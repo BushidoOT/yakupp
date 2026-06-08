@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha App Offline v46</title>
+  <title>Mesaha App Offline v47</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -1697,6 +1697,104 @@
       }
     }
 
+  
+    /* v47: mobil yerleşim ve tıklama düzeltmesi */
+    .barcode-save-row.fixed-mobile{
+      display:grid !important;
+      grid-template-columns:minmax(0, 1fr) 112px !important;
+      gap:8px !important;
+      align-items:stretch !important;
+    }
+
+    .barcode-save-row.fixed-mobile .barcode-under-measure,
+    .barcode-save-row.fixed-mobile .save-under-measure{
+      background:#ffffff !important;
+      border:1px solid #d7dee8 !important;
+      border-radius:14px !important;
+      padding:8px !important;
+      box-shadow:0 3px 10px rgba(16,24,40,.04) !important;
+      min-width:0 !important;
+      pointer-events:auto !important;
+    }
+
+    .barcode-save-row.fixed-mobile .barcode-under-measure input{
+      height:44px !important;
+      min-height:44px !important;
+      width:100% !important;
+      font-size:18px !important;
+      padding:8px 10px !important;
+      border-radius:11px !important;
+      font-weight:900 !important;
+      text-align:center !important;
+      letter-spacing:.3px !important;
+    }
+
+    .barcode-save-row.fixed-mobile .save-under-measure{
+      display:flex !important;
+      flex-direction:column !important;
+      justify-content:flex-start !important;
+      overflow:visible !important;
+    }
+
+    .barcode-save-row.fixed-mobile .save-under-measure button{
+      height:44px !important;
+      min-height:44px !important;
+      width:100% !important;
+      padding:8px 8px !important;
+      border-radius:12px !important;
+      font-size:15px !important;
+      font-weight:950 !important;
+      white-space:nowrap !important;
+      pointer-events:auto !important;
+    }
+
+    .barcode-save-row.fixed-mobile .save-under-measure .hint{display:none !important}
+
+    .barcode-save-row.fixed-mobile .barcode-under-measure .hint{
+      font-size:11px !important;
+      line-height:1.25 !important;
+      margin-top:5px !important;
+    }
+
+    .entry-panel .measure-compact{
+      display:grid !important;
+      grid-template-columns:1fr 1fr !important;
+      gap:8px !important;
+    }
+
+    .entry-panel .measure-field{min-width:0 !important}
+
+    .entry-panel .measure-field input{
+      width:100% !important;
+      height:44px !important;
+      min-height:44px !important;
+      font-size:19px !important;
+      text-align:center !important;
+    }
+
+    .product-box,
+    .bottom-nav button,
+    button{
+      pointer-events:auto !important;
+    }
+
+    @media (max-width:430px){
+      .barcode-save-row.fixed-mobile{
+        grid-template-columns:minmax(0, 1fr) 96px !important;
+        gap:7px !important;
+      }
+
+      .barcode-save-row.fixed-mobile .save-under-measure button{
+        font-size:14px !important;
+        padding-left:6px !important;
+        padding-right:6px !important;
+      }
+
+      .barcode-save-row.fixed-mobile .barcode-under-measure input{
+        font-size:17px !important;
+      }
+    }
+
   </style>
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -1790,14 +1888,10 @@
               </div>
             </div>
 
-<div class="row">
-              <div>
-                <label for="productionDate">Üretim Tarihi</label>
-                <input id="productionDate" name="productionDate" type="date"  autocomplete="off"  autocorrect="off"  autocapitalize="off"  spellcheck="false" />
-              </div>
-              <div>
-                <label for="quantity">Adet</label>
-                <input id="quantity" name="quantity" type="number" min="1" step="1" value="1" inputmode="numeric"  autocomplete="off"  autocorrect="off"  autocapitalize="off"  spellcheck="false"  enterkeyhint="done" />
+<div class="measure-field">
+                <label for="diameter">Çap</label>
+                <input id="diameter" name="diameter" type="number" min="0" step="1" placeholder="22" inputmode="numeric" enterkeyhint="done" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+                <div id="diameterChips" class="chip-row"></div>
               </div>
             </div>
 
@@ -2620,10 +2714,13 @@
         return `<div class="product-box" data-product="${escapeHtml(type)}">${escapeHtml(product.shortName || product.odunAdi)}</div>`;
       }).join("");
 
+      if (els.productBoxes) {
       els.productBoxes.querySelectorAll(".product-box").forEach(box => {
-        box.addEventListener("pointerdown", (event) => event.preventDefault());
-        box.addEventListener("click", () => setProductType(box.dataset.product, true));
+        box.addEventListener("click", () => {
+          setProductType(box.dataset.product);
+        });
       });
+    }
     }
 
     function syncWoodTypePanel() {
@@ -3708,7 +3805,7 @@
     function backup() {
       const data = {
         app: "Mesaha App",
-        version: 46,
+        version: 47,
         exportedAt: formatDateTime(),
         systemHeaders: HEADERS,
         settings: state.settings,
@@ -3849,7 +3946,7 @@
       box.addEventListener("click", () => setQualityClass(box.dataset.class, true));
     });
 
-    els.cancelEditBtn.addEventListener("click", cancelEditMode);
+    if (els.cancelEditBtn) els.cancelEditBtn.addEventListener("click", cancelEditMode);
     if (els.soundToggleBtn) els.soundToggleBtn.addEventListener("click", toggleSound);
 
     els.sameBarcodeBtn.addEventListener("click", () => {
@@ -3902,30 +3999,34 @@
       showToast("Tüm kayıtlar silindi. Geri almak için Geri Al butonunu kullanın.");
     });
 
-    els.navEntry.addEventListener("click", () => {
-      document.body.classList.remove("show-records", "show-guide");
-      els.navEntry.classList.add("active");
-      els.navRecords.classList.remove("active");
-      if (els.navGuide) els.navGuide.classList.remove("active");
-      focusDiameterKeepKeyboard();
-    });
+    if (els.navEntry) {
+      els.navEntry.addEventListener("click", () => {
+        document.body.classList.remove("show-records", "show-guide");
+        els.navEntry.classList.add("active");
+        if (els.navRecords) els.navRecords.classList.remove("active");
+        if (els.navGuide) els.navGuide.classList.remove("active");
+        focusDiameterKeepKeyboard();
+      });
+    }
 
-    els.navRecords.addEventListener("click", () => {
-      document.body.classList.add("show-records");
-      document.body.classList.remove("show-guide");
-      els.navRecords.classList.add("active");
-      els.navEntry.classList.remove("active");
-      if (els.navGuide) els.navGuide.classList.remove("active");
-      render();
-    });
+    if (els.navRecords) {
+      els.navRecords.addEventListener("click", () => {
+        document.body.classList.add("show-records");
+        document.body.classList.remove("show-guide");
+        els.navRecords.classList.add("active");
+        if (els.navEntry) els.navEntry.classList.remove("active");
+        if (els.navGuide) els.navGuide.classList.remove("active");
+        render();
+      });
+    }
 
     if (els.navGuide) {
       els.navGuide.addEventListener("click", () => {
         document.body.classList.add("show-guide");
         document.body.classList.remove("show-records");
         els.navGuide.classList.add("active");
-        els.navEntry.classList.remove("active");
-        els.navRecords.classList.remove("active");
+        if (els.navEntry) els.navEntry.classList.remove("active");
+        if (els.navRecords) els.navRecords.classList.remove("active");
       });
     }
 
