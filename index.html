@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha App Offline v48</title>
+  <title>Mesaha App Offline v49</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -1692,6 +1692,96 @@
       }
     }
 
+  
+    /* v49: temiz mobil giriş düzeni */
+    .entry-panel .measure-compact{
+      display:grid !important;
+      grid-template-columns:1fr 1fr !important;
+      gap:8px !important;
+      align-items:start !important;
+    }
+
+    .entry-panel .measure-field{
+      min-width:0 !important;
+    }
+
+    .entry-panel .measure-field input{
+      width:100% !important;
+      height:44px !important;
+      min-height:44px !important;
+      font-size:19px !important;
+      text-align:center !important;
+    }
+
+    .barcode-save-row-final{
+      display:grid !important;
+      grid-template-columns:minmax(0, 1fr) 104px !important;
+      gap:8px !important;
+      align-items:stretch !important;
+    }
+
+    .barcode-field-final,
+    .save-field-final{
+      background:#ffffff !important;
+      border:1px solid #d7dee8 !important;
+      border-radius:14px !important;
+      padding:8px !important;
+      box-shadow:0 3px 10px rgba(16,24,40,.04) !important;
+      min-width:0 !important;
+    }
+
+    .barcode-field-final input{
+      width:100% !important;
+      height:44px !important;
+      min-height:44px !important;
+      font-size:18px !important;
+      padding:8px 10px !important;
+      border-radius:11px !important;
+      font-weight:900 !important;
+      text-align:center !important;
+      letter-spacing:.3px !important;
+    }
+
+    .barcode-field-final .hint{
+      font-size:11px !important;
+      line-height:1.25 !important;
+      margin-top:5px !important;
+    }
+
+    .save-field-final{
+      display:flex !important;
+      flex-direction:column !important;
+      justify-content:flex-start !important;
+    }
+
+    .save-field-final button{
+      width:100% !important;
+      height:44px !important;
+      min-height:44px !important;
+      padding:8px 8px !important;
+      border-radius:12px !important;
+      font-size:15px !important;
+      font-weight:950 !important;
+      white-space:nowrap !important;
+    }
+
+    @media (max-width:430px){
+      .barcode-save-row-final{
+        grid-template-columns:minmax(0, 1fr) 94px !important;
+        gap:7px !important;
+      }
+
+      .save-field-final button{
+        font-size:14px !important;
+        padding-left:6px !important;
+        padding-right:6px !important;
+      }
+
+      .barcode-field-final input{
+        font-size:17px !important;
+      }
+    }
+
   </style>
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -1762,34 +1852,26 @@
             <div class="row measure-compact">
               <div class="measure-field">
                 <label for="length">Boy</label>
-                <input id="length" name="length" type="number" min="0" step="0.01" placeholder="3" inputmode="decimal"  autocomplete="off"  autocorrect="off"  autocapitalize="off"  spellcheck="false"  enterkeyhint="next" />
+                <input id="length" name="length" type="number" min="0" step="0.01" placeholder="3" inputmode="decimal" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="next" />
                 <div id="lengthChips" class="chip-row"></div>
               </div>
-                                      <div class="barcode-save-row-safe">
-              <div class="barcode-field-safe">
+              <div class="measure-field">
+                <label for="diameter">Çap</label>
+                <input id="diameter" name="diameter" type="number" min="0" step="1" placeholder="22" inputmode="numeric" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="done" />
+                <div id="diameterChips" class="chip-row"></div>
+              </div>
+            </div>
+
+            <div class="barcode-save-row-final">
+              <div class="barcode-field-final">
                 <label for="barcode">Barkod No</label>
                 <input id="barcode" name="barcode" type="text" placeholder="A17265597" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="done" />
                 <p class="hint">En az 9 karakter. Örn: A17265597</p>
                 <div id="duplicateWarning" class="duplicate-warning"></div>
               </div>
-              <div class="save-field-safe">
+              <div class="save-field-final">
                 <label>&nbsp;</label>
                 <button id="submitBtn" class="primary" type="submit">Kaydet</button>
-              </div>
-            </div>
-
-<div class="barcode-save-row">
-<div class="save-under-measure">
-                <label>&nbsp;</label>
-                
-                <p class="hint">Enter / Tamam ile kaydeder.</p>
-              </div>
-            </div>
-
-<div class="measure-field">
-                <label for="diameter">Çap</label>
-                <input id="diameter" name="diameter" type="tel" placeholder="22" inputmode="numeric"  autocomplete="off"  autocorrect="off"  autocapitalize="off"  spellcheck="false"  enterkeyhint="done"  />
-                <div id="diameterChips" class="chip-row"></div>
               </div>
             </div>
 
@@ -3721,7 +3803,7 @@
     function backup() {
       const data = {
         app: "Mesaha App",
-        version: 48,
+        version: 49,
         exportedAt: formatDateTime(),
         systemHeaders: HEADERS,
         settings: state.settings,
