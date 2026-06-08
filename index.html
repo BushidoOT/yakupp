@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha App Offline v34</title>
+  <title>Mesaha App Offline v36</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -1136,6 +1136,160 @@
     .stat.sanayi-stat{border-left:8px solid #16a34a!important;background:#f0fdf4!important}
     .stat.tel-stat{border-left:8px solid #7c3aed!important;background:#f5f3ff!important}
 
+  
+    /* v35: saha güvenliği ve özet ekleri */
+    .info-details{
+      border:1px solid #d7dee8;
+      border-radius:14px;
+      background:#ffffff;
+      overflow:hidden;
+    }
+
+    .info-details summary{
+      cursor:pointer;
+      padding:10px 12px;
+      font-weight:950;
+      color:#111827;
+      user-select:none;
+      list-style:none;
+    }
+
+    .info-details summary::-webkit-details-marker{display:none}
+
+    .info-details summary::after{
+      content:"Aç";
+      float:right;
+      font-size:12px;
+      background:#f1f5f9;
+      border:1px solid #cbd5e1;
+      border-radius:999px;
+      padding:2px 8px;
+      color:#334155;
+    }
+
+    .info-details[open] summary::after{
+      content:"Kapat";
+    }
+
+    .info-body{
+      border-top:1px solid #e5eaf1;
+      padding:10px;
+      display:grid;
+      gap:10px;
+    }
+
+    .info-body input{
+      min-height:42px;
+      height:42px;
+      padding:8px 10px;
+      font-size:15px;
+      border-radius:11px;
+    }
+
+    .duplicate-warning{
+      display:none;
+      margin-top:7px;
+      padding:8px 10px;
+      border-radius:12px;
+      background:#fff7ed;
+      border:1px solid #fed7aa;
+      color:#9a3412;
+      font-weight:900;
+      font-size:12.5px;
+      line-height:1.35;
+    }
+
+    .duplicate-warning.show{
+      display:block;
+    }
+
+    .rule-hint{
+      background:#f8fafc;
+      border:1px solid #e2e8f0;
+      border-radius:12px;
+      padding:8px 9px;
+      font-weight:850;
+    }
+
+    .summary-card{
+      background:#f8fafc;
+      border:1px solid #d7dee8;
+      border-radius:16px;
+      padding:12px;
+      margin-bottom:12px;
+      color:#172033;
+    }
+
+    .summary-card h3{
+      margin:0 0 8px;
+      font-size:15px;
+      font-weight:950;
+      color:#111827;
+    }
+
+    .summary-grid{
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0,1fr));
+      gap:8px;
+    }
+
+    .summary-item{
+      background:#ffffff;
+      border:1px solid #e5eaf1;
+      border-radius:13px;
+      padding:8px;
+      font-size:13px;
+      font-weight:800;
+    }
+
+    .summary-item b{
+      display:block;
+      font-size:16px;
+      color:#111827;
+      margin-top:2px;
+    }
+
+    .undo-banner{
+      display:none;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      background:#fff7ed;
+      border:2px solid #fdba74;
+      color:#7c2d12;
+      border-radius:14px;
+      padding:10px 12px;
+      margin:10px 0;
+      font-weight:900;
+    }
+
+    .undo-banner.show{
+      display:flex;
+    }
+
+    .undo-banner button{
+      width:auto;
+      min-width:82px;
+      padding:8px 10px;
+      min-height:36px;
+      border-radius:10px;
+      background:#ea580c !important;
+      color:#ffffff !important;
+    }
+
+    @media (max-width: 520px){
+      .summary-grid{
+        grid-template-columns:1fr;
+      }
+    }
+
+  
+    /* v36: Ekranda desi kaldırıldı, m³ kullanılır */
+    .unit,
+    .summary-item span{
+      font-weight:900;
+    }
+
   </style>
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -1166,7 +1320,30 @@
               <label for="barcode">Barkod No</label>
               <input id="barcode" name="barcode" placeholder="Örn: A102682" inputmode="text"  autocomplete="off"  autocorrect="off"  autocapitalize="off"  spellcheck="false"  enterkeyhint="next" />
               <p class="hint">Kaydetten sonra barkod otomatik bir sonraki sıraya geçer. Barkod en az 9 karakter olmalı. Örn: A17265597</p>
+              <div id="duplicateWarning" class="duplicate-warning"></div>
             </div>
+
+
+            <details class="info-details">
+              <summary>Dosya Bilgileri</summary>
+              <div class="info-body">
+                <div class="row">
+                  <div>
+                    <label for="bolmeNo">Bölme No</label>
+                    <input id="bolmeNo" name="bolmeNo" placeholder="Örn: 102" inputmode="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+                  </div>
+                  <div>
+                    <label for="seflik">Şeflik</label>
+                    <input id="seflik" name="seflik" placeholder="Örn: Tavşanlı" inputmode="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+                  </div>
+                </div>
+                <div>
+                  <label for="ekipNot">Not / Ekip Bilgisi</label>
+                  <input id="ekipNot" name="ekipNot" placeholder="İsteğe bağlı not" inputmode="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+                </div>
+                <p class="hint">Bu bilgiler sistem Excel’ine yazılmaz; dosya adını düzenli oluşturmak ve takip kolaylığı için kullanılır.</p>
+              </div>
+            </details>
 
             <div id="toast" class="toast form-toast"></div>
 
@@ -1190,7 +1367,7 @@
                 <button class="secondary small-action" type="button" id="woodTypeApplyBtn">Seçimi Uygula</button>
               </div>
               <div id="productBoxes" class="product-boxes"></div>
-              <p class="hint">Sadece seçtiğiniz odun türleri ana sayfada görünür.</p>
+              <p id="productRuleHint" class="hint rule-hint">Sadece seçtiğiniz odun türleri ana sayfada görünür.</p>
             </div>
 
             <div class="row measure-compact">
@@ -1229,12 +1406,12 @@
 
             <div class="result-box">
               <div>
-                <small>Otomatik Hacim</small>
+                <small>Hesaplanan m³</small>
                 <strong id="liveDesi">0</strong>
               </div>
               <div style="text-align:right">
-                <small>Sistem karşılığı</small>
-                <strong id="liveHacim" style="font-size:20px">0</strong>
+                <small>Excel hacim alanı</small>
+                <strong id="liveHacim" style="font-size:20px">Boş</strong>
               </div>
             </div>
 
@@ -1250,7 +1427,7 @@
             </div>
 
             <p class="hint">
-              Desi = 0.00007854 × çap² × boy × 1000 × adet. Sistem Excel’inde hacim <b>m³</b> olarak gider.
+              Hacim hesabı bilgi amaçlı m³ olarak gösterilir. Sistem Excel’inde hacim alanı boş gönderilir; ORBİS kendi hesaplar.
             </p>
           </form>
         </div>
@@ -1264,9 +1441,9 @@
         <div class="panel-body">
           <div class="totals">
             <div class="stat">
-              <small>Genel Hacim</small>
+              <small>Toplam m³</small>
               <strong id="totalDesi">0</strong>
-              <div class="unit">desi</div>
+              <div class="unit">m³</div>
             </div>
             <div class="stat">
               <small>Toplam Adet</small>
@@ -1300,14 +1477,19 @@
             </div>
           </div>
 
+          <div id="daySummary" class="summary-card"></div>
+
           <div class="tools">
             <button type="button" class="primary" id="exportSystemXlsBtn">Mesaha Dosyasını İndir</button>
             <button type="button" class="ghost" id="backupBtn">Yedek Al</button>
             <button type="button" class="ghost" id="restoreBtn">Yedek Yükle</button>
+            <button type="button" class="ghost" id="sampleBtn">Örnek Kayıt Oluştur</button>
             <button type="button" class="warning" id="printBtn">Yazdır</button>
             <button type="button" class="danger" id="deleteAllBtn">Tümünü Sil</button>
             <input id="restoreInput" type="file" accept=".json,application/json" style="display:none"  autocomplete="off"  autocorrect="off"  autocapitalize="off"  spellcheck="false" />
           </div>
+
+          <div id="undoBanner" class="undo-banner"><span id="undoMessage">Kayıt silindi.</span><button type="button" id="undoBtn">Geri Al</button></div>
 
           <div class="searchbar">
             <input id="searchInput" placeholder="Barkod, ürün, sınıf, çap veya boy ara..."  autocomplete="off"  autocorrect="off"  autocapitalize="off"  spellcheck="false" />
@@ -1323,7 +1505,6 @@
                   <th class="num">Boy</th>
                   <th class="num">Çap</th>
                   <th class="num">Adet</th>
-                  <th class="num">Desi</th>
                   <th class="num">m³</th>
                   <th>Tarih</th>
                   <th>İşlem</th>
@@ -1398,6 +1579,18 @@
               </ol>
             </div>
 
+
+            <div class="guide-card">
+              <h3>Yeni sürüm yükleme / güncelleme</h3>
+              <ol>
+                <li>Yeni sürüm dosyalarını GitHub projesine yükleyiniz: <b>index.html</b>, <b>manifest.json</b>, <b>service-worker.js</b> ve <b>.nojekyll</b>.</li>
+                <li>Yükleme tamamlandıktan sonra Mesaha App bağlantısını internet varken açınız.</li>
+                <li>Sayfayı 1-2 kez yenileyiniz. Böylece eski çevrimdışı önbellek yerine yeni sürüm alınır.</li>
+                <li>Hâlâ eski sürüm görünüyorsa tarayıcıdan site verilerini temizleyip bağlantıyı yeniden açınız.</li>
+                <li>Güncelleme yapmadan önce önemli kayıtlar varsa mutlaka <b>Yedek Al</b> veya <b>Mesaha Dosyasını İndir</b> işlemini yapınız.</li>
+              </ol>
+            </div>
+
             <div class="guide-note">
               Not: Arazide internet çekmeyebilir. Uygulamayı sahaya çıkmadan önce bir kez internet varken açıp ana ekrana eklemeniz tavsiye edilir. İş bitince mesaha dosyasını indirmeyi ve gerekirse yedek almayı unutmayınız.
             </div>
@@ -1445,6 +1638,10 @@
         recentLengths: ["3"],
         recentDiameters: ["22"],
         visibleProducts: ["Tomruk", "Maden Direk", "Kağıtlık", "Sanayi Odunu", "Tel Direk"],
+        bolmeNo: "",
+        seflik: "",
+        ekipNot: "",
+        lastBackupReminderCount: 0,
         soundEnabled: true
       }
     };
@@ -1455,6 +1652,10 @@
       form: $("entryForm"),
       submitBtn: $("submitBtn"),
       barcode: $("barcode"),
+      duplicateWarning: $("duplicateWarning"),
+      bolmeNo: $("bolmeNo"),
+      seflik: $("seflik"),
+      ekipNot: $("ekipNot"),
       productionDate: $("productionDate"),
       productType: $("productType"),
       qualityClass: $("qualityClass"),
@@ -1496,6 +1697,12 @@
       restoreInput: $("restoreInput"),
       printBtn: $("printBtn"),
       deleteAllBtn: $("deleteAllBtn"),
+      sampleBtn: $("sampleBtn"),
+      daySummary: $("daySummary"),
+      undoBanner: $("undoBanner"),
+      undoMessage: $("undoMessage"),
+      undoBtn: $("undoBtn"),
+      productRuleHint: $("productRuleHint"),
       navEntry: $("navEntry"),
       navRecords: $("navRecords"),
       navGuide: $("navGuide"),
@@ -1585,6 +1792,9 @@
       syncWoodTypePanel();
 
       els.barcode.value = state.settings.lastBarcode || "A102682";
+      if (els.bolmeNo) els.bolmeNo.value = state.settings.bolmeNo || "";
+      if (els.seflik) els.seflik.value = state.settings.seflik || "";
+      if (els.ekipNot) els.ekipNot.value = state.settings.ekipNot || "";
       els.productionDate.value = state.settings.productionDate || todayISO();
       els.length.value = state.settings.lastLength || "3";
       els.quantity.value = state.settings.lastQuantity || "1";
@@ -1595,6 +1805,8 @@
       updateLiveDesi();
       setupOfflineSupport();
       disableIosAutofillToolbarHints();
+      updateProductRuleHint();
+      updateDuplicateWarning();
       render();
       updateSoundButton();
       focusDiameterKeepKeyboard();
@@ -1606,6 +1818,9 @@
 
     function saveSettings() {
       state.settings.lastBarcode = els.barcode.value.trim();
+      state.settings.bolmeNo = els.bolmeNo ? els.bolmeNo.value.trim() : "";
+      state.settings.seflik = els.seflik ? els.seflik.value.trim() : "";
+      state.settings.ekipNot = els.ekipNot ? els.ekipNot.value.trim() : "";
       state.settings.productionDate = els.productionDate.value || todayISO();
       state.settings.lastProductType = els.productType.value;
       state.settings.lastQualityClass = "";
@@ -1901,6 +2116,61 @@
       return "tomruk";
     }
 
+    function productRuleText(type) {
+      if (type === "Tomruk") return "Tomruk: çap 21 ve üzeri girilebilir.";
+      if (type === "Maden Direk") return "Maden direği: çap 20 ve altı girilebilir.";
+      if (type === "Sanayi Odunu") return "Sanayi odunu: çap 12 ve üzeri, boy 0,50 - 1,45 m arasında olmalı.";
+      if (type === "Tel Direk") return "Tel direği: çap 12 - 40, boy 6,5 - 25 m arasında olmalı.";
+      if (type === "Kağıtlık") return "Kağıtlık odun: çap sınırı yoktur.";
+      return "Seçili odun türünün kuralına göre giriş yapınız.";
+    }
+
+    function updateProductRuleHint() {
+      if (!els.productRuleHint) return;
+      els.productRuleHint.textContent = productRuleText(els.productType.value);
+    }
+
+    function updateDuplicateWarning() {
+      if (!els.duplicateWarning) return;
+      const barcode = String(els.barcode.value || "").trim();
+      const exists = barcode && state.records.some(r => String(r.barcode || "").trim() === barcode && r.id !== state.editingId);
+
+      if (exists) {
+        els.duplicateWarning.textContent = "Dikkat: Bu barkod daha önce kullanılmış. Aynı barkoda ürün ekleyecekseniz sorun yoktur.";
+        els.duplicateWarning.classList.add("show");
+      } else {
+        els.duplicateWarning.textContent = "";
+        els.duplicateWarning.classList.remove("show");
+      }
+    }
+
+    function maybeShowBackupReminder() {
+      const count = state.records.length;
+      if (!count || count % 25 !== 0) return;
+      if (Number(state.settings.lastBackupReminderCount || 0) === count) return;
+
+      state.settings.lastBackupReminderCount = count;
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify(state.settings));
+
+      setTimeout(() => {
+        showErrorToast(`${count} kayıt girildi. Yedek almayı unutmayın.`);
+      }, 900);
+    }
+
+    function sanitizeFilePart(value) {
+      return String(value || "")
+        .trim()
+        .replace(/[ğĞ]/g, "g")
+        .replace(/[üÜ]/g, "u")
+        .replace(/[şŞ]/g, "s")
+        .replace(/[ıİ]/g, "i")
+        .replace(/[öÖ]/g, "o")
+        .replace(/[çÇ]/g, "c")
+        .replace(/[^a-zA-Z0-9_-]+/g, "_")
+        .replace(/^_+|_+$/g, "")
+        .slice(0, 40);
+    }
+
     function formatShortNumber(value) {
       const n = Number(value);
       if (!Number.isFinite(n)) return String(value || "");
@@ -1968,6 +2238,9 @@
       const l = Number(els.length.value || 0);
       if (d) validateDiameterByProduct(type, d, l || 0);
 
+      updateProductRuleHint();
+      updateDuplicateWarning();
+
       if (persist) saveSettings();
       focusDiameterKeepKeyboard();
     }
@@ -2022,8 +2295,8 @@
     function updateLiveDesi() {
       limitDiameterToTwoDigits();
       const desi = calculateDesi(els.diameter.value, els.length.value, els.quantity.value);
-      els.liveDesi.textContent = desi.toLocaleString("tr-TR") + " desi";
-      els.liveHacim.textContent = formatHacimFromDesi(desi) + " m³";
+      els.liveDesi.textContent = formatHacimFromDesi(desi) + " m³";
+      els.liveHacim.textContent = "Boş";
     }
 
     function recordToSystemRow(record) {
@@ -2108,6 +2381,7 @@
         render();
         playSuccessSound();
         showSuccessToast(`${formatShortNumber(diameter)} çap ${formatShortNumber(length)} boy ${productDisplayName(productType)} güncellendi`);
+        updateDuplicateWarning();
         cancelEditMode();
         return;
       }
@@ -2150,18 +2424,60 @@
       render();
 
       playSuccessSound();
-      showSuccessToast(`${formatShortNumber(diameter)} çap ${formatShortNumber(length)} boy ${productDisplayName(productType)} eklendi`);
+      const duplicateCount = state.records.filter(r => r.barcode === barcode).length;
+      const duplicateNote = duplicateCount > 1 && !state.sameBarcodeMode ? " — Dikkat: barkod daha önce kullanılmış." : "";
+      showSuccessToast(`${formatShortNumber(diameter)} çap ${formatShortNumber(length)} boy ${productDisplayName(productType)} eklendi${duplicateNote}`);
+      updateDuplicateWarning();
+      maybeShowBackupReminder();
       focusDiameterKeepKeyboard();
+    }
+
+    function showUndoBanner(message) {
+      if (!els.undoBanner) return;
+      clearTimeout(showUndoBanner.timer);
+      els.undoMessage.textContent = message || "Kayıt silindi.";
+      els.undoBanner.classList.add("show");
+      showUndoBanner.timer = setTimeout(() => {
+        if (els.undoBanner) els.undoBanner.classList.remove("show");
+      }, 9000);
+    }
+
+    function hideUndoBanner() {
+      if (els.undoBanner) els.undoBanner.classList.remove("show");
+      state.lastUndo = null;
+    }
+
+    function undoLastDelete() {
+      if (!state.lastUndo) return showToast("Geri alınacak kayıt yok.");
+
+      if (state.lastUndo.type === "single" && state.lastUndo.record) {
+        const index = Math.max(0, Math.min(state.lastUndo.index || 0, state.records.length));
+        state.records.splice(index, 0, state.lastUndo.record);
+      }
+
+      if (state.lastUndo.type === "all" && Array.isArray(state.lastUndo.records)) {
+        state.records = state.lastUndo.records;
+      }
+
+      saveRecords();
+      render();
+      hideUndoBanner();
+      showSuccessToast("Silme işlemi geri alındı.");
     }
 
     function deleteRecord(id) {
       const rec = state.records.find(r => r.id === id);
       if (!rec) return;
       if (!confirm(`${rec.barcode} kaydı silinsin mi?`)) return;
+
+      const index = state.records.findIndex(r => r.id === id);
+      state.lastUndo = { type: "single", record: rec, index };
       state.records = state.records.filter(r => r.id !== id);
+
       saveRecords();
       render();
-      showToast("Kayıt silindi.");
+      showUndoBanner(`${rec.barcode} silindi.`);
+      showToast("Kayıt silindi. Geri almak için Kayıtlar bölümündeki Geri Al butonunu kullanın.");
     }
 
     function editRecord(id) {
@@ -2205,8 +2521,7 @@
             <td class="num">${escapeHtml(sys.boy)}</td>
             <td class="num">${escapeHtml(sys.cap)}</td>
             <td class="num">${escapeHtml(sys.adet)}</td>
-            <td class="num"><b>${Number(r.desi || 0).toLocaleString("tr-TR")}</b></td>
-            <td class="num">${escapeHtml(sys.hacim)}</td>
+            <td class="num">${formatHacimFromDesi(Number(r.desi || 0))} m³</td>
             <td>${escapeHtml(sys.uretimTarihi)}</td>
             <td>
               <button class="mini-btn" onclick="event.stopPropagation(); editRecord('${r.id}')">Düzelt</button>
@@ -2218,6 +2533,27 @@
 
       els.emptyState.style.display = filtered.length ? "none" : "block";
       els.recordCount.textContent = `${state.records.length} kayıt`;
+
+      if (els.daySummary) {
+        const summaryLines = PRODUCT_ORDER.map(type => {
+          const itemRows = state.records.filter(r => (r.productType || "Tomruk") === type);
+          const adet = itemRows.reduce((sum, r) => sum + (Number(r.quantity) || 0), 0);
+          const desi = itemRows.reduce((sum, r) => sum + (Number(r.desi) || 0), 0);
+          const name = PRODUCT_MAP[type] ? PRODUCT_MAP[type].odunAdi : type;
+          return `<div class="summary-item">${escapeHtml(name)}<b>${adet.toLocaleString("tr-TR")} adet</b><span>${formatHacimFromDesi(desi)} m³</span></div>`;
+        }).join("");
+
+        const bolme = state.settings.bolmeNo ? ` • Bölme: ${escapeHtml(state.settings.bolmeNo)}` : "";
+        const seflik = state.settings.seflik ? ` • Şeflik: ${escapeHtml(state.settings.seflik)}` : "";
+        els.daySummary.innerHTML = `
+          <h3>Gün Sonu Özeti${bolme}${seflik}</h3>
+          <div class="summary-grid">
+            <div class="summary-item">Toplam Kayıt<b>${state.records.length.toLocaleString("tr-TR")}</b><span>satır</span></div>
+            <div class="summary-item">Toplam Adet<b>${state.records.reduce((s, r) => s + (Number(r.quantity) || 0), 0).toLocaleString("tr-TR")}</b><span>adet</span></div>
+            ${summaryLines}
+          </div>
+        `;
+      }
 
       const totals = {
         all: 0,
@@ -2254,24 +2590,24 @@
         return acc;
       }, { adet: 0, desi: 0 });
 
-      els.totalDesi.textContent = totals.all.toLocaleString("tr-TR");
+      els.totalDesi.textContent = formatHacimFromDesi(totals.all);
       els.totalAdet.textContent = totals.adet.toLocaleString("tr-TR");
-      els.totalTomruk.textContent = totals.Tomruk.toLocaleString("tr-TR") + " desi";
+      els.totalTomruk.textContent = formatHacimFromDesi(totals.Tomruk) + " m³";
       if (els.totalTomrukAdet) els.totalTomrukAdet.textContent = totals.TomrukAdet.toLocaleString("tr-TR") + " adet";
-      els.totalMaden.textContent = totals["Maden Direk"].toLocaleString("tr-TR") + " desi";
+      els.totalMaden.textContent = formatHacimFromDesi(totals["Maden Direk"]) + " m³";
       if (els.totalMadenAdet) els.totalMadenAdet.textContent = totals.MadenAdet.toLocaleString("tr-TR") + " adet";
-      els.totalKagit.textContent = totals["Kağıtlık"].toLocaleString("tr-TR") + " desi";
+      els.totalKagit.textContent = formatHacimFromDesi(totals["Kağıtlık"]) + " m³";
       if (els.totalKagitAdet) els.totalKagitAdet.textContent = totals.KagitAdet.toLocaleString("tr-TR") + " adet";
-      if (els.totalSanayi) els.totalSanayi.textContent = totals["Sanayi Odunu"].toLocaleString("tr-TR") + " desi";
+      if (els.totalSanayi) els.totalSanayi.textContent = formatHacimFromDesi(totals["Sanayi Odunu"]) + " m³";
       if (els.totalSanayiAdet) els.totalSanayiAdet.textContent = totals.SanayiAdet.toLocaleString("tr-TR") + " adet";
-      if (els.totalTel) els.totalTel.textContent = totals["Tel Direk"].toLocaleString("tr-TR") + " desi";
+      if (els.totalTel) els.totalTel.textContent = formatHacimFromDesi(totals["Tel Direk"]) + " m³";
       if (els.totalTelAdet) els.totalTelAdet.textContent = totals.TelAdet.toLocaleString("tr-TR") + " adet";
 
       els.recordsFoot.innerHTML = filtered.length ? `
         <tr class="table-total-row">
           <td colspan="5">Alttaki liste toplamı</td>
           <td class="num">${filteredTotals.adet.toLocaleString("tr-TR")} adet</td>
-          <td class="num">${filteredTotals.desi.toLocaleString("tr-TR")} desi</td>
+          <td class="num">${filteredTotals.desi.toLocaleString("tr-TR")} m³</td>
           <td class="num">${formatHacimFromDesi(filteredTotals.desi)} m³</td>
           <td colspan="2"></td>
         </tr>
@@ -2884,13 +3220,13 @@
     function backup() {
       const data = {
         app: "Mesaha App",
-        version: 34,
+        version: 36,
         exportedAt: formatDateTime(),
         systemHeaders: HEADERS,
         settings: state.settings,
         records: state.records
       };
-      downloadFile(JSON.stringify(data, null, 2), `cam_mesaha_yedek_${dateFileName()}.json`, "application/json");
+      downloadFile(JSON.stringify(data, null, 2), `mesaha_yedek_${dateFileName()}.json`, "application/json");
       showToast("Yedek indirildi.");
     }
 
@@ -2930,11 +3266,66 @@
     function dateFileName() {
       const d = new Date();
       const pad = (n) => String(n).padStart(2, "0");
-      return `${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}_${pad(d.getHours())}${pad(d.getMinutes())}`;
+      const base = `${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}_${pad(d.getHours())}${pad(d.getMinutes())}`;
+      const parts = [base];
+
+      const bolme = sanitizeFilePart(state.settings.bolmeNo || (els.bolmeNo ? els.bolmeNo.value : ""));
+      const seflik = sanitizeFilePart(state.settings.seflik || (els.seflik ? els.seflik.value : ""));
+
+      if (bolme) parts.push(`Bolme_${bolme}`);
+      if (seflik) parts.push(seflik);
+
+      return parts.join("_");
     }
 
     function buildChips() {
       renderRecentChips();
+    }
+
+    function nextSampleBarcode(offset = 1) {
+      const prefix = "TST";
+      let max = 0;
+      for (const r of state.records) {
+        const match = String(r.barcode || "").match(/^TST(\d+)$/);
+        if (match) max = Math.max(max, Number(match[1]) || 0);
+      }
+      return prefix + String(max + offset).padStart(6, "0");
+    }
+
+    function createSampleRecords() {
+      if (!confirm("Deneme için örnek kayıtlar eklensin mi? Gerçek işe başlamadan önce bu kayıtları silmeyi unutmayın.")) return;
+
+      const productionDate = els.productionDate.value || todayISO();
+      const samples = [
+        { barcode: nextSampleBarcode(1), productType: "Tomruk", length: 3, diameter: 22, quantity: 1 },
+        { barcode: nextSampleBarcode(2), productType: "Maden Direk", length: 3, diameter: 19, quantity: 1 },
+        { barcode: nextSampleBarcode(3), productType: "Kağıtlık", length: 2.5, diameter: 18, quantity: 1 },
+        { barcode: nextSampleBarcode(4), productType: "Sanayi Odunu", length: 1, diameter: 14, quantity: 1 },
+        { barcode: nextSampleBarcode(5), productType: "Tel Direk", length: 6.5, diameter: 22, quantity: 1 }
+      ];
+
+      for (const item of samples) {
+        const desi = calculateDesi(item.diameter, item.length, item.quantity);
+        state.records.unshift({
+          id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now() + Math.random()),
+          barcode: item.barcode,
+          species: "Karaçam",
+          productType: item.productType,
+          qualityClass: "",
+          productionDate,
+          uretimTarihi: isoToTRDate(productionDate),
+          length: item.length,
+          diameter: item.diameter,
+          quantity: item.quantity,
+          desi,
+          hacim: formatHacimFromDesi(desi),
+          createdAt: formatDateTime()
+        });
+      }
+
+      saveRecords();
+      render();
+      showSuccessToast("5 örnek kayıt eklendi. Testten sonra silmeyi unutmayın.");
     }
 
     els.submitBtn.addEventListener("pointerdown", (event) => {
@@ -2951,7 +3342,10 @@
       els.length.addEventListener(evt, () => { saveSettings(); updateLiveDesi(); });
       els.quantity.addEventListener(evt, () => { saveSettings(); updateLiveDesi(); });
       els.productionDate.addEventListener(evt, saveSettings);
-      els.barcode.addEventListener(evt, saveSettings);
+      els.barcode.addEventListener(evt, () => { saveSettings(); updateDuplicateWarning(); });
+      if (els.bolmeNo) els.bolmeNo.addEventListener(evt, saveSettings);
+      if (els.seflik) els.seflik.addEventListener(evt, saveSettings);
+      if (els.ekipNot) els.ekipNot.addEventListener(evt, saveSettings);
     });
 
     els.classBoxes.querySelectorAll(".class-box").forEach(box => {
@@ -2988,14 +3382,20 @@
       e.target.value = "";
     });
     els.printBtn.addEventListener("click", () => window.print());
+    if (els.sampleBtn) els.sampleBtn.addEventListener("click", createSampleRecords);
+    if (els.undoBtn) els.undoBtn.addEventListener("click", undoLastDelete);
 
     els.deleteAllBtn.addEventListener("click", () => {
       if (!state.records.length) return showToast("Silinecek kayıt yok.");
-      if (!confirm("Tüm kayıtlar silinsin mi? Bu işlem geri alınamaz.")) return;
+      if (!confirm("Tüm kayıtlar silinsin mi?")) return;
+
+      state.lastUndo = { type: "all", records: state.records.slice() };
       state.records = [];
+
       saveRecords();
       render();
-      showToast("Tüm kayıtlar silindi.");
+      showUndoBanner("Tüm kayıtlar silindi.");
+      showToast("Tüm kayıtlar silindi. Geri almak için Geri Al butonunu kullanın.");
     });
 
     els.navEntry.addEventListener("click", () => {
