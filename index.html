@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha App Offline v38</title>
+  <title>Mesaha App Offline v39</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -1505,6 +1505,57 @@
       }
     }
 
+  
+    /* v39: günlük giriş sayacı */
+    .usage-card{
+      display:none;
+      background:#f8fafc;
+      border:1px solid #d7dee8;
+      border-radius:16px;
+      padding:12px;
+      margin-top:10px;
+      color:#172033;
+    }
+
+    .usage-card.show{
+      display:block;
+    }
+
+    .usage-card h3{
+      margin:0 0 8px;
+      font-size:15px;
+      font-weight:950;
+      color:#111827;
+    }
+
+    .usage-grid{
+      display:grid;
+      grid-template-columns:repeat(3, minmax(0, 1fr));
+      gap:8px;
+    }
+
+    .usage-item{
+      background:#ffffff;
+      border:1px solid #e5eaf1;
+      border-radius:13px;
+      padding:9px;
+      font-size:12.5px;
+      font-weight:800;
+    }
+
+    .usage-item b{
+      display:block;
+      font-size:18px;
+      color:#111827;
+      margin-top:3px;
+    }
+
+    @media (max-width: 560px){
+      .usage-grid{
+        grid-template-columns:1fr;
+      }
+    }
+
   </style>
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -1701,6 +1752,9 @@
             <input id="restoreInput" type="file" accept=".json,application/json" style="display:none"  autocomplete="off"  autocorrect="off"  autocapitalize="off"  spellcheck="false" />
           </div>
 
+
+          <div id="usageCard" class="usage-card"></div>
+
           <div id="undoBanner" class="undo-banner"><span id="undoMessage">Kayıt silindi.</span><button type="button" id="undoBtn">Geri Al</button></div>
 
           <div class="searchbar">
@@ -1896,6 +1950,8 @@
       restoreBtn: $("restoreBtn"),
       restoreInput: $("restoreInput"),
       printBtn: $("printBtn"),
+      usageBtn: $("usageBtn"),
+      usageCard: $("usageCard"),
       deleteAllBtn: $("deleteAllBtn"),
       sampleBtn: $("sampleBtn"),
       undoBanner: $("undoBanner"),
@@ -2003,6 +2059,7 @@
       renderRecentChips();
       updateLiveDesi();
       setupOfflineSupport();
+      registerDailyVisit();
       disableIosAutofillToolbarHints();
       updateProductRuleHint();
       updateDuplicateWarning();
@@ -3395,7 +3452,7 @@
     function backup() {
       const data = {
         app: "Mesaha App",
-        version: 38,
+        version: 39,
         exportedAt: formatDateTime(),
         systemHeaders: HEADERS,
         settings: state.settings,
@@ -3455,6 +3512,60 @@
 
     function buildChips() {
       renderRecentChips();
+    }
+
+    function usageDateKey(date = new Date()) {
+      const pad = (n) => String(n).padStart(2, "0");
+      return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+    }
+
+    function loadUsageStats() {
+      try {
+        return JSON.parse(localStorage.getItem("mesaha_usage_stats_v1") || "{}");
+      } catch {
+        return {};
+      }
+    }
+
+    function saveUsageStats(stats) {
+      localStorage.setItem("mesaha_usage_stats_v1", JSON.stringify(stats));
+    }
+
+    function registerDailyVisit() {
+      const today = usageDateKey();
+      const stats = loadUsageStats();
+
+      if (!stats.days) stats.days = {};
+      if (!stats.days[today]) stats.days[today] = 0;
+
+      stats.days[today] += 1;
+      stats.total = (Number(stats.total) || 0) + 1;
+      stats.lastOpen = new Date().toLocaleString("tr-TR");
+
+      saveUsageStats(stats);
+      renderUsageStats(false);
+    }
+
+    function renderUsageStats(show = true) {
+      if (!els.usageCard) return;
+
+      const today = usageDateKey();
+      const stats = loadUsageStats();
+      const todayCount = stats.days && stats.days[today] ? stats.days[today] : 0;
+      const total = Number(stats.total) || 0;
+      const lastOpen = stats.lastOpen || "-";
+
+      els.usageCard.innerHTML = `
+        <h3>Günlük Giriş Sayacı</h3>
+        <div class="usage-grid">
+          <div class="usage-item">Bugünkü giriş<b>${todayCount.toLocaleString("tr-TR")}</b></div>
+          <div class="usage-item">Toplam açılış<b>${total.toLocaleString("tr-TR")}</b></div>
+          <div class="usage-item">Son açılış<b style="font-size:13px">${escapeHtml(lastOpen)}</b></div>
+        </div>
+        <p class="hint" style="margin-top:8px">Bu sayaç cihaz bazlıdır. Her telefon/terminal kendi giriş sayısını tutar.</p>
+      `;
+
+      if (show) els.usageCard.classList.toggle("show");
     }
 
     function buildPrintBeyan() {
@@ -3642,6 +3753,7 @@
       window.print();
     });
     if (els.sampleBtn) els.sampleBtn.addEventListener("click", createSampleRecords);
+    if (els.usageBtn) els.usageBtn.addEventListener("click", () => renderUsageStats(true));
     if (els.undoBtn) els.undoBtn.addEventListener("click", undoLastDelete);
 
     els.deleteAllBtn.addEventListener("click", () => {
