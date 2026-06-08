@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha App Offline v32</title>
+  <title>Mesaha App Offline v33</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -1118,6 +1118,24 @@
       }
     }
 
+  
+    /* v33: Yeni odun türleri ve seçim paneli */
+    .product-select-head{display:flex;gap:8px;margin:0 0 8px 0}
+    .small-action{min-height:36px!important;padding:7px 10px!important;font-size:13px!important;border-radius:11px!important}
+    .wood-type-panel{display:none;grid-template-columns:1fr 1fr;gap:7px;margin:8px 0;padding:9px;border:1px solid #cbd5e1;border-radius:14px;background:#f8fafc}
+    .wood-type-panel.open{display:grid}
+    .wood-check{display:flex!important;align-items:center;gap:7px;margin:0!important;padding:8px;border:1px solid #d7dee8;border-radius:12px;background:#fff;font-size:13px!important;font-weight:850!important;color:#172033!important}
+    .wood-check input{width:18px!important;height:18px!important;min-height:18px!important;accent-color:#2563eb;box-shadow:none!important}
+    #woodTypeApplyBtn{grid-column:1 / -1}
+    .product-box[data-product="Sanayi Odunu"]{background:#dcfce7!important;border-color:#16a34a!important;color:#14532d!important}
+    .product-box[data-product="Tel Direk"]{background:#ede9fe!important;border-color:#7c3aed!important;color:#3b0764!important}
+    .product-box.active[data-product="Sanayi Odunu"]{background:#86efac!important;color:#052e16!important;border-color:#15803d!important;box-shadow:0 0 0 4px rgba(22,163,74,.22)!important}
+    .product-box.active[data-product="Tel Direk"]{background:#c4b5fd!important;color:#2e1065!important;border-color:#6d28d9!important;box-shadow:0 0 0 4px rgba(124,58,237,.22)!important}
+    .tag.sanayi{background:#86efac!important;color:#052e16!important}
+    .tag.tel{background:#c4b5fd!important;color:#2e1065!important}
+    .stat.sanayi-stat{border-left:8px solid #16a34a!important;background:#f0fdf4!important}
+    .stat.tel-stat{border-left:8px solid #7c3aed!important;background:#f5f3ff!important}
+
   </style>
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -1158,14 +1176,21 @@
 
             <div class="product-compact">
               <label>Ürün Türü</label>
-              <input id="productType" name="productType" type="hidden" value="Tomruk"  autocomplete="off"  autocorrect="off"  autocapitalize="off"  spellcheck="false" />
-              <input id="qualityClass" name="qualityClass" type="hidden" value=""  autocomplete="off"  autocorrect="off"  autocapitalize="off"  spellcheck="false" />
-              <div id="productBoxes" class="product-boxes">
-                <div class="product-box active" data-product="Tomruk">Tomruk</div>
-                <div class="product-box" data-product="Maden Direk">Maden</div>
-                <div class="product-box" data-product="Kağıtlık">Kağıtlık</div>
+              <input id="productType" name="productType" type="hidden" value="Tomruk" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+              <input id="qualityClass" name="qualityClass" type="hidden" value="" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+              <div class="product-select-head">
+                <button class="ghost small-action" type="button" id="woodTypeSelectBtn">Odun Türü Seç</button>
               </div>
-              <p class="hint">Seçili ürün ✓ ile görünür. Tomruk 21+, Maden 20 ve altı.</p>
+              <div id="woodTypePanel" class="wood-type-panel" aria-label="Odun türü seçimi">
+                <label class="wood-check"><input type="checkbox" value="Tomruk" checked /> Tomruk</label>
+                <label class="wood-check"><input type="checkbox" value="Maden Direk" checked /> Maden Direği</label>
+                <label class="wood-check"><input type="checkbox" value="Kağıtlık" checked /> Kağıtlık</label>
+                <label class="wood-check"><input type="checkbox" value="Sanayi Odunu" checked /> Sanayi Odunu</label>
+                <label class="wood-check"><input type="checkbox" value="Tel Direk" checked /> Tel Direği</label>
+                <button class="secondary small-action" type="button" id="woodTypeApplyBtn">Seçimi Uygula</button>
+              </div>
+              <div id="productBoxes" class="product-boxes"></div>
+              <p class="hint">Sadece seçtiğiniz odun türleri ana sayfada görünür.</p>
             </div>
 
             <div class="row measure-compact">
@@ -1176,7 +1201,7 @@
               </div>
               <div class="measure-field">
                 <label for="diameter">Çap</label>
-                <input id="diameter" name="diameter" type="tel" placeholder="22" inputmode="numeric"  autocomplete="off"  autocorrect="off"  autocapitalize="off"  spellcheck="false"  enterkeyhint="done"  maxlength="2" pattern="[0-9]*" />
+                <input id="diameter" name="diameter" type="tel" placeholder="22" inputmode="numeric"  autocomplete="off"  autocorrect="off"  autocapitalize="off"  spellcheck="false"  enterkeyhint="done"  />
                 <div id="diameterChips" class="chip-row"></div>
               </div>
             </div>
@@ -1262,6 +1287,16 @@
               <small>Kağıtlık</small>
               <strong id="totalKagit">0</strong>
               <div class="unit" id="totalKagitAdet">0 adet</div>
+            </div>
+            <div class="stat sanayi-stat">
+              <small>Sanayi Odunu</small>
+              <strong id="totalSanayi">0</strong>
+              <div class="unit" id="totalSanayiAdet">0 adet</div>
+            </div>
+            <div class="stat tel-stat">
+              <small>Tel Direği</small>
+              <strong id="totalTel">0</strong>
+              <div class="unit" id="totalTelAdet">0 adet</div>
             </div>
           </div>
 
@@ -1364,10 +1399,14 @@
     ];
 
     const PRODUCT_MAP = {
-      "Tomruk": { odunId: 1, odunAdi: "Tomruk" },
-      "Maden Direk": { odunId: 3, odunAdi: "Maden Direği" },
-      "Kağıtlık": { odunId: 5, odunAdi: "Kağıtlık Odun" }
+      "Tomruk": { odunId: 1, odunAdi: "Tomruk", shortName: "Tomruk" },
+      "Tel Direk": { odunId: 2, odunAdi: "Tel Direği", shortName: "Tel" },
+      "Maden Direk": { odunId: 3, odunAdi: "Maden Direği", shortName: "Maden" },
+      "Sanayi Odunu": { odunId: 4, odunAdi: "Sanayi Odunu", shortName: "Sanayi" },
+      "Kağıtlık": { odunId: 5, odunAdi: "Kağıtlık Odun", shortName: "Kağıtlık" }
     };
+
+    const PRODUCT_ORDER = ["Tomruk", "Maden Direk", "Kağıtlık", "Sanayi Odunu", "Tel Direk"];
 
     const state = {
       records: [],
@@ -1382,6 +1421,7 @@
         productionDate: "",
         recentLengths: ["3"],
         recentDiameters: ["22"],
+        visibleProducts: ["Tomruk", "Maden Direk", "Kağıtlık", "Sanayi Odunu", "Tel Direk"],
         soundEnabled: true
       }
     };
@@ -1396,6 +1436,9 @@
       productType: $("productType"),
       qualityClass: $("qualityClass"),
       productBoxes: $("productBoxes"),
+      woodTypeSelectBtn: $("woodTypeSelectBtn"),
+      woodTypePanel: $("woodTypePanel"),
+      woodTypeApplyBtn: $("woodTypeApplyBtn"),
       classBoxes: $("classBoxes"),
       length: $("length"),
       diameter: $("diameter"),
@@ -1414,6 +1457,10 @@
       totalMadenAdet: $("totalMadenAdet"),
       totalKagit: $("totalKagit"),
       totalKagitAdet: $("totalKagitAdet"),
+      totalSanayi: $("totalSanayi"),
+      totalSanayiAdet: $("totalSanayiAdet"),
+      totalTel: $("totalTel"),
+      totalTelAdet: $("totalTelAdet"),
       searchInput: $("searchInput"),
       toast: $("toast"),
       sameBarcodeBtn: $("sameBarcodeBtn"),
@@ -1510,12 +1557,18 @@
       } catch {}
 
       if (!state.settings.productionDate) state.settings.productionDate = todayISO();
+      state.settings.visibleProducts = normalizeVisibleProducts(state.settings.visibleProducts);
+      renderProductButtons();
+      syncWoodTypePanel();
 
       els.barcode.value = state.settings.lastBarcode || "A102682";
       els.productionDate.value = state.settings.productionDate || todayISO();
       els.length.value = state.settings.lastLength || "3";
       els.quantity.value = state.settings.lastQuantity || "1";
-      setProductType(state.settings.lastProductType || "Tomruk", false);
+      const startupProduct = state.settings.visibleProducts.includes(state.settings.lastProductType)
+        ? state.settings.lastProductType
+        : state.settings.visibleProducts[0];
+      setProductType(startupProduct || "Tomruk", false);
       setQualityClass("", false);
 
       renderRecentChips();
@@ -1538,6 +1591,7 @@
       state.settings.lastQualityClass = "";
       state.settings.lastLength = els.length.value;
       state.settings.lastQuantity = els.quantity.value || "1";
+      state.settings.visibleProducts = normalizeVisibleProducts(state.settings.visibleProducts);
       localStorage.setItem(SETTINGS_KEY, JSON.stringify(state.settings));
     }
 
@@ -1561,18 +1615,48 @@
       return true;
     }
 
-    function validateDiameterByProduct(productType, diameter) {
+    function validateDiameterByProduct(productType, diameter, length) {
       const d = Number(diameter);
+      const l = Number(length);
+
       if (productType === "Tomruk" && d < 21) {
         showErrorToast("Tomruk 21 çapından küçük olmaz.");
         focusDiameterKeepKeyboard();
         return false;
       }
+
       if (productType === "Maden Direk" && d > 20) {
         showErrorToast("Maden direği 20 çapından büyük olmaz.");
         focusDiameterKeepKeyboard();
         return false;
       }
+
+      if (productType === "Sanayi Odunu") {
+        if (d < 12) {
+          showErrorToast("Sanayi odunu 12 çapından küçük olmaz.");
+          focusDiameterKeepKeyboard();
+          return false;
+        }
+        if (l < 0.5 || l > 1.45) {
+          showErrorToast("Sanayi odununda boy 0,50 ile 1,45 metre arasında olmalı.");
+          try { els.length.focus({ preventScroll: true }); } catch { els.length.focus(); }
+          return false;
+        }
+      }
+
+      if (productType === "Tel Direk") {
+        if (d < 12 || d > 40) {
+          showErrorToast("Tel direği çapı 12 ile 40 arasında olmalı.");
+          focusDiameterKeepKeyboard();
+          return false;
+        }
+        if (l < 6.5 || l > 25) {
+          showErrorToast("Tel direğinde boy 6,5 ile 25 metre arasında olmalı.");
+          try { els.length.focus({ preventScroll: true }); } catch { els.length.focus(); }
+          return false;
+        }
+      }
+
       return true;
     }
 
@@ -1601,7 +1685,10 @@
     function normalizeProductClass(type) {
       if (type === "Tomruk") return "tomruk";
       if (type === "Maden Direk") return "maden";
-      return "kagit";
+      if (type === "Kağıtlık") return "kagit";
+      if (type === "Sanayi Odunu") return "sanayi";
+      if (type === "Tel Direk") return "tel";
+      return "tomruk";
     }
 
     function formatDateTime(date = new Date()) {
@@ -1789,6 +1876,8 @@
     function productDisplayName(type) {
       if (type === "Maden Direk") return "maden direği";
       if (type === "Kağıtlık") return "kağıtlık";
+      if (type === "Sanayi Odunu") return "sanayi odunu";
+      if (type === "Tel Direk") return "tel direği";
       return "tomruk";
     }
 
@@ -1798,7 +1887,57 @@
       return Number.isInteger(n) ? String(n) : String(n).replace(".", ",");
     }
 
+    function normalizeVisibleProducts(list) {
+      const current = Array.isArray(list) ? list : PRODUCT_ORDER;
+      const cleaned = current.filter(p => PRODUCT_MAP[p]);
+      return cleaned.length ? cleaned : ["Tomruk"];
+    }
+
+    function renderProductButtons() {
+      state.settings.visibleProducts = normalizeVisibleProducts(state.settings.visibleProducts);
+      if (!els.productBoxes) return;
+
+      els.productBoxes.innerHTML = state.settings.visibleProducts.map(type => {
+        const product = PRODUCT_MAP[type];
+        return `<div class="product-box" data-product="${escapeHtml(type)}">${escapeHtml(product.shortName || product.odunAdi)}</div>`;
+      }).join("");
+
+      els.productBoxes.querySelectorAll(".product-box").forEach(box => {
+        box.addEventListener("pointerdown", (event) => event.preventDefault());
+        box.addEventListener("click", () => setProductType(box.dataset.product, true));
+      });
+    }
+
+    function syncWoodTypePanel() {
+      if (!els.woodTypePanel) return;
+      const visible = normalizeVisibleProducts(state.settings.visibleProducts);
+      els.woodTypePanel.querySelectorAll("input[type='checkbox']").forEach(input => {
+        input.checked = visible.includes(input.value);
+      });
+    }
+
+    function applyWoodTypeSelection() {
+      if (!els.woodTypePanel) return;
+      const selected = Array.from(els.woodTypePanel.querySelectorAll("input[type='checkbox']:checked")).map(input => input.value).filter(p => PRODUCT_MAP[p]);
+      state.settings.visibleProducts = normalizeVisibleProducts(selected);
+      if (!state.settings.visibleProducts.includes(els.productType.value)) {
+        els.productType.value = state.settings.visibleProducts[0];
+      }
+      renderProductButtons();
+      setProductType(els.productType.value, false);
+      saveSettings();
+      els.woodTypePanel.classList.remove("open");
+      showSuccessToast("Odun türü seçimi güncellendi.");
+    }
+
     function setProductType(type, persist = true) {
+      if (!PRODUCT_MAP[type]) type = "Tomruk";
+      if (!state.settings.visibleProducts.includes(type)) {
+        state.settings.visibleProducts = normalizeVisibleProducts([...state.settings.visibleProducts, type]);
+        renderProductButtons();
+        syncWoodTypePanel();
+      }
+
       els.productType.value = type;
       document.body.classList.toggle("product-tomruk", type === "Tomruk");
       els.productBoxes.querySelectorAll(".product-box").forEach(box => {
@@ -1806,10 +1945,8 @@
       });
 
       const d = Number(els.diameter.value || 0);
-      if (d) {
-        if (type === "Tomruk" && d < 21) showErrorToast("Tomruk 21 çapından küçük olmaz.");
-        if (type === "Maden Direk" && d > 20) showErrorToast("Maden direği 20 çapından büyük olmaz.");
-      }
+      const l = Number(els.length.value || 0);
+      if (d) validateDiameterByProduct(type, d, l || 0);
 
       if (persist) saveSettings();
       focusDiameterKeepKeyboard();
@@ -1817,7 +1954,20 @@
 
     function setQualityClass(cls, persist = true) {
       els.qualityClass.value = cls || "2";
-      els.classBoxes.querySelectorAll(".class-box").forEach(box => {
+      if (els.woodTypeSelectBtn) {
+      els.woodTypeSelectBtn.addEventListener("pointerdown", (event) => event.preventDefault());
+      els.woodTypeSelectBtn.addEventListener("click", () => {
+        syncWoodTypePanel();
+        els.woodTypePanel.classList.toggle("open");
+      });
+    }
+
+    if (els.woodTypeApplyBtn) {
+      els.woodTypeApplyBtn.addEventListener("pointerdown", (event) => event.preventDefault());
+      els.woodTypeApplyBtn.addEventListener("click", applyWoodTypeSelection);
+    }
+
+    els.classBoxes.querySelectorAll(".class-box").forEach(box => {
         box.classList.toggle("active", box.dataset.class === els.qualityClass.value);
       });
       if (persist) saveSettings();
@@ -1845,9 +1995,7 @@
 
     function limitDiameterToTwoDigits() {
       if (!els.diameter) return;
-      let value = String(els.diameter.value || "");
-      value = value.replace(/\D/g, "");
-      if (value.length > 2) value = value.slice(0, 2);
+      let value = String(els.diameter.value || "").replace(/\D/g, "");
       if (els.diameter.value !== value) els.diameter.value = value;
     }
 
@@ -1907,7 +2055,7 @@
         focusDiameterKeepKeyboard();
         return;
       }
-      if (!validateDiameterByProduct(productType, diameter)) return;
+      if (!validateDiameterByProduct(productType, diameter, length)) return;
 
       const desi = calculateDesi(diameter, length, quantity);
 
@@ -2059,7 +2207,11 @@
         "Maden Direk": 0,
         MadenAdet: 0,
         "Kağıtlık": 0,
-        KagitAdet: 0
+        KagitAdet: 0,
+        "Sanayi Odunu": 0,
+        SanayiAdet: 0,
+        "Tel Direk": 0,
+        TelAdet: 0
       };
 
       for (const r of state.records) {
@@ -2067,10 +2219,13 @@
         totals.all += Number(r.desi) || 0;
         totals.adet += qty;
         const key = r.productType || "Tomruk";
+        if (typeof totals[key] !== "number") totals[key] = 0;
         totals[key] += Number(r.desi) || 0;
         if (key === "Tomruk") totals.TomrukAdet += qty;
         if (key === "Maden Direk") totals.MadenAdet += qty;
         if (key === "Kağıtlık") totals.KagitAdet += qty;
+        if (key === "Sanayi Odunu") totals.SanayiAdet += qty;
+        if (key === "Tel Direk") totals.TelAdet += qty;
       }
 
       const filteredTotals = filtered.reduce((acc, r) => {
@@ -2087,6 +2242,10 @@
       if (els.totalMadenAdet) els.totalMadenAdet.textContent = totals.MadenAdet.toLocaleString("tr-TR") + " adet";
       els.totalKagit.textContent = totals["Kağıtlık"].toLocaleString("tr-TR") + " desi";
       if (els.totalKagitAdet) els.totalKagitAdet.textContent = totals.KagitAdet.toLocaleString("tr-TR") + " adet";
+      if (els.totalSanayi) els.totalSanayi.textContent = totals["Sanayi Odunu"].toLocaleString("tr-TR") + " desi";
+      if (els.totalSanayiAdet) els.totalSanayiAdet.textContent = totals.SanayiAdet.toLocaleString("tr-TR") + " adet";
+      if (els.totalTel) els.totalTel.textContent = totals["Tel Direk"].toLocaleString("tr-TR") + " desi";
+      if (els.totalTelAdet) els.totalTelAdet.textContent = totals.TelAdet.toLocaleString("tr-TR") + " adet";
 
       els.recordsFoot.innerHTML = filtered.length ? `
         <tr class="table-total-row">
@@ -2454,8 +2613,10 @@
     function s12ExampleRowsAndTypes() {
       const rows = [
         HEADERS,
-        [11, "Kayın", 3, "Maden Direği", "", "", 1, 20, "4.0", "0.126", "28.07.2025", "A123456789"],
-        [11, "Kayın", 1, "Tomruk", "1", "", 1, 20, "10.0", "0.314", "28.07.2025", "A987654321"]
+        [1, "Karaçam", 5, "Kağıtlık Odun", "", "", 1, 38, "2.5", "", "08.06.2026", "A12345678"],
+        [1, "Karaçam", 3, "Maden Direği", "", "", 1, 19, "3.0", "", "08.06.2026", "A12345670"],
+        [1, "Karaçam", 4, "Sanayi Odunu", "", "", 1, 21, "1.0", "", "08.06.2026", "A12345672"],
+        [1, "Karaçam", 2, "Tel Direği", "", "", 1, 22, "6.5", "", "08.06.2026", "A12345674"]
       ];
 
       const types = rows.map((row, r) => {
@@ -2703,7 +2864,7 @@
     function backup() {
       const data = {
         app: "Mesaha App",
-        version: 32,
+        version: 33,
         exportedAt: formatDateTime(),
         systemHeaders: HEADERS,
         settings: state.settings,
@@ -2771,11 +2932,6 @@
       els.quantity.addEventListener(evt, () => { saveSettings(); updateLiveDesi(); });
       els.productionDate.addEventListener(evt, saveSettings);
       els.barcode.addEventListener(evt, saveSettings);
-    });
-
-    els.productBoxes.querySelectorAll(".product-box").forEach(box => {
-      box.addEventListener("pointerdown", (event) => event.preventDefault());
-      box.addEventListener("click", () => setProductType(box.dataset.product, true));
     });
 
     els.classBoxes.querySelectorAll(".class-box").forEach(box => {
