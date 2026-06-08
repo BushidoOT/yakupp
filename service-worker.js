@@ -1,15 +1,16 @@
-const CACHE_NAME = "mesaha-app-v31";
+const CACHE_NAME = "mesaha-app-v32";
 const ASSETS = [
   "./",
   "./index.html",
   "./manifest.json",
-  "./service-worker.js"
+  "./service-worker.js",
+  "./.nojekyll"
 ];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then((cache) => cache.addAll(ASSETS))
+      .then((cache) => cache.addAll(ASSETS).catch(() => cache.addAll(["./", "./index.html", "./manifest.json", "./service-worker.js"])))
       .then(() => self.skipWaiting())
   );
 });

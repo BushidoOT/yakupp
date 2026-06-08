@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha App Offline v31</title>
+  <title>Mesaha App Offline v32</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -1034,6 +1034,90 @@
       box-shadow:0 6px 18px rgba(153,27,27,.22) !important;
     }
 
+  
+    /* v32: Kullanım kılavuzu sekmesi */
+    .guide-panel{
+      display:none;
+    }
+
+    body.show-guide .panel.entry-panel,
+    body.show-guide .panel.records-panel{
+      display:none !important;
+    }
+
+    body.show-guide .panel.guide-panel{
+      display:block !important;
+    }
+
+    .guide-content{
+      display:grid;
+      gap:14px;
+    }
+
+    .guide-card{
+      background:#ffffff;
+      border:1px solid #d7dee8;
+      border-radius:16px;
+      padding:14px;
+      box-shadow:0 3px 10px rgba(16,24,40,.04);
+    }
+
+    .guide-card h3{
+      margin:0 0 10px;
+      color:#111827;
+      font-size:17px;
+      font-weight:950;
+    }
+
+    .guide-card ol,
+    .guide-card ul{
+      margin:0;
+      padding-left:20px;
+      color:#172033;
+      line-height:1.55;
+      font-size:14.5px;
+    }
+
+    .guide-card li{
+      margin:6px 0;
+    }
+
+    .guide-note{
+      background:#eff6ff;
+      border:1px solid #bfdbfe;
+      color:#1e3a8a;
+      border-radius:14px;
+      padding:11px 12px;
+      font-size:13.5px;
+      font-weight:800;
+      line-height:1.45;
+    }
+
+    @media (max-width: 980px){
+      body.show-guide .panel.entry-panel,
+      body.show-guide .panel.records-panel{
+        display:none !important;
+      }
+
+      body.show-guide .panel.guide-panel{
+        display:block !important;
+      }
+
+      body.show-records .panel.guide-panel{
+        display:none !important;
+      }
+
+      .bottom-nav{
+        grid-template-columns:1fr 1fr 1fr;
+      }
+
+      .bottom-nav button{
+        font-size:13px;
+        padding-left:6px;
+        padding-right:6px;
+      }
+    }
+
   </style>
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -1182,7 +1266,7 @@
           </div>
 
           <div class="tools">
-            <button type="button" class="primary" id="exportSystemXlsBtn">Sistem Örnek Formatı (.xls)</button>
+            <button type="button" class="primary" id="exportSystemXlsBtn">Mesaha Dosyasını İndir</button>
             <button type="button" class="ghost" id="backupBtn">Yedek Al</button>
             <button type="button" class="ghost" id="restoreBtn">Yedek Yükle</button>
             <button type="button" class="warning" id="printBtn">Yazdır</button>
@@ -1217,12 +1301,58 @@
           </div>
         </div>
       </section>
+
+
+      <section class="panel guide-panel">
+        <div class="panel-header">
+          <h2>Kullanım Kılavuzu</h2>
+          <span class="pill" style="display:inline-flex">Yardım</span>
+        </div>
+        <div class="panel-body">
+          <div class="guide-content">
+            <div class="guide-card">
+              <h3>Mesaha dosyasını indirme ve ORBİS’e aktarma</h3>
+              <ol>
+                <li>Mesaha işlemi bittikten sonra <b>Kayıtlar</b> sekmesine giriniz.</li>
+                <li><b>Mesaha Dosyasını İndir</b> butonuna basarak dosyanızı indiriniz.</li>
+                <li>İndirilen mesaha dosyasını bilgisayara aktarınız.</li>
+                <li>Terminal kullanıyorsanız dosya genellikle <b>Download / İndirilenler</b> klasörüne kaydedilir. Dosyayı buradan alabilirsiniz.</li>
+                <li>Daha sonra <b>ORBİS</b> sistemine giriş yapınız.</li>
+                <li><b>İşletme Pazarlama</b> modülüne giriniz.</li>
+                <li><b>Kesme Faaliyetleri Raporu</b> ekranını açınız.</li>
+                <li>Şeflik ve bölme bilgilerini giriniz.</li>
+                <li>Şefiniz bölmeyi açmışsa ilgili bölme listede görünecektir.</li>
+                <li>Bölmenin üzerine iki defa tıklayınız.</li>
+                <li>Dosya yükleme bölümüne geliniz.</li>
+                <li>İndirdiğiniz mesaha dosyasını seçiniz ve <b>Excel’den Aktar</b> butonuna basınız.</li>
+              </ol>
+            </div>
+
+            <div class="guide-card">
+              <h3>iOS / iPhone cihazlarda kullanım</h3>
+              <ol>
+                <li>iPhone veya iOS cihazınızda <b>Safari</b> uygulamasını açınız.</li>
+                <li>Mesaha App bağlantısını Safari üzerinden açınız.</li>
+                <li>Sağ alttaki menü / üç çizgi simgesine dokununuz.</li>
+                <li><b>Daha Fazla</b> seçeneğine giriniz.</li>
+                <li><b>Ana Ekrana Ekle</b> seçeneğine basınız.</li>
+                <li>Bu işlemden sonra Mesaha App ana ekrana eklenir ve internet olmadığında da kullanılabilir.</li>
+              </ol>
+            </div>
+
+            <div class="guide-note">
+              Not: Arazide internet çekmeyebilir. Uygulamayı sahaya çıkmadan önce bir kez internet varken açıp ana ekrana eklemeniz tavsiye edilir. İş bitince mesaha dosyasını indirmeyi ve gerekirse yedek almayı unutmayınız.
+            </div>
+          </div>
+        </div>
+      </section>
     </main>
   </div>
 
   <nav class="bottom-nav">
     <button id="navEntry" class="active" type="button">Yeni Kayıt</button>
     <button id="navRecords" type="button">Kayıtlar</button>
+    <button id="navGuide" type="button">Kullanım Kılavuzu</button>
   </nav>
 <script>
     const STORAGE_KEY = "cam_mesaha_kayitlari_v1";
@@ -1298,6 +1428,7 @@
       deleteAllBtn: $("deleteAllBtn"),
       navEntry: $("navEntry"),
       navRecords: $("navRecords"),
+      navGuide: $("navGuide"),
       lengthChips: $("lengthChips"),
       diameterChips: $("diameterChips")
     };
@@ -1878,9 +2009,10 @@
       updateLiveDesi();
       setEditMode(id);
 
-      document.body.classList.remove("show-records");
+      document.body.classList.remove("show-records", "show-guide");
       els.navEntry.classList.add("active");
       els.navRecords.classList.remove("active");
+      if (els.navGuide) els.navGuide.classList.remove("active");
       focusDiameterKeepKeyboard();
     }
 
@@ -2571,7 +2703,7 @@
     function backup() {
       const data = {
         app: "Mesaha App",
-        version: 31,
+        version: 32,
         exportedAt: formatDateTime(),
         systemHeaders: HEADERS,
         settings: state.settings,
@@ -2691,17 +2823,30 @@
     });
 
     els.navEntry.addEventListener("click", () => {
-      document.body.classList.remove("show-records");
+      document.body.classList.remove("show-records", "show-guide");
       els.navEntry.classList.add("active");
       els.navRecords.classList.remove("active");
+      if (els.navGuide) els.navGuide.classList.remove("active");
       focusDiameterKeepKeyboard();
     });
 
     els.navRecords.addEventListener("click", () => {
       document.body.classList.add("show-records");
+      document.body.classList.remove("show-guide");
       els.navRecords.classList.add("active");
       els.navEntry.classList.remove("active");
+      if (els.navGuide) els.navGuide.classList.remove("active");
     });
+
+    if (els.navGuide) {
+      els.navGuide.addEventListener("click", () => {
+        document.body.classList.add("show-guide");
+        document.body.classList.remove("show-records");
+        els.navGuide.classList.add("active");
+        els.navEntry.classList.remove("active");
+        els.navRecords.classList.remove("active");
+      });
+    }
 
     window.deleteRecord = deleteRecord;
     window.editRecord = editRecord;
