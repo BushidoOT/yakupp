@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha App Offline v47</title>
+  <title>Mesaha App Offline v48</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -1605,193 +1605,90 @@
     }
 
   
-    /* v46: mobilde çap-barkod yerleşimi düzeltildi */
-    .barcode-save-row.fixed-mobile{
-      display:grid !important;
-      grid-template-columns:minmax(0, 1fr) 112px !important;
-      gap:8px !important;
-      align-items:stretch !important;
+    /* v48: güvenli mobil giriş düzeni */
+    .barcode-save-row-safe{
+      display:grid;
+      grid-template-columns:minmax(0, 1fr) 104px;
+      gap:8px;
+      align-items:stretch;
     }
 
-    .barcode-save-row.fixed-mobile .barcode-under-measure,
-    .barcode-save-row.fixed-mobile .save-under-measure{
-      background:#ffffff !important;
-      border:1px solid #d7dee8 !important;
-      border-radius:14px !important;
-      padding:8px !important;
-      box-shadow:0 3px 10px rgba(16,24,40,.04) !important;
-      min-width:0 !important;
+    .barcode-field-safe,
+    .save-field-safe{
+      background:#ffffff;
+      border:1px solid #d7dee8;
+      border-radius:14px;
+      padding:8px;
+      box-shadow:0 3px 10px rgba(16,24,40,.04);
+      min-width:0;
     }
 
-    .barcode-save-row.fixed-mobile .barcode-under-measure input{
-      height:44px !important;
-      min-height:44px !important;
-      width:100% !important;
-      font-size:18px !important;
-      padding:8px 10px !important;
-      border-radius:11px !important;
-      font-weight:900 !important;
-      text-align:center !important;
-      letter-spacing:.3px !important;
+    .barcode-field-safe input{
+      height:44px;
+      min-height:44px;
+      width:100%;
+      font-size:18px;
+      padding:8px 10px;
+      border-radius:11px;
+      font-weight:900;
+      text-align:center;
+      letter-spacing:.3px;
     }
 
-    .barcode-save-row.fixed-mobile .save-under-measure{
-      display:flex !important;
-      flex-direction:column !important;
-      justify-content:flex-start !important;
+    .save-field-safe{
+      display:flex;
+      flex-direction:column;
+      justify-content:flex-start;
     }
 
-    .barcode-save-row.fixed-mobile .save-under-measure button{
-      height:44px !important;
-      min-height:44px !important;
-      width:100% !important;
-      padding:8px 8px !important;
-      border-radius:12px !important;
-      font-size:15px !important;
-      font-weight:950 !important;
-      white-space:nowrap !important;
+    .save-field-safe button{
+      height:44px;
+      min-height:44px;
+      width:100%;
+      padding:8px 8px;
+      border-radius:12px;
+      font-size:15px;
+      font-weight:950;
+      white-space:nowrap;
     }
 
-    .barcode-save-row.fixed-mobile .save-under-measure .hint{
-      display:none !important;
-    }
-
-    .barcode-save-row.fixed-mobile .barcode-under-measure .hint{
-      font-size:11px !important;
-      line-height:1.25 !important;
-      margin-top:5px !important;
+    .barcode-field-safe .hint{
+      font-size:11px;
+      line-height:1.25;
+      margin-top:5px;
     }
 
     .entry-panel .measure-compact{
-      display:grid !important;
       grid-template-columns:1fr 1fr !important;
       gap:8px !important;
     }
 
     .entry-panel .measure-field{
-      min-width:0 !important;
+      min-width:0;
     }
 
     .entry-panel .measure-field input{
-      width:100% !important;
-      height:44px !important;
-      min-height:44px !important;
-      font-size:19px !important;
-      text-align:center !important;
-    }
-
-    @media (max-width: 430px){
-      .barcode-save-row.fixed-mobile{
-        grid-template-columns:minmax(0, 1fr) 96px !important;
-        gap:7px !important;
-      }
-
-      .barcode-save-row.fixed-mobile .save-under-measure button{
-        font-size:14px !important;
-        padding-left:6px !important;
-        padding-right:6px !important;
-      }
-
-      .barcode-save-row.fixed-mobile .barcode-under-measure input{
-        font-size:17px !important;
-      }
-    }
-
-  
-    /* v47: mobil yerleşim ve tıklama düzeltmesi */
-    .barcode-save-row.fixed-mobile{
-      display:grid !important;
-      grid-template-columns:minmax(0, 1fr) 112px !important;
-      gap:8px !important;
-      align-items:stretch !important;
-    }
-
-    .barcode-save-row.fixed-mobile .barcode-under-measure,
-    .barcode-save-row.fixed-mobile .save-under-measure{
-      background:#ffffff !important;
-      border:1px solid #d7dee8 !important;
-      border-radius:14px !important;
-      padding:8px !important;
-      box-shadow:0 3px 10px rgba(16,24,40,.04) !important;
-      min-width:0 !important;
-      pointer-events:auto !important;
-    }
-
-    .barcode-save-row.fixed-mobile .barcode-under-measure input{
-      height:44px !important;
-      min-height:44px !important;
-      width:100% !important;
-      font-size:18px !important;
-      padding:8px 10px !important;
-      border-radius:11px !important;
-      font-weight:900 !important;
-      text-align:center !important;
-      letter-spacing:.3px !important;
-    }
-
-    .barcode-save-row.fixed-mobile .save-under-measure{
-      display:flex !important;
-      flex-direction:column !important;
-      justify-content:flex-start !important;
-      overflow:visible !important;
-    }
-
-    .barcode-save-row.fixed-mobile .save-under-measure button{
-      height:44px !important;
-      min-height:44px !important;
-      width:100% !important;
-      padding:8px 8px !important;
-      border-radius:12px !important;
-      font-size:15px !important;
-      font-weight:950 !important;
-      white-space:nowrap !important;
-      pointer-events:auto !important;
-    }
-
-    .barcode-save-row.fixed-mobile .save-under-measure .hint{display:none !important}
-
-    .barcode-save-row.fixed-mobile .barcode-under-measure .hint{
-      font-size:11px !important;
-      line-height:1.25 !important;
-      margin-top:5px !important;
-    }
-
-    .entry-panel .measure-compact{
-      display:grid !important;
-      grid-template-columns:1fr 1fr !important;
-      gap:8px !important;
-    }
-
-    .entry-panel .measure-field{min-width:0 !important}
-
-    .entry-panel .measure-field input{
-      width:100% !important;
-      height:44px !important;
-      min-height:44px !important;
-      font-size:19px !important;
-      text-align:center !important;
-    }
-
-    .product-box,
-    .bottom-nav button,
-    button{
-      pointer-events:auto !important;
+      width:100%;
+      height:44px;
+      min-height:44px;
+      font-size:19px;
+      text-align:center;
     }
 
     @media (max-width:430px){
-      .barcode-save-row.fixed-mobile{
-        grid-template-columns:minmax(0, 1fr) 96px !important;
-        gap:7px !important;
+      .barcode-save-row-safe{
+        grid-template-columns:minmax(0, 1fr) 94px;
+        gap:7px;
       }
 
-      .barcode-save-row.fixed-mobile .save-under-measure button{
-        font-size:14px !important;
-        padding-left:6px !important;
-        padding-right:6px !important;
+      .save-field-safe button{
+        font-size:14px;
+        padding-left:6px;
+        padding-right:6px;
       }
 
-      .barcode-save-row.fixed-mobile .barcode-under-measure input{
-        font-size:17px !important;
+      .barcode-field-safe input{
+        font-size:17px;
       }
     }
 
@@ -1865,33 +1762,55 @@
             <div class="row measure-compact">
               <div class="measure-field">
                 <label for="length">Boy</label>
-                <input id="length" name="length" type="number" min="0" step="0.01" placeholder="3" inputmode="decimal" enterkeyhint="next" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+                <input id="length" name="length" type="number" min="0" step="0.01" placeholder="3" inputmode="decimal"  autocomplete="off"  autocorrect="off"  autocapitalize="off"  spellcheck="false"  enterkeyhint="next" />
                 <div id="lengthChips" class="chip-row"></div>
               </div>
-              <div class="measure-field">
-                <label for="diameter">Çap</label>
-                <input id="diameter" name="diameter" type="number" min="0" step="1" placeholder="22" inputmode="numeric" enterkeyhint="done" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
-                <div id="diameterChips" class="chip-row"></div>
-              </div>
-            </div>
-
-            <div class="barcode-save-row fixed-mobile">
-              <div class="barcode-under-measure">
+                                      <div class="barcode-save-row-safe">
+              <div class="barcode-field-safe">
                 <label for="barcode">Barkod No</label>
                 <input id="barcode" name="barcode" type="text" placeholder="A17265597" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="done" />
                 <p class="hint">En az 9 karakter. Örn: A17265597</p>
                 <div id="duplicateWarning" class="duplicate-warning"></div>
               </div>
-              <div class="save-under-measure">
+              <div class="save-field-safe">
                 <label>&nbsp;</label>
                 <button id="submitBtn" class="primary" type="submit">Kaydet</button>
               </div>
             </div>
 
+<div class="barcode-save-row">
+<div class="save-under-measure">
+                <label>&nbsp;</label>
+                
+                <p class="hint">Enter / Tamam ile kaydeder.</p>
+              </div>
+            </div>
+
 <div class="measure-field">
                 <label for="diameter">Çap</label>
-                <input id="diameter" name="diameter" type="number" min="0" step="1" placeholder="22" inputmode="numeric" enterkeyhint="done" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+                <input id="diameter" name="diameter" type="tel" placeholder="22" inputmode="numeric"  autocomplete="off"  autocorrect="off"  autocapitalize="off"  spellcheck="false"  enterkeyhint="done"  />
                 <div id="diameterChips" class="chip-row"></div>
+              </div>
+            </div>
+
+            <div id="tomrukClassPanel" class="tomruk-class-panel">
+              <label>Tomruk Kalite Sınıfı</label>
+              <div id="classBoxes" class="class-boxes">
+                <div class="class-box" data-class="1">1. Sınıf</div>
+                <div class="class-box active" data-class="2">2. Sınıf</div>
+                <div class="class-box" data-class="3">3. Sınıf</div>
+              </div>
+              <p class="hint">Tomrukta kalite sınıfı Excel’e gider. Maden ve kağıtlıkta boş bırakılır.</p>
+            </div>
+
+            <div class="row">
+              <div>
+                <label for="productionDate">Üretim Tarihi</label>
+                <input id="productionDate" name="productionDate" type="date"  autocomplete="off"  autocorrect="off"  autocapitalize="off"  spellcheck="false" />
+              </div>
+              <div>
+                <label for="quantity">Adet</label>
+                <input id="quantity" name="quantity" type="number" min="1" step="1" value="1" inputmode="numeric"  autocomplete="off"  autocorrect="off"  autocapitalize="off"  spellcheck="false"  enterkeyhint="done" />
               </div>
             </div>
 
@@ -2714,13 +2633,10 @@
         return `<div class="product-box" data-product="${escapeHtml(type)}">${escapeHtml(product.shortName || product.odunAdi)}</div>`;
       }).join("");
 
-      if (els.productBoxes) {
       els.productBoxes.querySelectorAll(".product-box").forEach(box => {
-        box.addEventListener("click", () => {
-          setProductType(box.dataset.product);
-        });
+        box.addEventListener("pointerdown", (event) => event.preventDefault());
+        box.addEventListener("click", () => setProductType(box.dataset.product, true));
       });
-    }
     }
 
     function syncWoodTypePanel() {
@@ -3805,7 +3721,7 @@
     function backup() {
       const data = {
         app: "Mesaha App",
-        version: 47,
+        version: 48,
         exportedAt: formatDateTime(),
         systemHeaders: HEADERS,
         settings: state.settings,
@@ -3946,7 +3862,7 @@
       box.addEventListener("click", () => setQualityClass(box.dataset.class, true));
     });
 
-    if (els.cancelEditBtn) els.cancelEditBtn.addEventListener("click", cancelEditMode);
+    els.cancelEditBtn.addEventListener("click", cancelEditMode);
     if (els.soundToggleBtn) els.soundToggleBtn.addEventListener("click", toggleSound);
 
     els.sameBarcodeBtn.addEventListener("click", () => {
@@ -3999,34 +3915,30 @@
       showToast("Tüm kayıtlar silindi. Geri almak için Geri Al butonunu kullanın.");
     });
 
-    if (els.navEntry) {
-      els.navEntry.addEventListener("click", () => {
-        document.body.classList.remove("show-records", "show-guide");
-        els.navEntry.classList.add("active");
-        if (els.navRecords) els.navRecords.classList.remove("active");
-        if (els.navGuide) els.navGuide.classList.remove("active");
-        focusDiameterKeepKeyboard();
-      });
-    }
+    els.navEntry.addEventListener("click", () => {
+      document.body.classList.remove("show-records", "show-guide");
+      els.navEntry.classList.add("active");
+      els.navRecords.classList.remove("active");
+      if (els.navGuide) els.navGuide.classList.remove("active");
+      focusDiameterKeepKeyboard();
+    });
 
-    if (els.navRecords) {
-      els.navRecords.addEventListener("click", () => {
-        document.body.classList.add("show-records");
-        document.body.classList.remove("show-guide");
-        els.navRecords.classList.add("active");
-        if (els.navEntry) els.navEntry.classList.remove("active");
-        if (els.navGuide) els.navGuide.classList.remove("active");
-        render();
-      });
-    }
+    els.navRecords.addEventListener("click", () => {
+      document.body.classList.add("show-records");
+      document.body.classList.remove("show-guide");
+      els.navRecords.classList.add("active");
+      els.navEntry.classList.remove("active");
+      if (els.navGuide) els.navGuide.classList.remove("active");
+      render();
+    });
 
     if (els.navGuide) {
       els.navGuide.addEventListener("click", () => {
         document.body.classList.add("show-guide");
         document.body.classList.remove("show-records");
         els.navGuide.classList.add("active");
-        if (els.navEntry) els.navEntry.classList.remove("active");
-        if (els.navRecords) els.navRecords.classList.remove("active");
+        els.navEntry.classList.remove("active");
+        els.navRecords.classList.remove("active");
       });
     }
 
