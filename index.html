@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha App Offline v33</title>
+  <title>Mesaha App Offline v34</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -1363,6 +1363,29 @@
               </ol>
             </div>
 
+
+            <div class="guide-card">
+              <h3>Terminal ve tablette kullanma</h3>
+              <ol>
+                <li>Terminal veya tableti Wi-Fi ya da kendi mobil interneti ile internete bağlayınız.</li>
+                <li>Ana menüde, alttaki seçeneklerden en sağdaki seçeneğe dokununuz.</li>
+                <li>Açılan ekranda <b>Yeşil Takip</b> seçeneğine basınız.</li>
+                <li>Bu işlemden sonra <b>Chrome</b> uygulaması açılacaktır.</li>
+                <li>Chrome’un arama / adres çubuğuna aşağıdaki adresi eksiksiz olarak yazınız:</li>
+              </ol>
+
+              <div class="guide-note" style="margin:10px 0; word-break:break-all;">
+                https://bushidoot.github.io/yakupp/
+              </div>
+
+              <ol start="6">
+                <li>Mesaha App açıldıktan sonra sağ üstteki <b>üç nokta</b> menüsüne basınız.</li>
+                <li>Açılan menüde <b>yıldız</b> simgesine dokununuz.</li>
+                <li>Çıkan seçeneklerde <b>Tamam</b> diyerek kaydediniz.</li>
+                <li>Bu işlemden sonra uygulamayı internet olmadan da kullanabilirsiniz.</li>
+              </ol>
+            </div>
+
             <div class="guide-card">
               <h3>iOS / iPhone cihazlarda kullanım</h3>
               <ol>
@@ -1565,10 +1588,7 @@
       els.productionDate.value = state.settings.productionDate || todayISO();
       els.length.value = state.settings.lastLength || "3";
       els.quantity.value = state.settings.lastQuantity || "1";
-      const startupProduct = state.settings.visibleProducts.includes(state.settings.lastProductType)
-        ? state.settings.lastProductType
-        : state.settings.visibleProducts[0];
-      setProductType(startupProduct || "Tomruk", false);
+      setProductType(state.settings.lastProductType || "Tomruk", false);
       setQualityClass("", false);
 
       renderRecentChips();
@@ -2864,7 +2884,7 @@
     function backup() {
       const data = {
         app: "Mesaha App",
-        version: 33,
+        version: 34,
         exportedAt: formatDateTime(),
         systemHeaders: HEADERS,
         settings: state.settings,
