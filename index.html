@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha App Chrome v28</title>
+  <title>Mesaha App Offline v30</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -945,7 +945,34 @@
       box-shadow:0 10px 26px rgba(153,27,27,.35) !important;
     }
 
+  
+    .offline-chip{
+      position:fixed;
+      top:calc(env(safe-area-inset-top, 0px) + 8px);
+      right:8px;
+      z-index:999998;
+      background:#166534;
+      color:#fff;
+      border-radius:999px;
+      padding:5px 9px;
+      font-size:11px;
+      font-weight:900;
+      box-shadow:0 4px 12px rgba(22,101,52,.25);
+      display:none;
+      pointer-events:none;
+    }
+
+    body.offline-mode .offline-chip{
+      display:block;
+      background:#92400e;
+    }
+
   </style>
+  <meta name="theme-color" content="#ffffff" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Mesaha App" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <link rel="manifest" href="./manifest.json" />
 </head>
 <body class="product-tomruk">
   <div class="app">
@@ -963,12 +990,12 @@
           <span class="pill" style="display:inline-flex">Karaçam</span>
         </div>
         <div class="panel-body">
-          <form id="entryForm" class="form" autocomplete="off">
+          <form autocomplete="off" novalidate id="entryForm" class="form" autocomplete="off">
             <div id="editBanner" class="edit-banner">Düzenleme modu açık. Kaydet dediğinde seçili kayıt güncellenecek.</div>
 
             <div>
               <label for="barcode">Barkod No</label>
-              <input id="barcode" name="barcode" placeholder="Örn: A102682" inputmode="text" />
+              <input id="barcode" name="barcode" placeholder="Örn: A102682" inputmode="text"  autocomplete="off"  autocorrect="off"  autocapitalize="off"  spellcheck="false"  enterkeyhint="next" />
               <p class="hint">Kaydetten sonra barkod otomatik bir sonraki sıraya geçer. Barkod en az 9 karakter olmalı. Örn: A17265597</p>
             </div>
 
@@ -978,8 +1005,8 @@
 
             <div class="product-compact">
               <label>Ürün Türü</label>
-              <input id="productType" name="productType" type="hidden" value="Tomruk" />
-              <input id="qualityClass" name="qualityClass" type="hidden" value="" />
+              <input id="productType" name="productType" type="hidden" value="Tomruk"  autocomplete="off"  autocorrect="off"  autocapitalize="off"  spellcheck="false" />
+              <input id="qualityClass" name="qualityClass" type="hidden" value=""  autocomplete="off"  autocorrect="off"  autocapitalize="off"  spellcheck="false" />
               <div id="productBoxes" class="product-boxes">
                 <div class="product-box active" data-product="Tomruk">Tomruk</div>
                 <div class="product-box" data-product="Maden Direk">Maden</div>
@@ -991,12 +1018,12 @@
             <div class="row measure-compact">
               <div class="measure-field">
                 <label for="length">Boy</label>
-                <input id="length" name="length" type="number" min="0" step="0.01" placeholder="3" inputmode="decimal" />
+                <input id="length" name="length" type="number" min="0" step="0.01" placeholder="3" inputmode="decimal"  autocomplete="off"  autocorrect="off"  autocapitalize="off"  spellcheck="false"  enterkeyhint="next" />
                 <div id="lengthChips" class="chip-row"></div>
               </div>
               <div class="measure-field">
                 <label for="diameter">Çap</label>
-                <input id="diameter" name="diameter" type="number" min="0" step="1" placeholder="22" inputmode="numeric" />
+                <input id="diameter" name="diameter" type="number" min="0" step="1" placeholder="22" inputmode="numeric"  autocomplete="off"  autocorrect="off"  autocapitalize="off"  spellcheck="false"  enterkeyhint="done" />
                 <div id="diameterChips" class="chip-row"></div>
               </div>
             </div>
@@ -1014,11 +1041,11 @@
             <div class="row">
               <div>
                 <label for="productionDate">Üretim Tarihi</label>
-                <input id="productionDate" name="productionDate" type="date" />
+                <input id="productionDate" name="productionDate" type="date"  autocomplete="off"  autocorrect="off"  autocapitalize="off"  spellcheck="false" />
               </div>
               <div>
                 <label for="quantity">Adet</label>
-                <input id="quantity" name="quantity" type="number" min="1" step="1" value="1" inputmode="numeric" />
+                <input id="quantity" name="quantity" type="number" min="1" step="1" value="1" inputmode="numeric"  autocomplete="off"  autocorrect="off"  autocapitalize="off"  spellcheck="false"  enterkeyhint="next" />
               </div>
             </div>
 
@@ -1091,11 +1118,11 @@
             <button type="button" class="ghost" id="restoreBtn">Yedek Yükle</button>
             <button type="button" class="warning" id="printBtn">Yazdır</button>
             <button type="button" class="danger" id="deleteAllBtn">Tümünü Sil</button>
-            <input id="restoreInput" type="file" accept=".json,application/json" style="display:none" />
+            <input id="restoreInput" type="file" accept=".json,application/json" style="display:none"  autocomplete="off"  autocorrect="off"  autocapitalize="off"  spellcheck="false" />
           </div>
 
           <div class="searchbar">
-            <input id="searchInput" placeholder="Barkod, ürün, sınıf, çap veya boy ara..." />
+            <input id="searchInput" placeholder="Barkod, ürün, sınıf, çap veya boy ara..."  autocomplete="off"  autocorrect="off"  autocapitalize="off"  spellcheck="false" />
           </div>
 
           <div class="table-wrap">
@@ -1296,6 +1323,8 @@
 
       renderRecentChips();
       updateLiveDesi();
+      setupOfflineSupport();
+      disableIosAutofillToolbarHints();
       render();
       updateSoundButton();
       focusDiameterKeepKeyboard();
@@ -1381,6 +1410,44 @@
     function formatDateTime(date = new Date()) {
       const pad = (n) => String(n).padStart(2, "0");
       return `${date.getFullYear()}-${pad(date.getMonth()+1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
+    }
+
+    function disableIosAutofillToolbarHints() {
+      document.querySelectorAll("input, textarea, select").forEach((el) => {
+        el.setAttribute("autocomplete", "off");
+        el.setAttribute("autocorrect", "off");
+        el.setAttribute("autocapitalize", "off");
+        el.setAttribute("spellcheck", "false");
+
+        if (el.id === "diameter" || el.id === "quantity") {
+          el.setAttribute("inputmode", "numeric");
+        }
+
+        if (el.id === "length") {
+          el.setAttribute("inputmode", "decimal");
+        }
+      });
+    }
+
+
+    function setupOfflineSupport() {
+      try {
+        if ("serviceWorker" in navigator) {
+          navigator.serviceWorker.register("./service-worker.js").catch(() => {});
+        }
+
+        if (navigator.storage && navigator.storage.persist) {
+          navigator.storage.persist().catch(() => {});
+        }
+
+        const updateOnlineState = () => {
+          document.body.classList.toggle("offline-mode", !navigator.onLine);
+        };
+
+        window.addEventListener("online", updateOnlineState);
+        window.addEventListener("offline", updateOnlineState);
+        updateOnlineState();
+      } catch (err) {}
     }
 
     function showToast(message) {
@@ -2428,7 +2495,7 @@
     function backup() {
       const data = {
         app: "Mesaha App",
-        version: 28,
+        version: 30,
         exportedAt: formatDateTime(),
         systemHeaders: HEADERS,
         settings: state.settings,
