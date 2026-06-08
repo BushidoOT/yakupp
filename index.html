@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha App Offline v44</title>
+  <title>Mesaha App Offline v45</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -1827,6 +1827,17 @@
               <tfoot id="recordsFoot"></tfoot>
             </table>
             <div id="emptyState" class="empty">Henüz kayıt yok. İlk barkodu girip kaydet.</div>
+
+            <div class="guide-card">
+              <h3>Günlük giriş sayacı</h3>
+              <ol>
+                <li><b>Kayıtlar</b> sekmesindeki <b>Günlük Giriş</b> butonuna basınız.</li>
+                <li>Bu bölümde bugünkü giriş sayısı, toplam açılış ve son açılış saati görünür.</li>
+                <li>Sayaç cihaz bazlıdır. Her telefon, tablet veya terminal kendi giriş sayısını tutar.</li>
+                <li>İnternet olmasa bile sayaç çalışmaya devam eder.</li>
+              </ol>
+            </div>
+
           </div>
         </div>
       </section>
@@ -2933,6 +2944,41 @@
 
       els.emptyState.style.display = filtered.length ? "none" : "block";
       els.recordCount.textContent = `${state.records.length} kayıt`;
+
+      const totals = {
+        all: 0,
+        adet: 0,
+        Tomruk: 0,
+        TomrukAdet: 0,
+        "Maden Direk": 0,
+        MadenAdet: 0,
+        "Kağıtlık": 0,
+        KagitAdet: 0,
+        "Sanayi Odunu": 0,
+        SanayiAdet: 0,
+        "Tel Direk": 0,
+        TelAdet: 0
+      };
+
+      for (const r of state.records) {
+        const qty = Number(r.quantity) || 0;
+        const value = Number(r.desi) || 0;
+        const key = normalizeProductType(r.productType || "Tomruk");
+
+        totals.all += value;
+        totals.adet += qty;
+
+        if (Object.prototype.hasOwnProperty.call(totals, key)) {
+          totals[key] += value;
+        }
+
+        if (key === "Tomruk") totals.TomrukAdet += qty;
+        if (key === "Maden Direk") totals.MadenAdet += qty;
+        if (key === "Kağıtlık") totals.KagitAdet += qty;
+        if (key === "Sanayi Odunu") totals.SanayiAdet += qty;
+        if (key === "Tel Direk") totals.TelAdet += qty;
+      }
+
       const filteredTotals = filtered.reduce((acc, r) => {
         acc.adet += Number(r.quantity) || 0;
         acc.desi += Number(r.desi) || 0;
@@ -3580,7 +3626,7 @@
     function backup() {
       const data = {
         app: "Mesaha App",
-        version: 44,
+        version: 45,
         exportedAt: formatDateTime(),
         systemHeaders: HEADERS,
         settings: state.settings,
@@ -3751,7 +3797,8 @@
     });
     els.printBtn.addEventListener("click", () => {
       if (!state.records.length) return showErrorToast("Yazdırılacak kayıt yok.");
-      forceRefreshSummaryCards();
+      render();
+      if (typeof forceRefreshSummaryCards === "function") forceRefreshSummaryCards();
       document.body.classList.add("print-summary-only");
       window.print();
       setTimeout(() => document.body.classList.remove("print-summary-only"), 800);
@@ -3787,6 +3834,7 @@
       els.navRecords.classList.add("active");
       els.navEntry.classList.remove("active");
       if (els.navGuide) els.navGuide.classList.remove("active");
+      render();
     });
 
     if (els.navGuide) {
