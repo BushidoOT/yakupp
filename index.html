@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha App Offline v36</title>
+  <title>Mesaha App Offline v38</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -1290,6 +1290,221 @@
       font-weight:900;
     }
 
+  
+    /* v37: Yazdırma temizliği */
+    @media print{
+      body{
+        background:#fff !important;
+        color:#000 !important;
+      }
+
+      .entry-panel,
+      .guide-panel,
+      .tools,
+      .bottom-nav,
+      .searchbar,
+      .topbar .pill,
+      .undo-banner,
+      .empty,
+      .offline-chip,
+      .toast{
+        display:none !important;
+      }
+
+      .records-panel{
+        display:block !important;
+      }
+
+      .app{
+        max-width:none !important;
+        padding:0 !important;
+      }
+
+      .panel{
+        box-shadow:none !important;
+        border:0 !important;
+        background:#fff !important;
+        color:#000 !important;
+      }
+
+      .panel-header{
+        border-bottom:1px solid #bbb !important;
+        padding:8px 0 !important;
+      }
+
+      .panel-header h2{
+        color:#000 !important;
+      }
+
+      .stat.print-zero,
+      .summary-item.print-zero{
+        display:none !important;
+      }
+
+      .records-panel table th:last-child,
+      .records-panel table td:last-child{
+        display:none !important;
+      }
+
+      .records-panel table{
+        width:100% !important;
+        border-collapse:collapse !important;
+      }
+
+      .records-panel th,
+      .records-panel td{
+        color:#000 !important;
+        border:1px solid #ccc !important;
+        padding:5px 6px !important;
+        font-size:11px !important;
+      }
+
+      .records-panel th{
+        background:#eee !important;
+      }
+
+      .tag{
+        color:#000 !important;
+        background:#eee !important;
+        border:1px solid #ccc !important;
+      }
+
+      .summary-card{
+        box-shadow:none !important;
+        border:1px solid #ccc !important;
+        margin:8px 0 10px !important;
+        padding:8px !important;
+      }
+
+      .summary-grid{
+        display:grid !important;
+        grid-template-columns:repeat(3, 1fr) !important;
+        gap:5px !important;
+      }
+
+      .summary-item{
+        border:1px solid #ccc !important;
+        background:#fff !important;
+        color:#000 !important;
+        padding:5px !important;
+        font-size:10.5px !important;
+      }
+
+      .summary-item b{
+        color:#000 !important;
+        font-size:12px !important;
+      }
+    }
+
+  
+    /* v38: Yazdırmada sadece BEYAN özeti çıksın */
+    .print-beyan{
+      display:none;
+    }
+
+    @media print{
+      body *{
+        visibility:hidden !important;
+      }
+
+      .print-beyan,
+      .print-beyan *{
+        visibility:visible !important;
+      }
+
+      .print-beyan{
+        display:block !important;
+        position:absolute !important;
+        left:0 !important;
+        top:0 !important;
+        width:100% !important;
+        padding:10mm !important;
+        background:#ffffff !important;
+        color:#000000 !important;
+        font-family:Arial, sans-serif !important;
+      }
+
+      .print-beyan h1{
+        margin:0 0 10mm !important;
+        padding:0 !important;
+        text-align:center !important;
+        font-size:26pt !important;
+        font-weight:900 !important;
+        color:#000 !important;
+        letter-spacing:1px !important;
+      }
+
+      .beyan-grid{
+        display:grid !important;
+        grid-template-columns:1fr 1fr !important;
+        gap:8mm !important;
+      }
+
+      .beyan-card{
+        border:1.5px solid #cbd5e1 !important;
+        border-radius:10px !important;
+        padding:8mm !important;
+        min-height:28mm !important;
+        background:#fff !important;
+        box-shadow:none !important;
+        break-inside:avoid !important;
+      }
+
+      .beyan-card.total{
+        border-color:#94a3b8 !important;
+      }
+
+      .beyan-card.tomruk{
+        border-left:6mm solid #eab308 !important;
+        background:#fffbea !important;
+      }
+
+      .beyan-card.maden{
+        border-left:6mm solid #2563eb !important;
+        background:#eff6ff !important;
+      }
+
+      .beyan-card.kagit{
+        border-left:6mm solid #dc2626 !important;
+        background:#fff1f2 !important;
+      }
+
+      .beyan-card.sanayi{
+        border-left:6mm solid #16a34a !important;
+        background:#f0fdf4 !important;
+      }
+
+      .beyan-card.tel{
+        border-left:6mm solid #7c3aed !important;
+        background:#f5f3ff !important;
+      }
+
+      .beyan-name{
+        font-size:16pt !important;
+        font-weight:700 !important;
+        color:#334155 !important;
+        margin-bottom:4mm !important;
+      }
+
+      .beyan-value{
+        font-size:25pt !important;
+        font-weight:900 !important;
+        color:#000 !important;
+        line-height:1.05 !important;
+      }
+
+      .beyan-unit{
+        font-size:13pt !important;
+        font-weight:800 !important;
+        color:#334155 !important;
+        margin-top:2mm !important;
+      }
+
+      @page{
+        margin:10mm;
+      }
+    }
+
   </style>
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -1476,13 +1691,11 @@
               <div class="unit" id="totalTelAdet">0 adet</div>
             </div>
           </div>
-
-          <div id="daySummary" class="summary-card"></div>
-
-          <div class="tools">
+<div class="tools">
             <button type="button" class="primary" id="exportSystemXlsBtn">Mesaha Dosyasını İndir</button>
             <button type="button" class="ghost" id="backupBtn">Yedek Al</button>
             <button type="button" class="ghost" id="restoreBtn">Yedek Yükle</button>
+            <button type="button" class="ghost" id="sampleBtn">Örnek Kayıt Oluştur</button>
             <button type="button" class="warning" id="printBtn">Yazdır</button>
             <button type="button" class="danger" id="deleteAllBtn">Tümünü Sil</button>
             <input id="restoreInput" type="file" accept=".json,application/json" style="display:none"  autocomplete="off"  autocorrect="off"  autocapitalize="off"  spellcheck="false" />
@@ -1577,20 +1790,7 @@
                 <li>Bu işlemden sonra Mesaha App ana ekrana eklenir ve internet olmadığında da kullanılabilir.</li>
               </ol>
             </div>
-
-
-            <div class="guide-card">
-              <h3>Yeni sürüm yükleme / güncelleme</h3>
-              <ol>
-                <li>Yeni sürüm dosyalarını GitHub projesine yükleyiniz: <b>index.html</b>, <b>manifest.json</b>, <b>service-worker.js</b> ve <b>.nojekyll</b>.</li>
-                <li>Yükleme tamamlandıktan sonra Mesaha App bağlantısını internet varken açınız.</li>
-                <li>Sayfayı 1-2 kez yenileyiniz. Böylece eski çevrimdışı önbellek yerine yeni sürüm alınır.</li>
-                <li>Hâlâ eski sürüm görünüyorsa tarayıcıdan site verilerini temizleyip bağlantıyı yeniden açınız.</li>
-                <li>Güncelleme yapmadan önce önemli kayıtlar varsa mutlaka <b>Yedek Al</b> veya <b>Mesaha Dosyasını İndir</b> işlemini yapınız.</li>
-              </ol>
-            </div>
-
-            <div class="guide-note">
+<div class="guide-note">
               Not: Arazide internet çekmeyebilir. Uygulamayı sahaya çıkmadan önce bir kez internet varken açıp ana ekrana eklemeniz tavsiye edilir. İş bitince mesaha dosyasını indirmeyi ve gerekirse yedek almayı unutmayınız.
             </div>
           </div>
@@ -1686,6 +1886,7 @@
       totalTelAdet: $("totalTelAdet"),
       searchInput: $("searchInput"),
       toast: $("toast"),
+      printBeyan: $("printBeyan"),
       sameBarcodeBtn: $("sameBarcodeBtn"),
       clearInputsBtn: $("clearInputsBtn"),
       soundToggleBtn: $("soundToggleBtn"),
@@ -1697,7 +1898,6 @@
       printBtn: $("printBtn"),
       deleteAllBtn: $("deleteAllBtn"),
       sampleBtn: $("sampleBtn"),
-      daySummary: $("daySummary"),
       undoBanner: $("undoBanner"),
       undoMessage: $("undoMessage"),
       undoBtn: $("undoBtn"),
@@ -2144,15 +2344,17 @@
     }
 
     function maybeShowBackupReminder() {
-      const count = state.records.length;
-      if (!count || count % 25 !== 0) return;
-      if (Number(state.settings.lastBackupReminderCount || 0) === count) return;
+      const totalAdet = state.records.reduce((sum, r) => sum + (Number(r.quantity) || 0), 0);
+      const reminderPoint = Math.floor(totalAdet / 200) * 200;
 
-      state.settings.lastBackupReminderCount = count;
+      if (reminderPoint < 200) return;
+      if (Number(state.settings.lastBackupReminderCount || 0) >= reminderPoint) return;
+
+      state.settings.lastBackupReminderCount = reminderPoint;
       localStorage.setItem(SETTINGS_KEY, JSON.stringify(state.settings));
 
       setTimeout(() => {
-        showErrorToast(`${count} kayıt girildi. Yedek almayı unutmayın.`);
+        showErrorToast(`${reminderPoint} adet/ağaç girildi. Yedek almayı unutmayın.`);
       }, 900);
     }
 
@@ -2532,43 +2734,6 @@
 
       els.emptyState.style.display = filtered.length ? "none" : "block";
       els.recordCount.textContent = `${state.records.length} kayıt`;
-
-      if (els.daySummary) {
-        const summaryLines = PRODUCT_ORDER.map(type => {
-          const itemRows = state.records.filter(r => (r.productType || "Tomruk") === type);
-          const adet = itemRows.reduce((sum, r) => sum + (Number(r.quantity) || 0), 0);
-          const desi = itemRows.reduce((sum, r) => sum + (Number(r.desi) || 0), 0);
-          const name = PRODUCT_MAP[type] ? PRODUCT_MAP[type].odunAdi : type;
-          return `<div class="summary-item">${escapeHtml(name)}<b>${adet.toLocaleString("tr-TR")} adet</b><span>${formatHacimFromDesi(desi)} m³</span></div>`;
-        }).join("");
-
-        const bolme = state.settings.bolmeNo ? ` • Bölme: ${escapeHtml(state.settings.bolmeNo)}` : "";
-        const seflik = state.settings.seflik ? ` • Şeflik: ${escapeHtml(state.settings.seflik)}` : "";
-        els.daySummary.innerHTML = `
-          <h3>Gün Sonu Özeti${bolme}${seflik}</h3>
-          <div class="summary-grid">
-            <div class="summary-item">Toplam Kayıt<b>${state.records.length.toLocaleString("tr-TR")}</b><span>satır</span></div>
-            <div class="summary-item">Toplam Adet<b>${state.records.reduce((s, r) => s + (Number(r.quantity) || 0), 0).toLocaleString("tr-TR")}</b><span>adet</span></div>
-            ${summaryLines}
-          </div>
-        `;
-      }
-
-      const totals = {
-        all: 0,
-        adet: 0,
-        Tomruk: 0,
-        TomrukAdet: 0,
-        "Maden Direk": 0,
-        MadenAdet: 0,
-        "Kağıtlık": 0,
-        KagitAdet: 0,
-        "Sanayi Odunu": 0,
-        SanayiAdet: 0,
-        "Tel Direk": 0,
-        TelAdet: 0
-      };
-
       for (const r of state.records) {
         const qty = Number(r.quantity) || 0;
         totals.all += Number(r.desi) || 0;
@@ -2602,11 +2767,22 @@
       if (els.totalTel) els.totalTel.textContent = formatHacimFromDesi(totals["Tel Direk"]) + " m³";
       if (els.totalTelAdet) els.totalTelAdet.textContent = totals.TelAdet.toLocaleString("tr-TR") + " adet";
 
+      const setPrintZero = (el, adet, hacim) => {
+        const card = el ? el.closest(".stat") : null;
+        if (!card) return;
+        card.classList.toggle("print-zero", !(Number(adet) || Number(hacim)));
+      };
+
+      setPrintZero(els.totalTomruk, totals.TomrukAdet, totals.Tomruk);
+      setPrintZero(els.totalMaden, totals.MadenAdet, totals["Maden Direk"]);
+      setPrintZero(els.totalKagit, totals.KagitAdet, totals["Kağıtlık"]);
+      setPrintZero(els.totalSanayi, totals.SanayiAdet, totals["Sanayi Odunu"]);
+      setPrintZero(els.totalTel, totals.TelAdet, totals["Tel Direk"]);
+
       els.recordsFoot.innerHTML = filtered.length ? `
         <tr class="table-total-row">
           <td colspan="5">Alttaki liste toplamı</td>
           <td class="num">${filteredTotals.adet.toLocaleString("tr-TR")} adet</td>
-          <td class="num">${filteredTotals.desi.toLocaleString("tr-TR")} m³</td>
           <td class="num">${formatHacimFromDesi(filteredTotals.desi)} m³</td>
           <td colspan="2"></td>
         </tr>
@@ -3219,7 +3395,7 @@
     function backup() {
       const data = {
         app: "Mesaha App",
-        version: 36,
+        version: 38,
         exportedAt: formatDateTime(),
         systemHeaders: HEADERS,
         settings: state.settings,
@@ -3279,6 +3455,86 @@
 
     function buildChips() {
       renderRecentChips();
+    }
+
+    function buildPrintBeyan() {
+      if (!els.printBeyan && !document.getElementById("printBeyan")) return;
+
+      const target = document.getElementById("printBeyan");
+      const totals = {
+        all: 0,
+        adet: 0,
+        Tomruk: 0,
+        TomrukAdet: 0,
+        "Maden Direk": 0,
+        MadenAdet: 0,
+        "Kağıtlık": 0,
+        KagitAdet: 0,
+        "Sanayi Odunu": 0,
+        SanayiAdet: 0,
+        "Tel Direk": 0,
+        TelAdet: 0
+      };
+
+      for (const r of state.records) {
+        const qty = Number(r.quantity) || 0;
+        const hacimDesi = Number(r.desi) || 0;
+        const key = r.productType || "Tomruk";
+
+        totals.all += hacimDesi;
+        totals.adet += qty;
+        if (totals[key] !== undefined) totals[key] += hacimDesi;
+
+        if (key === "Tomruk") totals.TomrukAdet += qty;
+        if (key === "Maden Direk") totals.MadenAdet += qty;
+        if (key === "Kağıtlık") totals.KagitAdet += qty;
+        if (key === "Sanayi Odunu") totals.SanayiAdet += qty;
+        if (key === "Tel Direk") totals.TelAdet += qty;
+      }
+
+      const productCards = PRODUCT_ORDER.map(type => {
+        const keyAdet = type === "Tomruk" ? "TomrukAdet"
+          : type === "Maden Direk" ? "MadenAdet"
+          : type === "Kağıtlık" ? "KagitAdet"
+          : type === "Sanayi Odunu" ? "SanayiAdet"
+          : "TelAdet";
+
+        const adet = totals[keyAdet] || 0;
+        const hacim = totals[type] || 0;
+        if (!adet && !hacim) return "";
+
+        const name = PRODUCT_MAP[type] ? PRODUCT_MAP[type].odunAdi : type;
+        const cls = type === "Tomruk" ? "tomruk"
+          : type === "Maden Direk" ? "maden"
+          : type === "Kağıtlık" ? "kagit"
+          : type === "Sanayi Odunu" ? "sanayi"
+          : "tel";
+
+        return `
+          <div class="beyan-card ${cls}">
+            <div class="beyan-name">${escapeHtml(name)}</div>
+            <div class="beyan-value">${formatHacimFromDesi(hacim)} m³</div>
+            <div class="beyan-unit">${adet.toLocaleString("tr-TR")} adet</div>
+          </div>
+        `;
+      }).join("");
+
+      target.innerHTML = `
+        <h1>BEYAN</h1>
+        <div class="beyan-grid">
+          <div class="beyan-card total">
+            <div class="beyan-name">Toplam m³</div>
+            <div class="beyan-value">${formatHacimFromDesi(totals.all)}</div>
+            <div class="beyan-unit">m³</div>
+          </div>
+          <div class="beyan-card total">
+            <div class="beyan-name">Toplam Adet</div>
+            <div class="beyan-value">${totals.adet.toLocaleString("tr-TR")}</div>
+            <div class="beyan-unit">adet</div>
+          </div>
+          ${productCards}
+        </div>
+      `;
     }
 
     function nextSampleBarcode(offset = 1) {
@@ -3380,7 +3636,11 @@
       if (file) restoreFromFile(file);
       e.target.value = "";
     });
-    els.printBtn.addEventListener("click", () => window.print());
+    els.printBtn.addEventListener("click", () => {
+      if (!state.records.length) return showErrorToast("Yazdırılacak kayıt yok.");
+      buildPrintBeyan();
+      window.print();
+    });
     if (els.sampleBtn) els.sampleBtn.addEventListener("click", createSampleRecords);
     if (els.undoBtn) els.undoBtn.addEventListener("click", undoLastDelete);
 
