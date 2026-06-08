@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha App Offline v39</title>
+  <title>Mesaha App Offline v40</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -1289,224 +1289,7 @@
     .summary-item span{
       font-weight:900;
     }
-
-  
-    /* v37: Yazdırma temizliği */
-    @media print{
-      body{
-        background:#fff !important;
-        color:#000 !important;
-      }
-
-      .entry-panel,
-      .guide-panel,
-      .tools,
-      .bottom-nav,
-      .searchbar,
-      .topbar .pill,
-      .undo-banner,
-      .empty,
-      .offline-chip,
-      .toast{
-        display:none !important;
-      }
-
-      .records-panel{
-        display:block !important;
-      }
-
-      .app{
-        max-width:none !important;
-        padding:0 !important;
-      }
-
-      .panel{
-        box-shadow:none !important;
-        border:0 !important;
-        background:#fff !important;
-        color:#000 !important;
-      }
-
-      .panel-header{
-        border-bottom:1px solid #bbb !important;
-        padding:8px 0 !important;
-      }
-
-      .panel-header h2{
-        color:#000 !important;
-      }
-
-      .stat.print-zero,
-      .summary-item.print-zero{
-        display:none !important;
-      }
-
-      .records-panel table th:last-child,
-      .records-panel table td:last-child{
-        display:none !important;
-      }
-
-      .records-panel table{
-        width:100% !important;
-        border-collapse:collapse !important;
-      }
-
-      .records-panel th,
-      .records-panel td{
-        color:#000 !important;
-        border:1px solid #ccc !important;
-        padding:5px 6px !important;
-        font-size:11px !important;
-      }
-
-      .records-panel th{
-        background:#eee !important;
-      }
-
-      .tag{
-        color:#000 !important;
-        background:#eee !important;
-        border:1px solid #ccc !important;
-      }
-
-      .summary-card{
-        box-shadow:none !important;
-        border:1px solid #ccc !important;
-        margin:8px 0 10px !important;
-        padding:8px !important;
-      }
-
-      .summary-grid{
-        display:grid !important;
-        grid-template-columns:repeat(3, 1fr) !important;
-        gap:5px !important;
-      }
-
-      .summary-item{
-        border:1px solid #ccc !important;
-        background:#fff !important;
-        color:#000 !important;
-        padding:5px !important;
-        font-size:10.5px !important;
-      }
-
-      .summary-item b{
-        color:#000 !important;
-        font-size:12px !important;
-      }
-    }
-
-  
-    /* v38: Yazdırmada sadece BEYAN özeti çıksın */
-    .print-beyan{
-      display:none;
-    }
-
-    @media print{
-      body *{
-        visibility:hidden !important;
-      }
-
-      .print-beyan,
-      .print-beyan *{
-        visibility:visible !important;
-      }
-
-      .print-beyan{
-        display:block !important;
-        position:absolute !important;
-        left:0 !important;
-        top:0 !important;
-        width:100% !important;
-        padding:10mm !important;
-        background:#ffffff !important;
-        color:#000000 !important;
-        font-family:Arial, sans-serif !important;
-      }
-
-      .print-beyan h1{
-        margin:0 0 10mm !important;
-        padding:0 !important;
-        text-align:center !important;
-        font-size:26pt !important;
-        font-weight:900 !important;
-        color:#000 !important;
-        letter-spacing:1px !important;
-      }
-
-      .beyan-grid{
-        display:grid !important;
-        grid-template-columns:1fr 1fr !important;
-        gap:8mm !important;
-      }
-
-      .beyan-card{
-        border:1.5px solid #cbd5e1 !important;
-        border-radius:10px !important;
-        padding:8mm !important;
-        min-height:28mm !important;
-        background:#fff !important;
-        box-shadow:none !important;
-        break-inside:avoid !important;
-      }
-
-      .beyan-card.total{
-        border-color:#94a3b8 !important;
-      }
-
-      .beyan-card.tomruk{
-        border-left:6mm solid #eab308 !important;
-        background:#fffbea !important;
-      }
-
-      .beyan-card.maden{
-        border-left:6mm solid #2563eb !important;
-        background:#eff6ff !important;
-      }
-
-      .beyan-card.kagit{
-        border-left:6mm solid #dc2626 !important;
-        background:#fff1f2 !important;
-      }
-
-      .beyan-card.sanayi{
-        border-left:6mm solid #16a34a !important;
-        background:#f0fdf4 !important;
-      }
-
-      .beyan-card.tel{
-        border-left:6mm solid #7c3aed !important;
-        background:#f5f3ff !important;
-      }
-
-      .beyan-name{
-        font-size:16pt !important;
-        font-weight:700 !important;
-        color:#334155 !important;
-        margin-bottom:4mm !important;
-      }
-
-      .beyan-value{
-        font-size:25pt !important;
-        font-weight:900 !important;
-        color:#000 !important;
-        line-height:1.05 !important;
-      }
-
-      .beyan-unit{
-        font-size:13pt !important;
-        font-weight:800 !important;
-        color:#334155 !important;
-        margin-top:2mm !important;
-      }
-
-      @page{
-        margin:10mm;
-      }
-    }
-
-  
-    /* v39: günlük giriş sayacı */
+/* v39: günlük giriş sayacı */
     .usage-card{
       display:none;
       background:#f8fafc;
@@ -1553,6 +1336,121 @@
     @media (max-width: 560px){
       .usage-grid{
         grid-template-columns:1fr;
+      }
+    }
+
+  
+    /* v40: Yazdırma boş sayfa düzeltmesi */
+    .print-beyan{
+      display:none;
+    }
+
+    @media print{
+      html,
+      body{
+        background:#ffffff !important;
+        color:#000000 !important;
+        width:100% !important;
+        min-height:100% !important;
+      }
+
+      body.printing-beyan .app,
+      body.printing-beyan .offline-chip,
+      body.printing-beyan .toast{
+        display:none !important;
+      }
+
+      body.printing-beyan .print-beyan{
+        display:block !important;
+        position:static !important;
+        width:100% !important;
+        max-width:none !important;
+        margin:0 !important;
+        padding:0 !important;
+        background:#ffffff !important;
+        color:#000000 !important;
+        font-family:Arial, sans-serif !important;
+      }
+
+      body.printing-beyan .print-beyan h1{
+        margin:0 0 10mm !important;
+        padding:0 !important;
+        text-align:center !important;
+        font-size:26pt !important;
+        font-weight:900 !important;
+        color:#000 !important;
+        letter-spacing:1px !important;
+      }
+
+      body.printing-beyan .beyan-grid{
+        display:grid !important;
+        grid-template-columns:1fr 1fr !important;
+        gap:8mm !important;
+      }
+
+      body.printing-beyan .beyan-card{
+        border:1.5px solid #cbd5e1 !important;
+        border-radius:10px !important;
+        padding:8mm !important;
+        min-height:28mm !important;
+        background:#fff !important;
+        box-shadow:none !important;
+        break-inside:avoid !important;
+        page-break-inside:avoid !important;
+      }
+
+      body.printing-beyan .beyan-card.total{
+        border-color:#94a3b8 !important;
+      }
+
+      body.printing-beyan .beyan-card.tomruk{
+        border-left:6mm solid #eab308 !important;
+        background:#fffbea !important;
+      }
+
+      body.printing-beyan .beyan-card.maden{
+        border-left:6mm solid #2563eb !important;
+        background:#eff6ff !important;
+      }
+
+      body.printing-beyan .beyan-card.kagit{
+        border-left:6mm solid #dc2626 !important;
+        background:#fff1f2 !important;
+      }
+
+      body.printing-beyan .beyan-card.sanayi{
+        border-left:6mm solid #16a34a !important;
+        background:#f0fdf4 !important;
+      }
+
+      body.printing-beyan .beyan-card.tel{
+        border-left:6mm solid #7c3aed !important;
+        background:#f5f3ff !important;
+      }
+
+      body.printing-beyan .beyan-name{
+        font-size:16pt !important;
+        font-weight:700 !important;
+        color:#334155 !important;
+        margin-bottom:4mm !important;
+      }
+
+      body.printing-beyan .beyan-value{
+        font-size:25pt !important;
+        font-weight:900 !important;
+        color:#000 !important;
+        line-height:1.05 !important;
+      }
+
+      body.printing-beyan .beyan-unit{
+        font-size:13pt !important;
+        font-weight:800 !important;
+        color:#334155 !important;
+        margin-top:2mm !important;
+      }
+
+      @page{
+        margin:10mm;
       }
     }
 
@@ -1746,7 +1644,6 @@
             <button type="button" class="primary" id="exportSystemXlsBtn">Mesaha Dosyasını İndir</button>
             <button type="button" class="ghost" id="backupBtn">Yedek Al</button>
             <button type="button" class="ghost" id="restoreBtn">Yedek Yükle</button>
-            <button type="button" class="ghost" id="sampleBtn">Örnek Kayıt Oluştur</button>
             <button type="button" class="warning" id="printBtn">Yazdır</button>
             <button type="button" class="danger" id="deleteAllBtn">Tümünü Sil</button>
             <input id="restoreInput" type="file" accept=".json,application/json" style="display:none"  autocomplete="off"  autocorrect="off"  autocapitalize="off"  spellcheck="false" />
@@ -1953,7 +1850,6 @@
       usageBtn: $("usageBtn"),
       usageCard: $("usageCard"),
       deleteAllBtn: $("deleteAllBtn"),
-      sampleBtn: $("sampleBtn"),
       undoBanner: $("undoBanner"),
       undoMessage: $("undoMessage"),
       undoBtn: $("undoBtn"),
@@ -3452,7 +3348,7 @@
     function backup() {
       const data = {
         app: "Mesaha App",
-        version: 39,
+        version: 40,
         exportedAt: formatDateTime(),
         systemHeaders: HEADERS,
         settings: state.settings,
@@ -3647,53 +3543,6 @@
         </div>
       `;
     }
-
-    function nextSampleBarcode(offset = 1) {
-      const prefix = "TST";
-      let max = 0;
-      for (const r of state.records) {
-        const match = String(r.barcode || "").match(/^TST(\d+)$/);
-        if (match) max = Math.max(max, Number(match[1]) || 0);
-      }
-      return prefix + String(max + offset).padStart(6, "0");
-    }
-
-    function createSampleRecords() {
-      if (!confirm("Deneme için örnek kayıtlar eklensin mi? Gerçek işe başlamadan önce bu kayıtları silmeyi unutmayın.")) return;
-
-      const productionDate = els.productionDate.value || todayISO();
-      const samples = [
-        { barcode: nextSampleBarcode(1), productType: "Tomruk", length: 3, diameter: 22, quantity: 1 },
-        { barcode: nextSampleBarcode(2), productType: "Maden Direk", length: 3, diameter: 19, quantity: 1 },
-        { barcode: nextSampleBarcode(3), productType: "Kağıtlık", length: 2.5, diameter: 18, quantity: 1 },
-        { barcode: nextSampleBarcode(4), productType: "Sanayi Odunu", length: 1, diameter: 14, quantity: 1 },
-        { barcode: nextSampleBarcode(5), productType: "Tel Direk", length: 6.5, diameter: 22, quantity: 1 }
-      ];
-
-      for (const item of samples) {
-        const desi = calculateDesi(item.diameter, item.length, item.quantity);
-        state.records.unshift({
-          id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now() + Math.random()),
-          barcode: item.barcode,
-          species: "Karaçam",
-          productType: item.productType,
-          qualityClass: "",
-          productionDate,
-          uretimTarihi: isoToTRDate(productionDate),
-          length: item.length,
-          diameter: item.diameter,
-          quantity: item.quantity,
-          desi,
-          hacim: formatHacimFromDesi(desi),
-          createdAt: formatDateTime()
-        });
-      }
-
-      saveRecords();
-      render();
-      showSuccessToast("5 örnek kayıt eklendi. Testten sonra silmeyi unutmayın.");
-    }
-
     els.submitBtn.addEventListener("pointerdown", (event) => {
       // Mobilde butona dokununca input blur olup klavye kapanmasın diye butonun odağı almasını engelliyoruz.
       event.preventDefault();
@@ -3749,10 +3598,17 @@
     });
     els.printBtn.addEventListener("click", () => {
       if (!state.records.length) return showErrorToast("Yazdırılacak kayıt yok.");
-      buildPrintBeyan();
-      window.print();
+
+      const ok = buildPrintBeyan();
+      if (!ok) return showErrorToast("Yazdırma özeti hazırlanamadı.");
+
+      document.body.classList.add("printing-beyan");
+
+      setTimeout(() => {
+        window.print();
+        setTimeout(() => document.body.classList.remove("printing-beyan"), 600);
+      }, 80);
     });
-    if (els.sampleBtn) els.sampleBtn.addEventListener("click", createSampleRecords);
     if (els.usageBtn) els.usageBtn.addEventListener("click", () => renderUsageStats(true));
     if (els.undoBtn) els.undoBtn.addEventListener("click", undoLastDelete);
 
