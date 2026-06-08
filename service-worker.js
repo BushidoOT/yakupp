@@ -1,8 +1,9 @@
-const CACHE_NAME = "mesaha-app-v30";
+const CACHE_NAME = "mesaha-app-v31";
 const ASSETS = [
   "./",
   "./index.html",
-  "./manifest.json"
+  "./manifest.json",
+  "./service-worker.js"
 ];
 
 self.addEventListener("install", (event) => {

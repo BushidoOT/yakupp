@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha App Offline v30</title>
+  <title>Mesaha App Offline v31</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -967,6 +967,73 @@
       background:#92400e;
     }
 
+  
+    /* v31: Uyarı barı artık kaydet butonunun hemen üstünde */
+    .toast.form-toast{
+      position:relative !important;
+      top:auto !important;
+      bottom:auto !important;
+      left:auto !important;
+      right:auto !important;
+      width:100% !important;
+      max-width:none !important;
+      transform:none !important;
+      opacity:0 !important;
+      visibility:hidden !important;
+      height:0 !important;
+      min-height:0 !important;
+      margin:0 !important;
+      padding:0 12px !important;
+      overflow:hidden !important;
+      z-index:10 !important;
+      border-radius:14px !important;
+      text-align:center !important;
+      display:flex !important;
+      align-items:center !important;
+      justify-content:center !important;
+      pointer-events:none !important;
+      transition:opacity .15s ease, height .15s ease, margin .15s ease, padding .15s ease, visibility .15s ease !important;
+    }
+
+    .toast.form-toast.show{
+      opacity:1 !important;
+      visibility:visible !important;
+      height:auto !important;
+      min-height:44px !important;
+      margin:0 0 8px 0 !important;
+      padding:10px 12px !important;
+      transform:none !important;
+    }
+
+    .toast.form-toast:not(.show){
+      opacity:0 !important;
+      visibility:hidden !important;
+      height:0 !important;
+      min-height:0 !important;
+      margin:0 !important;
+      padding-top:0 !important;
+      padding-bottom:0 !important;
+      transform:none !important;
+    }
+
+    .toast.form-toast.success-toast{
+      background:#166534 !important;
+      color:#ffffff !important;
+      border:2px solid #14532d !important;
+      font-size:15px !important;
+      font-weight:950 !important;
+      box-shadow:0 6px 18px rgba(22,101,52,.20) !important;
+    }
+
+    .toast.form-toast.error-toast{
+      background:#991b1b !important;
+      color:#ffffff !important;
+      border:2px solid #7f1d1d !important;
+      font-size:15px !important;
+      font-weight:950 !important;
+      box-shadow:0 6px 18px rgba(153,27,27,.22) !important;
+    }
+
   </style>
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -999,6 +1066,8 @@
               <p class="hint">Kaydetten sonra barkod otomatik bir sonraki sıraya geçer. Barkod en az 9 karakter olmalı. Örn: A17265597</p>
             </div>
 
+            <div id="toast" class="toast form-toast"></div>
+
             <div class="btn-row single">
               <button id="submitBtn" class="primary" type="submit">Kaydet ve Sonraki Barkoda Geç</button>
             </div>
@@ -1023,7 +1092,7 @@
               </div>
               <div class="measure-field">
                 <label for="diameter">Çap</label>
-                <input id="diameter" name="diameter" type="number" min="0" step="1" placeholder="22" inputmode="numeric"  autocomplete="off"  autocorrect="off"  autocapitalize="off"  spellcheck="false"  enterkeyhint="done" />
+                <input id="diameter" name="diameter" type="tel" placeholder="22" inputmode="numeric"  autocomplete="off"  autocorrect="off"  autocapitalize="off"  spellcheck="false"  enterkeyhint="done"  maxlength="2" pattern="[0-9]*" />
                 <div id="diameterChips" class="chip-row"></div>
               </div>
             </div>
@@ -1155,10 +1224,7 @@
     <button id="navEntry" class="active" type="button">Yeni Kayıt</button>
     <button id="navRecords" type="button">Kayıtlar</button>
   </nav>
-
-  <div id="toast" class="toast"></div>
-
-  <script>
+<script>
     const STORAGE_KEY = "cam_mesaha_kayitlari_v1";
     const SETTINGS_KEY = "cam_mesaha_ayarlar_v1";
 
@@ -1453,22 +1519,22 @@
     function showToast(message) {
       if (!els.toast) return;
 
-      els.toast.textContent = message;
-      els.toast.classList.remove("show");
       clearTimeout(showToast.timer);
       clearTimeout(showToast.cleaner);
 
-      // Reflow ile tekrar gösterimde animasyon düzgün çalışır.
+      els.toast.classList.remove("show", "visible", "active");
+      els.toast.textContent = String(message || "");
+
       void els.toast.offsetWidth;
 
       els.toast.classList.add("show");
 
       showToast.timer = setTimeout(() => {
-        els.toast.classList.remove("show");
+        els.toast.classList.remove("show", "visible", "active");
         showToast.cleaner = setTimeout(() => {
-          els.toast.classList.remove("success-toast", "error-toast", "visible", "active");
+          els.toast.classList.remove("success-toast", "error-toast");
           els.toast.textContent = "";
-        }, 260);
+        }, 220);
       }, 2200);
     }
 
@@ -1646,7 +1712,16 @@
       focusDiameterKeepKeyboard();
     }
 
+    function limitDiameterToTwoDigits() {
+      if (!els.diameter) return;
+      let value = String(els.diameter.value || "");
+      value = value.replace(/\D/g, "");
+      if (value.length > 2) value = value.slice(0, 2);
+      if (els.diameter.value !== value) els.diameter.value = value;
+    }
+
     function updateLiveDesi() {
+      limitDiameterToTwoDigits();
       const desi = calculateDesi(els.diameter.value, els.length.value, els.quantity.value);
       els.liveDesi.textContent = desi.toLocaleString("tr-TR") + " desi";
       els.liveHacim.textContent = formatHacimFromDesi(desi) + " m³";
@@ -1680,6 +1755,7 @@
       const qualityClass = els.qualityClass.value || "2";
       const productionDate = els.productionDate.value || todayISO();
       const length = Number(els.length.value);
+      limitDiameterToTwoDigits();
       const diameter = Number(els.diameter.value);
       const quantity = Number(els.quantity.value || 1);
 
@@ -2495,7 +2571,7 @@
     function backup() {
       const data = {
         app: "Mesaha App",
-        version: 30,
+        version: 31,
         exportedAt: formatDateTime(),
         systemHeaders: HEADERS,
         settings: state.settings,
@@ -2558,7 +2634,7 @@
     els.form.addEventListener("submit", addRecord);
 
     ["input", "change"].forEach(evt => {
-      els.diameter.addEventListener(evt, updateLiveDesi);
+      els.diameter.addEventListener(evt, () => { limitDiameterToTwoDigits(); updateLiveDesi(); });
       els.length.addEventListener(evt, () => { saveSettings(); updateLiveDesi(); });
       els.quantity.addEventListener(evt, () => { saveSettings(); updateLiveDesi(); });
       els.productionDate.addEventListener(evt, saveSettings);
