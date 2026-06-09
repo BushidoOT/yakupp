@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha App Offline v49</title>
+  <title>Mesaha App Offline v50</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -1782,6 +1782,29 @@
       }
     }
 
+  
+    /* v50: Ağaç türü seçimi */
+    .tree-compact{
+      margin-bottom:0 !important;
+    }
+
+    .tree-current{
+      background:#f0fdf4 !important;
+      color:#14532d !important;
+      border-color:#bbf7d0 !important;
+      font-weight:950 !important;
+      min-height:36px;
+      align-items:center;
+    }
+
+    .tree-type-panel{
+      grid-template-columns:1fr 1fr !important;
+    }
+
+    #treeTypeApplyBtn{
+      grid-column:1 / -1;
+    }
+
   </style>
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -1802,7 +1825,7 @@
       <section class="panel entry-panel">
         <div class="panel-header">
           <h2>Yeni Kayıt</h2>
-          <span class="pill" style="display:inline-flex">Karaçam</span>
+          <span id="speciesPill" class="pill" style="display:inline-flex">Karaçam</span>
         </div>
         <div class="panel-body">
           <form autocomplete="off" novalidate id="entryForm" class="form" autocomplete="off">
@@ -1829,6 +1852,23 @@
             </details>
 
             <div id="toast" class="toast form-toast"></div>
+
+            <div class="product-compact tree-compact">
+              <label>Ağaç Türü</label>
+              <input id="treeType" name="treeType" type="hidden" value="Karaçam" autocomplete="off" />
+              <div class="product-select-head">
+                <button class="ghost small-action" type="button" id="treeTypeSelectBtn">Ağaç Türü Seç</button>
+                <span id="treeTypeCurrent" class="pill tree-current">Karaçam</span>
+              </div>
+              <div id="treeTypePanel" class="wood-type-panel tree-type-panel" aria-label="Ağaç türü seçimi">
+                <label class="wood-check"><input type="radio" name="treeTypeRadio" value="Karaçam" checked /> Karaçam</label>
+                <label class="wood-check"><input type="radio" name="treeTypeRadio" value="Sedir" /> Sedir</label>
+                <label class="wood-check"><input type="radio" name="treeTypeRadio" value="Göknar" /> Göknar</label>
+                <label class="wood-check"><input type="radio" name="treeTypeRadio" value="Kızılçam" /> Kızılçam</label>
+                <button class="secondary small-action" type="button" id="treeTypeApplyBtn">Seçimi Uygula</button>
+              </div>
+              <p class="hint">Excel çıktısında seçilen ağaç türü gönderilir.</p>
+            </div>
 
             <div class="product-compact">
               <label>Ürün Türü</label>
@@ -2112,13 +2152,23 @@
 
     const PRODUCT_ORDER = ["Tomruk", "Maden Direk", "Kağıtlık", "Sanayi Odunu", "Tel Direk"];
 
+    const TREE_MAP = {
+      "Karaçam": { agacId: 1, agacAdi: "Karaçam" },
+      "Sedir": { agacId: 5, agacAdi: "Sedir" },
+      "Göknar": { agacId: 6, agacAdi: "Göknar" },
+      "Kızılçam": { agacId: 26, agacAdi: "Kızılçam" }
+    };
+
+
     const state = {
       records: [],
       sameBarcodeMode: false,
       editingId: null,
+      editingReturnBarcode: "",
       settings: {
         lastBarcode: "A102682",
         lastProductType: "Tomruk",
+        lastTreeType: "Karaçam",
         lastQualityClass: "2",
         lastLength: "3",
         lastQuantity: "1",
@@ -2146,6 +2196,12 @@
       ekipNot: $("ekipNot"),
       productionDate: $("productionDate"),
       productType: $("productType"),
+      treeType: $("treeType"),
+      treeTypeSelectBtn: $("treeTypeSelectBtn"),
+      treeTypePanel: $("treeTypePanel"),
+      treeTypeApplyBtn: $("treeTypeApplyBtn"),
+      treeTypeCurrent: $("treeTypeCurrent"),
+      speciesPill: $("speciesPill"),
       qualityClass: $("qualityClass"),
       productBoxes: $("productBoxes"),
       woodTypeSelectBtn: $("woodTypeSelectBtn"),
@@ -2278,6 +2334,7 @@
       state.settings.visibleProducts = normalizeVisibleProducts(state.settings.visibleProducts);
       renderProductButtons();
       syncWoodTypePanel();
+      initTreeTypePanel();
 
       els.barcode.value = state.settings.lastBarcode || "A102682";
       if (els.bolmeNo) els.bolmeNo.value = state.settings.bolmeNo || "";
@@ -2286,6 +2343,7 @@
       els.productionDate.value = state.settings.productionDate || todayISO();
       els.length.value = state.settings.lastLength || "3";
       els.quantity.value = state.settings.lastQuantity || "1";
+      setTreeType(state.settings.lastTreeType || "Karaçam", false);
       setProductType(state.settings.lastProductType || "Tomruk", false);
       setQualityClass("", false);
 
@@ -2313,6 +2371,7 @@
       state.settings.ekipNot = els.ekipNot ? els.ekipNot.value.trim() : "";
       state.settings.productionDate = els.productionDate.value || todayISO();
       state.settings.lastProductType = els.productType.value;
+      state.settings.lastTreeType = normalizeTreeType(els.treeType ? els.treeType.value : state.settings.lastTreeType || "Karaçam");
       state.settings.lastQualityClass = "";
       state.settings.lastLength = els.length.value;
       state.settings.lastQuantity = els.quantity.value || "1";
@@ -2393,8 +2452,7 @@
     function formatBoy(value) {
       const n = Number(value);
       if (!Number.isFinite(n)) return "";
-      if (Number.isInteger(n * 10)) return n.toFixed(1);
-      return String(n);
+      return Number.isInteger(n) ? String(n) : String(n).replace(",", ".");
     }
 
     function incrementBarcode(value) {
@@ -2700,6 +2758,68 @@
       return Number.isInteger(n) ? String(n) : String(n).replace(".", ",");
     }
 
+    function normalizeTreeType(type) {
+      const raw = String(type || "").trim();
+
+      if (TREE_MAP[raw]) return raw;
+      if (raw === "Kizilcam" || raw === "Kızılçam" || raw === "Kizilçam") return "Kızılçam";
+      if (raw === "Goknar" || raw === "Göknar") return "Göknar";
+      if (raw === "Sedir") return "Sedir";
+
+      return "Karaçam";
+    }
+
+    function getTreeInfo(type) {
+      return TREE_MAP[normalizeTreeType(type)] || TREE_MAP["Karaçam"];
+    }
+
+    function syncTreeTypePanel() {
+      if (!els.treeTypePanel) return;
+      const current = normalizeTreeType((els.treeType && els.treeType.value) || state.settings.lastTreeType || "Karaçam");
+
+      els.treeTypePanel.querySelectorAll("input[type='radio']").forEach(input => {
+        input.checked = input.value === current;
+      });
+    }
+
+    function setTreeType(type, persist = true) {
+      const key = normalizeTreeType(type);
+      const info = getTreeInfo(key);
+
+      if (els.treeType) els.treeType.value = key;
+      if (els.treeTypeCurrent) els.treeTypeCurrent.textContent = info.agacAdi;
+      if (els.speciesPill) els.speciesPill.textContent = info.agacAdi;
+
+      syncTreeTypePanel();
+
+      if (persist) saveSettings();
+    }
+
+    function applyTreeTypeSelection() {
+      if (!els.treeTypePanel) return;
+      const selected = els.treeTypePanel.querySelector("input[type='radio']:checked");
+      setTreeType(selected ? selected.value : "Karaçam", true);
+      els.treeTypePanel.classList.remove("open");
+      showSuccessToast("Ağaç türü seçimi güncellendi.");
+    }
+
+    function initTreeTypePanel() {
+      if (els.treeTypeSelectBtn && !els.treeTypeSelectBtn.dataset.bound) {
+        els.treeTypeSelectBtn.dataset.bound = "1";
+        els.treeTypeSelectBtn.addEventListener("pointerdown", (event) => event.preventDefault());
+        els.treeTypeSelectBtn.addEventListener("click", () => {
+          syncTreeTypePanel();
+          els.treeTypePanel.classList.toggle("open");
+        });
+      }
+
+      if (els.treeTypeApplyBtn && !els.treeTypeApplyBtn.dataset.bound) {
+        els.treeTypeApplyBtn.dataset.bound = "1";
+        els.treeTypeApplyBtn.addEventListener("pointerdown", (event) => event.preventDefault());
+        els.treeTypeApplyBtn.addEventListener("click", applyTreeTypeSelection);
+      }
+    }
+
     function normalizeVisibleProducts(list) {
       const current = Array.isArray(list) ? list : PRODUCT_ORDER;
       const cleaned = current.filter(p => PRODUCT_MAP[p]);
@@ -2794,18 +2914,25 @@
       const active = Boolean(recordId);
       document.body.classList.toggle("editing", active);
       els.cancelEditBtn.style.display = active ? "block" : "none";
-      els.submitBtn.textContent = active ? "Kaydı Güncelle" : "Kaydet ve Sonraki Barkoda Geç";
+      els.submitBtn.textContent = active ? "Kaydı Güncelle" : "Kaydet";
       if (active) showToast("Kayıt düzenleme için açıldı.");
     }
 
-    function cancelEditMode() {
+    function cancelEditMode(returnBarcode = null) {
+      const barcodeToRestore = returnBarcode || state.editingReturnBarcode || state.settings.lastBarcode || els.barcode.value;
+
       state.editingId = null;
+      state.editingReturnBarcode = "";
       document.body.classList.remove("editing");
       els.cancelEditBtn.style.display = "none";
-      els.submitBtn.textContent = "Kaydet ve Sonraki Barkoda Geç";
+      els.submitBtn.textContent = "Kaydet";
+
+      if (barcodeToRestore) els.barcode.value = barcodeToRestore;
+
       els.diameter.value = "";
       els.quantity.value = "1";
       updateLiveDesi();
+      updateDuplicateWarning();
       focusDiameterKeepKeyboard();
     }
 
@@ -2824,11 +2951,11 @@
 
     function recordToSystemRow(record) {
       const product = PRODUCT_MAP[record.productType] || PRODUCT_MAP["Tomruk"];
+      const tree = getTreeInfo(record.treeType || record.species || "Karaçam");
       const kalite = "";
-      const desi = Number(record.desi) || calculateDesi(record.diameter, record.length, record.quantity);
       return {
-        agacId: 1,
-        agacAdi: "Karaçam",
+        agacId: tree.agacId,
+        agacAdi: tree.agacAdi,
         odunId: product.odunId,
         odunAdi: product.odunAdi,
         kaliteSinifi: kalite,
@@ -2836,7 +2963,7 @@
         adet: Number(record.quantity || 1),
         cap: Number(record.diameter || 0),
         boy: formatBoy(record.length),
-        hacim: formatHacimFromDesi(desi),
+        hacim: "",
         uretimTarihi: record.uretimTarihi || isoToTRDate(record.productionDate) || isoToTRDate(todayISO()),
         barkodNo: record.barcode || ""
       };
@@ -2847,6 +2974,7 @@
 
       const barcode = els.barcode.value.trim();
       const productType = els.productType.value;
+      const treeType = normalizeTreeType(els.treeType ? els.treeType.value : state.settings.lastTreeType || "Karaçam");
       const qualityClass = els.qualityClass.value || "2";
       const productionDate = els.productionDate.value || todayISO();
       const length = Number(els.length.value);
@@ -2883,7 +3011,8 @@
         }
 
         rec.barcode = barcode;
-        rec.species = "Karaçam";
+        rec.treeType = treeType;
+        rec.species = treeType;
         rec.productType = productType;
         rec.qualityClass = "";
         rec.productionDate = productionDate;
@@ -2899,21 +3028,24 @@
         addRecentValue("recentDiameters", diameter);
         renderRecentChips();
 
+        const returnBarcode = state.editingReturnBarcode || state.settings.lastBarcode || incrementBarcode(barcode);
+
         saveRecords();
-        saveSettings();
         render();
         forceRefreshSummaryCards();
         playSuccessSound();
         showSuccessToast(`${formatShortNumber(diameter)} çap ${formatShortNumber(length)} boy ${productDisplayName(productType)} güncellendi`);
         updateDuplicateWarning();
-        cancelEditMode();
+        cancelEditMode(returnBarcode);
+        saveSettings();
         return;
       }
 
       const record = {
         id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now() + Math.random()),
         barcode,
-        species: "Karaçam",
+        treeType,
+        species: treeType,
         productType,
         qualityClass: "",
         productionDate,
@@ -3010,8 +3142,10 @@
     function editRecord(id) {
       const rec = state.records.find(r => r.id === id);
       if (!rec) return;
+      state.editingReturnBarcode = els.barcode.value || state.settings.lastBarcode || "";
       els.barcode.value = rec.barcode;
       els.productionDate.value = rec.productionDate || trDateToISO(rec.uretimTarihi);
+      setTreeType(rec.treeType || rec.species || state.settings.lastTreeType || "Karaçam", true);
       setProductType(rec.productType || "Tomruk", true);
       setQualityClass("", true);
       els.length.value = rec.length;
@@ -3516,20 +3650,20 @@
 
     function s12RecordToRow(record) {
       const product = PRODUCT_MAP[record.productType] || PRODUCT_MAP["Tomruk"];
-      const desi = Number(record.desi) || calculateDesi(record.diameter, record.length, record.quantity);
+      const tree = getTreeInfo(record.treeType || record.species || "Karaçam");
       const hacim = "";
       const kalite = "";
 
       return [
-        1,
-        "Karaçam",
+        tree.agacId,
+        tree.agacAdi,
         product.odunId,
         product.odunAdi,
         kalite,
         "",
         Number(record.quantity || 1),
         Number(record.diameter || 0),
-        Number(record.length || 0),
+        formatBoy(record.length),
         hacim,
         isoToTRDate(record.productionDate || trDateToISO(record.uretimTarihi) || todayISO()),
         record.barcode || ""
@@ -3544,7 +3678,7 @@
           if (value === "" || value === null || value === undefined) return "blank";
           // Tomrukta kaliteSinifi sistem tarafından sayı gibi bekleniyor olabilir.
           // Bu yüzden kaliteSinifi doluysa sayı, tarih ise 03.06.2026 şeklinde metin gider.
-          return [1, 3, 5, 10, 11].includes(c) ? "str" : "num";
+          return [1, 3, 5, 8, 10, 11].includes(c) ? "str" : "num";
         });
       });
     }
@@ -3803,7 +3937,7 @@
     function backup() {
       const data = {
         app: "Mesaha App",
-        version: 49,
+        version: 50,
         exportedAt: formatDateTime(),
         systemHeaders: HEADERS,
         settings: state.settings,
