@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha App Final v52</title>
+  <title>Mesaha App Final v53</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -1891,6 +1891,117 @@
       }
     }
 
+  
+    /* FINAL v53: son barkod paneli, dinamik çap placeholder ve daha rahat kısayollar */
+    .chip{
+      padding:9px 13px !important;
+      min-height:36px !important;
+      font-size:15px !important;
+      display:inline-flex !important;
+      align-items:center !important;
+      justify-content:center !important;
+    }
+
+    .chip-row{
+      gap:9px !important;
+    }
+
+    .recent-barcodes-box{
+      background:#f8fafc;
+      border:1px solid #d7dee8;
+      border-radius:16px;
+      padding:12px;
+      margin-top:2px;
+      box-shadow:0 3px 10px rgba(16,24,40,.04);
+    }
+
+    .recent-title{
+      font-size:13px;
+      font-weight:950;
+      color:#334155;
+      margin-bottom:8px;
+    }
+
+    .recent-barcode-list{
+      display:grid;
+      grid-template-columns:repeat(3, minmax(0, 1fr));
+      gap:8px;
+    }
+
+    .recent-barcode-item{
+      min-height:58px;
+      border-radius:14px;
+      border:1px solid #cbd5e1;
+      background:#ffffff;
+      padding:8px 6px;
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+      align-items:center;
+      justify-content:center;
+      color:#0f172a;
+      box-shadow:0 2px 8px rgba(15,23,42,.04);
+    }
+
+    .recent-barcode-item b{
+      font-size:14px;
+      line-height:1.1;
+      letter-spacing:.2px;
+    }
+
+    .recent-barcode-item span{
+      font-size:11px;
+      color:#475569;
+      line-height:1.15;
+      white-space:nowrap;
+      max-width:100%;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .recent-barcode-item:active{
+      transform:scale(.98);
+    }
+
+    .recent-note{
+      margin-top:7px !important;
+      font-size:11px !important;
+      text-align:center;
+    }
+
+    #sameBarcodeBtn{
+      display:none !important;
+    }
+
+    #sameBarcodeBtn + #clearInputsBtn{
+      grid-column:1 / -1;
+    }
+
+    @media (max-width:430px){
+      .chip{
+        padding:8px 12px !important;
+        min-height:34px !important;
+        font-size:14.5px !important;
+      }
+
+      .recent-barcode-list{
+        gap:6px;
+      }
+
+      .recent-barcode-item{
+        min-height:54px;
+        padding:7px 5px;
+      }
+
+      .recent-barcode-item b{
+        font-size:12.5px;
+      }
+
+      .recent-barcode-item span{
+        font-size:10.5px;
+      }
+    }
+
   </style>
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -2022,15 +2133,14 @@
               </div>
             </div>
 
-            <div class="result-box">
-              <div>
-                <small>Hesaplanan m³</small>
-                <strong id="liveDesi">0</strong>
+            <div class="recent-barcodes-box">
+              <div class="recent-title">Son Girilen 3 Barkod</div>
+              <div id="recentBarcodeList" class="recent-barcode-list">
+                <span class="hint">Henüz kayıt yok</span>
               </div>
-              <div style="text-align:right">
-                <small>Excel hacim alanı</small>
-                <strong id="liveHacim" style="font-size:20px">Boş</strong>
-              </div>
+              <p class="hint recent-note">Düzeltme yapmak için barkodun üzerine tıklayınız.</p>
+              <span id="liveDesi" style="display:none">0</span>
+              <span id="liveHacim" style="display:none">Boş</span>
             </div>
 
             <div class="btn-row">
@@ -2258,6 +2368,7 @@
         lastTreeType: "Karaçam",
         lastQualityClass: "2",
         lastLength: "3",
+        lastDiameter: "22",
         lastQuantity: "1",
         productionDate: "",
         recentLengths: ["3"],
@@ -2300,6 +2411,7 @@
       quantity: $("quantity"),
       liveDesi: $("liveDesi"),
       liveHacim: $("liveHacim"),
+      recentBarcodeList: $("recentBarcodeList"),
       recordsBody: $("recordsBody"),
       recordsFoot: $("recordsFoot"),
       emptyState: $("emptyState"),
@@ -2390,6 +2502,48 @@
           focusDiameterKeepKeyboard();
         });
       });
+
+      updateInputPlaceholders();
+    }
+
+    function updateInputPlaceholders() {
+      const recentDiameters = Array.isArray(state.settings.recentDiameters) ? state.settings.recentDiameters : [];
+      const recentLengths = Array.isArray(state.settings.recentLengths) ? state.settings.recentLengths : [];
+
+      const lastDiameter = String(state.settings.lastDiameter || recentDiameters[0] || "22").trim();
+      const lastLength = String(state.settings.lastLength || recentLengths[0] || "3").trim();
+
+      if (els.diameter) els.diameter.placeholder = lastDiameter || "22";
+      if (els.length) els.length.placeholder = lastLength || "3";
+    }
+
+    function renderRecentBarcodes() {
+      if (!els.recentBarcodeList) return;
+
+      const recent = state.records.slice(0, 3);
+
+      if (!recent.length) {
+        els.recentBarcodeList.innerHTML = `<span class="hint" style="grid-column:1/-1;text-align:center">Henüz kayıt yok</span>`;
+        return;
+      }
+
+      els.recentBarcodeList.innerHTML = recent.map((r) => {
+        const tree = getTreeInfo(r.treeType || r.species || "Karaçam");
+        const product = PRODUCT_MAP[normalizeProductType(r.productType || "Tomruk")] || PRODUCT_MAP["Tomruk"];
+        const detail = `${tree.agacAdi} • ${product.shortName || product.odunAdi}`;
+        const measure = `${formatShortNumber(r.diameter)} çap / ${formatShortNumber(r.length)} boy`;
+        return `
+          <button type="button" class="recent-barcode-item" data-id="${escapeHtml(r.id)}" title="Düzeltmek için tıkla">
+            <b>${escapeHtml(r.barcode)}</b>
+            <span>${escapeHtml(detail)}</span>
+            <span>${escapeHtml(measure)}</span>
+          </button>
+        `;
+      }).join("");
+
+      els.recentBarcodeList.querySelectorAll("[data-id]").forEach(btn => {
+        btn.addEventListener("click", () => editRecord(btn.dataset.id));
+      });
     }
 
     function isoToTRDate(iso) {
@@ -2435,6 +2589,7 @@
       setQualityClass("", false);
 
       renderRecentChips();
+      updateInputPlaceholders();
       updateLiveDesi();
       setupOfflineSupport();
       registerDailyVisit();
@@ -2461,6 +2616,8 @@
       state.settings.lastTreeType = normalizeTreeType(els.treeType ? els.treeType.value : state.settings.lastTreeType || "Karaçam");
       state.settings.lastQualityClass = "";
       state.settings.lastLength = els.length.value;
+      const currentDiameterForPlaceholder = String(els.diameter ? els.diameter.value || "" : "").trim();
+      if (currentDiameterForPlaceholder) state.settings.lastDiameter = currentDiameterForPlaceholder;
       state.settings.lastQuantity = els.quantity.value || "1";
       state.settings.visibleProducts = normalizeVisibleProducts(state.settings.visibleProducts);
       localStorage.setItem(SETTINGS_KEY, JSON.stringify(state.settings));
@@ -3030,6 +3187,7 @@
 
       els.diameter.value = "";
       els.quantity.value = "1";
+      updateInputPlaceholders();
       updateLiveDesi();
       updateDuplicateWarning();
       focusDiameterKeepKeyboard();
@@ -3044,8 +3202,8 @@
     function updateLiveDesi() {
       limitDiameterToTwoDigits();
       const desi = calculateDesi(els.diameter.value, els.length.value, els.quantity.value);
-      els.liveDesi.textContent = formatHacimFromDesi(desi) + " m³";
-      els.liveHacim.textContent = "Boş";
+      if (els.liveDesi) els.liveDesi.textContent = formatHacimFromDesi(desi) + " m³";
+      if (els.liveHacim) els.liveHacim.textContent = "Boş";
     }
 
     function recordToSystemRow(record) {
@@ -3132,7 +3290,9 @@
 
         addRecentValue("recentLengths", length);
         addRecentValue("recentDiameters", diameter);
+        state.settings.lastDiameter = normalizeRecentValue(diameter);
         renderRecentChips();
+        updateInputPlaceholders();
 
         const returnBarcode = state.editingReturnBarcode || state.settings.lastBarcode || incrementBarcode(barcode);
 
@@ -3168,15 +3328,16 @@
 
       addRecentValue("recentLengths", length);
       addRecentValue("recentDiameters", diameter);
+      state.settings.lastDiameter = normalizeRecentValue(diameter);
       renderRecentChips();
+      updateInputPlaceholders();
 
       saveRecords();
 
       saveSettings();
 
-      if (!state.sameBarcodeMode) {
-        els.barcode.value = incrementBarcode(barcode);
-      }
+      state.sameBarcodeMode = false;
+      els.barcode.value = incrementBarcode(barcode);
 
       els.diameter.value = "";
       els.quantity.value = "1";
@@ -3187,9 +3348,7 @@
       forceRefreshSummaryCards();
 
       playSuccessSound();
-      const duplicateCount = state.records.filter(r => r.barcode === barcode).length;
-      const duplicateNote = duplicateCount > 1 && !state.sameBarcodeMode ? " — Dikkat: barkod daha önce kullanılmış." : "";
-      showSuccessToast(`${formatShortNumber(diameter)} çap ${formatShortNumber(length)} boy ${productDisplayName(productType)} eklendi${duplicateNote}`);
+      showSuccessToast(`${formatShortNumber(diameter)} çap ${formatShortNumber(length)} boy ${productDisplayName(productType)} eklendi`);
       updateDuplicateWarning();
       maybeShowBackupReminder();
       focusDiameterKeepKeyboard();
@@ -3364,6 +3523,7 @@
 
       els.emptyState.style.display = filtered.length ? "none" : "block";
       els.recordCount.textContent = `${state.records.length} kayıt`;
+      renderRecentBarcodes();
 
       const totals = {
         all: 0,
@@ -4046,7 +4206,7 @@
     function backup() {
       const data = {
         app: "Mesaha App",
-        version: 52,
+        version: 53,
         exportedAt: formatDateTime(),
         systemHeaders: HEADERS,
         settings: state.settings,
@@ -4190,18 +4350,18 @@
     els.cancelEditBtn.addEventListener("click", cancelEditMode);
     if (els.soundToggleBtn) els.soundToggleBtn.addEventListener("click", toggleSound);
 
-    els.sameBarcodeBtn.addEventListener("click", () => {
-      state.sameBarcodeMode = !state.sameBarcodeMode;
-      els.sameBarcodeBtn.textContent = state.sameBarcodeMode ? "Aynı Barkod Modu: Açık" : "Aynı Barkoda Ürün Ekle";
-      els.sameBarcodeBtn.classList.toggle("warning", state.sameBarcodeMode);
-      els.sameBarcodeBtn.classList.toggle("secondary", !state.sameBarcodeMode);
-      showToast(state.sameBarcodeMode ? "Kaydetten sonra barkod artmayacak." : "Kaydetten sonra barkod artacak.");
-    });
+    if (els.sameBarcodeBtn) {
+      els.sameBarcodeBtn.addEventListener("click", () => {
+        state.sameBarcodeMode = false;
+        showErrorToast("Final sürümde aynı barkod ikinci kez kaydedilemez.");
+      });
+    }
 
     els.clearInputsBtn.addEventListener("click", () => {
       if (!confirm("Giriş alanları temizlensin mi?")) return;
       els.diameter.value = "";
       els.quantity.value = "1";
+      updateInputPlaceholders();
       updateLiveDesi();
       focusDiameterKeepKeyboard();
     });
