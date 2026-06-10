@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha App Final v53</title>
+  <title>Mesaha App Final v54</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -2002,6 +2002,55 @@
       }
     }
 
+  
+    /* FINAL v54: Son girilen 3 barkod ürün rengine göre renklendirildi */
+    .recent-barcode-item.recent-tomruk{
+      background:#fef3c7 !important;
+      border-color:#eab308 !important;
+      color:#713f12 !important;
+    }
+
+    .recent-barcode-item.recent-maden{
+      background:#dbeafe !important;
+      border-color:#3b82f6 !important;
+      color:#172554 !important;
+    }
+
+    .recent-barcode-item.recent-kagit{
+      background:#fee2e2 !important;
+      border-color:#ef4444 !important;
+      color:#7f1d1d !important;
+    }
+
+    .recent-barcode-item.recent-sanayi{
+      background:#dcfce7 !important;
+      border-color:#22c55e !important;
+      color:#14532d !important;
+    }
+
+    .recent-barcode-item.recent-tel{
+      background:#ede9fe !important;
+      border-color:#8b5cf6 !important;
+      color:#3b0764 !important;
+    }
+
+    .recent-barcode-item.recent-tomruk span,
+    .recent-barcode-item.recent-maden span,
+    .recent-barcode-item.recent-kagit span,
+    .recent-barcode-item.recent-sanayi span,
+    .recent-barcode-item.recent-tel span{
+      color:inherit !important;
+      opacity:.82;
+    }
+
+    .recent-barcode-item.recent-tomruk b,
+    .recent-barcode-item.recent-maden b,
+    .recent-barcode-item.recent-kagit b,
+    .recent-barcode-item.recent-sanayi b,
+    .recent-barcode-item.recent-tel b{
+      color:inherit !important;
+    }
+
   </style>
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -2311,7 +2360,7 @@
                 <li>iPhone veya iOS cihazınızda <b>Safari</b> uygulamasını açınız.</li>
                 <li>Mesaha App bağlantısını Safari üzerinden açınız.</li>
                 <li>Sağ alttaki menü / üç çizgi simgesine dokununuz.</li>
-                <li><b>Paylaş</b> seçeneğine giriniz.</li>
+                 <li><b>Paylaş</b> seçeneğine giriniz.</li>
                 <li><b>Daha Fazla</b> seçeneğine giriniz.</li>
                 <li><b>Ana Ekrana Ekle</b> seçeneğine basınız.</li>
                 <li>Bu işlemden sonra Mesaha App ana ekrana eklenir ve internet olmadığında da kullanılabilir.</li>
@@ -2534,7 +2583,7 @@
         const detail = `${tree.agacAdi} • ${product.shortName || product.odunAdi}`;
         const measure = `${formatShortNumber(r.diameter)} çap / ${formatShortNumber(r.length)} boy`;
         return `
-          <button type="button" class="recent-barcode-item" data-id="${escapeHtml(r.id)}" title="Düzeltmek için tıkla">
+          <button type="button" class="recent-barcode-item recent-${normalizeProductClass(r.productType || "Tomruk")}" data-id="${escapeHtml(r.id)}" title="Düzeltmek için tıkla">
             <b>${escapeHtml(r.barcode)}</b>
             <span>${escapeHtml(detail)}</span>
             <span>${escapeHtml(measure)}</span>
@@ -4207,7 +4256,7 @@
     function backup() {
       const data = {
         app: "Mesaha App",
-        version: 53,
+        version: 54,
         exportedAt: formatDateTime(),
         systemHeaders: HEADERS,
         settings: state.settings,
