@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha App v54</title>
+  <title>Mesaha App v55</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -2051,6 +2051,117 @@
       color:inherit !important;
     }
 
+  
+    /* v55: Kayıtlar altı günlük iş özeti */
+    .daily-work-summary{
+      background:#f8fafc;
+      border:1px solid #d7dee8;
+      border-radius:16px;
+      padding:12px;
+      margin-top:12px;
+      color:#172033;
+      box-shadow:0 3px 10px rgba(16,24,40,.04);
+    }
+    .daily-work-summary h3{
+      margin:0 0 10px;
+      font-size:16px;
+      font-weight:950;
+      color:#111827;
+    }
+    .daily-summary-grid{
+      display:grid;
+      grid-template-columns:repeat(4, minmax(0,1fr));
+      gap:8px;
+    }
+    .daily-summary-item{
+      background:#ffffff;
+      border:1px solid #e5eaf1;
+      border-radius:13px;
+      padding:9px;
+      min-width:0;
+    }
+    .daily-summary-item span{
+      display:block;
+      color:#475569;
+      font-size:12px;
+      font-weight:850;
+      margin-bottom:4px;
+    }
+    .daily-summary-item b{
+      display:block;
+      color:#111827;
+      font-size:18px;
+      font-weight:950;
+      line-height:1.15;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+    @media (max-width:720px){
+      .daily-summary-grid{grid-template-columns:1fr 1fr}
+    }
+
+    /* v55: Android benzeri alttan çıkan uyarı barı */
+    .toast,
+    .toast.form-toast,
+    .toast.success-toast,
+    .toast.error-toast{
+      position:fixed !important;
+      left:50% !important;
+      right:auto !important;
+      top:auto !important;
+      bottom:calc(env(safe-area-inset-bottom, 0px) + 84px) !important;
+      width:auto !important;
+      min-width:min(280px, calc(100vw - 32px)) !important;
+      max-width:calc(100vw - 32px) !important;
+      height:auto !important;
+      min-height:44px !important;
+      margin:0 !important;
+      padding:11px 16px !important;
+      border-radius:999px !important;
+      display:flex !important;
+      align-items:center !important;
+      justify-content:center !important;
+      text-align:center !important;
+      transform:translateX(-50%) translateY(28px) !important;
+      opacity:0 !important;
+      visibility:hidden !important;
+      z-index:999999 !important;
+      pointer-events:none !important;
+      transition:transform .22s ease, opacity .18s ease, visibility .18s ease !important;
+      box-shadow:0 10px 28px rgba(15,23,42,.25) !important;
+      font-size:14px !important;
+      font-weight:950 !important;
+      line-height:1.25 !important;
+      overflow:visible !important;
+    }
+    .toast.show,
+    .toast.form-toast.show,
+    .toast.success-toast.show,
+    .toast.error-toast.show{
+      transform:translateX(-50%) translateY(0) !important;
+      opacity:1 !important;
+      visibility:visible !important;
+    }
+    .toast.success-toast,
+    .toast.form-toast.success-toast{
+      background:#166534 !important;
+      color:#ffffff !important;
+      border:1px solid #14532d !important;
+    }
+    .toast.error-toast,
+    .toast.form-toast.error-toast{
+      background:#991b1b !important;
+      color:#ffffff !important;
+      border:1px solid #7f1d1d !important;
+    }
+    @media (min-width:981px){
+      .toast,.toast.form-toast{
+        bottom:calc(env(safe-area-inset-bottom, 0px) + 22px) !important;
+      }
+    }
+
+
   </style>
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -2258,6 +2369,7 @@
             <button type="button" class="ghost" id="backupBtn">Yedek Al</button>
             <button type="button" class="ghost" id="restoreBtn">Yedek Yükle</button>
             <button type="button" class="warning" id="printBtn">Yazdır</button>
+            <button type="button" class="ghost" id="usageBtn">Günlük Giriş</button>
             <button type="button" class="danger" id="deleteAllBtn">Tümünü Sil</button>
             <input id="restoreInput" type="file" accept=".json,application/json" style="display:none"  autocomplete="off"  autocorrect="off"  autocapitalize="off"  spellcheck="false" />
           </div>
@@ -2291,17 +2403,29 @@
             </table>
             <div id="emptyState" class="empty">Henüz kayıt yok. İlk barkodu girip kaydet.</div>
 
-            <div class="guide-card">
-              <h3>Günlük giriş sayacı</h3>
-              <ol>
-                <li><b>Kayıtlar</b> sekmesindeki <b>Günlük Giriş</b> butonuna basınız.</li>
-                <li>Bu bölümde bugünkü giriş sayısı, toplam açılış ve son açılış saati görünür.</li>
-                <li>Sayaç cihaz bazlıdır. Her telefon, tablet veya terminal kendi giriş sayısını tutar.</li>
-                <li>İnternet olmasa bile sayaç çalışmaya devam eder.</li>
-              </ol>
-            </div>
-
           </div>
+          <div id="dailyWorkSummary" class="daily-work-summary">
+            <h3>Günlük İş Özeti</h3>
+            <div class="daily-summary-grid">
+              <div class="daily-summary-item">
+                <span>Bugünkü Kayıt</span>
+                <b id="dailyRecordCount">0</b>
+              </div>
+              <div class="daily-summary-item">
+                <span>Bugünkü Adet</span>
+                <b id="dailyAdetCount">0</b>
+              </div>
+              <div class="daily-summary-item">
+                <span>Bugünkü m³</span>
+                <b id="dailyM3Count">0</b>
+              </div>
+              <div class="daily-summary-item">
+                <span>Son Barkod</span>
+                <b id="dailyLastBarcode">-</b>
+              </div>
+            </div>
+          </div>
+
         </div>
       </section>
 
@@ -2466,6 +2590,10 @@
       recordsFoot: $("recordsFoot"),
       emptyState: $("emptyState"),
       recordCount: $("recordCount"),
+      dailyRecordCount: $("dailyRecordCount"),
+      dailyAdetCount: $("dailyAdetCount"),
+      dailyM3Count: $("dailyM3Count"),
+      dailyLastBarcode: $("dailyLastBarcode"),
       totalDesi: $("totalDesi"),
       totalAdet: $("totalAdet"),
       totalTomruk: $("totalTomruk"),
@@ -2846,7 +2974,6 @@
       showToast.timer = setTimeout(() => {
         els.toast.classList.remove("show", "visible", "active");
         showToast.cleaner = setTimeout(() => {
-          els.toast.classList.remove("success-toast", "error-toast");
           els.toast.textContent = "";
         }, 220);
       }, 2200);
@@ -3537,6 +3664,28 @@
       setPrintZero(els.totalTel, totals.TelAdet, totals["Tel Direk"]);
     }
 
+
+    function sameDateISO(dateValue, todayIso) {
+      const iso = String(dateValue || "").slice(0, 10);
+      return iso === todayIso;
+    }
+
+    function renderDailyWorkSummary() {
+      if (!els.dailyRecordCount) return;
+
+      const todayIso = todayISO();
+      const todaysRecords = state.records.filter(r => sameDateISO(r.productionDate || trDateToISO(r.uretimTarihi), todayIso));
+
+      const adet = todaysRecords.reduce((sum, r) => sum + (Number(r.quantity) || 0), 0);
+      const desi = todaysRecords.reduce((sum, r) => sum + (Number(r.desi) || 0), 0);
+      const lastBarcode = todaysRecords.length ? (todaysRecords[0].barcode || "-") : "-";
+
+      els.dailyRecordCount.textContent = todaysRecords.length.toLocaleString("tr-TR");
+      els.dailyAdetCount.textContent = adet.toLocaleString("tr-TR");
+      els.dailyM3Count.textContent = formatHacimFromDesi(desi);
+      els.dailyLastBarcode.textContent = lastBarcode;
+    }
+
     function render() {
       const query = els.searchInput.value.trim().toLowerCase();
       const filtered = state.records.filter(r => {
@@ -3574,6 +3723,7 @@
       els.emptyState.style.display = filtered.length ? "none" : "block";
       els.recordCount.textContent = `${state.records.length} kayıt`;
       renderRecentBarcodes();
+      renderDailyWorkSummary();
 
       const totals = {
         all: 0,
@@ -4256,7 +4406,7 @@
     function backup() {
       const data = {
         app: "Mesaha App",
-        version: 54,
+        version: 55,
         exportedAt: formatDateTime(),
         systemHeaders: HEADERS,
         settings: state.settings,
@@ -4434,7 +4584,11 @@
       setTimeout(() => document.body.classList.remove("print-summary-only"), 800);
     });
     if (els.undoBtn) els.undoBtn.addEventListener("click", undoLastDelete);
-    if (els.usageBtn) els.usageBtn.addEventListener("click", () => renderUsageStats(true));
+    if (els.usageBtn) {
+      els.usageBtn.addEventListener("click", () => {
+        if (typeof renderUsageStats === "function") renderUsageStats(true);
+      });
+    }
 
     els.deleteAllBtn.addEventListener("click", () => {
       if (!state.records.length) return showToast("Silinecek kayıt yok.");
