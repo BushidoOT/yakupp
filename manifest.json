@@ -1,6 +1,6 @@
 {
-  "name": "Mesaha App",
-  "short_name": "Mesaha",
+  "name": "Mesaha İO",
+  "short_name": "Mesaha İO",
   "description": "Saha mesaha kaydı ve sistem uyumlu Excel çıktısı",
   "start_url": "./index.html",
   "scope": "./",

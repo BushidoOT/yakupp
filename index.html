@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha App v55</title>
+  <title>Mesaha App v57</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -2162,6 +2162,213 @@
     }
 
 
+  
+    /* v56: Şifresiz kullanıcı adı + şeflik girişi */
+    .user-login-overlay{
+      position:fixed;
+      inset:0;
+      z-index:1000000;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+      background:rgba(15,23,42,.45);
+      backdrop-filter:blur(10px);
+    }
+
+    body.user-login-required .user-login-overlay{
+      display:flex;
+    }
+
+    .user-login-card{
+      width:min(430px, 100%);
+      background:#ffffff;
+      color:#172033;
+      border:1px solid #d7dee8;
+      border-radius:20px;
+      padding:18px;
+      box-shadow:0 18px 55px rgba(15,23,42,.24);
+    }
+
+    .user-login-card h2{
+      margin:0 0 8px;
+      color:#111827;
+      font-size:22px;
+      font-weight:950;
+    }
+
+    .user-login-card label{
+      color:#172033 !important;
+      margin-top:12px;
+    }
+
+    .user-login-card input{
+      background:#ffffff !important;
+      color:#111827 !important;
+      border:2px solid #cbd5e1 !important;
+      border-radius:14px !important;
+      font-size:18px !important;
+      min-height:48px;
+    }
+
+    .user-login-card button{
+      width:100%;
+      margin-top:13px;
+    }
+
+    .small-login-note{
+      text-align:center;
+      font-size:12px !important;
+      margin-top:9px !important;
+    }
+
+    .login-error{
+      display:none;
+      margin-top:10px;
+      padding:9px 10px;
+      background:#fee2e2;
+      border:1px solid #ef4444;
+      color:#7f1d1d;
+      border-radius:12px;
+      font-size:13px;
+      font-weight:900;
+      text-align:center;
+    }
+
+    .login-error.show{
+      display:block;
+    }
+
+    .active-user-badge{
+      background:#ecfdf5;
+      border:1px solid #86efac;
+      color:#14532d;
+      border-radius:999px;
+      padding:8px 12px;
+      font-size:13px;
+      font-weight:950;
+      white-space:nowrap;
+      box-shadow:0 3px 10px rgba(22,163,74,.08);
+    }
+
+    .registered-users-card{
+      border-color:#bbf7d0 !important;
+      background:#f0fdf4 !important;
+    }
+
+    .registered-users-list{
+      display:grid;
+      gap:8px;
+    }
+
+    .registered-user-item{
+      background:#ffffff;
+      border:1px solid #d7dee8;
+      border-radius:14px;
+      padding:10px;
+      color:#172033;
+    }
+
+    .registered-user-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+      margin-bottom:7px;
+    }
+
+    .registered-user-head b{
+      color:#111827;
+      font-size:15px;
+      font-weight:950;
+    }
+
+    .active-user-label{
+      background:#16a34a;
+      color:#ffffff;
+      border-radius:999px;
+      padding:3px 7px;
+      font-size:10px;
+      font-weight:950;
+      white-space:nowrap;
+    }
+
+    .registered-user-meta{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:6px;
+      font-size:12.5px;
+      font-weight:800;
+      color:#475569;
+    }
+
+    .registered-user-meta span{
+      background:#f8fafc;
+      border:1px solid #e5eaf1;
+      border-radius:10px;
+      padding:6px 7px;
+      min-width:0;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+
+    .empty-user-list{
+      background:#ffffff;
+      border:1px solid #e5eaf1;
+      border-radius:13px;
+      padding:10px;
+      color:#475569;
+      font-weight:850;
+      text-align:center;
+    }
+
+    .user-change-btn{
+      width:100%;
+      margin-top:10px;
+    }
+
+    @media (max-width:560px){
+      .active-user-badge{
+        font-size:11.5px;
+        padding:7px 9px;
+        max-width:44vw;
+        overflow:hidden;
+        text-overflow:ellipsis;
+      }
+
+      .registered-user-meta{
+        grid-template-columns:1fr;
+      }
+    }
+
+  
+    /* v57: Kayıtlı kullanıcılar yönetici kodu ile gizlenir */
+    .admin-users-card{
+      background:#eff6ff !important;
+      border-color:#bfdbfe !important;
+    }
+
+    .admin-users-btn{
+      width:100%;
+      margin-top:10px;
+    }
+
+    .registered-users-card{
+      display:none !important;
+    }
+
+    body.admin-users-visible .registered-users-card{
+      display:block !important;
+    }
+
+    .admin-unlock-note{
+      margin-top:0 !important;
+      margin-bottom:10px !important;
+      color:#14532d !important;
+      font-weight:900 !important;
+    }
+
   </style>
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -2170,12 +2377,32 @@
   <link rel="manifest" href="./manifest.json" />
 </head>
 <body class="product-tomruk">
+
+  <div id="userLoginOverlay" class="user-login-overlay" role="dialog" aria-modal="true" aria-label="Kullanıcı girişi">
+    <div class="user-login-card">
+      <h2>Kullanıcı Girişi</h2>
+      <p class="hint">Devam etmek için kullanıcı adı ve şeflik bilgisi giriniz. Şifre yoktur.</p>
+
+      <label for="loginUserName">Kullanıcı Adı</label>
+      <input id="loginUserName" type="text" placeholder="Örn: Yakup" autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false" />
+
+      <label for="loginSeflik">Şeflik</label>
+      <input id="loginSeflik" type="text" placeholder="Örn: Tavşanlı" autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false" />
+
+      <div id="loginError" class="login-error"></div>
+
+      <button id="loginSaveBtn" class="primary" type="button">Giriş Yap</button>
+      <p class="hint small-login-note">Bu bilgiler sadece bu cihazda tutulur, ORBİS Excel dosyasına yazılmaz.</p>
+    </div>
+  </div>
+
   <div class="app">
     <header class="topbar">
       <div class="brand">
         <h1>Mesaha İO v1.1</h1>
         
       </div>
+      <div id="activeUserBadge" class="active-user-badge" style="display:none"></div>
     </header>
 
     <main class="grid">
@@ -2507,6 +2734,8 @@
 <script>
     const STORAGE_KEY = "cam_mesaha_kayitlari_v1";
     const SETTINGS_KEY = "cam_mesaha_ayarlar_v1";
+    const USER_STORE_KEY = "mesaha_kullanicilar_v1";
+    const ADMIN_CODE = "4767";
 
     const HEADERS = [
       "agacId","agacAdi","odunId","odunAdi","kaliteSinifi","boySinifi",
@@ -2536,6 +2765,8 @@
       sameBarcodeMode: false,
       editingId: null,
       editingReturnBarcode: "",
+      userStore: { activeUserId: "", users: [] },
+      activeUser: null,
       settings: {
         lastBarcode: "A102682",
         lastProductType: "Tomruk",
@@ -2628,7 +2859,17 @@
       navRecords: $("navRecords"),
       navGuide: $("navGuide"),
       lengthChips: $("lengthChips"),
-      diameterChips: $("diameterChips")
+      diameterChips: $("diameterChips"),
+      userLoginOverlay: $("userLoginOverlay"),
+      loginUserName: $("loginUserName"),
+      loginSeflik: $("loginSeflik"),
+      loginSaveBtn: $("loginSaveBtn"),
+      loginError: $("loginError"),
+      activeUserBadge: $("activeUserBadge"),
+      registeredUsersList: $("registeredUsersList"),
+      changeUserBtn: $("changeUserBtn"),
+      adminUsersBtn: $("adminUsersBtn"),
+      adminUsersCloseBtn: $("adminUsersCloseBtn")
     };
 
     function todayISO() {
@@ -2738,6 +2979,220 @@
       return `${parts[2]}-${parts[1]}-${parts[0]}`;
     }
 
+
+    function cleanUserText(value) {
+      return String(value || "").replace(/\s+/g, " ").trim();
+    }
+
+    function createUserId(name, seflik) {
+      const raw = `${cleanUserText(name).toLocaleLowerCase("tr-TR")}__${cleanUserText(seflik).toLocaleLowerCase("tr-TR")}`;
+      let hash = 0;
+      for (let i = 0; i < raw.length; i++) {
+        hash = ((hash << 5) - hash) + raw.charCodeAt(i);
+        hash |= 0;
+      }
+      return `u_${Math.abs(hash)}`;
+    }
+
+    function loadUserStore() {
+      try {
+        const parsed = JSON.parse(localStorage.getItem(USER_STORE_KEY) || "{}");
+        return {
+          activeUserId: parsed.activeUserId || "",
+          users: Array.isArray(parsed.users) ? parsed.users : []
+        };
+      } catch {
+        return { activeUserId: "", users: [] };
+      }
+    }
+
+    function saveUserStore() {
+      localStorage.setItem(USER_STORE_KEY, JSON.stringify(state.userStore));
+    }
+
+    function findActiveUser() {
+      const users = state.userStore && Array.isArray(state.userStore.users) ? state.userStore.users : [];
+      return users.find(u => u.id === state.userStore.activeUserId) || null;
+    }
+
+    function showLoginError(message) {
+      if (!els.loginError) return;
+      els.loginError.textContent = message;
+      els.loginError.classList.add("show");
+    }
+
+    function clearLoginError() {
+      if (!els.loginError) return;
+      els.loginError.textContent = "";
+      els.loginError.classList.remove("show");
+    }
+
+    function openUserLogin(prefill = true) {
+      clearLoginError();
+      if (prefill && state.activeUser) {
+        if (els.loginUserName) els.loginUserName.value = state.activeUser.name || "";
+        if (els.loginSeflik) els.loginSeflik.value = state.activeUser.seflik || "";
+      } else {
+        if (els.loginUserName) els.loginUserName.value = "";
+        if (els.loginSeflik) els.loginSeflik.value = "";
+      }
+
+      document.body.classList.add("user-login-required");
+      setTimeout(() => {
+        if (els.loginUserName) els.loginUserName.focus();
+      }, 80);
+    }
+
+    function closeUserLogin() {
+      document.body.classList.remove("user-login-required");
+      clearLoginError();
+    }
+
+    function applyActiveUserToScreen() {
+      state.activeUser = findActiveUser();
+
+      if (state.activeUser) {
+        if (els.activeUserBadge) {
+          els.activeUserBadge.textContent = `${state.activeUser.name} • ${state.activeUser.seflik}`;
+          els.activeUserBadge.style.display = "block";
+        }
+
+        if (els.seflik && !String(els.seflik.value || "").trim()) {
+          els.seflik.value = state.activeUser.seflik || "";
+        }
+
+        state.settings.seflik = els.seflik ? els.seflik.value.trim() : (state.activeUser.seflik || "");
+        localStorage.setItem(SETTINGS_KEY, JSON.stringify(state.settings));
+      } else if (els.activeUserBadge) {
+        els.activeUserBadge.textContent = "";
+        els.activeUserBadge.style.display = "none";
+      }
+
+      renderRegisteredUsers();
+    }
+
+    function registerUserLoginById(userId) {
+      const user = state.userStore.users.find(u => u.id === userId);
+      if (!user) return;
+
+      const now = new Date().toLocaleString("tr-TR");
+      user.loginCount = (Number(user.loginCount) || 0) + 1;
+      if (!user.firstLogin) user.firstLogin = now;
+      user.lastLogin = now;
+      state.userStore.activeUserId = user.id;
+      saveUserStore();
+      applyActiveUserToScreen();
+    }
+
+    function saveLoginUser() {
+      const name = cleanUserText(els.loginUserName ? els.loginUserName.value : "");
+      const seflik = cleanUserText(els.loginSeflik ? els.loginSeflik.value : "");
+
+      if (name.length < 2) return showLoginError("Kullanıcı adı en az 2 karakter olmalı.");
+      if (seflik.length < 2) return showLoginError("Şeflik bilgisi en az 2 karakter olmalı.");
+
+      const id = createUserId(name, seflik);
+      const now = new Date().toLocaleString("tr-TR");
+      let user = state.userStore.users.find(u => u.id === id);
+
+      if (!user) {
+        user = {
+          id,
+          name,
+          seflik,
+          firstLogin: now,
+          lastLogin: "",
+          loginCount: 0
+        };
+        state.userStore.users.unshift(user);
+      } else {
+        user.name = name;
+        user.seflik = seflik;
+      }
+
+      state.userStore.activeUserId = id;
+
+      if (els.seflik) els.seflik.value = seflik;
+      state.settings.seflik = seflik;
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify(state.settings));
+
+      registerUserLoginById(id);
+      closeUserLogin();
+      showToast("Kullanıcı girişi kaydedildi.");
+    }
+
+
+    function unlockRegisteredUsers() {
+      const code = window.prompt("Yönetici kodunu giriniz:");
+      if (String(code || "").trim() !== ADMIN_CODE) {
+        showToast("Yönetici kodu hatalı.");
+        return;
+      }
+
+      sessionStorage.setItem("mesaha_admin_users_visible", "1");
+      document.body.classList.add("admin-users-visible");
+      renderRegisteredUsers();
+      showToast("Kayıtlı kullanıcılar açıldı.");
+    }
+
+    function lockRegisteredUsers() {
+      sessionStorage.removeItem("mesaha_admin_users_visible");
+      document.body.classList.remove("admin-users-visible");
+      showToast("Kayıtlı kullanıcılar gizlendi.");
+    }
+
+    function restoreAdminUsersVisibility() {
+      if (sessionStorage.getItem("mesaha_admin_users_visible") === "1") {
+        document.body.classList.add("admin-users-visible");
+      } else {
+        document.body.classList.remove("admin-users-visible");
+      }
+    }
+
+
+    function initUserLoginSystem() {
+      state.userStore = loadUserStore();
+      restoreAdminUsersVisibility();
+      state.activeUser = findActiveUser();
+
+      if (state.activeUser) {
+        registerUserLoginById(state.activeUser.id);
+        closeUserLogin();
+      } else {
+        renderRegisteredUsers();
+        openUserLogin(false);
+      }
+    }
+
+    function renderRegisteredUsers() {
+      if (!els.registeredUsersList) return;
+
+      const users = state.userStore && Array.isArray(state.userStore.users) ? state.userStore.users : [];
+      if (!users.length) {
+        els.registeredUsersList.innerHTML = `<div class="empty-user-list">Henüz kullanıcı girişi yok.</div>`;
+        return;
+      }
+
+      els.registeredUsersList.innerHTML = users.map(user => {
+        const active = user.id === (state.userStore ? state.userStore.activeUserId : "");
+        return `
+          <div class="registered-user-item">
+            <div class="registered-user-head">
+              <b>${escapeHtml(user.name || "-")}</b>
+              ${active ? `<span class="active-user-label">AKTİF</span>` : ""}
+            </div>
+            <div class="registered-user-meta">
+              <span>Şeflik: ${escapeHtml(user.seflik || "-")}</span>
+              <span>Giriş: ${(Number(user.loginCount) || 0).toLocaleString("tr-TR")}</span>
+              <span>İlk: ${escapeHtml(user.firstLogin || "-")}</span>
+              <span>Son: ${escapeHtml(user.lastLogin || "-")}</span>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+
     function load() {
       try {
         state.records = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
@@ -2771,6 +3226,7 @@
       updateLiveDesi();
       setupOfflineSupport();
       registerDailyVisit();
+      initUserLoginSystem();
       disableIosAutofillToolbarHints();
       updateProductRuleHint();
       updateDuplicateWarning();
@@ -4406,7 +4862,7 @@
     function backup() {
       const data = {
         app: "Mesaha App",
-        version: 55,
+        version: 57,
         exportedAt: formatDateTime(),
         systemHeaders: HEADERS,
         settings: state.settings,
@@ -4496,7 +4952,7 @@
           <div class="usage-item">Toplam açılış<b>${total.toLocaleString("tr-TR")}</b></div>
           <div class="usage-item">Son açılış<b style="font-size:13px">${escapeHtml(lastOpen)}</b></div>
         </div>
-        <p class="hint" style="margin-top:8px">Bu sayaç cihaz bazlıdır. Her telefon/terminal kendi giriş sayısını tutar.</p>
+        <p class="hint" style="margin-top:8px">Bu sayaç bu cihazdaki açılışları gösterir. Kullanıcı adı ve şeflik girişleri kılavuzun altındaki listede tutulur.</p>
       `;
 
       if (show) els.usageCard.classList.toggle("show");
@@ -4520,6 +4976,32 @@
     function buildChips() {
       renderRecentChips();
     }
+
+    if (els.loginSaveBtn) els.loginSaveBtn.addEventListener("click", saveLoginUser);
+    if (els.loginUserName) {
+      els.loginUserName.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          if (els.loginSeflik) els.loginSeflik.focus();
+        }
+      });
+      els.loginUserName.addEventListener("input", clearLoginError);
+    }
+    if (els.loginSeflik) {
+      els.loginSeflik.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          saveLoginUser();
+        }
+      });
+      els.loginSeflik.addEventListener("input", clearLoginError);
+    }
+    if (els.changeUserBtn) els.changeUserBtn.addEventListener("click", () => openUserLogin(false));
+
+    if (els.adminUsersBtn) els.adminUsersBtn.addEventListener("click", unlockRegisteredUsers);
+    if (els.adminUsersCloseBtn) els.adminUsersCloseBtn.addEventListener("click", lockRegisteredUsers);
+
+
     document.addEventListener("keydown", handleEnterToSave);
 
     els.submitBtn.addEventListener("pointerdown", (event) => {
@@ -4628,6 +5110,7 @@
         els.navGuide.classList.add("active");
         els.navEntry.classList.remove("active");
         els.navRecords.classList.remove("active");
+        renderRegisteredUsers();
       });
     }
 
