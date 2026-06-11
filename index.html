@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha App v74</title>
+  <title>Mesaha App v75</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -3196,6 +3196,24 @@
       }
     }
 
+  
+    /* v75: Admin sayfa geçiş düzeltmesi */
+    body.show-admin .panel.entry-panel,
+    body.show-admin .panel.records-panel,
+    body.show-admin .panel.guide-panel{
+      display:none !important;
+    }
+
+    body.show-admin .panel.admin-panel{
+      display:block !important;
+    }
+
+    body.show-admin #navAdmin{
+      background:#2563eb !important;
+      color:#ffffff !important;
+      border-color:#2563eb !important;
+    }
+
   </style>
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -3288,7 +3306,7 @@
   <div class="app">
     <header class="topbar">
       <div class="brand">
-        <h1>Mesaha İO v1.3</h1>
+        <h1>Mesaha İO v1.4</h1>
         
       </div>
       <div id="activeUserBadge" class="active-user-badge" role="button" tabindex="0" title="Kullanıcı panelini aç" style="display:none"></div>
@@ -3637,7 +3655,6 @@
 
             <div class="guide-card admin-guide-open-card">
               <h3>Yönetici Bölümü</h3>
-              <p class="hint">Admin Paneli normalde gizlidir. Yönetici kodu doğru girilince altta 4. sekme olarak açılır.</p>
               <button id="guideAdminOpenBtn" class="secondary" type="button">Yönetici Panelini Aç</button>
             </div>
           </div>
@@ -4305,7 +4322,7 @@
 
     function showAdminPage() {
       document.body.classList.add("show-admin");
-      document.body.classList.remove("show-records", "show-guide", "show-admin");
+      document.body.classList.remove("show-records", "show-guide");
       if (els.navAdmin) els.navAdmin.classList.add("active");
       if (els.navEntry) els.navEntry.classList.remove("active");
       if (els.navRecords) els.navRecords.classList.remove("active");
@@ -4726,7 +4743,7 @@
 
     async function uploadCloudBackupOpen(user) {
       const payload = buildCloudBackupPayload(user);
-      payload.version = 74;
+      payload.version = 75;
       const bolmePart = els.bolmeNo && String(els.bolmeNo.value || "").trim() ? `_${cleanFilePart(els.bolmeNo.value)}` : "";
       const fileName = `Mesaha_Yedek_${cleanFilePart(user.seflik)}_${cleanFilePart(user.name)}${bolmePart}_${new Date().toISOString().slice(0,19).replace(/[-:T]/g, "")}.json`;
 
@@ -5154,7 +5171,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function buildCloudBackupPayload(user) {
       return {
         app: "Mesaha İO",
-        version: 74,
+        version: 75,
         createdAt: new Date().toLocaleString("tr-TR"),
         user: {
           name: user.name || "",
@@ -7154,7 +7171,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function backup() {
       const data = {
         app: "Mesaha App",
-        version: 74,
+        version: 75,
         exportedAt: formatDateTime(),
         systemHeaders: HEADERS,
         settings: state.settings,
@@ -7468,10 +7485,11 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     }
 
     els.navEntry.addEventListener("click", () => {
-      document.body.classList.remove("show-records", "show-guide");
+      document.body.classList.remove("show-records", "show-guide", "show-admin");
       els.navEntry.classList.add("active");
       els.navRecords.classList.remove("active");
       if (els.navGuide) els.navGuide.classList.remove("active");
+      if (els.navAdmin) els.navAdmin.classList.remove("active");
       focusDiameterKeepKeyboard();
     });
 
