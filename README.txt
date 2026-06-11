@@ -1,16 +1,17 @@
-Mesaha App v69
+Mesaha App v70
 
-v68 düzeltme sürümü.
+v69 taban alınmıştır.
 
-Düzeltmeler:
-- Kullanıcı sil dediğinde eski cihaz bazlı kullanıcı satırları da silinir.
-- Önceki sürümlerden kalan eski key yapısındaki satırlar da silme işlemine dahil edildi.
-- Kullanıcı listesi yüklenirken aynı kullanıcı/şeflik satırları Apps Script tarafında birleştirilir.
-- Kullanıcı silinince uygulama listeden anında düşürür.
-- Silme sonucunda kaç kullanıcı satırı ve kaç yedek silindiği gösterilir.
+Değişiklikler:
+- Aynı kullanıcı adı + aynı şeflik ikinci kez ayrı kullanıcı olarak kaydolmaz.
+- Uyarı/toast barı klavye açıkken klavyenin üstünde kalacak şekilde güncellendi.
+- Boy alanına tıklayınca mevcut değer seçili gelir; direkt yeni rakam yazınca eskisini değiştirir.
+- Günlük giriş sayacı butonu ve bilgisi kaldırıldı.
+- Buluta Yedekle sırasında dönen bekleme simgesi eklendi.
+- Buluttan geri yükleme sırasında dönen bekleme simgesi eklendi.
 
 Önemli:
-- Apps Script kodunu bu paketteki AppsScript_v69.txt ile komple değiştirip mevcut dağıtımı yeni sürüm olarak güncellemelisin.
+- Apps Script kodunu bu paketteki AppsScript_v70.txt ile mevcut dağıtıma yeni sürüm olarak yüklemen önerilir.
 - Yeni dağıtım linki oluşturma; mevcut dağıtımı düzenleyip "Yeni sürüm" seç.
 
 Kullanılan Apps Script URL:

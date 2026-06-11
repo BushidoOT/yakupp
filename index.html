@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha App v69</title>
+  <title>Mesaha App v70</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -2771,6 +2771,73 @@
       filter:grayscale(.15);
     }
 
+  
+    /* v70: Uyarı barı klavye üstünde kalsın */
+    :root{
+      --keyboard-offset: 0px;
+    }
+
+    .toast,
+    .toast.form-toast,
+    .toast.success-toast,
+    .toast.error-toast{
+      bottom:calc(env(safe-area-inset-bottom, 0px) + var(--keyboard-offset, 0px) + 84px) !important;
+      z-index:1000005 !important;
+    }
+
+    /* v70: Bulut işlem yükleme göstergesi */
+    .cloud-loading-overlay{
+      position:fixed;
+      inset:0;
+      z-index:1000004;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+      background:rgba(15,23,42,.35);
+      backdrop-filter:blur(6px);
+    }
+
+    body.cloud-loading-open .cloud-loading-overlay{
+      display:flex;
+    }
+
+    .cloud-loading-card{
+      width:min(320px, calc(100vw - 34px));
+      background:#111827;
+      color:#ffffff;
+      border:1px solid rgba(255,255,255,.16);
+      border-radius:18px;
+      padding:18px;
+      text-align:center;
+      box-shadow:0 18px 50px rgba(0,0,0,.30);
+    }
+
+    .cloud-spinner{
+      width:42px;
+      height:42px;
+      border-radius:50%;
+      border:4px solid rgba(255,255,255,.25);
+      border-top-color:#ffffff;
+      margin:0 auto 12px;
+      animation:cloudSpin .8s linear infinite;
+    }
+
+    @keyframes cloudSpin{
+      to{ transform:rotate(360deg); }
+    }
+
+    .cloud-loading-text{
+      font-size:15px;
+      font-weight:950;
+      line-height:1.35;
+    }
+
+    #usageStats,
+    #usageBtn{
+      display:none !important;
+    }
+
   </style>
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -2849,6 +2916,14 @@
       <div id="cloudBackupList" class="cloud-backup-list">
         <div class="cloud-backup-empty">Henüz arama yapılmadı.</div>
       </div>
+    </div>
+  </div>
+
+  
+  <div id="cloudLoadingOverlay" class="cloud-loading-overlay" aria-live="polite" aria-label="Bulut işlem bekleme">
+    <div class="cloud-loading-card">
+      <div class="cloud-spinner"></div>
+      <div id="cloudLoadingText" class="cloud-loading-text">Bulut işlemi yapılıyor...</div>
     </div>
   </div>
 
@@ -3054,7 +3129,6 @@
             <button type="button" class="secondary" id="cloudRestoreBtn">Buluttan Getir</button>
             <button type="button" class="ghost" id="restoreBtn">Yedek Yükle</button>
             <button type="button" class="warning" id="printBtn">Yazdır</button>
-            <button type="button" class="ghost" id="usageBtn">Günlük Giriş</button>
             <button type="button" class="danger" id="deleteAllBtn">Tümünü Sil</button>
             <input id="restoreInput" type="file" accept=".json,application/json" style="display:none"  autocomplete="off"  autocorrect="off"  autocapitalize="off"  spellcheck="false" />
           </div>
@@ -3338,7 +3412,6 @@
       restoreBtn: $("restoreBtn"),
       restoreInput: $("restoreInput"),
       printBtn: $("printBtn"),
-      usageBtn: $("usageBtn"),
       usageCard: $("usageCard"),
       deleteAllBtn: $("deleteAllBtn"),
       undoBanner: $("undoBanner"),
@@ -3374,6 +3447,8 @@
       cloudRestoreSeflik: $("cloudRestoreSeflik"),
       cloudRestoreSearchBtn: $("cloudRestoreSearchBtn"),
       cloudBackupList: $("cloudBackupList"),
+      cloudLoadingOverlay: $("cloudLoadingOverlay"),
+      cloudLoadingText: $("cloudLoadingText"),
       cloudRestoreActiveInfo: $("cloudRestoreActiveInfo"),
       cloudRestoreOtherBtn: $("cloudRestoreOtherBtn"),
       cloudRestoreManualFields: $("cloudRestoreManualFields")
@@ -3921,7 +3996,7 @@
 
     async function uploadCloudBackupOpen(user) {
       const payload = buildCloudBackupPayload(user);
-      payload.version = 69;
+      payload.version = 70;
       const bolmePart = els.bolmeNo && String(els.bolmeNo.value || "").trim() ? `_${cleanFilePart(els.bolmeNo.value)}` : "";
       const fileName = `Mesaha_Yedek_${cleanFilePart(user.seflik)}_${cleanFilePart(user.name)}${bolmePart}_${new Date().toISOString().slice(0,19).replace(/[-:T]/g, "")}.json`;
 
@@ -3997,6 +4072,7 @@
 
       try {
         setCloudBackupBusy(true);
+        setCloudLoading(true, "Buluta yedek yükleniyor...");
         showToast("Buluta yedek gönderiliyor, lütfen bekleyin...");
         const fileName = await uploadCloudBackupOpen(user);
 
@@ -4014,6 +4090,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
       } catch (error) {
         showToast(error && error.message ? error.message : "Bulut yedekleme başarısız.");
       } finally {
+        setCloudLoading(false);
         setTimeout(() => setCloudBackupBusy(false), 1500);
       }
     }
@@ -4094,6 +4171,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
       if (!ok) return;
 
       try {
+        setCloudLoading(true, "Bulut yedeği geri yükleniyor...");
         showToast("Bulut yedeği indiriliyor...");
         const data = await jsonpRequest(ONLINE_USER_API_URL, {
           action: "getBackup",
@@ -4116,6 +4194,8 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
         showToast("Bulut yedeği geri yüklendi.");
       } catch (error) {
         showToast(error && error.message ? error.message : "Geri yükleme başarısız.");
+      } finally {
+        setCloudLoading(false);
       }
     }
 
@@ -4242,6 +4322,42 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     }
 
 
+
+    function updateKeyboardOffset() {
+      const vv = window.visualViewport;
+      let offset = 0;
+
+      if (vv) {
+        offset = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
+      }
+
+      document.documentElement.style.setProperty("--keyboard-offset", `${Math.round(offset)}px`);
+    }
+
+    function initKeyboardAwareToast() {
+      updateKeyboardOffset();
+      if (window.visualViewport) {
+        window.visualViewport.addEventListener("resize", updateKeyboardOffset);
+        window.visualViewport.addEventListener("scroll", updateKeyboardOffset);
+      }
+      window.addEventListener("resize", updateKeyboardOffset);
+      document.addEventListener("focusin", () => setTimeout(updateKeyboardOffset, 80));
+      document.addEventListener("focusout", () => setTimeout(updateKeyboardOffset, 180));
+    }
+
+    function setCloudLoading(show, text = "Bulut işlemi yapılıyor...") {
+      if (els.cloudLoadingText) els.cloudLoadingText.textContent = text;
+      document.body.classList.toggle("cloud-loading-open", !!show);
+    }
+
+    function selectInputValue(el) {
+      if (!el) return;
+      setTimeout(() => {
+        try { el.select(); } catch {}
+      }, 20);
+    }
+
+
     function getCurrentCloudUser() {
       const user = state.activeUser || findActiveUser();
       if (!user) return null;
@@ -4308,7 +4424,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function buildCloudBackupPayload(user) {
       return {
         app: "Mesaha İO",
-        version: 69,
+        version: 70,
         createdAt: new Date().toLocaleString("tr-TR"),
         user: {
           name: user.name || "",
@@ -4508,6 +4624,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
       updateLiveDesi();
       setupOfflineSupport();
       registerDailyVisit();
+      initKeyboardAwareToast();
       initUserLoginSystem();
       disableIosAutofillToolbarHints();
       updateProductRuleHint();
@@ -6144,7 +6261,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function backup() {
       const data = {
         app: "Mesaha App",
-        version: 69,
+        version: 70,
         exportedAt: formatDateTime(),
         systemHeaders: HEADERS,
         settings: state.settings,
@@ -6343,6 +6460,12 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
 
 
 
+
+    if (els.length) {
+      els.length.addEventListener("focus", () => selectInputValue(els.length));
+      els.length.addEventListener("click", () => selectInputValue(els.length));
+    }
+
     document.addEventListener("keydown", handleEnterToSave);
 
     els.submitBtn.addEventListener("pointerdown", (event) => {
@@ -6407,12 +6530,6 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
       setTimeout(() => document.body.classList.remove("print-summary-only"), 800);
     });
     if (els.undoBtn) els.undoBtn.addEventListener("click", undoLastDelete);
-    if (els.usageBtn) {
-      els.usageBtn.addEventListener("click", () => {
-        if (typeof renderUsageStats === "function") renderUsageStats(true);
-      });
-    }
-
     els.deleteAllBtn.addEventListener("click", () => {
       if (!state.records.length) return showToast("Silinecek kayıt yok.");
       if (!confirm("Tüm kayıtlar silinsin mi?")) return;
