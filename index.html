@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha App v68</title>
+  <title>Mesaha App v69</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -3590,20 +3590,38 @@
           admin: adminCode,
           name: cleanName,
           seflik: cleanSeflik
-        }, 20000);
+        }, 25000);
 
         if (!data || data.ok !== true) {
           throw new Error((data && data.error) ? data.error : "Silme işlemi başarısız");
         }
 
-        showToast("Kullanıcı ve yedekleri silindi.");
+        showToast(`Silindi. Kullanıcı satırı: ${Number(data.deletedUsers || 0)}, yedek: ${Number(data.deletedBackups || 0)}`);
+
         const users = await loadOnlineUsers(adminCode);
-        renderOnlineUsers(users);
+        const deletedKey = foldLocalText(`${cleanName}__${cleanSeflik}`);
+        const filtered = users.filter(u => foldLocalText(`${u.name || ""}__${u.seflik || ""}`) !== deletedKey);
+        renderOnlineUsers(filtered);
       } catch (error) {
         showToast(error && error.message ? error.message : "Silme işlemi başarısız.");
       }
     }
 
+    function foldLocalText(value) {
+      return String(value || "")
+        .replace(/\s+/g, " ")
+        .trim()
+        .toLocaleLowerCase("tr-TR")
+        .replace(/ç/g, "c")
+        .replace(/ğ/g, "g")
+        .replace(/ı/g, "i")
+        .replace(/i̇/g, "i")
+        .replace(/ö/g, "o")
+        .replace(/ş/g, "s")
+        .replace(/ü/g, "u")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+    }
 
     function renderOnlineUsers(users) {
       if (!els.registeredUsersList) return;
@@ -3903,7 +3921,7 @@
 
     async function uploadCloudBackupOpen(user) {
       const payload = buildCloudBackupPayload(user);
-      payload.version = 68;
+      payload.version = 69;
       const bolmePart = els.bolmeNo && String(els.bolmeNo.value || "").trim() ? `_${cleanFilePart(els.bolmeNo.value)}` : "";
       const fileName = `Mesaha_Yedek_${cleanFilePart(user.seflik)}_${cleanFilePart(user.name)}${bolmePart}_${new Date().toISOString().slice(0,19).replace(/[-:T]/g, "")}.json`;
 
@@ -4290,7 +4308,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function buildCloudBackupPayload(user) {
       return {
         app: "Mesaha İO",
-        version: 68,
+        version: 69,
         createdAt: new Date().toLocaleString("tr-TR"),
         user: {
           name: user.name || "",
@@ -6126,7 +6144,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function backup() {
       const data = {
         app: "Mesaha App",
-        version: 68,
+        version: 69,
         exportedAt: formatDateTime(),
         systemHeaders: HEADERS,
         settings: state.settings,

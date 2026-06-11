@@ -1,19 +1,16 @@
-Mesaha App v68
+Mesaha App v69
 
-v67 taban alınmıştır.
+v68 düzeltme sürümü.
 
 Düzeltmeler:
-- Yönetici panelinde aynı kullanıcı/şeflik artık tek satırda görünür.
-- Kullanıcılar cihaz koduna göre ayrı ayrı çoğalmaz; giriş sayısı tek kullanıcıda toplanır.
-- Kullanıcı kartında yedek sayısı ve cihaz sayısı görünür.
-- Yönetici paneline Kullanıcıyı ve Bulut Yedeklerini Sil butonu eklendi.
-- Kullanıcı silinince merkezi kullanıcı kaydı ve o kullanıcıya ait tüm bulut yedek dosyaları çöpe taşınır.
-- Buluta Yedekle butonuna üst üste basma engellendi.
-- Yedekleme sırasında buton kilitlenir ve "devam ediyor" uyarısı verir.
-- Aynı yedeğin tekrar tekrar Drive'a düşmesini engellemek için yedekHash kontrolü eklendi.
+- Kullanıcı sil dediğinde eski cihaz bazlı kullanıcı satırları da silinir.
+- Önceki sürümlerden kalan eski key yapısındaki satırlar da silme işlemine dahil edildi.
+- Kullanıcı listesi yüklenirken aynı kullanıcı/şeflik satırları Apps Script tarafında birleştirilir.
+- Kullanıcı silinince uygulama listeden anında düşürür.
+- Silme sonucunda kaç kullanıcı satırı ve kaç yedek silindiği gösterilir.
 
 Önemli:
-- Apps Script kodunu bu paketteki AppsScript_v68.txt ile komple değiştirip mevcut dağıtımı yeni sürüm olarak güncellemelisin.
+- Apps Script kodunu bu paketteki AppsScript_v69.txt ile komple değiştirip mevcut dağıtımı yeni sürüm olarak güncellemelisin.
 - Yeni dağıtım linki oluşturma; mevcut dağıtımı düzenleyip "Yeni sürüm" seç.
 
 Kullanılan Apps Script URL:
