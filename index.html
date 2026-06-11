@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha App v62</title>
+  <title>Mesaha App v64</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -2710,6 +2710,46 @@
       }
     }
 
+  
+    /* v63: Buluttan getir aktif kullanıcıya göre direkt listeler */
+    .cloud-restore-active-info{
+      display:none;
+      background:#ecfdf5;
+      border:1px solid #86efac;
+      color:#14532d;
+      border-radius:14px;
+      padding:10px;
+      font-weight:950;
+      margin-bottom:10px;
+      text-align:center;
+    }
+
+    .cloud-restore-active-info.show{
+      display:block;
+    }
+
+    .cloud-restore-other-btn{
+      margin-bottom:10px;
+    }
+
+    .cloud-restore-manual-fields{
+      display:none !important;
+    }
+
+    .cloud-restore-manual-fields.show{
+      display:grid !important;
+    }
+
+    .cloud-backup-meta{
+      grid-template-columns:repeat(4, minmax(0,1fr)) !important;
+    }
+
+    @media (max-width:560px){
+      .cloud-backup-meta{
+        grid-template-columns:1fr !important;
+      }
+    }
+
   </style>
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -2764,12 +2804,15 @@
       <div class="cloud-restore-head">
         <div>
           <h2>Buluttan Getir</h2>
-          <p class="hint">Kullanıcı adı ve şeflik girince o kişiye ait bulut yedekleri listelenir.</p>
+          <p class="hint">Aktif kullanıcı varsa yedekler direkt listelenir. Başka cihazdaki/farklı kullanıcıdaki yedeği almak için Farklı Kullanıcı / Şeflik Ara butonu kullanılır.</p>
         </div>
         <button id="cloudRestoreCloseBtn" class="ghost cloud-restore-close" type="button">×</button>
       </div>
 
-      <div class="row">
+      <div id="cloudRestoreActiveInfo" class="cloud-restore-active-info"></div>
+      <button id="cloudRestoreOtherBtn" class="ghost cloud-restore-other-btn" type="button">Farklı Kullanıcı / Şeflik Ara</button>
+
+      <div id="cloudRestoreManualFields" class="row cloud-restore-manual-fields">
         <div>
           <label for="cloudRestoreUserName">Kullanıcı Adı</label>
           <input id="cloudRestoreUserName" type="text" placeholder="Örn: Yakup" autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false" />
@@ -3126,7 +3169,7 @@
               <ol>
                 <li><b>Buluta Yedekle</b> butonu herkeste görünür ve şifre istemez.</li>
                 <li>Yedekler kullanıcı adı ve şeflik bilgisine göre yöneticinin Drive hesabına kaydedilir.</li>
-                <li><b>Buluttan Getir</b> butonunda kullanıcı adı ve şeflik girilince o kişiye ait yedekler listelenir.</li>
+                <li><b>Buluttan Getir</b> butonunda aktif kullanıcının yedekleri direkt listelenir.</li><li>Başka cihazdaki veya farklı kullanıcıdaki yedeği almak için <b>Farklı Kullanıcı / Şeflik Ara</b> butonunu kullanınız.</li>
                 <li>Listeden yedeği geri yükleyebilir veya silebilirsiniz.</li>
                 <li>İnternet yoksa bulut işlemleri çalışmaz; cihazdaki kayıtlar etkilenmez.</li>
               </ol>
@@ -3307,7 +3350,10 @@
       cloudRestoreUserName: $("cloudRestoreUserName"),
       cloudRestoreSeflik: $("cloudRestoreSeflik"),
       cloudRestoreSearchBtn: $("cloudRestoreSearchBtn"),
-      cloudBackupList: $("cloudBackupList")
+      cloudBackupList: $("cloudBackupList"),
+      cloudRestoreActiveInfo: $("cloudRestoreActiveInfo"),
+      cloudRestoreOtherBtn: $("cloudRestoreOtherBtn"),
+      cloudRestoreManualFields: $("cloudRestoreManualFields")
     };
 
     function todayISO() {
@@ -3619,6 +3665,28 @@
       clearLoginError();
     }
 
+
+    function syncFileInfoWithActiveUser() {
+      const user = state.activeUser || findActiveUser();
+      if (!user) return;
+
+      if (els.seflik) {
+        els.seflik.value = user.seflik || "";
+      }
+
+      if (els.ekipNot && !String(els.ekipNot.value || "").trim()) {
+        els.ekipNot.value = user.name || "";
+      }
+
+      state.settings.seflik = user.seflik || "";
+      if (!state.settings.ekipNot) state.settings.ekipNot = user.name || "";
+
+      try {
+        localStorage.setItem(SETTINGS_KEY, JSON.stringify(state.settings));
+      } catch {}
+    }
+
+
     function applyActiveUserToScreen() {
       state.activeUser = findActiveUser();
 
@@ -3628,12 +3696,7 @@
           els.activeUserBadge.style.display = "block";
         }
 
-        if (els.seflik && !String(els.seflik.value || "").trim()) {
-          els.seflik.value = state.activeUser.seflik || "";
-        }
-
-        state.settings.seflik = els.seflik ? els.seflik.value.trim() : (state.activeUser.seflik || "");
-        localStorage.setItem(SETTINGS_KEY, JSON.stringify(state.settings));
+        syncFileInfoWithActiveUser();
       } else if (els.activeUserBadge) {
         els.activeUserBadge.textContent = "";
         els.activeUserBadge.style.display = "none";
@@ -3684,7 +3747,9 @@
       state.userStore.activeUserId = id;
 
       if (els.seflik) els.seflik.value = seflik;
+      if (els.ekipNot && !String(els.ekipNot.value || "").trim()) els.ekipNot.value = name;
       state.settings.seflik = seflik;
+      if (!state.settings.ekipNot) state.settings.ekipNot = name;
       localStorage.setItem(SETTINGS_KEY, JSON.stringify(state.settings));
 
       registerUserLoginById(id);
@@ -3697,18 +3762,36 @@
 
 
 
-    function openCloudRestorePanel(prefill = true) {
+    function openCloudRestorePanel(prefill = true, manual = false) {
       const user = state.activeUser || findActiveUser();
+
       if (prefill && user) {
         if (els.cloudRestoreUserName) els.cloudRestoreUserName.value = user.name || "";
         if (els.cloudRestoreSeflik) els.cloudRestoreSeflik.value = user.seflik || "";
       }
 
+      if (els.cloudRestoreActiveInfo && user && !manual) {
+        els.cloudRestoreActiveInfo.textContent = `Aktif kullanıcı: ${user.name || "-"} • ${user.seflik || "-"}`;
+        els.cloudRestoreActiveInfo.classList.add("show");
+      } else if (els.cloudRestoreActiveInfo) {
+        els.cloudRestoreActiveInfo.classList.remove("show");
+      }
+
+      if (els.cloudRestoreManualFields) {
+        els.cloudRestoreManualFields.classList.toggle("show", manual || !user);
+      }
+
       if (els.cloudBackupList) {
-        els.cloudBackupList.innerHTML = `<div class="cloud-backup-empty">Kullanıcı adı ve şeflik girip bulut kayıtlarını getirin.</div>`;
+        els.cloudBackupList.innerHTML = `<div class="cloud-backup-empty">Bulut yedekleri getiriliyor...</div>`;
       }
 
       document.body.classList.add("cloud-restore-open");
+
+      if (user && !manual) {
+        setTimeout(() => searchCloudBackups(false), 80);
+      } else if (els.cloudBackupList) {
+        els.cloudBackupList.innerHTML = `<div class="cloud-backup-empty">Kullanıcı adı ve şeflik girip bulut kayıtlarını getirin.</div>`;
+      }
     }
 
     function closeCloudRestorePanel() {
@@ -3717,14 +3800,17 @@
 
     async function uploadCloudBackupOpen(user) {
       const payload = buildCloudBackupPayload(user);
-      payload.version = 62;
-      const fileName = `Mesaha_Yedek_${cleanFilePart(user.seflik)}_${cleanFilePart(user.name)}_${new Date().toISOString().slice(0,19).replace(/[-:T]/g, "")}.json`;
+      payload.version = 64;
+      const bolmePart = els.bolmeNo && String(els.bolmeNo.value || "").trim() ? `_${cleanFilePart(els.bolmeNo.value)}` : "";
+      const fileName = `Mesaha_Yedek_${cleanFilePart(user.seflik)}_${cleanFilePart(user.name)}${bolmePart}_${new Date().toISOString().slice(0,19).replace(/[-:T]/g, "")}.json`;
 
       const body = new URLSearchParams();
       body.set("action", "backup");
       body.set("name", user.name || "");
       body.set("seflik", user.seflik || "");
       body.set("deviceId", user.deviceId || "");
+      body.set("bolmeNo", els.bolmeNo ? String(els.bolmeNo.value || "").trim() : "");
+      body.set("ekipNot", els.ekipNot ? String(els.ekipNot.value || "").trim() : "");
       body.set("fileName", fileName);
       body.set("recordCount", String((state.records || []).length));
       body.set("payload", JSON.stringify(payload));
@@ -3741,7 +3827,7 @@
 
     async function cloudBackupRecordsOpen() {
       if (!navigator.onLine) {
-        showToast("İnternet yok. Buluta yedekleme için internet gerekir.");
+        showToast("İnternet bağlantısı yok. Buluta yedekleme yapılamaz.");
         return;
       }
 
@@ -3769,14 +3855,15 @@
       }
     }
 
-    async function searchCloudBackups() {
+    async function searchCloudBackups(manual = true) {
       if (!navigator.onLine) {
-        if (els.cloudBackupList) els.cloudBackupList.innerHTML = `<div class="cloud-backup-error">İnternet yok. Buluttan getirme için internet gerekir.</div>`;
+        if (els.cloudBackupList) els.cloudBackupList.innerHTML = `<div class="cloud-backup-error">İnternet bağlantısı yok. Buluttan getirme yapılamaz.</div>`;
         return;
       }
 
-      const name = cleanUserText(els.cloudRestoreUserName ? els.cloudRestoreUserName.value : "");
-      const seflik = cleanUserText(els.cloudRestoreSeflik ? els.cloudRestoreSeflik.value : "");
+      const active = state.activeUser || findActiveUser();
+      const name = (!manual && active) ? cleanUserText(active.name) : cleanUserText(els.cloudRestoreUserName ? els.cloudRestoreUserName.value : "");
+      const seflik = (!manual && active) ? cleanUserText(active.seflik) : cleanUserText(els.cloudRestoreSeflik ? els.cloudRestoreSeflik.value : "");
 
       if (!name || !seflik) {
         if (els.cloudBackupList) els.cloudBackupList.innerHTML = `<div class="cloud-backup-error">Kullanıcı adı ve şeflik giriniz.</div>`;
@@ -3820,6 +3907,7 @@
             <span>Kayıt: ${(Number(backup.recordCount) || 0).toLocaleString("tr-TR")}</span>
             <span>Kullanıcı: ${escapeHtml(backup.name || "-")}</span>
             <span>Şeflik: ${escapeHtml(backup.seflik || "-")}</span>
+            <span>Bölme: ${escapeHtml(backup.bolmeNo || "-")}</span>
           </div>
           <div class="cloud-backup-actions">
             <button class="primary mini-cloud-restore" type="button" data-id="${escapeHtml(backup.id || "")}">Geri Yükle</button>
@@ -3886,7 +3974,7 @@
         }
 
         showToast("Bulut yedeği silindi.");
-        searchCloudBackups();
+        searchCloudBackups(true);
       } catch (error) {
         showToast(error && error.message ? error.message : "Silme başarısız.");
       }
@@ -4057,16 +4145,21 @@
     function buildCloudBackupPayload(user) {
       return {
         app: "Mesaha İO",
-        version: 62,
+        version: 64,
         createdAt: new Date().toLocaleString("tr-TR"),
         user: {
           name: user.name || "",
           seflik: user.seflik || "",
           deviceId: user.deviceId || ""
         },
+        fileInfo: {
+          bolmeNo: els.bolmeNo ? String(els.bolmeNo.value || "").trim() : (state.settings.bolmeNo || ""),
+          seflik: els.seflik ? String(els.seflik.value || "").trim() : (user.seflik || ""),
+          ekipNot: els.ekipNot ? String(els.ekipNot.value || "").trim() : (user.name || "")
+        },
         settings: state.settings || {},
         records: state.records || [],
-        totals: calculateTotals ? calculateTotals() : {}
+        totals: (typeof calculateTotals === "function" ? calculateTotals() : {})
       };
     }
 
@@ -4103,7 +4196,7 @@
 
     async function cloudBackupRecords() {
       if (!navigator.onLine) {
-        showToast("İnternet yok. Buluta yedekleme için internet gerekir.");
+        showToast("İnternet bağlantısı yok. Buluta yedekleme yapılamaz.");
         return;
       }
 
@@ -5885,7 +5978,7 @@
     function backup() {
       const data = {
         app: "Mesaha App",
-        version: 62,
+        version: 64,
         exportedAt: formatDateTime(),
         systemHeaders: HEADERS,
         settings: state.settings,
@@ -6022,7 +6115,31 @@
     if (els.changeUserBtn) els.changeUserBtn.addEventListener("click", () => openUserLogin(false));
     if (els.adminUsersBtn) els.adminUsersBtn.addEventListener("click", unlockRegisteredUsers);
     if (els.adminUsersCloseBtn) els.adminUsersCloseBtn.addEventListener("click", lockRegisteredUsers);
-    if (els.cloudBackupBtn) els.cloudBackupBtn.addEventListener("click", cloudBackupRecords);
+    if (els.cloudBackupBtn) els.cloudBackupBtn.addEventListener("click", cloudBackupRecordsOpen);
+
+    if (els.cloudRestoreBtn && !els.cloudRestoreBtn.dataset.boundV64) {
+      els.cloudRestoreBtn.dataset.boundV64 = "1";
+      els.cloudRestoreBtn.addEventListener("click", () => openCloudRestorePanel(true, false));
+    }
+    if (els.cloudRestoreOtherBtn && !els.cloudRestoreOtherBtn.dataset.boundV64) {
+      els.cloudRestoreOtherBtn.dataset.boundV64 = "1";
+      els.cloudRestoreOtherBtn.addEventListener("click", () => openCloudRestorePanel(false, true));
+    }
+    if (els.cloudRestoreCloseBtn && !els.cloudRestoreCloseBtn.dataset.boundV64) {
+      els.cloudRestoreCloseBtn.dataset.boundV64 = "1";
+      els.cloudRestoreCloseBtn.addEventListener("click", closeCloudRestorePanel);
+    }
+    if (els.cloudRestoreOverlay && !els.cloudRestoreOverlay.dataset.boundV64) {
+      els.cloudRestoreOverlay.dataset.boundV64 = "1";
+      els.cloudRestoreOverlay.addEventListener("click", (event) => {
+        if (event.target === els.cloudRestoreOverlay) closeCloudRestorePanel();
+      });
+    }
+    if (els.cloudRestoreSearchBtn && !els.cloudRestoreSearchBtn.dataset.boundV64) {
+      els.cloudRestoreSearchBtn.dataset.boundV64 = "1";
+      els.cloudRestoreSearchBtn.addEventListener("click", () => searchCloudBackups(true));
+    }
+
 
     if (els.activeUserBadge) {
       els.activeUserBadge.addEventListener("click", openUserPanel);
@@ -6045,7 +6162,7 @@
         openUserLogin(true);
       });
     }
-    if (els.panelPasswordBtn) els.panelPasswordBtn.addEventListener("click", () => { closeUserPanel(); openCloudRestorePanel(true); });
+    if (els.panelPasswordBtn) els.panelPasswordBtn.addEventListener("click", () => { closeUserPanel(); openCloudRestorePanel(true, false); });
     if (els.panelCloudBackupBtn) {
       els.panelCloudBackupBtn.addEventListener("click", () => {
         closeUserPanel();
