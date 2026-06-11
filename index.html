@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha App v70</title>
+  <title>Mesaha App v71</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -2838,6 +2838,114 @@
       display:none !important;
     }
 
+  
+    /* v71: Toplu seçim, admin arama ve net işlem butonları */
+    .bulk-actions{
+      display:grid;
+      grid-template-columns:minmax(190px, .8fr) 2.2fr;
+      gap:10px;
+      align-items:center;
+      margin:0 0 12px;
+      padding:10px;
+      border:1px solid var(--line);
+      border-radius:16px;
+      background:rgba(255,255,255,.06);
+    }
+
+    .bulk-info{
+      display:grid;
+      gap:2px;
+    }
+
+    .bulk-info b{
+      color:var(--text);
+      font-size:15px;
+      font-weight:950;
+    }
+
+    .bulk-info span{
+      color:var(--muted);
+      font-size:12px;
+      font-weight:800;
+    }
+
+    .bulk-buttons{
+      display:flex;
+      flex-wrap:wrap;
+      gap:7px;
+      justify-content:flex-end;
+    }
+
+    .bulk-buttons button{
+      min-height:36px;
+      padding:8px 10px;
+      border-radius:12px;
+      font-size:12px;
+      font-weight:950;
+    }
+
+    .select-col{
+      width:42px;
+      text-align:center !important;
+    }
+
+    .record-select,
+    #selectAllRecords{
+      width:20px;
+      height:20px;
+      accent-color:#2563eb;
+    }
+
+    .admin-user-search-wrap{
+      margin:8px 0 10px;
+    }
+
+    .admin-user-search-wrap input{
+      width:100%;
+      min-height:42px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.08);
+      color:var(--text);
+      padding:8px 12px;
+      font-weight:900;
+      outline:none;
+    }
+
+    .mini-btn{
+      color:#0f172a !important;
+      background:#e2e8f0 !important;
+      border:1px solid #94a3b8 !important;
+      font-weight:950 !important;
+      opacity:1 !important;
+    }
+
+    .mini-btn.edit-mini{
+      background:#dbeafe !important;
+      color:#1e3a8a !important;
+      border-color:#60a5fa !important;
+    }
+
+    .mini-btn.delete-mini{
+      background:#fee2e2 !important;
+      color:#991b1b !important;
+      border-color:#f87171 !important;
+    }
+
+    @media (max-width:720px){
+      .bulk-actions{
+        grid-template-columns:1fr;
+      }
+
+      .bulk-buttons{
+        justify-content:stretch;
+      }
+
+      .bulk-buttons button{
+        flex:1 1 130px;
+      }
+    }
+
   </style>
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -3137,6 +3245,21 @@
 
           <div id="undoBanner" class="undo-banner"><span id="undoMessage">Kayıt silindi.</span><button type="button" id="undoBtn">Geri Al</button></div>
 
+          
+          <div id="bulkActions" class="bulk-actions">
+            <div class="bulk-info">
+              <b id="selectedRecordCount">0 seçili</b>
+              <span>Toplu işlem için kayıtları işaretleyin.</span>
+            </div>
+            <div class="bulk-buttons">
+              <button type="button" class="ghost" id="selectFilteredBtn">Listedekileri Seç</button>
+              <button type="button" class="ghost" id="clearSelectionBtn">Seçimi Temizle</button>
+              <button type="button" class="secondary" id="bulkProductBtn">Ürün Değiştir</button>
+              <button type="button" class="secondary" id="bulkTreeBtn">Ağaç Değiştir</button>
+              <button type="button" class="danger" id="bulkDeleteBtn">Seçilenleri Sil</button>
+            </div>
+          </div>
+
           <div class="searchbar">
             <input id="searchInput" placeholder="Barkod, ağaç, ürün, çap veya boy ara..."  autocomplete="off"  autocorrect="off"  autocapitalize="off"  spellcheck="false" />
           </div>
@@ -3145,6 +3268,7 @@
             <table>
               <thead>
                 <tr>
+                  <th class="select-col"><input id="selectAllRecords" type="checkbox" title="Listedekileri seç" /></th>
                   <th>Sıra</th>
                   <th>Barkod</th>
                   <th>Ağaç</th>
@@ -3272,6 +3396,7 @@
 <div class="guide-card registered-users-card" id="registeredUsersCard">
               <h3>Kayıtlı Kullanıcılar</h3>
               <p class="hint admin-unlock-note">Bu bölüm yönetici kodu ile açılmıştır. İnternet varsa merkezde kayıtlı herkes listelenir.</p>
+              <div class="admin-user-search-wrap"><input id="adminUserSearch" type="text" placeholder="Kullanıcı veya şeflik ara..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" /></div>
               <div id="registeredUsersList" class="registered-users-list">
                 <div class="empty-user-list">Henüz kullanıcı girişi yok.</div>
               </div>
@@ -3330,6 +3455,8 @@
       userStore: { activeUserId: "", users: [] },
       activeUser: null,
       cloudBackupBusy: false,
+      selectedRecordIds: new Set(),
+      adminOnlineUsers: [],
       lastAdminCode: "",
       settings: {
         lastBarcode: "A102682",
@@ -3402,6 +3529,15 @@
       totalTel: $("totalTel"),
       totalTelAdet: $("totalTelAdet"),
       searchInput: $("searchInput"),
+      bulkActions: $("bulkActions"),
+      selectedRecordCount: $("selectedRecordCount"),
+      selectFilteredBtn: $("selectFilteredBtn"),
+      clearSelectionBtn: $("clearSelectionBtn"),
+      bulkProductBtn: $("bulkProductBtn"),
+      bulkTreeBtn: $("bulkTreeBtn"),
+      bulkDeleteBtn: $("bulkDeleteBtn"),
+      selectAllRecords: $("selectAllRecords"),
+      adminUserSearch: $("adminUserSearch"),
       toast: $("toast"),
       sameBarcodeBtn: $("sameBarcodeBtn"),
       clearInputsBtn: $("clearInputsBtn"),
@@ -3701,12 +3837,18 @@
     function renderOnlineUsers(users) {
       if (!els.registeredUsersList) return;
 
-      if (!users.length) {
-        els.registeredUsersList.innerHTML = `<div class="empty-user-list">Merkezde henüz kullanıcı kaydı yok.</div>`;
+      state.adminOnlineUsers = Array.isArray(users) ? users : [];
+      const q = els.adminUserSearch ? String(els.adminUserSearch.value || "").trim().toLowerCase() : "";
+      const list = q ? state.adminOnlineUsers.filter(user => [
+        user.name, user.seflik, user.firstLogin, user.lastLogin, user.loginCount, user.backupCount, user.deviceCount
+      ].join(" ").toLowerCase().includes(q)) : state.adminOnlineUsers;
+
+      if (!list.length) {
+        els.registeredUsersList.innerHTML = `<div class="empty-user-list">${q ? "Aramaya uygun kullanıcı bulunamadı." : "Merkezde henüz kullanıcı kaydı yok."}</div>`;
         return;
       }
 
-      els.registeredUsersList.innerHTML = users.map(user => `
+      els.registeredUsersList.innerHTML = list.map(user => `
         <div class="registered-user-item online-user">
           <div class="registered-user-head">
             <b>${escapeHtml(user.name || "-")}</b>
@@ -3996,7 +4138,7 @@
 
     async function uploadCloudBackupOpen(user) {
       const payload = buildCloudBackupPayload(user);
-      payload.version = 70;
+      payload.version = 71;
       const bolmePart = els.bolmeNo && String(els.bolmeNo.value || "").trim() ? `_${cleanFilePart(els.bolmeNo.value)}` : "";
       const fileName = `Mesaha_Yedek_${cleanFilePart(user.seflik)}_${cleanFilePart(user.name)}${bolmePart}_${new Date().toISOString().slice(0,19).replace(/[-:T]/g, "")}.json`;
 
@@ -4424,7 +4566,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function buildCloudBackupPayload(user) {
       return {
         app: "Mesaha İO",
-        version: 70,
+        version: 71,
         createdAt: new Date().toLocaleString("tr-TR"),
         user: {
           name: user.name || "",
@@ -5541,9 +5683,10 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
       els.dailyLastBarcode.textContent = lastBarcode;
     }
 
-    function render() {
-      const query = els.searchInput.value.trim().toLowerCase();
-      const filtered = state.records.filter(r => {
+
+    function getFilteredRecords() {
+      const query = els.searchInput ? els.searchInput.value.trim().toLowerCase() : "";
+      return state.records.filter(r => {
         if (!query) return true;
         const sys = recordToSystemRow(r);
         const tree = getTreeInfo(r.treeType || r.species || "Karaçam");
@@ -5552,12 +5695,172 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
           r.diameter, r.quantity, r.desi, r.uretimTarihi, r.createdAt
         ].join(" ").toLowerCase().includes(query);
       });
+    }
+
+    function cleanSelectedRecordIds() {
+      if (!state.selectedRecordIds) state.selectedRecordIds = new Set();
+      const existing = new Set(state.records.map(r => r.id));
+      Array.from(state.selectedRecordIds).forEach(id => {
+        if (!existing.has(id)) state.selectedRecordIds.delete(id);
+      });
+    }
+
+    function updateBulkActions(filtered = getFilteredRecords()) {
+      cleanSelectedRecordIds();
+
+      const count = state.selectedRecordIds.size;
+      if (els.selectedRecordCount) {
+        els.selectedRecordCount.textContent = `${count.toLocaleString("tr-TR")} seçili`;
+      }
+
+      const visibleIds = filtered.map(r => r.id);
+      const visibleSelected = visibleIds.filter(id => state.selectedRecordIds.has(id)).length;
+
+      if (els.selectAllRecords) {
+        els.selectAllRecords.checked = !!visibleIds.length && visibleSelected === visibleIds.length;
+        els.selectAllRecords.indeterminate = visibleSelected > 0 && visibleSelected < visibleIds.length;
+      }
+
+      [els.bulkDeleteBtn, els.bulkProductBtn, els.bulkTreeBtn, els.clearSelectionBtn].forEach(btn => {
+        if (btn) btn.disabled = count === 0;
+      });
+    }
+
+    function toggleRecordSelection(id, checked) {
+      if (!state.selectedRecordIds) state.selectedRecordIds = new Set();
+      if (checked) state.selectedRecordIds.add(id);
+      else state.selectedRecordIds.delete(id);
+      updateBulkActions();
+    }
+
+    function toggleSelectFiltered(checked) {
+      const filtered = getFilteredRecords();
+      if (!state.selectedRecordIds) state.selectedRecordIds = new Set();
+
+      filtered.forEach(r => {
+        if (checked) state.selectedRecordIds.add(r.id);
+        else state.selectedRecordIds.delete(r.id);
+      });
+
+      render();
+    }
+
+    function selectFilteredRecords() {
+      toggleSelectFiltered(true);
+      showToast("Listedeki kayıtlar seçildi.");
+    }
+
+    function clearRecordSelection() {
+      if (!state.selectedRecordIds) state.selectedRecordIds = new Set();
+      state.selectedRecordIds.clear();
+      render();
+    }
+
+    function deleteSelectedRecords() {
+      const ids = new Set(state.selectedRecordIds || []);
+      if (!ids.size) return showToast("Seçili kayıt yok.");
+
+      const selected = state.records.filter(r => ids.has(r.id));
+      const ok = confirm(`${selected.length.toLocaleString("tr-TR")} seçili kayıt silinsin mi?`);
+      if (!ok) return;
+
+      state.lastUndo = { type: "all", records: state.records.slice() };
+      state.records = state.records.filter(r => !ids.has(r.id));
+      state.selectedRecordIds.clear();
+
+      saveRecords();
+      render();
+      forceRefreshSummaryCards();
+      showUndoBanner(`${selected.length.toLocaleString("tr-TR")} kayıt silindi.`);
+      showToast("Seçilen kayıtlar silindi. Geri Al ile dönebilirsin.");
+    }
+
+    function bulkChangeProduct() {
+      const ids = new Set(state.selectedRecordIds || []);
+      if (!ids.size) return showToast("Seçili kayıt yok.");
+
+      const answer = prompt("Yeni ürün türünü yazın:\nTomruk, Maden, Kağıtlık, Sanayi, Tel");
+      if (!answer) return;
+
+      const map = {
+        "tomruk": "Tomruk",
+        "maden": "Maden Direk",
+        "maden direk": "Maden Direk",
+        "maden direği": "Maden Direk",
+        "maden diregi": "Maden Direk",
+        "kağıtlık": "Kağıtlık",
+        "kagitlik": "Kağıtlık",
+        "kağıtlık odun": "Kağıtlık",
+        "kagitlik odun": "Kağıtlık",
+        "sanayi": "Sanayi Odunu",
+        "sanayi odunu": "Sanayi Odunu",
+        "tel": "Tel Direk",
+        "tel direk": "Tel Direk",
+        "tel direği": "Tel Direk",
+        "tel diregi": "Tel Direk"
+      };
+
+      const key = foldLocalText ? foldLocalText(answer) : String(answer).trim().toLowerCase();
+      const product = map[key] || normalizeProductType(answer);
+
+      if (!PRODUCT_MAP[product]) {
+        showToast("Ürün türü bulunamadı.");
+        return;
+      }
+
+      state.records.forEach(r => {
+        if (ids.has(r.id)) r.productType = product;
+      });
+
+      saveRecords();
+      render();
+      forceRefreshSummaryCards();
+      showToast(`${ids.size.toLocaleString("tr-TR")} kaydın ürünü değiştirildi.`);
+    }
+
+    function bulkChangeTree() {
+      const ids = new Set(state.selectedRecordIds || []);
+      if (!ids.size) return showToast("Seçili kayıt yok.");
+
+      const answer = prompt("Yeni ağaç türünü yazın:\nKaraçam, Kızılçam, Sedir, Göknar");
+      if (!answer) return;
+
+      const key = foldLocalText ? foldLocalText(answer) : String(answer).trim().toLowerCase();
+      const treeMap = {};
+      Object.keys(TREE_MAP).forEach(name => {
+        treeMap[foldLocalText ? foldLocalText(name) : name.toLowerCase()] = name;
+      });
+
+      const treeName = treeMap[key];
+      if (!treeName) {
+        showToast("Ağaç türü bulunamadı.");
+        return;
+      }
+
+      state.records.forEach(r => {
+        if (ids.has(r.id)) {
+          r.treeType = treeName;
+          r.species = treeName;
+        }
+      });
+
+      saveRecords();
+      render();
+      forceRefreshSummaryCards();
+      showToast(`${ids.size.toLocaleString("tr-TR")} kaydın ağaç türü değiştirildi.`);
+    }
+
+
+    function render() {
+      const filtered = getFilteredRecords();
+      cleanSelectedRecordIds();
 
       els.recordsBody.innerHTML = filtered.map((r) => {
         const sys = recordToSystemRow(r);
         const tree = getTreeInfo(r.treeType || r.species || "Karaçam");
         return `
           <tr class="clickable-row" onclick="editRecord('${r.id}')">
+            <td class="select-col"><input class="record-select" type="checkbox" ${state.selectedRecordIds.has(r.id) ? "checked" : ""} onclick="event.stopPropagation()" onchange="toggleRecordSelection('${r.id}', this.checked)" /></td>
             <td>${state.records.length - state.records.indexOf(r)}</td>
             <td><b>${escapeHtml(r.barcode)}</b></td>
             <td><span class="tag tree-tag ${normalizeTreeClass(r.treeType || r.species || "Karaçam")}">${escapeHtml(tree.agacAdi)}</span></td>
@@ -5568,14 +5871,15 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
             <td class="num">${formatHacimFromDesi(Number(r.desi || 0))} m³</td>
             <td>${escapeHtml(sys.uretimTarihi)}</td>
             <td>
-              <button class="mini-btn" onclick="event.stopPropagation(); editRecord('${r.id}')">Düzelt</button>
-              <button class="mini-btn" onclick="event.stopPropagation(); deleteRecord('${r.id}')">Sil</button>
+              <button class="mini-btn edit-mini" onclick="event.stopPropagation(); editRecord('${r.id}')">Düzelt</button>
+              <button class="mini-btn delete-mini" onclick="event.stopPropagation(); deleteRecord('${r.id}')">Sil</button>
             </td>
           </tr>
         `;
       }).join("");
 
       els.emptyState.style.display = filtered.length ? "none" : "block";
+      updateBulkActions(filtered);
       els.recordCount.textContent = `${state.records.length} kayıt`;
       renderRecentBarcodes();
       renderDailyWorkSummary();
@@ -5647,7 +5951,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
 
       els.recordsFoot.innerHTML = filtered.length ? `
         <tr class="table-total-row">
-          <td colspan="6">Alttaki liste toplamı</td>
+          <td colspan="7">Alttaki liste toplamı</td>
           <td class="num">${filteredTotals.adet.toLocaleString("tr-TR")} adet</td>
           <td class="num">${formatHacimFromDesi(filteredTotals.desi)} m³</td>
           <td colspan="2"></td>
@@ -6261,7 +6565,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function backup() {
       const data = {
         app: "Mesaha App",
-        version: 70,
+        version: 71,
         exportedAt: formatDateTime(),
         systemHeaders: HEADERS,
         settings: state.settings,
@@ -6512,6 +6816,15 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
       focusDiameterKeepKeyboard();
     });
 
+    
+    if (els.selectAllRecords) els.selectAllRecords.addEventListener("change", () => toggleSelectFiltered(els.selectAllRecords.checked));
+    if (els.selectFilteredBtn) els.selectFilteredBtn.addEventListener("click", selectFilteredRecords);
+    if (els.clearSelectionBtn) els.clearSelectionBtn.addEventListener("click", clearRecordSelection);
+    if (els.bulkDeleteBtn) els.bulkDeleteBtn.addEventListener("click", deleteSelectedRecords);
+    if (els.bulkProductBtn) els.bulkProductBtn.addEventListener("click", bulkChangeProduct);
+    if (els.bulkTreeBtn) els.bulkTreeBtn.addEventListener("click", bulkChangeTree);
+    if (els.adminUserSearch) els.adminUserSearch.addEventListener("input", () => renderOnlineUsers(state.adminOnlineUsers || []));
+
     els.searchInput.addEventListener("input", render);
     els.exportSystemXlsBtn.addEventListener("click", exportSystemXls);
     els.backupBtn.addEventListener("click", backup);
@@ -6572,6 +6885,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
       });
     }
 
+    window.toggleRecordSelection = toggleRecordSelection;
     window.deleteRecord = deleteRecord;
     window.editRecord = editRecord;
 
