@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha App v64</title>
+  <title>Mesaha App v66</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -3800,7 +3800,7 @@
 
     async function uploadCloudBackupOpen(user) {
       const payload = buildCloudBackupPayload(user);
-      payload.version = 64;
+      payload.version = 66;
       const bolmePart = els.bolmeNo && String(els.bolmeNo.value || "").trim() ? `_${cleanFilePart(els.bolmeNo.value)}` : "";
       const fileName = `Mesaha_Yedek_${cleanFilePart(user.seflik)}_${cleanFilePart(user.name)}${bolmePart}_${new Date().toISOString().slice(0,19).replace(/[-:T]/g, "")}.json`;
 
@@ -3818,12 +3818,36 @@
       await fetch(ONLINE_USER_API_URL, {
         method: "POST",
         mode: "no-cors",
-        headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
-        body
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: body.toString()
       });
 
       return fileName;
     }
+
+
+    async function verifyLatestCloudBackupAfterUpload(user) {
+      try {
+        await new Promise(resolve => setTimeout(resolve, 1800));
+        const data = await jsonpRequest(ONLINE_USER_API_URL, {
+          action: "listBackups",
+          name: user.name || "",
+          seflik: user.seflik || ""
+        }, 12000);
+
+        if (data && data.ok === true && Array.isArray(data.backups) && data.backups.length) {
+          showToast("Bulut yedeği kayda geçti.");
+          return true;
+        }
+
+        showToast("Yedek gönderildi ama listede görünmedi. Apps Script kodunu v66 ile güncelle.");
+        return false;
+      } catch {
+        showToast("Yedek gönderildi, kontrol için Buluttan Getir'i deneyin.");
+        return false;
+      }
+    }
+
 
     async function cloudBackupRecordsOpen() {
       if (!navigator.onLine) {
@@ -3847,8 +3871,9 @@
         showToast("Buluta yedek gönderiliyor...");
         const fileName = await uploadCloudBackupOpen(user);
         showToast("Bulut yedekleme gönderildi.");
+        verifyLatestCloudBackupAfterUpload(user);
         setTimeout(() => {
-          alert(`Bulut yedeği gönderildi.\n\nDosya adı:\n${fileName}\n\nDrive'daki Mesaha_Yedekleri klasörüne kaydedilir.`);
+          alert(`Bulut yedeği gönderildi.\n\nDosya adı:\n${fileName}\n\nDrive'daki Mesaha_Yedekleri klasörüne kaydedilir.\n\nBuluttan Getir içinde görünmezse Apps Script kodunu v66 ile güncelleyin.`);
         }, 350);
       } catch (error) {
         showToast(error && error.message ? error.message : "Bulut yedekleme başarısız.");
@@ -3893,7 +3918,7 @@
       if (!els.cloudBackupList) return;
 
       if (!backups.length) {
-        els.cloudBackupList.innerHTML = `<div class="cloud-backup-empty">Bu kullanıcı ve şeflik için bulut yedeği bulunamadı.</div>`;
+        els.cloudBackupList.innerHTML = `<div class="cloud-backup-empty">Bu kullanıcı ve şeflik için bulut yedeği bulunamadı. Türkçe karakter veya şeflik farkı varsa Farklı Kullanıcı / Şeflik Ara ile tekrar deneyin.</div>`;
         return;
       }
 
@@ -4145,7 +4170,7 @@
     function buildCloudBackupPayload(user) {
       return {
         app: "Mesaha İO",
-        version: 64,
+        version: 66,
         createdAt: new Date().toLocaleString("tr-TR"),
         user: {
           name: user.name || "",
@@ -4179,8 +4204,8 @@
       await fetch(ONLINE_USER_API_URL, {
         method: "POST",
         mode: "no-cors",
-        headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
-        body
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: body.toString()
       });
 
       return fileName;
@@ -5978,7 +6003,7 @@
     function backup() {
       const data = {
         app: "Mesaha App",
-        version: 64,
+        version: 66,
         exportedAt: formatDateTime(),
         systemHeaders: HEADERS,
         settings: state.settings,
