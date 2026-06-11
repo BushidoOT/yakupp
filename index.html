@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha App v76</title>
+  <title>Mesaha App v77</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -3240,6 +3240,91 @@
       }
     }
 
+  
+    /* v77: Yazdırırken sadece beyan alanı */
+    @media print{
+      .bulk-actions,
+      #bulkActions,
+      .daily-summary,
+      #dailySummary,
+      .daily-stats,
+      #dailyStats,
+      .records-daily-summary,
+      .daily-report,
+      .day-summary,
+      .searchbar,
+      .bottom-nav,
+      .toast,
+      .admin-panel,
+      .guide-panel,
+      .entry-panel,
+      .keyboard-spacer,
+      .records-table-wrap,
+      .records-table,
+      #recordsTable{
+        display:none !important;
+      }
+
+      .records-panel .panel-header,
+      .records-panel .section-title,
+      .records-panel h2{
+        display:none !important;
+      }
+
+      body::before{
+        content:"BEYAN";
+        display:block;
+        text-align:center;
+        font-size:28px;
+        font-weight:950;
+        letter-spacing:.5px;
+        margin:18px 0 28px;
+        color:#000;
+      }
+    }
+
+  
+    /* v77: Daha ince, blur ve biraz daha aşağı uyarı */
+    .toast{
+      min-height:0 !important;
+      padding:9px 18px !important;
+      border-radius:999px !important;
+      font-size:14px !important;
+      line-height:1.25 !important;
+      font-weight:950 !important;
+      max-width:min(72vw, 520px) !important;
+      width:auto !important;
+      left:50% !important;
+      right:auto !important;
+      bottom:calc(env(safe-area-inset-bottom, 0px) + var(--keyboard-offset, 0px) + 54px) !important;
+      transform:translateX(-50%) translateY(18px) scale(.98) !important;
+      backdrop-filter:blur(16px) saturate(140%) !important;
+      -webkit-backdrop-filter:blur(16px) saturate(140%) !important;
+      box-shadow:0 10px 26px rgba(15,23,42,.22) !important;
+      border:1px solid rgba(255,255,255,.22) !important;
+    }
+
+    .toast.show{
+      transform:translateX(-50%) translateY(0) scale(1) !important;
+    }
+
+    .toast.success{
+      background:rgba(22,101,52,.82) !important;
+    }
+
+    .toast.error{
+      background:rgba(153,27,27,.82) !important;
+    }
+
+    @media (max-width:520px){
+      .toast{
+        max-width:74vw !important;
+        padding:8px 14px !important;
+        font-size:13px !important;
+        bottom:calc(env(safe-area-inset-bottom, 0px) + var(--keyboard-offset, 0px) + 48px) !important;
+      }
+    }
+
   </style>
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -3282,6 +3367,7 @@
         <button id="panelChangeUserBtn" class="secondary" type="button">Kullanıcı Adı / Şeflik Değiştir</button>
         <button id="panelPasswordBtn" class="warning" type="button">Bulut Yedeklerini Getir</button>
         <button id="panelCloudBackupBtn" class="primary" type="button">Buluta Yedekle</button>
+        <button id="userMenuForceUpdateBtn" class="secondary" type="button">Yeni Sürümü Güncelle</button>
       </div>
 
       <p class="hint">Bulut yedekleme şifresizdir. Kullanıcı adı ve şeflik ile yedekler listelenir.</p>
@@ -3332,8 +3418,7 @@
   <div class="app">
     <header class="topbar">
       <div class="brand">
-        <h1>Mesaha İO v1.5</h1>
-        <button id="forceUpdateBtn" class="update-app-btn" type="button" title="Yeni sürümü yükle">Güncelle</button>
+        <h1>Mesaha İO v1.6</h1>
         
       </div>
       <div id="activeUserBadge" class="active-user-badge" role="button" tabindex="0" title="Kullanıcı panelini aç" style="display:none"></div>
@@ -3549,8 +3634,6 @@
             <div class="bulk-buttons">
               <button type="button" class="ghost" id="selectFilteredBtn">Listedekileri Seç</button>
               <button type="button" class="ghost" id="clearSelectionBtn">Seçimi Temizle</button>
-              <button type="button" class="secondary" id="bulkProductBtn">Ürün Değiştir</button>
-              <button type="button" class="secondary" id="bulkTreeBtn">Ağaç Değiştir</button>
               <button type="button" class="danger" id="bulkDeleteBtn">Seçilenleri Sil</button>
             </div>
           </div>
@@ -3893,8 +3976,6 @@
       selectedRecordCount: $("selectedRecordCount"),
       selectFilteredBtn: $("selectFilteredBtn"),
       clearSelectionBtn: $("clearSelectionBtn"),
-      bulkProductBtn: $("bulkProductBtn"),
-      bulkTreeBtn: $("bulkTreeBtn"),
       bulkDeleteBtn: $("bulkDeleteBtn"),
       selectAllRecords: $("selectAllRecords"),
       adminUserSearch: $("adminUserSearch"),
@@ -3919,7 +4000,7 @@
       navGuide: $("navGuide"),
       navAdmin: $("navAdmin"),
       guideAdminOpenBtn: $("guideAdminOpenBtn"),
-      forceUpdateBtn: $("forceUpdateBtn"),
+      userMenuForceUpdateBtn: $("userMenuForceUpdateBtn"),
       guideForceUpdateBtn: $("guideForceUpdateBtn"),
       adminRefreshBtn: $("adminRefreshBtn"),
       adminTotalUsers: $("adminTotalUsers"),
@@ -4157,6 +4238,19 @@
 
 
 
+
+
+    function markPrintOnlyBeyan() {
+      const all = Array.from(document.querySelectorAll("section.records-panel *"));
+      all.forEach(el => {
+        const txt = (el.textContent || "").trim();
+        if (txt.includes("Günlük İş Özeti") || txt.includes("Listedekileri Seç") || txt.includes("Seçimi Temizle") || txt.includes("Toplu işlem için")) {
+          el.classList.add("print-hide");
+          let p = el.closest(".card, .summary-card, .bulk-actions, .guide-card, .panel-body > div");
+          if (p) p.classList.add("print-hide");
+        }
+      });
+    }
 
     async function forceUpdateApp() {
       const ok = confirm("Yeni sürüm kontrol edilsin mi? Kayıtlar silinmez, sadece uygulama önbelleği yenilenir.");
@@ -4814,7 +4908,7 @@
 
     async function uploadCloudBackupOpen(user) {
       const payload = buildCloudBackupPayload(user);
-      payload.version = 76;
+      payload.version = 77;
       const bolmePart = els.bolmeNo && String(els.bolmeNo.value || "").trim() ? `_${cleanFilePart(els.bolmeNo.value)}` : "";
       const fileName = `Mesaha_Yedek_${cleanFilePart(user.seflik)}_${cleanFilePart(user.name)}${bolmePart}_${new Date().toISOString().slice(0,19).replace(/[-:T]/g, "")}.json`;
 
@@ -5242,7 +5336,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function buildCloudBackupPayload(user) {
       return {
         app: "Mesaha İO",
-        version: 76,
+        version: 77,
         createdAt: new Date().toLocaleString("tr-TR"),
         user: {
           name: user.name || "",
@@ -6398,7 +6492,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
         els.selectAllRecords.indeterminate = visibleSelected > 0 && visibleSelected < visibleIds.length;
       }
 
-      [els.bulkDeleteBtn, els.bulkProductBtn, els.bulkTreeBtn, els.clearSelectionBtn].forEach(btn => {
+      [els.bulkDeleteBtn, els.clearSelectionBtn].forEach(btn => {
         if (btn) btn.disabled = count === 0;
       });
     }
@@ -7242,7 +7336,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function backup() {
       const data = {
         app: "Mesaha App",
-        version: 76,
+        version: 77,
         exportedAt: formatDateTime(),
         systemHeaders: HEADERS,
         settings: state.settings,
@@ -7497,10 +7591,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     if (els.selectAllRecords) els.selectAllRecords.addEventListener("change", () => toggleSelectFiltered(els.selectAllRecords.checked));
     if (els.selectFilteredBtn) els.selectFilteredBtn.addEventListener("click", selectFilteredRecords);
     if (els.clearSelectionBtn) els.clearSelectionBtn.addEventListener("click", clearRecordSelection);
-    if (els.bulkDeleteBtn) els.bulkDeleteBtn.addEventListener("click", deleteSelectedRecords);
-    if (els.bulkProductBtn) els.bulkProductBtn.addEventListener("click", bulkChangeProduct);
-    if (els.bulkTreeBtn) els.bulkTreeBtn.addEventListener("click", bulkChangeTree);
-    if (els.adminUserSearch) els.adminUserSearch.addEventListener("input", () => renderOnlineUsers(state.adminOnlineUsers || []));
+    if (els.bulkDeleteBtn) els.bulkDeleteBtn.addEventListener("click", deleteSelectedRecords);    if (els.adminUserSearch) els.adminUserSearch.addEventListener("input", () => renderOnlineUsers(state.adminOnlineUsers || []));
 
     els.searchInput.addEventListener("input", render);
     els.exportSystemXlsBtn.addEventListener("click", exportSystemXls);
@@ -7516,6 +7607,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
       render();
       if (typeof forceRefreshSummaryCards === "function") forceRefreshSummaryCards();
       document.body.classList.add("print-summary-only");
+      markPrintOnlyBeyan();
       window.print();
       setTimeout(() => document.body.classList.remove("print-summary-only"), 800);
     });
@@ -7536,7 +7628,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
 
 
     
-    if (els.forceUpdateBtn) els.forceUpdateBtn.addEventListener("click", forceUpdateApp);
+    if (els.userMenuForceUpdateBtn) els.userMenuForceUpdateBtn.addEventListener("click", forceUpdateApp);
     if (els.guideForceUpdateBtn) els.guideForceUpdateBtn.addEventListener("click", forceUpdateApp);
 
     if (els.guideAdminOpenBtn) els.guideAdminOpenBtn.addEventListener("click", unlockAdminPanel);
