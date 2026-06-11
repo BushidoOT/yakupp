@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha App v67</title>
+  <title>Mesaha App v68</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -2750,6 +2750,27 @@
       }
     }
 
+  
+    /* v68: Admin kullanıcı silme ve bulut işlem kilidi */
+    .registered-user-actions{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:7px;
+      margin-top:8px;
+    }
+
+    .registered-user-delete{
+      background:#dc2626 !important;
+      color:#ffffff !important;
+      width:100%;
+    }
+
+    button.is-busy{
+      opacity:.68 !important;
+      pointer-events:none !important;
+      filter:grayscale(.15);
+    }
+
   </style>
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -3234,6 +3255,8 @@
       editingReturnBarcode: "",
       userStore: { activeUserId: "", users: [] },
       activeUser: null,
+      cloudBackupBusy: false,
+      lastAdminCode: "",
       settings: {
         lastBarcode: "A102682",
         lastProductType: "Tomruk",
@@ -3542,6 +3565,46 @@
       return Array.isArray(data.users) ? data.users : [];
     }
 
+
+    async function deleteCloudUserAndBackups(name, seflik) {
+      const cleanName = cleanUserText(name);
+      const cleanSeflik = cleanUserText(seflik);
+      if (!cleanName || !cleanSeflik) return;
+
+      let adminCode = state.lastAdminCode || sessionStorage.getItem("mesaha_admin_code") || "";
+      if (!adminCode) {
+        adminCode = window.prompt("Silmek için yönetici kodunu giriniz:");
+      }
+      if (String(adminCode || "").trim() !== ADMIN_CODE) {
+        showToast("Yönetici kodu hatalı.");
+        return;
+      }
+
+      const ok = window.confirm(`${cleanName} / ${cleanSeflik} kullanıcısı ve bu kullanıcıya ait tüm bulut yedekleri silinsin mi? Bu işlem geri alınamaz.`);
+      if (!ok) return;
+
+      try {
+        showToast("Kullanıcı ve yedekleri siliniyor...");
+        const data = await jsonpRequest(ONLINE_USER_API_URL, {
+          action: "deleteUser",
+          admin: adminCode,
+          name: cleanName,
+          seflik: cleanSeflik
+        }, 20000);
+
+        if (!data || data.ok !== true) {
+          throw new Error((data && data.error) ? data.error : "Silme işlemi başarısız");
+        }
+
+        showToast("Kullanıcı ve yedekleri silindi.");
+        const users = await loadOnlineUsers(adminCode);
+        renderOnlineUsers(users);
+      } catch (error) {
+        showToast(error && error.message ? error.message : "Silme işlemi başarısız.");
+      }
+    }
+
+
     function renderOnlineUsers(users) {
       if (!els.registeredUsersList) return;
 
@@ -3561,9 +3624,20 @@
             <span>Giriş: ${(Number(user.loginCount) || 0).toLocaleString("tr-TR")}</span>
             <span>İlk: ${escapeHtml(user.firstLogin || "-")}</span>
             <span>Son: ${escapeHtml(user.lastLogin || "-")}</span>
+            <span>Yedek: ${(Number(user.backupCount) || 0).toLocaleString("tr-TR")}</span>
+            <span>Cihaz: ${(Number(user.deviceCount) || 0).toLocaleString("tr-TR")}</span>
+          </div>
+          <div class="registered-user-actions">
+            <button class="danger registered-user-delete" type="button" data-name="${escapeHtml(user.name || "")}" data-seflik="${escapeHtml(user.seflik || "")}">
+              Kullanıcıyı ve Bulut Yedeklerini Sil
+            </button>
           </div>
         </div>
       `).join("");
+
+      els.registeredUsersList.querySelectorAll(".registered-user-delete").forEach(btn => {
+        btn.addEventListener("click", () => deleteCloudUserAndBackups(btn.dataset.name || "", btn.dataset.seflik || ""));
+      });
     }
 
     function renderLocalUsersAsFallback(message) {
@@ -3798,9 +3872,38 @@
       document.body.classList.remove("cloud-restore-open");
     }
 
+
+    function stableBackupString(value) {
+      try {
+        return JSON.stringify(value, Object.keys(value).sort());
+      } catch {
+        return String(value || "");
+      }
+    }
+
+    function simpleHashText(text) {
+      let hash = 2166136261;
+      const str = String(text || "");
+      for (let i = 0; i < str.length; i++) {
+        hash ^= str.charCodeAt(i);
+        hash = Math.imul(hash, 16777619);
+      }
+      return (hash >>> 0).toString(16);
+    }
+
+    function setCloudBackupBusy(isBusy) {
+      state.cloudBackupBusy = !!isBusy;
+      [els.cloudBackupBtn, els.panelCloudBackupBtn].forEach(btn => {
+        if (!btn) return;
+        btn.classList.toggle("is-busy", !!isBusy);
+        btn.disabled = !!isBusy;
+      });
+    }
+
+
     async function uploadCloudBackupOpen(user) {
       const payload = buildCloudBackupPayload(user);
-      payload.version = 67;
+      payload.version = 68;
       const bolmePart = els.bolmeNo && String(els.bolmeNo.value || "").trim() ? `_${cleanFilePart(els.bolmeNo.value)}` : "";
       const fileName = `Mesaha_Yedek_${cleanFilePart(user.seflik)}_${cleanFilePart(user.name)}${bolmePart}_${new Date().toISOString().slice(0,19).replace(/[-:T]/g, "")}.json`;
 
@@ -3812,7 +3915,9 @@
       body.set("bolmeNo", els.bolmeNo ? String(els.bolmeNo.value || "").trim() : "");
       body.set("ekipNot", els.ekipNot ? String(els.ekipNot.value || "").trim() : "");
       body.set("fileName", fileName);
+      const backupHash = simpleHashText(JSON.stringify({ user, records: state.records || [], fileInfo: payload.fileInfo || {} }));
       body.set("recordCount", String((state.records || []).length));
+      body.set("backupHash", backupHash);
       body.set("payload", JSON.stringify(payload));
 
       await fetch(ONLINE_USER_API_URL, {
@@ -3850,6 +3955,11 @@
 
 
     async function cloudBackupRecordsOpen() {
+      if (state.cloudBackupBusy) {
+        showToast("Bulut yedekleme zaten devam ediyor. Lütfen bekleyin.");
+        return;
+      }
+
       if (!navigator.onLine) {
         showToast("İnternet bağlantısı yok. Buluta yedekleme yapılamaz.");
         return;
@@ -3868,15 +3978,25 @@
       }
 
       try {
-        showToast("Buluta yedek gönderiliyor...");
+        setCloudBackupBusy(true);
+        showToast("Buluta yedek gönderiliyor, lütfen bekleyin...");
         const fileName = await uploadCloudBackupOpen(user);
-        showToast("Bulut yedekleme gönderildi.");
-        verifyLatestCloudBackupAfterUpload(user);
+
+        showToast("Bulut yedekleme gönderildi. Kontrol ediliyor...");
+        const verified = await verifyLatestCloudBackupAfterUpload(user);
+
         setTimeout(() => {
-          alert(`Bulut yedeği gönderildi.\n\nDosya adı:\n${fileName}\n\nDrive'daki Mesaha_Yedekleri klasörüne kaydedilir.\n\nBuluttan Getir içinde görünmezse Apps Script kodunu v66 ile güncelleyin.`);
+          alert(`Bulut yedeği gönderildi.
+
+Dosya adı:
+${fileName}
+
+${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünmezse Apps Script kodunun v68 olduğundan emin olun."}`);
         }, 350);
       } catch (error) {
         showToast(error && error.message ? error.message : "Bulut yedekleme başarısız.");
+      } finally {
+        setTimeout(() => setCloudBackupBusy(false), 1500);
       }
     }
 
@@ -4170,7 +4290,7 @@
     function buildCloudBackupPayload(user) {
       return {
         app: "Mesaha İO",
-        version: 67,
+        version: 68,
         createdAt: new Date().toLocaleString("tr-TR"),
         user: {
           name: user.name || "",
@@ -4258,8 +4378,11 @@
         return;
       }
 
+      state.lastAdminCode = String(code || "").trim();
+      sessionStorage.setItem("mesaha_admin_code", state.lastAdminCode);
       sessionStorage.setItem("mesaha_admin_users_visible", "1");
       document.body.classList.add("admin-users-visible");
+        state.lastAdminCode = sessionStorage.getItem("mesaha_admin_code") || state.lastAdminCode || "";
 
       if (els.registeredUsersList) {
         els.registeredUsersList.innerHTML = `<div class="registered-loading">Merkez kullanıcı listesi yükleniyor...</div>`;
@@ -6003,7 +6126,7 @@
     function backup() {
       const data = {
         app: "Mesaha App",
-        version: 67,
+        version: 68,
         exportedAt: formatDateTime(),
         systemHeaders: HEADERS,
         settings: state.settings,
@@ -6140,7 +6263,10 @@
     if (els.changeUserBtn) els.changeUserBtn.addEventListener("click", () => openUserLogin(false));
     if (els.adminUsersBtn) els.adminUsersBtn.addEventListener("click", unlockRegisteredUsers);
     if (els.adminUsersCloseBtn) els.adminUsersCloseBtn.addEventListener("click", lockRegisteredUsers);
-    if (els.cloudBackupBtn) els.cloudBackupBtn.addEventListener("click", cloudBackupRecordsOpen);
+    if (els.cloudBackupBtn && !els.cloudBackupBtn.dataset.cloudBackupBound) {
+      els.cloudBackupBtn.dataset.cloudBackupBound = "1";
+      els.cloudBackupBtn.addEventListener("click", cloudBackupRecordsOpen);
+    }
 
     if (els.cloudRestoreBtn && !els.cloudRestoreBtn.dataset.boundV64) {
       els.cloudRestoreBtn.dataset.boundV64 = "1";
@@ -6188,7 +6314,8 @@
       });
     }
     if (els.panelPasswordBtn) els.panelPasswordBtn.addEventListener("click", () => { closeUserPanel(); openCloudRestorePanel(true, false); });
-    if (els.panelCloudBackupBtn) {
+    if (els.panelCloudBackupBtn && !els.panelCloudBackupBtn.dataset.cloudBackupBound) {
+      els.panelCloudBackupBtn.dataset.cloudBackupBound = "1";
       els.panelCloudBackupBtn.addEventListener("click", () => {
         closeUserPanel();
         cloudBackupRecordsOpen();
