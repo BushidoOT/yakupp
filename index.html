@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha App v78</title>
+  <title>Mesaha App v80</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -3465,6 +3465,95 @@
       }
     }
 
+  
+    /* v79: Ürüne göre renkli, daha şeffaf iPhone blur uyarı */
+    .toast,
+    #toast{
+      min-height:0 !important;
+      min-width:0 !important;
+      width:auto !important;
+      max-width:min(70vw, 500px) !important;
+      padding:8px 16px !important;
+      border-radius:999px !important;
+      font-size:14px !important;
+      line-height:1.2 !important;
+      font-weight:950 !important;
+      left:50% !important;
+      right:auto !important;
+      bottom:calc(env(safe-area-inset-bottom, 0px) + var(--keyboard-offset, 0px) + 42px) !important;
+      transform:translateX(-50%) translateY(16px) scale(.98) !important;
+      color:#ffffff !important;
+      backdrop-filter:blur(34px) saturate(210%) !important;
+      -webkit-backdrop-filter:blur(34px) saturate(210%) !important;
+      border:1px solid rgba(255,255,255,.42) !important;
+      box-shadow:0 18px 42px rgba(15,23,42,.22), inset 0 1px 0 rgba(255,255,255,.22) !important;
+      text-shadow:0 1px 2px rgba(0,0,0,.20) !important;
+      overflow:hidden !important;
+      isolation:isolate !important;
+    }
+
+    .toast::before,
+    #toast::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      border-radius:inherit;
+      background:linear-gradient(180deg, rgba(255,255,255,.28), rgba(255,255,255,.04)) !important;
+      pointer-events:none;
+      z-index:-1;
+    }
+
+    .toast.show,
+    #toast.show{
+      transform:translateX(-50%) translateY(0) scale(1) !important;
+    }
+
+    body.product-tomruk .toast.success-toast,
+    body.product-tomruk #toast.success-toast{
+      background:rgba(202,138,4,.40) !important;
+      background-color:rgba(202,138,4,.40) !important;
+    }
+
+    body.product-maden .toast.success-toast,
+    body.product-maden #toast.success-toast{
+      background:rgba(37,99,235,.36) !important;
+      background-color:rgba(37,99,235,.36) !important;
+    }
+
+    body.product-kagit .toast.success-toast,
+    body.product-kagit #toast.success-toast{
+      background:rgba(220,38,38,.36) !important;
+      background-color:rgba(220,38,38,.36) !important;
+    }
+
+    body.product-sanayi .toast.success-toast,
+    body.product-sanayi #toast.success-toast{
+      background:rgba(22,163,74,.34) !important;
+      background-color:rgba(22,163,74,.34) !important;
+    }
+
+    body.product-tel .toast.success-toast,
+    body.product-tel #toast.success-toast{
+      background:rgba(126,34,206,.36) !important;
+      background-color:rgba(126,34,206,.36) !important;
+    }
+
+    .toast.error-toast,
+    #toast.error-toast{
+      background:rgba(185,28,28,.42) !important;
+      background-color:rgba(185,28,28,.42) !important;
+    }
+
+    @media (max-width:520px){
+      .toast,
+      #toast{
+        max-width:72vw !important;
+        padding:7px 13px !important;
+        font-size:13px !important;
+        bottom:calc(env(safe-area-inset-bottom, 0px) + var(--keyboard-offset, 0px) + 38px) !important;
+      }
+    }
+
   </style>
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -3558,7 +3647,7 @@
   <div class="app">
     <header class="topbar">
       <div class="brand">
-        <h1>Mesaha İO v1.7</h1>
+        <h1>Mesaha İO v1.9</h1>
         
       </div>
       <div id="activeUserBadge" class="active-user-badge" role="button" tabindex="0" title="Kullanıcı panelini aç" style="display:none"></div>
@@ -3849,6 +3938,25 @@
                 <li>Güncelleme sonrası sayfayı 2-3 kez yenileyiniz.</li>
               </ol>
             </div>
+
+            <div class="guide-card">
+              <h3>Terminal Kurulumu</h3>
+              <ol>
+                <li>Terminal cihazında uygulama/terminal menüsünü açınız.</li>
+                <li>İlk gelen ekranda sol alttaki en son seçeneğe dokununuz.</li>
+                <li>Açılan bölümde <b>Yeşil Takip</b> yazan seçeneği açınız.</li>
+                <li>Bu işlem sizi Chrome uygulamasına yönlendirir.</li>
+                <li>Chrome’un arama/adres çubuğuna <b>bit.ly/mesahaio</b> yazıp aratınız.</li>
+                <li>Terminal kendi internetiyle uygulamayı açmazsa terminali Wi‑Fi’ye bağlayıp tekrar deneyiniz.</li>
+                <li>Uygulama açıldıktan sonra Chrome’da sağ üstteki <b>üç çizgi / menü</b> simgesine basınız.</li>
+                <li>Menüdeki <b>yıldız</b> simgesine dokunup onaylayınız.</li>
+                <li>Böylece uygulama <b>Mobil Yer İşaretleri</b> bölümüne kaydedilir.</li>
+                <li>İnternetsiz arazide kullanmak için Chrome menüsünden <b>Mobil Yer İşaretleri</b> bölümüne girip uygulama adına basınız.</li>
+              </ol>
+              <p class="hint">Not: Uygulamayı arazide kullanmadan önce bir kez internet varken açıp hazır hale getirmeniz önerilir.</p>
+            </div>
+
+
 
             <div class="guide-card">
               <h3>2. Yeni Kayıt</h3>
@@ -4384,11 +4492,249 @@
     function enhanceToastGlass() {
       const t = els.toast || document.getElementById("toast") || document.querySelector(".toast");
       if (!t) return;
-      t.style.background = "rgba(20, 83, 45, .46)";
-      t.style.backgroundColor = "rgba(20, 83, 45, .46)";
-      t.style.backdropFilter = "blur(22px) saturate(170%)";
-      t.style.webkitBackdropFilter = "blur(22px) saturate(170%)";
-      t.style.border = "1px solid rgba(255,255,255,.32)";
+
+      let bg = "rgba(22, 101, 52, .34)";
+      if (t.classList.contains("error-toast")) {
+        bg = "rgba(185, 28, 28, .42)";
+      } else if (document.body.classList.contains("product-tomruk")) {
+        bg = "rgba(202, 138, 4, .40)";
+      } else if (document.body.classList.contains("product-maden")) {
+        bg = "rgba(37, 99, 235, .36)";
+      } else if (document.body.classList.contains("product-kagit")) {
+        bg = "rgba(220, 38, 38, .36)";
+      } else if (document.body.classList.contains("product-sanayi")) {
+        bg = "rgba(22, 163, 74, .34)";
+      } else if (document.body.classList.contains("product-tel")) {
+        bg = "rgba(126, 34, 206, .36)";
+      }
+
+      t.style.background = bg;
+      t.style.backgroundColor = bg;
+      t.style.backdropFilter = "blur(34px) saturate(210%)";
+      t.style.webkitBackdropFilter = "blur(34px) saturate(210%)";
+      t.style.border = "1px solid rgba(255,255,255,.42)";
+      t.style.boxShadow = "0 18px 42px rgba(15,23,42,.22), inset 0 1px 0 rgba(255,255,255,.22)";
+    }
+
+
+
+    function getBeyanTotals() {
+      const totals = {
+        all: 0,
+        adet: 0,
+        products: {
+          "Tomruk": { label: "Tomruk", className: "tomruk", volume: 0, adet: 0 },
+          "Maden Direk": { label: "Maden Direği", className: "maden", volume: 0, adet: 0 },
+          "Kağıtlık": { label: "Kağıtlık", className: "kagit", volume: 0, adet: 0 },
+          "Sanayi Odunu": { label: "Sanayi Odunu", className: "sanayi", volume: 0, adet: 0 },
+          "Tel Direk": { label: "Tel Direği", className: "tel", volume: 0, adet: 0 }
+        }
+      };
+
+      state.records.forEach(r => {
+        const qty = Number(r.quantity) || 0;
+        const vol = Number(r.desi) || 0;
+        const key = normalizeProductType(r.productType || "Tomruk");
+
+        totals.all += vol;
+        totals.adet += qty;
+
+        if (totals.products[key]) {
+          totals.products[key].volume += vol;
+          totals.products[key].adet += qty;
+        }
+      });
+
+      return totals;
+    }
+
+    function buildBeyanPrintHtml() {
+      const totals = getBeyanTotals();
+      const productCards = Object.keys(totals.products).map(key => totals.products[key]).filter(item => item.adet || item.volume).map(item => `
+        <div class="product-card ${item.className}">
+          <div class="product-title">${escapeHtml(item.label)}</div>
+          <div class="product-value">${formatHacimFromDesi(item.volume)} m³</div>
+          <div class="product-adet">${Number(item.adet || 0).toLocaleString("tr-TR")} adet</div>
+        </div>
+      `).join("");
+
+      const now = new Date();
+      const pad = n => String(n).padStart(2, "0");
+      const dateText = `${pad(now.getDate())}.${pad(now.getMonth()+1)}.${now.getFullYear()} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
+      const userText = state.activeUser && state.activeUser.name ? `${state.activeUser.name} • ${state.activeUser.seflik || ""}` : "";
+
+      return `<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Beyan</title>
+<style>
+  @page{ size:A4 portrait; margin:14mm; }
+  *{ box-sizing:border-box; }
+  body{
+    margin:0;
+    background:#fff;
+    color:#111827;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+  }
+  .page{
+    width:100%;
+    min-height:260mm;
+    padding:0;
+    display:flex;
+    flex-direction:column;
+  }
+  h1{
+    margin:0 0 24px;
+    text-align:center;
+    font-size:26px;
+    font-weight:950;
+    letter-spacing:.6px;
+  }
+  .top-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+    margin-bottom:12px;
+  }
+  .summary-card,
+  .product-card{
+    border:1px solid #d7dee8;
+    border-radius:12px;
+    padding:14px;
+    min-height:92px;
+    page-break-inside:avoid;
+  }
+  .summary-card small{
+    display:block;
+    color:#334155;
+    font-size:14px;
+    font-weight:900;
+    margin-bottom:10px;
+  }
+  .summary-card strong{
+    display:block;
+    color:#000;
+    font-size:30px;
+    font-weight:950;
+    line-height:1;
+  }
+  .summary-card .unit{
+    margin-top:7px;
+    color:#334155;
+    font-size:15px;
+    font-weight:900;
+  }
+  .products{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+    margin-top:2px;
+  }
+  .product-card{
+    min-height:105px;
+    background:#fff;
+    border-left-width:8px;
+  }
+  .product-card.tomruk{ border-left-color:#f2b705; background:#fff9e8; }
+  .product-card.maden{ border-left-color:#3b82f6; background:#eff6ff; }
+  .product-card.kagit{ border-left-color:#ef4444; background:#fff1f2; }
+  .product-card.sanayi{ border-left-color:#16a34a; background:#f0fdf4; }
+  .product-card.tel{ border-left-color:#7c3aed; background:#f5f3ff; }
+  .product-title{
+    font-size:17px;
+    font-weight:950;
+    color:#334155;
+    margin-bottom:10px;
+  }
+  .product-value{
+    font-size:28px;
+    font-weight:950;
+    color:#000;
+    line-height:1.05;
+  }
+  .product-adet{
+    margin-top:8px;
+    font-size:15px;
+    color:#334155;
+    font-weight:900;
+  }
+  .footer{
+    margin-top:auto;
+    display:flex;
+    justify-content:space-between;
+    color:#94a3b8;
+    font-size:10px;
+    font-weight:800;
+    padding-top:16px;
+  }
+  @media print{
+    html,body{ width:210mm; min-height:297mm; }
+  }
+</style>
+</head>
+<body>
+  <div class="page">
+    <h1>BEYAN</h1>
+
+    <div class="top-grid">
+      <div class="summary-card">
+        <small>Toplam m³</small>
+        <strong>${formatHacimFromDesi(totals.all)}</strong>
+        <div class="unit">m³</div>
+      </div>
+      <div class="summary-card">
+        <small>Toplam Adet</small>
+        <strong>${Number(totals.adet || 0).toLocaleString("tr-TR")}</strong>
+        <div class="unit">adet</div>
+      </div>
+    </div>
+
+    <div class="products">
+      ${productCards || ""}
+    </div>
+
+    <div class="footer">
+      <span>${escapeHtml(window.location.origin + window.location.pathname)}</span>
+      <span>${escapeHtml(dateText)}${userText ? " • " + escapeHtml(userText) : ""}</span>
+    </div>
+  </div>
+</body>
+</html>`;
+    }
+
+    function printBeyanOnly() {
+      const htmlText = buildBeyanPrintHtml();
+
+      const frame = document.createElement("iframe");
+      frame.setAttribute("title", "Beyan Yazdır");
+      frame.style.position = "fixed";
+      frame.style.right = "0";
+      frame.style.bottom = "0";
+      frame.style.width = "0";
+      frame.style.height = "0";
+      frame.style.border = "0";
+      frame.style.opacity = "0";
+      document.body.appendChild(frame);
+
+      const doc = frame.contentWindow.document;
+      doc.open();
+      doc.write(htmlText);
+      doc.close();
+
+      setTimeout(() => {
+        try {
+          frame.contentWindow.focus();
+          frame.contentWindow.print();
+        } catch {
+          window.print();
+        }
+
+        setTimeout(() => {
+          try { frame.remove(); } catch {}
+        }, 4000);
+      }, 250);
     }
 
 
@@ -5100,7 +5446,7 @@
 
     async function uploadCloudBackupOpen(user) {
       const payload = buildCloudBackupPayload(user);
-      payload.version = 78;
+      payload.version = 80;
       const bolmePart = els.bolmeNo && String(els.bolmeNo.value || "").trim() ? `_${cleanFilePart(els.bolmeNo.value)}` : "";
       const fileName = `Mesaha_Yedek_${cleanFilePart(user.seflik)}_${cleanFilePart(user.name)}${bolmePart}_${new Date().toISOString().slice(0,19).replace(/[-:T]/g, "")}.json`;
 
@@ -5529,7 +5875,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function buildCloudBackupPayload(user) {
       return {
         app: "Mesaha İO",
-        version: 78,
+        version: 80,
         createdAt: new Date().toLocaleString("tr-TR"),
         user: {
           name: user.name || "",
@@ -6266,7 +6612,8 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
       }
 
       els.productType.value = type;
-      document.body.classList.toggle("product-tomruk", type === "Tomruk");
+      document.body.classList.remove("product-tomruk", "product-maden", "product-kagit", "product-sanayi", "product-tel");
+      document.body.classList.add("product-" + normalizeProductClass(type));
       els.productBoxes.querySelectorAll(".product-box").forEach(box => {
         box.classList.toggle("active", box.dataset.product === type);
       });
@@ -7530,7 +7877,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function backup() {
       const data = {
         app: "Mesaha App",
-        version: 78,
+        version: 80,
         exportedAt: formatDateTime(),
         systemHeaders: HEADERS,
         settings: state.settings,
@@ -7800,10 +8147,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
       if (!state.records.length) return showErrorToast("Yazdırılacak kayıt yok.");
       render();
       if (typeof forceRefreshSummaryCards === "function") forceRefreshSummaryCards();
-      document.body.classList.add("print-summary-only");
-      markPrintOnlyBeyan();
-      window.print();
-      setTimeout(() => document.body.classList.remove("print-summary-only"), 800);
+      printBeyanOnly();
     });
     if (els.undoBtn) els.undoBtn.addEventListener("click", undoLastDelete);
     els.deleteAllBtn.addEventListener("click", () => {
