@@ -1,14 +1,16 @@
-Mesaha App Final v54
+Mesaha App v67
 
-v53 üzerine küçük görsel düzeltme:
-- Son girilen 3 barkod kartları artık ürün cinsine göre renkli görünür.
-  - Tomruk: sarı
-  - Maden: mavi
-  - Kağıtlık: kırmızı
-  - Sanayi: yeşil
-  - Tel: mor
-- Barkoda tıklayınca düzenleme açma özelliği korunur.
-- v53'teki tüm final özellikler korunur.
+v66 taban alınmıştır.
+
+Değişiklik:
+- Silinen Apps Script projesi yerine yeni Web App URL işlendi.
+- Yeni Apps Script URL:
+https://script.google.com/macros/s/AKfycbzv8rw3n4FuwDmiFnW3ttKuoK0mUQnzEYizjaD46z0uuFiKtqLl1zkupkB9AkOehC7ECg/exec
+
+Önemli:
+- Yeni Apps Script projesinde kod yoksa ZIP içindeki AppsScript_v67.txt kodunu Apps Script'e komple yapıştır.
+- Sonra Dağıt / Deploy yaptıysan bu link zaten uygulamaya işlendi.
+- Eğer ileride tekrar yeni link oluşursa uygulama içindeki URL tekrar güncellenmelidir.
 
 GitHub'a yüklenecek dosyalar:
 - index.html
