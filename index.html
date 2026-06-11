@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha App v75</title>
+  <title>Mesaha App v76</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -3214,6 +3214,32 @@
       border-color:#2563eb !important;
     }
 
+  
+    /* v76: Yeni sürümü güncelle butonu */
+    .update-app-btn{
+      border:1px solid rgba(37,99,235,.35);
+      background:#2563eb;
+      color:#ffffff;
+      border-radius:999px;
+      min-height:34px;
+      padding:6px 12px;
+      font-size:12px;
+      font-weight:950;
+      box-shadow:0 8px 20px rgba(37,99,235,.20);
+      white-space:nowrap;
+    }
+
+    .update-app-btn:active{
+      transform:scale(.98);
+    }
+
+    @media (max-width:420px){
+      .update-app-btn{
+        padding:6px 9px;
+        font-size:11px;
+      }
+    }
+
   </style>
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -3306,7 +3332,8 @@
   <div class="app">
     <header class="topbar">
       <div class="brand">
-        <h1>Mesaha İO v1.4</h1>
+        <h1>Mesaha İO v1.5</h1>
+        <button id="forceUpdateBtn" class="update-app-btn" type="button" title="Yeni sürümü yükle">Güncelle</button>
         
       </div>
       <div id="activeUserBadge" class="active-user-badge" role="button" tabindex="0" title="Kullanıcı panelini aç" style="display:none"></div>
@@ -3653,6 +3680,16 @@
               </ol>
             </div>
 
+            <div class="guide-card">
+              <h3>7. Yeni Sürümü Güncelle</h3>
+              <ol>
+                <li>Yeni sürüm görünmüyorsa <b>Yeni Sürümü Güncelle</b> butonuna basınız.</li>
+                <li>Bu işlem kayıtları silmez; sadece uygulama önbelleğini yeniler.</li>
+                <li>iOS’ta ana ekrandan açılan uygulamalarda özellikle işe yarar.</li>
+              </ol>
+              <button id="guideForceUpdateBtn" class="secondary" type="button">Yeni Sürümü Güncelle</button>
+            </div>
+
             <div class="guide-card admin-guide-open-card">
               <h3>Yönetici Bölümü</h3>
               <button id="guideAdminOpenBtn" class="secondary" type="button">Yönetici Panelini Aç</button>
@@ -3882,6 +3919,8 @@
       navGuide: $("navGuide"),
       navAdmin: $("navAdmin"),
       guideAdminOpenBtn: $("guideAdminOpenBtn"),
+      forceUpdateBtn: $("forceUpdateBtn"),
+      guideForceUpdateBtn: $("guideForceUpdateBtn"),
       adminRefreshBtn: $("adminRefreshBtn"),
       adminTotalUsers: $("adminTotalUsers"),
       adminTodayUsers: $("adminTodayUsers"),
@@ -4116,6 +4155,38 @@
       return Array.isArray(data.users) ? data.users : [];
     }
 
+
+
+
+    async function forceUpdateApp() {
+      const ok = confirm("Yeni sürüm kontrol edilsin mi? Kayıtlar silinmez, sadece uygulama önbelleği yenilenir.");
+      if (!ok) return;
+
+      try {
+        showToast("Yeni sürüm hazırlanıyor...");
+
+        if ("serviceWorker" in navigator) {
+          const regs = await navigator.serviceWorker.getRegistrations();
+          await Promise.all(regs.map(reg => reg.unregister().catch(() => false)));
+        }
+
+        if ("caches" in window) {
+          const keys = await caches.keys();
+          await Promise.all(keys.map(key => caches.delete(key).catch(() => false)));
+        }
+
+        localStorage.setItem("mesaha_last_manual_update", new Date().toISOString());
+        sessionStorage.setItem("mesaha_force_reload", String(Date.now()));
+
+        const url = new URL(window.location.href);
+        url.searchParams.set("appUpdate", Date.now().toString());
+        url.hash = "";
+        window.location.replace(url.toString());
+      } catch (error) {
+        showToast("Güncelleme başlatılamadı. Sayfayı elle yenileyin.");
+        setTimeout(() => window.location.reload(), 700);
+      }
+    }
 
 
     function parseTrDate(value) {
@@ -4743,7 +4814,7 @@
 
     async function uploadCloudBackupOpen(user) {
       const payload = buildCloudBackupPayload(user);
-      payload.version = 75;
+      payload.version = 76;
       const bolmePart = els.bolmeNo && String(els.bolmeNo.value || "").trim() ? `_${cleanFilePart(els.bolmeNo.value)}` : "";
       const fileName = `Mesaha_Yedek_${cleanFilePart(user.seflik)}_${cleanFilePart(user.name)}${bolmePart}_${new Date().toISOString().slice(0,19).replace(/[-:T]/g, "")}.json`;
 
@@ -5171,7 +5242,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function buildCloudBackupPayload(user) {
       return {
         app: "Mesaha İO",
-        version: 75,
+        version: 76,
         createdAt: new Date().toLocaleString("tr-TR"),
         user: {
           name: user.name || "",
@@ -7171,7 +7242,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function backup() {
       const data = {
         app: "Mesaha App",
-        version: 75,
+        version: 76,
         exportedAt: formatDateTime(),
         systemHeaders: HEADERS,
         settings: state.settings,
@@ -7464,6 +7535,10 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     });
 
 
+    
+    if (els.forceUpdateBtn) els.forceUpdateBtn.addEventListener("click", forceUpdateApp);
+    if (els.guideForceUpdateBtn) els.guideForceUpdateBtn.addEventListener("click", forceUpdateApp);
+
     if (els.guideAdminOpenBtn) els.guideAdminOpenBtn.addEventListener("click", unlockAdminPanel);
     if (els.adminRefreshBtn) els.adminRefreshBtn.addEventListener("click", () => loadAdminPanelData().catch(err => showToast(err && err.message ? err.message : "Admin yenilenemedi.")));
     document.querySelectorAll(".admin-tab").forEach(btn => btn.addEventListener("click", () => setAdminPanelTab(btn.dataset.adminTab || "dashboard")));
@@ -7529,6 +7604,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     }
 
 
+    window.forceUpdateApp = forceUpdateApp;
     window.adminOpenUserBackups = adminOpenUserBackups;
     window.adminEditNote = adminEditNote;
     window.adminTogglePassive = adminTogglePassive;

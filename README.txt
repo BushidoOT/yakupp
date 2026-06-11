@@ -1,14 +1,19 @@
-Mesaha App v75 / Mesaha İO v1.4
+Mesaha App v76 / Mesaha İO v1.5
 
-Düzeltmeler:
-- Admin Paneli sekmesine basınca Yeni Kayıt ekranı yerine gerçek Admin Paneli açılır.
-- Admin Paneli görünürken Yeni Kayıt / Kayıtlar / Kullanım Kılavuzu gizlenir.
-- Yeni Kayıt, Kayıtlar veya Kullanım Kılavuzu sekmesine geçince Admin Paneli kapanır.
-- Kullanım Kılavuzu altındaki Yönetici Bölümü açıklamasından 4. sekme yazısı kaldırıldı.
-- Görünen uygulama sürümü Mesaha İO v1.4 yapıldı.
+Eklenenler:
+- Yeni Sürümü Güncelle butonu eklendi.
+- Buton kayıtları silmeden service worker ve önbelleği temizler.
+- iOS / ana ekran uygulamasında eski sürüm takılırsa yeni sürümü zorla açar.
+- Kullanım Kılavuzu içine "Yeni Sürümü Güncelle" bölümü eklendi.
+- Service worker navigasyonda ağ öncelikli hale getirildi; yeni sürüm daha hızlı alınır.
+- Görünen uygulama sürümü Mesaha İO v1.5 yapıldı.
 
 Not:
-- Apps Script tarafında zorunlu yeni değişiklik yoktur; v74 kodu paket içinde tekrar eklendi.
+- Bu işlem kayıtları silmez.
+- localStorage kayıtları durur; sadece uygulama cache temizlenir.
+
+Apps Script:
+- Zorunlu yeni Apps Script değişikliği yoktur; v75 kodu paket içinde tekrar eklendi.
 
 Kullanılan Apps Script URL:
 https://script.google.com/macros/s/AKfycbzv8rw3n4FuwDmiFnW3ttKuoK0mUQnzEYizjaD46z0uuFiKtqLl1zkupkB9AkOehC7ECg/exec
