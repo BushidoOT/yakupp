@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha App v77</title>
+  <title>Mesaha App v78</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -3325,6 +3325,146 @@
       }
     }
 
+  
+    /* v78: Gerçek cam/blur kayıt uyarısı */
+    .toast,
+    #toast,
+    .app-toast,
+    .save-toast,
+    .snackbar{
+      min-height:0 !important;
+      min-width:0 !important;
+      width:auto !important;
+      max-width:min(70vw, 500px) !important;
+      padding:8px 16px !important;
+      border-radius:999px !important;
+      font-size:14px !important;
+      line-height:1.2 !important;
+      font-weight:950 !important;
+      left:50% !important;
+      right:auto !important;
+      bottom:calc(env(safe-area-inset-bottom, 0px) + var(--keyboard-offset, 0px) + 44px) !important;
+      transform:translateX(-50%) translateY(16px) scale(.98) !important;
+      color:#ffffff !important;
+      background:rgba(20, 83, 45, .46) !important;
+      background-color:rgba(20, 83, 45, .46) !important;
+      backdrop-filter:blur(22px) saturate(170%) !important;
+      -webkit-backdrop-filter:blur(22px) saturate(170%) !important;
+      border:1px solid rgba(255,255,255,.32) !important;
+      box-shadow:0 14px 34px rgba(15,23,42,.20), inset 0 1px 0 rgba(255,255,255,.20) !important;
+      text-shadow:0 1px 2px rgba(0,0,0,.18) !important;
+      overflow:hidden !important;
+    }
+
+    .toast::before,
+    #toast::before,
+    .app-toast::before,
+    .save-toast::before,
+    .snackbar::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      border-radius:inherit;
+      background:linear-gradient(180deg, rgba(255,255,255,.20), rgba(255,255,255,.03)) !important;
+      pointer-events:none;
+    }
+
+    .toast.show,
+    #toast.show,
+    .app-toast.show,
+    .save-toast.show,
+    .snackbar.show{
+      transform:translateX(-50%) translateY(0) scale(1) !important;
+    }
+
+    .toast.success,
+    #toast.success,
+    .toast.is-success,
+    #toast.is-success{
+      background:rgba(20, 83, 45, .46) !important;
+      background-color:rgba(20, 83, 45, .46) !important;
+    }
+
+    .toast.error,
+    #toast.error,
+    .toast.is-error,
+    #toast.is-error{
+      background:rgba(127, 29, 29, .50) !important;
+      background-color:rgba(127, 29, 29, .50) !important;
+    }
+
+    @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))){
+      .toast,
+      #toast{
+        background:rgba(20,83,45,.72) !important;
+      }
+    }
+
+    @media (max-width:520px){
+      .toast,
+      #toast,
+      .app-toast,
+      .save-toast,
+      .snackbar{
+        max-width:72vw !important;
+        padding:7px 13px !important;
+        font-size:13px !important;
+        bottom:calc(env(safe-area-inset-bottom, 0px) + var(--keyboard-offset, 0px) + 40px) !important;
+      }
+    }
+
+  
+    /* v78: Yazdırmada günlük iş özeti ve toplu seçim kesin kapalı */
+    @media print{
+      .print-hide,
+      .bulk-actions,
+      #bulkActions,
+      .daily-summary,
+      #dailySummary,
+      .daily-stats,
+      #dailyStats,
+      .records-daily-summary,
+      .daily-report,
+      .day-summary,
+      .summary-daily,
+      .work-summary,
+      .records-table-wrap,
+      .records-table,
+      #recordsTable,
+      .searchbar,
+      .bottom-nav,
+      .toast,
+      #toast,
+      .admin-panel,
+      .guide-panel,
+      .entry-panel,
+      .keyboard-spacer,
+      button{
+        display:none !important;
+      }
+
+      .records-panel{
+        display:block !important;
+      }
+
+      .records-panel .panel-header,
+      .records-panel .section-title,
+      .records-panel h2:not(.print-title){
+        display:none !important;
+      }
+
+      body::before{
+        content:"BEYAN";
+        display:block;
+        text-align:center;
+        font-size:28px;
+        font-weight:950;
+        letter-spacing:.5px;
+        margin:18px 0 28px;
+        color:#000;
+      }
+    }
+
   </style>
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -3418,7 +3558,7 @@
   <div class="app">
     <header class="topbar">
       <div class="brand">
-        <h1>Mesaha İO v1.6</h1>
+        <h1>Mesaha İO v1.7</h1>
         
       </div>
       <div id="activeUserBadge" class="active-user-badge" role="button" tabindex="0" title="Kullanıcı panelini aç" style="display:none"></div>
@@ -4240,16 +4380,59 @@
 
 
 
+
+    function enhanceToastGlass() {
+      const t = els.toast || document.getElementById("toast") || document.querySelector(".toast");
+      if (!t) return;
+      t.style.background = "rgba(20, 83, 45, .46)";
+      t.style.backgroundColor = "rgba(20, 83, 45, .46)";
+      t.style.backdropFilter = "blur(22px) saturate(170%)";
+      t.style.webkitBackdropFilter = "blur(22px) saturate(170%)";
+      t.style.border = "1px solid rgba(255,255,255,.32)";
+    }
+
+
     function markPrintOnlyBeyan() {
-      const all = Array.from(document.querySelectorAll("section.records-panel *"));
+      const root = document.querySelector(".records-panel") || document.body;
+      const all = Array.from(root.querySelectorAll("*"));
+      const hideWords = [
+        "Günlük İş Özeti",
+        "Bugünkü Kayıt",
+        "Bugünkü Adet",
+        "Bugünkü m³",
+        "Son Barkod",
+        "Listedekileri Seç",
+        "Seçimi Temizle",
+        "Seçilenleri Sil",
+        "Toplu işlem için",
+        "Kayıtları işaretleyin"
+      ];
+
       all.forEach(el => {
-        const txt = (el.textContent || "").trim();
-        if (txt.includes("Günlük İş Özeti") || txt.includes("Listedekileri Seç") || txt.includes("Seçimi Temizle") || txt.includes("Toplu işlem için")) {
+        const txt = (el.textContent || "").replace(/\s+/g, " ").trim();
+        if (!txt) return;
+        if (hideWords.some(w => txt.includes(w))) {
           el.classList.add("print-hide");
-          let p = el.closest(".card, .summary-card, .bulk-actions, .guide-card, .panel-body > div");
+          let p = el.closest(".bulk-actions, .daily-summary, .summary-card, .card, .panel-body > div, .records-table-wrap");
           if (p) p.classList.add("print-hide");
+          let pp = p && p.parentElement;
+          if (pp && hideWords.some(w => (pp.textContent || "").includes(w))) pp.classList.add("print-hide");
         }
       });
+    }
+
+    window.addEventListener("beforeprint", markPrintOnlyBeyan);
+
+
+    async function quickAppUpdateCheck() {
+      try {
+        if ("serviceWorker" in navigator) {
+          const reg = await navigator.serviceWorker.getRegistration();
+          if (reg) {
+            reg.update().catch(() => {});
+          }
+        }
+      } catch {}
     }
 
     async function forceUpdateApp() {
@@ -4462,12 +4645,21 @@
       const admin = state.lastAdminCode || sessionStorage.getItem("mesaha_admin_code") || ADMIN_CODE;
       const users = await loadOnlineUsers(admin);
       state.adminOnlineUsers = users;
-      await loadAdminBackupsV74();
+
+      updateAdminTopSummary();
+      updateAdminSeflikOptions();
       renderAdminUsers();
       renderAdminActivity();
       renderAdminNotes();
       renderAdminControlCenter();
-      showToast("Admin paneli güncellendi.");
+      showToast("Kullanıcılar yüklendi.");
+
+      loadAdminBackupsV74()
+        .then(() => {
+          updateAdminTopSummary();
+          renderAdminControlCenter();
+        })
+        .catch(() => {});
     }
 
     function setAdminPanelTab(tab) {
@@ -4908,7 +5100,7 @@
 
     async function uploadCloudBackupOpen(user) {
       const payload = buildCloudBackupPayload(user);
-      payload.version = 77;
+      payload.version = 78;
       const bolmePart = els.bolmeNo && String(els.bolmeNo.value || "").trim() ? `_${cleanFilePart(els.bolmeNo.value)}` : "";
       const fileName = `Mesaha_Yedek_${cleanFilePart(user.seflik)}_${cleanFilePart(user.name)}${bolmePart}_${new Date().toISOString().slice(0,19).replace(/[-:T]/g, "")}.json`;
 
@@ -5101,7 +5293,8 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
 
         state.records = payload.records;
         save();
-        render();
+        quickAppUpdateCheck();
+    render();
         closeCloudRestorePanel();
         showToast("Bulut yedeği geri yüklendi.");
       } catch (error) {
@@ -5336,7 +5529,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function buildCloudBackupPayload(user) {
       return {
         app: "Mesaha İO",
-        version: 77,
+        version: 78,
         createdAt: new Date().toLocaleString("tr-TR"),
         user: {
           name: user.name || "",
@@ -5736,6 +5929,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
 
       void els.toast.offsetWidth;
 
+      enhanceToastGlass();
       els.toast.classList.add("show");
 
       showToast.timer = setTimeout(() => {
@@ -7336,7 +7530,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function backup() {
       const data = {
         app: "Mesaha App",
-        version: 77,
+        version: 78,
         exportedAt: formatDateTime(),
         systemHeaders: HEADERS,
         settings: state.settings,

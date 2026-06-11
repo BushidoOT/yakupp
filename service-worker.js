@@ -1,4 +1,4 @@
-const CACHE_NAME = "mesaha-app-v77";
+const CACHE_NAME = "mesaha-app-v78";
 const ASSETS = [
   "./",
   "./index.html",
@@ -38,7 +38,7 @@ self.addEventListener("fetch", (event) => {
 
   if (isNavigation) {
     event.respondWith(
-      fetch(request, { cache: "no-store" }).then((response) => {
+      fetch(request, { cache: "reload" }).then((response) => {
         const copy = response.clone();
         caches.open(CACHE_NAME).then((cache) => cache.put("./index.html", copy).catch(() => {}));
         return response;
@@ -48,13 +48,10 @@ self.addEventListener("fetch", (event) => {
   }
 
   event.respondWith(
-    caches.match(request).then((cached) => {
-      const network = fetch(request).then((response) => {
-        const copy = response.clone();
-        caches.open(CACHE_NAME).then((cache) => cache.put(request, copy).catch(() => {}));
-        return response;
-      }).catch(() => cached);
-      return cached || network;
-    })
+    fetch(request).then((response) => {
+      const copy = response.clone();
+      caches.open(CACHE_NAME).then((cache) => cache.put(request, copy).catch(() => {}));
+      return response;
+    }).catch(() => caches.match(request))
   );
 });
