@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha App v80</title>
+  <title>Mesaha App v81</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -3554,6 +3554,23 @@
       }
     }
 
+  
+    /* v81 stabil son katman */
+    @media print{
+      html, body{
+        background:#fff !important;
+      }
+      iframe[title="Beyan Yazdır"]{
+        display:block !important;
+      }
+    }
+
+    .toast,
+    #toast{
+      backdrop-filter:blur(38px) saturate(220%) !important;
+      -webkit-backdrop-filter:blur(38px) saturate(220%) !important;
+    }
+
   </style>
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -3647,7 +3664,7 @@
   <div class="app">
     <header class="topbar">
       <div class="brand">
-        <h1>Mesaha İO v1.9</h1>
+        <h1>Mesaha İO v1.10</h1>
         
       </div>
       <div id="activeUserBadge" class="active-user-badge" role="button" tabindex="0" title="Kullanıcı panelini aç" style="display:none"></div>
@@ -4734,7 +4751,7 @@
         setTimeout(() => {
           try { frame.remove(); } catch {}
         }, 4000);
-      }, 250);
+      }, 500);
     }
 
 
@@ -4790,7 +4807,13 @@
 
         if ("serviceWorker" in navigator) {
           const regs = await navigator.serviceWorker.getRegistrations();
-          await Promise.all(regs.map(reg => reg.unregister().catch(() => false)));
+          await Promise.all(regs.map(async (reg) => {
+            try {
+              if (reg.waiting) reg.waiting.postMessage({ type: "SKIP_WAITING" });
+              await reg.update().catch(() => {});
+              await reg.unregister().catch(() => false);
+            } catch {}
+          }));
         }
 
         if ("caches" in window) {
@@ -4804,7 +4827,8 @@
         const url = new URL(window.location.href);
         url.searchParams.set("appUpdate", Date.now().toString());
         url.hash = "";
-        window.location.replace(url.toString());
+
+        setTimeout(() => window.location.replace(url.toString()), 300);
       } catch (error) {
         showToast("Güncelleme başlatılamadı. Sayfayı elle yenileyin.");
         setTimeout(() => window.location.reload(), 700);
@@ -5446,7 +5470,7 @@
 
     async function uploadCloudBackupOpen(user) {
       const payload = buildCloudBackupPayload(user);
-      payload.version = 80;
+      payload.version = 81;
       const bolmePart = els.bolmeNo && String(els.bolmeNo.value || "").trim() ? `_${cleanFilePart(els.bolmeNo.value)}` : "";
       const fileName = `Mesaha_Yedek_${cleanFilePart(user.seflik)}_${cleanFilePart(user.name)}${bolmePart}_${new Date().toISOString().slice(0,19).replace(/[-:T]/g, "")}.json`;
 
@@ -5875,7 +5899,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function buildCloudBackupPayload(user) {
       return {
         app: "Mesaha İO",
-        version: 80,
+        version: 81,
         createdAt: new Date().toLocaleString("tr-TR"),
         user: {
           name: user.name || "",
@@ -7877,7 +7901,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function backup() {
       const data = {
         app: "Mesaha App",
-        version: 80,
+        version: 81,
         exportedAt: formatDateTime(),
         systemHeaders: HEADERS,
         settings: state.settings,
@@ -8245,6 +8269,13 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     window.editRecord = editRecord;
 
     load();
+  
+    window.MESAHA_BUILD_INFO = {
+      fileVersion: "v81",
+      visibleVersion: "Mesaha İO v1.10",
+      stableBuild: true
+    };
+
   </script>
 </body>
 </html>
