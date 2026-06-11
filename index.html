@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha App v58</title>
+  <title>Mesaha App v60</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -2403,6 +2403,71 @@
       font-weight:900 !important;
     }
 
+  
+    /* v59: Merkez kullanıcı listesi */
+    .registered-user-item.online-user{
+      border-color:#bfdbfe !important;
+      background:#eff6ff !important;
+    }
+
+    .registered-user-item.local-fallback-user{
+      border-color:#fde68a !important;
+      background:#fffbeb !important;
+    }
+
+    .registered-source-label{
+      display:inline-flex;
+      align-items:center;
+      border-radius:999px;
+      padding:3px 7px;
+      font-size:10px;
+      font-weight:950;
+      background:#2563eb;
+      color:#ffffff;
+      white-space:nowrap;
+    }
+
+    .registered-source-label.local{
+      background:#f59e0b;
+      color:#111827;
+    }
+
+    .registered-loading{
+      background:#eff6ff;
+      border:1px solid #bfdbfe;
+      border-radius:13px;
+      padding:10px;
+      color:#1e3a8a;
+      font-weight:900;
+      text-align:center;
+    }
+
+    .registered-error{
+      background:#fff7ed;
+      border:1px solid #fdba74;
+      border-radius:13px;
+      padding:10px;
+      color:#9a3412;
+      font-weight:900;
+      text-align:center;
+    }
+
+  
+    /* v60: Buluta yedekleme butonu */
+    #cloudBackupBtn{
+      background:#0ea5e9 !important;
+      color:#ffffff !important;
+    }
+
+    .cloud-backup-guide{
+      background:#f0f9ff !important;
+      border-color:#bae6fd !important;
+    }
+
+    .cloud-backup-guide h3{
+      color:#0c4a6e !important;
+    }
+
   </style>
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -2628,6 +2693,7 @@
 <div class="tools">
             <button type="button" class="primary" id="exportSystemXlsBtn">Mesaha Dosyasını İndir</button>
             <button type="button" class="ghost" id="backupBtn">Yedek Al</button>
+            <button type="button" class="secondary" id="cloudBackupBtn">Buluta Yedekle</button>
             <button type="button" class="ghost" id="restoreBtn">Yedek Yükle</button>
             <button type="button" class="warning" id="printBtn">Yazdır</button>
             <button type="button" class="ghost" id="usageBtn">Günlük Giriş</button>
@@ -2761,15 +2827,26 @@
               <button id="adminUsersBtn" class="secondary admin-users-btn" type="button">Yönetici Panelini Aç</button>
             </div>
 
+            <div class="guide-card cloud-backup-guide">
+              <h3>Buluta Yedekleme</h3>
+              <ol>
+                <li><b>Buluta Yedekle</b> butonu herkeste görünür.</li>
+                <li>İlk kullanımda kullanıcı kendi bulut yedek şifresini oluşturur.</li>
+                <li>Sonraki yedeklerde aynı şifre istenir.</li>
+                <li>Yedekler internet varsa yöneticinin Drive hesabına kaydedilir.</li>
+                <li>Şifre kullanıcıya özeldir; şifreyi bilmeyen aynı kullanıcı adına bulut yedeği gönderemez.</li>
+              </ol>
+            </div>
+
             <div class="guide-card registered-users-card" id="registeredUsersCard">
               <h3>Kayıtlı Kullanıcılar</h3>
-              <p class="hint admin-unlock-note">Bu bölüm yönetici kodu ile açılmıştır.</p>
+              <p class="hint admin-unlock-note">Bu bölüm yönetici kodu ile açılmıştır. İnternet varsa merkezde kayıtlı herkes listelenir.</p>
               <div id="registeredUsersList" class="registered-users-list">
                 <div class="empty-user-list">Henüz kullanıcı girişi yok.</div>
               </div>
               <button id="changeUserBtn" class="ghost user-change-btn" type="button">Kullanıcı Değiştir / Yeni Kullanıcı Gir</button>
               <button id="adminUsersCloseBtn" class="ghost user-change-btn" type="button">Kullanıcı Listesini Gizle</button>
-              <p class="hint">Bu liste sadece bu cihazda giriş yapan kullanıcıları gösterir. İnternet veya şifre gerekmez.</p>
+              <p class="hint">Bu liste internet varsa merkezde kayıtlı tüm kullanıcıları gösterir. İnternet yoksa sadece cihazdaki kayıtlar görünür.</p>
             </div>
 
           </div>
@@ -2788,6 +2865,8 @@
     const SETTINGS_KEY = "cam_mesaha_ayarlar_v1";
     const USER_STORE_KEY = "mesaha_kullanicilar_v1";
     const ADMIN_CODE = "4767";
+    const ONLINE_USER_API_URL = "https://script.google.com/macros/s/AKfycbySj6TXIdo7SRsvZ4VVZ7aZ-YtWAj8F4aaR4lPoJJL9e0xIkEEQ_xTYZRurECEXpJDv/exec";
+    const DEVICE_ID_KEY = "mesaha_cihaz_kodu_v1";
 
     const HEADERS = [
       "agacId","agacAdi","odunId","odunAdi","kaliteSinifi","boySinifi",
@@ -2921,7 +3000,8 @@
       registeredUsersList: $("registeredUsersList"),
       changeUserBtn: $("changeUserBtn"),
       adminUsersBtn: $("adminUsersBtn"),
-      adminUsersCloseBtn: $("adminUsersCloseBtn")
+      adminUsersCloseBtn: $("adminUsersCloseBtn"),
+      cloudBackupBtn: $("cloudBackupBtn")
     };
 
     function todayISO() {
@@ -3029,6 +3109,139 @@
       const parts = String(tr).split(".");
       if (parts.length !== 3) return todayISO();
       return `${parts[2]}-${parts[1]}-${parts[0]}`;
+    }
+
+
+
+    function getOrCreateDeviceId() {
+      let id = localStorage.getItem(DEVICE_ID_KEY);
+      if (!id) {
+        id = `cihaz_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
+        localStorage.setItem(DEVICE_ID_KEY, id);
+      }
+      return id;
+    }
+
+    function jsonpRequest(url, params = {}, timeoutMs = 9000) {
+      return new Promise((resolve, reject) => {
+        const callbackName = `mesahaJsonp_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+        const script = document.createElement("script");
+        const search = new URLSearchParams({
+          ...params,
+          callback: callbackName,
+          _: Date.now()
+        });
+
+        let finished = false;
+        const cleanup = () => {
+          finished = true;
+          try { delete window[callbackName]; } catch {}
+          if (script.parentNode) script.parentNode.removeChild(script);
+        };
+
+        const timer = setTimeout(() => {
+          if (finished) return;
+          cleanup();
+          reject(new Error("Bağlantı zaman aşımı"));
+        }, timeoutMs);
+
+        window[callbackName] = (data) => {
+          if (finished) return;
+          clearTimeout(timer);
+          cleanup();
+          resolve(data || {});
+        };
+
+        script.onerror = () => {
+          if (finished) return;
+          clearTimeout(timer);
+          cleanup();
+          reject(new Error("Bağlantı kurulamadı"));
+        };
+
+        script.src = `${url}?${search.toString()}`;
+        document.head.appendChild(script);
+      });
+    }
+
+    function logOnlineUser(user) {
+      if (!ONLINE_USER_API_URL || !user || !navigator.onLine) return;
+
+      jsonpRequest(ONLINE_USER_API_URL, {
+        action: "log",
+        name: user.name || "",
+        seflik: user.seflik || "",
+        deviceId: getOrCreateDeviceId()
+      }, 9000).catch(() => {
+        // İnternet yoksa mesaha işini bozmasın.
+      });
+    }
+
+    async function loadOnlineUsers(adminCode) {
+      const data = await jsonpRequest(ONLINE_USER_API_URL, {
+        action: "list",
+        admin: adminCode || ADMIN_CODE
+      }, 12000);
+
+      if (!data || data.ok !== true) {
+        throw new Error((data && data.error) ? data.error : "Merkez kullanıcı listesi alınamadı");
+      }
+
+      return Array.isArray(data.users) ? data.users : [];
+    }
+
+    function renderOnlineUsers(users) {
+      if (!els.registeredUsersList) return;
+
+      if (!users.length) {
+        els.registeredUsersList.innerHTML = `<div class="empty-user-list">Merkezde henüz kullanıcı kaydı yok.</div>`;
+        return;
+      }
+
+      els.registeredUsersList.innerHTML = users.map(user => `
+        <div class="registered-user-item online-user">
+          <div class="registered-user-head">
+            <b>${escapeHtml(user.name || "-")}</b>
+            <span class="registered-source-label">MERKEZ</span>
+          </div>
+          <div class="registered-user-meta">
+            <span>Şeflik: ${escapeHtml(user.seflik || "-")}</span>
+            <span>Giriş: ${(Number(user.loginCount) || 0).toLocaleString("tr-TR")}</span>
+            <span>İlk: ${escapeHtml(user.firstLogin || "-")}</span>
+            <span>Son: ${escapeHtml(user.lastLogin || "-")}</span>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function renderLocalUsersAsFallback(message) {
+      if (!els.registeredUsersList) return;
+
+      const users = state.userStore && Array.isArray(state.userStore.users) ? state.userStore.users : [];
+      if (!users.length) {
+        els.registeredUsersList.innerHTML = `<div class="registered-error">${escapeHtml(message || "Merkeze bağlanılamadı.")}<br>Bu cihazda da kayıtlı kullanıcı yok.</div>`;
+        return;
+      }
+
+      els.registeredUsersList.innerHTML = `
+        <div class="registered-error">${escapeHtml(message || "Merkeze bağlanılamadı.")}<br>Şimdilik bu cihazdaki kullanıcılar gösteriliyor.</div>
+      ` + users.map(user => {
+        const active = user.id === (state.userStore ? state.userStore.activeUserId : "");
+        return `
+          <div class="registered-user-item local-fallback-user">
+            <div class="registered-user-head">
+              <b>${escapeHtml(user.name || "-")}</b>
+              ${active ? `<span class="active-user-label">AKTİF</span>` : `<span class="registered-source-label local">CİHAZ</span>`}
+            </div>
+            <div class="registered-user-meta">
+              <span>Şeflik: ${escapeHtml(user.seflik || "-")}</span>
+              <span>Giriş: ${(Number(user.loginCount) || 0).toLocaleString("tr-TR")}</span>
+              <span>İlk: ${escapeHtml(user.firstLogin || "-")}</span>
+              <span>Son: ${escapeHtml(user.lastLogin || "-")}</span>
+            </div>
+          </div>
+        `;
+      }).join("");
     }
 
 
@@ -3169,12 +3382,156 @@
       localStorage.setItem(SETTINGS_KEY, JSON.stringify(state.settings));
 
       registerUserLoginById(id);
+      logOnlineUser(state.activeUser);
       closeUserLogin();
       showToast("Kullanıcı girişi kaydedildi.");
     }
 
 
-    function unlockRegisteredUsers() {
+
+    function getCurrentCloudUser() {
+      const user = state.activeUser || findActiveUser();
+      if (!user) return null;
+      return {
+        name: user.name || "",
+        seflik: user.seflik || "",
+        deviceId: getOrCreateDeviceId()
+      };
+    }
+
+    async function ensureCloudPasswordForUser(user) {
+      const info = await jsonpRequest(ONLINE_USER_API_URL, {
+        action: "passwordStatus",
+        name: user.name,
+        seflik: user.seflik,
+        deviceId: user.deviceId
+      }, 9000);
+
+      if (!info || info.ok !== true) {
+        throw new Error((info && info.error) ? info.error : "Şifre durumu alınamadı");
+      }
+
+      if (!info.hasPassword) {
+        const pass1 = window.prompt("Bu kullanıcı için bulut yedek şifresi oluşturunuz:");
+        if (!pass1) throw new Error("Şifre oluşturma iptal edildi.");
+        if (String(pass1).trim().length < 4) throw new Error("Şifre en az 4 karakter olmalı.");
+
+        const pass2 = window.prompt("Şifreyi tekrar giriniz:");
+        if (String(pass1) !== String(pass2)) throw new Error("Şifreler eşleşmedi.");
+
+        const created = await jsonpRequest(ONLINE_USER_API_URL, {
+          action: "setPassword",
+          name: user.name,
+          seflik: user.seflik,
+          deviceId: user.deviceId,
+          password: pass1
+        }, 9000);
+
+        if (!created || created.ok !== true) {
+          throw new Error((created && created.error) ? created.error : "Şifre oluşturulamadı");
+        }
+
+        return pass1;
+      }
+
+      const password = window.prompt("Bulut yedek şifrenizi giriniz:");
+      if (!password) throw new Error("Bulut yedekleme iptal edildi.");
+
+      const checked = await jsonpRequest(ONLINE_USER_API_URL, {
+        action: "checkPassword",
+        name: user.name,
+        seflik: user.seflik,
+        deviceId: user.deviceId,
+        password
+      }, 9000);
+
+      if (!checked || checked.ok !== true) {
+        throw new Error((checked && checked.error) ? checked.error : "Şifre hatalı");
+      }
+
+      return password;
+    }
+
+    function buildCloudBackupPayload(user) {
+      return {
+        app: "Mesaha İO",
+        version: 60,
+        createdAt: new Date().toLocaleString("tr-TR"),
+        user: {
+          name: user.name || "",
+          seflik: user.seflik || "",
+          deviceId: user.deviceId || ""
+        },
+        settings: state.settings || {},
+        records: state.records || [],
+        totals: calculateTotals ? calculateTotals() : {}
+      };
+    }
+
+    async function uploadCloudBackupNoCors(user, password) {
+      const payload = buildCloudBackupPayload(user);
+      const fileName = `Mesaha_Yedek_${cleanFilePart(user.seflik)}_${cleanFilePart(user.name)}_${new Date().toISOString().slice(0,19).replace(/[-:T]/g, "")}.json`;
+
+      const body = new URLSearchParams();
+      body.set("action", "backup");
+      body.set("name", user.name || "");
+      body.set("seflik", user.seflik || "");
+      body.set("deviceId", user.deviceId || "");
+      body.set("password", password || "");
+      body.set("fileName", fileName);
+      body.set("payload", JSON.stringify(payload));
+
+      await fetch(ONLINE_USER_API_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+        body
+      });
+
+      return fileName;
+    }
+
+    function cleanFilePart(value) {
+      return String(value || "bos")
+        .replace(/[^\p{L}\p{N}_-]+/gu, "_")
+        .replace(/_+/g, "_")
+        .replace(/^_+|_+$/g, "")
+        .slice(0, 32) || "bos";
+    }
+
+    async function cloudBackupRecords() {
+      if (!navigator.onLine) {
+        showToast("İnternet yok. Buluta yedekleme için internet gerekir.");
+        return;
+      }
+
+      const user = getCurrentCloudUser();
+      if (!user || !user.name || !user.seflik) {
+        openUserLogin(false);
+        showToast("Önce kullanıcı adı ve şeflik giriniz.");
+        return;
+      }
+
+      if (!state.records || !state.records.length) {
+        showToast("Buluta yedeklenecek kayıt yok.");
+        return;
+      }
+
+      try {
+        showToast("Bulut yedekleme hazırlanıyor...");
+        const password = await ensureCloudPasswordForUser(user);
+        const fileName = await uploadCloudBackupNoCors(user, password);
+        showToast("Bulut yedekleme gönderildi.");
+        setTimeout(() => {
+          alert(`Bulut yedeği gönderildi.\n\nDosya adı:\n${fileName}\n\nNot: Dosya yöneticinin Google Drive hesabındaki Mesaha_Yedekleri klasörüne kaydedilir.`);
+        }, 350);
+      } catch (error) {
+        showToast(error && error.message ? error.message : "Bulut yedekleme başarısız.");
+      }
+    }
+
+
+    async function unlockRegisteredUsers() {
       const code = window.prompt("Yönetici kodunu giriniz:");
       if (String(code || "").trim() !== ADMIN_CODE) {
         showToast("Yönetici kodu hatalı.");
@@ -3183,8 +3540,19 @@
 
       sessionStorage.setItem("mesaha_admin_users_visible", "1");
       document.body.classList.add("admin-users-visible");
-      renderRegisteredUsers();
-      showToast("Kayıtlı kullanıcılar açıldı.");
+
+      if (els.registeredUsersList) {
+        els.registeredUsersList.innerHTML = `<div class="registered-loading">Merkez kullanıcı listesi yükleniyor...</div>`;
+      }
+
+      try {
+        const users = await loadOnlineUsers(code);
+        renderOnlineUsers(users);
+        showToast("Merkez kullanıcı listesi açıldı.");
+      } catch (error) {
+        renderLocalUsersAsFallback(error && error.message ? error.message : "Merkeze bağlanılamadı.");
+        showToast("Merkeze bağlanılamadı, cihaz kayıtları gösteriliyor.");
+      }
     }
 
     function lockRegisteredUsers() {
@@ -3209,6 +3577,7 @@
 
       if (state.activeUser) {
         registerUserLoginById(state.activeUser.id);
+        logOnlineUser(state.activeUser);
         closeUserLogin();
       } else {
         renderRegisteredUsers();
@@ -3231,7 +3600,7 @@
           <div class="registered-user-item">
             <div class="registered-user-head">
               <b>${escapeHtml(user.name || "-")}</b>
-              ${active ? `<span class="active-user-label">AKTİF</span>` : ""}
+              ${active ? `<span class="active-user-label">AKTİF</span>` : `<span class="registered-source-label local">CİHAZ</span>`}
             </div>
             <div class="registered-user-meta">
               <span>Şeflik: ${escapeHtml(user.seflik || "-")}</span>
@@ -4914,7 +5283,7 @@
     function backup() {
       const data = {
         app: "Mesaha App",
-        version: 58,
+        version: 60,
         exportedAt: formatDateTime(),
         systemHeaders: HEADERS,
         settings: state.settings,
@@ -5051,6 +5420,7 @@
     if (els.changeUserBtn) els.changeUserBtn.addEventListener("click", () => openUserLogin(false));
     if (els.adminUsersBtn) els.adminUsersBtn.addEventListener("click", unlockRegisteredUsers);
     if (els.adminUsersCloseBtn) els.adminUsersCloseBtn.addEventListener("click", lockRegisteredUsers);
+    if (els.cloudBackupBtn) els.cloudBackupBtn.addEventListener("click", cloudBackupRecords);
 
 
 
