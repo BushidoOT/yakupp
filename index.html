@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha App v60</title>
+  <title>Mesaha App v62</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -2468,6 +2468,248 @@
       color:#0c4a6e !important;
     }
 
+  
+    /* v61: Sağ üst kullanıcı paneli */
+    .active-user-badge{
+      cursor:pointer;
+      user-select:none;
+    }
+
+    .active-user-badge:active{
+      transform:scale(.98);
+    }
+
+    .user-panel-overlay{
+      position:fixed;
+      inset:0;
+      z-index:1000001;
+      display:none;
+      align-items:flex-start;
+      justify-content:center;
+      padding:calc(env(safe-area-inset-top, 0px) + 18px) 14px 18px;
+      background:rgba(15,23,42,.38);
+      backdrop-filter:blur(10px);
+    }
+
+    body.user-panel-open .user-panel-overlay{
+      display:flex;
+    }
+
+    .user-panel-card{
+      width:min(460px, 100%);
+      background:#ffffff;
+      color:#172033;
+      border:1px solid #d7dee8;
+      border-radius:20px;
+      padding:15px;
+      box-shadow:0 18px 55px rgba(15,23,42,.24);
+    }
+
+    .user-panel-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:10px;
+      margin-bottom:10px;
+    }
+
+    .user-panel-head h2{
+      margin:0 0 4px;
+      color:#111827;
+      font-size:20px;
+      font-weight:950;
+    }
+
+    .user-panel-close{
+      width:42px;
+      min-height:38px;
+      padding:4px !important;
+      font-size:24px !important;
+      line-height:1 !important;
+      border-radius:12px !important;
+    }
+
+    .user-panel-actions{
+      display:grid;
+      gap:9px;
+    }
+
+    .user-panel-actions button{
+      width:100%;
+    }
+
+    @media (max-width:560px){
+      .user-panel-overlay{
+        align-items:flex-start;
+        padding-top:calc(env(safe-area-inset-top, 0px) + 12px);
+      }
+
+      .user-panel-card{
+        border-radius:18px;
+      }
+    }
+
+  
+    /* v62: Şifresiz bulut yedekleri listesi */
+    #cloudRestoreBtn{
+      background:#0284c7 !important;
+      color:#ffffff !important;
+    }
+
+    .cloud-restore-overlay{
+      position:fixed;
+      inset:0;
+      z-index:1000002;
+      display:none;
+      align-items:flex-start;
+      justify-content:center;
+      padding:calc(env(safe-area-inset-top, 0px) + 14px) 12px 18px;
+      background:rgba(15,23,42,.38);
+      backdrop-filter:blur(10px);
+      overflow:auto;
+    }
+
+    body.cloud-restore-open .cloud-restore-overlay{
+      display:flex;
+    }
+
+    .cloud-restore-card{
+      width:min(720px, 100%);
+      background:#ffffff;
+      color:#172033;
+      border:1px solid #d7dee8;
+      border-radius:20px;
+      padding:15px;
+      box-shadow:0 18px 55px rgba(15,23,42,.24);
+    }
+
+    .cloud-restore-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:10px;
+      margin-bottom:10px;
+    }
+
+    .cloud-restore-head h2{
+      margin:0 0 4px;
+      color:#111827;
+      font-size:20px;
+      font-weight:950;
+    }
+
+    .cloud-restore-close{
+      width:42px;
+      min-height:38px;
+      padding:4px !important;
+      font-size:24px !important;
+      line-height:1 !important;
+      border-radius:12px !important;
+    }
+
+    .cloud-restore-card .row{
+      margin-bottom:10px;
+    }
+
+    .cloud-restore-card button{
+      width:100%;
+    }
+
+    .cloud-backup-list{
+      display:grid;
+      gap:9px;
+      margin-top:12px;
+      max-height:55vh;
+      overflow:auto;
+      padding-right:2px;
+    }
+
+    .cloud-backup-item{
+      background:#f8fafc;
+      border:1px solid #d7dee8;
+      border-radius:14px;
+      padding:10px;
+    }
+
+    .cloud-backup-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:8px;
+      margin-bottom:8px;
+    }
+
+    .cloud-backup-head b{
+      color:#111827;
+      font-size:14px;
+      font-weight:950;
+      word-break:break-word;
+    }
+
+    .cloud-backup-date{
+      color:#475569;
+      font-size:12px;
+      font-weight:850;
+      white-space:nowrap;
+    }
+
+    .cloud-backup-meta{
+      display:grid;
+      grid-template-columns:repeat(3, minmax(0,1fr));
+      gap:6px;
+      margin-bottom:8px;
+    }
+
+    .cloud-backup-meta span{
+      background:#ffffff;
+      border:1px solid #e5eaf1;
+      border-radius:10px;
+      padding:6px 7px;
+      color:#475569;
+      font-size:12px;
+      font-weight:850;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+
+    .cloud-backup-actions{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:8px;
+    }
+
+    .cloud-backup-empty,
+    .cloud-backup-loading,
+    .cloud-backup-error{
+      background:#f8fafc;
+      border:1px solid #d7dee8;
+      border-radius:13px;
+      padding:11px;
+      text-align:center;
+      color:#475569;
+      font-weight:900;
+    }
+
+    .cloud-backup-error{
+      background:#fff7ed;
+      border-color:#fdba74;
+      color:#9a3412;
+    }
+
+    @media (max-width:560px){
+      .cloud-backup-meta{
+        grid-template-columns:1fr;
+      }
+      .cloud-backup-head{
+        display:block;
+      }
+      .cloud-backup-date{
+        display:block;
+        margin-top:4px;
+      }
+    }
+
   </style>
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -2495,13 +2737,64 @@
     </div>
   </div>
 
+  
+  <div id="userPanelOverlay" class="user-panel-overlay" role="dialog" aria-modal="true" aria-label="Kullanıcı paneli">
+    <div class="user-panel-card">
+      <div class="user-panel-head">
+        <div>
+          <h2>Kullanıcı Paneli</h2>
+          <p id="userPanelInfo" class="hint">Aktif kullanıcı bilgisi</p>
+        </div>
+        <button id="userPanelCloseBtn" class="ghost user-panel-close" type="button">×</button>
+      </div>
+
+      <div class="user-panel-actions">
+        <button id="panelChangeUserBtn" class="secondary" type="button">Kullanıcı Adı / Şeflik Değiştir</button>
+        <button id="panelPasswordBtn" class="warning" type="button">Bulut Yedeklerini Getir</button>
+        <button id="panelCloudBackupBtn" class="primary" type="button">Buluta Yedekle</button>
+      </div>
+
+      <p class="hint">Bulut yedekleme şifresizdir. Kullanıcı adı ve şeflik ile yedekler listelenir.</p>
+    </div>
+  </div>
+
+  
+  <div id="cloudRestoreOverlay" class="cloud-restore-overlay" role="dialog" aria-modal="true" aria-label="Buluttan getir">
+    <div class="cloud-restore-card">
+      <div class="cloud-restore-head">
+        <div>
+          <h2>Buluttan Getir</h2>
+          <p class="hint">Kullanıcı adı ve şeflik girince o kişiye ait bulut yedekleri listelenir.</p>
+        </div>
+        <button id="cloudRestoreCloseBtn" class="ghost cloud-restore-close" type="button">×</button>
+      </div>
+
+      <div class="row">
+        <div>
+          <label for="cloudRestoreUserName">Kullanıcı Adı</label>
+          <input id="cloudRestoreUserName" type="text" placeholder="Örn: Yakup" autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false" />
+        </div>
+        <div>
+          <label for="cloudRestoreSeflik">Şeflik</label>
+          <input id="cloudRestoreSeflik" type="text" placeholder="Örn: Yaylacık" autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false" />
+        </div>
+      </div>
+
+      <button id="cloudRestoreSearchBtn" class="secondary" type="button">Bulut Kayıtlarını Getir</button>
+
+      <div id="cloudBackupList" class="cloud-backup-list">
+        <div class="cloud-backup-empty">Henüz arama yapılmadı.</div>
+      </div>
+    </div>
+  </div>
+
   <div class="app">
     <header class="topbar">
       <div class="brand">
         <h1>Mesaha İO v1.1</h1>
         
       </div>
-      <div id="activeUserBadge" class="active-user-badge" style="display:none"></div>
+      <div id="activeUserBadge" class="active-user-badge" role="button" tabindex="0" title="Kullanıcı panelini aç" style="display:none"></div>
     </header>
 
     <main class="grid">
@@ -2694,6 +2987,7 @@
             <button type="button" class="primary" id="exportSystemXlsBtn">Mesaha Dosyasını İndir</button>
             <button type="button" class="ghost" id="backupBtn">Yedek Al</button>
             <button type="button" class="secondary" id="cloudBackupBtn">Buluta Yedekle</button>
+            <button type="button" class="secondary" id="cloudRestoreBtn">Buluttan Getir</button>
             <button type="button" class="ghost" id="restoreBtn">Yedek Yükle</button>
             <button type="button" class="warning" id="printBtn">Yazdır</button>
             <button type="button" class="ghost" id="usageBtn">Günlük Giriş</button>
@@ -2827,18 +3121,17 @@
               <button id="adminUsersBtn" class="secondary admin-users-btn" type="button">Yönetici Panelini Aç</button>
             </div>
 
-            <div class="guide-card cloud-backup-guide">
-              <h3>Buluta Yedekleme</h3>
+                        <div class="guide-card cloud-backup-guide">
+              <h3>Bulut Yedekleme ve Geri Yükleme</h3>
               <ol>
-                <li><b>Buluta Yedekle</b> butonu herkeste görünür.</li>
-                <li>İlk kullanımda kullanıcı kendi bulut yedek şifresini oluşturur.</li>
-                <li>Sonraki yedeklerde aynı şifre istenir.</li>
-                <li>Yedekler internet varsa yöneticinin Drive hesabına kaydedilir.</li>
-                <li>Şifre kullanıcıya özeldir; şifreyi bilmeyen aynı kullanıcı adına bulut yedeği gönderemez.</li>
+                <li><b>Buluta Yedekle</b> butonu herkeste görünür ve şifre istemez.</li>
+                <li>Yedekler kullanıcı adı ve şeflik bilgisine göre yöneticinin Drive hesabına kaydedilir.</li>
+                <li><b>Buluttan Getir</b> butonunda kullanıcı adı ve şeflik girilince o kişiye ait yedekler listelenir.</li>
+                <li>Listeden yedeği geri yükleyebilir veya silebilirsiniz.</li>
+                <li>İnternet yoksa bulut işlemleri çalışmaz; cihazdaki kayıtlar etkilenmez.</li>
               </ol>
             </div>
-
-            <div class="guide-card registered-users-card" id="registeredUsersCard">
+<div class="guide-card registered-users-card" id="registeredUsersCard">
               <h3>Kayıtlı Kullanıcılar</h3>
               <p class="hint admin-unlock-note">Bu bölüm yönetici kodu ile açılmıştır. İnternet varsa merkezde kayıtlı herkes listelenir.</p>
               <div id="registeredUsersList" class="registered-users-list">
@@ -3001,7 +3294,20 @@
       changeUserBtn: $("changeUserBtn"),
       adminUsersBtn: $("adminUsersBtn"),
       adminUsersCloseBtn: $("adminUsersCloseBtn"),
-      cloudBackupBtn: $("cloudBackupBtn")
+      cloudBackupBtn: $("cloudBackupBtn"),
+      userPanelOverlay: $("userPanelOverlay"),
+      userPanelInfo: $("userPanelInfo"),
+      userPanelCloseBtn: $("userPanelCloseBtn"),
+      panelChangeUserBtn: $("panelChangeUserBtn"),
+      panelPasswordBtn: $("panelPasswordBtn"),
+      panelCloudBackupBtn: $("panelCloudBackupBtn"),
+      cloudRestoreBtn: $("cloudRestoreBtn"),
+      cloudRestoreOverlay: $("cloudRestoreOverlay"),
+      cloudRestoreCloseBtn: $("cloudRestoreCloseBtn"),
+      cloudRestoreUserName: $("cloudRestoreUserName"),
+      cloudRestoreSeflik: $("cloudRestoreSeflik"),
+      cloudRestoreSearchBtn: $("cloudRestoreSearchBtn"),
+      cloudBackupList: $("cloudBackupList")
     };
 
     function todayISO() {
@@ -3389,6 +3695,302 @@
 
 
 
+
+
+    function openCloudRestorePanel(prefill = true) {
+      const user = state.activeUser || findActiveUser();
+      if (prefill && user) {
+        if (els.cloudRestoreUserName) els.cloudRestoreUserName.value = user.name || "";
+        if (els.cloudRestoreSeflik) els.cloudRestoreSeflik.value = user.seflik || "";
+      }
+
+      if (els.cloudBackupList) {
+        els.cloudBackupList.innerHTML = `<div class="cloud-backup-empty">Kullanıcı adı ve şeflik girip bulut kayıtlarını getirin.</div>`;
+      }
+
+      document.body.classList.add("cloud-restore-open");
+    }
+
+    function closeCloudRestorePanel() {
+      document.body.classList.remove("cloud-restore-open");
+    }
+
+    async function uploadCloudBackupOpen(user) {
+      const payload = buildCloudBackupPayload(user);
+      payload.version = 62;
+      const fileName = `Mesaha_Yedek_${cleanFilePart(user.seflik)}_${cleanFilePart(user.name)}_${new Date().toISOString().slice(0,19).replace(/[-:T]/g, "")}.json`;
+
+      const body = new URLSearchParams();
+      body.set("action", "backup");
+      body.set("name", user.name || "");
+      body.set("seflik", user.seflik || "");
+      body.set("deviceId", user.deviceId || "");
+      body.set("fileName", fileName);
+      body.set("recordCount", String((state.records || []).length));
+      body.set("payload", JSON.stringify(payload));
+
+      await fetch(ONLINE_USER_API_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+        body
+      });
+
+      return fileName;
+    }
+
+    async function cloudBackupRecordsOpen() {
+      if (!navigator.onLine) {
+        showToast("İnternet yok. Buluta yedekleme için internet gerekir.");
+        return;
+      }
+
+      const user = getCurrentCloudUser();
+      if (!user || !user.name || !user.seflik) {
+        openUserLogin(false);
+        showToast("Önce kullanıcı adı ve şeflik giriniz.");
+        return;
+      }
+
+      if (!state.records || !state.records.length) {
+        showToast("Buluta yedeklenecek kayıt yok.");
+        return;
+      }
+
+      try {
+        showToast("Buluta yedek gönderiliyor...");
+        const fileName = await uploadCloudBackupOpen(user);
+        showToast("Bulut yedekleme gönderildi.");
+        setTimeout(() => {
+          alert(`Bulut yedeği gönderildi.\n\nDosya adı:\n${fileName}\n\nDrive'daki Mesaha_Yedekleri klasörüne kaydedilir.`);
+        }, 350);
+      } catch (error) {
+        showToast(error && error.message ? error.message : "Bulut yedekleme başarısız.");
+      }
+    }
+
+    async function searchCloudBackups() {
+      if (!navigator.onLine) {
+        if (els.cloudBackupList) els.cloudBackupList.innerHTML = `<div class="cloud-backup-error">İnternet yok. Buluttan getirme için internet gerekir.</div>`;
+        return;
+      }
+
+      const name = cleanUserText(els.cloudRestoreUserName ? els.cloudRestoreUserName.value : "");
+      const seflik = cleanUserText(els.cloudRestoreSeflik ? els.cloudRestoreSeflik.value : "");
+
+      if (!name || !seflik) {
+        if (els.cloudBackupList) els.cloudBackupList.innerHTML = `<div class="cloud-backup-error">Kullanıcı adı ve şeflik giriniz.</div>`;
+        return;
+      }
+
+      if (els.cloudBackupList) els.cloudBackupList.innerHTML = `<div class="cloud-backup-loading">Bulut yedekleri getiriliyor...</div>`;
+
+      try {
+        const data = await jsonpRequest(ONLINE_USER_API_URL, {
+          action: "listBackups",
+          name,
+          seflik
+        }, 15000);
+
+        if (!data || data.ok !== true) {
+          throw new Error((data && data.error) ? data.error : "Bulut yedekleri alınamadı");
+        }
+
+        renderCloudBackupList(data.backups || []);
+      } catch (error) {
+        if (els.cloudBackupList) els.cloudBackupList.innerHTML = `<div class="cloud-backup-error">${escapeHtml(error && error.message ? error.message : "Bulut yedekleri alınamadı.")}</div>`;
+      }
+    }
+
+    function renderCloudBackupList(backups) {
+      if (!els.cloudBackupList) return;
+
+      if (!backups.length) {
+        els.cloudBackupList.innerHTML = `<div class="cloud-backup-empty">Bu kullanıcı ve şeflik için bulut yedeği bulunamadı.</div>`;
+        return;
+      }
+
+      els.cloudBackupList.innerHTML = backups.map(backup => `
+        <div class="cloud-backup-item" data-backup-id="${escapeHtml(backup.id || "")}">
+          <div class="cloud-backup-head">
+            <b>${escapeHtml(backup.fileName || "Mesaha yedeği")}</b>
+            <span class="cloud-backup-date">${escapeHtml(backup.createdAt || "-")}</span>
+          </div>
+          <div class="cloud-backup-meta">
+            <span>Kayıt: ${(Number(backup.recordCount) || 0).toLocaleString("tr-TR")}</span>
+            <span>Kullanıcı: ${escapeHtml(backup.name || "-")}</span>
+            <span>Şeflik: ${escapeHtml(backup.seflik || "-")}</span>
+          </div>
+          <div class="cloud-backup-actions">
+            <button class="primary mini-cloud-restore" type="button" data-id="${escapeHtml(backup.id || "")}">Geri Yükle</button>
+            <button class="danger mini-cloud-delete" type="button" data-id="${escapeHtml(backup.id || "")}">Sil</button>
+          </div>
+        </div>
+      `).join("");
+
+      els.cloudBackupList.querySelectorAll(".mini-cloud-restore").forEach(btn => {
+        btn.addEventListener("click", () => restoreCloudBackup(btn.dataset.id));
+      });
+      els.cloudBackupList.querySelectorAll(".mini-cloud-delete").forEach(btn => {
+        btn.addEventListener("click", () => deleteCloudBackup(btn.dataset.id));
+      });
+    }
+
+    async function restoreCloudBackup(backupId) {
+      if (!backupId) return;
+
+      const ok = window.confirm("Bu bulut yedeği geri yüklensin mi? Mevcut cihaz kayıtları bu yedekle değiştirilecek.");
+      if (!ok) return;
+
+      try {
+        showToast("Bulut yedeği indiriliyor...");
+        const data = await jsonpRequest(ONLINE_USER_API_URL, {
+          action: "getBackup",
+          backupId
+        }, 20000);
+
+        if (!data || data.ok !== true) {
+          throw new Error((data && data.error) ? data.error : "Yedek alınamadı");
+        }
+
+        const payload = typeof data.payload === "string" ? JSON.parse(data.payload) : data.payload;
+        if (!payload || !Array.isArray(payload.records)) {
+          throw new Error("Yedek dosyası geçersiz");
+        }
+
+        state.records = payload.records;
+        save();
+        render();
+        closeCloudRestorePanel();
+        showToast("Bulut yedeği geri yüklendi.");
+      } catch (error) {
+        showToast(error && error.message ? error.message : "Geri yükleme başarısız.");
+      }
+    }
+
+    async function deleteCloudBackup(backupId) {
+      if (!backupId) return;
+
+      const ok = window.confirm("Bu bulut yedeği silinsin mi? Bu işlem geri alınamaz.");
+      if (!ok) return;
+
+      try {
+        showToast("Bulut yedeği siliniyor...");
+        const data = await jsonpRequest(ONLINE_USER_API_URL, {
+          action: "deleteBackup",
+          backupId
+        }, 15000);
+
+        if (!data || data.ok !== true) {
+          throw new Error((data && data.error) ? data.error : "Silme başarısız");
+        }
+
+        showToast("Bulut yedeği silindi.");
+        searchCloudBackups();
+      } catch (error) {
+        showToast(error && error.message ? error.message : "Silme başarısız.");
+      }
+    }
+
+
+    function openUserPanel() {
+      const user = state.activeUser || findActiveUser();
+      if (!user) {
+        openUserLogin(false);
+        return;
+      }
+
+      if (els.userPanelInfo) {
+        els.userPanelInfo.textContent = `${user.name || "-"} • ${user.seflik || "-"}`;
+      }
+
+      document.body.classList.add("user-panel-open");
+    }
+
+    function closeUserPanel() {
+      document.body.classList.remove("user-panel-open");
+    }
+
+    async function createOrChangeCloudPassword() {
+      if (!navigator.onLine) {
+        showToast("Şifre işlemi için internet gerekir.");
+        return;
+      }
+
+      const user = getCurrentCloudUser();
+      if (!user || !user.name || !user.seflik) {
+        closeUserPanel();
+        openUserLogin(false);
+        showToast("Önce kullanıcı adı ve şeflik giriniz.");
+        return;
+      }
+
+      try {
+        const info = await jsonpRequest(ONLINE_USER_API_URL, {
+          action: "passwordStatus",
+          name: user.name,
+          seflik: user.seflik,
+          deviceId: user.deviceId
+        }, 9000);
+
+        if (!info || info.ok !== true) {
+          throw new Error((info && info.error) ? info.error : "Şifre durumu alınamadı");
+        }
+
+        if (!info.hasPassword) {
+          const pass1 = window.prompt("Bulut yedek şifresi oluşturunuz:");
+          if (!pass1) return showToast("Şifre oluşturma iptal edildi.");
+          if (String(pass1).trim().length < 4) return showToast("Şifre en az 4 karakter olmalı.");
+
+          const pass2 = window.prompt("Şifreyi tekrar giriniz:");
+          if (String(pass1) !== String(pass2)) return showToast("Şifreler eşleşmedi.");
+
+          const created = await jsonpRequest(ONLINE_USER_API_URL, {
+            action: "setPassword",
+            name: user.name,
+            seflik: user.seflik,
+            deviceId: user.deviceId,
+            password: pass1
+          }, 9000);
+
+          if (!created || created.ok !== true) {
+            throw new Error((created && created.error) ? created.error : "Şifre oluşturulamadı");
+          }
+
+          showToast("Bulut şifresi oluşturuldu.");
+          return;
+        }
+
+        const oldPass = window.prompt("Mevcut bulut şifrenizi giriniz:");
+        if (!oldPass) return showToast("Şifre değiştirme iptal edildi.");
+
+        const newPass1 = window.prompt("Yeni bulut şifresini giriniz:");
+        if (!newPass1) return showToast("Şifre değiştirme iptal edildi.");
+        if (String(newPass1).trim().length < 4) return showToast("Yeni şifre en az 4 karakter olmalı.");
+
+        const newPass2 = window.prompt("Yeni şifreyi tekrar giriniz:");
+        if (String(newPass1) !== String(newPass2)) return showToast("Yeni şifreler eşleşmedi.");
+
+        const changed = await jsonpRequest(ONLINE_USER_API_URL, {
+          action: "changePassword",
+          name: user.name,
+          seflik: user.seflik,
+          deviceId: user.deviceId,
+          oldPassword: oldPass,
+          newPassword: newPass1
+        }, 9000);
+
+        if (!changed || changed.ok !== true) {
+          throw new Error((changed && changed.error) ? changed.error : "Şifre değiştirilemedi");
+        }
+
+        showToast("Bulut şifresi değiştirildi.");
+      } catch (error) {
+        showToast(error && error.message ? error.message : "Şifre işlemi başarısız.");
+      }
+    }
+
+
     function getCurrentCloudUser() {
       const user = state.activeUser || findActiveUser();
       if (!user) return null;
@@ -3455,7 +4057,7 @@
     function buildCloudBackupPayload(user) {
       return {
         app: "Mesaha İO",
-        version: 60,
+        version: 62,
         createdAt: new Date().toLocaleString("tr-TR"),
         user: {
           name: user.name || "",
@@ -5283,7 +5885,7 @@
     function backup() {
       const data = {
         app: "Mesaha App",
-        version: 60,
+        version: 62,
         exportedAt: formatDateTime(),
         systemHeaders: HEADERS,
         settings: state.settings,
@@ -5421,6 +6023,36 @@
     if (els.adminUsersBtn) els.adminUsersBtn.addEventListener("click", unlockRegisteredUsers);
     if (els.adminUsersCloseBtn) els.adminUsersCloseBtn.addEventListener("click", lockRegisteredUsers);
     if (els.cloudBackupBtn) els.cloudBackupBtn.addEventListener("click", cloudBackupRecords);
+
+    if (els.activeUserBadge) {
+      els.activeUserBadge.addEventListener("click", openUserPanel);
+      els.activeUserBadge.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          openUserPanel();
+        }
+      });
+    }
+    if (els.userPanelCloseBtn) els.userPanelCloseBtn.addEventListener("click", closeUserPanel);
+    if (els.userPanelOverlay) {
+      els.userPanelOverlay.addEventListener("click", (event) => {
+        if (event.target === els.userPanelOverlay) closeUserPanel();
+      });
+    }
+    if (els.panelChangeUserBtn) {
+      els.panelChangeUserBtn.addEventListener("click", () => {
+        closeUserPanel();
+        openUserLogin(true);
+      });
+    }
+    if (els.panelPasswordBtn) els.panelPasswordBtn.addEventListener("click", () => { closeUserPanel(); openCloudRestorePanel(true); });
+    if (els.panelCloudBackupBtn) {
+      els.panelCloudBackupBtn.addEventListener("click", () => {
+        closeUserPanel();
+        cloudBackupRecordsOpen();
+      });
+    }
+
 
 
 
