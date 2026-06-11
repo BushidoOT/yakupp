@@ -1,22 +1,31 @@
-Mesaha App v73 / Mesaha İO v1.2
+Mesaha App v74 / Mesaha İO v1.3
 
-Yapılanlar:
-- Kullanım kılavuzu düzenlendi ve başlıklara ayrıldı.
-- Yönetici girişi en alta alındı.
-- Yönetici kodu doğru girilince ayrı Admin Paneli sekmesi açılır.
-- Admin paneline kontrol merkezi, hareketler, notlar, pasif/aktif kullanıcı, hızlı filtreler eklendi.
-- Admin panelinde 5-6-7-8-9 numaralı istenmeyen özellikler eklenmedi.
-- Görünen uygulama sürümü Mesaha İO v1.2 yapıldı.
+Düzeltmeler:
+- Admin Paneli artık normalde gizlidir.
+- Altta Yönetici Girişi butonu yoktur.
+- Kullanım Kılavuzu'nun en altına Yönetici Panelini Aç butonu eklendi.
+- Yönetici kodu doğru girilince altta 4. sekme olarak Admin Paneli açılır.
+- Admin Paneli sekmesi şifre girilmeden görünmez.
+- Kullanım kılavuzu daha düzenli hale getirildi.
+- Görünen uygulama sürümü Mesaha İO v1.3 yapıldı.
+
+Admin paneline eklenenler:
+- Kontrol merkezi
+- Kullanıcı hareketleri
+- Kullanıcıya admin notu
+- Kullanıcıyı pasif / aktif işaretleme
+- Hızlı filtreler
+
+Eklenmeyenler:
+- Yedek karşılaştırma
+- Kullanıcı bazlı m³ özeti
+- Şeflik bazlı rapor
+- Hatalı yedek uyarısı
+- Yedek indir / dışa aktar
 
 Önemli:
-- Apps Script kodunu bu paketteki AppsScript_v73_TAM_KOD.txt ile komple değiştirip mevcut dağıtımı yeni sürüm olarak güncellemelisin.
-- Yeni dağıtım linki oluşturma; mevcut dağıtımı düzenleyip "Yeni sürüm" seç.
+- Apps Script kodunu bu paketteki AppsScript_v74_TAM_KOD.txt ile güncelle.
+- GitHub'a index.html, manifest.json, service-worker.js, .nojekyll dosyalarını yükle.
 
 Kullanılan Apps Script URL:
 https://script.google.com/macros/s/AKfycbzv8rw3n4FuwDmiFnW3ttKuoK0mUQnzEYizjaD46z0uuFiKtqLl1zkupkB9AkOehC7ECg/exec
-
-GitHub'a yüklenecek dosyalar:
-- index.html
-- manifest.json
-- service-worker.js
-- .nojekyll

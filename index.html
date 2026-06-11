@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha App v73</title>
+  <title>Mesaha App v74</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -2947,62 +2947,75 @@
     }
 
   
-    /* v72: Gelişmiş yönetici paneli */
-    .admin-summary-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:10px 0}
-    .admin-summary-card{background:rgba(37,99,235,.10);border:1px solid rgba(37,99,235,.28);border-radius:14px;padding:10px;display:grid;gap:4px;min-height:68px}
-    .admin-summary-card span{color:var(--muted);font-size:11px;font-weight:900}.admin-summary-card b{color:var(--text);font-size:20px;font-weight:950;line-height:1.1;word-break:break-word}.admin-summary-card.wide{grid-column:span 2}
-    .admin-tabs{display:flex;flex-wrap:wrap;gap:7px;margin:9px 0}.admin-tab{min-height:36px;padding:8px 12px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.08);color:var(--text);font-weight:950;font-size:12px}.admin-tab.active{background:#2563eb;color:#fff;border-color:#2563eb}
-    .admin-filters{display:grid;grid-template-columns:1fr auto;gap:8px;margin:8px 0;align-items:center}.admin-filters select{min-height:40px;border-radius:13px;border:1px solid var(--line);background:rgba(255,255,255,.08);color:var(--text);padding:8px 10px;font-weight:900;outline:none}
-    .registered-user-item.status-today{border-color:#86efac!important;background:linear-gradient(180deg,rgba(34,197,94,.14),rgba(255,255,255,.05))!important}.registered-user-item.status-warning{border-color:#fde68a!important;background:linear-gradient(180deg,rgba(245,158,11,.14),rgba(255,255,255,.05))!important}.registered-user-item.status-old{border-color:#fecaca!important;background:linear-gradient(180deg,rgba(239,68,68,.14),rgba(255,255,255,.05))!important}
-    .admin-status-pill{display:inline-flex;align-items:center;border-radius:999px;padding:3px 7px;color:#fff;font-size:10px;font-weight:950;background:#64748b;white-space:nowrap}.admin-status-pill.today{background:#16a34a}.admin-status-pill.warning{background:#d97706}.admin-status-pill.old{background:#dc2626}
-    .registered-user-actions{grid-template-columns:repeat(4,minmax(0,1fr))!important}.registered-user-actions button{min-height:34px;padding:7px 8px;border-radius:11px;font-size:11px;font-weight:950}.admin-user-edit{background:#f59e0b!important;color:#111827!important}.admin-user-backups{background:#0ea5e9!important;color:#fff!important}
-    .admin-backups-list{display:grid;gap:9px;margin-top:10px}.admin-backup-card{background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:14px;padding:10px}.admin-backup-head{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;margin-bottom:8px}.admin-backup-head b{font-weight:950;color:var(--text);word-break:break-word}.admin-backup-head span{color:var(--muted);font-weight:900;font-size:12px;white-space:nowrap}.admin-backup-meta{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-bottom:8px}.admin-backup-meta span,.admin-detail-stat{background:rgba(255,255,255,.07);border:1px solid var(--line);border-radius:10px;padding:7px;color:var(--muted);font-size:12px;font-weight:900;overflow:hidden;text-overflow:ellipsis}.admin-backup-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-    .admin-detail-overlay{position:fixed;inset:0;z-index:1000003;display:none;align-items:flex-start;justify-content:center;padding:calc(env(safe-area-inset-top,0px) + 16px) 12px 18px;background:rgba(15,23,42,.42);backdrop-filter:blur(10px);overflow:auto}body.admin-detail-open .admin-detail-overlay#adminDetailOverlay,body.admin-cleanup-open .admin-detail-overlay#adminCleanupOverlay{display:flex}.admin-detail-card{width:min(760px,100%);background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:20px;padding:14px;box-shadow:0 18px 55px rgba(15,23,42,.28)}.admin-detail-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px}.admin-detail-head h2{margin:0 0 4px;color:var(--text);font-size:20px;font-weight:950}.admin-detail-close{width:42px;min-height:38px;padding:4px!important;font-size:24px!important;line-height:1!important;border-radius:12px!important}.admin-detail-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:10px}.admin-detail-stat b{display:block;color:var(--text);font-size:14px;margin-top:2px}.admin-detail-actions,.admin-cleanup-actions{display:grid;gap:8px;margin:8px 0}
-    @media(max-width:720px){.admin-summary-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.admin-summary-card.wide{grid-column:span 2}.admin-filters{grid-template-columns:1fr}.registered-user-actions{grid-template-columns:1fr!important}.admin-backup-meta,.admin-detail-stats{grid-template-columns:1fr}}
-
-  
-    /* v73: Admin paneli ayrı sekme ve düzenli kılavuz */
-    .admin-unlock-dock{
-      position:fixed;
-      right:12px;
-      bottom:calc(env(safe-area-inset-bottom,0px) + 76px);
-      z-index:999999;
+    /* v74: Admin paneli normalde gizli, kılavuzdan şifre ile açılır */
+    .admin-panel{
+      display:none;
     }
 
-    .admin-unlock-dock button{
-      border-radius:999px !important;
-      box-shadow:0 12px 28px rgba(15,23,42,.22);
+    body.show-admin .panel.entry-panel,
+    body.show-admin .panel.records-panel,
+    body.show-admin .panel.guide-panel{
+      display:none !important;
     }
 
-    .admin-panel-card{
-      border-color:rgba(37,99,235,.35) !important;
+    body.show-admin .panel.admin-panel{
+      display:block !important;
+    }
+
+    body.show-records .panel.admin-panel,
+    body.show-guide .panel.admin-panel{
+      display:none !important;
+    }
+
+    .bottom-nav.has-admin{
+      grid-template-columns:repeat(4, 1fr);
+    }
+
+    .admin-panel-top{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:10px;
+    }
+
+    .admin-panel-top h3{
+      margin:0 0 4px;
+      color:#111827;
+      font-size:18px;
+      font-weight:950;
+    }
+
+    .clean-guide{
+      display:grid;
+      gap:14px;
     }
 
     .admin-summary-grid{
       display:grid;
-      grid-template-columns:repeat(3,minmax(0,1fr));
+      grid-template-columns:repeat(3, minmax(0, 1fr));
       gap:8px;
       margin:10px 0;
     }
 
     .admin-summary-card{
-      background:rgba(37,99,235,.10);
-      border:1px solid rgba(37,99,235,.28);
+      background:#eff6ff;
+      border:1px solid #bfdbfe;
       border-radius:14px;
       padding:10px;
+      min-height:70px;
       display:grid;
       gap:4px;
-      min-height:70px;
     }
 
     .admin-summary-card span{
-      color:var(--muted);
+      color:#64748b;
       font-size:11px;
       font-weight:900;
     }
 
     .admin-summary-card b{
-      color:var(--text);
+      color:#111827;
       font-size:19px;
       font-weight:950;
       line-height:1.15;
@@ -3026,9 +3039,9 @@
       min-height:36px;
       padding:8px 12px;
       border-radius:12px;
-      border:1px solid var(--line);
-      background:rgba(255,255,255,.08);
-      color:var(--text);
+      border:1px solid #cbd5e1;
+      background:#ffffff;
+      color:#111827;
       font-weight:950;
       font-size:12px;
     }
@@ -3051,9 +3064,9 @@
     .admin-filters select{
       min-height:42px;
       border-radius:13px;
-      border:1px solid var(--line);
-      background:rgba(255,255,255,.08);
-      color:var(--text);
+      border:1px solid #cbd5e1;
+      background:#fff;
+      color:#111827;
       padding:8px 10px;
       font-weight:900;
       outline:none;
@@ -3070,8 +3083,8 @@
     .admin-dashboard-row,
     .admin-activity-item,
     .admin-note-item{
-      background:rgba(255,255,255,.06);
-      border:1px solid var(--line);
+      background:#ffffff;
+      border:1px solid #d7dee8;
       border-radius:14px;
       padding:10px;
     }
@@ -3079,7 +3092,7 @@
     .admin-dashboard-row b,
     .admin-activity-item b,
     .admin-note-item b{
-      color:var(--text);
+      color:#111827;
       font-weight:950;
     }
 
@@ -3087,31 +3100,32 @@
     .admin-activity-item span,
     .admin-note-item span{
       display:block;
-      color:var(--muted);
+      color:#64748b;
       font-size:12px;
       font-weight:850;
       margin-top:4px;
+      line-height:1.45;
     }
 
     .registered-user-item.status-today{
       border-color:#86efac !important;
-      background:linear-gradient(180deg, rgba(34,197,94,.14), rgba(255,255,255,.05)) !important;
+      background:linear-gradient(180deg, rgba(34,197,94,.14), rgba(255,255,255,.8)) !important;
     }
 
     .registered-user-item.status-warning{
       border-color:#fde68a !important;
-      background:linear-gradient(180deg, rgba(245,158,11,.14), rgba(255,255,255,.05)) !important;
+      background:linear-gradient(180deg, rgba(245,158,11,.14), rgba(255,255,255,.8)) !important;
     }
 
     .registered-user-item.status-old{
       border-color:#fecaca !important;
-      background:linear-gradient(180deg, rgba(239,68,68,.14), rgba(255,255,255,.05)) !important;
+      background:linear-gradient(180deg, rgba(239,68,68,.14), rgba(255,255,255,.8)) !important;
     }
 
     .registered-user-item.status-disabled{
       border-color:#94a3b8 !important;
-      background:linear-gradient(180deg, rgba(100,116,139,.20), rgba(255,255,255,.05)) !important;
-      opacity:.75;
+      background:linear-gradient(180deg, rgba(100,116,139,.18), rgba(255,255,255,.8)) !important;
+      opacity:.78;
     }
 
     .admin-status-pill{
@@ -3133,7 +3147,7 @@
 
     .registered-user-actions{
       display:grid;
-      grid-template-columns:repeat(3,minmax(0,1fr));
+      grid-template-columns:repeat(3, minmax(0, 1fr));
       gap:7px;
       margin-top:8px;
     }
@@ -3146,21 +3160,24 @@
       font-weight:950;
     }
 
-    .admin-user-edit{ background:#f59e0b !important; color:#111827 !important; }
-    .admin-user-passive{ background:#64748b !important; color:#fff !important; }
-    .admin-user-note{ background:#8b5cf6 !important; color:#fff !important; }
-    .admin-user-backups{ background:#0ea5e9 !important; color:#fff !important; }
+    .admin-user-passive{
+      background:#64748b !important;
+      color:#fff !important;
+    }
 
-    .clean-guide{
-      display:grid;
-      grid-template-columns:repeat(2,minmax(0,1fr));
-      gap:10px;
+    .admin-user-note{
+      background:#8b5cf6 !important;
+      color:#fff !important;
+    }
+
+    .admin-user-backups{
+      background:#0ea5e9 !important;
+      color:#fff !important;
     }
 
     @media (max-width:720px){
       .admin-summary-grid,
-      .admin-filters,
-      .clean-guide{
+      .admin-filters{
         grid-template-columns:1fr;
       }
 
@@ -3172,9 +3189,10 @@
         grid-template-columns:1fr !important;
       }
 
-      .admin-unlock-dock{
-        right:10px;
-        bottom:calc(env(safe-area-inset-bottom,0px) + 72px);
+      .bottom-nav.has-admin button{
+        font-size:12px;
+        padding-left:6px;
+        padding-right:6px;
       }
     }
 
@@ -3267,41 +3285,10 @@
     </div>
   </div>
 
-  
-  <div id="adminDetailOverlay" class="admin-detail-overlay" role="dialog" aria-modal="true" aria-label="Yönetici kullanıcı detayı">
-    <div class="admin-detail-card">
-      <div class="admin-detail-head">
-        <div>
-          <h2 id="adminDetailTitle">Kullanıcı Detayı</h2>
-          <p id="adminDetailSub" class="hint">Kullanıcı bilgileri ve yedekler</p>
-        </div>
-        <button id="adminDetailCloseBtn" class="ghost admin-detail-close" type="button">×</button>
-      </div>
-      <div id="adminDetailBody" class="admin-detail-body"></div>
-    </div>
-  </div>
-
-  <div id="adminCleanupOverlay" class="admin-detail-overlay" role="dialog" aria-modal="true" aria-label="Yönetici yedek temizlik">
-    <div class="admin-detail-card">
-      <div class="admin-detail-head">
-        <div>
-          <h2>Yedek Temizliği</h2>
-          <p class="hint">Bulut yedeklerini dikkatli şekilde temizleyin.</p>
-        </div>
-        <button id="adminCleanupCloseBtn" class="ghost admin-detail-close" type="button">×</button>
-      </div>
-      <div class="admin-cleanup-actions">
-        <button id="cleanupOlder30Btn" class="danger" type="button">30 Günden Eski Yedekleri Sil</button>
-        <button id="cleanupKeepLastBtn" class="danger" type="button">Her Kullanıcıda Sadece Son Yedeği Bırak</button>
-      </div>
-      <p class="hint">Bu işlemler geri alınamaz. Drive dosyaları çöp kutusuna taşınır.</p>
-    </div>
-  </div>
-
   <div class="app">
     <header class="topbar">
       <div class="brand">
-        <h1>Mesaha İO v1.2</h1>
+        <h1>Mesaha İO v1.3</h1>
         
       </div>
       <div id="activeUserBadge" class="active-user-badge" role="button" tabindex="0" title="Kullanıcı panelini aç" style="display:none"></div>
@@ -3576,196 +3563,160 @@
       </section>
 
 
+      
       <section class="panel guide-panel">
         <div class="panel-header">
           <h2>Kullanım Kılavuzu</h2>
           <span class="pill" style="display:inline-flex">Yardım</span>
         </div>
         <div class="panel-body">
-          <div class="guide-content">
+          <div class="guide-content clean-guide">
             <div class="guide-card">
-              <h3>Mesaha dosyasını indirme ve ORBİS’e aktarma</h3>
+              <h3>1. Kurulum</h3>
               <ol>
-                <li>Mesaha işlemi bittikten sonra <b>Kayıtlar</b> sekmesine giriniz.</li>
-                <li><b>Mesaha Dosyasını İndir</b> butonuna basarak dosyanızı indiriniz.</li>
-                <li>İndirilen mesaha dosyasını bilgisayara aktarınız.</li>
-                <li>Terminal kullanıyorsanız dosya genellikle <b>Download / İndirilenler</b> klasörüne kaydedilir. Dosyayı buradan alabilirsiniz.</li>
-                <li>Daha sonra <b>ORBİS</b> sistemine giriş yapınız.</li>
-                <li><b>İşletme Pazarlama</b> modülüne giriniz.</li>
+                <li>Uygulamayı Chrome veya Safari üzerinden açınız.</li>
+                <li>Adres olarak <b>https://bit.ly/mesahaio</b> bağlantısını kullanabilirsiniz.</li>
+                <li>Android cihazda Chrome menüsünden <b>Ana ekrana ekle</b> seçiniz.</li>
+                <li>iPhone / iOS cihazda Safari üzerinden açıp paylaş menüsünden <b>Ana Ekrana Ekle</b> seçiniz.</li>
+                <li>Güncelleme sonrası sayfayı 2-3 kez yenileyiniz.</li>
+              </ol>
+            </div>
+
+            <div class="guide-card">
+              <h3>2. Yeni Kayıt</h3>
+              <ol>
+                <li>Ağaç türünü seçiniz.</li>
+                <li>Ürün türünü seçiniz.</li>
+                <li>Boy, çap, barkod, adet ve üretim tarihini giriniz.</li>
+                <li><b>Kaydet</b> butonuna basınız.</li>
+                <li>Aynı barkod iki kez kaydedilemez; uyarı verirse barkodu kontrol ediniz.</li>
+              </ol>
+            </div>
+
+            <div class="guide-card">
+              <h3>3. Kayıtlar</h3>
+              <ol>
+                <li><b>Kayıtlar</b> sekmesinde kayıtları görebilir ve arayabilirsiniz.</li>
+                <li><b>Düzelt</b> ile kayıt düzenlenir, <b>Sil</b> ile tek kayıt silinir.</li>
+                <li>Toplu seçim ile birden fazla kaydı silebilir, ürün veya ağaç türünü değiştirebilirsiniz.</li>
+                <li><b>Mesaha Dosyasını İndir</b> butonu ORBİS uyumlu Excel dosyası oluşturur.</li>
+              </ol>
+            </div>
+
+            <div class="guide-card">
+              <h3>4. ORBİS’e Aktarma</h3>
+              <ol>
+                <li>Mesaha dosyasını indirdikten sonra dosyayı bilgisayara aktarınız.</li>
+                <li>ORBİS sisteminde <b>İşletme Pazarlama</b> modülüne giriniz.</li>
                 <li><b>Kesme Faaliyetleri Raporu</b> ekranını açınız.</li>
                 <li>Şeflik ve bölme bilgilerini giriniz.</li>
-                <li>Şefiniz bölmeyi açmışsa ilgili bölme listede görünecektir.</li>
-                <li>Bölmenin üzerine iki defa tıklayınız.</li>
-                <li>Dosya yükleme bölümüne geliniz.</li>
-                <li>İndirdiğiniz mesaha dosyasını seçiniz ve <b>Excel’den Aktar</b> butonuna basınız.</li>
-              </ol>
-            </div>
-
-
-            <div class="guide-card">
-              <h3>Terminal ve tablette kullanma</h3>
-              <ol>
-                <li>Terminal veya tableti Wi-Fi ya da kendi mobil interneti ile internete bağlayınız.</li>
-                <li>Ana menüde, alttaki seçeneklerden en sağdaki seçeneğe dokununuz.</li>
-                <li>Açılan ekranda <b>Yeşil Takip</b> seçeneğine basınız.</li>
-                <li>Bu işlemden sonra <b>Chrome</b> uygulaması açılacaktır.</li>
-                <li>Chrome’un arama / adres çubuğuna aşağıdaki adresi eksiksiz olarak yazınız:</li>
-              </ol>
-
-              <div class="guide-note" style="margin:10px 0; word-break:break-all;">
-                https://bit.ly/mesahaio
-              </div>
-
-              <ol start="6">
-                <li>Mesaha App açıldıktan sonra sağ üstteki <b>üç nokta</b> menüsüne basınız.</li>
-                <li>Açılan menüde <b>yıldız</b> simgesine dokununuz.</li>
-                <li>Çıkan seçeneklerde <b>Tamam</b> diyerek kaydediniz.</li>
-                <li>Bu işlemden sonra uygulamayı internet olmadan da kullanabilirsiniz.</li>
+                <li>Bölmenin üzerine çift tıklayınız.</li>
+                <li>Dosya yükleme bölümünden mesaha dosyasını seçip <b>Excel’den Aktar</b> deyiniz.</li>
               </ol>
             </div>
 
             <div class="guide-card">
-              <h3>iOS / iPhone cihazlarda kullanım</h3>
+              <h3>5. Bulut Yedek</h3>
               <ol>
-                <li>iPhone veya iOS cihazınızda <b>Safari</b> uygulamasını açınız.</li>
-                <li>Mesaha App bağlantısını Safari üzerinden açınız.</li>
-                <li>Sağ alttaki menü / üç çizgi simgesine dokununuz.</li>
-                 <li><b>Paylaş</b> seçeneğine giriniz.</li>
-                <li><b>Daha Fazla</b> seçeneğine giriniz.</li>
-                <li><b>Ana Ekrana Ekle</b> seçeneğine basınız.</li>
-                <li>Bu işlemden sonra Mesaha App ana ekrana eklenir ve internet olmadığında da kullanılabilir.</li>
+                <li><b>Buluta Yedekle</b> internet varsa kayıtları Drive’a gönderir.</li>
+                <li><b>Buluttan Getir</b> aktif kullanıcıya ait yedekleri listeler.</li>
+                <li>Başka cihazdaki yedekler için <b>Farklı Kullanıcı / Şeflik Ara</b> seçeneğini kullanınız.</li>
+                <li>İnternet yoksa bulut çalışmaz; cihazdaki kayıtlar etkilenmez.</li>
               </ol>
             </div>
-<div class="guide-note">
-              Not: Arazide internet çekmeyebilir. Uygulamayı sahaya çıkmadan önce bir kez internet varken açıp ana ekrana eklemeniz tavsiye edilir. İş bitince mesaha dosyasını indirmeyi ve gerekirse yedek almayı unutmayınız. Bir sorunla karşılaşırsanız Telegramdan ulaşabilirsiniz @ExelanceX
-            </div>
 
-            <div class="guide-card admin-users-card" id="adminUsersCard">
-              <h3>Yönetici Paneli</h3>
-              <p class="hint">Kayıtlı kullanıcıları görmek için yönetici kodu gerekir.</p>
-              <button id="adminUsersBtn" class="secondary admin-users-btn" type="button">Yönetici Panelini Aç</button>
-            </div>
-
-                        <div class="guide-card cloud-backup-guide">
-              <h3>Bulut Yedekleme ve Geri Yükleme</h3>
+            <div class="guide-card">
+              <h3>6. Sorun Çözme</h3>
               <ol>
-                <li><b>Buluta Yedekle</b> butonu herkeste görünür ve şifre istemez.</li>
-                <li>Yedekler kullanıcı adı ve şeflik bilgisine göre yöneticinin Drive hesabına kaydedilir.</li>
-                <li><b>Buluttan Getir</b> butonunda aktif kullanıcının yedekleri direkt listelenir.</li><li>Başka cihazdaki veya farklı kullanıcıdaki yedeği almak için <b>Farklı Kullanıcı / Şeflik Ara</b> butonunu kullanınız.</li>
-                <li>Listeden yedeği geri yükleyebilir veya silebilirsiniz.</li>
-                <li>İnternet yoksa bulut işlemleri çalışmaz; cihazdaki kayıtlar etkilenmez.</li>
+                <li>Güncelleme görünmüyorsa sayfayı 2-3 kez yenileyiniz.</li>
+                <li>Bulut çalışmıyorsa interneti ve Apps Script dağıtımını kontrol ediniz.</li>
+                <li>Excel hatası alırsanız kayıtları kontrol edip tekrar dışa aktarınız.</li>
+                <li>Yardım için Telegram: <b>@ExelanceX</b></li>
               </ol>
             </div>
-<div class="guide-card registered-users-card" id="registeredUsersCard">
-              <h3>Kayıtlı Kullanıcılar</h3>
-              <p class="hint admin-unlock-note">Bu bölüm yönetici kodu ile açılmıştır. İnternet varsa merkezde kayıtlı herkes listelenir.</p>
-              
-              <div id="adminSummaryGrid" class="admin-summary-grid">
-                <div class="admin-summary-card"><span>Toplam Kullanıcı</span><b id="adminTotalUsers">0</b></div>
-                <div class="admin-summary-card"><span>Bugün Giriş</span><b id="adminTodayUsers">0</b></div>
-                <div class="admin-summary-card"><span>Toplam Yedek</span><b id="adminTotalBackups">0</b></div>
-                <div class="admin-summary-card"><span>Toplam Cihaz</span><b id="adminTotalDevices">0</b></div>
-                <div class="admin-summary-card wide"><span>Son Yedek</span><b id="adminLastBackup">-</b></div>
-              </div>
-              <div class="admin-tabs">
-                <button class="admin-tab active" type="button" data-admin-tab="users">Kullanıcılar</button>
-                <button class="admin-tab" type="button" data-admin-tab="backups">Yedekler</button>
-                <button class="admin-tab" type="button" data-admin-tab="cleanup">Temizlik</button>
-              </div>
-              <div class="admin-filters">
-                <select id="adminSeflikFilter"><option value="">Tüm şeflikler</option></select>
-                <button id="adminCleanupOpenBtn" class="danger" type="button">Yedek Temizliği</button>
-              </div>
-<div class="admin-user-search-wrap"><input id="adminUserSearch" type="text" placeholder="Kullanıcı veya şeflik ara..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" /></div>
-              <div id="registeredUsersList" class="registered-users-list">
-                <div class="empty-user-list">Henüz kullanıcı girişi yok.</div>
-              </div>
-              <div id="adminBackupsList" class="admin-backups-list" style="display:none;"></div>
-              <button id="changeUserBtn" class="ghost user-change-btn" type="button">Kullanıcı Değiştir / Yeni Kullanıcı Gir</button>
-              <button id="adminUsersCloseBtn" class="ghost user-change-btn" type="button">Kullanıcı Listesini Gizle</button>
-              <p class="hint">Bu liste internet varsa merkezde kayıtlı tüm kullanıcıları gösterir. İnternet yoksa sadece cihazdaki kayıtlar görünür.</p>
-            </div>
 
+            <div class="guide-card admin-guide-open-card">
+              <h3>Yönetici Bölümü</h3>
+              <p class="hint">Admin Paneli normalde gizlidir. Yönetici kodu doğru girilince altta 4. sekme olarak açılır.</p>
+              <button id="guideAdminOpenBtn" class="secondary" type="button">Yönetici Panelini Aç</button>
+            </div>
           </div>
         </div>
       </section>
+
     
-        <section id="adminPanel" class="page">
-          <div class="card admin-panel-card">
-            <div class="section-title">
-              <div>
-                <h2>Admin Paneli</h2>
-                <p>Kontrol merkezi, kullanıcılar, hareketler, notlar ve hızlı filtreler.</p>
-              </div>
-              <button type="button" id="adminRefreshBtn" class="secondary">Yenile</button>
+      <section class="panel admin-panel">
+        <div class="panel-header">
+          <h2>Admin Paneli</h2>
+          <span class="pill" style="display:inline-flex">Kontrol</span>
+        </div>
+        <div class="panel-body">
+          <div class="admin-panel-top">
+            <div>
+              <h3>Kontrol Merkezi</h3>
+              <p class="hint">Kullanıcılar, hareketler, notlar, pasif işaretleme ve hızlı filtreler.</p>
             </div>
-
-            <div class="admin-summary-grid">
-              <div class="admin-summary-card"><span>Toplam Kullanıcı</span><b id="adminTotalUsers">0</b></div>
-              <div class="admin-summary-card"><span>Bugün Giriş</span><b id="adminTodayUsers">0</b></div>
-              <div class="admin-summary-card"><span>Son 7 Gün</span><b id="adminWeekUsers">0</b></div>
-              <div class="admin-summary-card"><span>Toplam Yedek</span><b id="adminTotalBackups">0</b></div>
-              <div class="admin-summary-card"><span>Bugünkü Yedek</span><b id="adminTodayBackups">0</b></div>
-              <div class="admin-summary-card wide"><span>En Son Yedek</span><b id="adminLastBackup">-</b></div>
-            </div>
-
-            <div class="admin-tabs">
-              <button class="admin-tab active" type="button" data-admin-tab="dashboard">Özet</button>
-              <button class="admin-tab" type="button" data-admin-tab="users">Kullanıcılar</button>
-              <button class="admin-tab" type="button" data-admin-tab="activity">Hareketler</button>
-              <button class="admin-tab" type="button" data-admin-tab="notes">Notlar</button>
-              <button class="admin-tab" type="button" data-admin-tab="settings">Ayarlar</button>
-            </div>
-
-            <div class="admin-filters">
-              <input id="adminUserSearch" type="text" placeholder="Kullanıcı veya şeflik ara..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
-              <select id="adminSeflikFilter">
-                <option value="">Tüm şeflikler</option>
-              </select>
-            </div>
-
-            <div class="admin-quick-filters">
-              <button type="button" class="admin-quick active" data-admin-quick="all">Tümü</button>
-              <button type="button" class="admin-quick" data-admin-quick="today">Bugün aktif</button>
-              <button type="button" class="admin-quick" data-admin-quick="noBackup">Yedeği olmayan</button>
-              <button type="button" class="admin-quick" data-admin-quick="inactive7">7+ gün girmeyen</button>
-              <button type="button" class="admin-quick" data-admin-quick="mostBackup">En çok yedek alan</button>
-              <button type="button" class="admin-quick" data-admin-quick="disabled">Pasifler</button>
-            </div>
-
-            <div id="adminDashboardView" class="admin-view">
-              <div id="adminControlCenter" class="admin-control-center"></div>
-            </div>
-
-            <div id="adminUsersView" class="admin-view" style="display:none">
-              <div id="registeredUsersList" class="registered-users-list"></div>
-            </div>
-
-            <div id="adminActivityView" class="admin-view" style="display:none">
-              <div id="adminActivityList" class="admin-activity-list"></div>
-            </div>
-
-            <div id="adminNotesView" class="admin-view" style="display:none">
-              <div id="adminNotesList" class="admin-notes-list"></div>
-            </div>
-
-            <div id="adminSettingsView" class="admin-view" style="display:none">
-              <div class="admin-cleanup-actions">
-                <button id="cleanupOlder30Btn" class="danger" type="button">30 Günden Eski Yedekleri Sil</button>
-                <button id="cleanupKeepLastBtn" class="danger" type="button">Her Kullanıcıda Sadece Son Yedeği Bırak</button>
-              </div>
-              <p class="hint">Temizlik işlemleri geri alınamaz; Drive dosyaları çöp kutusuna taşınır.</p>
-            </div>
+            <button type="button" id="adminRefreshBtn" class="secondary">Yenile</button>
           </div>
-        </section>
 
-      </main>
+          <div class="admin-summary-grid">
+            <div class="admin-summary-card"><span>Toplam Kullanıcı</span><b id="adminTotalUsers">0</b></div>
+            <div class="admin-summary-card"><span>Bugün Giriş</span><b id="adminTodayUsers">0</b></div>
+            <div class="admin-summary-card"><span>Son 7 Gün</span><b id="adminWeekUsers">0</b></div>
+            <div class="admin-summary-card"><span>Toplam Yedek</span><b id="adminTotalBackups">0</b></div>
+            <div class="admin-summary-card"><span>Bugünkü Yedek</span><b id="adminTodayBackups">0</b></div>
+            <div class="admin-summary-card wide"><span>En Son Yedek</span><b id="adminLastBackup">-</b></div>
+          </div>
+
+          <div class="admin-tabs">
+            <button class="admin-tab active" type="button" data-admin-tab="dashboard">Özet</button>
+            <button class="admin-tab" type="button" data-admin-tab="users">Kullanıcılar</button>
+            <button class="admin-tab" type="button" data-admin-tab="activity">Hareketler</button>
+            <button class="admin-tab" type="button" data-admin-tab="notes">Notlar</button>
+          </div>
+
+          <div class="admin-filters">
+            <input id="adminUserSearch" type="text" placeholder="Kullanıcı veya şeflik ara..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+            <select id="adminSeflikFilter">
+              <option value="">Tüm şeflikler</option>
+            </select>
+          </div>
+
+          <div class="admin-quick-filters">
+            <button type="button" class="admin-quick active" data-admin-quick="all">Tümü</button>
+            <button type="button" class="admin-quick" data-admin-quick="today">Bugün aktif</button>
+            <button type="button" class="admin-quick" data-admin-quick="noBackup">Yedeği olmayan</button>
+            <button type="button" class="admin-quick" data-admin-quick="inactive7">7+ gün girmeyen</button>
+            <button type="button" class="admin-quick" data-admin-quick="mostBackup">En çok yedek alan</button>
+            <button type="button" class="admin-quick" data-admin-quick="disabled">Pasifler</button>
+          </div>
+
+          <div id="adminDashboardView" class="admin-view">
+            <div id="adminControlCenter" class="admin-control-center"></div>
+          </div>
+
+          <div id="adminUsersView" class="admin-view" style="display:none">
+            <div id="registeredUsersList" class="registered-users-list"></div>
+          </div>
+
+          <div id="adminActivityView" class="admin-view" style="display:none">
+            <div id="adminActivityList" class="admin-activity-list"></div>
+          </div>
+
+          <div id="adminNotesView" class="admin-view" style="display:none">
+            <div id="adminNotesList" class="admin-notes-list"></div>
+          </div>
+        </div>
+      </section>
+
+    </main>
   </div>
 
   <nav class="bottom-nav">
     <button id="navEntry" class="active" type="button">Yeni Kayıt</button>
     <button id="navRecords" type="button">Kayıtlar</button>
     <button id="navGuide" type="button">Kullanım Kılavuzu</button>
+    <button id="navAdmin" type="button" style="display:none">Admin Paneli</button>
   </nav>
 <script>
     const STORAGE_KEY = "cam_mesaha_kayitlari_v1";
@@ -3809,12 +3760,9 @@
       selectedRecordIds: new Set(),
       adminOnlineUsers: [],
       adminBackups: [],
-      adminActivity: [],
       adminNotes: {},
       adminDisabledUsers: {},
       adminQuickFilter: "all",
-      adminBackups: [],
-      adminSelectedSeflik: "",
       lastAdminCode: "",
       settings: {
         lastBarcode: "A102682",
@@ -3895,45 +3843,7 @@
       bulkTreeBtn: $("bulkTreeBtn"),
       bulkDeleteBtn: $("bulkDeleteBtn"),
       selectAllRecords: $("selectAllRecords"),
-            adminTabBtn: $("adminTabBtn"),
-      adminOpenBtn: $("adminOpenBtn"),
-      adminRefreshBtn: $("adminRefreshBtn"),
-      adminTotalUsers: $("adminTotalUsers"),
-      adminTodayUsers: $("adminTodayUsers"),
-      adminWeekUsers: $("adminWeekUsers"),
-      adminTotalBackups: $("adminTotalBackups"),
-      adminTodayBackups: $("adminTodayBackups"),
-      adminLastBackup: $("adminLastBackup"),
       adminUserSearch: $("adminUserSearch"),
-      adminSeflikFilter: $("adminSeflikFilter"),
-      adminControlCenter: $("adminControlCenter"),
-      registeredUsersList: $("registeredUsersList"),
-      adminActivityList: $("adminActivityList"),
-      adminNotesList: $("adminNotesList"),
-      adminDashboardView: $("adminDashboardView"),
-      adminUsersView: $("adminUsersView"),
-      adminActivityView: $("adminActivityView"),
-      adminNotesView: $("adminNotesView"),
-      adminSettingsView: $("adminSettingsView"),
-      cleanupOlder30Btn: $("cleanupOlder30Btn"),
-      cleanupKeepLastBtn: $("cleanupKeepLastBtn"),
-      adminTotalUsers: $("adminTotalUsers"),
-      adminTodayUsers: $("adminTodayUsers"),
-      adminTotalBackups: $("adminTotalBackups"),
-      adminTotalDevices: $("adminTotalDevices"),
-      adminLastBackup: $("adminLastBackup"),
-      adminSeflikFilter: $("adminSeflikFilter"),
-      adminCleanupOpenBtn: $("adminCleanupOpenBtn"),
-      adminBackupsList: $("adminBackupsList"),
-      adminDetailOverlay: $("adminDetailOverlay"),
-      adminDetailCloseBtn: $("adminDetailCloseBtn"),
-      adminDetailTitle: $("adminDetailTitle"),
-      adminDetailSub: $("adminDetailSub"),
-      adminDetailBody: $("adminDetailBody"),
-      adminCleanupOverlay: $("adminCleanupOverlay"),
-      adminCleanupCloseBtn: $("adminCleanupCloseBtn"),
-      cleanupOlder30Btn: $("cleanupOlder30Btn"),
-      cleanupKeepLastBtn: $("cleanupKeepLastBtn"),
       toast: $("toast"),
       sameBarcodeBtn: $("sameBarcodeBtn"),
       clearInputsBtn: $("clearInputsBtn"),
@@ -3953,6 +3863,23 @@
       navEntry: $("navEntry"),
       navRecords: $("navRecords"),
       navGuide: $("navGuide"),
+      navAdmin: $("navAdmin"),
+      guideAdminOpenBtn: $("guideAdminOpenBtn"),
+      adminRefreshBtn: $("adminRefreshBtn"),
+      adminTotalUsers: $("adminTotalUsers"),
+      adminTodayUsers: $("adminTodayUsers"),
+      adminWeekUsers: $("adminWeekUsers"),
+      adminTotalBackups: $("adminTotalBackups"),
+      adminTodayBackups: $("adminTodayBackups"),
+      adminLastBackup: $("adminLastBackup"),
+      adminSeflikFilter: $("adminSeflikFilter"),
+      adminControlCenter: $("adminControlCenter"),
+      adminActivityList: $("adminActivityList"),
+      adminNotesList: $("adminNotesList"),
+      adminDashboardView: $("adminDashboardView"),
+      adminUsersView: $("adminUsersView"),
+      adminActivityView: $("adminActivityView"),
+      adminNotesView: $("adminNotesView"),
       lengthChips: $("lengthChips"),
       diameterChips: $("diameterChips"),
       userLoginOverlay: $("userLoginOverlay"),
@@ -4174,25 +4101,6 @@
 
 
 
-    function parseTurkishDateText(value){const t=String(value||"");const m=t.match(/(\d{2})\.(\d{2})\.(\d{4})(?:\s+(\d{2}):(\d{2})(?::(\d{2}))?)?/);if(!m)return null;return new Date(Number(m[3]),Number(m[2])-1,Number(m[1]),Number(m[4]||0),Number(m[5]||0),Number(m[6]||0));}
-    function isTodayText(value){const d=parseTurkishDateText(value);if(!d)return false;const n=new Date();return d.getFullYear()===n.getFullYear()&&d.getMonth()===n.getMonth()&&d.getDate()===n.getDate();}
-    function daysSinceText(value){const d=parseTurkishDateText(value);if(!d)return 9999;return Math.floor((Date.now()-d.getTime())/86400000);}
-    function adminStatusForUser(user){const days=daysSinceText(user.lastLogin);if(days<=0)return{key:"today",label:"BUGÜN"};if(days<=3)return{key:"warning",label:"3 GÜN"};return{key:"old",label:"PASİF"};}
-    function updateAdminSummary(users=state.adminOnlineUsers||[],backups=state.adminBackups||[]){const today=users.filter(u=>isTodayText(u.lastLogin)).length;const devices=users.reduce((s,u)=>s+(Number(u.deviceCount)||0),0);const last=backups[0]&&backups[0].createdAt?backups[0].createdAt:"-";if(els.adminTotalUsers)els.adminTotalUsers.textContent=users.length.toLocaleString("tr-TR");if(els.adminTodayUsers)els.adminTodayUsers.textContent=today.toLocaleString("tr-TR");if(els.adminTotalBackups)els.adminTotalBackups.textContent=backups.length.toLocaleString("tr-TR");if(els.adminTotalDevices)els.adminTotalDevices.textContent=devices.toLocaleString("tr-TR");if(els.adminLastBackup)els.adminLastBackup.textContent=last;}
-    function updateAdminSeflikFilter(users=state.adminOnlineUsers||[]){if(!els.adminSeflikFilter)return;const current=els.adminSeflikFilter.value||"";const ss=Array.from(new Set(users.map(u=>u.seflik).filter(Boolean))).sort((a,b)=>String(a).localeCompare(String(b),"tr"));els.adminSeflikFilter.innerHTML=`<option value="">Tüm şeflikler</option>`+ss.map(s=>`<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join("");if(ss.includes(current))els.adminSeflikFilter.value=current;}
-    function applyAdminUserFilters(users=state.adminOnlineUsers||[]){const q=els.adminUserSearch?String(els.adminUserSearch.value||"").trim().toLowerCase():"";const s=els.adminSeflikFilter?String(els.adminSeflikFilter.value||""):"";return users.filter(u=>(!q||[u.name,u.seflik,u.firstLogin,u.lastLogin,u.loginCount,u.backupCount,u.deviceCount].join(" ").toLowerCase().includes(q))&&(!s||String(u.seflik||"")===s));}
-    async function loadAdminBackups(adminCode=state.lastAdminCode||sessionStorage.getItem("mesaha_admin_code")||ADMIN_CODE){try{const d=await jsonpRequest(ONLINE_USER_API_URL,{action:"listAllBackups",admin:adminCode},20000);if(d&&d.ok===true&&Array.isArray(d.backups)){state.adminBackups=d.backups;updateAdminSummary(state.adminOnlineUsers||[],state.adminBackups);renderAdminBackups();}}catch{}}
-    function renderAdminBackups(backups=state.adminBackups||[]){if(!els.adminBackupsList)return;const q=els.adminUserSearch?String(els.adminUserSearch.value||"").trim().toLowerCase():"";const s=els.adminSeflikFilter?String(els.adminSeflikFilter.value||""):"";const list=backups.filter(b=>(!q||[b.name,b.seflik,b.fileName,b.bolmeNo,b.ekipNot,b.createdAt].join(" ").toLowerCase().includes(q))&&(!s||String(b.seflik||"")===s));if(!list.length){els.adminBackupsList.innerHTML=`<div class="empty-user-list">Yedek bulunamadı.</div>`;return;}els.adminBackupsList.innerHTML=list.map(b=>`<div class="admin-backup-card"><div class="admin-backup-head"><b>${escapeHtml(b.fileName||"Yedek")}</b><span>${escapeHtml(b.createdAt||"-")}</span></div><div class="admin-backup-meta"><span>Kullanıcı: ${escapeHtml(b.name||"-")}</span><span>Şeflik: ${escapeHtml(b.seflik||"-")}</span><span>Bölme: ${escapeHtml(b.bolmeNo||"-")}</span><span>Kayıt: ${(Number(b.recordCount)||0).toLocaleString("tr-TR")}</span></div><div class="admin-backup-actions"><button class="primary" type="button" onclick="restoreCloudBackup('${escapeHtml(b.id||"")}')">Geri Yükle</button><button class="danger" type="button" onclick="deleteAdminBackup('${escapeHtml(b.id||"")}')">Sil</button></div></div>`).join("");}
-    async function deleteAdminBackup(backupId){if(!backupId)return;if(!confirm("Bu bulut yedeği silinsin mi?"))return;try{showToast("Yedek siliniyor...");const d=await jsonpRequest(ONLINE_USER_API_URL,{action:"deleteBackup",backupId},15000);if(!d||d.ok!==true)throw new Error((d&&d.error)||"Yedek silinemedi");state.adminBackups=(state.adminBackups||[]).filter(b=>b.id!==backupId);renderAdminBackups();updateAdminSummary(state.adminOnlineUsers||[],state.adminBackups);showToast("Yedek silindi.");}catch(e){showToast(e&&e.message?e.message:"Yedek silinemedi.");}}
-    function openAdminUserDetail(name,seflik){const user=(state.adminOnlineUsers||[]).find(u=>String(u.name||"")===String(name||"")&&String(u.seflik||"")===String(seflik||""));if(!user)return showToast("Kullanıcı bulunamadı.");const backups=(state.adminBackups||[]).filter(b=>String(b.name||"")===String(name||"")&&String(b.seflik||"")===String(seflik||""));const st=adminStatusForUser(user);if(els.adminDetailTitle)els.adminDetailTitle.textContent=`${user.name||"-"} • ${user.seflik||"-"}`;if(els.adminDetailSub)els.adminDetailSub.textContent=`Durum: ${st.label}`;if(els.adminDetailBody){els.adminDetailBody.innerHTML=`<div class="admin-detail-stats"><div class="admin-detail-stat">İlk giriş<b>${escapeHtml(user.firstLogin||"-")}</b></div><div class="admin-detail-stat">Son giriş<b>${escapeHtml(user.lastLogin||"-")}</b></div><div class="admin-detail-stat">Toplam giriş<b>${(Number(user.loginCount)||0).toLocaleString("tr-TR")}</b></div><div class="admin-detail-stat">Cihaz sayısı<b>${(Number(user.deviceCount)||0).toLocaleString("tr-TR")}</b></div><div class="admin-detail-stat">Yedek sayısı<b>${backups.length.toLocaleString("tr-TR")}</b></div><div class="admin-detail-stat">Son yedek<b>${escapeHtml((backups[0]&&backups[0].createdAt)||"-")}</b></div></div><div class="admin-detail-actions"><button class="secondary" type="button" onclick="adminShowUserBackups('${escapeHtml(user.name||"")}', '${escapeHtml(user.seflik||"")}')">Yedekleri Gör</button><button class="warning" type="button" onclick="editAdminUser('${escapeHtml(user.name||"")}', '${escapeHtml(user.seflik||"")}')">Kullanıcı / Şeflik Düzelt</button><button class="danger" type="button" onclick="deleteCloudUserAndBackups('${escapeHtml(user.name||"")}', '${escapeHtml(user.seflik||"")}')">Kullanıcıyı ve Yedeklerini Sil</button></div>`;}document.body.classList.add("admin-detail-open");}
-    function closeAdminDetail(){document.body.classList.remove("admin-detail-open");}
-    function adminShowUserBackups(name,seflik){closeAdminDetail();if(els.adminUserSearch)els.adminUserSearch.value=name||"";if(els.adminSeflikFilter)els.adminSeflikFilter.value=seflik||"";setAdminTab("backups");}
-    async function editAdminUser(name,seflik){const newName=prompt("Yeni kullanıcı adını yazın:",name||"");if(!newName)return;const newSeflik=prompt("Yeni şefliği yazın:",seflik||"");if(!newSeflik)return;const admin=state.lastAdminCode||sessionStorage.getItem("mesaha_admin_code")||"";if(!admin)return showToast("Yönetici kodu yok.");try{showToast("Kullanıcı düzeltiliyor...");const d=await jsonpRequest(ONLINE_USER_API_URL,{action:"renameUser",admin,oldName:name,oldSeflik:seflik,newName,newSeflik},20000);if(!d||d.ok!==true)throw new Error((d&&d.error)||"Düzeltme başarısız");const users=await loadOnlineUsers(admin);renderOnlineUsers(users);await loadAdminBackups(admin);closeAdminDetail();showToast("Kullanıcı düzeltildi.");}catch(e){showToast(e&&e.message?e.message:"Düzeltme başarısız.");}}
-    function setAdminTab(tab){document.querySelectorAll(".admin-tab").forEach(btn=>btn.classList.toggle("active",btn.dataset.adminTab===tab));if(els.registeredUsersList)els.registeredUsersList.style.display=(tab==="users"?"":"none");if(els.adminBackupsList)els.adminBackupsList.style.display=(tab==="backups"?"":"none");if(tab==="cleanup")openAdminCleanup();if(tab==="backups")renderAdminBackups();if(tab==="users")renderOnlineUsers(state.adminOnlineUsers||[]);}
-    function openAdminCleanup(){document.body.classList.add("admin-cleanup-open");}function closeAdminCleanup(){document.body.classList.remove("admin-cleanup-open");}
-    async function cleanupBackups(mode){const admin=state.lastAdminCode||sessionStorage.getItem("mesaha_admin_code")||"";if(!admin)return showToast("Yönetici kodu yok.");const txt=mode==="older30"?"30 günden eski tüm yedekler silinsin mi?":"Her kullanıcıda sadece son yedek bırakılıp diğerleri silinsin mi?";if(!confirm(txt)||!confirm("Bu işlem geri alınamaz. Emin misiniz?"))return;try{showToast("Yedek temizliği yapılıyor...");const d=await jsonpRequest(ONLINE_USER_API_URL,{action:"cleanupBackups",admin,mode},30000);if(!d||d.ok!==true)throw new Error((d&&d.error)||"Temizlik başarısız");showToast(`${Number(d.deleted||0).toLocaleString("tr-TR")} yedek silindi.`);await loadAdminBackups(admin);closeAdminCleanup();}catch(e){showToast(e&&e.message?e.message:"Temizlik başarısız.");}}
-
-
     function parseTrDate(value) {
       const text = String(value || "");
       const m = text.match(/(\d{2})\.(\d{2})\.(\d{4})(?:\s+(\d{2}):(\d{2})(?::(\d{2}))?)?/);
@@ -4214,7 +4122,8 @@
     }
 
     function adminUserKey(name, seflik) {
-      return foldLocalText ? foldLocalText(`${name || ""}__${seflik || ""}`) : `${name || ""}__${seflik || ""}`.toLowerCase();
+      const raw = `${name || ""}__${seflik || ""}`;
+      return typeof foldLocalText === "function" ? foldLocalText(raw) : raw.toLowerCase();
     }
 
     function adminIsDisabled(user) {
@@ -4226,7 +4135,7 @@
       const days = adminDaysSince(user.lastLogin);
       if (days <= 0) return { key: "today", label: "BUGÜN" };
       if (days <= 3) return { key: "warning", label: "3 GÜN" };
-      return { key: "old", label: "PASİF" };
+      return { key: "old", label: "ESKİ" };
     }
 
     function adminFilteredUsers() {
@@ -4257,12 +4166,13 @@
       const todayUsers = users.filter(u => adminIsToday(u.lastLogin)).length;
       const weekUsers = users.filter(u => adminDaysSince(u.lastLogin) <= 7).length;
       const todayBackups = backups.filter(b => adminIsToday(b.createdAt)).length;
+      const totalBackups = backups.length || users.reduce((sum, u) => sum + (Number(u.backupCount) || 0), 0);
       const lastBackup = backups[0] && backups[0].createdAt ? backups[0].createdAt : "-";
 
       if (els.adminTotalUsers) els.adminTotalUsers.textContent = users.length.toLocaleString("tr-TR");
       if (els.adminTodayUsers) els.adminTodayUsers.textContent = todayUsers.toLocaleString("tr-TR");
       if (els.adminWeekUsers) els.adminWeekUsers.textContent = weekUsers.toLocaleString("tr-TR");
-      if (els.adminTotalBackups) els.adminTotalBackups.textContent = backups.length.toLocaleString("tr-TR");
+      if (els.adminTotalBackups) els.adminTotalBackups.textContent = totalBackups.toLocaleString("tr-TR");
       if (els.adminTodayBackups) els.adminTodayBackups.textContent = todayBackups.toLocaleString("tr-TR");
       if (els.adminLastBackup) els.adminLastBackup.textContent = lastBackup;
     }
@@ -4278,9 +4188,9 @@
     function renderAdminControlCenter() {
       if (!els.adminControlCenter) return;
       const users = state.adminOnlineUsers || [];
-      const activeToday = users.filter(u => adminIsToday(u.lastLogin)).slice(0, 5);
-      const noBackup = users.filter(u => !Number(u.backupCount || 0)).slice(0, 5);
-      const inactive = users.filter(u => adminDaysSince(u.lastLogin) >= 7).slice(0, 5);
+      const activeToday = users.filter(u => adminIsToday(u.lastLogin)).slice(0, 6);
+      const noBackup = users.filter(u => !Number(u.backupCount || 0)).slice(0, 6);
+      const inactive = users.filter(u => adminDaysSince(u.lastLogin) >= 7).slice(0, 6);
 
       els.adminControlCenter.innerHTML = `
         <div class="admin-dashboard-row"><b>Bugün aktif olanlar</b><span>${activeToday.map(u => `${escapeHtml(u.name)} / ${escapeHtml(u.seflik)}`).join("<br>") || "Yok"}</span></div>
@@ -4320,7 +4230,6 @@
             ${note ? `<div class="admin-note-item"><b>Not</b><span>${escapeHtml(note)}</span></div>` : ""}
             <div class="registered-user-actions">
               <button class="secondary admin-user-backups" type="button" onclick="adminOpenUserBackups('${escapeHtml(user.name || "")}','${escapeHtml(user.seflik || "")}')">Yedekleri Gör</button>
-              <button class="warning admin-user-edit" type="button" onclick="adminRenameUser('${escapeHtml(user.name || "")}','${escapeHtml(user.seflik || "")}')">Düzelt</button>
               <button class="admin-user-note" type="button" onclick="adminEditNote('${escapeHtml(user.name || "")}','${escapeHtml(user.seflik || "")}')">Not</button>
               <button class="admin-user-passive" type="button" onclick="adminTogglePassive('${escapeHtml(user.name || "")}','${escapeHtml(user.seflik || "")}')">${adminIsDisabled(user) ? "Aktif Yap" : "Pasif Yap"}</button>
               <button class="ghost" type="button" onclick="adminShowDetail('${escapeHtml(user.name || "")}','${escapeHtml(user.seflik || "")}')">Detay</button>
@@ -4355,12 +4264,14 @@
       `).join("") || `<div class="empty-user-list">Henüz admin notu yok.</div>`;
     }
 
-    async function loadAdminBackupsV73() {
+    async function loadAdminBackupsV74() {
       const admin = state.lastAdminCode || sessionStorage.getItem("mesaha_admin_code") || ADMIN_CODE;
       try {
         const data = await jsonpRequest(ONLINE_USER_API_URL, { action: "listAllBackups", admin }, 20000);
         if (data && data.ok && Array.isArray(data.backups)) state.adminBackups = data.backups;
-      } catch {}
+      } catch {
+        state.adminBackups = [];
+      }
       updateAdminTopSummary();
       renderAdminControlCenter();
     }
@@ -4369,7 +4280,7 @@
       const admin = state.lastAdminCode || sessionStorage.getItem("mesaha_admin_code") || ADMIN_CODE;
       const users = await loadOnlineUsers(admin);
       state.adminOnlineUsers = users;
-      await loadAdminBackupsV73();
+      await loadAdminBackupsV74();
       renderAdminUsers();
       renderAdminActivity();
       renderAdminNotes();
@@ -4382,8 +4293,7 @@
         dashboard: els.adminDashboardView,
         users: els.adminUsersView,
         activity: els.adminActivityView,
-        notes: els.adminNotesView,
-        settings: els.adminSettingsView
+        notes: els.adminNotesView
       };
       Object.keys(views).forEach(k => { if (views[k]) views[k].style.display = k === tab ? "" : "none"; });
       document.querySelectorAll(".admin-tab").forEach(btn => btn.classList.toggle("active", btn.dataset.adminTab === tab));
@@ -4393,14 +4303,27 @@
       if (tab === "notes") renderAdminNotes();
     }
 
+    function showAdminPage() {
+      document.body.classList.add("show-admin");
+      document.body.classList.remove("show-records", "show-guide", "show-admin");
+      if (els.navAdmin) els.navAdmin.classList.add("active");
+      if (els.navEntry) els.navEntry.classList.remove("active");
+      if (els.navRecords) els.navRecords.classList.remove("active");
+      if (els.navGuide) els.navGuide.classList.remove("active");
+    }
+
     function unlockAdminPanel() {
       const code = window.prompt("Yönetici kodunu giriniz:");
       if (String(code || "").trim() !== ADMIN_CODE) return showToast("Yönetici kodu hatalı.");
       state.lastAdminCode = String(code).trim();
       sessionStorage.setItem("mesaha_admin_code", state.lastAdminCode);
-      sessionStorage.setItem("mesaha_admin_users_visible", "1");
-      if (els.adminTabBtn) els.adminTabBtn.style.display = "";
-      switchTab("adminPanel");
+      sessionStorage.setItem("mesaha_admin_panel_open", "1");
+      if (els.navAdmin) {
+        els.navAdmin.style.display = "";
+        const bottomNav = document.querySelector(".bottom-nav");
+        if (bottomNav) bottomNav.classList.add("has-admin");
+      }
+      showAdminPage();
       loadAdminPanelData().catch(err => showToast(err && err.message ? err.message : "Admin paneli açılamadı."));
     }
 
@@ -4417,6 +4340,7 @@
       const note = prompt("Bu kullanıcı için admin notu:", current);
       if (note === null) return;
       state.adminNotes[key] = String(note || "").trim();
+      if (!state.adminNotes[key]) delete state.adminNotes[key];
       localStorage.setItem("mesaha_admin_notes_v1", JSON.stringify(state.adminNotes));
       renderAdminUsers();
       renderAdminNotes();
@@ -4432,45 +4356,12 @@
       showToast(state.adminDisabledUsers[key] ? "Kullanıcı pasif işaretlendi." : "Kullanıcı aktif işaretlendi.");
     }
 
-    async function adminRenameUser(name, seflik) {
-      const newName = prompt("Yeni kullanıcı adı:", name || "");
-      if (!newName) return;
-      const newSeflik = prompt("Yeni şeflik:", seflik || "");
-      if (!newSeflik) return;
-      const admin = state.lastAdminCode || sessionStorage.getItem("mesaha_admin_code") || "";
-      try {
-        showToast("Kullanıcı düzeltiliyor...");
-        const data = await jsonpRequest(ONLINE_USER_API_URL, { action: "renameUser", admin, oldName: name, oldSeflik: seflik, newName, newSeflik }, 20000);
-        if (!data || !data.ok) throw new Error((data && data.error) || "Düzeltme başarısız");
-        await loadAdminPanelData();
-        showToast("Kullanıcı düzeltildi.");
-      } catch (err) {
-        showToast(err && err.message ? err.message : "Düzeltme başarısız.");
-      }
-    }
-
     function adminShowDetail(name, seflik) {
       const u = (state.adminOnlineUsers || []).find(x => String(x.name) === String(name) && String(x.seflik) === String(seflik));
       if (!u) return showToast("Kullanıcı bulunamadı.");
       alert(
         `Kullanıcı: ${u.name}\nŞeflik: ${u.seflik}\nİlk giriş: ${u.firstLogin || "-"}\nSon giriş: ${u.lastLogin || "-"}\nToplam giriş: ${u.loginCount || 0}\nCihaz sayısı: ${u.deviceCount || 0}\nYedek sayısı: ${u.backupCount || 0}\nNot: ${state.adminNotes[adminUserKey(u.name, u.seflik)] || "-"}`
       );
-    }
-
-    async function cleanupBackups(mode) {
-      const admin = state.lastAdminCode || sessionStorage.getItem("mesaha_admin_code") || "";
-      const text = mode === "older30" ? "30 günden eski tüm yedekler silinsin mi?" : "Her kullanıcıda sadece son yedek kalacak. Devam mı?";
-      if (!confirm(text)) return;
-      if (!confirm("Bu işlem geri alınamaz. Emin misiniz?")) return;
-      try {
-        showToast("Yedek temizliği yapılıyor...");
-        const data = await jsonpRequest(ONLINE_USER_API_URL, { action: "cleanupBackups", admin, mode }, 30000);
-        if (!data || !data.ok) throw new Error((data && data.error) || "Temizlik başarısız");
-        await loadAdminPanelData();
-        showToast(`${Number(data.deleted || 0).toLocaleString("tr-TR")} yedek silindi.`);
-      } catch (err) {
-        showToast(err && err.message ? err.message : "Temizlik başarısız.");
-      }
     }
 
 
@@ -4533,28 +4424,43 @@
 
     function renderOnlineUsers(users) {
       if (!els.registeredUsersList) return;
+
       state.adminOnlineUsers = Array.isArray(users) ? users : [];
-      updateAdminSeflikFilter(state.adminOnlineUsers);
-      updateAdminSummary(state.adminOnlineUsers, state.adminBackups || []);
-      const list = applyAdminUserFilters(state.adminOnlineUsers);
-      if (!list.length) { els.registeredUsersList.innerHTML = `<div class="empty-user-list">Aramaya uygun kullanıcı bulunamadı.</div>`; return; }
-      els.registeredUsersList.innerHTML = list.map(user => { const status=adminStatusForUser(user); return `
-        <div class="registered-user-item online-user status-${status.key}">
-          <div class="registered-user-head"><b>${escapeHtml(user.name || "-")}</b><span class="admin-status-pill ${status.key}">${status.label}</span></div>
+      const q = els.adminUserSearch ? String(els.adminUserSearch.value || "").trim().toLowerCase() : "";
+      const list = q ? state.adminOnlineUsers.filter(user => [
+        user.name, user.seflik, user.firstLogin, user.lastLogin, user.loginCount, user.backupCount, user.deviceCount
+      ].join(" ").toLowerCase().includes(q)) : state.adminOnlineUsers;
+
+      if (!list.length) {
+        els.registeredUsersList.innerHTML = `<div class="empty-user-list">${q ? "Aramaya uygun kullanıcı bulunamadı." : "Merkezde henüz kullanıcı kaydı yok."}</div>`;
+        return;
+      }
+
+      els.registeredUsersList.innerHTML = list.map(user => `
+        <div class="registered-user-item online-user">
+          <div class="registered-user-head">
+            <b>${escapeHtml(user.name || "-")}</b>
+            <span class="registered-source-label">MERKEZ</span>
+          </div>
           <div class="registered-user-meta">
-            <span>Şeflik: ${escapeHtml(user.seflik || "-")}</span><span>Giriş: ${(Number(user.loginCount) || 0).toLocaleString("tr-TR")}</span><span>İlk: ${escapeHtml(user.firstLogin || "-")}</span><span>Son: ${escapeHtml(user.lastLogin || "-")}</span><span>Yedek: ${(Number(user.backupCount) || 0).toLocaleString("tr-TR")}</span><span>Cihaz: ${(Number(user.deviceCount) || 0).toLocaleString("tr-TR")}</span>
+            <span>Şeflik: ${escapeHtml(user.seflik || "-")}</span>
+            <span>Giriş: ${(Number(user.loginCount) || 0).toLocaleString("tr-TR")}</span>
+            <span>İlk: ${escapeHtml(user.firstLogin || "-")}</span>
+            <span>Son: ${escapeHtml(user.lastLogin || "-")}</span>
+            <span>Yedek: ${(Number(user.backupCount) || 0).toLocaleString("tr-TR")}</span>
+            <span>Cihaz: ${(Number(user.deviceCount) || 0).toLocaleString("tr-TR")}</span>
           </div>
           <div class="registered-user-actions">
-            <button class="secondary admin-user-backups" type="button" data-name="${escapeHtml(user.name || "")}" data-seflik="${escapeHtml(user.seflik || "")}">Yedekleri Gör</button>
-            <button class="warning admin-user-edit" type="button" data-name="${escapeHtml(user.name || "")}" data-seflik="${escapeHtml(user.seflik || "")}">Düzelt</button>
-            <button class="danger registered-user-delete" type="button" data-name="${escapeHtml(user.name || "")}" data-seflik="${escapeHtml(user.seflik || "")}">Sil</button>
-            <button class="ghost admin-user-detail" type="button" data-name="${escapeHtml(user.name || "")}" data-seflik="${escapeHtml(user.seflik || "")}">Detay</button>
+            <button class="danger registered-user-delete" type="button" data-name="${escapeHtml(user.name || "")}" data-seflik="${escapeHtml(user.seflik || "")}">
+              Kullanıcıyı ve Bulut Yedeklerini Sil
+            </button>
           </div>
-        </div>`}).join("");
-      els.registeredUsersList.querySelectorAll(".registered-user-delete").forEach(btn => btn.addEventListener("click", () => deleteCloudUserAndBackups(btn.dataset.name || "", btn.dataset.seflik || "")));
-      els.registeredUsersList.querySelectorAll(".admin-user-backups").forEach(btn => btn.addEventListener("click", () => adminShowUserBackups(btn.dataset.name || "", btn.dataset.seflik || "")));
-      els.registeredUsersList.querySelectorAll(".admin-user-edit").forEach(btn => btn.addEventListener("click", () => editAdminUser(btn.dataset.name || "", btn.dataset.seflik || "")));
-      els.registeredUsersList.querySelectorAll(".admin-user-detail").forEach(btn => btn.addEventListener("click", () => openAdminUserDetail(btn.dataset.name || "", btn.dataset.seflik || "")));
+        </div>
+      `).join("");
+
+      els.registeredUsersList.querySelectorAll(".registered-user-delete").forEach(btn => {
+        btn.addEventListener("click", () => deleteCloudUserAndBackups(btn.dataset.name || "", btn.dataset.seflik || ""));
+      });
     }
 
     function renderLocalUsersAsFallback(message) {
@@ -4820,7 +4726,7 @@
 
     async function uploadCloudBackupOpen(user) {
       const payload = buildCloudBackupPayload(user);
-      payload.version = 73;
+      payload.version = 74;
       const bolmePart = els.bolmeNo && String(els.bolmeNo.value || "").trim() ? `_${cleanFilePart(els.bolmeNo.value)}` : "";
       const fileName = `Mesaha_Yedek_${cleanFilePart(user.seflik)}_${cleanFilePart(user.name)}${bolmePart}_${new Date().toISOString().slice(0,19).replace(/[-:T]/g, "")}.json`;
 
@@ -5248,7 +5154,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function buildCloudBackupPayload(user) {
       return {
         app: "Mesaha İO",
-        version: 73,
+        version: 74,
         createdAt: new Date().toLocaleString("tr-TR"),
         user: {
           name: user.name || "",
@@ -5349,7 +5255,6 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
       try {
         const users = await loadOnlineUsers(code);
         renderOnlineUsers(users);
-        loadAdminBackups(code);
         showToast("Merkez kullanıcı listesi açıldı.");
       } catch (error) {
         renderLocalUsersAsFallback(error && error.message ? error.message : "Merkeze bağlanılamadı.");
@@ -6280,6 +6185,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
       els.navEntry.classList.add("active");
       els.navRecords.classList.remove("active");
       if (els.navGuide) els.navGuide.classList.remove("active");
+      if (els.navAdmin) els.navAdmin.classList.remove("active");
       focusDiameterKeepKeyboard();
     }
 
@@ -7248,7 +7154,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function backup() {
       const data = {
         app: "Mesaha App",
-        version: 73,
+        version: 74,
         exportedAt: formatDateTime(),
         systemHeaders: HEADERS,
         settings: state.settings,
@@ -7453,32 +7359,6 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
       els.length.addEventListener("click", () => selectInputValue(els.length));
     }
 
-
-    if (els.adminOpenBtn) els.adminOpenBtn.addEventListener("click", unlockAdminPanel);
-    if (els.adminRefreshBtn) els.adminRefreshBtn.addEventListener("click", () => loadAdminPanelData().catch(err => showToast(err && err.message ? err.message : "Admin yenilenemedi.")));
-    document.querySelectorAll(".admin-tab").forEach(btn => btn.addEventListener("click", () => setAdminPanelTab(btn.dataset.adminTab || "dashboard")));
-    document.querySelectorAll(".admin-quick").forEach(btn => btn.addEventListener("click", () => {
-      state.adminQuickFilter = btn.dataset.adminQuick || "all";
-      document.querySelectorAll(".admin-quick").forEach(b => b.classList.toggle("active", b === btn));
-      renderAdminUsers();
-      renderAdminActivity();
-    }));
-    if (els.adminUserSearch) els.adminUserSearch.addEventListener("input", () => { renderAdminUsers(); renderAdminActivity(); });
-    if (els.adminSeflikFilter) els.adminSeflikFilter.addEventListener("change", () => { renderAdminUsers(); renderAdminActivity(); });
-    if (els.cleanupOlder30Btn) els.cleanupOlder30Btn.addEventListener("click", () => cleanupBackups("older30"));
-    if (els.cleanupKeepLastBtn) els.cleanupKeepLastBtn.addEventListener("click", () => cleanupBackups("keepLast"));
-
-    try {
-      state.adminNotes = JSON.parse(localStorage.getItem("mesaha_admin_notes_v1") || "{}") || {};
-      state.adminDisabledUsers = JSON.parse(localStorage.getItem("mesaha_admin_disabled_v1") || "{}") || {};
-    } catch {
-      state.adminNotes = {};
-      state.adminDisabledUsers = {};
-    }
-    if (sessionStorage.getItem("mesaha_admin_users_visible") === "1" && els.adminTabBtn) {
-      els.adminTabBtn.style.display = "";
-    }
-
     document.addEventListener("keydown", handleEnterToSave);
 
     els.submitBtn.addEventListener("pointerdown", (event) => {
@@ -7532,18 +7412,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     if (els.bulkDeleteBtn) els.bulkDeleteBtn.addEventListener("click", deleteSelectedRecords);
     if (els.bulkProductBtn) els.bulkProductBtn.addEventListener("click", bulkChangeProduct);
     if (els.bulkTreeBtn) els.bulkTreeBtn.addEventListener("click", bulkChangeTree);
-    if (els.adminUserSearch) els.adminUserSearch.addEventListener("input", () => { renderOnlineUsers(state.adminOnlineUsers || []); renderAdminBackups(); });
-
-    
-    document.querySelectorAll(".admin-tab").forEach(btn => btn.addEventListener("click", () => setAdminTab(btn.dataset.adminTab || "users")));
-    if (els.adminSeflikFilter) els.adminSeflikFilter.addEventListener("change", () => { renderOnlineUsers(state.adminOnlineUsers || []); renderAdminBackups(); });
-    if (els.adminCleanupOpenBtn) els.adminCleanupOpenBtn.addEventListener("click", openAdminCleanup);
-    if (els.adminDetailCloseBtn) els.adminDetailCloseBtn.addEventListener("click", closeAdminDetail);
-    if (els.adminDetailOverlay) els.adminDetailOverlay.addEventListener("click", event => { if (event.target === els.adminDetailOverlay) closeAdminDetail(); });
-    if (els.adminCleanupCloseBtn) els.adminCleanupCloseBtn.addEventListener("click", closeAdminCleanup);
-    if (els.adminCleanupOverlay) els.adminCleanupOverlay.addEventListener("click", event => { if (event.target === els.adminCleanupOverlay) closeAdminCleanup(); });
-    if (els.cleanupOlder30Btn) els.cleanupOlder30Btn.addEventListener("click", () => cleanupBackups("older30"));
-    if (els.cleanupKeepLastBtn) els.cleanupKeepLastBtn.addEventListener("click", () => cleanupBackups("keepLast"));
+    if (els.adminUserSearch) els.adminUserSearch.addEventListener("input", () => renderOnlineUsers(state.adminOnlineUsers || []));
 
     els.searchInput.addEventListener("input", render);
     els.exportSystemXlsBtn.addEventListener("click", exportSystemXls);
@@ -7577,6 +7446,27 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
       showToast("Tüm kayıtlar silindi. Geri almak için Geri Al butonunu kullanın.");
     });
 
+
+    if (els.guideAdminOpenBtn) els.guideAdminOpenBtn.addEventListener("click", unlockAdminPanel);
+    if (els.adminRefreshBtn) els.adminRefreshBtn.addEventListener("click", () => loadAdminPanelData().catch(err => showToast(err && err.message ? err.message : "Admin yenilenemedi.")));
+    document.querySelectorAll(".admin-tab").forEach(btn => btn.addEventListener("click", () => setAdminPanelTab(btn.dataset.adminTab || "dashboard")));
+    document.querySelectorAll(".admin-quick").forEach(btn => btn.addEventListener("click", () => {
+      state.adminQuickFilter = btn.dataset.adminQuick || "all";
+      document.querySelectorAll(".admin-quick").forEach(b => b.classList.toggle("active", b === btn));
+      renderAdminUsers();
+      renderAdminActivity();
+    }));
+    if (els.adminUserSearch) els.adminUserSearch.addEventListener("input", () => { renderAdminUsers(); renderAdminActivity(); });
+    if (els.adminSeflikFilter) els.adminSeflikFilter.addEventListener("change", () => { renderAdminUsers(); renderAdminActivity(); });
+
+    try {
+      state.adminNotes = JSON.parse(localStorage.getItem("mesaha_admin_notes_v1") || "{}") || {};
+      state.adminDisabledUsers = JSON.parse(localStorage.getItem("mesaha_admin_disabled_v1") || "{}") || {};
+    } catch {
+      state.adminNotes = {};
+      state.adminDisabledUsers = {};
+    }
+
     els.navEntry.addEventListener("click", () => {
       document.body.classList.remove("show-records", "show-guide");
       els.navEntry.classList.add("active");
@@ -7587,33 +7477,41 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
 
     els.navRecords.addEventListener("click", () => {
       document.body.classList.add("show-records");
-      document.body.classList.remove("show-guide");
+      document.body.classList.remove("show-guide", "show-admin");
       els.navRecords.classList.add("active");
       els.navEntry.classList.remove("active");
       if (els.navGuide) els.navGuide.classList.remove("active");
+      if (els.navAdmin) els.navAdmin.classList.remove("active");
       render();
     });
 
     if (els.navGuide) {
       els.navGuide.addEventListener("click", () => {
         document.body.classList.add("show-guide");
-        document.body.classList.remove("show-records");
+        document.body.classList.remove("show-records", "show-admin");
         els.navGuide.classList.add("active");
         els.navEntry.classList.remove("active");
         els.navRecords.classList.remove("active");
-        renderRegisteredUsers();
+        if (els.navAdmin) els.navAdmin.classList.remove("active");
       });
     }
 
-    window.restoreCloudBackup = restoreCloudBackup;
-    window.deleteAdminBackup = deleteAdminBackup;
-    window.adminShowUserBackups = adminShowUserBackups;
-    window.editAdminUser = editAdminUser;
-    window.openAdminUserDetail = openAdminUserDetail;
+
+    if (els.navAdmin) {
+      els.navAdmin.addEventListener("click", () => {
+        if (sessionStorage.getItem("mesaha_admin_panel_open") !== "1") return unlockAdminPanel();
+        showAdminPage();
+        loadAdminPanelData().catch(() => {});
+      });
+      if (sessionStorage.getItem("mesaha_admin_panel_open") === "1") {
+        els.navAdmin.style.display = "";
+        const bottomNav = document.querySelector(".bottom-nav");
+        if (bottomNav) bottomNav.classList.add("has-admin");
+      }
+    }
 
 
     window.adminOpenUserBackups = adminOpenUserBackups;
-    window.adminRenameUser = adminRenameUser;
     window.adminEditNote = adminEditNote;
     window.adminTogglePassive = adminTogglePassive;
     window.adminShowDetail = adminShowDetail;
@@ -7624,10 +7522,5 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
 
     load();
   </script>
-
-  <div id="adminUnlockDock" class="admin-unlock-dock">
-    <button type="button" id="adminOpenBtn" class="secondary">Yönetici Girişi</button>
-  </div>
-
 </body>
 </html>
