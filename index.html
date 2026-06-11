@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha App v57</title>
+  <title>Mesaha App v58</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -2369,6 +2369,40 @@
       font-weight:900 !important;
     }
 
+  
+    /* v58: Yönetici paneli kılavuz notunun hemen altında görünür */
+    .admin-users-card{
+      display:block !important;
+      background:#eff6ff !important;
+      border-color:#bfdbfe !important;
+    }
+
+    .admin-users-card h3{
+      color:#111827 !important;
+    }
+
+    .admin-users-btn{
+      width:100%;
+      margin-top:10px;
+    }
+
+    .registered-users-card{
+      display:none !important;
+      border-color:#bbf7d0 !important;
+      background:#f0fdf4 !important;
+    }
+
+    body.admin-users-visible .registered-users-card{
+      display:block !important;
+    }
+
+    .admin-unlock-note{
+      margin-top:0 !important;
+      margin-bottom:10px !important;
+      color:#14532d !important;
+      font-weight:900 !important;
+    }
+
   </style>
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -2720,6 +2754,24 @@
 <div class="guide-note">
               Not: Arazide internet çekmeyebilir. Uygulamayı sahaya çıkmadan önce bir kez internet varken açıp ana ekrana eklemeniz tavsiye edilir. İş bitince mesaha dosyasını indirmeyi ve gerekirse yedek almayı unutmayınız. Bir sorunla karşılaşırsanız Telegramdan ulaşabilirsiniz @ExelanceX
             </div>
+
+            <div class="guide-card admin-users-card" id="adminUsersCard">
+              <h3>Yönetici Paneli</h3>
+              <p class="hint">Kayıtlı kullanıcıları görmek için yönetici kodu gerekir.</p>
+              <button id="adminUsersBtn" class="secondary admin-users-btn" type="button">Yönetici Panelini Aç</button>
+            </div>
+
+            <div class="guide-card registered-users-card" id="registeredUsersCard">
+              <h3>Kayıtlı Kullanıcılar</h3>
+              <p class="hint admin-unlock-note">Bu bölüm yönetici kodu ile açılmıştır.</p>
+              <div id="registeredUsersList" class="registered-users-list">
+                <div class="empty-user-list">Henüz kullanıcı girişi yok.</div>
+              </div>
+              <button id="changeUserBtn" class="ghost user-change-btn" type="button">Kullanıcı Değiştir / Yeni Kullanıcı Gir</button>
+              <button id="adminUsersCloseBtn" class="ghost user-change-btn" type="button">Kullanıcı Listesini Gizle</button>
+              <p class="hint">Bu liste sadece bu cihazda giriş yapan kullanıcıları gösterir. İnternet veya şifre gerekmez.</p>
+            </div>
+
           </div>
         </div>
       </section>
@@ -4862,7 +4914,7 @@
     function backup() {
       const data = {
         app: "Mesaha App",
-        version: 57,
+        version: 58,
         exportedAt: formatDateTime(),
         systemHeaders: HEADERS,
         settings: state.settings,
@@ -4997,9 +5049,9 @@
       els.loginSeflik.addEventListener("input", clearLoginError);
     }
     if (els.changeUserBtn) els.changeUserBtn.addEventListener("click", () => openUserLogin(false));
-
     if (els.adminUsersBtn) els.adminUsersBtn.addEventListener("click", unlockRegisteredUsers);
     if (els.adminUsersCloseBtn) els.adminUsersCloseBtn.addEventListener("click", lockRegisteredUsers);
+
 
 
     document.addEventListener("keydown", handleEnterToSave);
