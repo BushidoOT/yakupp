@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha App v81</title>
+  <title>Mesaha App v82</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -3664,7 +3664,7 @@
   <div class="app">
     <header class="topbar">
       <div class="brand">
-        <h1>Mesaha İO v1.10</h1>
+        <h1>Mesaha İO v1.11</h1>
         
       </div>
       <div id="activeUserBadge" class="active-user-badge" role="button" tabindex="0" title="Kullanıcı panelini aç" style="display:none"></div>
@@ -3960,7 +3960,7 @@
               <h3>Terminal Kurulumu</h3>
               <ol>
                 <li>Terminal cihazında uygulama/terminal menüsünü açınız.</li>
-                <li>İlk gelen ekranda sağ alttaki en son seçeneğe dokununuz.</li>
+                <li>İlk gelen ekranda sol alttaki en son seçeneğe dokununuz.</li>
                 <li>Açılan bölümde <b>Yeşil Takip</b> yazan seçeneği açınız.</li>
                 <li>Bu işlem sizi Chrome uygulamasına yönlendirir.</li>
                 <li>Chrome’un arama/adres çubuğuna <b>bit.ly/mesahaio</b> yazıp aratınız.</li>
@@ -4059,6 +4059,7 @@
               <p class="hint">Kullanıcılar, hareketler, notlar, pasif işaretleme ve hızlı filtreler.</p>
             </div>
             <button type="button" id="adminRefreshBtn" class="secondary">Yenile</button>
+              <button type="button" id="adminFirebaseMigrateBtn" class="secondary">Eski Kullanıcıları Firebase’e Aktar</button>
           </div>
 
           <div class="admin-summary-grid">
@@ -4126,6 +4127,21 @@
     const USER_STORE_KEY = "mesaha_kullanicilar_v1";
     const ADMIN_CODE = "4767";
     const ONLINE_USER_API_URL = "https://script.google.com/macros/s/AKfycbzv8rw3n4FuwDmiFnW3ttKuoK0mUQnzEYizjaD46z0uuFiKtqLl1zkupkB9AkOehC7ECg/exec";
+
+    const FIREBASE_CONFIG = {
+      "apiKey": "AIzaSyCKveylTPgKmWEMmYf-aFj6yLXB5CKAiJ0",
+      "authDomain": "mesaha-io.firebaseapp.com",
+      "projectId": "mesaha-io",
+      "storageBucket": "mesaha-io.firebasestorage.app",
+      "messagingSenderId": "840655878243",
+      "appId": "1:840655878243:web:add76f52bbf55ad9dd6056",
+      "measurementId": "G-81JPD5ZY44"
+};
+    const FIREBASE_ENABLED = true;
+    const FIREBASE_SDK_VERSION = "9.23.0";
+    const FIREBASE_USERS_COLLECTION = "users";
+    const FIREBASE_BACKUPS_COLLECTION = "backups";
+
     const DEVICE_ID_KEY = "mesaha_cihaz_kodu_v1";
 
     const HEADERS = [
@@ -4268,6 +4284,7 @@
       userMenuForceUpdateBtn: $("userMenuForceUpdateBtn"),
       guideForceUpdateBtn: $("guideForceUpdateBtn"),
       adminRefreshBtn: $("adminRefreshBtn"),
+      adminFirebaseMigrateBtn: $("adminFirebaseMigrateBtn"),
       adminTotalUsers: $("adminTotalUsers"),
       adminTodayUsers: $("adminTodayUsers"),
       adminWeekUsers: $("adminWeekUsers"),
@@ -5470,7 +5487,7 @@
 
     async function uploadCloudBackupOpen(user) {
       const payload = buildCloudBackupPayload(user);
-      payload.version = 81;
+      payload.version = 82;
       const bolmePart = els.bolmeNo && String(els.bolmeNo.value || "").trim() ? `_${cleanFilePart(els.bolmeNo.value)}` : "";
       const fileName = `Mesaha_Yedek_${cleanFilePart(user.seflik)}_${cleanFilePart(user.name)}${bolmePart}_${new Date().toISOString().slice(0,19).replace(/[-:T]/g, "")}.json`;
 
@@ -5899,7 +5916,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function buildCloudBackupPayload(user) {
       return {
         app: "Mesaha İO",
-        version: 81,
+        version: 82,
         createdAt: new Date().toLocaleString("tr-TR"),
         user: {
           name: user.name || "",
@@ -7901,7 +7918,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function backup() {
       const data = {
         app: "Mesaha App",
-        version: 81,
+        version: 82,
         exportedAt: formatDateTime(),
         systemHeaders: HEADERS,
         settings: state.settings,
@@ -8160,6 +8177,486 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
 
     els.searchInput.addEventListener("input", render);
     els.exportSystemXlsBtn.addEventListener("click", exportSystemXls);
+
+    /*
+      v82 Firebase Köprüsü
+      - Yeni kullanıcı/yedek işlemlerinde Firebase Firestore kullanılır.
+      - Google Apps Script yedek sistem olarak korunur.
+      - Uygulama yerel kayıt mantığını bozmaz.
+    */
+    const mesahaAppsScriptBridge = {
+      logOnlineUser,
+      loadOnlineUsers,
+      loadAdminBackupsV74,
+      uploadCloudBackupOpen,
+      searchCloudBackups,
+      restoreCloudBackup,
+      deleteCloudBackup,
+      deleteCloudUserAndBackups
+    };
+
+    let mesahaFirebaseReadyPromise = null;
+    let mesahaFirebasePersistenceTried = false;
+
+    function loadExternalScript(src) {
+      return new Promise((resolve, reject) => {
+        if (document.querySelector(`script[src="${src}"]`)) return resolve();
+        const s = document.createElement("script");
+        s.src = src;
+        s.async = true;
+        s.onload = () => resolve();
+        s.onerror = () => reject(new Error("Firebase kütüphanesi yüklenemedi"));
+        document.head.appendChild(s);
+      });
+    }
+
+    async function ensureFirebaseReady() {
+      if (!FIREBASE_ENABLED) throw new Error("Firebase kapalı");
+      if (!navigator.onLine) throw new Error("İnternet bağlantısı yok");
+
+      if (!mesahaFirebaseReadyPromise) {
+        mesahaFirebaseReadyPromise = (async () => {
+          if (!window.firebase || !window.firebase.apps) {
+            const base = `https://www.gstatic.com/firebasejs/${FIREBASE_SDK_VERSION}`;
+            await loadExternalScript(`${base}/firebase-app-compat.js`);
+            await loadExternalScript(`${base}/firebase-auth-compat.js`);
+            await loadExternalScript(`${base}/firebase-firestore-compat.js`);
+          }
+
+          if (!firebase.apps.length) {
+            firebase.initializeApp(FIREBASE_CONFIG);
+          }
+
+          const auth = firebase.auth();
+          if (!auth.currentUser) {
+            await auth.signInAnonymously();
+          }
+
+          const db = firebase.firestore();
+
+          if (!mesahaFirebasePersistenceTried) {
+            mesahaFirebasePersistenceTried = true;
+            try {
+              db.settings({ experimentalForceLongPolling: true, merge: true });
+            } catch {}
+            try {
+              await db.enablePersistence({ synchronizeTabs: true });
+            } catch {}
+          }
+
+          return { db, auth };
+        })();
+      }
+
+      return mesahaFirebaseReadyPromise;
+    }
+
+    function firebaseUserKey(name, seflik) {
+      const raw = `${cleanUserText(name)}__${cleanUserText(seflik)}`;
+      return foldLocalText(raw).replace(/[^a-z0-9_-]+/g, "_").slice(0, 120) || "bos";
+    }
+
+    function firebaseBackupDocId(userKey, backupHash) {
+      return `fb_${userKey}_${String(backupHash || "").replace(/[^a-zA-Z0-9_-]+/g, "").slice(0, 40) || Date.now()}`;
+    }
+
+    function firebaseDateText() {
+      return new Date().toLocaleString("tr-TR");
+    }
+
+    async function firebaseLogUser(user) {
+      const { db } = await ensureFirebaseReady();
+      const name = cleanUserText(user && user.name);
+      const seflik = cleanUserText(user && user.seflik);
+      if (!name || !seflik) return;
+
+      const key = firebaseUserKey(name, seflik);
+      const ref = db.collection(FIREBASE_USERS_COLLECTION).doc(key);
+      const snap = await ref.get();
+      const nowText = firebaseDateText();
+      const nowMs = Date.now();
+      const deviceId = getOrCreateDeviceId();
+
+      const old = snap.exists ? (snap.data() || {}) : {};
+      const deviceIds = old.deviceIds && typeof old.deviceIds === "object" ? old.deviceIds : {};
+      deviceIds[deviceId] = true;
+
+      await ref.set({
+        id: key,
+        name,
+        seflik,
+        userKey: key,
+        firstLogin: old.firstLogin || nowText,
+        firstLoginMs: old.firstLoginMs || nowMs,
+        lastLogin: nowText,
+        lastLoginMs: nowMs,
+        loginCount: Number(old.loginCount || 0) + 1,
+        deviceIds,
+        deviceCount: Object.keys(deviceIds).length,
+        backupCount: Number(old.backupCount || 0),
+        lastBackupAt: old.lastBackupAt || "",
+        lastBackupMs: Number(old.lastBackupMs || 0),
+        source: "firebase"
+      }, { merge: true });
+    }
+
+    async function firebaseLoadUsers() {
+      const { db } = await ensureFirebaseReady();
+      const snap = await db.collection(FIREBASE_USERS_COLLECTION).get();
+      const users = [];
+      snap.forEach(doc => {
+        const d = doc.data() || {};
+        users.push({
+          id: d.id || doc.id,
+          name: d.name || "-",
+          seflik: d.seflik || "-",
+          firstLogin: d.firstLogin || "-",
+          lastLogin: d.lastLogin || "-",
+          loginCount: Number(d.loginCount || 0),
+          backupCount: Number(d.backupCount || 0),
+          deviceCount: Number(d.deviceCount || (d.deviceIds ? Object.keys(d.deviceIds).length : 0)),
+          lastLoginMs: Number(d.lastLoginMs || 0),
+          lastBackupAt: d.lastBackupAt || ""
+        });
+      });
+      users.sort((a, b) => Number(b.lastLoginMs || 0) - Number(a.lastLoginMs || 0));
+      return users;
+    }
+
+    async function firebaseUploadBackup(user) {
+      const { db } = await ensureFirebaseReady();
+      const payload = buildCloudBackupPayload(user);
+      payload.version = 82;
+      payload.cloud = "firebase";
+
+      const bolmeNo = els.bolmeNo ? String(els.bolmeNo.value || "").trim() : "";
+      const ekipNot = els.ekipNot ? String(els.ekipNot.value || "").trim() : "";
+      const bolmePart = bolmeNo ? `_${cleanFilePart(bolmeNo)}` : "";
+      const fileName = `Mesaha_Yedek_${cleanFilePart(user.seflik)}_${cleanFilePart(user.name)}${bolmePart}_${new Date().toISOString().slice(0,19).replace(/[-:T]/g, "")}.json`;
+      const backupHash = simpleHashText(JSON.stringify({ user, records: state.records || [], fileInfo: payload.fileInfo || {} }));
+      const userKey = firebaseUserKey(user.name, user.seflik);
+      const backupId = firebaseBackupDocId(userKey, backupHash);
+      const backupRef = db.collection(FIREBASE_BACKUPS_COLLECTION).doc(backupId);
+      const exists = await backupRef.get();
+
+      if (exists.exists) {
+        return exists.data().fileName || fileName;
+      }
+
+      const nowText = firebaseDateText();
+      const nowMs = Date.now();
+
+      await backupRef.set({
+        id: backupId,
+        userKey,
+        name: cleanUserText(user.name),
+        seflik: cleanUserText(user.seflik),
+        deviceId: user.deviceId || getOrCreateDeviceId(),
+        fileName,
+        payload,
+        payloadText: JSON.stringify(payload),
+        recordCount: (state.records || []).length,
+        bolmeNo,
+        ekipNot,
+        backupHash,
+        createdAt: nowText,
+        createdAtMs: nowMs,
+        createdAtIso: new Date().toISOString(),
+        source: "firebase"
+      });
+
+      const userRef = db.collection(FIREBASE_USERS_COLLECTION).doc(userKey);
+      const userSnap = await userRef.get();
+      const old = userSnap.exists ? (userSnap.data() || {}) : {};
+      await userRef.set({
+        id: userKey,
+        name: cleanUserText(user.name),
+        seflik: cleanUserText(user.seflik),
+        userKey,
+        firstLogin: old.firstLogin || nowText,
+        firstLoginMs: old.firstLoginMs || nowMs,
+        lastLogin: nowText,
+        lastLoginMs: nowMs,
+        loginCount: Number(old.loginCount || 0),
+        backupCount: Number(old.backupCount || 0) + 1,
+        lastBackupAt: nowText,
+        lastBackupMs: nowMs,
+        source: "firebase"
+      }, { merge: true });
+
+      return fileName;
+    }
+
+    async function firebaseListBackups(name, seflik) {
+      const { db } = await ensureFirebaseReady();
+      const userKey = firebaseUserKey(name, seflik);
+      const snap = await db.collection(FIREBASE_BACKUPS_COLLECTION)
+        .where("userKey", "==", userKey)
+        .get();
+
+      const backups = [];
+      snap.forEach(doc => {
+        const d = doc.data() || {};
+        backups.push({
+          id: d.id || doc.id,
+          fileName: d.fileName || "Mesaha yedeği",
+          createdAt: d.createdAt || "-",
+          createdAtMs: Number(d.createdAtMs || 0),
+          recordCount: Number(d.recordCount || 0),
+          name: d.name || name || "-",
+          seflik: d.seflik || seflik || "-",
+          bolmeNo: d.bolmeNo || "-",
+          source: "firebase"
+        });
+      });
+
+      backups.sort((a, b) => Number(b.createdAtMs || 0) - Number(a.createdAtMs || 0));
+      return backups;
+    }
+
+    async function firebaseGetBackup(backupId) {
+      const { db } = await ensureFirebaseReady();
+      const doc = await db.collection(FIREBASE_BACKUPS_COLLECTION).doc(backupId).get();
+      if (!doc.exists) throw new Error("Firebase yedeği bulunamadı");
+      const d = doc.data() || {};
+      const payload = d.payload || (d.payloadText ? JSON.parse(d.payloadText) : null);
+      if (!payload || !Array.isArray(payload.records)) throw new Error("Yedek dosyası geçersiz");
+      return payload;
+    }
+
+    async function firebaseDeleteBackup(backupId) {
+      const { db } = await ensureFirebaseReady();
+      const ref = db.collection(FIREBASE_BACKUPS_COLLECTION).doc(backupId);
+      const snap = await ref.get();
+      const d = snap.exists ? (snap.data() || {}) : {};
+      await ref.delete();
+
+      if (d.userKey) {
+        const userRef = db.collection(FIREBASE_USERS_COLLECTION).doc(d.userKey);
+        const userSnap = await userRef.get();
+        if (userSnap.exists) {
+          const old = userSnap.data() || {};
+          await userRef.set({
+            backupCount: Math.max(0, Number(old.backupCount || 0) - 1)
+          }, { merge: true });
+        }
+      }
+    }
+
+    async function firebaseLoadAllBackups() {
+      const { db } = await ensureFirebaseReady();
+      const snap = await db.collection(FIREBASE_BACKUPS_COLLECTION).get();
+      const backups = [];
+      snap.forEach(doc => {
+        const d = doc.data() || {};
+        backups.push({
+          id: d.id || doc.id,
+          fileName: d.fileName || "Mesaha yedeği",
+          createdAt: d.createdAt || "-",
+          createdAtMs: Number(d.createdAtMs || 0),
+          recordCount: Number(d.recordCount || 0),
+          name: d.name || "-",
+          seflik: d.seflik || "-",
+          bolmeNo: d.bolmeNo || "-",
+          source: "firebase"
+        });
+      });
+      backups.sort((a, b) => Number(b.createdAtMs || 0) - Number(a.createdAtMs || 0));
+      return backups.slice(0, 300);
+    }
+
+    async function firebaseDeleteUserAndBackups(name, seflik) {
+      const { db } = await ensureFirebaseReady();
+      const key = firebaseUserKey(name, seflik);
+      const backupsSnap = await db.collection(FIREBASE_BACKUPS_COLLECTION).where("userKey", "==", key).get();
+      const batch = db.batch();
+      backupsSnap.forEach(doc => batch.delete(doc.ref));
+      batch.delete(db.collection(FIREBASE_USERS_COLLECTION).doc(key));
+      await batch.commit();
+    }
+
+    logOnlineUser = function(user) {
+      firebaseLogUser(user).catch(() => {
+        mesahaAppsScriptBridge.logOnlineUser(user);
+      });
+    };
+
+    loadOnlineUsers = async function(adminCode) {
+      try {
+        const users = await firebaseLoadUsers();
+        if (users.length) return users;
+        return await mesahaAppsScriptBridge.loadOnlineUsers(adminCode);
+      } catch (error) {
+        return await mesahaAppsScriptBridge.loadOnlineUsers(adminCode);
+      }
+    };
+
+    loadAdminBackupsV74 = async function() {
+      try {
+        state.adminBackups = await firebaseLoadAllBackups();
+      } catch (error) {
+        await mesahaAppsScriptBridge.loadAdminBackupsV74();
+      }
+    };
+
+    uploadCloudBackupOpen = async function(user) {
+      try {
+        return await firebaseUploadBackup(user);
+      } catch (error) {
+        return await mesahaAppsScriptBridge.uploadCloudBackupOpen(user);
+      }
+    };
+
+    searchCloudBackups = async function(manual = true) {
+      if (!navigator.onLine) {
+        if (els.cloudBackupList) els.cloudBackupList.innerHTML = `<div class="cloud-backup-error">İnternet bağlantısı yok. Buluttan getirme yapılamaz.</div>`;
+        return;
+      }
+
+      const active = state.activeUser || findActiveUser();
+      const name = (!manual && active) ? cleanUserText(active.name) : cleanUserText(els.cloudRestoreUserName ? els.cloudRestoreUserName.value : "");
+      const seflik = (!manual && active) ? cleanUserText(active.seflik) : cleanUserText(els.cloudRestoreSeflik ? els.cloudRestoreSeflik.value : "");
+
+      if (!name || !seflik) {
+        if (els.cloudBackupList) els.cloudBackupList.innerHTML = `<div class="cloud-backup-error">Kullanıcı adı ve şeflik giriniz.</div>`;
+        return;
+      }
+
+      if (els.cloudBackupList) els.cloudBackupList.innerHTML = `<div class="cloud-backup-loading">Firebase yedekleri getiriliyor...</div>`;
+
+      try {
+        const backups = await firebaseListBackups(name, seflik);
+        if (backups.length) {
+          renderCloudBackupList(backups);
+          return;
+        }
+        await mesahaAppsScriptBridge.searchCloudBackups(manual);
+      } catch (error) {
+        await mesahaAppsScriptBridge.searchCloudBackups(manual);
+      }
+    };
+
+    restoreCloudBackup = async function(backupId) {
+      if (!backupId) return;
+
+      if (!String(backupId).startsWith("fb_")) {
+        return mesahaAppsScriptBridge.restoreCloudBackup(backupId);
+      }
+
+      const ok = window.confirm("Bu Firebase yedeği geri yüklensin mi? Mevcut cihaz kayıtları bu yedekle değiştirilecek.");
+      if (!ok) return;
+
+      try {
+        setCloudLoading(true, "Firebase yedeği geri yükleniyor...");
+        showToast("Firebase yedeği indiriliyor...");
+        const payload = await firebaseGetBackup(backupId);
+        state.records = payload.records;
+        save();
+        render();
+        closeCloudRestorePanel();
+        showToast("Firebase yedeği geri yüklendi.");
+      } catch (error) {
+        showToast(error && error.message ? error.message : "Geri yükleme başarısız.");
+      } finally {
+        setCloudLoading(false);
+      }
+    };
+
+    deleteCloudBackup = async function(backupId) {
+      if (!backupId) return;
+
+      if (!String(backupId).startsWith("fb_")) {
+        return mesahaAppsScriptBridge.deleteCloudBackup(backupId);
+      }
+
+      const ok = window.confirm("Bu Firebase yedeği silinsin mi? Bu işlem geri alınamaz.");
+      if (!ok) return;
+
+      try {
+        showToast("Firebase yedeği siliniyor...");
+        await firebaseDeleteBackup(backupId);
+        showToast("Firebase yedeği silindi.");
+        searchCloudBackups(true);
+      } catch (error) {
+        showToast(error && error.message ? error.message : "Silme başarısız.");
+      }
+    };
+
+    deleteCloudUserAndBackups = async function(name, seflik) {
+      const cleanName = cleanUserText(name);
+      const cleanSeflik = cleanUserText(seflik);
+      if (!cleanName || !cleanSeflik) return;
+
+      const ok = window.confirm(`${cleanName} / ${cleanSeflik} Firebase kullanıcı kaydı ve yedekleri silinsin mi?`);
+      if (!ok) return;
+
+      try {
+        showToast("Firebase kullanıcısı siliniyor...");
+        await firebaseDeleteUserAndBackups(cleanName, cleanSeflik);
+        state.adminOnlineUsers = state.adminOnlineUsers.filter(u => firebaseUserKey(u.name, u.seflik) !== firebaseUserKey(cleanName, cleanSeflik));
+        renderOnlineUsers(state.adminOnlineUsers);
+        renderAdminUsers();
+        renderAdminControlCenter();
+        showToast("Firebase kullanıcısı silindi.");
+      } catch (error) {
+        return mesahaAppsScriptBridge.deleteCloudUserAndBackups(name, seflik);
+      }
+    };
+
+    async function migrateAppsScriptUsersToFirebase() {
+      const code = window.prompt("Eski kullanıcıları Firebase’e aktarmak için yönetici kodunu giriniz:");
+      if (String(code || "").trim() !== ADMIN_CODE) {
+        showToast("Yönetici kodu hatalı.");
+        return;
+      }
+
+      try {
+        showToast("Eski kullanıcılar alınıyor...");
+        const oldUsers = await mesahaAppsScriptBridge.loadOnlineUsers(code);
+        if (!oldUsers.length) {
+          showToast("Aktarılacak eski kullanıcı bulunamadı.");
+          return;
+        }
+
+        const { db } = await ensureFirebaseReady();
+        const batchSize = 250;
+        let done = 0;
+
+        for (let i = 0; i < oldUsers.length; i += batchSize) {
+          const batch = db.batch();
+          oldUsers.slice(i, i + batchSize).forEach(u => {
+            const name = cleanUserText(u.name);
+            const seflik = cleanUserText(u.seflik);
+            if (!name || !seflik) return;
+
+            const key = firebaseUserKey(name, seflik);
+            batch.set(db.collection(FIREBASE_USERS_COLLECTION).doc(key), {
+              id: key,
+              userKey: key,
+              name,
+              seflik,
+              firstLogin: u.firstLogin || "",
+              lastLogin: u.lastLogin || "",
+              loginCount: Number(u.loginCount || 0),
+              backupCount: Number(u.backupCount || 0),
+              deviceCount: Number(u.deviceCount || 0),
+              source: "appsScriptMigration",
+              migratedAt: firebaseDateText(),
+              migratedAtMs: Date.now()
+            }, { merge: true });
+            done++;
+          });
+          await batch.commit();
+        }
+
+        showToast(`${done} kullanıcı Firebase’e aktarıldı.`);
+        loadAdminPanelData().catch(() => {});
+      } catch (error) {
+        showToast(error && error.message ? error.message : "Aktarım yapılamadı.");
+      }
+    }
+
+
     els.backupBtn.addEventListener("click", backup);
     els.restoreBtn.addEventListener("click", () => els.restoreInput.click());
     els.restoreInput.addEventListener("change", (e) => {
@@ -8194,6 +8691,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     if (els.guideForceUpdateBtn) els.guideForceUpdateBtn.addEventListener("click", forceUpdateApp);
 
     if (els.guideAdminOpenBtn) els.guideAdminOpenBtn.addEventListener("click", unlockAdminPanel);
+    if (els.adminFirebaseMigrateBtn) els.adminFirebaseMigrateBtn.addEventListener("click", migrateAppsScriptUsersToFirebase);
     if (els.adminRefreshBtn) els.adminRefreshBtn.addEventListener("click", () => loadAdminPanelData().catch(err => showToast(err && err.message ? err.message : "Admin yenilenemedi.")));
     document.querySelectorAll(".admin-tab").forEach(btn => btn.addEventListener("click", () => setAdminPanelTab(btn.dataset.adminTab || "dashboard")));
     document.querySelectorAll(".admin-quick").forEach(btn => btn.addEventListener("click", () => {
@@ -8271,8 +8769,8 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     load();
   
     window.MESAHA_BUILD_INFO = {
-      fileVersion: "v81",
-      visibleVersion: "Mesaha İO v1.10",
+      fileVersion: "v82",
+      visibleVersion: "Mesaha İO v1.11",
       stableBuild: true
     };
 

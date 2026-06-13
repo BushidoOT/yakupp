@@ -1,30 +1,24 @@
-Mesaha App v81 STABİL / Mesaha İO v1.10
+Mesaha App v82 Firebase / Mesaha İO v1.11
 
-Bu paket v80 üzerinde stabil kontrol paketi olarak hazırlanmıştır.
+Bu sürüm Firebase Firestore bağlantısı ekler.
 
-Kontrol edilen ve düzeltilenler:
-- JavaScript sözdizimi kontrol edildi.
-- Ürün renk sınıfları için normalizeProductClass güvenceye alındı.
-- Toplu işlemde kaldırılan Ürün Değiştir / Ağaç Değiştir kalıntıları temizlendi.
-- Yazdırma BEYAN çıktısı için iOS bekleme süresi iyileştirildi.
-- Yeni Sürümü Güncelle fonksiyonu service worker ve cache temizliğinde daha sağlam hale getirildi.
-- Admin Paneli kullanıcıları önce gösterip yedekleri arkadan yükleyecek şekilde sabitlendi.
-- Sürüm teşhisi için build bilgisi eklendi.
-- Görünen uygulama sürümü Mesaha İO v1.10 yapıldı.
+Yapılanlar:
+- Firebase config uygulamaya eklendi.
+- Yeni kullanıcı kayıtları Firebase'e yazılır.
+- Yeni bulut yedekleri Firebase Firestore'a yazılır.
+- Buluttan Getir önce Firebase'i kontrol eder, Firebase'te yoksa eski Google Apps Script sisteminden arar.
+- Admin Paneli önce Firebase kullanıcılarını gösterir; gerekirse eski sistem yedek olarak çalışır.
+- Admin Paneli'ne "Eski Kullanıcıları Firebase’e Aktar" butonu eklendi.
+- Google Apps Script sistemi yedek/fallback olarak korunur.
+- Görünen uygulama sürümü Mesaha İO v1.11 yapıldı.
 
-Not:
-- Apps Script tarafında zorunlu yeni değişiklik yoktur; v80 kodu paket içinde tekrar eklendi.
-- Buna rağmen Apps Script dosyasını güncel tutmak istersen AppsScript_v81_TAM_KOD.txt kullanılabilir.
+Firebase'de yapılacaklar:
+1. Authentication > Sign-in method > Anonymous etkinleştir.
+2. Firestore > Rules kısmına FIRESTORE_RULES.txt içindeki kuralları yapıştırıp Publish/Yayınla.
+3. GitHub'a index.html, manifest.json, service-worker.js, .nojekyll yükle.
 
-Kullanılan Apps Script URL:
+Apps Script:
+- Zorunlu değişiklik yoktur. Eski sistem fallback olarak kalır.
+
+Eski Apps Script URL:
 https://script.google.com/macros/s/AKfycbzv8rw3n4FuwDmiFnW3ttKuoK0mUQnzEYizjaD46z0uuFiKtqLl1zkupkB9AkOehC7ECg/exec
-
-GitHub'a yüklenecek dosyalar:
-- index.html
-- manifest.json
-- service-worker.js
-- .nojekyll
-
-Yükledikten sonra:
-- Sayfayı 2-3 kez yenile.
-- Gerekirse Kullanıcı Paneli veya Kullanım Kılavuzu içindeki Yeni Sürümü Güncelle butonuna bas.
