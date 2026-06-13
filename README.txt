@@ -1,21 +1,18 @@
-Mesaha App v92 / Mesaha İO v1.21
+Mesaha App v93 / Mesaha İO v1.22
 
-Bu sürüm v91 sağlam tabanı üzerine güvenli şekilde hazırlanmıştır.
+Sade Mod düzeltmeleri:
+- Boy solda, Çap sağda olacak şekilde düzeltildi.
+- Boy kayıttan sonra silinmez; son girilen boy aynı kalır.
+- Boy/Çap alanına dokununca değer seçili hale gelir.
+- Sade Modda sadece Yeni Kayıt ekranında görünen/açık odun türleri listelenir.
+- Boy ve çap için büyük hızlı giriş butonları eklendi.
+- Kaydet butonu otomatik bilgi kutusunun üstüne alındı.
+- Kayıttan sonra çap temizlenir, boy korunur.
+- Son 3 barkod düzeltme mantığı korunur.
 
-Eklenenler:
-- Sağ üstte Karanlık / Aydınlık butonu.
-- Sağ üstte Sade Mod butonu.
-- Sade Mod tam ekran hızlı giriş penceresi olarak çalışır.
-- Sade Modda sadece ürün seçimi, çap, boy, kaydet ve son 3 barkod görünür.
-- Barkod, tarih, adet, ağaç ve dosya bilgileri Yeni Kayıt ekranındaki mevcut alanlardan otomatik alınır.
-- Sade Mod mevcut Yeni Kayıt kaydetme sistemini kullanır; kayıt saklama ve ORBİS/Excel yapısı değişmez.
-- Son 3 barkoda tıklayınca mevcut düzeltme sistemi açılır.
-- Karanlık mod tercihi cihazda saklanır.
-
-Güvenlik:
-- Açılışta ürün listesine, kullanıcıya veya kayıt saklama sistemine dokunulmaz.
-- Sade Mod açılana kadar hiçbir kayıt/dosya ayarı değiştirilmez.
-- Sade Mod sadece kaydet butonuna basılınca ana formu doldurur.
+Karanlık Mod:
+- Karanlık mod kontrastı ve okunabilirliği iyileştirildi.
+- Kılavuz, admin paneli ve kart içi metinler daha net hale getirildi.
 
 GitHub'a yüklenecek dosyalar:
 - index.html

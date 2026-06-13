@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha App v92</title>
+  <title>Mesaha App v93</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -4347,6 +4347,130 @@
       }
     }
 
+  
+    /* v93: Karanlık mod kontrast düzeltmeleri */
+    body.theme-dark,
+    body.theme-dark *{
+      scrollbar-color:#475569 #0f172a;
+    }
+
+    body.theme-dark .guide-card,
+    body.theme-dark .guide-card *,
+    body.theme-dark .admin-panel,
+    body.theme-dark .admin-panel *,
+    body.theme-dark .records-panel,
+    body.theme-dark .records-panel *,
+    body.theme-dark .entry-panel,
+    body.theme-dark .entry-panel *,
+    body.theme-dark .panel-body,
+    body.theme-dark .panel-body *{
+      color:#e5eefb;
+    }
+
+    body.theme-dark .guide-card li,
+    body.theme-dark .guide-card b,
+    body.theme-dark .guide-card strong,
+    body.theme-dark .admin-summary-card span,
+    body.theme-dark .admin-summary-card b,
+    body.theme-dark .registered-user-item b,
+    body.theme-dark .registered-user-meta span,
+    body.theme-dark .admin-note-item,
+    body.theme-dark .admin-note-item *{
+      color:#f8fafc !important;
+    }
+
+    body.theme-dark .guide-card,
+    body.theme-dark .admin-summary-card,
+    body.theme-dark .registered-user-item,
+    body.theme-dark .bulk-actions,
+    body.theme-dark .daily-summary,
+    body.theme-dark .table-wrap,
+    body.theme-dark .simple-mode-card{
+      background:#172033 !important;
+      border-color:#3b4a61 !important;
+    }
+
+    body.theme-dark .guide-card .hint,
+    body.theme-dark .simple-mode-card .hint,
+    body.theme-dark .registered-user-meta span{
+      color:#dbeafe !important;
+    }
+
+    body.theme-dark .admin-quick:not(.active),
+    body.theme-dark .admin-tab:not(.active),
+    body.theme-dark .mode-mini-btn,
+    body.theme-dark .secondary,
+    body.theme-dark button.ghost{
+      background:#1f2a3a !important;
+      color:#f8fafc !important;
+      border-color:#52627a !important;
+    }
+
+    body.theme-dark .admin-quick.active,
+    body.theme-dark .admin-tab.active,
+    body.theme-dark .bottom-nav button.active{
+      background:#2563eb !important;
+      color:#ffffff !important;
+      border-color:#60a5fa !important;
+    }
+
+    body.theme-dark .records-table,
+    body.theme-dark table,
+    body.theme-dark tbody,
+    body.theme-dark tr,
+    body.theme-dark td,
+    body.theme-dark th{
+      color:#111827 !important;
+    }
+
+    body.theme-dark .simple-mode-card h2,
+    body.theme-dark .simple-recent-area h3,
+    body.theme-dark .simple-measure-grid label{
+      color:#f8fafc !important;
+    }
+
+    body.theme-dark .simple-recent-item b,
+    body.theme-dark .simple-recent-item span{
+      color:#e5eefb !important;
+    }
+
+    /* v93: Sade Mod hızlı giriş butonları */
+    .simple-chip-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-top:8px;
+      min-height:42px;
+      align-items:center;
+    }
+
+    .simple-chip-btn{
+      min-width:58px;
+      min-height:42px;
+      border-radius:15px;
+      border:1px solid #cbd5e1;
+      background:#f8fafc;
+      color:#172033;
+      font-size:16px;
+      font-weight:950;
+      padding:8px 12px;
+      box-shadow:0 6px 14px rgba(16,24,40,.06);
+    }
+
+    .simple-chip-btn:active{
+      transform:scale(.97);
+    }
+
+    body.theme-dark .simple-chip-btn{
+      background:#0f172a !important;
+      color:#f8fafc !important;
+      border-color:#52627a !important;
+    }
+
+    .simple-save-btn{
+      margin:12px 0 10px !important;
+    }
+
   </style>
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -4490,18 +4614,20 @@
 
       <div class="simple-measure-grid">
         <div>
-          <label for="simpleDiameter">Çap</label>
-          <input id="simpleDiameter" type="number" min="0" step="1" inputmode="numeric" placeholder="22" autocomplete="off" />
-        </div>
-        <div>
           <label for="simpleLength">Boy</label>
           <input id="simpleLength" type="number" min="0" step="0.01" inputmode="decimal" placeholder="3" autocomplete="off" />
+          <div id="simpleLengthChips" class="simple-chip-row"></div>
+        </div>
+        <div>
+          <label for="simpleDiameter">Çap</label>
+          <input id="simpleDiameter" type="number" min="0" step="1" inputmode="numeric" placeholder="22" autocomplete="off" />
+          <div id="simpleDiameterChips" class="simple-chip-row"></div>
         </div>
       </div>
 
-      <div id="simpleAutoInfo" class="simple-auto-info"></div>
-
       <button id="simpleSaveBtn" class="primary simple-save-btn" type="button">Kaydet</button>
+
+      <div id="simpleAutoInfo" class="simple-auto-info"></div>
 
       <div class="simple-recent-area">
         <h3>Son 3 Barkod</h3>
@@ -4515,7 +4641,7 @@
 <div class="app">
     <header class="topbar">
       <div class="brand">
-        <h1>Mesaha İO v1.21</h1>
+        <h1>Mesaha İO v1.22</h1>
         
       </div>
       <div id="activeUserBadge" class="active-user-badge" role="button" tabindex="0" title="Kullanıcı panelini aç" style="display:none"></div>
@@ -5176,6 +5302,8 @@
       simpleAutoInfo: $("simpleAutoInfo"),
       simpleSaveBtn: $("simpleSaveBtn"),
       simpleRecentList: $("simpleRecentList"),
+      simpleLengthChips: $("simpleLengthChips"),
+      simpleDiameterChips: $("simpleDiameterChips"),
       registeredUsersList: $("registeredUsersList"),
       changeUserBtn: $("changeUserBtn"),
       adminUsersBtn: $("adminUsersBtn"),
@@ -5966,8 +6094,8 @@
     function currentDeviceInfoPayload() {
       const active = state.activeUser || findActiveUser();
       return {
-        appVersion: "Mesaha İO v1.21",
-        fileVersion: "v92",
+        appVersion: "Mesaha İO v1.22",
+        fileVersion: "v93",
         userName: active && active.name ? cleanUserText(active.name) : "",
         seflik: active && active.seflik ? cleanUserText(active.seflik) : "",
         deviceId: getOrCreateDeviceId(),
@@ -6707,7 +6835,7 @@
 
     async function uploadCloudBackupOpen(user) {
       const payload = buildCloudBackupPayload(user);
-      payload.version = 92;
+      payload.version = 93;
       const bolmePart = els.bolmeNo && String(els.bolmeNo.value || "").trim() ? `_${cleanFilePart(els.bolmeNo.value)}` : "";
       const fileName = `Mesaha_Yedek_${cleanFilePart(user.seflik)}_${cleanFilePart(user.name)}${bolmePart}_${new Date().toISOString().slice(0,19).replace(/[-:T]/g, "")}.json`;
 
@@ -7136,7 +7264,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function buildCloudBackupPayload(user) {
       return {
         app: "Mesaha İO",
-        version: 92,
+        version: 93,
         createdAt: new Date().toLocaleString("tr-TR"),
         user: {
           name: user.name || "",
@@ -9138,7 +9266,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function backup() {
       const data = {
         app: "Mesaha App",
-        version: 92,
+        version: 93,
         exportedAt: formatDateTime(),
         systemHeaders: HEADERS,
         settings: state.settings,
@@ -9555,7 +9683,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     async function firebaseUploadBackup(user) {
       const { db } = await ensureFirebaseReady();
       const payload = buildCloudBackupPayload(user);
-      payload.version = 92;
+      payload.version = 93;
       payload.cloud = "firebase";
 
       const bolmeNo = els.bolmeNo ? String(els.bolmeNo.value || "").trim() : "";
@@ -9963,10 +10091,161 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
 
     
     
+    
+    /* v93: Sade Mod düzenleme ve güvenli iyileştirmeler */
+    function simpleVisibleProductsV93() {
+      const order = [
+        { key:"Tomruk", label:"Tomruk", cls:"simple-tomruk" },
+        { key:"Maden Direk", label:"Maden", cls:"simple-maden" },
+        { key:"Kağıtlık", label:"Kağıtlık", cls:"simple-kagit" },
+        { key:"Sanayi Odunu", label:"Sanayi", cls:"simple-sanayi" },
+        { key:"Tel Direk", label:"Tel", cls:"simple-tel" }
+      ];
+
+      const visible = [];
+      const mainBtns = Array.from(document.querySelectorAll("[data-product-type], [data-product], .product-option, .product-box, .product-btn"));
+      order.forEach(item => {
+        const found = mainBtns.find(btn => {
+          const txt = (btn.textContent || "").toLowerCase("tr-TR");
+          const data = (btn.dataset.productType || btn.dataset.product || "").toLowerCase("tr-TR");
+          const key = item.key.toLowerCase("tr-TR");
+          const label = item.label.toLowerCase("tr-TR");
+          const matched = data.includes(key) || data.includes(label) || txt.includes(label) || (item.key === "Maden Direk" && txt.includes("maden")) || (item.key === "Tel Direk" && txt.includes("tel"));
+          if (!matched) return false;
+          const style = window.getComputedStyle(btn);
+          return style.display !== "none" && style.visibility !== "hidden" && btn.offsetParent !== null;
+        });
+        if (found) visible.push(item);
+      });
+
+      return visible.length ? visible : order;
+    }
+
+    function simpleRenderProductsV93() {
+      if (!els.simpleProductGrid) return;
+      const current = normalizeProductType((els.productType && els.productType.value) || state.settings.lastProductType || "Tomruk");
+      const products = simpleVisibleProductsV93();
+      els.simpleProductGrid.innerHTML = products.map(item => `
+        <button type="button" class="simple-product-btn ${item.cls} ${normalizeProductType(item.key) === current ? "active" : ""}" data-simple-product="${escapeHtml(item.key)}">${escapeHtml(item.label)}</button>
+      `).join("");
+
+      if (!els.simpleProductGrid.querySelector(".simple-product-btn.active")) {
+        const first = els.simpleProductGrid.querySelector(".simple-product-btn");
+        if (first) first.classList.add("active");
+      }
+    }
+
+    function uniqueRecentValuesV93(field, fallback = []) {
+      const values = [];
+      (state.records || []).forEach(r => {
+        const val = String(r[field] || "").trim();
+        if (val && !values.includes(val)) values.push(val);
+      });
+      fallback.forEach(v => {
+        const val = String(v || "").trim();
+        if (val && !values.includes(val)) values.push(val);
+      });
+      return values.slice(0, 5);
+    }
+
+    function simpleRenderQuickChipsV93() {
+      if (els.simpleLengthChips) {
+        const lastBoy = (els.simpleLength && els.simpleLength.value) || (els.length && els.length.value) || "";
+        const values = uniqueRecentValuesV93("length", [lastBoy, "3", "2.5", "2", "1.5"]);
+        els.simpleLengthChips.innerHTML = values.map(v => `<button type="button" class="simple-chip-btn" data-simple-length="${escapeHtml(v)}">${escapeHtml(v)}</button>`).join("");
+      }
+
+      if (els.simpleDiameterChips) {
+        const lastCap = (els.simpleDiameter && els.simpleDiameter.value) || (els.diameter && els.diameter.value) || "";
+        const values = uniqueRecentValuesV93("diameter", [lastCap, "22", "24", "20", "18"]);
+        els.simpleDiameterChips.innerHTML = values.map(v => `<button type="button" class="simple-chip-btn" data-simple-diameter="${escapeHtml(v)}">${escapeHtml(v)}</button>`).join("");
+      }
+    }
+
+    function simpleSyncFromMainV93() {
+      simpleRenderProductsV93();
+
+      if (els.simpleDiameter && els.diameter) {
+        els.simpleDiameter.value = els.diameter.value || "";
+      }
+
+      if (els.simpleLength) {
+        const savedBoy = localStorage.getItem("mesaha_simple_last_length_v1") || "";
+        els.simpleLength.value = savedBoy || (els.length ? (els.length.value || "") : "");
+      }
+
+      simpleSetProductV92((els.productType && els.productType.value) || state.settings.lastProductType || "Tomruk");
+      simpleRenderQuickChipsV93();
+      simpleRenderRecentV92();
+      simpleUpdateAutoInfoV92();
+    }
+
+    function simpleOpenModeV93() {
+      if (els.simpleModeOverlay) els.simpleModeOverlay.classList.add("show");
+      simpleSyncFromMainV93();
+      setTimeout(() => { if (els.simpleDiameter) { els.simpleDiameter.focus(); els.simpleDiameter.select(); } }, 120);
+    }
+
+    function simpleSaveRecordV93() {
+      const boy = els.simpleLength ? String(els.simpleLength.value || "").trim() : "";
+      const cap = els.simpleDiameter ? String(els.simpleDiameter.value || "").trim() : "";
+      if (!boy || !cap) {
+        showToast("Boy ve çap giriniz.");
+        return;
+      }
+
+      localStorage.setItem("mesaha_simple_last_length_v1", boy);
+      const beforeCount = (state.records || []).length;
+
+      if (els.length) {
+        els.length.value = boy;
+        els.length.dispatchEvent(new Event("input", { bubbles:true }));
+        els.length.dispatchEvent(new Event("change", { bubbles:true }));
+      }
+
+      if (els.diameter) {
+        els.diameter.value = cap;
+        els.diameter.dispatchEvent(new Event("input", { bubbles:true }));
+        els.diameter.dispatchEvent(new Event("change", { bubbles:true }));
+      }
+
+      const selectedProduct = simpleSelectedProductV92();
+      if (typeof setProductType === "function") setProductType(selectedProduct, true);
+      else if (els.productType) els.productType.value = selectedProduct;
+
+      try {
+        if (els.form && els.form.requestSubmit) els.form.requestSubmit(els.submitBtn || undefined);
+        else if (els.form) els.form.dispatchEvent(new Event("submit", { bubbles:true, cancelable:true }));
+      } catch {
+        if (els.submitBtn) els.submitBtn.click();
+      }
+
+      setTimeout(() => {
+        const afterCount = (state.records || []).length;
+        simpleRenderRecentV92();
+        simpleUpdateAutoInfoV92();
+
+        if (afterCount > beforeCount) {
+          if (els.simpleDiameter) els.simpleDiameter.value = "";
+          if (els.diameter) els.diameter.value = "";
+          if (els.simpleLength) els.simpleLength.value = boy;
+          if (els.length) els.length.value = boy;
+          simpleRenderQuickChipsV93();
+          if (els.simpleDiameter) { els.simpleDiameter.focus(); els.simpleDiameter.select(); }
+        }
+      }, 280);
+    }
+
+    /* Eski v92 fonksiyon adlarını v93'e yönlendir */
+    simpleSyncFromMainV92 = simpleSyncFromMainV93;
+    simpleOpenModeV92 = simpleOpenModeV93;
+    simpleSaveRecordV92 = simpleSaveRecordV93;
+
+
     if (els.themeToggleBtn) els.themeToggleBtn.addEventListener("click", mesahaToggleTheme);
-    if (els.simpleModeBtn) els.simpleModeBtn.addEventListener("click", simpleOpenModeV92);
+    if (els.simpleModeBtn) els.simpleModeBtn.addEventListener("click", simpleOpenModeV93);
     if (els.simpleModeCloseBtn) els.simpleModeCloseBtn.addEventListener("click", simpleCloseModeV92);
-    if (els.simpleSaveBtn) els.simpleSaveBtn.addEventListener("click", simpleSaveRecordV92);
+    if (els.simpleSaveBtn) els.simpleSaveBtn.addEventListener("click", simpleSaveRecordV93);
     if (els.simpleProductGrid) {
       els.simpleProductGrid.addEventListener("click", (event) => {
         const btn = event.target.closest("[data-simple-product]");
@@ -9989,6 +10268,28 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
           simpleSaveRecordV92();
         }
       });
+    }
+
+    
+    if (els.simpleLengthChips) {
+      els.simpleLengthChips.addEventListener("click", (event) => {
+        const btn = event.target.closest("[data-simple-length]");
+        if (!btn) return;
+        if (els.simpleLength) { els.simpleLength.value = btn.dataset.simpleLength || ""; els.simpleLength.focus(); els.simpleLength.select(); }
+      });
+    }
+    if (els.simpleDiameterChips) {
+      els.simpleDiameterChips.addEventListener("click", (event) => {
+        const btn = event.target.closest("[data-simple-diameter]");
+        if (!btn) return;
+        if (els.simpleDiameter) { els.simpleDiameter.value = btn.dataset.simpleDiameter || ""; els.simpleDiameter.focus(); els.simpleDiameter.select(); }
+      });
+    }
+    if (els.simpleLength) {
+      ["focus","click"].forEach(evt => els.simpleLength.addEventListener(evt, () => setTimeout(() => els.simpleLength.select(), 20)));
+    }
+    if (els.simpleDiameter) {
+      ["focus","click"].forEach(evt => els.simpleDiameter.addEventListener(evt, () => setTimeout(() => els.simpleDiameter.select(), 20)));
     }
 
     if (els.userMenuForceUpdateBtn) els.userMenuForceUpdateBtn.addEventListener("click", forceUpdateApp);
@@ -10250,8 +10551,8 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     load();
   
     window.MESAHA_BUILD_INFO = {
-      fileVersion: "v92",
-      visibleVersion: "Mesaha İO v1.21",
+      fileVersion: "v93",
+      visibleVersion: "Mesaha İO v1.22",
       stableBuild: true
     };
 
