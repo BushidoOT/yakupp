@@ -1,0 +1,8 @@
+{
+  "name": "Mesaha İO",
+  "short_name": "Mesaha İO",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "icons": []
+}
