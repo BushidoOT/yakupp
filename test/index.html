@@ -7678,6 +7678,179 @@
       border-color:var(--v121-line) !important;
     }
 
+
+    /* v122: karanlık modda net ürün renkleri + son 3 barkod renk düzeltmesi */
+    :root{
+      --v122-tomruk:#facc15;
+      --v122-maden:#3b82f6;
+      --v122-kagit:#ef4444;
+      --v122-sanayi:#22c55e;
+      --v122-tel:#8b5cf6;
+      --v122-dark-card:#151922;
+      --v122-dark-line:#303744;
+    }
+
+    body.theme-dark .product-box,
+    body.theme-dark .clean-product-v111{
+      background:var(--v122-dark-card) !important;
+      color:#f1f5f9 !important;
+      border:1.8px solid var(--v122-dark-line) !important;
+      border-left-width:7px !important;
+      box-shadow:none !important;
+    }
+
+    body.theme-dark .product-box[data-product="Tomruk"],
+    body.theme-dark .clean-product-v111.tomruk{
+      background:rgba(250,204,21,.12) !important;
+      border-color:var(--v122-tomruk) !important;
+      color:var(--v122-tomruk) !important;
+    }
+    body.theme-dark .product-box[data-product="Maden Direk"],
+    body.theme-dark .clean-product-v111.maden{
+      background:rgba(59,130,246,.14) !important;
+      border-color:var(--v122-maden) !important;
+      color:#60a5fa !important;
+    }
+    body.theme-dark .product-box[data-product="Kağıtlık"],
+    body.theme-dark .clean-product-v111.kagit{
+      background:rgba(239,68,68,.15) !important;
+      border-color:var(--v122-kagit) !important;
+      color:#ff6b6b !important;
+    }
+    body.theme-dark .product-box[data-product="Sanayi Odunu"],
+    body.theme-dark .clean-product-v111.sanayi{
+      background:rgba(34,197,94,.14) !important;
+      border-color:var(--v122-sanayi) !important;
+      color:#4ade80 !important;
+    }
+    body.theme-dark .product-box[data-product="Tel Direk"],
+    body.theme-dark .clean-product-v111.tel{
+      background:rgba(139,92,246,.15) !important;
+      border-color:var(--v122-tel) !important;
+      color:#a78bfa !important;
+    }
+
+    body.theme-dark .product-box.active[data-product="Tomruk"],
+    body.theme-dark .clean-product-v111.active.tomruk{
+      background:var(--v122-tomruk) !important;
+      border-color:var(--v122-tomruk) !important;
+      color:#1f2937 !important;
+      box-shadow:0 0 0 3px rgba(250,204,21,.22), 0 12px 24px rgba(0,0,0,.20) !important;
+    }
+    body.theme-dark .product-box.active[data-product="Maden Direk"],
+    body.theme-dark .clean-product-v111.active.maden{
+      background:var(--v122-maden) !important;
+      border-color:var(--v122-maden) !important;
+      color:#ffffff !important;
+      box-shadow:0 0 0 3px rgba(59,130,246,.22), 0 12px 24px rgba(0,0,0,.20) !important;
+    }
+    body.theme-dark .product-box.active[data-product="Kağıtlık"],
+    body.theme-dark .clean-product-v111.active.kagit{
+      background:var(--v122-kagit) !important;
+      border-color:var(--v122-kagit) !important;
+      color:#ffffff !important;
+      box-shadow:0 0 0 3px rgba(239,68,68,.22), 0 12px 24px rgba(0,0,0,.20) !important;
+    }
+    body.theme-dark .product-box.active[data-product="Sanayi Odunu"],
+    body.theme-dark .clean-product-v111.active.sanayi{
+      background:var(--v122-sanayi) !important;
+      border-color:var(--v122-sanayi) !important;
+      color:#052e16 !important;
+      box-shadow:0 0 0 3px rgba(34,197,94,.22), 0 12px 24px rgba(0,0,0,.20) !important;
+    }
+    body.theme-dark .product-box.active[data-product="Tel Direk"],
+    body.theme-dark .clean-product-v111.active.tel{
+      background:var(--v122-tel) !important;
+      border-color:var(--v122-tel) !important;
+      color:#ffffff !important;
+      box-shadow:0 0 0 3px rgba(139,92,246,.22), 0 12px 24px rgba(0,0,0,.20) !important;
+    }
+
+    body.theme-dark .product-box.active::after,
+    body.theme-dark .clean-product-v111.active::after{
+      background:#0d1118 !important;
+      color:#ffffff !important;
+      border-color:#ffffff !important;
+    }
+
+    body.theme-dark #submitBtn,
+    body.theme-dark .clean-save-v111,
+    body.theme-dark .clean-header-save-v113{
+      background:#22c55e !important;
+      border-color:#22c55e !important;
+      color:#052e16 !important;
+      box-shadow:0 10px 22px rgba(34,197,94,.22) !important;
+    }
+
+    body.theme-dark .recent-barcode-list > .recent-barcode-item,
+    body.theme-dark .clean-recent-item-v114{
+      border:1.8px solid var(--v122-dark-line) !important;
+      border-left-width:7px !important;
+      box-shadow:0 10px 20px rgba(0,0,0,.18) !important;
+    }
+
+    body.theme-dark .recent-barcode-list > .recent-tomruk,
+    body.theme-dark .clean-recent-item-v114.tomruk{
+      background:var(--v122-tomruk) !important;
+      border-color:var(--v122-tomruk) !important;
+      color:#1f2937 !important;
+    }
+    body.theme-dark .recent-barcode-list > .recent-maden,
+    body.theme-dark .clean-recent-item-v114.maden{
+      background:var(--v122-maden) !important;
+      border-color:var(--v122-maden) !important;
+      color:#ffffff !important;
+    }
+    body.theme-dark .recent-barcode-list > .recent-kagit,
+    body.theme-dark .clean-recent-item-v114.kagit{
+      background:var(--v122-kagit) !important;
+      border-color:var(--v122-kagit) !important;
+      color:#ffffff !important;
+    }
+    body.theme-dark .recent-barcode-list > .recent-sanayi,
+    body.theme-dark .clean-recent-item-v114.sanayi{
+      background:var(--v122-sanayi) !important;
+      border-color:var(--v122-sanayi) !important;
+      color:#052e16 !important;
+    }
+    body.theme-dark .recent-barcode-list > .recent-tel,
+    body.theme-dark .clean-recent-item-v114.tel{
+      background:var(--v122-tel) !important;
+      border-color:var(--v122-tel) !important;
+      color:#ffffff !important;
+    }
+
+    body.theme-dark .recent-barcode-list > .recent-tomruk *,
+    body.theme-dark .clean-recent-item-v114.tomruk *,
+    body.theme-dark .recent-barcode-list > .recent-sanayi *,
+    body.theme-dark .clean-recent-item-v114.sanayi *{
+      color:inherit !important;
+    }
+    body.theme-dark .recent-barcode-list > .recent-maden *,
+    body.theme-dark .recent-barcode-list > .recent-kagit *,
+    body.theme-dark .recent-barcode-list > .recent-tel *,
+    body.theme-dark .clean-recent-item-v114.maden *,
+    body.theme-dark .clean-recent-item-v114.kagit *,
+    body.theme-dark .clean-recent-item-v114.tel *{
+      color:#ffffff !important;
+    }
+
+    body.theme-dark .mini-tag-v111.tomruk,
+    body.theme-dark .tag.tomruk,
+    body.theme-dark .chip.tomruk{ background:var(--v122-tomruk) !important; border-color:var(--v122-tomruk) !important; color:#1f2937 !important; }
+    body.theme-dark .mini-tag-v111.maden,
+    body.theme-dark .tag.maden,
+    body.theme-dark .chip.maden{ background:var(--v122-maden) !important; border-color:var(--v122-maden) !important; color:#ffffff !important; }
+    body.theme-dark .mini-tag-v111.kagit,
+    body.theme-dark .tag.kagit,
+    body.theme-dark .chip.kagit{ background:var(--v122-kagit) !important; border-color:var(--v122-kagit) !important; color:#ffffff !important; }
+    body.theme-dark .mini-tag-v111.sanayi,
+    body.theme-dark .tag.sanayi,
+    body.theme-dark .chip.sanayi{ background:var(--v122-sanayi) !important; border-color:var(--v122-sanayi) !important; color:#052e16 !important; }
+    body.theme-dark .mini-tag-v111.tel,
+    body.theme-dark .tag.tel,
+    body.theme-dark .chip.tel{ background:var(--v122-tel) !important; border-color:var(--v122-tel) !important; color:#ffffff !important; }
+
   </style>
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -9297,8 +9470,8 @@
     function currentDeviceInfoPayload() {
       const active = state.activeUser || findActiveUser();
       return {
-        appVersion: "Mesaha İO v1.50",
-        fileVersion: "v119",
+        appVersion: "Mesaha İO v1.51",
+        fileVersion: "v122",
         userName: active && active.name ? cleanUserText(active.name) : "",
         seflik: active && active.seflik ? cleanUserText(active.seflik) : "",
         deviceId: getOrCreateDeviceId(),
@@ -10037,7 +10210,7 @@
 
     async function uploadCloudBackupOpen(user) {
       const payload = buildCloudBackupPayload(user);
-      payload.version = 121;
+      payload.version = 122;
       const bolmePart = els.bolmeNo && String(els.bolmeNo.value || "").trim() ? `_${cleanFilePart(els.bolmeNo.value)}` : "";
       const fileName = `Mesaha_Yedek_${cleanFilePart(user.seflik)}_${cleanFilePart(user.name)}${bolmePart}_${new Date().toISOString().slice(0,19).replace(/[-:T]/g, "")}.json`;
 
@@ -10466,7 +10639,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function buildCloudBackupPayload(user) {
       return {
         app: "Mesaha İO",
-        version: 121,
+        version: 122,
         createdAt: new Date().toLocaleString("tr-TR"),
         user: {
           name: user.name || "",
@@ -12470,7 +12643,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function backup() {
       const data = {
         app: "Mesaha App",
-        version: 121,
+        version: 122,
         exportedAt: formatDateTime(),
         systemHeaders: HEADERS,
         settings: state.settings,
@@ -12887,7 +13060,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     async function firebaseUploadBackup(user) {
       const { db } = await ensureFirebaseReady();
       const payload = buildCloudBackupPayload(user);
-      payload.version = 121;
+      payload.version = 122;
       payload.cloud = "firebase";
 
       const bolmeNo = els.bolmeNo ? String(els.bolmeNo.value || "").trim() : "";
@@ -14652,10 +14825,101 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 
 
     load();
+
+
+    /* v122: Sade Mod / Normal geçişini sert şekilde düzelt */
+    function syncInlineSimpleButtonV122() {
+      const btn = document.getElementById('openSimpleV112');
+      if (!btn) return;
+      const on = document.body.classList.contains('inline-simple-v119');
+      btn.textContent = on ? '↩ Normal' : '⚡ Sade Mod';
+      btn.classList.toggle('active', on);
+      btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+      btn.type = 'button';
+    }
+
+    function setInlineSimpleV122(on) {
+      on = !!on;
+      const overlay = document.getElementById('cleanSimpleOverlayV111');
+      if (overlay) {
+        overlay.classList.remove('show');
+        overlay.style.setProperty('display', 'none', 'important');
+        overlay.style.setProperty('visibility', 'hidden', 'important');
+        overlay.style.setProperty('pointer-events', 'none', 'important');
+      }
+
+      document.body.classList.remove('clean-simple-open-v111', 'clean-keyboard-v118');
+
+      if (on) {
+        if (typeof showEntryForInlineSimpleV119 === 'function') showEntryForInlineSimpleV119();
+        document.body.classList.add('inline-simple-v119');
+        if (typeof renderProductButtons === 'function') renderProductButtons();
+        if (typeof setProductType === 'function' && typeof els !== 'undefined' && els && els.productType) {
+          setProductType(els.productType.value || 'Tomruk', false);
+        }
+        setTimeout(() => {
+          if (typeof renderRecentBarcodes === 'function') renderRecentBarcodes();
+        }, 30);
+      } else {
+        document.body.classList.remove('inline-simple-v119');
+        if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
+      }
+
+      syncInlineSimpleButtonV122();
+      setTimeout(() => {
+        syncInlineSimpleButtonV122();
+        if (typeof keepNaturalScrollV111 === 'function') keepNaturalScrollV111();
+        if (typeof updateFlowTabsV111 === 'function') updateFlowTabsV111();
+      }, 60);
+    }
+
+    function toggleInlineSimpleV122() {
+      setInlineSimpleV122(!document.body.classList.contains('inline-simple-v119'));
+    }
+
+    try { setInlineSimpleV119 = setInlineSimpleV122; } catch {}
+    try { toggleInlineSimpleV119 = toggleInlineSimpleV122; } catch {}
+    try { closeInlineSimpleV119 = function(){ setInlineSimpleV122(false); }; } catch {}
+    openCleanSimpleV111 = function(){ setInlineSimpleV122(true); };
+    openCleanSimpleV113 = openCleanSimpleV111;
+    closeCleanSimpleV111 = function(){ setInlineSimpleV122(false); };
+
+    function bindInlineSimpleV122() {
+      const btn = document.getElementById('openSimpleV112');
+      if (btn && btn.dataset.mesahaV122Simple !== '1') {
+        const fresh = btn.cloneNode(true);
+        fresh.dataset.mesahaV122Simple = '1';
+        btn.parentNode.replaceChild(fresh, btn);
+        fresh.addEventListener('click', (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          event.stopImmediatePropagation();
+          toggleInlineSimpleV122();
+        }, true);
+      }
+      syncInlineSimpleButtonV122();
+    }
+
+    if (!window.__MESAHA_V122_SIMPLE_CAPTURE__) {
+      window.__MESAHA_V122_SIMPLE_CAPTURE__ = true;
+      document.addEventListener('click', (event) => {
+        const target = event.target && event.target.closest ? event.target.closest('#openSimpleV112') : null;
+        if (!target) return;
+        event.preventDefault();
+        event.stopPropagation();
+        event.stopImmediatePropagation();
+        toggleInlineSimpleV122();
+      }, true);
+    }
+
+    bindInlineSimpleV122();
+    setTimeout(bindInlineSimpleV122, 100);
+    setTimeout(bindInlineSimpleV122, 400);
+    setTimeout(syncInlineSimpleButtonV122, 700);
   
     window.MESAHA_BUILD_INFO = {
-      fileVersion: "v119",
-      visibleVersion: "Mesaha İO v1.50",
+      fileVersion: "v122",
+      visibleVersion: "Mesaha İO v1.51",
       stableBuild: true
     };
 
