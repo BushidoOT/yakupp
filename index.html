@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha App v93</title>
+  <title>Mesaha App v94</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -4471,6 +4471,44 @@
       margin:12px 0 10px !important;
     }
 
+  
+    /* v94: Sade Mod seçili işareti ve klavye koruma görünümü */
+    .simple-product-btn{
+      position:relative;
+      user-select:none;
+      -webkit-user-select:none;
+      touch-action:manipulation;
+    }
+
+    .simple-product-btn.active::after{
+      content:"✓ SEÇİLİ";
+      position:absolute;
+      right:8px;
+      top:-12px;
+      border-radius:999px;
+      padding:4px 8px;
+      background:#111827;
+      color:#ffffff;
+      border:2px solid #ffffff;
+      font-size:10px;
+      font-weight:950;
+      line-height:1;
+      box-shadow:0 8px 18px rgba(15,23,42,.22);
+      letter-spacing:.2px;
+    }
+
+    body.theme-dark .simple-product-btn.active::after{
+      background:#f8fafc;
+      color:#111827;
+      border-color:#0f172a;
+    }
+
+    .simple-chip-btn{
+      user-select:none;
+      -webkit-user-select:none;
+      touch-action:manipulation;
+    }
+
   </style>
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -4641,7 +4679,7 @@
 <div class="app">
     <header class="topbar">
       <div class="brand">
-        <h1>Mesaha İO v1.22</h1>
+        <h1>Mesaha İO v1.23</h1>
         
       </div>
       <div id="activeUserBadge" class="active-user-badge" role="button" tabindex="0" title="Kullanıcı panelini aç" style="display:none"></div>
@@ -6094,8 +6132,8 @@
     function currentDeviceInfoPayload() {
       const active = state.activeUser || findActiveUser();
       return {
-        appVersion: "Mesaha İO v1.22",
-        fileVersion: "v93",
+        appVersion: "Mesaha İO v1.23",
+        fileVersion: "v94",
         userName: active && active.name ? cleanUserText(active.name) : "",
         seflik: active && active.seflik ? cleanUserText(active.seflik) : "",
         deviceId: getOrCreateDeviceId(),
@@ -6835,7 +6873,7 @@
 
     async function uploadCloudBackupOpen(user) {
       const payload = buildCloudBackupPayload(user);
-      payload.version = 93;
+      payload.version = 94;
       const bolmePart = els.bolmeNo && String(els.bolmeNo.value || "").trim() ? `_${cleanFilePart(els.bolmeNo.value)}` : "";
       const fileName = `Mesaha_Yedek_${cleanFilePart(user.seflik)}_${cleanFilePart(user.name)}${bolmePart}_${new Date().toISOString().slice(0,19).replace(/[-:T]/g, "")}.json`;
 
@@ -7264,7 +7302,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function buildCloudBackupPayload(user) {
       return {
         app: "Mesaha İO",
-        version: 93,
+        version: 94,
         createdAt: new Date().toLocaleString("tr-TR"),
         user: {
           name: user.name || "",
@@ -9266,7 +9304,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function backup() {
       const data = {
         app: "Mesaha App",
-        version: 93,
+        version: 94,
         exportedAt: formatDateTime(),
         systemHeaders: HEADERS,
         settings: state.settings,
@@ -9683,7 +9721,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     async function firebaseUploadBackup(user) {
       const { db } = await ensureFirebaseReady();
       const payload = buildCloudBackupPayload(user);
-      payload.version = 93;
+      payload.version = 94;
       payload.cloud = "firebase";
 
       const bolmeNo = els.bolmeNo ? String(els.bolmeNo.value || "").trim() : "";
@@ -10531,6 +10569,93 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     }
 
 
+    
+    /* v94: Sade Mod butonlarında klavye kapanmasını engelle */
+    function simpleFocusedInputV94() {
+      const active = document.activeElement;
+      if (active === els.simpleLength || active === els.simpleDiameter) return active;
+      if (els.simpleDiameter && els.simpleDiameter.value === "") return els.simpleDiameter;
+      return els.simpleLength || els.simpleDiameter || null;
+    }
+
+    function simpleRefocusInputV94(targetInput) {
+      const input = targetInput || simpleFocusedInputV94();
+      if (!input) return;
+      setTimeout(() => {
+        try {
+          input.focus({ preventScroll:true });
+          input.select();
+        } catch {
+          try { input.focus(); input.select(); } catch {}
+        }
+      }, 20);
+    }
+
+    function simpleNoBlurActionV94(event, action, focusTarget) {
+      if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+      try {
+        action();
+      } finally {
+        simpleRefocusInputV94(focusTarget);
+      }
+    }
+
+    function simpleAttachNoBlurHandlersV94() {
+      if (window.__simpleNoBlurHandlersV94) return;
+      window.__simpleNoBlurHandlersV94 = true;
+
+      if (els.simpleProductGrid) {
+        els.simpleProductGrid.addEventListener("pointerdown", (event) => {
+          const btn = event.target.closest("[data-simple-product]");
+          if (!btn) return;
+          const focusTarget = simpleFocusedInputV94();
+          simpleNoBlurActionV94(event, () => simpleSetProductV93(btn.dataset.simpleProduct || "Tomruk"), focusTarget);
+        }, { passive:false });
+      }
+
+      if (els.simpleLengthChips) {
+        els.simpleLengthChips.addEventListener("pointerdown", (event) => {
+          const btn = event.target.closest("[data-simple-length]");
+          if (!btn) return;
+          simpleNoBlurActionV94(event, () => {
+            if (els.simpleLength) els.simpleLength.value = btn.dataset.simpleLength || "";
+          }, els.simpleLength);
+        }, { passive:false });
+      }
+
+      if (els.simpleDiameterChips) {
+        els.simpleDiameterChips.addEventListener("pointerdown", (event) => {
+          const btn = event.target.closest("[data-simple-diameter]");
+          if (!btn) return;
+          simpleNoBlurActionV94(event, () => {
+            if (els.simpleDiameter) els.simpleDiameter.value = btn.dataset.simpleDiameter || "";
+          }, els.simpleDiameter);
+        }, { passive:false });
+      }
+    }
+
+    const __simpleOpenModeV93_original = simpleOpenModeV93;
+    simpleOpenModeV93 = function() {
+      __simpleOpenModeV93_original();
+      simpleAttachNoBlurHandlersV94();
+    };
+
+    const __simpleRenderProductsV93_original = simpleRenderProductsV93;
+    simpleRenderProductsV93 = function() {
+      __simpleRenderProductsV93_original();
+      simpleAttachNoBlurHandlersV94();
+    };
+
+    const __simpleRenderQuickChipsV93_original = simpleRenderQuickChipsV93;
+    simpleRenderQuickChipsV93 = function() {
+      __simpleRenderQuickChipsV93_original();
+      simpleAttachNoBlurHandlersV94();
+    };
+
+
     window.forceUpdateApp = forceUpdateApp;
     window.mesahaToggleTheme = mesahaToggleTheme;
     window.simpleOpenModeV92 = simpleOpenModeV92;
@@ -10551,8 +10676,8 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     load();
   
     window.MESAHA_BUILD_INFO = {
-      fileVersion: "v93",
-      visibleVersion: "Mesaha İO v1.22",
+      fileVersion: "v94",
+      visibleVersion: "Mesaha İO v1.23",
       stableBuild: true
     };
 
