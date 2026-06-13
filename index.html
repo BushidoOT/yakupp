@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha App v106</title>
+  <title>Mesaha App v107</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -6448,6 +6448,209 @@
       }
     }
 
+  
+    /* v107: mobil kayıtlar büyük kart yerine kompakt liste */
+    .mobile-records-v106{
+      display:grid;
+      gap:7px !important;
+      margin-top:10px !important;
+    }
+
+    .record-card-v106{
+      display:none !important;
+    }
+
+    .record-row-v107{
+      display:grid;
+      grid-template-columns:34px minmax(96px,1.35fr) minmax(88px,.95fr) minmax(82px,.85fr);
+      gap:6px;
+      align-items:center;
+      min-height:50px;
+      border:1px solid #d7dee8;
+      border-left:6px solid #94a3b8;
+      border-radius:16px;
+      background:#ffffff;
+      color:#0f172a;
+      padding:7px 8px;
+      box-shadow:0 5px 14px rgba(15,23,42,.06);
+    }
+
+    .record-row-v107.tomruk{ border-left-color:#ca8a04; }
+    .record-row-v107.maden{ border-left-color:#2563eb; }
+    .record-row-v107.kagit{ border-left-color:#dc2626; }
+    .record-row-v107.sanayi{ border-left-color:#16a34a; }
+    .record-row-v107.tel{ border-left-color:#7c3aed; }
+
+    .record-no-v107{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      width:28px;
+      height:28px;
+      border-radius:999px;
+      background:#f1f5f9;
+      color:#334155;
+      font-size:11px;
+      font-weight:950;
+    }
+
+    .record-main-v107{
+      min-width:0;
+      overflow:hidden;
+    }
+
+    .record-main-v107 b{
+      display:block;
+      font-size:13px;
+      line-height:1.08;
+      font-weight:950;
+      color:#0f172a;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+
+    .record-tags-line-v107{
+      display:flex;
+      gap:4px;
+      margin-top:4px;
+      min-width:0;
+      overflow:hidden;
+    }
+
+    .mini-tag-v107{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      max-width:54px;
+      border-radius:999px;
+      padding:2px 6px;
+      font-size:10px;
+      line-height:1.15;
+      font-weight:950;
+      border:1px solid #cbd5e1;
+      background:#f8fafc;
+      color:#334155;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .mini-tag-v107.tomruk{ background:#fff7cc; border-color:#eab308; color:#713f12; }
+    .mini-tag-v107.maden{ background:#dbeafe; border-color:#2563eb; color:#1e3a8a; }
+    .mini-tag-v107.kagit{ background:#fee2e2; border-color:#dc2626; color:#7f1d1d; }
+    .mini-tag-v107.sanayi{ background:#dcfce7; border-color:#16a34a; color:#14532d; }
+    .mini-tag-v107.tel{ background:#ede9fe; border-color:#7c3aed; color:#3b0764; }
+    .mini-tag-v107.tree{ background:#dcfce7; border-color:#22c55e; color:#064e3b; }
+
+    .record-values-v107{
+      display:grid;
+      grid-template-columns:repeat(3, minmax(0,1fr));
+      gap:3px;
+      align-items:center;
+      min-width:0;
+    }
+
+    .record-val-v107{
+      min-width:0;
+      border-radius:10px;
+      background:#f8fafc;
+      border:1px solid #e2e8f0;
+      padding:4px 3px;
+      text-align:center;
+    }
+
+    .record-val-v107 small{
+      display:block;
+      font-size:9px;
+      line-height:1;
+      font-weight:900;
+      color:#64748b;
+      margin-bottom:2px;
+    }
+
+    .record-val-v107 strong{
+      display:block;
+      font-size:12px;
+      line-height:1;
+      font-weight:950;
+      color:#0f172a;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+
+    .record-actions-v107{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:4px;
+    }
+
+    .record-actions-v107 button{
+      min-height:36px;
+      border-radius:11px;
+      border:1px solid #cbd5e1;
+      font-size:11px;
+      font-weight:950;
+      padding:4px 2px;
+      touch-action:manipulation;
+      -webkit-tap-highlight-color:transparent;
+    }
+
+    .record-edit-v107{
+      background:#2563eb;
+      color:#fff;
+      border-color:#2563eb !important;
+    }
+
+    .record-delete-v107{
+      background:#fee2e2;
+      color:#7f1d1d;
+      border-color:#fecaca !important;
+    }
+
+    body.theme-dark .record-row-v107{
+      background:#101c2e;
+      border-color:#3e526d;
+      color:#f8fafc;
+      box-shadow:0 5px 14px rgba(0,0,0,.22);
+    }
+
+    body.theme-dark .record-main-v107 b,
+    body.theme-dark .record-val-v107 strong{
+      color:#f8fafc;
+    }
+
+    body.theme-dark .record-no-v107,
+    body.theme-dark .record-val-v107{
+      background:#0b1525;
+      border-color:#3e526d;
+      color:#dbeafe;
+    }
+
+    body.theme-dark .record-val-v107 small{
+      color:#bfdbfe;
+    }
+
+    body.theme-dark .mini-tag-v107.tomruk{ background:#facc15; border-color:#ca8a04; color:#422006; }
+    body.theme-dark .mini-tag-v107.maden{ background:#93c5fd; border-color:#2563eb; color:#172554; }
+    body.theme-dark .mini-tag-v107.kagit{ background:#fca5a5; border-color:#dc2626; color:#450a0a; }
+    body.theme-dark .mini-tag-v107.sanayi{ background:#86efac; border-color:#16a34a; color:#052e16; }
+    body.theme-dark .mini-tag-v107.tel{ background:#c4b5fd; border-color:#7c3aed; color:#2e1065; }
+    body.theme-dark .mini-tag-v107.tree{ background:#bbf7d0; border-color:#16a34a; color:#052e16; }
+
+    @media (max-width:390px){
+      .record-row-v107{
+        grid-template-columns:30px minmax(86px,1.25fr) minmax(76px,.9fr) minmax(72px,.8fr);
+        gap:5px;
+        padding:6px;
+      }
+      .record-main-v107 b{ font-size:12px; }
+      .mini-tag-v107{ max-width:46px; font-size:9px; padding:2px 5px; }
+      .record-val-v107 strong{ font-size:11px; }
+      .record-actions-v107 button{ font-size:10px; min-height:34px; }
+    }
+
   </style>
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -6657,7 +6860,7 @@
 <div class="app">
     <header class="topbar">
       <div class="brand">
-        <h1>Mesaha İO v1.35</h1>
+        <h1>Mesaha İO v1.36</h1>
         
       </div>
       <div id="activeUserBadge" class="active-user-badge" role="button" tabindex="0" title="Kullanıcı panelini aç" style="display:none"></div>
@@ -8122,8 +8325,8 @@
     function currentDeviceInfoPayload() {
       const active = state.activeUser || findActiveUser();
       return {
-        appVersion: "Mesaha İO v1.35",
-        fileVersion: "v106",
+        appVersion: "Mesaha İO v1.36",
+        fileVersion: "v107",
         userName: active && active.name ? cleanUserText(active.name) : "",
         seflik: active && active.seflik ? cleanUserText(active.seflik) : "",
         deviceId: getOrCreateDeviceId(),
@@ -8864,7 +9067,7 @@
 
     async function uploadCloudBackupOpen(user) {
       const payload = buildCloudBackupPayload(user);
-      payload.version = 106;
+      payload.version = 107;
       const bolmePart = els.bolmeNo && String(els.bolmeNo.value || "").trim() ? `_${cleanFilePart(els.bolmeNo.value)}` : "";
       const fileName = `Mesaha_Yedek_${cleanFilePart(user.seflik)}_${cleanFilePart(user.name)}${bolmePart}_${new Date().toISOString().slice(0,19).replace(/[-:T]/g, "")}.json`;
 
@@ -9293,7 +9496,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function buildCloudBackupPayload(user) {
       return {
         app: "Mesaha İO",
-        version: 106,
+        version: 107,
         createdAt: new Date().toLocaleString("tr-TR"),
         user: {
           name: user.name || "",
@@ -11297,7 +11500,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function backup() {
       const data = {
         app: "Mesaha App",
-        version: 106,
+        version: 107,
         exportedAt: formatDateTime(),
         systemHeaders: HEADERS,
         settings: state.settings,
@@ -11714,7 +11917,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     async function firebaseUploadBackup(user) {
       const { db } = await ensureFirebaseReady();
       const payload = buildCloudBackupPayload(user);
-      payload.version = 106;
+      payload.version = 107;
       payload.cloud = "firebase";
 
       const bolmeNo = els.bolmeNo ? String(els.bolmeNo.value || "").trim() : "";
@@ -14504,6 +14707,99 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     }, 1500);
 
 
+    
+    /* v107: mobil kayıtlar kompakt liste */
+    function productShortV107(product) {
+      const key = normalizeProductType(product || "Tomruk");
+      if (key === "Maden Direk") return "Mdn";
+      if (key === "Kağıtlık") return "Kğt";
+      if (key === "Sanayi Odunu") return "San";
+      if (key === "Tel Direk") return "Tel";
+      return "Tmk";
+    }
+
+    function treeShortV107(tree) {
+      const key = normalizeTreeType ? normalizeTreeType(tree || "Karaçam") : String(tree || "Karaçam");
+      if (key === "Sarıçam") return "SÇ";
+      if (key === "Sedir") return "Sd";
+      if (key === "Göknar") return "Gk";
+      if (key === "Kızılçam") return "Kz";
+      return "KÇ";
+    }
+
+    function updateMobileRecordsV107() {
+      const wrap = document.getElementById("mobileRecordsV106");
+      if (!wrap) return;
+
+      const q = els.searchInput ? String(els.searchInput.value || "").trim().toLowerCase("tr-TR") : "";
+      let list = Array.isArray(state.records) ? state.records.slice() : [];
+      if (q) {
+        list = list.filter(r => JSON.stringify(r).toLowerCase("tr-TR").includes(q));
+      }
+
+      if (!list.length) {
+        wrap.innerHTML = `<div class="empty">Kayıt yok.</div>`;
+        return;
+      }
+
+      wrap.innerHTML = list.map((r, idx) => {
+        const product = normalizeProductType(r.productType || r.woodType || r.odunAdi || "Tomruk");
+        const cls = prodClsV106 ? prodClsV106(product) : (product === "Maden Direk" ? "maden" : product === "Kağıtlık" ? "kagit" : product === "Sanayi Odunu" ? "sanayi" : product === "Tel Direk" ? "tel" : "tomruk");
+        const tree = r.treeType || r.agacAdi || "Karaçam";
+        const id = String(r.id || "");
+        const barcode = r.barcode || r.barkodNo || "-";
+        const length = r.length || r.boy || "-";
+        const diameter = r.diameter || r.cap || "-";
+        const quantity = r.quantity || r.adet || 1;
+
+        return `
+          <div class="record-row-v107 ${cls}">
+            <div class="record-no-v107">${idx + 1}</div>
+
+            <div class="record-main-v107">
+              <b>${escapeHtml(barcode)}</b>
+              <div class="record-tags-line-v107">
+                <span class="mini-tag-v107 ${cls}" title="${escapeHtml(product)}">${escapeHtml(productShortV107(product))}</span>
+                <span class="mini-tag-v107 tree" title="${escapeHtml(tree)}">${escapeHtml(treeShortV107(tree))}</span>
+              </div>
+            </div>
+
+            <div class="record-values-v107">
+              <div class="record-val-v107"><small>B</small><strong>${escapeHtml(String(length))}</strong></div>
+              <div class="record-val-v107"><small>Ç</small><strong>${escapeHtml(String(diameter))}</strong></div>
+              <div class="record-val-v107"><small>A</small><strong>${escapeHtml(String(quantity))}</strong></div>
+            </div>
+
+            <div class="record-actions-v107">
+              <button type="button" class="record-edit-v107" data-v106-edit="${escapeHtml(id)}">Düz</button>
+              <button type="button" class="record-delete-v107" data-v106-delete="${escapeHtml(id)}">Sil</button>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    updateMobileRecordsV106 = updateMobileRecordsV107;
+
+    if (typeof renderRecords === "function" && !renderRecords.__v107Wrapped) {
+      const renderRecordsOriginalV107 = renderRecords;
+      renderRecords = function(...args) {
+        const result = renderRecordsOriginalV107.apply(this, args);
+        setTimeout(updateMobileRecordsV107, 30);
+        return result;
+      };
+      renderRecords.__v107Wrapped = true;
+    }
+
+    if (els.searchInput && !els.searchInput.__v107Bound) {
+      els.searchInput.__v107Bound = true;
+      els.searchInput.addEventListener("input", () => setTimeout(updateMobileRecordsV107, 30));
+    }
+
+    setTimeout(updateMobileRecordsV107, 80);
+    setInterval(updateMobileRecordsV107, 1800);
+
+
     window.forceUpdateApp = forceUpdateApp;
     window.mesahaToggleTheme = mesahaToggleTheme;
     window.simpleOpenModeV92 = simpleOpenModeV92;
@@ -14524,8 +14820,8 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     load();
   
     window.MESAHA_BUILD_INFO = {
-      fileVersion: "v106",
-      visibleVersion: "Mesaha İO v1.35",
+      fileVersion: "v107",
+      visibleVersion: "Mesaha İO v1.36",
       stableBuild: true
     };
 
