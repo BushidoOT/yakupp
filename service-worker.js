@@ -1,6 +1,59 @@
-const CACHE_NAME = "mesaha-app-v108";
-const ASSETS = ["./","./index.html","./manifest.json","./service-worker.js","./version.json","./.nojekyll"];
-self.addEventListener("install", e=>{e.waitUntil(caches.open(CACHE_NAME).then(c=>c.addAll(ASSETS).catch(()=>c.addAll(["./","./index.html","./manifest.json","./service-worker.js"]))).then(()=>self.skipWaiting()))});
-self.addEventListener("activate", e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.map(k=>k!==CACHE_NAME?caches.delete(k):null))).then(()=>self.clients.claim()))});
-self.addEventListener("message", e=>{if(e.data&&e.data.type==="SKIP_WAITING")self.skipWaiting()});
-self.addEventListener("fetch", e=>{const r=e.request;if(r.method!=="GET")return;const u=new URL(r.url);const nav=r.mode==="navigate"||u.pathname.endsWith("/")||u.pathname.endsWith("/index.html");if(nav){e.respondWith(fetch(r,{cache:"reload"}).then(res=>{const copy=res.clone();caches.open(CACHE_NAME).then(c=>c.put("./index.html",copy).catch(()=>{}));return res}).catch(()=>caches.match("./index.html").then(c=>c||caches.match("./"))));return}e.respondWith(caches.match(r).then(cached=>{const network=fetch(r).then(res=>{const copy=res.clone();caches.open(CACHE_NAME).then(c=>c.put(r,copy).catch(()=>{}));return res}).catch(()=>cached);return cached||network}))});
+const CACHE_NAME = "mesaha-app-v109";
+const ASSETS = [
+  "./",
+  "./index.html",
+  "./manifest.json",
+  "./service-worker.js",
+  "./version.json",
+  "./.nojekyll"
+];
+
+self.addEventListener("install", (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then((cache) => cache.addAll(ASSETS).catch(() => cache.addAll(["./", "./index.html", "./manifest.json", "./service-worker.js"])))
+      .then(() => self.skipWaiting())
+  );
+});
+
+self.addEventListener("activate", (event) => {
+  event.waitUntil(
+    caches.keys()
+      .then((keys) => Promise.all(keys.map((key) => key !== CACHE_NAME ? caches.delete(key) : null)))
+      .then(() => self.clients.claim())
+  );
+});
+
+self.addEventListener("message", (event) => {
+  if (event.data && event.data.type === "SKIP_WAITING") self.skipWaiting();
+});
+
+self.addEventListener("fetch", (event) => {
+  const request = event.request;
+  if (request.method !== "GET") return;
+
+  const url = new URL(request.url);
+  const isNavigation = request.mode === "navigate" || url.pathname.endsWith("/") || url.pathname.endsWith("/index.html");
+
+  if (isNavigation) {
+    event.respondWith(
+      fetch(request, { cache: "reload" }).then((response) => {
+        const copy = response.clone();
+        caches.open(CACHE_NAME).then((cache) => cache.put("./index.html", copy).catch(() => {}));
+        return response;
+      }).catch(() => caches.match("./index.html").then((cached) => cached || caches.match("./")))
+    );
+    return;
+  }
+
+  event.respondWith(
+    caches.match(request).then((cached) => {
+      const network = fetch(request).then((response) => {
+        const copy = response.clone();
+        caches.open(CACHE_NAME).then((cache) => cache.put(request, copy).catch(() => {}));
+        return response;
+      }).catch(() => cached);
+      return cached || network;
+    })
+  );
+});

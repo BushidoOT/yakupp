@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha App v108</title>
+  <title>Mesaha App v109</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -6673,6 +6673,138 @@
     body:not(.issue-panel-open) .issue-report-overlay{ display:none !important; }
     body.issue-panel-open .issue-report-overlay.show{ display:flex !important; }
 
+  
+    /* v109: scroll kilidi ve vurma efekti kesin düzeltme */
+    html,
+    body{
+      height:auto !important;
+      min-height:100% !important;
+      overflow-x:hidden !important;
+      overflow-y:auto !important;
+      overscroll-behavior-y:auto !important;
+      touch-action:auto !important;
+      -webkit-overflow-scrolling:touch !important;
+      scroll-behavior:auto !important;
+    }
+
+    body{
+      padding-bottom:34px !important;
+      position:static !important;
+    }
+
+    .app{
+      min-height:auto !important;
+      height:auto !important;
+      overflow:visible !important;
+      overflow-y:visible !important;
+      padding-bottom:80px !important;
+      scroll-behavior:auto !important;
+    }
+
+    .panel{
+      overflow:visible !important;
+      transform:none !important;
+      transition:none !important;
+      animation:none !important;
+      will-change:auto !important;
+    }
+
+    .records-panel{
+      min-height:auto !important;
+      overflow:visible !important;
+      padding-bottom:120px !important;
+    }
+
+    .records-panel .panel-body{
+      overflow:visible !important;
+      padding-bottom:120px !important;
+    }
+
+    .mobile-records-v106{
+      display:grid !important;
+      overflow:visible !important;
+      max-height:none !important;
+      height:auto !important;
+      padding-bottom:130px !important;
+      touch-action:pan-y !important;
+      overscroll-behavior-y:auto !important;
+      -webkit-overflow-scrolling:touch !important;
+      contain:none !important;
+    }
+
+    .record-row-v107{
+      touch-action:pan-y !important;
+      transform:none !important;
+      transition:none !important;
+      animation:none !important;
+      will-change:auto !important;
+      contain:layout paint !important;
+    }
+
+    .record-row-v107 *,
+    .mobile-records-v106 *{
+      scroll-behavior:auto !important;
+    }
+
+    .flow-tabs-v106{
+      position:relative !important;
+      top:auto !important;
+      bottom:auto !important;
+      transform:none !important;
+      transition:none !important;
+      animation:none !important;
+      will-change:auto !important;
+      touch-action:manipulation !important;
+    }
+
+    .bottom-nav,
+    .stable-nav-v105,
+    #stableNavV105{
+      display:none !important;
+      visibility:hidden !important;
+      opacity:0 !important;
+      pointer-events:none !important;
+      transform:none !important;
+    }
+
+    .record-selectbox-v108,
+    .record-actions-v107,
+    .record-actions-v107 button,
+    .flow-tabs-v106 button,
+    .clean-chip-v105,
+    .clean-product-v105,
+    .clean-save-v105{
+      touch-action:manipulation !important;
+    }
+
+    button,
+    input,
+    textarea,
+    select{
+      -webkit-tap-highlight-color:transparent !important;
+    }
+
+    button:active,
+    .record-row-v107:active,
+    .flow-tabs-v106 button:active,
+    .clean-chip-v105:active{
+      transform:none !important;
+      filter:none !important;
+    }
+
+    @media (max-width:780px){
+      .records-panel .records-scroll-v105,
+      .records-panel .table-wrap{
+        display:none !important;
+        max-height:0 !important;
+        overflow:hidden !important;
+      }
+
+      .mobile-records-v106{
+        display:grid !important;
+      }
+    }
+
   </style>
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -6882,7 +7014,7 @@
 <div class="app">
     <header class="topbar">
       <div class="brand">
-        <h1>Mesaha İO v1.37</h1>
+        <h1>Mesaha İO v1.38</h1>
         
       </div>
       <div id="activeUserBadge" class="active-user-badge" role="button" tabindex="0" title="Kullanıcı panelini aç" style="display:none"></div>
@@ -8347,8 +8479,8 @@
     function currentDeviceInfoPayload() {
       const active = state.activeUser || findActiveUser();
       return {
-        appVersion: "Mesaha İO v1.37",
-        fileVersion: "v108",
+        appVersion: "Mesaha İO v1.38",
+        fileVersion: "v109",
         userName: active && active.name ? cleanUserText(active.name) : "",
         seflik: active && active.seflik ? cleanUserText(active.seflik) : "",
         deviceId: getOrCreateDeviceId(),
@@ -9089,7 +9221,7 @@
 
     async function uploadCloudBackupOpen(user) {
       const payload = buildCloudBackupPayload(user);
-      payload.version = 108;
+      payload.version = 109;
       const bolmePart = els.bolmeNo && String(els.bolmeNo.value || "").trim() ? `_${cleanFilePart(els.bolmeNo.value)}` : "";
       const fileName = `Mesaha_Yedek_${cleanFilePart(user.seflik)}_${cleanFilePart(user.name)}${bolmePart}_${new Date().toISOString().slice(0,19).replace(/[-:T]/g, "")}.json`;
 
@@ -9518,7 +9650,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function buildCloudBackupPayload(user) {
       return {
         app: "Mesaha İO",
-        version: 108,
+        version: 109,
         createdAt: new Date().toLocaleString("tr-TR"),
         user: {
           name: user.name || "",
@@ -11522,7 +11654,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function backup() {
       const data = {
         app: "Mesaha App",
-        version: 108,
+        version: 109,
         exportedAt: formatDateTime(),
         systemHeaders: HEADERS,
         settings: state.settings,
@@ -11939,7 +12071,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     async function firebaseUploadBackup(user) {
       const { db } = await ensureFirebaseReady();
       const payload = buildCloudBackupPayload(user);
-      payload.version = 108;
+      payload.version = 109;
       payload.cloud = "firebase";
 
       const bolmeNo = els.bolmeNo ? String(els.bolmeNo.value || "").trim() : "";
@@ -14863,6 +14995,244 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     setInterval(()=>{ rebindIssueButtonsV108(); updateMobileRecordsV108(false); },1800);
 
 
+    
+    /* v109: scroll sırasında hiçbir liste/menü yeniden çizimi yok */
+    let recordsDirtyV109 = true;
+    let recordsSigV109 = "";
+
+    function stopScrollRefreshV109() {
+      // Eski sürümlerde scroll/touch ile çağrılan fonksiyonları sakinleştir.
+      window.hideStableNavWhileScrollingV105 = function(){};
+      window.hideAllFloatingNavsV106 = function(){
+        document.querySelectorAll(".bottom-nav, .stable-nav-v105, #stableNavV105").forEach(n => {
+          n.style.setProperty("display", "none", "important");
+          n.style.setProperty("visibility", "hidden", "important");
+          n.style.setProperty("pointer-events", "none", "important");
+        });
+      };
+      window.createStableNavV105 = function(){ return null; };
+      window.updateStableNavActiveV105 = function(){};
+      window.stabilizeRecordsScrollV105 = function(){};
+      window.forceBottomNavV102 = function(){};
+      window.moveBottomNavToBodyV103 = function(){};
+    }
+
+    function listForMobileV109() {
+      const q = els.searchInput ? String(els.searchInput.value || "").trim().toLowerCase("tr-TR") : "";
+      let list = Array.isArray(state.records) ? state.records.slice() : [];
+      if (q) list = list.filter(r => JSON.stringify(r).toLowerCase("tr-TR").includes(q));
+      return list;
+    }
+
+    function signatureV109(list) {
+      const selected = state.selectedRecordIds ? Array.from(state.selectedRecordIds).sort().join(",") : "";
+      const q = els.searchInput ? String(els.searchInput.value || "") : "";
+      const rows = list.map(r => [
+        r.id, r.barcode || r.barkodNo || "", r.productType || r.woodType || r.odunAdi || "",
+        r.treeType || r.agacAdi || "", r.length || r.boy || "", r.diameter || r.cap || "", r.quantity || r.adet || ""
+      ].join("|")).join("~");
+      return q + "||" + selected + "||" + rows;
+    }
+
+    function prodShortV109(product) {
+      const key = normalizeProductType(product || "Tomruk");
+      if (key === "Maden Direk") return "Mdn";
+      if (key === "Kağıtlık") return "Kğt";
+      if (key === "Sanayi Odunu") return "San";
+      if (key === "Tel Direk") return "Tel";
+      return "Tmk";
+    }
+
+    function treeShortV109(tree) {
+      const key = typeof normalizeTreeType === "function" ? normalizeTreeType(tree || "Karaçam") : String(tree || "Karaçam");
+      if (key === "Sarıçam") return "ÇS";
+      if (key === "Sedir") return "S";
+      if (key === "Göknar") return "GN";
+      if (key === "Kızılçam") return "ÇZ";
+      return "ÇK";
+    }
+
+    function clsV109(product) {
+      const key = normalizeProductType(product || "Tomruk");
+      if (key === "Maden Direk") return "maden";
+      if (key === "Kağıtlık") return "kagit";
+      if (key === "Sanayi Odunu") return "sanayi";
+      if (key === "Tel Direk") return "tel";
+      return "tomruk";
+    }
+
+    function renderMobileRecordsV109(force = false) {
+      const wrap = document.getElementById("mobileRecordsV106");
+      if (!wrap) return;
+
+      const list = listForMobileV109();
+      const sig = signatureV109(list);
+      if (!force && !recordsDirtyV109 && sig === recordsSigV109) return;
+
+      recordsSigV109 = sig;
+      recordsDirtyV109 = false;
+
+      if (!list.length) {
+        wrap.innerHTML = `<div class="empty">Kayıt yok.</div>`;
+        if (typeof updateBulkActions === "function") updateBulkActions();
+        return;
+      }
+
+      if (!state.selectedRecordIds) state.selectedRecordIds = new Set();
+
+      wrap.innerHTML = list.map((r, idx) => {
+        const product = normalizeProductType(r.productType || r.woodType || r.odunAdi || "Tomruk");
+        const cls = clsV109(product);
+        const tree = r.treeType || r.agacAdi || "Karaçam";
+        const id = String(r.id || "");
+        const checked = state.selectedRecordIds.has(id);
+        const barcode = r.barcode || r.barkodNo || "-";
+        const length = r.length || r.boy || "-";
+        const diameter = r.diameter || r.cap || "-";
+        const quantity = r.quantity || r.adet || 1;
+
+        return `
+          <div class="record-row-v107 ${cls} ${checked ? "selected-v108" : ""}" data-v108-row="${escapeHtml(id)}">
+            <label class="record-selectbox-v108" title="Seç">
+              <input type="checkbox" data-v108-select="${escapeHtml(id)}" ${checked ? "checked" : ""} />
+            </label>
+
+            <div class="record-main-v107">
+              <b>${escapeHtml(barcode)}</b>
+              <div class="record-tags-line-v107">
+                <span class="mini-tag-v107 ${cls}" title="${escapeHtml(product)}">${escapeHtml(prodShortV109(product))}</span>
+                <span class="mini-tag-v107 tree" title="${escapeHtml(tree)}">${escapeHtml(treeShortV109(tree))}</span>
+              </div>
+            </div>
+
+            <div class="record-values-v107">
+              <div class="record-val-v107"><small>B</small><strong>${escapeHtml(String(length))}</strong></div>
+              <div class="record-val-v107"><small>Ç</small><strong>${escapeHtml(String(diameter))}</strong></div>
+              <div class="record-val-v107"><small>A</small><strong>${escapeHtml(String(quantity))}</strong></div>
+            </div>
+
+            <div class="record-actions-v107">
+              <button type="button" class="record-edit-v107" data-v106-edit="${escapeHtml(id)}">Düz</button>
+              <button type="button" class="record-delete-v107" data-v106-delete="${escapeHtml(id)}">Sil</button>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      if (typeof updateBulkActions === "function") updateBulkActions(list);
+    }
+
+    function markRecordsDirtyV109() {
+      recordsDirtyV109 = true;
+      setTimeout(() => renderMobileRecordsV109(true), 30);
+    }
+
+    function bindMobileSelectionV109() {
+      const wrap = document.getElementById("mobileRecordsV106");
+      if (!wrap || wrap.__v109Bound) return;
+      wrap.__v109Bound = true;
+
+      wrap.addEventListener("change", (event) => {
+        const box = event.target.closest("[data-v108-select]");
+        if (!box) return;
+
+        const id = box.dataset.v108Select;
+        if (!state.selectedRecordIds) state.selectedRecordIds = new Set();
+
+        if (box.checked) state.selectedRecordIds.add(id);
+        else state.selectedRecordIds.delete(id);
+
+        const row = wrap.querySelector(`[data-v108-row="${CSS.escape(id)}"]`);
+        if (row) row.classList.toggle("selected-v108", box.checked);
+
+        recordsDirtyV109 = true;
+        if (typeof updateBulkActions === "function") updateBulkActions();
+      });
+
+      wrap.addEventListener("click", (event) => {
+        const edit = event.target.closest("[data-v106-edit]");
+        if (edit) {
+          event.preventDefault();
+          if (typeof editRecord === "function") editRecord(edit.dataset.v106Edit);
+          return;
+        }
+
+        const del = event.target.closest("[data-v106-delete]");
+        if (del) {
+          event.preventDefault();
+          const id = del.dataset.v106Delete;
+          if (typeof deleteRecord === "function") deleteRecord(id);
+          else if (typeof removeRecord === "function") removeRecord(id);
+          markRecordsDirtyV109();
+        }
+      });
+    }
+
+    // Eski periyodik güncellemelerin çağırdığı isimleri artık güvenli fonksiyona bağla.
+    window.updateMobileRecordsV106 = renderMobileRecordsV109;
+    window.updateMobileRecordsV107 = renderMobileRecordsV109;
+    window.updateMobileRecordsV108 = renderMobileRecordsV109;
+
+    if (typeof renderRecords === "function" && !renderRecords.__v109Wrapped) {
+      const originalRenderRecordsV109 = renderRecords;
+      renderRecords = function(...args) {
+        const result = originalRenderRecordsV109.apply(this, args);
+        markRecordsDirtyV109();
+        return result;
+      };
+      renderRecords.__v109Wrapped = true;
+    }
+
+    ["selectFilteredRecords", "clearRecordSelection", "toggleRecordSelection", "toggleSelectFiltered"].forEach(name => {
+      const fn = window[name];
+      if (typeof fn === "function" && !fn.__v109Wrapped) {
+        window[name] = function(...args) {
+          const result = fn.apply(this, args);
+          markRecordsDirtyV109();
+          return result;
+        };
+        window[name].__v109Wrapped = true;
+      }
+    });
+
+    if (els.searchInput && !els.searchInput.__v109Bound) {
+      els.searchInput.__v109Bound = true;
+      els.searchInput.addEventListener("input", markRecordsDirtyV109);
+    }
+
+    function keepNaturalScrollV109() {
+      document.documentElement.style.overflowY = "auto";
+      document.body.style.overflowY = "auto";
+      document.body.style.position = "static";
+      document.body.style.touchAction = "auto";
+      const app = document.querySelector(".app");
+      if (app) {
+        app.style.overflow = "visible";
+        app.style.height = "auto";
+      }
+      document.querySelectorAll(".bottom-nav, .stable-nav-v105, #stableNavV105").forEach(n => {
+        n.style.setProperty("display", "none", "important");
+        n.style.setProperty("visibility", "hidden", "important");
+        n.style.setProperty("pointer-events", "none", "important");
+      });
+    }
+
+    stopScrollRefreshV109();
+    bindMobileSelectionV109();
+    keepNaturalScrollV109();
+    renderMobileRecordsV109(true);
+
+    // Scroll olayında kesinlikle render yok; sadece CSS kilidi çöz.
+    window.addEventListener("scroll", keepNaturalScrollV109, { passive:true });
+    window.addEventListener("resize", keepNaturalScrollV109, { passive:true });
+
+    setInterval(() => {
+      stopScrollRefreshV109();
+      keepNaturalScrollV109();
+      renderMobileRecordsV109(false);
+    }, 2000);
+
+
     window.forceUpdateApp = forceUpdateApp;
     window.mesahaToggleTheme = mesahaToggleTheme;
     window.simpleOpenModeV92 = simpleOpenModeV92;
@@ -14883,8 +15253,8 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     load();
   
     window.MESAHA_BUILD_INFO = {
-      fileVersion: "v108",
-      visibleVersion: "Mesaha İO v1.37",
+      fileVersion: "v109",
+      visibleVersion: "Mesaha İO v1.38",
       stableBuild: true
     };
 
