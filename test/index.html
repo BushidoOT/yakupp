@@ -8504,6 +8504,270 @@
       .admin-detail-grid-v131{ grid-template-columns:1fr; }
     }
 
+
+    /* v132: Admin istatistik paneli - ağaç/odun türü toplamları */
+    .admin-top-actions-v132{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+    .admin-top-actions-v132 button{
+      min-height:42px !important;
+      border-radius:14px !important;
+      font-weight:950 !important;
+    }
+    .admin-stats-toggle-v132.active{
+      background:#16a34a !important;
+      border-color:#16a34a !important;
+      color:#ffffff !important;
+    }
+    .admin-stats-panel-v132{
+      display:none;
+      margin:10px 0 12px;
+      border:1px solid #e3e8ef;
+      background:#ffffff;
+      border-radius:18px;
+      padding:12px;
+      box-shadow:0 8px 18px rgba(15,23,42,.05);
+    }
+    .admin-stats-panel-v132.open{ display:block; }
+    .admin-stats-head-v132{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:10px;
+    }
+    .admin-stats-head-v132 b{
+      display:block;
+      font-size:15px;
+      font-weight:950;
+      color:#111827;
+    }
+    .admin-stats-head-v132 span{
+      display:block;
+      margin-top:3px;
+      font-size:12px;
+      font-weight:850;
+      color:#64748b;
+    }
+    .admin-stats-head-v132 button{
+      min-height:38px !important;
+      border-radius:13px !important;
+      font-weight:950 !important;
+      white-space:nowrap;
+    }
+    .admin-stats-cards-v132{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:8px;
+      margin-bottom:10px;
+    }
+    .admin-stat-top-card-v132{
+      border:1px solid #e6edf5;
+      background:#f8fafc;
+      border-radius:15px;
+      padding:10px;
+      min-width:0;
+    }
+    .admin-stat-top-card-v132 span{
+      display:block;
+      font-size:11.5px;
+      font-weight:900;
+      color:#667085;
+    }
+    .admin-stat-top-card-v132 b{
+      display:block;
+      margin-top:4px;
+      font-size:16px;
+      font-weight:950;
+      color:#111827;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .admin-stat-top-card-v132 small{
+      display:block;
+      margin-top:4px;
+      font-size:11px;
+      font-weight:850;
+      color:#64748b;
+    }
+    .admin-stats-columns-v132{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:10px;
+    }
+    .admin-stats-section-v132{
+      border:1px solid #e6edf5;
+      background:#f8fafc;
+      border-radius:15px;
+      padding:10px;
+      min-width:0;
+    }
+    .admin-stats-section-v132 h4{
+      margin:0 0 8px;
+      font-size:13px;
+      font-weight:950;
+      color:#111827;
+    }
+    .admin-stat-row-v132{
+      position:relative;
+      display:grid;
+      grid-template-columns:minmax(0,1fr) auto auto;
+      gap:8px;
+      align-items:center;
+      padding:8px 8px 8px 12px;
+      border-radius:13px;
+      background:#ffffff;
+      border:1px solid #e7edf5;
+      margin-top:6px;
+      overflow:hidden;
+    }
+    .admin-stat-row-v132::before{
+      content:"";
+      position:absolute;
+      left:0;
+      top:8px;
+      bottom:8px;
+      width:4px;
+      border-radius:0 8px 8px 0;
+      background:#94a3b8;
+    }
+    .admin-stat-row-v132.tree-karaçam::before{ background:#22c55e; }
+    .admin-stat-row-v132.tree-sarıçam::before{ background:#eab308; }
+    .admin-stat-row-v132.tree-kızılçam::before{ background:#f97316; }
+    .admin-stat-row-v132.tree-sedir::before{ background:#10b981; }
+    .admin-stat-row-v132.tree-göknar::before{ background:#38bdf8; }
+    .admin-stat-row-v132.prod-tomruk::before{ background:#ffd400; }
+    .admin-stat-row-v132.prod-maden::before{ background:#1d9bf0; }
+    .admin-stat-row-v132.prod-kağıtlık::before{ background:#ef4444; }
+    .admin-stat-row-v132.prod-sanayi::before{ background:#22c55e; }
+    .admin-stat-row-v132.prod-tel::before{ background:#a855f7; }
+    .admin-stat-name-v132{
+      min-width:0;
+      font-size:12.5px;
+      font-weight:950;
+      color:#111827;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .admin-stat-val-v132{
+      font-size:12px;
+      font-weight:950;
+      color:#334155;
+      white-space:nowrap;
+      text-align:right;
+    }
+    .admin-stats-empty-v132{
+      border:1px dashed #cbd5e1;
+      background:#f8fafc;
+      border-radius:15px;
+      padding:12px;
+      color:#64748b;
+      font-size:12.5px;
+      font-weight:850;
+      line-height:1.45;
+    }
+    body.theme-dark .admin-stats-panel-v132{
+      background:#171b22;
+      border-color:#2b323d;
+      box-shadow:0 8px 18px rgba(0,0,0,.18);
+    }
+    body.theme-dark .admin-stats-head-v132 b,
+    body.theme-dark .admin-stat-top-card-v132 b,
+    body.theme-dark .admin-stats-section-v132 h4,
+    body.theme-dark .admin-stat-name-v132{ color:#f8fafc; }
+    body.theme-dark .admin-stats-head-v132 span,
+    body.theme-dark .admin-stat-top-card-v132 span,
+    body.theme-dark .admin-stat-top-card-v132 small,
+    body.theme-dark .admin-stat-val-v132{ color:#a8b3c2; }
+    body.theme-dark .admin-stat-top-card-v132,
+    body.theme-dark .admin-stats-section-v132,
+    body.theme-dark .admin-stats-empty-v132{
+      background:#11151b;
+      border-color:#2b323d;
+    }
+    body.theme-dark .admin-stat-row-v132{
+      background:#171b22;
+      border-color:#2b323d;
+    }
+    @media (max-width:640px){
+      .admin-panel-top-clean{ align-items:flex-start !important; }
+      .admin-top-actions-v132{ width:100%; justify-content:stretch; }
+      .admin-top-actions-v132 button{ flex:1 1 0; }
+      .admin-stats-cards-v132,
+      .admin-stats-columns-v132{ grid-template-columns:1fr; }
+      .admin-stat-row-v132{ grid-template-columns:minmax(0,1fr) auto; }
+      .admin-stat-row-v132 .admin-stat-val-v132:last-child{ grid-column:2; }
+    }
+
+
+    /* v133: Admin sorun bildirimleri - ayrı açılır sade panel */
+    .admin-support-toggle-v133.active{
+      background:#ef4444 !important;
+      border-color:#ef4444 !important;
+      color:#ffffff !important;
+    }
+    #adminReportsView.admin-reports-panel-v133{
+      display:none !important;
+      margin:10px 0 12px;
+      border:1px solid #e3e8ef;
+      background:#ffffff;
+      border-radius:18px;
+      padding:12px;
+      box-shadow:0 8px 18px rgba(15,23,42,.05);
+    }
+    body.admin-reports-open-v133 #adminReportsView.admin-reports-panel-v133{
+      display:block !important;
+    }
+    #adminReportsView.admin-reports-panel-v133::before{
+      content:"Sorun Bildirimleri";
+      display:block;
+      margin:0 0 8px;
+      color:#111827;
+      font-size:15px;
+      font-weight:950;
+    }
+    #adminReportsView.admin-reports-panel-v133 .admin-report-toolbar{
+      display:flex;
+      gap:7px;
+      flex-wrap:wrap;
+      margin-bottom:10px;
+    }
+    #adminReportsView.admin-reports-panel-v133 .admin-report-filter,
+    #adminReportsView.admin-reports-panel-v133 .admin-report-refresh-v133{
+      min-height:38px !important;
+      border-radius:13px !important;
+      font-weight:950 !important;
+      padding:8px 11px !important;
+    }
+    #adminReportsView.admin-reports-panel-v133 .admin-report-card{
+      border-radius:16px !important;
+      margin-top:8px;
+      border-color:#e5eaf1;
+    }
+    body.theme-dark #adminReportsView.admin-reports-panel-v133{
+      background:#171b22;
+      border-color:#2b323d;
+      box-shadow:0 8px 18px rgba(0,0,0,.18);
+    }
+    body.theme-dark #adminReportsView.admin-reports-panel-v133::before{
+      color:#f8fafc;
+    }
+    body.theme-dark #adminReportsView.admin-reports-panel-v133 .admin-report-card{
+      background:#11151b;
+      border-color:#2b323d;
+    }
+    @media (max-width:640px){
+      #adminReportsView.admin-reports-panel-v133 .admin-report-toolbar button{
+        flex:1 1 auto;
+      }
+    }
+
   </style>
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -16816,6 +17080,403 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
       initAdminV131();
       setTimeout(initAdminV131, 300);
       setTimeout(initAdminV131, 1200);
+    })();
+
+
+    /* v132: Admin istatistik - en çok ağaç/odun türü, adet ve m³ */
+    (function(){
+      const BUILD_VERSION_V132 = "Mesaha İO v1.61";
+      const FILE_VERSION_V132 = "v132";
+
+      function adminStatsSetLoadingV132(show, text){
+        try {
+          if (typeof setCloudLoading === "function") setCloudLoading(!!show, text || "İstatistikler hazırlanıyor...");
+        } catch {}
+      }
+
+      function adminStatsFmtM3V132(value){
+        const n = Number(value) || 0;
+        return n.toLocaleString("tr-TR", { minimumFractionDigits: 3, maximumFractionDigits: 3 }) + " m³";
+      }
+      function adminStatsFmtIntV132(value){
+        return (Number(value) || 0).toLocaleString("tr-TR");
+      }
+      function adminStatsClassV132(name, type){
+        const raw = String(name || "").toLocaleLowerCase("tr-TR").replace(/[^a-zığüşöçİĞÜŞÖÇ]+/gi, "-").replace(/^-+|-+$/g, "");
+        if (type === "tree") return "tree-" + raw;
+        if (raw.includes("tomruk")) return "prod-tomruk";
+        if (raw.includes("maden")) return "prod-maden";
+        if (raw.includes("kağıt") || raw.includes("kagit")) return "prod-kağıtlık";
+        if (raw.includes("sanayi")) return "prod-sanayi";
+        if (raw.includes("tel")) return "prod-tel";
+        return "prod-" + raw;
+      }
+      function adminStatsAddV132(map, key, adet, m3){
+        const k = String(key || "Bilinmiyor").trim() || "Bilinmiyor";
+        const old = map.get(k) || { name:k, adet:0, m3:0 };
+        old.adet += Number(adet) || 0;
+        old.m3 += Number(m3) || 0;
+        map.set(k, old);
+      }
+      function adminStatsQuantityV132(r){
+        return Number(r && (r.quantity ?? r.adet ?? r.count)) || 0;
+      }
+      function adminStatsM3V132(r){
+        if (!r) return 0;
+        const desi = Number(r.desi);
+        if (Number.isFinite(desi) && desi > 0) return desi / 1000;
+        const hacimRaw = String(r.hacim ?? r.volume ?? "").replace(",", ".").replace(/[^0-9.\-]+/g, "");
+        const hacim = Number(hacimRaw);
+        if (Number.isFinite(hacim) && hacim > 0) return hacim;
+        try {
+          const d = Number(r.diameter ?? r.cap ?? r.çap ?? 0);
+          const l = Number(r.length ?? r.boy ?? 0);
+          const q = adminStatsQuantityV132(r) || 1;
+          if (typeof calculateDesi === "function") return (Number(calculateDesi(d, l, q)) || 0) / 1000;
+        } catch {}
+        return 0;
+      }
+      function adminStatsTreeNameV132(r){
+        const raw = String((r && (r.treeType || r.species || r.agacAdi || r.ağaç || r.agac)) || "").trim();
+        if (raw) {
+          try { return (typeof getTreeInfo === "function" ? getTreeInfo(raw).agacAdi : raw) || raw; } catch { return raw; }
+        }
+        return "Bilinmiyor";
+      }
+      function adminStatsProductNameV132(r){
+        const raw = String((r && (r.productType || r.odunAdi || r.odun || r.product)) || "").trim();
+        if (!raw) return "Bilinmiyor";
+        try {
+          if (typeof PRODUCT_MAP !== "undefined" && PRODUCT_MAP[raw]) return PRODUCT_MAP[raw].odunAdi || raw;
+          if (typeof productDisplayName === "function") return productDisplayName(raw) || raw;
+        } catch {}
+        return raw;
+      }
+      function adminStatsSortV132(map){
+        return Array.from(map.values()).sort((a,b) => {
+          if ((b.m3 || 0) !== (a.m3 || 0)) return (b.m3 || 0) - (a.m3 || 0);
+          if ((b.adet || 0) !== (a.adet || 0)) return (b.adet || 0) - (a.adet || 0);
+          return String(a.name).localeCompare(String(b.name), "tr");
+        });
+      }
+      function adminStatsRowsHtmlV132(rows, type){
+        if (!rows.length) return `<div class="admin-stats-empty-v132">Veri bulunamadı.</div>`;
+        return rows.map(row => `
+          <div class="admin-stat-row-v132 ${escapeHtml(adminStatsClassV132(row.name, type))}">
+            <div class="admin-stat-name-v132">${escapeHtml(row.name)}</div>
+            <div class="admin-stat-val-v132">${adminStatsFmtIntV132(row.adet)} adet</div>
+            <div class="admin-stat-val-v132">${adminStatsFmtM3V132(row.m3)}</div>
+          </div>`).join("");
+      }
+
+      async function firebaseLoadAdminStatsV132(){
+        const { db } = await ensureFirebaseReady();
+        const snap = await db.collection(typeof FIREBASE_BACKUPS_COLLECTION !== "undefined" ? FIREBASE_BACKUPS_COLLECTION : "backups").get();
+        const latestByUser = new Map();
+        snap.forEach(doc => {
+          try {
+            const d = doc.data() || {};
+            let payload = d.payload || null;
+            if (!payload && d.payloadText) payload = JSON.parse(d.payloadText);
+            if (!payload || !Array.isArray(payload.records) || !payload.records.length) return;
+            const name = cleanUserText(d.name || (payload.user && payload.user.name) || "");
+            const seflik = cleanUserText(d.seflik || (payload.user && payload.user.seflik) || "");
+            const key = d.userKey || (typeof firebaseUserKey === "function" ? firebaseUserKey(name, seflik) : `${name}_${seflik}`) || doc.id;
+            const ms = Number(d.createdAtMs || 0) || Date.parse(d.createdAtIso || "") || 0;
+            const old = latestByUser.get(key);
+            if (!old || ms >= old.ms) latestByUser.set(key, { id:doc.id, ms, name, seflik, payload });
+          } catch {}
+        });
+
+        const treeMap = new Map();
+        const productMap = new Map();
+        let totalRecords = 0;
+        let totalAdet = 0;
+        let totalM3 = 0;
+        latestByUser.forEach(item => {
+          (item.payload.records || []).forEach(r => {
+            const adet = adminStatsQuantityV132(r) || 1;
+            const m3 = adminStatsM3V132(r);
+            totalRecords += 1;
+            totalAdet += adet;
+            totalM3 += m3;
+            adminStatsAddV132(treeMap, adminStatsTreeNameV132(r), adet, m3);
+            adminStatsAddV132(productMap, adminStatsProductNameV132(r), adet, m3);
+          });
+        });
+        return {
+          users: latestByUser.size,
+          recordCount: totalRecords,
+          adet: totalAdet,
+          m3: totalM3,
+          trees: adminStatsSortV132(treeMap),
+          products: adminStatsSortV132(productMap),
+          loadedAt: new Date().toLocaleString("tr-TR")
+        };
+      }
+
+      function ensureAdminStatsUiV132(){
+        const top = document.querySelector(".admin-panel-top-clean");
+        const refresh = document.getElementById("adminRefreshBtn");
+        if (top && refresh && !document.getElementById("adminStatsBtnV132")) {
+          let actions = top.querySelector(".admin-top-actions-v132");
+          if (!actions) {
+            actions = document.createElement("div");
+            actions.className = "admin-top-actions-v132";
+            top.appendChild(actions);
+            actions.appendChild(refresh);
+          }
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.id = "adminStatsBtnV132";
+          btn.className = "secondary admin-stats-toggle-v132";
+          btn.textContent = "İstatistik";
+          actions.insertBefore(btn, refresh);
+          btn.addEventListener("click", () => adminToggleStatsV132());
+        }
+        const summary = document.querySelector(".admin-summary-grid-clean");
+        if (summary && !document.getElementById("adminStatsPanelV132")) {
+          const panel = document.createElement("div");
+          panel.id = "adminStatsPanelV132";
+          panel.className = "admin-stats-panel-v132";
+          panel.innerHTML = `<div class="admin-stats-empty-v132">İstatistikleri görmek için üstteki İstatistik butonuna bas.</div>`;
+          summary.insertAdjacentElement("afterend", panel);
+        }
+      }
+
+      function renderAdminStatsV132(stats, message){
+        ensureAdminStatsUiV132();
+        const panel = document.getElementById("adminStatsPanelV132");
+        if (!panel) return;
+        if (message) {
+          panel.innerHTML = `<div class="admin-stats-empty-v132">${escapeHtml(message)}</div>`;
+          return;
+        }
+        if (!stats || (!stats.trees.length && !stats.products.length)) {
+          panel.innerHTML = `<div class="admin-stats-empty-v132">İstatistik için uygun Firebase yedeği bulunamadı. Yeni yedekler alınmaya başladıkça burası dolacak.</div>`;
+          return;
+        }
+        const topTree = stats.trees[0] || { name:"-", adet:0, m3:0 };
+        const topProduct = stats.products[0] || { name:"-", adet:0, m3:0 };
+        panel.innerHTML = `
+          <div class="admin-stats-head-v132">
+            <div>
+              <b>Toplu İstatistik</b>
+              <span>Her kullanıcı için son Firebase yedeği esas alınır. Son yenileme: ${escapeHtml(stats.loadedAt || "-")}</span>
+            </div>
+            <button type="button" class="secondary" onclick="adminRefreshStatsV132()">Yenile</button>
+          </div>
+          <div class="admin-stats-cards-v132">
+            <div class="admin-stat-top-card-v132"><span>En fazla ağaç türü</span><b>${escapeHtml(topTree.name)}</b><small>${adminStatsFmtIntV132(topTree.adet)} adet • ${adminStatsFmtM3V132(topTree.m3)}</small></div>
+            <div class="admin-stat-top-card-v132"><span>En fazla odun türü</span><b>${escapeHtml(topProduct.name)}</b><small>${adminStatsFmtIntV132(topProduct.adet)} adet • ${adminStatsFmtM3V132(topProduct.m3)}</small></div>
+            <div class="admin-stat-top-card-v132"><span>Kapsam</span><b>${adminStatsFmtIntV132(stats.users)} kullanıcı</b><small>${adminStatsFmtIntV132(stats.recordCount)} kayıt</small></div>
+            <div class="admin-stat-top-card-v132"><span>Toplam</span><b>${adminStatsFmtIntV132(stats.adet)} adet</b><small>${adminStatsFmtM3V132(stats.m3)}</small></div>
+          </div>
+          <div class="admin-stats-columns-v132">
+            <div class="admin-stats-section-v132"><h4>Ağaç türleri</h4>${adminStatsRowsHtmlV132(stats.trees, "tree")}</div>
+            <div class="admin-stats-section-v132"><h4>Odun türleri</h4>${adminStatsRowsHtmlV132(stats.products, "product")}</div>
+          </div>`;
+      }
+
+      async function loadAndRenderAdminStatsV132(force){
+        ensureAdminStatsUiV132();
+        const panel = document.getElementById("adminStatsPanelV132");
+        if (panel) panel.classList.add("open");
+        const btn = document.getElementById("adminStatsBtnV132");
+        if (btn) btn.classList.add("active");
+        if (!force && state.adminStatsV132) return renderAdminStatsV132(state.adminStatsV132);
+        adminStatsSetLoadingV132(true, "İstatistikler hazırlanıyor...");
+        renderAdminStatsV132(null, "İstatistikler hazırlanıyor...");
+        try {
+          state.adminStatsV132 = await firebaseLoadAdminStatsV132();
+          renderAdminStatsV132(state.adminStatsV132);
+        } catch (err) {
+          renderAdminStatsV132(null, "İstatistikler alınamadı. İnternet, Firebase bağlantısı veya Firestore Rules alanını kontrol et.");
+          if (typeof showToast === "function") showToast(err && err.message ? err.message : "İstatistik alınamadı.");
+        } finally {
+          adminStatsSetLoadingV132(false);
+        }
+      }
+
+      window.adminRefreshStatsV132 = function(){
+        loadAndRenderAdminStatsV132(true);
+      };
+
+      window.adminToggleStatsV132 = function(){
+        ensureAdminStatsUiV132();
+        const panel = document.getElementById("adminStatsPanelV132");
+        const btn = document.getElementById("adminStatsBtnV132");
+        if (!panel) return;
+        const willOpen = !panel.classList.contains("open");
+        panel.classList.toggle("open", willOpen);
+        if (btn) btn.classList.toggle("active", willOpen);
+        if (willOpen) loadAndRenderAdminStatsV132(false);
+      };
+
+      const prevAdminLoadDataV132 = typeof loadAdminPanelData === "function" ? loadAdminPanelData : null;
+      if (prevAdminLoadDataV132) {
+        loadAdminPanelData = async function(){
+          await prevAdminLoadDataV132.apply(this, arguments);
+          try { if (document.getElementById("adminStatsPanelV132")?.classList.contains("open")) await loadAndRenderAdminStatsV132(true); } catch {}
+        };
+      }
+
+      const prevCurrentDeviceInfoPayloadV132 = typeof currentDeviceInfoPayload === "function" ? currentDeviceInfoPayload : null;
+      currentDeviceInfoPayload = function(){
+        const info = prevCurrentDeviceInfoPayloadV132 ? prevCurrentDeviceInfoPayloadV132() : {};
+        info.appVersion = BUILD_VERSION_V132;
+        info.fileVersion = FILE_VERSION_V132;
+        info.adminStatsPanel = true;
+        info.updatedMs = Date.now();
+        return info;
+      };
+
+      window.MESAHA_BUILD_INFO = Object.assign({}, window.MESAHA_BUILD_INFO || {}, {
+        fileVersion: FILE_VERSION_V132,
+        visibleVersion: BUILD_VERSION_V132,
+        adminStatsPanel: true,
+        stableBuild: true
+      });
+
+      ensureAdminStatsUiV132();
+      setTimeout(ensureAdminStatsUiV132, 300);
+      setTimeout(ensureAdminStatsUiV132, 1200);
+    })();
+
+
+    /* v133: Admin panelinde Sorun Bildirimleri alanı */
+    (function(){
+      const BUILD_VERSION_V133 = "Mesaha İO v1.62";
+      const FILE_VERSION_V133 = "v133";
+
+      function supportSetLoadingV133(show, text){
+        try {
+          if (typeof setCloudLoading === "function") setCloudLoading(!!show, text || "Sorun bildirimleri yükleniyor...");
+        } catch {}
+      }
+
+      function ensureAdminSupportUiV133(){
+        const top = document.querySelector(".admin-panel-top-clean");
+        const refresh = document.getElementById("adminRefreshBtn");
+        if (top && refresh && !document.getElementById("adminSupportBtnV133")) {
+          let actions = top.querySelector(".admin-top-actions-v132");
+          if (!actions) {
+            actions = document.createElement("div");
+            actions.className = "admin-top-actions-v132";
+            top.appendChild(actions);
+            actions.appendChild(refresh);
+          }
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.id = "adminSupportBtnV133";
+          btn.className = "secondary admin-support-toggle-v133";
+          btn.textContent = "Sorunlar";
+          const statsBtn = document.getElementById("adminStatsBtnV132");
+          if (statsBtn && statsBtn.parentNode === actions) actions.insertBefore(btn, statsBtn);
+          else actions.insertBefore(btn, refresh);
+          btn.addEventListener("click", () => window.adminToggleReportsV133());
+        }
+
+        const reports = document.getElementById("adminReportsView");
+        if (reports) {
+          reports.classList.add("admin-reports-panel-v133");
+          const toolbar = reports.querySelector(".admin-report-toolbar");
+          if (toolbar && !document.getElementById("adminReportRefreshBtnV133")) {
+            const b = document.createElement("button");
+            b.type = "button";
+            b.id = "adminReportRefreshBtnV133";
+            b.className = "secondary admin-report-refresh-v133";
+            b.textContent = "Yenile";
+            b.addEventListener("click", () => window.adminRefreshReportsV133(true));
+            toolbar.appendChild(b);
+          }
+          const summary = document.querySelector(".admin-summary-grid-clean");
+          const statsPanel = document.getElementById("adminStatsPanelV132");
+          if (statsPanel && statsPanel.nextElementSibling !== reports) statsPanel.insertAdjacentElement("afterend", reports);
+          else if (!statsPanel && summary && summary.nextElementSibling !== reports) summary.insertAdjacentElement("afterend", reports);
+        }
+      }
+
+      function setReportsOpenV133(open){
+        document.body.classList.toggle("admin-reports-open-v133", !!open);
+        const btn = document.getElementById("adminSupportBtnV133");
+        if (btn) btn.classList.toggle("active", !!open);
+      }
+
+      async function loadReportsV133(){
+        ensureAdminSupportUiV133();
+        setReportsOpenV133(true);
+        supportSetLoadingV133(true, "Sorun bildirimleri yükleniyor...");
+        try {
+          if (typeof renderAdminReports === "function") await renderAdminReports();
+          else {
+            const list = document.getElementById("adminReportsList");
+            if (list) list.innerHTML = `<div class="empty-user-list">Sorun bildirimi modülü bulunamadı.</div>`;
+          }
+        } catch (err) {
+          const list = document.getElementById("adminReportsList");
+          if (list) list.innerHTML = `<div class="cloud-backup-error">Sorun bildirimleri alınamadı. İnternet veya Firebase bağlantısını kontrol et.</div>`;
+          if (typeof showToast === "function") showToast(err && err.message ? err.message : "Sorun bildirimleri alınamadı.");
+        } finally {
+          supportSetLoadingV133(false);
+        }
+      }
+
+      window.adminRefreshReportsV133 = function(){
+        return loadReportsV133();
+      };
+
+      window.adminToggleReportsV133 = function(){
+        ensureAdminSupportUiV133();
+        const willOpen = !document.body.classList.contains("admin-reports-open-v133");
+        setReportsOpenV133(willOpen);
+        if (willOpen) {
+          try {
+            const statsPanel = document.getElementById("adminStatsPanelV132");
+            const statsBtn = document.getElementById("adminStatsBtnV132");
+            if (statsPanel) statsPanel.classList.remove("open");
+            if (statsBtn) statsBtn.classList.remove("active");
+          } catch {}
+          loadReportsV133();
+        }
+      };
+
+      const prevAdminToggleStatsV133 = typeof window.adminToggleStatsV132 === "function" ? window.adminToggleStatsV132 : null;
+      if (prevAdminToggleStatsV133) {
+        window.adminToggleStatsV132 = function(){
+          setReportsOpenV133(false);
+          return prevAdminToggleStatsV133.apply(this, arguments);
+        };
+      }
+
+      const prevAdminPanelLoadV133 = typeof loadAdminPanelData === "function" ? loadAdminPanelData : null;
+      if (prevAdminPanelLoadV133) {
+        loadAdminPanelData = async function(){
+          await prevAdminPanelLoadV133.apply(this, arguments);
+          try { if (document.body.classList.contains("admin-reports-open-v133")) await loadReportsV133(); } catch {}
+        };
+      }
+
+      const prevCurrentDeviceInfoPayloadV133 = typeof currentDeviceInfoPayload === "function" ? currentDeviceInfoPayload : null;
+      currentDeviceInfoPayload = function(){
+        const info = prevCurrentDeviceInfoPayloadV133 ? prevCurrentDeviceInfoPayloadV133() : {};
+        info.appVersion = BUILD_VERSION_V133;
+        info.fileVersion = FILE_VERSION_V133;
+        info.adminSupportPanel = true;
+        info.updatedMs = Date.now();
+        return info;
+      };
+
+      window.MESAHA_BUILD_INFO = Object.assign({}, window.MESAHA_BUILD_INFO || {}, {
+        fileVersion: FILE_VERSION_V133,
+        visibleVersion: BUILD_VERSION_V133,
+        adminSupportPanel: true,
+        stableBuild: true
+      });
+
+      ensureAdminSupportUiV133();
+      setTimeout(ensureAdminSupportUiV133, 300);
+      setTimeout(ensureAdminSupportUiV133, 1300);
     })();
 
 </script>
