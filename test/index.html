@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha App v112</title>
+  <title>Mesaha App v113</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -4662,6 +4662,271 @@
       }
     }
 
+  
+    /* v113: gerçek karanlık mod + tam ekran sade mod */
+    body.theme-dark,
+    html.theme-dark{
+      background:#07111f !important;
+      color:#e8eef8 !important;
+    }
+
+    body.theme-dark .app,
+    body.theme-dark .topbar,
+    body.theme-dark header,
+    body.theme-dark .panel,
+    body.theme-dark .card,
+    body.theme-dark .section,
+    body.theme-dark .form-card,
+    body.theme-dark .settings-card,
+    body.theme-dark .user-card,
+    body.theme-dark .admin-card,
+    body.theme-dark .daily-work-summary,
+    body.theme-dark .summary-card,
+    body.theme-dark .modal,
+    body.theme-dark .sheet,
+    body.theme-dark .box,
+    body.theme-dark .field,
+    body.theme-dark .login-card,
+    body.theme-dark .user-panel-card,
+    body.theme-dark .issue-report-card{
+      background:#101c2e !important;
+      color:#e8eef8 !important;
+      border-color:#3e526d !important;
+      box-shadow:none !important;
+    }
+
+    body.theme-dark h1,
+    body.theme-dark h2,
+    body.theme-dark h3,
+    body.theme-dark h4,
+    body.theme-dark label,
+    body.theme-dark p,
+    body.theme-dark small,
+    body.theme-dark .muted,
+    body.theme-dark .hint,
+    body.theme-dark .sub,
+    body.theme-dark .help,
+    body.theme-dark .card-title,
+    body.theme-dark .section-title{
+      color:#e8eef8 !important;
+    }
+
+    body.theme-dark input,
+    body.theme-dark textarea,
+    body.theme-dark select{
+      background:#07111f !important;
+      color:#f8fafc !important;
+      border-color:#60748f !important;
+      caret-color:#f8fafc !important;
+    }
+
+    body.theme-dark input::placeholder,
+    body.theme-dark textarea::placeholder{
+      color:#93a9c7 !important;
+      opacity:1 !important;
+    }
+
+    body.theme-dark table,
+    body.theme-dark thead,
+    body.theme-dark tbody,
+    body.theme-dark tr,
+    body.theme-dark th,
+    body.theme-dark td{
+      background:#101c2e !important;
+      color:#e8eef8 !important;
+      border-color:#3e526d !important;
+    }
+
+    body.theme-dark th{
+      background:#0b1525 !important;
+      color:#f8fafc !important;
+    }
+
+    body.theme-dark .empty,
+    body.theme-dark .toast,
+    body.theme-dark .badge,
+    body.theme-dark .pill,
+    body.theme-dark .chip:not(.tomruk):not(.maden):not(.kagit):not(.sanayi):not(.tel):not(.tree),
+    body.theme-dark .tag:not(.tree-saricam){
+      background:#0b1525 !important;
+      color:#dbeafe !important;
+      border-color:#3e526d !important;
+    }
+
+    body.theme-dark button:not(.clean-product-v111):not(.clean-chip-v111):not(.clean-save-v111):not(.record-edit-v111):not(.record-delete-v111):not(.flow-tabs-v111 button):not(.top-actions-v112 button){
+      background:#0b1525 !important;
+      color:#e8eef8 !important;
+      border-color:#3e526d !important;
+    }
+
+    body.theme-dark .btn-primary,
+    body.theme-dark button.primary,
+    body.theme-dark .primary{
+      background:#2563eb !important;
+      color:#fff !important;
+      border-color:#60a5fa !important;
+    }
+
+    body.theme-dark .btn-danger,
+    body.theme-dark button.danger,
+    body.theme-dark .danger{
+      background:#7f1d1d !important;
+      color:#fff !important;
+      border-color:#ef4444 !important;
+    }
+
+    body.theme-dark .top-actions-v112 button:first-child{
+      background:#22c55e !important;
+      border-color:#22c55e !important;
+      color:#052e16 !important;
+    }
+
+    body.theme-dark .top-actions-v112 button:last-child{
+      background:#f8fafc !important;
+      border-color:#f8fafc !important;
+      color:#111827 !important;
+    }
+
+    /* Sade Mod artık tam ekran, ayrı pencere gibi */
+    .clean-simple-overlay-v111{
+      align-items:stretch !important;
+      justify-content:stretch !important;
+      padding:0 !important;
+      background:#f1f5f9 !important;
+      backdrop-filter:none !important;
+      -webkit-backdrop-filter:none !important;
+      overflow:hidden !important;
+    }
+
+    body.theme-dark .clean-simple-overlay-v111{
+      background:#07111f !important;
+    }
+
+    .clean-simple-card-v111{
+      width:100% !important;
+      height:100dvh !important;
+      max-height:100dvh !important;
+      min-height:100dvh !important;
+      border-radius:0 !important;
+      border:none !important;
+      box-shadow:none !important;
+      padding:0 12px calc(130px + env(safe-area-inset-bottom, 0px)) !important;
+      overflow-y:auto !important;
+      -webkit-overflow-scrolling:touch !important;
+      background:#f8fafc !important;
+      color:#172033 !important;
+    }
+
+    body.theme-dark .clean-simple-card-v111{
+      background:#07111f !important;
+      color:#e8eef8 !important;
+    }
+
+    .clean-simple-head-v111{
+      position:sticky !important;
+      top:0 !important;
+      z-index:50 !important;
+      display:grid !important;
+      grid-template-columns:48px 1fr 116px !important;
+      gap:8px !important;
+      align-items:center !important;
+      margin:0 -12px 12px !important;
+      padding:10px 12px calc(10px + env(safe-area-inset-top, 0px)) !important;
+      background:rgba(248,250,252,.98) !important;
+      border-bottom:1px solid #d7dee8 !important;
+      box-shadow:0 8px 18px rgba(15,23,42,.08) !important;
+    }
+
+    body.theme-dark .clean-simple-head-v111{
+      background:rgba(7,17,31,.98) !important;
+      border-bottom-color:#3e526d !important;
+      box-shadow:0 8px 18px rgba(0,0,0,.22) !important;
+    }
+
+    .clean-simple-head-v111 > div{
+      display:none !important;
+    }
+
+    .clean-simple-close-v111{
+      grid-column:1 !important;
+      width:44px !important;
+      height:44px !important;
+      border-radius:15px !important;
+      border:1px solid #cbd5e1 !important;
+      background:#fff !important;
+      color:#111827 !important;
+      font-size:25px !important;
+      font-weight:950 !important;
+    }
+
+    body.theme-dark .clean-simple-close-v111{
+      background:#101c2e !important;
+      color:#f8fafc !important;
+      border-color:#3e526d !important;
+    }
+
+    .clean-header-save-v113{
+      grid-column:3 !important;
+      width:100% !important;
+      min-height:44px !important;
+      border:none !important;
+      border-radius:15px !important;
+      background:#16a34a !important;
+      color:#fff !important;
+      font-size:15px !important;
+      font-weight:950 !important;
+      padding:8px 10px !important;
+      touch-action:manipulation !important;
+    }
+
+    body.theme-dark .clean-header-save-v113{
+      background:#22c55e !important;
+      color:#052e16 !important;
+    }
+
+    .clean-save-v111{
+      position:sticky !important;
+      top:calc(64px + env(safe-area-inset-top, 0px)) !important;
+      z-index:45 !important;
+      box-shadow:0 10px 22px rgba(22,163,74,.20) !important;
+    }
+
+    .clean-product-grid-v111{
+      margin-top:12px !important;
+    }
+
+    .clean-measure-grid-v111{
+      align-items:start !important;
+    }
+
+    .clean-chip-row-v111{
+      min-height:auto !important;
+      gap:10px !important;
+    }
+
+    .clean-chip-v111{
+      box-shadow:none !important;
+      transform:none !important;
+      transition:none !important;
+    }
+
+    .clean-chip-v111:active,
+    .clean-save-v111:active,
+    .clean-header-save-v113:active,
+    .clean-simple-close-v111:active{
+      transform:none !important;
+      filter:none !important;
+    }
+
+    @media (max-width:380px){
+      .clean-simple-head-v111{
+        grid-template-columns:44px 1fr 100px !important;
+      }
+      .clean-header-save-v113{
+        font-size:14px !important;
+      }
+    }
+
   </style>
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -4826,14 +5091,14 @@
 <div class="app">
     <header class="topbar">
       <div class="brand">
-        <h1>Mesaha İO v1.41</h1>
+        <h1>Mesaha İO v1.42</h1>
         
       </div>
       <div id="activeUserBadge" class="active-user-badge" role="button" tabindex="0" title="Kullanıcı panelini aç" style="display:none"></div>
 
       <div class="top-actions-v112">
-        <button id="openSimpleV112" type="button">Sade Mod</button>
-        <button id="themeToggleV112" type="button">Karanlık</button>
+        <button id="openSimpleV112" type="button">⚡ Sade Mod</button>
+        <button id="themeToggleV112" type="button">🌙 Karanlık</button>
       </div>
 
     </header>
@@ -6281,8 +6546,8 @@
     function currentDeviceInfoPayload() {
       const active = state.activeUser || findActiveUser();
       return {
-        appVersion: "Mesaha İO v1.41",
-        fileVersion: "v112",
+        appVersion: "Mesaha İO v1.42",
+        fileVersion: "v113",
         userName: active && active.name ? cleanUserText(active.name) : "",
         seflik: active && active.seflik ? cleanUserText(active.seflik) : "",
         deviceId: getOrCreateDeviceId(),
@@ -7021,7 +7286,7 @@
 
     async function uploadCloudBackupOpen(user) {
       const payload = buildCloudBackupPayload(user);
-      payload.version = 112;
+      payload.version = 113;
       const bolmePart = els.bolmeNo && String(els.bolmeNo.value || "").trim() ? `_${cleanFilePart(els.bolmeNo.value)}` : "";
       const fileName = `Mesaha_Yedek_${cleanFilePart(user.seflik)}_${cleanFilePart(user.name)}${bolmePart}_${new Date().toISOString().slice(0,19).replace(/[-:T]/g, "")}.json`;
 
@@ -7450,7 +7715,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function buildCloudBackupPayload(user) {
       return {
         app: "Mesaha İO",
-        version: 112,
+        version: 113,
         createdAt: new Date().toLocaleString("tr-TR"),
         user: {
           name: user.name || "",
@@ -9454,7 +9719,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function backup() {
       const data = {
         app: "Mesaha App",
-        version: 112,
+        version: 113,
         exportedAt: formatDateTime(),
         systemHeaders: HEADERS,
         settings: state.settings,
@@ -9871,7 +10136,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     async function firebaseUploadBackup(user) {
       const { db } = await ensureFirebaseReady();
       const payload = buildCloudBackupPayload(user);
-      payload.version = 112;
+      payload.version = 113;
       payload.cloud = "firebase";
 
       const bolmeNo = els.bolmeNo ? String(els.bolmeNo.value || "").trim() : "";
@@ -10926,6 +11191,116 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     initThemeV112();
 
 
+    
+    /* v113: Sade Mod tam ekran + genel karanlık mod */
+    function ensureCleanHeaderSaveV113() {
+      const head = document.querySelector(".clean-simple-head-v111");
+      if (!head || document.getElementById("cleanHeaderSaveV113")) return;
+      const btn = document.createElement("button");
+      btn.id = "cleanHeaderSaveV113";
+      btn.className = "clean-header-save-v113";
+      btn.type = "button";
+      btn.textContent = "Kaydet";
+      btn.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        if (typeof saveCleanSimpleV111 === "function") saveCleanSimpleV111();
+      });
+      head.appendChild(btn);
+    }
+
+    function applyThemeV113(mode) {
+      const dark = mode === "dark";
+      document.body.classList.toggle("theme-dark", dark);
+      document.documentElement.classList.toggle("theme-dark", dark);
+      try {
+        localStorage.setItem("mesaha_theme_v112", dark ? "dark" : "light");
+        localStorage.setItem("mesaha_theme_v113", dark ? "dark" : "light");
+      } catch {}
+
+      const btn = document.getElementById("themeToggleV112");
+      if (btn) btn.textContent = dark ? "☀️ Aydınlık" : "🌙 Karanlık";
+    }
+
+    function initThemeV113() {
+      let saved = "light";
+      try {
+        saved = localStorage.getItem("mesaha_theme_v113") || localStorage.getItem("mesaha_theme_v112") || localStorage.getItem("mesaha_theme") || localStorage.getItem("theme") || "light";
+      } catch {}
+      applyThemeV113(saved === "dark" ? "dark" : "light");
+    }
+
+    // v112 tema fonksiyonunu geniş tema fonksiyonuna yönlendir.
+    applyThemeV112 = applyThemeV113;
+    initThemeV112 = initThemeV113;
+
+    function openCleanSimpleV113() {
+      const c = cleanElsV111();
+      if (!c.overlay) return;
+
+      if (els.simpleModeOverlay) els.simpleModeOverlay.classList.remove("show");
+      ensureCleanHeaderSaveV113();
+
+      renderCleanProductsV111();
+      if (c.len) c.len.value = localStorage.getItem("mesaha_simple_last_length_v1") || (els.length ? (els.length.value || "") : "");
+      if (c.dia) c.dia.value = els.diameter ? (els.diameter.value || "") : "";
+
+      renderCleanChipsV111();
+      renderCleanAutoV111();
+      renderCleanRecentV111();
+
+      c.overlay.classList.add("show");
+      document.body.classList.add("clean-simple-open-v111");
+
+      // Klavye otomatik açılmasın; Kaydet butonu üstte kalır.
+    }
+
+    openCleanSimpleV111 = openCleanSimpleV113;
+
+    function bindTopActionsV113() {
+      const simpleBtn = document.getElementById("openSimpleV112");
+      const themeBtn = document.getElementById("themeToggleV112");
+
+      if (simpleBtn) {
+        simpleBtn.textContent = "⚡ Sade Mod";
+        if (!simpleBtn.__v113Bound) {
+          simpleBtn.__v113Bound = true;
+          simpleBtn.addEventListener("click", (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            openCleanSimpleV113();
+          }, true);
+        }
+      }
+
+      if (themeBtn) {
+        const isDark = document.body.classList.contains("theme-dark");
+        themeBtn.textContent = isDark ? "☀️ Aydınlık" : "🌙 Karanlık";
+        if (!themeBtn.__v113Bound) {
+          themeBtn.__v113Bound = true;
+          themeBtn.addEventListener("click", (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            const darkNow = document.body.classList.contains("theme-dark");
+            applyThemeV113(darkNow ? "light" : "dark");
+          }, true);
+        }
+      }
+    }
+
+    ensureCleanHeaderSaveV113();
+    bindTopActionsV113();
+    initThemeV113();
+
+    setTimeout(() => {
+      ensureCleanHeaderSaveV113();
+      bindTopActionsV113();
+      const darkNow = document.body.classList.contains("theme-dark");
+      const btn = document.getElementById("themeToggleV112");
+      if (btn) btn.textContent = darkNow ? "☀️ Aydınlık" : "🌙 Karanlık";
+    }, 200);
+
+
     window.forceUpdateApp = forceUpdateApp;
     window.openAdminFromUserPanel = openAdminFromUserPanel;
 
@@ -10944,8 +11319,8 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     load();
   
     window.MESAHA_BUILD_INFO = {
-      fileVersion: "v112",
-      visibleVersion: "Mesaha İO v1.41",
+      fileVersion: "v113",
+      visibleVersion: "Mesaha İO v1.42",
       stableBuild: true
     };
 
