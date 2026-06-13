@@ -1,12 +1,8 @@
 {
   "name": "Mesaha İO",
   "short_name": "Mesaha İO",
-  "description": "Saha mesaha kaydı ve sistem uyumlu Excel çıktısı",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#ffffff",
-  "orientation": "portrait",
   "icons": []
 }

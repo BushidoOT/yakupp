@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha App v96</title>
+  <title>Mesaha App v98</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -4915,6 +4915,85 @@
       color:#fff !important;
     }
 
+  
+    /* v97: Sade Mod ergonomi ve stabilizasyon */
+    .simple-mode-overlay{
+      align-items:flex-start !important;
+      padding-top:max(10px, env(safe-area-inset-top, 0px)) !important;
+      padding-bottom:max(10px, env(safe-area-inset-bottom, 0px)) !important;
+    }
+    .simple-mode-card{
+      max-height:calc(100dvh - 18px) !important;
+      overflow-y:auto !important;
+      -webkit-overflow-scrolling:touch;
+      padding-bottom:calc(16px + var(--simple-keyboard-bottom, 0px)) !important;
+      scroll-padding-bottom:calc(86px + var(--simple-keyboard-bottom, 0px)) !important;
+    }
+    .simple-measure-grid{ gap:9px !important; margin:8px 0 6px !important; }
+    .simple-measure-grid label{ margin-bottom:5px !important; font-size:12px !important; }
+    .simple-measure-grid input{
+      min-height:48px !important;
+      height:48px !important;
+      border-radius:16px !important;
+      font-size:21px !important;
+      padding:7px 10px !important;
+    }
+    .simple-chip-row{
+      display:grid !important;
+      grid-template-columns:repeat(3, minmax(0, 1fr)) !important;
+      gap:7px !important;
+      margin-top:7px !important;
+      min-height:82px !important;
+      align-items:stretch !important;
+    }
+    .simple-chip-btn{
+      min-width:0 !important;
+      min-height:38px !important;
+      border-radius:14px !important;
+      font-size:15px !important;
+      padding:6px 8px !important;
+    }
+    .simple-save-btn{
+      position:sticky !important;
+      bottom:calc(var(--simple-keyboard-bottom, 0px) + 10px) !important;
+      z-index:35 !important;
+      min-height:50px !important;
+      border-radius:18px !important;
+      margin:8px 0 8px !important;
+      box-shadow:0 16px 35px rgba(22,163,74,.26), 0 0 0 4px rgba(255,255,255,.72) !important;
+    }
+    body.theme-dark .simple-save-btn{
+      box-shadow:0 16px 35px rgba(37,99,235,.28), 0 0 0 4px rgba(15,23,42,.82) !important;
+    }
+    .simple-auto-info{ margin:8px 0 !important; font-size:11px !important; line-height:1.38 !important; }
+    .simple-recent-area h3{ margin:8px 0 6px !important; font-size:15px !important; }
+    .simple-mode-card.keyboard-open .simple-mode-head{ margin-bottom:8px !important; }
+    .simple-mode-card.keyboard-open .simple-product-grid{ gap:7px !important; margin:7px 0 8px !important; }
+    .simple-mode-card.keyboard-open .simple-product-btn{ min-height:42px !important; font-size:13px !important; }
+    @media (max-height:720px){
+      .simple-mode-card{ border-radius:22px !important; padding:12px !important; }
+      .simple-mode-head h2{ font-size:19px !important; }
+      .simple-mode-head .hint{ font-size:11px !important; }
+      .simple-product-btn{ min-height:42px !important; }
+      .simple-measure-grid input{ min-height:46px !important; height:46px !important; }
+      .simple-chip-row{ min-height:78px !important; }
+    }
+    @media (max-width:420px){
+      .simple-chip-btn{ font-size:14px !important; }
+      .simple-measure-grid input{ font-size:20px !important; }
+    }
+
+  
+    /* v98: güçlü kayıt sesi sistemi */
+    .sound-ready-pulse{
+      animation:soundReadyPulse .28s ease-out;
+    }
+
+    @keyframes soundReadyPulse{
+      from{ transform:scale(.98); }
+      to{ transform:scale(1); }
+    }
+
   </style>
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -5085,7 +5164,7 @@
 <div class="app">
     <header class="topbar">
       <div class="brand">
-        <h1>Mesaha İO v1.25</h1>
+        <h1>Mesaha İO v1.27</h1>
         
       </div>
       <div id="activeUserBadge" class="active-user-badge" role="button" tabindex="0" title="Kullanıcı panelini aç" style="display:none"></div>
@@ -6538,8 +6617,8 @@
     function currentDeviceInfoPayload() {
       const active = state.activeUser || findActiveUser();
       return {
-        appVersion: "Mesaha İO v1.25",
-        fileVersion: "v96",
+        appVersion: "Mesaha İO v1.27",
+        fileVersion: "v98",
         userName: active && active.name ? cleanUserText(active.name) : "",
         seflik: active && active.seflik ? cleanUserText(active.seflik) : "",
         deviceId: getOrCreateDeviceId(),
@@ -7280,7 +7359,7 @@
 
     async function uploadCloudBackupOpen(user) {
       const payload = buildCloudBackupPayload(user);
-      payload.version = 96;
+      payload.version = 98;
       const bolmePart = els.bolmeNo && String(els.bolmeNo.value || "").trim() ? `_${cleanFilePart(els.bolmeNo.value)}` : "";
       const fileName = `Mesaha_Yedek_${cleanFilePart(user.seflik)}_${cleanFilePart(user.name)}${bolmePart}_${new Date().toISOString().slice(0,19).replace(/[-:T]/g, "")}.json`;
 
@@ -7709,7 +7788,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function buildCloudBackupPayload(user) {
       return {
         app: "Mesaha İO",
-        version: 96,
+        version: 98,
         createdAt: new Date().toLocaleString("tr-TR"),
         user: {
           name: user.name || "",
@@ -9711,7 +9790,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function backup() {
       const data = {
         app: "Mesaha App",
-        version: 96,
+        version: 98,
         exportedAt: formatDateTime(),
         systemHeaders: HEADERS,
         settings: state.settings,
@@ -10128,7 +10207,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     async function firebaseUploadBackup(user) {
       const { db } = await ensureFirebaseReady();
       const payload = buildCloudBackupPayload(user);
-      payload.version = 96;
+      payload.version = 98;
       payload.cloud = "firebase";
 
       const bolmeNo = els.bolmeNo ? String(els.bolmeNo.value || "").trim() : "";
@@ -11164,6 +11243,274 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     }, true);
 
 
+    
+    /* v97: Sade Mod 6 hızlı buton + klavye üstü Kaydet */
+    function simpleSetKeyboardBottomV97() {
+      try {
+        const vv = window.visualViewport;
+        let inset = 0;
+        if (vv) inset = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
+        document.documentElement.style.setProperty("--simple-keyboard-bottom", inset + "px");
+        const card = document.querySelector(".simple-mode-card");
+        if (card) card.classList.toggle("keyboard-open", inset > 80);
+      } catch {
+        document.documentElement.style.setProperty("--simple-keyboard-bottom", "0px");
+      }
+    }
+
+    function simpleStartKeyboardWatcherV97() {
+      if (window.__simpleKeyboardWatcherV97) return;
+      window.__simpleKeyboardWatcherV97 = true;
+      simpleSetKeyboardBottomV97();
+      if (window.visualViewport) {
+        window.visualViewport.addEventListener("resize", simpleSetKeyboardBottomV97);
+        window.visualViewport.addEventListener("scroll", simpleSetKeyboardBottomV97);
+      }
+      window.addEventListener("resize", simpleSetKeyboardBottomV97);
+    }
+
+    function uniqueRecentValuesV97(field, fallback = []) {
+      const values = [];
+      (state.records || []).forEach(r => {
+        const val = String(r[field] || "").trim();
+        if (val && !values.includes(val)) values.push(val);
+      });
+      fallback.forEach(v => {
+        const val = String(v || "").trim();
+        if (val && !values.includes(val)) values.push(val);
+      });
+      return values.slice(0, 6);
+    }
+
+    function simpleRenderQuickChipsV97() {
+      if (els.simpleLengthChips) {
+        const lastBoy = (els.simpleLength && els.simpleLength.value) || (els.length && els.length.value) || localStorage.getItem("mesaha_simple_last_length_v1") || "";
+        const values = uniqueRecentValuesV97("length", [lastBoy, "4", "3", "2.5", "2", "1.5", "1"]);
+        els.simpleLengthChips.innerHTML = values.map(v => `<button type="button" class="simple-chip-btn" data-simple-length="${escapeHtml(v)}">${escapeHtml(v)}</button>`).join("");
+      }
+      if (els.simpleDiameterChips) {
+        const lastCap = (els.simpleDiameter && els.simpleDiameter.value) || (els.diameter && els.diameter.value) || "";
+        const values = uniqueRecentValuesV97("diameter", [lastCap, "32", "28", "26", "24", "22", "21"]);
+        els.simpleDiameterChips.innerHTML = values.map(v => `<button type="button" class="simple-chip-btn" data-simple-diameter="${escapeHtml(v)}">${escapeHtml(v)}</button>`).join("");
+      }
+      if (typeof simpleAttachNoBlurHandlersV94 === "function") {
+        try { window.__simpleNoBlurHandlersV94 = false; simpleAttachNoBlurHandlersV94(); } catch {}
+      }
+    }
+
+    if (typeof simpleOpenModeV93 === "function" && !window.__simpleOpenWrappedV97) {
+      window.__simpleOpenWrappedV97 = true;
+      const __simpleOpenModeV93_forV97 = simpleOpenModeV93;
+      simpleOpenModeV93 = function() {
+        simpleStartKeyboardWatcherV97();
+        __simpleOpenModeV93_forV97();
+        simpleRenderQuickChipsV97();
+        simpleSetKeyboardBottomV97();
+        setTimeout(() => {
+          simpleSetKeyboardBottomV97();
+          if (els.simpleDiameter) {
+            try { els.simpleDiameter.scrollIntoView({ block:"center", behavior:"smooth" }); } catch {}
+          }
+        }, 180);
+      };
+      simpleOpenModeV92 = simpleOpenModeV93;
+    }
+
+    if (typeof simpleRenderQuickChipsV93 === "function") {
+      simpleRenderQuickChipsV93 = simpleRenderQuickChipsV97;
+    }
+
+    if (typeof simpleSaveRecordV93 === "function" && !window.__simpleSaveWrappedV97) {
+      window.__simpleSaveWrappedV97 = true;
+      const __simpleSaveRecordV93_forV97 = simpleSaveRecordV93;
+      simpleSaveRecordV93 = function() {
+        simpleSetKeyboardBottomV97();
+        const result = __simpleSaveRecordV93_forV97();
+        setTimeout(() => {
+          simpleRenderQuickChipsV97();
+          simpleSetKeyboardBottomV97();
+          if (els.simpleDiameter) {
+            try { els.simpleDiameter.focus({ preventScroll:true }); els.simpleDiameter.select(); } catch {}
+          }
+        }, 320);
+        return result;
+      };
+      simpleSaveRecordV92 = simpleSaveRecordV93;
+    }
+
+    if (typeof simpleCloseModeV92 === "function" && !window.__simpleCloseWrappedV97) {
+      window.__simpleCloseWrappedV97 = true;
+      const __simpleCloseModeV92_forV97 = simpleCloseModeV92;
+      simpleCloseModeV92 = function() {
+        document.documentElement.style.setProperty("--simple-keyboard-bottom", "0px");
+        const card = document.querySelector(".simple-mode-card");
+        if (card) card.classList.remove("keyboard-open");
+        return __simpleCloseModeV92_forV97();
+      };
+    }
+
+    document.addEventListener("pointerdown", (event) => {
+      const simpleButton = event.target && event.target.closest ? event.target.closest(".simple-product-btn, .simple-chip-btn") : null;
+      if (!simpleButton) return;
+      const activeInput = document.activeElement === els.simpleLength || document.activeElement === els.simpleDiameter ? document.activeElement : (els.simpleDiameter || els.simpleLength);
+      setTimeout(() => {
+        try { if (activeInput) activeInput.focus({ preventScroll:true }); } catch {}
+        simpleSetKeyboardBottomV97();
+      }, 30);
+    }, true);
+
+
+    
+    /* v98: Güçlü kayıt sesi */
+    const mesahaSound = {
+      ctx: null,
+      ready: false,
+      lastPlayAt: 0,
+
+      ensure() {
+        try {
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          if (!AudioContextClass) return null;
+          if (!this.ctx) this.ctx = new AudioContextClass();
+          if (this.ctx.state === "suspended") this.ctx.resume().catch(() => {});
+          this.ready = true;
+          return this.ctx;
+        } catch {
+          return null;
+        }
+      },
+
+      tone(freq, start, duration, gainValue) {
+        const ctx = this.ensure();
+        if (!ctx) return;
+
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        osc.type = "square";
+        osc.frequency.setValueAtTime(freq, ctx.currentTime + start);
+
+        gain.gain.setValueAtTime(0.0001, ctx.currentTime + start);
+        gain.gain.exponentialRampToValueAtTime(gainValue, ctx.currentTime + start + 0.018);
+        gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + start + duration);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start(ctx.currentTime + start);
+        osc.stop(ctx.currentTime + start + duration + 0.025);
+      },
+
+      success() {
+        const now = Date.now();
+        if (now - this.lastPlayAt < 450) return;
+        this.lastPlayAt = now;
+
+        try {
+          this.ensure();
+          // güçlü ama kısa: iki ton + ince onay tonu
+          this.tone(740, 0.00, 0.085, 0.28);
+          this.tone(1110, 0.075, 0.095, 0.34);
+          this.tone(1480, 0.155, 0.060, 0.22);
+
+          if (navigator.vibrate) {
+            try { navigator.vibrate([35, 18, 35]); } catch {}
+          }
+        } catch {}
+      },
+
+      warning() {
+        const now = Date.now();
+        if (now - this.lastPlayAt < 450) return;
+        this.lastPlayAt = now;
+
+        try {
+          this.ensure();
+          this.tone(260, 0.00, 0.11, 0.26);
+          this.tone(190, 0.115, 0.14, 0.24);
+          if (navigator.vibrate) {
+            try { navigator.vibrate(80); } catch {}
+          }
+        } catch {}
+      }
+    };
+
+    function mesahaUnlockSoundV98() {
+      try {
+        mesahaSound.ensure();
+        document.body.classList.add("sound-ready-pulse");
+        setTimeout(() => document.body.classList.remove("sound-ready-pulse"), 300);
+      } catch {}
+    }
+
+    function mesahaRecordCountV98() {
+      try { return Array.isArray(state.records) ? state.records.length : 0; } catch { return 0; }
+    }
+
+    function mesahaWatchSaveSoundV98(beforeCount) {
+      setTimeout(() => {
+        const afterCount = mesahaRecordCountV98();
+        if (afterCount > beforeCount) {
+          mesahaSound.success();
+        }
+      }, 180);
+
+      setTimeout(() => {
+        const afterCount = mesahaRecordCountV98();
+        if (afterCount > beforeCount) {
+          mesahaSound.success();
+        }
+      }, 420);
+    }
+
+    function mesahaAttachSoundV98() {
+      if (window.__mesahaSoundV98Attached) return;
+      window.__mesahaSoundV98Attached = true;
+
+      ["pointerdown", "touchstart", "click", "keydown"].forEach(evt => {
+        document.addEventListener(evt, mesahaUnlockSoundV98, { once:false, passive:true });
+      });
+
+      document.addEventListener("click", (event) => {
+        const target = event.target && event.target.closest ? event.target.closest("button, input[type='submit']") : null;
+        if (!target) return;
+
+        const text = (target.textContent || target.value || "").trim().toLowerCase("tr-TR");
+        const id = String(target.id || "").toLowerCase("tr-TR");
+        const isSave =
+          text === "kaydet" ||
+          text.includes("kaydet") ||
+          id.includes("save") ||
+          id.includes("submit") ||
+          target.classList.contains("simple-save-btn");
+
+        if (!isSave) return;
+
+        mesahaUnlockSoundV98();
+        const before = mesahaRecordCountV98();
+        mesahaWatchSaveSoundV98(before);
+      }, true);
+    }
+
+    // Toast üzerinden de güvence: kayıt eklendi mesajı gelirse ses çal.
+    if (typeof showToast === "function" && !showToast.__mesahaSoundWrappedV98) {
+      const __showToastOriginalV98 = showToast;
+      showToast = function(message, ...rest) {
+        const text = String(message || "").toLowerCase("tr-TR");
+        const result = __showToastOriginalV98.call(this, message, ...rest);
+        if (text.includes("eklendi") && !text.includes("daha önce") && !text.includes("hata")) {
+          setTimeout(() => mesahaSound.success(), 40);
+        } else if (text.includes("daha önce") || text.includes("hata") || text.includes("geçersiz")) {
+          setTimeout(() => mesahaSound.warning(), 40);
+        }
+        return result;
+      };
+      showToast.__mesahaSoundWrappedV98 = true;
+    }
+
+    mesahaAttachSoundV98();
+
+
     window.forceUpdateApp = forceUpdateApp;
     window.mesahaToggleTheme = mesahaToggleTheme;
     window.simpleOpenModeV92 = simpleOpenModeV92;
@@ -11184,8 +11531,8 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     load();
   
     window.MESAHA_BUILD_INFO = {
-      fileVersion: "v96",
-      visibleVersion: "Mesaha İO v1.25",
+      fileVersion: "v98",
+      visibleVersion: "Mesaha İO v1.27",
       stableBuild: true
     };
 
