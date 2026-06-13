@@ -1,7 +1,7 @@
 {
-  "version": 137,
-  "visibleVersion": "Mesaha İO v1.66",
-  "cache": "mesaha-app-v137",
+  "version": 139,
+  "visibleVersion": "Mesaha İO v1.68",
+  "cache": "mesaha-app-v139",
   "builtAt": "2026-06-13",
-  "notes": "v137 aktif istatistik sıfırlama düzeltmesi; usageStats temizleme, reset marker ve offline kuyruk filtresi"
+  "notes": "v139 istatistik sıfırlama admin ana özet ve kullanıcı listesi fix; usageStats, kullanıcı günlük özetleri ve local kuyruk birlikte temizlenir"
 }
