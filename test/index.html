@@ -8117,6 +8117,89 @@
       box-shadow:0 10px 22px rgba(34,197,94,.22) !important;
     }
 
+
+    /* v125: Yeni Kayıt + Sade Mod + Son 3 Barkod için zorunlu sol çizgi düzeltmesi */
+    :root{
+      --v125-card:#1b202a;
+      --v125-card-active:#232a36;
+      --v125-line:#343c49;
+      --v125-text:#f1f5f9;
+      --v125-muted:#aeb8c7;
+      --v125-tomruk:#facc15;
+      --v125-maden:#3b82f6;
+      --v125-kagit:#ef4444;
+      --v125-sanayi:#22c55e;
+      --v125-tel:#8b5cf6;
+    }
+
+    body.theme-dark .entry-panel .product-box,
+    body.theme-dark.inline-simple-v119 .entry-panel .product-box,
+    body.theme-dark .clean-product-v111{
+      background:var(--v125-card) !important;
+      background-image:none !important;
+      color:var(--v125-text) !important;
+      border:1.6px solid var(--v125-line) !important;
+      border-left:7px solid var(--v125-line) !important;
+      box-shadow:none !important;
+      border-radius:16px !important;
+    }
+
+    body.theme-dark .entry-panel .product-box.active,
+    body.theme-dark.inline-simple-v119 .entry-panel .product-box.active,
+    body.theme-dark .clean-product-v111.active{
+      background:var(--v125-card-active) !important;
+      background-image:none !important;
+      color:#ffffff !important;
+      border-color:#465162 !important;
+      box-shadow:0 10px 22px rgba(0,0,0,.18) !important;
+    }
+
+    body.theme-dark .entry-panel .product-box[data-product="Tomruk"],
+    body.theme-dark .clean-product-v111.tomruk{ border-left-color:var(--v125-tomruk) !important; }
+    body.theme-dark .entry-panel .product-box[data-product="Maden Direk"],
+    body.theme-dark .clean-product-v111.maden{ border-left-color:var(--v125-maden) !important; }
+    body.theme-dark .entry-panel .product-box[data-product="Kağıtlık"],
+    body.theme-dark .clean-product-v111.kagit{ border-left-color:var(--v125-kagit) !important; }
+    body.theme-dark .entry-panel .product-box[data-product="Sanayi Odunu"],
+    body.theme-dark .clean-product-v111.sanayi{ border-left-color:var(--v125-sanayi) !important; }
+    body.theme-dark .entry-panel .product-box[data-product="Tel Direk"],
+    body.theme-dark .clean-product-v111.tel{ border-left-color:var(--v125-tel) !important; }
+
+    body.theme-dark .recent-barcode-list > .recent-barcode-item,
+    body.theme-dark .clean-recent-item-v114{
+      background:var(--v125-card) !important;
+      background-image:none !important;
+      color:var(--v125-text) !important;
+      border:1.6px solid var(--v125-line) !important;
+      border-left:7px solid var(--v125-line) !important;
+      box-shadow:0 10px 20px rgba(0,0,0,.14) !important;
+      border-radius:16px !important;
+    }
+
+    body.theme-dark .recent-barcode-list > .recent-tomruk,
+    body.theme-dark .clean-recent-item-v114.tomruk{ border-left-color:var(--v125-tomruk) !important; }
+    body.theme-dark .recent-barcode-list > .recent-maden,
+    body.theme-dark .clean-recent-item-v114.maden{ border-left-color:var(--v125-maden) !important; }
+    body.theme-dark .recent-barcode-list > .recent-kagit,
+    body.theme-dark .clean-recent-item-v114.kagit{ border-left-color:var(--v125-kagit) !important; }
+    body.theme-dark .recent-barcode-list > .recent-sanayi,
+    body.theme-dark .clean-recent-item-v114.sanayi{ border-left-color:var(--v125-sanayi) !important; }
+    body.theme-dark .recent-barcode-list > .recent-tel,
+    body.theme-dark .clean-recent-item-v114.tel{ border-left-color:var(--v125-tel) !important; }
+
+    body.theme-dark .recent-barcode-list > .recent-barcode-item b,
+    body.theme-dark .clean-recent-item-v114 b,
+    body.theme-dark .recent-barcode-list > .recent-barcode-item strong,
+    body.theme-dark .clean-recent-item-v114 strong{
+      color:var(--v125-text) !important;
+    }
+
+    body.theme-dark .recent-barcode-list > .recent-barcode-item span,
+    body.theme-dark .clean-recent-item-v114 span{
+      color:var(--v125-muted) !important;
+      opacity:1 !important;
+    }
+
   </style>
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -8281,7 +8364,7 @@
 <div class="app">
     <header class="topbar">
       <div class="brand">
-        <h1>Mesaha İO v1.53</h1>
+        <h1>Mesaha İO v1.54</h1>
         
       </div>
       <div id="activeUserBadge" class="active-user-badge" role="button" tabindex="0" title="Kullanıcı panelini aç" style="display:none"></div>
@@ -9736,8 +9819,8 @@
     function currentDeviceInfoPayload() {
       const active = state.activeUser || findActiveUser();
       return {
-        appVersion: "Mesaha İO v1.53",
-        fileVersion: "v124",
+        appVersion: "Mesaha İO v1.54",
+        fileVersion: "v125",
         userName: active && active.name ? cleanUserText(active.name) : "",
         seflik: active && active.seflik ? cleanUserText(active.seflik) : "",
         deviceId: getOrCreateDeviceId(),
@@ -15183,9 +15266,127 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     setTimeout(bindInlineSimpleV122, 400);
     setTimeout(syncInlineSimpleButtonV122, 700);
   
+
+    /* v125: v124'te kayıtlar doğruydu; aynı sol çizgi stilini dinamik alanlara zorla uygula */
+    function clearV125StripeInline() {
+      document.querySelectorAll('[data-mesaha-v125-stripe="1"]').forEach(el => {
+        ['background','background-color','background-image','color','border','border-color','border-left','box-shadow','border-radius'].forEach(prop => {
+          try { el.style.removeProperty(prop); } catch {}
+        });
+        if (el.dataset) delete el.dataset.mesahaV125Stripe;
+        if (!el.getAttribute('style')) el.removeAttribute('style');
+      });
+    }
+
+    function productColorV125(nameOrClass) {
+      const raw = String(nameOrClass || '').toLowerCase();
+      if (raw.includes('tomruk')) return '#facc15';
+      if (raw.includes('maden')) return '#3b82f6';
+      if (raw.includes('kağıt') || raw.includes('kagit')) return '#ef4444';
+      if (raw.includes('sanayi')) return '#22c55e';
+      if (raw.includes('tel')) return '#8b5cf6';
+      return '#343c49';
+    }
+
+    function productKeyFromElementV125(el) {
+      if (!el) return '';
+      if (el.dataset && el.dataset.product) return el.dataset.product;
+      if (el.dataset && el.dataset.cleanProduct) return el.dataset.cleanProduct;
+      const cls = String(el.className || '');
+      if (cls.includes('recent-tomruk') || cls.includes(' tomruk') || cls.endsWith('tomruk')) return 'tomruk';
+      if (cls.includes('recent-maden') || cls.includes(' maden') || cls.endsWith('maden')) return 'maden';
+      if (cls.includes('recent-kagit') || cls.includes(' kagit') || cls.endsWith('kagit')) return 'kagit';
+      if (cls.includes('recent-sanayi') || cls.includes(' sanayi') || cls.endsWith('sanayi')) return 'sanayi';
+      if (cls.includes('recent-tel') || cls.includes(' tel') || cls.endsWith('tel')) return 'tel';
+      return '';
+    }
+
+    function markV125(el) {
+      if (el && el.dataset) el.dataset.mesahaV125Stripe = '1';
+    }
+
+    function applyV125StripeToCard(el, color, active) {
+      if (!el || !document.body.classList.contains('theme-dark')) return;
+      markV125(el);
+      el.style.setProperty('background', active ? '#232a36' : '#1b202a', 'important');
+      el.style.setProperty('background-image', 'none', 'important');
+      el.style.setProperty('color', '#f1f5f9', 'important');
+      el.style.setProperty('border', '1.6px solid ' + (active ? '#465162' : '#343c49'), 'important');
+      el.style.setProperty('border-left', '7px solid ' + color, 'important');
+      el.style.setProperty('border-radius', '16px', 'important');
+      el.style.setProperty('box-shadow', active ? '0 10px 22px rgba(0,0,0,.18)' : '0 10px 20px rgba(0,0,0,.10)', 'important');
+    }
+
+    function applyProductSideStripesV125() {
+      if (!document.body.classList.contains('theme-dark')) {
+        clearV125StripeInline();
+        return;
+      }
+
+      document.querySelectorAll('.entry-panel .product-box, .clean-product-v111').forEach(el => {
+        const key = productKeyFromElementV125(el) || (el.textContent || '');
+        applyV125StripeToCard(el, productColorV125(key), el.classList.contains('active'));
+      });
+
+      document.querySelectorAll('.recent-barcode-list > .recent-barcode-item, .clean-recent-item-v114').forEach(el => {
+        const key = productKeyFromElementV125(el) || (el.textContent || '');
+        applyV125StripeToCard(el, productColorV125(key), false);
+        el.querySelectorAll('b,strong').forEach(x => {
+          markV125(x);
+          x.style.setProperty('color', '#f1f5f9', 'important');
+        });
+        el.querySelectorAll('span').forEach(x => {
+          markV125(x);
+          x.style.setProperty('color', '#aeb8c7', 'important');
+          x.style.setProperty('opacity', '1', 'important');
+        });
+      });
+    }
+
+    const oldApplyThemeV125 = typeof applyThemeV113 === 'function' ? applyThemeV113 : null;
+    function applyThemeV125(mode) {
+      if (oldApplyThemeV125) oldApplyThemeV125(mode);
+      if (mode === 'dark') {
+        setTimeout(applyProductSideStripesV125, 40);
+        setTimeout(applyProductSideStripesV125, 220);
+        setTimeout(applyProductSideStripesV125, 700);
+      } else {
+        setTimeout(clearV125StripeInline, 20);
+        setTimeout(clearV125StripeInline, 220);
+      }
+    }
+    applyThemeV113 = applyThemeV125;
+    applyThemeV112 = applyThemeV125;
+
+    ['renderProductButtons','renderRecentBarcodes','renderCleanProductsV111','renderCleanRecentV111','renderCleanRecentV114','render','setProductType','setInlineSimpleV122'].forEach(fnName => {
+      const fn = typeof window[fnName] === 'function' ? window[fnName] : null;
+      if (fn && !fn.__v125StripeWrapped) {
+        window[fnName] = function(...args) {
+          const result = fn.apply(this, args);
+          setTimeout(applyProductSideStripesV125, 25);
+          setTimeout(applyProductSideStripesV125, 160);
+          return result;
+        };
+        window[fnName].__v125StripeWrapped = true;
+      }
+    });
+
+    document.addEventListener('click', (event) => {
+      if (event.target && event.target.closest && event.target.closest('#openSimpleV112, .product-box, .recent-barcode-item')) {
+        setTimeout(applyProductSideStripesV125, 40);
+        setTimeout(applyProductSideStripesV125, 180);
+      }
+    }, true);
+
+    setTimeout(applyProductSideStripesV125, 200);
+    setTimeout(applyProductSideStripesV125, 800);
+    setInterval(() => {
+      if (document.body.classList.contains('theme-dark')) applyProductSideStripesV125();
+    }, 1400);
+
     window.MESAHA_BUILD_INFO = {
-      fileVersion: "v124",
-      visibleVersion: "Mesaha İO v1.53",
+      fileVersion: "v125",
+      visibleVersion: "Mesaha İO v1.54",
       stableBuild: true
     };
 
