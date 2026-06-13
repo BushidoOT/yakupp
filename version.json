@@ -1,7 +1,7 @@
 {
-  "version": 138,
-  "visibleVersion": "Mesaha İO v1.67",
-  "cache": "mesaha-app-v138",
+  "version": 140,
+  "visibleVersion": "Mesaha İO v1.69",
+  "cache": "mesaha-app-v140",
   "builtAt": "2026-06-13",
-  "notes": "v138 istatistik sıfırlama kesin düzeltme; eski yedek fallback kapatma, usageStats reset marker, kapsam açıklığı"
+  "notes": "v140 admin kullanıcı listesi son giriş/son aktif sıralama; görünür süre ölçümü export öncesi güncellenir"
 }
