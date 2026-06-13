@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha App v101</title>
+  <title>Mesaha App v102</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -5313,6 +5313,241 @@
       font-weight:950 !important;
     }
 
+  
+    /* v102: alt menü aşağı kilit + tablo kaydırma + sade hızlı buton optimizasyonu */
+
+    html{
+      height:100%;
+      overflow-x:hidden;
+    }
+
+    body{
+      min-height:100%;
+      overflow-x:hidden;
+      padding-bottom:calc(120px + env(safe-area-inset-bottom, 0px)) !important;
+    }
+
+    .app{
+      padding-bottom:calc(124px + env(safe-area-inset-bottom, 0px)) !important;
+    }
+
+    .bottom-nav{
+      position:fixed !important;
+      top:auto !important;
+      left:10px !important;
+      right:10px !important;
+      bottom:0 !important;
+      transform:none !important;
+      translate:none !important;
+      margin:0 !important;
+      z-index:70 !important;
+      max-height:74px !important;
+      min-height:62px !important;
+      will-change:auto !important;
+      contain:layout paint style !important;
+      backface-visibility:hidden !important;
+      -webkit-transform:translate3d(0,0,0) !important;
+    }
+
+    .bottom-nav,
+    .bottom-nav *{
+      touch-action:manipulation !important;
+    }
+
+    .bottom-nav::before{
+      content:"";
+      position:absolute;
+      left:0;
+      right:0;
+      bottom:-24px;
+      height:28px;
+      background:inherit;
+      pointer-events:none;
+    }
+
+    body.nav-force-bottom .bottom-nav{
+      bottom:0 !important;
+      top:auto !important;
+      transform:none !important;
+    }
+
+    body.show-records .panel.records-panel{
+      padding-bottom:calc(112px + env(safe-area-inset-bottom, 0px)) !important;
+    }
+
+    .table-wrap{
+      display:block !important;
+      width:100% !important;
+      max-width:100% !important;
+      overflow-x:scroll !important;
+      overflow-y:auto !important;
+      -webkit-overflow-scrolling:touch !important;
+      touch-action:auto !important;
+      overscroll-behavior-x:contain !important;
+      overscroll-behavior-y:auto !important;
+      position:relative !important;
+      isolation:isolate;
+      cursor:grab;
+    }
+
+    .table-wrap:active{
+      cursor:grabbing;
+    }
+
+    .table-wrap table{
+      width:1080px !important;
+      min-width:1080px !important;
+      max-width:none !important;
+      table-layout:auto !important;
+    }
+
+    .table-wrap th,
+    .table-wrap td{
+      white-space:nowrap !important;
+    }
+
+    .table-wrap button,
+    .table-wrap input,
+    .table-wrap label{
+      touch-action:manipulation !important;
+    }
+
+    .table-wrap::after{
+      content:"⇠ Kaydır ⇢";
+      position:sticky;
+      left:12px;
+      bottom:6px;
+      display:inline-flex;
+      padding:4px 9px;
+      border-radius:999px;
+      background:rgba(15,23,42,.72);
+      color:#fff;
+      font-size:11px;
+      font-weight:900;
+      pointer-events:none;
+      opacity:.7;
+    }
+
+    body.theme-dark .table-wrap::after{
+      background:rgba(248,250,252,.18);
+      color:#f8fafc;
+    }
+
+    .simple-chip-row{
+      gap:10px !important;
+      margin-top:9px !important;
+      grid-template-columns:repeat(3, minmax(0, 1fr)) !important;
+      min-height:88px !important;
+    }
+
+    .simple-chip-btn{
+      min-height:42px !important;
+      border-radius:16px !important;
+      font-size:16px !important;
+      font-weight:950 !important;
+      padding:7px 10px !important;
+      box-shadow:0 8px 18px rgba(15,23,42,.09) !important;
+      transition:transform .05s ease, box-shadow .08s ease, background .08s ease !important;
+      -webkit-tap-highlight-color:transparent !important;
+      touch-action:manipulation !important;
+    }
+
+    .simple-chip-btn:active{
+      transform:scale(.96) !important;
+      box-shadow:0 3px 9px rgba(15,23,42,.12) !important;
+    }
+
+    .simple-chip-btn.chip-boy:nth-child(1),
+    .simple-chip-btn.chip-boy:nth-child(4){
+      background:#ecfdf5 !important;
+      border-color:#34d399 !important;
+      color:#064e3b !important;
+    }
+
+    .simple-chip-btn.chip-boy:nth-child(2),
+    .simple-chip-btn.chip-boy:nth-child(5){
+      background:#eff6ff !important;
+      border-color:#60a5fa !important;
+      color:#1e3a8a !important;
+    }
+
+    .simple-chip-btn.chip-boy:nth-child(3),
+    .simple-chip-btn.chip-boy:nth-child(6){
+      background:#fefce8 !important;
+      border-color:#eab308 !important;
+      color:#713f12 !important;
+    }
+
+    .simple-chip-btn.chip-cap:nth-child(1),
+    .simple-chip-btn.chip-cap:nth-child(4){
+      background:#fff7ed !important;
+      border-color:#fb923c !important;
+      color:#7c2d12 !important;
+    }
+
+    .simple-chip-btn.chip-cap:nth-child(2),
+    .simple-chip-btn.chip-cap:nth-child(5){
+      background:#f0f9ff !important;
+      border-color:#38bdf8 !important;
+      color:#075985 !important;
+    }
+
+    .simple-chip-btn.chip-cap:nth-child(3),
+    .simple-chip-btn.chip-cap:nth-child(6){
+      background:#f5f3ff !important;
+      border-color:#8b5cf6 !important;
+      color:#3b0764 !important;
+    }
+
+    body.theme-dark .simple-chip-btn.chip-boy,
+    body.theme-dark .simple-chip-btn.chip-cap{
+      opacity:1 !important;
+      font-weight:950 !important;
+      filter:none !important;
+    }
+
+    body.theme-dark .simple-chip-btn.chip-boy:nth-child(1),
+    body.theme-dark .simple-chip-btn.chip-boy:nth-child(4){
+      background:#86efac !important;
+      border-color:#22c55e !important;
+      color:#052e16 !important;
+    }
+
+    body.theme-dark .simple-chip-btn.chip-boy:nth-child(2),
+    body.theme-dark .simple-chip-btn.chip-boy:nth-child(5){
+      background:#93c5fd !important;
+      border-color:#3b82f6 !important;
+      color:#172554 !important;
+    }
+
+    body.theme-dark .simple-chip-btn.chip-boy:nth-child(3),
+    body.theme-dark .simple-chip-btn.chip-boy:nth-child(6){
+      background:#fde68a !important;
+      border-color:#eab308 !important;
+      color:#422006 !important;
+    }
+
+    body.theme-dark .simple-chip-btn.chip-cap:nth-child(1),
+    body.theme-dark .simple-chip-btn.chip-cap:nth-child(4){
+      background:#fdba74 !important;
+      border-color:#f97316 !important;
+      color:#431407 !important;
+    }
+
+    body.theme-dark .simple-chip-btn.chip-cap:nth-child(2),
+    body.theme-dark .simple-chip-btn.chip-cap:nth-child(5){
+      background:#7dd3fc !important;
+      border-color:#0284c7 !important;
+      color:#082f49 !important;
+    }
+
+    body.theme-dark .simple-chip-btn.chip-cap:nth-child(3),
+    body.theme-dark .simple-chip-btn.chip-cap:nth-child(6){
+      background:#c4b5fd !important;
+      border-color:#7c3aed !important;
+      color:#2e1065 !important;
+    }
+
   </style>
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -5483,7 +5718,7 @@
 <div class="app">
     <header class="topbar">
       <div class="brand">
-        <h1>Mesaha İO v1.30</h1>
+        <h1>Mesaha İO v1.31</h1>
         
       </div>
       <div id="activeUserBadge" class="active-user-badge" role="button" tabindex="0" title="Kullanıcı panelini aç" style="display:none"></div>
@@ -6938,8 +7173,8 @@
     function currentDeviceInfoPayload() {
       const active = state.activeUser || findActiveUser();
       return {
-        appVersion: "Mesaha İO v1.30",
-        fileVersion: "v101",
+        appVersion: "Mesaha İO v1.31",
+        fileVersion: "v102",
         userName: active && active.name ? cleanUserText(active.name) : "",
         seflik: active && active.seflik ? cleanUserText(active.seflik) : "",
         deviceId: getOrCreateDeviceId(),
@@ -7680,7 +7915,7 @@
 
     async function uploadCloudBackupOpen(user) {
       const payload = buildCloudBackupPayload(user);
-      payload.version = 101;
+      payload.version = 102;
       const bolmePart = els.bolmeNo && String(els.bolmeNo.value || "").trim() ? `_${cleanFilePart(els.bolmeNo.value)}` : "";
       const fileName = `Mesaha_Yedek_${cleanFilePart(user.seflik)}_${cleanFilePart(user.name)}${bolmePart}_${new Date().toISOString().slice(0,19).replace(/[-:T]/g, "")}.json`;
 
@@ -8109,7 +8344,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function buildCloudBackupPayload(user) {
       return {
         app: "Mesaha İO",
-        version: 101,
+        version: 102,
         createdAt: new Date().toLocaleString("tr-TR"),
         user: {
           name: user.name || "",
@@ -10113,7 +10348,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function backup() {
       const data = {
         app: "Mesaha App",
-        version: 101,
+        version: 102,
         exportedAt: formatDateTime(),
         systemHeaders: HEADERS,
         settings: state.settings,
@@ -10530,7 +10765,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     async function firebaseUploadBackup(user) {
       const { db } = await ensureFirebaseReady();
       const payload = buildCloudBackupPayload(user);
-      payload.version = 101;
+      payload.version = 102;
       payload.cloud = "firebase";
 
       const bolmeNo = els.bolmeNo ? String(els.bolmeNo.value || "").trim() : "";
@@ -12221,6 +12456,143 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     syncOverlayBodyClassesV101();
 
 
+    
+    /* v102: alt menü kilidi + hızlı sade butonlar */
+    function forceBottomNavV102() {
+      document.body.classList.add("nav-force-bottom");
+      const nav = document.querySelector(".bottom-nav");
+      if (!nav) return;
+      nav.style.setProperty("position", "fixed", "important");
+      nav.style.setProperty("top", "auto", "important");
+      nav.style.setProperty("bottom", "0px", "important");
+      nav.style.setProperty("transform", "none", "important");
+      nav.style.setProperty("z-index", "70", "important");
+    }
+
+    window.addEventListener("scroll", forceBottomNavV102, { passive:true });
+    window.addEventListener("resize", forceBottomNavV102, { passive:true });
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener("resize", forceBottomNavV102, { passive:true });
+      window.visualViewport.addEventListener("scroll", forceBottomNavV102, { passive:true });
+    }
+    setInterval(forceBottomNavV102, 900);
+    setTimeout(forceBottomNavV102, 50);
+    setTimeout(forceBottomNavV102, 500);
+
+    function uniqueRecentValuesV102(field, fallback = []) {
+      const values = [];
+      (state.records || []).forEach(r => {
+        const val = String(r[field] || "").trim();
+        if (val && !values.includes(val)) values.push(val);
+      });
+      fallback.forEach(v => {
+        const val = String(v || "").trim();
+        if (val && !values.includes(val)) values.push(val);
+      });
+      return values.slice(0, 6);
+    }
+
+    function setSimpleValueFastV102(input, value) {
+      if (!input) return;
+      input.value = String(value || "");
+      try { input.dispatchEvent(new Event("input", { bubbles:true })); } catch {}
+      try {
+        input.focus({ preventScroll:true });
+        input.select();
+      } catch {
+        try { input.focus(); input.select(); } catch {}
+      }
+    }
+
+    function simpleChipDownV102(event, field, value) {
+      if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        if (event.stopImmediatePropagation) event.stopImmediatePropagation();
+      }
+
+      if (field === "length") {
+        setSimpleValueFastV102(els.simpleLength, value);
+      } else {
+        setSimpleValueFastV102(els.simpleDiameter, value);
+      }
+
+      return false;
+    }
+
+    function simpleRenderQuickChipsV102() {
+      if (els.simpleLengthChips) {
+        const lastBoy = (els.simpleLength && els.simpleLength.value) || (els.length && els.length.value) || localStorage.getItem("mesaha_simple_last_length_v1") || "";
+        const values = uniqueRecentValuesV102("length", [lastBoy, "4", "3", "2.5", "2", "1.5", "1"]);
+        els.simpleLengthChips.innerHTML = values.map(v => `<button type="button" class="simple-chip-btn chip-boy" data-simple-length="${escapeHtml(v)}" onpointerdown="return simpleChipDownV102(event,'length','${escapeHtml(v)}')" onclick="return false">${escapeHtml(v)}</button>`).join("");
+      }
+
+      if (els.simpleDiameterChips) {
+        const lastCap = (els.simpleDiameter && els.simpleDiameter.value) || (els.diameter && els.diameter.value) || "";
+        const values = uniqueRecentValuesV102("diameter", [lastCap, "32", "28", "26", "24", "22", "21"]);
+        els.simpleDiameterChips.innerHTML = values.map(v => `<button type="button" class="simple-chip-btn chip-cap" data-simple-diameter="${escapeHtml(v)}" onpointerdown="return simpleChipDownV102(event,'diameter','${escapeHtml(v)}')" onclick="return false">${escapeHtml(v)}</button>`).join("");
+      }
+    }
+
+    // Eski yavaş/çakışan renderları yeni hızlı rendera yönlendir.
+    if (typeof simpleRenderQuickChipsV93 === "function") simpleRenderQuickChipsV93 = simpleRenderQuickChipsV102;
+    if (typeof simpleRenderQuickChipsV97 === "function") simpleRenderQuickChipsV97 = simpleRenderQuickChipsV102;
+
+    if (typeof simpleOpenModeV93 === "function" && !simpleOpenModeV93.__v102Wrapped) {
+      const originalOpenV102 = simpleOpenModeV93;
+      simpleOpenModeV93 = function(...args) {
+        const result = originalOpenV102.apply(this, args);
+        simpleRenderQuickChipsV102();
+        forceBottomNavV102();
+        return result;
+      };
+      simpleOpenModeV93.__v102Wrapped = true;
+      if (typeof simpleOpenModeV92 === "function") simpleOpenModeV92 = simpleOpenModeV93;
+    }
+
+    window.simpleChipDownV102 = simpleChipDownV102;
+
+    // Kayıtlar tablosunda parmakla yatay sürükleme destekleyici.
+    function attachTableDragScrollV102() {
+      document.querySelectorAll(".table-wrap").forEach(wrap => {
+        if (wrap.__dragScrollV102) return;
+        wrap.__dragScrollV102 = true;
+
+        let startX = 0;
+        let startY = 0;
+        let startScroll = 0;
+        let dragging = false;
+
+        wrap.addEventListener("touchstart", e => {
+          if (!e.touches || !e.touches[0]) return;
+          startX = e.touches[0].clientX;
+          startY = e.touches[0].clientY;
+          startScroll = wrap.scrollLeft;
+          dragging = false;
+        }, { passive:true });
+
+        wrap.addEventListener("touchmove", e => {
+          if (!e.touches || !e.touches[0]) return;
+          const dx = e.touches[0].clientX - startX;
+          const dy = e.touches[0].clientY - startY;
+          if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 5) {
+            dragging = true;
+            wrap.scrollLeft = startScroll - dx;
+          }
+        }, { passive:true });
+
+        wrap.addEventListener("touchend", e => {
+          if (dragging) {
+            setTimeout(() => { dragging = false; }, 80);
+          }
+        }, { passive:true });
+      });
+    }
+
+    attachTableDragScrollV102();
+    setInterval(attachTableDragScrollV102, 1200);
+
+
     window.forceUpdateApp = forceUpdateApp;
     window.mesahaToggleTheme = mesahaToggleTheme;
     window.simpleOpenModeV92 = simpleOpenModeV92;
@@ -12241,8 +12613,8 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     load();
   
     window.MESAHA_BUILD_INFO = {
-      fileVersion: "v101",
-      visibleVersion: "Mesaha İO v1.30",
+      fileVersion: "v102",
+      visibleVersion: "Mesaha İO v1.31",
       stableBuild: true
     };
 
