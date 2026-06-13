@@ -1,11 +1,12 @@
-Mesaha App v94 / Mesaha İO v1.23
+Mesaha App v95 / Mesaha İO v1.24
 
-Sade Mod düzeltmesi:
-- Odun türü butonlarına basınca klavyenin kapanmaması için odak koruma eklendi.
-- Çap/Boy hızlı giriş butonlarına basınca klavyenin kapanmaması için odak koruma eklendi.
-- Sade Mod ürün butonlarında net ✓ SEÇİLİ işareti eklendi.
-- Sade Mod v93 davranışı korunur:
-  Boy solda, Çap sağda; boy kayıttan sonra kalır; çap kayıttan sonra temizlenir.
+Düzeltmeler:
+- Karanlık mod tamamen daha okunur ve şık hale getirildi.
+- Kılavuz, admin paneli, kartlar, inputlar ve butonlarda kontrast iyileştirildi.
+- Beyaz kart içinde soluk yazı sorunu giderildi.
+- Barkod düzeltmeyi iptal edince barkod alanına [object PointerEvent] yazma sorunu için güvenlik düzeltmesi eklendi.
+- Barkod alanında yanlışlıkla [object PointerEvent] / [object Object] görünürse otomatik temizlenir ve güvenli barkoda döner.
+- Sade Mod v94 davranışı korunur.
 
 GitHub'a yüklenecek dosyalar:
 - index.html

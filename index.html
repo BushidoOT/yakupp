@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha App v94</title>
+  <title>Mesaha App v95</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -4509,6 +4509,229 @@
       touch-action:manipulation;
     }
 
+  
+    /* v95: Şık ve okunur karanlık mod */
+    body.theme-dark{
+      --dm-bg:#07111f;
+      --dm-surface:#101c2e;
+      --dm-surface-2:#17243a;
+      --dm-card:#1b2a42;
+      --dm-border:#3e526d;
+      --dm-text:#f8fafc;
+      --dm-muted:#d7e3f5;
+      --dm-soft:#94a3b8;
+      background:
+        radial-gradient(circle at 15% 0%, rgba(37,99,235,.20), transparent 34%),
+        radial-gradient(circle at 90% 12%, rgba(16,185,129,.12), transparent 28%),
+        linear-gradient(180deg, #06101f 0%, #0b1525 48%, #0f172a 100%) !important;
+      color:var(--dm-text) !important;
+    }
+
+    body.theme-dark .app,
+    body.theme-dark .panel{
+      background:rgba(16,28,46,.96) !important;
+      border-color:var(--dm-border) !important;
+      color:var(--dm-text) !important;
+      box-shadow:0 18px 50px rgba(0,0,0,.36) !important;
+    }
+
+    body.theme-dark .topbar{
+      background:rgba(11,21,37,.88) !important;
+      border:1px solid var(--dm-border) !important;
+      box-shadow:0 14px 36px rgba(0,0,0,.24) !important;
+      backdrop-filter:blur(18px) saturate(150%) !important;
+      -webkit-backdrop-filter:blur(18px) saturate(150%) !important;
+    }
+
+    body.theme-dark .brand h1,
+    body.theme-dark h1,
+    body.theme-dark h2,
+    body.theme-dark h3,
+    body.theme-dark h4,
+    body.theme-dark label,
+    body.theme-dark .panel-header h2,
+    body.theme-dark .guide-card h3,
+    body.theme-dark .section-title,
+    body.theme-dark .field-title{
+      color:var(--dm-text) !important;
+      text-shadow:none !important;
+      opacity:1 !important;
+    }
+
+    body.theme-dark p,
+    body.theme-dark li,
+    body.theme-dark .hint,
+    body.theme-dark .help-text,
+    body.theme-dark .recent-note,
+    body.theme-dark .guide-card li,
+    body.theme-dark .guide-card p,
+    body.theme-dark .panel-body,
+    body.theme-dark .panel-body *{
+      color:var(--dm-muted) !important;
+      opacity:1 !important;
+    }
+
+    body.theme-dark b,
+    body.theme-dark strong{
+      color:var(--dm-text) !important;
+      opacity:1 !important;
+    }
+
+    body.theme-dark .guide-card,
+    body.theme-dark .admin-summary-card,
+    body.theme-dark .registered-user-item,
+    body.theme-dark .bulk-actions,
+    body.theme-dark .daily-summary,
+    body.theme-dark .table-wrap,
+    body.theme-dark .simple-mode-card,
+    body.theme-dark .user-panel-card,
+    body.theme-dark .issue-report-card,
+    body.theme-dark .cloud-restore-card,
+    body.theme-dark .recent-barcodes-box,
+    body.theme-dark .tree-section,
+    body.theme-dark .product-section,
+    body.theme-dark .form-card,
+    body.theme-dark .input-card,
+    body.theme-dark .card{
+      background:linear-gradient(180deg, var(--dm-surface-2), var(--dm-surface)) !important;
+      border-color:var(--dm-border) !important;
+      color:var(--dm-text) !important;
+      box-shadow:0 12px 28px rgba(0,0,0,.20) !important;
+    }
+
+    body.theme-dark .mode-mini-btn,
+    body.theme-dark .secondary,
+    body.theme-dark button.ghost,
+    body.theme-dark .admin-quick:not(.active),
+    body.theme-dark .admin-tab:not(.active),
+    body.theme-dark .chip,
+    body.theme-dark .pill{
+      background:#23334d !important;
+      color:#f8fafc !important;
+      border-color:#526783 !important;
+      opacity:1 !important;
+    }
+
+    body.theme-dark .primary,
+    body.theme-dark button.primary,
+    body.theme-dark .admin-quick.active,
+    body.theme-dark .admin-tab.active{
+      background:linear-gradient(180deg, #3b82f6, #2563eb) !important;
+      color:#ffffff !important;
+      border-color:#60a5fa !important;
+      opacity:1 !important;
+    }
+
+    body.theme-dark input,
+    body.theme-dark select,
+    body.theme-dark textarea{
+      background:#07111f !important;
+      color:#f8fafc !important;
+      border-color:#60748f !important;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.05) !important;
+      opacity:1 !important;
+    }
+
+    body.theme-dark input::placeholder,
+    body.theme-dark textarea::placeholder{
+      color:#cbd5e1 !important;
+      opacity:1 !important;
+    }
+
+    body.theme-dark input:focus,
+    body.theme-dark select:focus,
+    body.theme-dark textarea:focus{
+      border-color:#60a5fa !important;
+      box-shadow:0 0 0 4px rgba(96,165,250,.18) !important;
+    }
+
+    body.theme-dark .bottom-nav{
+      background:rgba(11,21,37,.95) !important;
+      border-color:#3e526d !important;
+      box-shadow:0 -12px 34px rgba(0,0,0,.34) !important;
+    }
+
+    body.theme-dark .bottom-nav button{
+      background:#101c2e !important;
+      color:#dbeafe !important;
+      border-color:#3e526d !important;
+      opacity:1 !important;
+    }
+
+    body.theme-dark .bottom-nav button.active{
+      background:linear-gradient(180deg, #3b82f6, #2563eb) !important;
+      color:#ffffff !important;
+      border-color:#60a5fa !important;
+    }
+
+    body.theme-dark .product-box,
+    body.theme-dark .product-btn,
+    body.theme-dark [data-product-type]{
+      opacity:1 !important;
+      color:#111827 !important;
+    }
+
+    body.theme-dark .product-box.active,
+    body.theme-dark .product-btn.active,
+    body.theme-dark [data-product-type].active{
+      color:#111827 !important;
+      filter:saturate(1.05) brightness(1.02);
+    }
+
+    body.theme-dark .tree-pill,
+    body.theme-dark .tree-chip,
+    body.theme-dark .selected-tree,
+    body.theme-dark .selected-pill{
+      background:#dcfce7 !important;
+      color:#14532d !important;
+      border-color:#86efac !important;
+    }
+
+    body.theme-dark .records-table,
+    body.theme-dark table{
+      background:#ffffff !important;
+      color:#111827 !important;
+    }
+
+    body.theme-dark .records-table *,
+    body.theme-dark table *{
+      color:#111827 !important;
+      opacity:1 !important;
+    }
+
+    body.theme-dark .toast{
+      color:#ffffff !important;
+      opacity:1 !important;
+    }
+
+    body.theme-dark .simple-chip-btn{
+      background:#22324a !important;
+      color:#f8fafc !important;
+      border-color:#526783 !important;
+    }
+
+    body.theme-dark .simple-recent-item{
+      background:#17243a !important;
+      border-color:#3e526d !important;
+    }
+
+    body.theme-dark .simple-recent-item b,
+    body.theme-dark .simple-recent-item span{
+      color:#f8fafc !important;
+    }
+
+    body.theme-dark .simple-auto-info{
+      background:#0f1d31 !important;
+      color:#dbeafe !important;
+      border-color:#3e526d !important;
+    }
+
+    body.theme-dark .simple-empty{
+      background:#0f1d31 !important;
+      color:#dbeafe !important;
+      border-color:#3e526d !important;
+    }
+
   </style>
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -4679,7 +4902,7 @@
 <div class="app">
     <header class="topbar">
       <div class="brand">
-        <h1>Mesaha İO v1.23</h1>
+        <h1>Mesaha İO v1.24</h1>
         
       </div>
       <div id="activeUserBadge" class="active-user-badge" role="button" tabindex="0" title="Kullanıcı panelini aç" style="display:none"></div>
@@ -6132,8 +6355,8 @@
     function currentDeviceInfoPayload() {
       const active = state.activeUser || findActiveUser();
       return {
-        appVersion: "Mesaha İO v1.23",
-        fileVersion: "v94",
+        appVersion: "Mesaha İO v1.24",
+        fileVersion: "v95",
         userName: active && active.name ? cleanUserText(active.name) : "",
         seflik: active && active.seflik ? cleanUserText(active.seflik) : "",
         deviceId: getOrCreateDeviceId(),
@@ -6151,6 +6374,7 @@
     function issueDeviceInfoPayload() {
       return currentDeviceInfoPayload();
     mesahaInitTheme();
+    setTimeout(mesahaRepairBarcodeInput, 300);
     }
 
     function issueDeviceInfoText(info) {
@@ -6873,7 +7097,7 @@
 
     async function uploadCloudBackupOpen(user) {
       const payload = buildCloudBackupPayload(user);
-      payload.version = 94;
+      payload.version = 95;
       const bolmePart = els.bolmeNo && String(els.bolmeNo.value || "").trim() ? `_${cleanFilePart(els.bolmeNo.value)}` : "";
       const fileName = `Mesaha_Yedek_${cleanFilePart(user.seflik)}_${cleanFilePart(user.name)}${bolmePart}_${new Date().toISOString().slice(0,19).replace(/[-:T]/g, "")}.json`;
 
@@ -7302,7 +7526,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function buildCloudBackupPayload(user) {
       return {
         app: "Mesaha İO",
-        version: 94,
+        version: 95,
         createdAt: new Date().toLocaleString("tr-TR"),
         user: {
           name: user.name || "",
@@ -9304,7 +9528,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function backup() {
       const data = {
         app: "Mesaha App",
-        version: 94,
+        version: 95,
         exportedAt: formatDateTime(),
         systemHeaders: HEADERS,
         settings: state.settings,
@@ -9721,7 +9945,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     async function firebaseUploadBackup(user) {
       const { db } = await ensureFirebaseReady();
       const payload = buildCloudBackupPayload(user);
-      payload.version = 94;
+      payload.version = 95;
       payload.cloud = "firebase";
 
       const bolmeNo = els.bolmeNo ? String(els.bolmeNo.value || "").trim() : "";
@@ -10656,6 +10880,107 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     };
 
 
+    
+    /* v95: Barkod alanında [object PointerEvent] düzeltmesi */
+    function mesahaIsObjectEventText(value) {
+      return String(value || "").includes("[object PointerEvent]") ||
+             String(value || "").includes("[object MouseEvent]") ||
+             String(value || "").includes("[object Event]") ||
+             String(value || "").includes("[object Object]");
+    }
+
+    function mesahaGetBarcodeInput() {
+      return els.barcode || document.getElementById("barcode") || document.getElementById("barkod") || document.getElementById("barkodNo") || document.querySelector('input[name="barcode"], input[name="barkodNo"]');
+    }
+
+    function mesahaNextSafeBarcode() {
+      if (typeof nextBarcode === "function") {
+        try {
+          const value = nextBarcode();
+          if (value && !mesahaIsObjectEventText(value)) return String(value);
+        } catch {}
+      }
+
+      if (typeof generateNextBarcode === "function") {
+        try {
+          const value = generateNextBarcode();
+          if (value && !mesahaIsObjectEventText(value)) return String(value);
+        } catch {}
+      }
+
+      const last = (state.records || [])[0] || {};
+      const raw = String(last.barcode || last.barkodNo || "").trim();
+      const match = raw.match(/^(.*?)(\d+)$/);
+      if (match) {
+        const prefix = match[1];
+        const num = match[2];
+        return prefix + String(Number(num) + 1).padStart(num.length, "0");
+      }
+
+      return "";
+    }
+
+    function mesahaRepairBarcodeInput() {
+      const input = mesahaGetBarcodeInput();
+      if (!input) return;
+
+      if (mesahaIsObjectEventText(input.value)) {
+        const safe = mesahaNextSafeBarcode();
+        input.value = safe;
+        try { input.dispatchEvent(new Event("input", { bubbles:true })); } catch {}
+        try { input.dispatchEvent(new Event("change", { bubbles:true })); } catch {}
+      }
+    }
+
+    document.addEventListener("input", (event) => {
+      if (event && event.target && event.target === mesahaGetBarcodeInput()) {
+        setTimeout(mesahaRepairBarcodeInput, 0);
+      }
+    }, true);
+
+    document.addEventListener("click", () => {
+      setTimeout(mesahaRepairBarcodeInput, 30);
+    }, true);
+
+    const __mesahaCancelCandidates = ["cancelEdit", "cancelEditing", "resetEdit", "clearEditMode"];
+    __mesahaCancelCandidates.forEach(name => {
+      if (typeof window[name] === "function" && !window[name].__mesahaWrappedV95) {
+        const original = window[name];
+        const wrapped = function(...args) {
+          const result = original.apply(this, args);
+          setTimeout(mesahaRepairBarcodeInput, 30);
+          return result;
+        };
+        wrapped.__mesahaWrappedV95 = true;
+        window[name] = wrapped;
+      }
+    });
+
+    const __mesahaEditCandidates = ["editRecord", "startEditRecord", "editByBarcode"];
+    __mesahaEditCandidates.forEach(name => {
+      if (typeof window[name] === "function" && !window[name].__mesahaWrappedV95) {
+        const original = window[name];
+        const wrapped = function(arg, ...rest) {
+          if (arg && typeof arg === "object" && typeof arg.preventDefault === "function") {
+            arg.preventDefault();
+            return;
+          }
+          return original.call(this, arg, ...rest);
+        };
+        wrapped.__mesahaWrappedV95 = true;
+        window[name] = wrapped;
+      }
+    });
+
+    // Sade mod son 3 karttan gelen tıklama olayının barkoda yazılmasını engellemek için ek güvence
+    document.addEventListener("pointerdown", (event) => {
+      const recent = event.target && event.target.closest ? event.target.closest(".simple-recent-item, .recent-barcode-card, [data-simple-id]") : null;
+      if (recent) {
+        setTimeout(mesahaRepairBarcodeInput, 60);
+      }
+    }, true);
+
+
     window.forceUpdateApp = forceUpdateApp;
     window.mesahaToggleTheme = mesahaToggleTheme;
     window.simpleOpenModeV92 = simpleOpenModeV92;
@@ -10676,8 +11001,8 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     load();
   
     window.MESAHA_BUILD_INFO = {
-      fileVersion: "v94",
-      visibleVersion: "Mesaha İO v1.23",
+      fileVersion: "v95",
+      visibleVersion: "Mesaha İO v1.24",
       stableBuild: true
     };
 
