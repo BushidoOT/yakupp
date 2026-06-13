@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha App v84</title>
+  <title>Mesaha App v85</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -3936,6 +3936,62 @@
       }
     }
 
+  
+    /* v85: Kullanıcı cihaz/sürüm bilgisi ve bildirim rozeti */
+    .active-user-badge{
+      position:relative !important;
+    }
+
+    .user-notification-dot{
+      position:absolute;
+      top:-6px;
+      right:-6px;
+      min-width:18px;
+      height:18px;
+      padding:0 5px;
+      border-radius:999px;
+      background:#ef4444;
+      color:#fff;
+      border:2px solid #fff;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      font-size:10px;
+      font-weight:950;
+      box-shadow:0 8px 18px rgba(239,68,68,.35);
+      line-height:1;
+    }
+
+    .active-user-badge.has-notification .user-notification-dot{
+      display:flex;
+    }
+
+    .user-update-offline-note{
+      margin:2px 0 0 !important;
+      padding:8px 10px;
+      border-radius:14px;
+      background:#fff7ed;
+      color:#9a3412 !important;
+      border:1px solid #fed7aa;
+      font-weight:850 !important;
+      font-size:12px !important;
+      line-height:1.35 !important;
+      grid-column:1 / -1;
+    }
+
+    .admin-device-pill{
+      grid-column:1 / -1;
+      background:#f1f5f9 !important;
+      border:1px solid #cbd5e1 !important;
+      color:#334155 !important;
+    }
+
+    .admin-version-pill{
+      background:#eef2ff !important;
+      border-color:#c7d2fe !important;
+      color:#3730a3 !important;
+    }
+
   </style>
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -3979,7 +4035,9 @@
         <button id="panelPasswordBtn" class="warning" type="button">Bulut Yedeklerini Getir</button>
         <button id="panelCloudBackupBtn" class="primary" type="button">Buluta Yedekle</button>
         <button id="panelReportIssueBtn" class="secondary" type="button">Sorun Bildir</button>
+        <button id="panelAdminOpenBtn" class="secondary" type="button">Yönetici Panelini Aç</button>
         <button id="userMenuForceUpdateBtn" class="secondary" type="button">Yeni Sürümü Güncelle</button>
+        <p class="hint user-update-offline-note">Not: İnternet olmadığında güncelleme yapılamaz; uygulamayı araziden önce bir kez internet varken açınız.</p>
       </div>
 
       <p class="hint">Bulut yedekleme şifresizdir. Kullanıcı adı ve şeflik ile yedekler listelenir.</p>
@@ -4059,7 +4117,7 @@
   <div class="app">
     <header class="topbar">
       <div class="brand">
-        <h1>Mesaha İO v1.13</h1>
+        <h1>Mesaha İO v1.14</h1>
         
       </div>
       <div id="activeUserBadge" class="active-user-badge" role="button" tabindex="0" title="Kullanıcı panelini aç" style="display:none"></div>
@@ -4432,11 +4490,6 @@
               </ol>
               <button id="guideForceUpdateBtn" class="secondary" type="button">Yeni Sürümü Güncelle</button>
             </div>
-
-            <div class="guide-card admin-guide-open-card">
-              <h3>Yönetici Bölümü</h3>
-              <button id="guideAdminOpenBtn" class="secondary" type="button">Yönetici Panelini Aç</button>
-            </div>
           </div>
         </div>
       </section>
@@ -4673,9 +4726,9 @@
       navRecords: $("navRecords"),
       navGuide: $("navGuide"),
       navAdmin: $("navAdmin"),
-      guideAdminOpenBtn: $("guideAdminOpenBtn"),
       userMenuForceUpdateBtn: $("userMenuForceUpdateBtn"),
       panelReportIssueBtn: $("panelReportIssueBtn"),
+      panelAdminOpenBtn: $("panelAdminOpenBtn"),
       issueReportOverlay: $("issueReportOverlay"),
       issueReportCloseBtn: $("issueReportCloseBtn"),
       issueReportCancelBtn: $("issueReportCancelBtn"),
@@ -5384,7 +5437,8 @@
               <span>Şeflik: ${escapeHtml(user.seflik || "-")}</span>
               <span>Son giriş: ${escapeHtml(user.lastLogin || "-")}</span>
               <span>Yedek: ${(Number(user.backupCount) || 0).toLocaleString("tr-TR")}</span>
-              <span>Cihaz: ${(Number(user.deviceCount) || 0).toLocaleString("tr-TR")}</span>
+              <span class="admin-version-pill">Sürüm: ${escapeHtml(user.appVersion || user.fileVersion || "-")}</span>
+              <span class="admin-device-pill">Cihaz: ${escapeHtml((user.lastDeviceInfo && (user.lastDeviceInfo.platform || user.lastDeviceInfo.userAgent)) || user.lastDevice || `${(Number(user.deviceCount) || 0).toLocaleString("tr-TR")} cihaz`)}</span>
             </div>
             ${note ? `<div class="admin-note-item"><b>Admin Notu</b><span>${escapeHtml(note)}</span></div>` : ""}
             <div class="registered-user-actions">
@@ -5496,11 +5550,12 @@
       return "new";
     }
 
-    function issueDeviceInfoPayload() {
+    
+    function currentDeviceInfoPayload() {
       const active = state.activeUser || findActiveUser();
       return {
-        appVersion: "Mesaha İO v1.13",
-        fileVersion: "v84",
+        appVersion: "Mesaha İO v1.14",
+        fileVersion: "v85",
         userName: active && active.name ? cleanUserText(active.name) : "",
         seflik: active && active.seflik ? cleanUserText(active.seflik) : "",
         deviceId: getOrCreateDeviceId(),
@@ -5509,8 +5564,14 @@
         platform: navigator.platform || "",
         online: navigator.onLine,
         screen: `${window.screen && window.screen.width || 0}x${window.screen && window.screen.height || 0}`,
-        createdLocal: new Date().toLocaleString("tr-TR")
+        language: navigator.language || "",
+        createdLocal: new Date().toLocaleString("tr-TR"),
+        updatedMs: Date.now()
       };
+    }
+
+    function issueDeviceInfoPayload() {
+      return currentDeviceInfoPayload();
     }
 
     function issueDeviceInfoText(info) {
@@ -5529,6 +5590,7 @@
         return;
       }
 
+      closeUserPanel();
       if (els.issueReportMessage) els.issueReportMessage.value = "";
       if (els.issueReportUserInfo) els.issueReportUserInfo.textContent = `${active.name} • ${active.seflik}`;
       if (els.issueDeviceInfo) els.issueDeviceInfo.textContent = issueDeviceInfoText(issueDeviceInfoPayload());
@@ -5615,10 +5677,63 @@
             ${r.adminReply ? `<div class="issue-reply"><b>Admin Cevabı:</b> ${escapeHtml(r.adminReply)}</div>` : ""}
           </div>
         `).join("");
+        markUserRepliesSeen();
       } catch (error) {
         els.issueMyReportsList.innerHTML = "Bildirimler alınamadı.";
       }
     }
+
+    
+    async function countUserUnreadReplies() {
+      const active = state.activeUser || findActiveUser();
+      if (!active || !active.name || !active.seflik) return 0;
+
+      try {
+        const rows = await firebaseListMyTickets();
+        const seenRaw = localStorage.getItem("mesaha_seen_admin_replies_v1") || "{}";
+        const seen = JSON.parse(seenRaw);
+        let count = 0;
+        rows.forEach(r => {
+          if (!r.adminReply) return;
+          const key = `${r.id}_${r.updatedAtMs || r.createdAtMs || ""}`;
+          if (!seen[key]) count++;
+        });
+        return count;
+      } catch {
+        return 0;
+      }
+    }
+
+    async function updateUserNotificationBadge() {
+      const badge = els.activeUserBadge || document.getElementById("activeUserBadge");
+      if (!badge) return;
+      let dot = badge.querySelector(".user-notification-dot");
+      if (!dot) {
+        dot = document.createElement("span");
+        dot.className = "user-notification-dot";
+        badge.appendChild(dot);
+      }
+
+      const count = await countUserUnreadReplies();
+      badge.classList.toggle("has-notification", count > 0);
+      dot.textContent = count > 9 ? "9+" : String(count || "");
+    }
+
+    async function markUserRepliesSeen() {
+      try {
+        const rows = await firebaseListMyTickets();
+        const seenRaw = localStorage.getItem("mesaha_seen_admin_replies_v1") || "{}";
+        const seen = JSON.parse(seenRaw);
+        rows.forEach(r => {
+          if (!r.adminReply) return;
+          const key = `${r.id}_${r.updatedAtMs || r.createdAtMs || ""}`;
+          seen[key] = true;
+        });
+        localStorage.setItem("mesaha_seen_admin_replies_v1", JSON.stringify(seen));
+        updateUserNotificationBadge().catch(() => {});
+      } catch {}
+    }
+
 
     let adminReportFilter = "open";
 
@@ -6150,7 +6265,7 @@
 
     async function uploadCloudBackupOpen(user) {
       const payload = buildCloudBackupPayload(user);
-      payload.version = 84;
+      payload.version = 85;
       const bolmePart = els.bolmeNo && String(els.bolmeNo.value || "").trim() ? `_${cleanFilePart(els.bolmeNo.value)}` : "";
       const fileName = `Mesaha_Yedek_${cleanFilePart(user.seflik)}_${cleanFilePart(user.name)}${bolmePart}_${new Date().toISOString().slice(0,19).replace(/[-:T]/g, "")}.json`;
 
@@ -6579,7 +6694,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function buildCloudBackupPayload(user) {
       return {
         app: "Mesaha İO",
-        version: 84,
+        version: 85,
         createdAt: new Date().toLocaleString("tr-TR"),
         user: {
           name: user.name || "",
@@ -8581,7 +8696,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function backup() {
       const data = {
         app: "Mesaha App",
-        version: 84,
+        version: 85,
         exportedAt: formatDateTime(),
         systemHeaders: HEADERS,
         settings: state.settings,
@@ -8939,6 +9054,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
       const nowText = firebaseDateText();
       const nowMs = Date.now();
       const deviceId = getOrCreateDeviceId();
+      const deviceInfo = currentDeviceInfoPayload();
 
       const old = snap.exists ? (snap.data() || {}) : {};
       const deviceIds = old.deviceIds && typeof old.deviceIds === "object" ? old.deviceIds : {};
@@ -8959,7 +9075,11 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
         backupCount: Number(old.backupCount || 0),
         lastBackupAt: old.lastBackupAt || "",
         lastBackupMs: Number(old.lastBackupMs || 0),
-        source: "firebase"
+        source: "firebase",
+        appVersion: deviceInfo.appVersion,
+        fileVersion: deviceInfo.fileVersion,
+        lastDeviceInfo: deviceInfo,
+        lastDevice: `${deviceInfo.platform || "-"} • ${deviceInfo.screen || "-"}`
       }, { merge: true });
     }
 
@@ -8979,7 +9099,11 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
           backupCount: Number(d.backupCount || 0),
           deviceCount: Number(d.deviceCount || (d.deviceIds ? Object.keys(d.deviceIds).length : 0)),
           lastLoginMs: Number(d.lastLoginMs || 0),
-          lastBackupAt: d.lastBackupAt || ""
+          lastBackupAt: d.lastBackupAt || "",
+          appVersion: d.appVersion || d.fileVersion || "",
+          fileVersion: d.fileVersion || "",
+          lastDeviceInfo: d.lastDeviceInfo || null,
+          lastDevice: d.lastDevice || ""
         });
       });
       users.sort((a, b) => Number(b.lastLoginMs || 0) - Number(a.lastLoginMs || 0));
@@ -8989,7 +9113,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     async function firebaseUploadBackup(user) {
       const { db } = await ensureFirebaseReady();
       const payload = buildCloudBackupPayload(user);
-      payload.version = 84;
+      payload.version = 85;
       payload.cloud = "firebase";
 
       const bolmeNo = els.bolmeNo ? String(els.bolmeNo.value || "").trim() : "";
@@ -9410,8 +9534,6 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     }));
 
     if (els.guideForceUpdateBtn) els.guideForceUpdateBtn.addEventListener("click", forceUpdateApp);
-
-    if (els.guideAdminOpenBtn) els.guideAdminOpenBtn.addEventListener("click", unlockAdminPanel);
     if (els.adminRefreshBtn) els.adminRefreshBtn.addEventListener("click", () => loadAdminPanelData().catch(err => showToast(err && err.message ? err.message : "Admin yenilenemedi.")));
     document.querySelectorAll(".admin-tab").forEach(btn => btn.addEventListener("click", () => setAdminPanelTab(btn.dataset.adminTab || "dashboard")));
     document.querySelectorAll(".admin-quick").forEach(btn => btn.addEventListener("click", () => {
@@ -9492,8 +9614,8 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     load();
   
     window.MESAHA_BUILD_INFO = {
-      fileVersion: "v84",
-      visibleVersion: "Mesaha İO v1.13",
+      fileVersion: "v85",
+      visibleVersion: "Mesaha İO v1.14",
       stableBuild: true
     };
 
