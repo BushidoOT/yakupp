@@ -1,23 +1,31 @@
-Mesaha App v87 / Mesaha İO v1.16
+Mesaha App v92 / Mesaha İO v1.21
 
-Eklenenler / düzeltmeler:
-- Admin Paneli Bildirimler sekmesine açık bildirim sayacı eklendi.
-- Bildirim kartlarına Sil butonu eklendi.
-- Kullanıcı kartına Güncelleme Uyarısı gönderme butonu eklendi.
-- Admin güncelleme uyarısı gönderince kullanıcı tarafında bildirim rozeti çıkar.
-- Admin cevap yazınca kullanıcı bildirim rozeti daha sağlam çalışır.
-- Kullanıcı rozeti uygulama açıkken 45 saniyede bir ve uygulamaya geri dönünce kontrol eder.
-- Kullanıcı cevapları/bildirimleri görünce rozet temizlenir.
-- Görünen uygulama sürümü Mesaha İO v1.16 yapıldı.
+Bu sürüm v91 sağlam tabanı üzerine güvenli şekilde hazırlanmıştır.
 
-Firebase:
-- v84/v85/v86 kuralları aynen geçerlidir. supportTickets koleksiyonu kullanılır.
+Eklenenler:
+- Sağ üstte Karanlık / Aydınlık butonu.
+- Sağ üstte Sade Mod butonu.
+- Sade Mod tam ekran hızlı giriş penceresi olarak çalışır.
+- Sade Modda sadece ürün seçimi, çap, boy, kaydet ve son 3 barkod görünür.
+- Barkod, tarih, adet, ağaç ve dosya bilgileri Yeni Kayıt ekranındaki mevcut alanlardan otomatik alınır.
+- Sade Mod mevcut Yeni Kayıt kaydetme sistemini kullanır; kayıt saklama ve ORBİS/Excel yapısı değişmez.
+- Son 3 barkoda tıklayınca mevcut düzeltme sistemi açılır.
+- Karanlık mod tercihi cihazda saklanır.
+
+Güvenlik:
+- Açılışta ürün listesine, kullanıcıya veya kayıt saklama sistemine dokunulmaz.
+- Sade Mod açılana kadar hiçbir kayıt/dosya ayarı değiştirilmez.
+- Sade Mod sadece kaydet butonuna basılınca ana formu doldurur.
 
 GitHub'a yüklenecek dosyalar:
 - index.html
 - manifest.json
 - service-worker.js
+- version.json
 - .nojekyll
+
+Firebase:
+- Kurallar değişmedi.
 
 Eski Apps Script URL:
 https://script.google.com/macros/s/AKfycbzv8rw3n4FuwDmiFnW3ttKuoK0mUQnzEYizjaD46z0uuFiKtqLl1zkupkB9AkOehC7ECg/exec

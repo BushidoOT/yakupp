@@ -1,11 +1,11 @@
-const CACHE_NAME = "mesaha-app-v91";
+const CACHE_NAME = "mesaha-app-v92";
 const ASSETS = [
   "./",
   "./index.html",
   "./manifest.json",
   "./service-worker.js",
-  "./.nojekyll",
-  "./version.json"
+  "./version.json",
+  "./.nojekyll"
 ];
 
 self.addEventListener("install", (event) => {

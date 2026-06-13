@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha App v91</title>
+  <title>Mesaha App v92</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -3992,6 +3992,361 @@
       color:#3730a3 !important;
     }
 
+  
+    /* v92: Güvenli Karanlık Mod ve Sade Mod */
+    .topbar-mode-actions{
+      display:flex;
+      align-items:center;
+      gap:7px;
+      margin-left:auto;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    .mode-mini-btn{
+      min-height:34px;
+      border:1px solid #cbd5e1;
+      border-radius:999px;
+      background:#ffffff;
+      color:#172033;
+      padding:6px 10px;
+      font-size:12px;
+      font-weight:950;
+      box-shadow:0 6px 14px rgba(16,24,40,.08);
+      white-space:nowrap;
+    }
+
+    .mode-mini-btn:active{ transform:scale(.98); }
+
+    body.theme-dark{
+      background:
+        radial-gradient(circle at 20% 10%, rgba(56,189,248,.12), transparent 30%),
+        radial-gradient(circle at 90% 10%, rgba(34,197,94,.10), transparent 25%),
+        linear-gradient(160deg, #050816 0%, #0f172a 55%, #111827 100%) !important;
+      color:#e5eefb !important;
+    }
+
+    body.theme-dark .app,
+    body.theme-dark .panel,
+    body.theme-dark .user-panel-card,
+    body.theme-dark .issue-report-card,
+    body.theme-dark .cloud-restore-card,
+    body.theme-dark .simple-mode-card{
+      background:#111827 !important;
+      color:#e5eefb !important;
+      border-color:#334155 !important;
+      box-shadow:0 14px 40px rgba(0,0,0,.36) !important;
+    }
+
+    body.theme-dark .topbar{
+      background:rgba(15,23,42,.72) !important;
+      border:1px solid rgba(51,65,85,.65) !important;
+      border-radius:18px;
+      padding:10px;
+      backdrop-filter:blur(16px);
+      -webkit-backdrop-filter:blur(16px);
+    }
+
+    body.theme-dark .brand h1,
+    body.theme-dark .panel-header h2,
+    body.theme-dark h2,
+    body.theme-dark h3,
+    body.theme-dark label{
+      color:#f8fafc !important;
+    }
+
+    body.theme-dark .hint,
+    body.theme-dark p,
+    body.theme-dark .recent-note{
+      color:#cbd5e1 !important;
+    }
+
+    body.theme-dark input,
+    body.theme-dark select,
+    body.theme-dark textarea{
+      background:#0b1220 !important;
+      color:#f8fafc !important;
+      border-color:#475569 !important;
+      box-shadow:none !important;
+    }
+
+    body.theme-dark input::placeholder,
+    body.theme-dark textarea::placeholder{
+      color:#94a3b8 !important;
+    }
+
+    body.theme-dark .mode-mini-btn,
+    body.theme-dark button.secondary,
+    body.theme-dark button.ghost{
+      background:#1e293b !important;
+      color:#e5eefb !important;
+      border-color:#475569 !important;
+    }
+
+    body.theme-dark button.primary{
+      background:#16a34a !important;
+      color:#ffffff !important;
+    }
+
+    body.theme-dark .pill,
+    body.theme-dark .chip,
+    body.theme-dark .stat,
+    body.theme-dark .guide-card,
+    body.theme-dark .recent-barcodes-box,
+    body.theme-dark .registered-user-item,
+    body.theme-dark .admin-summary-card,
+    body.theme-dark .issue-mini-card,
+    body.theme-dark .admin-report-card,
+    body.theme-dark .simple-auto-info,
+    body.theme-dark .simple-recent-item{
+      background:#1e293b !important;
+      color:#e5eefb !important;
+      border-color:#334155 !important;
+    }
+
+    body.theme-dark .panel-header,
+    body.theme-dark .records-panel thead th,
+    body.theme-dark .bottom-nav{
+      background:#0f172a !important;
+      border-color:#334155 !important;
+    }
+
+    body.theme-dark .bottom-nav button{
+      color:#cbd5e1 !important;
+      background:#111827 !important;
+      border-color:#334155 !important;
+    }
+
+    body.theme-dark .bottom-nav button.active{
+      background:#2563eb !important;
+      color:#fff !important;
+    }
+
+    body.theme-dark .product-box{
+      color:#0f172a !important;
+    }
+
+    .simple-mode-overlay{
+      position:fixed;
+      inset:0;
+      z-index:95;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      background:rgba(15,23,42,.30);
+      backdrop-filter:blur(12px);
+      -webkit-backdrop-filter:blur(12px);
+      padding:12px;
+    }
+
+    .simple-mode-overlay.show{ display:flex; }
+
+    .simple-mode-card{
+      width:min(620px, 100%);
+      max-height:92vh;
+      overflow:auto;
+      background:#ffffff;
+      border:1px solid #d7dee8;
+      border-radius:26px;
+      box-shadow:0 22px 60px rgba(15,23,42,.24);
+      padding:16px;
+      color:#172033;
+    }
+
+    .simple-mode-head{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:12px;
+    }
+
+    .simple-mode-head h2{
+      margin:0 0 4px;
+      font-size:22px;
+      font-weight:950;
+      color:#172033;
+    }
+
+    .simple-close-btn{
+      width:40px;
+      height:40px;
+      border-radius:15px;
+      font-size:22px;
+      line-height:1;
+    }
+
+    .simple-product-grid{
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0, 1fr));
+      gap:8px;
+      margin:10px 0 12px;
+    }
+
+    .simple-product-btn{
+      min-height:48px;
+      border-radius:16px;
+      border:2px solid #cbd5e1;
+      background:#ffffff;
+      color:#111827;
+      font-weight:950;
+      font-size:14px;
+    }
+
+    .simple-product-btn.active{
+      color:#ffffff !important;
+      box-shadow:0 12px 22px rgba(15,23,42,.16);
+      transform:translateY(-1px);
+    }
+
+    .simple-tomruk{ background:#fff7cc !important; border-color:#eab308 !important; color:#713f12 !important; }
+    .simple-maden{ background:#dbeafe !important; border-color:#2563eb !important; color:#1e3a8a !important; }
+    .simple-kagit{ background:#fee2e2 !important; border-color:#dc2626 !important; color:#7f1d1d !important; }
+    .simple-sanayi{ background:#dcfce7 !important; border-color:#16a34a !important; color:#14532d !important; }
+    .simple-tel{ background:#ede9fe !important; border-color:#7c3aed !important; color:#3b0764 !important; }
+
+    .simple-tomruk.active{ background:#ca8a04 !important; border-color:#a16207 !important; }
+    .simple-maden.active{ background:#2563eb !important; border-color:#1d4ed8 !important; }
+    .simple-kagit.active{ background:#dc2626 !important; border-color:#b91c1c !important; }
+    .simple-sanayi.active{ background:#16a34a !important; border-color:#15803d !important; }
+    .simple-tel.active{ background:#7c3aed !important; border-color:#6d28d9 !important; }
+
+    .simple-measure-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      margin:10px 0;
+    }
+
+    .simple-measure-grid label{
+      display:block;
+      margin-bottom:6px;
+      font-size:13px;
+      color:#334155;
+      font-weight:950;
+    }
+
+    .simple-measure-grid input{
+      width:100%;
+      min-height:56px;
+      border:2px solid #cbd5e1;
+      border-radius:18px;
+      padding:10px 12px;
+      font-size:24px;
+      font-weight:950;
+      text-align:center;
+      outline:none;
+      background:#fff;
+      color:#111827;
+    }
+
+    .simple-measure-grid input:focus{
+      border-color:#2563eb;
+      box-shadow:0 0 0 4px rgba(37,99,235,.12);
+    }
+
+    .simple-auto-info{
+      margin:10px 0;
+      padding:10px;
+      border-radius:16px;
+      background:#f8fafc;
+      border:1px solid #e2e8f0;
+      color:#475569;
+      font-size:12px;
+      font-weight:850;
+      line-height:1.45;
+    }
+
+    .simple-save-btn{
+      width:100%;
+      min-height:54px !important;
+      border-radius:18px !important;
+      font-size:18px !important;
+      font-weight:950 !important;
+      margin:6px 0 12px !important;
+    }
+
+    .simple-recent-area h3{
+      margin:12px 0 8px;
+      font-size:16px;
+      font-weight:950;
+      color:#172033;
+    }
+
+    .simple-recent-list{
+      display:grid;
+      gap:8px;
+    }
+
+    .simple-recent-item{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      border:1px solid #e2e8f0;
+      border-left-width:7px;
+      border-radius:18px;
+      padding:10px 12px;
+      background:#fff;
+      cursor:pointer;
+      box-shadow:0 8px 18px rgba(15,23,42,.05);
+    }
+
+    .simple-recent-item b{
+      display:block;
+      color:#0f172a;
+      font-size:14px;
+      font-weight:950;
+    }
+
+    .simple-recent-item span{
+      display:block;
+      color:#64748b;
+      font-size:12px;
+      font-weight:850;
+      margin-top:2px;
+    }
+
+    .simple-recent-item.tomruk{ border-left-color:#ca8a04; }
+    .simple-recent-item.maden{ border-left-color:#2563eb; }
+    .simple-recent-item.kagit{ border-left-color:#dc2626; }
+    .simple-recent-item.sanayi{ border-left-color:#16a34a; }
+    .simple-recent-item.tel{ border-left-color:#7c3aed; }
+
+    .simple-empty{
+      padding:12px;
+      border-radius:16px;
+      background:#f8fafc;
+      border:1px solid #e2e8f0;
+      color:#64748b;
+      font-weight:850;
+      text-align:center;
+    }
+
+    @media (min-width:720px){
+      .simple-product-grid{
+        grid-template-columns:repeat(5, minmax(0,1fr));
+      }
+    }
+
+    @media (max-width:560px){
+      .topbar{
+        align-items:flex-start;
+        flex-wrap:wrap;
+      }
+      .topbar-mode-actions{
+        width:100%;
+        justify-content:flex-start;
+      }
+      .mode-mini-btn{
+        font-size:11px;
+        padding:6px 9px;
+      }
+      .simple-mode-overlay{
+        align-items:flex-end;
+      }
+    }
+
   </style>
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -4114,13 +4469,60 @@
     </div>
   </div>
 
-  <div class="app">
+  
+  <div id="simpleModeOverlay" class="simple-mode-overlay" role="dialog" aria-modal="true" aria-label="Sade mod">
+    <div class="simple-mode-card">
+      <div class="simple-mode-head">
+        <div>
+          <h2>Sade Mod</h2>
+          <p class="hint">Barkod, tarih, adet, ağaç ve dosya bilgileri Yeni Kayıt ekranından otomatik alınır.</p>
+        </div>
+        <button id="simpleModeCloseBtn" class="ghost simple-close-btn" type="button">×</button>
+      </div>
+
+      <div class="simple-product-grid" id="simpleProductGrid">
+        <button type="button" class="simple-product-btn simple-tomruk active" data-simple-product="Tomruk">Tomruk</button>
+        <button type="button" class="simple-product-btn simple-maden" data-simple-product="Maden Direk">Maden</button>
+        <button type="button" class="simple-product-btn simple-kagit" data-simple-product="Kağıtlık">Kağıtlık</button>
+        <button type="button" class="simple-product-btn simple-sanayi" data-simple-product="Sanayi Odunu">Sanayi</button>
+        <button type="button" class="simple-product-btn simple-tel" data-simple-product="Tel Direk">Tel</button>
+      </div>
+
+      <div class="simple-measure-grid">
+        <div>
+          <label for="simpleDiameter">Çap</label>
+          <input id="simpleDiameter" type="number" min="0" step="1" inputmode="numeric" placeholder="22" autocomplete="off" />
+        </div>
+        <div>
+          <label for="simpleLength">Boy</label>
+          <input id="simpleLength" type="number" min="0" step="0.01" inputmode="decimal" placeholder="3" autocomplete="off" />
+        </div>
+      </div>
+
+      <div id="simpleAutoInfo" class="simple-auto-info"></div>
+
+      <button id="simpleSaveBtn" class="primary simple-save-btn" type="button">Kaydet</button>
+
+      <div class="simple-recent-area">
+        <h3>Son 3 Barkod</h3>
+        <div id="simpleRecentList" class="simple-recent-list">
+          <div class="simple-empty">Henüz kayıt yok</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<div class="app">
     <header class="topbar">
       <div class="brand">
-        <h1>Mesaha İO v1.20</h1>
+        <h1>Mesaha İO v1.21</h1>
         
       </div>
       <div id="activeUserBadge" class="active-user-badge" role="button" tabindex="0" title="Kullanıcı panelini aç" style="display:none"></div>
+      <div class="topbar-mode-actions">
+        <button id="themeToggleBtn" class="mode-mini-btn" type="button">Karanlık</button>
+        <button id="simpleModeBtn" class="mode-mini-btn" type="button">Sade Mod</button>
+      </div>
     </header>
 
     <main class="grid">
@@ -4764,6 +5166,16 @@
       loginSaveBtn: $("loginSaveBtn"),
       loginError: $("loginError"),
       activeUserBadge: $("activeUserBadge"),
+      themeToggleBtn: $("themeToggleBtn"),
+      simpleModeBtn: $("simpleModeBtn"),
+      simpleModeOverlay: $("simpleModeOverlay"),
+      simpleModeCloseBtn: $("simpleModeCloseBtn"),
+      simpleProductGrid: $("simpleProductGrid"),
+      simpleDiameter: $("simpleDiameter"),
+      simpleLength: $("simpleLength"),
+      simpleAutoInfo: $("simpleAutoInfo"),
+      simpleSaveBtn: $("simpleSaveBtn"),
+      simpleRecentList: $("simpleRecentList"),
       registeredUsersList: $("registeredUsersList"),
       changeUserBtn: $("changeUserBtn"),
       adminUsersBtn: $("adminUsersBtn"),
@@ -5554,8 +5966,8 @@
     function currentDeviceInfoPayload() {
       const active = state.activeUser || findActiveUser();
       return {
-        appVersion: "Mesaha İO v1.20",
-        fileVersion: "v91",
+        appVersion: "Mesaha İO v1.21",
+        fileVersion: "v92",
         userName: active && active.name ? cleanUserText(active.name) : "",
         seflik: active && active.seflik ? cleanUserText(active.seflik) : "",
         deviceId: getOrCreateDeviceId(),
@@ -5572,6 +5984,7 @@
 
     function issueDeviceInfoPayload() {
       return currentDeviceInfoPayload();
+    mesahaInitTheme();
     }
 
     function issueDeviceInfoText(info) {
@@ -6294,7 +6707,7 @@
 
     async function uploadCloudBackupOpen(user) {
       const payload = buildCloudBackupPayload(user);
-      payload.version = 91;
+      payload.version = 92;
       const bolmePart = els.bolmeNo && String(els.bolmeNo.value || "").trim() ? `_${cleanFilePart(els.bolmeNo.value)}` : "";
       const fileName = `Mesaha_Yedek_${cleanFilePart(user.seflik)}_${cleanFilePart(user.name)}${bolmePart}_${new Date().toISOString().slice(0,19).replace(/[-:T]/g, "")}.json`;
 
@@ -6723,7 +7136,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function buildCloudBackupPayload(user) {
       return {
         app: "Mesaha İO",
-        version: 91,
+        version: 92,
         createdAt: new Date().toLocaleString("tr-TR"),
         user: {
           name: user.name || "",
@@ -8725,7 +9138,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function backup() {
       const data = {
         app: "Mesaha App",
-        version: 91,
+        version: 92,
         exportedAt: formatDateTime(),
         systemHeaders: HEADERS,
         settings: state.settings,
@@ -9142,7 +9555,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     async function firebaseUploadBackup(user) {
       const { db } = await ensureFirebaseReady();
       const payload = buildCloudBackupPayload(user);
-      payload.version = 91;
+      payload.version = 92;
       payload.cloud = "firebase";
 
       const bolmeNo = els.bolmeNo ? String(els.bolmeNo.value || "").trim() : "";
@@ -9549,6 +9962,35 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
 
 
     
+    
+    if (els.themeToggleBtn) els.themeToggleBtn.addEventListener("click", mesahaToggleTheme);
+    if (els.simpleModeBtn) els.simpleModeBtn.addEventListener("click", simpleOpenModeV92);
+    if (els.simpleModeCloseBtn) els.simpleModeCloseBtn.addEventListener("click", simpleCloseModeV92);
+    if (els.simpleSaveBtn) els.simpleSaveBtn.addEventListener("click", simpleSaveRecordV92);
+    if (els.simpleProductGrid) {
+      els.simpleProductGrid.addEventListener("click", (event) => {
+        const btn = event.target.closest("[data-simple-product]");
+        if (!btn) return;
+        simpleSetProductV92(btn.dataset.simpleProduct || "Tomruk");
+      });
+    }
+    if (els.simpleDiameter) {
+      els.simpleDiameter.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          if (els.simpleLength) els.simpleLength.focus();
+        }
+      });
+    }
+    if (els.simpleLength) {
+      els.simpleLength.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          simpleSaveRecordV92();
+        }
+      });
+    }
+
     if (els.userMenuForceUpdateBtn) els.userMenuForceUpdateBtn.addEventListener("click", forceUpdateApp);
 
     if (els.panelReportIssueBtn) els.panelReportIssueBtn.addEventListener("click", openIssueReportPanel);
@@ -9627,7 +10069,170 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     }
 
 
+    
+    /* v92: Güvenli Karanlık / Sade Mod */
+    function mesahaApplyTheme(mode) {
+      const dark = mode === "dark";
+      document.body.classList.toggle("theme-dark", dark);
+      if (els.themeToggleBtn) els.themeToggleBtn.textContent = dark ? "Aydınlık" : "Karanlık";
+      try { localStorage.setItem("mesaha_theme_mode_v2", dark ? "dark" : "light"); } catch {}
+    }
+
+    function mesahaToggleTheme() {
+      mesahaApplyTheme(document.body.classList.contains("theme-dark") ? "light" : "dark");
+    }
+
+    function mesahaInitTheme() {
+      let saved = "light";
+      try { saved = localStorage.getItem("mesaha_theme_mode_v2") || "light"; } catch {}
+      mesahaApplyTheme(saved === "dark" ? "dark" : "light");
+    }
+
+    function simpleProductClassV92(type) {
+      const key = normalizeProductType(type || "Tomruk");
+      if (key === "Maden Direk") return "maden";
+      if (key === "Kağıtlık") return "kagit";
+      if (key === "Sanayi Odunu") return "sanayi";
+      if (key === "Tel Direk") return "tel";
+      return "tomruk";
+    }
+
+    function simpleSelectedProductV92() {
+      const active = document.querySelector(".simple-product-btn.active");
+      return active ? active.dataset.simpleProduct : (els.productType ? els.productType.value : "Tomruk");
+    }
+
+    function simpleSetProductV92(type) {
+      const normalized = normalizeProductType(type || "Tomruk");
+      document.querySelectorAll(".simple-product-btn").forEach(btn => {
+        btn.classList.toggle("active", normalizeProductType(btn.dataset.simpleProduct) === normalized);
+      });
+      simpleUpdateAutoInfoV92();
+    }
+
+    function simpleInputValueV92(id) {
+      const el = document.getElementById(id);
+      return el ? String(el.value || "").trim() : "";
+    }
+
+    function simpleUpdateAutoInfoV92() {
+      if (!els.simpleAutoInfo) return;
+      const barkod = els.barcode ? (els.barcode.value || "-") : "-";
+      const tarih = els.productionDate ? (els.productionDate.value || "-") : "-";
+      const adet = els.quantity ? (els.quantity.value || "1") : "1";
+      const agac = els.treeType ? (els.treeType.value || "Karaçam") : "Karaçam";
+      const urun = simpleSelectedProductV92();
+
+      els.simpleAutoInfo.innerHTML = `
+        <b>Otomatik alınacak bilgiler:</b><br>
+        Ürün: ${escapeHtml(urun)} • Ağaç: ${escapeHtml(agac)} • Barkod: ${escapeHtml(barkod)} • Tarih: ${escapeHtml(tarih)} • Adet: ${escapeHtml(adet)}
+      `;
+    }
+
+    function simpleSyncFromMainV92() {
+      if (els.simpleDiameter) els.simpleDiameter.value = els.diameter ? (els.diameter.value || "") : "";
+      if (els.simpleLength) els.simpleLength.value = els.length ? (els.length.value || "") : "";
+      simpleSetProductV92(els.productType ? (els.productType.value || state.settings.lastProductType || "Tomruk") : "Tomruk");
+      simpleRenderRecentV92();
+      simpleUpdateAutoInfoV92();
+    }
+
+    function simpleOpenModeV92() {
+      if (els.simpleModeOverlay) els.simpleModeOverlay.classList.add("show");
+      simpleSyncFromMainV92();
+      setTimeout(() => { if (els.simpleDiameter) els.simpleDiameter.focus(); }, 120);
+    }
+
+    function simpleCloseModeV92() {
+      if (els.simpleModeOverlay) els.simpleModeOverlay.classList.remove("show");
+    }
+
+    function simpleRenderRecentV92() {
+      if (!els.simpleRecentList) return;
+      const recent = (state.records || []).slice(0, 3);
+      if (!recent.length) {
+        els.simpleRecentList.innerHTML = `<div class="simple-empty">Henüz kayıt yok</div>`;
+        return;
+      }
+
+      els.simpleRecentList.innerHTML = recent.map(r => {
+        const product = normalizeProductType(r.productType || "Tomruk");
+        const cls = simpleProductClassV92(product);
+        const barkod = r.barcode || "-";
+        const cap = r.diameter || "-";
+        const boy = r.length || "-";
+        const adet = r.quantity || 1;
+        return `
+          <button type="button" class="simple-recent-item ${cls}" data-simple-id="${escapeHtml(r.id)}">
+            <div>
+              <b>${escapeHtml(barkod)}</b>
+              <span>${escapeHtml(product)} • Çap ${escapeHtml(String(cap))} • Boy ${escapeHtml(String(boy))} • Adet ${escapeHtml(String(adet))}</span>
+            </div>
+            <span>Düzelt</span>
+          </button>
+        `;
+      }).join("");
+
+      els.simpleRecentList.querySelectorAll("[data-simple-id]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const id = btn.dataset.simpleId;
+          simpleCloseModeV92();
+          if (typeof editRecord === "function") editRecord(id);
+          else showToast("Düzeltme için Kayıtlar ekranını kullanınız.");
+        });
+      });
+    }
+
+    function simpleSaveRecordV92() {
+      const cap = els.simpleDiameter ? String(els.simpleDiameter.value || "").trim() : "";
+      const boy = els.simpleLength ? String(els.simpleLength.value || "").trim() : "";
+      if (!cap || !boy) {
+        showToast("Çap ve boy giriniz.");
+        return;
+      }
+
+      const beforeCount = (state.records || []).length;
+
+      if (els.diameter) {
+        els.diameter.value = cap;
+        els.diameter.dispatchEvent(new Event("input", { bubbles:true }));
+        els.diameter.dispatchEvent(new Event("change", { bubbles:true }));
+      }
+
+      if (els.length) {
+        els.length.value = boy;
+        els.length.dispatchEvent(new Event("input", { bubbles:true }));
+        els.length.dispatchEvent(new Event("change", { bubbles:true }));
+      }
+
+      const selectedProduct = simpleSelectedProductV92();
+      if (typeof setProductType === "function") setProductType(selectedProduct, true);
+      else if (els.productType) els.productType.value = selectedProduct;
+
+      try {
+        if (els.form && els.form.requestSubmit) els.form.requestSubmit(els.submitBtn || undefined);
+        else if (els.form) els.form.dispatchEvent(new Event("submit", { bubbles:true, cancelable:true }));
+      } catch {
+        if (els.submitBtn) els.submitBtn.click();
+      }
+
+      setTimeout(() => {
+        const afterCount = (state.records || []).length;
+        simpleRenderRecentV92();
+        simpleUpdateAutoInfoV92();
+
+        if (afterCount > beforeCount) {
+          if (els.simpleDiameter) els.simpleDiameter.value = "";
+          if (els.simpleLength) els.simpleLength.value = "";
+          if (els.simpleDiameter) els.simpleDiameter.focus();
+        }
+      }, 260);
+    }
+
+
     window.forceUpdateApp = forceUpdateApp;
+    window.mesahaToggleTheme = mesahaToggleTheme;
+    window.simpleOpenModeV92 = simpleOpenModeV92;
     window.openAdminFromUserPanel = openAdminFromUserPanel;
 
     window.adminSetReportStatus = adminSetReportStatus;
@@ -9645,8 +10250,8 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     load();
   
     window.MESAHA_BUILD_INFO = {
-      fileVersion: "v91",
-      visibleVersion: "Mesaha İO v1.20",
+      fileVersion: "v92",
+      visibleVersion: "Mesaha İO v1.21",
       stableBuild: true
     };
 
