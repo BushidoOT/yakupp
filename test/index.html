@@ -7273,6 +7273,92 @@
       body.inline-simple-v119 .recent-barcode-list{ grid-template-columns:1fr !important; }
     }
 
+
+
+    /* v120: Sade mod çıkış onarımı + sade karanlık ürün renkleri */
+    :root{
+      --v120-tomruk:#f2b705;
+      --v120-maden:#3b82f6;
+      --v120-kagit:#ef4444;
+      --v120-sanayi:#22c55e;
+      --v120-tel:#8b5cf6;
+      --v120-save:#18a957;
+    }
+
+    body.theme-dark .product-box{
+      background:#101827 !important;
+      color:#eaf1ff !important;
+      border-color:#2b3a50 !important;
+      border-left-width:6px !important;
+      box-shadow:none !important;
+    }
+    body.theme-dark .product-box[data-product="Tomruk"]{ border-left-color:var(--v120-tomruk) !important; background:linear-gradient(135deg, rgba(242,183,5,.16), #101827 58%) !important; }
+    body.theme-dark .product-box[data-product="Maden Direk"]{ border-left-color:var(--v120-maden) !important; background:linear-gradient(135deg, rgba(59,130,246,.16), #101827 58%) !important; }
+    body.theme-dark .product-box[data-product="Kağıtlık"]{ border-left-color:var(--v120-kagit) !important; background:linear-gradient(135deg, rgba(239,68,68,.15), #101827 58%) !important; }
+    body.theme-dark .product-box[data-product="Sanayi Odunu"]{ border-left-color:var(--v120-sanayi) !important; background:linear-gradient(135deg, rgba(34,197,94,.15), #101827 58%) !important; }
+    body.theme-dark .product-box[data-product="Tel Direk"]{ border-left-color:var(--v120-tel) !important; background:linear-gradient(135deg, rgba(139,92,246,.16), #101827 58%) !important; }
+
+    body.theme-dark .product-box[data-product="Tomruk"].active{ background:linear-gradient(135deg, #b98200, #302405) !important; border-color:var(--v120-tomruk) !important; color:#fff7d6 !important; }
+    body.theme-dark .product-box[data-product="Maden Direk"].active{ background:linear-gradient(135deg, #2563eb, #10254f) !important; border-color:#93c5fd !important; color:#eff6ff !important; }
+    body.theme-dark .product-box[data-product="Kağıtlık"].active{ background:linear-gradient(135deg, #dc2626, #481515) !important; border-color:#fca5a5 !important; color:#fff1f2 !important; }
+    body.theme-dark .product-box[data-product="Sanayi Odunu"].active{ background:linear-gradient(135deg, #16a34a, #123b24) !important; border-color:#86efac !important; color:#ecfdf5 !important; }
+    body.theme-dark .product-box[data-product="Tel Direk"].active{ background:linear-gradient(135deg, #7c3aed, #2f185d) !important; border-color:#c4b5fd !important; color:#f5f3ff !important; }
+
+    #submitBtn,
+    .save-field-final button,
+    body.inline-simple-v119 #submitBtn{
+      background:linear-gradient(135deg, #1fc76a, #118944) !important;
+      border-color:#28d978 !important;
+      color:#ffffff !important;
+      box-shadow:0 12px 22px rgba(24,169,87,.22) !important;
+    }
+    body.theme-dark #submitBtn,
+    body.theme-dark .save-field-final button,
+    body.theme-dark.inline-simple-v119 #submitBtn{
+      background:linear-gradient(135deg, #20c96d, #0f7a3b) !important;
+      border-color:#44e58c !important;
+      color:#ffffff !important;
+      box-shadow:0 12px 26px rgba(34,197,94,.24) !important;
+    }
+
+    .record-values-v111{ grid-template-columns:repeat(2, minmax(0,1fr)) !important; }
+    .record-row-v111{ grid-template-columns:30px minmax(92px,1.22fr) minmax(70px,.70fr) minmax(72px,.78fr) !important; }
+
+    body.theme-dark .record-row-v111{
+      background:#101827 !important;
+      color:#eef4ff !important;
+      border-color:#2d3b50 !important;
+      box-shadow:none !important;
+    }
+    body.theme-dark .record-row-v111.tomruk{ background:linear-gradient(135deg, rgba(242,183,5,.15), #101827 62%) !important; border-left-color:var(--v120-tomruk) !important; }
+    body.theme-dark .record-row-v111.maden{ background:linear-gradient(135deg, rgba(59,130,246,.15), #101827 62%) !important; border-left-color:var(--v120-maden) !important; }
+    body.theme-dark .record-row-v111.kagit{ background:linear-gradient(135deg, rgba(239,68,68,.14), #101827 62%) !important; border-left-color:var(--v120-kagit) !important; }
+    body.theme-dark .record-row-v111.sanayi{ background:linear-gradient(135deg, rgba(34,197,94,.14), #101827 62%) !important; border-left-color:var(--v120-sanayi) !important; }
+    body.theme-dark .record-row-v111.tel{ background:linear-gradient(135deg, rgba(139,92,246,.15), #101827 62%) !important; border-left-color:var(--v120-tel) !important; }
+
+    body.theme-dark .record-val-v111{
+      background:rgba(15,23,42,.72) !important;
+      color:#eaf1ff !important;
+      border-color:#33445c !important;
+    }
+
+    body.theme-dark .recent-barcode-item.recent-tomruk{ background:linear-gradient(135deg, rgba(242,183,5,.20), #111827 64%) !important; border-color:rgba(242,183,5,.75) !important; color:#fff3c4 !important; }
+    body.theme-dark .recent-barcode-item.recent-maden{ background:linear-gradient(135deg, rgba(59,130,246,.20), #111827 64%) !important; border-color:rgba(59,130,246,.82) !important; color:#dbeafe !important; }
+    body.theme-dark .recent-barcode-item.recent-kagit{ background:linear-gradient(135deg, rgba(239,68,68,.18), #111827 64%) !important; border-color:rgba(239,68,68,.82) !important; color:#fee2e2 !important; }
+    body.theme-dark .recent-barcode-item.recent-sanayi{ background:linear-gradient(135deg, rgba(34,197,94,.18), #111827 64%) !important; border-color:rgba(34,197,94,.82) !important; color:#dcfce7 !important; }
+    body.theme-dark .recent-barcode-item.recent-tel{ background:linear-gradient(135deg, rgba(139,92,246,.20), #111827 64%) !important; border-color:rgba(139,92,246,.82) !important; color:#ede9fe !important; }
+
+    body.theme-dark .totals .stat.tomruk-stat{ background:linear-gradient(135deg, rgba(242,183,5,.18), #111827 62%) !important; border-left:8px solid var(--v120-tomruk) !important; }
+    body.theme-dark .totals .stat.maden-stat{ background:linear-gradient(135deg, rgba(59,130,246,.18), #111827 62%) !important; border-left:8px solid var(--v120-maden) !important; }
+    body.theme-dark .totals .stat.kagit-stat{ background:linear-gradient(135deg, rgba(239,68,68,.16), #111827 62%) !important; border-left:8px solid var(--v120-kagit) !important; }
+    body.theme-dark .totals .stat.sanayi-stat{ background:linear-gradient(135deg, rgba(34,197,94,.16), #111827 62%) !important; border-left:8px solid var(--v120-sanayi) !important; }
+    body.theme-dark .totals .stat.tel-stat{ background:linear-gradient(135deg, rgba(139,92,246,.18), #111827 62%) !important; border-left:8px solid var(--v120-tel) !important; }
+
+    @media (max-width:430px){
+      .record-row-v111{ grid-template-columns:28px minmax(82px,1.16fr) minmax(66px,.66fr) minmax(68px,.74fr) !important; }
+      .mini-tag-v111{ max-width:58px !important; padding-left:5px !important; padding-right:5px !important; }
+    }
+
   </style>
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -7437,7 +7523,7 @@
 <div class="app">
     <header class="topbar">
       <div class="brand">
-        <h1>Mesaha İO v1.48</h1>
+        <h1>Mesaha İO v1.49</h1>
         
       </div>
       <div id="activeUserBadge" class="active-user-badge" role="button" tabindex="0" title="Kullanıcı panelini aç" style="display:none"></div>
@@ -8892,8 +8978,8 @@
     function currentDeviceInfoPayload() {
       const active = state.activeUser || findActiveUser();
       return {
-        appVersion: "Mesaha İO v1.48",
-        fileVersion: "v119",
+        appVersion: "Mesaha İO v1.49",
+        fileVersion: "v120",
         userName: active && active.name ? cleanUserText(active.name) : "",
         seflik: active && active.seflik ? cleanUserText(active.seflik) : "",
         deviceId: getOrCreateDeviceId(),
@@ -14246,11 +14332,256 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     setTimeout(() => { bindTopActionsV119(); initThemeV119(); }, 250);
 
 
+    /* v120: Normal butonu kesin çıkış, kayıt listesi sade görünüm, koyu ürün renkleri */
+    function productShortV120(product) {
+      const key = normalizeProductType(product || "Tomruk");
+      if (key === "Tomruk") return "TMRK";
+      if (key === "Maden Direk") return "Mdn";
+      if (key === "Kağıtlık") return "Kğt";
+      if (key === "Sanayi Odunu") return "San";
+      if (key === "Tel Direk") return "Tel";
+      return "TMRK";
+    }
+    productShortV111 = productShortV120;
+
+    function renderMobileRecordsV120(force = false) {
+      const wrap = document.getElementById("mobileRecordsV111");
+      if (!wrap) return;
+
+      const list = getFilteredRecordsV111();
+      if (!state.selectedRecordIds) state.selectedRecordIds = new Set();
+
+      if (!list.length) {
+        wrap.innerHTML = `<div class="empty">Kayıt yok.</div>`;
+        if (typeof updateBulkActions === "function") updateBulkActions(list);
+        return;
+      }
+
+      wrap.innerHTML = list.map((r) => {
+        const product = normalizeProductType(r.productType || r.woodType || r.odunAdi || "Tomruk");
+        const cls = productClassV111(product);
+        const tree = r.treeType || r.agacAdi || "Karaçam";
+        const id = String(r.id || "");
+        const checked = state.selectedRecordIds.has(id);
+        const barcode = r.barcode || r.barkodNo || "-";
+        const length = r.length || r.boy || "-";
+        const diameter = r.diameter || r.cap || "-";
+
+        return `
+          <div class="record-row-v111 ${cls} ${checked ? "selected" : ""}" data-v111-row="${escapeHtml(id)}">
+            <label class="record-select-v111" title="Seç">
+              <input type="checkbox" data-v111-select="${escapeHtml(id)}" ${checked ? "checked" : ""} />
+            </label>
+
+            <div class="record-main-v111">
+              <b>${escapeHtml(barcode)}</b>
+              <div class="record-tags-v111">
+                <span class="mini-tag-v111 ${cls}" title="${escapeHtml(product)}">${escapeHtml(productShortV120(product))}</span>
+                <span class="mini-tag-v111 tree" title="${escapeHtml(tree)}">${escapeHtml(treeShortV111(tree))}</span>
+              </div>
+            </div>
+
+            <div class="record-values-v111">
+              <div class="record-val-v111"><small>Ç</small><strong>${escapeHtml(String(diameter))}</strong></div>
+              <div class="record-val-v111"><small>B</small><strong>${escapeHtml(String(length))}</strong></div>
+            </div>
+
+            <div class="record-actions-v111">
+              <button type="button" class="record-edit-v111" data-v111-edit="${escapeHtml(id)}">Düz</button>
+              <button type="button" class="record-delete-v111" data-v111-delete="${escapeHtml(id)}">Sil</button>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      if (typeof updateBulkActions === "function") updateBulkActions(list);
+      setTimeout(forceDarkProductColorsV120, 20);
+    }
+    renderMobileRecordsV111 = renderMobileRecordsV120;
+
+    function setProductColorInlineV120(selector, props) {
+      document.querySelectorAll(selector).forEach(el => {
+        if (!el || !el.style) return;
+        el.dataset.mesahaThemeInlineV120 = '1';
+        Object.entries(props).forEach(([k, v]) => el.style.setProperty(k, v, 'important'));
+      });
+    }
+
+    function forceDarkProductColorsV120() {
+      if (!document.body.classList.contains('theme-dark')) return;
+      const genericDark = {
+        background:'#111827', color:'#eef4ff', 'border-color':'#2d3b50', 'box-shadow':'0 10px 24px rgba(0,0,0,.18)'
+      };
+      setProductColorInlineV120('.panel, .panel-header, .panel-body, .info-details, .info-body, .product-compact, .measure-field, .barcode-field-final, .save-field-final, .recent-barcodes-box, .daily-work-summary, .bulk-actions, .tools, .guide-card, .admin-panel-top-clean, .admin-summary-card, .admin-dashboard-row, .admin-activity-item, .admin-note-item, .registered-user-item, .mobile-records-v111, .usage-card, .searchbar, .wood-type-panel, .wood-check, .tomruk-class-panel, .totals .stat', genericDark);
+      setProductColorInlineV120('input, textarea, select', { background:'#0f172a', color:'#f8fafc', 'border-color':'#3a4a63', 'box-shadow':'none' });
+      setProductColorInlineV120('.record-val-v111', { background:'rgba(15,23,42,.72)', color:'#eaf1ff', 'border-color':'#33445c' });
+      setProductColorInlineV120('#submitBtn, .save-field-final button', { background:'linear-gradient(135deg, #20c96d, #0f7a3b)', color:'#ffffff', 'border-color':'#44e58c', 'box-shadow':'0 12px 26px rgba(34,197,94,.24)' });
+
+      const rows = [
+        ['tomruk', 'rgba(242,183,5,.16)', '#f2b705'],
+        ['maden', 'rgba(59,130,246,.16)', '#3b82f6'],
+        ['kagit', 'rgba(239,68,68,.15)', '#ef4444'],
+        ['sanayi', 'rgba(34,197,94,.15)', '#22c55e'],
+        ['tel', 'rgba(139,92,246,.16)', '#8b5cf6']
+      ];
+      rows.forEach(([cls, tint, color]) => {
+        setProductColorInlineV120(`.record-row-v111.${cls}`, { background:`linear-gradient(135deg, ${tint}, #101827 62%)`, color:'#eef4ff', 'border-color':'#2d3b50', 'border-left-color':color, 'box-shadow':'none' });
+        setProductColorInlineV120(`.recent-barcode-item.recent-${cls}`, { background:`linear-gradient(135deg, ${tint}, #111827 64%)`, color:'#fff', 'border-color':color, 'box-shadow':'none' });
+      });
+
+      const productMap = [
+        ['Tomruk', 'rgba(242,183,5,.16)', '#f2b705', 'linear-gradient(135deg, #b98200, #302405)', '#fff7d6'],
+        ['Maden Direk', 'rgba(59,130,246,.16)', '#3b82f6', 'linear-gradient(135deg, #2563eb, #10254f)', '#eff6ff'],
+        ['Kağıtlık', 'rgba(239,68,68,.15)', '#ef4444', 'linear-gradient(135deg, #dc2626, #481515)', '#fff1f2'],
+        ['Sanayi Odunu', 'rgba(34,197,94,.15)', '#22c55e', 'linear-gradient(135deg, #16a34a, #123b24)', '#ecfdf5'],
+        ['Tel Direk', 'rgba(139,92,246,.16)', '#8b5cf6', 'linear-gradient(135deg, #7c3aed, #2f185d)', '#f5f3ff']
+      ];
+      productMap.forEach(([name, tint, color, activeBg, activeText]) => {
+        setProductColorInlineV120(`.product-box[data-product="${name}"]`, { background:`linear-gradient(135deg, ${tint}, #101827 58%)`, color:'#eaf1ff', 'border-color':'#2b3a50', 'border-left-color':color, 'box-shadow':'none' });
+        setProductColorInlineV120(`.product-box[data-product="${name}"].active`, { background:activeBg, color:activeText, 'border-color':color, 'border-left-color':color, 'box-shadow':'0 10px 22px rgba(0,0,0,.20)' });
+      });
+
+      setProductColorInlineV120('.totals .stat.tomruk-stat', { background:'linear-gradient(135deg, rgba(242,183,5,.18), #111827 62%)', 'border-left':'8px solid #f2b705' });
+      setProductColorInlineV120('.totals .stat.maden-stat', { background:'linear-gradient(135deg, rgba(59,130,246,.18), #111827 62%)', 'border-left':'8px solid #3b82f6' });
+      setProductColorInlineV120('.totals .stat.kagit-stat', { background:'linear-gradient(135deg, rgba(239,68,68,.16), #111827 62%)', 'border-left':'8px solid #ef4444' });
+      setProductColorInlineV120('.totals .stat.sanayi-stat', { background:'linear-gradient(135deg, rgba(34,197,94,.16), #111827 62%)', 'border-left':'8px solid #22c55e' });
+      setProductColorInlineV120('.totals .stat.tel-stat', { background:'linear-gradient(135deg, rgba(139,92,246,.18), #111827 62%)', 'border-left':'8px solid #8b5cf6' });
+    }
+
+    const oldRemoveThemeInlineV119For120 = typeof removeThemeInlineV119 === 'function' ? removeThemeInlineV119 : null;
+    if (oldRemoveThemeInlineV119For120) {
+      removeThemeInlineV119 = function() {
+        oldRemoveThemeInlineV119For120();
+        document.querySelectorAll('[data-mesaha-theme-inline-v120]').forEach(el => {
+          ['background','background-color','background-image','color','border-color','border-left','border-left-color','box-shadow','outline'].forEach(prop => el.style.removeProperty(prop));
+          delete el.dataset.mesahaThemeInlineV120;
+          if (!el.getAttribute('style')) el.removeAttribute('style');
+        });
+      };
+    }
+
+    function applyThemeV120(mode) {
+      const dark = mode === 'dark';
+      if (typeof removeThemeInlineV119 === 'function') removeThemeInlineV119();
+      document.body.classList.toggle('theme-dark', dark);
+      document.documentElement.classList.toggle('theme-dark', dark);
+      try {
+        localStorage.setItem('mesaha_theme_v113', dark ? 'dark' : 'light');
+        localStorage.setItem('mesaha_theme_v112', dark ? 'dark' : 'light');
+        localStorage.setItem('mesaha_theme', dark ? 'dark' : 'light');
+      } catch {}
+      const btn = document.getElementById('themeToggleV112');
+      if (btn) btn.textContent = dark ? '☀️ Aydınlık' : '🌙 Karanlık';
+      const meta = document.querySelector('meta[name="theme-color"]');
+      if (meta) meta.setAttribute('content', dark ? '#0b1220' : '#f5f7fb');
+      if (dark) {
+        setTimeout(forceDarkProductColorsV120, 20);
+        setTimeout(forceDarkProductColorsV120, 180);
+        setTimeout(forceDarkProductColorsV120, 600);
+      } else if (typeof removeThemeInlineV119 === 'function') {
+        setTimeout(removeThemeInlineV119, 20);
+        setTimeout(removeThemeInlineV119, 180);
+        setTimeout(removeThemeInlineV119, 600);
+      }
+    }
+
+    function initThemeV120() {
+      let saved = 'light';
+      try { saved = localStorage.getItem('mesaha_theme_v113') || localStorage.getItem('mesaha_theme_v112') || localStorage.getItem('mesaha_theme') || localStorage.getItem('theme') || 'light'; } catch {}
+      applyThemeV120(saved === 'dark' ? 'dark' : 'light');
+    }
+
+    applyThemeV119 = applyThemeV120;
+    applyThemeV113 = applyThemeV120;
+    applyThemeV112 = applyThemeV120;
+    initThemeV119 = initThemeV120;
+    initThemeV113 = initThemeV120;
+    initThemeV112 = initThemeV120;
+    try { repaintDarkInlineV114 = forceDarkProductColorsV120; } catch {}
+    try { forceDarkPanelsV115 = forceDarkProductColorsV120; } catch {}
+    try { forceDarkReadableV116 = forceDarkProductColorsV120; } catch {}
+    try { forceDarkReadableV118 = forceDarkProductColorsV120; } catch {}
+    try { forceDarkReadableV119 = forceDarkProductColorsV120; } catch {}
+
+    function setInlineSimpleV120(on) {
+      const overlay = document.getElementById('cleanSimpleOverlayV111');
+      if (overlay) {
+        overlay.classList.remove('show');
+        overlay.style.setProperty('display', 'none', 'important');
+      }
+      document.body.classList.remove('clean-simple-open-v111', 'clean-keyboard-v118');
+      if (on) {
+        showEntryForInlineSimpleV119();
+        document.body.classList.add('inline-simple-v119');
+        if (typeof renderProductButtons === 'function') renderProductButtons();
+        if (typeof setProductType === 'function' && els && els.productType) setProductType(els.productType.value || 'Tomruk', false);
+      } else {
+        document.body.classList.remove('inline-simple-v119');
+        if (typeof keepNaturalScrollV111 === 'function') keepNaturalScrollV111();
+        if (typeof updateFlowTabsV111 === 'function') updateFlowTabsV111();
+        try { document.activeElement && document.activeElement.blur && document.activeElement.blur(); } catch {}
+      }
+      const btn = document.getElementById('openSimpleV112');
+      if (btn) {
+        btn.textContent = on ? '↩ Normal' : '⚡ Sade Mod';
+        btn.classList.toggle('active', !!on);
+        btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+      }
+      setTimeout(() => {
+        if (typeof renderMobileRecordsV111 === 'function') renderMobileRecordsV111(true);
+        if (document.body.classList.contains('theme-dark')) forceDarkProductColorsV120();
+      }, 60);
+    }
+    setInlineSimpleV119 = setInlineSimpleV120;
+    toggleInlineSimpleV119 = function() { setInlineSimpleV120(!document.body.classList.contains('inline-simple-v119')); };
+    closeInlineSimpleV119 = function() { setInlineSimpleV120(false); };
+    openCleanSimpleV111 = function() { setInlineSimpleV120(true); };
+    openCleanSimpleV113 = openCleanSimpleV111;
+    closeCleanSimpleV111 = closeInlineSimpleV119;
+
+    function bindTopActionsV120() {
+      const simpleOld = document.getElementById('openSimpleV112');
+      if (simpleOld && !simpleOld.__v120CleanBound) {
+        const simpleBtn = simpleOld.cloneNode(true);
+        simpleBtn.__v120CleanBound = true;
+        simpleOld.parentNode.replaceChild(simpleBtn, simpleOld);
+        simpleBtn.textContent = document.body.classList.contains('inline-simple-v119') ? '↩ Normal' : '⚡ Sade Mod';
+        simpleBtn.addEventListener('click', (event) => {
+          event.preventDefault();
+          event.stopImmediatePropagation();
+          event.stopPropagation();
+          setInlineSimpleV120(!document.body.classList.contains('inline-simple-v119'));
+        }, true);
+        if (typeof els !== 'undefined') els.simpleModeBtn = simpleBtn;
+      }
+
+      const themeOld = document.getElementById('themeToggleV112');
+      if (themeOld && !themeOld.__v120CleanBound) {
+        const themeBtn = themeOld.cloneNode(true);
+        themeBtn.__v120CleanBound = true;
+        themeOld.parentNode.replaceChild(themeBtn, themeOld);
+        themeBtn.textContent = document.body.classList.contains('theme-dark') ? '☀️ Aydınlık' : '🌙 Karanlık';
+        themeBtn.addEventListener('click', (event) => {
+          event.preventDefault();
+          event.stopImmediatePropagation();
+          event.stopPropagation();
+          applyThemeV120(document.body.classList.contains('theme-dark') ? 'light' : 'dark');
+        }, true);
+      }
+    }
+
+    bindTopActionsV120();
+    initThemeV120();
+    renderMobileRecordsV120(true);
+    [250, 700, 1400, 2400].forEach(ms => setTimeout(() => { bindTopActionsV120(); if (document.body.classList.contains('theme-dark')) forceDarkProductColorsV120(); }, ms));
+
+
+
     load();
   
     window.MESAHA_BUILD_INFO = {
-      fileVersion: "v119",
-      visibleVersion: "Mesaha İO v1.48",
+      fileVersion: "v120",
+      visibleVersion: "Mesaha İO v1.49",
       stableBuild: true
     };
 
