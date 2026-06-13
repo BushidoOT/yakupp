@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha App v104</title>
+  <title>Mesaha App v105</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -5745,6 +5745,455 @@
       display:flex !important;
     }
 
+  
+    /* v105: yeni stabil alt menü ve temiz sade mod sistemi */
+    .bottom-nav{
+      display:none !important;
+      visibility:hidden !important;
+      pointer-events:none !important;
+    }
+
+    #simpleModeOverlay{
+      display:none !important;
+      visibility:hidden !important;
+      pointer-events:none !important;
+    }
+
+    body{
+      padding-bottom:calc(96px + env(safe-area-inset-bottom, 0px)) !important;
+      overflow-x:hidden !important;
+    }
+
+    .app{
+      padding-bottom:calc(104px + env(safe-area-inset-bottom, 0px)) !important;
+    }
+
+    .stable-nav-v105{
+      position:fixed;
+      left:10px;
+      right:10px;
+      bottom:calc(8px + env(safe-area-inset-bottom, 0px));
+      z-index:2147483600;
+      display:grid;
+      grid-template-columns:repeat(4, minmax(0,1fr));
+      gap:8px;
+      padding:10px;
+      border:1px solid rgba(203,213,225,.95);
+      border-radius:22px;
+      background:rgba(255,255,255,.96);
+      box-shadow:0 12px 35px rgba(15,23,42,.18);
+      backdrop-filter:blur(16px) saturate(160%);
+      -webkit-backdrop-filter:blur(16px) saturate(160%);
+      transition:transform .18s ease, opacity .18s ease;
+      transform:translate3d(0,0,0);
+      will-change:transform;
+    }
+
+    .stable-nav-v105.nav-hidden{
+      transform:translate3d(0,125%,0);
+      opacity:.15;
+      pointer-events:none;
+    }
+
+    .stable-nav-v105 button{
+      min-height:54px;
+      border-radius:16px;
+      border:1px solid #cbd5e1;
+      background:#f8fafc;
+      color:#172033;
+      font-size:13px;
+      font-weight:950;
+      padding:8px 6px;
+      touch-action:manipulation;
+      -webkit-tap-highlight-color:transparent;
+    }
+
+    .stable-nav-v105 button.active{
+      background:#2563eb;
+      color:#fff;
+      border-color:#2563eb;
+      box-shadow:0 10px 20px rgba(37,99,235,.28);
+    }
+
+    body.theme-dark .stable-nav-v105{
+      background:rgba(11,21,37,.96);
+      border-color:#3e526d;
+      box-shadow:0 12px 35px rgba(0,0,0,.35);
+    }
+
+    body.theme-dark .stable-nav-v105 button{
+      background:#101c2e;
+      color:#dbeafe;
+      border-color:#3e526d;
+    }
+
+    body.theme-dark .stable-nav-v105 button.active{
+      background:#2563eb;
+      color:#fff;
+      border-color:#60a5fa;
+    }
+
+    body.clean-simple-open-v105 .stable-nav-v105,
+    body.user-panel-open .stable-nav-v105,
+    body.issue-panel-open .stable-nav-v105{
+      display:none !important;
+    }
+
+    .records-scroll-v105{
+      display:block !important;
+      width:100% !important;
+      max-width:100% !important;
+      overflow-x:auto !important;
+      overflow-y:visible !important;
+      -webkit-overflow-scrolling:touch !important;
+      overscroll-behavior-x:contain !important;
+      overscroll-behavior-y:auto !important;
+      touch-action:pan-x pan-y !important;
+      position:relative !important;
+      border-radius:20px;
+      border:1px solid #d7dee8;
+      background:#ffffff;
+    }
+
+    .records-scroll-v105 table{
+      min-width:1080px !important;
+      width:1080px !important;
+      max-width:none !important;
+      table-layout:auto !important;
+    }
+
+    .records-scroll-v105 th,
+    .records-scroll-v105 td{
+      white-space:nowrap !important;
+    }
+
+    .records-scroll-v105 button,
+    .records-scroll-v105 input{
+      touch-action:manipulation !important;
+    }
+
+    body.theme-dark .records-scroll-v105{
+      background:#0f1a2b !important;
+      border-color:#35506e !important;
+    }
+
+    .clean-simple-overlay-v105{
+      position:fixed;
+      inset:0;
+      z-index:2147483650;
+      display:none;
+      align-items:flex-end;
+      justify-content:center;
+      background:rgba(15,23,42,.30);
+      backdrop-filter:blur(12px);
+      -webkit-backdrop-filter:blur(12px);
+      padding:10px;
+      padding-top:max(10px, env(safe-area-inset-top, 0px));
+      padding-bottom:max(10px, env(safe-area-inset-bottom, 0px));
+    }
+
+    .clean-simple-overlay-v105.show{
+      display:flex;
+    }
+
+    .clean-simple-card-v105{
+      width:min(620px, 100%);
+      max-height:calc(100dvh - 20px);
+      overflow-y:auto;
+      -webkit-overflow-scrolling:touch;
+      background:#fff;
+      color:#172033;
+      border:1px solid #d7dee8;
+      border-radius:26px;
+      box-shadow:0 22px 60px rgba(15,23,42,.24);
+      padding:14px;
+      overscroll-behavior:contain;
+    }
+
+    body.theme-dark .clean-simple-card-v105{
+      background:#101c2e;
+      color:#f8fafc;
+      border-color:#3e526d;
+      box-shadow:0 22px 60px rgba(0,0,0,.36);
+    }
+
+    .clean-simple-head-v105{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:12px;
+      margin-bottom:10px;
+    }
+
+    .clean-simple-head-v105 h2{
+      margin:0 0 4px;
+      font-size:21px;
+      font-weight:950;
+      color:#172033;
+    }
+
+    .clean-simple-head-v105 p{
+      margin:0;
+      color:#64748b;
+      font-size:12px;
+      font-weight:850;
+      line-height:1.35;
+    }
+
+    body.theme-dark .clean-simple-head-v105 h2{
+      color:#f8fafc;
+    }
+
+    body.theme-dark .clean-simple-head-v105 p{
+      color:#dbeafe;
+    }
+
+    .clean-simple-close-v105{
+      width:40px;
+      height:40px;
+      border-radius:15px;
+      border:1px solid #cbd5e1;
+      background:#f8fafc;
+      color:#111827;
+      font-size:24px;
+      line-height:1;
+      font-weight:950;
+    }
+
+    body.theme-dark .clean-simple-close-v105{
+      background:#1e293b;
+      color:#fff;
+      border-color:#526783;
+    }
+
+    .clean-product-grid-v105{
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0,1fr));
+      gap:9px;
+      margin:8px 0 10px;
+    }
+
+    .clean-product-v105{
+      min-height:48px;
+      border-radius:16px;
+      border:2px solid #cbd5e1;
+      background:#fff;
+      color:#111827;
+      font-size:14px;
+      font-weight:950;
+      position:relative;
+      touch-action:manipulation;
+      -webkit-tap-highlight-color:transparent;
+    }
+
+    .clean-product-v105.active::after{
+      content:"✓ SEÇİLİ";
+      position:absolute;
+      right:8px;
+      top:-12px;
+      border-radius:999px;
+      padding:4px 8px;
+      background:#111827;
+      color:#fff;
+      border:2px solid #fff;
+      font-size:10px;
+      font-weight:950;
+      line-height:1;
+      box-shadow:0 8px 18px rgba(15,23,42,.22);
+    }
+
+    .clean-product-v105.tomruk{ background:#fff7cc; border-color:#eab308; color:#713f12; }
+    .clean-product-v105.maden{ background:#dbeafe; border-color:#2563eb; color:#1e3a8a; }
+    .clean-product-v105.kagit{ background:#fee2e2; border-color:#dc2626; color:#7f1d1d; }
+    .clean-product-v105.sanayi{ background:#dcfce7; border-color:#16a34a; color:#14532d; }
+    .clean-product-v105.tel{ background:#ede9fe; border-color:#7c3aed; color:#3b0764; }
+
+    .clean-product-v105.active.tomruk{ background:#ca8a04; border-color:#a16207; color:#fff; }
+    .clean-product-v105.active.maden{ background:#2563eb; border-color:#1d4ed8; color:#fff; }
+    .clean-product-v105.active.kagit{ background:#dc2626; border-color:#b91c1c; color:#fff; }
+    .clean-product-v105.active.sanayi{ background:#16a34a; border-color:#15803d; color:#fff; }
+    .clean-product-v105.active.tel{ background:#7c3aed; border-color:#6d28d9; color:#fff; }
+
+    .clean-measure-grid-v105{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      margin:8px 0;
+    }
+
+    .clean-measure-grid-v105 label{
+      display:block;
+      margin-bottom:5px;
+      font-size:12px;
+      font-weight:950;
+      color:#334155;
+    }
+
+    body.theme-dark .clean-measure-grid-v105 label{
+      color:#f8fafc;
+    }
+
+    .clean-measure-grid-v105 input{
+      width:100%;
+      height:48px;
+      border:2px solid #cbd5e1;
+      border-radius:16px;
+      padding:7px 10px;
+      text-align:center;
+      font-size:21px;
+      font-weight:950;
+      color:#111827;
+      background:#fff;
+      outline:none;
+    }
+
+    body.theme-dark .clean-measure-grid-v105 input{
+      background:#07111f;
+      border-color:#60748f;
+      color:#f8fafc;
+    }
+
+    .clean-chip-row-v105{
+      display:grid;
+      grid-template-columns:repeat(3, minmax(0,1fr));
+      gap:12px;
+      margin-top:10px;
+      min-height:94px;
+    }
+
+    .clean-chip-v105{
+      min-height:44px;
+      border-radius:16px;
+      border:2px solid #cbd5e1;
+      font-size:16px;
+      font-weight:950;
+      padding:8px 10px;
+      touch-action:manipulation;
+      -webkit-tap-highlight-color:transparent;
+      user-select:none;
+      -webkit-user-select:none;
+      box-shadow:0 8px 18px rgba(15,23,42,.08);
+    }
+
+    .clean-chip-v105:active{
+      transform:scale(.96);
+      filter:brightness(.98);
+    }
+
+    .clean-chip-v105.boy:nth-child(odd){ background:#ecfdf5; border-color:#34d399; color:#064e3b; }
+    .clean-chip-v105.boy:nth-child(even){ background:#eff6ff; border-color:#60a5fa; color:#1e3a8a; }
+    .clean-chip-v105.cap:nth-child(odd){ background:#fff7ed; border-color:#fb923c; color:#7c2d12; }
+    .clean-chip-v105.cap:nth-child(even){ background:#f5f3ff; border-color:#8b5cf6; color:#3b0764; }
+
+    body.theme-dark .clean-chip-v105.boy:nth-child(odd){ background:#86efac; border-color:#22c55e; color:#052e16; }
+    body.theme-dark .clean-chip-v105.boy:nth-child(even){ background:#93c5fd; border-color:#3b82f6; color:#172554; }
+    body.theme-dark .clean-chip-v105.cap:nth-child(odd){ background:#fdba74; border-color:#f97316; color:#431407; }
+    body.theme-dark .clean-chip-v105.cap:nth-child(even){ background:#c4b5fd; border-color:#8b5cf6; color:#2e1065; }
+
+    .clean-save-v105{
+      width:100%;
+      min-height:50px;
+      border:none;
+      border-radius:18px;
+      background:#16a34a;
+      color:#fff;
+      font-size:18px;
+      font-weight:950;
+      margin:10px 0 8px;
+      box-shadow:0 12px 25px rgba(22,163,74,.22);
+    }
+
+    .clean-auto-info-v105{
+      margin:8px 0;
+      padding:10px;
+      border-radius:16px;
+      background:#f8fafc;
+      border:1px solid #e2e8f0;
+      color:#475569;
+      font-size:11px;
+      font-weight:850;
+      line-height:1.38;
+    }
+
+    body.theme-dark .clean-auto-info-v105{
+      background:#0f1d31;
+      color:#dbeafe;
+      border-color:#3e526d;
+    }
+
+    .clean-recent-area-v105 h3{
+      margin:8px 0 6px;
+      font-size:15px;
+      font-weight:950;
+      color:#172033;
+    }
+
+    body.theme-dark .clean-recent-area-v105 h3{
+      color:#f8fafc;
+    }
+
+    .clean-recent-list-v105{
+      display:grid;
+      gap:8px;
+    }
+
+    .clean-recent-item-v105{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      width:100%;
+      text-align:left;
+      border:1px solid #e2e8f0;
+      border-left-width:7px;
+      border-radius:18px;
+      padding:10px 12px;
+      background:#fff;
+      color:#0f172a;
+    }
+
+    .clean-recent-item-v105 b{
+      display:block;
+      font-size:14px;
+      font-weight:950;
+      color:inherit;
+    }
+
+    .clean-recent-item-v105 span{
+      display:block;
+      font-size:12px;
+      font-weight:850;
+      color:inherit;
+      opacity:.86;
+      margin-top:2px;
+    }
+
+    .clean-recent-item-v105.tomruk{ border-left-color:#ca8a04; background:#fff7cc; color:#422006; }
+    .clean-recent-item-v105.maden{ border-left-color:#2563eb; background:#dbeafe; color:#172554; }
+    .clean-recent-item-v105.kagit{ border-left-color:#dc2626; background:#fee2e2; color:#450a0a; }
+    .clean-recent-item-v105.sanayi{ border-left-color:#16a34a; background:#dcfce7; color:#052e16; }
+    .clean-recent-item-v105.tel{ border-left-color:#7c3aed; background:#ede9fe; color:#2e1065; }
+
+    .clean-empty-v105{
+      padding:12px;
+      border-radius:16px;
+      background:#f8fafc;
+      border:1px solid #e2e8f0;
+      color:#64748b;
+      font-weight:850;
+      text-align:center;
+    }
+
+    body.theme-dark .clean-empty-v105{
+      background:#0f1d31;
+      color:#dbeafe;
+      border-color:#3e526d;
+    }
+
+    @media (min-width:720px){
+      .clean-simple-overlay-v105{ align-items:center; }
+      .clean-product-grid-v105{ grid-template-columns:repeat(5, minmax(0,1fr)); }
+    }
+
   </style>
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -5912,10 +6361,49 @@
     </div>
   </div>
 
+
+  <div id="cleanSimpleOverlayV105" class="clean-simple-overlay-v105" role="dialog" aria-modal="true" aria-label="Sade Mod">
+    <div class="clean-simple-card-v105">
+      <div class="clean-simple-head-v105">
+        <div>
+          <h2>Sade Mod</h2>
+          <p>Barkod, tarih, adet, ağaç ve dosya bilgileri Yeni Kayıt ekranından otomatik alınır.</p>
+        </div>
+        <button id="cleanSimpleCloseV105" class="clean-simple-close-v105" type="button">×</button>
+      </div>
+
+      <div id="cleanProductGridV105" class="clean-product-grid-v105"></div>
+
+      <div class="clean-measure-grid-v105">
+        <div>
+          <label for="cleanLengthV105">Boy</label>
+          <input id="cleanLengthV105" type="number" min="0" step="0.01" inputmode="decimal" placeholder="3" autocomplete="off" />
+          <div id="cleanLengthChipsV105" class="clean-chip-row-v105"></div>
+        </div>
+        <div>
+          <label for="cleanDiameterV105">Çap</label>
+          <input id="cleanDiameterV105" type="number" min="0" step="1" inputmode="numeric" placeholder="22" autocomplete="off" />
+          <div id="cleanDiameterChipsV105" class="clean-chip-row-v105"></div>
+        </div>
+      </div>
+
+      <button id="cleanSaveV105" class="clean-save-v105" type="button">Kaydet</button>
+
+      <div id="cleanAutoInfoV105" class="clean-auto-info-v105"></div>
+
+      <div class="clean-recent-area-v105">
+        <h3>Son 3 Barkod</h3>
+        <div id="cleanRecentListV105" class="clean-recent-list-v105">
+          <div class="clean-empty-v105">Henüz kayıt yok</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 <div class="app">
     <header class="topbar">
       <div class="brand">
-        <h1>Mesaha İO v1.33</h1>
+        <h1>Mesaha İO v1.34</h1>
         
       </div>
       <div id="activeUserBadge" class="active-user-badge" role="button" tabindex="0" title="Kullanıcı panelini aç" style="display:none"></div>
@@ -7370,8 +7858,8 @@
     function currentDeviceInfoPayload() {
       const active = state.activeUser || findActiveUser();
       return {
-        appVersion: "Mesaha İO v1.33",
-        fileVersion: "v104",
+        appVersion: "Mesaha İO v1.34",
+        fileVersion: "v105",
         userName: active && active.name ? cleanUserText(active.name) : "",
         seflik: active && active.seflik ? cleanUserText(active.seflik) : "",
         deviceId: getOrCreateDeviceId(),
@@ -8112,7 +8600,7 @@
 
     async function uploadCloudBackupOpen(user) {
       const payload = buildCloudBackupPayload(user);
-      payload.version = 104;
+      payload.version = 105;
       const bolmePart = els.bolmeNo && String(els.bolmeNo.value || "").trim() ? `_${cleanFilePart(els.bolmeNo.value)}` : "";
       const fileName = `Mesaha_Yedek_${cleanFilePart(user.seflik)}_${cleanFilePart(user.name)}${bolmePart}_${new Date().toISOString().slice(0,19).replace(/[-:T]/g, "")}.json`;
 
@@ -8541,7 +9029,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function buildCloudBackupPayload(user) {
       return {
         app: "Mesaha İO",
-        version: 104,
+        version: 105,
         createdAt: new Date().toLocaleString("tr-TR"),
         user: {
           name: user.name || "",
@@ -10545,7 +11033,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function backup() {
       const data = {
         app: "Mesaha App",
-        version: 104,
+        version: 105,
         exportedAt: formatDateTime(),
         systemHeaders: HEADERS,
         settings: state.settings,
@@ -10962,7 +11450,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     async function firebaseUploadBackup(user) {
       const { db } = await ensureFirebaseReady();
       const payload = buildCloudBackupPayload(user);
-      payload.version = 104;
+      payload.version = 105;
       payload.cloud = "firebase";
 
       const bolmeNo = els.bolmeNo ? String(els.bolmeNo.value || "").trim() : "";
@@ -13096,6 +13584,480 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     setTimeout(updateOverlayClassesV104, 80);
 
 
+    
+    /* v105: temiz bağımsız sade mod ve alt menü */
+    function createStableNavV105() {
+      let nav = document.getElementById("stableNavV105");
+      if (nav) return nav;
+
+      nav = document.createElement("div");
+      nav.id = "stableNavV105";
+      nav.className = "stable-nav-v105";
+      nav.innerHTML = `
+        <button type="button" data-nav-v105="entry">Yeni Kayıt</button>
+        <button type="button" data-nav-v105="records">Kayıtlar</button>
+        <button type="button" data-nav-v105="guide">Kılavuz</button>
+        <button type="button" data-nav-v105="admin">Admin</button>
+      `;
+      document.body.appendChild(nav);
+
+      nav.addEventListener("click", (event) => {
+        const btn = event.target.closest("[data-nav-v105]");
+        if (!btn) return;
+        const target = btn.dataset.navV105;
+
+        if (target === "entry" && els.navEntry) els.navEntry.click();
+        if (target === "records" && els.navRecords) els.navRecords.click();
+        if (target === "guide" && els.navGuide) els.navGuide.click();
+        if (target === "admin") {
+          if (els.navAdmin && els.navAdmin.style.display !== "none") els.navAdmin.click();
+          else if (typeof openAdminFromUserPanel === "function") openAdminFromUserPanel();
+          else if (typeof unlockAdminPanel === "function") unlockAdminPanel();
+        }
+
+        updateStableNavActiveV105();
+      });
+
+      return nav;
+    }
+
+    function updateStableNavActiveV105() {
+      const nav = createStableNavV105();
+      const showAdmin = document.body.classList.contains("show-admin");
+      const showRecords = document.body.classList.contains("show-records");
+      const showGuide = document.body.classList.contains("show-guide");
+
+      nav.querySelectorAll("button").forEach(b => b.classList.remove("active"));
+      if (showAdmin) nav.querySelector('[data-nav-v105="admin"]')?.classList.add("active");
+      else if (showRecords) nav.querySelector('[data-nav-v105="records"]')?.classList.add("active");
+      else if (showGuide) nav.querySelector('[data-nav-v105="guide"]')?.classList.add("active");
+      else nav.querySelector('[data-nav-v105="entry"]')?.classList.add("active");
+
+      const overlayOpen =
+        document.body.classList.contains("clean-simple-open-v105") ||
+        !!(els.userPanelOverlay && els.userPanelOverlay.classList.contains("show")) ||
+        !!(els.issueReportOverlay && els.issueReportOverlay.classList.contains("show"));
+
+      nav.style.display = overlayOpen ? "none" : "grid";
+    }
+
+    let stableNavTimerV105 = null;
+    function hideStableNavWhileScrollingV105() {
+      const nav = createStableNavV105();
+      nav.classList.add("nav-hidden");
+      clearTimeout(stableNavTimerV105);
+      stableNavTimerV105 = setTimeout(() => {
+        nav.classList.remove("nav-hidden");
+        updateStableNavActiveV105();
+      }, 520);
+    }
+
+    function stabilizeRecordsScrollV105() {
+      document.querySelectorAll(".table-wrap").forEach(wrap => {
+        wrap.classList.remove("table-wrap");
+        wrap.classList.add("records-scroll-v105");
+      });
+      document.querySelectorAll(".records-scroll-v105").forEach(wrap => {
+        if (wrap.__v105Scroll) return;
+        wrap.__v105Scroll = true;
+        wrap.addEventListener("touchstart", hideStableNavWhileScrollingV105, { passive:true });
+        wrap.addEventListener("scroll", hideStableNavWhileScrollingV105, { passive:true });
+      });
+    }
+
+    function productClassCleanV105(type) {
+      const key = normalizeProductType(type || "Tomruk");
+      if (key === "Maden Direk") return "maden";
+      if (key === "Kağıtlık") return "kagit";
+      if (key === "Sanayi Odunu") return "sanayi";
+      if (key === "Tel Direk") return "tel";
+      return "tomruk";
+    }
+
+    function cleanVisibleProductsV105() {
+      const order = [
+        { key:"Tomruk", label:"Tomruk", cls:"tomruk" },
+        { key:"Maden Direk", label:"Maden", cls:"maden" },
+        { key:"Kağıtlık", label:"Kağıtlık", cls:"kagit" },
+        { key:"Sanayi Odunu", label:"Sanayi", cls:"sanayi" },
+        { key:"Tel Direk", label:"Tel", cls:"tel" }
+      ];
+
+      const mainBtns = Array.from(document.querySelectorAll("[data-product-type], [data-product], .product-option, .product-box, .product-btn"));
+      const visible = [];
+
+      order.forEach(item => {
+        const found = mainBtns.find(btn => {
+          const txt = (btn.textContent || "").toLowerCase("tr-TR");
+          const data = (btn.dataset.productType || btn.dataset.product || "").toLowerCase("tr-TR");
+          const label = item.label.toLowerCase("tr-TR");
+          const matched = txt.includes(label) || data.includes(label) || (item.key === "Maden Direk" && txt.includes("maden")) || (item.key === "Tel Direk" && txt.includes("tel"));
+          if (!matched) return false;
+          const style = window.getComputedStyle(btn);
+          return style.display !== "none" && style.visibility !== "hidden" && btn.offsetParent !== null;
+        });
+        if (found) visible.push(item);
+      });
+
+      return visible.length ? visible : order;
+    }
+
+    function getCleanElsV105() {
+      return {
+        overlay: document.getElementById("cleanSimpleOverlayV105"),
+        close: document.getElementById("cleanSimpleCloseV105"),
+        productGrid: document.getElementById("cleanProductGridV105"),
+        len: document.getElementById("cleanLengthV105"),
+        dia: document.getElementById("cleanDiameterV105"),
+        lenChips: document.getElementById("cleanLengthChipsV105"),
+        diaChips: document.getElementById("cleanDiameterChipsV105"),
+        save: document.getElementById("cleanSaveV105"),
+        auto: document.getElementById("cleanAutoInfoV105"),
+        recent: document.getElementById("cleanRecentListV105")
+      };
+    }
+
+    function cleanSelectedProductV105() {
+      const c = getCleanElsV105();
+      const active = c.productGrid?.querySelector(".clean-product-v105.active");
+      return active ? active.dataset.cleanProduct : ((els.productType && els.productType.value) || "Tomruk");
+    }
+
+    function renderCleanProductsV105() {
+      const c = getCleanElsV105();
+      if (!c.productGrid) return;
+      const current = normalizeProductType((els.productType && els.productType.value) || state.settings.lastProductType || "Tomruk");
+      const products = cleanVisibleProductsV105();
+
+      c.productGrid.innerHTML = products.map(item => `
+        <button type="button" class="clean-product-v105 ${item.cls} ${normalizeProductType(item.key) === current ? "active" : ""}" data-clean-product="${escapeHtml(item.key)}">${escapeHtml(item.label)}</button>
+      `).join("");
+
+      if (!c.productGrid.querySelector(".clean-product-v105.active")) {
+        c.productGrid.querySelector(".clean-product-v105")?.classList.add("active");
+      }
+    }
+
+    function uniqueCleanValuesV105(field, fallback = []) {
+      const values = [];
+      (state.records || []).forEach(r => {
+        const val = String(r[field] || "").trim();
+        if (val && !values.includes(val)) values.push(val);
+      });
+      fallback.forEach(v => {
+        const val = String(v || "").trim();
+        if (val && !values.includes(val)) values.push(val);
+      });
+      return values.slice(0, 6);
+    }
+
+    function renderCleanChipsV105() {
+      const c = getCleanElsV105();
+      if (c.lenChips) {
+        const lastBoy = (c.len && c.len.value) || (els.length && els.length.value) || localStorage.getItem("mesaha_simple_last_length_v1") || "";
+        const values = uniqueCleanValuesV105("length", [lastBoy, "4", "3", "2.5", "2", "1.5", "1"]);
+        c.lenChips.innerHTML = values.map(v => `<button type="button" class="clean-chip-v105 boy" data-clean-length="${escapeHtml(v)}">${escapeHtml(v)}</button>`).join("");
+      }
+
+      if (c.diaChips) {
+        const lastCap = (c.dia && c.dia.value) || (els.diameter && els.diameter.value) || "";
+        const values = uniqueCleanValuesV105("diameter", [lastCap, "32", "28", "26", "24", "22", "21"]);
+        c.diaChips.innerHTML = values.map(v => `<button type="button" class="clean-chip-v105 cap" data-clean-diameter="${escapeHtml(v)}">${escapeHtml(v)}</button>`).join("");
+      }
+    }
+
+    function renderCleanAutoV105() {
+      const c = getCleanElsV105();
+      if (!c.auto) return;
+      const barkod = els.barcode ? (els.barcode.value || "-") : "-";
+      const tarih = els.productionDate ? (els.productionDate.value || "-") : "-";
+      const adet = els.quantity ? (els.quantity.value || "1") : "1";
+      const agac = els.treeType ? (els.treeType.value || "Karaçam") : "Karaçam";
+      const urun = cleanSelectedProductV105();
+      c.auto.innerHTML = `<b>Otomatik bilgiler:</b><br>Ürün: ${escapeHtml(urun)} • Ağaç: ${escapeHtml(agac)} • Barkod: ${escapeHtml(barkod)} • Tarih: ${escapeHtml(tarih)} • Adet: ${escapeHtml(adet)}`;
+    }
+
+    function renderCleanRecentV105() {
+      const c = getCleanElsV105();
+      if (!c.recent) return;
+      const recent = (state.records || []).slice(0, 3);
+      if (!recent.length) {
+        c.recent.innerHTML = `<div class="clean-empty-v105">Henüz kayıt yok</div>`;
+        return;
+      }
+
+      c.recent.innerHTML = recent.map(r => {
+        const product = normalizeProductType(r.productType || "Tomruk");
+        const cls = productClassCleanV105(product);
+        const barkod = r.barcode || "-";
+        const cap = r.diameter || "-";
+        const boy = r.length || "-";
+        const adet = r.quantity || 1;
+        return `
+          <button type="button" class="clean-recent-item-v105 ${cls}" data-clean-record-id="${escapeHtml(r.id)}">
+            <div>
+              <b>${escapeHtml(barkod)}</b>
+              <span>${escapeHtml(product)} • Çap ${escapeHtml(String(cap))} • Boy ${escapeHtml(String(boy))} • Adet ${escapeHtml(String(adet))}</span>
+            </div>
+            <span>Düzelt</span>
+          </button>
+        `;
+      }).join("");
+    }
+
+    function setCleanInputV105(input, value) {
+      if (!input) return;
+      input.value = String(value || "");
+      try { input.dispatchEvent(new Event("input", { bubbles:true })); } catch {}
+      try { input.dispatchEvent(new Event("change", { bubbles:true })); } catch {}
+      setTimeout(() => {
+        try {
+          input.focus({ preventScroll:true });
+          input.select();
+        } catch {
+          try { input.focus(); input.select(); } catch {}
+        }
+      }, 0);
+    }
+
+    function openCleanSimpleV105() {
+      const c = getCleanElsV105();
+      if (!c.overlay) return;
+
+      if (document.getElementById("simpleModeOverlay")) {
+        document.getElementById("simpleModeOverlay").classList.remove("show");
+      }
+
+      renderCleanProductsV105();
+      if (c.dia && els.diameter) c.dia.value = els.diameter.value || "";
+      if (c.len) {
+        const savedBoy = localStorage.getItem("mesaha_simple_last_length_v1") || "";
+        c.len.value = savedBoy || (els.length ? (els.length.value || "") : "");
+      }
+      renderCleanChipsV105();
+      renderCleanAutoV105();
+      renderCleanRecentV105();
+
+      c.overlay.classList.add("show");
+      document.body.classList.add("clean-simple-open-v105");
+      updateStableNavActiveV105();
+
+      setTimeout(() => {
+        try { c.dia.focus({ preventScroll:true }); c.dia.select(); } catch {}
+      }, 120);
+    }
+
+    function closeCleanSimpleV105() {
+      const c = getCleanElsV105();
+      if (c.overlay) c.overlay.classList.remove("show");
+      document.body.classList.remove("clean-simple-open-v105");
+      updateStableNavActiveV105();
+    }
+
+    function saveCleanSimpleV105() {
+      const c = getCleanElsV105();
+      const boy = c.len ? String(c.len.value || "").trim() : "";
+      const cap = c.dia ? String(c.dia.value || "").trim() : "";
+      if (!boy || !cap) {
+        showToast("Boy ve çap giriniz.");
+        if (!boy) setCleanInputV105(c.len, boy);
+        else setCleanInputV105(c.dia, cap);
+        return;
+      }
+
+      localStorage.setItem("mesaha_simple_last_length_v1", boy);
+      const before = Array.isArray(state.records) ? state.records.length : 0;
+
+      if (els.length) {
+        els.length.value = boy;
+        els.length.dispatchEvent(new Event("input", { bubbles:true }));
+        els.length.dispatchEvent(new Event("change", { bubbles:true }));
+      }
+
+      if (els.diameter) {
+        els.diameter.value = cap;
+        els.diameter.dispatchEvent(new Event("input", { bubbles:true }));
+        els.diameter.dispatchEvent(new Event("change", { bubbles:true }));
+      }
+
+      const selected = cleanSelectedProductV105();
+      if (typeof setProductType === "function") setProductType(selected, true);
+      else if (els.productType) els.productType.value = selected;
+
+      try {
+        if (els.form && els.form.requestSubmit) els.form.requestSubmit(els.submitBtn || undefined);
+        else if (els.form) els.form.dispatchEvent(new Event("submit", { bubbles:true, cancelable:true }));
+      } catch {
+        if (els.submitBtn) els.submitBtn.click();
+      }
+
+      setTimeout(() => {
+        const after = Array.isArray(state.records) ? state.records.length : 0;
+        renderCleanRecentV105();
+        renderCleanAutoV105();
+        renderCleanChipsV105();
+
+        if (after > before) {
+          if (c.dia) c.dia.value = "";
+          if (els.diameter) els.diameter.value = "";
+          if (c.len) c.len.value = boy;
+          if (els.length) els.length.value = boy;
+          setCleanInputV105(c.dia, "");
+        }
+      }, 260);
+    }
+
+    function attachCleanSimpleEventsV105() {
+      const c = getCleanElsV105();
+      if (window.__cleanSimpleEventsV105) return;
+      window.__cleanSimpleEventsV105 = true;
+
+      c.close?.addEventListener("click", closeCleanSimpleV105);
+      c.save?.addEventListener("click", saveCleanSimpleV105);
+
+      c.overlay?.addEventListener("click", (event) => {
+        if (event.target === c.overlay) closeCleanSimpleV105();
+      });
+
+      c.productGrid?.addEventListener("pointerdown", (event) => {
+        const btn = event.target.closest(".clean-product-v105");
+        if (!btn) return;
+        event.preventDefault();
+        event.stopPropagation();
+
+        c.productGrid.querySelectorAll(".clean-product-v105").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        renderCleanAutoV105();
+
+        const active = document.activeElement === c.len || document.activeElement === c.dia ? document.activeElement : null;
+        if (active) setTimeout(() => { try { active.focus({ preventScroll:true }); } catch {} }, 0);
+      });
+
+      c.lenChips?.addEventListener("pointerdown", (event) => {
+        const btn = event.target.closest(".clean-chip-v105");
+        if (!btn) return;
+        event.preventDefault();
+        event.stopPropagation();
+        setCleanInputV105(c.len, btn.dataset.cleanLength || "");
+      });
+
+      c.diaChips?.addEventListener("pointerdown", (event) => {
+        const btn = event.target.closest(".clean-chip-v105");
+        if (!btn) return;
+        event.preventDefault();
+        event.stopPropagation();
+        setCleanInputV105(c.dia, btn.dataset.cleanDiameter || "");
+      });
+
+      c.len?.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          c.dia?.focus();
+          c.dia?.select();
+        }
+      });
+
+      c.dia?.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          saveCleanSimpleV105();
+        }
+      });
+
+      c.recent?.addEventListener("click", (event) => {
+        const btn = event.target.closest("[data-clean-record-id]");
+        if (!btn) return;
+        const id = btn.dataset.cleanRecordId;
+        closeCleanSimpleV105();
+        if (typeof editRecord === "function") editRecord(id);
+        else showToast("Düzeltme için Kayıtlar ekranını kullanınız.");
+      });
+    }
+
+    // Sağ üstteki Sade Mod butonunu eski listenerlardan kurtar.
+    function rebindSimpleButtonV105() {
+      const oldBtn = document.getElementById("simpleModeBtn");
+      if (!oldBtn || oldBtn.__cleanV105) return;
+      const newBtn = oldBtn.cloneNode(true);
+      newBtn.__cleanV105 = true;
+      oldBtn.parentNode.replaceChild(newBtn, oldBtn);
+      newBtn.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        openCleanSimpleV105();
+      });
+      if (typeof els !== "undefined") els.simpleModeBtn = newBtn;
+    }
+
+    // Hata sonrası Sade Mod açıkken yeni inputa dön.
+    if (typeof showErrorToast === "function" && !showErrorToast.__cleanV105) {
+      const originalErrorV105 = showErrorToast;
+      showErrorToast = function(message, ...rest) {
+        const result = originalErrorV105.call(this, message, ...rest);
+        const c = getCleanElsV105();
+        if (document.body.classList.contains("clean-simple-open-v105")) {
+          const text = String(message || "").toLowerCase("tr-TR");
+          const target = text.includes("boy") ? c.len : c.dia;
+          setCleanInputV105(target, target ? target.value : "");
+        }
+        return result;
+      };
+      showErrorToast.__cleanV105 = true;
+    }
+
+    if (typeof showToast === "function" && !showToast.__cleanV105) {
+      const originalToastV105 = showToast;
+      showToast = function(message, ...rest) {
+        const result = originalToastV105.call(this, message, ...rest);
+        const c = getCleanElsV105();
+        if (document.body.classList.contains("clean-simple-open-v105")) {
+          const text = String(message || "").toLowerCase("tr-TR");
+          if (text.includes("çap") || text.includes("cap") || text.includes("tomruk") || text.includes("boy") || text.includes("geçersiz") || text.includes("daha önce")) {
+            const target = text.includes("boy") ? c.len : c.dia;
+            setCleanInputV105(target, target ? target.value : "");
+          }
+        }
+        return result;
+      };
+      showToast.__cleanV105 = true;
+    }
+
+    if (typeof renderRecords === "function" && !renderRecords.__v105Wrapped) {
+      const renderRecordsOriginalV105 = renderRecords;
+      renderRecords = function(...args) {
+        const result = renderRecordsOriginalV105.apply(this, args);
+        setTimeout(stabilizeRecordsScrollV105, 30);
+        setTimeout(updateStableNavActiveV105, 40);
+        return result;
+      };
+      renderRecords.__v105Wrapped = true;
+    }
+
+    attachCleanSimpleEventsV105();
+    rebindSimpleButtonV105();
+    createStableNavV105();
+    updateStableNavActiveV105();
+    stabilizeRecordsScrollV105();
+
+    ["scroll", "touchmove"].forEach(evt => {
+      window.addEventListener(evt, hideStableNavWhileScrollingV105, { passive:true });
+    });
+
+    ["click", "pointerup", "touchend"].forEach(evt => {
+      document.addEventListener(evt, () => {
+        setTimeout(updateStableNavActiveV105, 80);
+        setTimeout(stabilizeRecordsScrollV105, 120);
+        setTimeout(rebindSimpleButtonV105, 120);
+      }, true);
+    });
+
+    setInterval(() => {
+      updateStableNavActiveV105();
+      stabilizeRecordsScrollV105();
+      rebindSimpleButtonV105();
+    }, 1200);
+
+
     window.forceUpdateApp = forceUpdateApp;
     window.mesahaToggleTheme = mesahaToggleTheme;
     window.simpleOpenModeV92 = simpleOpenModeV92;
@@ -13116,8 +14078,8 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     load();
   
     window.MESAHA_BUILD_INFO = {
-      fileVersion: "v104",
-      visibleVersion: "Mesaha İO v1.33",
+      fileVersion: "v105",
+      visibleVersion: "Mesaha İO v1.34",
       stableBuild: true
     };
 
