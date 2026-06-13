@@ -1,10 +1,11 @@
-const CACHE_NAME = "mesaha-app-v90";
+const CACHE_NAME = "mesaha-app-v91";
 const ASSETS = [
   "./",
   "./index.html",
   "./manifest.json",
   "./service-worker.js",
-  "./.nojekyll"
+  "./.nojekyll",
+  "./version.json"
 ];
 
 self.addEventListener("install", (event) => {
@@ -46,10 +47,13 @@ self.addEventListener("fetch", (event) => {
   }
 
   event.respondWith(
-    fetch(request).then((response) => {
-      const copy = response.clone();
-      caches.open(CACHE_NAME).then((cache) => cache.put(request, copy).catch(() => {}));
-      return response;
-    }).catch(() => caches.match(request))
+    caches.match(request).then((cached) => {
+      const network = fetch(request).then((response) => {
+        const copy = response.clone();
+        caches.open(CACHE_NAME).then((cache) => cache.put(request, copy).catch(() => {}));
+        return response;
+      }).catch(() => cached);
+      return cached || network;
+    })
   );
 });

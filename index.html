@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha App v90</title>
+  <title>Mesaha App v91</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -3992,433 +3992,6 @@
       color:#3730a3 !important;
     }
 
-  
-    /* v87: Bildirim sayacı, silme ve güncelleme uyarısı */
-    .admin-tab-count{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      min-width:20px;
-      height:20px;
-      padding:0 6px;
-      border-radius:999px;
-      background:#ef4444;
-      color:#fff;
-      font-size:10px;
-      font-weight:950;
-      margin-left:5px;
-      vertical-align:middle;
-      box-shadow:0 6px 14px rgba(239,68,68,.26);
-    }
-
-    .admin-tab-count.zero{
-      background:#cbd5e1;
-      color:#334155;
-      box-shadow:none;
-    }
-
-    .admin-update-warn-btn{
-      background:#fff7ed !important;
-      color:#9a3412 !important;
-      border-color:#fed7aa !important;
-    }
-
-    .admin-report-delete{
-      background:#fff1f2 !important;
-      color:#be123c !important;
-      border-color:#fecdd3 !important;
-    }
-
-    .admin-report-actions.four{
-      grid-template-columns:repeat(2, minmax(0,1fr)) !important;
-    }
-
-    @media (min-width:720px){
-      .admin-report-actions.four{
-        grid-template-columns:repeat(4, minmax(0,1fr)) !important;
-      }
-    }
-
-  
-    /* v88: Sabit kullanıcı bildirim rozeti */
-    .active-user-wrap{
-      position:relative;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-    }
-
-    .user-notification-badge{
-      position:absolute;
-      top:-7px;
-      right:-8px;
-      min-width:20px;
-      height:20px;
-      padding:0 6px;
-      border-radius:999px;
-      background:#ef4444;
-      color:#ffffff;
-      border:2px solid #ffffff;
-      display:none;
-      align-items:center;
-      justify-content:center;
-      font-size:10px;
-      line-height:1;
-      font-weight:950;
-      box-shadow:0 8px 18px rgba(239,68,68,.38);
-      z-index:20;
-      pointer-events:none;
-    }
-
-    .active-user-wrap.has-notification .user-notification-badge,
-    .user-notification-badge.show{
-      display:flex !important;
-    }
-
-    .active-user-badge.has-notification::after{
-      content:"";
-      position:absolute;
-      top:-5px;
-      right:-5px;
-      width:10px;
-      height:10px;
-      border-radius:999px;
-      background:#ef4444;
-      border:2px solid #fff;
-      box-shadow:0 0 0 3px rgba(239,68,68,.14);
-    }
-
-  
-    /* v90: Karanlık Mod ve Sade Mod */
-    .topbar{
-      gap:10px;
-      flex-wrap:wrap;
-    }
-
-    .topbar-extra-actions{
-      display:flex;
-      gap:7px;
-      align-items:center;
-      justify-content:flex-end;
-      margin-left:auto;
-    }
-
-    .topbar-mini-btn{
-      min-height:34px;
-      border-radius:999px;
-      border:1px solid #cbd5e1;
-      background:#ffffff;
-      color:#0f172a;
-      padding:6px 10px;
-      font-size:12px;
-      font-weight:950;
-      box-shadow:0 8px 18px rgba(15,23,42,.07);
-      white-space:nowrap;
-    }
-
-    .topbar-mini-btn:active{
-      transform:scale(.98);
-    }
-
-    body.dark-mode{
-      background:#0f172a !important;
-      color:#e5e7eb !important;
-    }
-
-    body.dark-mode .app,
-    body.dark-mode .panel,
-    body.dark-mode .user-panel-card,
-    body.dark-mode .issue-report-card,
-    body.dark-mode .simple-mode-card,
-    body.dark-mode .cloud-restore-card,
-    body.dark-mode .cloud-loading-card{
-      background:#111827 !important;
-      color:#e5e7eb !important;
-      border-color:#334155 !important;
-    }
-
-    body.dark-mode .topbar{
-      background:rgba(15,23,42,.86) !important;
-      color:#e5e7eb !important;
-      border-color:#334155 !important;
-      backdrop-filter:blur(18px) saturate(150%);
-      -webkit-backdrop-filter:blur(18px) saturate(150%);
-    }
-
-    body.dark-mode .brand h1,
-    body.dark-mode .panel h2,
-    body.dark-mode .panel h3,
-    body.dark-mode label{
-      color:#f8fafc !important;
-    }
-
-    body.dark-mode .hint,
-    body.dark-mode .panel p,
-    body.dark-mode .simple-auto-info{
-      color:#cbd5e1 !important;
-    }
-
-    body.dark-mode input,
-    body.dark-mode select,
-    body.dark-mode textarea{
-      background:#0b1220 !important;
-      color:#f8fafc !important;
-      border-color:#334155 !important;
-    }
-
-    body.dark-mode input::placeholder,
-    body.dark-mode textarea::placeholder{
-      color:#64748b !important;
-    }
-
-    body.dark-mode .topbar-mini-btn,
-    body.dark-mode .secondary,
-    body.dark-mode .ghost{
-      background:#1e293b !important;
-      color:#e5e7eb !important;
-      border-color:#475569 !important;
-    }
-
-    body.dark-mode .primary{
-      background:#2563eb !important;
-      color:#fff !important;
-    }
-
-    body.dark-mode .guide-card,
-    body.dark-mode .admin-summary-card,
-    body.dark-mode .registered-user-item,
-    body.dark-mode .issue-mini-card,
-    body.dark-mode .admin-report-card,
-    body.dark-mode .simple-auto-info,
-    body.dark-mode .simple-last-item{
-      background:#1e293b !important;
-      color:#e5e7eb !important;
-      border-color:#334155 !important;
-    }
-
-    body.dark-mode .bottom-nav{
-      background:rgba(15,23,42,.94) !important;
-      border-color:#334155 !important;
-    }
-
-    body.dark-mode .bottom-nav button{
-      color:#cbd5e1 !important;
-    }
-
-    body.dark-mode .bottom-nav button.active{
-      background:#2563eb !important;
-      color:#fff !important;
-    }
-
-    body.dark-mode .topbar-mini-btn.dark-active{
-      background:#f8fafc !important;
-      color:#0f172a !important;
-    }
-
-    .simple-mode-overlay{
-      position:fixed;
-      inset:0;
-      z-index:95;
-      display:none;
-      align-items:flex-end;
-      justify-content:center;
-      background:rgba(15,23,42,.28);
-      backdrop-filter:blur(10px);
-      -webkit-backdrop-filter:blur(10px);
-      padding:12px;
-    }
-
-    .simple-mode-overlay.show{
-      display:flex;
-    }
-
-    .simple-mode-card{
-      width:min(620px, 100%);
-      max-height:92vh;
-      overflow:auto;
-      background:rgba(255,255,255,.96);
-      border:1px solid rgba(226,232,240,.95);
-      border-radius:26px;
-      box-shadow:0 22px 60px rgba(15,23,42,.24);
-      padding:16px;
-    }
-
-    .simple-mode-head{
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:12px;
-      margin-bottom:12px;
-    }
-
-    .simple-mode-head h2{
-      margin:0 0 4px;
-      font-size:22px;
-      font-weight:950;
-    }
-
-    .simple-mode-close{
-      width:40px;
-      height:40px;
-      border-radius:15px;
-      font-size:22px;
-      line-height:1;
-    }
-
-    .simple-product-grid{
-      display:grid;
-      grid-template-columns:repeat(2, minmax(0, 1fr));
-      gap:8px;
-      margin:10px 0 12px;
-    }
-
-    .simple-product-btn{
-      min-height:46px;
-      border-radius:16px;
-      border:1px solid #dbe4ef;
-      background:#fff;
-      color:#0f172a;
-      font-weight:950;
-      font-size:14px;
-    }
-
-    .simple-product-btn.active{
-      color:#fff;
-      box-shadow:0 12px 22px rgba(15,23,42,.14);
-      transform:translateY(-1px);
-    }
-
-    .simple-product-btn.tomruk.active{ background:#ca8a04; border-color:#ca8a04; }
-    .simple-product-btn.maden.active{ background:#2563eb; border-color:#2563eb; }
-    .simple-product-btn.kagit.active{ background:#dc2626; border-color:#dc2626; }
-    .simple-product-btn.sanayi.active{ background:#16a34a; border-color:#16a34a; }
-    .simple-product-btn.tel.active{ background:#7c3aed; border-color:#7c3aed; }
-
-    .simple-input-grid{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:10px;
-      margin:10px 0;
-    }
-
-    .simple-input-grid label{
-      display:block;
-      margin-bottom:6px;
-      font-size:13px;
-      font-weight:950;
-      color:#334155;
-    }
-
-    .simple-input-grid input{
-      width:100%;
-      min-height:54px;
-      border:1px solid #dbe4ef;
-      border-radius:18px;
-      padding:10px 12px;
-      font-size:22px;
-      font-weight:950;
-      outline:none;
-      text-align:center;
-    }
-
-    .simple-input-grid input:focus{
-      border-color:#2563eb;
-      box-shadow:0 0 0 3px rgba(37,99,235,.12);
-    }
-
-    .simple-auto-info{
-      margin:10px 0;
-      padding:10px;
-      border-radius:16px;
-      background:#f8fafc;
-      border:1px solid #e2e8f0;
-      color:#475569;
-      font-size:12px;
-      font-weight:850;
-      line-height:1.45;
-    }
-
-    .simple-save-btn{
-      width:100%;
-      min-height:52px !important;
-      border-radius:18px !important;
-      font-size:17px !important;
-      font-weight:950 !important;
-      margin:6px 0 12px !important;
-    }
-
-    .simple-last-wrap h3{
-      margin:12px 0 8px;
-      font-size:16px;
-      font-weight:950;
-    }
-
-    .simple-last-records{
-      display:grid;
-      gap:8px;
-    }
-
-    .simple-last-item{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      border:1px solid #e2e8f0;
-      border-left-width:7px;
-      border-radius:18px;
-      padding:10px 12px;
-      background:#fff;
-      cursor:pointer;
-      box-shadow:0 8px 18px rgba(15,23,42,.05);
-    }
-
-    .simple-last-item b{
-      display:block;
-      font-size:14px;
-      color:#0f172a;
-    }
-
-    .simple-last-item span{
-      display:block;
-      color:#64748b;
-      font-size:12px;
-      font-weight:850;
-      margin-top:2px;
-    }
-
-    body.dark-mode .simple-last-item b{
-      color:#f8fafc !important;
-    }
-
-    .simple-last-item.tomruk{ border-left-color:#ca8a04; }
-    .simple-last-item.maden{ border-left-color:#2563eb; }
-    .simple-last-item.kagit{ border-left-color:#dc2626; }
-    .simple-last-item.sanayi{ border-left-color:#16a34a; }
-    .simple-last-item.tel{ border-left-color:#7c3aed; }
-
-    @media (min-width:720px){
-      .simple-mode-overlay{
-        align-items:center;
-      }
-      .simple-product-grid{
-        grid-template-columns:repeat(5, minmax(0,1fr));
-      }
-    }
-
-    @media (max-width:430px){
-      .topbar-extra-actions{
-        width:100%;
-        justify-content:flex-start;
-      }
-      .topbar-mini-btn{
-        font-size:11px;
-        padding:6px 9px;
-      }
-      .simple-input-grid input{
-        font-size:20px;
-      }
-    }
-
   </style>
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -4541,61 +4114,13 @@
     </div>
   </div>
 
-  
-  <div id="simpleModeOverlay" class="simple-mode-overlay" role="dialog" aria-modal="true" aria-label="Sade Mod">
-    <div class="simple-mode-card">
-      <div class="simple-mode-head">
-        <div>
-          <h2>Sade Mod</h2>
-          <p id="simpleModeInfo" class="hint">Barkod, tarih, adet ve dosya bilgileri Yeni Kayıt ekranından otomatik alınır.</p>
-        </div>
-        <button id="simpleModeCloseBtn" class="ghost simple-mode-close" type="button">×</button>
-      </div>
-
-      <div class="simple-product-grid" id="simpleProductGrid">
-        <button type="button" data-simple-product="Tomruk" class="simple-product-btn tomruk active">Tomruk</button>
-        <button type="button" data-simple-product="Maden Direk" class="simple-product-btn maden">Maden</button>
-        <button type="button" data-simple-product="Kağıtlık" class="simple-product-btn kagit">Kağıtlık</button>
-        <button type="button" data-simple-product="Sanayi Odunu" class="simple-product-btn sanayi">Sanayi</button>
-        <button type="button" data-simple-product="Tel Direk" class="simple-product-btn tel">Tel</button>
-      </div>
-
-      <div class="simple-input-grid">
-        <div>
-          <label for="simpleDiameter">Çap</label>
-          <input id="simpleDiameter" inputmode="decimal" autocomplete="off" placeholder="Çap" />
-        </div>
-        <div>
-          <label for="simpleLength">Boy</label>
-          <input id="simpleLength" inputmode="decimal" autocomplete="off" placeholder="Boy" />
-        </div>
-      </div>
-
-      <div id="simpleAutoInfo" class="simple-auto-info"></div>
-
-      <button id="simpleSaveBtn" class="primary simple-save-btn" type="button">Kaydet</button>
-
-      <div class="simple-last-wrap">
-        <h3>Son 3 Barkod</h3>
-        <div id="simpleLastRecords" class="simple-last-records"></div>
-      </div>
-    </div>
-  </div>
-
-<div class="app">
+  <div class="app">
     <header class="topbar">
       <div class="brand">
-        <h1>Mesaha İO v1.19</h1>
+        <h1>Mesaha İO v1.20</h1>
         
       </div>
-      <div class="active-user-wrap">
-        <div id="activeUserBadge" class="active-user-badge" role="button" tabindex="0" title="Kullanıcı panelini aç" style="display:none"></div>
-        <span id="userNotificationBadge" class="user-notification-badge" style="display:none">0</span>
-      </div>
-      <div class="topbar-extra-actions">
-        <button id="themeToggleBtn" class="topbar-mini-btn" type="button">Karanlık</button>
-        <button id="simpleModeBtn" class="topbar-mini-btn" type="button">Sade Mod</button>
-      </div>
+      <div id="activeUserBadge" class="active-user-badge" role="button" tabindex="0" title="Kullanıcı panelini aç" style="display:none"></div>
     </header>
 
     <main class="grid">
@@ -4888,7 +4413,7 @@
               <h3>Terminal Kurulumu</h3>
               <ol>
                 <li>Terminal cihazında uygulama/terminal menüsünü açınız.</li>
-                <li>İlk gelen ekranda sol alttaki en son seçeneğe dokununuz.</li>
+                <li>İlk gelen ekranda sağ alttaki en son seçeneğe dokununuz.</li>
                 <li>Açılan bölümde <b>Yeşil Takip</b> yazan seçeneği açınız.</li>
                 <li>Bu işlem sizi Chrome uygulamasına yönlendirir.</li>
                 <li>Chrome’un arama/adres çubuğuna <b>bit.ly/mesahaio</b> yazıp aratınız.</li>
@@ -5010,7 +4535,7 @@
           <div class="admin-tabs admin-tabs-clean">
             <button class="admin-tab active" type="button" data-admin-tab="users">Kullanıcılar</button>
             <button class="admin-tab" type="button" data-admin-tab="notes">Notlar</button>
-            <button class="admin-tab" type="button" data-admin-tab="reports">Bildirimler <span id="adminReportsCount" class="admin-tab-count">0</span></button>
+            <button class="admin-tab" type="button" data-admin-tab="reports">Bildirimler</button>
           </div>
 
           <div id="adminUsersView" class="admin-view">
@@ -5214,7 +4739,6 @@
       issueMyReportsList: $("issueMyReportsList"),
       adminReportsView: $("adminReportsView"),
       adminReportsList: $("adminReportsList"),
-      adminReportsCount: $("adminReportsCount"),
       guideForceUpdateBtn: $("guideForceUpdateBtn"),
       adminRefreshBtn: $("adminRefreshBtn"),
       adminSyncInfo: $("adminSyncInfo"),
@@ -5240,18 +4764,6 @@
       loginSaveBtn: $("loginSaveBtn"),
       loginError: $("loginError"),
       activeUserBadge: $("activeUserBadge"),
-      userNotificationBadge: $("userNotificationBadge"),
-      themeToggleBtn: $("themeToggleBtn"),
-      simpleModeBtn: $("simpleModeBtn"),
-      simpleModeOverlay: $("simpleModeOverlay"),
-      simpleModeCloseBtn: $("simpleModeCloseBtn"),
-      simpleModeInfo: $("simpleModeInfo"),
-      simpleProductGrid: $("simpleProductGrid"),
-      simpleDiameter: $("simpleDiameter"),
-      simpleLength: $("simpleLength"),
-      simpleAutoInfo: $("simpleAutoInfo"),
-      simpleSaveBtn: $("simpleSaveBtn"),
-      simpleLastRecords: $("simpleLastRecords"),
       registeredUsersList: $("registeredUsersList"),
       changeUserBtn: $("changeUserBtn"),
       adminUsersBtn: $("adminUsersBtn"),
@@ -5933,7 +5445,6 @@
               <button class="secondary admin-user-backups" type="button" onclick="adminOpenUserBackups('${escapeHtml(user.name || "")}','${escapeHtml(user.seflik || "")}')">Yedekleri Gör</button>
               <button class="admin-user-note" type="button" onclick="adminEditNote('${escapeHtml(user.name || "")}','${escapeHtml(user.seflik || "")}')">Not Yaz</button>
               <button class="ghost" type="button" onclick="adminShowDetail('${escapeHtml(user.name || "")}','${escapeHtml(user.seflik || "")}')">Detay</button>
-              <button class="secondary admin-update-warn-btn" type="button" onclick="adminSendUpdateNotice('${escapeHtml(user.name || "")}','${escapeHtml(user.seflik || "")}')">Güncelleme Uyarısı</button>
               <button class="danger registered-user-delete" type="button" onclick="deleteCloudUserAndBackups('${escapeHtml(user.name || "")}','${escapeHtml(user.seflik || "")}')">Sil</button>
             </div>
           </div>
@@ -6043,8 +5554,8 @@
     function currentDeviceInfoPayload() {
       const active = state.activeUser || findActiveUser();
       return {
-        appVersion: "Mesaha İO v1.19",
-        fileVersion: "v90",
+        appVersion: "Mesaha İO v1.20",
+        fileVersion: "v91",
         userName: active && active.name ? cleanUserText(active.name) : "",
         seflik: active && active.seflik ? cleanUserText(active.seflik) : "",
         deviceId: getOrCreateDeviceId(),
@@ -6113,7 +5624,7 @@
       if (els.issueReportUserInfo) els.issueReportUserInfo.textContent = `${active.name} • ${active.seflik}`;
       if (els.issueDeviceInfo) els.issueDeviceInfo.textContent = issueDeviceInfoText(issueDeviceInfoPayload());
       if (els.issueReportOverlay) els.issueReportOverlay.classList.add("show");
-      loadMyIssueReports().then(() => markUserRepliesSeenV89()).catch(() => {});
+      loadMyIssueReports().catch(() => {});
       setTimeout(() => { if (els.issueReportMessage) els.issueReportMessage.focus(); }, 120);
     }
 
@@ -6195,7 +5706,7 @@
             ${r.adminReply ? `<div class="issue-reply"><b>Admin Cevabı:</b> ${escapeHtml(r.adminReply)}</div>` : ""}
           </div>
         `).join("");
-        markUserRepliesSeenV89();
+        markUserRepliesSeen();
       } catch (error) {
         els.issueMyReportsList.innerHTML = "Bildirimler alınamadı.";
       }
@@ -6237,7 +5748,7 @@
       dot.textContent = count > 9 ? "9+" : String(count || "");
     }
 
-    async function markUserRepliesSeenV89() {
+    async function markUserRepliesSeen() {
       try {
         const rows = await firebaseListMyTickets();
         const seenRaw = localStorage.getItem("mesaha_seen_admin_replies_v1") || "{}";
@@ -6249,170 +5760,11 @@
         });
         localStorage.setItem("mesaha_seen_admin_replies_v1", JSON.stringify(seen));
         updateUserNotificationBadge().catch(() => {});
-    startNotificationWatcherV89();
       } catch {}
     }
 
 
     let adminReportFilter = "open";
-
-    
-    function userReplySeenStorageKey() {
-      const active = state.activeUser || findActiveUser();
-      const key = active && active.name && active.seflik ? firebaseUserKey(active.name, active.seflik) : "default";
-      return `mesaha_seen_admin_replies_v2_${key}`;
-    }
-
-    async function countUserUnreadReplies() {
-      const active = state.activeUser || findActiveUser();
-      if (!active || !active.name || !active.seflik) return 0;
-
-      try {
-        const rows = await firebaseListMyTickets();
-        const seenRaw = localStorage.getItem(userReplySeenStorageKey()) || "{}";
-        const seen = JSON.parse(seenRaw);
-        let count = 0;
-
-        rows.forEach(r => {
-          const hasAdminMessage = !!String(r.adminReply || "").trim() || r.type === "updateNotice";
-          if (!hasAdminMessage) return;
-          const stamp = r.replyAtMs || r.updatedAtMs || r.createdAtMs || "";
-          const key = `${r.id}_${stamp}`;
-          if (!seen[key]) count++;
-        });
-
-        return count;
-      } catch {
-        return 0;
-      }
-    }
-
-    async function updateUserNotificationBadge() {
-      const badge = els.activeUserBadge || document.getElementById("activeUserBadge");
-      if (!badge) return;
-
-      let dot = badge.querySelector(".user-notification-dot");
-      if (!dot) {
-        dot = document.createElement("span");
-        dot.className = "user-notification-dot";
-        badge.appendChild(dot);
-      }
-
-      const count = await countUserUnreadReplies();
-      badge.classList.toggle("has-notification", count > 0);
-      dot.textContent = count > 9 ? "9+" : String(count || "");
-    }
-
-    async function markUserRepliesSeenV89() {
-      try {
-        const rows = await firebaseListMyTickets();
-        const seenRaw = localStorage.getItem(userReplySeenStorageKey()) || "{}";
-        const seen = JSON.parse(seenRaw);
-
-        rows.forEach(r => {
-          const hasAdminMessage = !!String(r.adminReply || "").trim() || r.type === "updateNotice";
-          if (!hasAdminMessage) return;
-          const stamp = r.replyAtMs || r.updatedAtMs || r.createdAtMs || "";
-          const key = `${r.id}_${stamp}`;
-          seen[key] = true;
-        });
-
-        localStorage.setItem(userReplySeenStorageKey(), JSON.stringify(seen));
-        updateUserNotificationBadge().catch(() => {});
-      } catch {}
-    }
-
-    function startNotificationWatcher() {
-      if (window.__mesahaNotificationWatcherStarted) return;
-      window.__mesahaNotificationWatcherStarted = true;
-
-      setTimeout(() => updateUserNotificationBadge().catch(() => {}), 1500);
-      setInterval(() => {
-        if (document.visibilityState === "visible") {
-          updateUserNotificationBadge().catch(() => {});
-        }
-      }, 45000);
-
-      document.addEventListener("visibilitychange", () => {
-        if (document.visibilityState === "visible") {
-          updateUserNotificationBadge().catch(() => {});
-        }
-      });
-    }
-
-    async function updateAdminReportsCount() {
-      if (!els.adminReportsCount) return;
-
-      try {
-        const rows = await firebaseListSupportTickets();
-        const openCount = rows.filter(r => r.status !== "done").length;
-        els.adminReportsCount.textContent = openCount > 99 ? "99+" : String(openCount);
-        els.adminReportsCount.classList.toggle("zero", openCount === 0);
-      } catch {
-        els.adminReportsCount.textContent = "!";
-        els.adminReportsCount.classList.remove("zero");
-      }
-    }
-
-    async function adminDeleteReport(ticketId) {
-      const ok = window.confirm("Bu sorun bildirimi silinsin mi? Bu işlem geri alınamaz.");
-      if (!ok) return;
-
-      try {
-        const { db } = await ensureFirebaseReady();
-        await db.collection(FIREBASE_REPORTS_COLLECTION).doc(ticketId).delete();
-        showToast("Bildirim silindi.");
-        await renderAdminReports();
-        updateAdminReportsCount().catch(() => {});
-      } catch (error) {
-        showToast("Bildirim silinemedi.");
-      }
-    }
-
-    async function adminSendUpdateNotice(name, seflik) {
-      const cleanName = cleanUserText(name);
-      const cleanSeflik = cleanUserText(seflik);
-      if (!cleanName || !cleanSeflik) return showToast("Kullanıcı bilgisi eksik.");
-
-      const text = window.prompt(
-        "Kullanıcıya gönderilecek güncelleme uyarısı:",
-        "Yeni sürüm var. Lütfen internet varken Kullanıcı Paneli > Yeni Sürümü Güncelle butonunu kullanınız. Arazide veya internetsizken güncelleme yapmayınız."
-      );
-      if (text === null) return;
-      const reply = String(text || "").trim();
-      if (!reply) return showToast("Uyarı metni boş olamaz.");
-
-      try {
-        const { db } = await ensureFirebaseReady();
-        const userKey = firebaseUserKey(cleanName, cleanSeflik);
-        const nowMs = Date.now();
-        const id = `notice_${userKey}_${nowMs}`;
-
-        await db.collection(FIREBASE_REPORTS_COLLECTION).doc(id).set({
-          id,
-          userKey,
-          name: cleanName,
-          seflik: cleanSeflik,
-          type: "updateNotice",
-          message: "Admin güncelleme uyarısı gönderdi.",
-          status: "review",
-          adminReply: reply,
-          appVersion: "Mesaha İO v1.19",
-          recordCount: 0,
-          createdAt: firebaseDateText(),
-          createdAtMs: nowMs,
-          updatedAt: firebaseDateText(),
-          updatedAtMs: nowMs,
-          replyAtMs: nowMs
-        });
-
-        showToast("Güncelleme uyarısı gönderildi.");
-        updateAdminReportsCount().catch(() => {});
-      } catch (error) {
-        showToast("Güncelleme uyarısı gönderilemedi.");
-      }
-    }
-
 
     async function firebaseListSupportTickets() {
       const { db } = await ensureFirebaseReady();
@@ -6429,7 +5781,6 @@
 
       try {
         let rows = await firebaseListSupportTickets();
-        updateAdminReportsCount().catch(() => {});
         if (adminReportFilter === "open") rows = rows.filter(r => r.status !== "done");
         if (adminReportFilter === "done") rows = rows.filter(r => r.status === "done");
 
@@ -6457,11 +5808,10 @@
               </div>
               <div class="admin-report-message">${escapeHtml(r.message || "-")}</div>
               ${r.adminReply ? `<div class="admin-reply-box"><b>Cevap:</b> ${escapeHtml(r.adminReply)}</div>` : ""}
-              <div class="admin-report-actions four">
+              <div class="admin-report-actions">
                 <button type="button" class="secondary" onclick="adminSetReportStatus('${escapeHtml(r.id)}','review')">İncelendi</button>
                 <button type="button" class="secondary" onclick="adminReplyReport('${escapeHtml(r.id)}')">Cevap Yaz</button>
                 <button type="button" class="primary" onclick="adminSetReportStatus('${escapeHtml(r.id)}','done')">Çözüldü</button>
-                <button type="button" class="admin-report-delete" onclick="adminDeleteReport('${escapeHtml(r.id)}')">Sil</button>
               </div>
             </div>
           `;
@@ -6477,12 +5827,10 @@
         await db.collection(FIREBASE_REPORTS_COLLECTION).doc(ticketId).set({
           status,
           updatedAt: firebaseDateText(),
-          updatedAtMs: Date.now(),
-          replyAtMs: Date.now()
+          updatedAtMs: Date.now()
         }, { merge: true });
         showToast("Bildirim durumu güncellendi.");
-        await renderAdminReports();
-        updateAdminReportsCount().catch(() => {});
+        renderAdminReports();
       } catch (error) {
         showToast("Durum güncellenemedi.");
       }
@@ -6502,8 +5850,7 @@
           updatedAtMs: Date.now()
         }, { merge: true });
         showToast("Admin cevabı kaydedildi.");
-        await renderAdminReports();
-        updateAdminReportsCount().catch(() => {});
+        renderAdminReports();
       } catch (error) {
         showToast("Cevap kaydedilemedi.");
       }
@@ -6947,7 +6294,7 @@
 
     async function uploadCloudBackupOpen(user) {
       const payload = buildCloudBackupPayload(user);
-      payload.version = 90;
+      payload.version = 91;
       const bolmePart = els.bolmeNo && String(els.bolmeNo.value || "").trim() ? `_${cleanFilePart(els.bolmeNo.value)}` : "";
       const fileName = `Mesaha_Yedek_${cleanFilePart(user.seflik)}_${cleanFilePart(user.name)}${bolmePart}_${new Date().toISOString().slice(0,19).replace(/[-:T]/g, "")}.json`;
 
@@ -7140,8 +6487,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
 
         state.records = payload.records;
         save();
-        initThemeMode();
-    quickAppUpdateCheck();
+        quickAppUpdateCheck();
     render();
         closeCloudRestorePanel();
         showToast("Bulut yedeği geri yüklendi.");
@@ -7377,7 +6723,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function buildCloudBackupPayload(user) {
       return {
         app: "Mesaha İO",
-        version: 90,
+        version: 91,
         createdAt: new Date().toLocaleString("tr-TR"),
         user: {
           name: user.name || "",
@@ -9379,7 +8725,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function backup() {
       const data = {
         app: "Mesaha App",
-        version: 90,
+        version: 91,
         exportedAt: formatDateTime(),
         systemHeaders: HEADERS,
         settings: state.settings,
@@ -9796,7 +9142,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     async function firebaseUploadBackup(user) {
       const { db } = await ensureFirebaseReady();
       const payload = buildCloudBackupPayload(user);
-      payload.version = 90;
+      payload.version = 91;
       payload.cloud = "firebase";
 
       const bolmeNo = els.bolmeNo ? String(els.bolmeNo.value || "").trim() : "";
@@ -10173,23 +9519,6 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     }
 
 
-    
-    if (els.themeToggleBtn) els.themeToggleBtn.addEventListener("click", toggleThemeMode);
-    if (els.simpleModeBtn) els.simpleModeBtn.addEventListener("click", simpleOpenMode);
-    if (els.simpleModeCloseBtn) els.simpleModeCloseBtn.addEventListener("click", simpleCloseMode);
-    if (els.simpleSaveBtn) els.simpleSaveBtn.addEventListener("click", simpleSaveRecord);
-    if (els.simpleProductGrid) els.simpleProductGrid.addEventListener("click", (event) => {
-      const btn = event.target.closest("[data-simple-product]");
-      if (!btn) return;
-      setSimpleSelectedProduct(btn.dataset.simpleProduct || "Tomruk");
-    });
-    if (els.simpleDiameter) els.simpleDiameter.addEventListener("keydown", (event) => {
-      if (event.key === "Enter") { event.preventDefault(); if (els.simpleLength) els.simpleLength.focus(); }
-    });
-    if (els.simpleLength) els.simpleLength.addEventListener("keydown", (event) => {
-      if (event.key === "Enter") { event.preventDefault(); simpleSaveRecord(); }
-    });
-
     els.backupBtn.addEventListener("click", backup);
     els.restoreBtn.addEventListener("click", () => els.restoreInput.click());
     els.restoreInput.addEventListener("change", (e) => {
@@ -10299,242 +9628,10 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 
 
     window.forceUpdateApp = forceUpdateApp;
-
-    window.toggleThemeMode = toggleThemeMode;
-    window.simpleOpenMode = simpleOpenMode;
-    window.simpleCloseMode = simpleCloseMode;
-
     window.openAdminFromUserPanel = openAdminFromUserPanel;
 
     window.adminSetReportStatus = adminSetReportStatus;
     window.adminReplyReport = adminReplyReport;
-
-    
-    /* v88: Kullanıcı bildirim rozeti sağlam kontrol */
-    function activeUserTicketKey() {
-      const active = state.activeUser || findActiveUser();
-      if (!active || !active.name || !active.seflik) return "";
-      return firebaseUserKey(active.name, active.seflik);
-    }
-
-    function seenReplyStoreKeyV88() {
-      const key = activeUserTicketKey() || "default";
-      return `mesaha_seen_admin_replies_v88_${key}`;
-    }
-
-    async function listTicketsForActiveUserV88() {
-      const active = state.activeUser || findActiveUser();
-      if (!active || !active.name || !active.seflik) return [];
-      const { db } = await ensureFirebaseReady();
-      const userKey = firebaseUserKey(active.name, active.seflik);
-
-      const snap = await db.collection(FIREBASE_REPORTS_COLLECTION).where("userKey", "==", userKey).get();
-      const rows = [];
-      snap.forEach(doc => rows.push(Object.assign({ id: doc.id }, doc.data() || {})));
-
-      rows.sort((a, b) => Number(b.updatedAtMs || b.createdAtMs || 0) - Number(a.updatedAtMs || a.createdAtMs || 0));
-      return rows;
-    }
-
-    function ticketHasUserNoticeV88(ticket) {
-      if (!ticket) return false;
-      if (ticket.type === "updateNotice") return true;
-      if (String(ticket.adminReply || "").trim()) return true;
-      return false;
-    }
-
-    function ticketStampV88(ticket) {
-      return String(ticket.replyAtMs || ticket.updatedAtMs || ticket.createdAtMs || "");
-    }
-
-    async function countUserUnreadRepliesV88() {
-      try {
-        const rows = await listTicketsForActiveUserV88();
-        const seenRaw = localStorage.getItem(seenReplyStoreKeyV88()) || "{}";
-        const seen = JSON.parse(seenRaw);
-        let count = 0;
-
-        rows.forEach(ticket => {
-          if (!ticketHasUserNoticeV88(ticket)) return;
-          const key = `${ticket.id}_${ticketStampV88(ticket)}`;
-          if (!seen[key]) count++;
-        });
-
-        return count;
-      } catch (error) {
-        return 0;
-      }
-    }
-
-    function setUserNotificationVisualV88(count) {
-      const wrap = document.querySelector(".active-user-wrap");
-      const activeBadge = els.activeUserBadge || document.getElementById("activeUserBadge");
-      const badge = els.userNotificationBadge || document.getElementById("userNotificationBadge");
-
-      if (!badge) return;
-
-      const show = Number(count || 0) > 0;
-      badge.textContent = count > 9 ? "9+" : String(count || "");
-      badge.classList.toggle("show", show);
-      badge.style.display = show ? "flex" : "none";
-
-      if (wrap) wrap.classList.toggle("has-notification", show);
-      if (activeBadge) activeBadge.classList.toggle("has-notification", show);
-    }
-
-    async function updateUserNotificationBadgeV88() {
-      const count = await countUserUnreadRepliesV88();
-      setUserNotificationVisualV88(count);
-      return count;
-    }
-
-    async function markUserRepliesSeenV89() {
-      try {
-        const rows = await listTicketsForActiveUserV88();
-        const seenRaw = localStorage.getItem(seenReplyStoreKeyV88()) || "{}";
-        const seen = JSON.parse(seenRaw);
-
-        rows.forEach(ticket => {
-          if (!ticketHasUserNoticeV88(ticket)) return;
-          const key = `${ticket.id}_${ticketStampV88(ticket)}`;
-          seen[key] = true;
-        });
-
-        localStorage.setItem(seenReplyStoreKeyV88(), JSON.stringify(seen));
-        setUserNotificationVisualV88(0);
-      } catch {}
-    }
-
-    function startNotificationWatcherV88() {
-      if (window.__mesahaNotificationWatcherV88) return;
-      window.__mesahaNotificationWatcherV88 = true;
-
-      const run = () => updateUserNotificationBadgeV89().catch(() => {});
-      setTimeout(run, 800);
-      setTimeout(run, 2500);
-      setInterval(() => {
-        if (document.visibilityState === "visible") run();
-      }, 30000);
-
-      document.addEventListener("visibilitychange", () => {
-        if (document.visibilityState === "visible") run();
-      });
-
-      window.addEventListener("focus", run);
-    }
-
-    /* Eski fonksiyon adlarını da v88'e yönlendir */
-    countUserUnreadReplies = countUserUnreadRepliesV88;
-    updateUserNotificationBadge = updateUserNotificationBadgeV88;
-    markUserRepliesSeen = markUserRepliesSeenV88;
-    startNotificationWatcher = startNotificationWatcherV88;
-
-
-    
-    /* v89: Offline öncelikli bildirim kontrolü */
-    async function listTicketsForActiveUserV89() {
-      if (!navigator.onLine) return [];
-      const active = state.activeUser || findActiveUser();
-      if (!active || !active.name || !active.seflik) return [];
-
-      try {
-        const { db } = await ensureFirebaseReady();
-        const userKey = firebaseUserKey(active.name, active.seflik);
-        const snap = await db.collection(FIREBASE_REPORTS_COLLECTION).where("userKey", "==", userKey).get();
-        const rows = [];
-        snap.forEach(doc => rows.push(Object.assign({ id: doc.id }, doc.data() || {})));
-        rows.sort((a, b) => Number(b.updatedAtMs || b.createdAtMs || 0) - Number(a.updatedAtMs || a.createdAtMs || 0));
-        return rows;
-      } catch {
-        return [];
-      }
-    }
-
-    async function countUserUnreadRepliesV89() {
-      if (!navigator.onLine) return 0;
-
-      try {
-        const rows = await listTicketsForActiveUserV89();
-        const seenRaw = localStorage.getItem(seenReplyStoreKeyV88()) || "{}";
-        const seen = JSON.parse(seenRaw);
-        let count = 0;
-
-        rows.forEach(ticket => {
-          if (!ticketHasUserNoticeV88(ticket)) return;
-          const key = `${ticket.id}_${ticketStampV88(ticket)}`;
-          if (!seen[key]) count++;
-        });
-
-        return count;
-      } catch {
-        return 0;
-      }
-    }
-
-    async function updateUserNotificationBadgeV89() {
-      if (!navigator.onLine) {
-        return 0;
-      }
-
-      try {
-        const count = await countUserUnreadRepliesV89();
-        setUserNotificationVisualV88(count);
-        return count;
-      } catch {
-        return 0;
-      }
-    }
-
-    async function markUserRepliesSeenV89() {
-      if (!navigator.onLine) return;
-
-      try {
-        const rows = await listTicketsForActiveUserV89();
-        const seenRaw = localStorage.getItem(seenReplyStoreKeyV88()) || "{}";
-        const seen = JSON.parse(seenRaw);
-
-        rows.forEach(ticket => {
-          if (!ticketHasUserNoticeV88(ticket)) return;
-          const key = `${ticket.id}_${ticketStampV88(ticket)}`;
-          seen[key] = true;
-        });
-
-        localStorage.setItem(seenReplyStoreKeyV88(), JSON.stringify(seen));
-        setUserNotificationVisualV88(0);
-      } catch {}
-    }
-
-    function startNotificationWatcherV89() {
-      if (window.__mesahaNotificationWatcherV89) return;
-      window.__mesahaNotificationWatcherV89 = true;
-
-      if (!navigator.onLine) return;
-
-      const run = () => {
-        try {
-          updateUserNotificationBadgeV89().catch(() => {});
-        } catch {}
-      };
-
-      setTimeout(run, 1200);
-      setTimeout(run, 3500);
-    }
-
-    listTicketsForActiveUserV88 = listTicketsForActiveUserV89;
-    countUserUnreadRepliesV88 = countUserUnreadRepliesV89;
-    updateUserNotificationBadgeV88 = updateUserNotificationBadgeV89;
-    markUserRepliesSeenV88 = markUserRepliesSeenV89;
-    startNotificationWatcherV88 = startNotificationWatcherV89;
-
-    countUserUnreadReplies = countUserUnreadRepliesV89;
-    updateUserNotificationBadge = updateUserNotificationBadgeV89;
-    markUserRepliesSeen = markUserRepliesSeenV89;
-    startNotificationWatcher = startNotificationWatcherV89;
-
-
-    window.adminDeleteReport = adminDeleteReport;
-    window.adminSendUpdateNotice = adminSendUpdateNotice;
-
 
     window.adminOpenUserBackups = adminOpenUserBackups;
     window.adminEditNote = adminEditNote;
@@ -10548,8 +9645,8 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     load();
   
     window.MESAHA_BUILD_INFO = {
-      fileVersion: "v90",
-      visibleVersion: "Mesaha İO v1.19",
+      fileVersion: "v91",
+      visibleVersion: "Mesaha İO v1.20",
       stableBuild: true
     };
 
