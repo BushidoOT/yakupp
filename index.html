@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha App v105</title>
+  <title>Mesaha App v106</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -6194,6 +6194,260 @@
       .clean-product-grid-v105{ grid-template-columns:repeat(5, minmax(0,1fr)); }
     }
 
+  
+    /* v106: alt menü tamamen kaldırıldı, üst akış sekmeleri ve mobil kayıt kartları */
+    .bottom-nav,
+    .stable-nav-v105{
+      display:none !important;
+      visibility:hidden !important;
+      pointer-events:none !important;
+      opacity:0 !important;
+    }
+
+    body{
+      padding-bottom:18px !important;
+      overflow-x:hidden !important;
+    }
+
+    .app{
+      padding-bottom:24px !important;
+      overflow-x:hidden !important;
+    }
+
+    .flow-tabs-v106{
+      display:grid;
+      grid-template-columns:repeat(4, minmax(0,1fr));
+      gap:8px;
+      margin:10px 0 12px;
+      padding:10px;
+      border:1px solid rgba(203,213,225,.95);
+      border-radius:22px;
+      background:rgba(255,255,255,.96);
+      box-shadow:0 8px 24px rgba(15,23,42,.10);
+      position:relative;
+      z-index:5;
+    }
+
+    .flow-tabs-v106 button{
+      min-height:48px;
+      border-radius:15px;
+      border:1px solid #cbd5e1;
+      background:#f8fafc;
+      color:#172033;
+      font-size:13px;
+      font-weight:950;
+      padding:8px 5px;
+      touch-action:manipulation;
+      -webkit-tap-highlight-color:transparent;
+    }
+
+    .flow-tabs-v106 button.active{
+      background:#2563eb;
+      border-color:#2563eb;
+      color:#fff;
+      box-shadow:0 8px 18px rgba(37,99,235,.22);
+    }
+
+    body.theme-dark .flow-tabs-v106{
+      background:#101c2e;
+      border-color:#3e526d;
+      box-shadow:0 8px 24px rgba(0,0,0,.28);
+    }
+
+    body.theme-dark .flow-tabs-v106 button{
+      background:#0b1525;
+      color:#dbeafe;
+      border-color:#3e526d;
+    }
+
+    body.theme-dark .flow-tabs-v106 button.active{
+      background:#2563eb;
+      color:#fff;
+      border-color:#60a5fa;
+    }
+
+    body.clean-simple-open-v105 .flow-tabs-v106,
+    body.user-panel-open .flow-tabs-v106,
+    body.issue-panel-open .flow-tabs-v106,
+    body.simple-mode-open .flow-tabs-v106{
+      display:none !important;
+    }
+
+    .mobile-records-v106{
+      display:grid;
+      gap:10px;
+      margin-top:12px;
+    }
+
+    .record-card-v106{
+      border:1px solid #d7dee8;
+      border-left:7px solid #94a3b8;
+      border-radius:20px;
+      background:#ffffff;
+      box-shadow:0 8px 22px rgba(15,23,42,.08);
+      padding:12px;
+      color:#0f172a;
+    }
+
+    .record-card-v106.tomruk{ border-left-color:#ca8a04; }
+    .record-card-v106.maden{ border-left-color:#2563eb; }
+    .record-card-v106.kagit{ border-left-color:#dc2626; }
+    .record-card-v106.sanayi{ border-left-color:#16a34a; }
+    .record-card-v106.tel{ border-left-color:#7c3aed; }
+
+    .record-card-head-v106{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:8px;
+      margin-bottom:8px;
+    }
+
+    .record-card-head-v106 b{
+      font-size:16px;
+      font-weight:950;
+      color:#0f172a;
+    }
+
+    .record-card-head-v106 span{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      border-radius:999px;
+      padding:4px 8px;
+      background:#f1f5f9;
+      color:#334155;
+      font-size:12px;
+      font-weight:950;
+      white-space:nowrap;
+    }
+
+    .record-card-grid-v106{
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0,1fr));
+      gap:8px;
+      margin:8px 0;
+    }
+
+    .record-mini-v106{
+      border:1px solid #e2e8f0;
+      border-radius:14px;
+      background:#f8fafc;
+      padding:8px;
+    }
+
+    .record-mini-v106 small{
+      display:block;
+      color:#64748b;
+      font-size:11px;
+      font-weight:850;
+      margin-bottom:2px;
+    }
+
+    .record-mini-v106 strong{
+      display:block;
+      color:#0f172a;
+      font-size:14px;
+      font-weight:950;
+    }
+
+    .record-tags-v106{
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+      margin:8px 0;
+    }
+
+    .record-tag-v106{
+      border-radius:999px;
+      padding:5px 9px;
+      font-size:12px;
+      font-weight:950;
+      border:1px solid #cbd5e1;
+      background:#f8fafc;
+      color:#334155;
+    }
+
+    .record-tag-v106.tomruk{ background:#fff7cc; border-color:#eab308; color:#713f12; }
+    .record-tag-v106.maden{ background:#dbeafe; border-color:#2563eb; color:#1e3a8a; }
+    .record-tag-v106.kagit{ background:#fee2e2; border-color:#dc2626; color:#7f1d1d; }
+    .record-tag-v106.sanayi{ background:#dcfce7; border-color:#16a34a; color:#14532d; }
+    .record-tag-v106.tel{ background:#ede9fe; border-color:#7c3aed; color:#3b0764; }
+    .record-tag-v106.tree{ background:#dcfce7; border-color:#22c55e; color:#064e3b; }
+
+    .record-card-actions-v106{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:8px;
+      margin-top:10px;
+    }
+
+    .record-card-actions-v106 button{
+      min-height:42px;
+      border-radius:14px;
+      font-weight:950;
+      border:1px solid #cbd5e1;
+      touch-action:manipulation;
+    }
+
+    .record-edit-v106{
+      background:#2563eb;
+      color:#fff;
+      border-color:#2563eb !important;
+    }
+
+    .record-delete-v106{
+      background:#fee2e2;
+      color:#7f1d1d;
+      border-color:#fecaca !important;
+    }
+
+    body.theme-dark .record-card-v106{
+      background:#101c2e;
+      border-color:#3e526d;
+      box-shadow:0 8px 22px rgba(0,0,0,.28);
+      color:#f8fafc;
+    }
+
+    body.theme-dark .record-card-head-v106 b,
+    body.theme-dark .record-mini-v106 strong{
+      color:#f8fafc;
+    }
+
+    body.theme-dark .record-card-head-v106 span,
+    body.theme-dark .record-mini-v106{
+      background:#0b1525;
+      color:#dbeafe;
+      border-color:#3e526d;
+    }
+
+    body.theme-dark .record-mini-v106 small{
+      color:#bfdbfe;
+    }
+
+    body.theme-dark .record-tag-v106.tomruk{ background:#facc15; border-color:#ca8a04; color:#422006; }
+    body.theme-dark .record-tag-v106.maden{ background:#93c5fd; border-color:#2563eb; color:#172554; }
+    body.theme-dark .record-tag-v106.kagit{ background:#fca5a5; border-color:#dc2626; color:#450a0a; }
+    body.theme-dark .record-tag-v106.sanayi{ background:#86efac; border-color:#16a34a; color:#052e16; }
+    body.theme-dark .record-tag-v106.tel{ background:#c4b5fd; border-color:#7c3aed; color:#2e1065; }
+    body.theme-dark .record-tag-v106.tree{ background:#bbf7d0; border-color:#16a34a; color:#052e16; }
+
+    @media (max-width: 780px){
+      .records-panel .records-scroll-v105,
+      .records-panel .table-wrap{
+        display:none !important;
+      }
+      .mobile-records-v106{
+        display:grid !important;
+      }
+    }
+
+    @media (min-width: 781px){
+      .mobile-records-v106{
+        display:none !important;
+      }
+    }
+
   </style>
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -6403,7 +6657,7 @@
 <div class="app">
     <header class="topbar">
       <div class="brand">
-        <h1>Mesaha İO v1.34</h1>
+        <h1>Mesaha İO v1.35</h1>
         
       </div>
       <div id="activeUserBadge" class="active-user-badge" role="button" tabindex="0" title="Kullanıcı panelini aç" style="display:none"></div>
@@ -6412,6 +6666,14 @@
         <button id="simpleModeBtn" class="mode-mini-btn" type="button">Sade Mod</button>
       </div>
     </header>
+
+      <nav id="flowTabsV106" class="flow-tabs-v106" aria-label="Ana menü">
+        <button type="button" data-flow-tab="entry">Yeni Kayıt</button>
+        <button type="button" data-flow-tab="records">Kayıtlar</button>
+        <button type="button" data-flow-tab="guide">Kılavuz</button>
+        <button type="button" data-flow-tab="admin">Admin</button>
+      </nav>
+
 
     <main class="grid">
       <section class="panel entry-panel">
@@ -6655,6 +6917,8 @@
             <div id="emptyState" class="empty">Henüz kayıt yok. İlk barkodu girip kaydet.</div>
 
           </div>
+          <div id="mobileRecordsV106" class="mobile-records-v106"></div>
+
           <div id="dailyWorkSummary" class="daily-work-summary">
             <h3>Günlük İş Özeti</h3>
             <div class="daily-summary-grid">
@@ -7858,8 +8122,8 @@
     function currentDeviceInfoPayload() {
       const active = state.activeUser || findActiveUser();
       return {
-        appVersion: "Mesaha İO v1.34",
-        fileVersion: "v105",
+        appVersion: "Mesaha İO v1.35",
+        fileVersion: "v106",
         userName: active && active.name ? cleanUserText(active.name) : "",
         seflik: active && active.seflik ? cleanUserText(active.seflik) : "",
         deviceId: getOrCreateDeviceId(),
@@ -8600,7 +8864,7 @@
 
     async function uploadCloudBackupOpen(user) {
       const payload = buildCloudBackupPayload(user);
-      payload.version = 105;
+      payload.version = 106;
       const bolmePart = els.bolmeNo && String(els.bolmeNo.value || "").trim() ? `_${cleanFilePart(els.bolmeNo.value)}` : "";
       const fileName = `Mesaha_Yedek_${cleanFilePart(user.seflik)}_${cleanFilePart(user.name)}${bolmePart}_${new Date().toISOString().slice(0,19).replace(/[-:T]/g, "")}.json`;
 
@@ -9029,7 +9293,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function buildCloudBackupPayload(user) {
       return {
         app: "Mesaha İO",
-        version: 105,
+        version: 106,
         createdAt: new Date().toLocaleString("tr-TR"),
         user: {
           name: user.name || "",
@@ -11033,7 +11297,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function backup() {
       const data = {
         app: "Mesaha App",
-        version: 105,
+        version: 106,
         exportedAt: formatDateTime(),
         systemHeaders: HEADERS,
         settings: state.settings,
@@ -11450,7 +11714,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     async function firebaseUploadBackup(user) {
       const { db } = await ensureFirebaseReady();
       const payload = buildCloudBackupPayload(user);
-      payload.version = 105;
+      payload.version = 106;
       payload.cloud = "firebase";
 
       const bolmeNo = els.bolmeNo ? String(els.bolmeNo.value || "").trim() : "";
@@ -14058,6 +14322,188 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     }, 1200);
 
 
+    
+    /* v106: alt menü yok, üst sekme var; yatay kaydırma yerine mobil kartlar */
+    function hideAllFloatingNavsV106() {
+      document.querySelectorAll(".bottom-nav, .stable-nav-v105, #stableNavV105").forEach(n => {
+        n.style.setProperty("display", "none", "important");
+        n.style.setProperty("visibility", "hidden", "important");
+        n.style.setProperty("pointer-events", "none", "important");
+      });
+    }
+
+    function updateFlowTabsV106() {
+      const tabs = document.getElementById("flowTabsV106");
+      if (!tabs) return;
+
+      tabs.querySelectorAll("button").forEach(b => b.classList.remove("active"));
+      if (document.body.classList.contains("show-admin")) tabs.querySelector('[data-flow-tab="admin"]')?.classList.add("active");
+      else if (document.body.classList.contains("show-records")) tabs.querySelector('[data-flow-tab="records"]')?.classList.add("active");
+      else if (document.body.classList.contains("show-guide")) tabs.querySelector('[data-flow-tab="guide"]')?.classList.add("active");
+      else tabs.querySelector('[data-flow-tab="entry"]')?.classList.add("active");
+    }
+
+    function bindFlowTabsV106() {
+      const tabs = document.getElementById("flowTabsV106");
+      if (!tabs || tabs.__boundV106) return;
+      tabs.__boundV106 = true;
+
+      tabs.addEventListener("click", (event) => {
+        const btn = event.target.closest("[data-flow-tab]");
+        if (!btn) return;
+
+        event.preventDefault();
+        const target = btn.dataset.flowTab;
+
+        if (target === "entry" && els.navEntry) els.navEntry.click();
+        if (target === "records" && els.navRecords) els.navRecords.click();
+        if (target === "guide" && els.navGuide) els.navGuide.click();
+        if (target === "admin") {
+          if (els.navAdmin && els.navAdmin.style.display !== "none") els.navAdmin.click();
+          else if (typeof openAdminFromUserPanel === "function") openAdminFromUserPanel();
+          else if (typeof unlockAdminPanel === "function") unlockAdminPanel();
+        }
+
+        updateFlowTabsV106();
+        setTimeout(updateMobileRecordsV106, 40);
+      });
+    }
+
+    function prodClsV106(type) {
+      const key = normalizeProductType(type || "Tomruk");
+      if (key === "Maden Direk") return "maden";
+      if (key === "Kağıtlık") return "kagit";
+      if (key === "Sanayi Odunu") return "sanayi";
+      if (key === "Tel Direk") return "tel";
+      return "tomruk";
+    }
+
+    function recordDateV106(record) {
+      return record.productionDate || record.date || record.uretimTarihi || "-";
+    }
+
+    function updateMobileRecordsV106() {
+      const wrap = document.getElementById("mobileRecordsV106");
+      if (!wrap) return;
+
+      const q = els.searchInput ? String(els.searchInput.value || "").trim().toLowerCase("tr-TR") : "";
+      let list = Array.isArray(state.records) ? state.records.slice() : [];
+      if (q) {
+        list = list.filter(r => JSON.stringify(r).toLowerCase("tr-TR").includes(q));
+      }
+
+      if (!list.length) {
+        wrap.innerHTML = `<div class="empty">Kayıt yok.</div>`;
+        return;
+      }
+
+      wrap.innerHTML = list.map((r, idx) => {
+        const cls = prodClsV106(r.productType || r.woodType || r.odunAdi);
+        const product = normalizeProductType(r.productType || r.woodType || r.odunAdi || "Tomruk");
+        const tree = r.treeType || r.agacAdi || "Karaçam";
+        const id = String(r.id || "");
+        const barcode = r.barcode || r.barkodNo || "-";
+        const length = r.length || r.boy || "-";
+        const diameter = r.diameter || r.cap || "-";
+        const quantity = r.quantity || r.adet || 1;
+        const volume = r.volume || r.hacim || "-";
+        const date = recordDateV106(r);
+
+        return `
+          <div class="record-card-v106 ${cls}">
+            <div class="record-card-head-v106">
+              <b>${escapeHtml(barcode)}</b>
+              <span>#${idx + 1}</span>
+            </div>
+
+            <div class="record-tags-v106">
+              <span class="record-tag-v106 ${cls}">${escapeHtml(product)}</span>
+              <span class="record-tag-v106 tree">${escapeHtml(tree)}</span>
+            </div>
+
+            <div class="record-card-grid-v106">
+              <div class="record-mini-v106"><small>Boy</small><strong>${escapeHtml(String(length))}</strong></div>
+              <div class="record-mini-v106"><small>Çap</small><strong>${escapeHtml(String(diameter))}</strong></div>
+              <div class="record-mini-v106"><small>Adet</small><strong>${escapeHtml(String(quantity))}</strong></div>
+              <div class="record-mini-v106"><small>m³</small><strong>${escapeHtml(String(volume))}</strong></div>
+              <div class="record-mini-v106"><small>Tarih</small><strong>${escapeHtml(String(date))}</strong></div>
+              <div class="record-mini-v106"><small>Sıra</small><strong>${idx + 1}</strong></div>
+            </div>
+
+            <div class="record-card-actions-v106">
+              <button type="button" class="record-edit-v106" data-v106-edit="${escapeHtml(id)}">Düzelt</button>
+              <button type="button" class="record-delete-v106" data-v106-delete="${escapeHtml(id)}">Sil</button>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function bindMobileRecordsV106() {
+      const wrap = document.getElementById("mobileRecordsV106");
+      if (!wrap || wrap.__boundV106) return;
+      wrap.__boundV106 = true;
+
+      wrap.addEventListener("click", (event) => {
+        const edit = event.target.closest("[data-v106-edit]");
+        if (edit) {
+          event.preventDefault();
+          const id = edit.dataset.v106Edit;
+          if (typeof editRecord === "function") editRecord(id);
+          else showToast("Düzeltme fonksiyonu bulunamadı.");
+          return;
+        }
+
+        const del = event.target.closest("[data-v106-delete]");
+        if (del) {
+          event.preventDefault();
+          const id = del.dataset.v106Delete;
+          if (typeof deleteRecord === "function") deleteRecord(id);
+          else if (typeof removeRecord === "function") removeRecord(id);
+          else showToast("Silme fonksiyonu bulunamadı.");
+          setTimeout(updateMobileRecordsV106, 80);
+        }
+      });
+    }
+
+    if (typeof renderRecords === "function" && !renderRecords.__v106Wrapped) {
+      const renderRecordsOriginalV106 = renderRecords;
+      renderRecords = function(...args) {
+        const result = renderRecordsOriginalV106.apply(this, args);
+        setTimeout(updateMobileRecordsV106, 30);
+        setTimeout(updateFlowTabsV106, 30);
+        hideAllFloatingNavsV106();
+        return result;
+      };
+      renderRecords.__v106Wrapped = true;
+    }
+
+    if (els.searchInput && !els.searchInput.__v106Bound) {
+      els.searchInput.__v106Bound = true;
+      els.searchInput.addEventListener("input", () => setTimeout(updateMobileRecordsV106, 30));
+    }
+
+    ["click", "touchend", "pointerup", "scroll"].forEach(evt => {
+      document.addEventListener(evt, () => {
+        hideAllFloatingNavsV106();
+        setTimeout(updateFlowTabsV106, 30);
+        setTimeout(updateMobileRecordsV106, 60);
+      }, { passive:true, capture:true });
+    });
+
+    bindFlowTabsV106();
+    bindMobileRecordsV106();
+    hideAllFloatingNavsV106();
+    updateFlowTabsV106();
+    updateMobileRecordsV106();
+
+    setInterval(() => {
+      hideAllFloatingNavsV106();
+      updateFlowTabsV106();
+      updateMobileRecordsV106();
+    }, 1500);
+
+
     window.forceUpdateApp = forceUpdateApp;
     window.mesahaToggleTheme = mesahaToggleTheme;
     window.simpleOpenModeV92 = simpleOpenModeV92;
@@ -14078,8 +14524,8 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     load();
   
     window.MESAHA_BUILD_INFO = {
-      fileVersion: "v105",
-      visibleVersion: "Mesaha İO v1.34",
+      fileVersion: "v106",
+      visibleVersion: "Mesaha İO v1.35",
       stableBuild: true
     };
 
