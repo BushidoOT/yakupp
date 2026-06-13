@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha App v115</title>
+  <title>Mesaha App v116</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -5511,6 +5511,231 @@
       border-color:#3a4656 !important;
     }
 
+
+    /* v116: Karanlık mod okunabilirlik düzeltmeleri - scroll/touch koduna dokunmadan sadece renk katmanı */
+    body.theme-dark{
+      background:#101216 !important;
+      color:#f2f5f9 !important;
+    }
+
+    body.theme-dark .panel,
+    body.theme-dark .panel-header,
+    body.theme-dark .panel-body{
+      background:#1d232c !important;
+      color:#f2f5f9 !important;
+      border-color:#3a4656 !important;
+    }
+
+    /* Kılavuz: koyu zeminde koyu kalan liste yazıları */
+    body.theme-dark .guide-card,
+    body.theme-dark .clean-guide .guide-card{
+      background:#1d232c !important;
+      color:#dbe3ef !important;
+      border-color:#3a4656 !important;
+      box-shadow:none !important;
+    }
+
+    body.theme-dark .guide-card h3{
+      color:#f8fafc !important;
+    }
+
+    body.theme-dark .guide-card ol,
+    body.theme-dark .guide-card ul,
+    body.theme-dark .guide-card li,
+    body.theme-dark .guide-card p{
+      color:#dbe3ef !important;
+    }
+
+    body.theme-dark .guide-card b,
+    body.theme-dark .guide-card strong{
+      color:#ffffff !important;
+      font-weight:950 !important;
+    }
+
+    body.theme-dark .guide-note,
+    body.theme-dark .guide-card .hint{
+      background:#162235 !important;
+      color:#b7c4d8 !important;
+      border-color:#3a4656 !important;
+    }
+
+    /* Yeni Kayıt: Dosya Bilgileri ve beyaz kalan açıklama şeritleri */
+    body.theme-dark .info-details,
+    body.theme-dark .info-details summary,
+    body.theme-dark .info-body,
+    body.theme-dark .rule-hint,
+    body.theme-dark .recent-barcodes-box,
+    body.theme-dark .tomruk-class-panel,
+    body.theme-dark .wood-type-panel,
+    body.theme-dark .product-select-head{
+      background:#1d232c !important;
+      color:#f2f5f9 !important;
+      border-color:#3a4656 !important;
+      box-shadow:none !important;
+    }
+
+    body.theme-dark .info-details summary::after{
+      background:#111827 !important;
+      color:#e8eef8 !important;
+      border-color:#4b5d72 !important;
+    }
+
+    body.theme-dark .wood-check{
+      background:#222a35 !important;
+      color:#f2f5f9 !important;
+      border-color:#3a4656 !important;
+    }
+
+    body.theme-dark .hint,
+    body.theme-dark .rule-hint,
+    body.theme-dark .recent-note{
+      color:#b7c4d8 !important;
+    }
+
+    /* Beyan: ürün özet kutuları artık açık pastel kalmasın */
+    body.theme-dark .totals .stat{
+      background:#1d232c !important;
+      color:#f2f5f9 !important;
+      border-color:#3a4656 !important;
+      box-shadow:none !important;
+    }
+
+    body.theme-dark .totals .stat small,
+    body.theme-dark .totals .stat .unit{
+      color:#b7c4d8 !important;
+    }
+
+    body.theme-dark .totals .stat strong{
+      color:#f8fafc !important;
+    }
+
+    body.theme-dark .totals .stat.tomruk-stat{
+      background:linear-gradient(135deg, rgba(202,138,4,.22), #1d232c 62%) !important;
+      border-left:8px solid #facc15 !important;
+    }
+
+    body.theme-dark .totals .stat.maden-stat{
+      background:linear-gradient(135deg, rgba(37,99,235,.22), #1d232c 62%) !important;
+      border-left:8px solid #93c5fd !important;
+    }
+
+    body.theme-dark .totals .stat.kagit-stat{
+      background:linear-gradient(135deg, rgba(220,38,38,.20), #1d232c 62%) !important;
+      border-left:8px solid #fca5a5 !important;
+    }
+
+    body.theme-dark .totals .stat.sanayi-stat{
+      background:linear-gradient(135deg, rgba(22,163,74,.20), #1d232c 62%) !important;
+      border-left:8px solid #86efac !important;
+    }
+
+    body.theme-dark .totals .stat.tel-stat{
+      background:linear-gradient(135deg, rgba(124,58,237,.20), #1d232c 62%) !important;
+      border-left:8px solid #c4b5fd !important;
+    }
+
+    /* Admin: kullanıcı kartları ve meta kutuları beyaza kaçmasın */
+    body.theme-dark .admin-panel-top-clean,
+    body.theme-dark .admin-summary-card,
+    body.theme-dark .admin-summary-grid-clean .admin-summary-card,
+    body.theme-dark .admin-dashboard-row,
+    body.theme-dark .admin-activity-item,
+    body.theme-dark .admin-note-item,
+    body.theme-dark .registered-user-item,
+    body.theme-dark .registered-user-item.online-user{
+      background:#1d232c !important;
+      color:#f2f5f9 !important;
+      border-color:#3a4656 !important;
+      box-shadow:none !important;
+    }
+
+    body.theme-dark .registered-user-item.status-today{
+      background:linear-gradient(180deg, rgba(34,197,94,.25), #1d232c 68%) !important;
+      border-color:#22c55e !important;
+    }
+
+    body.theme-dark .registered-user-item.status-warning{
+      background:linear-gradient(180deg, rgba(245,158,11,.23), #1d232c 68%) !important;
+      border-color:#f59e0b !important;
+    }
+
+    body.theme-dark .registered-user-item.status-old{
+      background:linear-gradient(180deg, rgba(239,68,68,.22), #1d232c 68%) !important;
+      border-color:#ef4444 !important;
+    }
+
+    body.theme-dark .registered-user-item.status-disabled{
+      background:linear-gradient(180deg, rgba(100,116,139,.28), #1d232c 68%) !important;
+      border-color:#94a3b8 !important;
+    }
+
+    body.theme-dark .registered-user-head b,
+    body.theme-dark .registered-user-item b,
+    body.theme-dark .admin-summary-card b,
+    body.theme-dark .admin-panel-top-clean h3,
+    body.theme-dark .admin-dashboard-row b,
+    body.theme-dark .admin-activity-item b,
+    body.theme-dark .admin-note-item b{
+      color:#f8fafc !important;
+    }
+
+    body.theme-dark .registered-user-meta span,
+    body.theme-dark .admin-summary-card span,
+    body.theme-dark .admin-dashboard-row span,
+    body.theme-dark .admin-activity-item span,
+    body.theme-dark .admin-note-item span{
+      background:#222a35 !important;
+      color:#dbe3ef !important;
+      border-color:#3a4656 !important;
+    }
+
+    body.theme-dark .admin-source-pill{
+      background:#162235 !important;
+      color:#dbeafe !important;
+      border-color:#3a4656 !important;
+    }
+
+    body.theme-dark .admin-filters input,
+    body.theme-dark .admin-filters select,
+    body.theme-dark .searchbar input,
+    body.theme-dark input,
+    body.theme-dark textarea,
+    body.theme-dark select{
+      background:#111827 !important;
+      color:#f8fafc !important;
+      border-color:#4b5d72 !important;
+    }
+
+    body.theme-dark input::placeholder,
+    body.theme-dark textarea::placeholder{
+      color:#aeb8c7 !important;
+      opacity:1 !important;
+    }
+
+    body.theme-dark .mobile-records-v111,
+    body.theme-dark .record-row-v111,
+    body.theme-dark .record-val-v111,
+    body.theme-dark .daily-work-summary,
+    body.theme-dark .daily-summary-item,
+    body.theme-dark .bulk-actions,
+    body.theme-dark .tools,
+    body.theme-dark .usage-card{
+      background:#1d232c !important;
+      color:#f2f5f9 !important;
+      border-color:#3a4656 !important;
+    }
+
+    body.theme-dark .daily-summary-item span,
+    body.theme-dark .record-val-v111 small{
+      color:#b7c4d8 !important;
+    }
+
+    body.theme-dark .daily-summary-item b,
+    body.theme-dark .record-main-v111 b,
+    body.theme-dark .record-val-v111 strong{
+      color:#f8fafc !important;
+    }
+
   </style>
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -5675,7 +5900,7 @@
 <div class="app">
     <header class="topbar">
       <div class="brand">
-        <h1>Mesaha İO v1.44</h1>
+        <h1>Mesaha İO v1.45</h1>
         
       </div>
       <div id="activeUserBadge" class="active-user-badge" role="button" tabindex="0" title="Kullanıcı panelini aç" style="display:none"></div>
@@ -7130,8 +7355,8 @@
     function currentDeviceInfoPayload() {
       const active = state.activeUser || findActiveUser();
       return {
-        appVersion: "Mesaha İO v1.44",
-        fileVersion: "v115",
+        appVersion: "Mesaha İO v1.45",
+        fileVersion: "v116",
         userName: active && active.name ? cleanUserText(active.name) : "",
         seflik: active && active.seflik ? cleanUserText(active.seflik) : "",
         deviceId: getOrCreateDeviceId(),
@@ -12061,11 +12286,94 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     window.deleteRecord = deleteRecord;
     window.editRecord = editRecord;
 
+
+    /* v116: Karanlık mod sonrası dinamik üretilen Admin/Kılavuz/Beyan alanlarını tekrar boyama */
+    function forceDarkReadableV116() {
+      if (!document.body.classList.contains("theme-dark")) return;
+      const setMany = (selector, props) => {
+        document.querySelectorAll(selector).forEach(el => {
+          Object.entries(props).forEach(([k, v]) => el.style.setProperty(k, v, "important"));
+        });
+      };
+
+      setMany(".guide-card, .info-details, .info-body, .recent-barcodes-box, .tomruk-class-panel", {
+        background: "#1d232c",
+        color: "#f2f5f9",
+        "border-color": "#3a4656",
+        "box-shadow": "none"
+      });
+      setMany(".guide-card ol, .guide-card ul, .guide-card li, .guide-card p", { color: "#dbe3ef" });
+      setMany(".guide-card h3, .guide-card b, .guide-card strong", { color: "#ffffff" });
+
+      setMany(".totals .stat", {
+        color: "#f2f5f9",
+        "border-color": "#3a4656",
+        "box-shadow": "none"
+      });
+      setMany(".totals .stat small, .totals .stat .unit", { color: "#b7c4d8" });
+      setMany(".totals .stat strong", { color: "#f8fafc" });
+
+      const statBg = {
+        "tomruk-stat": ["linear-gradient(135deg, rgba(202,138,4,.22), #1d232c 62%)", "#facc15"],
+        "maden-stat": ["linear-gradient(135deg, rgba(37,99,235,.22), #1d232c 62%)", "#93c5fd"],
+        "kagit-stat": ["linear-gradient(135deg, rgba(220,38,38,.20), #1d232c 62%)", "#fca5a5"],
+        "sanayi-stat": ["linear-gradient(135deg, rgba(22,163,74,.20), #1d232c 62%)", "#86efac"],
+        "tel-stat": ["linear-gradient(135deg, rgba(124,58,237,.20), #1d232c 62%)", "#c4b5fd"]
+      };
+      Object.entries(statBg).forEach(([cls, vals]) => {
+        document.querySelectorAll(".totals .stat." + cls).forEach(el => {
+          el.style.setProperty("background", vals[0], "important");
+          el.style.setProperty("border-left", "8px solid " + vals[1], "important");
+        });
+      });
+
+      setMany(".admin-panel-top-clean, .admin-summary-card, .admin-dashboard-row, .admin-activity-item, .admin-note-item, .registered-user-item, .registered-user-item.online-user", {
+        background: "#1d232c",
+        color: "#f2f5f9",
+        "border-color": "#3a4656",
+        "box-shadow": "none"
+      });
+      setMany(".registered-user-item.status-today", { background: "linear-gradient(180deg, rgba(34,197,94,.25), #1d232c 68%)", "border-color": "#22c55e" });
+      setMany(".registered-user-item.status-warning", { background: "linear-gradient(180deg, rgba(245,158,11,.23), #1d232c 68%)", "border-color": "#f59e0b" });
+      setMany(".registered-user-item.status-old", { background: "linear-gradient(180deg, rgba(239,68,68,.22), #1d232c 68%)", "border-color": "#ef4444" });
+      setMany(".registered-user-item.status-disabled", { background: "linear-gradient(180deg, rgba(100,116,139,.28), #1d232c 68%)", "border-color": "#94a3b8" });
+      setMany(".registered-user-meta span, .admin-summary-card span, .admin-dashboard-row span, .admin-activity-item span, .admin-note-item span", {
+        background: "#222a35",
+        color: "#dbe3ef",
+        "border-color": "#3a4656"
+      });
+      setMany(".registered-user-head b, .registered-user-item b, .admin-summary-card b, .admin-panel-top-clean h3", { color: "#f8fafc" });
+    }
+
+    const oldApplyThemeV113For116 = typeof applyThemeV113 === "function" ? applyThemeV113 : null;
+    applyThemeV113 = function(mode) {
+      if (oldApplyThemeV113For116) oldApplyThemeV113For116(mode);
+      setTimeout(forceDarkReadableV116, 40);
+      setTimeout(forceDarkReadableV116, 260);
+    };
+    applyThemeV112 = applyThemeV113;
+
+    ["render", "renderAdminUsers", "renderAdminSummary", "renderAdminDashboard", "renderAdminNotes", "renderMobileRecordsV111"].forEach(fnName => {
+      const oldFn = typeof window[fnName] === "function" ? window[fnName] : null;
+      if (!oldFn) return;
+      window[fnName] = function(...args) {
+        const result = oldFn.apply(this, args);
+        setTimeout(forceDarkReadableV116, 30);
+        return result;
+      };
+    });
+
+    setTimeout(forceDarkReadableV116, 180);
+    setInterval(() => {
+      if (document.body.classList.contains("theme-dark")) forceDarkReadableV116();
+    }, 1800);
+
+
     load();
   
     window.MESAHA_BUILD_INFO = {
-      fileVersion: "v115",
-      visibleVersion: "Mesaha İO v1.44",
+      fileVersion: "v116",
+      visibleVersion: "Mesaha İO v1.45",
       stableBuild: true
     };
 
