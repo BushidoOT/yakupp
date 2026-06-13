@@ -1,7 +1,7 @@
 {
-  "version": 135,
-  "visibleVersion": "Mesaha İO v1.64",
-  "cache": "mesaha-app-v135",
+  "version": 136,
+  "visibleVersion": "Mesaha İO v1.65",
+  "cache": "mesaha-app-v136",
   "builtAt": "2026-06-13",
-  "notes": "v135 performans/test temizliği, Mesaha dosyası indirirken özet veri kuyruğu"
+  "notes": "v136 admin istatistik sıfırlama, usageStats deneme verilerini güvenli temizleme"
 }
