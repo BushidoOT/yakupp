@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha App v100</title>
+  <title>Mesaha App v101</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -5086,6 +5086,233 @@
       box-shadow:0 0 0 4px rgba(251,113,133,.22) !important;
     }
 
+  
+    /* v101: Sarıçam, alt menü sabitleme, tablo kaydırma ve karanlık baloncuk düzeltmeleri */
+
+    .tag.tree-saricam{
+      background:#dcfce7 !important;
+      border-color:#22c55e !important;
+      color:#064e3b !important;
+    }
+
+    html, body{
+      overscroll-behavior-y:none;
+    }
+
+    body{
+      padding-bottom:calc(104px + env(safe-area-inset-bottom, 0px)) !important;
+    }
+
+    .app{
+      padding-bottom:calc(108px + env(safe-area-inset-bottom, 0px)) !important;
+    }
+
+    .bottom-nav{
+      position:fixed !important;
+      left:12px !important;
+      right:12px !important;
+      bottom:calc(8px + env(safe-area-inset-bottom, 0px)) !important;
+      transform:translateZ(0) !important;
+      will-change:auto !important;
+      z-index:90 !important;
+      touch-action:manipulation !important;
+      contain:layout paint !important;
+      backface-visibility:hidden !important;
+      max-height:76px !important;
+    }
+
+    .bottom-nav button{
+      touch-action:manipulation !important;
+      -webkit-tap-highlight-color:transparent;
+    }
+
+    body.simple-mode-open .bottom-nav,
+    body.user-panel-open .bottom-nav,
+    body.issue-panel-open .bottom-nav{
+      display:none !important;
+    }
+
+    .table-wrap{
+      overflow-x:auto !important;
+      overflow-y:auto !important;
+      -webkit-overflow-scrolling:touch !important;
+      touch-action:pan-x pan-y !important;
+      overscroll-behavior:contain !important;
+      max-width:100% !important;
+      position:relative !important;
+    }
+
+    .table-wrap table{
+      min-width:980px !important;
+      width:max-content !important;
+      table-layout:auto !important;
+    }
+
+    .table-wrap th,
+    .table-wrap td{
+      white-space:nowrap !important;
+      touch-action:pan-x pan-y !important;
+    }
+
+    .table-wrap input,
+    .table-wrap button{
+      touch-action:manipulation !important;
+    }
+
+    .table-wrap::-webkit-scrollbar{
+      height:10px;
+      width:10px;
+    }
+
+    .table-wrap::-webkit-scrollbar-thumb{
+      background:#94a3b8;
+      border-radius:999px;
+    }
+
+    .table-wrap::-webkit-scrollbar-track{
+      background:#e5e7eb;
+      border-radius:999px;
+    }
+
+    body.theme-dark .table-wrap::-webkit-scrollbar-thumb{
+      background:#64748b;
+    }
+
+    body.theme-dark .table-wrap::-webkit-scrollbar-track{
+      background:#0f172a;
+    }
+
+    /* Karanlık modda ürün/ağaç/barkod baloncukları net */
+    body.theme-dark .tag,
+    body.theme-dark .tag *,
+    body.theme-dark .recent-barcode-item,
+    body.theme-dark .recent-barcode-item *,
+    body.theme-dark .simple-recent-item,
+    body.theme-dark .simple-recent-item *,
+    body.theme-dark .product-box,
+    body.theme-dark .product-box *,
+    body.theme-dark .simple-product-btn,
+    body.theme-dark .simple-product-btn *{
+      opacity:1 !important;
+      text-shadow:none !important;
+      filter:none !important;
+    }
+
+    body.theme-dark .tag.tomruk,
+    body.theme-dark .recent-barcode-item.recent-tomruk,
+    body.theme-dark .simple-recent-item.tomruk,
+    body.theme-dark .product-box.tomruk,
+    body.theme-dark .simple-tomruk{
+      background:#facc15 !important;
+      border-color:#ca8a04 !important;
+      color:#422006 !important;
+    }
+
+    body.theme-dark .tag.maden,
+    body.theme-dark .recent-barcode-item.recent-maden,
+    body.theme-dark .simple-recent-item.maden,
+    body.theme-dark .product-box.maden,
+    body.theme-dark .simple-maden{
+      background:#93c5fd !important;
+      border-color:#2563eb !important;
+      color:#172554 !important;
+    }
+
+    body.theme-dark .tag.kagit,
+    body.theme-dark .recent-barcode-item.recent-kagit,
+    body.theme-dark .simple-recent-item.kagit,
+    body.theme-dark .product-box.kagit,
+    body.theme-dark .simple-kagit{
+      background:#fca5a5 !important;
+      border-color:#dc2626 !important;
+      color:#450a0a !important;
+    }
+
+    body.theme-dark .tag.sanayi,
+    body.theme-dark .recent-barcode-item.recent-sanayi,
+    body.theme-dark .simple-recent-item.sanayi,
+    body.theme-dark .product-box.sanayi,
+    body.theme-dark .simple-sanayi{
+      background:#86efac !important;
+      border-color:#16a34a !important;
+      color:#052e16 !important;
+    }
+
+    body.theme-dark .tag.tel,
+    body.theme-dark .recent-barcode-item.recent-tel,
+    body.theme-dark .simple-recent-item.tel,
+    body.theme-dark .product-box.tel,
+    body.theme-dark .simple-tel{
+      background:#c4b5fd !important;
+      border-color:#7c3aed !important;
+      color:#2e1065 !important;
+    }
+
+    body.theme-dark .tag.tree-tag,
+    body.theme-dark .tag.tree-karacam,
+    body.theme-dark .tag.tree-saricam,
+    body.theme-dark .tag.tree-sedir,
+    body.theme-dark .tag.tree-goknar,
+    body.theme-dark .tag.tree-kizilcam{
+      font-weight:950 !important;
+      opacity:1 !important;
+    }
+
+    body.theme-dark .tag.tree-karacam,
+    body.theme-dark .tag.tree-saricam{
+      background:#bbf7d0 !important;
+      border-color:#16a34a !important;
+      color:#052e16 !important;
+    }
+
+    body.theme-dark .tag.tree-sedir{
+      background:#ddd6fe !important;
+      border-color:#7c3aed !important;
+      color:#2e1065 !important;
+    }
+
+    body.theme-dark .tag.tree-goknar{
+      background:#bfdbfe !important;
+      border-color:#2563eb !important;
+      color:#172554 !important;
+    }
+
+    body.theme-dark .tag.tree-kizilcam{
+      background:#fed7aa !important;
+      border-color:#f97316 !important;
+      color:#7c2d12 !important;
+    }
+
+    body.theme-dark .recent-barcode-item b,
+    body.theme-dark .recent-barcode-item span,
+    body.theme-dark .simple-recent-item b,
+    body.theme-dark .simple-recent-item span{
+      color:inherit !important;
+      opacity:1 !important;
+      font-weight:950 !important;
+    }
+
+    body.theme-dark .recent-barcode-item span,
+    body.theme-dark .simple-recent-item span{
+      font-weight:850 !important;
+    }
+
+    body.theme-dark .registered-user-meta span,
+    body.theme-dark .admin-device-pill,
+    body.theme-dark .admin-version-pill{
+      background:#17243a !important;
+      border-color:#4a6384 !important;
+      color:#f8fafc !important;
+      opacity:1 !important;
+    }
+
+    body.theme-dark .admin-status-pill,
+    body.theme-dark .admin-source-pill{
+      color:#111827 !important;
+      opacity:1 !important;
+      font-weight:950 !important;
+    }
+
   </style>
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -5256,7 +5483,7 @@
 <div class="app">
     <header class="topbar">
       <div class="brand">
-        <h1>Mesaha İO v1.29</h1>
+        <h1>Mesaha İO v1.30</h1>
         
       </div>
       <div id="activeUserBadge" class="active-user-badge" role="button" tabindex="0" title="Kullanıcı panelini aç" style="display:none"></div>
@@ -5307,6 +5534,7 @@
               </div>
               <div id="treeTypePanel" class="wood-type-panel tree-type-panel" aria-label="Ağaç türü seçimi">
                 <label class="wood-check"><input type="radio" name="treeTypeRadio" value="Karaçam" checked /> Karaçam</label>
+                <label class="wood-check"><input type="radio" name="treeTypeRadio" value="Sarıçam" /> Sarıçam</label>
                 <label class="wood-check"><input type="radio" name="treeTypeRadio" value="Sedir" /> Sedir</label>
                 <label class="wood-check"><input type="radio" name="treeTypeRadio" value="Göknar" /> Göknar</label>
                 <label class="wood-check"><input type="radio" name="treeTypeRadio" value="Kızılçam" /> Kızılçam</label>
@@ -5750,6 +5978,7 @@
 
     const TREE_MAP = {
       "Karaçam": { agacId: 1, agacAdi: "Karaçam" },
+      "Sarıçam": { agacId: 2, agacAdi: "Sarıçam" },
       "Sedir": { agacId: 5, agacAdi: "Sedir" },
       "Göknar": { agacId: 6, agacAdi: "Göknar" },
       "Kızılçam": { agacId: 26, agacAdi: "Kızılçam" }
@@ -6709,8 +6938,8 @@
     function currentDeviceInfoPayload() {
       const active = state.activeUser || findActiveUser();
       return {
-        appVersion: "Mesaha İO v1.29",
-        fileVersion: "v100",
+        appVersion: "Mesaha İO v1.30",
+        fileVersion: "v101",
         userName: active && active.name ? cleanUserText(active.name) : "",
         seflik: active && active.seflik ? cleanUserText(active.seflik) : "",
         deviceId: getOrCreateDeviceId(),
@@ -7451,7 +7680,7 @@
 
     async function uploadCloudBackupOpen(user) {
       const payload = buildCloudBackupPayload(user);
-      payload.version = 100;
+      payload.version = 101;
       const bolmePart = els.bolmeNo && String(els.bolmeNo.value || "").trim() ? `_${cleanFilePart(els.bolmeNo.value)}` : "";
       const fileName = `Mesaha_Yedek_${cleanFilePart(user.seflik)}_${cleanFilePart(user.name)}${bolmePart}_${new Date().toISOString().slice(0,19).replace(/[-:T]/g, "")}.json`;
 
@@ -7880,7 +8109,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function buildCloudBackupPayload(user) {
       return {
         app: "Mesaha İO",
-        version: 100,
+        version: 101,
         createdAt: new Date().toLocaleString("tr-TR"),
         user: {
           name: user.name || "",
@@ -8495,6 +8724,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
       const raw = String(type || "").trim();
 
       if (TREE_MAP[raw]) return raw;
+      if (raw === "Saricam" || raw === "Sarıçam" || raw === "Saricam" || raw === "Sariçam") return "Sarıçam";
       if (raw === "Kizilcam" || raw === "Kızılçam" || raw === "Kizilçam") return "Kızılçam";
       if (raw === "Goknar" || raw === "Göknar") return "Göknar";
       if (raw === "Sedir") return "Sedir";
@@ -8508,6 +8738,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
 
     function normalizeTreeClass(type) {
       const key = normalizeTreeType(type);
+      if (key === "Sarıçam") return "tree-saricam";
       if (key === "Sedir") return "tree-sedir";
       if (key === "Göknar") return "tree-goknar";
       if (key === "Kızılçam") return "tree-kizilcam";
@@ -9139,7 +9370,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
       const ids = new Set(state.selectedRecordIds || []);
       if (!ids.size) return showToast("Seçili kayıt yok.");
 
-      const answer = prompt("Yeni ağaç türünü yazın:\nKaraçam, Kızılçam, Sedir, Göknar");
+      const answer = prompt("Yeni ağaç türünü yazın:\nKaraçam, Sarıçam, Kızılçam, Sedir, Göknar");
       if (!answer) return;
 
       const key = foldLocalText ? foldLocalText(answer) : String(answer).trim().toLowerCase();
@@ -9882,7 +10113,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function backup() {
       const data = {
         app: "Mesaha App",
-        version: 100,
+        version: 101,
         exportedAt: formatDateTime(),
         systemHeaders: HEADERS,
         settings: state.settings,
@@ -10299,7 +10530,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     async function firebaseUploadBackup(user) {
       const { db } = await ensureFirebaseReady();
       const payload = buildCloudBackupPayload(user);
-      payload.version = 100;
+      payload.version = 101;
       payload.cloud = "firebase";
 
       const bolmeNo = els.bolmeNo ? String(els.bolmeNo.value || "").trim() : "";
@@ -11924,6 +12155,72 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     attachSimpleNoBlurV100();
 
 
+    
+    /* v101: alt menü/scroll stabilizasyonu */
+    function syncOverlayBodyClassesV101() {
+      document.body.classList.toggle("simple-mode-open", !!(els.simpleModeOverlay && els.simpleModeOverlay.classList.contains("show")));
+      document.body.classList.toggle("user-panel-open", !!(els.userPanelOverlay && els.userPanelOverlay.classList.contains("show")));
+      document.body.classList.toggle("issue-panel-open", !!(els.issueReportOverlay && els.issueReportOverlay.classList.contains("show")));
+    }
+
+    if (typeof simpleOpenModeV93 === "function" && !simpleOpenModeV93.__v101Wrapped) {
+      const originalSimpleOpenV101 = simpleOpenModeV93;
+      simpleOpenModeV93 = function(...args) {
+        const result = originalSimpleOpenV101.apply(this, args);
+        setTimeout(syncOverlayBodyClassesV101, 20);
+        return result;
+      };
+      simpleOpenModeV93.__v101Wrapped = true;
+      if (typeof simpleOpenModeV92 === "function") simpleOpenModeV92 = simpleOpenModeV93;
+    }
+
+    if (typeof simpleCloseModeV92 === "function" && !simpleCloseModeV92.__v101Wrapped) {
+      const originalSimpleCloseV101 = simpleCloseModeV92;
+      simpleCloseModeV92 = function(...args) {
+        const result = originalSimpleCloseV101.apply(this, args);
+        setTimeout(syncOverlayBodyClassesV101, 20);
+        return result;
+      };
+      simpleCloseModeV92.__v101Wrapped = true;
+    }
+
+    ["click", "touchend", "pointerup"].forEach(evt => {
+      document.addEventListener(evt, () => setTimeout(syncOverlayBodyClassesV101, 30), true);
+    });
+
+    // Kayıtlar tablosunda sağ-sol kaydırmanın checkbox/button tıklamalarıyla takılmasını azaltır.
+    document.addEventListener("touchstart", (event) => {
+      const wrap = event.target && event.target.closest ? event.target.closest(".table-wrap") : null;
+      if (!wrap) return;
+      wrap.__touchStartX = event.touches && event.touches[0] ? event.touches[0].clientX : 0;
+      wrap.__touchStartY = event.touches && event.touches[0] ? event.touches[0].clientY : 0;
+    }, { passive:true, capture:true });
+
+    document.addEventListener("touchmove", (event) => {
+      const wrap = event.target && event.target.closest ? event.target.closest(".table-wrap") : null;
+      if (!wrap || !event.touches || !event.touches[0]) return;
+      const dx = Math.abs(event.touches[0].clientX - (wrap.__touchStartX || 0));
+      const dy = Math.abs(event.touches[0].clientY - (wrap.__touchStartY || 0));
+      if (dx > dy && dx > 8) {
+        // Yatay kaydırmada tarayıcıya scroll hakkını bırak.
+        event.stopPropagation();
+      }
+    }, { passive:true, capture:true });
+
+    // Alt menü iOS adres çubuğu değişince yukarı zıplamasın diye konumu CSS'te fixed tutulur.
+    function refreshBottomNavV101() {
+      const nav = document.querySelector(".bottom-nav");
+      if (!nav) return;
+      nav.style.transform = "translateZ(0)";
+      nav.style.bottom = "calc(8px + env(safe-area-inset-bottom, 0px))";
+    }
+
+    window.addEventListener("resize", refreshBottomNavV101, { passive:true });
+    document.addEventListener("scroll", refreshBottomNavV101, { passive:true });
+    setTimeout(refreshBottomNavV101, 300);
+    syncOverlayBodyClassesV101();
+
+
     window.forceUpdateApp = forceUpdateApp;
     window.mesahaToggleTheme = mesahaToggleTheme;
     window.simpleOpenModeV92 = simpleOpenModeV92;
@@ -11944,8 +12241,8 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     load();
   
     window.MESAHA_BUILD_INFO = {
-      fileVersion: "v100",
-      visibleVersion: "Mesaha İO v1.29",
+      fileVersion: "v101",
+      visibleVersion: "Mesaha İO v1.30",
       stableBuild: true
     };
 
