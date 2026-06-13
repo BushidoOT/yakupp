@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha App v114</title>
+  <title>Mesaha App v115</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -5222,6 +5222,295 @@
       border-color:#3e526d !important;
     }
 
+  
+    /* v115: örnek görsel tarzı tam koyu mod - beyaz panel kalmasın */
+    :root{
+      --dark-bg-v115:#101216;
+      --dark-page-v115:#151a21;
+      --dark-card-v115:#1d232c;
+      --dark-card2-v115:#222a35;
+      --dark-soft-v115:#2b3442;
+      --dark-border-v115:#3a4656;
+      --dark-text-v115:#f2f5f9;
+      --dark-muted-v115:#aeb8c7;
+      --dark-blue-v115:#3b82f6;
+      --dark-green-v115:#22c55e;
+    }
+
+    html.theme-dark,
+    body.theme-dark{
+      color-scheme:dark !important;
+      background:var(--dark-bg-v115) !important;
+      color:var(--dark-text-v115) !important;
+    }
+
+    body.theme-dark .app{
+      background:var(--dark-bg-v115) !important;
+      color:var(--dark-text-v115) !important;
+    }
+
+    body.theme-dark .topbar{
+      background:#1b2028 !important;
+      color:var(--dark-text-v115) !important;
+      border-color:#252d38 !important;
+      box-shadow:none !important;
+    }
+
+    body.theme-dark .brand h1,
+    body.theme-dark .brand-title,
+    body.theme-dark h1{
+      color:#f8fafc !important;
+      text-shadow:none !important;
+    }
+
+    body.theme-dark .active-user-badge{
+      background:#dfffea !important;
+      color:#0f5132 !important;
+      border-color:#8af0b0 !important;
+      box-shadow:0 0 18px rgba(34,197,94,.22) !important;
+    }
+
+    body.theme-dark .flow-tabs-v111{
+      background:#1b2028 !important;
+      border-color:#344052 !important;
+      box-shadow:none !important;
+    }
+
+    body.theme-dark .flow-tabs-v111 button{
+      background:#171d26 !important;
+      color:#dbe3ef !important;
+      border-color:#3a4656 !important;
+      box-shadow:none !important;
+    }
+
+    body.theme-dark .flow-tabs-v111 button.active{
+      background:#2f6df6 !important;
+      color:#ffffff !important;
+      border-color:#5d8cff !important;
+      box-shadow:0 0 0 1px rgba(93,140,255,.22) inset !important;
+    }
+
+    /* Kapsayıcı ve paneller */
+    body.theme-dark :is(
+      main,section,article,aside,header,footer,
+      .panel,.panel-body,.card,.box,.sheet,.modal,.modal-card,
+      .section,.form-card,.form-section,.settings-card,.summary-card,
+      .daily-work-summary,.login-card,.user-panel-card,.issue-report-card,
+      .admin-card,.user-card,.backup-card,.notice-card,.support-card,
+      .ticket-card,.guide-card,.content-card,.grid-card,.stat-card,.info-card,
+      .select-card,.tree-card,.wood-card,.export-card,.input-card,
+      .product-card,.quick-card,.barcode-card,.list-card,.record-card,
+      .bulk-actions,.toolbar,.search-row,.filter-row,.action-row,
+      .field-row,.form-row,.input-row,.setting-row,.list-row,.item-row,
+      .data-row,.summary-row,.admin-row,.notice-row,.support-row,
+      .accordion,.accordion-body,.accordion-header,.collapsible,.collapse,
+      .file-card,.tree-section,.wood-section,.record-section
+    ){
+      background:var(--dark-card-v115) !important;
+      color:var(--dark-text-v115) !important;
+      border-color:var(--dark-border-v115) !important;
+      box-shadow:none !important;
+    }
+
+    /* İçte beyaz kalan divleri koyulaştır; ürün renkleri ve özel etiketler hariç */
+    body.theme-dark :is(div,label,fieldset,form,details,summary):not(.tomruk):not(.maden):not(.kagit):not(.sanayi):not(.tel):not(.tree):not(.tree-saricam):not(.active-user-badge):not(.clean-recent-item-v114):not(.clean-product-v111):not(.clean-chip-v111):not(.mini-tag-v111):not(.tag):not(.chip):not(.pill):not(.badge){
+      border-color:var(--dark-border-v115) !important;
+    }
+
+    body.theme-dark :is(.field,.input-field,.form-field,.control,.controls,.group,.input-group,.select-group,.wood-check,.product-option,.tree-option,.quick-preset,.preset,.hint-box,.notice,.callout){
+      background:var(--dark-card2-v115) !important;
+      color:var(--dark-text-v115) !important;
+      border-color:var(--dark-border-v115) !important;
+      box-shadow:none !important;
+    }
+
+    body.theme-dark :is(
+      .section-title,.panel-title,.card-title,.field-title,.title,
+      h1,h2,h3,h4,h5,h6,p,label,legend,small,span,strong,b,
+      .subtitle,.muted,.hint,.help,.sub,.desc,.description
+    ){
+      color:var(--dark-text-v115) !important;
+    }
+
+    body.theme-dark :is(.muted,.hint,.help,.sub,.desc,.description,small){
+      color:var(--dark-muted-v115) !important;
+    }
+
+    body.theme-dark :is(input,textarea,select){
+      background:#111827 !important;
+      color:#f8fafc !important;
+      border-color:#4b5d72 !important;
+      box-shadow:none !important;
+      outline-color:#60a5fa !important;
+      caret-color:#f8fafc !important;
+    }
+
+    body.theme-dark :is(input,textarea,select):focus{
+      background:#0d1522 !important;
+      border-color:#6aa0ff !important;
+      box-shadow:0 0 0 2px rgba(96,165,250,.22) !important;
+    }
+
+    body.theme-dark :is(input,textarea)::placeholder{
+      color:#9ca9ba !important;
+      opacity:1 !important;
+    }
+
+    body.theme-dark :is(table,thead,tbody,tr,td,th){
+      background:var(--dark-card-v115) !important;
+      color:var(--dark-text-v115) !important;
+      border-color:var(--dark-border-v115) !important;
+    }
+
+    body.theme-dark th{
+      background:#171d26 !important;
+      color:#f8fafc !important;
+    }
+
+    body.theme-dark :is(button,.btn):not(.top-actions-v112 button):not(.flow-tabs-v111 button):not(.clean-product-v111):not(.clean-chip-v111):not(.clean-save-v111):not(.clean-header-save-v113):not(.clean-simple-close-v111):not(.record-edit-v111):not(.record-delete-v111){
+      background:#171d26 !important;
+      color:#f2f5f9 !important;
+      border-color:#3a4656 !important;
+      box-shadow:none !important;
+    }
+
+    body.theme-dark :is(.primary,.btn-primary,button.primary,[data-primary="true"]){
+      background:#2f6df6 !important;
+      color:#fff !important;
+      border-color:#5d8cff !important;
+    }
+
+    body.theme-dark :is(.success,.btn-success,button.success){
+      background:#1b7d3a !important;
+      color:#eafff0 !important;
+      border-color:#30d567 !important;
+    }
+
+    body.theme-dark :is(.danger,.btn-danger,button.danger){
+      background:#7f1d1d !important;
+      color:#fff !important;
+      border-color:#ef4444 !important;
+    }
+
+    body.theme-dark :is(.empty,.toast,.badge,.pill,.chip,.tag){
+      background:#171d26 !important;
+      color:#dbe3ef !important;
+      border-color:#3a4656 !important;
+    }
+
+    /* Yeni Kayıt formundaki özellikle beyaz kalan kutular */
+    body.theme-dark :is(
+      [class*="file"],[class*="tree"],[class*="wood"],[class*="product"],[class*="barcode"],[class*="length"],[class*="diameter"],[class*="quantity"],[class*="date"],[class*="record"],[class*="summary"]
+    ):not(.tomruk):not(.maden):not(.kagit):not(.sanayi):not(.tel):not(.mini-tag-v111):not(.clean-recent-item-v114):not(.clean-product-v111):not(.tag):not(.chip){
+      border-color:#3a4656 !important;
+    }
+
+    body.theme-dark :is(.record-row-v111,.record-val-v111){
+      background:#1d232c !important;
+      border-color:#3a4656 !important;
+    }
+
+    body.theme-dark .record-row-v111.selected{
+      background:#1c3358 !important;
+      border-color:#60a5fa !important;
+    }
+
+    body.theme-dark .record-main-v111 b,
+    body.theme-dark .record-val-v111 strong{
+      color:#f8fafc !important;
+    }
+
+    /* Ürün renkleri koyu modda okunaklı kalsın */
+    body.theme-dark :is(.mini-tag-v111.tomruk,.tag.tomruk,.chip.tomruk,.clean-product-v111.tomruk){
+      background:#facc15 !important;
+      border-color:#ca8a04 !important;
+      color:#422006 !important;
+    }
+    body.theme-dark :is(.mini-tag-v111.maden,.tag.maden,.chip.maden,.clean-product-v111.maden){
+      background:#93c5fd !important;
+      border-color:#2563eb !important;
+      color:#172554 !important;
+    }
+    body.theme-dark :is(.mini-tag-v111.kagit,.tag.kagit,.chip.kagit,.clean-product-v111.kagit){
+      background:#fca5a5 !important;
+      border-color:#dc2626 !important;
+      color:#450a0a !important;
+    }
+    body.theme-dark :is(.mini-tag-v111.sanayi,.tag.sanayi,.chip.sanayi,.clean-product-v111.sanayi){
+      background:#86efac !important;
+      border-color:#16a34a !important;
+      color:#052e16 !important;
+    }
+    body.theme-dark :is(.mini-tag-v111.tel,.tag.tel,.chip.tel,.clean-product-v111.tel){
+      background:#c4b5fd !important;
+      border-color:#7c3aed !important;
+      color:#2e1065 !important;
+    }
+    body.theme-dark :is(.mini-tag-v111.tree,.tag.tree,.tag.tree-saricam){
+      background:#bbf7d0 !important;
+      border-color:#16a34a !important;
+      color:#052e16 !important;
+    }
+
+    body.theme-dark .clean-simple-overlay-v111{
+      background:#101216 !important;
+    }
+
+    body.theme-dark .clean-simple-card-v111{
+      background:#151a21 !important;
+      color:#f2f5f9 !important;
+    }
+
+    body.theme-dark .clean-simple-head-v111{
+      background:#1d232c !important;
+      border-color:#3a4656 !important;
+    }
+
+    body.theme-dark .clean-simple-close-v111{
+      background:#171d26 !important;
+      color:#f8fafc !important;
+      border-color:#3a4656 !important;
+    }
+
+    body.theme-dark .clean-auto-info-v111,
+    body.theme-dark .clean-empty-v111{
+      background:#1d232c !important;
+      color:#dbe3ef !important;
+      border-color:#3a4656 !important;
+    }
+
+    /* Inline style ile gelen beyazları da yakala */
+    body.theme-dark [style*="background: white"],
+    body.theme-dark [style*="background:white"],
+    body.theme-dark [style*="background:#fff"],
+    body.theme-dark [style*="background: #fff"],
+    body.theme-dark [style*="background-color: white"],
+    body.theme-dark [style*="background-color:white"],
+    body.theme-dark [style*="background-color:#fff"],
+    body.theme-dark [style*="background-color: #fff"],
+    body.theme-dark [style*="rgb(255, 255, 255)"]{
+      background:#1d232c !important;
+      color:#f2f5f9 !important;
+      border-color:#3a4656 !important;
+    }
+
+    /* Özellikle screenshot'taki beyaz blokları hedefleyen agresif ama güvenli katman */
+    body.theme-dark .panel > div:not(.flow-tabs-v111):not(.mobile-records-v111),
+    body.theme-dark .card > div:not(.clean-recent-item-v114),
+    body.theme-dark section > div:not(.flow-tabs-v111):not(.mobile-records-v111):not(.clean-simple-overlay-v111),
+    body.theme-dark form > div:not(.top-actions-v112):not(.record-tags-v111){
+      background:#1d232c !important;
+      color:#f2f5f9 !important;
+      border-color:#3a4656 !important;
+    }
+
+    body.theme-dark .panel > div > div:not(.tomruk):not(.maden):not(.kagit):not(.sanayi):not(.tel):not(.tree):not(.mini-tag-v111):not(.tag):not(.chip):not(.clean-recent-item-v114):not(.clean-product-v111),
+    body.theme-dark .card > div > div:not(.tomruk):not(.maden):not(.kagit):not(.sanayi):not(.tel):not(.tree):not(.mini-tag-v111):not(.tag):not(.chip):not(.clean-recent-item-v114):not(.clean-product-v111){
+      background:#222a35 !important;
+      color:#f2f5f9 !important;
+      border-color:#3a4656 !important;
+    }
+
   </style>
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -5386,7 +5675,7 @@
 <div class="app">
     <header class="topbar">
       <div class="brand">
-        <h1>Mesaha İO v1.43</h1>
+        <h1>Mesaha İO v1.44</h1>
         
       </div>
       <div id="activeUserBadge" class="active-user-badge" role="button" tabindex="0" title="Kullanıcı panelini aç" style="display:none"></div>
@@ -6841,8 +7130,8 @@
     function currentDeviceInfoPayload() {
       const active = state.activeUser || findActiveUser();
       return {
-        appVersion: "Mesaha İO v1.43",
-        fileVersion: "v114",
+        appVersion: "Mesaha İO v1.44",
+        fileVersion: "v115",
         userName: active && active.name ? cleanUserText(active.name) : "",
         seflik: active && active.seflik ? cleanUserText(active.seflik) : "",
         deviceId: getOrCreateDeviceId(),
@@ -7581,7 +7870,7 @@
 
     async function uploadCloudBackupOpen(user) {
       const payload = buildCloudBackupPayload(user);
-      payload.version = 114;
+      payload.version = 115;
       const bolmePart = els.bolmeNo && String(els.bolmeNo.value || "").trim() ? `_${cleanFilePart(els.bolmeNo.value)}` : "";
       const fileName = `Mesaha_Yedek_${cleanFilePart(user.seflik)}_${cleanFilePart(user.name)}${bolmePart}_${new Date().toISOString().slice(0,19).replace(/[-:T]/g, "")}.json`;
 
@@ -8010,7 +8299,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function buildCloudBackupPayload(user) {
       return {
         app: "Mesaha İO",
-        version: 114,
+        version: 115,
         createdAt: new Date().toLocaleString("tr-TR"),
         user: {
           name: user.name || "",
@@ -10014,7 +10303,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function backup() {
       const data = {
         app: "Mesaha App",
-        version: 114,
+        version: 115,
         exportedAt: formatDateTime(),
         systemHeaders: HEADERS,
         settings: state.settings,
@@ -10431,7 +10720,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     async function firebaseUploadBackup(user) {
       const { db } = await ensureFirebaseReady();
       const payload = buildCloudBackupPayload(user);
-      payload.version = 114;
+      payload.version = 115;
       payload.cloud = "firebase";
 
       const bolmeNo = els.bolmeNo ? String(els.bolmeNo.value || "").trim() : "";
@@ -11688,6 +11977,75 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     }, 2000);
 
 
+    
+    /* v115: karanlık moddaki beyaz alanları uygulama içinde de koyulaştır */
+    function isProductColorElementV115(el) {
+      if (!el || !el.classList) return false;
+      return ["tomruk","maden","kagit","sanayi","tel","tree","tree-saricam","mini-tag-v111","tag","chip","clean-product-v111","clean-chip-v111","clean-recent-item-v114"].some(c => el.classList.contains(c));
+    }
+
+    function forceDarkPanelsV115() {
+      if (!document.body.classList.contains("theme-dark")) return;
+
+      const whiteLike = ["rgb(255, 255, 255)", "white", "#fff", "#ffffff", "rgb(248, 250, 252)", "rgb(241, 245, 249)", "rgba(255, 255, 255"];
+      document.querySelectorAll("div, section, article, form, fieldset, label, aside").forEach(el => {
+        if (isProductColorElementV115(el)) return;
+
+        const cs = getComputedStyle(el);
+        const bg = (cs.backgroundColor || "").toLowerCase();
+        const inline = (el.getAttribute("style") || "").toLowerCase();
+
+        const looksWhite = whiteLike.some(w => bg.includes(w) || inline.includes(w));
+        const hasBorder = (cs.borderTopWidth && cs.borderTopWidth !== "0px") || (cs.borderBottomWidth && cs.borderBottomWidth !== "0px");
+        const isBox = hasBorder || el.className || el.children.length;
+
+        if (looksWhite && isBox) {
+          el.style.setProperty("background", "#1d232c", "important");
+          el.style.setProperty("color", "#f2f5f9", "important");
+          el.style.setProperty("border-color", "#3a4656", "important");
+          el.style.setProperty("box-shadow", "none", "important");
+        }
+      });
+
+      document.querySelectorAll("input, textarea, select").forEach(el => {
+        el.style.setProperty("background", "#111827", "important");
+        el.style.setProperty("color", "#f8fafc", "important");
+        el.style.setProperty("border-color", "#4b5d72", "important");
+      });
+    }
+
+    const oldApplyThemeV113For115 = typeof applyThemeV113 === "function" ? applyThemeV113 : null;
+    applyThemeV113 = function(mode) {
+      if (oldApplyThemeV113For115) oldApplyThemeV113For115(mode);
+      const dark = mode === "dark";
+      document.body.classList.toggle("theme-dark", dark);
+      document.documentElement.classList.toggle("theme-dark", dark);
+      try {
+        localStorage.setItem("mesaha_theme_v113", dark ? "dark" : "light");
+        localStorage.setItem("mesaha_theme_v112", dark ? "dark" : "light");
+      } catch {}
+      const btn = document.getElementById("themeToggleV112");
+      if (btn) btn.textContent = dark ? "☀️ Aydınlık" : "🌙 Karanlık";
+      setTimeout(forceDarkPanelsV115, 30);
+      setTimeout(forceDarkPanelsV115, 250);
+    };
+
+    applyThemeV112 = applyThemeV113;
+
+    const oldOpenCleanSimpleV113For115 = typeof openCleanSimpleV113 === "function" ? openCleanSimpleV113 : null;
+    openCleanSimpleV113 = function() {
+      if (oldOpenCleanSimpleV113For115) oldOpenCleanSimpleV113For115();
+      if (typeof renderCleanRecentV114 === "function") setTimeout(renderCleanRecentV114, 40);
+      setTimeout(forceDarkPanelsV115, 80);
+    };
+    openCleanSimpleV111 = openCleanSimpleV113;
+
+    setTimeout(forceDarkPanelsV115, 120);
+    setInterval(() => {
+      if (document.body.classList.contains("theme-dark")) forceDarkPanelsV115();
+    }, 1500);
+
+
     window.forceUpdateApp = forceUpdateApp;
     window.openAdminFromUserPanel = openAdminFromUserPanel;
 
@@ -11706,8 +12064,8 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     load();
   
     window.MESAHA_BUILD_INFO = {
-      fileVersion: "v114",
-      visibleVersion: "Mesaha İO v1.43",
+      fileVersion: "v115",
+      visibleVersion: "Mesaha İO v1.44",
       stableBuild: true
     };
 
