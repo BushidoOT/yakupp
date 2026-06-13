@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha App v87</title>
+  <title>Mesaha App v88</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -4039,6 +4039,55 @@
       }
     }
 
+  
+    /* v88: Sabit kullanıcı bildirim rozeti */
+    .active-user-wrap{
+      position:relative;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .user-notification-badge{
+      position:absolute;
+      top:-7px;
+      right:-8px;
+      min-width:20px;
+      height:20px;
+      padding:0 6px;
+      border-radius:999px;
+      background:#ef4444;
+      color:#ffffff;
+      border:2px solid #ffffff;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      font-size:10px;
+      line-height:1;
+      font-weight:950;
+      box-shadow:0 8px 18px rgba(239,68,68,.38);
+      z-index:20;
+      pointer-events:none;
+    }
+
+    .active-user-wrap.has-notification .user-notification-badge,
+    .user-notification-badge.show{
+      display:flex !important;
+    }
+
+    .active-user-badge.has-notification::after{
+      content:"";
+      position:absolute;
+      top:-5px;
+      right:-5px;
+      width:10px;
+      height:10px;
+      border-radius:999px;
+      background:#ef4444;
+      border:2px solid #fff;
+      box-shadow:0 0 0 3px rgba(239,68,68,.14);
+    }
+
   </style>
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -4164,10 +4213,13 @@
   <div class="app">
     <header class="topbar">
       <div class="brand">
-        <h1>Mesaha İO v1.16</h1>
+        <h1>Mesaha İO v1.17</h1>
         
       </div>
-      <div id="activeUserBadge" class="active-user-badge" role="button" tabindex="0" title="Kullanıcı panelini aç" style="display:none"></div>
+      <div class="active-user-wrap">
+        <div id="activeUserBadge" class="active-user-badge" role="button" tabindex="0" title="Kullanıcı panelini aç" style="display:none"></div>
+        <span id="userNotificationBadge" class="user-notification-badge" style="display:none">0</span>
+      </div>
     </header>
 
     <main class="grid">
@@ -4812,6 +4864,7 @@
       loginSaveBtn: $("loginSaveBtn"),
       loginError: $("loginError"),
       activeUserBadge: $("activeUserBadge"),
+      userNotificationBadge: $("userNotificationBadge"),
       registeredUsersList: $("registeredUsersList"),
       changeUserBtn: $("changeUserBtn"),
       adminUsersBtn: $("adminUsersBtn"),
@@ -5603,8 +5656,8 @@
     function currentDeviceInfoPayload() {
       const active = state.activeUser || findActiveUser();
       return {
-        appVersion: "Mesaha İO v1.16",
-        fileVersion: "v87",
+        appVersion: "Mesaha İO v1.17",
+        fileVersion: "v88",
         userName: active && active.name ? cleanUserText(active.name) : "",
         seflik: active && active.seflik ? cleanUserText(active.seflik) : "",
         deviceId: getOrCreateDeviceId(),
@@ -5673,7 +5726,7 @@
       if (els.issueReportUserInfo) els.issueReportUserInfo.textContent = `${active.name} • ${active.seflik}`;
       if (els.issueDeviceInfo) els.issueDeviceInfo.textContent = issueDeviceInfoText(issueDeviceInfoPayload());
       if (els.issueReportOverlay) els.issueReportOverlay.classList.add("show");
-      loadMyIssueReports().then(() => markUserRepliesSeen()).catch(() => {});
+      loadMyIssueReports().then(() => markUserRepliesSeenV88()).catch(() => {});
       setTimeout(() => { if (els.issueReportMessage) els.issueReportMessage.focus(); }, 120);
     }
 
@@ -5755,7 +5808,7 @@
             ${r.adminReply ? `<div class="issue-reply"><b>Admin Cevabı:</b> ${escapeHtml(r.adminReply)}</div>` : ""}
           </div>
         `).join("");
-        markUserRepliesSeen();
+        markUserRepliesSeenV88();
       } catch (error) {
         els.issueMyReportsList.innerHTML = "Bildirimler alınamadı.";
       }
@@ -5797,7 +5850,7 @@
       dot.textContent = count > 9 ? "9+" : String(count || "");
     }
 
-    async function markUserRepliesSeen() {
+    async function markUserRepliesSeenV88() {
       try {
         const rows = await firebaseListMyTickets();
         const seenRaw = localStorage.getItem("mesaha_seen_admin_replies_v1") || "{}";
@@ -5809,7 +5862,7 @@
         });
         localStorage.setItem("mesaha_seen_admin_replies_v1", JSON.stringify(seen));
         updateUserNotificationBadge().catch(() => {});
-    startNotificationWatcher();
+    startNotificationWatcherV88();
       } catch {}
     }
 
@@ -5863,7 +5916,7 @@
       dot.textContent = count > 9 ? "9+" : String(count || "");
     }
 
-    async function markUserRepliesSeen() {
+    async function markUserRepliesSeenV88() {
       try {
         const rows = await firebaseListMyTickets();
         const seenRaw = localStorage.getItem(userReplySeenStorageKey()) || "{}";
@@ -5957,7 +6010,7 @@
           message: "Admin güncelleme uyarısı gönderdi.",
           status: "review",
           adminReply: reply,
-          appVersion: "Mesaha İO v1.16",
+          appVersion: "Mesaha İO v1.17",
           recordCount: 0,
           createdAt: firebaseDateText(),
           createdAtMs: nowMs,
@@ -6507,7 +6560,7 @@
 
     async function uploadCloudBackupOpen(user) {
       const payload = buildCloudBackupPayload(user);
-      payload.version = 87;
+      payload.version = 88;
       const bolmePart = els.bolmeNo && String(els.bolmeNo.value || "").trim() ? `_${cleanFilePart(els.bolmeNo.value)}` : "";
       const fileName = `Mesaha_Yedek_${cleanFilePart(user.seflik)}_${cleanFilePart(user.name)}${bolmePart}_${new Date().toISOString().slice(0,19).replace(/[-:T]/g, "")}.json`;
 
@@ -6936,7 +6989,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function buildCloudBackupPayload(user) {
       return {
         app: "Mesaha İO",
-        version: 87,
+        version: 88,
         createdAt: new Date().toLocaleString("tr-TR"),
         user: {
           name: user.name || "",
@@ -8938,7 +8991,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function backup() {
       const data = {
         app: "Mesaha App",
-        version: 87,
+        version: 88,
         exportedAt: formatDateTime(),
         systemHeaders: HEADERS,
         settings: state.settings,
@@ -9355,7 +9408,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     async function firebaseUploadBackup(user) {
       const { db } = await ensureFirebaseReady();
       const payload = buildCloudBackupPayload(user);
-      payload.version = 87;
+      payload.version = 88;
       payload.cloud = "firebase";
 
       const bolmeNo = els.bolmeNo ? String(els.bolmeNo.value || "").trim() : "";
@@ -9846,6 +9899,127 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     window.adminSetReportStatus = adminSetReportStatus;
     window.adminReplyReport = adminReplyReport;
 
+    
+    /* v88: Kullanıcı bildirim rozeti sağlam kontrol */
+    function activeUserTicketKey() {
+      const active = state.activeUser || findActiveUser();
+      if (!active || !active.name || !active.seflik) return "";
+      return firebaseUserKey(active.name, active.seflik);
+    }
+
+    function seenReplyStoreKeyV88() {
+      const key = activeUserTicketKey() || "default";
+      return `mesaha_seen_admin_replies_v88_${key}`;
+    }
+
+    async function listTicketsForActiveUserV88() {
+      const active = state.activeUser || findActiveUser();
+      if (!active || !active.name || !active.seflik) return [];
+      const { db } = await ensureFirebaseReady();
+      const userKey = firebaseUserKey(active.name, active.seflik);
+
+      const snap = await db.collection(FIREBASE_REPORTS_COLLECTION).where("userKey", "==", userKey).get();
+      const rows = [];
+      snap.forEach(doc => rows.push(Object.assign({ id: doc.id }, doc.data() || {})));
+
+      rows.sort((a, b) => Number(b.updatedAtMs || b.createdAtMs || 0) - Number(a.updatedAtMs || a.createdAtMs || 0));
+      return rows;
+    }
+
+    function ticketHasUserNoticeV88(ticket) {
+      if (!ticket) return false;
+      if (ticket.type === "updateNotice") return true;
+      if (String(ticket.adminReply || "").trim()) return true;
+      return false;
+    }
+
+    function ticketStampV88(ticket) {
+      return String(ticket.replyAtMs || ticket.updatedAtMs || ticket.createdAtMs || "");
+    }
+
+    async function countUserUnreadRepliesV88() {
+      try {
+        const rows = await listTicketsForActiveUserV88();
+        const seenRaw = localStorage.getItem(seenReplyStoreKeyV88()) || "{}";
+        const seen = JSON.parse(seenRaw);
+        let count = 0;
+
+        rows.forEach(ticket => {
+          if (!ticketHasUserNoticeV88(ticket)) return;
+          const key = `${ticket.id}_${ticketStampV88(ticket)}`;
+          if (!seen[key]) count++;
+        });
+
+        return count;
+      } catch (error) {
+        return 0;
+      }
+    }
+
+    function setUserNotificationVisualV88(count) {
+      const wrap = document.querySelector(".active-user-wrap");
+      const activeBadge = els.activeUserBadge || document.getElementById("activeUserBadge");
+      const badge = els.userNotificationBadge || document.getElementById("userNotificationBadge");
+
+      if (!badge) return;
+
+      const show = Number(count || 0) > 0;
+      badge.textContent = count > 9 ? "9+" : String(count || "");
+      badge.classList.toggle("show", show);
+      badge.style.display = show ? "flex" : "none";
+
+      if (wrap) wrap.classList.toggle("has-notification", show);
+      if (activeBadge) activeBadge.classList.toggle("has-notification", show);
+    }
+
+    async function updateUserNotificationBadgeV88() {
+      const count = await countUserUnreadRepliesV88();
+      setUserNotificationVisualV88(count);
+      return count;
+    }
+
+    async function markUserRepliesSeenV88() {
+      try {
+        const rows = await listTicketsForActiveUserV88();
+        const seenRaw = localStorage.getItem(seenReplyStoreKeyV88()) || "{}";
+        const seen = JSON.parse(seenRaw);
+
+        rows.forEach(ticket => {
+          if (!ticketHasUserNoticeV88(ticket)) return;
+          const key = `${ticket.id}_${ticketStampV88(ticket)}`;
+          seen[key] = true;
+        });
+
+        localStorage.setItem(seenReplyStoreKeyV88(), JSON.stringify(seen));
+        setUserNotificationVisualV88(0);
+      } catch {}
+    }
+
+    function startNotificationWatcherV88() {
+      if (window.__mesahaNotificationWatcherV88) return;
+      window.__mesahaNotificationWatcherV88 = true;
+
+      const run = () => updateUserNotificationBadgeV88().catch(() => {});
+      setTimeout(run, 800);
+      setTimeout(run, 2500);
+      setInterval(() => {
+        if (document.visibilityState === "visible") run();
+      }, 30000);
+
+      document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "visible") run();
+      });
+
+      window.addEventListener("focus", run);
+    }
+
+    /* Eski fonksiyon adlarını da v88'e yönlendir */
+    countUserUnreadReplies = countUserUnreadRepliesV88;
+    updateUserNotificationBadge = updateUserNotificationBadgeV88;
+    markUserRepliesSeen = markUserRepliesSeenV88;
+    startNotificationWatcher = startNotificationWatcherV88;
+
+
     window.adminDeleteReport = adminDeleteReport;
     window.adminSendUpdateNotice = adminSendUpdateNotice;
 
@@ -9862,8 +10036,8 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     load();
   
     window.MESAHA_BUILD_INFO = {
-      fileVersion: "v87",
-      visibleVersion: "Mesaha İO v1.16",
+      fileVersion: "v88",
+      visibleVersion: "Mesaha İO v1.17",
       stableBuild: true
     };
 
