@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha App v134</title>
+  <title>Mesaha App v135</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -9146,7 +9146,7 @@ body.theme-dark .admin-stats-note-v134{ color:#a8b3c2; }
 <div class="app">
     <header class="topbar">
       <div class="brand">
-        <h1>Mesaha İO v1.63</h1>
+        <h1>Mesaha İO v1.64</h1>
         
       </div>
       <div id="activeUserBadge" class="active-user-badge" role="button" tabindex="0" title="Kullanıcı panelini aç" style="display:none"></div>
@@ -10602,8 +10602,8 @@ body.theme-dark .admin-stats-note-v134{ color:#a8b3c2; }
     function currentDeviceInfoPayload() {
       const active = state.activeUser || findActiveUser();
       return {
-        appVersion: "Mesaha İO v1.63",
-        fileVersion: "v134",
+        appVersion: "Mesaha İO v1.64",
+        fileVersion: "v135",
         userName: active && active.name ? cleanUserText(active.name) : "",
         seflik: active && active.seflik ? cleanUserText(active.seflik) : "",
         deviceId: getOrCreateDeviceId(),
@@ -11771,7 +11771,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function buildCloudBackupPayload(user) {
       return {
         app: "Mesaha İO",
-        version: 129,
+        version: 135,
         createdAt: new Date().toLocaleString("tr-TR"),
         user: {
           name: user.name || "",
@@ -13776,7 +13776,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function backup() {
       const data = {
         app: "Mesaha App",
-        version: 129,
+        version: 135,
         exportedAt: formatDateTime(),
         systemHeaders: HEADERS,
         settings: state.settings,
@@ -16472,8 +16472,8 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     function usageTouchStatV128(stat){
       stat.updatedAt = (typeof firebaseDateText === "function") ? firebaseDateText() : new Date().toLocaleString("tr-TR");
       stat.updatedAtMs = Date.now();
-      stat.appVersion = "Mesaha İO v1.63";
-      stat.fileVersion = "v130";
+      stat.appVersion = "Mesaha İO v1.64";
+      stat.fileVersion = "v135";
       stat.recordCount = Array.isArray(state.records) ? state.records.length : 0;
       return stat;
     }
@@ -16555,8 +16555,8 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
             inputM3: Number(usageCleanNumberV128(stat.inputM3).toFixed(3)),
             recordEntryCount: Math.round(usageCleanNumberV128(stat.recordEntryCount)),
             recordCount: Math.round(usageCleanNumberV128(stat.recordCount)),
-            appVersion: "Mesaha İO v1.63",
-            fileVersion: "v134",
+            appVersion: "Mesaha İO v1.64",
+            fileVersion: "v135",
             createdAt: stat.createdAt || firebaseDateText(),
             createdAtMs: Number(stat.createdAtMs || Date.now()),
             updatedAt: firebaseDateText(),
@@ -16790,8 +16790,8 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     const prevCurrentDeviceInfoPayloadV128 = typeof currentDeviceInfoPayload === "function" ? currentDeviceInfoPayload : null;
     currentDeviceInfoPayload = function(){
       const info = prevCurrentDeviceInfoPayloadV128 ? prevCurrentDeviceInfoPayloadV128() : {};
-      info.appVersion = "Mesaha İO v1.63";
-      info.fileVersion = "v130";
+      info.appVersion = "Mesaha İO v1.64";
+      info.fileVersion = "v135";
       info.recordCount = Array.isArray(state.records) ? state.records.length : (Number(info.recordCount) || 0);
       info.updatedMs = Date.now();
       return info;
@@ -16803,8 +16803,8 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     setTimeout(() => { try { usageSyncNowV128().catch(() => {}); } catch {} }, 2500);
 
     window.MESAHA_BUILD_INFO = {
-      fileVersion: "v134",
-      visibleVersion: "Mesaha İO v1.63",
+      fileVersion: "v135",
+      visibleVersion: "Mesaha İO v1.64",
       stableBuild: true
     };
 
@@ -16813,16 +16813,16 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     const prevCurrentDeviceInfoPayloadV129 = typeof currentDeviceInfoPayload === "function" ? currentDeviceInfoPayload : null;
     currentDeviceInfoPayload = function(){
       const info = prevCurrentDeviceInfoPayloadV129 ? prevCurrentDeviceInfoPayloadV129() : {};
-      info.appVersion = "Mesaha İO v1.63";
-      info.fileVersion = "v130";
+      info.appVersion = "Mesaha İO v1.64";
+      info.fileVersion = "v135";
       info.recordCount = Array.isArray(state.records) ? state.records.length : (Number(info.recordCount) || 0);
       info.updatedMs = Date.now();
       info.offlineFirstTimeoutMs = MESAHA_STARTUP_TIMEOUT_V129;
       return info;
     };
     window.MESAHA_BUILD_INFO = {
-      fileVersion: "v134",
-      visibleVersion: "Mesaha İO v1.63",
+      fileVersion: "v135",
+      visibleVersion: "Mesaha İO v1.64",
       stableBuild: true,
       offlineFirstTimeoutMs: MESAHA_STARTUP_TIMEOUT_V129
     };
@@ -16831,7 +16831,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 
     /* v130: Boy kısayol butonlarında klavye kapanmasını engelle + küçük stabilite denetimi */
     (function(){
-      const BUILD_VERSION_V130 = "Mesaha İO v1.63";
+      const BUILD_VERSION_V130 = "Mesaha İO v1.64";
       const FILE_VERSION_V130 = "v134";
 
       function safeFocusV130(input, selectMode){
@@ -16980,8 +16980,8 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 
     /* v131: Admin sade liste, kullanıcı panelinden şifreli açılış, onaylı-yüklemeli yenileme */
     (function(){
-      const BUILD_VERSION_V131 = "Mesaha İO v1.63";
-      const FILE_VERSION_V131 = "v134";
+      const BUILD_VERSION_V131 = "Mesaha İO v1.64";
+      const FILE_VERSION_V131 = "v135";
 
       function adminSetLoadingV131(show, text){
         try {
@@ -17187,8 +17187,8 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 
     /* v132: Admin istatistik - en çok ağaç/odun türü, adet ve m³ */
     (function(){
-      const BUILD_VERSION_V132 = "Mesaha İO v1.63";
-      const FILE_VERSION_V132 = "v134";
+      const BUILD_VERSION_V132 = "Mesaha İO v1.64";
+      const FILE_VERSION_V132 = "v135";
 
       function adminStatsSetLoadingV132(show, text){
         try {
@@ -17448,7 +17448,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 
     /* v133: Admin panelinde Sorun Bildirimleri alanı */
     (function(){
-      const BUILD_VERSION_V133 = "Mesaha İO v1.63";
+      const BUILD_VERSION_V133 = "Mesaha İO v1.64";
       const FILE_VERSION_V133 = "v134";
 
       function supportSetLoadingV133(show, text){
@@ -17585,7 +17585,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 
     /* v134: Admin detayları, güvenli kullanıcı silme, rozetler, dönemli istatistik ve offline sorun kuyruğu */
     (function(){
-      const BUILD_VERSION_V134 = "Mesaha İO v1.63";
+      const BUILD_VERSION_V134 = "Mesaha İO v1.64";
       const FILE_VERSION_V134 = "v134";
       const CURRENT_FILE_NO_V134 = 134;
       const CURRENT_VISIBLE_NO_V134 = 1.63;
@@ -18121,12 +18121,565 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
         supportOfflineQueue: true,
         stableBuild: true
       });
-      try { document.title = "Mesaha App v134"; document.querySelector(".brand h1") && (document.querySelector(".brand h1").textContent = BUILD_VERSION_V134); } catch {}
+      try { document.title = "Mesaha App v135"; document.querySelector(".brand h1") && (document.querySelector(".brand h1").textContent = BUILD_VERSION_V134); } catch {}
       v134EnsureStatsUi();
       v134LoadSupportTickets().then(() => { try { renderAdminUsers(); } catch {} }).catch(()=>{});
       setTimeout(() => { try { v134EnsureStatsUi(); renderAdminUsers(); } catch {} }, 500);
       setTimeout(() => { try { v134EnsureStatsUi(); renderAdminUsers(); } catch {} }, 1500);
       if (navigator.onLine) setTimeout(() => v134SyncSupportQueue().catch(()=>{}), 2500);
+    })();
+
+
+    /* v135: performans/test temizliği + Mesaha dosyası indirirken özet veri gönderimi */
+    (function(){
+      const BUILD_VERSION_V135 = "Mesaha İO v1.64";
+      const FILE_VERSION_V135 = "v135";
+      const EXPORT_QUEUE_KEY_V135 = "mesaha_export_stats_queue_v135";
+      const RECORD_RENDER_LIMIT_KEY_V135 = "mesaha_record_render_limit_v135";
+      const DEFAULT_RECORD_LIMIT_V135 = 150;
+
+      function v135Esc(value){
+        try { return escapeHtml(value); } catch {}
+        return String(value ?? "").replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[ch]));
+      }
+      function v135Clean(value){
+        try { return cleanUserText(value); } catch {}
+        return String(value || "").trim();
+      }
+      function v135Num(value){
+        const n = Number(String(value ?? "").replace(",", "."));
+        return Number.isFinite(n) ? n : 0;
+      }
+      function v135IntText(value){ return (Number(value) || 0).toLocaleString("tr-TR"); }
+      function v135M3Text(value){ return (Number(value) || 0).toLocaleString("tr-TR", { minimumFractionDigits:3, maximumFractionDigits:3 }) + " m³"; }
+      function v135Today(){
+        try { return todayISO(); } catch { return new Date().toISOString().slice(0,10); }
+      }
+      function v135WeekStartISO(){
+        const d = new Date();
+        const day = (d.getDay() + 6) % 7;
+        d.setDate(d.getDate() - day);
+        return d.toISOString().slice(0,10);
+      }
+      function v135User(){
+        try {
+          const u = (state && state.activeUser) || (typeof findActiveUser === "function" ? findActiveUser() : null) || {};
+          return { name:v135Clean(u.name), seflik:v135Clean(u.seflik), deviceId:(u.deviceId || getOrCreateDeviceId()) };
+        } catch { return { name:"", seflik:"", deviceId:"" }; }
+      }
+      function v135UserKey(user){
+        try { return firebaseUserKey(user.name, user.seflik); } catch {}
+        return `${user.name || ""}_${user.seflik || ""}`.toLowerCase().replace(/[^a-z0-9_-]+/g, "_") || "bos";
+      }
+      function v135RecordDate(r){
+        try {
+          const raw = String((r && (r.productionDate || r.date || r.createdAtIso)) || "").slice(0,10);
+          if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) return raw;
+          if (r && r.uretimTarihi && typeof trDateToISO === "function") return trDateToISO(r.uretimTarihi) || "";
+        } catch {}
+        return "";
+      }
+      function v135Qty(r){ return Math.max(0, v135Num(r && (r.quantity ?? r.adet ?? r.count)) || 1); }
+      function v135M3(r){
+        if (!r) return 0;
+        const desi = v135Num(r.desi);
+        if (desi > 0) return desi / 1000;
+        const hacim = v135Num(String(r.hacim ?? r.volume ?? "").replace(/[^0-9.,-]/g, ""));
+        if (hacim > 0) return hacim;
+        try {
+          const d = v135Num(r.diameter ?? r.cap ?? 0);
+          const l = v135Num(r.length ?? r.boy ?? 0);
+          const q = v135Qty(r) || 1;
+          if (typeof calculateDesi === "function") return (Number(calculateDesi(d, l, q)) || 0) / 1000;
+        } catch {}
+        return 0;
+      }
+      function v135TreeName(r){
+        const raw = String((r && (r.treeType || r.species || r.agacAdi || r.agac)) || "").trim();
+        if (!raw) return "Bilinmiyor";
+        try { return (typeof getTreeInfo === "function" ? getTreeInfo(raw).agacAdi : raw) || raw; } catch { return raw; }
+      }
+      function v135ProductName(r){
+        const raw = String((r && (r.productType || r.odunAdi || r.odun || r.product)) || "").trim();
+        if (!raw) return "Bilinmiyor";
+        try { if (typeof PRODUCT_MAP !== "undefined" && PRODUCT_MAP[raw]) return PRODUCT_MAP[raw].odunAdi || raw; } catch {}
+        try { if (typeof productDisplayName === "function") return productDisplayName(raw) || raw; } catch {}
+        return raw;
+      }
+      function v135AddTotal(map, name, adet, m3){
+        const key = String(name || "Bilinmiyor").trim() || "Bilinmiyor";
+        const row = map.get(key) || { name:key, adet:0, m3:0 };
+        row.adet += Number(adet) || 0;
+        row.m3 += Number(m3) || 0;
+        map.set(key, row);
+      }
+      function v135Sorted(map){
+        return Array.from(map.values()).sort((a,b) => ((b.m3 || 0) - (a.m3 || 0)) || ((b.adet || 0) - (a.adet || 0)) || String(a.name).localeCompare(String(b.name), "tr"));
+      }
+      function v135SummarizeRecords(records, period){
+        const today = v135Today();
+        const weekStart = v135WeekStartISO();
+        const treeMap = new Map(), productMap = new Map();
+        let recordCount = 0, adet = 0, m3 = 0;
+        (Array.isArray(records) ? records : []).forEach(r => {
+          const date = v135RecordDate(r);
+          if (period === "today" && date && date !== today) return;
+          if (period === "week" && date && date < weekStart) return;
+          const q = v135Qty(r);
+          const vol = v135M3(r);
+          recordCount += 1; adet += q; m3 += vol;
+          v135AddTotal(treeMap, v135TreeName(r), q, vol);
+          v135AddTotal(productMap, v135ProductName(r), q, vol);
+        });
+        return { recordCount, adet, m3:Number(m3.toFixed(3)), trees:v135Sorted(treeMap), products:v135Sorted(productMap) };
+      }
+      function v135QueueRead(){
+        try { const data = JSON.parse(localStorage.getItem(EXPORT_QUEUE_KEY_V135) || "{}"); return data && typeof data === "object" ? data : {}; } catch { return {}; }
+      }
+      function v135QueueWrite(data){ try { localStorage.setItem(EXPORT_QUEUE_KEY_V135, JSON.stringify(data || {})); } catch {} }
+      function v135DailyLocal(){
+        try {
+          if (typeof usageGetDailyV128 === "function") return usageGetDailyV128(v135Today(), (typeof usageActiveUserV128 === "function" ? usageActiveUserV128() : v135User())).stat || {};
+        } catch {}
+        return {};
+      }
+      function v135BuildExportPayload(kind){
+        const user = v135User();
+        const userKey = v135UserKey(user);
+        const deviceId = user.deviceId || (typeof getOrCreateDeviceId === "function" ? getOrCreateDeviceId() : "cihaz");
+        const date = v135Today();
+        const docId = (typeof usageDocIdV128 === "function") ? usageDocIdV128(date, userKey, deviceId) : `usage_${date}_${userKey}_${deviceId}`.replace(/[^a-zA-Z0-9_-]+/g,"_").slice(0,180);
+        const daily = v135DailyLocal();
+        const summaryAll = v135SummarizeRecords(state.records || [], "all");
+        const summaryToday = v135SummarizeRecords(state.records || [], "today");
+        const summaryWeek = v135SummarizeRecords(state.records || [], "week");
+        const now = Date.now();
+        const nowText = (typeof firebaseDateText === "function") ? firebaseDateText() : new Date().toLocaleString("tr-TR");
+        return {
+          id: docId,
+          date,
+          userKey,
+          name: user.name,
+          seflik: user.seflik,
+          deviceId,
+          type: "dailyExportSummary",
+          source: "mesahaDownload",
+          exportKind: kind || "xls",
+          exportCount: (Number(daily.exportCount) || 0) + 1,
+          exportAt: nowText,
+          exportAtMs: now,
+          activeMs: Math.round(v135Num(daily.activeMs)),
+          activeMinutes: Math.round(v135Num(daily.activeMs) / 60000),
+          inputAdet: Math.round(v135Num(daily.inputAdet) || summaryToday.adet),
+          inputM3: Number((v135Num(daily.inputM3) || summaryToday.m3).toFixed(3)),
+          recordEntryCount: Math.round(v135Num(daily.recordEntryCount)),
+          recordCount: summaryAll.recordCount,
+          totalAdet: Math.round(summaryAll.adet),
+          totalM3: Number(summaryAll.m3.toFixed(3)),
+          todaySummary: summaryToday,
+          weekSummary: summaryWeek,
+          allSummary: summaryAll,
+          treeTotals: summaryAll.trees,
+          productTotals: summaryAll.products,
+          appVersion: BUILD_VERSION_V135,
+          fileVersion: FILE_VERSION_V135,
+          createdAt: daily.createdAt || nowText,
+          createdAtMs: Number(daily.createdAtMs || now),
+          updatedAt: nowText,
+          updatedAtMs: now,
+          queuedAtMs: now
+        };
+      }
+      function v135QueueExportSummary(kind){
+        try {
+          if (!state.records || !state.records.length) return false;
+          const payload = v135BuildExportPayload(kind);
+          const q = v135QueueRead();
+          q[payload.id] = payload; // aynı gün/cihaz/kullanıcı için son özet kalsın, yığılma olmasın
+          v135QueueWrite(q);
+          setTimeout(() => v135FlushExportQueue(true), 600);
+          return true;
+        } catch (err) { return false; }
+      }
+      async function v135FlushExportQueue(silent){
+        if (!navigator.onLine) return false;
+        const q = v135QueueRead();
+        const ids = Object.keys(q);
+        if (!ids.length) return false;
+        const { db } = await ensureFirebaseReady();
+        let sent = 0;
+        for (const id of ids) {
+          const payload = q[id];
+          if (!payload || !payload.userKey) { delete q[id]; continue; }
+          payload.updatedAt = (typeof firebaseDateText === "function") ? firebaseDateText() : new Date().toLocaleString("tr-TR");
+          payload.updatedAtMs = Date.now();
+          await db.collection(typeof FIREBASE_USAGE_COLLECTION !== "undefined" ? FIREBASE_USAGE_COLLECTION : "usageStats").doc(id).set(payload, { merge:true });
+          await db.collection(typeof FIREBASE_USERS_COLLECTION !== "undefined" ? FIREBASE_USERS_COLLECTION : "users").doc(payload.userKey).set({
+            userKey: payload.userKey,
+            name: payload.name,
+            seflik: payload.seflik,
+            appVersion: BUILD_VERSION_V135,
+            fileVersion: FILE_VERSION_V135,
+            recordCount: payload.recordCount,
+            todayUsage: {
+              date: payload.date,
+              activeMs: payload.activeMs,
+              activeMinutes: payload.activeMinutes,
+              inputAdet: payload.inputAdet,
+              inputM3: payload.inputM3,
+              recordEntryCount: payload.recordEntryCount,
+              updatedAt: payload.updatedAt,
+              updatedAtMs: payload.updatedAtMs
+            },
+            lastUsageAt: payload.updatedAt,
+            lastUsageMs: payload.updatedAtMs,
+            lastExportAt: payload.exportAt,
+            lastExportAtMs: payload.exportAtMs,
+            lastExportSummary: {
+              recordCount: payload.recordCount,
+              totalAdet: payload.totalAdet,
+              totalM3: payload.totalM3,
+              exportKind: payload.exportKind,
+              exportAt: payload.exportAt,
+              exportAtMs: payload.exportAtMs
+            }
+          }, { merge:true });
+          delete q[id];
+          sent++;
+        }
+        v135QueueWrite(q);
+        if (sent && !silent && typeof showToast === "function") showToast(`${sent} kullanım özeti gönderildi.`);
+        return !!sent;
+      }
+      window.v135FlushExportQueue = v135FlushExportQueue;
+      window.addEventListener("online", () => setTimeout(() => v135FlushExportQueue(true).catch(() => {}), 1200));
+
+      // v128 günlük kullanım sistemi cihazda çalışsın; Firebase'e sürekli yazmasın. Mesaha dosyası indirirken gönderilecek.
+      try {
+        const oldSchedule = typeof usageScheduleSyncV128 === "function" ? usageScheduleSyncV128 : null;
+        usageScheduleSyncV128 = function(delay){
+          if (delay === "force" || delay === true) return v135FlushExportQueue(true).catch(() => {});
+          return false;
+        };
+        const oldSync = typeof usageSyncNowV128 === "function" ? usageSyncNowV128 : null;
+        usageSyncNowV128 = async function(){ return v135FlushExportQueue(true); };
+        const oldRecordEntry = typeof usageRecordEntryV128 === "function" ? usageRecordEntryV128 : null;
+        if (oldRecordEntry) {
+          usageRecordEntryV128 = function(record){
+            try {
+              const user = (typeof usageActiveUserV128 === "function") ? usageActiveUserV128() : v135User();
+              const got = usageGetDailyV128(v135Today(), user);
+              const qty = Math.max(0, v135Num(record && record.quantity) || 1);
+              const desi = Math.max(0, v135Num(record && record.desi));
+              got.stat.inputAdet = v135Num(got.stat.inputAdet) + qty;
+              got.stat.inputM3 = Number((v135Num(got.stat.inputM3) + (desi / 1000)).toFixed(3));
+              got.stat.recordEntryCount = v135Num(got.stat.recordEntryCount) + 1;
+              got.stat.appVersion = BUILD_VERSION_V135;
+              got.stat.fileVersion = FILE_VERSION_V135;
+              got.stat.recordCount = Array.isArray(state.records) ? state.records.length : 0;
+              got.stat.updatedAt = (typeof firebaseDateText === "function") ? firebaseDateText() : new Date().toLocaleString("tr-TR");
+              got.stat.updatedAtMs = Date.now();
+              usageSaveStoreV128(got.store);
+            } catch { try { oldRecordEntry(record); } catch {} }
+          };
+        }
+        const oldAddActive = typeof usageAddActiveMsV128 === "function" ? usageAddActiveMsV128 : null;
+        if (oldAddActive) {
+          usageAddActiveMsV128 = function(ms){
+            try {
+              const add = Math.max(0, Math.min(Number(ms) || 0, 60000));
+              if (add < 1000) return;
+              const got = usageGetDailyV128(v135Today(), (typeof usageActiveUserV128 === "function" ? usageActiveUserV128() : v135User()));
+              got.stat.activeMs = v135Num(got.stat.activeMs) + add;
+              got.stat.appVersion = BUILD_VERSION_V135;
+              got.stat.fileVersion = FILE_VERSION_V135;
+              got.stat.recordCount = Array.isArray(state.records) ? state.records.length : 0;
+              got.stat.updatedAt = (typeof firebaseDateText === "function") ? firebaseDateText() : new Date().toLocaleString("tr-TR");
+              got.stat.updatedAtMs = Date.now();
+              usageSaveStoreV128(got.store);
+            } catch { try { oldAddActive(ms); } catch {} }
+          };
+        }
+      } catch {}
+
+      // Mesaha Dosyasını İndir butonu: indirme hızlı kalsın, özet veri sıraya alınsın ve internet varsa arka planda gitsin.
+      function v135BindExportButton(){
+        const btn = document.getElementById("exportSystemXlsBtn");
+        if (!btn || btn.__v135Bound) return;
+        const clone = btn.cloneNode(true);
+        clone.__v135Bound = true;
+        btn.parentNode.replaceChild(clone, btn);
+        try { if (typeof els !== "undefined") els.exportSystemXlsBtn = clone; } catch {}
+        clone.addEventListener("click", function(event){
+          event.preventDefault();
+          event.stopPropagation();
+          try {
+            if (typeof exportSystemXls === "function") exportSystemXls();
+            v135QueueExportSummary("xls");
+          } catch (err) {
+            if (typeof showToast === "function") showToast(err && err.message ? err.message : "Dosya indirilemedi.");
+          }
+        });
+      }
+
+      // Kayıtlar sekmesi performansı: ana ekranda gereksiz liste çizme yok; kayıtlar sekmesinde ilk 150, istenirse devamı.
+      let v135RecordsLimit = Number(localStorage.getItem(RECORD_RENDER_LIMIT_KEY_V135) || DEFAULT_RECORD_LIMIT_V135) || DEFAULT_RECORD_LIMIT_V135;
+      function v135ProductShort(product){
+        const key = (typeof normalizeProductType === "function") ? normalizeProductType(product || "Tomruk") : String(product || "Tomruk");
+        if (key === "Maden Direk") return "MDN";
+        if (key === "Kağıtlık") return "KGT";
+        if (key === "Sanayi Odunu") return "SNY";
+        if (key === "Tel Direk") return "TEL";
+        return "TMRK";
+      }
+      function v135TreeShort(tree){
+        try { return treeShortV111(tree); } catch {}
+        return String(tree || "").slice(0,2).toUpperCase();
+      }
+      function v135ProductClass(product){
+        try { return productClassV111(product); } catch {}
+        const key = String(product || "").toLowerCase();
+        if (key.includes("maden")) return "maden";
+        if (key.includes("kağ") || key.includes("kag")) return "kagit";
+        if (key.includes("sanayi")) return "sanayi";
+        if (key.includes("tel")) return "tel";
+        return "tomruk";
+      }
+      function v135GetRecords(){
+        try { return getFilteredRecordsV111(); } catch {}
+        try { return state.records || []; } catch { return []; }
+      }
+      function v135RenderMobileRecords(force){
+        const wrap = document.getElementById("mobileRecordsV111");
+        if (!wrap) return;
+        if (!document.body.classList.contains("show-records") && !force) return;
+        const list = v135GetRecords();
+        if (!state.selectedRecordIds) state.selectedRecordIds = new Set();
+        if (!list.length) {
+          wrap.innerHTML = `<div class="empty">Kayıt yok.</div>`;
+          try { if (typeof updateBulkActions === "function") updateBulkActions(list); } catch {}
+          return;
+        }
+        const shown = list.slice(0, Math.max(DEFAULT_RECORD_LIMIT_V135, v135RecordsLimit));
+        const html = shown.map((r) => {
+          const product = (typeof normalizeProductType === "function") ? normalizeProductType(r.productType || r.woodType || r.odunAdi || "Tomruk") : (r.productType || "Tomruk");
+          const cls = v135ProductClass(product);
+          const tree = r.treeType || r.agacAdi || "Karaçam";
+          const id = String(r.id || "");
+          const checked = state.selectedRecordIds.has(id);
+          const barcode = r.barcode || r.barkodNo || "-";
+          const length = r.length || r.boy || "-";
+          const diameter = r.diameter || r.cap || "-";
+          return `
+            <div class="record-row-v111 ${cls} ${checked ? "selected" : ""}" data-v111-row="${v135Esc(id)}">
+              <label class="record-select-v111" title="Seç">
+                <input type="checkbox" data-v111-select="${v135Esc(id)}" ${checked ? "checked" : ""} />
+              </label>
+              <div class="record-main-v111">
+                <b>${v135Esc(barcode)}</b>
+                <div class="record-tags-v111">
+                  <span class="mini-tag-v111 ${cls}" title="${v135Esc(product)}">${v135Esc(v135ProductShort(product))}</span>
+                  <span class="mini-tag-v111 tree" title="${v135Esc(tree)}">${v135Esc(v135TreeShort(tree))}</span>
+                </div>
+              </div>
+              <div class="record-values-v111">
+                <div class="record-val-v111"><small>Ç</small><strong>${v135Esc(String(diameter))}</strong></div>
+                <div class="record-val-v111"><small>B</small><strong>${v135Esc(String(length))}</strong></div>
+              </div>
+              <div class="record-actions-v111">
+                <button type="button" class="record-edit-v111" data-v111-edit="${v135Esc(id)}">Düz</button>
+                <button type="button" class="record-delete-v111" data-v111-delete="${v135Esc(id)}">Sil</button>
+              </div>
+            </div>`;
+        }).join("");
+        const more = list.length > shown.length ? `<button type="button" class="record-more-v135" id="recordMoreV135">Daha fazla göster (${v135IntText(list.length - shown.length)})</button>` : "";
+        wrap.innerHTML = html + more;
+        const moreBtn = document.getElementById("recordMoreV135");
+        if (moreBtn) moreBtn.addEventListener("click", () => {
+          v135RecordsLimit += 150;
+          try { localStorage.setItem(RECORD_RENDER_LIMIT_KEY_V135, String(v135RecordsLimit)); } catch {}
+          v135RenderMobileRecords(true);
+        });
+        try { if (typeof updateBulkActions === "function") updateBulkActions(list); } catch {}
+      }
+      try { renderMobileRecordsV111 = v135RenderMobileRecords; } catch {}
+
+      // Admin istatistik: önce Mesaha dosyası indirme özetleri, yoksa Firebase yedekleri.
+      async function v135LoadExportSummaryStats(period){
+        const { db } = await ensureFirebaseReady();
+        const coll = typeof FIREBASE_USAGE_COLLECTION !== "undefined" ? FIREBASE_USAGE_COLLECTION : "usageStats";
+        let snap;
+        try { snap = await db.collection(coll).where("type", "==", "dailyExportSummary").get(); }
+        catch { snap = await db.collection(coll).get(); }
+        const latestByUser = new Map();
+        snap.forEach(doc => {
+          try {
+            const d = doc.data() || {};
+            if (d.type && d.type !== "dailyExportSummary") return;
+            if (!d.allSummary && !d.treeTotals && !d.productTotals) return;
+            const key = d.userKey || v135UserKey({ name:d.name, seflik:d.seflik });
+            const ms = Number(d.exportAtMs || d.updatedAtMs || 0);
+            const old = latestByUser.get(key);
+            if (!old || ms >= old.ms) latestByUser.set(key, { ms, data:d });
+          } catch {}
+        });
+        const treeMap = new Map(), productMap = new Map();
+        let users = 0, recordCount = 0, adet = 0, m3 = 0;
+        latestByUser.forEach(item => {
+          users += 1;
+          const d = item.data || {};
+          const summary = period === "today" ? d.todaySummary : (period === "week" ? d.weekSummary : d.allSummary);
+          const trees = (summary && summary.trees) || (period === "all" ? d.treeTotals : [] ) || [];
+          const products = (summary && summary.products) || (period === "all" ? d.productTotals : [] ) || [];
+          recordCount += Number((summary && summary.recordCount) || (period === "all" ? d.recordCount : 0)) || 0;
+          adet += Number((summary && summary.adet) || (period === "all" ? d.totalAdet : 0)) || 0;
+          m3 += Number((summary && summary.m3) || (period === "all" ? d.totalM3 : 0)) || 0;
+          (trees || []).forEach(r => v135AddTotal(treeMap, r.name, r.adet, r.m3));
+          (products || []).forEach(r => v135AddTotal(productMap, r.name, r.adet, r.m3));
+        });
+        return { users, recordCount, adet, m3, trees:v135Sorted(treeMap), products:v135Sorted(productMap), period, source:"downloadSummary", loadedAt:new Date().toLocaleString("tr-TR") };
+      }
+      async function v135LoadBackupStatsFallback(period){
+        const { db } = await ensureFirebaseReady();
+        const snap = await db.collection(typeof FIREBASE_BACKUPS_COLLECTION !== "undefined" ? FIREBASE_BACKUPS_COLLECTION : "backups").get();
+        const latestByUser = new Map();
+        snap.forEach(doc => {
+          try {
+            const d = doc.data() || {};
+            let payload = d.payload || null;
+            if (!payload && d.payloadText) payload = JSON.parse(d.payloadText);
+            if (!payload || !Array.isArray(payload.records) || !payload.records.length) return;
+            const key = d.userKey || v135UserKey({ name:d.name || (payload.user && payload.user.name), seflik:d.seflik || (payload.user && payload.user.seflik) }) || doc.id;
+            const ms = Number(d.createdAtMs || 0) || Date.parse(d.createdAtIso || "") || 0;
+            const old = latestByUser.get(key);
+            if (!old || ms >= old.ms) latestByUser.set(key, { ms, payload });
+          } catch {}
+        });
+        const records = [];
+        latestByUser.forEach(item => records.push(...(item.payload.records || [])));
+        const s = v135SummarizeRecords(records, period);
+        return { users:latestByUser.size, recordCount:s.recordCount, adet:s.adet, m3:s.m3, trees:s.trees, products:s.products, period, source:"backupFallback", loadedAt:new Date().toLocaleString("tr-TR") };
+      }
+      async function v135LoadAdminStats(period){
+        const p = period === "today" || period === "week" ? period : "all";
+        let stats = await v135LoadExportSummaryStats(p);
+        if (!stats.recordCount && !stats.trees.length && !stats.products.length) stats = await v135LoadBackupStatsFallback(p);
+        return stats;
+      }
+      function v135Rows(rows, type){
+        if (!rows || !rows.length) return `<div class="admin-stats-empty-v132">Veri bulunamadı.</div>`;
+        return rows.map(row => `<div class="admin-stat-row-v132"><div class="admin-stat-name-v132">${v135Esc(row.name)}</div><div class="admin-stat-val-v132">${v135IntText(row.adet)} adet</div><div class="admin-stat-val-v132">${v135M3Text(row.m3)}</div></div>`).join("");
+      }
+      function v135StatsPanel(){
+        let panel = document.getElementById("adminStatsPanelV132");
+        if (!panel) {
+          const summary = document.querySelector(".admin-summary-grid-clean") || document.querySelector(".admin-panel-top-clean");
+          if (summary) {
+            panel = document.createElement("div");
+            panel.id = "adminStatsPanelV132";
+            panel.className = "admin-stats-panel-v132";
+            summary.insertAdjacentElement("afterend", panel);
+          }
+        }
+        return panel;
+      }
+      function v135RenderStats(stats, message){
+        const panel = v135StatsPanel();
+        if (!panel) return;
+        if (message) { panel.innerHTML = `<div class="admin-stats-empty-v132">${v135Esc(message)}</div>`; return; }
+        const topTree = (stats.trees || [])[0] || { name:"-", adet:0, m3:0 };
+        const topProduct = (stats.products || [])[0] || { name:"-", adet:0, m3:0 };
+        const period = stats.period || window.adminStatsPeriodV134 || "all";
+        const label = period === "today" ? "Bugün" : (period === "week" ? "Bu Hafta" : "Tüm Zamanlar");
+        const sourceText = stats.source === "downloadSummary" ? "Mesaha dosyası indirme özetleri" : "Firebase yedekleri";
+        panel.innerHTML = `
+          <div class="admin-stats-head-v132">
+            <div>
+              <b>Toplu İstatistik</b>
+              <span>Dönem: ${v135Esc(label)} • Kaynak: ${v135Esc(sourceText)} • Son yenileme: ${v135Esc(stats.loadedAt || "-")}</span>
+              <div class="admin-stats-period-v134">
+                <button type="button" class="${period === "today" ? "active" : ""}" onclick="adminSetStatsPeriodV134('today')">Bugün</button>
+                <button type="button" class="${period === "week" ? "active" : ""}" onclick="adminSetStatsPeriodV134('week')">Bu Hafta</button>
+                <button type="button" class="${period === "all" ? "active" : ""}" onclick="adminSetStatsPeriodV134('all')">Tüm Zamanlar</button>
+              </div>
+              <div class="admin-stats-note-v134">Yeni sistemde kullanıcı Mesaha Dosyasını İndir dediğinde özet veri gönderilir; internet yoksa bağlantı gelince otomatik aktarılır.</div>
+            </div>
+            <button type="button" class="secondary" onclick="adminRefreshStatsV132()">Yenile</button>
+          </div>
+          <div class="admin-stats-cards-v132">
+            <div class="admin-stat-top-card-v132"><span>En fazla ağaç türü</span><b>${v135Esc(topTree.name)}</b><small>${v135IntText(topTree.adet)} adet • ${v135M3Text(topTree.m3)}</small></div>
+            <div class="admin-stat-top-card-v132"><span>En fazla odun türü</span><b>${v135Esc(topProduct.name)}</b><small>${v135IntText(topProduct.adet)} adet • ${v135M3Text(topProduct.m3)}</small></div>
+            <div class="admin-stat-top-card-v132"><span>Kapsam</span><b>${v135IntText(stats.users)} kullanıcı</b><small>${v135IntText(stats.recordCount)} kayıt</small></div>
+            <div class="admin-stat-top-card-v132"><span>Toplam</span><b>${v135IntText(stats.adet)} adet</b><small>${v135M3Text(stats.m3)}</small></div>
+          </div>
+          <div class="admin-stats-columns-v132">
+            <div class="admin-stats-section-v132"><h4>Ağaç türleri</h4>${v135Rows(stats.trees, "tree")}</div>
+            <div class="admin-stats-section-v132"><h4>Odun türleri</h4>${v135Rows(stats.products, "product")}</div>
+          </div>`;
+      }
+      async function v135LoadAndRenderStats(force){
+        window.adminStatsPeriodV134 = window.adminStatsPeriodV134 || "all";
+        const panel = v135StatsPanel();
+        const btn = document.getElementById("adminStatsBtnV132");
+        if (panel) panel.classList.add("open");
+        if (btn) btn.classList.add("active");
+        const period = window.adminStatsPeriodV134;
+        const cacheKey = `adminStatsV135_${period}`;
+        if (!force && state[cacheKey]) return v135RenderStats(state[cacheKey]);
+        try { if (typeof setCloudLoading === "function") setCloudLoading(true, "İstatistikler hazırlanıyor..."); } catch {}
+        v135RenderStats(null, "İstatistikler hazırlanıyor...");
+        try { state[cacheKey] = await v135LoadAdminStats(period); v135RenderStats(state[cacheKey]); }
+        catch (err) { v135RenderStats(null, "İstatistikler alınamadı. İnternet, Firebase bağlantısı veya Firestore Rules alanını kontrol et."); }
+        finally { try { if (typeof setCloudLoading === "function") setCloudLoading(false); } catch {} }
+      }
+      window.adminSetStatsPeriodV134 = function(period){ window.adminStatsPeriodV134 = (period === "today" || period === "week") ? period : "all"; v135LoadAndRenderStats(true); };
+      window.adminRefreshStatsV132 = function(){ return v135LoadAndRenderStats(true); };
+      window.adminToggleStatsV132 = function(){
+        const panel = v135StatsPanel();
+        const btn = document.getElementById("adminStatsBtnV132");
+        if (!panel) return;
+        const willOpen = !panel.classList.contains("open");
+        panel.classList.toggle("open", willOpen);
+        if (btn) btn.classList.toggle("active", willOpen);
+        if (willOpen) v135LoadAndRenderStats(false);
+      };
+
+      // Hafif CSS ekleri
+      try {
+        const style = document.createElement("style");
+        style.id = "mesaha-v135-performance-css";
+        style.textContent = `
+          .record-more-v135{width:100%;border:0;border-radius:16px;padding:12px 14px;margin:8px 0 4px;font-weight:900;background:#e5eef8;color:#0f172a;}
+          body.theme-dark .record-more-v135{background:#232a35;color:#f8fafc;border:1px solid rgba(255,255,255,.08);}
+          .admin-stats-note-v134{line-height:1.35;}
+        `;
+        document.head.appendChild(style);
+      } catch {}
+
+      const prevDeviceInfoV135 = typeof currentDeviceInfoPayload === "function" ? currentDeviceInfoPayload : null;
+      currentDeviceInfoPayload = function(){
+        const info = prevDeviceInfoV135 ? prevDeviceInfoV135() : {};
+        info.appVersion = BUILD_VERSION_V135;
+        info.fileVersion = FILE_VERSION_V135;
+        info.performanceBuild = true;
+        info.exportSummaryOnDownload = true;
+        info.updatedMs = Date.now();
+        return info;
+      };
+
+      window.MESAHA_BUILD_INFO = {
+        fileVersion: FILE_VERSION_V135,
+        visibleVersion: BUILD_VERSION_V135,
+        stableBuild: true,
+        performanceBuild: true,
+        exportSummaryOnDownload: true,
+        usageSyncMode: "onMesahaDownload"
+      };
+      try { document.title = "Mesaha App v135"; } catch {}
+      try { const h1 = document.querySelector(".brand h1"); if (h1) h1.textContent = BUILD_VERSION_V135; } catch {}
+      setTimeout(v135BindExportButton, 80);
+      setTimeout(v135BindExportButton, 800);
+      setTimeout(() => v135FlushExportQueue(true).catch(() => {}), 1800);
     })();
 </script>
 </body>
