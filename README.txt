@@ -19,6 +19,3 @@ Firebase'de yapılacaklar:
 
 Apps Script:
 - Zorunlu değişiklik yoktur. Eski sistem fallback olarak kalır.
-
-Eski Apps Script URL:
-https://script.google.com/macros/s/AKfycbzv8rw3n4FuwDmiFnW3ttKuoK0mUQnzEYizjaD46z0uuFiKtqLl1zkupkB9AkOehC7ECg/exec
