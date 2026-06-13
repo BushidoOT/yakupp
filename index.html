@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha App v99</title>
+  <title>Mesaha App v100</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -5039,6 +5039,53 @@
       border-color:#ef4444 !important;
     }
 
+  
+    /* v100: Sade Mod akıcılık ve hata sonrası alan seçimi */
+    .simple-mode-card{
+      scroll-behavior:smooth;
+      overscroll-behavior:contain;
+    }
+
+    .simple-product-btn,
+    .simple-chip-btn,
+    .simple-save-btn{
+      -webkit-tap-highlight-color:transparent;
+      touch-action:manipulation;
+    }
+
+    .simple-product-btn,
+    .simple-chip-btn{
+      transition:transform .08s ease, box-shadow .12s ease, border-color .12s ease;
+    }
+
+    .simple-product-btn:active,
+    .simple-chip-btn:active{
+      transform:scale(.985);
+    }
+
+    .simple-save-btn{
+      position:relative !important;
+      bottom:auto !important;
+      top:auto !important;
+      z-index:1 !important;
+      margin:10px 0 8px !important;
+    }
+
+    .simple-mode-card.keyboard-open .simple-save-btn{
+      position:relative !important;
+      bottom:auto !important;
+    }
+
+    .simple-field-attention{
+      border-color:#ef4444 !important;
+      box-shadow:0 0 0 4px rgba(239,68,68,.20) !important;
+    }
+
+    body.theme-dark .simple-field-attention{
+      border-color:#fb7185 !important;
+      box-shadow:0 0 0 4px rgba(251,113,133,.22) !important;
+    }
+
   </style>
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -5209,7 +5256,7 @@
 <div class="app">
     <header class="topbar">
       <div class="brand">
-        <h1>Mesaha İO v1.28</h1>
+        <h1>Mesaha İO v1.29</h1>
         
       </div>
       <div id="activeUserBadge" class="active-user-badge" role="button" tabindex="0" title="Kullanıcı panelini aç" style="display:none"></div>
@@ -6662,8 +6709,8 @@
     function currentDeviceInfoPayload() {
       const active = state.activeUser || findActiveUser();
       return {
-        appVersion: "Mesaha İO v1.28",
-        fileVersion: "v99",
+        appVersion: "Mesaha İO v1.29",
+        fileVersion: "v100",
         userName: active && active.name ? cleanUserText(active.name) : "",
         seflik: active && active.seflik ? cleanUserText(active.seflik) : "",
         deviceId: getOrCreateDeviceId(),
@@ -7404,7 +7451,7 @@
 
     async function uploadCloudBackupOpen(user) {
       const payload = buildCloudBackupPayload(user);
-      payload.version = 99;
+      payload.version = 100;
       const bolmePart = els.bolmeNo && String(els.bolmeNo.value || "").trim() ? `_${cleanFilePart(els.bolmeNo.value)}` : "";
       const fileName = `Mesaha_Yedek_${cleanFilePart(user.seflik)}_${cleanFilePart(user.name)}${bolmePart}_${new Date().toISOString().slice(0,19).replace(/[-:T]/g, "")}.json`;
 
@@ -7833,7 +7880,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function buildCloudBackupPayload(user) {
       return {
         app: "Mesaha İO",
-        version: 99,
+        version: 100,
         createdAt: new Date().toLocaleString("tr-TR"),
         user: {
           name: user.name || "",
@@ -9835,7 +9882,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function backup() {
       const data = {
         app: "Mesaha App",
-        version: 99,
+        version: 100,
         exportedAt: formatDateTime(),
         systemHeaders: HEADERS,
         settings: state.settings,
@@ -10252,7 +10299,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     async function firebaseUploadBackup(user) {
       const { db } = await ensureFirebaseReady();
       const payload = buildCloudBackupPayload(user);
-      payload.version = 99;
+      payload.version = 100;
       payload.cloud = "firebase";
 
       const bolmeNo = els.bolmeNo ? String(els.bolmeNo.value || "").trim() : "";
@@ -11676,6 +11723,207 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     }
 
 
+    
+    /* v100: hata sonrası klavye kapanmadan doğru alanı seç */
+    function simpleModeIsOpenV100() {
+      return !!(els.simpleModeOverlay && els.simpleModeOverlay.classList.contains("show"));
+    }
+
+    function selectAndKeepKeyboardV100(input, attempts = [0, 35, 95, 180, 320]) {
+      if (!input) return;
+
+      const run = () => {
+        try {
+          input.focus({ preventScroll:true });
+          input.select();
+          input.classList.add("simple-field-attention");
+          setTimeout(() => input.classList.remove("simple-field-attention"), 650);
+        } catch {
+          try {
+            input.focus();
+            input.select();
+          } catch {}
+        }
+      };
+
+      run();
+      attempts.forEach(ms => setTimeout(run, ms));
+    }
+
+    function invalidTargetFromMessageV100(message) {
+      const text = String(message || "").toLowerCase("tr-TR");
+      const simpleOpen = simpleModeIsOpenV100();
+
+      if (text.includes("boy")) {
+        return simpleOpen ? els.simpleLength : els.length;
+      }
+
+      if (
+        text.includes("çap") ||
+        text.includes("cap") ||
+        text.includes("tomruk") ||
+        text.includes("maden") ||
+        text.includes("sanayi") ||
+        text.includes("tel")
+      ) {
+        return simpleOpen ? els.simpleDiameter : els.diameter;
+      }
+
+      if (text.includes("barkod")) {
+        return els.barcode || document.getElementById("barcode");
+      }
+
+      return simpleOpen ? els.simpleDiameter : els.diameter;
+    }
+
+    function focusInvalidFromMessageV100(message) {
+      const target = invalidTargetFromMessageV100(message);
+      selectAndKeepKeyboardV100(target);
+    }
+
+    function messageLooksInvalidV100(message) {
+      const text = String(message || "").toLowerCase("tr-TR");
+      return (
+        text.includes("olmaz") ||
+        text.includes("olmalı") ||
+        text.includes("gir") ||
+        text.includes("geçersiz") ||
+        text.includes("daha önce") ||
+        text.includes("küçük") ||
+        text.includes("büyük") ||
+        text.includes("arasında")
+      );
+    }
+
+    // Ana fonksiyonun yönünü Sade Mod açıkken simple çap alanına çevir.
+    if (typeof focusDiameterKeepKeyboard === "function" && !focusDiameterKeepKeyboard.__v100Wrapped) {
+      const focusDiameterKeepKeyboardOriginalV100 = focusDiameterKeepKeyboard;
+      focusDiameterKeepKeyboard = function() {
+        if (simpleModeIsOpenV100() && els.simpleDiameter) {
+          selectAndKeepKeyboardV100(els.simpleDiameter);
+          return;
+        }
+        try {
+          focusDiameterKeepKeyboardOriginalV100();
+        } catch {
+          selectAndKeepKeyboardV100(els.diameter);
+        }
+      };
+      focusDiameterKeepKeyboard.__v100Wrapped = true;
+    }
+
+    // showErrorToast direkt kullanıldığı için burada sarıyoruz.
+    if (typeof showErrorToast === "function" && !showErrorToast.__v100FocusWrapped) {
+      const showErrorToastOriginalV100 = showErrorToast;
+      showErrorToast = function(message, ...rest) {
+        const result = showErrorToastOriginalV100.call(this, message, ...rest);
+        if (messageLooksInvalidV100(message)) {
+          focusInvalidFromMessageV100(message);
+        }
+        return result;
+      };
+      showErrorToast.__v100FocusWrapped = true;
+    }
+
+    // showToast üzerinden gelen hata/uyarılar için de yedek.
+    if (typeof showToast === "function" && !showToast.__v100FocusWrapped) {
+      const showToastOriginalV100 = showToast;
+      showToast = function(message, ...rest) {
+        const result = showToastOriginalV100.call(this, message, ...rest);
+        if (messageLooksInvalidV100(message)) {
+          focusInvalidFromMessageV100(message);
+        }
+        return result;
+      };
+      showToast.__v100FocusWrapped = true;
+    }
+
+    // Sade Mod Kaydet dokunuşunda iOS'un inputu blur yapmasını engelle.
+    function attachSimpleSavePointerV100() {
+      if (!els.simpleSaveBtn || els.simpleSaveBtn.__v100PointerFixed) return;
+      els.simpleSaveBtn.__v100PointerFixed = true;
+
+      els.simpleSaveBtn.addEventListener("pointerdown", (event) => {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+
+        const beforeActive = document.activeElement;
+        const activeInput = beforeActive === els.simpleLength || beforeActive === els.simpleDiameter
+          ? beforeActive
+          : (els.simpleDiameter || els.simpleLength);
+
+        if (typeof simpleSaveRecordV93 === "function") {
+          simpleSaveRecordV93();
+        } else if (typeof simpleSaveRecordV92 === "function") {
+          simpleSaveRecordV92();
+        }
+
+        setTimeout(() => {
+          // Başarılı kayıtta çap temizlenir ve çap alanı seçili kalır;
+          // hata durumunda showErrorToast zaten doğru alanı seçer.
+          if (simpleModeIsOpenV100()) {
+            const target = (els.simpleDiameter && String(els.simpleDiameter.value || "").trim())
+              ? els.simpleDiameter
+              : (activeInput || els.simpleDiameter);
+            if (target) {
+              try { target.focus({ preventScroll:true }); } catch {}
+            }
+          }
+        }, 60);
+      }, true);
+
+      els.simpleSaveBtn.addEventListener("click", (event) => {
+        // pointerdown ile kayıt tetiklendiği için click tekrar çalışmasın.
+        event.preventDefault();
+        event.stopImmediatePropagation();
+      }, true);
+    }
+
+    // Ürün ve hızlı giriş butonları input odağını bozmasın.
+    function attachSimpleNoBlurV100() {
+      if (window.__simpleNoBlurV100) return;
+      window.__simpleNoBlurV100 = true;
+
+      document.addEventListener("pointerdown", (event) => {
+        const btn = event.target && event.target.closest
+          ? event.target.closest(".simple-product-btn, .simple-chip-btn")
+          : null;
+        if (!btn) return;
+
+        const active = document.activeElement === els.simpleLength || document.activeElement === els.simpleDiameter
+          ? document.activeElement
+          : (els.simpleDiameter || els.simpleLength);
+
+        event.preventDefault();
+
+        setTimeout(() => {
+          try {
+            if (active) active.focus({ preventScroll:true });
+          } catch {}
+        }, 10);
+      }, true);
+    }
+
+    if (typeof simpleOpenModeV93 === "function" && !simpleOpenModeV93.__v100Wrapped) {
+      const simpleOpenModeOriginalV100 = simpleOpenModeV93;
+      simpleOpenModeV93 = function(...args) {
+        const result = simpleOpenModeOriginalV100.apply(this, args);
+        attachSimpleSavePointerV100();
+        attachSimpleNoBlurV100();
+        setTimeout(() => {
+          attachSimpleSavePointerV100();
+          if (els.simpleDiameter) selectAndKeepKeyboardV100(els.simpleDiameter, [0, 80]);
+        }, 120);
+        return result;
+      };
+      simpleOpenModeV93.__v100Wrapped = true;
+      if (typeof simpleOpenModeV92 === "function") simpleOpenModeV92 = simpleOpenModeV93;
+    }
+
+    attachSimpleSavePointerV100();
+    attachSimpleNoBlurV100();
+
+
     window.forceUpdateApp = forceUpdateApp;
     window.mesahaToggleTheme = mesahaToggleTheme;
     window.simpleOpenModeV92 = simpleOpenModeV92;
@@ -11696,8 +11944,8 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     load();
   
     window.MESAHA_BUILD_INFO = {
-      fileVersion: "v99",
-      visibleVersion: "Mesaha İO v1.28",
+      fileVersion: "v100",
+      visibleVersion: "Mesaha İO v1.29",
       stableBuild: true
     };
 
