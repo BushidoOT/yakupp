@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha App v95</title>
+  <title>Mesaha App v96</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -4732,6 +4732,189 @@
       border-color:#3e526d !important;
     }
 
+  
+    /* v96: karanlık mod beyaz alan temizliği */
+    body.theme-dark .info-details,
+    body.theme-dark .info-details[open],
+    body.theme-dark .info-details > summary,
+    body.theme-dark .info-details .info-body,
+    body.theme-dark .product-compact,
+    body.theme-dark .measure-field,
+    body.theme-dark .barcode-field-final,
+    body.theme-dark .save-field-final,
+    body.theme-dark .recent-barcodes-box,
+    body.theme-dark .daily-work-summary,
+    body.theme-dark .daily-summary-item,
+    body.theme-dark .table-wrap,
+    body.theme-dark .records-panel .stat,
+    body.theme-dark .bulk-actions,
+    body.theme-dark .searchbar,
+    body.theme-dark .searchbar input,
+    body.theme-dark .btn-row button,
+    body.theme-dark .tools button,
+    body.theme-dark .wood-type-panel,
+    body.theme-dark .wood-check,
+    body.theme-dark .registered-user-meta span,
+    body.theme-dark .admin-note-item,
+    body.theme-dark .issue-mini-card,
+    body.theme-dark .usage-card,
+    body.theme-dark .undo-banner,
+    body.theme-dark .empty-user-list,
+    body.theme-dark .empty,
+    body.theme-dark .admin-detail-card,
+    body.theme-dark .admin-summary-grid-clean .admin-summary-card,
+    body.theme-dark .registered-user-actions .ghost,
+    body.theme-dark .registered-user-actions .secondary,
+    body.theme-dark .registered-user-actions .admin-user-note,
+    body.theme-dark .registered-user-actions .danger,
+    body.theme-dark .cloud-restore-card,
+    body.theme-dark .user-panel-menu,
+    body.theme-dark .simple-empty,
+    body.theme-dark .simple-auto-info,
+    body.theme-dark .simple-recent-item,
+    body.theme-dark .simple-chip-btn,
+    body.theme-dark .tree-type-panel,
+    body.theme-dark .tomruk-class-panel,
+    body.theme-dark .class-boxes,
+    body.theme-dark .class-box,
+    body.theme-dark .product-select-head,
+    body.theme-dark .save-field-final label,
+    body.theme-dark .barcode-field-final .hint,
+    body.theme-dark .rule-hint,
+    body.theme-dark .recent-note,
+    body.theme-dark .hint,
+    body.theme-dark .duplicate-warning{
+      background: linear-gradient(180deg, #16243a 0%, #101b2d 100%) !important;
+      color: #e8eef8 !important;
+      border-color: #35506e !important;
+      box-shadow: 0 10px 24px rgba(0,0,0,.18) !important;
+      opacity: 1 !important;
+    }
+
+    body.theme-dark .info-details > summary,
+    body.theme-dark .product-select-head .ghost,
+    body.theme-dark .btn-row .ghost,
+    body.theme-dark .btn-row .secondary,
+    body.theme-dark .tools .ghost,
+    body.theme-dark .tools .secondary,
+    body.theme-dark .tools .warning,
+    body.theme-dark .tools .danger,
+    body.theme-dark .bulk-buttons .ghost,
+    body.theme-dark .bulk-buttons .danger,
+    body.theme-dark .searchbar input,
+    body.theme-dark .registered-user-actions button,
+    body.theme-dark .daily-summary-item,
+    body.theme-dark .registered-user-meta span,
+    body.theme-dark .admin-note-item,
+    body.theme-dark .issue-mini-card,
+    body.theme-dark .wood-check,
+    body.theme-dark .class-box{
+      background: #1a2941 !important;
+      color: #f8fafc !important;
+      border-color: #4a6384 !important;
+    }
+
+    body.theme-dark .info-details > summary *,
+    body.theme-dark .product-compact *,
+    body.theme-dark .measure-field *,
+    body.theme-dark .barcode-field-final *,
+    body.theme-dark .save-field-final *,
+    body.theme-dark .recent-barcodes-box *,
+    body.theme-dark .daily-work-summary *,
+    body.theme-dark .bulk-actions *,
+    body.theme-dark .searchbar *,
+    body.theme-dark .table-wrap .empty,
+    body.theme-dark .usage-card *,
+    body.theme-dark .undo-banner *,
+    body.theme-dark .registered-user-item *,
+    body.theme-dark .guide-card *,
+    body.theme-dark .admin-panel *{
+      color: #e8eef8;
+    }
+
+    body.theme-dark .table-wrap table,
+    body.theme-dark .table-wrap thead,
+    body.theme-dark .table-wrap tbody,
+    body.theme-dark .table-wrap tfoot{
+      background: transparent !important;
+      color: #e8eef8 !important;
+    }
+
+    body.theme-dark .table-wrap thead th{
+      background: #12233d !important;
+      color: #f8fafc !important;
+      border-color: #35506e !important;
+    }
+
+    body.theme-dark .table-wrap tbody tr,
+    body.theme-dark .table-wrap tbody td,
+    body.theme-dark .table-wrap tbody th{
+      background: #0f1a2b !important;
+      color: #e8eef8 !important;
+      border-color: #2f4560 !important;
+    }
+
+    body.theme-dark .table-wrap tbody tr:nth-child(even) td,
+    body.theme-dark .table-wrap tbody tr:nth-child(even) th{
+      background: #122038 !important;
+    }
+
+    body.theme-dark .table-wrap tfoot td,
+    body.theme-dark .table-wrap tfoot th{
+      background: #15253c !important;
+      color: #f8fafc !important;
+      border-color: #35506e !important;
+    }
+
+    body.theme-dark .records-panel .stat small,
+    body.theme-dark .records-panel .stat .unit,
+    body.theme-dark .daily-summary-item span,
+    body.theme-dark .registered-user-meta span,
+    body.theme-dark .admin-note-item span,
+    body.theme-dark .issue-mini-card span,
+    body.theme-dark .hint,
+    body.theme-dark .recent-note,
+    body.theme-dark .rule-hint,
+    body.theme-dark .duplicate-warning{
+      color: #cbd5e1 !important;
+    }
+
+    body.theme-dark .records-panel .stat strong,
+    body.theme-dark .daily-summary-item b,
+    body.theme-dark .registered-user-item b,
+    body.theme-dark .issue-mini-card b,
+    body.theme-dark .admin-note-item b,
+    body.theme-dark .info-details > summary,
+    body.theme-dark .recent-title,
+    body.theme-dark label,
+    body.theme-dark .panel-header h2,
+    body.theme-dark .guide-card h3{
+      color: #f8fafc !important;
+    }
+
+    body.theme-dark .product-box,
+    body.theme-dark .product-box *,
+    body.theme-dark .product-box.active,
+    body.theme-dark .product-box.active *{
+      opacity: 1 !important;
+    }
+
+    body.theme-dark .registered-user-item .admin-status-pill,
+    body.theme-dark .registered-user-item .admin-source-pill,
+    body.theme-dark .registered-user-item .admin-version-pill,
+    body.theme-dark .registered-user-item .admin-device-pill{
+      color: inherit !important;
+    }
+
+    body.theme-dark .danger,
+    body.theme-dark button.danger,
+    body.theme-dark .warning,
+    body.theme-dark button.warning,
+    body.theme-dark .primary,
+    body.theme-dark button.primary{
+      color:#fff !important;
+    }
+
   </style>
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -4902,7 +5085,7 @@
 <div class="app">
     <header class="topbar">
       <div class="brand">
-        <h1>Mesaha İO v1.24</h1>
+        <h1>Mesaha İO v1.25</h1>
         
       </div>
       <div id="activeUserBadge" class="active-user-badge" role="button" tabindex="0" title="Kullanıcı panelini aç" style="display:none"></div>
@@ -6355,8 +6538,8 @@
     function currentDeviceInfoPayload() {
       const active = state.activeUser || findActiveUser();
       return {
-        appVersion: "Mesaha İO v1.24",
-        fileVersion: "v95",
+        appVersion: "Mesaha İO v1.25",
+        fileVersion: "v96",
         userName: active && active.name ? cleanUserText(active.name) : "",
         seflik: active && active.seflik ? cleanUserText(active.seflik) : "",
         deviceId: getOrCreateDeviceId(),
@@ -7097,7 +7280,7 @@
 
     async function uploadCloudBackupOpen(user) {
       const payload = buildCloudBackupPayload(user);
-      payload.version = 95;
+      payload.version = 96;
       const bolmePart = els.bolmeNo && String(els.bolmeNo.value || "").trim() ? `_${cleanFilePart(els.bolmeNo.value)}` : "";
       const fileName = `Mesaha_Yedek_${cleanFilePart(user.seflik)}_${cleanFilePart(user.name)}${bolmePart}_${new Date().toISOString().slice(0,19).replace(/[-:T]/g, "")}.json`;
 
@@ -7526,7 +7709,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function buildCloudBackupPayload(user) {
       return {
         app: "Mesaha İO",
-        version: 95,
+        version: 96,
         createdAt: new Date().toLocaleString("tr-TR"),
         user: {
           name: user.name || "",
@@ -9528,7 +9711,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function backup() {
       const data = {
         app: "Mesaha App",
-        version: 95,
+        version: 96,
         exportedAt: formatDateTime(),
         systemHeaders: HEADERS,
         settings: state.settings,
@@ -9945,7 +10128,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     async function firebaseUploadBackup(user) {
       const { db } = await ensureFirebaseReady();
       const payload = buildCloudBackupPayload(user);
-      payload.version = 95;
+      payload.version = 96;
       payload.cloud = "firebase";
 
       const bolmeNo = els.bolmeNo ? String(els.bolmeNo.value || "").trim() : "";
@@ -11001,8 +11184,8 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     load();
   
     window.MESAHA_BUILD_INFO = {
-      fileVersion: "v95",
-      visibleVersion: "Mesaha İO v1.24",
+      fileVersion: "v96",
+      visibleVersion: "Mesaha İO v1.25",
       stableBuild: true
     };
 
