@@ -7679,653 +7679,177 @@
     }
 
 
-
-    /* v123: referans görsele göre antrasit modern tema + sağlam sade mod */
+    /* v122: karanlık modda net ürün renkleri + son 3 barkod renk düzeltmesi */
     :root{
-      --v123-bg:#0b0f14;
-      --v123-panel:#10161f;
-      --v123-panel-2:#0f1722;
-      --v123-card:#131b26;
-      --v123-soft:#182233;
-      --v123-border:#243041;
-      --v123-border-2:#2d3a4e;
-      --v123-text:#f4f7fb;
-      --v123-muted:#9aa8bd;
-      --v123-blue:#3b82f6;
-      --v123-purple:#6d4cff;
-      --v123-green:#22c55e;
-      --v123-yellow:#facc15;
-      --v123-red:#ef4444;
-      --v123-violet:#8b5cf6;
+      --v122-tomruk:#facc15;
+      --v122-maden:#3b82f6;
+      --v122-kagit:#ef4444;
+      --v122-sanayi:#22c55e;
+      --v122-tel:#8b5cf6;
+      --v122-dark-card:#151922;
+      --v122-dark-line:#303744;
     }
 
-    body.theme-dark,
-    html.theme-dark{
-      background:var(--v123-bg) !important;
-      color:var(--v123-text) !important;
-    }
-
-    body.theme-dark .app{
-      background:
-        radial-gradient(circle at top center, rgba(59,130,246,.08), transparent 38%),
-        linear-gradient(180deg, #0a0f15 0%, #0b1016 100%) !important;
-      color:var(--v123-text) !important;
-    }
-
-    body.theme-dark .topbar{
-      background:linear-gradient(180deg, rgba(18,24,34,.96), rgba(13,18,27,.96)) !important;
-      border:1px solid rgba(95,117,150,.22) !important;
-      border-radius:22px !important;
-      box-shadow:0 14px 36px rgba(0,0,0,.34) !important;
-      padding:14px 16px !important;
-      gap:12px !important;
-      align-items:center !important;
-    }
-    body.theme-dark .brand h1,
-    body.theme-dark .brand-title,
-    body.theme-dark h1{
-      color:#ffffff !important;
-      font-weight:950 !important;
-      letter-spacing:-.03em !important;
-    }
-    body.theme-dark .active-user-badge{
-      background:rgba(16,22,31,.95) !important;
-      color:#e7edf7 !important;
-      border:1px solid rgba(78,215,120,.26) !important;
-      box-shadow:inset 0 0 0 1px rgba(255,255,255,.03), 0 10px 24px rgba(0,0,0,.22) !important;
-    }
-
-    body.theme-dark .top-actions-v112{
-      gap:10px !important;
-      align-items:center !important;
-    }
-    body.theme-dark .top-actions-v112 button{
-      min-height:52px !important;
-      padding:0 18px !important;
-      border-radius:18px !important;
-      font-weight:900 !important;
-      letter-spacing:-.01em !important;
-      border:1px solid rgba(105,123,148,.28) !important;
-      box-shadow:0 12px 28px rgba(0,0,0,.18) !important;
-      transition:transform .18s ease, box-shadow .18s ease, background .18s ease !important;
-    }
-    body.theme-dark .top-actions-v112 button:active{ transform:translateY(1px) scale(.99) !important; }
-    body.theme-dark #openSimpleV112{
-      background:linear-gradient(135deg, #3d84f7 0%, #6c4cff 100%) !important;
-      color:#fff !important;
-      border-color:rgba(117,137,255,.45) !important;
-    }
-    body.theme-dark #openSimpleV112.active{
-      background:linear-gradient(135deg, #263447 0%, #34465f 100%) !important;
-      color:#f4f7fb !important;
-      border-color:rgba(133,155,184,.4) !important;
-    }
-    body.theme-dark #themeToggleV112{
-      background:linear-gradient(180deg, #151c27 0%, #111824 100%) !important;
-      color:#f4f7fb !important;
-      border-color:rgba(115,133,159,.34) !important;
-    }
-
-    body.theme-dark .flow-tabs-v111{
-      background:linear-gradient(180deg, rgba(17,23,34,.96), rgba(11,16,24,.96)) !important;
-      border:1px solid rgba(88,105,128,.24) !important;
-      border-radius:22px !important;
-      padding:14px !important;
-      gap:12px !important;
-      box-shadow:0 18px 34px rgba(0,0,0,.28) !important;
-    }
-    body.theme-dark .flow-tabs-v111 button{
-      background:linear-gradient(180deg, #121924 0%, #0d141f 100%) !important;
-      color:#f4f7fb !important;
-      border:1px solid rgba(89,105,128,.24) !important;
-      border-radius:20px !important;
-      min-height:58px !important;
-      font-weight:900 !important;
-      box-shadow:inset 0 1px 0 rgba(255,255,255,.03) !important;
-    }
-    body.theme-dark .flow-tabs-v111 button.active{
-      background:linear-gradient(135deg, #2f8bf7 0%, #6e47ff 100%) !important;
-      border-color:rgba(123,153,255,.42) !important;
-      box-shadow:0 16px 30px rgba(48,104,255,.24) !important;
-      color:#fff !important;
-    }
-
-    body.theme-dark .panel,
-    body.theme-dark .entry-panel,
-    body.theme-dark .records-panel,
-    body.theme-dark .guide-panel,
-    body.theme-dark .admin-panel,
-    body.theme-dark .info-details,
-    body.theme-dark .info-body,
-    body.theme-dark .product-compact,
-    body.theme-dark .measure-field,
-    body.theme-dark .barcode-field-final,
-    body.theme-dark .save-field-final,
-    body.theme-dark .recent-barcodes-box,
-    body.theme-dark .daily-work-summary,
-    body.theme-dark .bulk-actions,
-    body.theme-dark .tools,
-    body.theme-dark .guide-card,
-    body.theme-dark .admin-panel-top-clean,
-    body.theme-dark .admin-summary-card,
-    body.theme-dark .registered-user-item,
-    body.theme-dark .record-row-v111,
-    body.theme-dark .record-val-v111,
-    body.theme-dark .mobile-records-v111,
-    body.theme-dark .usage-card,
-    body.theme-dark .searchbar,
-    body.theme-dark .wood-type-panel,
-    body.theme-dark .wood-check,
-    body.theme-dark .tomruk-class-panel{
-      background:linear-gradient(180deg, rgba(17,24,35,.98), rgba(12,17,26,.98)) !important;
-      color:var(--v123-text) !important;
-      border-color:rgba(88,106,131,.24) !important;
-      box-shadow:0 14px 34px rgba(0,0,0,.22), inset 0 1px 0 rgba(255,255,255,.02) !important;
-      border-radius:22px !important;
-    }
-    body.theme-dark .panel-header{
-      background:transparent !important;
-      border-bottom:1px solid rgba(91,110,137,.2) !important;
-    }
-    body.theme-dark :is(label,h2,h3,h4,.recent-title,.panel-header h2,.card-title,.section-title,strong,b){
-      color:#f8fbff !important;
-    }
-    body.theme-dark :is(.hint,.muted,.help,.sub,.desc,.description,small,p){
-      color:var(--v123-muted) !important;
-    }
-
-    body.theme-dark :is(input,textarea,select){
-      background:#0b1320 !important;
-      border:1px solid rgba(86,110,142,.42) !important;
-      color:#ffffff !important;
-      border-radius:18px !important;
-      box-shadow:inset 0 1px 0 rgba(255,255,255,.02) !important;
-    }
-    body.theme-dark :is(input,textarea,select):focus{
-      border-color:#4a7fff !important;
-      box-shadow:0 0 0 4px rgba(74,127,255,.18) !important;
-      outline:none !important;
-    }
-    body.theme-dark :is(input,textarea)::placeholder{ color:#7e90aa !important; }
-
-    body.theme-dark .product-boxes{
-      gap:12px !important;
-    }
-    body.theme-dark .product-box{
-      min-height:88px !important;
-      border-radius:20px !important;
-      border-width:2px !important;
-      background:linear-gradient(180deg, #111826 0%, #0f1520 100%) !important;
-      color:#eaf0f7 !important;
-      box-shadow:inset 0 1px 0 rgba(255,255,255,.03), 0 10px 22px rgba(0,0,0,.16) !important;
-      font-weight:900 !important;
-    }
-    body.theme-dark .product-box[data-product="Tomruk"]{ border-color:#facc15 !important; background:linear-gradient(180deg, rgba(250,204,21,.13), rgba(17,24,38,.96)) !important; color:#ffd94d !important; }
-    body.theme-dark .product-box[data-product="Maden Direk"]{ border-color:#3b82f6 !important; background:linear-gradient(180deg, rgba(59,130,246,.12), rgba(17,24,38,.96)) !important; color:#84b8ff !important; }
-    body.theme-dark .product-box[data-product="Kağıtlık"]{ border-color:#ef4444 !important; background:linear-gradient(180deg, rgba(239,68,68,.12), rgba(17,24,38,.96)) !important; color:#ff8383 !important; }
-    body.theme-dark .product-box[data-product="Sanayi Odunu"]{ border-color:#22c55e !important; background:linear-gradient(180deg, rgba(34,197,94,.12), rgba(17,24,38,.96)) !important; color:#67df8d !important; }
-    body.theme-dark .product-box[data-product="Tel Direk"]{ border-color:#8b5cf6 !important; background:linear-gradient(180deg, rgba(139,92,246,.12), rgba(17,24,38,.96)) !important; color:#b898ff !important; }
-    body.theme-dark .product-box.active{
-      transform:none !important;
-      box-shadow:0 0 0 1px rgba(255,255,255,.03), 0 18px 30px rgba(0,0,0,.2) !important;
-    }
-    body.theme-dark .product-box.active[data-product="Tomruk"]{ background:linear-gradient(180deg, rgba(250,204,21,.18), rgba(17,24,38,.98)) !important; }
-    body.theme-dark .product-box.active[data-product="Maden Direk"]{ background:linear-gradient(180deg, rgba(59,130,246,.18), rgba(17,24,38,.98)) !important; }
-    body.theme-dark .product-box.active[data-product="Kağıtlık"]{ background:linear-gradient(180deg, rgba(239,68,68,.18), rgba(17,24,38,.98)) !important; }
-    body.theme-dark .product-box.active[data-product="Sanayi Odunu"]{ background:linear-gradient(180deg, rgba(34,197,94,.18), rgba(17,24,38,.98)) !important; }
-    body.theme-dark .product-box.active[data-product="Tel Direk"]{ background:linear-gradient(180deg, rgba(139,92,246,.18), rgba(17,24,38,.98)) !important; }
-    body.theme-dark .product-box.active::after{
-      top:10px !important;
-      right:12px !important;
-      background:rgba(255,255,255,.06) !important;
-      border:1px solid rgba(255,255,255,.08) !important;
-      color:#fff !important;
+    body.theme-dark .product-box,
+    body.theme-dark .clean-product-v111{
+      background:var(--v122-dark-card) !important;
+      color:#f1f5f9 !important;
+      border:1.8px solid var(--v122-dark-line) !important;
+      border-left-width:7px !important;
       box-shadow:none !important;
     }
 
-    body.theme-dark .chip-row button,
-    body.theme-dark .chip,
-    body.theme-dark .quick-chip,
-    body.theme-dark .class-box,
-    body.theme-dark .wood-check{
-      background:#111a27 !important;
-      color:#edf3fb !important;
-      border-color:rgba(92,109,132,.34) !important;
-      border-radius:16px !important;
+    body.theme-dark .product-box[data-product="Tomruk"],
+    body.theme-dark .clean-product-v111.tomruk{
+      background:rgba(250,204,21,.12) !important;
+      border-color:var(--v122-tomruk) !important;
+      color:var(--v122-tomruk) !important;
     }
-    body.theme-dark .chip-row button:hover,
-    body.theme-dark .chip:hover,
-    body.theme-dark .quick-chip:hover,
-    body.theme-dark .class-box:hover{
-      border-color:rgba(121,147,191,.42) !important;
-      background:#172131 !important;
+    body.theme-dark .product-box[data-product="Maden Direk"],
+    body.theme-dark .clean-product-v111.maden{
+      background:rgba(59,130,246,.14) !important;
+      border-color:var(--v122-maden) !important;
+      color:#60a5fa !important;
     }
-
-    body.theme-dark #submitBtn{
-      background:linear-gradient(135deg, #1dc95c 0%, #14a84b 100%) !important;
-      color:#fff !important;
-      border:1px solid rgba(99,242,148,.26) !important;
-      border-radius:22px !important;
-      min-height:72px !important;
-      font-weight:950 !important;
-      box-shadow:0 18px 34px rgba(14,102,42,.34) !important;
+    body.theme-dark .product-box[data-product="Kağıtlık"],
+    body.theme-dark .clean-product-v111.kagit{
+      background:rgba(239,68,68,.15) !important;
+      border-color:var(--v122-kagit) !important;
+      color:#ff6b6b !important;
     }
-    body.theme-dark #submitBtn:hover{ filter:brightness(1.04) !important; }
-
-    body.theme-dark .recent-barcodes-box{
-      background:linear-gradient(180deg, rgba(18,24,35,.98), rgba(12,18,27,.98)) !important;
+    body.theme-dark .product-box[data-product="Sanayi Odunu"],
+    body.theme-dark .clean-product-v111.sanayi{
+      background:rgba(34,197,94,.14) !important;
+      border-color:var(--v122-sanayi) !important;
+      color:#4ade80 !important;
     }
-    body.theme-dark .recent-barcode-list > *{
-      min-height:106px !important;
-      border-radius:20px !important;
-      border:2px solid rgba(90,108,133,.24) !important;
-      background:#101720 !important;
-      box-shadow:0 14px 28px rgba(0,0,0,.18) !important;
-    }
-    body.theme-dark .recent-barcode-list .tomruk{ border-color:#facc15 !important; background:linear-gradient(180deg, rgba(250,204,21,.14), rgba(16,23,32,.98)) !important; color:#ffe168 !important; }
-    body.theme-dark .recent-barcode-list .maden{ border-color:#3b82f6 !important; background:linear-gradient(180deg, rgba(59,130,246,.14), rgba(16,23,32,.98)) !important; color:#a0c7ff !important; }
-    body.theme-dark .recent-barcode-list .kagit{ border-color:#ef4444 !important; background:linear-gradient(180deg, rgba(239,68,68,.14), rgba(16,23,32,.98)) !important; color:#ff9696 !important; }
-    body.theme-dark .recent-barcode-list .sanayi{ border-color:#22c55e !important; background:linear-gradient(180deg, rgba(34,197,94,.14), rgba(16,23,32,.98)) !important; color:#8ef0ac !important; }
-    body.theme-dark .recent-barcode-list .tel{ border-color:#8b5cf6 !important; background:linear-gradient(180deg, rgba(139,92,246,.14), rgba(16,23,32,.98)) !important; color:#ceb3ff !important; }
-    body.theme-dark .recent-barcode-item b,
-    body.theme-dark .recent-barcode-item span{ color:inherit !important; }
-
-    body.theme-dark .stat,
-    body.theme-dark .summary-card,
-    body.theme-dark .daily-summary-item{
-      background:linear-gradient(180deg, rgba(18,24,35,.98), rgba(12,18,27,.98)) !important;
-      border-color:rgba(88,106,131,.24) !important;
-      border-radius:20px !important;
-      color:#f6fbff !important;
+    body.theme-dark .product-box[data-product="Tel Direk"],
+    body.theme-dark .clean-product-v111.tel{
+      background:rgba(139,92,246,.15) !important;
+      border-color:var(--v122-tel) !important;
+      color:#a78bfa !important;
     }
 
-    body.theme-dark .tree-compact{
-      position:relative !important;
-      overflow:hidden !important;
+    body.theme-dark .product-box.active[data-product="Tomruk"],
+    body.theme-dark .clean-product-v111.active.tomruk{
+      background:var(--v122-tomruk) !important;
+      border-color:var(--v122-tomruk) !important;
+      color:#1f2937 !important;
+      box-shadow:0 0 0 3px rgba(250,204,21,.22), 0 12px 24px rgba(0,0,0,.20) !important;
     }
-    body.theme-dark .tree-compact::after{
-      content:'🌲';
-      position:absolute;
-      right:22px;
-      top:50%;
-      transform:translateY(-50%);
-      font-size:50px;
-      opacity:.82;
-      filter:drop-shadow(0 8px 12px rgba(34,197,94,.18));
-      pointer-events:none;
-    }
-
-    body.theme-dark .pill,
-    body.theme-dark .tree-current{
-      background:#121c28 !important;
-      color:#dff3e7 !important;
-      border:1px solid rgba(78,215,120,.28) !important;
-      border-radius:999px !important;
-    }
-
-    /* inline sade mod - aynı sayfada ferah kayıt akışı */
-    body.inline-simple-v119 .product-boxes{
-      grid-template-columns:repeat(2,minmax(0,1fr)) !important;
-      gap:12px !important;
-    }
-    body.inline-simple-v119 .product-box{
-      min-height:74px !important;
-      padding:14px 12px !important;
-      font-size:15px !important;
-    }
-    body.inline-simple-v119 .measure-compact{
-      gap:12px !important;
-      align-items:start !important;
-    }
-    body.inline-simple-v119 .measure-field{
-      padding:14px !important;
-    }
-    body.inline-simple-v119 #length,
-    body.inline-simple-v119 #diameter{
-      height:60px !important;
-      font-size:34px !important;
-      font-weight:950 !important;
-    }
-    body.inline-simple-v119 .chip-row{
-      gap:8px !important;
-      margin-top:10px !important;
-    }
-    body.inline-simple-v119 .chip-row button,
-    body.inline-simple-v119 .chip,
-    body.inline-simple-v119 .quick-chip{
-      min-height:42px !important;
-      min-width:42px !important;
-      padding:8px 12px !important;
-      font-size:14px !important;
-      font-weight:900 !important;
-    }
-    body.inline-simple-v119 .barcode-save-row-final{
-      grid-template-columns:minmax(0,1fr) 164px !important;
-      gap:12px !important;
-      align-items:stretch !important;
-    }
-    body.inline-simple-v119 #barcode{
-      height:66px !important;
-      font-size:22px !important;
-      font-weight:900 !important;
-    }
-    body.inline-simple-v119 #submitBtn{
-      min-height:120px !important;
-      height:100% !important;
-      font-size:18px !important;
-    }
-    body.inline-simple-v119 .recent-barcode-list{
-      grid-template-columns:repeat(3,minmax(0,1fr)) !important;
-      gap:10px !important;
-    }
-
-    @media (max-width: 720px){
-      body.inline-simple-v119 .product-boxes{ gap:10px !important; }
-      body.inline-simple-v119 .measure-compact{ grid-template-columns:1fr 1fr !important; }
-      body.inline-simple-v119 .barcode-save-row-final{ grid-template-columns:minmax(0,1fr) 120px !important; gap:10px !important; }
-      body.inline-simple-v119 #submitBtn{ min-height:92px !important; }
-    }
-    @media (max-width: 520px){
-      body.inline-simple-v119 .barcode-save-row-final{ grid-template-columns:1fr !important; }
-      body.inline-simple-v119 #submitBtn{ min-height:58px !important; }
-      body.inline-simple-v119 .recent-barcode-list{ grid-template-columns:1fr !important; }
-    }
-
-
-
-    /* v123: örnek tasarıma uyarlanmış modern antrasit tema + net ürün renkleri */
-    :root{
-      --v123-bg:#05070b;
-      --v123-shell:#0a0d12;
-      --v123-panel:#10141b;
-      --v123-panel2:#151a22;
-      --v123-soft:#0c1016;
-      --v123-input:#070a10;
-      --v123-line:#252b35;
-      --v123-line2:#343b48;
-      --v123-text:#f4f6fb;
-      --v123-muted:#8f98aa;
-      --v123-blue:#2f80ff;
-      --v123-purple:#6d28ff;
-      --v123-green:#19c66a;
-      --v123-tomruk:#ffd21f;
-      --v123-maden:#2f80ff;
-      --v123-kagit:#ff4040;
-      --v123-sanayi:#22c55e;
-      --v123-tel:#8b5cf6;
-    }
-
-    body.theme-dark,
-    html.theme-dark{
-      background:var(--v123-bg) !important;
-      color:var(--v123-text) !important;
-      color-scheme:dark !important;
-    }
-
-    body.theme-dark .app{
-      background:var(--v123-bg) !important;
-      color:var(--v123-text) !important;
-    }
-
-    body.theme-dark .topbar{
-      background:linear-gradient(180deg,#11151d 0%,#0b0f15 100%) !important;
-      border:1px solid var(--v123-line) !important;
-      box-shadow:0 18px 45px rgba(0,0,0,.38) !important;
-      border-radius:22px !important;
-    }
-
-    body.theme-dark .brand h1{
+    body.theme-dark .product-box.active[data-product="Maden Direk"],
+    body.theme-dark .clean-product-v111.active.maden{
+      background:var(--v122-maden) !important;
+      border-color:var(--v122-maden) !important;
       color:#ffffff !important;
-      letter-spacing:-.02em !important;
+      box-shadow:0 0 0 3px rgba(59,130,246,.22), 0 12px 24px rgba(0,0,0,.20) !important;
     }
-    body.theme-dark .brand .app-version-v123{
-      color:#4f8cff !important;
-      font-weight:950 !important;
-    }
-
-    body.theme-dark .active-user-badge{
-      background:rgba(17,21,29,.96) !important;
-      color:#d8dee9 !important;
-      border:1px solid #2c3440 !important;
-      box-shadow:inset 0 1px 0 rgba(255,255,255,.05), 0 12px 28px rgba(0,0,0,.24) !important;
-    }
-    body.theme-dark .active-user-badge::before{
-      content:"";
-      width:9px;
-      height:9px;
-      border-radius:99px;
-      background:var(--v123-green);
-      box-shadow:0 0 0 4px rgba(25,198,106,.12);
-      display:inline-block;
-      margin-right:8px;
-      vertical-align:middle;
-    }
-
-    body.theme-dark .top-actions-v112 button{
-      background:#11151d !important;
-      color:#f4f6fb !important;
-      border:1px solid #2c3440 !important;
-      box-shadow:inset 0 1px 0 rgba(255,255,255,.05), 0 12px 28px rgba(0,0,0,.22) !important;
-    }
-    body.theme-dark #openSimpleV112{
-      background:linear-gradient(135deg,var(--v123-blue),var(--v123-purple)) !important;
-      border-color:rgba(126,87,255,.75) !important;
+    body.theme-dark .product-box.active[data-product="Kağıtlık"],
+    body.theme-dark .clean-product-v111.active.kagit{
+      background:var(--v122-kagit) !important;
+      border-color:var(--v122-kagit) !important;
       color:#ffffff !important;
-      box-shadow:0 14px 30px rgba(47,128,255,.24) !important;
+      box-shadow:0 0 0 3px rgba(239,68,68,.22), 0 12px 24px rgba(0,0,0,.20) !important;
     }
-    body.theme-dark #openSimpleV112.active,
-    body.theme-dark.inline-simple-v119 #openSimpleV112{
-      background:linear-gradient(135deg,#202633,#11151d) !important;
-      border-color:#4f5b70 !important;
+    body.theme-dark .product-box.active[data-product="Sanayi Odunu"],
+    body.theme-dark .clean-product-v111.active.sanayi{
+      background:var(--v122-sanayi) !important;
+      border-color:var(--v122-sanayi) !important;
+      color:#052e16 !important;
+      box-shadow:0 0 0 3px rgba(34,197,94,.22), 0 12px 24px rgba(0,0,0,.20) !important;
+    }
+    body.theme-dark .product-box.active[data-product="Tel Direk"],
+    body.theme-dark .clean-product-v111.active.tel{
+      background:var(--v122-tel) !important;
+      border-color:var(--v122-tel) !important;
       color:#ffffff !important;
-      box-shadow:inset 0 1px 0 rgba(255,255,255,.07), 0 12px 24px rgba(0,0,0,.28) !important;
+      box-shadow:0 0 0 3px rgba(139,92,246,.22), 0 12px 24px rgba(0,0,0,.20) !important;
     }
 
-    body.theme-dark .flow-tabs-v111{
-      background:#0b0f15 !important;
-      border:1px solid var(--v123-line) !important;
-      box-shadow:0 18px 44px rgba(0,0,0,.30) !important;
-    }
-    body.theme-dark .flow-tabs-v111 button{
-      background:#11151d !important;
-      color:#c9d1df !important;
-      border:1px solid #2a303b !important;
-      box-shadow:inset 0 1px 0 rgba(255,255,255,.04) !important;
-    }
-    body.theme-dark .flow-tabs-v111 button.active{
-      background:linear-gradient(135deg,var(--v123-blue),var(--v123-purple)) !important;
+    body.theme-dark .product-box.active::after,
+    body.theme-dark .clean-product-v111.active::after{
+      background:#0d1118 !important;
       color:#ffffff !important;
-      border-color:rgba(126,87,255,.85) !important;
-      box-shadow:0 16px 34px rgba(47,128,255,.23) !important;
+      border-color:#ffffff !important;
     }
 
-    body.theme-dark :is(.panel,.panel-header,.panel-body,.card,.section,.form-card,.settings-card,.user-card,.admin-card,.daily-work-summary,.summary-card,.modal,.sheet,.box,.field,.login-card,.user-panel-card,.issue-report-card,.info-details,.info-body,.product-compact,.measure-field,.barcode-field-final,.save-field-final,.recent-barcodes-box,.bulk-actions,.tools,.guide-card,.admin-panel-top-clean,.admin-summary-card,.admin-dashboard-row,.admin-activity-item,.admin-note-item,.registered-user-item,.record-row-v111,.record-val-v111,.mobile-records-v111,.usage-card,.searchbar,.wood-type-panel,.wood-check,.class-box,.tomruk-class-panel){
-      background:var(--v123-panel) !important;
-      color:var(--v123-text) !important;
-      border-color:var(--v123-line) !important;
-      box-shadow:0 18px 42px rgba(0,0,0,.25) !important;
+    body.theme-dark #submitBtn,
+    body.theme-dark .clean-save-v111,
+    body.theme-dark .clean-header-save-v113{
+      background:#22c55e !important;
+      border-color:#22c55e !important;
+      color:#052e16 !important;
+      box-shadow:0 10px 22px rgba(34,197,94,.22) !important;
     }
 
-    body.theme-dark .panel-header{
-      background:linear-gradient(180deg,#151a22 0%,#11151d 100%) !important;
-      border-bottom-color:var(--v123-line) !important;
+    body.theme-dark .recent-barcode-list > .recent-barcode-item,
+    body.theme-dark .clean-recent-item-v114{
+      border:1.8px solid var(--v122-dark-line) !important;
+      border-left-width:7px !important;
+      box-shadow:0 10px 20px rgba(0,0,0,.18) !important;
     }
 
-    body.theme-dark :is(label,h1,h2,h3,h4,strong,b,.panel-header h2,.recent-title,.card-title,.section-title){
-      color:var(--v123-text) !important;
+    body.theme-dark .recent-barcode-list > .recent-tomruk,
+    body.theme-dark .clean-recent-item-v114.tomruk{
+      background:var(--v122-tomruk) !important;
+      border-color:var(--v122-tomruk) !important;
+      color:#1f2937 !important;
     }
-    body.theme-dark :is(.hint,.rule-hint,.recent-note,.muted,.sub,.desc,.description,small){
-      color:var(--v123-muted) !important;
-    }
-
-    body.theme-dark :is(input,textarea,select){
-      background:var(--v123-input) !important;
-      color:#f8fafc !important;
-      border:1px solid #2e3745 !important;
-      box-shadow:inset 0 1px 0 rgba(255,255,255,.03) !important;
-      caret-color:#ffffff !important;
-    }
-    body.theme-dark :is(input,textarea,select):focus{
-      border-color:#4f8cff !important;
-      box-shadow:0 0 0 3px rgba(79,140,255,.18), inset 0 1px 0 rgba(255,255,255,.04) !important;
-      outline:none !important;
-    }
-    body.theme-dark :is(input,textarea)::placeholder{ color:#697386 !important; opacity:1 !important; }
-
-    body.theme-dark .tree-compact{
-      position:relative !important;
-      overflow:hidden !important;
-    }
-    body.theme-dark .tree-compact::after{
-      content:"🌲";
-      position:absolute;
-      right:24px;
-      top:50%;
-      transform:translateY(-50%);
-      font-size:54px;
-      opacity:.55;
-      filter:saturate(.9);
-      pointer-events:none;
-    }
-    body.theme-dark .tree-compact .tree-select-current,
-    body.theme-dark #treeTypeCurrent,
-    body.theme-dark #treeTypeSelectBtn{
-      background:rgba(34,197,94,.10) !important;
-      border-color:rgba(34,197,94,.42) !important;
-      color:#64e895 !important;
-    }
-
-    body.theme-dark .product-box{
-      background:#111722 !important;
-      color:#dbe4f0 !important;
-      border:1.8px solid #2e3745 !important;
-      border-radius:18px !important;
-      box-shadow:inset 0 1px 0 rgba(255,255,255,.04) !important;
-    }
-    body.theme-dark .product-box[data-product="Tomruk"]{
-      border-color:var(--v123-tomruk) !important;
-      color:var(--v123-tomruk) !important;
-      background:linear-gradient(135deg,rgba(255,210,31,.18),rgba(255,210,31,.05)) !important;
-    }
-    body.theme-dark .product-box[data-product="Maden Direk"]{
-      border-color:var(--v123-maden) !important;
-      color:#6dabff !important;
-      background:linear-gradient(135deg,rgba(47,128,255,.17),rgba(47,128,255,.05)) !important;
-    }
-    body.theme-dark .product-box[data-product="Kağıtlık"]{
-      border-color:var(--v123-kagit) !important;
-      color:#ff7575 !important;
-      background:linear-gradient(135deg,rgba(255,64,64,.18),rgba(255,64,64,.05)) !important;
-    }
-    body.theme-dark .product-box[data-product="Sanayi Odunu"]{
-      border-color:var(--v123-sanayi) !important;
-      color:#69e694 !important;
-      background:linear-gradient(135deg,rgba(34,197,94,.17),rgba(34,197,94,.05)) !important;
-    }
-    body.theme-dark .product-box[data-product="Tel Direk"]{
-      border-color:var(--v123-tel) !important;
-      color:#b79cff !important;
-      background:linear-gradient(135deg,rgba(139,92,246,.18),rgba(139,92,246,.05)) !important;
-    }
-    body.theme-dark .product-box.active{
+    body.theme-dark .recent-barcode-list > .recent-maden,
+    body.theme-dark .clean-recent-item-v114.maden{
+      background:var(--v122-maden) !important;
+      border-color:var(--v122-maden) !important;
       color:#ffffff !important;
-      transform:none !important;
-      box-shadow:0 0 0 1px rgba(255,255,255,.05), 0 15px 34px rgba(0,0,0,.32) !important;
     }
-    body.theme-dark .product-box.active[data-product="Tomruk"]{ background:linear-gradient(135deg,rgba(255,210,31,.34),rgba(255,210,31,.12)) !important; box-shadow:0 0 0 1px rgba(255,210,31,.35), 0 14px 32px rgba(255,210,31,.13) !important; color:#ffe889 !important; }
-    body.theme-dark .product-box.active[data-product="Maden Direk"]{ background:linear-gradient(135deg,rgba(47,128,255,.34),rgba(47,128,255,.12)) !important; box-shadow:0 0 0 1px rgba(47,128,255,.35), 0 14px 32px rgba(47,128,255,.14) !important; color:#dbeafe !important; }
-    body.theme-dark .product-box.active[data-product="Kağıtlık"]{ background:linear-gradient(135deg,rgba(255,64,64,.34),rgba(255,64,64,.12)) !important; box-shadow:0 0 0 1px rgba(255,64,64,.35), 0 14px 32px rgba(255,64,64,.13) !important; color:#ffe4e4 !important; }
-    body.theme-dark .product-box.active[data-product="Sanayi Odunu"]{ background:linear-gradient(135deg,rgba(34,197,94,.34),rgba(34,197,94,.12)) !important; box-shadow:0 0 0 1px rgba(34,197,94,.35), 0 14px 32px rgba(34,197,94,.13) !important; color:#dcfce7 !important; }
-    body.theme-dark .product-box.active[data-product="Tel Direk"]{ background:linear-gradient(135deg,rgba(139,92,246,.34),rgba(139,92,246,.12)) !important; box-shadow:0 0 0 1px rgba(139,92,246,.35), 0 14px 32px rgba(139,92,246,.13) !important; color:#ede9fe !important; }
-
-    body.theme-dark .product-box.active::after{
-      background:#0b0f15 !important;
+    body.theme-dark .recent-barcode-list > .recent-kagit,
+    body.theme-dark .clean-recent-item-v114.kagit{
+      background:var(--v122-kagit) !important;
+      border-color:var(--v122-kagit) !important;
       color:#ffffff !important;
-      border-color:#3a4250 !important;
-      box-shadow:0 8px 18px rgba(0,0,0,.32) !important;
     }
-
-    body.theme-dark #length,
-    body.theme-dark #diameter,
-    body.theme-dark #barcode{
-      background:#080b11 !important;
-      border-color:#303948 !important;
-      color:#f7f9ff !important;
-      font-weight:950 !important;
+    body.theme-dark .recent-barcode-list > .recent-sanayi,
+    body.theme-dark .clean-recent-item-v114.sanayi{
+      background:var(--v122-sanayi) !important;
+      border-color:var(--v122-sanayi) !important;
+      color:#052e16 !important;
     }
-
-    body.theme-dark .chip-row button,
-    body.theme-dark .chip,
-    body.theme-dark .quick-chip{
-      background:#111722 !important;
-      border-color:#303948 !important;
-      color:#dce4ef !important;
-      box-shadow:none !important;
-    }
-
-    body.theme-dark #submitBtn{
-      background:linear-gradient(135deg,#16b85f,#20d074) !important;
-      border-color:#21d978 !important;
+    body.theme-dark .recent-barcode-list > .recent-tel,
+    body.theme-dark .clean-recent-item-v114.tel{
+      background:var(--v122-tel) !important;
+      border-color:var(--v122-tel) !important;
       color:#ffffff !important;
-      box-shadow:0 16px 34px rgba(25,198,106,.24) !important;
     }
 
-    body.theme-dark .recent-barcode-list > .recent-barcode-item{
-      background:#111722 !important;
-      border:1.8px solid #303948 !important;
-      color:#f4f6fb !important;
-      box-shadow:inset 0 1px 0 rgba(255,255,255,.04) !important;
+    body.theme-dark .recent-barcode-list > .recent-tomruk *,
+    body.theme-dark .clean-recent-item-v114.tomruk *,
+    body.theme-dark .recent-barcode-list > .recent-sanayi *,
+    body.theme-dark .clean-recent-item-v114.sanayi *{
+      color:inherit !important;
     }
-    body.theme-dark .recent-barcode-list > .recent-tomruk{ border-color:var(--v123-tomruk) !important; background:linear-gradient(135deg,rgba(255,210,31,.17),rgba(255,210,31,.04)) !important; }
-    body.theme-dark .recent-barcode-list > .recent-maden{ border-color:var(--v123-maden) !important; background:linear-gradient(135deg,rgba(47,128,255,.17),rgba(47,128,255,.04)) !important; }
-    body.theme-dark .recent-barcode-list > .recent-kagit{ border-color:var(--v123-kagit) !important; background:linear-gradient(135deg,rgba(255,64,64,.17),rgba(255,64,64,.04)) !important; }
-    body.theme-dark .recent-barcode-list > .recent-sanayi{ border-color:var(--v123-sanayi) !important; background:linear-gradient(135deg,rgba(34,197,94,.17),rgba(34,197,94,.04)) !important; }
-    body.theme-dark .recent-barcode-list > .recent-tel{ border-color:var(--v123-tel) !important; background:linear-gradient(135deg,rgba(139,92,246,.17),rgba(139,92,246,.04)) !important; }
-    body.theme-dark .recent-barcode-list > .recent-tomruk b,
-    body.theme-dark .recent-barcode-list > .recent-tomruk span{ color:#ffe889 !important; }
-    body.theme-dark .recent-barcode-list > .recent-maden b,
-    body.theme-dark .recent-barcode-list > .recent-maden span{ color:#b9d7ff !important; }
-    body.theme-dark .recent-barcode-list > .recent-kagit b,
-    body.theme-dark .recent-barcode-list > .recent-kagit span{ color:#ffb3b3 !important; }
-    body.theme-dark .recent-barcode-list > .recent-sanayi b,
-    body.theme-dark .recent-barcode-list > .recent-sanayi span{ color:#b8f4c7 !important; }
-    body.theme-dark .recent-barcode-list > .recent-tel b,
-    body.theme-dark .recent-barcode-list > .recent-tel span{ color:#d8ccff !important; }
-
-    body.theme-dark :is(.summary-card,.stat,.product-card){
-      background:#111722 !important;
-      border:1px solid #2d3440 !important;
-      box-shadow:inset 0 1px 0 rgba(255,255,255,.04), 0 14px 30px rgba(0,0,0,.25) !important;
+    body.theme-dark .recent-barcode-list > .recent-maden *,
+    body.theme-dark .recent-barcode-list > .recent-kagit *,
+    body.theme-dark .recent-barcode-list > .recent-tel *,
+    body.theme-dark .clean-recent-item-v114.maden *,
+    body.theme-dark .clean-recent-item-v114.kagit *,
+    body.theme-dark .clean-recent-item-v114.tel *{
+      color:#ffffff !important;
     }
-    body.theme-dark .product-card.tomruk{ border-color:var(--v123-tomruk) !important; background:linear-gradient(135deg,rgba(255,210,31,.16),rgba(255,210,31,.04)) !important; }
-    body.theme-dark .product-card.maden{ border-color:var(--v123-maden) !important; background:linear-gradient(135deg,rgba(47,128,255,.16),rgba(47,128,255,.04)) !important; }
-    body.theme-dark .product-card.kagit{ border-color:var(--v123-kagit) !important; background:linear-gradient(135deg,rgba(255,64,64,.16),rgba(255,64,64,.04)) !important; }
-    body.theme-dark .product-card.sanayi{ border-color:var(--v123-sanayi) !important; background:linear-gradient(135deg,rgba(34,197,94,.16),rgba(34,197,94,.04)) !important; }
-    body.theme-dark .product-card.tel{ border-color:var(--v123-tel) !important; background:linear-gradient(135deg,rgba(139,92,246,.16),rgba(139,92,246,.04)) !important; }
 
     body.theme-dark .mini-tag-v111.tomruk,
     body.theme-dark .tag.tomruk,
-    body.theme-dark .chip.tomruk{ background:var(--v123-tomruk) !important; border-color:var(--v123-tomruk) !important; color:#181300 !important; }
+    body.theme-dark .chip.tomruk{ background:var(--v122-tomruk) !important; border-color:var(--v122-tomruk) !important; color:#1f2937 !important; }
     body.theme-dark .mini-tag-v111.maden,
     body.theme-dark .tag.maden,
-    body.theme-dark .chip.maden{ background:var(--v123-maden) !important; border-color:var(--v123-maden) !important; color:#ffffff !important; }
+    body.theme-dark .chip.maden{ background:var(--v122-maden) !important; border-color:var(--v122-maden) !important; color:#ffffff !important; }
     body.theme-dark .mini-tag-v111.kagit,
     body.theme-dark .tag.kagit,
-    body.theme-dark .chip.kagit{ background:var(--v123-kagit) !important; border-color:var(--v123-kagit) !important; color:#ffffff !important; }
+    body.theme-dark .chip.kagit{ background:var(--v122-kagit) !important; border-color:var(--v122-kagit) !important; color:#ffffff !important; }
     body.theme-dark .mini-tag-v111.sanayi,
     body.theme-dark .tag.sanayi,
-    body.theme-dark .chip.sanayi{ background:var(--v123-sanayi) !important; border-color:var(--v123-sanayi) !important; color:#041b0c !important; }
+    body.theme-dark .chip.sanayi{ background:var(--v122-sanayi) !important; border-color:var(--v122-sanayi) !important; color:#052e16 !important; }
     body.theme-dark .mini-tag-v111.tel,
     body.theme-dark .tag.tel,
-    body.theme-dark .chip.tel{ background:var(--v123-tel) !important; border-color:var(--v123-tel) !important; color:#ffffff !important; }
-
-    body.inline-simple-v119 .topbar{
-      grid-template-columns:1fr auto !important;
-    }
-    body.inline-simple-v119 .panel.entry-panel{
-      max-width:760px !important;
-      margin-inline:auto !important;
-    }
+    body.theme-dark .chip.tel{ background:var(--v122-tel) !important; border-color:var(--v122-tel) !important; color:#ffffff !important; }
 
   </style>
   <meta name="theme-color" content="#ffffff" />
@@ -8491,14 +8015,14 @@
 <div class="app">
     <header class="topbar">
       <div class="brand">
-        <h1>Mesaha İO v1.52</h1>
+        <h1>Mesaha İO v1.50</h1>
         
       </div>
       <div id="activeUserBadge" class="active-user-badge" role="button" tabindex="0" title="Kullanıcı panelini aç" style="display:none"></div>
 
       <div class="top-actions-v112">
-        <button id="openSimpleV112" type="button">Sade Mod</button>
-        <button id="themeToggleV112" type="button">Karanlık</button>
+        <button id="openSimpleV112" type="button">⚡ Sade Mod</button>
+        <button id="themeToggleV112" type="button">🌙 Karanlık</button>
       </div>
 
     </header>
@@ -9946,8 +9470,8 @@
     function currentDeviceInfoPayload() {
       const active = state.activeUser || findActiveUser();
       return {
-        appVersion: "Mesaha İO v1.52",
-        fileVersion: "v123",
+        appVersion: "Mesaha İO v1.51",
+        fileVersion: "v122",
         userName: active && active.name ? cleanUserText(active.name) : "",
         seflik: active && active.seflik ? cleanUserText(active.seflik) : "",
         deviceId: getOrCreateDeviceId(),
@@ -10686,7 +10210,7 @@
 
     async function uploadCloudBackupOpen(user) {
       const payload = buildCloudBackupPayload(user);
-      payload.version = 121;
+      payload.version = 122;
       const bolmePart = els.bolmeNo && String(els.bolmeNo.value || "").trim() ? `_${cleanFilePart(els.bolmeNo.value)}` : "";
       const fileName = `Mesaha_Yedek_${cleanFilePart(user.seflik)}_${cleanFilePart(user.name)}${bolmePart}_${new Date().toISOString().slice(0,19).replace(/[-:T]/g, "")}.json`;
 
@@ -11115,7 +10639,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function buildCloudBackupPayload(user) {
       return {
         app: "Mesaha İO",
-        version: 121,
+        version: 122,
         createdAt: new Date().toLocaleString("tr-TR"),
         user: {
           name: user.name || "",
@@ -13119,7 +12643,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function backup() {
       const data = {
         app: "Mesaha App",
-        version: 121,
+        version: 122,
         exportedAt: formatDateTime(),
         systemHeaders: HEADERS,
         settings: state.settings,
@@ -13536,7 +13060,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     async function firebaseUploadBackup(user) {
       const { db } = await ensureFirebaseReady();
       const payload = buildCloudBackupPayload(user);
-      payload.version = 121;
+      payload.version = 122;
       payload.cloud = "firebase";
 
       const bolmeNo = els.bolmeNo ? String(els.bolmeNo.value || "").trim() : "";
@@ -15301,68 +14825,10 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 
 
     load();
-  
 
 
-    /* v123: tema uyarlama + Sade Mod Normal düğmesi kesin düzeltme */
-    function mesahaProductColorV123(productClass){
-      const c = String(productClass || '').toLowerCase();
-      if (c.includes('maden')) return '#2f80ff';
-      if (c.includes('kagit')) return '#ff4040';
-      if (c.includes('sanayi')) return '#22c55e';
-      if (c.includes('tel')) return '#8b5cf6';
-      return '#ffd21f';
-    }
-
-    function setThemeInlineV123(selector, props) {
-      document.querySelectorAll(selector).forEach(el => {
-        Object.entries(props).forEach(([k, v]) => el.style.setProperty(k, v, 'important'));
-      });
-    }
-
-    function forceDarkReadableV123() {
-      if (!document.body.classList.contains('theme-dark')) return;
-      setThemeInlineV123('.app', { background:'#05070b', color:'#f4f6fb' });
-      setThemeInlineV123('.topbar', { background:'linear-gradient(180deg,#11151d 0%,#0b0f15 100%)', color:'#f4f6fb', 'border-color':'#252b35', 'box-shadow':'0 18px 45px rgba(0,0,0,.38)' });
-      setThemeInlineV123('.panel, .panel-header, .panel-body, .info-details, .info-body, .product-compact, .measure-field, .barcode-field-final, .save-field-final, .recent-barcodes-box, .daily-work-summary, .bulk-actions, .tools, .guide-card, .admin-panel-top-clean, .admin-summary-card, .admin-dashboard-row, .admin-activity-item, .admin-note-item, .registered-user-item, .record-row-v111, .record-val-v111, .mobile-records-v111, .usage-card, .searchbar, .wood-type-panel, .wood-check, .tomruk-class-panel, .class-box', {
-        background:'#10141b', color:'#f4f6fb', 'border-color':'#252b35', 'box-shadow':'0 18px 42px rgba(0,0,0,.25)'
-      });
-      setThemeInlineV123('input, textarea, select', { background:'#070a10', color:'#f8fafc', 'border-color':'#2e3745', 'box-shadow':'inset 0 1px 0 rgba(255,255,255,.03)' });
-      setThemeInlineV123('#submitBtn', { background:'linear-gradient(135deg,#16b85f,#20d074)', color:'#ffffff', 'border-color':'#21d978', 'box-shadow':'0 16px 34px rgba(25,198,106,.24)' });
-    }
-
-    function applyThemeV123(mode) {
-      const dark = mode === 'dark';
-      try { if (typeof removeThemeInlineV119 === 'function') removeThemeInlineV119(); } catch {}
-      document.body.classList.toggle('theme-dark', dark);
-      document.documentElement.classList.toggle('theme-dark', dark);
-      try {
-        localStorage.setItem('mesaha_theme_v113', dark ? 'dark' : 'light');
-        localStorage.setItem('mesaha_theme_v112', dark ? 'dark' : 'light');
-        localStorage.setItem('mesaha_theme', dark ? 'dark' : 'light');
-      } catch {}
-      const btn = document.getElementById('themeToggleV112');
-      if (btn) btn.textContent = dark ? '☀️ Aydınlık' : '🌙 Karanlık';
-      const meta = document.querySelector('meta[name="theme-color"]');
-      if (meta) meta.setAttribute('content', dark ? '#05070b' : '#f5f7fb');
-      if (dark) {
-        setTimeout(forceDarkReadableV123, 20);
-        setTimeout(forceDarkReadableV123, 180);
-        setTimeout(forceDarkReadableV123, 550);
-      } else {
-        try { if (typeof removeThemeInlineV119 === 'function') removeThemeInlineV119(); } catch {}
-        setTimeout(() => { try { if (typeof removeThemeInlineV119 === 'function') removeThemeInlineV119(); } catch {} }, 80);
-        setTimeout(() => { try { if (typeof removeThemeInlineV119 === 'function') removeThemeInlineV119(); } catch {} }, 300);
-      }
-    }
-
-    function initThemeV123() {
-      let saved = 'light';
-      try { saved = localStorage.getItem('mesaha_theme_v113') || localStorage.getItem('mesaha_theme_v112') || localStorage.getItem('mesaha_theme') || localStorage.getItem('theme') || 'light'; } catch {}
-      applyThemeV123(saved === 'dark' ? 'dark' : 'light');
-    }
-
-    function syncInlineSimpleButtonV123() {
+    /* v122: Sade Mod / Normal geçişini sert şekilde düzelt */
+    function syncInlineSimpleButtonV122() {
       const btn = document.getElementById('openSimpleV112');
       if (!btn) return;
       const on = document.body.classList.contains('inline-simple-v119');
@@ -15372,18 +14838,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
       btn.type = 'button';
     }
 
-    function showEntryForInlineSimpleV123() {
-      document.body.classList.remove('show-records', 'show-guide', 'show-admin');
-      try {
-        if (els && els.navEntry) els.navEntry.classList.add('active');
-        if (els && els.navRecords) els.navRecords.classList.remove('active');
-        if (els && els.navGuide) els.navGuide.classList.remove('active');
-        if (els && els.navAdmin) els.navAdmin.classList.remove('active');
-      } catch {}
-      try { if (typeof updateFlowTabsV111 === 'function') updateFlowTabsV111(); } catch {}
-    }
-
-    function setInlineSimpleV123(on) {
+    function setInlineSimpleV122(on) {
       on = !!on;
       const overlay = document.getElementById('cleanSimpleOverlayV111');
       if (overlay) {
@@ -15392,99 +14847,81 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
         overlay.style.setProperty('visibility', 'hidden', 'important');
         overlay.style.setProperty('pointer-events', 'none', 'important');
       }
+
       document.body.classList.remove('clean-simple-open-v111', 'clean-keyboard-v118');
 
       if (on) {
-        showEntryForInlineSimpleV123();
+        if (typeof showEntryForInlineSimpleV119 === 'function') showEntryForInlineSimpleV119();
         document.body.classList.add('inline-simple-v119');
-        try { if (typeof renderProductButtons === 'function') renderProductButtons(); } catch {}
-        try { if (typeof setProductType === 'function' && els && els.productType) setProductType(els.productType.value || 'Tomruk', false); } catch {}
+        if (typeof renderProductButtons === 'function') renderProductButtons();
+        if (typeof setProductType === 'function' && typeof els !== 'undefined' && els && els.productType) {
+          setProductType(els.productType.value || 'Tomruk', false);
+        }
+        setTimeout(() => {
+          if (typeof renderRecentBarcodes === 'function') renderRecentBarcodes();
+        }, 30);
       } else {
         document.body.classList.remove('inline-simple-v119');
-        document.documentElement.classList.remove('inline-simple-v119');
-        ['flowTabsV111','themeToggleV112'].forEach(id => {
-          const el = document.getElementById(id);
-          if (el) el.style.removeProperty('display');
-        });
-        document.querySelectorAll('.panel.entry-panel, .panel.records-panel, .panel.guide-panel, .panel.admin-panel, .tree-compact, details.info-details, #productionDate, #quantity').forEach(el => {
-          if (el) el.style.removeProperty('display');
-        });
         if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
       }
 
-      syncInlineSimpleButtonV123();
+      syncInlineSimpleButtonV122();
       setTimeout(() => {
-        syncInlineSimpleButtonV123();
-        try { if (typeof keepNaturalScrollV111 === 'function') keepNaturalScrollV111(); } catch {}
-        try { if (typeof updateFlowTabsV111 === 'function') updateFlowTabsV111(); } catch {}
-        if (document.body.classList.contains('theme-dark')) forceDarkReadableV123();
-      }, 70);
+        syncInlineSimpleButtonV122();
+        if (typeof keepNaturalScrollV111 === 'function') keepNaturalScrollV111();
+        if (typeof updateFlowTabsV111 === 'function') updateFlowTabsV111();
+      }, 60);
     }
 
-    function toggleInlineSimpleV123() {
-      const isOn = document.body.classList.contains('inline-simple-v119');
-      setInlineSimpleV123(!isOn);
+    function toggleInlineSimpleV122() {
+      setInlineSimpleV122(!document.body.classList.contains('inline-simple-v119'));
     }
 
-    try { forceDarkReadableV119 = forceDarkReadableV123; } catch {}
-    try { forceDarkReadableV118 = forceDarkReadableV123; } catch {}
-    try { forceDarkReadableV116 = forceDarkReadableV123; } catch {}
-    try { forceDarkPanelsV115 = forceDarkReadableV123; } catch {}
-    try { repaintDarkInlineV114 = forceDarkReadableV123; } catch {}
-    try { applyThemeV119 = applyThemeV123; } catch {}
-    try { applyThemeV113 = applyThemeV123; } catch {}
-    try { applyThemeV112 = applyThemeV123; } catch {}
-    try { initThemeV119 = initThemeV123; } catch {}
-    try { initThemeV113 = initThemeV123; } catch {}
-    try { initThemeV112 = initThemeV123; } catch {}
-    try { setInlineSimpleV119 = setInlineSimpleV123; } catch {}
-    try { setInlineSimpleV122 = setInlineSimpleV123; } catch {}
-    try { toggleInlineSimpleV119 = toggleInlineSimpleV123; } catch {}
-    try { toggleInlineSimpleV122 = toggleInlineSimpleV123; } catch {}
-    try { closeInlineSimpleV119 = function(){ setInlineSimpleV123(false); }; } catch {}
-    try { closeCleanSimpleV111 = function(){ setInlineSimpleV123(false); }; } catch {}
-    try { openCleanSimpleV111 = function(){ setInlineSimpleV123(true); }; } catch {}
-    try { openCleanSimpleV113 = function(){ setInlineSimpleV123(true); }; } catch {}
+    try { setInlineSimpleV119 = setInlineSimpleV122; } catch {}
+    try { toggleInlineSimpleV119 = toggleInlineSimpleV122; } catch {}
+    try { closeInlineSimpleV119 = function(){ setInlineSimpleV122(false); }; } catch {}
+    openCleanSimpleV111 = function(){ setInlineSimpleV122(true); };
+    openCleanSimpleV113 = openCleanSimpleV111;
+    closeCleanSimpleV111 = function(){ setInlineSimpleV122(false); };
 
-    function bindInlineSimpleV123() {
-      const oldBtn = document.getElementById('openSimpleV112');
-      if (!oldBtn) return;
-      if (oldBtn.dataset.mesahaV123Simple === '1') { syncInlineSimpleButtonV123(); return; }
-      const btn = oldBtn.cloneNode(true);
-      btn.dataset.mesahaV123Simple = '1';
-      oldBtn.parentNode.replaceChild(btn, oldBtn);
-      btn.addEventListener('click', (event) => {
+    function bindInlineSimpleV122() {
+      const btn = document.getElementById('openSimpleV112');
+      if (btn && btn.dataset.mesahaV122Simple !== '1') {
+        const fresh = btn.cloneNode(true);
+        fresh.dataset.mesahaV122Simple = '1';
+        btn.parentNode.replaceChild(fresh, btn);
+        fresh.addEventListener('click', (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          event.stopImmediatePropagation();
+          toggleInlineSimpleV122();
+        }, true);
+      }
+      syncInlineSimpleButtonV122();
+    }
+
+    if (!window.__MESAHA_V122_SIMPLE_CAPTURE__) {
+      window.__MESAHA_V122_SIMPLE_CAPTURE__ = true;
+      document.addEventListener('click', (event) => {
+        const target = event.target && event.target.closest ? event.target.closest('#openSimpleV112') : null;
+        if (!target) return;
         event.preventDefault();
         event.stopPropagation();
         event.stopImmediatePropagation();
-        toggleInlineSimpleV123();
+        toggleInlineSimpleV122();
       }, true);
-      try { if (typeof els !== 'undefined') els.simpleModeBtn = btn; } catch {}
-      syncInlineSimpleButtonV123();
     }
 
-    function polishHeaderV123() {
-      const h1 = document.querySelector('.brand h1');
-      if (h1 && !h1.dataset.v123Version) {
-        h1.dataset.v123Version = '1';
-        h1.innerHTML = 'Mesaha İO <span class="app-version-v123">v1.52</span>';
-      }
-    }
-
-    bindInlineSimpleV123();
-    polishHeaderV123();
-    initThemeV123();
-    setTimeout(() => { bindInlineSimpleV123(); polishHeaderV123(); initThemeV123(); syncInlineSimpleButtonV123(); }, 200);
-    setTimeout(() => { bindInlineSimpleV123(); syncInlineSimpleButtonV123(); if (document.body.classList.contains('theme-dark')) forceDarkReadableV123(); }, 700);
-
+    bindInlineSimpleV122();
+    setTimeout(bindInlineSimpleV122, 100);
+    setTimeout(bindInlineSimpleV122, 400);
+    setTimeout(syncInlineSimpleButtonV122, 700);
+  
     window.MESAHA_BUILD_INFO = {
-      fileVersion: "v123",
-      visibleVersion: "Mesaha İO v1.52",
+      fileVersion: "v122",
+      visibleVersion: "Mesaha İO v1.51",
       stableBuild: true
     };
-
-
-
 
   </script>
 </body>
