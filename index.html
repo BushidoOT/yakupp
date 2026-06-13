@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha App v126</title>
+  <title>Mesaha App v128</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -8200,7 +8200,83 @@
       opacity:1 !important;
     }
 
-  </style>
+  
+
+    /* v128: Admin kullanıcı takip paneli - filtreleri kaldır, günlük kullanım kartları */
+    .admin-filters-clean,
+    .admin-quick-filters-clean,
+    .admin-tab[data-admin-tab="notes"],
+    #adminNotesView{
+      display:none !important;
+    }
+
+    .admin-tabs-clean{
+      grid-template-columns:repeat(2, minmax(0,1fr)) !important;
+    }
+
+    .admin-usage-mini{
+      display:grid;
+      grid-template-columns:repeat(3, minmax(0,1fr));
+      gap:7px;
+      margin:9px 0 2px;
+    }
+
+    .admin-usage-mini span{
+      display:flex;
+      flex-direction:column;
+      gap:3px;
+      min-width:0;
+      padding:8px 9px;
+      border-radius:13px;
+      border:1px solid #dbe3ee;
+      background:#f8fafc;
+      color:#475569;
+      font-size:11px;
+      font-weight:900;
+    }
+
+    .admin-usage-mini b{
+      color:#0f172a;
+      font-size:15px;
+      font-weight:950;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .admin-user-line-v128{
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+      margin-top:8px;
+    }
+
+    .admin-user-line-v128 span{
+      background:#eef2f7;
+      border:1px solid #dbe3ee;
+      color:#334155;
+      border-radius:999px;
+      padding:5px 8px;
+      font-size:11px;
+      font-weight:900;
+    }
+
+    body.theme-dark .admin-usage-mini span,
+    body.theme-dark .admin-user-line-v128 span{
+      background:#1b202a !important;
+      border-color:#343c49 !important;
+      color:#aeb8c7 !important;
+    }
+
+    body.theme-dark .admin-usage-mini b{
+      color:#f8fafc !important;
+    }
+
+    @media (max-width:560px){
+      .admin-usage-mini{ grid-template-columns:1fr; }
+      .admin-tabs-clean{ grid-template-columns:1fr 1fr !important; }
+    }
+</style>
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-title" content="Mesaha App" />
@@ -8476,7 +8552,7 @@
 <div class="app">
     <header class="topbar">
       <div class="brand">
-        <h1>Mesaha İO v1.55</h1>
+        <h1>Mesaha İO v1.58</h1>
         
       </div>
       <div id="activeUserBadge" class="active-user-badge" role="button" tabindex="0" title="Kullanıcı panelini aç" style="display:none"></div>
@@ -8963,6 +9039,7 @@
     const FIREBASE_USERS_COLLECTION = "users";
     const FIREBASE_BACKUPS_COLLECTION = "backups";
     const FIREBASE_REPORTS_COLLECTION = "supportTickets";
+    const FIREBASE_USAGE_COLLECTION = "usageStats";
 
     const DEVICE_ID_KEY = "mesaha_cihaz_kodu_v1";
 
@@ -9931,8 +10008,8 @@
     function currentDeviceInfoPayload() {
       const active = state.activeUser || findActiveUser();
       return {
-        appVersion: "Mesaha İO v1.55",
-        fileVersion: "v126",
+        appVersion: "Mesaha İO v1.58",
+        fileVersion: "v129",
         userName: active && active.name ? cleanUserText(active.name) : "",
         seflik: active && active.seflik ? cleanUserText(active.seflik) : "",
         deviceId: getOrCreateDeviceId(),
@@ -10671,7 +10748,7 @@
 
     async function uploadCloudBackupOpen(user) {
       const payload = buildCloudBackupPayload(user);
-      payload.version = 121;
+      payload.version = 129;
       const bolmePart = els.bolmeNo && String(els.bolmeNo.value || "").trim() ? `_${cleanFilePart(els.bolmeNo.value)}` : "";
       const fileName = `Mesaha_Yedek_${cleanFilePart(user.seflik)}_${cleanFilePart(user.name)}${bolmePart}_${new Date().toISOString().slice(0,19).replace(/[-:T]/g, "")}.json`;
 
@@ -11100,7 +11177,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function buildCloudBackupPayload(user) {
       return {
         app: "Mesaha İO",
-        version: 121,
+        version: 129,
         createdAt: new Date().toLocaleString("tr-TR"),
         user: {
           name: user.name || "",
@@ -12037,6 +12114,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
       };
 
       state.records.unshift(record);
+      try { usageRecordEntryV128(record); } catch {}
 
       addRecentValue("recentLengths", length);
       addRecentValue("recentDiameters", diameter);
@@ -13104,7 +13182,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function backup() {
       const data = {
         app: "Mesaha App",
-        version: 121,
+        version: 129,
         exportedAt: formatDateTime(),
         systemHeaders: HEADERS,
         settings: state.settings,
@@ -13511,7 +13589,10 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
           appVersion: d.appVersion || d.fileVersion || "",
           fileVersion: d.fileVersion || "",
           lastDeviceInfo: d.lastDeviceInfo || null,
-          lastDevice: d.lastDevice || ""
+          lastDevice: d.lastDevice || "",
+          todayUsage: d.todayUsage || null,
+          lastUsageAt: d.lastUsageAt || "",
+          lastUsageMs: Number(d.lastUsageMs || 0)
         });
       });
       users.sort((a, b) => Number(b.lastLoginMs || 0) - Number(a.lastLoginMs || 0));
@@ -13521,7 +13602,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     async function firebaseUploadBackup(user) {
       const { db } = await ensureFirebaseReady();
       const payload = buildCloudBackupPayload(user);
-      payload.version = 121;
+      payload.version = 129;
       payload.cloud = "firebase";
 
       const bolmeNo = els.bolmeNo ? String(els.bolmeNo.value || "").trim() : "";
@@ -15285,6 +15366,110 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     setTimeout(() => { bindTopActionsV119(); initThemeV119(); }, 250);
 
 
+    /* v129: Zayıf internet için 3 saniyede offline açılış koruması */
+    const MESAHA_STARTUP_TIMEOUT_V129 = 3000;
+    function mesahaTimeoutV129(ms, message) {
+      return new Promise((_, reject) => setTimeout(() => reject(new Error(message || "Bağlantı zaman aşımı")), Number(ms || MESAHA_STARTUP_TIMEOUT_V129)));
+    }
+    function mesahaRaceTimeoutV129(promise, ms, message) {
+      return Promise.race([Promise.resolve(promise), mesahaTimeoutV129(ms, message)]);
+    }
+
+    if (typeof loadExternalScript === "function" && !loadExternalScript.__v129Timeout) {
+      const oldLoadExternalScriptV129 = loadExternalScript;
+      loadExternalScript = function(src) {
+        return mesahaRaceTimeoutV129(
+          oldLoadExternalScriptV129(src),
+          MESAHA_STARTUP_TIMEOUT_V129,
+          "Firebase kütüphanesi 3 saniyede yüklenemedi"
+        );
+      };
+      loadExternalScript.__v129Timeout = true;
+    }
+
+    if (typeof ensureFirebaseReady === "function" && !ensureFirebaseReady.__v129OfflineFirst) {
+      const oldEnsureFirebaseReadyV129 = ensureFirebaseReady;
+      ensureFirebaseReady = function() {
+        return mesahaRaceTimeoutV129(
+          oldEnsureFirebaseReadyV129(),
+          MESAHA_STARTUP_TIMEOUT_V129,
+          "Firebase 3 saniyede yanıt vermedi"
+        ).catch(err => {
+          try { mesahaFirebaseReadyPromise = null; } catch {}
+          throw err;
+        });
+      };
+      ensureFirebaseReady.__v129OfflineFirst = true;
+    }
+
+    if (typeof logOnlineUser === "function" && !logOnlineUser.__v129OfflineFirst) {
+      const oldLogOnlineUserV129 = logOnlineUser;
+      logOnlineUser = function(user) {
+        if (!user || !navigator.onLine) return;
+        Promise.race([
+          Promise.resolve().then(() => oldLogOnlineUserV129(user)),
+          mesahaTimeoutV129(MESAHA_STARTUP_TIMEOUT_V129, "Online giriş 3 saniyede tamamlanmadı")
+        ]).catch(() => {
+          // Zayıf internet mesaha girişini kilitlemesin; online kayıt sonra tekrar denenir.
+        });
+      };
+      logOnlineUser.__v129OfflineFirst = true;
+    }
+
+    function saveLoginUserLocalFirstV129(event) {
+      try {
+        if (event) {
+          event.preventDefault();
+          event.stopPropagation();
+          if (typeof event.stopImmediatePropagation === "function") event.stopImmediatePropagation();
+        }
+        const name = cleanUserText(els.loginUserName ? els.loginUserName.value : "");
+        const seflik = cleanUserText(els.loginSeflik ? els.loginSeflik.value : "");
+        if (name.length < 2) return showLoginError("Kullanıcı adı en az 2 karakter olmalı.");
+        if (seflik.length < 2) return showLoginError("Şeflik bilgisi en az 2 karakter olmalı.");
+
+        state.userStore = state.userStore || loadUserStore();
+        const id = createUserId(name, seflik);
+        const now = new Date().toLocaleString("tr-TR");
+        let user = state.userStore.users.find(u => u.id === id);
+        if (!user) {
+          user = { id, name, seflik, firstLogin: now, lastLogin: "", loginCount: 0 };
+          state.userStore.users.unshift(user);
+        } else {
+          user.name = name;
+          user.seflik = seflik;
+        }
+        state.userStore.activeUserId = id;
+        if (els.seflik) els.seflik.value = seflik;
+        if (els.ekipNot && !String(els.ekipNot.value || "").trim()) els.ekipNot.value = name;
+        state.settings.seflik = seflik;
+        if (!state.settings.ekipNot) state.settings.ekipNot = name;
+        try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(state.settings)); } catch {}
+        registerUserLoginById(id);
+        closeUserLogin();
+        showToast(navigator.onLine ? "Giriş açıldı. Bulut arka planda kontrol ediliyor." : "Offline giriş açıldı.");
+        setTimeout(() => {
+          try { logOnlineUser(state.activeUser || findActiveUser()); } catch {}
+          try { if (typeof usageScheduleSyncV128 === "function") usageScheduleSyncV128(1200); } catch {}
+        }, 80);
+      } catch (err) {
+        try { showLoginError(err && err.message ? err.message : "Giriş kaydedilemedi."); } catch {}
+      }
+    }
+
+    if (els.loginSaveBtn && !els.loginSaveBtn.__v129LocalFirst) {
+      els.loginSaveBtn.__v129LocalFirst = true;
+      els.loginSaveBtn.addEventListener("click", saveLoginUserLocalFirstV129, true);
+    }
+    if (els.loginSeflik && !els.loginSeflik.__v129LocalFirst) {
+      els.loginSeflik.__v129LocalFirst = true;
+      els.loginSeflik.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") saveLoginUserLocalFirstV129(event);
+      }, true);
+    }
+
+
+
     load();
 
 
@@ -15612,10 +15797,440 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
       setInterval(refreshGirisUiV126, 1500);
     })();
 
+
+
+    /* v128: Firebase usageStats + admin kullanıcı kullanım bilgisi */
+    const USAGE_STATS_LOCAL_KEY_V128 = "mesaha_usage_stats_v128";
+    const USAGE_ACTIVE_IDLE_LIMIT_V128 = 5 * 60 * 1000;
+    let usageLastActivityMsV128 = Date.now();
+    let usageLastTickMsV128 = Date.now();
+    let usageSyncTimerV128 = null;
+
+    function usageTodayISOv128(){
+      try { return todayISO(); } catch { return new Date().toISOString().slice(0,10); }
+    }
+
+    function usageCleanNumberV128(value){
+      const n = Number(value);
+      return Number.isFinite(n) ? n : 0;
+    }
+
+    function usageLoadStoreV128(){
+      try {
+        const data = JSON.parse(localStorage.getItem(USAGE_STATS_LOCAL_KEY_V128) || "{}");
+        return data && typeof data === "object" ? data : {};
+      } catch { return {}; }
+    }
+
+    function usageSaveStoreV128(data){
+      try { localStorage.setItem(USAGE_STATS_LOCAL_KEY_V128, JSON.stringify(data || {})); } catch {}
+    }
+
+    function usageActiveUserV128(){
+      try {
+        const u = (state && state.activeUser) ? state.activeUser : (typeof findActiveUser === "function" ? findActiveUser() : null);
+        if (u && (u.name || u.seflik)) return u;
+      } catch {}
+      return { name:"", seflik:"", deviceId:getOrCreateDeviceId() };
+    }
+
+    function usageUserKeyV128(user){
+      try { return firebaseUserKey(user && user.name, user && user.seflik); } catch {}
+      const raw = `${(user && user.name) || ""}__${(user && user.seflik) || ""}`;
+      try { return foldLocalText(raw).replace(/[^a-z0-9_-]+/g, "_").slice(0,120) || "bos"; } catch { return raw.toLowerCase().replace(/[^a-z0-9_-]+/g,"_") || "bos"; }
+    }
+
+    function usageDocIdV128(date, userKey, deviceId){
+      return `usage_${String(date || "").replace(/[^0-9-]+/g,"")}_${String(userKey || "bos").replace(/[^a-zA-Z0-9_-]+/g,"_")}_${String(deviceId || "cihaz").replace(/[^a-zA-Z0-9_-]+/g,"_")}`.slice(0,180);
+    }
+
+    function usageGetDailyV128(date, user){
+      const store = usageLoadStoreV128();
+      const day = date || usageTodayISOv128();
+      const active = user || usageActiveUserV128();
+      const key = usageUserKeyV128(active);
+      if (!store[day]) store[day] = {};
+      if (!store[day][key]) {
+        store[day][key] = {
+          date: day,
+          userKey: key,
+          name: cleanUserText(active && active.name),
+          seflik: cleanUserText(active && active.seflik),
+          deviceId: (active && active.deviceId) || getOrCreateDeviceId(),
+          activeMs: 0,
+          inputAdet: 0,
+          inputM3: 0,
+          recordEntryCount: 0,
+          createdAt: firebaseDateText ? firebaseDateText() : new Date().toLocaleString("tr-TR"),
+          createdAtMs: Date.now(),
+          updatedAt: firebaseDateText ? firebaseDateText() : new Date().toLocaleString("tr-TR"),
+          updatedAtMs: Date.now(),
+          lastSyncedMs: 0
+        };
+      } else {
+        store[day][key].name = store[day][key].name || cleanUserText(active && active.name);
+        store[day][key].seflik = store[day][key].seflik || cleanUserText(active && active.seflik);
+        store[day][key].deviceId = store[day][key].deviceId || ((active && active.deviceId) || getOrCreateDeviceId());
+      }
+      return { store, stat: store[day][key], day, key };
+    }
+
+    function usageTouchStatV128(stat){
+      stat.updatedAt = (typeof firebaseDateText === "function") ? firebaseDateText() : new Date().toLocaleString("tr-TR");
+      stat.updatedAtMs = Date.now();
+      stat.appVersion = "Mesaha İO v1.58";
+      stat.fileVersion = "v128";
+      stat.recordCount = Array.isArray(state.records) ? state.records.length : 0;
+      return stat;
+    }
+
+    function usageScheduleSyncV128(delay){
+      if (!navigator.onLine) return;
+      clearTimeout(usageSyncTimerV128);
+      usageSyncTimerV128 = setTimeout(() => {
+        if (typeof usageSyncNowV128 === "function") usageSyncNowV128().catch(() => {});
+      }, Number(delay || 2500));
+    }
+
+    function usageRecordEntryV128(record){
+      try {
+        const user = usageActiveUserV128();
+        const got = usageGetDailyV128(usageTodayISOv128(), user);
+        const qty = Math.max(0, usageCleanNumberV128(record && record.quantity) || 1);
+        const desi = Math.max(0, usageCleanNumberV128(record && record.desi));
+        got.stat.inputAdet = usageCleanNumberV128(got.stat.inputAdet) + qty;
+        got.stat.inputM3 = Number((usageCleanNumberV128(got.stat.inputM3) + (desi / 1000)).toFixed(3));
+        got.stat.recordEntryCount = usageCleanNumberV128(got.stat.recordEntryCount) + 1;
+        usageTouchStatV128(got.stat);
+        usageSaveStoreV128(got.store);
+        usageScheduleSyncV128(900);
+      } catch {}
+    }
+
+    function usageAddActiveMsV128(ms){
+      try {
+        const add = Math.max(0, Math.min(Number(ms) || 0, 60000));
+        if (add < 1000) return;
+        const got = usageGetDailyV128(usageTodayISOv128(), usageActiveUserV128());
+        got.stat.activeMs = usageCleanNumberV128(got.stat.activeMs) + add;
+        usageTouchStatV128(got.stat);
+        usageSaveStoreV128(got.store);
+        usageScheduleSyncV128(7000);
+      } catch {}
+    }
+
+    function usageActivityEventV128(){
+      usageLastActivityMsV128 = Date.now();
+    }
+
+    function usageTickV128(){
+      const now = Date.now();
+      const elapsed = now - usageLastTickMsV128;
+      usageLastTickMsV128 = now;
+      if (document.visibilityState === "hidden") return;
+      if (now - usageLastActivityMsV128 > USAGE_ACTIVE_IDLE_LIMIT_V128) return;
+      usageAddActiveMsV128(elapsed);
+    }
+
+    async function usageSyncNowV128(){
+      if (!navigator.onLine) return false;
+      const { db } = await ensureFirebaseReady();
+      const store = usageLoadStoreV128();
+      const today = usageTodayISOv128();
+      const days = Object.keys(store || {}).sort();
+      let changed = false;
+
+      for (const day of days) {
+        const users = store[day] || {};
+        for (const key of Object.keys(users)) {
+          const stat = users[key] || {};
+          if (!stat.name || !stat.seflik) continue;
+          if (Number(stat.updatedAtMs || 0) <= Number(stat.lastSyncedMs || 0)) continue;
+          usageTouchStatV128(stat);
+          const docId = usageDocIdV128(day, stat.userKey || key, stat.deviceId || getOrCreateDeviceId());
+          const payload = {
+            id: docId,
+            date: day,
+            userKey: stat.userKey || key,
+            name: cleanUserText(stat.name),
+            seflik: cleanUserText(stat.seflik),
+            deviceId: stat.deviceId || getOrCreateDeviceId(),
+            activeMs: Math.round(usageCleanNumberV128(stat.activeMs)),
+            activeMinutes: Math.round(usageCleanNumberV128(stat.activeMs) / 60000),
+            inputAdet: Math.round(usageCleanNumberV128(stat.inputAdet)),
+            inputM3: Number(usageCleanNumberV128(stat.inputM3).toFixed(3)),
+            recordEntryCount: Math.round(usageCleanNumberV128(stat.recordEntryCount)),
+            recordCount: Math.round(usageCleanNumberV128(stat.recordCount)),
+            appVersion: "Mesaha İO v1.58",
+            fileVersion: "v129",
+            createdAt: stat.createdAt || firebaseDateText(),
+            createdAtMs: Number(stat.createdAtMs || Date.now()),
+            updatedAt: firebaseDateText(),
+            updatedAtMs: Date.now(),
+            source: "firebaseUsage"
+          };
+          await db.collection(typeof FIREBASE_USAGE_COLLECTION !== "undefined" ? FIREBASE_USAGE_COLLECTION : "usageStats").doc(docId).set(payload, { merge:true });
+
+          if (day === today) {
+            await db.collection(FIREBASE_USERS_COLLECTION).doc(payload.userKey).set({
+              userKey: payload.userKey,
+              name: payload.name,
+              seflik: payload.seflik,
+              todayUsage: {
+                date: payload.date,
+                activeMs: payload.activeMs,
+                activeMinutes: payload.activeMinutes,
+                inputAdet: payload.inputAdet,
+                inputM3: payload.inputM3,
+                recordEntryCount: payload.recordEntryCount,
+                updatedAt: payload.updatedAt,
+                updatedAtMs: payload.updatedAtMs
+              },
+              lastUsageAt: payload.updatedAt,
+              lastUsageMs: payload.updatedAtMs,
+              appVersion: payload.appVersion,
+              fileVersion: payload.fileVersion
+            }, { merge:true });
+          }
+          stat.lastSyncedMs = payload.updatedAtMs;
+          changed = true;
+        }
+      }
+      if (changed) usageSaveStoreV128(store);
+      return changed;
+    }
+
+    async function firebaseLoadUsageStatsV128(daysBack){
+      const { db } = await ensureFirebaseReady();
+      const days = Math.max(1, Number(daysBack || 7));
+      const start = new Date();
+      start.setDate(start.getDate() - (days - 1));
+      const startIso = start.toISOString().slice(0,10);
+      const snap = await db.collection(typeof FIREBASE_USAGE_COLLECTION !== "undefined" ? FIREBASE_USAGE_COLLECTION : "usageStats")
+        .where("date", ">=", startIso)
+        .get();
+      const rows = [];
+      snap.forEach(doc => rows.push(Object.assign({ id: doc.id }, doc.data() || {})));
+      return rows;
+    }
+
+    function usageAggregateByUserV128(rows){
+      const today = usageTodayISOv128();
+      const map = new Map();
+      (rows || []).forEach(r => {
+        const key = r.userKey || usageUserKeyV128(r);
+        if (!map.has(key)) map.set(key, { todayActiveMs:0, todayInputAdet:0, todayInputM3:0, todayRecordEntryCount:0, weekInputAdet:0, weekInputM3:0, lastUsageAt:"", lastUsageMs:0 });
+        const a = map.get(key);
+        const adet = usageCleanNumberV128(r.inputAdet);
+        const m3 = usageCleanNumberV128(r.inputM3);
+        a.weekInputAdet += adet;
+        a.weekInputM3 += m3;
+        if (String(r.date || "") === today) {
+          a.todayActiveMs += usageCleanNumberV128(r.activeMs);
+          a.todayInputAdet += adet;
+          a.todayInputM3 += m3;
+          a.todayRecordEntryCount += usageCleanNumberV128(r.recordEntryCount);
+        }
+        const ms = Number(r.updatedAtMs || 0);
+        if (ms > a.lastUsageMs) {
+          a.lastUsageMs = ms;
+          a.lastUsageAt = r.updatedAt || r.createdAt || "";
+        }
+      });
+      map.forEach(a => {
+        a.todayInputM3 = Number(a.todayInputM3.toFixed(3));
+        a.weekInputM3 = Number(a.weekInputM3.toFixed(3));
+      });
+      return map;
+    }
+
+    function usageMergeIntoUsersV128(users, rows){
+      const agg = usageAggregateByUserV128(rows || []);
+      return (users || []).map(u => {
+        const key = usageUserKeyV128(u);
+        const a = agg.get(key) || {};
+        const tu = (u.todayUsage && u.todayUsage.date === usageTodayISOv128()) ? u.todayUsage : {};
+        return Object.assign({}, u, {
+          todayActiveMs: usageCleanNumberV128(a.todayActiveMs) || usageCleanNumberV128(tu.activeMs),
+          todayInputAdet: usageCleanNumberV128(a.todayInputAdet) || usageCleanNumberV128(tu.inputAdet),
+          todayInputM3: usageCleanNumberV128(a.todayInputM3) || usageCleanNumberV128(tu.inputM3),
+          todayRecordEntryCount: usageCleanNumberV128(a.todayRecordEntryCount) || usageCleanNumberV128(tu.recordEntryCount),
+          weekInputAdet: usageCleanNumberV128(a.weekInputAdet),
+          weekInputM3: usageCleanNumberV128(a.weekInputM3),
+          lastUsageAt: a.lastUsageAt || u.lastUsageAt || (tu.updatedAt || ""),
+          lastUsageMs: Number(a.lastUsageMs || u.lastUsageMs || tu.updatedAtMs || 0)
+        });
+      });
+    }
+
+    function adminDurationTextV128(ms){
+      const totalMin = Math.round((Number(ms) || 0) / 60000);
+      if (totalMin <= 0) return "0 dk";
+      const h = Math.floor(totalMin / 60);
+      const m = totalMin % 60;
+      if (!h) return `${m} dk`;
+      return `${h} sa ${m} dk`;
+    }
+
+    function adminM3TextV128(value){
+      return `${(Number(value) || 0).toFixed(3).replace(/0+$/, "").replace(/\.$/, "0")} m³`;
+    }
+
+    const prevLoadOnlineUsersV128 = typeof loadOnlineUsers === "function" ? loadOnlineUsers : null;
+    if (prevLoadOnlineUsersV128) {
+      loadOnlineUsers = async function(adminCode){
+        const users = await prevLoadOnlineUsersV128(adminCode);
+        let stats = [];
+        try { stats = await firebaseLoadUsageStatsV128(7); } catch {}
+        return usageMergeIntoUsersV128(users, stats);
+      };
+    }
+
+    adminFilteredUsers = function(){
+      return (Array.isArray(state.adminOnlineUsers) ? state.adminOnlineUsers.slice() : []).sort((a,b) => {
+        const au = Number(a.lastUsageMs || a.lastLoginMs || 0);
+        const bu = Number(b.lastUsageMs || b.lastLoginMs || 0);
+        return bu - au;
+      });
+    };
+
+    updateAdminTopSummary = function(){
+      const users = state.adminOnlineUsers || [];
+      const backups = state.adminBackups || [];
+      const todayUsers = users.filter(u => usageCleanNumberV128(u.todayActiveMs) || usageCleanNumberV128(u.todayInputAdet) || adminIsToday(u.lastLogin)).length;
+      const todayAdet = users.reduce((sum,u) => sum + usageCleanNumberV128(u.todayInputAdet), 0);
+      const todayM3 = users.reduce((sum,u) => sum + usageCleanNumberV128(u.todayInputM3), 0);
+      const totalBackups = backups.length || users.reduce((sum, u) => sum + (Number(u.backupCount) || 0), 0);
+      const lastBackup = backups[0] && backups[0].createdAt ? backups[0].createdAt : "-";
+      const setLabel = (el, label) => { try { const s = el && el.parentElement && el.parentElement.querySelector("span"); if (s) s.textContent = label; } catch {} };
+      setLabel(els.adminTotalUsers, "Kullanıcı");
+      setLabel(els.adminTodayUsers, "Bugün Aktif");
+      setLabel(els.adminWeekUsers, "Bugün Adet");
+      setLabel(els.adminTotalBackups, "Bugün m³");
+      setLabel(els.adminLastBackup, "Son Yedek");
+      if (els.adminTotalUsers) els.adminTotalUsers.textContent = users.length.toLocaleString("tr-TR");
+      if (els.adminTodayUsers) els.adminTodayUsers.textContent = todayUsers.toLocaleString("tr-TR");
+      if (els.adminWeekUsers) els.adminWeekUsers.textContent = todayAdet.toLocaleString("tr-TR");
+      if (els.adminTotalBackups) els.adminTotalBackups.textContent = adminM3TextV128(todayM3).replace(" m³", "");
+      if (els.adminLastBackup) els.adminLastBackup.textContent = lastBackup;
+    };
+
+    renderAdminUsers = function(){
+      if (!els.registeredUsersList) return;
+      updateAdminTopSummary();
+      const list = adminFilteredUsers();
+      if (!list.length) {
+        els.registeredUsersList.innerHTML = `<div class="empty-user-list">Kullanıcı bulunamadı.</div>`;
+        return;
+      }
+      els.registeredUsersList.innerHTML = list.map(user => {
+        const status = adminStatus(user);
+        const source = user.sourceLabel || user.source || "";
+        const sourceText = String(source).includes("firebase") ? "Firebase" : (String(source).includes("Eski") || String(source).includes("Apps") || String(source).includes("apps") ? "Eski" : "");
+        const deviceText = (user.lastDeviceInfo && (user.lastDeviceInfo.platform || user.lastDeviceInfo.userAgent)) || user.lastDevice || `${(Number(user.deviceCount) || 0).toLocaleString("tr-TR")} cihaz`;
+        return `
+          <div class="registered-user-item online-user status-${status.key}">
+            <div class="registered-user-head">
+              <b>${escapeHtml(user.name || "-")}</b>
+              <div>
+                ${sourceText ? `<span class="admin-source-pill">${escapeHtml(sourceText)}</span>` : ""}
+                <span class="admin-status-pill ${status.key}">${status.label}</span>
+              </div>
+            </div>
+            <div class="admin-usage-mini">
+              <span>Bugün Süre <b>${adminDurationTextV128(user.todayActiveMs)}</b></span>
+              <span>Bugün Adet <b>${(Number(user.todayInputAdet) || 0).toLocaleString("tr-TR")}</b></span>
+              <span>Bugün m³ <b>${adminM3TextV128(user.todayInputM3)}</b></span>
+            </div>
+            <div class="registered-user-meta">
+              <span>Şeflik: ${escapeHtml(user.seflik || "-")}</span>
+              <span>Son giriş: ${escapeHtml(user.lastLogin || "-")}</span>
+              <span>Son aktif: ${escapeHtml(user.lastUsageAt || user.lastLogin || "-")}</span>
+              <span>Yedek: ${(Number(user.backupCount) || 0).toLocaleString("tr-TR")}</span>
+              <span class="admin-version-pill">Sürüm: ${escapeHtml(user.appVersion || user.fileVersion || "-")}</span>
+              <span class="admin-device-pill">Cihaz: ${escapeHtml(deviceText)}</span>
+            </div>
+            <div class="admin-user-line-v128">
+              <span>7 gün adet: ${(Number(user.weekInputAdet) || 0).toLocaleString("tr-TR")}</span>
+              <span>7 gün m³: ${adminM3TextV128(user.weekInputM3)}</span>
+            </div>
+            <div class="registered-user-actions">
+              <button class="secondary admin-user-backups" type="button" onclick="adminOpenUserBackups('${escapeHtml(user.name || "")}','${escapeHtml(user.seflik || "")}')">Yedekleri Gör</button>
+              <button class="ghost" type="button" onclick="adminShowDetail('${escapeHtml(user.name || "")}','${escapeHtml(user.seflik || "")}')">Detay</button>
+              <button class="danger registered-user-delete" type="button" onclick="deleteCloudUserAndBackups('${escapeHtml(user.name || "")}','${escapeHtml(user.seflik || "")}')">Sil</button>
+            </div>
+          </div>`;
+      }).join("");
+    };
+
+    adminShowDetail = function(name, seflik){
+      const u = (state.adminOnlineUsers || []).find(x => String(x.name) === String(name) && String(x.seflik) === String(seflik));
+      if (!u) return showToast("Kullanıcı bulunamadı.");
+      alert(
+        `Kullanıcı: ${u.name}\nŞeflik: ${u.seflik}\nSon giriş: ${u.lastLogin || "-"}\nSon aktif: ${u.lastUsageAt || "-"}\nBugün süre: ${adminDurationTextV128(u.todayActiveMs)}\nBugün adet: ${(Number(u.todayInputAdet)||0).toLocaleString("tr-TR")}\nBugün m³: ${adminM3TextV128(u.todayInputM3)}\n7 gün adet: ${(Number(u.weekInputAdet)||0).toLocaleString("tr-TR")}\n7 gün m³: ${adminM3TextV128(u.weekInputM3)}\nYedek sayısı: ${u.backupCount || 0}\nSürüm: ${u.appVersion || u.fileVersion || "-"}\nCihaz: ${(u.lastDeviceInfo && (u.lastDeviceInfo.platform || u.lastDeviceInfo.userAgent)) || u.lastDevice || "-"}`
+      );
+    };
+
+    function initUsageTrackerV128(){
+      ["click","input","keydown","touchstart","pointerdown"].forEach(ev => document.addEventListener(ev, usageActivityEventV128, { passive:true, capture:true }));
+      document.addEventListener("visibilitychange", () => {
+        usageLastTickMsV128 = Date.now();
+        usageActivityEventV128();
+        usageScheduleSyncV128(600);
+      });
+      window.addEventListener("online", () => usageScheduleSyncV128(500));
+      setInterval(usageTickV128, 15000);
+      setInterval(() => usageScheduleSyncV128(1000), 120000);
+      usageActivityEventV128();
+      usageScheduleSyncV128(1500);
+    }
+
+    const prevLogOnlineUserV128 = typeof logOnlineUser === "function" ? logOnlineUser : null;
+    if (prevLogOnlineUserV128) {
+      logOnlineUser = function(user){
+        try { prevLogOnlineUserV128(user); } catch {}
+        usageScheduleSyncV128(1200);
+      };
+    }
+
+    const prevCurrentDeviceInfoPayloadV128 = typeof currentDeviceInfoPayload === "function" ? currentDeviceInfoPayload : null;
+    currentDeviceInfoPayload = function(){
+      const info = prevCurrentDeviceInfoPayloadV128 ? prevCurrentDeviceInfoPayloadV128() : {};
+      info.appVersion = "Mesaha İO v1.58";
+      info.fileVersion = "v128";
+      info.recordCount = Array.isArray(state.records) ? state.records.length : (Number(info.recordCount) || 0);
+      info.updatedMs = Date.now();
+      return info;
+    };
+
+    document.querySelectorAll('.admin-tab[data-admin-tab="notes"]').forEach(btn => btn.style.display = 'none');
+    document.querySelectorAll('.admin-filters-clean, .admin-quick-filters-clean').forEach(el => el.style.display = 'none');
+    setTimeout(initUsageTrackerV128, 300);
+    setTimeout(() => { try { usageSyncNowV128().catch(() => {}); } catch {} }, 2500);
+
     window.MESAHA_BUILD_INFO = {
-      fileVersion: "v126",
-      visibleVersion: "Mesaha İO v1.55",
+      fileVersion: "v129",
+      visibleVersion: "Mesaha İO v1.58",
       stableBuild: true
+    };
+
+
+    /* v129: son sürüm bilgisi */
+    const prevCurrentDeviceInfoPayloadV129 = typeof currentDeviceInfoPayload === "function" ? currentDeviceInfoPayload : null;
+    currentDeviceInfoPayload = function(){
+      const info = prevCurrentDeviceInfoPayloadV129 ? prevCurrentDeviceInfoPayloadV129() : {};
+      info.appVersion = "Mesaha İO v1.58";
+      info.fileVersion = "v129";
+      info.recordCount = Array.isArray(state.records) ? state.records.length : (Number(info.recordCount) || 0);
+      info.updatedMs = Date.now();
+      info.offlineFirstTimeoutMs = MESAHA_STARTUP_TIMEOUT_V129;
+      return info;
+    };
+    window.MESAHA_BUILD_INFO = {
+      fileVersion: "v129",
+      visibleVersion: "Mesaha İO v1.58",
+      stableBuild: true,
+      offlineFirstTimeoutMs: MESAHA_STARTUP_TIMEOUT_V129
     };
 
   </script>
