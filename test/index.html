@@ -7851,6 +7851,272 @@
     body.theme-dark .tag.tel,
     body.theme-dark .chip.tel{ background:var(--v122-tel) !important; border-color:var(--v122-tel) !important; color:#ffffff !important; }
 
+
+    /* v124: v122 tabanı - koyu modda oval köşeler + sadece sol çizgi ürün rengi */
+    :root{
+      --v124-bg:#101216;
+      --v124-card:#151922;
+      --v124-card2:#1b202a;
+      --v124-card3:#202633;
+      --v124-line:#303744;
+      --v124-line2:#3d4655;
+      --v124-text:#f1f5f9;
+      --v124-muted:#aeb8c7;
+      --v124-tomruk:#facc15;
+      --v124-maden:#3b82f6;
+      --v124-kagit:#ef4444;
+      --v124-sanayi:#22c55e;
+      --v124-tel:#8b5cf6;
+    }
+
+    body.theme-dark,
+    html.theme-dark{
+      background:var(--v124-bg) !important;
+      color:var(--v124-text) !important;
+      color-scheme:dark !important;
+    }
+
+    /* Karanlık modda keskin kalan kutuların köşelerini toparla */
+    body.theme-dark :is(
+      .topbar,.panel,.panel-header,.panel-body,.card,.box,.sheet,.modal,.modal-card,
+      .section,.form-card,.form-section,.settings-card,.summary-card,.stat,
+      .info-details,.info-body,.product-compact,.measure-field,.barcode-field-final,
+      .save-field-final,.recent-barcodes-box,.daily-work-summary,.daily-summary-item,
+      .bulk-actions,.tools,.guide-card,.admin-panel-top-clean,.admin-summary-card,
+      .admin-dashboard-row,.admin-activity-item,.admin-note-item,.registered-user-item,
+      .record-row-v111,.record-val-v111,.mobile-records-v111,.usage-card,.searchbar,
+      .wood-type-panel,.wood-check,.class-box,.tomruk-class-panel,.product-box,
+      .clean-product-v111,.recent-barcode-item,.clean-recent-item-v114,
+      input,textarea,select,button,.btn,.pill,.chip,.tag,.mini-tag-v111
+    ){
+      border-radius:16px !important;
+    }
+
+    body.theme-dark .panel,
+    body.theme-dark .topbar,
+    body.theme-dark .recent-barcodes-box,
+    body.theme-dark .daily-work-summary,
+    body.theme-dark .product-compact{
+      border-radius:22px !important;
+    }
+
+    body.theme-dark .panel-header{
+      border-radius:22px 22px 14px 14px !important;
+    }
+
+    body.theme-dark .panel-body{
+      border-radius:14px 14px 22px 22px !important;
+    }
+
+    /* BEYAN kartları: kart koyu kalsın, sadece soldaki ince çizgi ürün rengi olsun */
+    body.theme-dark .totals .stat,
+    body.theme-dark .daily-summary-item{
+      background:var(--v124-card2) !important;
+      color:var(--v124-text) !important;
+      border:1.6px solid var(--v124-line) !important;
+      border-left:7px solid var(--v124-line2) !important;
+      box-shadow:0 10px 20px rgba(0,0,0,.14) !important;
+    }
+
+    body.theme-dark .totals .stat small,
+    body.theme-dark .totals .stat .unit,
+    body.theme-dark .daily-summary-item span{
+      color:var(--v124-muted) !important;
+    }
+
+    body.theme-dark .totals .stat strong,
+    body.theme-dark .daily-summary-item b{
+      color:var(--v124-text) !important;
+    }
+
+    body.theme-dark .totals .stat.tomruk-stat{
+      background:var(--v124-card2) !important;
+      border-color:var(--v124-line) !important;
+      border-left-color:var(--v124-tomruk) !important;
+    }
+    body.theme-dark .totals .stat.maden-stat{
+      background:var(--v124-card2) !important;
+      border-color:var(--v124-line) !important;
+      border-left-color:var(--v124-maden) !important;
+    }
+    body.theme-dark .totals .stat.kagit-stat{
+      background:var(--v124-card2) !important;
+      border-color:var(--v124-line) !important;
+      border-left-color:var(--v124-kagit) !important;
+    }
+    body.theme-dark .totals .stat.sanayi-stat{
+      background:var(--v124-card2) !important;
+      border-color:var(--v124-line) !important;
+      border-left-color:var(--v124-sanayi) !important;
+    }
+    body.theme-dark .totals .stat.tel-stat{
+      background:var(--v124-card2) !important;
+      border-color:var(--v124-line) !important;
+      border-left-color:var(--v124-tel) !important;
+    }
+
+    /* Yeni Kayıt + Sade Mod odun türü kartları: dolgu koyu, ürün rengi sadece sol çizgi */
+    body.theme-dark .product-box,
+    body.theme-dark .clean-product-v111{
+      background:var(--v124-card2) !important;
+      color:var(--v124-text) !important;
+      border:1.6px solid var(--v124-line) !important;
+      border-left-width:7px !important;
+      box-shadow:none !important;
+    }
+
+    body.theme-dark .product-box[data-product="Tomruk"],
+    body.theme-dark .clean-product-v111.tomruk{
+      background:var(--v124-card2) !important;
+      border-color:var(--v124-line) !important;
+      border-left-color:var(--v124-tomruk) !important;
+      color:var(--v124-text) !important;
+    }
+    body.theme-dark .product-box[data-product="Maden Direk"],
+    body.theme-dark .clean-product-v111.maden{
+      background:var(--v124-card2) !important;
+      border-color:var(--v124-line) !important;
+      border-left-color:var(--v124-maden) !important;
+      color:var(--v124-text) !important;
+    }
+    body.theme-dark .product-box[data-product="Kağıtlık"],
+    body.theme-dark .clean-product-v111.kagit{
+      background:var(--v124-card2) !important;
+      border-color:var(--v124-line) !important;
+      border-left-color:var(--v124-kagit) !important;
+      color:var(--v124-text) !important;
+    }
+    body.theme-dark .product-box[data-product="Sanayi Odunu"],
+    body.theme-dark .clean-product-v111.sanayi{
+      background:var(--v124-card2) !important;
+      border-color:var(--v124-line) !important;
+      border-left-color:var(--v124-sanayi) !important;
+      color:var(--v124-text) !important;
+    }
+    body.theme-dark .product-box[data-product="Tel Direk"],
+    body.theme-dark .clean-product-v111.tel{
+      background:var(--v124-card2) !important;
+      border-color:var(--v124-line) !important;
+      border-left-color:var(--v124-tel) !important;
+      color:var(--v124-text) !important;
+    }
+
+    body.theme-dark .product-box.active,
+    body.theme-dark .clean-product-v111.active{
+      background:var(--v124-card3) !important;
+      color:#ffffff !important;
+      border-color:var(--v124-line2) !important;
+      box-shadow:0 0 0 2px rgba(255,255,255,.04), 0 10px 22px rgba(0,0,0,.18) !important;
+    }
+    body.theme-dark .product-box.active[data-product="Tomruk"],
+    body.theme-dark .clean-product-v111.active.tomruk{ border-left-color:var(--v124-tomruk) !important; }
+    body.theme-dark .product-box.active[data-product="Maden Direk"],
+    body.theme-dark .clean-product-v111.active.maden{ border-left-color:var(--v124-maden) !important; }
+    body.theme-dark .product-box.active[data-product="Kağıtlık"],
+    body.theme-dark .clean-product-v111.active.kagit{ border-left-color:var(--v124-kagit) !important; }
+    body.theme-dark .product-box.active[data-product="Sanayi Odunu"],
+    body.theme-dark .clean-product-v111.active.sanayi{ border-left-color:var(--v124-sanayi) !important; }
+    body.theme-dark .product-box.active[data-product="Tel Direk"],
+    body.theme-dark .clean-product-v111.active.tel{ border-left-color:var(--v124-tel) !important; }
+
+    body.theme-dark .product-box.active::after,
+    body.theme-dark .clean-product-v111.active::after{
+      background:#0f1218 !important;
+      color:#ffffff !important;
+      border-color:var(--v124-line2) !important;
+      box-shadow:none !important;
+    }
+
+    /* Son girilen 3 barkod: dolgu koyu, sadece sol çizgi ürün rengi */
+    body.theme-dark .recent-barcode-list > .recent-barcode-item,
+    body.theme-dark .clean-recent-item-v114{
+      background:var(--v124-card2) !important;
+      color:var(--v124-text) !important;
+      border:1.6px solid var(--v124-line) !important;
+      border-left-width:7px !important;
+      box-shadow:0 10px 20px rgba(0,0,0,.14) !important;
+    }
+
+    body.theme-dark .recent-barcode-list > .recent-tomruk,
+    body.theme-dark .clean-recent-item-v114.tomruk{
+      background:var(--v124-card2) !important;
+      border-color:var(--v124-line) !important;
+      border-left-color:var(--v124-tomruk) !important;
+      color:var(--v124-text) !important;
+    }
+    body.theme-dark .recent-barcode-list > .recent-maden,
+    body.theme-dark .clean-recent-item-v114.maden{
+      background:var(--v124-card2) !important;
+      border-color:var(--v124-line) !important;
+      border-left-color:var(--v124-maden) !important;
+      color:var(--v124-text) !important;
+    }
+    body.theme-dark .recent-barcode-list > .recent-kagit,
+    body.theme-dark .clean-recent-item-v114.kagit{
+      background:var(--v124-card2) !important;
+      border-color:var(--v124-line) !important;
+      border-left-color:var(--v124-kagit) !important;
+      color:var(--v124-text) !important;
+    }
+    body.theme-dark .recent-barcode-list > .recent-sanayi,
+    body.theme-dark .clean-recent-item-v114.sanayi{
+      background:var(--v124-card2) !important;
+      border-color:var(--v124-line) !important;
+      border-left-color:var(--v124-sanayi) !important;
+      color:var(--v124-text) !important;
+    }
+    body.theme-dark .recent-barcode-list > .recent-tel,
+    body.theme-dark .clean-recent-item-v114.tel{
+      background:var(--v124-card2) !important;
+      border-color:var(--v124-line) !important;
+      border-left-color:var(--v124-tel) !important;
+      color:var(--v124-text) !important;
+    }
+
+    body.theme-dark .recent-barcode-list > .recent-barcode-item *,
+    body.theme-dark .clean-recent-item-v114 *{
+      color:inherit !important;
+    }
+    body.theme-dark .recent-barcode-list > .recent-barcode-item span,
+    body.theme-dark .clean-recent-item-v114 span{
+      color:var(--v124-muted) !important;
+      opacity:1 !important;
+    }
+
+    /* Kayıt listesi satırları da aynı mantıkta kalsın */
+    body.theme-dark .record-row-v111{
+      background:var(--v124-card2) !important;
+      color:var(--v124-text) !important;
+      border:1.6px solid var(--v124-line) !important;
+      border-left-width:7px !important;
+      box-shadow:0 10px 20px rgba(0,0,0,.14) !important;
+    }
+    body.theme-dark .record-row-v111.tomruk{ border-left-color:var(--v124-tomruk) !important; }
+    body.theme-dark .record-row-v111.maden{ border-left-color:var(--v124-maden) !important; }
+    body.theme-dark .record-row-v111.kagit{ border-left-color:var(--v124-kagit) !important; }
+    body.theme-dark .record-row-v111.sanayi{ border-left-color:var(--v124-sanayi) !important; }
+    body.theme-dark .record-row-v111.tel{ border-left-color:var(--v124-tel) !important; }
+
+    body.theme-dark .record-row-v111.selected{
+      background:var(--v124-card3) !important;
+      border-color:var(--v124-line2) !important;
+    }
+    body.theme-dark .record-row-v111.selected.tomruk{ border-left-color:var(--v124-tomruk) !important; }
+    body.theme-dark .record-row-v111.selected.maden{ border-left-color:var(--v124-maden) !important; }
+    body.theme-dark .record-row-v111.selected.kagit{ border-left-color:var(--v124-kagit) !important; }
+    body.theme-dark .record-row-v111.selected.sanayi{ border-left-color:var(--v124-sanayi) !important; }
+    body.theme-dark .record-row-v111.selected.tel{ border-left-color:var(--v124-tel) !important; }
+
+    body.theme-dark #submitBtn,
+    body.theme-dark .clean-save-v111,
+    body.theme-dark .clean-header-save-v113{
+      border-radius:18px !important;
+      background:#22c55e !important;
+      border-color:#22c55e !important;
+      color:#052e16 !important;
+      box-shadow:0 10px 22px rgba(34,197,94,.22) !important;
+    }
+
   </style>
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -8015,7 +8281,7 @@
 <div class="app">
     <header class="topbar">
       <div class="brand">
-        <h1>Mesaha İO v1.50</h1>
+        <h1>Mesaha İO v1.53</h1>
         
       </div>
       <div id="activeUserBadge" class="active-user-badge" role="button" tabindex="0" title="Kullanıcı panelini aç" style="display:none"></div>
@@ -9470,8 +9736,8 @@
     function currentDeviceInfoPayload() {
       const active = state.activeUser || findActiveUser();
       return {
-        appVersion: "Mesaha İO v1.51",
-        fileVersion: "v122",
+        appVersion: "Mesaha İO v1.53",
+        fileVersion: "v124",
         userName: active && active.name ? cleanUserText(active.name) : "",
         seflik: active && active.seflik ? cleanUserText(active.seflik) : "",
         deviceId: getOrCreateDeviceId(),
@@ -10210,7 +10476,7 @@
 
     async function uploadCloudBackupOpen(user) {
       const payload = buildCloudBackupPayload(user);
-      payload.version = 122;
+      payload.version = 121;
       const bolmePart = els.bolmeNo && String(els.bolmeNo.value || "").trim() ? `_${cleanFilePart(els.bolmeNo.value)}` : "";
       const fileName = `Mesaha_Yedek_${cleanFilePart(user.seflik)}_${cleanFilePart(user.name)}${bolmePart}_${new Date().toISOString().slice(0,19).replace(/[-:T]/g, "")}.json`;
 
@@ -10639,7 +10905,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function buildCloudBackupPayload(user) {
       return {
         app: "Mesaha İO",
-        version: 122,
+        version: 121,
         createdAt: new Date().toLocaleString("tr-TR"),
         user: {
           name: user.name || "",
@@ -12643,7 +12909,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function backup() {
       const data = {
         app: "Mesaha App",
-        version: 122,
+        version: 121,
         exportedAt: formatDateTime(),
         systemHeaders: HEADERS,
         settings: state.settings,
@@ -13060,7 +13326,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     async function firebaseUploadBackup(user) {
       const { db } = await ensureFirebaseReady();
       const payload = buildCloudBackupPayload(user);
-      payload.version = 122;
+      payload.version = 121;
       payload.cloud = "firebase";
 
       const bolmeNo = els.bolmeNo ? String(els.bolmeNo.value || "").trim() : "";
@@ -14918,8 +15184,8 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     setTimeout(syncInlineSimpleButtonV122, 700);
   
     window.MESAHA_BUILD_INFO = {
-      fileVersion: "v122",
-      visibleVersion: "Mesaha İO v1.51",
+      fileVersion: "v124",
+      visibleVersion: "Mesaha İO v1.53",
       stableBuild: true
     };
 
