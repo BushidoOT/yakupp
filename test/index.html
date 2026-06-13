@@ -5736,6 +5736,481 @@
       color:#f8fafc !important;
     }
 
+
+    /* v117: Modern karanlık tema + modern Sade Mod - sadece renk/görünüm, scroll/touch yok */
+    :root{
+      --dark-bg-v117:#070b14;
+      --dark-bg2-v117:#0b1220;
+      --dark-panel-v117:#101827;
+      --dark-panel2-v117:#162033;
+      --dark-panel3-v117:#1d2a40;
+      --dark-border-v117:#314159;
+      --dark-border2-v117:#435671;
+      --dark-text-v117:#f4f8ff;
+      --dark-soft-v117:#c8d3e4;
+      --dark-muted-v117:#9eabc0;
+      --dark-blue-v117:#3b82f6;
+      --dark-cyan-v117:#22d3ee;
+      --dark-green-v117:#22c55e;
+      --dark-yellow-v117:#facc15;
+      --dark-red-v117:#fb7185;
+      --dark-purple-v117:#a78bfa;
+    }
+
+    html.theme-dark,
+    body.theme-dark{
+      background:
+        radial-gradient(circle at top left, rgba(59,130,246,.22), transparent 30%),
+        radial-gradient(circle at top right, rgba(34,197,94,.14), transparent 28%),
+        linear-gradient(180deg, var(--dark-bg-v117), #0a101b 62%, #070b14) !important;
+      color:var(--dark-text-v117) !important;
+    }
+
+    body.theme-dark .app{
+      background:transparent !important;
+    }
+
+    body.theme-dark .topbar{
+      background:linear-gradient(135deg, rgba(16,24,39,.96), rgba(13,23,38,.94) 52%, rgba(18,38,40,.88)) !important;
+      border:1px solid rgba(148,163,184,.18) !important;
+      border-radius:0 0 22px 22px !important;
+      box-shadow:0 16px 34px rgba(0,0,0,.28) !important;
+    }
+
+    body.theme-dark .brand h1{
+      color:#ffffff !important;
+      letter-spacing:-.8px !important;
+      text-shadow:0 0 22px rgba(96,165,250,.22) !important;
+    }
+
+    body.theme-dark .active-user-badge{
+      background:linear-gradient(135deg, #bbf7d0, #dcfce7) !important;
+      color:#064e3b !important;
+      border-color:#86efac !important;
+      box-shadow:0 0 0 1px rgba(34,197,94,.22), 0 10px 26px rgba(34,197,94,.22) !important;
+    }
+
+    body.theme-dark .top-actions-v112 button:first-child{
+      background:linear-gradient(135deg, #22c55e, #14b8a6) !important;
+      color:#052e16 !important;
+      border-color:rgba(134,239,172,.55) !important;
+      box-shadow:0 12px 28px rgba(34,197,94,.24) !important;
+    }
+
+    body.theme-dark .top-actions-v112 button:last-child{
+      background:linear-gradient(135deg, #f8fafc, #dbeafe) !important;
+      color:#172033 !important;
+      border-color:#e5e7eb !important;
+      box-shadow:0 10px 22px rgba(219,234,254,.10) !important;
+    }
+
+    body.theme-dark .flow-tabs-v111{
+      background:rgba(15,23,42,.76) !important;
+      border:1px solid rgba(148,163,184,.25) !important;
+      border-radius:24px !important;
+      box-shadow:0 14px 32px rgba(0,0,0,.25) !important;
+      backdrop-filter:blur(12px) !important;
+      -webkit-backdrop-filter:blur(12px) !important;
+    }
+
+    body.theme-dark .flow-tabs-v111 button{
+      background:linear-gradient(180deg, #121c2d, #0d1625) !important;
+      color:#dbeafe !important;
+      border-color:rgba(148,163,184,.28) !important;
+      border-radius:18px !important;
+    }
+
+    body.theme-dark .flow-tabs-v111 button.active{
+      background:linear-gradient(135deg, #2563eb, #3b82f6 58%, #06b6d4) !important;
+      color:#ffffff !important;
+      border-color:#60a5fa !important;
+      box-shadow:0 12px 26px rgba(37,99,235,.32), inset 0 1px 0 rgba(255,255,255,.18) !important;
+    }
+
+    body.theme-dark .panel,
+    body.theme-dark .panel-header,
+    body.theme-dark .panel-body,
+    body.theme-dark .info-details,
+    body.theme-dark .product-compact,
+    body.theme-dark .measure-field,
+    body.theme-dark .daily-work-summary,
+    body.theme-dark .bulk-actions,
+    body.theme-dark .tools,
+    body.theme-dark .guide-card,
+    body.theme-dark .admin-panel-top-clean,
+    body.theme-dark .admin-summary-card,
+    body.theme-dark .registered-user-item{
+      background:linear-gradient(180deg, rgba(16,24,39,.97), rgba(15,23,42,.94)) !important;
+      color:var(--dark-text-v117) !important;
+      border-color:rgba(148,163,184,.24) !important;
+      box-shadow:0 10px 30px rgba(0,0,0,.18) !important;
+    }
+
+    body.theme-dark .panel-header{
+      border-bottom-color:rgba(148,163,184,.24) !important;
+      box-shadow:none !important;
+    }
+
+    body.theme-dark .panel-header h2,
+    body.theme-dark .guide-card h3,
+    body.theme-dark .admin-panel-top-clean h3{
+      color:#ffffff !important;
+    }
+
+    body.theme-dark input,
+    body.theme-dark textarea,
+    body.theme-dark select{
+      background:#0a1221 !important;
+      color:#f8fbff !important;
+      border-color:#425775 !important;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.04) !important;
+    }
+
+    body.theme-dark input:focus,
+    body.theme-dark textarea:focus,
+    body.theme-dark select:focus{
+      background:#07111f !important;
+      border-color:#60a5fa !important;
+      box-shadow:0 0 0 3px rgba(59,130,246,.20), inset 0 1px 0 rgba(255,255,255,.05) !important;
+    }
+
+    body.theme-dark .hint,
+    body.theme-dark .rule-hint,
+    body.theme-dark .recent-note,
+    body.theme-dark .guide-card li,
+    body.theme-dark .guide-card p,
+    body.theme-dark .guide-card small{
+      color:#c8d3e4 !important;
+    }
+
+    body.theme-dark .product-select-head,
+    body.theme-dark .wood-type-panel,
+    body.theme-dark .wood-check,
+    body.theme-dark .info-body{
+      background:linear-gradient(180deg, rgba(22,32,51,.95), rgba(15,23,42,.95)) !important;
+      color:#f4f8ff !important;
+      border-color:rgba(148,163,184,.26) !important;
+    }
+
+    body.theme-dark .wood-check:has(input:checked),
+    body.theme-dark .tree-type-panel .wood-check.tree-selected{
+      background:linear-gradient(135deg, rgba(34,197,94,.24), rgba(59,130,246,.12)) !important;
+      border-color:#22c55e !important;
+      color:#ffffff !important;
+      box-shadow:0 0 0 1px rgba(34,197,94,.18) inset !important;
+    }
+
+    body.theme-dark .product-box{
+      border-width:2px !important;
+      box-shadow:0 10px 20px rgba(0,0,0,.18) !important;
+    }
+
+    body.theme-dark .product-box.active{
+      box-shadow:0 0 0 3px rgba(255,255,255,.08), 0 14px 28px rgba(0,0,0,.24) !important;
+      transform:none !important;
+    }
+
+    body.theme-dark .totals .stat{
+      border-radius:20px !important;
+      box-shadow:0 12px 28px rgba(0,0,0,.18) !important;
+    }
+
+    body.theme-dark .totals .stat.tomruk-stat{ background:linear-gradient(135deg, rgba(250,204,21,.26), rgba(16,24,39,.96) 64%) !important; border-color:rgba(250,204,21,.42) !important; }
+    body.theme-dark .totals .stat.maden-stat{ background:linear-gradient(135deg, rgba(96,165,250,.26), rgba(16,24,39,.96) 64%) !important; border-color:rgba(147,197,253,.42) !important; }
+    body.theme-dark .totals .stat.kagit-stat{ background:linear-gradient(135deg, rgba(251,113,133,.24), rgba(16,24,39,.96) 64%) !important; border-color:rgba(252,165,165,.42) !important; }
+    body.theme-dark .totals .stat.sanayi-stat{ background:linear-gradient(135deg, rgba(74,222,128,.22), rgba(16,24,39,.96) 64%) !important; border-color:rgba(134,239,172,.42) !important; }
+    body.theme-dark .totals .stat.tel-stat{ background:linear-gradient(135deg, rgba(167,139,250,.24), rgba(16,24,39,.96) 64%) !important; border-color:rgba(196,181,253,.42) !important; }
+
+    body.theme-dark .record-row-v111{
+      background:linear-gradient(180deg, #111b2d, #0d1625) !important;
+      border-color:rgba(148,163,184,.28) !important;
+      box-shadow:0 10px 22px rgba(0,0,0,.20) !important;
+    }
+
+    body.theme-dark .record-row-v111.selected{
+      background:linear-gradient(135deg, rgba(37,99,235,.34), #111b2d 68%) !important;
+      border-color:#60a5fa !important;
+    }
+
+    body.theme-dark .record-val-v111{
+      background:#0a1221 !important;
+      border-color:#33445d !important;
+    }
+
+    body.theme-dark .registered-user-item.status-today{
+      background:linear-gradient(180deg, rgba(34,197,94,.26), rgba(16,24,39,.96) 70%) !important;
+      border-color:rgba(34,197,94,.52) !important;
+    }
+
+    body.theme-dark .registered-user-meta span,
+    body.theme-dark .admin-summary-card span,
+    body.theme-dark .admin-dashboard-row span,
+    body.theme-dark .admin-activity-item span,
+    body.theme-dark .admin-note-item span{
+      background:#0a1221 !important;
+      color:#dbeafe !important;
+      border-color:#314159 !important;
+    }
+
+    /* v117: Sade Mod modern ekran */
+    .clean-simple-overlay-v111{
+      background:
+        radial-gradient(circle at 18% 0%, rgba(37,99,235,.18), transparent 34%),
+        radial-gradient(circle at 86% 6%, rgba(34,197,94,.16), transparent 30%),
+        linear-gradient(180deg, #eef4ff, #f8fafc 58%, #eef2f7) !important;
+    }
+
+    body.theme-dark .clean-simple-overlay-v111{
+      background:
+        radial-gradient(circle at 18% 0%, rgba(37,99,235,.28), transparent 34%),
+        radial-gradient(circle at 88% 8%, rgba(34,197,94,.20), transparent 30%),
+        linear-gradient(180deg, #050914, #07111f 58%, #050914) !important;
+    }
+
+    .clean-simple-card-v111{
+      background:transparent !important;
+    }
+
+    body.theme-dark .clean-simple-card-v111{
+      background:transparent !important;
+      color:#f4f8ff !important;
+    }
+
+    .clean-simple-head-v111{
+      grid-template-columns:48px minmax(0,1fr) 112px !important;
+      background:rgba(248,250,252,.86) !important;
+      border-bottom:1px solid rgba(148,163,184,.32) !important;
+      box-shadow:0 16px 34px rgba(15,23,42,.10) !important;
+      backdrop-filter:blur(16px) !important;
+      -webkit-backdrop-filter:blur(16px) !important;
+    }
+
+    body.theme-dark .clean-simple-head-v111{
+      background:rgba(8,15,28,.86) !important;
+      border-bottom-color:rgba(148,163,184,.24) !important;
+      box-shadow:0 16px 34px rgba(0,0,0,.34) !important;
+    }
+
+    .clean-simple-head-v111 > div{
+      display:block !important;
+      min-width:0 !important;
+    }
+
+    .clean-simple-head-v111 h2{
+      margin:0 !important;
+      font-size:18px !important;
+      line-height:1.05 !important;
+      font-weight:950 !important;
+      color:#0f172a !important;
+      white-space:nowrap !important;
+      overflow:hidden !important;
+      text-overflow:ellipsis !important;
+    }
+
+    .clean-simple-head-v111 p{
+      margin:3px 0 0 !important;
+      font-size:10.5px !important;
+      line-height:1.2 !important;
+      color:#64748b !important;
+      white-space:nowrap !important;
+      overflow:hidden !important;
+      text-overflow:ellipsis !important;
+    }
+
+    body.theme-dark .clean-simple-head-v111 h2{ color:#ffffff !important; }
+    body.theme-dark .clean-simple-head-v111 p{ color:#aebdda !important; }
+
+    .clean-simple-close-v111,
+    .clean-header-save-v113,
+    .clean-save-v111,
+    .clean-product-v111,
+    .clean-chip-v111,
+    .clean-auto-info-v111,
+    .clean-empty-v111,
+    .clean-recent-item-v114,
+    .clean-measure-grid-v111 input{
+      box-shadow:0 12px 26px rgba(15,23,42,.10) !important;
+    }
+
+    body.theme-dark .clean-simple-close-v111{
+      background:linear-gradient(180deg, #122033, #0b1424) !important;
+      color:#e5eefc !important;
+      border-color:#33445d !important;
+    }
+
+    .clean-header-save-v113,
+    .clean-save-v111{
+      background:linear-gradient(135deg, #22c55e, #14b8a6) !important;
+      color:#052e16 !important;
+      border:1px solid rgba(134,239,172,.60) !important;
+    }
+
+    body.theme-dark .clean-header-save-v113,
+    body.theme-dark .clean-save-v111{
+      background:linear-gradient(135deg, #22c55e, #06b6d4) !important;
+      color:#04111f !important;
+      box-shadow:0 14px 30px rgba(34,197,94,.20) !important;
+    }
+
+    .clean-product-grid-v111{
+      grid-template-columns:repeat(auto-fit, minmax(112px, 1fr)) !important;
+      gap:10px !important;
+      margin:14px 0 12px !important;
+    }
+
+    .clean-product-v111{
+      min-height:56px !important;
+      border-radius:20px !important;
+      font-size:15px !important;
+      letter-spacing:-.2px !important;
+      border-width:2px !important;
+      overflow:visible !important;
+    }
+
+    .clean-product-v111.active::after{
+      top:-10px !important;
+      right:10px !important;
+      background:#0f172a !important;
+      border-color:rgba(255,255,255,.92) !important;
+      box-shadow:0 8px 18px rgba(0,0,0,.18) !important;
+    }
+
+    body.theme-dark .clean-product-v111.active::after{
+      background:#f8fafc !important;
+      color:#0f172a !important;
+      border-color:#111827 !important;
+    }
+
+    body.theme-dark .clean-product-v111.tomruk{ background:linear-gradient(135deg, #facc15, #f59e0b) !important; color:#422006 !important; }
+    body.theme-dark .clean-product-v111.maden{ background:linear-gradient(135deg, #93c5fd, #60a5fa) !important; color:#172554 !important; }
+    body.theme-dark .clean-product-v111.kagit{ background:linear-gradient(135deg, #fecaca, #fb7185) !important; color:#450a0a !important; }
+    body.theme-dark .clean-product-v111.sanayi{ background:linear-gradient(135deg, #bbf7d0, #4ade80) !important; color:#052e16 !important; }
+    body.theme-dark .clean-product-v111.tel{ background:linear-gradient(135deg, #ddd6fe, #a78bfa) !important; color:#2e1065 !important; }
+
+    body.theme-dark .clean-product-v111.active.tomruk,
+    body.theme-dark .clean-product-v111.active.maden,
+    body.theme-dark .clean-product-v111.active.kagit,
+    body.theme-dark .clean-product-v111.active.sanayi,
+    body.theme-dark .clean-product-v111.active.tel{
+      outline:3px solid rgba(255,255,255,.24) !important;
+      box-shadow:0 16px 32px rgba(0,0,0,.30), 0 0 0 1px rgba(255,255,255,.12) inset !important;
+    }
+
+    .clean-measure-grid-v111{
+      gap:12px !important;
+    }
+
+    .clean-measure-grid-v111 > div{
+      background:rgba(255,255,255,.72) !important;
+      border:1px solid rgba(148,163,184,.32) !important;
+      border-radius:22px !important;
+      padding:10px !important;
+      box-shadow:0 12px 28px rgba(15,23,42,.08) !important;
+    }
+
+    body.theme-dark .clean-measure-grid-v111 > div{
+      background:linear-gradient(180deg, rgba(16,24,39,.92), rgba(8,15,28,.92)) !important;
+      border-color:rgba(148,163,184,.24) !important;
+      box-shadow:0 14px 34px rgba(0,0,0,.24) !important;
+    }
+
+    body.theme-dark .clean-measure-grid-v111 label{
+      color:#eaf2ff !important;
+    }
+
+    .clean-measure-grid-v111 input{
+      height:56px !important;
+      border-radius:18px !important;
+      font-size:24px !important;
+      background:#ffffff !important;
+    }
+
+    body.theme-dark .clean-measure-grid-v111 input{
+      background:#07111f !important;
+      color:#ffffff !important;
+      border-color:#425775 !important;
+    }
+
+    .clean-chip-row-v111{
+      grid-template-columns:repeat(3, minmax(0,1fr)) !important;
+      gap:8px !important;
+      margin-top:9px !important;
+    }
+
+    .clean-chip-v111{
+      border-radius:16px !important;
+      min-height:42px !important;
+      font-size:15px !important;
+    }
+
+    body.theme-dark .clean-chip-v111.boy{
+      background:linear-gradient(135deg, #bae6fd, #38bdf8) !important;
+      color:#082f49 !important;
+      border-color:#0ea5e9 !important;
+    }
+
+    body.theme-dark .clean-chip-v111.cap{
+      background:linear-gradient(135deg, #bbf7d0, #4ade80) !important;
+      color:#052e16 !important;
+      border-color:#22c55e !important;
+    }
+
+    .clean-auto-info-v111,
+    .clean-empty-v111{
+      border-radius:20px !important;
+      background:rgba(255,255,255,.78) !important;
+      border-color:rgba(148,163,184,.34) !important;
+      color:#334155 !important;
+    }
+
+    body.theme-dark .clean-auto-info-v111,
+    body.theme-dark .clean-empty-v111{
+      background:linear-gradient(180deg, rgba(16,24,39,.92), rgba(8,15,28,.92)) !important;
+      color:#cfe0f7 !important;
+      border-color:rgba(148,163,184,.24) !important;
+    }
+
+    .clean-recent-area-v111 h3{
+      font-size:16px !important;
+      margin-top:12px !important;
+    }
+
+    body.theme-dark .clean-recent-area-v111 h3{
+      color:#ffffff !important;
+    }
+
+    .clean-recent-item-v114{
+      border-radius:20px !important;
+      border-width:1px !important;
+      border-left-width:8px !important;
+      min-height:58px !important;
+      box-shadow:0 12px 26px rgba(15,23,42,.10) !important;
+    }
+
+    body.theme-dark .clean-recent-item-v114.tomruk{ background:linear-gradient(135deg, #facc15, #f59e0b) !important; color:#422006 !important; }
+    body.theme-dark .clean-recent-item-v114.maden{ background:linear-gradient(135deg, #93c5fd, #60a5fa) !important; color:#172554 !important; }
+    body.theme-dark .clean-recent-item-v114.kagit{ background:linear-gradient(135deg, #fecaca, #fb7185) !important; color:#450a0a !important; }
+    body.theme-dark .clean-recent-item-v114.sanayi{ background:linear-gradient(135deg, #bbf7d0, #4ade80) !important; color:#052e16 !important; }
+    body.theme-dark .clean-recent-item-v114.tel{ background:linear-gradient(135deg, #ddd6fe, #a78bfa) !important; color:#2e1065 !important; }
+
+    @media (max-width:430px){
+      .clean-product-grid-v111{
+        grid-template-columns:repeat(2, minmax(0,1fr)) !important;
+      }
+      .clean-measure-grid-v111{
+        grid-template-columns:1fr 1fr !important;
+      }
+      .clean-simple-head-v111{
+        grid-template-columns:44px minmax(0,1fr) 96px !important;
+      }
+      .clean-simple-head-v111 h2{
+        font-size:16px !important;
+      }
+      .clean-simple-head-v111 p{
+        display:none !important;
+      }
+    }
+
   </style>
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -5900,7 +6375,7 @@
 <div class="app">
     <header class="topbar">
       <div class="brand">
-        <h1>Mesaha İO v1.45</h1>
+        <h1>Mesaha İO v1.46</h1>
         
       </div>
       <div id="activeUserBadge" class="active-user-badge" role="button" tabindex="0" title="Kullanıcı panelini aç" style="display:none"></div>
@@ -7355,7 +7830,7 @@
     function currentDeviceInfoPayload() {
       const active = state.activeUser || findActiveUser();
       return {
-        appVersion: "Mesaha İO v1.45",
+        appVersion: "Mesaha İO v1.46",
         fileVersion: "v116",
         userName: active && active.name ? cleanUserText(active.name) : "",
         seflik: active && active.seflik ? cleanUserText(active.seflik) : "",
@@ -11716,18 +12191,23 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     function renderCleanProductsV111() {
       const c = cleanElsV111();
       if (!c.grid) return;
-      const current = normalizeProductType((els.productType && els.productType.value) || state.settings.lastProductType || "Tomruk");
-      const products = [
-        { key:"Tomruk", label:"Tomruk", cls:"tomruk" },
-        { key:"Maden Direk", label:"Maden", cls:"maden" },
-        { key:"Kağıtlık", label:"Kağıtlık", cls:"kagit" },
-        { key:"Sanayi Odunu", label:"Sanayi", cls:"sanayi" },
-        { key:"Tel Direk", label:"Tel", cls:"tel" }
-      ];
+      const selectedProducts = normalizeVisibleProducts(state.settings && state.settings.visibleProducts);
+      const currentRaw = normalizeProductType((els.productType && els.productType.value) || state.settings.lastProductType || selectedProducts[0] || "Tomruk");
+      const current = selectedProducts.includes(currentRaw) ? currentRaw : selectedProducts[0];
+      const productClasses = {
+        "Tomruk":"tomruk",
+        "Maden Direk":"maden",
+        "Kağıtlık":"kagit",
+        "Sanayi Odunu":"sanayi",
+        "Tel Direk":"tel"
+      };
 
-      c.grid.innerHTML = products.map(item => `
-        <button type="button" class="clean-product-v111 ${item.cls} ${normalizeProductType(item.key) === current ? "active" : ""}" data-clean-product="${escapeHtml(item.key)}">${escapeHtml(item.label)}</button>
-      `).join("");
+      c.grid.innerHTML = selectedProducts.map(type => {
+        const product = PRODUCT_MAP[type] || PRODUCT_MAP[normalizeProductType(type)] || PRODUCT_MAP["Tomruk"];
+        const label = product && product.shortName ? product.shortName : normalizeProductType(type);
+        const cls = productClasses[normalizeProductType(type)] || normalizeProductClass(type);
+        return `<button type="button" class="clean-product-v111 ${cls} ${normalizeProductType(type) === current ? "active" : ""}" data-clean-product="${escapeHtml(normalizeProductType(type))}">${escapeHtml(label)}</button>`;
+      }).join("");
       if (!c.grid.querySelector(".clean-product-v111.active")) c.grid.querySelector(".clean-product-v111")?.classList.add("active");
     }
 
@@ -11779,7 +12259,8 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
       }
       c.recent.innerHTML = recent.map(r => {
         const product = normalizeProductType(r.productType || "Tomruk");
-        return `<div class="clean-empty-v111">${escapeHtml(r.barcode || "-")} • ${escapeHtml(product)} • B ${escapeHtml(String(r.length || "-"))} • Ç ${escapeHtml(String(r.diameter || "-"))}</div>`;
+        const cls = normalizeProductClass(product);
+        return `<div class="clean-recent-item-v114 ${cls}"><div><b>${escapeHtml(r.barcode || "-")}</b><span>${escapeHtml(productDisplayName(product))} • Boy ${escapeHtml(String(r.length || "-"))} • Çap ${escapeHtml(String(r.diameter || "-"))}</span></div><strong>${escapeHtml(String(r.quantity || 1))} adet</strong></div>`;
       }).join("");
     }
 
@@ -12373,7 +12854,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
   
     window.MESAHA_BUILD_INFO = {
       fileVersion: "v116",
-      visibleVersion: "Mesaha İO v1.45",
+      visibleVersion: "Mesaha İO v1.46",
       stableBuild: true
     };
 
