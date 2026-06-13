@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha App v116</title>
+  <title>Mesaha App v118</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -6211,6 +6211,642 @@
       }
     }
 
+  
+
+    /* v118: sade, modern ve sorunsuz tema katmanı */
+    :root{
+      --ui-bg-v118:#f6f7fb;
+      --ui-card-v118:#ffffff;
+      --ui-soft-v118:#f8fafc;
+      --ui-line-v118:#d9e2ec;
+      --ui-line2-v118:#cbd5e1;
+      --ui-text-v118:#111827;
+      --ui-muted-v118:#64748b;
+      --ui-blue-v118:#2563eb;
+      --ui-green-v118:#16a34a;
+      --ui-amber-v118:#d99a00;
+      --ui-red-v118:#dc2626;
+      --ui-purple-v118:#7c3aed;
+      --dark-bg-v118:#0b1220;
+      --dark-card-v118:#111827;
+      --dark-card2-v118:#151f2f;
+      --dark-soft-v118:#0f172a;
+      --dark-line-v118:#2b3a50;
+      --dark-line2-v118:#3a4a63;
+      --dark-text-v118:#eef4ff;
+      --dark-muted-v118:#a8b5c8;
+      --simple-vh-v118:100dvh;
+      --simple-vvtop-v118:0px;
+    }
+
+    html:not(.theme-dark),
+    body:not(.theme-dark){
+      background:var(--ui-bg-v118) !important;
+      color:var(--ui-text-v118) !important;
+      color-scheme:light !important;
+    }
+
+    body:not(.theme-dark) .app{
+      background:var(--ui-bg-v118) !important;
+      color:var(--ui-text-v118) !important;
+    }
+
+    body:not(.theme-dark) .topbar{
+      background:rgba(255,255,255,.94) !important;
+      border:1px solid var(--ui-line-v118) !important;
+      border-radius:0 0 20px 20px !important;
+      box-shadow:0 10px 28px rgba(15,23,42,.07) !important;
+    }
+
+    body:not(.theme-dark) .brand h1{
+      color:#111827 !important;
+      text-shadow:none !important;
+      letter-spacing:-.7px !important;
+    }
+
+    body:not(.theme-dark) .active-user-badge{
+      background:#ecfdf5 !important;
+      color:#065f46 !important;
+      border-color:#bbf7d0 !important;
+      box-shadow:none !important;
+    }
+
+    body:not(.theme-dark) .top-actions-v112 button:first-child{
+      background:#16a34a !important;
+      color:#ffffff !important;
+      border:1px solid #16a34a !important;
+      box-shadow:none !important;
+    }
+
+    body:not(.theme-dark) .top-actions-v112 button:last-child{
+      background:#ffffff !important;
+      color:#172033 !important;
+      border:1px solid var(--ui-line-v118) !important;
+      box-shadow:none !important;
+    }
+
+    body:not(.theme-dark) .flow-tabs-v111{
+      background:#ffffff !important;
+      border:1px solid var(--ui-line-v118) !important;
+      border-radius:22px !important;
+      box-shadow:0 8px 22px rgba(15,23,42,.06) !important;
+    }
+
+    body:not(.theme-dark) .flow-tabs-v111 button{
+      background:#f8fafc !important;
+      color:#334155 !important;
+      border:1px solid var(--ui-line-v118) !important;
+      border-radius:16px !important;
+      box-shadow:none !important;
+    }
+
+    body:not(.theme-dark) .flow-tabs-v111 button.active{
+      background:#2563eb !important;
+      color:#ffffff !important;
+      border-color:#2563eb !important;
+      box-shadow:0 10px 20px rgba(37,99,235,.18) !important;
+    }
+
+    body:not(.theme-dark) :is(.panel,.panel-header,.panel-body,.info-details,.info-body,.product-compact,.measure-field,.daily-work-summary,.bulk-actions,.tools,.guide-card,.admin-panel-top-clean,.admin-summary-card,.registered-user-item,.record-row-v111,.record-val-v111,.mobile-records-v111,.usage-card){
+      background:#ffffff !important;
+      color:#111827 !important;
+      border-color:var(--ui-line-v118) !important;
+      box-shadow:0 10px 24px rgba(15,23,42,.05) !important;
+    }
+
+    body:not(.theme-dark) .panel-header{
+      border-bottom-color:var(--ui-line-v118) !important;
+      box-shadow:none !important;
+    }
+
+    body:not(.theme-dark) :is(.panel-header h2,.guide-card h3,.admin-panel-top-clean h3,label,h1,h2,h3,h4,strong,b){
+      color:#111827 !important;
+    }
+
+    body:not(.theme-dark) :is(.hint,.rule-hint,.recent-note,.guide-card li,.guide-card p,.guide-card small,.muted,.sub,.desc,.description,small){
+      color:#64748b !important;
+    }
+
+    body:not(.theme-dark) :is(input,textarea,select){
+      background:#ffffff !important;
+      color:#111827 !important;
+      border-color:#cbd5e1 !important;
+      box-shadow:none !important;
+      caret-color:#111827 !important;
+    }
+
+    body:not(.theme-dark) :is(input,textarea,select):focus{
+      background:#ffffff !important;
+      border-color:#2563eb !important;
+      box-shadow:0 0 0 3px rgba(37,99,235,.14) !important;
+    }
+
+    body:not(.theme-dark) :is(input,textarea)::placeholder{
+      color:#94a3b8 !important;
+      opacity:1 !important;
+    }
+
+    html.theme-dark,
+    body.theme-dark{
+      background:var(--dark-bg-v118) !important;
+      color:var(--dark-text-v118) !important;
+      color-scheme:dark !important;
+    }
+
+    body.theme-dark .app{
+      background:var(--dark-bg-v118) !important;
+      color:var(--dark-text-v118) !important;
+    }
+
+    body.theme-dark .topbar{
+      background:#111827 !important;
+      border:1px solid #263548 !important;
+      border-radius:0 0 20px 20px !important;
+      box-shadow:0 12px 28px rgba(0,0,0,.22) !important;
+    }
+
+    body.theme-dark .brand h1{
+      color:#f8fafc !important;
+      text-shadow:none !important;
+      letter-spacing:-.7px !important;
+    }
+
+    body.theme-dark .active-user-badge{
+      background:#dcfce7 !important;
+      color:#064e3b !important;
+      border-color:#86efac !important;
+      box-shadow:none !important;
+    }
+
+    body.theme-dark .top-actions-v112 button:first-child{
+      background:#16a34a !important;
+      color:#ffffff !important;
+      border-color:#16a34a !important;
+      box-shadow:none !important;
+    }
+
+    body.theme-dark .top-actions-v112 button:last-child{
+      background:#f8fafc !important;
+      color:#172033 !important;
+      border-color:#e5e7eb !important;
+      box-shadow:none !important;
+    }
+
+    body.theme-dark .flow-tabs-v111{
+      background:#111827 !important;
+      border:1px solid #263548 !important;
+      border-radius:22px !important;
+      box-shadow:0 10px 24px rgba(0,0,0,.20) !important;
+      backdrop-filter:none !important;
+      -webkit-backdrop-filter:none !important;
+    }
+
+    body.theme-dark .flow-tabs-v111 button{
+      background:#0f172a !important;
+      color:#cbd5e1 !important;
+      border-color:#2b3a50 !important;
+      border-radius:16px !important;
+      box-shadow:none !important;
+    }
+
+    body.theme-dark .flow-tabs-v111 button.active{
+      background:#2563eb !important;
+      color:#ffffff !important;
+      border-color:#3b82f6 !important;
+      box-shadow:0 10px 20px rgba(37,99,235,.24) !important;
+    }
+
+    body.theme-dark :is(.panel,.panel-header,.panel-body,.info-details,.info-body,.product-compact,.measure-field,.daily-work-summary,.bulk-actions,.tools,.guide-card,.admin-panel-top-clean,.admin-summary-card,.registered-user-item,.record-row-v111,.record-val-v111,.mobile-records-v111,.usage-card){
+      background:var(--dark-card-v118) !important;
+      color:var(--dark-text-v118) !important;
+      border-color:var(--dark-line-v118) !important;
+      box-shadow:0 10px 24px rgba(0,0,0,.18) !important;
+    }
+
+    body.theme-dark .panel-header{
+      border-bottom-color:var(--dark-line-v118) !important;
+      box-shadow:none !important;
+    }
+
+    body.theme-dark :is(.panel-header h2,.guide-card h3,.admin-panel-top-clean h3,label,h1,h2,h3,h4,strong,b){
+      color:#f8fafc !important;
+    }
+
+    body.theme-dark :is(.hint,.rule-hint,.recent-note,.guide-card li,.guide-card p,.guide-card small,.muted,.sub,.desc,.description,small){
+      color:var(--dark-muted-v118) !important;
+    }
+
+    body.theme-dark :is(input,textarea,select){
+      background:#0f172a !important;
+      color:#f8fafc !important;
+      border-color:#3a4a63 !important;
+      box-shadow:none !important;
+      caret-color:#f8fafc !important;
+    }
+
+    body.theme-dark :is(input,textarea,select):focus{
+      background:#0b1220 !important;
+      border-color:#60a5fa !important;
+      box-shadow:0 0 0 3px rgba(96,165,250,.18) !important;
+    }
+
+    body.theme-dark :is(input,textarea)::placeholder{
+      color:#94a3b8 !important;
+      opacity:1 !important;
+    }
+
+    /* v118: ürünler artık pastel dolgu yerine sade kart + renk şeridi */
+    .product-box,
+    .clean-product-v111{
+      background:#ffffff !important;
+      color:#172033 !important;
+      border:1.5px solid #d8e1eb !important;
+      box-shadow:none !important;
+      transform:none !important;
+      outline:none !important;
+    }
+
+    .product-box[data-product="Tomruk"],
+    .clean-product-v111.tomruk{ border-left:5px solid #d99a00 !important; color:#4a3410 !important; }
+    .product-box[data-product="Maden Direk"],
+    .clean-product-v111.maden{ border-left:5px solid #2563eb !important; color:#1e3a8a !important; }
+    .product-box[data-product="Kağıtlık"],
+    .clean-product-v111.kagit{ border-left:5px solid #dc2626 !important; color:#7f1d1d !important; }
+    .product-box[data-product="Sanayi Odunu"],
+    .clean-product-v111.sanayi{ border-left:5px solid #16a34a !important; color:#14532d !important; }
+    .product-box[data-product="Tel Direk"],
+    .clean-product-v111.tel{ border-left:5px solid #7c3aed !important; color:#3b0764 !important; }
+
+    .product-box.active,
+    .clean-product-v111.active{
+      background:#111827 !important;
+      color:#ffffff !important;
+      border-color:#111827 !important;
+      box-shadow:0 8px 18px rgba(15,23,42,.16) !important;
+      transform:none !important;
+      outline:none !important;
+    }
+
+    body.theme-dark .product-box,
+    body.theme-dark .clean-product-v111{
+      background:#121c2b !important;
+      color:#dbeafe !important;
+      border-color:#2d3b50 !important;
+      box-shadow:none !important;
+      outline:none !important;
+    }
+
+    body.theme-dark .product-box.active,
+    body.theme-dark .clean-product-v111.active{
+      background:#2563eb !important;
+      color:#ffffff !important;
+      border-color:#60a5fa !important;
+      box-shadow:0 10px 20px rgba(37,99,235,.22) !important;
+    }
+
+    .product-box.active::after,
+    .clean-product-v111.active::after{
+      content:"✓" !important;
+      top:-9px !important;
+      right:8px !important;
+      padding:2px 7px !important;
+      min-width:20px !important;
+      text-align:center !important;
+      border-radius:999px !important;
+      font-size:11px !important;
+      letter-spacing:0 !important;
+      background:#111827 !important;
+      color:#ffffff !important;
+      border:2px solid #ffffff !important;
+      box-shadow:none !important;
+    }
+
+    body.theme-dark .product-box.active::after,
+    body.theme-dark .clean-product-v111.active::after{
+      background:#f8fafc !important;
+      color:#0f172a !important;
+      border-color:#0f172a !important;
+    }
+
+    /* v118: sade mod daha kompakt, klavyede alan kaybetmesin */
+    .clean-simple-overlay-v111{
+      inset:auto 0 0 0 !important;
+      top:var(--simple-vvtop-v118, 0px) !important;
+      height:var(--simple-vh-v118, 100dvh) !important;
+      align-items:stretch !important;
+      justify-content:center !important;
+      padding:0 !important;
+      background:#f6f7fb !important;
+      backdrop-filter:none !important;
+      -webkit-backdrop-filter:none !important;
+    }
+
+    body.theme-dark .clean-simple-overlay-v111{
+      background:#0b1220 !important;
+    }
+
+    .clean-simple-card-v111{
+      width:min(720px, 100%) !important;
+      height:var(--simple-vh-v118, 100dvh) !important;
+      min-height:0 !important;
+      max-height:var(--simple-vh-v118, 100dvh) !important;
+      border-radius:0 !important;
+      border:none !important;
+      background:#f6f7fb !important;
+      color:#111827 !important;
+      padding:0 12px calc(18px + env(safe-area-inset-bottom, 0px)) !important;
+      box-shadow:none !important;
+      overflow-y:auto !important;
+      overscroll-behavior:contain !important;
+    }
+
+    body.theme-dark .clean-simple-card-v111{
+      background:#0b1220 !important;
+      color:#eef4ff !important;
+    }
+
+    .clean-simple-head-v111{
+      position:sticky !important;
+      top:0 !important;
+      z-index:80 !important;
+      display:grid !important;
+      grid-template-columns:40px minmax(0,1fr) 88px !important;
+      gap:8px !important;
+      align-items:center !important;
+      margin:0 -12px 8px !important;
+      padding:8px 12px calc(8px + env(safe-area-inset-top, 0px)) !important;
+      background:rgba(255,255,255,.96) !important;
+      border-bottom:1px solid #d9e2ec !important;
+      box-shadow:0 6px 18px rgba(15,23,42,.06) !important;
+      backdrop-filter:none !important;
+      -webkit-backdrop-filter:none !important;
+    }
+
+    body.theme-dark .clean-simple-head-v111{
+      background:#111827 !important;
+      border-bottom-color:#2b3a50 !important;
+      box-shadow:0 8px 18px rgba(0,0,0,.18) !important;
+    }
+
+    .clean-simple-head-v111 > div{
+      display:block !important;
+      min-width:0 !important;
+    }
+
+    .clean-simple-head-v111 h2{
+      margin:0 !important;
+      font-size:17px !important;
+      line-height:1.1 !important;
+      color:#111827 !important;
+      white-space:nowrap !important;
+      overflow:hidden !important;
+      text-overflow:ellipsis !important;
+    }
+
+    .clean-simple-head-v111 p{
+      display:none !important;
+    }
+
+    body.theme-dark .clean-simple-head-v111 h2{ color:#f8fafc !important; }
+
+    .clean-simple-close-v111{
+      grid-column:1 !important;
+      width:38px !important;
+      height:38px !important;
+      min-height:38px !important;
+      border-radius:14px !important;
+      border:1px solid #d9e2ec !important;
+      background:#ffffff !important;
+      color:#111827 !important;
+      font-size:23px !important;
+      box-shadow:none !important;
+    }
+
+    body.theme-dark .clean-simple-close-v111{
+      background:#0f172a !important;
+      color:#f8fafc !important;
+      border-color:#2b3a50 !important;
+    }
+
+    .clean-header-save-v113{
+      grid-column:3 !important;
+      width:100% !important;
+      min-height:38px !important;
+      border-radius:14px !important;
+      background:#16a34a !important;
+      color:#ffffff !important;
+      border:1px solid #16a34a !important;
+      font-size:14px !important;
+      font-weight:950 !important;
+      padding:6px 8px !important;
+      box-shadow:none !important;
+    }
+
+    body.theme-dark .clean-header-save-v113{
+      background:#16a34a !important;
+      color:#ffffff !important;
+      border-color:#22c55e !important;
+      box-shadow:none !important;
+    }
+
+    .clean-save-v111{
+      display:none !important;
+    }
+
+    .clean-product-grid-v111{
+      grid-template-columns:repeat(2, minmax(0, 1fr)) !important;
+      gap:8px !important;
+      margin:8px 0 8px !important;
+    }
+
+    .clean-product-v111{
+      min-height:42px !important;
+      border-radius:15px !important;
+      font-size:14px !important;
+      padding:7px 8px !important;
+      overflow:visible !important;
+    }
+
+    .clean-measure-grid-v111{
+      grid-template-columns:1fr 1fr !important;
+      gap:8px !important;
+      margin:8px 0 !important;
+      align-items:start !important;
+    }
+
+    .clean-measure-grid-v111 > div{
+      background:#ffffff !important;
+      border:1px solid #d9e2ec !important;
+      border-radius:18px !important;
+      padding:8px !important;
+      box-shadow:none !important;
+    }
+
+    body.theme-dark .clean-measure-grid-v111 > div{
+      background:#111827 !important;
+      border-color:#2b3a50 !important;
+      box-shadow:none !important;
+    }
+
+    .clean-measure-grid-v111 label{
+      margin-bottom:5px !important;
+      font-size:12px !important;
+      color:#111827 !important;
+    }
+
+    body.theme-dark .clean-measure-grid-v111 label{ color:#f8fafc !important; }
+
+    .clean-measure-grid-v111 input{
+      height:44px !important;
+      border-radius:14px !important;
+      font-size:21px !important;
+      background:#ffffff !important;
+      color:#111827 !important;
+      border:2px solid #cbd5e1 !important;
+      box-shadow:none !important;
+    }
+
+    body.theme-dark .clean-measure-grid-v111 input{
+      background:#0f172a !important;
+      color:#f8fafc !important;
+      border-color:#3a4a63 !important;
+    }
+
+    .clean-chip-row-v111{
+      grid-template-columns:repeat(3, minmax(0, 1fr)) !important;
+      gap:6px !important;
+      margin-top:7px !important;
+      min-height:auto !important;
+    }
+
+    .clean-chip-v111{
+      min-height:36px !important;
+      border-radius:13px !important;
+      font-size:14px !important;
+      padding:6px 5px !important;
+      background:#f8fafc !important;
+      color:#172033 !important;
+      border:1.5px solid #d9e2ec !important;
+      box-shadow:none !important;
+    }
+
+    .clean-chip-v111.boy{ border-color:#0ea5e9 !important; background:#f8fafc !important; color:#0f172a !important; }
+    .clean-chip-v111.cap{ border-color:#16a34a !important; background:#f8fafc !important; color:#0f172a !important; }
+
+    body.theme-dark .clean-chip-v111{
+      background:#121c2b !important;
+      color:#e5edf8 !important;
+      border-color:#2d3b50 !important;
+    }
+
+    body.theme-dark .clean-chip-v111.boy{ border-color:#0ea5e9 !important; background:#121c2b !important; color:#e5edf8 !important; }
+    body.theme-dark .clean-chip-v111.cap{ border-color:#16a34a !important; background:#121c2b !important; color:#e5edf8 !important; }
+
+    .clean-auto-info-v111,
+    .clean-empty-v111{
+      border-radius:16px !important;
+      background:#ffffff !important;
+      border:1px solid #d9e2ec !important;
+      color:#475569 !important;
+      padding:9px !important;
+      box-shadow:none !important;
+    }
+
+    body.theme-dark .clean-auto-info-v111,
+    body.theme-dark .clean-empty-v111{
+      background:#111827 !important;
+      color:#a8b5c8 !important;
+      border-color:#2b3a50 !important;
+    }
+
+    .clean-recent-area-v111 h3{
+      color:#334155 !important;
+      font-size:14px !important;
+      margin:9px 0 6px !important;
+      background:transparent !important;
+      border:none !important;
+    }
+
+    body.theme-dark .clean-recent-area-v111 h3{ color:#dbeafe !important; }
+
+    .clean-recent-list-v111{
+      display:grid !important;
+      grid-template-columns:repeat(3, minmax(0, 1fr)) !important;
+      gap:7px !important;
+    }
+
+    .clean-recent-item-v114{
+      min-height:54px !important;
+      border-radius:15px !important;
+      border:1px solid #d9e2ec !important;
+      border-left-width:5px !important;
+      background:#ffffff !important;
+      color:#172033 !important;
+      padding:8px !important;
+      box-shadow:none !important;
+      overflow:hidden !important;
+    }
+
+    .clean-recent-item-v114.tomruk{ border-left-color:#d99a00 !important; }
+    .clean-recent-item-v114.maden{ border-left-color:#2563eb !important; }
+    .clean-recent-item-v114.kagit{ border-left-color:#dc2626 !important; }
+    .clean-recent-item-v114.sanayi{ border-left-color:#16a34a !important; }
+    .clean-recent-item-v114.tel{ border-left-color:#7c3aed !important; }
+
+    body.theme-dark .clean-recent-item-v114{
+      background:#111827 !important;
+      color:#e5edf8 !important;
+      border-color:#2b3a50 !important;
+      box-shadow:none !important;
+    }
+
+    body.theme-dark .clean-recent-item-v114.tomruk{ border-left-color:#d99a00 !important; }
+    body.theme-dark .clean-recent-item-v114.maden{ border-left-color:#2563eb !important; }
+    body.theme-dark .clean-recent-item-v114.kagit{ border-left-color:#dc2626 !important; }
+    body.theme-dark .clean-recent-item-v114.sanayi{ border-left-color:#16a34a !important; }
+    body.theme-dark .clean-recent-item-v114.tel{ border-left-color:#7c3aed !important; }
+
+    .clean-recent-item-v114 b{
+      display:block !important;
+      white-space:nowrap !important;
+      overflow:hidden !important;
+      text-overflow:ellipsis !important;
+      font-size:13px !important;
+      color:inherit !important;
+    }
+
+    .clean-recent-item-v114 span{
+      display:block !important;
+      white-space:nowrap !important;
+      overflow:hidden !important;
+      text-overflow:ellipsis !important;
+      font-size:11px !important;
+      color:#64748b !important;
+    }
+
+    body.theme-dark .clean-recent-item-v114 span{ color:#a8b5c8 !important; }
+
+    body.clean-keyboard-v118 .clean-auto-info-v111,
+    body.clean-keyboard-v118 .clean-recent-area-v111{
+      display:none !important;
+    }
+
+    body.clean-keyboard-v118 .clean-product-v111{
+      min-height:38px !important;
+      font-size:13px !important;
+    }
+
+    body.clean-keyboard-v118 .clean-chip-v111{
+      min-height:34px !important;
+      font-size:13px !important;
+    }
+
+    @media (max-width:430px){
+      .clean-product-grid-v111{ gap:7px !important; }
+      .clean-measure-grid-v111{ gap:7px !important; }
+      .clean-recent-list-v111{ gap:6px !important; }
+    }
+
   </style>
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -6375,7 +7011,7 @@
 <div class="app">
     <header class="topbar">
       <div class="brand">
-        <h1>Mesaha İO v1.46</h1>
+        <h1>Mesaha İO v1.47</h1>
         
       </div>
       <div id="activeUserBadge" class="active-user-badge" role="button" tabindex="0" title="Kullanıcı panelini aç" style="display:none"></div>
@@ -7830,8 +8466,8 @@
     function currentDeviceInfoPayload() {
       const active = state.activeUser || findActiveUser();
       return {
-        appVersion: "Mesaha İO v1.46",
-        fileVersion: "v116",
+        appVersion: "Mesaha İO v1.47",
+        fileVersion: "v118",
         userName: active && active.name ? cleanUserText(active.name) : "",
         seflik: active && active.seflik ? cleanUserText(active.seflik) : "",
         deviceId: getOrCreateDeviceId(),
@@ -12850,11 +13486,166 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     }, 1800);
 
 
+
+    /* v118: tema değişince siyah kalan inline stilleri temizle + Sade Mod klavye alanı */
+    function clearThemeInlineV118() {
+      const darkFragments = [
+        '#1d232c','#222a35','#101c2e','#111827','#07111f','#0a1221','#0d1522','#171d26','#162235','#1b2028','#0f172a','#0b1220','#121c2b','#151f2f',
+        '#f2f5f9','#f8fafc','#dbe3ef','#dbeafe','#e8eef8','#eef4ff','#c8d3e4','#a8b5c8',
+        'rgb(29, 35, 44)','rgb(34, 42, 53)','rgb(16, 28, 46)','rgb(17, 24, 39)','rgb(7, 17, 31)','rgb(15, 23, 42)','rgb(11, 18, 32)','rgb(18, 28, 43)',
+        'linear-gradient(135deg, rgba(202,138,4','linear-gradient(135deg, rgba(37,99,235','linear-gradient(135deg, rgba(220,38,38','linear-gradient(135deg, rgba(22,163,74','linear-gradient(135deg, rgba(124,58,237',
+        'linear-gradient(180deg, rgba(34,197,94','linear-gradient(180deg, rgba(245,158,11','linear-gradient(180deg, rgba(239,68,68','linear-gradient(180deg, rgba(100,116,139'
+      ];
+      const props = ['background','background-color','background-image','color','border-color','box-shadow','border-left','outline'];
+      document.querySelectorAll('[style], [data-mesaha-theme-inline-v118]').forEach(el => {
+        let touched = el.dataset && el.dataset.mesahaThemeInlineV118 === '1';
+        props.forEach(prop => {
+          const val = (el.style.getPropertyValue(prop) || '').toLowerCase();
+          if (!val) return;
+          if (touched || darkFragments.some(f => val.includes(String(f).toLowerCase()))) {
+            el.style.removeProperty(prop);
+          }
+        });
+        if (el.dataset) delete el.dataset.mesahaThemeInlineV118;
+        if (!el.getAttribute('style')) el.removeAttribute('style');
+      });
+      document.body.classList.remove('clean-keyboard-v118');
+      updateSimpleViewportV118();
+    }
+
+    function setThemeInlineV118(selector, props) {
+      document.querySelectorAll(selector).forEach(el => {
+        if (!el || !el.style) return;
+        el.dataset.mesahaThemeInlineV118 = '1';
+        Object.entries(props).forEach(([k, v]) => el.style.setProperty(k, v, 'important'));
+      });
+    }
+
+    function forceDarkReadableV118() {
+      if (!document.body.classList.contains('theme-dark')) return;
+      setThemeInlineV118('.guide-card, .info-details, .info-body, .recent-barcodes-box, .tomruk-class-panel, .admin-panel-top-clean, .admin-summary-card, .admin-dashboard-row, .admin-activity-item, .admin-note-item, .registered-user-item, .daily-work-summary, .bulk-actions, .tools, .record-row-v111, .record-val-v111', {
+        background:'#111827', color:'#eef4ff', 'border-color':'#2b3a50', 'box-shadow':'none'
+      });
+      setThemeInlineV118('input, textarea, select', {
+        background:'#0f172a', color:'#f8fafc', 'border-color':'#3a4a63', 'box-shadow':'none'
+      });
+      setThemeInlineV118('.registered-user-meta span, .admin-summary-card span, .admin-dashboard-row span, .admin-activity-item span, .admin-note-item span', {
+        background:'#151f2f', color:'#dbeafe', 'border-color':'#2b3a50'
+      });
+    }
+
+    // Eski agresif koyulaştırma fonksiyonlarını v118 sade ve temiz sürüme yönlendir.
+    try { repaintDarkInlineV114 = forceDarkReadableV118; } catch {}
+    try { forceDarkPanelsV115 = forceDarkReadableV118; } catch {}
+    try { forceDarkReadableV116 = forceDarkReadableV118; } catch {}
+
+    function updateSimpleViewportV118() {
+      const vv = window.visualViewport;
+      const h = vv ? Math.max(320, Math.round(vv.height)) : window.innerHeight;
+      const top = vv ? Math.max(0, Math.round(vv.offsetTop || 0)) : 0;
+      document.documentElement.style.setProperty('--simple-vh-v118', h + 'px');
+      document.documentElement.style.setProperty('--simple-vvtop-v118', top + 'px');
+      const keyboardOpen = !!(vv && document.body.classList.contains('clean-simple-open-v111') && h < window.innerHeight - 120);
+      document.body.classList.toggle('clean-keyboard-v118', keyboardOpen);
+    }
+
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', updateSimpleViewportV118);
+      window.visualViewport.addEventListener('scroll', updateSimpleViewportV118);
+    }
+    window.addEventListener('resize', updateSimpleViewportV118);
+    updateSimpleViewportV118();
+
+    const oldApplyThemeV118 = typeof applyThemeV113 === 'function' ? applyThemeV113 : null;
+    function applyThemeV118(mode) {
+      const dark = mode === 'dark';
+      if (oldApplyThemeV118) oldApplyThemeV118(dark ? 'dark' : 'light');
+      document.body.classList.toggle('theme-dark', dark);
+      document.documentElement.classList.toggle('theme-dark', dark);
+      try {
+        localStorage.setItem('mesaha_theme_v113', dark ? 'dark' : 'light');
+        localStorage.setItem('mesaha_theme_v112', dark ? 'dark' : 'light');
+      } catch {}
+      const btn = document.getElementById('themeToggleV112');
+      if (btn) btn.textContent = dark ? '☀️ Aydınlık' : '🌙 Karanlık';
+      const meta = document.querySelector('meta[name="theme-color"]');
+      if (meta) meta.setAttribute('content', dark ? '#0b1220' : '#f6f7fb');
+      if (dark) {
+        setTimeout(forceDarkReadableV118, 30);
+        setTimeout(forceDarkReadableV118, 180);
+      } else {
+        setTimeout(clearThemeInlineV118, 0);
+        setTimeout(clearThemeInlineV118, 80);
+        setTimeout(clearThemeInlineV118, 260);
+      }
+    }
+
+    function initThemeV118() {
+      let saved = 'light';
+      try {
+        saved = localStorage.getItem('mesaha_theme_v113') || localStorage.getItem('mesaha_theme_v112') || localStorage.getItem('mesaha_theme') || localStorage.getItem('theme') || 'light';
+      } catch {}
+      applyThemeV118(saved === 'dark' ? 'dark' : 'light');
+    }
+
+    applyThemeV113 = applyThemeV118;
+    applyThemeV112 = applyThemeV118;
+    initThemeV113 = initThemeV118;
+    initThemeV112 = initThemeV118;
+
+    const oldOpenCleanSimpleV118 = typeof openCleanSimpleV113 === 'function' ? openCleanSimpleV113 : (typeof openCleanSimpleV111 === 'function' ? openCleanSimpleV111 : null);
+    openCleanSimpleV113 = function() {
+      if (oldOpenCleanSimpleV118) oldOpenCleanSimpleV118();
+      updateSimpleViewportV118();
+      setTimeout(updateSimpleViewportV118, 80);
+      setTimeout(() => {
+        const c = cleanElsV111 && cleanElsV111();
+        if (c && c.len && !c.len.__v118FocusBound) {
+          [c.len, c.dia].forEach(inp => {
+            if (!inp || inp.__v118FocusBound) return;
+            inp.__v118FocusBound = true;
+            inp.addEventListener('focus', () => {
+              updateSimpleViewportV118();
+              setTimeout(() => { try { inp.scrollIntoView({block:'center', behavior:'smooth'}); } catch {} }, 120);
+            });
+            inp.addEventListener('blur', () => setTimeout(updateSimpleViewportV118, 120));
+          });
+        }
+      }, 120);
+    };
+    openCleanSimpleV111 = openCleanSimpleV113;
+
+    const oldCloseCleanSimpleV118 = typeof closeCleanSimpleV111 === 'function' ? closeCleanSimpleV111 : null;
+    if (oldCloseCleanSimpleV118) {
+      closeCleanSimpleV111 = function() {
+        const result = oldCloseCleanSimpleV118.apply(this, arguments);
+        document.body.classList.remove('clean-keyboard-v118');
+        updateSimpleViewportV118();
+        return result;
+      };
+    }
+
+    const oldRenderCleanProductsV118 = typeof renderCleanProductsV111 === 'function' ? renderCleanProductsV111 : null;
+    if (oldRenderCleanProductsV118) {
+      renderCleanProductsV111 = function() {
+        const result = oldRenderCleanProductsV118.apply(this, arguments);
+        const c = cleanElsV111 && cleanElsV111();
+        if (c && c.grid && !c.grid.querySelector('.clean-product-v111.active')) {
+          c.grid.querySelector('.clean-product-v111')?.classList.add('active');
+        }
+        return result;
+      };
+    }
+
+    initThemeV118();
+    setTimeout(updateSimpleViewportV118, 100);
+
+
     load();
   
     window.MESAHA_BUILD_INFO = {
-      fileVersion: "v116",
-      visibleVersion: "Mesaha İO v1.46",
+      fileVersion: "v118",
+      visibleVersion: "Mesaha İO v1.47",
       stableBuild: true
     };
 
