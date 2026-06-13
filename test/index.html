@@ -7273,90 +7273,409 @@
       body.inline-simple-v119 .recent-barcode-list{ grid-template-columns:1fr !important; }
     }
 
+  
 
-
-    /* v120: Sade mod çıkış onarımı + sade karanlık ürün renkleri */
+    /* v121: Corona örnek tonlarında sade antrasit karanlık tema - neon yok */
     :root{
-      --v120-tomruk:#f2b705;
-      --v120-maden:#3b82f6;
-      --v120-kagit:#ef4444;
-      --v120-sanayi:#22c55e;
-      --v120-tel:#8b5cf6;
-      --v120-save:#18a957;
+      --v121-bg:#090b10;
+      --v121-shell:#11151d;
+      --v121-card:#171b24;
+      --v121-card2:#1d222d;
+      --v121-input:#10141c;
+      --v121-line:#2a303b;
+      --v121-line2:#353d4b;
+      --v121-text:#eef1f6;
+      --v121-soft:#c9d0dc;
+      --v121-muted:#8f98aa;
+      --v121-blue:#3b82f6;
+      --v121-green:#5fc85f;
+      --v121-tomruk:#d9a21b;
+      --v121-maden:#3b82f6;
+      --v121-kagit:#ef4444;
+      --v121-sanayi:#4ade80;
+      --v121-tel:#8b5cf6;
     }
 
-    body.theme-dark .product-box{
-      background:#101827 !important;
-      color:#eaf1ff !important;
-      border-color:#2b3a50 !important;
-      border-left-width:6px !important;
+    html.theme-dark,
+    body.theme-dark{
+      background:var(--v121-bg) !important;
+      color:var(--v121-text) !important;
+      color-scheme:dark !important;
+    }
+
+    body.theme-dark .app{
+      background:var(--v121-bg) !important;
+      color:var(--v121-text) !important;
+    }
+
+    body.theme-dark .topbar{
+      background:var(--v121-shell) !important;
+      border:1px solid var(--v121-line) !important;
+      border-radius:0 0 18px 18px !important;
+      box-shadow:0 14px 28px rgba(0,0,0,.28) !important;
+    }
+
+    body.theme-dark .brand h1,
+    body.theme-dark .brand-title,
+    body.theme-dark h1{
+      color:#f7f8fb !important;
+      text-shadow:none !important;
+      letter-spacing:-.6px !important;
+    }
+
+    body.theme-dark .active-user-badge{
+      background:#1b2a20 !important;
+      color:#bff5cc !important;
+      border-color:#315b3a !important;
       box-shadow:none !important;
     }
-    body.theme-dark .product-box[data-product="Tomruk"]{ border-left-color:var(--v120-tomruk) !important; background:linear-gradient(135deg, rgba(242,183,5,.16), #101827 58%) !important; }
-    body.theme-dark .product-box[data-product="Maden Direk"]{ border-left-color:var(--v120-maden) !important; background:linear-gradient(135deg, rgba(59,130,246,.16), #101827 58%) !important; }
-    body.theme-dark .product-box[data-product="Kağıtlık"]{ border-left-color:var(--v120-kagit) !important; background:linear-gradient(135deg, rgba(239,68,68,.15), #101827 58%) !important; }
-    body.theme-dark .product-box[data-product="Sanayi Odunu"]{ border-left-color:var(--v120-sanayi) !important; background:linear-gradient(135deg, rgba(34,197,94,.15), #101827 58%) !important; }
-    body.theme-dark .product-box[data-product="Tel Direk"]{ border-left-color:var(--v120-tel) !important; background:linear-gradient(135deg, rgba(139,92,246,.16), #101827 58%) !important; }
 
-    body.theme-dark .product-box[data-product="Tomruk"].active{ background:linear-gradient(135deg, #b98200, #302405) !important; border-color:var(--v120-tomruk) !important; color:#fff7d6 !important; }
-    body.theme-dark .product-box[data-product="Maden Direk"].active{ background:linear-gradient(135deg, #2563eb, #10254f) !important; border-color:#93c5fd !important; color:#eff6ff !important; }
-    body.theme-dark .product-box[data-product="Kağıtlık"].active{ background:linear-gradient(135deg, #dc2626, #481515) !important; border-color:#fca5a5 !important; color:#fff1f2 !important; }
-    body.theme-dark .product-box[data-product="Sanayi Odunu"].active{ background:linear-gradient(135deg, #16a34a, #123b24) !important; border-color:#86efac !important; color:#ecfdf5 !important; }
-    body.theme-dark .product-box[data-product="Tel Direk"].active{ background:linear-gradient(135deg, #7c3aed, #2f185d) !important; border-color:#c4b5fd !important; color:#f5f3ff !important; }
-
-    #submitBtn,
-    .save-field-final button,
-    body.inline-simple-v119 #submitBtn{
-      background:linear-gradient(135deg, #1fc76a, #118944) !important;
-      border-color:#28d978 !important;
-      color:#ffffff !important;
-      box-shadow:0 12px 22px rgba(24,169,87,.22) !important;
-    }
-    body.theme-dark #submitBtn,
-    body.theme-dark .save-field-final button,
-    body.theme-dark.inline-simple-v119 #submitBtn{
-      background:linear-gradient(135deg, #20c96d, #0f7a3b) !important;
-      border-color:#44e58c !important;
-      color:#ffffff !important;
-      box-shadow:0 12px 26px rgba(34,197,94,.24) !important;
+    body.theme-dark .top-actions-v112 button:first-child,
+    body.theme-dark #openSimpleV112{
+      background:#1f8f4d !important;
+      color:#f4fff7 !important;
+      border-color:#39b96c !important;
+      box-shadow:none !important;
     }
 
-    .record-values-v111{ grid-template-columns:repeat(2, minmax(0,1fr)) !important; }
-    .record-row-v111{ grid-template-columns:30px minmax(92px,1.22fr) minmax(70px,.70fr) minmax(72px,.78fr) !important; }
+    body.theme-dark .top-actions-v112 button:last-child,
+    body.theme-dark #themeToggleV112{
+      background:#f3f4f6 !important;
+      color:#111827 !important;
+      border-color:#f3f4f6 !important;
+      box-shadow:none !important;
+    }
+
+    body.theme-dark .flow-tabs-v111{
+      background:var(--v121-shell) !important;
+      border:1px solid var(--v121-line) !important;
+      border-radius:22px !important;
+      box-shadow:0 12px 24px rgba(0,0,0,.22) !important;
+      backdrop-filter:none !important;
+      -webkit-backdrop-filter:none !important;
+    }
+
+    body.theme-dark .flow-tabs-v111 button{
+      background:#121720 !important;
+      color:#c5ccda !important;
+      border:1px solid var(--v121-line) !important;
+      border-radius:16px !important;
+      box-shadow:none !important;
+    }
+
+    body.theme-dark .flow-tabs-v111 button.active{
+      background:#2f6df6 !important;
+      color:#ffffff !important;
+      border-color:#4b83ff !important;
+      box-shadow:none !important;
+    }
+
+    body.theme-dark :is(
+      .panel,.panel-header,.panel-body,.card,.section,.form-card,.form-section,
+      .info-details,.info-body,.product-compact,.measure-field,.barcode-field-final,
+      .save-field-final,.recent-barcodes-box,.daily-work-summary,.daily-summary-item,
+      .bulk-actions,.tools,.guide-card,.admin-panel-top-clean,.admin-summary-card,
+      .registered-user-item,.record-row-v111,.record-val-v111,.mobile-records-v111,
+      .usage-card,.searchbar,.wood-type-panel,.wood-check,.class-box,.tomruk-class-panel,
+      .user-card,.backup-card,.notice-card,.support-card,.ticket-card,.content-card,
+      .grid-card,.stat-card,.info-card,.select-card,.tree-card,.wood-card,.export-card,
+      .modal,.modal-card,.sheet,.box,.field,.user-panel-card,.issue-report-card,
+      .cloud-restore-card,.login-card
+    ){
+      background:var(--v121-card) !important;
+      color:var(--v121-text) !important;
+      border-color:var(--v121-line) !important;
+      box-shadow:0 10px 22px rgba(0,0,0,.18) !important;
+    }
+
+    body.theme-dark .panel-header,
+    body.theme-dark .card-header,
+    body.theme-dark .admin-panel-head,
+    body.theme-dark .user-panel-head,
+    body.theme-dark .issue-report-head{
+      background:var(--v121-card) !important;
+      border-bottom-color:var(--v121-line) !important;
+      box-shadow:none !important;
+    }
+
+    body.theme-dark :is(.panel > div,.card > div,section > div,form > div):not(.flow-tabs-v111):not(.mobile-records-v111):not(.record-tags-v111):not(.product-boxes):not(.chip-row):not(.recent-barcode-list):not(.top-actions-v112):not(.clean-simple-overlay-v111):not(.tomruk):not(.maden):not(.kagit):not(.sanayi):not(.tel):not(.tree):not(.mini-tag-v111):not(.tag):not(.chip):not(.pill):not(.badge){
+      border-color:var(--v121-line) !important;
+    }
+
+    body.theme-dark :is(input,textarea,select){
+      background:var(--v121-input) !important;
+      color:#f6f8fb !important;
+      border-color:var(--v121-line2) !important;
+      box-shadow:none !important;
+      caret-color:#ffffff !important;
+    }
+
+    body.theme-dark :is(input,textarea,select):focus{
+      background:#0d1118 !important;
+      border-color:#4b83ff !important;
+      box-shadow:0 0 0 3px rgba(59,130,246,.15) !important;
+    }
+
+    body.theme-dark :is(input,textarea)::placeholder{
+      color:#7f8899 !important;
+      opacity:1 !important;
+    }
+
+    body.theme-dark :is(label,h1,h2,h3,h4,h5,h6,strong,b,.panel-header h2,.recent-title,.section-title,.card-title){
+      color:#f6f8fb !important;
+    }
+
+    body.theme-dark :is(.hint,.rule-hint,.recent-note,.muted,.sub,.desc,.description,small,p,li){
+      color:var(--v121-muted) !important;
+    }
+
+    body.theme-dark :is(table,thead,tbody,tr,td,th){
+      background:var(--v121-card) !important;
+      color:var(--v121-text) !important;
+      border-color:var(--v121-line) !important;
+    }
+
+    body.theme-dark th{
+      background:#121720 !important;
+      color:#f6f8fb !important;
+    }
+
+    body.theme-dark :is(button,.btn):not(.top-actions-v112 button):not(.flow-tabs-v111 button):not(.product-box):not(.clean-product-v111):not(.clean-chip-v111):not(.record-edit-v111):not(.record-delete-v111):not(#submitBtn){
+      background:#121720 !important;
+      color:#e6ebf3 !important;
+      border-color:var(--v121-line) !important;
+      box-shadow:none !important;
+    }
+
+    body.theme-dark :is(.primary,.btn-primary,button.primary,[data-primary="true"]):not(#submitBtn){
+      background:#2f6df6 !important;
+      color:#ffffff !important;
+      border-color:#4b83ff !important;
+      box-shadow:none !important;
+    }
+
+    body.theme-dark :is(.success,.btn-success,button.success),
+    body.theme-dark #submitBtn{
+      background:#1f9d55 !important;
+      color:#ffffff !important;
+      border-color:#38c172 !important;
+      box-shadow:0 10px 20px rgba(31,157,85,.18) !important;
+    }
+
+    body.theme-dark #submitBtn:active{
+      filter:brightness(.96) !important;
+      transform:none !important;
+    }
+
+    body.theme-dark :is(.danger,.btn-danger,button.danger){
+      background:#7f1d1d !important;
+      color:#fff !important;
+      border-color:#b93a3a !important;
+    }
+
+    /* Ürün renkleri: açık moddaki mantık, koyu modda sade vurgu */
+    body.theme-dark .product-box,
+    body.theme-dark .clean-product-v111{
+      background:var(--v121-card2) !important;
+      color:#e9eef6 !important;
+      border:1.5px solid var(--v121-line2) !important;
+      border-left-width:5px !important;
+      box-shadow:none !important;
+      outline:none !important;
+    }
+
+    body.theme-dark .product-box[data-product="Tomruk"],
+    body.theme-dark .clean-product-v111.tomruk{ border-left-color:var(--v121-tomruk) !important; color:#f3d486 !important; }
+    body.theme-dark .product-box[data-product="Maden Direk"],
+    body.theme-dark .clean-product-v111.maden{ border-left-color:var(--v121-maden) !important; color:#b9d3ff !important; }
+    body.theme-dark .product-box[data-product="Kağıtlık"],
+    body.theme-dark .clean-product-v111.kagit{ border-left-color:var(--v121-kagit) !important; color:#ffb4b4 !important; }
+    body.theme-dark .product-box[data-product="Sanayi Odunu"],
+    body.theme-dark .clean-product-v111.sanayi{ border-left-color:var(--v121-sanayi) !important; color:#b8f4c7 !important; }
+    body.theme-dark .product-box[data-product="Tel Direk"],
+    body.theme-dark .clean-product-v111.tel{ border-left-color:var(--v121-tel) !important; color:#d8ccff !important; }
+
+    body.theme-dark .product-box.active,
+    body.theme-dark .clean-product-v111.active{
+      color:#ffffff !important;
+      box-shadow:0 10px 22px rgba(0,0,0,.22) !important;
+    }
+    body.theme-dark .product-box.active[data-product="Tomruk"],
+    body.theme-dark .clean-product-v111.active.tomruk{ background:#3a2a0b !important; border-color:var(--v121-tomruk) !important; }
+    body.theme-dark .product-box.active[data-product="Maden Direk"],
+    body.theme-dark .clean-product-v111.active.maden{ background:#142746 !important; border-color:var(--v121-maden) !important; }
+    body.theme-dark .product-box.active[data-product="Kağıtlık"],
+    body.theme-dark .clean-product-v111.active.kagit{ background:#3a1518 !important; border-color:var(--v121-kagit) !important; }
+    body.theme-dark .product-box.active[data-product="Sanayi Odunu"],
+    body.theme-dark .clean-product-v111.active.sanayi{ background:#14331f !important; border-color:var(--v121-sanayi) !important; }
+    body.theme-dark .product-box.active[data-product="Tel Direk"],
+    body.theme-dark .clean-product-v111.active.tel{ background:#26183d !important; border-color:var(--v121-tel) !important; }
+
+    body.theme-dark .product-box.active::after,
+    body.theme-dark .clean-product-v111.active::after{
+      background:#0d1118 !important;
+      color:#ffffff !important;
+      border-color:var(--v121-line2) !important;
+      box-shadow:none !important;
+    }
+
+    body.theme-dark .mini-tag-v111.tomruk,
+    body.theme-dark .tag.tomruk,
+    body.theme-dark .chip.tomruk{
+      background:#3a2a0b !important;
+      border-color:var(--v121-tomruk) !important;
+      color:#f3d486 !important;
+    }
+    body.theme-dark .mini-tag-v111.maden,
+    body.theme-dark .tag.maden,
+    body.theme-dark .chip.maden{
+      background:#142746 !important;
+      border-color:var(--v121-maden) !important;
+      color:#b9d3ff !important;
+    }
+    body.theme-dark .mini-tag-v111.kagit,
+    body.theme-dark .tag.kagit,
+    body.theme-dark .chip.kagit{
+      background:#3a1518 !important;
+      border-color:var(--v121-kagit) !important;
+      color:#ffb4b4 !important;
+    }
+    body.theme-dark .mini-tag-v111.sanayi,
+    body.theme-dark .tag.sanayi,
+    body.theme-dark .chip.sanayi{
+      background:#14331f !important;
+      border-color:var(--v121-sanayi) !important;
+      color:#b8f4c7 !important;
+    }
+    body.theme-dark .mini-tag-v111.tel,
+    body.theme-dark .tag.tel,
+    body.theme-dark .chip.tel{
+      background:#26183d !important;
+      border-color:var(--v121-tel) !important;
+      color:#d8ccff !important;
+    }
+    body.theme-dark .mini-tag-v111.tree,
+    body.theme-dark .tag.tree,
+    body.theme-dark .tag.tree-saricam{
+      background:#14331f !important;
+      border-color:#4ade80 !important;
+      color:#b8f4c7 !important;
+    }
+
+    body.theme-dark .totals .stat,
+    body.theme-dark .daily-summary-item{
+      background:var(--v121-card) !important;
+      color:var(--v121-text) !important;
+      border:1px solid var(--v121-line) !important;
+      border-left-width:5px !important;
+      box-shadow:0 10px 22px rgba(0,0,0,.18) !important;
+    }
+    body.theme-dark .totals .stat.tomruk-stat{ border-left-color:var(--v121-tomruk) !important; }
+    body.theme-dark .totals .stat.maden-stat{ border-left-color:var(--v121-maden) !important; }
+    body.theme-dark .totals .stat.kagit-stat{ border-left-color:var(--v121-kagit) !important; }
+    body.theme-dark .totals .stat.sanayi-stat{ border-left-color:var(--v121-sanayi) !important; }
+    body.theme-dark .totals .stat.tel-stat{ border-left-color:var(--v121-tel) !important; }
+    body.theme-dark .totals .stat small,
+    body.theme-dark .totals .stat .unit{ color:var(--v121-muted) !important; }
+    body.theme-dark .totals .stat strong{ color:#f6f8fb !important; }
 
     body.theme-dark .record-row-v111{
-      background:#101827 !important;
-      color:#eef4ff !important;
-      border-color:#2d3b50 !important;
+      background:var(--v121-card) !important;
+      border-color:var(--v121-line) !important;
+      box-shadow:0 10px 22px rgba(0,0,0,.17) !important;
+    }
+    body.theme-dark .record-row-v111.selected{
+      background:#1a2333 !important;
+      border-color:#4b83ff !important;
       box-shadow:none !important;
     }
-    body.theme-dark .record-row-v111.tomruk{ background:linear-gradient(135deg, rgba(242,183,5,.15), #101827 62%) !important; border-left-color:var(--v120-tomruk) !important; }
-    body.theme-dark .record-row-v111.maden{ background:linear-gradient(135deg, rgba(59,130,246,.15), #101827 62%) !important; border-left-color:var(--v120-maden) !important; }
-    body.theme-dark .record-row-v111.kagit{ background:linear-gradient(135deg, rgba(239,68,68,.14), #101827 62%) !important; border-left-color:var(--v120-kagit) !important; }
-    body.theme-dark .record-row-v111.sanayi{ background:linear-gradient(135deg, rgba(34,197,94,.14), #101827 62%) !important; border-left-color:var(--v120-sanayi) !important; }
-    body.theme-dark .record-row-v111.tel{ background:linear-gradient(135deg, rgba(139,92,246,.15), #101827 62%) !important; border-left-color:var(--v120-tel) !important; }
-
     body.theme-dark .record-val-v111{
-      background:rgba(15,23,42,.72) !important;
-      color:#eaf1ff !important;
-      border-color:#33445c !important;
+      background:var(--v121-input) !important;
+      border-color:var(--v121-line) !important;
+      box-shadow:none !important;
+    }
+    body.theme-dark .record-main-v111 b,
+    body.theme-dark .record-val-v111 strong{ color:#f6f8fb !important; }
+    body.theme-dark .record-val-v111 small{ color:var(--v121-muted) !important; }
+
+    body.theme-dark .recent-barcodes-box,
+    body.theme-dark .clean-auto-info-v111,
+    body.theme-dark .clean-empty-v111{
+      background:var(--v121-card) !important;
+      color:var(--v121-muted) !important;
+      border-color:var(--v121-line) !important;
+      box-shadow:0 10px 22px rgba(0,0,0,.16) !important;
+    }
+    body.theme-dark .clean-recent-item-v114,
+    body.theme-dark .recent-barcode-list > *{
+      background:var(--v121-card2) !important;
+      color:#e9eef6 !important;
+      border-color:var(--v121-line) !important;
+      box-shadow:none !important;
+    }
+    body.theme-dark .clean-recent-item-v114.tomruk,
+    body.theme-dark .recent-barcode-list .tomruk{ border-left-color:var(--v121-tomruk) !important; color:#f3d486 !important; }
+    body.theme-dark .clean-recent-item-v114.maden,
+    body.theme-dark .recent-barcode-list .maden{ border-left-color:var(--v121-maden) !important; color:#b9d3ff !important; }
+    body.theme-dark .clean-recent-item-v114.kagit,
+    body.theme-dark .recent-barcode-list .kagit{ border-left-color:var(--v121-kagit) !important; color:#ffb4b4 !important; }
+    body.theme-dark .clean-recent-item-v114.sanayi,
+    body.theme-dark .recent-barcode-list .sanayi{ border-left-color:var(--v121-sanayi) !important; color:#b8f4c7 !important; }
+    body.theme-dark .clean-recent-item-v114.tel,
+    body.theme-dark .recent-barcode-list .tel{ border-left-color:var(--v121-tel) !important; color:#d8ccff !important; }
+
+    body.theme-dark .registered-user-item.status-today{
+      background:linear-gradient(180deg, rgba(95,200,95,.12), var(--v121-card) 70%) !important;
+      border-color:#315b3a !important;
+    }
+    body.theme-dark .registered-user-item.status-warning{
+      background:linear-gradient(180deg, rgba(217,162,27,.12), var(--v121-card) 70%) !important;
+      border-color:#5c4719 !important;
+    }
+    body.theme-dark .registered-user-item.status-old{
+      background:linear-gradient(180deg, rgba(239,68,68,.10), var(--v121-card) 70%) !important;
+      border-color:#5b272a !important;
+    }
+    body.theme-dark .registered-user-meta span,
+    body.theme-dark .admin-summary-card span,
+    body.theme-dark .admin-dashboard-row span,
+    body.theme-dark .admin-activity-item span,
+    body.theme-dark .admin-note-item span{
+      background:var(--v121-input) !important;
+      color:var(--v121-soft) !important;
+      border-color:var(--v121-line) !important;
     }
 
-    body.theme-dark .recent-barcode-item.recent-tomruk{ background:linear-gradient(135deg, rgba(242,183,5,.20), #111827 64%) !important; border-color:rgba(242,183,5,.75) !important; color:#fff3c4 !important; }
-    body.theme-dark .recent-barcode-item.recent-maden{ background:linear-gradient(135deg, rgba(59,130,246,.20), #111827 64%) !important; border-color:rgba(59,130,246,.82) !important; color:#dbeafe !important; }
-    body.theme-dark .recent-barcode-item.recent-kagit{ background:linear-gradient(135deg, rgba(239,68,68,.18), #111827 64%) !important; border-color:rgba(239,68,68,.82) !important; color:#fee2e2 !important; }
-    body.theme-dark .recent-barcode-item.recent-sanayi{ background:linear-gradient(135deg, rgba(34,197,94,.18), #111827 64%) !important; border-color:rgba(34,197,94,.82) !important; color:#dcfce7 !important; }
-    body.theme-dark .recent-barcode-item.recent-tel{ background:linear-gradient(135deg, rgba(139,92,246,.20), #111827 64%) !important; border-color:rgba(139,92,246,.82) !important; color:#ede9fe !important; }
+    body.theme-dark [style*="background: white"],
+    body.theme-dark [style*="background:white"],
+    body.theme-dark [style*="background:#fff"],
+    body.theme-dark [style*="background: #fff"],
+    body.theme-dark [style*="background-color: white"],
+    body.theme-dark [style*="background-color:white"],
+    body.theme-dark [style*="background-color:#fff"],
+    body.theme-dark [style*="background-color: #fff"],
+    body.theme-dark [style*="rgb(255, 255, 255)"]{
+      background:var(--v121-card) !important;
+      color:var(--v121-text) !important;
+      border-color:var(--v121-line) !important;
+    }
 
-    body.theme-dark .totals .stat.tomruk-stat{ background:linear-gradient(135deg, rgba(242,183,5,.18), #111827 62%) !important; border-left:8px solid var(--v120-tomruk) !important; }
-    body.theme-dark .totals .stat.maden-stat{ background:linear-gradient(135deg, rgba(59,130,246,.18), #111827 62%) !important; border-left:8px solid var(--v120-maden) !important; }
-    body.theme-dark .totals .stat.kagit-stat{ background:linear-gradient(135deg, rgba(239,68,68,.16), #111827 62%) !important; border-left:8px solid var(--v120-kagit) !important; }
-    body.theme-dark .totals .stat.sanayi-stat{ background:linear-gradient(135deg, rgba(34,197,94,.16), #111827 62%) !important; border-left:8px solid var(--v120-sanayi) !important; }
-    body.theme-dark .totals .stat.tel-stat{ background:linear-gradient(135deg, rgba(139,92,246,.18), #111827 62%) !important; border-left:8px solid var(--v120-tel) !important; }
-
-    @media (max-width:430px){
-      .record-row-v111{ grid-template-columns:28px minmax(82px,1.16fr) minmax(66px,.66fr) minmax(68px,.74fr) !important; }
-      .mini-tag-v111{ max-width:58px !important; padding-left:5px !important; padding-right:5px !important; }
+    body.theme-dark.inline-simple-v119 .app{
+      background:var(--v121-bg) !important;
+    }
+    body.theme-dark.inline-simple-v119 .panel.entry-panel,
+    body.theme-dark.inline-simple-v119 .product-compact,
+    body.theme-dark.inline-simple-v119 .measure-field,
+    body.theme-dark.inline-simple-v119 .barcode-field-final,
+    body.theme-dark.inline-simple-v119 .save-field-final,
+    body.theme-dark.inline-simple-v119 .recent-barcodes-box{
+      background:var(--v121-card) !important;
+      border-color:var(--v121-line) !important;
+      box-shadow:0 10px 22px rgba(0,0,0,.16) !important;
+    }
+    body.theme-dark.inline-simple-v119 .entry-panel .panel-header{
+      background:var(--v121-card) !important;
+      border-color:var(--v121-line) !important;
     }
 
   </style>
@@ -7523,7 +7842,7 @@
 <div class="app">
     <header class="topbar">
       <div class="brand">
-        <h1>Mesaha İO v1.49</h1>
+        <h1>Mesaha İO v1.50</h1>
         
       </div>
       <div id="activeUserBadge" class="active-user-badge" role="button" tabindex="0" title="Kullanıcı panelini aç" style="display:none"></div>
@@ -8978,8 +9297,8 @@
     function currentDeviceInfoPayload() {
       const active = state.activeUser || findActiveUser();
       return {
-        appVersion: "Mesaha İO v1.49",
-        fileVersion: "v120",
+        appVersion: "Mesaha İO v1.50",
+        fileVersion: "v119",
         userName: active && active.name ? cleanUserText(active.name) : "",
         seflik: active && active.seflik ? cleanUserText(active.seflik) : "",
         deviceId: getOrCreateDeviceId(),
@@ -9718,7 +10037,7 @@
 
     async function uploadCloudBackupOpen(user) {
       const payload = buildCloudBackupPayload(user);
-      payload.version = 115;
+      payload.version = 121;
       const bolmePart = els.bolmeNo && String(els.bolmeNo.value || "").trim() ? `_${cleanFilePart(els.bolmeNo.value)}` : "";
       const fileName = `Mesaha_Yedek_${cleanFilePart(user.seflik)}_${cleanFilePart(user.name)}${bolmePart}_${new Date().toISOString().slice(0,19).replace(/[-:T]/g, "")}.json`;
 
@@ -10147,7 +10466,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function buildCloudBackupPayload(user) {
       return {
         app: "Mesaha İO",
-        version: 115,
+        version: 121,
         createdAt: new Date().toLocaleString("tr-TR"),
         user: {
           name: user.name || "",
@@ -12151,7 +12470,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function backup() {
       const data = {
         app: "Mesaha App",
-        version: 115,
+        version: 121,
         exportedAt: formatDateTime(),
         systemHeaders: HEADERS,
         settings: state.settings,
@@ -12568,7 +12887,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     async function firebaseUploadBackup(user) {
       const { db } = await ensureFirebaseReady();
       const payload = buildCloudBackupPayload(user);
-      payload.version = 115;
+      payload.version = 121;
       payload.cloud = "firebase";
 
       const bolmeNo = els.bolmeNo ? String(els.bolmeNo.value || "").trim() : "";
@@ -14081,7 +14400,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
       const btn = document.getElementById('themeToggleV112');
       if (btn) btn.textContent = dark ? '☀️ Aydınlık' : '🌙 Karanlık';
       const meta = document.querySelector('meta[name="theme-color"]');
-      if (meta) meta.setAttribute('content', dark ? '#0b1220' : '#f6f7fb');
+      if (meta) meta.setAttribute('content', dark ? '#090b10' : '#f6f7fb');
       if (dark) {
         setTimeout(forceDarkReadableV118, 30);
         setTimeout(forceDarkReadableV118, 180);
@@ -14218,7 +14537,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
       const btn = document.getElementById('themeToggleV112');
       if (btn) btn.textContent = dark ? '☀️ Aydınlık' : '🌙 Karanlık';
       const meta = document.querySelector('meta[name="theme-color"]');
-      if (meta) meta.setAttribute('content', dark ? '#0b1220' : '#f5f7fb');
+      if (meta) meta.setAttribute('content', dark ? '#090b10' : '#f5f7fb');
       if (dark) {
         setTimeout(forceDarkReadableV119, 20);
         setTimeout(forceDarkReadableV119, 160);
@@ -14332,256 +14651,11 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     setTimeout(() => { bindTopActionsV119(); initThemeV119(); }, 250);
 
 
-    /* v120: Normal butonu kesin çıkış, kayıt listesi sade görünüm, koyu ürün renkleri */
-    function productShortV120(product) {
-      const key = normalizeProductType(product || "Tomruk");
-      if (key === "Tomruk") return "TMRK";
-      if (key === "Maden Direk") return "Mdn";
-      if (key === "Kağıtlık") return "Kğt";
-      if (key === "Sanayi Odunu") return "San";
-      if (key === "Tel Direk") return "Tel";
-      return "TMRK";
-    }
-    productShortV111 = productShortV120;
-
-    function renderMobileRecordsV120(force = false) {
-      const wrap = document.getElementById("mobileRecordsV111");
-      if (!wrap) return;
-
-      const list = getFilteredRecordsV111();
-      if (!state.selectedRecordIds) state.selectedRecordIds = new Set();
-
-      if (!list.length) {
-        wrap.innerHTML = `<div class="empty">Kayıt yok.</div>`;
-        if (typeof updateBulkActions === "function") updateBulkActions(list);
-        return;
-      }
-
-      wrap.innerHTML = list.map((r) => {
-        const product = normalizeProductType(r.productType || r.woodType || r.odunAdi || "Tomruk");
-        const cls = productClassV111(product);
-        const tree = r.treeType || r.agacAdi || "Karaçam";
-        const id = String(r.id || "");
-        const checked = state.selectedRecordIds.has(id);
-        const barcode = r.barcode || r.barkodNo || "-";
-        const length = r.length || r.boy || "-";
-        const diameter = r.diameter || r.cap || "-";
-
-        return `
-          <div class="record-row-v111 ${cls} ${checked ? "selected" : ""}" data-v111-row="${escapeHtml(id)}">
-            <label class="record-select-v111" title="Seç">
-              <input type="checkbox" data-v111-select="${escapeHtml(id)}" ${checked ? "checked" : ""} />
-            </label>
-
-            <div class="record-main-v111">
-              <b>${escapeHtml(barcode)}</b>
-              <div class="record-tags-v111">
-                <span class="mini-tag-v111 ${cls}" title="${escapeHtml(product)}">${escapeHtml(productShortV120(product))}</span>
-                <span class="mini-tag-v111 tree" title="${escapeHtml(tree)}">${escapeHtml(treeShortV111(tree))}</span>
-              </div>
-            </div>
-
-            <div class="record-values-v111">
-              <div class="record-val-v111"><small>Ç</small><strong>${escapeHtml(String(diameter))}</strong></div>
-              <div class="record-val-v111"><small>B</small><strong>${escapeHtml(String(length))}</strong></div>
-            </div>
-
-            <div class="record-actions-v111">
-              <button type="button" class="record-edit-v111" data-v111-edit="${escapeHtml(id)}">Düz</button>
-              <button type="button" class="record-delete-v111" data-v111-delete="${escapeHtml(id)}">Sil</button>
-            </div>
-          </div>
-        `;
-      }).join("");
-
-      if (typeof updateBulkActions === "function") updateBulkActions(list);
-      setTimeout(forceDarkProductColorsV120, 20);
-    }
-    renderMobileRecordsV111 = renderMobileRecordsV120;
-
-    function setProductColorInlineV120(selector, props) {
-      document.querySelectorAll(selector).forEach(el => {
-        if (!el || !el.style) return;
-        el.dataset.mesahaThemeInlineV120 = '1';
-        Object.entries(props).forEach(([k, v]) => el.style.setProperty(k, v, 'important'));
-      });
-    }
-
-    function forceDarkProductColorsV120() {
-      if (!document.body.classList.contains('theme-dark')) return;
-      const genericDark = {
-        background:'#111827', color:'#eef4ff', 'border-color':'#2d3b50', 'box-shadow':'0 10px 24px rgba(0,0,0,.18)'
-      };
-      setProductColorInlineV120('.panel, .panel-header, .panel-body, .info-details, .info-body, .product-compact, .measure-field, .barcode-field-final, .save-field-final, .recent-barcodes-box, .daily-work-summary, .bulk-actions, .tools, .guide-card, .admin-panel-top-clean, .admin-summary-card, .admin-dashboard-row, .admin-activity-item, .admin-note-item, .registered-user-item, .mobile-records-v111, .usage-card, .searchbar, .wood-type-panel, .wood-check, .tomruk-class-panel, .totals .stat', genericDark);
-      setProductColorInlineV120('input, textarea, select', { background:'#0f172a', color:'#f8fafc', 'border-color':'#3a4a63', 'box-shadow':'none' });
-      setProductColorInlineV120('.record-val-v111', { background:'rgba(15,23,42,.72)', color:'#eaf1ff', 'border-color':'#33445c' });
-      setProductColorInlineV120('#submitBtn, .save-field-final button', { background:'linear-gradient(135deg, #20c96d, #0f7a3b)', color:'#ffffff', 'border-color':'#44e58c', 'box-shadow':'0 12px 26px rgba(34,197,94,.24)' });
-
-      const rows = [
-        ['tomruk', 'rgba(242,183,5,.16)', '#f2b705'],
-        ['maden', 'rgba(59,130,246,.16)', '#3b82f6'],
-        ['kagit', 'rgba(239,68,68,.15)', '#ef4444'],
-        ['sanayi', 'rgba(34,197,94,.15)', '#22c55e'],
-        ['tel', 'rgba(139,92,246,.16)', '#8b5cf6']
-      ];
-      rows.forEach(([cls, tint, color]) => {
-        setProductColorInlineV120(`.record-row-v111.${cls}`, { background:`linear-gradient(135deg, ${tint}, #101827 62%)`, color:'#eef4ff', 'border-color':'#2d3b50', 'border-left-color':color, 'box-shadow':'none' });
-        setProductColorInlineV120(`.recent-barcode-item.recent-${cls}`, { background:`linear-gradient(135deg, ${tint}, #111827 64%)`, color:'#fff', 'border-color':color, 'box-shadow':'none' });
-      });
-
-      const productMap = [
-        ['Tomruk', 'rgba(242,183,5,.16)', '#f2b705', 'linear-gradient(135deg, #b98200, #302405)', '#fff7d6'],
-        ['Maden Direk', 'rgba(59,130,246,.16)', '#3b82f6', 'linear-gradient(135deg, #2563eb, #10254f)', '#eff6ff'],
-        ['Kağıtlık', 'rgba(239,68,68,.15)', '#ef4444', 'linear-gradient(135deg, #dc2626, #481515)', '#fff1f2'],
-        ['Sanayi Odunu', 'rgba(34,197,94,.15)', '#22c55e', 'linear-gradient(135deg, #16a34a, #123b24)', '#ecfdf5'],
-        ['Tel Direk', 'rgba(139,92,246,.16)', '#8b5cf6', 'linear-gradient(135deg, #7c3aed, #2f185d)', '#f5f3ff']
-      ];
-      productMap.forEach(([name, tint, color, activeBg, activeText]) => {
-        setProductColorInlineV120(`.product-box[data-product="${name}"]`, { background:`linear-gradient(135deg, ${tint}, #101827 58%)`, color:'#eaf1ff', 'border-color':'#2b3a50', 'border-left-color':color, 'box-shadow':'none' });
-        setProductColorInlineV120(`.product-box[data-product="${name}"].active`, { background:activeBg, color:activeText, 'border-color':color, 'border-left-color':color, 'box-shadow':'0 10px 22px rgba(0,0,0,.20)' });
-      });
-
-      setProductColorInlineV120('.totals .stat.tomruk-stat', { background:'linear-gradient(135deg, rgba(242,183,5,.18), #111827 62%)', 'border-left':'8px solid #f2b705' });
-      setProductColorInlineV120('.totals .stat.maden-stat', { background:'linear-gradient(135deg, rgba(59,130,246,.18), #111827 62%)', 'border-left':'8px solid #3b82f6' });
-      setProductColorInlineV120('.totals .stat.kagit-stat', { background:'linear-gradient(135deg, rgba(239,68,68,.16), #111827 62%)', 'border-left':'8px solid #ef4444' });
-      setProductColorInlineV120('.totals .stat.sanayi-stat', { background:'linear-gradient(135deg, rgba(34,197,94,.16), #111827 62%)', 'border-left':'8px solid #22c55e' });
-      setProductColorInlineV120('.totals .stat.tel-stat', { background:'linear-gradient(135deg, rgba(139,92,246,.18), #111827 62%)', 'border-left':'8px solid #8b5cf6' });
-    }
-
-    const oldRemoveThemeInlineV119For120 = typeof removeThemeInlineV119 === 'function' ? removeThemeInlineV119 : null;
-    if (oldRemoveThemeInlineV119For120) {
-      removeThemeInlineV119 = function() {
-        oldRemoveThemeInlineV119For120();
-        document.querySelectorAll('[data-mesaha-theme-inline-v120]').forEach(el => {
-          ['background','background-color','background-image','color','border-color','border-left','border-left-color','box-shadow','outline'].forEach(prop => el.style.removeProperty(prop));
-          delete el.dataset.mesahaThemeInlineV120;
-          if (!el.getAttribute('style')) el.removeAttribute('style');
-        });
-      };
-    }
-
-    function applyThemeV120(mode) {
-      const dark = mode === 'dark';
-      if (typeof removeThemeInlineV119 === 'function') removeThemeInlineV119();
-      document.body.classList.toggle('theme-dark', dark);
-      document.documentElement.classList.toggle('theme-dark', dark);
-      try {
-        localStorage.setItem('mesaha_theme_v113', dark ? 'dark' : 'light');
-        localStorage.setItem('mesaha_theme_v112', dark ? 'dark' : 'light');
-        localStorage.setItem('mesaha_theme', dark ? 'dark' : 'light');
-      } catch {}
-      const btn = document.getElementById('themeToggleV112');
-      if (btn) btn.textContent = dark ? '☀️ Aydınlık' : '🌙 Karanlık';
-      const meta = document.querySelector('meta[name="theme-color"]');
-      if (meta) meta.setAttribute('content', dark ? '#0b1220' : '#f5f7fb');
-      if (dark) {
-        setTimeout(forceDarkProductColorsV120, 20);
-        setTimeout(forceDarkProductColorsV120, 180);
-        setTimeout(forceDarkProductColorsV120, 600);
-      } else if (typeof removeThemeInlineV119 === 'function') {
-        setTimeout(removeThemeInlineV119, 20);
-        setTimeout(removeThemeInlineV119, 180);
-        setTimeout(removeThemeInlineV119, 600);
-      }
-    }
-
-    function initThemeV120() {
-      let saved = 'light';
-      try { saved = localStorage.getItem('mesaha_theme_v113') || localStorage.getItem('mesaha_theme_v112') || localStorage.getItem('mesaha_theme') || localStorage.getItem('theme') || 'light'; } catch {}
-      applyThemeV120(saved === 'dark' ? 'dark' : 'light');
-    }
-
-    applyThemeV119 = applyThemeV120;
-    applyThemeV113 = applyThemeV120;
-    applyThemeV112 = applyThemeV120;
-    initThemeV119 = initThemeV120;
-    initThemeV113 = initThemeV120;
-    initThemeV112 = initThemeV120;
-    try { repaintDarkInlineV114 = forceDarkProductColorsV120; } catch {}
-    try { forceDarkPanelsV115 = forceDarkProductColorsV120; } catch {}
-    try { forceDarkReadableV116 = forceDarkProductColorsV120; } catch {}
-    try { forceDarkReadableV118 = forceDarkProductColorsV120; } catch {}
-    try { forceDarkReadableV119 = forceDarkProductColorsV120; } catch {}
-
-    function setInlineSimpleV120(on) {
-      const overlay = document.getElementById('cleanSimpleOverlayV111');
-      if (overlay) {
-        overlay.classList.remove('show');
-        overlay.style.setProperty('display', 'none', 'important');
-      }
-      document.body.classList.remove('clean-simple-open-v111', 'clean-keyboard-v118');
-      if (on) {
-        showEntryForInlineSimpleV119();
-        document.body.classList.add('inline-simple-v119');
-        if (typeof renderProductButtons === 'function') renderProductButtons();
-        if (typeof setProductType === 'function' && els && els.productType) setProductType(els.productType.value || 'Tomruk', false);
-      } else {
-        document.body.classList.remove('inline-simple-v119');
-        if (typeof keepNaturalScrollV111 === 'function') keepNaturalScrollV111();
-        if (typeof updateFlowTabsV111 === 'function') updateFlowTabsV111();
-        try { document.activeElement && document.activeElement.blur && document.activeElement.blur(); } catch {}
-      }
-      const btn = document.getElementById('openSimpleV112');
-      if (btn) {
-        btn.textContent = on ? '↩ Normal' : '⚡ Sade Mod';
-        btn.classList.toggle('active', !!on);
-        btn.setAttribute('aria-pressed', on ? 'true' : 'false');
-      }
-      setTimeout(() => {
-        if (typeof renderMobileRecordsV111 === 'function') renderMobileRecordsV111(true);
-        if (document.body.classList.contains('theme-dark')) forceDarkProductColorsV120();
-      }, 60);
-    }
-    setInlineSimpleV119 = setInlineSimpleV120;
-    toggleInlineSimpleV119 = function() { setInlineSimpleV120(!document.body.classList.contains('inline-simple-v119')); };
-    closeInlineSimpleV119 = function() { setInlineSimpleV120(false); };
-    openCleanSimpleV111 = function() { setInlineSimpleV120(true); };
-    openCleanSimpleV113 = openCleanSimpleV111;
-    closeCleanSimpleV111 = closeInlineSimpleV119;
-
-    function bindTopActionsV120() {
-      const simpleOld = document.getElementById('openSimpleV112');
-      if (simpleOld && !simpleOld.__v120CleanBound) {
-        const simpleBtn = simpleOld.cloneNode(true);
-        simpleBtn.__v120CleanBound = true;
-        simpleOld.parentNode.replaceChild(simpleBtn, simpleOld);
-        simpleBtn.textContent = document.body.classList.contains('inline-simple-v119') ? '↩ Normal' : '⚡ Sade Mod';
-        simpleBtn.addEventListener('click', (event) => {
-          event.preventDefault();
-          event.stopImmediatePropagation();
-          event.stopPropagation();
-          setInlineSimpleV120(!document.body.classList.contains('inline-simple-v119'));
-        }, true);
-        if (typeof els !== 'undefined') els.simpleModeBtn = simpleBtn;
-      }
-
-      const themeOld = document.getElementById('themeToggleV112');
-      if (themeOld && !themeOld.__v120CleanBound) {
-        const themeBtn = themeOld.cloneNode(true);
-        themeBtn.__v120CleanBound = true;
-        themeOld.parentNode.replaceChild(themeBtn, themeOld);
-        themeBtn.textContent = document.body.classList.contains('theme-dark') ? '☀️ Aydınlık' : '🌙 Karanlık';
-        themeBtn.addEventListener('click', (event) => {
-          event.preventDefault();
-          event.stopImmediatePropagation();
-          event.stopPropagation();
-          applyThemeV120(document.body.classList.contains('theme-dark') ? 'light' : 'dark');
-        }, true);
-      }
-    }
-
-    bindTopActionsV120();
-    initThemeV120();
-    renderMobileRecordsV120(true);
-    [250, 700, 1400, 2400].forEach(ms => setTimeout(() => { bindTopActionsV120(); if (document.body.classList.contains('theme-dark')) forceDarkProductColorsV120(); }, ms));
-
-
-
     load();
   
     window.MESAHA_BUILD_INFO = {
-      fileVersion: "v120",
-      visibleVersion: "Mesaha İO v1.49",
+      fileVersion: "v119",
+      visibleVersion: "Mesaha İO v1.50",
       stableBuild: true
     };
 
