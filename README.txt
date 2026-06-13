@@ -1,21 +1,23 @@
-Mesaha App v82 Firebase / Mesaha İO v1.11
+Mesaha App v87 / Mesaha İO v1.16
 
-Bu sürüm Firebase Firestore bağlantısı ekler.
+Eklenenler / düzeltmeler:
+- Admin Paneli Bildirimler sekmesine açık bildirim sayacı eklendi.
+- Bildirim kartlarına Sil butonu eklendi.
+- Kullanıcı kartına Güncelleme Uyarısı gönderme butonu eklendi.
+- Admin güncelleme uyarısı gönderince kullanıcı tarafında bildirim rozeti çıkar.
+- Admin cevap yazınca kullanıcı bildirim rozeti daha sağlam çalışır.
+- Kullanıcı rozeti uygulama açıkken 45 saniyede bir ve uygulamaya geri dönünce kontrol eder.
+- Kullanıcı cevapları/bildirimleri görünce rozet temizlenir.
+- Görünen uygulama sürümü Mesaha İO v1.16 yapıldı.
 
-Yapılanlar:
-- Firebase config uygulamaya eklendi.
-- Yeni kullanıcı kayıtları Firebase'e yazılır.
-- Yeni bulut yedekleri Firebase Firestore'a yazılır.
-- Buluttan Getir önce Firebase'i kontrol eder, Firebase'te yoksa eski Google Apps Script sisteminden arar.
-- Admin Paneli önce Firebase kullanıcılarını gösterir; gerekirse eski sistem yedek olarak çalışır.
-- Admin Paneli'ne "Eski Kullanıcıları Firebase’e Aktar" butonu eklendi.
-- Google Apps Script sistemi yedek/fallback olarak korunur.
-- Görünen uygulama sürümü Mesaha İO v1.11 yapıldı.
+Firebase:
+- v84/v85/v86 kuralları aynen geçerlidir. supportTickets koleksiyonu kullanılır.
 
-Firebase'de yapılacaklar:
-1. Authentication > Sign-in method > Anonymous etkinleştir.
-2. Firestore > Rules kısmına FIRESTORE_RULES.txt içindeki kuralları yapıştırıp Publish/Yayınla.
-3. GitHub'a index.html, manifest.json, service-worker.js, .nojekyll yükle.
+GitHub'a yüklenecek dosyalar:
+- index.html
+- manifest.json
+- service-worker.js
+- .nojekyll
 
-Apps Script:
-- Zorunlu değişiklik yoktur. Eski sistem fallback olarak kalır.
+Eski Apps Script URL:
+https://script.google.com/macros/s/AKfycbzv8rw3n4FuwDmiFnW3ttKuoK0mUQnzEYizjaD46z0uuFiKtqLl1zkupkB9AkOehC7ECg/exec

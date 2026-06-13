@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha App v86</title>
+  <title>Mesaha App v87</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -3992,6 +3992,53 @@
       color:#3730a3 !important;
     }
 
+  
+    /* v87: Bildirim sayacı, silme ve güncelleme uyarısı */
+    .admin-tab-count{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-width:20px;
+      height:20px;
+      padding:0 6px;
+      border-radius:999px;
+      background:#ef4444;
+      color:#fff;
+      font-size:10px;
+      font-weight:950;
+      margin-left:5px;
+      vertical-align:middle;
+      box-shadow:0 6px 14px rgba(239,68,68,.26);
+    }
+
+    .admin-tab-count.zero{
+      background:#cbd5e1;
+      color:#334155;
+      box-shadow:none;
+    }
+
+    .admin-update-warn-btn{
+      background:#fff7ed !important;
+      color:#9a3412 !important;
+      border-color:#fed7aa !important;
+    }
+
+    .admin-report-delete{
+      background:#fff1f2 !important;
+      color:#be123c !important;
+      border-color:#fecdd3 !important;
+    }
+
+    .admin-report-actions.four{
+      grid-template-columns:repeat(2, minmax(0,1fr)) !important;
+    }
+
+    @media (min-width:720px){
+      .admin-report-actions.four{
+        grid-template-columns:repeat(4, minmax(0,1fr)) !important;
+      }
+    }
+
   </style>
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -4117,7 +4164,7 @@
   <div class="app">
     <header class="topbar">
       <div class="brand">
-        <h1>Mesaha İO v1.15</h1>
+        <h1>Mesaha İO v1.16</h1>
         
       </div>
       <div id="activeUserBadge" class="active-user-badge" role="button" tabindex="0" title="Kullanıcı panelini aç" style="display:none"></div>
@@ -4535,7 +4582,7 @@
           <div class="admin-tabs admin-tabs-clean">
             <button class="admin-tab active" type="button" data-admin-tab="users">Kullanıcılar</button>
             <button class="admin-tab" type="button" data-admin-tab="notes">Notlar</button>
-            <button class="admin-tab" type="button" data-admin-tab="reports">Bildirimler</button>
+            <button class="admin-tab" type="button" data-admin-tab="reports">Bildirimler <span id="adminReportsCount" class="admin-tab-count">0</span></button>
           </div>
 
           <div id="adminUsersView" class="admin-view">
@@ -4739,6 +4786,7 @@
       issueMyReportsList: $("issueMyReportsList"),
       adminReportsView: $("adminReportsView"),
       adminReportsList: $("adminReportsList"),
+      adminReportsCount: $("adminReportsCount"),
       guideForceUpdateBtn: $("guideForceUpdateBtn"),
       adminRefreshBtn: $("adminRefreshBtn"),
       adminSyncInfo: $("adminSyncInfo"),
@@ -5445,6 +5493,7 @@
               <button class="secondary admin-user-backups" type="button" onclick="adminOpenUserBackups('${escapeHtml(user.name || "")}','${escapeHtml(user.seflik || "")}')">Yedekleri Gör</button>
               <button class="admin-user-note" type="button" onclick="adminEditNote('${escapeHtml(user.name || "")}','${escapeHtml(user.seflik || "")}')">Not Yaz</button>
               <button class="ghost" type="button" onclick="adminShowDetail('${escapeHtml(user.name || "")}','${escapeHtml(user.seflik || "")}')">Detay</button>
+              <button class="secondary admin-update-warn-btn" type="button" onclick="adminSendUpdateNotice('${escapeHtml(user.name || "")}','${escapeHtml(user.seflik || "")}')">Güncelleme Uyarısı</button>
               <button class="danger registered-user-delete" type="button" onclick="deleteCloudUserAndBackups('${escapeHtml(user.name || "")}','${escapeHtml(user.seflik || "")}')">Sil</button>
             </div>
           </div>
@@ -5554,8 +5603,8 @@
     function currentDeviceInfoPayload() {
       const active = state.activeUser || findActiveUser();
       return {
-        appVersion: "Mesaha İO v1.15",
-        fileVersion: "v86",
+        appVersion: "Mesaha İO v1.16",
+        fileVersion: "v87",
         userName: active && active.name ? cleanUserText(active.name) : "",
         seflik: active && active.seflik ? cleanUserText(active.seflik) : "",
         deviceId: getOrCreateDeviceId(),
@@ -5624,7 +5673,7 @@
       if (els.issueReportUserInfo) els.issueReportUserInfo.textContent = `${active.name} • ${active.seflik}`;
       if (els.issueDeviceInfo) els.issueDeviceInfo.textContent = issueDeviceInfoText(issueDeviceInfoPayload());
       if (els.issueReportOverlay) els.issueReportOverlay.classList.add("show");
-      loadMyIssueReports().catch(() => {});
+      loadMyIssueReports().then(() => markUserRepliesSeen()).catch(() => {});
       setTimeout(() => { if (els.issueReportMessage) els.issueReportMessage.focus(); }, 120);
     }
 
@@ -5760,11 +5809,170 @@
         });
         localStorage.setItem("mesaha_seen_admin_replies_v1", JSON.stringify(seen));
         updateUserNotificationBadge().catch(() => {});
+    startNotificationWatcher();
       } catch {}
     }
 
 
     let adminReportFilter = "open";
+
+    
+    function userReplySeenStorageKey() {
+      const active = state.activeUser || findActiveUser();
+      const key = active && active.name && active.seflik ? firebaseUserKey(active.name, active.seflik) : "default";
+      return `mesaha_seen_admin_replies_v2_${key}`;
+    }
+
+    async function countUserUnreadReplies() {
+      const active = state.activeUser || findActiveUser();
+      if (!active || !active.name || !active.seflik) return 0;
+
+      try {
+        const rows = await firebaseListMyTickets();
+        const seenRaw = localStorage.getItem(userReplySeenStorageKey()) || "{}";
+        const seen = JSON.parse(seenRaw);
+        let count = 0;
+
+        rows.forEach(r => {
+          const hasAdminMessage = !!String(r.adminReply || "").trim() || r.type === "updateNotice";
+          if (!hasAdminMessage) return;
+          const stamp = r.replyAtMs || r.updatedAtMs || r.createdAtMs || "";
+          const key = `${r.id}_${stamp}`;
+          if (!seen[key]) count++;
+        });
+
+        return count;
+      } catch {
+        return 0;
+      }
+    }
+
+    async function updateUserNotificationBadge() {
+      const badge = els.activeUserBadge || document.getElementById("activeUserBadge");
+      if (!badge) return;
+
+      let dot = badge.querySelector(".user-notification-dot");
+      if (!dot) {
+        dot = document.createElement("span");
+        dot.className = "user-notification-dot";
+        badge.appendChild(dot);
+      }
+
+      const count = await countUserUnreadReplies();
+      badge.classList.toggle("has-notification", count > 0);
+      dot.textContent = count > 9 ? "9+" : String(count || "");
+    }
+
+    async function markUserRepliesSeen() {
+      try {
+        const rows = await firebaseListMyTickets();
+        const seenRaw = localStorage.getItem(userReplySeenStorageKey()) || "{}";
+        const seen = JSON.parse(seenRaw);
+
+        rows.forEach(r => {
+          const hasAdminMessage = !!String(r.adminReply || "").trim() || r.type === "updateNotice";
+          if (!hasAdminMessage) return;
+          const stamp = r.replyAtMs || r.updatedAtMs || r.createdAtMs || "";
+          const key = `${r.id}_${stamp}`;
+          seen[key] = true;
+        });
+
+        localStorage.setItem(userReplySeenStorageKey(), JSON.stringify(seen));
+        updateUserNotificationBadge().catch(() => {});
+      } catch {}
+    }
+
+    function startNotificationWatcher() {
+      if (window.__mesahaNotificationWatcherStarted) return;
+      window.__mesahaNotificationWatcherStarted = true;
+
+      setTimeout(() => updateUserNotificationBadge().catch(() => {}), 1500);
+      setInterval(() => {
+        if (document.visibilityState === "visible") {
+          updateUserNotificationBadge().catch(() => {});
+        }
+      }, 45000);
+
+      document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "visible") {
+          updateUserNotificationBadge().catch(() => {});
+        }
+      });
+    }
+
+    async function updateAdminReportsCount() {
+      if (!els.adminReportsCount) return;
+
+      try {
+        const rows = await firebaseListSupportTickets();
+        const openCount = rows.filter(r => r.status !== "done").length;
+        els.adminReportsCount.textContent = openCount > 99 ? "99+" : String(openCount);
+        els.adminReportsCount.classList.toggle("zero", openCount === 0);
+      } catch {
+        els.adminReportsCount.textContent = "!";
+        els.adminReportsCount.classList.remove("zero");
+      }
+    }
+
+    async function adminDeleteReport(ticketId) {
+      const ok = window.confirm("Bu sorun bildirimi silinsin mi? Bu işlem geri alınamaz.");
+      if (!ok) return;
+
+      try {
+        const { db } = await ensureFirebaseReady();
+        await db.collection(FIREBASE_REPORTS_COLLECTION).doc(ticketId).delete();
+        showToast("Bildirim silindi.");
+        await renderAdminReports();
+        updateAdminReportsCount().catch(() => {});
+      } catch (error) {
+        showToast("Bildirim silinemedi.");
+      }
+    }
+
+    async function adminSendUpdateNotice(name, seflik) {
+      const cleanName = cleanUserText(name);
+      const cleanSeflik = cleanUserText(seflik);
+      if (!cleanName || !cleanSeflik) return showToast("Kullanıcı bilgisi eksik.");
+
+      const text = window.prompt(
+        "Kullanıcıya gönderilecek güncelleme uyarısı:",
+        "Yeni sürüm var. Lütfen internet varken Kullanıcı Paneli > Yeni Sürümü Güncelle butonunu kullanınız. Arazide veya internetsizken güncelleme yapmayınız."
+      );
+      if (text === null) return;
+      const reply = String(text || "").trim();
+      if (!reply) return showToast("Uyarı metni boş olamaz.");
+
+      try {
+        const { db } = await ensureFirebaseReady();
+        const userKey = firebaseUserKey(cleanName, cleanSeflik);
+        const nowMs = Date.now();
+        const id = `notice_${userKey}_${nowMs}`;
+
+        await db.collection(FIREBASE_REPORTS_COLLECTION).doc(id).set({
+          id,
+          userKey,
+          name: cleanName,
+          seflik: cleanSeflik,
+          type: "updateNotice",
+          message: "Admin güncelleme uyarısı gönderdi.",
+          status: "review",
+          adminReply: reply,
+          appVersion: "Mesaha İO v1.16",
+          recordCount: 0,
+          createdAt: firebaseDateText(),
+          createdAtMs: nowMs,
+          updatedAt: firebaseDateText(),
+          updatedAtMs: nowMs,
+          replyAtMs: nowMs
+        });
+
+        showToast("Güncelleme uyarısı gönderildi.");
+        updateAdminReportsCount().catch(() => {});
+      } catch (error) {
+        showToast("Güncelleme uyarısı gönderilemedi.");
+      }
+    }
+
 
     async function firebaseListSupportTickets() {
       const { db } = await ensureFirebaseReady();
@@ -5781,6 +5989,7 @@
 
       try {
         let rows = await firebaseListSupportTickets();
+        updateAdminReportsCount().catch(() => {});
         if (adminReportFilter === "open") rows = rows.filter(r => r.status !== "done");
         if (adminReportFilter === "done") rows = rows.filter(r => r.status === "done");
 
@@ -5808,10 +6017,11 @@
               </div>
               <div class="admin-report-message">${escapeHtml(r.message || "-")}</div>
               ${r.adminReply ? `<div class="admin-reply-box"><b>Cevap:</b> ${escapeHtml(r.adminReply)}</div>` : ""}
-              <div class="admin-report-actions">
+              <div class="admin-report-actions four">
                 <button type="button" class="secondary" onclick="adminSetReportStatus('${escapeHtml(r.id)}','review')">İncelendi</button>
                 <button type="button" class="secondary" onclick="adminReplyReport('${escapeHtml(r.id)}')">Cevap Yaz</button>
                 <button type="button" class="primary" onclick="adminSetReportStatus('${escapeHtml(r.id)}','done')">Çözüldü</button>
+                <button type="button" class="admin-report-delete" onclick="adminDeleteReport('${escapeHtml(r.id)}')">Sil</button>
               </div>
             </div>
           `;
@@ -5827,10 +6037,12 @@
         await db.collection(FIREBASE_REPORTS_COLLECTION).doc(ticketId).set({
           status,
           updatedAt: firebaseDateText(),
-          updatedAtMs: Date.now()
+          updatedAtMs: Date.now(),
+          replyAtMs: Date.now()
         }, { merge: true });
         showToast("Bildirim durumu güncellendi.");
-        renderAdminReports();
+        await renderAdminReports();
+        updateAdminReportsCount().catch(() => {});
       } catch (error) {
         showToast("Durum güncellenemedi.");
       }
@@ -5850,7 +6062,8 @@
           updatedAtMs: Date.now()
         }, { merge: true });
         showToast("Admin cevabı kaydedildi.");
-        renderAdminReports();
+        await renderAdminReports();
+        updateAdminReportsCount().catch(() => {});
       } catch (error) {
         showToast("Cevap kaydedilemedi.");
       }
@@ -6294,7 +6507,7 @@
 
     async function uploadCloudBackupOpen(user) {
       const payload = buildCloudBackupPayload(user);
-      payload.version = 86;
+      payload.version = 87;
       const bolmePart = els.bolmeNo && String(els.bolmeNo.value || "").trim() ? `_${cleanFilePart(els.bolmeNo.value)}` : "";
       const fileName = `Mesaha_Yedek_${cleanFilePart(user.seflik)}_${cleanFilePart(user.name)}${bolmePart}_${new Date().toISOString().slice(0,19).replace(/[-:T]/g, "")}.json`;
 
@@ -6723,7 +6936,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function buildCloudBackupPayload(user) {
       return {
         app: "Mesaha İO",
-        version: 86,
+        version: 87,
         createdAt: new Date().toLocaleString("tr-TR"),
         user: {
           name: user.name || "",
@@ -8725,7 +8938,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function backup() {
       const data = {
         app: "Mesaha App",
-        version: 86,
+        version: 87,
         exportedAt: formatDateTime(),
         systemHeaders: HEADERS,
         settings: state.settings,
@@ -9142,7 +9355,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     async function firebaseUploadBackup(user) {
       const { db } = await ensureFirebaseReady();
       const payload = buildCloudBackupPayload(user);
-      payload.version = 86;
+      payload.version = 87;
       payload.cloud = "firebase";
 
       const bolmeNo = els.bolmeNo ? String(els.bolmeNo.value || "").trim() : "";
@@ -9633,6 +9846,10 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     window.adminSetReportStatus = adminSetReportStatus;
     window.adminReplyReport = adminReplyReport;
 
+    window.adminDeleteReport = adminDeleteReport;
+    window.adminSendUpdateNotice = adminSendUpdateNotice;
+
+
     window.adminOpenUserBackups = adminOpenUserBackups;
     window.adminEditNote = adminEditNote;
     window.adminTogglePassive = adminTogglePassive;
@@ -9645,8 +9862,8 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     load();
   
     window.MESAHA_BUILD_INFO = {
-      fileVersion: "v86",
-      visibleVersion: "Mesaha İO v1.15",
+      fileVersion: "v87",
+      visibleVersion: "Mesaha İO v1.16",
       stableBuild: true
     };
 
