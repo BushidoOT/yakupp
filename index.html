@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha App v85</title>
+  <title>Mesaha App v86</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -4035,9 +4035,9 @@
         <button id="panelPasswordBtn" class="warning" type="button">Bulut Yedeklerini Getir</button>
         <button id="panelCloudBackupBtn" class="primary" type="button">Buluta Yedekle</button>
         <button id="panelReportIssueBtn" class="secondary" type="button">Sorun Bildir</button>
-        <button id="panelAdminOpenBtn" class="secondary" type="button">Yönetici Panelini Aç</button>
+        <button id="panelAdminOpenBtn" class="secondary" type="button" onclick="openAdminFromUserPanel()">Yönetici Panelini Aç</button>
         <button id="userMenuForceUpdateBtn" class="secondary" type="button">Yeni Sürümü Güncelle</button>
-        <p class="hint user-update-offline-note">Not: İnternet olmadığında güncelleme yapılamaz; uygulamayı araziden önce bir kez internet varken açınız.</p>
+        <p class="hint user-update-offline-note">Not: Güncelle butonunu sadece internet varken kullanınız. Arazide veya internet yokken güncelleme yapmayınız; aksi halde uygulama yeniden açılmayabilir.</p>
       </div>
 
       <p class="hint">Bulut yedekleme şifresizdir. Kullanıcı adı ve şeflik ile yedekler listelenir.</p>
@@ -4117,7 +4117,7 @@
   <div class="app">
     <header class="topbar">
       <div class="brand">
-        <h1>Mesaha İO v1.14</h1>
+        <h1>Mesaha İO v1.15</h1>
         
       </div>
       <div id="activeUserBadge" class="active-user-badge" role="button" tabindex="0" title="Kullanıcı panelini aç" style="display:none"></div>
@@ -5554,8 +5554,8 @@
     function currentDeviceInfoPayload() {
       const active = state.activeUser || findActiveUser();
       return {
-        appVersion: "Mesaha İO v1.14",
-        fileVersion: "v85",
+        appVersion: "Mesaha İO v1.15",
+        fileVersion: "v86",
         userName: active && active.name ? cleanUserText(active.name) : "",
         seflik: active && active.seflik ? cleanUserText(active.seflik) : "",
         deviceId: getOrCreateDeviceId(),
@@ -5582,6 +5582,35 @@
         `İnternet: ${info.online ? "Var" : "Yok"}`
       ].join(" • ");
     }
+
+    
+    function openAdminFromUserPanel() {
+      try {
+        closeUserPanel();
+      } catch {}
+
+      setTimeout(() => {
+        if (typeof unlockAdminPanel === "function") {
+          unlockAdminPanel();
+          return;
+        }
+
+        const code = window.prompt("Yönetici kodunu giriniz:");
+        if (String(code || "").trim() !== ADMIN_CODE) {
+          showToast("Yönetici kodu hatalı.");
+          return;
+        }
+
+        state.lastAdminCode = ADMIN_CODE;
+        sessionStorage.setItem("mesaha_admin_code", ADMIN_CODE);
+        if (els.navAdmin) els.navAdmin.style.display = "";
+        if (els.navAdmin) els.navAdmin.classList.add("active");
+        document.body.classList.add("show-admin");
+        document.body.classList.remove("show-records", "show-guide");
+        loadAdminPanelData().catch(err => showToast(err && err.message ? err.message : "Admin paneli yüklenemedi."));
+      }, 120);
+    }
+
 
     async function openIssueReportPanel() {
       const active = state.activeUser || findActiveUser();
@@ -6265,7 +6294,7 @@
 
     async function uploadCloudBackupOpen(user) {
       const payload = buildCloudBackupPayload(user);
-      payload.version = 85;
+      payload.version = 86;
       const bolmePart = els.bolmeNo && String(els.bolmeNo.value || "").trim() ? `_${cleanFilePart(els.bolmeNo.value)}` : "";
       const fileName = `Mesaha_Yedek_${cleanFilePart(user.seflik)}_${cleanFilePart(user.name)}${bolmePart}_${new Date().toISOString().slice(0,19).replace(/[-:T]/g, "")}.json`;
 
@@ -6694,7 +6723,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function buildCloudBackupPayload(user) {
       return {
         app: "Mesaha İO",
-        version: 85,
+        version: 86,
         createdAt: new Date().toLocaleString("tr-TR"),
         user: {
           name: user.name || "",
@@ -8696,7 +8725,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function backup() {
       const data = {
         app: "Mesaha App",
-        version: 85,
+        version: 86,
         exportedAt: formatDateTime(),
         systemHeaders: HEADERS,
         settings: state.settings,
@@ -9113,7 +9142,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     async function firebaseUploadBackup(user) {
       const { db } = await ensureFirebaseReady();
       const payload = buildCloudBackupPayload(user);
-      payload.version = 85;
+      payload.version = 86;
       payload.cloud = "firebase";
 
       const bolmeNo = els.bolmeNo ? String(els.bolmeNo.value || "").trim() : "";
@@ -9523,6 +9552,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     if (els.userMenuForceUpdateBtn) els.userMenuForceUpdateBtn.addEventListener("click", forceUpdateApp);
 
     if (els.panelReportIssueBtn) els.panelReportIssueBtn.addEventListener("click", openIssueReportPanel);
+if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openAdminFromUserPanel);
     if (els.issueReportCloseBtn) els.issueReportCloseBtn.addEventListener("click", closeIssueReportPanel);
     if (els.issueReportCancelBtn) els.issueReportCancelBtn.addEventListener("click", closeIssueReportPanel);
     if (els.issueReportSendBtn) els.issueReportSendBtn.addEventListener("click", sendIssueReport);
@@ -9598,6 +9628,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
 
 
     window.forceUpdateApp = forceUpdateApp;
+    window.openAdminFromUserPanel = openAdminFromUserPanel;
 
     window.adminSetReportStatus = adminSetReportStatus;
     window.adminReplyReport = adminReplyReport;
@@ -9614,8 +9645,8 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     load();
   
     window.MESAHA_BUILD_INFO = {
-      fileVersion: "v85",
-      visibleVersion: "Mesaha İO v1.14",
+      fileVersion: "v86",
+      visibleVersion: "Mesaha İO v1.15",
       stableBuild: true
     };
 
