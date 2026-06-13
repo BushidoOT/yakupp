@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha App v111</title>
+  <title>Mesaha App v112</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -4585,6 +4585,83 @@
       color:#064e3b !important;
     }
 
+  
+    /* v112: v91 tabanında görünür Sade Mod + Karanlık Mod butonları */
+    .topbar{
+      gap:10px !important;
+      flex-wrap:wrap !important;
+      align-items:flex-start !important;
+    }
+
+    .top-actions-v112{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:8px;
+      width:100%;
+      margin-top:8px;
+    }
+
+    .top-actions-v112 button{
+      min-height:42px;
+      border-radius:15px;
+      border:1px solid #cbd5e1;
+      background:#f8fafc;
+      color:#172033;
+      font-size:13px;
+      font-weight:950;
+      padding:8px 10px;
+      touch-action:manipulation !important;
+      -webkit-tap-highlight-color:transparent !important;
+      transform:none !important;
+      transition:none !important;
+    }
+
+    .top-actions-v112 button:first-child{
+      background:#16a34a;
+      border-color:#16a34a;
+      color:#fff;
+      box-shadow:0 8px 18px rgba(22,163,74,.18);
+    }
+
+    .top-actions-v112 button:last-child{
+      background:#111827;
+      border-color:#111827;
+      color:#fff;
+      box-shadow:0 8px 18px rgba(17,24,39,.16);
+    }
+
+    body.theme-dark .top-actions-v112 button:first-child{
+      background:#22c55e;
+      border-color:#22c55e;
+      color:#052e16;
+    }
+
+    body.theme-dark .top-actions-v112 button:last-child{
+      background:#f8fafc;
+      border-color:#f8fafc;
+      color:#111827;
+    }
+
+    body.clean-simple-open-v111 .top-actions-v112,
+    body.user-panel-open .top-actions-v112,
+    body.issue-panel-open .top-actions-v112{
+      display:none !important;
+    }
+
+    button:active,
+    .top-actions-v112 button:active{
+      transform:none !important;
+      filter:none !important;
+    }
+
+    @media (min-width:640px){
+      .top-actions-v112{
+        width:auto;
+        min-width:250px;
+        margin-top:0;
+      }
+    }
+
   </style>
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -4749,10 +4826,16 @@
 <div class="app">
     <header class="topbar">
       <div class="brand">
-        <h1>Mesaha İO v1.40</h1>
+        <h1>Mesaha İO v1.41</h1>
         
       </div>
       <div id="activeUserBadge" class="active-user-badge" role="button" tabindex="0" title="Kullanıcı panelini aç" style="display:none"></div>
+
+      <div class="top-actions-v112">
+        <button id="openSimpleV112" type="button">Sade Mod</button>
+        <button id="themeToggleV112" type="button">Karanlık</button>
+      </div>
+
     </header>
 
       <nav id="flowTabsV111" class="flow-tabs-v111" aria-label="Ana menü">
@@ -6198,8 +6281,8 @@
     function currentDeviceInfoPayload() {
       const active = state.activeUser || findActiveUser();
       return {
-        appVersion: "Mesaha İO v1.40",
-        fileVersion: "v111",
+        appVersion: "Mesaha İO v1.41",
+        fileVersion: "v112",
         userName: active && active.name ? cleanUserText(active.name) : "",
         seflik: active && active.seflik ? cleanUserText(active.seflik) : "",
         deviceId: getOrCreateDeviceId(),
@@ -6938,7 +7021,7 @@
 
     async function uploadCloudBackupOpen(user) {
       const payload = buildCloudBackupPayload(user);
-      payload.version = 111;
+      payload.version = 112;
       const bolmePart = els.bolmeNo && String(els.bolmeNo.value || "").trim() ? `_${cleanFilePart(els.bolmeNo.value)}` : "";
       const fileName = `Mesaha_Yedek_${cleanFilePart(user.seflik)}_${cleanFilePart(user.name)}${bolmePart}_${new Date().toISOString().slice(0,19).replace(/[-:T]/g, "")}.json`;
 
@@ -7367,7 +7450,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function buildCloudBackupPayload(user) {
       return {
         app: "Mesaha İO",
-        version: 111,
+        version: 112,
         createdAt: new Date().toLocaleString("tr-TR"),
         user: {
           name: user.name || "",
@@ -9371,7 +9454,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function backup() {
       const data = {
         app: "Mesaha App",
-        version: 111,
+        version: 112,
         exportedAt: formatDateTime(),
         systemHeaders: HEADERS,
         settings: state.settings,
@@ -9788,7 +9871,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     async function firebaseUploadBackup(user) {
       const { db } = await ensureFirebaseReady();
       const payload = buildCloudBackupPayload(user);
-      payload.version = 111;
+      payload.version = 112;
       payload.cloud = "firebase";
 
       const bolmeNo = els.bolmeNo ? String(els.bolmeNo.value || "").trim() : "";
@@ -10792,6 +10875,57 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     window.addEventListener("resize", keepNaturalScrollV111, { passive:true });
 
 
+    
+    /* v112: Sade Mod ve Karanlık Mod görünür butonları */
+    function applyThemeV112(mode) {
+      const dark = mode === "dark";
+      document.body.classList.toggle("theme-dark", dark);
+      document.documentElement.classList.toggle("theme-dark", dark);
+      try { localStorage.setItem("mesaha_theme_v112", dark ? "dark" : "light"); } catch {}
+      const btn = document.getElementById("themeToggleV112");
+      if (btn) btn.textContent = dark ? "Aydınlık" : "Karanlık";
+    }
+
+    function initThemeV112() {
+      let saved = "light";
+      try {
+        saved = localStorage.getItem("mesaha_theme_v112") || localStorage.getItem("mesaha_theme") || localStorage.getItem("theme") || "light";
+      } catch {}
+      if (saved === "dark" || document.body.classList.contains("theme-dark")) applyThemeV112("dark");
+      else applyThemeV112("light");
+    }
+
+    function bindTopActionsV112() {
+      const simpleBtn = document.getElementById("openSimpleV112");
+      const themeBtn = document.getElementById("themeToggleV112");
+
+      if (simpleBtn && !simpleBtn.__v112Bound) {
+        simpleBtn.__v112Bound = true;
+        simpleBtn.addEventListener("click", (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          if (typeof openCleanSimpleV111 === "function") openCleanSimpleV111();
+          else if (typeof openCleanSimpleV110 === "function") openCleanSimpleV110();
+          else if (typeof simpleOpenModeV93 === "function") simpleOpenModeV93();
+          else showToast("Sade Mod hazır değil.");
+        });
+      }
+
+      if (themeBtn && !themeBtn.__v112Bound) {
+        themeBtn.__v112Bound = true;
+        themeBtn.addEventListener("click", (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          const isDark = document.body.classList.contains("theme-dark");
+          applyThemeV112(isDark ? "light" : "dark");
+        });
+      }
+    }
+
+    bindTopActionsV112();
+    initThemeV112();
+
+
     window.forceUpdateApp = forceUpdateApp;
     window.openAdminFromUserPanel = openAdminFromUserPanel;
 
@@ -10810,8 +10944,8 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     load();
   
     window.MESAHA_BUILD_INFO = {
-      fileVersion: "v111",
-      visibleVersion: "Mesaha İO v1.40",
+      fileVersion: "v112",
+      visibleVersion: "Mesaha İO v1.41",
       stableBuild: true
     };
 
