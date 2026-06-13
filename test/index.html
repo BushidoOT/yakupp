@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha App v128</title>
+  <title>Mesaha App v131</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -8276,7 +8276,235 @@
       .admin-usage-mini{ grid-template-columns:1fr; }
       .admin-tabs-clean{ grid-template-columns:1fr 1fr !important; }
     }
-</style>
+
+
+    /* v131: Admin sade kullanıcı listesi + gizli admin sekmesi */
+    #flowTabsV111 [data-flow-tab="admin"]{
+      display:none !important;
+    }
+    body.admin-unlocked-v131 #flowTabsV111 [data-flow-tab="admin"]{
+      display:inline-flex !important;
+    }
+    .admin-filters-clean,
+    .admin-quick-filters-clean,
+    .admin-tabs-clean,
+    #adminNotesView,
+    #adminReportsView{
+      display:none !important;
+    }
+    .admin-panel-top-clean{
+      border-radius:20px !important;
+      padding:12px !important;
+    }
+    .admin-panel-top-clean h3{
+      margin-bottom:2px !important;
+    }
+    .admin-summary-grid-clean{
+      grid-template-columns:repeat(4,minmax(0,1fr)) !important;
+      gap:8px !important;
+      margin:10px 0 12px !important;
+    }
+    .admin-summary-grid-clean .admin-summary-card{
+      border-radius:16px !important;
+      padding:10px !important;
+      min-height:62px !important;
+    }
+    .admin-summary-grid-clean .admin-summary-card.wide{
+      grid-column:span 4 !important;
+      min-height:58px !important;
+    }
+    .registered-users-list.admin-list-v131{
+      display:grid !important;
+      gap:8px !important;
+    }
+    .admin-user-row-v131{
+      position:relative;
+      display:grid;
+      grid-template-columns:minmax(0,1.15fr) minmax(0,1.55fr) auto;
+      gap:8px;
+      align-items:center;
+      background:#ffffff;
+      border:1px solid #e3e8ef;
+      border-radius:17px;
+      padding:10px;
+      box-shadow:0 6px 16px rgba(15,23,42,.05);
+      overflow:hidden;
+    }
+    .admin-user-row-v131::before{
+      content:"";
+      position:absolute;
+      left:0;
+      top:10px;
+      bottom:10px;
+      width:4px;
+      border-radius:0 8px 8px 0;
+      background:#22c55e;
+    }
+    .admin-user-row-v131.status-warning::before{ background:#f59e0b; }
+    .admin-user-row-v131.status-old::before{ background:#ef4444; }
+    .admin-user-row-v131.status-disabled::before{ background:#64748b; }
+    .admin-user-main-v131{
+      min-width:0;
+      padding-left:4px;
+    }
+    .admin-user-main-v131 b{
+      display:block;
+      color:#111827;
+      font-size:14.5px;
+      font-weight:950;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .admin-user-main-v131 span{
+      display:block;
+      margin-top:3px;
+      color:#64748b;
+      font-size:12px;
+      font-weight:850;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .admin-user-stats-v131{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:5px;
+      min-width:0;
+    }
+    .admin-user-stats-v131 span{
+      background:#f8fafc;
+      border:1px solid #e6edf5;
+      border-radius:12px;
+      padding:6px 7px;
+      color:#667085;
+      font-size:10.5px;
+      font-weight:900;
+      line-height:1.15;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .admin-user-stats-v131 b{
+      display:block;
+      margin-top:2px;
+      color:#111827;
+      font-size:12.5px;
+      font-weight:950;
+    }
+    .admin-detail-bubble-v131{
+      width:48px;
+      height:48px;
+      border-radius:999px !important;
+      border:1px solid #d7dee8 !important;
+      background:#111827 !important;
+      color:#ffffff !important;
+      font-size:11px !important;
+      font-weight:950 !important;
+      padding:0 !important;
+      box-shadow:0 8px 18px rgba(15,23,42,.12);
+      flex-shrink:0;
+    }
+    .admin-detail-bubble-v131.open{
+      background:#16a34a !important;
+      border-color:#16a34a !important;
+    }
+    .admin-user-detail-panel-v131{
+      grid-column:1/-1;
+      display:none;
+      margin-top:2px;
+      background:#f8fafc;
+      border:1px solid #e5eaf1;
+      border-radius:15px;
+      padding:10px;
+    }
+    .admin-user-detail-panel-v131.open{
+      display:block;
+    }
+    .admin-detail-grid-v131{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:7px;
+    }
+    .admin-detail-grid-v131 span{
+      background:#ffffff;
+      border:1px solid #e6edf5;
+      border-radius:12px;
+      padding:7px 8px;
+      color:#64748b;
+      font-size:11.5px;
+      font-weight:850;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .admin-detail-grid-v131 b{
+      display:block;
+      color:#111827;
+      font-size:13px;
+      font-weight:950;
+      margin-top:2px;
+      white-space:normal;
+      overflow-wrap:anywhere;
+    }
+    .admin-detail-actions-v131{
+      display:flex;
+      gap:8px;
+      margin-top:9px;
+    }
+    .admin-detail-actions-v131 button{
+      min-height:40px !important;
+      border-radius:13px !important;
+      font-weight:950 !important;
+    }
+    body.theme-dark .admin-user-row-v131{
+      background:#171b22;
+      border-color:#2b323d;
+      box-shadow:0 8px 18px rgba(0,0,0,.18);
+    }
+    body.theme-dark .admin-user-main-v131 b{ color:#f8fafc; }
+    body.theme-dark .admin-user-main-v131 span{ color:#a8b3c2; }
+    body.theme-dark .admin-user-stats-v131 span,
+    body.theme-dark .admin-user-detail-panel-v131{
+      background:#11151b;
+      border-color:#2b323d;
+      color:#a8b3c2;
+    }
+    body.theme-dark .admin-user-stats-v131 b,
+    body.theme-dark .admin-detail-grid-v131 b{ color:#ffffff; }
+    body.theme-dark .admin-detail-grid-v131 span{
+      background:#171b22;
+      border-color:#2b323d;
+      color:#a8b3c2;
+    }
+    body.theme-dark .admin-detail-bubble-v131{
+      background:#242a34 !important;
+      border-color:#3a4350 !important;
+      color:#ffffff !important;
+    }
+    body.theme-dark .admin-detail-bubble-v131.open{
+      background:#16a34a !important;
+      border-color:#16a34a !important;
+    }
+    @media (max-width:640px){
+      .admin-summary-grid-clean{ grid-template-columns:repeat(2,minmax(0,1fr)) !important; }
+      .admin-summary-grid-clean .admin-summary-card.wide{ grid-column:span 2 !important; }
+      .admin-user-row-v131{
+        grid-template-columns:minmax(0,1fr) 48px;
+        gap:7px;
+        padding:9px;
+      }
+      .admin-user-stats-v131{
+        grid-column:1/-1;
+        grid-row:2;
+      }
+      .admin-detail-bubble-v131{
+        grid-column:2;
+        grid-row:1;
+      }
+      .admin-detail-grid-v131{ grid-template-columns:1fr; }
+    }
+
+  </style>
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-title" content="Mesaha App" />
@@ -8552,7 +8780,7 @@
 <div class="app">
     <header class="topbar">
       <div class="brand">
-        <h1>Mesaha İO v1.57</h1>
+        <h1>Mesaha İO v1.60</h1>
         
       </div>
       <div id="activeUserBadge" class="active-user-badge" role="button" tabindex="0" title="Kullanıcı panelini aç" style="display:none"></div>
@@ -10008,8 +10236,8 @@
     function currentDeviceInfoPayload() {
       const active = state.activeUser || findActiveUser();
       return {
-        appVersion: "Mesaha İO v1.57",
-        fileVersion: "v128",
+        appVersion: "Mesaha İO v1.60",
+        fileVersion: "v131",
         userName: active && active.name ? cleanUserText(active.name) : "",
         seflik: active && active.seflik ? cleanUserText(active.seflik) : "",
         deviceId: getOrCreateDeviceId(),
@@ -10748,7 +10976,7 @@
 
     async function uploadCloudBackupOpen(user) {
       const payload = buildCloudBackupPayload(user);
-      payload.version = 128;
+      payload.version = 129;
       const bolmePart = els.bolmeNo && String(els.bolmeNo.value || "").trim() ? `_${cleanFilePart(els.bolmeNo.value)}` : "";
       const fileName = `Mesaha_Yedek_${cleanFilePart(user.seflik)}_${cleanFilePart(user.name)}${bolmePart}_${new Date().toISOString().slice(0,19).replace(/[-:T]/g, "")}.json`;
 
@@ -11177,7 +11405,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function buildCloudBackupPayload(user) {
       return {
         app: "Mesaha İO",
-        version: 128,
+        version: 129,
         createdAt: new Date().toLocaleString("tr-TR"),
         user: {
           name: user.name || "",
@@ -13182,7 +13410,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function backup() {
       const data = {
         app: "Mesaha App",
-        version: 128,
+        version: 129,
         exportedAt: formatDateTime(),
         systemHeaders: HEADERS,
         settings: state.settings,
@@ -13602,7 +13830,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     async function firebaseUploadBackup(user) {
       const { db } = await ensureFirebaseReady();
       const payload = buildCloudBackupPayload(user);
-      payload.version = 128;
+      payload.version = 129;
       payload.cloud = "firebase";
 
       const bolmeNo = els.bolmeNo ? String(els.bolmeNo.value || "").trim() : "";
@@ -15366,6 +15594,110 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     setTimeout(() => { bindTopActionsV119(); initThemeV119(); }, 250);
 
 
+    /* v129: Zayıf internet için 3 saniyede offline açılış koruması */
+    const MESAHA_STARTUP_TIMEOUT_V129 = 3000;
+    function mesahaTimeoutV129(ms, message) {
+      return new Promise((_, reject) => setTimeout(() => reject(new Error(message || "Bağlantı zaman aşımı")), Number(ms || MESAHA_STARTUP_TIMEOUT_V129)));
+    }
+    function mesahaRaceTimeoutV129(promise, ms, message) {
+      return Promise.race([Promise.resolve(promise), mesahaTimeoutV129(ms, message)]);
+    }
+
+    if (typeof loadExternalScript === "function" && !loadExternalScript.__v129Timeout) {
+      const oldLoadExternalScriptV129 = loadExternalScript;
+      loadExternalScript = function(src) {
+        return mesahaRaceTimeoutV129(
+          oldLoadExternalScriptV129(src),
+          MESAHA_STARTUP_TIMEOUT_V129,
+          "Firebase kütüphanesi 3 saniyede yüklenemedi"
+        );
+      };
+      loadExternalScript.__v129Timeout = true;
+    }
+
+    if (typeof ensureFirebaseReady === "function" && !ensureFirebaseReady.__v129OfflineFirst) {
+      const oldEnsureFirebaseReadyV129 = ensureFirebaseReady;
+      ensureFirebaseReady = function() {
+        return mesahaRaceTimeoutV129(
+          oldEnsureFirebaseReadyV129(),
+          MESAHA_STARTUP_TIMEOUT_V129,
+          "Firebase 3 saniyede yanıt vermedi"
+        ).catch(err => {
+          try { mesahaFirebaseReadyPromise = null; } catch {}
+          throw err;
+        });
+      };
+      ensureFirebaseReady.__v129OfflineFirst = true;
+    }
+
+    if (typeof logOnlineUser === "function" && !logOnlineUser.__v129OfflineFirst) {
+      const oldLogOnlineUserV129 = logOnlineUser;
+      logOnlineUser = function(user) {
+        if (!user || !navigator.onLine) return;
+        Promise.race([
+          Promise.resolve().then(() => oldLogOnlineUserV129(user)),
+          mesahaTimeoutV129(MESAHA_STARTUP_TIMEOUT_V129, "Online giriş 3 saniyede tamamlanmadı")
+        ]).catch(() => {
+          // Zayıf internet mesaha girişini kilitlemesin; online kayıt sonra tekrar denenir.
+        });
+      };
+      logOnlineUser.__v129OfflineFirst = true;
+    }
+
+    function saveLoginUserLocalFirstV129(event) {
+      try {
+        if (event) {
+          event.preventDefault();
+          event.stopPropagation();
+          if (typeof event.stopImmediatePropagation === "function") event.stopImmediatePropagation();
+        }
+        const name = cleanUserText(els.loginUserName ? els.loginUserName.value : "");
+        const seflik = cleanUserText(els.loginSeflik ? els.loginSeflik.value : "");
+        if (name.length < 2) return showLoginError("Kullanıcı adı en az 2 karakter olmalı.");
+        if (seflik.length < 2) return showLoginError("Şeflik bilgisi en az 2 karakter olmalı.");
+
+        state.userStore = state.userStore || loadUserStore();
+        const id = createUserId(name, seflik);
+        const now = new Date().toLocaleString("tr-TR");
+        let user = state.userStore.users.find(u => u.id === id);
+        if (!user) {
+          user = { id, name, seflik, firstLogin: now, lastLogin: "", loginCount: 0 };
+          state.userStore.users.unshift(user);
+        } else {
+          user.name = name;
+          user.seflik = seflik;
+        }
+        state.userStore.activeUserId = id;
+        if (els.seflik) els.seflik.value = seflik;
+        if (els.ekipNot && !String(els.ekipNot.value || "").trim()) els.ekipNot.value = name;
+        state.settings.seflik = seflik;
+        if (!state.settings.ekipNot) state.settings.ekipNot = name;
+        try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(state.settings)); } catch {}
+        registerUserLoginById(id);
+        closeUserLogin();
+        showToast(navigator.onLine ? "Giriş açıldı. Bulut arka planda kontrol ediliyor." : "Offline giriş açıldı.");
+        setTimeout(() => {
+          try { logOnlineUser(state.activeUser || findActiveUser()); } catch {}
+          try { if (typeof usageScheduleSyncV128 === "function") usageScheduleSyncV128(1200); } catch {}
+        }, 80);
+      } catch (err) {
+        try { showLoginError(err && err.message ? err.message : "Giriş kaydedilemedi."); } catch {}
+      }
+    }
+
+    if (els.loginSaveBtn && !els.loginSaveBtn.__v129LocalFirst) {
+      els.loginSaveBtn.__v129LocalFirst = true;
+      els.loginSaveBtn.addEventListener("click", saveLoginUserLocalFirstV129, true);
+    }
+    if (els.loginSeflik && !els.loginSeflik.__v129LocalFirst) {
+      els.loginSeflik.__v129LocalFirst = true;
+      els.loginSeflik.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") saveLoginUserLocalFirstV129(event);
+      }, true);
+    }
+
+
+
     load();
 
 
@@ -15774,8 +16106,8 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     function usageTouchStatV128(stat){
       stat.updatedAt = (typeof firebaseDateText === "function") ? firebaseDateText() : new Date().toLocaleString("tr-TR");
       stat.updatedAtMs = Date.now();
-      stat.appVersion = "Mesaha İO v1.57";
-      stat.fileVersion = "v128";
+      stat.appVersion = "Mesaha İO v1.60";
+      stat.fileVersion = "v130";
       stat.recordCount = Array.isArray(state.records) ? state.records.length : 0;
       return stat;
     }
@@ -15857,8 +16189,8 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
             inputM3: Number(usageCleanNumberV128(stat.inputM3).toFixed(3)),
             recordEntryCount: Math.round(usageCleanNumberV128(stat.recordEntryCount)),
             recordCount: Math.round(usageCleanNumberV128(stat.recordCount)),
-            appVersion: "Mesaha İO v1.57",
-            fileVersion: "v128",
+            appVersion: "Mesaha İO v1.60",
+            fileVersion: "v131",
             createdAt: stat.createdAt || firebaseDateText(),
             createdAtMs: Number(stat.createdAtMs || Date.now()),
             updatedAt: firebaseDateText(),
@@ -16092,8 +16424,8 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     const prevCurrentDeviceInfoPayloadV128 = typeof currentDeviceInfoPayload === "function" ? currentDeviceInfoPayload : null;
     currentDeviceInfoPayload = function(){
       const info = prevCurrentDeviceInfoPayloadV128 ? prevCurrentDeviceInfoPayloadV128() : {};
-      info.appVersion = "Mesaha İO v1.57";
-      info.fileVersion = "v128";
+      info.appVersion = "Mesaha İO v1.60";
+      info.fileVersion = "v130";
       info.recordCount = Array.isArray(state.records) ? state.records.length : (Number(info.recordCount) || 0);
       info.updatedMs = Date.now();
       return info;
@@ -16105,11 +16437,387 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     setTimeout(() => { try { usageSyncNowV128().catch(() => {}); } catch {} }, 2500);
 
     window.MESAHA_BUILD_INFO = {
-      fileVersion: "v128",
-      visibleVersion: "Mesaha İO v1.57",
+      fileVersion: "v131",
+      visibleVersion: "Mesaha İO v1.60",
       stableBuild: true
     };
 
-  </script>
+
+    /* v129: son sürüm bilgisi */
+    const prevCurrentDeviceInfoPayloadV129 = typeof currentDeviceInfoPayload === "function" ? currentDeviceInfoPayload : null;
+    currentDeviceInfoPayload = function(){
+      const info = prevCurrentDeviceInfoPayloadV129 ? prevCurrentDeviceInfoPayloadV129() : {};
+      info.appVersion = "Mesaha İO v1.60";
+      info.fileVersion = "v130";
+      info.recordCount = Array.isArray(state.records) ? state.records.length : (Number(info.recordCount) || 0);
+      info.updatedMs = Date.now();
+      info.offlineFirstTimeoutMs = MESAHA_STARTUP_TIMEOUT_V129;
+      return info;
+    };
+    window.MESAHA_BUILD_INFO = {
+      fileVersion: "v131",
+      visibleVersion: "Mesaha İO v1.60",
+      stableBuild: true,
+      offlineFirstTimeoutMs: MESAHA_STARTUP_TIMEOUT_V129
+    };
+
+  
+
+    /* v130: Boy kısayol butonlarında klavye kapanmasını engelle + küçük stabilite denetimi */
+    (function(){
+      const BUILD_VERSION_V130 = "Mesaha İO v1.60";
+      const FILE_VERSION_V130 = "v131";
+
+      function safeFocusV130(input, selectMode){
+        if (!input) return;
+        const focusOnce = () => {
+          try { input.focus({ preventScroll:true }); } catch { try { input.focus(); } catch {} }
+          try {
+            const len = String(input.value || "").length;
+            if (selectMode === "select") input.select();
+            else input.setSelectionRange(len, len);
+          } catch {}
+        };
+        try { focusOnce(); } catch {}
+        requestAnimationFrame(focusOnce);
+        setTimeout(focusOnce, 60);
+        setTimeout(focusOnce, 160);
+      }
+
+      function setMainLengthFromChipV130(value){
+        const val = String(value || "").trim();
+        if (!val) return;
+        if (typeof els !== "undefined" && els.length) els.length.value = val;
+        try {
+          if (typeof state !== "undefined" && state.settings) state.settings.lastLength = val;
+          if (typeof saveSettings === "function") saveSettings();
+        } catch {}
+        try { if (typeof updateLiveDesi === "function") updateLiveDesi(); } catch {}
+        try { if (typeof updateInputPlaceholders === "function") updateInputPlaceholders(); } catch {}
+        const dia = (typeof els !== "undefined" && els.diameter) ? els.diameter : document.getElementById("diameter");
+        safeFocusV130(dia, "caret");
+      }
+
+      function setCleanLengthFromChipV130(value){
+        const val = String(value || "").trim();
+        if (!val) return;
+        const cleanLen = document.getElementById("cleanLengthV111");
+        const cleanDia = document.getElementById("cleanDiameterV111");
+        if (cleanLen) cleanLen.value = val;
+        try { localStorage.setItem("mesaha_simple_last_length_v1", val); } catch {}
+        try { if (typeof renderCleanAutoV111 === "function") renderCleanAutoV111(); } catch {}
+        safeFocusV130(cleanDia || document.getElementById("diameter"), "caret");
+      }
+
+      function targetInfoV130(target){
+        if (!target || !target.closest) return null;
+        const cleanLenBtn = target.closest("[data-clean-length]");
+        if (cleanLenBtn) return { type:"cleanLength", value: cleanLenBtn.dataset.cleanLength || cleanLenBtn.textContent || "" };
+        const lenBtn = target.closest("[data-len]");
+        if (lenBtn) return { type:"mainLength", value: lenBtn.dataset.len || lenBtn.textContent || "" };
+        return null;
+      }
+
+      function applyShortcutV130(info){
+        if (!info) return;
+        if (info.type === "cleanLength") setCleanLengthFromChipV130(info.value);
+        if (info.type === "mainLength") setMainLengthFromChipV130(info.value);
+      }
+
+      function protectDownV130(event){
+        const info = targetInfoV130(event.target);
+        if (!info) return;
+        try { event.preventDefault(); } catch {}
+        applyShortcutV130(info);
+      }
+
+      function protectClickV130(event){
+        const info = targetInfoV130(event.target);
+        if (!info) return;
+        try { event.preventDefault(); } catch {}
+        try { event.stopImmediatePropagation(); } catch { try { event.stopPropagation(); } catch {} }
+        applyShortcutV130(info);
+      }
+
+      function bindShortcutProtectionV130(){
+        if (document.__v130LengthShortcutNoBlur) return;
+        document.__v130LengthShortcutNoBlur = true;
+        ["pointerdown","mousedown","touchstart"].forEach(type => {
+          document.addEventListener(type, protectDownV130, { capture:true, passive:false });
+        });
+        document.addEventListener("click", protectClickV130, { capture:true, passive:false });
+      }
+
+      const prevRenderRecentChipsV130 = (typeof renderRecentChips === "function") ? renderRecentChips : null;
+      if (prevRenderRecentChipsV130 && !prevRenderRecentChipsV130.__v130NoBlurWrapped) {
+        renderRecentChips = function(...args){
+          const result = prevRenderRecentChipsV130.apply(this, args);
+          setTimeout(bindShortcutProtectionV130, 0);
+          return result;
+        };
+        renderRecentChips.__v130NoBlurWrapped = true;
+      }
+
+      const prevRenderCleanChipsV130 = (typeof renderCleanChipsV111 === "function") ? renderCleanChipsV111 : null;
+      if (prevRenderCleanChipsV130 && !prevRenderCleanChipsV130.__v130NoBlurWrapped) {
+        renderCleanChipsV111 = function(...args){
+          const result = prevRenderCleanChipsV130.apply(this, args);
+          setTimeout(bindShortcutProtectionV130, 0);
+          return result;
+        };
+        renderCleanChipsV111.__v130NoBlurWrapped = true;
+      }
+
+      function smallStabilityPassV130(){
+        try {
+          document.querySelectorAll("button:not([type])").forEach(btn => btn.type = "button");
+          document.querySelectorAll("#lengthChips [data-len], #cleanLengthChipsV111 [data-clean-length]").forEach(btn => {
+            btn.setAttribute("tabindex", "-1");
+            btn.setAttribute("role", "button");
+            btn.style.setProperty("-webkit-tap-highlight-color", "transparent", "important");
+            btn.style.setProperty("touch-action", "manipulation", "important");
+          });
+          const themeBtn = document.getElementById("themeToggleV112");
+          if (themeBtn) themeBtn.type = "button";
+          const girisBtn = document.getElementById("openSimpleV112");
+          if (girisBtn) girisBtn.type = "button";
+        } catch {}
+      }
+
+      const prevCurrentDeviceInfoPayloadV130 = typeof currentDeviceInfoPayload === "function" ? currentDeviceInfoPayload : null;
+      currentDeviceInfoPayload = function(){
+        const info = prevCurrentDeviceInfoPayloadV130 ? prevCurrentDeviceInfoPayloadV130() : {};
+        info.appVersion = BUILD_VERSION_V130;
+        info.fileVersion = FILE_VERSION_V130;
+        info.recordCount = Array.isArray(state.records) ? state.records.length : (Number(info.recordCount) || 0);
+        info.updatedMs = Date.now();
+        info.keyboardShortcutFix = true;
+        return info;
+      };
+
+      window.MESAHA_BUILD_INFO = {
+        fileVersion: FILE_VERSION_V130,
+        visibleVersion: BUILD_VERSION_V130,
+        stableBuild: true,
+        keyboardShortcutFix: true,
+        offlineFirstTimeoutMs: (typeof MESAHA_STARTUP_TIMEOUT_V129 !== "undefined" ? MESAHA_STARTUP_TIMEOUT_V129 : 3000)
+      };
+
+      bindShortcutProtectionV130();
+      smallStabilityPassV130();
+      setTimeout(smallStabilityPassV130, 250);
+      setTimeout(smallStabilityPassV130, 1000);
+    })();
+
+
+  
+
+    /* v131: Admin sade liste, kullanıcı panelinden şifreli açılış, onaylı-yüklemeli yenileme */
+    (function(){
+      const BUILD_VERSION_V131 = "Mesaha İO v1.60";
+      const FILE_VERSION_V131 = "v131";
+
+      function adminSetLoadingV131(show, text){
+        try {
+          if (typeof setCloudLoading === "function") setCloudLoading(!!show, text || "Admin paneli yenileniyor...");
+          else document.body.classList.toggle("cloud-loading-open", !!show);
+        } catch {}
+      }
+
+      function adminDeviceTextV131(user){
+        return (user && user.lastDeviceInfo && (user.lastDeviceInfo.platform || user.lastDeviceInfo.userAgent)) ||
+          (user && user.lastDevice) ||
+          `${(Number(user && user.deviceCount) || 0).toLocaleString("tr-TR")} cihaz`;
+      }
+
+      function adminStatusSafeV131(user){
+        try { return adminStatus(user); }
+        catch { return { key:"today", label:"AKTİF" }; }
+      }
+
+      function adminSourceTextV131(user){
+        const source = (user && (user.sourceLabel || user.source)) || "";
+        if (String(source).toLowerCase().includes("firebase")) return "Firebase";
+        if (String(source).toLowerCase().includes("apps") || String(source).toLowerCase().includes("eski")) return "Eski";
+        return "";
+      }
+
+      function adminEscapeArgV131(value){
+        return String(value || "").replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+      }
+
+      window.adminToggleDetailV131 = function(index){
+        const row = document.querySelector(`[data-admin-row-v131="${index}"]`);
+        if (!row) return;
+        const panel = row.querySelector(".admin-user-detail-panel-v131");
+        const btn = row.querySelector(".admin-detail-bubble-v131");
+        const open = !(panel && panel.classList.contains("open"));
+        document.querySelectorAll(".admin-user-detail-panel-v131.open").forEach(el => el.classList.remove("open"));
+        document.querySelectorAll(".admin-detail-bubble-v131.open").forEach(el => el.classList.remove("open"));
+        if (panel) panel.classList.toggle("open", open);
+        if (btn) {
+          btn.classList.toggle("open", open);
+          btn.textContent = open ? "Kapat" : "Detay";
+        }
+      };
+
+      const prevAdminFilteredUsersV131 = typeof adminFilteredUsers === "function" ? adminFilteredUsers : null;
+      adminFilteredUsers = function(){
+        const list = prevAdminFilteredUsersV131 ? prevAdminFilteredUsersV131() : (Array.isArray(state.adminOnlineUsers) ? state.adminOnlineUsers.slice() : []);
+        return list.slice().sort((a,b) => {
+          const au = Number(a.lastUsageMs || a.lastLoginMs || 0);
+          const bu = Number(b.lastUsageMs || b.lastLoginMs || 0);
+          if (bu !== au) return bu - au;
+          return String(a.name || "").localeCompare(String(b.name || ""), "tr");
+        });
+      };
+
+      renderAdminUsers = function(){
+        if (!els.registeredUsersList) return;
+        try { updateAdminTopSummary(); } catch {}
+        const list = adminFilteredUsers();
+        window.__adminListV131 = list;
+        els.registeredUsersList.classList.add("admin-list-v131");
+        if (!list.length) {
+          els.registeredUsersList.innerHTML = `<div class="empty-user-list">Kullanıcı bulunamadı.</div>`;
+          return;
+        }
+        els.registeredUsersList.innerHTML = list.map((user, index) => {
+          const status = adminStatusSafeV131(user);
+          const sourceText = adminSourceTextV131(user);
+          const deviceText = adminDeviceTextV131(user);
+          const todayAdet = (Number(user.todayInputAdet) || 0).toLocaleString("tr-TR");
+          const todayM3 = typeof adminM3TextV128 === "function" ? adminM3TextV128(user.todayInputM3) : `${(Number(user.todayInputM3)||0).toFixed(3)} m³`;
+          const todaySure = typeof adminDurationTextV128 === "function" ? adminDurationTextV128(user.todayActiveMs) : `${Math.round((Number(user.todayActiveMs)||0)/60000)} dk`;
+          const weekM3 = typeof adminM3TextV128 === "function" ? adminM3TextV128(user.weekInputM3) : `${(Number(user.weekInputM3)||0).toFixed(3)} m³`;
+          return `
+            <div class="admin-user-row-v131 status-${escapeHtml(status.key || "today")}" data-admin-row-v131="${index}">
+              <div class="admin-user-main-v131">
+                <b>${escapeHtml(user.name || "-")}</b>
+                <span>${escapeHtml(user.seflik || "-")} ${sourceText ? `• ${escapeHtml(sourceText)}` : ""}</span>
+              </div>
+              <div class="admin-user-stats-v131">
+                <span>Süre <b>${escapeHtml(todaySure)}</b></span>
+                <span>Adet <b>${escapeHtml(todayAdet)}</b></span>
+                <span>m³ <b>${escapeHtml(todayM3)}</b></span>
+              </div>
+              <button class="admin-detail-bubble-v131" type="button" onclick="adminToggleDetailV131(${index})">Detay</button>
+              <div class="admin-user-detail-panel-v131">
+                <div class="admin-detail-grid-v131">
+                  <span>Durum <b>${escapeHtml(status.label || "-")}</b></span>
+                  <span>Son giriş <b>${escapeHtml(user.lastLogin || "-")}</b></span>
+                  <span>Son aktif <b>${escapeHtml(user.lastUsageAt || user.lastLogin || "-")}</b></span>
+                  <span>Yedek sayısı <b>${(Number(user.backupCount) || 0).toLocaleString("tr-TR")}</b></span>
+                  <span>7 gün adet <b>${(Number(user.weekInputAdet) || 0).toLocaleString("tr-TR")}</b></span>
+                  <span>7 gün m³ <b>${escapeHtml(weekM3)}</b></span>
+                  <span>Sürüm <b>${escapeHtml(user.appVersion || user.fileVersion || "-")}</b></span>
+                  <span>Cihaz <b>${escapeHtml(deviceText || "-")}</b></span>
+                </div>
+                <div class="admin-detail-actions-v131">
+                  <button class="secondary" type="button" onclick="adminOpenUserBackups('${adminEscapeArgV131(user.name)}','${adminEscapeArgV131(user.seflik)}')">Yedekleri Gör</button>
+                  <button class="ghost" type="button" onclick="adminToggleDetailV131(${index})">Kapat</button>
+                </div>
+              </div>
+            </div>`;
+        }).join("");
+      };
+
+      async function adminLoadWithLoadingV131(message){
+        const btn = document.getElementById("adminRefreshBtn");
+        if (btn) btn.disabled = true;
+        adminSetLoadingV131(true, message || "Admin paneli yenileniyor...");
+        try {
+          await loadAdminPanelData();
+        } finally {
+          adminSetLoadingV131(false);
+          if (btn) btn.disabled = false;
+        }
+      }
+
+      async function adminRefreshWithConfirmV131(){
+        if (!window.confirm("Admin kullanıcı bilgileri yenilensin mi?")) return;
+        try {
+          await adminLoadWithLoadingV131("Admin paneli yenileniyor...");
+        } catch (err) {
+          if (typeof showToast === "function") showToast(err && err.message ? err.message : "Admin yenilenemedi.");
+        }
+      }
+
+      function showAdminPageV131(){
+        document.body.classList.add("admin-unlocked-v131", "show-admin");
+        document.body.classList.remove("show-records", "show-guide");
+        try { if (els.navAdmin) { els.navAdmin.style.display = ""; els.navAdmin.classList.add("active"); } } catch {}
+        try { if (els.navEntry) els.navEntry.classList.remove("active"); if (els.navRecords) els.navRecords.classList.remove("active"); if (els.navGuide) els.navGuide.classList.remove("active"); } catch {}
+        try { if (typeof updateFlowTabsV111 === "function") updateFlowTabsV111(); } catch {}
+      }
+
+      openAdminFromUserPanel = function(){
+        try { closeUserPanel(); } catch {}
+        setTimeout(() => {
+          const code = window.prompt("Yönetici kodunu giriniz:");
+          if (String(code || "").trim() !== String(ADMIN_CODE)) {
+            if (typeof showToast === "function") showToast("Yönetici kodu hatalı.");
+            return;
+          }
+          state.lastAdminCode = String(code).trim();
+          sessionStorage.setItem("mesaha_admin_code", state.lastAdminCode);
+          sessionStorage.setItem("mesaha_admin_panel_open", "1");
+          showAdminPageV131();
+          adminLoadWithLoadingV131("Admin paneli açılıyor...").catch(err => {
+            if (typeof showToast === "function") showToast(err && err.message ? err.message : "Admin paneli açılamadı.");
+          });
+        }, 120);
+      };
+      window.openAdminFromUserPanel = openAdminFromUserPanel;
+
+      function replaceClickButtonV131(id, handler){
+        const old = document.getElementById(id);
+        if (!old) return null;
+        const clone = old.cloneNode(true);
+        clone.removeAttribute("onclick");
+        clone.addEventListener("click", (event) => { event.preventDefault(); event.stopPropagation(); handler(event); });
+        old.parentNode.replaceChild(clone, old);
+        if (typeof els !== "undefined") els[id] = clone;
+        return clone;
+      }
+
+      function initAdminV131(){
+        document.body.classList.remove("admin-unlocked-v131");
+        try {
+          const adminTab = document.querySelector('#flowTabsV111 [data-flow-tab="admin"]');
+          if (adminTab) adminTab.style.display = "none";
+          if (els.navAdmin) els.navAdmin.style.display = "none";
+        } catch {}
+        document.querySelectorAll('.admin-filters-clean, .admin-quick-filters-clean, .admin-tabs-clean, #adminNotesView, #adminReportsView').forEach(el => el.style.display = 'none');
+        replaceClickButtonV131("panelAdminOpenBtn", openAdminFromUserPanel);
+        replaceClickButtonV131("adminRefreshBtn", adminRefreshWithConfirmV131);
+        try { renderAdminUsers(); } catch {}
+      }
+
+      const prevCurrentDeviceInfoPayloadV131 = typeof currentDeviceInfoPayload === "function" ? currentDeviceInfoPayload : null;
+      currentDeviceInfoPayload = function(){
+        const info = prevCurrentDeviceInfoPayloadV131 ? prevCurrentDeviceInfoPayloadV131() : {};
+        info.appVersion = BUILD_VERSION_V131;
+        info.fileVersion = FILE_VERSION_V131;
+        info.adminSimpleList = true;
+        info.updatedMs = Date.now();
+        return info;
+      };
+
+      window.MESAHA_BUILD_INFO = {
+        fileVersion: FILE_VERSION_V131,
+        visibleVersion: BUILD_VERSION_V131,
+        stableBuild: true,
+        adminSimpleList: true,
+        keyboardShortcutFix: true,
+        offlineFirstTimeoutMs: (typeof MESAHA_STARTUP_TIMEOUT_V129 !== "undefined" ? MESAHA_STARTUP_TIMEOUT_V129 : 3000)
+      };
+
+      initAdminV131();
+      setTimeout(initAdminV131, 300);
+      setTimeout(initAdminV131, 1200);
+    })();
+
+</script>
 </body>
 </html>
