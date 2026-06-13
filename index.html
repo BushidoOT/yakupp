@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha App v89</title>
+  <title>Mesaha App v90</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -4088,6 +4088,337 @@
       box-shadow:0 0 0 3px rgba(239,68,68,.14);
     }
 
+  
+    /* v90: Karanlık Mod ve Sade Mod */
+    .topbar{
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .topbar-extra-actions{
+      display:flex;
+      gap:7px;
+      align-items:center;
+      justify-content:flex-end;
+      margin-left:auto;
+    }
+
+    .topbar-mini-btn{
+      min-height:34px;
+      border-radius:999px;
+      border:1px solid #cbd5e1;
+      background:#ffffff;
+      color:#0f172a;
+      padding:6px 10px;
+      font-size:12px;
+      font-weight:950;
+      box-shadow:0 8px 18px rgba(15,23,42,.07);
+      white-space:nowrap;
+    }
+
+    .topbar-mini-btn:active{
+      transform:scale(.98);
+    }
+
+    body.dark-mode{
+      background:#0f172a !important;
+      color:#e5e7eb !important;
+    }
+
+    body.dark-mode .app,
+    body.dark-mode .panel,
+    body.dark-mode .user-panel-card,
+    body.dark-mode .issue-report-card,
+    body.dark-mode .simple-mode-card,
+    body.dark-mode .cloud-restore-card,
+    body.dark-mode .cloud-loading-card{
+      background:#111827 !important;
+      color:#e5e7eb !important;
+      border-color:#334155 !important;
+    }
+
+    body.dark-mode .topbar{
+      background:rgba(15,23,42,.86) !important;
+      color:#e5e7eb !important;
+      border-color:#334155 !important;
+      backdrop-filter:blur(18px) saturate(150%);
+      -webkit-backdrop-filter:blur(18px) saturate(150%);
+    }
+
+    body.dark-mode .brand h1,
+    body.dark-mode .panel h2,
+    body.dark-mode .panel h3,
+    body.dark-mode label{
+      color:#f8fafc !important;
+    }
+
+    body.dark-mode .hint,
+    body.dark-mode .panel p,
+    body.dark-mode .simple-auto-info{
+      color:#cbd5e1 !important;
+    }
+
+    body.dark-mode input,
+    body.dark-mode select,
+    body.dark-mode textarea{
+      background:#0b1220 !important;
+      color:#f8fafc !important;
+      border-color:#334155 !important;
+    }
+
+    body.dark-mode input::placeholder,
+    body.dark-mode textarea::placeholder{
+      color:#64748b !important;
+    }
+
+    body.dark-mode .topbar-mini-btn,
+    body.dark-mode .secondary,
+    body.dark-mode .ghost{
+      background:#1e293b !important;
+      color:#e5e7eb !important;
+      border-color:#475569 !important;
+    }
+
+    body.dark-mode .primary{
+      background:#2563eb !important;
+      color:#fff !important;
+    }
+
+    body.dark-mode .guide-card,
+    body.dark-mode .admin-summary-card,
+    body.dark-mode .registered-user-item,
+    body.dark-mode .issue-mini-card,
+    body.dark-mode .admin-report-card,
+    body.dark-mode .simple-auto-info,
+    body.dark-mode .simple-last-item{
+      background:#1e293b !important;
+      color:#e5e7eb !important;
+      border-color:#334155 !important;
+    }
+
+    body.dark-mode .bottom-nav{
+      background:rgba(15,23,42,.94) !important;
+      border-color:#334155 !important;
+    }
+
+    body.dark-mode .bottom-nav button{
+      color:#cbd5e1 !important;
+    }
+
+    body.dark-mode .bottom-nav button.active{
+      background:#2563eb !important;
+      color:#fff !important;
+    }
+
+    body.dark-mode .topbar-mini-btn.dark-active{
+      background:#f8fafc !important;
+      color:#0f172a !important;
+    }
+
+    .simple-mode-overlay{
+      position:fixed;
+      inset:0;
+      z-index:95;
+      display:none;
+      align-items:flex-end;
+      justify-content:center;
+      background:rgba(15,23,42,.28);
+      backdrop-filter:blur(10px);
+      -webkit-backdrop-filter:blur(10px);
+      padding:12px;
+    }
+
+    .simple-mode-overlay.show{
+      display:flex;
+    }
+
+    .simple-mode-card{
+      width:min(620px, 100%);
+      max-height:92vh;
+      overflow:auto;
+      background:rgba(255,255,255,.96);
+      border:1px solid rgba(226,232,240,.95);
+      border-radius:26px;
+      box-shadow:0 22px 60px rgba(15,23,42,.24);
+      padding:16px;
+    }
+
+    .simple-mode-head{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:12px;
+    }
+
+    .simple-mode-head h2{
+      margin:0 0 4px;
+      font-size:22px;
+      font-weight:950;
+    }
+
+    .simple-mode-close{
+      width:40px;
+      height:40px;
+      border-radius:15px;
+      font-size:22px;
+      line-height:1;
+    }
+
+    .simple-product-grid{
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0, 1fr));
+      gap:8px;
+      margin:10px 0 12px;
+    }
+
+    .simple-product-btn{
+      min-height:46px;
+      border-radius:16px;
+      border:1px solid #dbe4ef;
+      background:#fff;
+      color:#0f172a;
+      font-weight:950;
+      font-size:14px;
+    }
+
+    .simple-product-btn.active{
+      color:#fff;
+      box-shadow:0 12px 22px rgba(15,23,42,.14);
+      transform:translateY(-1px);
+    }
+
+    .simple-product-btn.tomruk.active{ background:#ca8a04; border-color:#ca8a04; }
+    .simple-product-btn.maden.active{ background:#2563eb; border-color:#2563eb; }
+    .simple-product-btn.kagit.active{ background:#dc2626; border-color:#dc2626; }
+    .simple-product-btn.sanayi.active{ background:#16a34a; border-color:#16a34a; }
+    .simple-product-btn.tel.active{ background:#7c3aed; border-color:#7c3aed; }
+
+    .simple-input-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      margin:10px 0;
+    }
+
+    .simple-input-grid label{
+      display:block;
+      margin-bottom:6px;
+      font-size:13px;
+      font-weight:950;
+      color:#334155;
+    }
+
+    .simple-input-grid input{
+      width:100%;
+      min-height:54px;
+      border:1px solid #dbe4ef;
+      border-radius:18px;
+      padding:10px 12px;
+      font-size:22px;
+      font-weight:950;
+      outline:none;
+      text-align:center;
+    }
+
+    .simple-input-grid input:focus{
+      border-color:#2563eb;
+      box-shadow:0 0 0 3px rgba(37,99,235,.12);
+    }
+
+    .simple-auto-info{
+      margin:10px 0;
+      padding:10px;
+      border-radius:16px;
+      background:#f8fafc;
+      border:1px solid #e2e8f0;
+      color:#475569;
+      font-size:12px;
+      font-weight:850;
+      line-height:1.45;
+    }
+
+    .simple-save-btn{
+      width:100%;
+      min-height:52px !important;
+      border-radius:18px !important;
+      font-size:17px !important;
+      font-weight:950 !important;
+      margin:6px 0 12px !important;
+    }
+
+    .simple-last-wrap h3{
+      margin:12px 0 8px;
+      font-size:16px;
+      font-weight:950;
+    }
+
+    .simple-last-records{
+      display:grid;
+      gap:8px;
+    }
+
+    .simple-last-item{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      border:1px solid #e2e8f0;
+      border-left-width:7px;
+      border-radius:18px;
+      padding:10px 12px;
+      background:#fff;
+      cursor:pointer;
+      box-shadow:0 8px 18px rgba(15,23,42,.05);
+    }
+
+    .simple-last-item b{
+      display:block;
+      font-size:14px;
+      color:#0f172a;
+    }
+
+    .simple-last-item span{
+      display:block;
+      color:#64748b;
+      font-size:12px;
+      font-weight:850;
+      margin-top:2px;
+    }
+
+    body.dark-mode .simple-last-item b{
+      color:#f8fafc !important;
+    }
+
+    .simple-last-item.tomruk{ border-left-color:#ca8a04; }
+    .simple-last-item.maden{ border-left-color:#2563eb; }
+    .simple-last-item.kagit{ border-left-color:#dc2626; }
+    .simple-last-item.sanayi{ border-left-color:#16a34a; }
+    .simple-last-item.tel{ border-left-color:#7c3aed; }
+
+    @media (min-width:720px){
+      .simple-mode-overlay{
+        align-items:center;
+      }
+      .simple-product-grid{
+        grid-template-columns:repeat(5, minmax(0,1fr));
+      }
+    }
+
+    @media (max-width:430px){
+      .topbar-extra-actions{
+        width:100%;
+        justify-content:flex-start;
+      }
+      .topbar-mini-btn{
+        font-size:11px;
+        padding:6px 9px;
+      }
+      .simple-input-grid input{
+        font-size:20px;
+      }
+    }
+
   </style>
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -4210,15 +4541,60 @@
     </div>
   </div>
 
-  <div class="app">
+  
+  <div id="simpleModeOverlay" class="simple-mode-overlay" role="dialog" aria-modal="true" aria-label="Sade Mod">
+    <div class="simple-mode-card">
+      <div class="simple-mode-head">
+        <div>
+          <h2>Sade Mod</h2>
+          <p id="simpleModeInfo" class="hint">Barkod, tarih, adet ve dosya bilgileri Yeni Kayıt ekranından otomatik alınır.</p>
+        </div>
+        <button id="simpleModeCloseBtn" class="ghost simple-mode-close" type="button">×</button>
+      </div>
+
+      <div class="simple-product-grid" id="simpleProductGrid">
+        <button type="button" data-simple-product="Tomruk" class="simple-product-btn tomruk active">Tomruk</button>
+        <button type="button" data-simple-product="Maden Direk" class="simple-product-btn maden">Maden</button>
+        <button type="button" data-simple-product="Kağıtlık" class="simple-product-btn kagit">Kağıtlık</button>
+        <button type="button" data-simple-product="Sanayi Odunu" class="simple-product-btn sanayi">Sanayi</button>
+        <button type="button" data-simple-product="Tel Direk" class="simple-product-btn tel">Tel</button>
+      </div>
+
+      <div class="simple-input-grid">
+        <div>
+          <label for="simpleDiameter">Çap</label>
+          <input id="simpleDiameter" inputmode="decimal" autocomplete="off" placeholder="Çap" />
+        </div>
+        <div>
+          <label for="simpleLength">Boy</label>
+          <input id="simpleLength" inputmode="decimal" autocomplete="off" placeholder="Boy" />
+        </div>
+      </div>
+
+      <div id="simpleAutoInfo" class="simple-auto-info"></div>
+
+      <button id="simpleSaveBtn" class="primary simple-save-btn" type="button">Kaydet</button>
+
+      <div class="simple-last-wrap">
+        <h3>Son 3 Barkod</h3>
+        <div id="simpleLastRecords" class="simple-last-records"></div>
+      </div>
+    </div>
+  </div>
+
+<div class="app">
     <header class="topbar">
       <div class="brand">
-        <h1>Mesaha İO v1.18</h1>
+        <h1>Mesaha İO v1.19</h1>
         
       </div>
       <div class="active-user-wrap">
         <div id="activeUserBadge" class="active-user-badge" role="button" tabindex="0" title="Kullanıcı panelini aç" style="display:none"></div>
         <span id="userNotificationBadge" class="user-notification-badge" style="display:none">0</span>
+      </div>
+      <div class="topbar-extra-actions">
+        <button id="themeToggleBtn" class="topbar-mini-btn" type="button">Karanlık</button>
+        <button id="simpleModeBtn" class="topbar-mini-btn" type="button">Sade Mod</button>
       </div>
     </header>
 
@@ -4865,6 +5241,17 @@
       loginError: $("loginError"),
       activeUserBadge: $("activeUserBadge"),
       userNotificationBadge: $("userNotificationBadge"),
+      themeToggleBtn: $("themeToggleBtn"),
+      simpleModeBtn: $("simpleModeBtn"),
+      simpleModeOverlay: $("simpleModeOverlay"),
+      simpleModeCloseBtn: $("simpleModeCloseBtn"),
+      simpleModeInfo: $("simpleModeInfo"),
+      simpleProductGrid: $("simpleProductGrid"),
+      simpleDiameter: $("simpleDiameter"),
+      simpleLength: $("simpleLength"),
+      simpleAutoInfo: $("simpleAutoInfo"),
+      simpleSaveBtn: $("simpleSaveBtn"),
+      simpleLastRecords: $("simpleLastRecords"),
       registeredUsersList: $("registeredUsersList"),
       changeUserBtn: $("changeUserBtn"),
       adminUsersBtn: $("adminUsersBtn"),
@@ -5656,8 +6043,8 @@
     function currentDeviceInfoPayload() {
       const active = state.activeUser || findActiveUser();
       return {
-        appVersion: "Mesaha İO v1.18",
-        fileVersion: "v89",
+        appVersion: "Mesaha İO v1.19",
+        fileVersion: "v90",
         userName: active && active.name ? cleanUserText(active.name) : "",
         seflik: active && active.seflik ? cleanUserText(active.seflik) : "",
         deviceId: getOrCreateDeviceId(),
@@ -6010,7 +6397,7 @@
           message: "Admin güncelleme uyarısı gönderdi.",
           status: "review",
           adminReply: reply,
-          appVersion: "Mesaha İO v1.18",
+          appVersion: "Mesaha İO v1.19",
           recordCount: 0,
           createdAt: firebaseDateText(),
           createdAtMs: nowMs,
@@ -6560,7 +6947,7 @@
 
     async function uploadCloudBackupOpen(user) {
       const payload = buildCloudBackupPayload(user);
-      payload.version = 89;
+      payload.version = 90;
       const bolmePart = els.bolmeNo && String(els.bolmeNo.value || "").trim() ? `_${cleanFilePart(els.bolmeNo.value)}` : "";
       const fileName = `Mesaha_Yedek_${cleanFilePart(user.seflik)}_${cleanFilePart(user.name)}${bolmePart}_${new Date().toISOString().slice(0,19).replace(/[-:T]/g, "")}.json`;
 
@@ -6753,7 +7140,8 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
 
         state.records = payload.records;
         save();
-        quickAppUpdateCheck();
+        initThemeMode();
+    quickAppUpdateCheck();
     render();
         closeCloudRestorePanel();
         showToast("Bulut yedeği geri yüklendi.");
@@ -6989,7 +7377,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function buildCloudBackupPayload(user) {
       return {
         app: "Mesaha İO",
-        version: 89,
+        version: 90,
         createdAt: new Date().toLocaleString("tr-TR"),
         user: {
           name: user.name || "",
@@ -8991,7 +9379,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function backup() {
       const data = {
         app: "Mesaha App",
-        version: 89,
+        version: 90,
         exportedAt: formatDateTime(),
         systemHeaders: HEADERS,
         settings: state.settings,
@@ -9408,7 +9796,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     async function firebaseUploadBackup(user) {
       const { db } = await ensureFirebaseReady();
       const payload = buildCloudBackupPayload(user);
-      payload.version = 89;
+      payload.version = 90;
       payload.cloud = "firebase";
 
       const bolmeNo = els.bolmeNo ? String(els.bolmeNo.value || "").trim() : "";
@@ -9785,6 +10173,23 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     }
 
 
+    
+    if (els.themeToggleBtn) els.themeToggleBtn.addEventListener("click", toggleThemeMode);
+    if (els.simpleModeBtn) els.simpleModeBtn.addEventListener("click", simpleOpenMode);
+    if (els.simpleModeCloseBtn) els.simpleModeCloseBtn.addEventListener("click", simpleCloseMode);
+    if (els.simpleSaveBtn) els.simpleSaveBtn.addEventListener("click", simpleSaveRecord);
+    if (els.simpleProductGrid) els.simpleProductGrid.addEventListener("click", (event) => {
+      const btn = event.target.closest("[data-simple-product]");
+      if (!btn) return;
+      setSimpleSelectedProduct(btn.dataset.simpleProduct || "Tomruk");
+    });
+    if (els.simpleDiameter) els.simpleDiameter.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") { event.preventDefault(); if (els.simpleLength) els.simpleLength.focus(); }
+    });
+    if (els.simpleLength) els.simpleLength.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") { event.preventDefault(); simpleSaveRecord(); }
+    });
+
     els.backupBtn.addEventListener("click", backup);
     els.restoreBtn.addEventListener("click", () => els.restoreInput.click());
     els.restoreInput.addEventListener("change", (e) => {
@@ -9894,6 +10299,11 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 
 
     window.forceUpdateApp = forceUpdateApp;
+
+    window.toggleThemeMode = toggleThemeMode;
+    window.simpleOpenMode = simpleOpenMode;
+    window.simpleCloseMode = simpleCloseMode;
+
     window.openAdminFromUserPanel = openAdminFromUserPanel;
 
     window.adminSetReportStatus = adminSetReportStatus;
@@ -10138,8 +10548,8 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     load();
   
     window.MESAHA_BUILD_INFO = {
-      fileVersion: "v89",
-      visibleVersion: "Mesaha İO v1.18",
+      fileVersion: "v90",
+      visibleVersion: "Mesaha İO v1.19",
       stableBuild: true
     };
 
