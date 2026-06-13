@@ -1,4 +1,4 @@
-const CACHE_NAME = "mesaha-app-v82";
+const CACHE_NAME = "mesaha-app-v84";
 const ASSETS = [
   "./",
   "./index.html",
@@ -24,9 +24,7 @@ self.addEventListener("activate", (event) => {
 });
 
 self.addEventListener("message", (event) => {
-  if (event.data && event.data.type === "SKIP_WAITING") {
-    self.skipWaiting();
-  }
+  if (event.data && event.data.type === "SKIP_WAITING") self.skipWaiting();
 });
 
 self.addEventListener("fetch", (event) => {

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha App v82</title>
+  <title>Mesaha App v84</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -3571,6 +3571,371 @@
       -webkit-backdrop-filter:blur(38px) saturate(220%) !important;
     }
 
+  
+    /* v83: Sade Admin Paneli */
+    .admin-panel-top-clean{
+      align-items:center !important;
+      background:linear-gradient(180deg, #ffffff, #f8fafc);
+      border:1px solid #dbe4ef;
+      border-radius:16px;
+      padding:12px;
+      margin-bottom:12px !important;
+    }
+
+    .admin-panel-top-clean h3{
+      margin:0 0 4px !important;
+      font-size:18px !important;
+    }
+
+    .admin-summary-grid-clean{
+      grid-template-columns:repeat(2, minmax(0, 1fr)) !important;
+      gap:9px !important;
+      margin:10px 0 12px !important;
+    }
+
+    .admin-summary-grid-clean .admin-summary-card{
+      min-height:68px;
+      border-radius:16px;
+      background:#f8fafc;
+      border-color:#dbe4ef;
+    }
+
+    .admin-summary-grid-clean .admin-summary-card.wide{
+      grid-column:1 / -1;
+    }
+
+    .admin-filters-clean{
+      grid-template-columns:1fr !important;
+      gap:8px !important;
+      margin:10px 0 !important;
+    }
+
+    .admin-filters-clean select{
+      min-height:40px !important;
+    }
+
+    .admin-quick-filters-clean{
+      display:grid !important;
+      grid-template-columns:repeat(2, minmax(0, 1fr));
+      gap:8px !important;
+      margin:10px 0 !important;
+    }
+
+    .admin-quick-filters-clean .admin-quick{
+      min-height:38px !important;
+      border-radius:14px !important;
+      font-size:12px !important;
+    }
+
+    .admin-tabs-clean{
+      display:grid !important;
+      grid-template-columns:1fr 1fr;
+      gap:8px !important;
+      margin:12px 0 10px !important;
+    }
+
+    .admin-tabs-clean .admin-tab{
+      min-height:42px !important;
+      border-radius:16px !important;
+      font-size:13px !important;
+    }
+
+    .registered-user-item.online-user{
+      border-radius:18px !important;
+      padding:12px !important;
+    }
+
+    .registered-user-head{
+      gap:8px !important;
+    }
+
+    .registered-user-meta{
+      display:grid !important;
+      grid-template-columns:repeat(2, minmax(0, 1fr)) !important;
+      gap:6px !important;
+      margin-top:8px !important;
+    }
+
+    .registered-user-meta span{
+      background:#f8fafc;
+      border:1px solid #e2e8f0;
+      border-radius:12px;
+      padding:7px 8px;
+      font-size:11px !important;
+      font-weight:900 !important;
+      color:#475569 !important;
+    }
+
+    .registered-user-actions{
+      display:grid !important;
+      grid-template-columns:repeat(2, minmax(0, 1fr));
+      gap:7px !important;
+      margin-top:10px !important;
+    }
+
+    .registered-user-actions button{
+      min-height:36px !important;
+      border-radius:13px !important;
+      font-size:12px !important;
+      padding:7px 8px !important;
+    }
+
+    .admin-source-pill{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      border-radius:999px;
+      padding:4px 8px;
+      font-size:10px;
+      font-weight:950;
+      background:#eef2ff;
+      color:#3730a3;
+      border:1px solid #c7d2fe;
+      margin-left:6px;
+      white-space:nowrap;
+    }
+
+    @media (min-width:720px){
+      .admin-summary-grid-clean{
+        grid-template-columns:repeat(4, minmax(0, 1fr)) !important;
+      }
+      .admin-summary-grid-clean .admin-summary-card.wide{
+        grid-column:span 2;
+      }
+      .admin-filters-clean{
+        grid-template-columns:1fr 180px !important;
+      }
+      .admin-quick-filters-clean{
+        grid-template-columns:repeat(4, minmax(0, 1fr));
+      }
+    }
+
+  
+    /* v84: Sorun Bildir ve Admin Bildirimleri */
+    .issue-report-overlay{
+      position:fixed;
+      inset:0;
+      z-index:90;
+      display:none;
+      align-items:flex-end;
+      justify-content:center;
+      background:rgba(15,23,42,.26);
+      backdrop-filter:blur(10px);
+      -webkit-backdrop-filter:blur(10px);
+      padding:12px;
+    }
+
+    .issue-report-overlay.show{
+      display:flex;
+    }
+
+    .issue-report-card{
+      width:min(560px, 100%);
+      max-height:88vh;
+      overflow:auto;
+      background:rgba(255,255,255,.94);
+      border:1px solid rgba(226,232,240,.95);
+      border-radius:24px;
+      box-shadow:0 22px 60px rgba(15,23,42,.22);
+      padding:16px;
+    }
+
+    .issue-report-head{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:12px;
+    }
+
+    .issue-report-head h2{
+      margin:0 0 4px;
+      font-size:20px;
+      font-weight:950;
+    }
+
+    .issue-report-close{
+      width:38px;
+      height:38px;
+      border-radius:14px;
+      font-size:22px;
+      line-height:1;
+    }
+
+    #issueReportMessage{
+      width:100%;
+      resize:vertical;
+      min-height:110px;
+      border:1px solid #dbe4ef;
+      border-radius:16px;
+      padding:12px;
+      font:inherit;
+      outline:none;
+    }
+
+    #issueReportMessage:focus{
+      border-color:#2563eb;
+      box-shadow:0 0 0 3px rgba(37,99,235,.12);
+    }
+
+    .issue-device-info{
+      margin:10px 0;
+      padding:10px;
+      border-radius:16px;
+      background:#f8fafc;
+      border:1px solid #e2e8f0;
+      color:#475569;
+      font-size:12px;
+      font-weight:800;
+      line-height:1.45;
+    }
+
+    .issue-report-actions{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:8px;
+      margin:10px 0 14px;
+    }
+
+    .issue-my-reports h3{
+      margin:12px 0 8px;
+      font-size:15px;
+      font-weight:950;
+    }
+
+    .issue-mini-card,
+    .admin-report-card{
+      border:1px solid #e2e8f0;
+      border-radius:18px;
+      background:#fff;
+      padding:12px;
+      margin:8px 0;
+    }
+
+    .issue-mini-card .top,
+    .admin-report-card .top{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:8px;
+      margin-bottom:7px;
+    }
+
+    .issue-status,
+    .admin-report-status{
+      display:inline-flex;
+      border-radius:999px;
+      padding:4px 8px;
+      font-size:10px;
+      font-weight:950;
+      border:1px solid #dbe4ef;
+      background:#f8fafc;
+      color:#334155;
+      white-space:nowrap;
+    }
+
+    .issue-status.new,
+    .admin-report-status.new{
+      background:#fff7ed;
+      color:#9a3412;
+      border-color:#fed7aa;
+    }
+
+    .issue-status.review,
+    .admin-report-status.review{
+      background:#eff6ff;
+      color:#1d4ed8;
+      border-color:#bfdbfe;
+    }
+
+    .issue-status.done,
+    .admin-report-status.done{
+      background:#f0fdf4;
+      color:#166534;
+      border-color:#bbf7d0;
+    }
+
+    .issue-reply,
+    .admin-reply-box{
+      margin-top:8px;
+      padding:9px;
+      border-radius:14px;
+      background:#f0fdf4;
+      border:1px solid #bbf7d0;
+      color:#166534;
+      font-size:12px;
+      font-weight:850;
+    }
+
+    .admin-report-toolbar{
+      display:grid;
+      grid-template-columns:repeat(3, minmax(0,1fr));
+      gap:8px;
+      margin:10px 0;
+    }
+
+    .admin-report-filter{
+      min-height:38px;
+      border-radius:14px;
+      font-size:12px;
+      font-weight:950;
+    }
+
+    .admin-report-filter.active{
+      background:#111827;
+      color:#fff;
+    }
+
+    .admin-report-meta{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:6px;
+      margin:8px 0;
+    }
+
+    .admin-report-meta span{
+      background:#f8fafc;
+      border:1px solid #e2e8f0;
+      border-radius:12px;
+      padding:7px 8px;
+      font-size:11px;
+      font-weight:900;
+      color:#475569;
+    }
+
+    .admin-report-message{
+      margin-top:8px;
+      white-space:pre-wrap;
+      font-size:13px;
+      color:#0f172a;
+      font-weight:850;
+      line-height:1.45;
+    }
+
+    .admin-report-actions{
+      display:grid;
+      grid-template-columns:repeat(3, minmax(0,1fr));
+      gap:7px;
+      margin-top:10px;
+    }
+
+    .admin-report-actions button{
+      min-height:36px;
+      border-radius:13px;
+      font-size:11px;
+      padding:7px 6px;
+    }
+
+    .admin-tabs-clean{
+      grid-template-columns:repeat(3, minmax(0,1fr)) !important;
+    }
+
+    @media (min-width:720px){
+      .issue-report-overlay{
+        align-items:center;
+      }
+    }
+
   </style>
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -3613,6 +3978,7 @@
         <button id="panelChangeUserBtn" class="secondary" type="button">Kullanıcı Adı / Şeflik Değiştir</button>
         <button id="panelPasswordBtn" class="warning" type="button">Bulut Yedeklerini Getir</button>
         <button id="panelCloudBackupBtn" class="primary" type="button">Buluta Yedekle</button>
+        <button id="panelReportIssueBtn" class="secondary" type="button">Sorun Bildir</button>
         <button id="userMenuForceUpdateBtn" class="secondary" type="button">Yeni Sürümü Güncelle</button>
       </div>
 
@@ -3621,6 +3987,35 @@
   </div>
 
   
+  
+  <div id="issueReportOverlay" class="issue-report-overlay" role="dialog" aria-modal="true" aria-label="Sorun bildir">
+    <div class="issue-report-card">
+      <div class="issue-report-head">
+        <div>
+          <h2>Sorun Bildir</h2>
+          <p id="issueReportUserInfo" class="hint">Kullanıcı bilgileri otomatik eklenir.</p>
+        </div>
+        <button id="issueReportCloseBtn" class="ghost issue-report-close" type="button">×</button>
+      </div>
+
+      <label for="issueReportMessage">Sorunu kısaca yazınız</label>
+      <textarea id="issueReportMessage" rows="5" placeholder="Örn: Yazdırma ekranında günlük özet çıkıyor, Excel inmiyor, yedek gelmiyor..." autocomplete="off"></textarea>
+
+      <div id="issueDeviceInfo" class="issue-device-info"></div>
+
+      <div class="issue-report-actions">
+        <button id="issueReportSendBtn" class="primary" type="button">Gönder</button>
+        <button id="issueReportCancelBtn" class="secondary" type="button">Vazgeç</button>
+      </div>
+
+      <div class="issue-my-reports">
+        <h3>Son Bildirimlerim</h3>
+        <div id="issueMyReportsList" class="issue-my-reports-list">Henüz bildirim yok.</div>
+      </div>
+    </div>
+  </div>
+
+
   <div id="cloudRestoreOverlay" class="cloud-restore-overlay" role="dialog" aria-modal="true" aria-label="Buluttan getir">
     <div class="cloud-restore-card">
       <div class="cloud-restore-head">
@@ -3664,7 +4059,7 @@
   <div class="app">
     <header class="topbar">
       <div class="brand">
-        <h1>Mesaha İO v1.11</h1>
+        <h1>Mesaha İO v1.13</h1>
         
       </div>
       <div id="activeUserBadge" class="active-user-badge" role="button" tabindex="0" title="Kullanıcı panelini aç" style="display:none"></div>
@@ -4047,67 +4442,64 @@
       </section>
 
     
+      
       <section class="panel admin-panel">
         <div class="panel-header">
           <h2>Admin Paneli</h2>
-          <span class="pill" style="display:inline-flex">Kontrol</span>
+          <span class="pill" style="display:inline-flex">Yönetim</span>
         </div>
         <div class="panel-body">
-          <div class="admin-panel-top">
+          <div class="admin-panel-top admin-panel-top-clean">
             <div>
-              <h3>Kontrol Merkezi</h3>
-              <p class="hint">Kullanıcılar, hareketler, notlar, pasif işaretleme ve hızlı filtreler.</p>
+              <h3>Yönetim Özeti</h3>
+              <p id="adminSyncInfo" class="hint">Firebase ve eski sistem birlikte kontrol edilir.</p>
             </div>
             <button type="button" id="adminRefreshBtn" class="secondary">Yenile</button>
-              <button type="button" id="adminFirebaseMigrateBtn" class="secondary">Eski Kullanıcıları Firebase’e Aktar</button>
           </div>
 
-          <div class="admin-summary-grid">
+          <div class="admin-summary-grid admin-summary-grid-clean">
             <div class="admin-summary-card"><span>Toplam Kullanıcı</span><b id="adminTotalUsers">0</b></div>
             <div class="admin-summary-card"><span>Bugün Giriş</span><b id="adminTodayUsers">0</b></div>
             <div class="admin-summary-card"><span>Son 7 Gün</span><b id="adminWeekUsers">0</b></div>
             <div class="admin-summary-card"><span>Toplam Yedek</span><b id="adminTotalBackups">0</b></div>
-            <div class="admin-summary-card"><span>Bugünkü Yedek</span><b id="adminTodayBackups">0</b></div>
             <div class="admin-summary-card wide"><span>En Son Yedek</span><b id="adminLastBackup">-</b></div>
           </div>
 
-          <div class="admin-tabs">
-            <button class="admin-tab active" type="button" data-admin-tab="dashboard">Özet</button>
-            <button class="admin-tab" type="button" data-admin-tab="users">Kullanıcılar</button>
-            <button class="admin-tab" type="button" data-admin-tab="activity">Hareketler</button>
-            <button class="admin-tab" type="button" data-admin-tab="notes">Notlar</button>
-          </div>
-
-          <div class="admin-filters">
+          <div class="admin-filters admin-filters-clean">
             <input id="adminUserSearch" type="text" placeholder="Kullanıcı veya şeflik ara..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
             <select id="adminSeflikFilter">
               <option value="">Tüm şeflikler</option>
             </select>
           </div>
 
-          <div class="admin-quick-filters">
+          <div class="admin-quick-filters admin-quick-filters-clean">
             <button type="button" class="admin-quick active" data-admin-quick="all">Tümü</button>
             <button type="button" class="admin-quick" data-admin-quick="today">Bugün aktif</button>
             <button type="button" class="admin-quick" data-admin-quick="noBackup">Yedeği olmayan</button>
-            <button type="button" class="admin-quick" data-admin-quick="inactive7">7+ gün girmeyen</button>
-            <button type="button" class="admin-quick" data-admin-quick="mostBackup">En çok yedek alan</button>
-            <button type="button" class="admin-quick" data-admin-quick="disabled">Pasifler</button>
+            <button type="button" class="admin-quick" data-admin-quick="inactive">7+ gün girmeyen</button>
           </div>
 
-          <div id="adminDashboardView" class="admin-view">
-            <div id="adminControlCenter" class="admin-control-center"></div>
+          <div class="admin-tabs admin-tabs-clean">
+            <button class="admin-tab active" type="button" data-admin-tab="users">Kullanıcılar</button>
+            <button class="admin-tab" type="button" data-admin-tab="notes">Notlar</button>
+            <button class="admin-tab" type="button" data-admin-tab="reports">Bildirimler</button>
           </div>
 
-          <div id="adminUsersView" class="admin-view" style="display:none">
+          <div id="adminUsersView" class="admin-view">
             <div id="registeredUsersList" class="registered-users-list"></div>
-          </div>
-
-          <div id="adminActivityView" class="admin-view" style="display:none">
-            <div id="adminActivityList" class="admin-activity-list"></div>
           </div>
 
           <div id="adminNotesView" class="admin-view" style="display:none">
             <div id="adminNotesList" class="admin-notes-list"></div>
+          </div>
+
+          <div id="adminReportsView" class="admin-view" style="display:none">
+            <div class="admin-report-toolbar">
+              <button type="button" class="admin-report-filter active" data-report-filter="open">Açık</button>
+              <button type="button" class="admin-report-filter" data-report-filter="all">Tümü</button>
+              <button type="button" class="admin-report-filter" data-report-filter="done">Çözüldü</button>
+            </div>
+            <div id="adminReportsList" class="admin-reports-list"></div>
           </div>
         </div>
       </section>
@@ -4141,6 +4533,7 @@
     const FIREBASE_SDK_VERSION = "9.23.0";
     const FIREBASE_USERS_COLLECTION = "users";
     const FIREBASE_BACKUPS_COLLECTION = "backups";
+    const FIREBASE_REPORTS_COLLECTION = "supportTickets";
 
     const DEVICE_ID_KEY = "mesaha_cihaz_kodu_v1";
 
@@ -4282,9 +4675,20 @@
       navAdmin: $("navAdmin"),
       guideAdminOpenBtn: $("guideAdminOpenBtn"),
       userMenuForceUpdateBtn: $("userMenuForceUpdateBtn"),
+      panelReportIssueBtn: $("panelReportIssueBtn"),
+      issueReportOverlay: $("issueReportOverlay"),
+      issueReportCloseBtn: $("issueReportCloseBtn"),
+      issueReportCancelBtn: $("issueReportCancelBtn"),
+      issueReportSendBtn: $("issueReportSendBtn"),
+      issueReportMessage: $("issueReportMessage"),
+      issueReportUserInfo: $("issueReportUserInfo"),
+      issueDeviceInfo: $("issueDeviceInfo"),
+      issueMyReportsList: $("issueMyReportsList"),
+      adminReportsView: $("adminReportsView"),
+      adminReportsList: $("adminReportsList"),
       guideForceUpdateBtn: $("guideForceUpdateBtn"),
       adminRefreshBtn: $("adminRefreshBtn"),
-      adminFirebaseMigrateBtn: $("adminFirebaseMigrateBtn"),
+      adminSyncInfo: $("adminSyncInfo"),
       adminTotalUsers: $("adminTotalUsers"),
       adminTodayUsers: $("adminTodayUsers"),
       adminWeekUsers: $("adminWeekUsers"),
@@ -4965,25 +5369,27 @@
       els.registeredUsersList.innerHTML = list.map(user => {
         const status = adminStatus(user);
         const note = state.adminNotes[adminUserKey(user.name, user.seflik)] || "";
+        const source = user.sourceLabel || user.source || "";
+        const sourceText = String(source).includes("firebase") ? "Firebase" : (String(source).includes("Eski") || String(source).includes("Apps") || String(source).includes("apps") ? "Eski" : "");
         return `
           <div class="registered-user-item online-user status-${status.key}">
             <div class="registered-user-head">
               <b>${escapeHtml(user.name || "-")}</b>
-              <span class="admin-status-pill ${status.key}">${status.label}</span>
+              <div>
+                ${sourceText ? `<span class="admin-source-pill">${escapeHtml(sourceText)}</span>` : ""}
+                <span class="admin-status-pill ${status.key}">${status.label}</span>
+              </div>
             </div>
             <div class="registered-user-meta">
               <span>Şeflik: ${escapeHtml(user.seflik || "-")}</span>
-              <span>Giriş: ${(Number(user.loginCount) || 0).toLocaleString("tr-TR")}</span>
-              <span>İlk: ${escapeHtml(user.firstLogin || "-")}</span>
-              <span>Son: ${escapeHtml(user.lastLogin || "-")}</span>
+              <span>Son giriş: ${escapeHtml(user.lastLogin || "-")}</span>
               <span>Yedek: ${(Number(user.backupCount) || 0).toLocaleString("tr-TR")}</span>
               <span>Cihaz: ${(Number(user.deviceCount) || 0).toLocaleString("tr-TR")}</span>
             </div>
-            ${note ? `<div class="admin-note-item"><b>Not</b><span>${escapeHtml(note)}</span></div>` : ""}
+            ${note ? `<div class="admin-note-item"><b>Admin Notu</b><span>${escapeHtml(note)}</span></div>` : ""}
             <div class="registered-user-actions">
               <button class="secondary admin-user-backups" type="button" onclick="adminOpenUserBackups('${escapeHtml(user.name || "")}','${escapeHtml(user.seflik || "")}')">Yedekleri Gör</button>
-              <button class="admin-user-note" type="button" onclick="adminEditNote('${escapeHtml(user.name || "")}','${escapeHtml(user.seflik || "")}')">Not</button>
-              <button class="admin-user-passive" type="button" onclick="adminTogglePassive('${escapeHtml(user.name || "")}','${escapeHtml(user.seflik || "")}')">${adminIsDisabled(user) ? "Aktif Yap" : "Pasif Yap"}</button>
+              <button class="admin-user-note" type="button" onclick="adminEditNote('${escapeHtml(user.name || "")}','${escapeHtml(user.seflik || "")}')">Not Yaz</button>
               <button class="ghost" type="button" onclick="adminShowDetail('${escapeHtml(user.name || "")}','${escapeHtml(user.seflik || "")}')">Detay</button>
               <button class="danger registered-user-delete" type="button" onclick="deleteCloudUserAndBackups('${escapeHtml(user.name || "")}','${escapeHtml(user.seflik || "")}')">Sil</button>
             </div>
@@ -5030,38 +5436,295 @@
 
     async function loadAdminPanelData() {
       const admin = state.lastAdminCode || sessionStorage.getItem("mesaha_admin_code") || ADMIN_CODE;
-      const users = await loadOnlineUsers(admin);
-      state.adminOnlineUsers = users;
 
-      updateAdminTopSummary();
-      updateAdminSeflikOptions();
-      renderAdminUsers();
-      renderAdminActivity();
-      renderAdminNotes();
-      renderAdminControlCenter();
-      showToast("Kullanıcılar yüklendi.");
-
-      loadAdminBackupsV74()
-        .then(() => {
+      try {
+        const cached = JSON.parse(localStorage.getItem("mesaha_admin_users_cache_v1") || "null");
+        if (cached && Array.isArray(cached.users) && cached.users.length) {
+          state.adminOnlineUsers = cached.users;
           updateAdminTopSummary();
-          renderAdminControlCenter();
-        })
-        .catch(() => {});
+          updateAdminSeflikOptions();
+          renderAdminUsers();
+          renderAdminNotes();
+          if (els.adminSyncInfo) els.adminSyncInfo.textContent = `Önbellekten gösteriliyor • Son kayıt: ${cached.time || "-"}`;
+        }
+      } catch {}
+
+      try {
+        if (els.registeredUsersList && !(state.adminOnlineUsers || []).length) {
+          els.registeredUsersList.innerHTML = `<div class="empty-user-list">Kullanıcılar yükleniyor...</div>`;
+        }
+
+        const users = await loadOnlineUsers(admin);
+        state.adminOnlineUsers = users;
+
+        const time = new Date().toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" });
+        localStorage.setItem("mesaha_admin_users_cache_v1", JSON.stringify({ time, users }));
+
+        updateAdminTopSummary();
+        updateAdminSeflikOptions();
+        renderAdminUsers();
+        renderAdminNotes();
+        setAdminPanelTab("users");
+
+        if (els.adminSyncInfo) {
+          els.adminSyncInfo.textContent = `Güncel veri gösteriliyor • Firebase + eski sistem • ${time}`;
+        }
+        showToast("Admin paneli güncellendi.");
+
+        loadAdminBackupsV74()
+          .then(() => {
+            updateAdminTopSummary();
+            if (els.adminSyncInfo) els.adminSyncInfo.textContent = `Güncel veri gösteriliyor • Yedekler de kontrol edildi • ${time}`;
+          })
+          .catch(() => {});
+      } catch (err) {
+        if (els.adminSyncInfo) els.adminSyncInfo.textContent = "Admin verisi alınamadı. İnternet veya Firebase kurallarını kontrol edin.";
+        showToast(err && err.message ? err.message : "Admin paneli yüklenemedi.");
+      }
     }
 
-    function setAdminPanelTab(tab) {
-      const views = {
-        dashboard: els.adminDashboardView,
-        users: els.adminUsersView,
-        activity: els.adminActivityView,
-        notes: els.adminNotesView
+    
+    function reportStatusLabel(status) {
+      if (status === "done") return "Çözüldü";
+      if (status === "review") return "İncelendi";
+      return "Yeni";
+    }
+
+    function reportStatusClass(status) {
+      if (status === "done") return "done";
+      if (status === "review") return "review";
+      return "new";
+    }
+
+    function issueDeviceInfoPayload() {
+      const active = state.activeUser || findActiveUser();
+      return {
+        appVersion: "Mesaha İO v1.13",
+        fileVersion: "v84",
+        userName: active && active.name ? cleanUserText(active.name) : "",
+        seflik: active && active.seflik ? cleanUserText(active.seflik) : "",
+        deviceId: getOrCreateDeviceId(),
+        recordCount: (state.records || []).length,
+        userAgent: navigator.userAgent || "",
+        platform: navigator.platform || "",
+        online: navigator.onLine,
+        screen: `${window.screen && window.screen.width || 0}x${window.screen && window.screen.height || 0}`,
+        createdLocal: new Date().toLocaleString("tr-TR")
       };
-      Object.keys(views).forEach(k => { if (views[k]) views[k].style.display = k === tab ? "" : "none"; });
-      document.querySelectorAll(".admin-tab").forEach(btn => btn.classList.toggle("active", btn.dataset.adminTab === tab));
-      if (tab === "dashboard") renderAdminControlCenter();
-      if (tab === "users") renderAdminUsers();
-      if (tab === "activity") renderAdminActivity();
-      if (tab === "notes") renderAdminNotes();
+    }
+
+    function issueDeviceInfoText(info) {
+      return [
+        `Sürüm: ${info.appVersion || "-"}`,
+        `Kayıt: ${Number(info.recordCount || 0).toLocaleString("tr-TR")}`,
+        `Cihaz: ${info.platform || "-"}`,
+        `İnternet: ${info.online ? "Var" : "Yok"}`
+      ].join(" • ");
+    }
+
+    async function openIssueReportPanel() {
+      const active = state.activeUser || findActiveUser();
+      if (!active || !active.name || !active.seflik) {
+        showToast("Önce kullanıcı girişi yapınız.");
+        return;
+      }
+
+      if (els.issueReportMessage) els.issueReportMessage.value = "";
+      if (els.issueReportUserInfo) els.issueReportUserInfo.textContent = `${active.name} • ${active.seflik}`;
+      if (els.issueDeviceInfo) els.issueDeviceInfo.textContent = issueDeviceInfoText(issueDeviceInfoPayload());
+      if (els.issueReportOverlay) els.issueReportOverlay.classList.add("show");
+      loadMyIssueReports().catch(() => {});
+      setTimeout(() => { if (els.issueReportMessage) els.issueReportMessage.focus(); }, 120);
+    }
+
+    function closeIssueReportPanel() {
+      if (els.issueReportOverlay) els.issueReportOverlay.classList.remove("show");
+    }
+
+    async function firebaseCreateSupportTicket(message) {
+      const { db } = await ensureFirebaseReady();
+      const info = issueDeviceInfoPayload();
+      const active = state.activeUser || findActiveUser();
+      const userKey = firebaseUserKey(active.name, active.seflik);
+      const nowMs = Date.now();
+      const id = `ticket_${userKey}_${nowMs}`;
+      await db.collection(FIREBASE_REPORTS_COLLECTION).doc(id).set({
+        id,
+        userKey,
+        name: cleanUserText(active.name),
+        seflik: cleanUserText(active.seflik),
+        message: String(message || "").trim(),
+        status: "new",
+        adminReply: "",
+        deviceInfo: info,
+        appVersion: info.appVersion,
+        recordCount: info.recordCount,
+        createdAt: firebaseDateText(),
+        createdAtMs: nowMs,
+        updatedAt: firebaseDateText(),
+        updatedAtMs: nowMs
+      });
+      return id;
+    }
+
+    async function sendIssueReport() {
+      const msg = els.issueReportMessage ? String(els.issueReportMessage.value || "").trim() : "";
+      if (msg.length < 5) {
+        showToast("Sorunu birkaç kelimeyle yazınız.");
+        return;
+      }
+
+      try {
+        showToast("Bildirim gönderiliyor...");
+        await firebaseCreateSupportTicket(msg);
+        showToast("Sorun bildirimi gönderildi.");
+        if (els.issueReportMessage) els.issueReportMessage.value = "";
+        await loadMyIssueReports();
+      } catch (error) {
+        showToast(error && error.message ? error.message : "Bildirim gönderilemedi.");
+      }
+    }
+
+    async function firebaseListMyTickets() {
+      const active = state.activeUser || findActiveUser();
+      if (!active || !active.name || !active.seflik) return [];
+      const { db } = await ensureFirebaseReady();
+      const userKey = firebaseUserKey(active.name, active.seflik);
+      const snap = await db.collection(FIREBASE_REPORTS_COLLECTION).where("userKey", "==", userKey).get();
+      const rows = [];
+      snap.forEach(doc => rows.push(Object.assign({ id: doc.id }, doc.data() || {})));
+      return rows.sort((a, b) => Number(b.createdAtMs || 0) - Number(a.createdAtMs || 0)).slice(0, 5);
+    }
+
+    async function loadMyIssueReports() {
+      if (!els.issueMyReportsList) return;
+      els.issueMyReportsList.innerHTML = "Yükleniyor...";
+      try {
+        const rows = await firebaseListMyTickets();
+        if (!rows.length) {
+          els.issueMyReportsList.innerHTML = "Henüz bildirim yok.";
+          return;
+        }
+        els.issueMyReportsList.innerHTML = rows.map(r => `
+          <div class="issue-mini-card">
+            <div class="top">
+              <b>${escapeHtml(r.createdAt || "-")}</b>
+              <span class="issue-status ${reportStatusClass(r.status)}">${reportStatusLabel(r.status)}</span>
+            </div>
+            <div>${escapeHtml(String(r.message || "").slice(0, 120))}</div>
+            ${r.adminReply ? `<div class="issue-reply"><b>Admin Cevabı:</b> ${escapeHtml(r.adminReply)}</div>` : ""}
+          </div>
+        `).join("");
+      } catch (error) {
+        els.issueMyReportsList.innerHTML = "Bildirimler alınamadı.";
+      }
+    }
+
+    let adminReportFilter = "open";
+
+    async function firebaseListSupportTickets() {
+      const { db } = await ensureFirebaseReady();
+      const snap = await db.collection(FIREBASE_REPORTS_COLLECTION).get();
+      const rows = [];
+      snap.forEach(doc => rows.push(Object.assign({ id: doc.id }, doc.data() || {})));
+      rows.sort((a, b) => Number(b.createdAtMs || 0) - Number(a.createdAtMs || 0));
+      return rows.slice(0, 300);
+    }
+
+    async function renderAdminReports() {
+      if (!els.adminReportsList) return;
+      els.adminReportsList.innerHTML = `<div class="empty-user-list">Bildirimler yükleniyor...</div>`;
+
+      try {
+        let rows = await firebaseListSupportTickets();
+        if (adminReportFilter === "open") rows = rows.filter(r => r.status !== "done");
+        if (adminReportFilter === "done") rows = rows.filter(r => r.status === "done");
+
+        if (!rows.length) {
+          els.adminReportsList.innerHTML = `<div class="empty-user-list">Bildirim yok.</div>`;
+          return;
+        }
+
+        els.adminReportsList.innerHTML = rows.map(r => {
+          const info = r.deviceInfo || {};
+          return `
+            <div class="admin-report-card">
+              <div class="top">
+                <div>
+                  <b>${escapeHtml(r.name || "-")}</b>
+                  <div class="hint">${escapeHtml(r.seflik || "-")} • ${escapeHtml(r.createdAt || "-")}</div>
+                </div>
+                <span class="admin-report-status ${reportStatusClass(r.status)}">${reportStatusLabel(r.status)}</span>
+              </div>
+              <div class="admin-report-meta">
+                <span>Sürüm: ${escapeHtml(r.appVersion || info.appVersion || "-")}</span>
+                <span>Kayıt: ${Number(r.recordCount || info.recordCount || 0).toLocaleString("tr-TR")}</span>
+                <span>Cihaz: ${escapeHtml(info.platform || "-")}</span>
+                <span>İnternet: ${info.online ? "Var" : "Yok"}</span>
+              </div>
+              <div class="admin-report-message">${escapeHtml(r.message || "-")}</div>
+              ${r.adminReply ? `<div class="admin-reply-box"><b>Cevap:</b> ${escapeHtml(r.adminReply)}</div>` : ""}
+              <div class="admin-report-actions">
+                <button type="button" class="secondary" onclick="adminSetReportStatus('${escapeHtml(r.id)}','review')">İncelendi</button>
+                <button type="button" class="secondary" onclick="adminReplyReport('${escapeHtml(r.id)}')">Cevap Yaz</button>
+                <button type="button" class="primary" onclick="adminSetReportStatus('${escapeHtml(r.id)}','done')">Çözüldü</button>
+              </div>
+            </div>
+          `;
+        }).join("");
+      } catch (error) {
+        els.adminReportsList.innerHTML = `<div class="cloud-backup-error">Bildirimler alınamadı. Firebase kurallarını kontrol edin.</div>`;
+      }
+    }
+
+    async function adminSetReportStatus(ticketId, status) {
+      try {
+        const { db } = await ensureFirebaseReady();
+        await db.collection(FIREBASE_REPORTS_COLLECTION).doc(ticketId).set({
+          status,
+          updatedAt: firebaseDateText(),
+          updatedAtMs: Date.now()
+        }, { merge: true });
+        showToast("Bildirim durumu güncellendi.");
+        renderAdminReports();
+      } catch (error) {
+        showToast("Durum güncellenemedi.");
+      }
+    }
+
+    async function adminReplyReport(ticketId) {
+      const reply = window.prompt("Kullanıcıya görünecek admin cevabını yazınız:");
+      if (reply === null) return;
+      const text = String(reply || "").trim();
+
+      try {
+        const { db } = await ensureFirebaseReady();
+        await db.collection(FIREBASE_REPORTS_COLLECTION).doc(ticketId).set({
+          adminReply: text,
+          status: text ? "review" : "new",
+          updatedAt: firebaseDateText(),
+          updatedAtMs: Date.now()
+        }, { merge: true });
+        showToast("Admin cevabı kaydedildi.");
+        renderAdminReports();
+      } catch (error) {
+        showToast("Cevap kaydedilemedi.");
+      }
+    }
+
+
+    function setAdminPanelTab(tab) {
+      const selected = tab === "notes" ? "notes" : (tab === "reports" ? "reports" : "users");
+      const views = {
+        users: els.adminUsersView,
+        notes: els.adminNotesView,
+        reports: els.adminReportsView
+      };
+      Object.keys(views).forEach(k => { if (views[k]) views[k].style.display = k === selected ? "" : "none"; });
+      document.querySelectorAll(".admin-tab").forEach(btn => btn.classList.toggle("active", btn.dataset.adminTab === selected));
+      if (selected === "users") renderAdminUsers();
+      if (selected === "notes") renderAdminNotes();
+      if (selected === "reports") renderAdminReports();
     }
 
     function showAdminPage() {
@@ -5487,7 +6150,7 @@
 
     async function uploadCloudBackupOpen(user) {
       const payload = buildCloudBackupPayload(user);
-      payload.version = 82;
+      payload.version = 84;
       const bolmePart = els.bolmeNo && String(els.bolmeNo.value || "").trim() ? `_${cleanFilePart(els.bolmeNo.value)}` : "";
       const fileName = `Mesaha_Yedek_${cleanFilePart(user.seflik)}_${cleanFilePart(user.name)}${bolmePart}_${new Date().toISOString().slice(0,19).replace(/[-:T]/g, "")}.json`;
 
@@ -5916,7 +6579,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function buildCloudBackupPayload(user) {
       return {
         app: "Mesaha İO",
-        version: 82,
+        version: 84,
         createdAt: new Date().toLocaleString("tr-TR"),
         user: {
           name: user.name || "",
@@ -7918,7 +8581,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function backup() {
       const data = {
         app: "Mesaha App",
-        version: 82,
+        version: 84,
         exportedAt: formatDateTime(),
         systemHeaders: HEADERS,
         settings: state.settings,
@@ -8326,7 +8989,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     async function firebaseUploadBackup(user) {
       const { db } = await ensureFirebaseReady();
       const payload = buildCloudBackupPayload(user);
-      payload.version = 82;
+      payload.version = 84;
       payload.cloud = "firebase";
 
       const bolmeNo = els.bolmeNo ? String(els.bolmeNo.value || "").trim() : "";
@@ -8481,22 +9144,68 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
       });
     };
 
+    function mergeAdminUsers(firebaseUsers, oldUsers) {
+      const map = new Map();
+
+      (oldUsers || []).forEach(u => {
+        const key = firebaseUserKey(u.name, u.seflik);
+        map.set(key, Object.assign({}, u, {
+          sourceLabel: "Eski Sistem"
+        }));
+      });
+
+      (firebaseUsers || []).forEach(u => {
+        const key = firebaseUserKey(u.name, u.seflik);
+        const old = map.get(key) || {};
+        map.set(key, Object.assign({}, old, u, {
+          backupCount: Math.max(Number(old.backupCount || 0), Number(u.backupCount || 0)),
+          deviceCount: Math.max(Number(old.deviceCount || 0), Number(u.deviceCount || 0)),
+          loginCount: Math.max(Number(old.loginCount || 0), Number(u.loginCount || 0)),
+          sourceLabel: old.name ? "Firebase + Eski" : "Firebase"
+        }));
+      });
+
+      return Array.from(map.values()).sort((a, b) => {
+        const ams = Number(a.lastLoginMs || a.migratedAtMs || 0);
+        const bms = Number(b.lastLoginMs || b.migratedAtMs || 0);
+        if (ams || bms) return bms - ams;
+        return String(b.lastLogin || "").localeCompare(String(a.lastLogin || ""), "tr");
+      });
+    }
+
     loadOnlineUsers = async function(adminCode) {
-      try {
-        const users = await firebaseLoadUsers();
-        if (users.length) return users;
-        return await mesahaAppsScriptBridge.loadOnlineUsers(adminCode);
-      } catch (error) {
-        return await mesahaAppsScriptBridge.loadOnlineUsers(adminCode);
-      }
+      let firebaseUsers = [];
+      let oldUsers = [];
+
+      try { firebaseUsers = await firebaseLoadUsers(); } catch {}
+      try { oldUsers = await mesahaAppsScriptBridge.loadOnlineUsers(adminCode); } catch {}
+
+      const merged = mergeAdminUsers(firebaseUsers, oldUsers);
+      if (merged.length) return merged;
+      return [];
     };
 
     loadAdminBackupsV74 = async function() {
+      let firebaseBackups = [];
+      let oldBackups = [];
+
+      try { firebaseBackups = await firebaseLoadAllBackups(); } catch {}
       try {
-        state.adminBackups = await firebaseLoadAllBackups();
-      } catch (error) {
         await mesahaAppsScriptBridge.loadAdminBackupsV74();
-      }
+        oldBackups = Array.isArray(state.adminBackups) ? state.adminBackups.slice() : [];
+      } catch {}
+
+      const seen = new Set();
+      const merged = [];
+      [...firebaseBackups, ...oldBackups].forEach(b => {
+        const key = `${b.source || ""}_${b.id || b.fileName || ""}`;
+        if (seen.has(key)) return;
+        seen.add(key);
+        merged.push(b);
+      });
+
+      state.adminBackups = merged.sort((a, b) => Number(b.createdAtMs || 0) - Number(a.createdAtMs || 0)).slice(0, 500);
+      updateAdminTopSummary();
     };
 
     uploadCloudBackupOpen = async function(user) {
@@ -8688,20 +9397,30 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
 
     
     if (els.userMenuForceUpdateBtn) els.userMenuForceUpdateBtn.addEventListener("click", forceUpdateApp);
+
+    if (els.panelReportIssueBtn) els.panelReportIssueBtn.addEventListener("click", openIssueReportPanel);
+    if (els.issueReportCloseBtn) els.issueReportCloseBtn.addEventListener("click", closeIssueReportPanel);
+    if (els.issueReportCancelBtn) els.issueReportCancelBtn.addEventListener("click", closeIssueReportPanel);
+    if (els.issueReportSendBtn) els.issueReportSendBtn.addEventListener("click", sendIssueReport);
+    document.querySelectorAll(".admin-report-filter").forEach(btn => btn.addEventListener("click", () => {
+      document.querySelectorAll(".admin-report-filter").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      adminReportFilter = btn.dataset.reportFilter || "open";
+      renderAdminReports();
+    }));
+
     if (els.guideForceUpdateBtn) els.guideForceUpdateBtn.addEventListener("click", forceUpdateApp);
 
     if (els.guideAdminOpenBtn) els.guideAdminOpenBtn.addEventListener("click", unlockAdminPanel);
-    if (els.adminFirebaseMigrateBtn) els.adminFirebaseMigrateBtn.addEventListener("click", migrateAppsScriptUsersToFirebase);
     if (els.adminRefreshBtn) els.adminRefreshBtn.addEventListener("click", () => loadAdminPanelData().catch(err => showToast(err && err.message ? err.message : "Admin yenilenemedi.")));
     document.querySelectorAll(".admin-tab").forEach(btn => btn.addEventListener("click", () => setAdminPanelTab(btn.dataset.adminTab || "dashboard")));
     document.querySelectorAll(".admin-quick").forEach(btn => btn.addEventListener("click", () => {
       state.adminQuickFilter = btn.dataset.adminQuick || "all";
       document.querySelectorAll(".admin-quick").forEach(b => b.classList.toggle("active", b === btn));
       renderAdminUsers();
-      renderAdminActivity();
     }));
-    if (els.adminUserSearch) els.adminUserSearch.addEventListener("input", () => { renderAdminUsers(); renderAdminActivity(); });
-    if (els.adminSeflikFilter) els.adminSeflikFilter.addEventListener("change", () => { renderAdminUsers(); renderAdminActivity(); });
+    if (els.adminUserSearch) els.adminUserSearch.addEventListener("input", () => { renderAdminUsers(); });
+    if (els.adminSeflikFilter) els.adminSeflikFilter.addEventListener("change", () => { renderAdminUsers(); });
 
     try {
       state.adminNotes = JSON.parse(localStorage.getItem("mesaha_admin_notes_v1") || "{}") || {};
@@ -8757,6 +9476,10 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
 
 
     window.forceUpdateApp = forceUpdateApp;
+
+    window.adminSetReportStatus = adminSetReportStatus;
+    window.adminReplyReport = adminReplyReport;
+
     window.adminOpenUserBackups = adminOpenUserBackups;
     window.adminEditNote = adminEditNote;
     window.adminTogglePassive = adminTogglePassive;
@@ -8769,8 +9492,8 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     load();
   
     window.MESAHA_BUILD_INFO = {
-      fileVersion: "v82",
-      visibleVersion: "Mesaha İO v1.11",
+      fileVersion: "v84",
+      visibleVersion: "Mesaha İO v1.13",
       stableBuild: true
     };
 
