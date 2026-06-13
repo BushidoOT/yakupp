@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha App v131</title>
+  <title>Mesaha App v134</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -8768,7 +8768,109 @@
       }
     }
 
-  </style>
+  
+
+/* v134: Admin kontrol merkezi - detaylı liste, rozetler, güvenli silme, dönemli istatistik */
+.admin-user-badges-v134{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  margin-top:7px;
+}
+.admin-badge-v134{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:999px;
+  padding:5px 8px;
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:.01em;
+  line-height:1;
+  background:#eef2f7;
+  color:#334155;
+  border:1px solid rgba(15,23,42,.08);
+  white-space:nowrap;
+}
+.admin-badge-v134.active{ background:#dcfce7; color:#166534; border-color:rgba(22,101,52,.18); }
+.admin-badge-v134.week{ background:#e0f2fe; color:#075985; border-color:rgba(7,89,133,.18); }
+.admin-badge-v134.inactive{ background:#fee2e2; color:#991b1b; border-color:rgba(153,27,27,.18); }
+.admin-badge-v134.version{ background:#fef3c7; color:#92400e; border-color:rgba(146,64,14,.18); }
+.admin-badge-v134.backup{ background:#ffedd5; color:#9a3412; border-color:rgba(154,52,18,.18); }
+.admin-badge-v134.issue{ background:#fee2e2; color:#b91c1c; border-color:rgba(185,28,28,.22); }
+.admin-badge-v134.ok{ background:#ecfdf5; color:#047857; border-color:rgba(4,120,87,.18); }
+.admin-user-row-v131.has-open-issue-v134::after{
+  content:"";
+  position:absolute;
+  top:12px;
+  right:12px;
+  width:9px;
+  height:9px;
+  border-radius:50%;
+  background:#ef4444;
+  box-shadow:0 0 0 3px rgba(239,68,68,.13);
+}
+.admin-detail-actions-v131 .danger-v134{
+  background:#dc2626 !important;
+  color:#fff !important;
+  border:0 !important;
+  box-shadow:0 10px 24px rgba(220,38,38,.20);
+}
+.admin-detail-actions-v131 .danger-v134:hover{ filter:brightness(.96); }
+.admin-detail-actions-v131 .issue-v134{
+  background:#fff1f2 !important;
+  color:#be123c !important;
+  border:1px solid rgba(190,18,60,.18) !important;
+}
+.admin-stats-period-v134{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:10px;
+}
+.admin-stats-period-v134 button{
+  border-radius:999px;
+  padding:8px 12px;
+  min-height:34px;
+  font-size:12px;
+  font-weight:900;
+}
+.admin-stats-period-v134 button.active{
+  background:#16a34a !important;
+  color:#fff !important;
+  border-color:#16a34a !important;
+}
+.admin-stats-note-v134{
+  margin-top:8px;
+  font-size:12px;
+  color:#64748b;
+}
+body.theme-dark .admin-badge-v134{
+  background:#1f2937;
+  color:#cbd5e1;
+  border-color:rgba(255,255,255,.08);
+}
+body.theme-dark .admin-badge-v134.active{ background:rgba(34,197,94,.16); color:#86efac; border-color:rgba(34,197,94,.28); }
+body.theme-dark .admin-badge-v134.week{ background:rgba(14,165,233,.16); color:#7dd3fc; border-color:rgba(14,165,233,.28); }
+body.theme-dark .admin-badge-v134.inactive{ background:rgba(239,68,68,.17); color:#fca5a5; border-color:rgba(239,68,68,.30); }
+body.theme-dark .admin-badge-v134.version{ background:rgba(245,158,11,.18); color:#fcd34d; border-color:rgba(245,158,11,.30); }
+body.theme-dark .admin-badge-v134.backup{ background:rgba(249,115,22,.17); color:#fdba74; border-color:rgba(249,115,22,.30); }
+body.theme-dark .admin-badge-v134.issue{ background:rgba(239,68,68,.20); color:#fecaca; border-color:rgba(239,68,68,.35); }
+body.theme-dark .admin-badge-v134.ok{ background:rgba(16,185,129,.15); color:#6ee7b7; border-color:rgba(16,185,129,.28); }
+body.theme-dark .admin-detail-actions-v131 .issue-v134{
+  background:rgba(244,63,94,.14) !important;
+  color:#fecdd3 !important;
+  border-color:rgba(244,63,94,.28) !important;
+}
+body.theme-dark .admin-stats-note-v134{ color:#a8b3c2; }
+@media (max-width: 640px){
+  .admin-user-badges-v134{ gap:5px; }
+  .admin-badge-v134{ font-size:10.5px; padding:5px 7px; }
+  .admin-detail-actions-v131{ grid-template-columns:1fr !important; }
+  .admin-stats-period-v134{ display:grid; grid-template-columns:1fr 1fr 1fr; }
+  .admin-stats-period-v134 button{ padding:8px 6px; }
+}
+</style>
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-title" content="Mesaha App" />
@@ -9044,7 +9146,7 @@
 <div class="app">
     <header class="topbar">
       <div class="brand">
-        <h1>Mesaha İO v1.60</h1>
+        <h1>Mesaha İO v1.63</h1>
         
       </div>
       <div id="activeUserBadge" class="active-user-badge" role="button" tabindex="0" title="Kullanıcı panelini aç" style="display:none"></div>
@@ -10500,8 +10602,8 @@
     function currentDeviceInfoPayload() {
       const active = state.activeUser || findActiveUser();
       return {
-        appVersion: "Mesaha İO v1.60",
-        fileVersion: "v131",
+        appVersion: "Mesaha İO v1.63",
+        fileVersion: "v134",
         userName: active && active.name ? cleanUserText(active.name) : "",
         seflik: active && active.seflik ? cleanUserText(active.seflik) : "",
         deviceId: getOrCreateDeviceId(),
@@ -11240,7 +11342,7 @@
 
     async function uploadCloudBackupOpen(user) {
       const payload = buildCloudBackupPayload(user);
-      payload.version = 129;
+      payload.version = 134;
       const bolmePart = els.bolmeNo && String(els.bolmeNo.value || "").trim() ? `_${cleanFilePart(els.bolmeNo.value)}` : "";
       const fileName = `Mesaha_Yedek_${cleanFilePart(user.seflik)}_${cleanFilePart(user.name)}${bolmePart}_${new Date().toISOString().slice(0,19).replace(/[-:T]/g, "")}.json`;
 
@@ -14094,7 +14196,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     async function firebaseUploadBackup(user) {
       const { db } = await ensureFirebaseReady();
       const payload = buildCloudBackupPayload(user);
-      payload.version = 129;
+      payload.version = 134;
       payload.cloud = "firebase";
 
       const bolmeNo = els.bolmeNo ? String(els.bolmeNo.value || "").trim() : "";
@@ -16370,7 +16472,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     function usageTouchStatV128(stat){
       stat.updatedAt = (typeof firebaseDateText === "function") ? firebaseDateText() : new Date().toLocaleString("tr-TR");
       stat.updatedAtMs = Date.now();
-      stat.appVersion = "Mesaha İO v1.60";
+      stat.appVersion = "Mesaha İO v1.63";
       stat.fileVersion = "v130";
       stat.recordCount = Array.isArray(state.records) ? state.records.length : 0;
       return stat;
@@ -16453,8 +16555,8 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
             inputM3: Number(usageCleanNumberV128(stat.inputM3).toFixed(3)),
             recordEntryCount: Math.round(usageCleanNumberV128(stat.recordEntryCount)),
             recordCount: Math.round(usageCleanNumberV128(stat.recordCount)),
-            appVersion: "Mesaha İO v1.60",
-            fileVersion: "v131",
+            appVersion: "Mesaha İO v1.63",
+            fileVersion: "v134",
             createdAt: stat.createdAt || firebaseDateText(),
             createdAtMs: Number(stat.createdAtMs || Date.now()),
             updatedAt: firebaseDateText(),
@@ -16688,7 +16790,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     const prevCurrentDeviceInfoPayloadV128 = typeof currentDeviceInfoPayload === "function" ? currentDeviceInfoPayload : null;
     currentDeviceInfoPayload = function(){
       const info = prevCurrentDeviceInfoPayloadV128 ? prevCurrentDeviceInfoPayloadV128() : {};
-      info.appVersion = "Mesaha İO v1.60";
+      info.appVersion = "Mesaha İO v1.63";
       info.fileVersion = "v130";
       info.recordCount = Array.isArray(state.records) ? state.records.length : (Number(info.recordCount) || 0);
       info.updatedMs = Date.now();
@@ -16701,8 +16803,8 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     setTimeout(() => { try { usageSyncNowV128().catch(() => {}); } catch {} }, 2500);
 
     window.MESAHA_BUILD_INFO = {
-      fileVersion: "v131",
-      visibleVersion: "Mesaha İO v1.60",
+      fileVersion: "v134",
+      visibleVersion: "Mesaha İO v1.63",
       stableBuild: true
     };
 
@@ -16711,7 +16813,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     const prevCurrentDeviceInfoPayloadV129 = typeof currentDeviceInfoPayload === "function" ? currentDeviceInfoPayload : null;
     currentDeviceInfoPayload = function(){
       const info = prevCurrentDeviceInfoPayloadV129 ? prevCurrentDeviceInfoPayloadV129() : {};
-      info.appVersion = "Mesaha İO v1.60";
+      info.appVersion = "Mesaha İO v1.63";
       info.fileVersion = "v130";
       info.recordCount = Array.isArray(state.records) ? state.records.length : (Number(info.recordCount) || 0);
       info.updatedMs = Date.now();
@@ -16719,8 +16821,8 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
       return info;
     };
     window.MESAHA_BUILD_INFO = {
-      fileVersion: "v131",
-      visibleVersion: "Mesaha İO v1.60",
+      fileVersion: "v134",
+      visibleVersion: "Mesaha İO v1.63",
       stableBuild: true,
       offlineFirstTimeoutMs: MESAHA_STARTUP_TIMEOUT_V129
     };
@@ -16729,8 +16831,8 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 
     /* v130: Boy kısayol butonlarında klavye kapanmasını engelle + küçük stabilite denetimi */
     (function(){
-      const BUILD_VERSION_V130 = "Mesaha İO v1.60";
-      const FILE_VERSION_V130 = "v131";
+      const BUILD_VERSION_V130 = "Mesaha İO v1.63";
+      const FILE_VERSION_V130 = "v134";
 
       function safeFocusV130(input, selectMode){
         if (!input) return;
@@ -16878,8 +16980,8 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 
     /* v131: Admin sade liste, kullanıcı panelinden şifreli açılış, onaylı-yüklemeli yenileme */
     (function(){
-      const BUILD_VERSION_V131 = "Mesaha İO v1.60";
-      const FILE_VERSION_V131 = "v131";
+      const BUILD_VERSION_V131 = "Mesaha İO v1.63";
+      const FILE_VERSION_V131 = "v134";
 
       function adminSetLoadingV131(show, text){
         try {
@@ -17085,8 +17187,8 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 
     /* v132: Admin istatistik - en çok ağaç/odun türü, adet ve m³ */
     (function(){
-      const BUILD_VERSION_V132 = "Mesaha İO v1.61";
-      const FILE_VERSION_V132 = "v132";
+      const BUILD_VERSION_V132 = "Mesaha İO v1.63";
+      const FILE_VERSION_V132 = "v134";
 
       function adminStatsSetLoadingV132(show, text){
         try {
@@ -17346,8 +17448,8 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 
     /* v133: Admin panelinde Sorun Bildirimleri alanı */
     (function(){
-      const BUILD_VERSION_V133 = "Mesaha İO v1.62";
-      const FILE_VERSION_V133 = "v133";
+      const BUILD_VERSION_V133 = "Mesaha İO v1.63";
+      const FILE_VERSION_V133 = "v134";
 
       function supportSetLoadingV133(show, text){
         try {
@@ -17479,6 +17581,553 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
       setTimeout(ensureAdminSupportUiV133, 1300);
     })();
 
+
+
+    /* v134: Admin detayları, güvenli kullanıcı silme, rozetler, dönemli istatistik ve offline sorun kuyruğu */
+    (function(){
+      const BUILD_VERSION_V134 = "Mesaha İO v1.63";
+      const FILE_VERSION_V134 = "v134";
+      const CURRENT_FILE_NO_V134 = 134;
+      const CURRENT_VISIBLE_NO_V134 = 1.63;
+      const SUPPORT_QUEUE_KEY_V134 = "mesaha_support_queue_v134";
+
+      function v134Toast(text){ try { if (typeof showToast === "function") showToast(text); } catch {} }
+      function v134Esc(value){ try { return escapeHtml(value); } catch { return String(value ?? "").replace(/[&<>'"]/g, m => ({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[m])); } }
+      function v134Clean(value){ try { return cleanUserText(value); } catch { return String(value || "").trim(); } }
+      function v134Key(name, seflik){ try { return firebaseUserKey(name, seflik); } catch { return String(`${v134Clean(name)}__${v134Clean(seflik)}`).toLocaleLowerCase("tr-TR"); } }
+      function v134TrInt(n){ return (Number(n) || 0).toLocaleString("tr-TR"); }
+      function v134M3(value){ try { if (typeof adminM3TextV128 === "function") return adminM3TextV128(value); } catch {} return `${(Number(value)||0).toFixed(3)} m³`; }
+      function v134Duration(ms){ try { if (typeof adminDurationTextV128 === "function") return adminDurationTextV128(ms); } catch {} const min=Math.round((Number(ms)||0)/60000); return min ? `${min} dk` : "0 dk"; }
+      function v134ParseIsoLocal(d){
+        const s = String(d || "").slice(0,10);
+        const m = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+        if (!m) return null;
+        return new Date(Number(m[1]), Number(m[2])-1, Number(m[3]));
+      }
+      function v134TodayIso(){
+        const d = new Date();
+        const p = n => String(n).padStart(2,"0");
+        return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`;
+      }
+      function v134WeekStartIso(){
+        const d = new Date();
+        const day = d.getDay() || 7;
+        d.setDate(d.getDate() - day + 1);
+        const p = n => String(n).padStart(2,"0");
+        return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`;
+      }
+      function v134RecordIso(r){
+        if (!r) return "";
+        const iso = String(r.productionDate || r.date || r.createdAtIso || "").slice(0,10);
+        if (/^\d{4}-\d{2}-\d{2}$/.test(iso)) return iso;
+        try { if (typeof trDateToISO === "function") return String(trDateToISO(r.uretimTarihi || r.createdAt || "") || "").slice(0,10); } catch {}
+        return "";
+      }
+      function v134PeriodLabel(period){
+        if (period === "today") return "Bugün";
+        if (period === "week") return "Bu Hafta";
+        return "Tüm Zamanlar";
+      }
+      function v134RecordInPeriod(r, period){
+        if (!period || period === "all") return true;
+        const iso = v134RecordIso(r);
+        if (!iso) return false;
+        if (period === "today") return iso === v134TodayIso();
+        if (period === "week") return iso >= v134WeekStartIso() && iso <= v134TodayIso();
+        return true;
+      }
+      function v134ParseFileNo(user){
+        const text = String((user && (user.fileVersion || user.appVersion || (user.lastDeviceInfo && (user.lastDeviceInfo.fileVersion || user.lastDeviceInfo.appVersion)))) || "");
+        const fm = text.match(/v\s*(\d{2,4})\b/i);
+        if (fm && Number(fm[1]) >= 50) return Number(fm[1]);
+        const vm = text.match(/v?\s*(\d+)\.(\d+)/i);
+        if (vm) {
+          const visible = Number(`${vm[1]}.${vm[2]}`);
+          if (Number.isFinite(visible)) return visible >= CURRENT_VISIBLE_NO_V134 ? CURRENT_FILE_NO_V134 : Math.max(0, Math.round(100 + (visible - 1.30) * 100));
+        }
+        return 0;
+      }
+      function v134IsOldVersion(user){
+        const no = v134ParseFileNo(user);
+        return no > 0 && no < CURRENT_FILE_NO_V134;
+      }
+      function v134LastBackupDays(user){
+        const ms = Number(user && user.lastBackupMs || 0);
+        if (ms) return Math.floor((Date.now() - ms) / 86400000);
+        try { return adminDaysSince(user && user.lastBackupAt); } catch { return 9999; }
+      }
+      function v134ActivityBadge(user){
+        const activeToday = (Number(user && user.todayActiveMs)||0) > 0 || (Number(user && user.todayInputAdet)||0) > 0 || (typeof adminIsToday === "function" && adminIsToday(user && user.lastLogin));
+        if (activeToday) return `<span class="admin-badge-v134 active">Bugün aktif</span>`;
+        let days = 9999;
+        try { days = adminDaysSince(user && user.lastLogin); } catch {}
+        if (days <= 7) return `<span class="admin-badge-v134 week">Bu hafta aktif</span>`;
+        return `<span class="admin-badge-v134 inactive">Uzun süredir girmedi</span>`;
+      }
+      function v134OpenTicketsForUser(user){
+        const rows = Array.isArray(state.adminSupportTicketsV134) ? state.adminSupportTicketsV134 : [];
+        const key = v134Key(user && user.name, user && user.seflik);
+        return rows.filter(r => {
+          const rk = r.userKey || v134Key(r.name, r.seflik);
+          return String(rk) === String(key) && String(r.status || "new") !== "done";
+        }).length;
+      }
+      function v134Badges(user){
+        const list = [v134ActivityBadge(user)];
+        if (v134IsOldVersion(user)) list.push(`<span class="admin-badge-v134 version">Eski sürüm</span>`);
+        const bCount = Number(user && user.backupCount || 0);
+        const bDays = v134LastBackupDays(user);
+        if (!bCount) list.push(`<span class="admin-badge-v134 backup">Yedek yok</span>`);
+        else if (bDays >= 3) list.push(`<span class="admin-badge-v134 backup">Yedek eski</span>`);
+        else list.push(`<span class="admin-badge-v134 ok">Yedek var</span>`);
+        const issues = v134OpenTicketsForUser(user);
+        if (issues) list.push(`<span class="admin-badge-v134 issue">${v134TrInt(issues)} açık sorun</span>`);
+        return `<div class="admin-user-badges-v134">${list.join("")}</div>`;
+      }
+      async function v134LoadSupportTickets(){
+        try {
+          if (typeof firebaseListSupportTickets === "function") {
+            state.adminSupportTicketsV134 = await firebaseListSupportTickets();
+            return state.adminSupportTicketsV134;
+          }
+        } catch {}
+        try {
+          const { db } = await ensureFirebaseReady();
+          const snap = await db.collection(typeof FIREBASE_REPORTS_COLLECTION !== "undefined" ? FIREBASE_REPORTS_COLLECTION : "supportTickets").get();
+          const rows = [];
+          snap.forEach(doc => rows.push(Object.assign({ id: doc.id }, doc.data() || {})));
+          rows.sort((a,b) => Number(b.createdAtMs || 0) - Number(a.createdAtMs || 0));
+          state.adminSupportTicketsV134 = rows.slice(0,300);
+          return state.adminSupportTicketsV134;
+        } catch {
+          state.adminSupportTicketsV134 = state.adminSupportTicketsV134 || [];
+          return state.adminSupportTicketsV134;
+        }
+      }
+      function v134DeviceText(user){
+        return (user && user.lastDeviceInfo && (user.lastDeviceInfo.platform || user.lastDeviceInfo.userAgent)) ||
+          (user && user.lastDevice) || `${v134TrInt(Number(user && user.deviceCount) || 0)} cihaz`;
+      }
+      function v134Status(user){ try { return adminStatus(user); } catch { return { key:"today", label:"AKTİF" }; } }
+      function v134SourceText(user){
+        const source = (user && (user.sourceLabel || user.source)) || "";
+        if (String(source).toLowerCase().includes("firebase")) return "Firebase";
+        if (String(source).toLowerCase().includes("apps") || String(source).toLowerCase().includes("eski")) return "Eski";
+        return "";
+      }
+      function v134EscapeArg(value){ return String(value || "").replace(/\\/g, "\\\\").replace(/'/g, "\\'"); }
+
+      window.adminOpenUserReportsV134 = function(index){
+        try {
+          const user = (window.__adminListV134 || [])[index];
+          if (!user) return v134Toast("Kullanıcı bulunamadı.");
+          if (typeof adminReportFilter !== "undefined") adminReportFilter = "open";
+          if (typeof window.adminToggleReportsV133 === "function" && !document.body.classList.contains("admin-reports-open-v133")) window.adminToggleReportsV133();
+          else if (typeof renderAdminReports === "function") renderAdminReports();
+          v134Toast(`${user.name || "Kullanıcı"} için açık sorunlar Sorunlar bölümünde gösteriliyor.`);
+        } catch { v134Toast("Sorunlar açılamadı."); }
+      };
+
+      async function v134BatchDeleteQuery(db, collectionName, field, value, batch, counter){
+        const snap = await db.collection(collectionName).where(field, "==", value).get();
+        snap.forEach(doc => { batch.delete(doc.ref); counter.count += 1; });
+      }
+      async function v134DeleteFirebaseUser(name, seflik, deleteRelated){
+        const { db } = await ensureFirebaseReady();
+        const key = v134Key(name, seflik);
+        const batch = db.batch();
+        const counter = { count: 0 };
+        batch.delete(db.collection(typeof FIREBASE_USERS_COLLECTION !== "undefined" ? FIREBASE_USERS_COLLECTION : "users").doc(key));
+        counter.count += 1;
+        if (deleteRelated) {
+          await v134BatchDeleteQuery(db, typeof FIREBASE_BACKUPS_COLLECTION !== "undefined" ? FIREBASE_BACKUPS_COLLECTION : "backups", "userKey", key, batch, counter);
+          await v134BatchDeleteQuery(db, typeof FIREBASE_USAGE_COLLECTION !== "undefined" ? FIREBASE_USAGE_COLLECTION : "usageStats", "userKey", key, batch, counter);
+          await v134BatchDeleteQuery(db, typeof FIREBASE_REPORTS_COLLECTION !== "undefined" ? FIREBASE_REPORTS_COLLECTION : "supportTickets", "userKey", key, batch, counter);
+        }
+        await batch.commit();
+        return counter.count;
+      }
+      window.adminDeleteUserV134 = async function(index){
+        const user = (window.__adminListV134 || [])[index];
+        if (!user) return v134Toast("Kullanıcı bulunamadı.");
+        const name = v134Clean(user.name), seflik = v134Clean(user.seflik);
+        const typed = window.prompt(`${name} / ${seflik} kullanıcısını silmek için SIL yazınız.\n\nYedekler varsayılan olarak korunur.`);
+        const t = String(typed || "").trim().toLocaleUpperCase("tr-TR").replace("İ", "I");
+        if (t !== "SIL") return;
+        const deleteRelated = window.confirm("Bu kullanıcıya ait yedekler, kullanım istatistikleri ve sorun bildirimleri de silinsin mi?\n\nTamam: Kullanıcı + bağlı veriler silinir.\nİptal: Sadece kullanıcı kaydı silinir, yedekler kalır.");
+        try {
+          if (typeof setCloudLoading === "function") setCloudLoading(true, "Kullanıcı siliniyor...");
+          await v134DeleteFirebaseUser(name, seflik, deleteRelated);
+          const delKey = v134Key(name, seflik);
+          state.adminOnlineUsers = (state.adminOnlineUsers || []).filter(u => v134Key(u.name, u.seflik) !== delKey);
+          state.adminSupportTicketsV134 = (state.adminSupportTicketsV134 || []).filter(r => (r.userKey || v134Key(r.name, r.seflik)) !== delKey);
+          try { localStorage.setItem("mesaha_admin_users_cache_v1", JSON.stringify({ time:new Date().toLocaleTimeString("tr-TR", {hour:"2-digit", minute:"2-digit"}), users: state.adminOnlineUsers })); } catch {}
+          if (typeof renderAdminUsers === "function") renderAdminUsers();
+          if (typeof updateAdminTopSummary === "function") updateAdminTopSummary();
+          v134Toast(deleteRelated ? "Kullanıcı ve bağlı veriler silindi." : "Kullanıcı silindi, yedekler korundu.");
+        } catch (err) {
+          v134Toast(err && err.message ? err.message : "Kullanıcı silinemedi.");
+        } finally {
+          try { if (typeof setCloudLoading === "function") setCloudLoading(false); } catch {}
+        }
+      };
+
+      const prevAdminFilteredUsersV134 = typeof adminFilteredUsers === "function" ? adminFilteredUsers : null;
+      adminFilteredUsers = function(){
+        const list = prevAdminFilteredUsersV134 ? prevAdminFilteredUsersV134() : (Array.isArray(state.adminOnlineUsers) ? state.adminOnlineUsers.slice() : []);
+        return list.slice().sort((a,b) => {
+          const ai = v134OpenTicketsForUser(a), bi = v134OpenTicketsForUser(b);
+          if (bi !== ai) return bi - ai;
+          const au = Number(a.lastUsageMs || a.lastLoginMs || 0);
+          const bu = Number(b.lastUsageMs || b.lastLoginMs || 0);
+          if (bu !== au) return bu - au;
+          return String(a.name || "").localeCompare(String(b.name || ""), "tr");
+        });
+      };
+
+      renderAdminUsers = function(){
+        if (!els.registeredUsersList) return;
+        try { updateAdminTopSummary(); } catch {}
+        const list = adminFilteredUsers();
+        window.__adminListV134 = window.__adminListV131 = list;
+        els.registeredUsersList.classList.add("admin-list-v131");
+        if (!list.length) {
+          els.registeredUsersList.innerHTML = `<div class="empty-user-list">Kullanıcı bulunamadı.</div>`;
+          return;
+        }
+        els.registeredUsersList.innerHTML = list.map((user, index) => {
+          const status = v134Status(user);
+          const sourceText = v134SourceText(user);
+          const deviceText = v134DeviceText(user);
+          const todayAdet = v134TrInt(user.todayInputAdet);
+          const todayM3 = v134M3(user.todayInputM3);
+          const todaySure = v134Duration(user.todayActiveMs);
+          const weekM3 = v134M3(user.weekInputM3);
+          const openIssues = v134OpenTicketsForUser(user);
+          return `
+            <div class="admin-user-row-v131 status-${v134Esc(status.key || "today")} ${openIssues ? "has-open-issue-v134" : ""}" data-admin-row-v131="${index}">
+              <div class="admin-user-main-v131">
+                <b>${v134Esc(user.name || "-")}</b>
+                <span>${v134Esc(user.seflik || "-")} ${sourceText ? `• ${v134Esc(sourceText)}` : ""}</span>
+                ${v134Badges(user)}
+              </div>
+              <div class="admin-user-stats-v131">
+                <span>Süre <b>${v134Esc(todaySure)}</b></span>
+                <span>Adet <b>${v134Esc(todayAdet)}</b></span>
+                <span>m³ <b>${v134Esc(todayM3)}</b></span>
+              </div>
+              <button class="admin-detail-bubble-v131" type="button" onclick="adminToggleDetailV131(${index})">Detay</button>
+              <div class="admin-user-detail-panel-v131">
+                <div class="admin-detail-grid-v131">
+                  <span>Durum <b>${v134Esc(status.label || "-")}</b></span>
+                  <span>Son giriş <b>${v134Esc(user.lastLogin || "-")}</b></span>
+                  <span>Son aktif <b>${v134Esc(user.lastUsageAt || user.lastLogin || "-")}</b></span>
+                  <span>Son yedek <b>${v134Esc(user.lastBackupAt || "-")}</b></span>
+                  <span>Yedek sayısı <b>${v134TrInt(user.backupCount)}</b></span>
+                  <span>Açık sorun <b>${v134TrInt(openIssues)}</b></span>
+                  <span>7 gün adet <b>${v134TrInt(user.weekInputAdet)}</b></span>
+                  <span>7 gün m³ <b>${v134Esc(weekM3)}</b></span>
+                  <span>Sürüm <b>${v134Esc(user.appVersion || user.fileVersion || "-")}</b></span>
+                  <span>Cihaz <b>${v134Esc(deviceText || "-")}</b></span>
+                </div>
+                <div class="admin-detail-actions-v131">
+                  <button class="secondary" type="button" onclick="adminOpenUserBackups('${v134EscapeArg(user.name)}','${v134EscapeArg(user.seflik)}')">Yedekleri Gör</button>
+                  ${openIssues ? `<button class="issue-v134" type="button" onclick="adminOpenUserReportsV134(${index})">Sorunları Gör</button>` : ""}
+                  <button class="danger-v134" type="button" onclick="adminDeleteUserV134(${index})">Kullanıcıyı Sil</button>
+                  <button class="ghost" type="button" onclick="adminToggleDetailV131(${index})">Kapat</button>
+                </div>
+              </div>
+            </div>`;
+        }).join("");
+      };
+
+      // Dönemli istatistik paneli
+      window.adminStatsPeriodV134 = window.adminStatsPeriodV134 || "all";
+      function v134StatsAdd(map, key, adet, m3){
+        const k = String(key || "Bilinmiyor").trim() || "Bilinmiyor";
+        const old = map.get(k) || { name:k, adet:0, m3:0 };
+        old.adet += Number(adet) || 0;
+        old.m3 += Number(m3) || 0;
+        map.set(k, old);
+      }
+      function v134StatsQty(r){ return Number(r && (r.quantity ?? r.adet ?? r.count)) || 0; }
+      function v134StatsM3(r){
+        if (!r) return 0;
+        const desi = Number(r.desi);
+        if (Number.isFinite(desi) && desi > 0) return desi / 1000;
+        const hacimRaw = String(r.hacim ?? r.volume ?? "").replace(",", ".").replace(/[^0-9.\-]+/g, "");
+        const hacim = Number(hacimRaw);
+        if (Number.isFinite(hacim) && hacim > 0) return hacim;
+        try {
+          const d = Number(r.diameter ?? r.cap ?? r.çap ?? 0);
+          const l = Number(r.length ?? r.boy ?? 0);
+          const q = v134StatsQty(r) || 1;
+          if (typeof calculateDesi === "function") return (Number(calculateDesi(d, l, q)) || 0) / 1000;
+        } catch {}
+        return 0;
+      }
+      function v134TreeName(r){
+        const raw = String((r && (r.treeType || r.species || r.agacAdi || r.ağaç || r.agac)) || "").trim();
+        if (raw) { try { return (typeof getTreeInfo === "function" ? getTreeInfo(raw).agacAdi : raw) || raw; } catch { return raw; } }
+        return "Bilinmiyor";
+      }
+      function v134ProductName(r){
+        const raw = String((r && (r.productType || r.odunAdi || r.odun || r.product)) || "").trim();
+        if (!raw) return "Bilinmiyor";
+        try { if (typeof PRODUCT_MAP !== "undefined" && PRODUCT_MAP[raw]) return PRODUCT_MAP[raw].odunAdi || raw; } catch {}
+        try { if (typeof productDisplayName === "function") return productDisplayName(raw) || raw; } catch {}
+        return raw;
+      }
+      function v134Sort(map){
+        return Array.from(map.values()).sort((a,b) => ((b.m3||0)-(a.m3||0)) || ((b.adet||0)-(a.adet||0)) || String(a.name).localeCompare(String(b.name), "tr"));
+      }
+      function v134Class(name, type){
+        const raw = String(name || "").toLocaleLowerCase("tr-TR").replace(/[^a-zığüşöçİĞÜŞÖÇ]+/gi, "-").replace(/^-+|-+$/g, "");
+        if (type === "tree") return "tree-" + raw;
+        if (raw.includes("tomruk")) return "prod-tomruk";
+        if (raw.includes("maden")) return "prod-maden";
+        if (raw.includes("kağıt") || raw.includes("kagit")) return "prod-kağıtlık";
+        if (raw.includes("sanayi")) return "prod-sanayi";
+        if (raw.includes("tel")) return "prod-tel";
+        return "prod-" + raw;
+      }
+      function v134Rows(rows, type){
+        if (!rows.length) return `<div class="admin-stats-empty-v132">Veri bulunamadı.</div>`;
+        return rows.map(row => `
+          <div class="admin-stat-row-v132 ${v134Esc(v134Class(row.name, type))}">
+            <div class="admin-stat-name-v132">${v134Esc(row.name)}</div>
+            <div class="admin-stat-val-v132">${v134TrInt(row.adet)} adet</div>
+            <div class="admin-stat-val-v132">${v134M3(row.m3)}</div>
+          </div>`).join("");
+      }
+      async function v134LoadStats(period){
+        const { db } = await ensureFirebaseReady();
+        const snap = await db.collection(typeof FIREBASE_BACKUPS_COLLECTION !== "undefined" ? FIREBASE_BACKUPS_COLLECTION : "backups").get();
+        const latestByUser = new Map();
+        snap.forEach(doc => {
+          try {
+            const d = doc.data() || {};
+            let payload = d.payload || null;
+            if (!payload && d.payloadText) payload = JSON.parse(d.payloadText);
+            if (!payload || !Array.isArray(payload.records) || !payload.records.length) return;
+            const name = v134Clean(d.name || (payload.user && payload.user.name) || "");
+            const seflik = v134Clean(d.seflik || (payload.user && payload.user.seflik) || "");
+            const key = d.userKey || v134Key(name, seflik) || doc.id;
+            const ms = Number(d.createdAtMs || 0) || Date.parse(d.createdAtIso || "") || 0;
+            const old = latestByUser.get(key);
+            if (!old || ms >= old.ms) latestByUser.set(key, { id:doc.id, ms, name, seflik, payload });
+          } catch {}
+        });
+        const treeMap = new Map();
+        const productMap = new Map();
+        let totalRecords = 0, totalAdet = 0, totalM3 = 0;
+        latestByUser.forEach(item => {
+          (item.payload.records || []).forEach(r => {
+            if (!v134RecordInPeriod(r, period)) return;
+            const adet = v134StatsQty(r) || 1;
+            const m3 = v134StatsM3(r);
+            totalRecords += 1; totalAdet += adet; totalM3 += m3;
+            v134StatsAdd(treeMap, v134TreeName(r), adet, m3);
+            v134StatsAdd(productMap, v134ProductName(r), adet, m3);
+          });
+        });
+        return { users: latestByUser.size, recordCount: totalRecords, adet: totalAdet, m3: totalM3, trees: v134Sort(treeMap), products: v134Sort(productMap), period, loadedAt: new Date().toLocaleString("tr-TR") };
+      }
+      function v134EnsureStatsUi(){
+        const top = document.querySelector(".admin-panel-top-clean");
+        const refresh = document.getElementById("adminRefreshBtn");
+        if (top && refresh && !document.getElementById("adminStatsBtnV132")) {
+          let actions = top.querySelector(".admin-top-actions-v132");
+          if (!actions) { actions = document.createElement("div"); actions.className = "admin-top-actions-v132"; top.appendChild(actions); actions.appendChild(refresh); }
+          const btn = document.createElement("button");
+          btn.type = "button"; btn.id = "adminStatsBtnV132"; btn.className = "secondary admin-stats-toggle-v132"; btn.textContent = "İstatistik";
+          actions.insertBefore(btn, refresh); btn.addEventListener("click", () => window.adminToggleStatsV132());
+        }
+        const summary = document.querySelector(".admin-summary-grid-clean");
+        if (summary && !document.getElementById("adminStatsPanelV132")) {
+          const panel = document.createElement("div"); panel.id = "adminStatsPanelV132"; panel.className = "admin-stats-panel-v132";
+          panel.innerHTML = `<div class="admin-stats-empty-v132">İstatistikleri görmek için üstteki İstatistik butonuna bas.</div>`;
+          summary.insertAdjacentElement("afterend", panel);
+        }
+      }
+      function v134RenderStats(stats, message){
+        v134EnsureStatsUi();
+        const panel = document.getElementById("adminStatsPanelV132");
+        if (!panel) return;
+        if (message) { panel.innerHTML = `<div class="admin-stats-empty-v132">${v134Esc(message)}</div>`; return; }
+        if (!stats || (!stats.trees.length && !stats.products.length)) {
+          panel.innerHTML = `<div class="admin-stats-empty-v132">${v134Esc(v134PeriodLabel(window.adminStatsPeriodV134))} için uygun Firebase yedeği bulunamadı.</div>`;
+          return;
+        }
+        const topTree = stats.trees[0] || { name:"-", adet:0, m3:0 };
+        const topProduct = stats.products[0] || { name:"-", adet:0, m3:0 };
+        const period = stats.period || window.adminStatsPeriodV134 || "all";
+        panel.innerHTML = `
+          <div class="admin-stats-head-v132">
+            <div>
+              <b>Toplu İstatistik</b>
+              <span>Dönem: ${v134Esc(v134PeriodLabel(period))} • Her kullanıcı için son Firebase yedeği esas alınır. Son yenileme: ${v134Esc(stats.loadedAt || "-")}</span>
+              <div class="admin-stats-period-v134">
+                <button type="button" class="${period === "today" ? "active" : ""}" onclick="adminSetStatsPeriodV134('today')">Bugün</button>
+                <button type="button" class="${period === "week" ? "active" : ""}" onclick="adminSetStatsPeriodV134('week')">Bu Hafta</button>
+                <button type="button" class="${period === "all" ? "active" : ""}" onclick="adminSetStatsPeriodV134('all')">Tüm Zamanlar</button>
+              </div>
+              <div class="admin-stats-note-v134">Bugün/hafta seçimi kayıtlardaki üretim tarihine göre hesaplanır.</div>
+            </div>
+            <button type="button" class="secondary" onclick="adminRefreshStatsV132()">Yenile</button>
+          </div>
+          <div class="admin-stats-cards-v132">
+            <div class="admin-stat-top-card-v132"><span>En fazla ağaç türü</span><b>${v134Esc(topTree.name)}</b><small>${v134TrInt(topTree.adet)} adet • ${v134M3(topTree.m3)}</small></div>
+            <div class="admin-stat-top-card-v132"><span>En fazla odun türü</span><b>${v134Esc(topProduct.name)}</b><small>${v134TrInt(topProduct.adet)} adet • ${v134M3(topProduct.m3)}</small></div>
+            <div class="admin-stat-top-card-v132"><span>Kapsam</span><b>${v134TrInt(stats.users)} kullanıcı</b><small>${v134TrInt(stats.recordCount)} kayıt</small></div>
+            <div class="admin-stat-top-card-v132"><span>Toplam</span><b>${v134TrInt(stats.adet)} adet</b><small>${v134M3(stats.m3)}</small></div>
+          </div>
+          <div class="admin-stats-columns-v132">
+            <div class="admin-stats-section-v132"><h4>Ağaç türleri</h4>${v134Rows(stats.trees, "tree")}</div>
+            <div class="admin-stats-section-v132"><h4>Odun türleri</h4>${v134Rows(stats.products, "product")}</div>
+          </div>`;
+      }
+      async function v134LoadAndRenderStats(force){
+        v134EnsureStatsUi();
+        const period = window.adminStatsPeriodV134 || "all";
+        const panel = document.getElementById("adminStatsPanelV132");
+        const btn = document.getElementById("adminStatsBtnV132");
+        if (panel) panel.classList.add("open");
+        if (btn) btn.classList.add("active");
+        const cacheKey = `adminStatsV134_${period}`;
+        if (!force && state[cacheKey]) return v134RenderStats(state[cacheKey]);
+        try { if (typeof setCloudLoading === "function") setCloudLoading(true, "İstatistikler hazırlanıyor..."); } catch {}
+        v134RenderStats(null, "İstatistikler hazırlanıyor...");
+        try { state[cacheKey] = await v134LoadStats(period); v134RenderStats(state[cacheKey]); }
+        catch (err) { v134RenderStats(null, "İstatistikler alınamadı. İnternet, Firebase bağlantısı veya Firestore Rules alanını kontrol et."); v134Toast(err && err.message ? err.message : "İstatistik alınamadı."); }
+        finally { try { if (typeof setCloudLoading === "function") setCloudLoading(false); } catch {} }
+      }
+      window.adminSetStatsPeriodV134 = function(period){
+        window.adminStatsPeriodV134 = (period === "today" || period === "week") ? period : "all";
+        v134LoadAndRenderStats(true);
+      };
+      window.adminRefreshStatsV132 = function(){ return v134LoadAndRenderStats(true); };
+      window.adminToggleStatsV132 = function(){
+        v134EnsureStatsUi();
+        try { document.body.classList.remove("admin-reports-open-v133"); document.getElementById("adminSupportBtnV133")?.classList.remove("active"); } catch {}
+        const panel = document.getElementById("adminStatsPanelV132");
+        const btn = document.getElementById("adminStatsBtnV132");
+        if (!panel) return;
+        const willOpen = !panel.classList.contains("open");
+        panel.classList.toggle("open", willOpen);
+        if (btn) btn.classList.toggle("active", willOpen);
+        if (willOpen) v134LoadAndRenderStats(false);
+      };
+
+      // Sorun bildirimi offline kuyruğu
+      function v134QueueRead(){ try { return JSON.parse(localStorage.getItem(SUPPORT_QUEUE_KEY_V134) || "[]"); } catch { return []; } }
+      function v134QueueWrite(rows){ try { localStorage.setItem(SUPPORT_QUEUE_KEY_V134, JSON.stringify(rows || [])); } catch {} }
+      async function v134CreateTicketFromQueue(item){
+        const { db } = await ensureFirebaseReady();
+        const nowMs = Date.now();
+        const name = v134Clean(item.name), seflik = v134Clean(item.seflik);
+        const userKey = item.userKey || v134Key(name, seflik);
+        const id = item.id || `ticket_${userKey}_${item.createdAtMs || nowMs}`;
+        await db.collection(typeof FIREBASE_REPORTS_COLLECTION !== "undefined" ? FIREBASE_REPORTS_COLLECTION : "supportTickets").doc(id).set({
+          id, userKey, name, seflik,
+          message: String(item.message || "").trim(),
+          status: "new",
+          adminReply: "",
+          deviceInfo: item.deviceInfo || {},
+          appVersion: (item.deviceInfo && item.deviceInfo.appVersion) || BUILD_VERSION_V134,
+          recordCount: Number(item.recordCount || 0),
+          createdAt: item.createdAt || (typeof firebaseDateText === "function" ? firebaseDateText() : new Date().toLocaleString("tr-TR")),
+          createdAtMs: Number(item.createdAtMs || nowMs),
+          updatedAt: typeof firebaseDateText === "function" ? firebaseDateText() : new Date().toLocaleString("tr-TR"),
+          updatedAtMs: nowMs,
+          queuedOffline: true
+        }, { merge:true });
+      }
+      async function v134SyncSupportQueue(){
+        const rows = v134QueueRead();
+        if (!rows.length) return 0;
+        const remain = [];
+        let sent = 0;
+        for (const item of rows) {
+          try { await v134CreateTicketFromQueue(item); sent += 1; }
+          catch { remain.push(item); }
+        }
+        v134QueueWrite(remain);
+        if (sent) v134Toast(`${v134TrInt(sent)} bekleyen sorun bildirimi gönderildi.`);
+        return sent;
+      }
+      const prevSendIssueReportV134 = typeof sendIssueReport === "function" ? sendIssueReport : null;
+      sendIssueReport = async function(){
+        const msg = els.issueReportMessage ? String(els.issueReportMessage.value || "").trim() : "";
+        if (msg.length < 5) { v134Toast("Sorunu birkaç kelimeyle yazınız."); return; }
+        const active = state.activeUser || (typeof findActiveUser === "function" ? findActiveUser() : null);
+        if (!active || !active.name || !active.seflik) { v134Toast("Önce kullanıcı girişi yapınız."); return; }
+        try {
+          if (prevSendIssueReportV134) return await prevSendIssueReportV134.apply(this, arguments);
+          await firebaseCreateSupportTicket(msg);
+          v134Toast("Sorun bildirimi gönderildi.");
+        } catch (error) {
+          const nowMs = Date.now();
+          const info = (typeof issueDeviceInfoPayload === "function" ? issueDeviceInfoPayload() : (typeof currentDeviceInfoPayload === "function" ? currentDeviceInfoPayload() : {}));
+          const item = {
+            id: `ticket_${v134Key(active.name, active.seflik)}_${nowMs}`,
+            userKey: v134Key(active.name, active.seflik),
+            name: active.name,
+            seflik: active.seflik,
+            message: msg,
+            deviceInfo: info,
+            recordCount: Number(info.recordCount || ((state.records || []).length) || 0),
+            createdAt: typeof firebaseDateText === "function" ? firebaseDateText() : new Date().toLocaleString("tr-TR"),
+            createdAtMs: nowMs
+          };
+          const rows = v134QueueRead();
+          rows.push(item); v134QueueWrite(rows);
+          if (els.issueReportMessage) els.issueReportMessage.value = "";
+          v134Toast("İnternet zayıf. Sorun bildirimi kaydedildi, internet gelince gönderilecek.");
+        }
+      };
+      window.syncSupportQueueV134 = v134SyncSupportQueue;
+      window.addEventListener("online", () => setTimeout(v134SyncSupportQueue, 1200));
+      setInterval(() => { if (navigator.onLine) v134SyncSupportQueue().catch(()=>{}); }, 180000);
+
+      const prevLoadAdminPanelDataV134 = typeof loadAdminPanelData === "function" ? loadAdminPanelData : null;
+      if (prevLoadAdminPanelDataV134) {
+        loadAdminPanelData = async function(){
+          await prevLoadAdminPanelDataV134.apply(this, arguments);
+          await v134LoadSupportTickets();
+          try { renderAdminUsers(); } catch {}
+          try { if (document.getElementById("adminStatsPanelV132")?.classList.contains("open")) await v134LoadAndRenderStats(true); } catch {}
+        };
+      }
+
+      const prevCurrentDeviceInfoPayloadV134 = typeof currentDeviceInfoPayload === "function" ? currentDeviceInfoPayload : null;
+      currentDeviceInfoPayload = function(){
+        const info = prevCurrentDeviceInfoPayloadV134 ? prevCurrentDeviceInfoPayloadV134() : {};
+        info.appVersion = BUILD_VERSION_V134;
+        info.fileVersion = FILE_VERSION_V134;
+        info.adminUserBadges = true;
+        info.adminPeriodStats = true;
+        info.supportOfflineQueue = true;
+        info.updatedMs = Date.now();
+        return info;
+      };
+
+      window.MESAHA_BUILD_INFO = Object.assign({}, window.MESAHA_BUILD_INFO || {}, {
+        fileVersion: FILE_VERSION_V134,
+        visibleVersion: BUILD_VERSION_V134,
+        adminUserDeleteRestored: true,
+        adminUserBadges: true,
+        adminPeriodStats: true,
+        supportOfflineQueue: true,
+        stableBuild: true
+      });
+      try { document.title = "Mesaha App v134"; document.querySelector(".brand h1") && (document.querySelector(".brand h1").textContent = BUILD_VERSION_V134); } catch {}
+      v134EnsureStatsUi();
+      v134LoadSupportTickets().then(() => { try { renderAdminUsers(); } catch {} }).catch(()=>{});
+      setTimeout(() => { try { v134EnsureStatsUi(); renderAdminUsers(); } catch {} }, 500);
+      setTimeout(() => { try { v134EnsureStatsUi(); renderAdminUsers(); } catch {} }, 1500);
+      if (navigator.onLine) setTimeout(() => v134SyncSupportQueue().catch(()=>{}), 2500);
+    })();
 </script>
 </body>
 </html>
