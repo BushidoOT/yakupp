@@ -1,7 +1,7 @@
 {
-  "version": 141,
-  "visibleVersion": "Mesaha İO v1.70",
-  "cache": "mesaha-app-v141",
+  "version": 142,
+  "visibleVersion": "Mesaha İO v1.71",
+  "cache": "mesaha-app-v142",
   "builtAt": "2026-06-14",
-  "notes": "v141 admin son görülen son girişe göre sıralanır; kullanım süresi Mesaha dosyası indirmeden arka planda kuyrukla senkronlanır"
+  "notes": "v142 admin üst özetinde Son Görülen kişi yerine bugün görülen kullanıcı sayısı gösterilir"
 }
