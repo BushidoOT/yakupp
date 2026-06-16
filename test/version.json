@@ -1,10 +1,10 @@
 {
-  "version": "v153",
-  "appVersion": "Mesaha İO v1.82",
-  "build": "v153",
-  "updatedAt": "2026-06-16T20:35:00Z",
-  "notes": "v152 üstünde liderler ilk 3 düzeltmesi, dosya/yedek başarı pencereleri, yeni dosya adları, dosya bilgileri aç/kapa temizliği ve admin sürüm/success düzenlemeleri.",
-  "visibleVersion": "Mesaha İO v1.82",
-  "fileVersion": "v153",
-  "cache": "mesaha-app-v153"
+  "version": "v154",
+  "appVersion": "Mesaha İO v1.83",
+  "build": "v154",
+  "updatedAt": "2026-06-16T21:05:00Z",
+  "notes": "v153 üstünde Mesaha Liderleri tek buton ve doğru ilk 3 hesaplama, kullanıcı paneli yedek butonları kaldırma, ağaç türü aç/kapat kalıcılığı, dosya bilgileri aç/kapa temizliği ve sürüm sabitleme düzeltmeleri.",
+  "visibleVersion": "Mesaha İO v1.83",
+  "fileVersion": "v154",
+  "cache": "mesaha-app-v154"
 }

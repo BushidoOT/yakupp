@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha App v153</title>
+  <title>Mesaha App v154</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -9144,15 +9144,12 @@ body.theme-dark .admin-stats-note-v134{ color:#a8b3c2; }
 
       <div class="user-panel-actions">
         <button id="panelChangeUserBtn" class="secondary" type="button">Kullanıcı Adı / Şeflik Değiştir</button>
-        <button id="panelPasswordBtn" class="warning" type="button">Bulut Yedeklerini Getir</button>
-        <button id="panelCloudBackupBtn" class="primary" type="button">Buluta Yedekle</button>
         <button id="panelReportIssueBtn" class="secondary" type="button">Sorun Bildir</button>
         <button id="panelAdminOpenBtn" class="secondary" type="button" onclick="openAdminFromUserPanel()">Yönetici Panelini Aç</button>
         <button id="userMenuForceUpdateBtn" class="secondary" type="button">Yeni Sürümü Güncelle</button>
         <p class="hint user-update-offline-note">Not: Güncelle butonunu sadece internet varken kullanınız. Arazide veya internet yokken güncelleme yapmayınız; aksi halde uygulama yeniden açılmayabilir.</p>
       </div>
 
-      <p class="hint">Bulut yedekleme şifresizdir. Kullanıcı adı ve şeflik ile yedekler listelenir.</p>
     </div>
   </div>
 
@@ -9268,7 +9265,7 @@ body.theme-dark .admin-stats-note-v134{ color:#a8b3c2; }
 <div class="app">
     <header class="topbar">
       <div class="brand">
-        <h1>Mesaha İO v1.82</h1>
+        <h1>Mesaha İO v1.83</h1>
         
       </div>
       <div id="activeUserBadge" class="active-user-badge" role="button" tabindex="0" title="Kullanıcı panelini aç" style="display:none"></div>
@@ -10729,8 +10726,8 @@ body.theme-dark .admin-stats-note-v134{ color:#a8b3c2; }
     function currentDeviceInfoPayload() {
       const active = state.activeUser || findActiveUser();
       return {
-        appVersion: "Mesaha İO v1.80",
-        fileVersion: "v151",
+        appVersion: "Mesaha İO v1.83",
+        fileVersion: "v154",
         userName: active && active.name ? cleanUserText(active.name) : "",
         seflik: active && active.seflik ? cleanUserText(active.seflik) : "",
         deviceId: getOrCreateDeviceId(),
@@ -16599,7 +16596,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     function usageTouchStatV128(stat){
       stat.updatedAt = (typeof firebaseDateText === "function") ? firebaseDateText() : new Date().toLocaleString("tr-TR");
       stat.updatedAtMs = Date.now();
-      stat.appVersion = "Mesaha İO v1.80";
+      stat.appVersion = "Mesaha İO v1.83";
       stat.fileVersion = "v135";
       stat.recordCount = Array.isArray(state.records) ? state.records.length : 0;
       return stat;
@@ -16682,8 +16679,8 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
             inputM3: Number(usageCleanNumberV128(stat.inputM3).toFixed(3)),
             recordEntryCount: Math.round(usageCleanNumberV128(stat.recordEntryCount)),
             recordCount: Math.round(usageCleanNumberV128(stat.recordCount)),
-            appVersion: "Mesaha İO v1.80",
-            fileVersion: "v151",
+            appVersion: "Mesaha İO v1.83",
+            fileVersion: "v154",
             createdAt: stat.createdAt || firebaseDateText(),
             createdAtMs: Number(stat.createdAtMs || Date.now()),
             updatedAt: firebaseDateText(),
@@ -16917,7 +16914,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     const prevCurrentDeviceInfoPayloadV128 = typeof currentDeviceInfoPayload === "function" ? currentDeviceInfoPayload : null;
     currentDeviceInfoPayload = function(){
       const info = prevCurrentDeviceInfoPayloadV128 ? prevCurrentDeviceInfoPayloadV128() : {};
-      info.appVersion = "Mesaha İO v1.80";
+      info.appVersion = "Mesaha İO v1.83";
       info.fileVersion = "v135";
       info.recordCount = Array.isArray(state.records) ? state.records.length : (Number(info.recordCount) || 0);
       info.updatedMs = Date.now();
@@ -16930,8 +16927,8 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     setTimeout(() => { try { usageSyncNowV128().catch(() => {}); } catch {} }, 2500);
 
     window.MESAHA_BUILD_INFO = {
-      fileVersion: "v151",
-      visibleVersion: "Mesaha İO v1.80",
+      fileVersion: "v154",
+      visibleVersion: "Mesaha İO v1.83",
       stableBuild: true
     };
 
@@ -16940,7 +16937,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     const prevCurrentDeviceInfoPayloadV129 = typeof currentDeviceInfoPayload === "function" ? currentDeviceInfoPayload : null;
     currentDeviceInfoPayload = function(){
       const info = prevCurrentDeviceInfoPayloadV129 ? prevCurrentDeviceInfoPayloadV129() : {};
-      info.appVersion = "Mesaha İO v1.80";
+      info.appVersion = "Mesaha İO v1.83";
       info.fileVersion = "v135";
       info.recordCount = Array.isArray(state.records) ? state.records.length : (Number(info.recordCount) || 0);
       info.updatedMs = Date.now();
@@ -16948,8 +16945,8 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
       return info;
     };
     window.MESAHA_BUILD_INFO = {
-      fileVersion: "v151",
-      visibleVersion: "Mesaha İO v1.80",
+      fileVersion: "v154",
+      visibleVersion: "Mesaha İO v1.83",
       stableBuild: true,
       offlineFirstTimeoutMs: MESAHA_STARTUP_TIMEOUT_V129
     };
@@ -16958,7 +16955,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 
     /* v130: Boy kısayol butonlarında klavye kapanmasını engelle + küçük stabilite denetimi */
     (function(){
-      const BUILD_VERSION_V130 = "Mesaha İO v1.80";
+      const BUILD_VERSION_V130 = "Mesaha İO v1.83";
       const FILE_VERSION_V130 = "v134";
 
       function safeFocusV130(input, selectMode){
@@ -17107,7 +17104,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 
     /* v131: Admin sade liste, kullanıcı panelinden şifreli açılış, onaylı-yüklemeli yenileme */
     (function(){
-      const BUILD_VERSION_V131 = "Mesaha İO v1.80";
+      const BUILD_VERSION_V131 = "Mesaha İO v1.83";
       const FILE_VERSION_V131 = "v135";
 
       function adminSetLoadingV131(show, text){
@@ -17314,7 +17311,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 
     /* v132: Admin istatistik - en çok ağaç/odun türü, adet ve m³ */
     (function(){
-      const BUILD_VERSION_V132 = "Mesaha İO v1.80";
+      const BUILD_VERSION_V132 = "Mesaha İO v1.83";
       const FILE_VERSION_V132 = "v135";
 
       function adminStatsSetLoadingV132(show, text){
@@ -17575,7 +17572,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 
     /* v133: Admin panelinde Sorun Bildirimleri alanı */
     (function(){
-      const BUILD_VERSION_V133 = "Mesaha İO v1.80";
+      const BUILD_VERSION_V133 = "Mesaha İO v1.83";
       const FILE_VERSION_V133 = "v134";
 
       function supportSetLoadingV133(show, text){
@@ -17712,7 +17709,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 
     /* v134: Admin detayları, güvenli kullanıcı silme, rozetler, dönemli istatistik ve offline sorun kuyruğu */
     (function(){
-      const BUILD_VERSION_V134 = "Mesaha İO v1.80";
+      const BUILD_VERSION_V134 = "Mesaha İO v1.83";
       const FILE_VERSION_V134 = "v134";
       const CURRENT_FILE_NO_V134 = 134;
       const CURRENT_VISIBLE_NO_V134 = 1.63;
@@ -18248,7 +18245,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
         supportOfflineQueue: true,
         stableBuild: true
       });
-      try { document.title = "Mesaha App v151"; document.querySelector(".brand h1") && (document.querySelector(".brand h1").textContent = BUILD_VERSION_V134); } catch {}
+      try { document.title = "Mesaha App v154"; document.querySelector(".brand h1") && (document.querySelector(".brand h1").textContent = BUILD_VERSION_V134); } catch {}
       v134EnsureStatsUi();
       v134LoadSupportTickets().then(() => { try { renderAdminUsers(); } catch {} }).catch(()=>{});
       setTimeout(() => { try { v134EnsureStatsUi(); renderAdminUsers(); } catch {} }, 500);
@@ -18259,7 +18256,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 
     /* v135: performans/test temizliği + Mesaha dosyası indirirken özet veri gönderimi */
     (function(){
-      const BUILD_VERSION_V135 = "Mesaha İO v1.80";
+      const BUILD_VERSION_V135 = "Mesaha İO v1.83";
       const FILE_VERSION_V135 = "v135";
       const EXPORT_QUEUE_KEY_V135 = "mesaha_export_stats_queue_v135";
       const RECORD_RENDER_LIMIT_KEY_V135 = "mesaha_record_render_limit_v135";
@@ -18802,7 +18799,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
         exportSummaryOnDownload: true,
         usageSyncMode: "onMesahaDownload"
       };
-      try { document.title = "Mesaha App v151"; } catch {}
+      try { document.title = "Mesaha App v154"; } catch {}
       try { const h1 = document.querySelector(".brand h1"); if (h1) h1.textContent = BUILD_VERSION_V135; } catch {}
       setTimeout(v135BindExportButton, 80);
       setTimeout(v135BindExportButton, 800);
@@ -18812,7 +18809,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 
 /* Mesaha v140 - admin son aktif sıralama + süre ölçüm düzeltmesi */
 (function(){
-  const BUILD_VERSION="Mesaha İO v1.80", FILE_VERSION="v151";
+  const BUILD_VERSION="Mesaha İO v1.83", FILE_VERSION="v154";
   const MAX_VISIBLE_TICK_MS=60*1000;
   function num(v){ const n=Number(v); return Number.isFinite(n)?n:0; }
   function clean(v){ return String(v||"").trim(); }
@@ -18913,7 +18910,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     activeTimeMode:"visibleTimeLocal_exportSync",
     adminSortMode:"lastLoginOrActiveDesc"
   });
-  try{ document.title="Mesaha App v151"; const h1=document.querySelector(".brand h1"); if(h1) h1.textContent=BUILD_VERSION; }catch{}
+  try{ document.title="Mesaha App v154"; const h1=document.querySelector(".brand h1"); if(h1) h1.textContent=BUILD_VERSION; }catch{}
   setTimeout(()=>{ try{ if(typeof renderAdminUsers==="function") renderAdminUsers(); }catch{} }, 500);
 })();
 
@@ -18926,7 +18923,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 /* Mesaha v139 - istatistik sıfırlama admin ana liste/özet kesin düzeltme */
 (function(){
   "use strict";
-  const BUILD_VERSION="Mesaha İO v1.80", FILE_VERSION="v151", MARKER="__stats_reset_marker__";
+  const BUILD_VERSION="Mesaha İO v1.83", FILE_VERSION="v154", MARKER="__stats_reset_marker__";
   const EXPORT_QUEUE="mesaha_export_stats_queue_v135", USAGE_LOCAL="mesaha_usage_stats_v128";
   const usageColl=()=>{try{return FIREBASE_USAGE_COLLECTION||"usageStats";}catch{return"usageStats";}};
   const usersColl=()=>{try{return FIREBASE_USERS_COLLECTION||"users";}catch{return"users";}};
@@ -18995,7 +18992,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
   const oldRefresh=typeof adminRefreshStatsV132==="function"?adminRefreshStatsV132:null;if(oldRefresh){adminRefreshStatsV132=async function(){try{setLocalReset(await readMarker());}catch{}return oldRefresh();};}
   const oldDevice=typeof currentDeviceInfoPayload==="function"?currentDeviceInfoPayload:null;try{currentDeviceInfoPayload=function(){const info=oldDevice?oldDevice():{};info.appVersion=BUILD_VERSION;info.fileVersion=FILE_VERSION;info.statsResetAdminListFix=true;info.updatedMs=Date.now();return info;};}catch{}
   window.MESAHA_BUILD_INFO=Object.assign({},window.MESAHA_BUILD_INFO||{},{fileVersion:FILE_VERSION,visibleVersion:BUILD_VERSION,statsResetAdminListFix:true,stableBuild:true});
-  try{document.title="Mesaha App v151";const h1=document.querySelector(".brand h1");if(h1)h1.textContent=BUILD_VERSION;}catch{}
+  try{document.title="Mesaha App v154";const h1=document.querySelector(".brand h1");if(h1)h1.textContent=BUILD_VERSION;}catch{}
   setTimeout(()=>{readMarker().then(marker=>{if(marker&&marker.resetAtMs){try{state.adminOnlineUsers=sanitizeUsers(state.adminOnlineUsers||[],marker);renderAdminUsers();}catch{}}}).catch(()=>{});},1200);
 })();
 
@@ -19006,8 +19003,8 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 /* Mesaha v141 - admin son görülen + arka plan süre senkronu */
 (function(){
   "use strict";
-  const BUILD_VERSION = "Mesaha İO v1.80";
-  const FILE_VERSION = "v151";
+  const BUILD_VERSION = "Mesaha İO v1.83";
+  const FILE_VERSION = "v154";
   const LIVE_QUEUE_KEY = "mesaha_live_usage_queue_v141";
   const LIVE_LAST_SYNC_KEY = "mesaha_live_usage_last_sync_v141";
   const LIVE_MIN_SYNC_MS = 60 * 1000;
@@ -19216,7 +19213,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
   const oldDevice = typeof currentDeviceInfoPayload === "function" ? currentDeviceInfoPayload : null;
   try{ currentDeviceInfoPayload = function(){ const info = oldDevice ? oldDevice() : {}; info.appVersion = BUILD_VERSION; info.fileVersion = FILE_VERSION; info.adminSortMode = "lastLoginOnlyDesc"; info.activeTimeMode = "backgroundQueueLiveSync"; info.updatedMs = Date.now(); return info; }; }catch{}
   window.MESAHA_BUILD_INFO = Object.assign({}, window.MESAHA_BUILD_INFO || {}, { fileVersion:FILE_VERSION, visibleVersion:BUILD_VERSION, adminSortMode:"lastLoginOnlyDesc", activeTimeMode:"backgroundQueueLiveSync" });
-  try { document.title = "Mesaha App v151"; const h1 = document.querySelector(".brand h1"); if(h1) h1.textContent = BUILD_VERSION; } catch {}
+  try { document.title = "Mesaha App v154"; const h1 = document.querySelector(".brand h1"); if(h1) h1.textContent = BUILD_VERSION; } catch {}
   try { setTimeout(()=>{ if(typeof renderAdminUsers === "function") renderAdminUsers(); }, 1200); } catch {}
 })();
 </script>
@@ -19226,8 +19223,8 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 /* Mesaha v142 - admin üst özet: Son Görülen kişi yerine bugün görülen kullanıcı sayısı */
 (function(){
   "use strict";
-  const BUILD_VERSION = "Mesaha İO v1.80";
-  const FILE_VERSION = "v151";
+  const BUILD_VERSION = "Mesaha İO v1.83";
+  const FILE_VERSION = "v154";
   const esc = (v) => { try { return escapeHtml(v); } catch { return String(v ?? "").replace(/[&<>\"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[c])); } };
   const n = (v) => { const x = Number(String(v ?? "").replace(",", ".").replace(/[^0-9.\-]/g, "")); return Number.isFinite(x) ? x : 0; };
   const fmtM3 = (v) => `${(Number(v) || 0).toLocaleString("tr-TR", { minimumFractionDigits:3, maximumFractionDigits:3 })} m³`;
@@ -19288,7 +19285,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
   const oldDevice = typeof currentDeviceInfoPayload === "function" ? currentDeviceInfoPayload : null;
   try { currentDeviceInfoPayload = function(){ const info = oldDevice ? oldDevice() : {}; info.appVersion = BUILD_VERSION; info.fileVersion = FILE_VERSION; info.adminTopSummaryMode = "todaySeenUserCount"; info.updatedMs = Date.now(); return info; }; } catch {}
   window.MESAHA_BUILD_INFO = Object.assign({}, window.MESAHA_BUILD_INFO || {}, { fileVersion:FILE_VERSION, visibleVersion:BUILD_VERSION, adminTopSummaryMode:"todaySeenUserCount" });
-  try { document.title = "Mesaha App v151"; const h1 = document.querySelector(".brand h1"); if(h1) h1.textContent = BUILD_VERSION; } catch {}
+  try { document.title = "Mesaha App v154"; const h1 = document.querySelector(".brand h1"); if(h1) h1.textContent = BUILD_VERSION; } catch {}
   try { setTimeout(()=>{ updateAdminTopSummary(); if(typeof renderAdminUsers === "function") renderAdminUsers(); }, 500); setTimeout(()=>{ updateAdminTopSummary(); }, 1800); } catch {}
 })();
 </script>
@@ -19299,8 +19296,8 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 /* Mesaha v144 - m³ doğruluk düzeltmesi: güvenli hacim, çap kontrolü, admin yedekten doğrulama */
 (function(){
   "use strict";
-  const BUILD_VERSION = "Mesaha İO v1.80";
-  const FILE_VERSION = "v151";
+  const BUILD_VERSION = "Mesaha İO v1.83";
+  const FILE_VERSION = "v154";
   const MAX_DIAMETER_CM = 200;
   const MAX_LENGTH_M = 30;
   const EXPORT_QUEUE_KEY = "mesaha_export_stats_queue_v135";
@@ -19741,7 +19738,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
   const oldDevice = typeof currentDeviceInfoPayload === "function" ? currentDeviceInfoPayload : null;
   try { currentDeviceInfoPayload = function(){ const info = oldDevice ? oldDevice() : {}; info.appVersion = BUILD_VERSION; info.fileVersion = FILE_VERSION; info.m3AccuracyFix = true; info.updatedMs = Date.now(); return info; }; } catch {}
   window.MESAHA_BUILD_INFO = Object.assign({}, window.MESAHA_BUILD_INFO || {}, { fileVersion:FILE_VERSION, visibleVersion:BUILD_VERSION, m3AccuracyFix:true, stableBuild:true });
-  try { document.title = "Mesaha App v151"; const h1 = document.querySelector(".brand h1"); if (h1) h1.textContent = BUILD_VERSION; } catch {}
+  try { document.title = "Mesaha App v154"; const h1 = document.querySelector(".brand h1"); if (h1) h1.textContent = BUILD_VERSION; } catch {}
   setTimeout(bindExport, 100); setTimeout(bindExport, 1000); setTimeout(()=>{ recalcTodayUsageFromLocal(); v144FlushExportQueue(true).catch(()=>{}); }, 2500);
   setTimeout(()=>applyBackupCorrections().catch(()=>{}), 3500);
 })();
@@ -19750,8 +19747,8 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 /* Mesaha v145 - giriş sayısı, liderler panosu, ağaç seçimi ve UI küçük düzenlemeler */
 (function(){
   "use strict";
-  const BUILD_VERSION = "Mesaha İO v1.80";
-  const FILE_VERSION = "v151";
+  const BUILD_VERSION = "Mesaha İO v1.83";
+  const FILE_VERSION = "v154";
   const LOGIN_QUEUE_KEY = "mesaha_today_login_queue_v145";
   const LOGIN_MARKED = new Set();
 
@@ -19777,7 +19774,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
   function todayLoginCount(u){ const t=(u&&u.todayLogin)||{}; if(t.date && t.date!==todayIso()) return 0; return Number((u&&u.todayLoginCount) || t.count || (u&&u.todayUsage&&u.todayUsage.loginCount) || 0) || 0; }
 
   function setVersions(){
-    try { document.title = "Mesaha App v151"; const h1=document.querySelector(".brand h1"); if(h1) h1.textContent=BUILD_VERSION; } catch {}
+    try { document.title = "Mesaha App v154"; const h1=document.querySelector(".brand h1"); if(h1) h1.textContent=BUILD_VERSION; } catch {}
     try { window.MESAHA_BUILD_INFO = Object.assign({}, window.MESAHA_BUILD_INFO||{}, {fileVersion:FILE_VERSION, visibleVersion:BUILD_VERSION, dailyLoginCount:true, leadersPanel:true}); } catch {}
     try { const old = typeof currentDeviceInfoPayload === "function" ? currentDeviceInfoPayload : null; if(old && !old.__v145){ currentDeviceInfoPayload = function(){ const info=old?old():{}; info.appVersion=BUILD_VERSION; info.fileVersion=FILE_VERSION; info.dailyLoginCount=true; info.leadersPanel=true; info.updatedMs=Date.now(); return info; }; currentDeviceInfoPayload.__v145=true; } } catch {}
   }
@@ -19957,8 +19954,8 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 </script>
 <script id="mesaha-v146-tree-filter-script">
 (function(){
-  const BUILD_VERSION="Mesaha İO v1.80";
-  const FILE_VERSION = "v151";
+  const BUILD_VERSION="Mesaha İO v1.83";
+  const FILE_VERSION = "v154";
   const FILTER_KEY="mesaha_records_tree_filter_v146";
   const TREE_NAMES=["Karaçam","Sarıçam","Sedir","Göknar","Kızılçam"];
   function $(id){return document.getElementById(id);}
@@ -20074,7 +20071,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     setTreeType.__v146Tree=true;
   }
   function setVersions(){
-    try{document.title="Mesaha App v151"; const h1=document.querySelector(".brand h1"); if(h1) h1.textContent=BUILD_VERSION;}catch{}
+    try{document.title="Mesaha App v154"; const h1=document.querySelector(".brand h1"); if(h1) h1.textContent=BUILD_VERSION;}catch{}
     try{window.MESAHA_BUILD_INFO=Object.assign({},window.MESAHA_BUILD_INFO||{},{fileVersion:FILE_VERSION,visibleVersion:BUILD_VERSION,treeFilter:true,quickTree:true});}catch{}
   }
   const oldDevice = (typeof currentDeviceInfoPayload==="function") ? currentDeviceInfoPayload : null;
@@ -20092,10 +20089,10 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 /* Mesaha v147 - temiz taban düzeltme: ham kod görünme hatası fix + sürüm sabitleme */
 (function(){
   "use strict";
-  const BUILD_VERSION = "Mesaha İO v1.80";
-  const FILE_VERSION = "v151";
+  const BUILD_VERSION = "Mesaha İO v1.83";
+  const FILE_VERSION = "v154";
   function setVersion(){
-    try { document.title = "Mesaha App v151"; const h1=document.querySelector(".brand h1"); if(h1) h1.textContent=BUILD_VERSION; } catch {}
+    try { document.title = "Mesaha App v154"; const h1=document.querySelector(".brand h1"); if(h1) h1.textContent=BUILD_VERSION; } catch {}
     try { window.MESAHA_BUILD_INFO = Object.assign({}, window.MESAHA_BUILD_INFO||{}, {fileVersion:FILE_VERSION, visibleVersion:BUILD_VERSION, cleanBaseFix:true, treeFilter:true, quickTree:true}); } catch {}
   }
   const oldDevice = (typeof currentDeviceInfoPayload === "function") ? currentDeviceInfoPayload : null;
@@ -20220,8 +20217,8 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 <script id="mesaha-v148-missing-features-offline-guard">
 (function(){
   "use strict";
-  const BUILD_VERSION = "Mesaha İO v1.80";
-  const FILE_VERSION = "v151";
+  const BUILD_VERSION = "Mesaha İO v1.83";
+  const FILE_VERSION = "v154";
   const TODAY_MARK_KEY = "mesaha_v148_today_date_mark";
   const LEADER_OPEN_KEY = "mesaha_v148_leaders_open";
 
@@ -20239,7 +20236,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
   }
 
   function setVersionsV148(){
-    try { document.title = "Mesaha App v151"; } catch {}
+    try { document.title = "Mesaha App v154"; } catch {}
     try { const h1 = document.querySelector(".brand h1"); if (h1) h1.textContent = BUILD_VERSION; } catch {}
     try { window.MESAHA_BUILD_INFO = Object.assign({}, window.MESAHA_BUILD_INFO||{}, { fileVersion:FILE_VERSION, visibleVersion:BUILD_VERSION, v148:true }); } catch {}
   }
@@ -20448,10 +20445,10 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 <script id="mesaha-v149-clean-version-stabilizer">
 (function(){
   "use strict";
-  var APP_BUILD = "v151";
-  var APP_VISIBLE_VERSION = "Mesaha İO v1.80";
+  var APP_BUILD = "v154";
+  var APP_VISIBLE_VERSION = "Mesaha İO v1.83";
   function applyVersion(){
-    try { document.title = "Mesaha App v151"; } catch(e) {}
+    try { document.title = "Mesaha App v154"; } catch(e) {}
     try { var h1 = document.querySelector(".brand h1"); if (h1) h1.textContent = APP_VISIBLE_VERSION; } catch(e) {}
     try {
       window.MESAHA_BUILD_INFO = Object.assign({}, window.MESAHA_BUILD_INFO || {}, {
@@ -20578,8 +20575,8 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 <script id="mesaha-v150-leaders-modal-fix">
 (function(){
   "use strict";
-  var APP_BUILD = "v151";
-  var APP_VISIBLE_VERSION = "Mesaha İO v1.80";
+  var APP_BUILD = "v154";
+  var APP_VISIBLE_VERSION = "Mesaha İO v1.83";
 
   function esc(v){
     try { if (typeof escapeHtml === "function") return escapeHtml(v); } catch(e) {}
@@ -20740,7 +20737,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     }, true);
   }
   function applyVersionV150(){
-    try { document.title = "Mesaha App v151"; } catch(e) {}
+    try { document.title = "Mesaha App v154"; } catch(e) {}
     try { var h1 = document.querySelector(".brand h1"); if (h1) h1.textContent = APP_VISIBLE_VERSION; } catch(e) {}
     try { window.MESAHA_BUILD_INFO = Object.assign({}, window.MESAHA_BUILD_INFO||{}, {fileVersion:APP_BUILD, visibleVersion:APP_VISIBLE_VERSION, leadersModal:true, updatedMs:Date.now()}); } catch(e) {}
   }
@@ -20772,9 +20769,9 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 <script id="mesaha-v151-single-version-stabilizer">
 (function(){
   "use strict";
-  var APP_BUILD = "v151";
-  var APP_VISIBLE_VERSION = "Mesaha İO v1.80";
-  var APP_TITLE = "Mesaha App v151";
+  var APP_BUILD = "v154";
+  var APP_VISIBLE_VERSION = "Mesaha İO v1.83";
+  var APP_TITLE = "Mesaha App v154";
   function applyStableVersionV151(){
     try{ document.title = APP_TITLE; }catch(e){}
     try{
@@ -20868,9 +20865,9 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 <script id="mesaha-v153-final-polish">
 (function(){
   "use strict";
-  var APP_BUILD = "v153";
-  var APP_VISIBLE_VERSION = "Mesaha İO v1.82";
-  var APP_TITLE = "Mesaha App v153";
+  var APP_BUILD = "v154";
+  var APP_VISIBLE_VERSION = "Mesaha İO v1.83";
+  var APP_TITLE = "Mesaha App v154";
 
   function $(id){ return document.getElementById(id); }
   function esc(v){ try{ if(typeof escapeHtml === "function") return escapeHtml(v); }catch(e){} return String(v == null ? "" : v).replace(/[&<>\"']/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[c]; }); }
@@ -21055,3 +21052,234 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 })();
 </script>
 
+
+
+<style id="v154-stabil-style">
+  /* v154: Kullanıcı paneli sade; dosya bilgileri sabit açık */
+  #userPanelOverlay .user-panel-actions #panelPasswordBtn,
+  #userPanelOverlay .user-panel-actions #panelCloudBackupBtn{
+    display:none !important;
+  }
+  #userPanelOverlay .user-panel-actions .leader-duplicate-v154{
+    display:none !important;
+  }
+  .info-details summary::after{display:none !important; content:"" !important;}
+  .info-details[open] summary::after{display:none !important; content:"" !important;}
+  .info-details summary{cursor:default !important; pointer-events:none !important;}
+  .leaders-overlay-v154{z-index:99999 !important;}
+  .leaders-card-v154{max-width:780px;width:min(92vw,780px);}
+  .leaders-list-v154{display:grid;gap:10px;margin-top:14px;}
+  .leader-row-v154{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;border:1px solid #e2e8f0;border-radius:18px;background:#fff;padding:12px;}
+  .leader-rank-v154{width:46px;height:46px;border-radius:16px;background:#2563eb;color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:1000;}
+  .leader-main-v154 b{display:block;color:#0f172a;font-size:16px;font-weight:1000;}
+  .leader-main-v154 span{display:block;color:#64748b;font-weight:900;margin-top:2px;}
+  .leader-val-v154{text-align:right;color:#0f172a;font-size:18px;font-weight:1000;white-space:nowrap;}
+  .leader-val-v154 small{display:block;color:#64748b;font-size:13px;font-weight:900;margin-top:2px;}
+  .leaders-empty-v154{border:1px dashed #cbd5e1;border-radius:18px;padding:18px;color:#64748b;font-weight:900;background:#f8fafc;}
+  body.theme-dark .leader-row-v154{background:#111827;border-color:#334155;}
+  body.theme-dark .leader-main-v154 b, body.theme-dark .leader-val-v154{color:#f8fafc;}
+  body.theme-dark .leader-main-v154 span, body.theme-dark .leader-val-v154 small{color:#cbd5e1;}
+  body.theme-dark .leaders-empty-v154{background:#0b1220;border-color:#334155;color:#cbd5e1;}
+</style>
+<script id="v154-stabil-fixes">
+(function(){
+  "use strict";
+  var APP_VISIBLE_VERSION = "Mesaha İO v1.83";
+  var APP_FILE_VERSION = "v154";
+  var APP_TITLE = "Mesaha App v154";
+  var TREE_OPEN_KEY = "mesaha_tree_panel_open_v154";
+  var CLEAN_TREE_OPEN_KEY = "mesaha_clean_tree_panel_open_v154";
+  var cleaningPanel = false;
+  function $(id){ return document.getElementById(id); }
+  function esc(v){ return String(v==null?"":v).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];}); }
+  function n(v){ if(v==null || v==="") return 0; if(typeof v==="number") return isFinite(v)?v:0; var s=String(v).replace(/[^0-9,.-]/g,"").replace(/\./g,"").replace(",","."); var x=parseFloat(s); return isFinite(x)?x:0; }
+  function fmtInt(v){ try{return Math.round(n(v)).toLocaleString("tr-TR");}catch(e){return String(Math.round(n(v)));} }
+  function fmtM3(v){ try{return n(v).toLocaleString("tr-TR",{minimumFractionDigits:3,maximumFractionDigits:3})+" m³";}catch(e){return (Math.round(n(v)*1000)/1000)+" m³";} }
+  function mask(v){ var s=String(v||"").trim(); if(!s) return "**"; var arr=Array.from(s); return arr.slice(0,2).join("") + "*".repeat(Math.max(2, arr.length-2)); }
+  function userKey(name,seflik){ try{ if(typeof firebaseUserKey==="function") return firebaseUserKey(name,seflik); }catch(e){} return String((name||"")+"__"+(seflik||"")).toLocaleLowerCase("tr-TR").replace(/[^a-z0-9ğüşöçıİĞÜŞÖÇ_-]+/gi,"_").replace(/^_+|_+$/g,"") || "kullanici"; }
+  function normTree(v){ var s=String(v||"Karaçam").trim(); var l=s.toLocaleLowerCase("tr-TR"); if(l.includes("sarı")||l.includes("sari")) return "Sarıçam"; if(l.includes("kızıl")||l.includes("kizil")) return "Kızılçam"; if(l.includes("göknar")||l.includes("goknar")) return "Göknar"; if(l.includes("sedir")) return "Sedir"; if(l.includes("kara")) return "Karaçam"; return s || "Karaçam"; }
+  function recTree(r){ return normTree(r && (r.treeType || r.species || r.agacAdi || r.agac || r.tree || r.ağaç)); }
+  function safeM3(r){
+    var desi=n(r && r.desi); if(desi>0 && desi<99999999) return desi/1000;
+    var hv=n(r && (r.hacim||r.volume)); if(hv>0 && hv<99999) return hv;
+    var d=n(r && (r.diameter||r.cap)); var l=n(r && (r.length||r.boy)); var q=Math.max(1,n(r && (r.quantity||r.adet))||1);
+    if(d<=0 || d>200 || l<=0 || l>50 || q<=0 || q>99999) return 0;
+    try{ if(typeof calculateDesi==="function") return (n(calculateDesi(d,l,q))||0)/1000; }catch(e){}
+    return 0.00007854*d*d*l*q;
+  }
+  function qty(r){ var q=n(r && (r.quantity||r.adet)); return q>0?q:1; }
+  function setVersion(){
+    try{ document.title = APP_TITLE; var h1=document.querySelector(".brand h1"); if(h1) h1.textContent=APP_VISIBLE_VERSION; }catch(e){}
+    try{ window.MESAHA_BUILD_INFO = Object.assign({}, window.MESAHA_BUILD_INFO||{}, {fileVersion:APP_FILE_VERSION, visibleVersion:APP_VISIBLE_VERSION, cleanupV154:true}); }catch(e){}
+  }
+  var oldDevice = (typeof currentDeviceInfoPayload === "function") ? currentDeviceInfoPayload : null;
+  if(oldDevice && !oldDevice.__v154Version){
+    currentDeviceInfoPayload = function(){ var info=oldDevice.apply(this,arguments)||{}; info.appVersion=APP_VISIBLE_VERSION; info.fileVersion=APP_FILE_VERSION; info.cleanupV154=true; return info; };
+    currentDeviceInfoPayload.__v154Version=true;
+  }
+
+  function cleanupUserPanel(){
+    if(cleaningPanel) return; cleaningPanel=true;
+    try{
+      var actions=document.querySelector("#userPanelOverlay .user-panel-actions");
+      if(!actions) return;
+      ["panelPasswordBtn","panelCloudBackupBtn"].forEach(function(id){ var el=$(id); if(el) el.remove(); });
+      Array.from(actions.children).forEach(function(el){
+        var txt=(el.textContent||"").trim();
+        if(el.tagName==="P" && txt.includes("Bulut yedekleme şifresizdir")) el.remove();
+      });
+      // Eski yamalardan çoğalan tüm lider butonlarını temizle ve tek buton bırak.
+      Array.from(actions.querySelectorAll("button")).forEach(function(btn){
+        var txt=(btn.textContent||"").trim();
+        if((txt.includes("Mesaha Liderleri") || /^userLeadersToggle/.test(btn.id||"")) && btn.id!=="userLeadersToggleV154") btn.remove();
+      });
+      var btn=$("userLeadersToggleV154");
+      if(!btn){
+        btn=document.createElement("button");
+        btn.id="userLeadersToggleV154"; btn.type="button"; btn.className="secondary"; btn.textContent="📊 Mesaha Liderleri";
+        actions.insertBefore(btn, actions.firstChild);
+      }
+      if(!btn.__v154Bound){
+        btn.__v154Bound=true;
+        btn.addEventListener("click", function(ev){ ev.preventDefault(); ev.stopPropagation(); openLeadersV154(); }, true);
+      }
+    }catch(e){} finally { cleaningPanel=false; }
+  }
+
+  function getPayloadRecords(payload){
+    if(!payload) return [];
+    if(Array.isArray(payload.records)) return payload.records;
+    if(Array.isArray(payload.kayitlar)) return payload.kayitlar;
+    if(Array.isArray(payload.data)) return payload.data;
+    if(payload.payload && payload.payload!==payload) return getPayloadRecords(payload.payload);
+    return [];
+  }
+  function addUserAgg(map, name, seflik, records, fallbackAdet, fallbackM3, fallbackTree){
+    var k=userKey(name,seflik); var row=map.get(k) || {name:name||"Kullanıcı", seflik:seflik||"Şeflik", adet:0, m3:0, trees:{}};
+    if(Array.isArray(records) && records.length){
+      records.forEach(function(r){
+        var q=qty(r); var m=safeM3(r); var t=recTree(r);
+        row.adet += q; row.m3 += m; row.trees[t]=(row.trees[t]||0)+q;
+      });
+    }else{
+      var q=n(fallbackAdet), m=n(fallbackM3), t=normTree(fallbackTree||"Kayıt");
+      row.adet += q; row.m3 += m; if(q||m) row.trees[t]=(row.trees[t]||0)+q;
+    }
+    map.set(k,row);
+  }
+  function finishRows(map){
+    return Array.from(map.values()).map(function(r){
+      var topTree="Kayıt", best=-1;
+      Object.keys(r.trees||{}).forEach(function(t){ if(r.trees[t]>best){best=r.trees[t]; topTree=t;} });
+      r.tree=topTree; r.m3=Number((n(r.m3)).toFixed(3)); return r;
+    }).filter(function(r){ return n(r.adet)>0 || n(r.m3)>0; }).sort(function(a,b){ return (n(b.adet)-n(a.adet)) || (n(b.m3)-n(a.m3)); }).slice(0,3);
+  }
+  async function loadLeaderRowsV154(){
+    var map=new Map();
+    // Önce mevcut admin verisi varsa anlık bilgilerden doldur.
+    try{
+      var adminUsers=(window.state && Array.isArray(state.adminOnlineUsers)) ? state.adminOnlineUsers : [];
+      adminUsers.forEach(function(u){ addUserAgg(map,u.name,u.seflik,null,u.weekInputAdet||u.todayInputAdet,u.weekInputM3||u.todayInputM3,"Kayıt"); });
+    }catch(e){}
+    var ready=null;
+    try{ ready = await Promise.race([Promise.resolve().then(function(){return ensureFirebaseReady();}), new Promise(function(_,rej){setTimeout(function(){rej(new Error("Firebase zaman aşımı"));},8000);})]); }catch(e){}
+    var db=ready && ready.db;
+    if(db){
+      // En güvenilir kaynak: her kullanıcının son bulut yedeğindeki gerçek kayıtlar.
+      try{
+        var latest=new Map();
+        var snap=await db.collection(typeof FIREBASE_BACKUPS_COLLECTION!=="undefined"?FIREBASE_BACKUPS_COLLECTION:"backups").get();
+        snap.forEach(function(doc){
+          try{
+            var d=doc.data()||{}; var payload=d.payload || (d.payloadText ? JSON.parse(d.payloadText) : null) || d;
+            var records=getPayloadRecords(payload); if(!records.length) return;
+            var name=d.name || d.userName || (payload.user && payload.user.name) || "Kullanıcı";
+            var seflik=d.seflik || (payload.user && payload.user.seflik) || "Şeflik";
+            var k=d.userKey || userKey(name,seflik);
+            var ms=n(d.createdAtMs||d.updatedAtMs||Date.parse(d.createdAt||d.updatedAt||""));
+            var old=latest.get(k); if(!old || ms>=old.ms) latest.set(k,{ms:ms,name:name,seflik:seflik,records:records});
+          }catch(e){}
+        });
+        latest.forEach(function(x){ addUserAgg(map,x.name,x.seflik,x.records); });
+      }catch(e){}
+      // Yedek yoksa veya eksikse usageStats ile tamamla.
+      try{
+        var us=await db.collection(typeof FIREBASE_USAGE_COLLECTION!=="undefined"?FIREBASE_USAGE_COLLECTION:"usageStats").get();
+        us.forEach(function(doc){
+          var d=doc.data()||{}; if(d.type==="statsResetMarker") return;
+          var name=d.name||d.userName||"Kullanıcı", seflik=d.seflik||"Şeflik";
+          var trees=[]; try{ if(d.weekSummary && Array.isArray(d.weekSummary.trees)) trees=d.weekSummary.trees; }catch(e){}
+          if(!trees.length){ try{ if(d.todaySummary && Array.isArray(d.todaySummary.trees)) trees=d.todaySummary.trees; }catch(e){} }
+          if(trees.length) trees.forEach(function(t){ addUserAgg(map,name,seflik,null,t.adet||t.count||t.totalAdet,t.m3||t.hacim||t.volume,t.name||t.agacAdi||t.tree); });
+          else addUserAgg(map,name,seflik,null,d.weekInputAdet||d.todayInputAdet,d.weekInputM3||d.todayInputM3,"Kayıt");
+        });
+      }catch(e){}
+    }
+    return finishRows(map);
+  }
+  function removeOldLeaderOverlays(){
+    ["leaderOverlayV150","leaderOverlayV153"].forEach(function(id){ var el=$(id); if(el) el.remove(); });
+  }
+  function ensureLeaderOverlayV154(){
+    removeOldLeaderOverlays();
+    var ov=$("leaderOverlayV154"); if(ov) return ov;
+    ov=document.createElement("div"); ov.id="leaderOverlayV154"; ov.className="issue-report-overlay leaders-overlay-v154"; ov.setAttribute("role","dialog"); ov.setAttribute("aria-modal","true"); ov.setAttribute("aria-label","Mesaha Liderleri");
+    ov.innerHTML='<div class="issue-report-card leaders-card-v154"><div class="issue-report-head"><div><h2>Mesaha Liderleri</h2><p class="leaders-sub-v150">İlk 3 kullanıcı. İsim ve şeflik gizlenir.</p></div><button id="leaderCloseBtnV154" class="ghost issue-report-close" type="button">×</button></div><div id="leadersModalListV154" class="leaders-list-v154"><div class="leaders-empty-v154">Pano yükleniyor...</div></div></div>';
+    document.body.appendChild(ov);
+    ov.addEventListener("click",function(ev){ if(ev.target===ov) closeLeadersV154(); });
+    var c=$("leaderCloseBtnV154"); if(c) c.addEventListener("click",closeLeadersV154);
+    return ov;
+  }
+  function closeLeadersV154(){ var ov=$("leaderOverlayV154"); if(ov) ov.classList.remove("show"); }
+  async function openLeadersV154(){
+    try{ var up=$("userPanelOverlay"); if(up) up.classList.remove("show"); }catch(e){}
+    var ov=ensureLeaderOverlayV154(), list=$("leadersModalListV154"); ov.classList.add("show");
+    if(list) list.innerHTML='<div class="leaders-empty-v154">Mesaha liderleri yükleniyor...</div>';
+    try{
+      var rows=await loadLeaderRowsV154();
+      if(!rows.length){ if(list) list.innerHTML='<div class="leaders-empty-v154">Pano verisi bulunamadı. Kullanıcılar yedek aldıkça veya mesaha dosyası indirdikçe burası dolacak.</div>'; return; }
+      if(list) list.innerHTML=rows.map(function(r,i){ return '<div class="leader-row-v154"><div class="leader-rank-v154">'+(i+1)+'</div><div class="leader-main-v154"><b>'+esc(mask(r.name))+' • '+esc(mask(r.seflik))+'</b><span>'+esc(r.tree||"Kayıt")+'</span></div><div class="leader-val-v154">'+fmtInt(r.adet)+' adet<small>'+fmtM3(r.m3)+'</small></div></div>'; }).join("");
+    }catch(e){ if(list) list.innerHTML='<div class="leaders-empty-v154">Liderler alınamadı. İnternet bağlantısını kontrol edip tekrar deneyin.</div>'; }
+  }
+
+  function isOpenKey(key){ try{return localStorage.getItem(key)==="1";}catch(e){return false;} }
+  function setOpenKey(key,val){ try{localStorage.setItem(key,val?"1":"0");}catch(e){} }
+  function currentTree(){ var inp=$("treeType"); return normTree((inp&&inp.value)||"Karaçam"); }
+  function updateMainTreeUi(){
+    var btn=$("treeTypeSelectBtn"), panel=$("treeTypePanel"); if(!btn||!panel) return;
+    var open=isOpenKey(TREE_OPEN_KEY); panel.classList.toggle("open",open); btn.setAttribute("aria-expanded",open?"true":"false"); btn.textContent="Ağaç Türü: "+currentTree()+" • "+(open?"Kapat":"Aç");
+  }
+  function bindMainTreeToggle(){
+    var btn=$("treeTypeSelectBtn"), panel=$("treeTypePanel"), apply=$("treeTypeApplyBtn"); if(!btn||!panel) return;
+    if(apply) apply.style.setProperty("display","none","important");
+    if(!btn.__v154MainTree){ btn.__v154MainTree=true; btn.addEventListener("click",function(ev){ ev.preventDefault(); ev.stopPropagation(); if(ev.stopImmediatePropagation) ev.stopImmediatePropagation(); var open=!isOpenKey(TREE_OPEN_KEY); setOpenKey(TREE_OPEN_KEY,open); try{ if(typeof syncTreeTypePanel==="function") syncTreeTypePanel(); }catch(e){} updateMainTreeUi(); }, true); }
+    panel.querySelectorAll("label.wood-check").forEach(function(label){ if(label.__v154TreeChoice) return; label.__v154TreeChoice=true; label.addEventListener("click",function(ev){ var input=label.querySelector("input[type='radio']"); if(!input) return; ev.preventDefault(); ev.stopPropagation(); if(ev.stopImmediatePropagation) ev.stopImmediatePropagation(); input.checked=true; try{ if(typeof setTreeType==="function") setTreeType(input.value,true); else {var t=$("treeType"); if(t) t.value=input.value;} }catch(e){} try{ if(typeof syncTreeTypePanel==="function") syncTreeTypePanel(); }catch(e){} updateMainTreeUi(); try{ if(typeof showToast==="function") showToast(input.value+" seçildi."); }catch(e){} }, true); });
+    updateMainTreeUi();
+  }
+  function updateCleanTreeUi(){
+    var btn=$("cleanTreeToggleV146"), panel=$("cleanTreePanelV146"); if(!btn||!panel) return;
+    var open=isOpenKey(CLEAN_TREE_OPEN_KEY); panel.classList.toggle("open",open); btn.textContent="Ağaç Türü: "+currentTree()+" • "+(open?"Kapat":"Aç"); btn.setAttribute("aria-expanded",open?"true":"false");
+    panel.querySelectorAll("[data-clean-tree]").forEach(function(b){ b.classList.toggle("active", normTree(b.getAttribute("data-clean-tree"))===currentTree()); });
+  }
+  function bindCleanTreeToggle(){
+    var btn=$("cleanTreeToggleV146"), panel=$("cleanTreePanelV146"); if(!btn||!panel) return;
+    if(!btn.__v154CleanTree){ btn.__v154CleanTree=true; btn.addEventListener("click",function(ev){ ev.preventDefault(); ev.stopPropagation(); if(ev.stopImmediatePropagation) ev.stopImmediatePropagation(); var open=!isOpenKey(CLEAN_TREE_OPEN_KEY); setOpenKey(CLEAN_TREE_OPEN_KEY,open); updateCleanTreeUi(); }, true); }
+    if(!panel.__v154CleanTree){ panel.__v154CleanTree=true; panel.addEventListener("click",function(ev){ var b=ev.target.closest("[data-clean-tree]"); if(!b) return; ev.preventDefault(); ev.stopPropagation(); if(ev.stopImmediatePropagation) ev.stopImmediatePropagation(); var t=b.getAttribute("data-clean-tree")||"Karaçam"; try{ if(typeof setTreeType==="function") setTreeType(t,true); else {var inp=$("treeType"); if(inp) inp.value=t;} }catch(e){} updateCleanTreeUi(); try{ if(typeof renderCleanAutoV111==="function") renderCleanAutoV111(); }catch(e){} try{ if(typeof showToast==="function") showToast(t+" seçildi."); }catch(e){} }, true); }
+    updateCleanTreeUi();
+  }
+  var oldSetTree = (typeof setTreeType==="function") ? setTreeType : null;
+  if(oldSetTree && !oldSetTree.__v154KeepOpen){
+    setTreeType=function(){ var res=oldSetTree.apply(this,arguments); setTimeout(function(){ updateMainTreeUi(); updateCleanTreeUi(); },0); return res; };
+    setTreeType.__v154KeepOpen=true;
+  }
+  function forceFileInfoOpen(){ try{ document.querySelectorAll("details.info-details").forEach(function(d){ d.open=true; }); }catch(e){} }
+  function boot(){ setVersion(); cleanupUserPanel(); bindMainTreeToggle(); bindCleanTreeToggle(); forceFileInfoOpen(); }
+  window.openMesahaLeadersV154=openLeadersV154; window.openMesahaLeadersV153=openLeadersV154; window.openMesahaLeadersV150=openLeadersV154;
+  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded", boot); else boot();
+  [150,500,1100,2200,4200,7000,10000].forEach(function(ms){ setTimeout(boot,ms); });
+  try{
+    var mo=new MutationObserver(function(){ cleanupUserPanel(); bindCleanTreeToggle(); bindMainTreeToggle(); forceFileInfoOpen(); });
+    mo.observe(document.body,{childList:true,subtree:true});
+  }catch(e){}
+})();
+</script>
