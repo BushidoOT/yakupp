@@ -1,7 +1,7 @@
 {
-  "version": 145,
-  "visibleVersion": "Mesaha İO v1.74",
-  "cache": "mesaha-app-v145",
+  "version": 146,
+  "visibleVersion": "Mesaha İO v1.75",
+  "cache": "mesaha-app-v146",
   "builtAt": "2026-06-16",
-  "notes": "v145 giriş sayısı, Mesaha Liderleri panosu, direkt ağaç seçimi ve küçük UI düzenlemeleri"
+  "notes": "v146 hızlı girişe ağaç seçimi, kayıtlar sekmesine ağaç filtresi ve filtreli yazdırma"
 }
