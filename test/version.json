@@ -1,7 +1,7 @@
 {
-  "version": 139,
-  "visibleVersion": "Mesaha İO v1.68",
-  "cache": "mesaha-app-v139",
-  "builtAt": "2026-06-13",
-  "notes": "v139 istatistik sıfırlama admin ana özet ve kullanıcı listesi fix; usageStats, kullanıcı günlük özetleri ve local kuyruk birlikte temizlenir"
+  "version": 145,
+  "visibleVersion": "Mesaha İO v1.74",
+  "cache": "mesaha-app-v145",
+  "builtAt": "2026-06-16",
+  "notes": "v145 giriş sayısı, Mesaha Liderleri panosu, direkt ağaç seçimi ve küçük UI düzenlemeleri"
 }
