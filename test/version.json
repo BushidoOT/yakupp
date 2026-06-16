@@ -1,7 +1,7 @@
 {
-  "version": "v148",
-  "appVersion": "Mesaha İO v1.77",
-  "build": "v148-ui-offline-giris-agac-fix",
-  "updatedAt": "2026-06-16T16:05:00Z",
-  "notes": "v147 temiz taban üstüne: Giriş Modu ağaç seçimi görünür/aç-kapa; üst menü belirgin; Mesaha Liderleri kullanıcı panelinde butonla açılır; tarih cihaz gününe otomatik gelir; offline Firebase/servis worker koruması güçlendirildi."
+  "version": "v149",
+  "appVersion": "Mesaha İO v1.78",
+  "build": "v149-kod-temizligi-stabilizasyon",
+  "updatedAt": "2026-06-16T16:30:00Z",
+  "notes": "v148 tabanı üstünde özellik eklemeden kod temizliği/stabilizasyon: eski v137/v138 tekrar patchleri kaldırıldı, post-html scriptler body içine alındı, sürüm bilgisi tek son katmanda sabitlendi, zip ve cache güncellendi."
 }
