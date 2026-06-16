@@ -1,10 +1,10 @@
 {
-  "version": "v151",
-  "appVersion": "Mesaha İO v1.80",
-  "build": "v151",
-  "updatedAt": "2026-06-16T17:00:00Z",
-  "notes": "v150 temiz taban üstünde sürüm sabitleme/kod temizliği: tüm eski sürüm yazıları tek merkeze alındı; Excel/Mesaha dosyası indirme-export koduna dokunulmadı.",
-  "visibleVersion": "Mesaha İO v1.80",
-  "fileVersion": "v151",
-  "cache": "mesaha-app-v151"
+  "version": "v152",
+  "appVersion": "Mesaha İO v1.81",
+  "build": "v152",
+  "updatedAt": "2026-06-16T17:15:00Z",
+  "notes": "v151 temiz taban üstünde Mesaha Liderleri ayrı pencere düzeltmesi; mevcut yedeklerden lider hesaplama; ağaç türü aç/kapat seçimi kalıcı yapıldı. Excel/Mesaha export koduna dokunulmadı.",
+  "visibleVersion": "Mesaha İO v1.81",
+  "fileVersion": "v152",
+  "cache": "mesaha-app-v152"
 }
