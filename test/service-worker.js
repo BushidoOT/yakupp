@@ -1,4 +1,4 @@
-const CACHE_NAME = "mesaha-app-v159";
+const CACHE_NAME = "mesaha-app-v160";
 const ASSETS = [
   "./",
   "./index.html",
@@ -13,7 +13,7 @@ function timeoutPromise(ms) {
 }
 
 async function networkWithTimeout(request, ms) {
-  return Promise.race([fetch(request, { cache: "reload" }), timeoutPromise(ms || 3500)]);
+  return Promise.race([fetch(request, { cache: "reload" }), timeoutPromise(ms || 3000)]);
 }
 
 self.addEventListener("install", (event) => {
@@ -48,7 +48,7 @@ self.addEventListener("fetch", (event) => {
       const cache = await caches.open(CACHE_NAME);
       const cachedIndex = await cache.match("./index.html");
       try {
-        const response = await networkWithTimeout(request, 3500);
+        const response = await networkWithTimeout(request, 3000);
         if (response && response.ok) cache.put("./index.html", response.clone()).catch(() => {});
         return response || cachedIndex || Response.error();
       } catch (err) {

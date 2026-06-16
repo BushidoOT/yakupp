@@ -1,10 +1,10 @@
 {
-  "version": "v159",
-  "appVersion": "Mesaha İO v1.88",
-  "visibleVersion": "Mesaha İO v1.88",
-  "build": "v159",
-  "fileVersion": "v159",
-  "cache": "mesaha-app-v159",
+  "version": "v160",
+  "appVersion": "Mesaha İO v1.89",
+  "visibleVersion": "Mesaha İO v1.89",
+  "build": "v160",
+  "fileVersion": "v160",
+  "cache": "mesaha-app-v160",
   "updatedAt": "2026-06-17",
-  "notes": "Mesaha Liderleri hatalı m³ verisi düzeltildi; liderler admin listesindeki görünen temiz veriden hesaplanır. Ağaç türü aç/kapat için eski oynayan panel gizlendi ve sabit panel eklendi."
+  "notes": "Final stabilizasyon: tek Mesaha Liderleri butonu, kullanıcı paneli kesin kapanışı, sabit ağaç türü aç/kapat, not en altta, offline/Firebase 3 sn koruması. Excel/Mesaha dosyası indirme içeriğine dokunulmadı."
 }
