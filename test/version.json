@@ -1,10 +1,10 @@
 {
-  "version": "v157",
-  "appVersion": "Mesaha İO v1.86",
-  "visibleVersion": "Mesaha İO v1.86",
-  "build": "v157",
-  "fileVersion": "v157",
-  "cache": "mesaha-app-v157",
-  "updatedAt": "2026-06-16",
-  "notes": "Kullanıcı panelindeki çoğalan Mesaha Liderleri butonu kesin temizlendi; panel kapanışı ve ağaç türü aç/kapat kalıcılığı düzeltildi."
+  "version": "v158",
+  "appVersion": "Mesaha İO v1.87",
+  "visibleVersion": "Mesaha İO v1.87",
+  "build": "v158",
+  "fileVersion": "v158",
+  "cache": "mesaha-app-v158",
+  "updatedAt": "2026-06-17",
+  "notes": "Mesaha Liderleri hatalı m³ verisi düzeltildi; liderler admin listesindeki görünen temiz veriden hesaplanır. Ağaç türü aç/kapat için eski oynayan panel gizlendi ve sabit panel eklendi."
 }
