@@ -1,1 +1,433 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Mesaha İO v1.86</title>
+  <meta name="theme-color" content="#ffffff" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Mesaha App" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <link rel="manifest" href="./manifest.json" />
+  
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body class="product-tomruk">
 
+  <div id="userLoginOverlay" class="user-login-overlay" role="dialog" aria-modal="true" aria-label="Kullanıcı girişi">
+    <div class="user-login-card">
+      <h2>Kullanıcı Girişi</h2>
+      <p class="hint">Devam etmek için kullanıcı adı ve şeflik bilgisi giriniz. Şifre yoktur.</p>
+      <label for="loginUserName">Kullanıcı Adı</label>
+      <input id="loginUserName" type="text" placeholder="Örn: Yakup" autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false" />
+      <label for="loginSeflik">Şeflik</label>
+      <input id="loginSeflik" type="text" placeholder="Örn: Tavşanlı" autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false" />
+      <div id="loginError" class="login-error"></div>
+      <button id="loginSaveBtn" class="primary" type="button">Giriş Yap</button>
+      <p class="hint small-login-note">Bu bilgiler sadece bu cihazda tutulur, ORBİS Excel dosyasına yazılmaz.</p>
+    </div>
+  </div>
+
+  <div id="userPanelOverlay" class="user-panel-overlay" role="dialog" aria-modal="true" aria-label="Kullanıcı paneli">
+    <div class="user-panel-card">
+      <div class="user-panel-head">
+        <div>
+          <h2>Kullanıcı Paneli</h2>
+          <p id="userPanelInfo" class="hint">Aktif kullanıcı bilgisi</p>
+        </div>
+        <button id="userPanelCloseBtn" class="ghost user-panel-close" type="button">×</button>
+      </div>
+      <div class="user-panel-actions">
+        <button id="userLeadersToggleV157" class="secondary" type="button">📊 Mesaha Liderleri</button>
+        <button id="panelChangeUserBtn" class="secondary" type="button">Kullanıcı Adı / Şeflik Değiştir</button>
+        <button id="panelReportIssueBtn" class="secondary" type="button">Sorun Bildir</button>
+        <button id="panelAdminOpenBtn" class="secondary" type="button">Yönetici Panelini Aç</button>
+        <button id="userMenuForceUpdateBtn" class="secondary" type="button">Yeni Sürümü Güncelle</button>
+        <p class="hint user-update-offline-note">Not: Güncelle butonunu sadece internet varken kullanınız.</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="issueReportOverlay" class="issue-report-overlay" role="dialog" aria-modal="true" aria-label="Sorun bildir">
+    <div class="issue-report-card">
+      <div class="issue-report-head">
+        <div>
+          <h2>Sorun Bildir</h2>
+          <p id="issueReportUserInfo" class="hint">Kullanıcı bilgileri otomatik eklenir.</p>
+        </div>
+        <button id="issueReportCloseBtn" class="ghost issue-report-close" type="button">×</button>
+      </div>
+      <label for="issueReportMessage">Sorunu kısaca yazınız</label>
+      <textarea id="issueReportMessage" rows="5" placeholder="Örn: Yazdırma ekranında hata var..." autocomplete="off"></textarea>
+      <div id="issueDeviceInfo" class="issue-device-info"></div>
+      <div class="issue-report-actions">
+        <button id="issueReportSendBtn" class="primary" type="button">Gönder</button>
+        <button id="issueReportCancelBtn" class="secondary" type="button">Vazgeç</button>
+      </div>
+      <div class="issue-my-reports">
+        <h3>Son Bildirimlerim</h3>
+        <div id="issueMyReportsList" class="issue-my-reports-list">Henüz bildirim yok.</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="cloudRestoreOverlay" class="cloud-restore-overlay" role="dialog" aria-modal="true" aria-label="Buluttan getir">
+    <div class="cloud-restore-card">
+      <div class="cloud-restore-head">
+        <div>
+          <h2>Buluttan Getir</h2>
+          <p class="hint">Aktif kullanıcı varsa yedekler direkt listelenir.</p>
+        </div>
+        <button id="cloudRestoreCloseBtn" class="ghost cloud-restore-close" type="button">×</button>
+      </div>
+      <div id="cloudRestoreActiveInfo" class="cloud-restore-active-info"></div>
+      <button id="cloudRestoreOtherBtn" class="ghost cloud-restore-other-btn" type="button">Farklı Kullanıcı / Şeflik Ara</button>
+      <div id="cloudRestoreManualFields" class="row cloud-restore-manual-fields">
+        <div>
+          <label for="cloudRestoreUserName">Kullanıcı Adı</label>
+          <input id="cloudRestoreUserName" type="text" placeholder="Örn: Yakup" autocomplete="off" />
+        </div>
+        <div>
+          <label for="cloudRestoreSeflik">Şeflik</label>
+          <input id="cloudRestoreSeflik" type="text" placeholder="Örn: Yaylacık" autocomplete="off" />
+        </div>
+      </div>
+      <button id="cloudRestoreSearchBtn" class="secondary" type="button">Bulut Kayıtlarını Getir</button>
+      <div id="cloudBackupList" class="cloud-backup-list">
+        <div class="cloud-backup-empty">Henüz arama yapılmadı.</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="leaderOverlayV157" class="issue-report-overlay leaders-overlay-v157" role="dialog" aria-modal="true">
+    <div class="issue-report-card leaders-card-v157">
+      <div class="issue-report-head">
+        <div>
+          <h2>Mesaha Liderleri</h2>
+          <p class="leaders-sub-v150">İlk 3 kullanıcı. İsim ve şeflik gizlenir.</p>
+        </div>
+        <button id="leaderCloseBtnV157" class="ghost issue-report-close" type="button">×</button>
+      </div>
+      <div id="leadersModalListV157" class="leaders-list-v157">
+        <div class="leaders-empty-v157">Pano yükleniyor...</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="cloudLoadingOverlay" class="cloud-loading-overlay" aria-live="polite">
+    <div class="cloud-loading-card">
+      <div class="cloud-spinner"></div>
+      <div id="cloudLoadingText" class="cloud-loading-text">Bulut işlemi yapılıyor...</div>
+    </div>
+  </div>
+
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <h1>Mesaha İO v1.86</h1>
+      </div>
+      <div id="activeUserBadge" class="active-user-badge" role="button" tabindex="0" style="display:none"></div>
+      <div class="top-actions-v112">
+        <button id="openSimpleV112" type="button">⚡ Giriş Modu</button>
+        <button id="themeToggleV112" type="button">🌙 Karanlık</button>
+      </div>
+    </header>
+
+    <nav id="flowTabsV111" class="flow-tabs-v111" aria-label="Ana menü">
+      <button type="button" data-flow-tab="entry">Yeni Kayıt</button>
+      <button type="button" data-flow-tab="records">Kayıtlar</button>
+      <button type="button" data-flow-tab="guide">Kılavuz</button>
+      <button type="button" data-flow-tab="admin">Admin</button>
+    </nav>
+
+    <main class="grid">
+      <section class="panel entry-panel">
+        <div class="panel-header">
+          <h2>Yeni Kayıt</h2>
+          <div id="simpleTotalAdetV126" class="simple-total-adet-v126" style="display:none;">
+            <span class="simple-total-label-v126">Toplam Adet</span>
+            <strong id="simpleTotalAdetValueV126" class="simple-total-value-v126">0</strong>
+          </div>
+          <span id="speciesPill" class="pill" style="display:inline-flex">Karaçam</span>
+        </div>
+        <div class="panel-body">
+          <form autocomplete="off" novalidate id="entryForm" class="form">
+            <div id="editBanner" class="edit-banner">Düzenleme modu açık. Kaydet dediğinde seçili kayıt güncellenecek.</div>
+            
+            <details class="info-details" open>
+              <summary style="display:none;">Dosya Bilgileri</summary>
+              <div class="info-body">
+                <div class="row">
+                  <div>
+                    <label for="bolmeNo">Bölme No</label>
+                    <input id="bolmeNo" name="bolmeNo" placeholder="Örn: 102" inputmode="text" autocomplete="off" />
+                  </div>
+                  <div>
+                    <label for="seflik">Şeflik</label>
+                    <input id="seflik" name="seflik" placeholder="Örn: Tavşanlı" inputmode="text" autocomplete="off" />
+                  </div>
+                </div>
+                <div>
+                  <label for="ekipNot">Not / Ekip Bilgisi</label>
+                  <input id="ekipNot" name="ekipNot" placeholder="İsteğe bağlı not" inputmode="text" autocomplete="off" />
+                </div>
+              </div>
+            </details>
+
+            <div id="toast" class="toast form-toast"></div>
+
+            <div class="product-compact tree-compact">
+              <label>Ağaç Türü</label>
+              <input id="treeType" name="treeType" type="hidden" value="Karaçam" autocomplete="off" />
+              <div class="product-select-head">
+                <button class="ghost small-action tree-toggle-fixed-v155" type="button" id="treeTypeSelectBtn">Ağaç Türü Seç: Karaçam • Aç</button>
+                <span id="treeTypeCurrent" class="pill tree-current">Karaçam</span>
+              </div>
+              <div id="treeTypePanel" class="wood-type-panel tree-type-panel">
+                <label class="wood-check"><input type="radio" name="treeTypeRadio" value="Karaçam" checked /> Karaçam</label>
+                <label class="wood-check"><input type="radio" name="treeTypeRadio" value="Sarıçam" /> Sarıçam</label>
+                <label class="wood-check"><input type="radio" name="treeTypeRadio" value="Sedir" /> Sedir</label>
+                <label class="wood-check"><input type="radio" name="treeTypeRadio" value="Göknar" /> Göknar</label>
+                <label class="wood-check"><input type="radio" name="treeTypeRadio" value="Kızılçam" /> Kızılçam</label>
+                <button class="secondary small-action" type="button" id="treeTypeApplyBtn" style="display:none;">Seçimi Uygula</button>
+              </div>
+            </div>
+
+            <div class="product-compact">
+              <label>Ürün Türü</label>
+              <input id="productType" name="productType" type="hidden" value="Tomruk" autocomplete="off" />
+              <input id="qualityClass" name="qualityClass" type="hidden" value="" autocomplete="off" />
+              <div class="product-select-head">
+                <button class="ghost small-action" type="button" id="woodTypeSelectBtn">Odun Türü Seç</button>
+              </div>
+              <div id="woodTypePanel" class="wood-type-panel">
+                <label class="wood-check"><input type="checkbox" value="Tomruk" checked /> Tomruk</label>
+                <label class="wood-check"><input type="checkbox" value="Maden Direk" checked /> Maden Direği</label>
+                <label class="wood-check"><input type="checkbox" value="Kağıtlık" checked /> Kağıtlık</label>
+                <label class="wood-check"><input type="checkbox" value="Sanayi Odunu" checked /> Sanayi Odunu</label>
+                <label class="wood-check"><input type="checkbox" value="Tel Direk" checked /> Tel Direği</label>
+                <button class="secondary small-action" type="button" id="woodTypeApplyBtn">Seçimi Uygula</button>
+              </div>
+              <div id="productBoxes" class="product-boxes"></div>
+              <p id="productRuleHint" class="hint rule-hint">Sadece seçtiğiniz odun türleri ana sayfada görünür.</p>
+            </div>
+
+            <div class="row measure-compact">
+              <div class="measure-field">
+                <label for="length">Boy</label>
+                <input id="length" name="length" type="number" min="0" step="0.01" placeholder="3" inputmode="decimal" autocomplete="off" />
+                <div id="lengthChips" class="chip-row"></div>
+              </div>
+              <div class="measure-field">
+                <label for="diameter">Çap</label>
+                <input id="diameter" name="diameter" type="number" min="0" step="1" placeholder="22" inputmode="numeric" autocomplete="off" />
+                <div id="diameterChips" class="chip-row"></div>
+              </div>
+            </div>
+
+            <div class="barcode-save-row-final">
+              <div class="barcode-field-final">
+                <label for="barcode">Barkod No</label>
+                <input id="barcode" name="barcode" type="text" placeholder="A17265597" autocomplete="off" />
+                <p class="hint">En az 9 karakter. Örn: A17265597</p>
+                <div id="duplicateWarning" class="duplicate-warning"></div>
+              </div>
+              <div class="save-field-final">
+                <label>&nbsp;</label>
+                <button id="submitBtn" class="primary" type="submit">Kaydet</button>
+              </div>
+            </div>
+
+            <div class="row">
+              <div>
+                <label for="productionDate">Üretim Tarihi</label>
+                <input id="productionDate" name="productionDate" type="date" autocomplete="off" />
+              </div>
+              <div>
+                <label for="quantity">Adet</label>
+                <input id="quantity" name="quantity" type="number" min="1" step="1" value="1" inputmode="numeric" autocomplete="off" />
+              </div>
+            </div>
+
+            <div class="recent-barcodes-box">
+              <div class="recent-title">Son Girilen 3 Barkod</div>
+              <div id="recentBarcodeList" class="recent-barcode-list">
+                <span class="hint">Henüz kayıt yok</span>
+              </div>
+              <p class="hint recent-note">Düzeltme yapmak için barkodun üzerine tıklayınız.</p>
+              <span id="liveDesi" style="display:none">0</span>
+              <span id="liveHacim" style="display:none">Boş</span>
+            </div>
+
+            <div class="btn-row">
+              <button class="secondary" type="button" id="sameBarcodeBtn">Aynı Barkoda Ürün Ekle</button>
+              <button class="ghost" type="button" id="clearInputsBtn">Alanları Temizle</button>
+            </div>
+            <div class="btn-row single">
+              <button class="ghost" type="button" id="soundToggleBtn">Ses: Açık</button>
+            </div>
+            <div class="btn-row single">
+              <button class="warning" type="button" id="cancelEditBtn" style="display:none">Düzenlemeyi İptal Et</button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <section class="panel records-panel">
+        <div class="panel-header">
+          <h2>BEYAN</h2>
+          <span id="recordCount" class="pill" style="display:inline-flex">0 kayıt</span>
+        </div>
+        <div class="panel-body">
+          <div class="totals">
+            <div class="stat"><small>Toplam m³</small><strong id="totalDesi">0</strong><div class="unit">m³</div></div>
+            <div class="stat"><small>Toplam Adet</small><strong id="totalAdet">0</strong><div class="unit">adet</div></div>
+            <div class="stat tomruk-stat"><small>Tomruk</small><strong id="totalTomruk">0</strong><div class="unit" id="totalTomrukAdet">0 adet</div></div>
+            <div class="stat maden-stat"><small>Maden Direği</small><strong id="totalMaden">0</strong><div class="unit" id="totalMadenAdet">0 adet</div></div>
+            <div class="stat kagit-stat"><small>Kağıtlık</small><strong id="totalKagit">0</strong><div class="unit" id="totalKagitAdet">0 adet</div></div>
+            <div class="stat sanayi-stat"><small>Sanayi Odunu</small><strong id="totalSanayi">0</strong><div class="unit" id="totalSanayiAdet">0 adet</div></div>
+            <div class="stat tel-stat"><small>Tel Direği</small><strong id="totalTel">0</strong><div class="unit" id="totalTelAdet">0 adet</div></div>
+          </div>
+          
+          <div class="tools">
+            <button type="button" class="primary" id="exportSystemXlsBtn">Mesaha Dosyasını İndir</button>
+            <div class="local-backup-pair-v153">
+              <button type="button" class="ghost" id="backupBtn">Yedek Al</button>
+              <button type="button" class="ghost" id="restoreBtn">Yedek Yükle</button>
+            </div>
+            <button type="button" class="secondary" id="cloudBackupBtn">Buluta Yedekle</button>
+            <button type="button" class="secondary" id="cloudRestoreBtn">Buluttan Getir</button>
+            <button type="button" class="warning" id="printBtn">Yazdır</button>
+            <button type="button" class="danger" id="deleteAllBtn">Tümünü Sil</button>
+            <input id="restoreInput" type="file" accept=".json,application/json" style="display:none" autocomplete="off" />
+          </div>
+
+          <div id="usageCard" class="usage-card"></div>
+          <div id="undoBanner" class="undo-banner"><span id="undoMessage">Kayıt silindi.</span><button type="button" id="undoBtn">Geri Al</button></div>
+
+          <div id="bulkActions" class="bulk-actions">
+            <div class="bulk-info">
+              <b id="selectedRecordCount">0 seçili</b>
+              <span>Toplu işlem için kayıtları işaretleyin.</span>
+            </div>
+            <div class="bulk-buttons">
+              <button type="button" class="ghost" id="selectFilteredBtn">Listedekileri Seç</button>
+              <button type="button" class="ghost" id="clearSelectionBtn">Seçimi Temizle</button>
+              <button type="button" class="danger" id="bulkDeleteBtn">Seçilenleri Sil</button>
+            </div>
+          </div>
+
+          <div class="searchbar">
+            <input id="searchInput" placeholder="Barkod, ağaç, ürün, çap veya boy ara..." autocomplete="off" />
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th class="select-col"><input id="selectAllRecords" type="checkbox" title="Listedekileri seç" /></th>
+                  <th>Sıra</th>
+                  <th>Barkod</th>
+                  <th>Ağaç</th>
+                  <th>Ürün</th>
+                  <th class="num">Boy</th>
+                  <th class="num">Çap</th>
+                  <th class="num">Adet</th>
+                  <th class="num">m³</th>
+                  <th>Tarih</th>
+                  <th>İşlem</th>
+                </tr>
+              </thead>
+              <tbody id="recordsBody"></tbody>
+              <tfoot id="recordsFoot"></tfoot>
+            </table>
+            <div id="emptyState" class="empty">Henüz kayıt yok. İlk barkodu girip kaydet.</div>
+          </div>
+          <div id="mobileRecordsV111" class="mobile-records-v111"></div>
+
+          <div id="dailyWorkSummary" class="daily-work-summary">
+            <h3>Günlük İş Özeti</h3>
+            <div class="daily-summary-grid">
+              <div class="daily-summary-item"><span>Bugünkü Kayıt</span><b id="dailyRecordCount">0</b></div>
+              <div class="daily-summary-item"><span>Bugünkü Adet</span><b id="dailyAdetCount">0</b></div>
+              <div class="daily-summary-item"><span>Bugünkü m³</span><b id="dailyM3Count">0</b></div>
+              <div class="daily-summary-item"><span>Son Barkod</span><b id="dailyLastBarcode">-</b></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel guide-panel">
+        <div class="panel-header">
+          <h2>Kullanım Kılavuzu</h2>
+          <span class="pill" style="display:inline-flex">Yardım</span>
+        </div>
+        <div class="panel-body">
+          <div class="guide-content clean-guide">
+            <div class="guide-card">
+              <h3>1. Kurulum</h3>
+              <ol>
+                <li>Adres olarak <b>https://bit.ly/mesahaio</b> bağlantısını kullanabilirsiniz.</li>
+                <li>Android cihazda Chrome menüsünden <b>Ana ekrana ekle</b> seçiniz.</li>
+                <li>Güncelleme sonrası sayfayı 2-3 kez yenileyiniz.</li>
+              </ol>
+            </div>
+            <div class="guide-card">
+              <h3>7. Yeni Sürümü Güncelle</h3>
+              <ol>
+                <li>Yeni sürüm görünmüyorsa <b>Yeni Sürümü Güncelle</b> butonuna basınız.</li>
+                <li>Kayıtları silmez; sadece uygulama önbelleğini yeniler.</li>
+              </ol>
+              <button id="guideForceUpdateBtn" class="secondary" type="button">Yeni Sürümü Güncelle</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel admin-panel">
+        <div class="panel-header">
+          <h2>Admin Paneli</h2>
+          <span class="pill" style="display:inline-flex">Yönetim</span>
+        </div>
+        <div class="panel-body">
+          <div class="admin-panel-top admin-panel-top-clean">
+            <div>
+              <h3>Yönetim Özeti</h3>
+              <p id="adminSyncInfo" class="hint">Firebase ve eski sistem birlikte kontrol edilir.</p>
+            </div>
+            <button type="button" id="adminRefreshBtn" class="secondary">Yenile</button>
+          </div>
+          <div class="admin-summary-grid admin-summary-grid-clean">
+            <div class="admin-summary-card"><span>Toplam Kullanıcı</span><b id="adminTotalUsers">0</b></div>
+            <div class="admin-summary-card"><span>Bugün Giriş</span><b id="adminTodayUsers">0</b></div>
+            <div class="admin-summary-card"><span>Son 7 Gün</span><b id="adminWeekUsers">0</b></div>
+            <div class="admin-summary-card"><span>Toplam Yedek</span><b id="adminTotalBackups">0</b></div>
+            <div class="admin-summary-card wide"><span>En Son Yedek</span><b id="adminLastBackup">-</b></div>
+          </div>
+          <div id="adminUsersView" class="admin-view">
+            <div id="registeredUsersList" class="registered-users-list"></div>
+          </div>
+          <div id="adminReportsView" class="admin-view" style="display:none">
+            <div class="admin-report-toolbar">
+              <button type="button" class="admin-report-filter active" data-report-filter="open">Açık</button>
+              <button type="button" class="admin-report-filter" data-report-filter="all">Tümü</button>
+              <button type="button" class="admin-report-filter" data-report-filter="done">Çözüldü</button>
+            </div>
+            <div id="adminReportsList" class="admin-reports-list"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <nav class="bottom-nav">
+    <button id="navEntry" class="active" type="button">Yeni Kayıt</button>
+    <button id="navRecords" type="button">Kayıtlar</button>
+    <button id="navGuide" type="button">Kullanım Kılavuzu</button>
+    <button id="navAdmin" type="button" style="display:none">Admin Paneli</button>
+  </nav>
+
+  <script src="./excel-templates.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>
