@@ -1,10 +1,10 @@
 {
-  "version": "v158",
-  "appVersion": "Mesaha İO v1.87",
-  "visibleVersion": "Mesaha İO v1.87",
-  "build": "v158",
-  "fileVersion": "v158",
-  "cache": "mesaha-app-v158",
+  "version": "v159",
+  "appVersion": "Mesaha İO v1.88",
+  "visibleVersion": "Mesaha İO v1.88",
+  "build": "v159",
+  "fileVersion": "v159",
+  "cache": "mesaha-app-v159",
   "updatedAt": "2026-06-17",
   "notes": "Mesaha Liderleri hatalı m³ verisi düzeltildi; liderler admin listesindeki görünen temiz veriden hesaplanır. Ağaç türü aç/kapat için eski oynayan panel gizlendi ve sabit panel eklendi."
 }
