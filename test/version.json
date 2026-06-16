@@ -1,7 +1,7 @@
 {
-  "version": "v147",
-  "appVersion": "Mesaha İO v1.76",
-  "build": "v147-clean-base-tree-filter",
-  "updatedAt": "2026-06-16T15:45:00Z",
-  "notes": "v145/v146 ham kod görünme ve bozuk buton temiz taban düzeltmesi; hızlı giriş ağaç seçimi; kayıtlar ağaç filtresi; filtreli yazdırma; Excel tüm kayıtlar."
+  "version": "v148",
+  "appVersion": "Mesaha İO v1.77",
+  "build": "v148-ui-offline-giris-agac-fix",
+  "updatedAt": "2026-06-16T16:05:00Z",
+  "notes": "v147 temiz taban üstüne: Giriş Modu ağaç seçimi görünür/aç-kapa; üst menü belirgin; Mesaha Liderleri kullanıcı panelinde butonla açılır; tarih cihaz gününe otomatik gelir; offline Firebase/servis worker koruması güçlendirildi."
 }
