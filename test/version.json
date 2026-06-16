@@ -1,10 +1,10 @@
 {
-  "version": "v160",
-  "appVersion": "Mesaha İO v1.89",
-  "visibleVersion": "Mesaha İO v1.89",
-  "build": "v160",
-  "fileVersion": "v160",
-  "cache": "mesaha-app-v160",
+  "version": "v159",
+  "appVersion": "Mesaha İO v1.88",
+  "visibleVersion": "Mesaha İO v1.88",
+  "build": "v159",
+  "fileVersion": "v159",
+  "cache": "mesaha-app-v159",
   "updatedAt": "2026-06-17",
-  "notes": "Touch optimizasyonu + Ağaç türü paneli stabilizasyonu + Dosya görüntüleme düzeltmesi."
+  "notes": "Eski Mesaha Liderleri kodları temizlendi; liderler tek pencerede admin görünen veriden hesaplanır. Ağaç türü aç/kapat eski panelden ayrılıp sabit yeni sistem yapıldı."
 }
