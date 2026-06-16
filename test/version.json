@@ -1,10 +1,10 @@
 {
-  "version": "v154",
-  "appVersion": "Mesaha İO v1.83",
-  "build": "v154",
-  "updatedAt": "2026-06-16T21:05:00Z",
-  "notes": "v153 üstünde Mesaha Liderleri tek buton ve doğru ilk 3 hesaplama, kullanıcı paneli yedek butonları kaldırma, ağaç türü aç/kapat kalıcılığı, dosya bilgileri aç/kapa temizliği ve sürüm sabitleme düzeltmeleri.",
-  "visibleVersion": "Mesaha İO v1.83",
-  "fileVersion": "v154",
-  "cache": "mesaha-app-v154"
+  "version": "v155",
+  "appVersion": "Mesaha İO v1.84",
+  "build": "v155",
+  "updatedAt": "2026-06-16T21:20:00Z",
+  "notes": "v154 üstünde açılışta JS takılmasına neden olan ağaç türü/MutationObserver döngüsü düzeltildi; buton tıklama sorunu giderildi; dosya bilgileri aç/kapa yazısı gizlendi; ağaç türü aç/kapat kalıcı hale getirildi.",
+  "visibleVersion": "Mesaha İO v1.84",
+  "fileVersion": "v155",
+  "cache": "mesaha-app-v155"
 }
