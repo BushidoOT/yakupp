@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha App v159</title>
+  <title>Mesaha App v158</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -9265,7 +9265,7 @@ body.theme-dark .admin-stats-note-v134{ color:#a8b3c2; }
 <div class="app">
     <header class="topbar">
       <div class="brand">
-        <h1>Mesaha İO v1.88</h1>
+        <h1>Mesaha İO v1.87</h1>
         
       </div>
       <div id="activeUserBadge" class="active-user-badge" role="button" tabindex="0" title="Kullanıcı panelini aç" style="display:none"></div>
@@ -10369,7 +10369,8 @@ body.theme-dark .admin-stats-note-v134{ color:#a8b3c2; }
   .info-details[open] summary::after{display:none !important; content:"" !important; width:0 !important; height:0 !important; padding:0 !important; border:0 !important;}
   .info-details summary{pointer-events:none !important; cursor:default !important;}
   .tree-toggle-fixed-v155{font-weight:950 !important; border-color:#cbd5e1 !important;}
-  #treeTypePanel.open, #cleanTreePanelV146.open{display:block !important; max-height:none !important; opacity:1 !important; visibility:visible !important;}
+  #treeTypePanel.open{display:grid !important; grid-template-columns:1fr 1fr !important; max-height:none !important; opacity:1 !important; visibility:visible !important;}
+  #cleanTreePanelV146.open{display:block !important; max-height:none !important; opacity:1 !important; visibility:visible !important;}
 </style>
 </body>
 </html>`;
@@ -10734,8 +10735,8 @@ body.theme-dark .admin-stats-note-v134{ color:#a8b3c2; }
     function currentDeviceInfoPayload() {
       const active = state.activeUser || findActiveUser();
       return {
-        appVersion: "Mesaha İO v1.88",
-        fileVersion: "v159",
+        appVersion: "Mesaha İO v1.87",
+        fileVersion: "v158",
         userName: active && active.name ? cleanUserText(active.name) : "",
         seflik: active && active.seflik ? cleanUserText(active.seflik) : "",
         deviceId: getOrCreateDeviceId(),
@@ -16604,7 +16605,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     function usageTouchStatV128(stat){
       stat.updatedAt = (typeof firebaseDateText === "function") ? firebaseDateText() : new Date().toLocaleString("tr-TR");
       stat.updatedAtMs = Date.now();
-      stat.appVersion = "Mesaha İO v1.88";
+      stat.appVersion = "Mesaha İO v1.87";
       stat.fileVersion = "v135";
       stat.recordCount = Array.isArray(state.records) ? state.records.length : 0;
       return stat;
@@ -16687,8 +16688,8 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
             inputM3: Number(usageCleanNumberV128(stat.inputM3).toFixed(3)),
             recordEntryCount: Math.round(usageCleanNumberV128(stat.recordEntryCount)),
             recordCount: Math.round(usageCleanNumberV128(stat.recordCount)),
-            appVersion: "Mesaha İO v1.88",
-            fileVersion: "v159",
+            appVersion: "Mesaha İO v1.87",
+            fileVersion: "v158",
             createdAt: stat.createdAt || firebaseDateText(),
             createdAtMs: Number(stat.createdAtMs || Date.now()),
             updatedAt: firebaseDateText(),
@@ -16922,7 +16923,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     const prevCurrentDeviceInfoPayloadV128 = typeof currentDeviceInfoPayload === "function" ? currentDeviceInfoPayload : null;
     currentDeviceInfoPayload = function(){
       const info = prevCurrentDeviceInfoPayloadV128 ? prevCurrentDeviceInfoPayloadV128() : {};
-      info.appVersion = "Mesaha İO v1.88";
+      info.appVersion = "Mesaha İO v1.87";
       info.fileVersion = "v135";
       info.recordCount = Array.isArray(state.records) ? state.records.length : (Number(info.recordCount) || 0);
       info.updatedMs = Date.now();
@@ -16935,8 +16936,8 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     setTimeout(() => { try { usageSyncNowV128().catch(() => {}); } catch {} }, 2500);
 
     window.MESAHA_BUILD_INFO = {
-      fileVersion: "v159",
-      visibleVersion: "Mesaha İO v1.88",
+      fileVersion: "v158",
+      visibleVersion: "Mesaha İO v1.87",
       stableBuild: true
     };
 
@@ -16945,7 +16946,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     const prevCurrentDeviceInfoPayloadV129 = typeof currentDeviceInfoPayload === "function" ? currentDeviceInfoPayload : null;
     currentDeviceInfoPayload = function(){
       const info = prevCurrentDeviceInfoPayloadV129 ? prevCurrentDeviceInfoPayloadV129() : {};
-      info.appVersion = "Mesaha İO v1.88";
+      info.appVersion = "Mesaha İO v1.87";
       info.fileVersion = "v135";
       info.recordCount = Array.isArray(state.records) ? state.records.length : (Number(info.recordCount) || 0);
       info.updatedMs = Date.now();
@@ -16953,8 +16954,8 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
       return info;
     };
     window.MESAHA_BUILD_INFO = {
-      fileVersion: "v159",
-      visibleVersion: "Mesaha İO v1.88",
+      fileVersion: "v158",
+      visibleVersion: "Mesaha İO v1.87",
       stableBuild: true,
       offlineFirstTimeoutMs: MESAHA_STARTUP_TIMEOUT_V129
     };
@@ -16963,7 +16964,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 
     /* v130: Boy kısayol butonlarında klavye kapanmasını engelle + küçük stabilite denetimi */
     (function(){
-      const BUILD_VERSION_V130 = "Mesaha İO v1.88";
+      const BUILD_VERSION_V130 = "Mesaha İO v1.87";
       const FILE_VERSION_V130 = "v134";
 
       function safeFocusV130(input, selectMode){
@@ -17112,7 +17113,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 
     /* v131: Admin sade liste, kullanıcı panelinden şifreli açılış, onaylı-yüklemeli yenileme */
     (function(){
-      const BUILD_VERSION_V131 = "Mesaha İO v1.88";
+      const BUILD_VERSION_V131 = "Mesaha İO v1.87";
       const FILE_VERSION_V131 = "v135";
 
       function adminSetLoadingV131(show, text){
@@ -17319,7 +17320,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 
     /* v132: Admin istatistik - en çok ağaç/odun türü, adet ve m³ */
     (function(){
-      const BUILD_VERSION_V132 = "Mesaha İO v1.88";
+      const BUILD_VERSION_V132 = "Mesaha İO v1.87";
       const FILE_VERSION_V132 = "v135";
 
       function adminStatsSetLoadingV132(show, text){
@@ -17580,7 +17581,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 
     /* v133: Admin panelinde Sorun Bildirimleri alanı */
     (function(){
-      const BUILD_VERSION_V133 = "Mesaha İO v1.88";
+      const BUILD_VERSION_V133 = "Mesaha İO v1.87";
       const FILE_VERSION_V133 = "v134";
 
       function supportSetLoadingV133(show, text){
@@ -17717,7 +17718,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 
     /* v134: Admin detayları, güvenli kullanıcı silme, rozetler, dönemli istatistik ve offline sorun kuyruğu */
     (function(){
-      const BUILD_VERSION_V134 = "Mesaha İO v1.88";
+      const BUILD_VERSION_V134 = "Mesaha İO v1.87";
       const FILE_VERSION_V134 = "v134";
       const CURRENT_FILE_NO_V134 = 134;
       const CURRENT_VISIBLE_NO_V134 = 1.63;
@@ -18253,7 +18254,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
         supportOfflineQueue: true,
         stableBuild: true
       });
-      try { document.title = "Mesaha App v159"; document.querySelector(".brand h1") && (document.querySelector(".brand h1").textContent = BUILD_VERSION_V134); } catch {}
+      try { document.title = "Mesaha App v158"; document.querySelector(".brand h1") && (document.querySelector(".brand h1").textContent = BUILD_VERSION_V134); } catch {}
       v134EnsureStatsUi();
       v134LoadSupportTickets().then(() => { try { renderAdminUsers(); } catch {} }).catch(()=>{});
       setTimeout(() => { try { v134EnsureStatsUi(); renderAdminUsers(); } catch {} }, 500);
@@ -18264,7 +18265,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 
     /* v135: performans/test temizliği + Mesaha dosyası indirirken özet veri gönderimi */
     (function(){
-      const BUILD_VERSION_V135 = "Mesaha İO v1.88";
+      const BUILD_VERSION_V135 = "Mesaha İO v1.87";
       const FILE_VERSION_V135 = "v135";
       const EXPORT_QUEUE_KEY_V135 = "mesaha_export_stats_queue_v135";
       const RECORD_RENDER_LIMIT_KEY_V135 = "mesaha_record_render_limit_v135";
@@ -18807,7 +18808,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
         exportSummaryOnDownload: true,
         usageSyncMode: "onMesahaDownload"
       };
-      try { document.title = "Mesaha App v159"; } catch {}
+      try { document.title = "Mesaha App v158"; } catch {}
       try { const h1 = document.querySelector(".brand h1"); if (h1) h1.textContent = BUILD_VERSION_V135; } catch {}
       setTimeout(v135BindExportButton, 80);
       setTimeout(v135BindExportButton, 800);
@@ -18817,7 +18818,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 
 /* Mesaha v140 - admin son aktif sıralama + süre ölçüm düzeltmesi */
 (function(){
-  const BUILD_VERSION="Mesaha İO v1.88", FILE_VERSION="v159";
+  const BUILD_VERSION="Mesaha İO v1.87", FILE_VERSION="v158";
   const MAX_VISIBLE_TICK_MS=60*1000;
   function num(v){ const n=Number(v); return Number.isFinite(n)?n:0; }
   function clean(v){ return String(v||"").trim(); }
@@ -18918,7 +18919,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     activeTimeMode:"visibleTimeLocal_exportSync",
     adminSortMode:"lastLoginOrActiveDesc"
   });
-  try{ document.title="Mesaha App v159"; const h1=document.querySelector(".brand h1"); if(h1) h1.textContent=BUILD_VERSION; }catch{}
+  try{ document.title="Mesaha App v158"; const h1=document.querySelector(".brand h1"); if(h1) h1.textContent=BUILD_VERSION; }catch{}
   setTimeout(()=>{ try{ if(typeof renderAdminUsers==="function") renderAdminUsers(); }catch{} }, 500);
 })();
 
@@ -18931,7 +18932,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 /* Mesaha v139 - istatistik sıfırlama admin ana liste/özet kesin düzeltme */
 (function(){
   "use strict";
-  const BUILD_VERSION="Mesaha İO v1.88", FILE_VERSION="v159", MARKER="__stats_reset_marker__";
+  const BUILD_VERSION="Mesaha İO v1.87", FILE_VERSION="v158", MARKER="__stats_reset_marker__";
   const EXPORT_QUEUE="mesaha_export_stats_queue_v135", USAGE_LOCAL="mesaha_usage_stats_v128";
   const usageColl=()=>{try{return FIREBASE_USAGE_COLLECTION||"usageStats";}catch{return"usageStats";}};
   const usersColl=()=>{try{return FIREBASE_USERS_COLLECTION||"users";}catch{return"users";}};
@@ -19000,7 +19001,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
   const oldRefresh=typeof adminRefreshStatsV132==="function"?adminRefreshStatsV132:null;if(oldRefresh){adminRefreshStatsV132=async function(){try{setLocalReset(await readMarker());}catch{}return oldRefresh();};}
   const oldDevice=typeof currentDeviceInfoPayload==="function"?currentDeviceInfoPayload:null;try{currentDeviceInfoPayload=function(){const info=oldDevice?oldDevice():{};info.appVersion=BUILD_VERSION;info.fileVersion=FILE_VERSION;info.statsResetAdminListFix=true;info.updatedMs=Date.now();return info;};}catch{}
   window.MESAHA_BUILD_INFO=Object.assign({},window.MESAHA_BUILD_INFO||{},{fileVersion:FILE_VERSION,visibleVersion:BUILD_VERSION,statsResetAdminListFix:true,stableBuild:true});
-  try{document.title="Mesaha App v159";const h1=document.querySelector(".brand h1");if(h1)h1.textContent=BUILD_VERSION;}catch{}
+  try{document.title="Mesaha App v158";const h1=document.querySelector(".brand h1");if(h1)h1.textContent=BUILD_VERSION;}catch{}
   setTimeout(()=>{readMarker().then(marker=>{if(marker&&marker.resetAtMs){try{state.adminOnlineUsers=sanitizeUsers(state.adminOnlineUsers||[],marker);renderAdminUsers();}catch{}}}).catch(()=>{});},1200);
 })();
 
@@ -19011,8 +19012,8 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 /* Mesaha v141 - admin son görülen + arka plan süre senkronu */
 (function(){
   "use strict";
-  const BUILD_VERSION = "Mesaha İO v1.88";
-  const FILE_VERSION = "v159";
+  const BUILD_VERSION = "Mesaha İO v1.87";
+  const FILE_VERSION = "v158";
   const LIVE_QUEUE_KEY = "mesaha_live_usage_queue_v141";
   const LIVE_LAST_SYNC_KEY = "mesaha_live_usage_last_sync_v141";
   const LIVE_MIN_SYNC_MS = 60 * 1000;
@@ -19221,7 +19222,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
   const oldDevice = typeof currentDeviceInfoPayload === "function" ? currentDeviceInfoPayload : null;
   try{ currentDeviceInfoPayload = function(){ const info = oldDevice ? oldDevice() : {}; info.appVersion = BUILD_VERSION; info.fileVersion = FILE_VERSION; info.adminSortMode = "lastLoginOnlyDesc"; info.activeTimeMode = "backgroundQueueLiveSync"; info.updatedMs = Date.now(); return info; }; }catch{}
   window.MESAHA_BUILD_INFO = Object.assign({}, window.MESAHA_BUILD_INFO || {}, { fileVersion:FILE_VERSION, visibleVersion:BUILD_VERSION, adminSortMode:"lastLoginOnlyDesc", activeTimeMode:"backgroundQueueLiveSync" });
-  try { document.title = "Mesaha App v159"; const h1 = document.querySelector(".brand h1"); if(h1) h1.textContent = BUILD_VERSION; } catch {}
+  try { document.title = "Mesaha App v158"; const h1 = document.querySelector(".brand h1"); if(h1) h1.textContent = BUILD_VERSION; } catch {}
   try { setTimeout(()=>{ if(typeof renderAdminUsers === "function") renderAdminUsers(); }, 1200); } catch {}
 })();
 </script>
@@ -19231,8 +19232,8 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 /* Mesaha v142 - admin üst özet: Son Görülen kişi yerine bugün görülen kullanıcı sayısı */
 (function(){
   "use strict";
-  const BUILD_VERSION = "Mesaha İO v1.88";
-  const FILE_VERSION = "v159";
+  const BUILD_VERSION = "Mesaha İO v1.87";
+  const FILE_VERSION = "v158";
   const esc = (v) => { try { return escapeHtml(v); } catch { return String(v ?? "").replace(/[&<>\"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[c])); } };
   const n = (v) => { const x = Number(String(v ?? "").replace(",", ".").replace(/[^0-9.\-]/g, "")); return Number.isFinite(x) ? x : 0; };
   const fmtM3 = (v) => `${(Number(v) || 0).toLocaleString("tr-TR", { minimumFractionDigits:3, maximumFractionDigits:3 })} m³`;
@@ -19293,7 +19294,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
   const oldDevice = typeof currentDeviceInfoPayload === "function" ? currentDeviceInfoPayload : null;
   try { currentDeviceInfoPayload = function(){ const info = oldDevice ? oldDevice() : {}; info.appVersion = BUILD_VERSION; info.fileVersion = FILE_VERSION; info.adminTopSummaryMode = "todaySeenUserCount"; info.updatedMs = Date.now(); return info; }; } catch {}
   window.MESAHA_BUILD_INFO = Object.assign({}, window.MESAHA_BUILD_INFO || {}, { fileVersion:FILE_VERSION, visibleVersion:BUILD_VERSION, adminTopSummaryMode:"todaySeenUserCount" });
-  try { document.title = "Mesaha App v159"; const h1 = document.querySelector(".brand h1"); if(h1) h1.textContent = BUILD_VERSION; } catch {}
+  try { document.title = "Mesaha App v158"; const h1 = document.querySelector(".brand h1"); if(h1) h1.textContent = BUILD_VERSION; } catch {}
   try { setTimeout(()=>{ updateAdminTopSummary(); if(typeof renderAdminUsers === "function") renderAdminUsers(); }, 500); setTimeout(()=>{ updateAdminTopSummary(); }, 1800); } catch {}
 })();
 </script>
@@ -19304,8 +19305,8 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 /* Mesaha v144 - m³ doğruluk düzeltmesi: güvenli hacim, çap kontrolü, admin yedekten doğrulama */
 (function(){
   "use strict";
-  const BUILD_VERSION = "Mesaha İO v1.88";
-  const FILE_VERSION = "v159";
+  const BUILD_VERSION = "Mesaha İO v1.87";
+  const FILE_VERSION = "v158";
   const MAX_DIAMETER_CM = 200;
   const MAX_LENGTH_M = 30;
   const EXPORT_QUEUE_KEY = "mesaha_export_stats_queue_v135";
@@ -19746,7 +19747,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
   const oldDevice = typeof currentDeviceInfoPayload === "function" ? currentDeviceInfoPayload : null;
   try { currentDeviceInfoPayload = function(){ const info = oldDevice ? oldDevice() : {}; info.appVersion = BUILD_VERSION; info.fileVersion = FILE_VERSION; info.m3AccuracyFix = true; info.updatedMs = Date.now(); return info; }; } catch {}
   window.MESAHA_BUILD_INFO = Object.assign({}, window.MESAHA_BUILD_INFO || {}, { fileVersion:FILE_VERSION, visibleVersion:BUILD_VERSION, m3AccuracyFix:true, stableBuild:true });
-  try { document.title = "Mesaha App v159"; const h1 = document.querySelector(".brand h1"); if (h1) h1.textContent = BUILD_VERSION; } catch {}
+  try { document.title = "Mesaha App v158"; const h1 = document.querySelector(".brand h1"); if (h1) h1.textContent = BUILD_VERSION; } catch {}
   setTimeout(bindExport, 100); setTimeout(bindExport, 1000); setTimeout(()=>{ recalcTodayUsageFromLocal(); v144FlushExportQueue(true).catch(()=>{}); }, 2500);
   setTimeout(()=>applyBackupCorrections().catch(()=>{}), 3500);
 })();
@@ -19755,8 +19756,8 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 /* Mesaha v145 - giriş sayısı, liderler panosu, ağaç seçimi ve UI küçük düzenlemeler */
 (function(){
   "use strict";
-  const BUILD_VERSION = "Mesaha İO v1.88";
-  const FILE_VERSION = "v159";
+  const BUILD_VERSION = "Mesaha İO v1.87";
+  const FILE_VERSION = "v158";
   const LOGIN_QUEUE_KEY = "mesaha_today_login_queue_v145";
   const LOGIN_MARKED = new Set();
 
@@ -19782,7 +19783,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
   function todayLoginCount(u){ const t=(u&&u.todayLogin)||{}; if(t.date && t.date!==todayIso()) return 0; return Number((u&&u.todayLoginCount) || t.count || (u&&u.todayUsage&&u.todayUsage.loginCount) || 0) || 0; }
 
   function setVersions(){
-    try { document.title = "Mesaha App v159"; const h1=document.querySelector(".brand h1"); if(h1) h1.textContent=BUILD_VERSION; } catch {}
+    try { document.title = "Mesaha App v158"; const h1=document.querySelector(".brand h1"); if(h1) h1.textContent=BUILD_VERSION; } catch {}
     try { window.MESAHA_BUILD_INFO = Object.assign({}, window.MESAHA_BUILD_INFO||{}, {fileVersion:FILE_VERSION, visibleVersion:BUILD_VERSION, dailyLoginCount:true, leadersPanel:true}); } catch {}
     try { const old = typeof currentDeviceInfoPayload === "function" ? currentDeviceInfoPayload : null; if(old && !old.__v145){ currentDeviceInfoPayload = function(){ const info=old?old():{}; info.appVersion=BUILD_VERSION; info.fileVersion=FILE_VERSION; info.dailyLoginCount=true; info.leadersPanel=true; info.updatedMs=Date.now(); return info; }; currentDeviceInfoPayload.__v145=true; } } catch {}
   }
@@ -19914,6 +19915,35 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
       }catch{ if(oldSummary)oldSummary(); }
     };
   }catch{}
+
+  function maskText(v){ const s=String(v||"").trim(); if(!s) return "**"; const chars=Array.from(s); const open=chars.slice(0,2).join(""); return open + "*".repeat(Math.max(2, chars.length-2)); }
+  function normalizeTreeName(v){ const s=String(v||"Bilinmiyor").trim(); const l=s.toLocaleLowerCase("tr-TR"); if(l.includes("sarı")||l.includes("sari"))return "Sarıçam"; if(l.includes("kara"))return "Karaçam"; if(l.includes("kızıl")||l.includes("kizil"))return "Kızılçam"; if(l.includes("göknar")||l.includes("goknar"))return "Göknar"; if(l.includes("sedir"))return "Sedir"; return s||"Bilinmiyor"; }
+  function addLeader(map, name, seflik, tree, adet, m3){ const k=`${userKey({name,seflik})}_${normalizeTreeName(tree)}`; const old=map.get(k)||{name,seflik,tree:normalizeTreeName(tree),adet:0,m3:0}; old.adet += Number(adet)||0; old.m3 = Number((old.m3+(Number(m3)||0)).toFixed(3)); map.set(k,old); }
+  async function loadLeaders(){
+    const ready=await ensureFirebaseReady(); const db=ready&&ready.db; if(!db) throw new Error("Firebase hazır değil");
+    const start=weekStartIso(); const snap=await db.collection(typeof FIREBASE_USAGE_COLLECTION!=="undefined"?FIREBASE_USAGE_COLLECTION:"usageStats").where("date",">=",start).get();
+    const latest=new Map();
+    snap.forEach(doc=>{ const d=doc.data()||{}; const key=d.userKey||userKey(d); const ms=Number(d.updatedAtMs||d.exportAtMs||d.createdAtMs||0); const old=latest.get(key); if(!old||ms>=old.ms) latest.set(key,{ms,d}); });
+    const map=new Map(); latest.forEach(({d})=>{ const trees=(d.weekSummary&&Array.isArray(d.weekSummary.trees)?d.weekSummary.trees:(d.todaySummary&&Array.isArray(d.todaySummary.trees)?d.todaySummary.trees:(Array.isArray(d.treeTotals)?d.treeTotals:(d.allSummary&&Array.isArray(d.allSummary.trees)?d.allSummary.trees:[])))); trees.forEach(t=>addLeader(map,d.name,d.seflik,t.name||t.agacAdi, t.adet, t.m3)); });
+    return Array.from(map.values()).filter(x=>x.adet||x.m3).sort((a,b)=>(b.adet-a.adet)||(b.m3-a.m3)).slice(0,8);
+  }
+  function ensureLeadersUI(){
+    const card=document.querySelector("#userPanelOverlay .user-panel-card"); if(!card) return null;
+    let box=document.getElementById("userLeadersPanelV145");
+    if(!box){ box=document.createElement("div"); box.id="userLeadersPanelV145"; box.className="user-panel-leaders-v145"; box.innerHTML=`<h3>Mesaha Liderleri</h3><p class="hint">Haftalık ağaç türü panosu yükleniyor...</p><div id="userLeadersListV145"></div>`; const actions=card.querySelector(".user-panel-actions"); card.insertBefore(box, actions || card.children[1]); }
+    return box;
+  }
+  async function renderLeaders(){
+    const box=ensureLeadersUI(); if(!box) return; const listEl=box.querySelector("#userLeadersListV145"); if(!listEl) return;
+    listEl.innerHTML=`<p class="hint">Haftalık pano yükleniyor...</p>`;
+    try{ const rows=await loadLeaders(); if(!rows.length){ listEl.innerHTML=`<p class="hint">Bu hafta pano verisi yok. Kullanıcılar Mesaha dosyası indirdikçe burası dolacak.</p>`; return; }
+      listEl.innerHTML=rows.map((r,i)=>`<div class="leader-row-v145"><div><b>${i+1}. ${esc(maskText(r.name))} • ${esc(maskText(r.seflik))}</b><span>${esc(r.tree)}</span></div><strong>${fmtInt(r.adet)} adet<br>${fmtM3(r.m3)}</strong></div>`).join("");
+    }catch{ listEl.innerHTML=`<p class="hint">Liderler panosu alınamadı. İnternet gelince tekrar açınız.</p>`; }
+  }
+  window.mesahaRenderLeadersV145 = renderLeaders;
+  setTimeout(()=>{ const badge=document.getElementById("activeUserBadge"); if(badge&&!badge.__v145Leader){ badge.__v145Leader=true; badge.addEventListener("click",()=>setTimeout(renderLeaders,180)); } },800);
+  try{ const oldOpen=typeof openUserPanel==="function"?openUserPanel:null; if(oldOpen&&!oldOpen.__v145){ openUserPanel=function(){ const r=oldOpen.apply(this,arguments); setTimeout(renderLeaders,180); return r; }; openUserPanel.__v145=true; } }catch{}
+
   function enhanceTreeSelection(){
     const panel=document.getElementById("treeTypePanel"); if(!panel||panel.__v145) return; panel.__v145=true; const apply=document.getElementById("treeTypeApplyBtn"); if(apply) apply.style.display="none";
     panel.querySelectorAll("label.wood-check").forEach(label=>{ label.addEventListener("click", function(ev){ const input=label.querySelector("input[type='radio']"); if(!input) return; ev.preventDefault(); ev.stopPropagation(); if(typeof ev.stopImmediatePropagation==="function") ev.stopImmediatePropagation(); input.checked=true; try{ if(typeof setTreeType==="function") setTreeType(input.value,true); }catch{} try{ panel.classList.remove("open"); }catch{} toast(`${input.value} seçildi.`); }, true); });
@@ -19933,20 +19963,1106 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 </script>
 <script id="mesaha-v146-tree-filter-script">
 (function(){
-  const BUILD_VERSION="Mesaha İO v1.88";
-  const FILE_VERSION = "v159";
+  const BUILD_VERSION="Mesaha İO v1.87";
+  const FILE_VERSION = "v158";
   const FILTER_KEY="mesaha_records_tree_filter_v146";
   const TREE_NAMES=["Karaçam","Sarıçam","Sedir","Göknar","Kızılçam"];
   function $(id){return document.getElementById(id);}
   function esc(v){try{ if(typeof escapeHtml==="function") return escapeHtml(v); }catch{} return String(v??"").replace(/[&<>\"']/g, m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m]));}
   function toNum(v){const n=Number(v); return Number.isFinite(n)?n:0;}
   function m3TextFromDesi(desi){try{return formatHacimFromDesi(desi)+" m³";}catch{return (toNum(desi)/1000).toLocaleString("tr-TR",{minimumFractionDigits:3,maximumFractionDigits:3})+" m³";}}
+  function normTree(v){try{return normalizeTreeType(v||"Karaçam");}catch{const s=String(v||"Karaçam").trim(); return TREE_NAMES.includes(s)?s:"Karaçam";}}
+  function treeInfo(v){try{return getTreeInfo(v);}catch{return {agacAdi:normTree(v)};}}
+  function recTree(r){return normTree(r && (r.treeType||r.species||r.agacAdi||r.agac||r.tree));}
+  function allRecords(){try{return (state&&Array.isArray(state.records))?state.records:[];}catch{return [];}}
+  function getFilter(){try{const v=localStorage.getItem(FILTER_KEY)||"all"; return v==="all"?"all":normTree(v);}catch{return "all";}}
+  function setFilter(v){const key=(v==="all")?"all":normTree(v); try{localStorage.setItem(FILTER_KEY,key);}catch{} return key;}
+  function applyTreeFilter(list){const f=getFilter(); const arr=Array.isArray(list)?list:[]; return f==="all"?arr:arr.filter(r=>recTree(r)===f);}
+  function calcTotals(list){
+    const totals={all:0,adet:0,products:{"Tomruk":{vol:0,adet:0},"Maden Direk":{vol:0,adet:0},"Kağıtlık":{vol:0,adet:0},"Sanayi Odunu":{vol:0,adet:0},"Tel Direk":{vol:0,adet:0}}};
+    (Array.isArray(list)?list:[]).forEach(r=>{const q=toNum(r&&r.quantity)||toNum(r&&r.adet)||0; const vol=toNum(r&&r.desi); let key="Tomruk"; try{key=normalizeProductType((r&&r.productType)||"Tomruk");}catch{} totals.all+=vol; totals.adet+=q; if(totals.products[key]){totals.products[key].vol+=vol; totals.products[key].adet+=q;}});
+    return totals;
+  }
+  function setText(id, value){const el=$(id); if(el) el.textContent=value;}
+  function updateMainTotalsForTree(){
+    const selected=getFilter();
+    const list=applyTreeFilter(allRecords());
+    const totals=calcTotals(list);
+    setText("totalDesi", m3TextFromDesi(totals.all).replace(" m³", ""));
+    setText("totalAdet", Math.round(totals.adet).toLocaleString("tr-TR"));
+    setText("totalTomruk", m3TextFromDesi(totals.products["Tomruk"].vol));
+    setText("totalTomrukAdet", Math.round(totals.products["Tomruk"].adet).toLocaleString("tr-TR")+" adet");
+    setText("totalMaden", m3TextFromDesi(totals.products["Maden Direk"].vol));
+    setText("totalMadenAdet", Math.round(totals.products["Maden Direk"].adet).toLocaleString("tr-TR")+" adet");
+    setText("totalKagit", m3TextFromDesi(totals.products["Kağıtlık"].vol));
+    setText("totalKagitAdet", Math.round(totals.products["Kağıtlık"].adet).toLocaleString("tr-TR")+" adet");
+    setText("totalSanayi", m3TextFromDesi(totals.products["Sanayi Odunu"].vol));
+    setText("totalSanayiAdet", Math.round(totals.products["Sanayi Odunu"].adet).toLocaleString("tr-TR")+" adet");
+    setText("totalTel", m3TextFromDesi(totals.products["Tel Direk"].vol));
+    setText("totalTelAdet", Math.round(totals.products["Tel Direk"].adet).toLocaleString("tr-TR")+" adet");
+    const rc=$("recordCount"); if(rc) rc.textContent = selected==="all" ? `${allRecords().length.toLocaleString("tr-TR")} kayıt` : `${list.length.toLocaleString("tr-TR")} / ${allRecords().length.toLocaleString("tr-TR")} kayıt`;
+    return {selected,list,totals};
+  }
+  function ensureRecordsFilter(){
+    const body=document.querySelector(".records-panel .panel-body");
+    const totals=document.querySelector(".records-panel .totals");
+    if(!body||!totals) return;
+    let box=$("recordTreeFilterV146");
+    if(!box){
+      box=document.createElement("div");
+      box.id="recordTreeFilterV146";
+      box.className="records-tree-filter-v146";
+      box.innerHTML=`<div class="records-tree-filter-head-v146"><div><b>Ağaç türü seç</b><span id="recordTreeFilterLabelV146">Tüm kayıtlar gösteriliyor</span></div></div><div class="records-tree-buttons-v146"><button type="button" data-tree-filter="all">Tümünü göster</button>${TREE_NAMES.map(t=>`<button type="button" data-tree-filter="${esc(t)}">${esc(t)}</button>`).join("")}</div><div id="recordTreeSummaryV146" class="records-tree-summary-v146"></div>`;
+      totals.parentNode.insertBefore(box, totals.nextSibling);
+      box.addEventListener("click", ev=>{const btn=ev.target.closest("[data-tree-filter]"); if(!btn) return; ev.preventDefault(); const value=btn.getAttribute("data-tree-filter")||"all"; setFilter(value); try{ if(state&&state.selectedRecordIds) state.selectedRecordIds.clear(); }catch{} if(typeof render==="function") render(); else updateRecordsFilterUi(); try{showToast(value==="all"?"Tüm ağaç türleri gösteriliyor.":`${value} kayıtları gösteriliyor.`);}catch{} });
+    }
+    updateRecordsFilterUi();
+  }
+  function updateRecordsFilterUi(){
+    const box=$("recordTreeFilterV146"); if(!box) return;
+    const f=getFilter(); const all=allRecords(); const list=applyTreeFilter(all); const totals=calcTotals(list);
+    box.querySelectorAll("[data-tree-filter]").forEach(btn=>btn.classList.toggle("active", (btn.getAttribute("data-tree-filter")||"all")===f));
+    const label=$("recordTreeFilterLabelV146");
+    if(label) label.textContent = f==="all" ? "Tüm kayıtlar gösteriliyor" : `${f} seçili; yazdırma sadece bu ağaç türüyle yapılacak`;
+    const summary=$("recordTreeSummaryV146");
+    if(summary){
+      summary.innerHTML=`<div class="mini-stat-v146"><small>${f==="all"?"Tüm ağaçlar":"Seçili ağaç"}</small><strong>${esc(f==="all"?"Tümü":f)}</strong></div><div class="mini-stat-v146"><small>Adet</small><strong>${Math.round(totals.adet).toLocaleString("tr-TR")}</strong></div><div class="mini-stat-v146"><small>Hacim</small><strong>${m3TextFromDesi(totals.all)}</strong></div>`;
+    }
+    updateMainTotalsForTree();
+  }
+  const oldGetFilteredRecords = (typeof getFilteredRecords==="function") ? getFilteredRecords : null;
+  if(oldGetFilteredRecords && !oldGetFilteredRecords.__v146TreeFilter){
+    getFilteredRecords=function(){return applyTreeFilter(oldGetFilteredRecords.apply(this,arguments));};
+    getFilteredRecords.__v146TreeFilter=true;
+  }
+  const oldRender = (typeof render==="function") ? render : null;
+  if(oldRender && !oldRender.__v146TreeFilter){
+    render=function(){const res=oldRender.apply(this,arguments); setTimeout(()=>{try{ensureRecordsFilter(); updateRecordsFilterUi(); if(typeof renderMobileRecordsV111==="function") renderMobileRecordsV111(true);}catch(e){console.warn("v146 render update",e);}},30); return res;};
+    render.__v146TreeFilter=true;
+  }
+  const oldPrintBeyanOnly = (typeof printBeyanOnly==="function") ? printBeyanOnly : null;
+  if(oldPrintBeyanOnly && !oldPrintBeyanOnly.__v146TreePrint){
+    printBeyanOnly=function(){
+      const f=getFilter();
+      if(f==="all") return oldPrintBeyanOnly.apply(this,arguments);
+      const old=allRecords(); const filtered=old.filter(r=>recTree(r)===f);
+      if(!filtered.length){try{showErrorToast(`${f} için yazdırılacak kayıt yok.`);}catch{alert(`${f} için yazdırılacak kayıt yok.`);} return;}
+      try{state.records=filtered; return oldPrintBeyanOnly.apply(this,arguments);}finally{state.records=old; setTimeout(()=>{try{render();}catch{}},80);}
+    };
+    printBeyanOnly.__v146TreePrint=true;
+  }
+  function ensureCleanTreeSelector(){
+    const card=document.querySelector(".clean-simple-card-v111"); const grid=$("cleanProductGridV111"); if(!card||!grid) return;
+    let box=$("cleanTreeSelectorV146");
+    if(!box){
+      box=document.createElement("div"); box.id="cleanTreeSelectorV146"; box.className="quick-tree-v146";
+      box.innerHTML=`<div class="quick-tree-head-v146"><b>Ağaç Türü</b><button id="cleanTreeToggleV146" class="quick-tree-toggle-v146" type="button">Ağaç Türü Seç</button></div><div id="cleanTreePanelV146" class="quick-tree-panel-v146">${TREE_NAMES.map(t=>`<button type="button" class="quick-tree-option-v146" data-clean-tree="${esc(t)}">${esc(t)}</button>`).join("")}</div>`;
+      card.insertBefore(box, grid);
+      const toggle=$("cleanTreeToggleV146"), panel=$("cleanTreePanelV146");
+      toggle&&toggle.addEventListener("click", ev=>{ev.preventDefault(); ev.stopPropagation(); panel&&panel.classList.toggle("open"); updateCleanTreeSelector();});
+      panel&&panel.addEventListener("click", ev=>{const btn=ev.target.closest("[data-clean-tree]"); if(!btn) return; ev.preventDefault(); const t=btn.getAttribute("data-clean-tree")||"Karaçam"; try{ if(typeof setTreeType==="function") setTreeType(t,true); else {const inp=$("treeType"); if(inp) inp.value=t;} }catch{} panel.classList.remove("open"); updateCleanTreeSelector(); try{ if(typeof renderCleanAutoV111==="function") renderCleanAutoV111(); }catch{} try{showToast(`${t} seçildi.`);}catch{} });
+    }
+    updateCleanTreeSelector();
+  }
+  function updateCleanTreeSelector(){
+    const current=normTree(($("treeType")&&$("treeType").value)||"Karaçam");
+    const toggle=$("cleanTreeToggleV146"); if(toggle) toggle.textContent="Ağaç Türü Seç: "+current;
+    const panel=$("cleanTreePanelV146"); if(panel) panel.querySelectorAll("[data-clean-tree]").forEach(btn=>btn.classList.toggle("active", normTree(btn.getAttribute("data-clean-tree"))===current));
+  }
+  const oldOpenClean = (typeof openCleanSimpleV111==="function") ? openCleanSimpleV111 : null;
+  if(oldOpenClean && !oldOpenClean.__v146Tree){
+    openCleanSimpleV111=function(){const res=oldOpenClean.apply(this,arguments); setTimeout(()=>{ensureCleanTreeSelector(); updateCleanTreeSelector();},40); return res;};
+    openCleanSimpleV111.__v146Tree=true;
+  }
+  const oldSetTree = (typeof setTreeType==="function") ? setTreeType : null;
+  if(oldSetTree && !oldSetTree.__v146Tree){
+    setTreeType=function(){const res=oldSetTree.apply(this,arguments); setTimeout(()=>{updateCleanTreeSelector(); try{ if(typeof renderCleanAutoV111==="function") renderCleanAutoV111(); }catch{}},10); return res;};
+    setTreeType.__v146Tree=true;
+  }
+  function setVersions(){
+    try{document.title="Mesaha App v158"; const h1=document.querySelector(".brand h1"); if(h1) h1.textContent=BUILD_VERSION;}catch{}
+    try{window.MESAHA_BUILD_INFO=Object.assign({},window.MESAHA_BUILD_INFO||{},{fileVersion:FILE_VERSION,visibleVersion:BUILD_VERSION,treeFilter:true,quickTree:true});}catch{}
+  }
+  const oldDevice = (typeof currentDeviceInfoPayload==="function") ? currentDeviceInfoPayload : null;
+  if(oldDevice && !oldDevice.__v146Version){
+    currentDeviceInfoPayload=function(){const info=oldDevice.apply(this,arguments)||{}; info.appVersion=BUILD_VERSION; info.fileVersion=FILE_VERSION; info.treeFilterV146=true; return info;};
+    currentDeviceInfoPayload.__v146Version=true;
+  }
+  function boot(){setVersions(); ensureRecordsFilter(); updateRecordsFilterUi(); ensureCleanTreeSelector(); updateCleanTreeSelector();}
+  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",boot); else boot();
+  setTimeout(boot,600); setTimeout(()=>{try{if(typeof render==="function") render();}catch{}},1200);
+})();
+</script>
+
+<script>
+/* Mesaha v147 - temiz taban düzeltme: ham kod görünme hatası fix + sürüm sabitleme */
+(function(){
+  "use strict";
+  const BUILD_VERSION = "Mesaha İO v1.87";
+  const FILE_VERSION = "v158";
+  function setVersion(){
+    try { document.title = "Mesaha App v158"; const h1=document.querySelector(".brand h1"); if(h1) h1.textContent=BUILD_VERSION; } catch {}
+    try { window.MESAHA_BUILD_INFO = Object.assign({}, window.MESAHA_BUILD_INFO||{}, {fileVersion:FILE_VERSION, visibleVersion:BUILD_VERSION, cleanBaseFix:true, treeFilter:true, quickTree:true}); } catch {}
+  }
+  const oldDevice = (typeof currentDeviceInfoPayload === "function") ? currentDeviceInfoPayload : null;
+  if (oldDevice && !oldDevice.__v147Version) {
+    currentDeviceInfoPayload = function(){ const info = oldDevice.apply(this, arguments) || {}; info.appVersion = BUILD_VERSION; info.fileVersion = FILE_VERSION; info.cleanBaseFixV147 = true; return info; };
+    currentDeviceInfoPayload.__v147Version = true;
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", setVersion); else setVersion();
+  setTimeout(setVersion, 500); setTimeout(setVersion, 1600);
+})();
+</script>
+
+
+<style id="mesaha-v148-ui-offline-fix-style">
+  /* v148: üst menü daha belirgin */
+  .flow-tabs-v111 button{
+    font-weight:1000 !important;
+    font-size:clamp(15px, 2.8vw, 18px) !important;
+    letter-spacing:.15px !important;
+    color:#111827 !important;
+    min-height:66px !important;
+    box-shadow:0 8px 18px rgba(15,23,42,.06) !important;
+  }
+  .flow-tabs-v111 button.active,
+  .flow-tabs-v111 button[aria-selected="true"]{
+    font-weight:1000 !important;
+    color:#fff !important;
+    box-shadow:0 12px 28px rgba(37,99,235,.26) !important;
+  }
+  body.theme-dark .flow-tabs-v111 button{
+    color:#f8fafc !important;
+    border-color:#334155 !important;
+    background:#111827 !important;
+  }
+  body.theme-dark .flow-tabs-v111 button.active,
+  body.theme-dark .flow-tabs-v111 button[aria-selected="true"]{
+    background:#2563eb !important;
+    color:#fff !important;
+    border-color:#3b82f6 !important;
+  }
+
+  /* v148: kullanıcı rozeti menü olduğunu belli etsin */
+  .active-user-badge::before{
+    content:"⚙️";
+    display:inline-flex;
+    margin-right:6px;
+    font-size:14px;
+    line-height:1;
+    vertical-align:middle;
+  }
+
+  /* v148: Giriş Modu içinde ağaç türü seçimi açık/kapa */
+  body.inline-simple-v119 .entry-panel .tree-compact{
+    display:block !important;
+    margin:0 0 12px 0 !important;
+    padding:12px !important;
+    border-radius:18px !important;
+    border:1px solid #d7e2ef !important;
+    background:#f8fafc !important;
+  }
+  body.inline-simple-v119 .entry-panel .tree-compact > label{
+    display:block !important;
+    margin:0 0 8px 0 !important;
+    font-weight:1000 !important;
+    font-size:14px !important;
+    color:#0f172a !important;
+  }
+  body.inline-simple-v119 .entry-panel .tree-compact .product-select-head{
+    display:flex !important;
+    gap:8px !important;
+    align-items:center !important;
+    justify-content:space-between !important;
+    margin:0 !important;
+  }
+  body.inline-simple-v119 .entry-panel .tree-compact .hint{
+    display:none !important;
+  }
+  body.inline-simple-v119 .entry-panel .tree-compact #treeTypePanel{
+    margin-top:10px !important;
+  }
+  body.inline-simple-v119 .entry-panel .tree-compact #treeTypePanel:not(.open){
+    display:none !important;
+  }
+  body.inline-simple-v119 .entry-panel .tree-compact #treeTypePanel.open{
+    display:grid !important;
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+    gap:8px !important;
+  }
+  body.inline-simple-v119 .entry-panel .tree-compact #treeTypeApplyBtn{
+    display:none !important;
+  }
+  body.inline-simple-v119 .entry-panel .tree-compact .wood-check{
+    min-height:44px !important;
+    padding:10px 12px !important;
+    border-radius:14px !important;
+    font-weight:1000 !important;
+  }
+  body.theme-dark.inline-simple-v119 .entry-panel .tree-compact{
+    background:#111827 !important;
+    border-color:#334155 !important;
+  }
+  body.theme-dark.inline-simple-v119 .entry-panel .tree-compact > label{ color:#f8fafc !important; }
+
+  /* v148: Mesaha Liderleri kullanıcı panelinde seçenekle açılsın */
+  #userLeadersPanelV145:not(.open-v148){
+    display:none !important;
+  }
+  #userLeadersPanelV145.open-v148{
+    display:block !important;
+  }
+  #userLeadersToggleV148{
+    width:100% !important;
+    border-radius:18px !important;
+    min-height:48px !important;
+    font-weight:1000 !important;
+  }
+  .user-panel-leaders-v145{
+    margin:12px 0 !important;
+  }
+</style>
+
+<script id="mesaha-v148-missing-features-offline-guard">
+(function(){
+  "use strict";
+  const BUILD_VERSION = "Mesaha İO v1.87";
+  const FILE_VERSION = "v158";
+  const TODAY_MARK_KEY = "mesaha_v148_today_date_mark";
+  const LEADER_OPEN_KEY = "mesaha_v148_leaders_open";
+
+  function $(id){ return document.getElementById(id); }
+  function todayIsoLocal(){
+    const d = new Date();
+    const y = d.getFullYear();
+    const m = String(d.getMonth()+1).padStart(2,"0");
+    const day = String(d.getDate()).padStart(2,"0");
+    return `${y}-${m}-${day}`;
+  }
+  function toast(msg){
+    try { if (typeof showToast === "function") return showToast(msg); } catch {}
+    try { console.log(msg); } catch {}
+  }
+
+  function setVersionsV148(){
+    try { document.title = "Mesaha App v158"; } catch {}
+    try { const h1 = document.querySelector(".brand h1"); if (h1) h1.textContent = BUILD_VERSION; } catch {}
+    try { window.MESAHA_BUILD_INFO = Object.assign({}, window.MESAHA_BUILD_INFO||{}, { fileVersion:FILE_VERSION, visibleVersion:BUILD_VERSION, v148:true }); } catch {}
+  }
+
+  // Tarih: uygulama açılışında cihazdaki günün tarihi gelsin; kullanıcı isterse sonra değiştirebilir.
+  function enforceTodayDateV148(forceNewDay){
+    const el = $("productionDate");
+    if (!el) return;
+    const today = todayIsoLocal();
+    let mark = "";
+    try { mark = localStorage.getItem(TODAY_MARK_KEY) || ""; } catch {}
+    const shouldSet = forceNewDay || !el.value || mark !== today;
+    if (shouldSet) {
+      el.value = today;
+      try { if (typeof state !== "undefined" && state.settings) state.settings.productionDate = today; } catch {}
+      try { if (typeof saveSettings === "function") saveSettings(); } catch {}
+      try { localStorage.setItem(TODAY_MARK_KEY, today); } catch {}
+    }
+    if (!el.__v148DateBound) {
+      el.__v148DateBound = true;
+      el.addEventListener("change", function(){
+        try { if (typeof state !== "undefined" && state.settings) state.settings.productionDate = el.value || todayIsoLocal(); } catch {}
+        try { if (typeof saveSettings === "function") saveSettings(); } catch {}
+      });
+    }
+  }
+
+  // Giriş Modu: normal formdaki Ağaç Türü alanını görünür tut ve aç/kapa + direkt seçimi garanti et.
+  function ensureInlineTreeSelectorV148(){
+    const treeCard = document.querySelector(".entry-panel .tree-compact");
+    const btn = $("treeTypeSelectBtn");
+    const panel = $("treeTypePanel");
+    const apply = $("treeTypeApplyBtn");
+    if (!treeCard || !btn || !panel) return;
+    if (apply) apply.style.setProperty("display", "none", "important");
+    btn.type = "button";
+    btn.setAttribute("aria-expanded", panel.classList.contains("open") ? "true" : "false");
+    if (!btn.__v148TreeToggle) {
+      btn.__v148TreeToggle = true;
+      btn.addEventListener("click", function(ev){
+        ev.preventDefault();
+        ev.stopPropagation();
+        try { if (typeof syncTreeTypePanel === "function") syncTreeTypePanel(); } catch {}
+        panel.classList.toggle("open");
+        btn.setAttribute("aria-expanded", panel.classList.contains("open") ? "true" : "false");
+      }, true);
+    }
+    panel.querySelectorAll("label.wood-check").forEach(label=>{
+      if (label.__v148DirectTree) return;
+      label.__v148DirectTree = true;
+      label.addEventListener("click", function(ev){
+        const input = label.querySelector("input[type='radio']");
+        if (!input) return;
+        ev.preventDefault();
+        ev.stopPropagation();
+        if (typeof ev.stopImmediatePropagation === "function") ev.stopImmediatePropagation();
+        input.checked = true;
+        try { if (typeof setTreeType === "function") setTreeType(input.value, true); else { const t=$("treeType"); if(t) t.value=input.value; } } catch {}
+        try { panel.classList.remove("open"); btn.setAttribute("aria-expanded", "false"); } catch {}
+        toast(input.value + " seçildi.");
+      }, true);
+    });
+  }
+
+  // Mesaha Liderleri: artık kullanıcı panelinde butona basınca açılsın.
+  function ensureLeaderToggleV148(){
+    const card = document.querySelector("#userPanelOverlay .user-panel-card");
+    const actions = card && card.querySelector(".user-panel-actions");
+    if (!card || !actions) return;
+    let btn = $("userLeadersToggleV148");
+    if (!btn) {
+      btn = document.createElement("button");
+      btn.id = "userLeadersToggleV148";
+      btn.className = "secondary";
+      btn.type = "button";
+      btn.textContent = "📊 Mesaha Liderleri";
+      actions.insertBefore(btn, actions.firstChild);
+    }
+    let box = $("userLeadersPanelV145");
+    if (box && !box.__v148DefaultClosed) {
+      box.__v148DefaultClosed = true;
+      try { if (localStorage.getItem(LEADER_OPEN_KEY) === "1") box.classList.add("open-v148"); else box.classList.remove("open-v148"); } catch { box.classList.remove("open-v148"); }
+    }
+    if (!btn.__v148Toggle) {
+      btn.__v148Toggle = true;
+      btn.addEventListener("click", function(ev){
+        ev.preventDefault(); ev.stopPropagation();
+        let box = $("userLeadersPanelV145");
+        if (!box && typeof window.mesahaRenderLeadersV145 === "function") {
+          try { window.mesahaRenderLeadersV145(); } catch {}
+          box = $("userLeadersPanelV145");
+        }
+        if (!box) return toast("Mesaha Liderleri hazırlanıyor.");
+        const open = !box.classList.contains("open-v148");
+        box.classList.toggle("open-v148", open);
+        try { localStorage.setItem(LEADER_OPEN_KEY, open ? "1" : "0"); } catch {}
+        if (open && typeof window.mesahaRenderLeadersV145 === "function") {
+          try { window.mesahaRenderLeadersV145(); } catch {}
+        }
+      });
+    }
+  }
+
+  // Dosya bilgileri her zaman açık kalsın; aç/kapa davranışı olmasın.
+  function forceFileInfoOpenV148(){
+    document.querySelectorAll("details.info-details").forEach(d=>{
+      d.open = true;
+      const sum = d.querySelector("summary");
+      if (sum && !sum.__v148NoToggle) {
+        sum.__v148NoToggle = true;
+        sum.addEventListener("click", function(ev){ ev.preventDefault(); ev.stopPropagation(); d.open = true; }, true);
+      }
+    });
+  }
+
+  // Offline stabilite: Firebase/bağlantı hatası uygulamayı beyaz ekrana düşürmesin.
+  function looksNetworkError(err){
+    const s = String((err && (err.message || err.reason || err)) || "").toLowerCase();
+    return /firebase|network|offline|internet|timeout|failed to fetch|yüklenemedi|bağlantı|quota|unavailable/.test(s);
+  }
+  function installOfflineGuardsV148(){
+    if (!window.__mesahaV148OfflineGuards) {
+      window.__mesahaV148OfflineGuards = true;
+      window.addEventListener("unhandledrejection", function(ev){
+        if (looksNetworkError(ev.reason)) {
+          try { ev.preventDefault(); } catch {}
+          try { console.warn("Mesaha offline koruma:", ev.reason); } catch {}
+        }
+      });
+      window.addEventListener("error", function(ev){
+        if (looksNetworkError(ev.error || ev.message)) {
+          try { ev.preventDefault(); } catch {}
+          try { console.warn("Mesaha offline hata koruma:", ev.message || ev.error); } catch {}
+        }
+      }, true);
+    }
+    // Firebase hazır beklemesi çok uzarsa local/offline devam etsin.
+    try {
+      if (typeof ensureFirebaseReady === "function" && !ensureFirebaseReady.__v148OfflineTimeout) {
+        const old = ensureFirebaseReady;
+        ensureFirebaseReady = function(){
+          const timeout = new Promise((_, reject)=>setTimeout(()=>reject(new Error("Firebase bağlantısı zaman aşımı")), 3500));
+          return Promise.race([Promise.resolve().then(()=>old.apply(this, arguments)), timeout]).catch(err=>{
+            try { mesahaFirebaseReadyPromise = null; } catch {}
+            throw err;
+          });
+        };
+        ensureFirebaseReady.__v148OfflineTimeout = true;
+      }
+    } catch {}
+  }
+
+  function bindUserPanelOpenPatchV148(){
+    try {
+      if (typeof openUserPanel === "function" && !openUserPanel.__v148Leaders) {
+        const oldOpen = openUserPanel;
+        openUserPanel = function(){
+          const r = oldOpen.apply(this, arguments);
+          setTimeout(()=>{ ensureLeaderToggleV148(); const box=$("userLeadersPanelV145"); if (box && localStorage.getItem(LEADER_OPEN_KEY)!=="1") box.classList.remove("open-v148"); }, 80);
+          return r;
+        };
+        openUserPanel.__v148Leaders = true;
+      }
+    } catch {}
+  }
+
+  function bootV148(){
+    setVersionsV148();
+    installOfflineGuardsV148();
+    enforceTodayDateV148(false);
+    ensureInlineTreeSelectorV148();
+    ensureLeaderToggleV148();
+    forceFileInfoOpenV148();
+    bindUserPanelOpenPatchV148();
+    try { if (typeof updateFlowTabsV111 === "function") updateFlowTabsV111(); } catch {}
+  }
+
+  // Cihaz/Firebase sürüm bilgisini güncelle.
+  try {
+    const oldDevice = (typeof currentDeviceInfoPayload === "function") ? currentDeviceInfoPayload : null;
+    if (oldDevice && !oldDevice.__v148Version) {
+      currentDeviceInfoPayload = function(){
+        const info = oldDevice.apply(this, arguments) || {};
+        info.appVersion = BUILD_VERSION;
+        info.fileVersion = FILE_VERSION;
+        info.v148OfflineGuard = true;
+        return info;
+      };
+      currentDeviceInfoPayload.__v148Version = true;
+    }
+  } catch {}
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", bootV148); else bootV148();
+  [300, 900, 1800, 3200, 5200].forEach(ms=>setTimeout(bootV148, ms));
+  document.addEventListener("visibilitychange", function(){
+    if (!document.hidden) {
+      const today = todayIsoLocal();
+      let mark=""; try{ mark=localStorage.getItem(TODAY_MARK_KEY)||""; }catch{}
+      if (mark !== today) enforceTodayDateV148(true);
+      setTimeout(bootV148, 80);
+    }
+  });
+})();
+</script>
+
+<script id="mesaha-v149-clean-version-stabilizer">
+(function(){
+  "use strict";
+  var APP_BUILD = "v155";
+  var APP_VISIBLE_VERSION = "Mesaha İO v1.87";
+  function applyVersion(){
+    try { document.title = "Mesaha App v158"; } catch(e) {}
+    try { var h1 = document.querySelector(".brand h1"); if (h1) h1.textContent = APP_VISIBLE_VERSION; } catch(e) {}
+    try {
+      window.MESAHA_BUILD_INFO = Object.assign({}, window.MESAHA_BUILD_INFO || {}, {
+        fileVersion: APP_BUILD,
+        visibleVersion: APP_VISIBLE_VERSION,
+        cleanupBuild: true,
+        cleanupBase: "v148",
+        updatedMs: Date.now()
+      });
+    } catch(e) {}
+  }
+  var previousDeviceInfo = null;
+  try { previousDeviceInfo = (typeof currentDeviceInfoPayload === "function") ? currentDeviceInfoPayload : null; } catch(e) {}
+  if (previousDeviceInfo && !previousDeviceInfo.__v149CleanWrapper) {
+    try {
+      currentDeviceInfoPayload = function(){
+        var info = {};
+        try { info = previousDeviceInfo.apply(this, arguments) || {}; } catch(e) { info = {}; }
+        info.appVersion = APP_VISIBLE_VERSION;
+        info.fileVersion = APP_BUILD;
+        info.cleanupBuild = true;
+        info.updatedMs = Date.now();
+        return info;
+      };
+      currentDeviceInfoPayload.__v149CleanWrapper = true;
+    } catch(e) {}
+  }
+  applyVersion();
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", applyVersion);
+  setTimeout(applyVersion, 500);
+  setTimeout(applyVersion, 1500);
+})();
+</script>
+
+
+<style id="mesaha-v150-leaders-modal-style">
+  /* v150: Mesaha Liderleri artık kullanıcı paneline gömülü değil, ayrı pencere. */
+  #userLeadersPanelV145,
+  #userLeadersPanelV145.open-v148{
+    display:none !important;
+  }
+  .leaders-overlay-v150{
+    z-index:96 !important;
+  }
+  .leaders-card-v150{
+    width:min(540px, 100%) !important;
+  }
+  .leaders-sub-v150{
+    margin:0 0 12px !important;
+    color:#64748b !important;
+    font-weight:750 !important;
+    line-height:1.35 !important;
+  }
+  .leaders-list-v150{
+    display:grid !important;
+    gap:10px !important;
+  }
+  .leader-row-v150.modal-v150{
+    display:grid !important;
+    grid-template-columns:auto 1fr auto !important;
+    gap:12px !important;
+    align-items:center !important;
+    border:1px solid #e2e8f0 !important;
+    border-radius:18px !important;
+    background:#f8fafc !important;
+    padding:12px !important;
+  }
+  .leader-rank-v150{
+    width:40px !important;
+    height:40px !important;
+    border-radius:16px !important;
+    display:grid !important;
+    place-items:center !important;
+    background:#2563eb !important;
+    color:#fff !important;
+    font-weight:1000 !important;
+    box-shadow:0 10px 24px rgba(37,99,235,.18) !important;
+  }
+  .leader-main-v150 b{
+    display:block !important;
+    color:#0f172a !important;
+    font-weight:1000 !important;
+    font-size:15px !important;
+  }
+  .leader-main-v150 span{
+    display:block !important;
+    color:#64748b !important;
+    font-weight:850 !important;
+    margin-top:2px !important;
+  }
+  .leader-val-v150{
+    text-align:right !important;
+    color:#0f172a !important;
+    font-weight:1000 !important;
+    white-space:nowrap !important;
+  }
+  .leader-val-v150 small{
+    display:block !important;
+    color:#64748b !important;
+    font-weight:900 !important;
+    margin-top:2px !important;
+  }
+  .leaders-empty-v150{
+    border:1px dashed #cbd5e1 !important;
+    border-radius:18px !important;
+    padding:14px !important;
+    color:#64748b !important;
+    font-weight:850 !important;
+    background:#f8fafc !important;
+  }
+  body.theme-dark .leaders-sub-v150{ color:#94a3b8 !important; }
+  body.theme-dark .leader-row-v150.modal-v150,
+  body.theme-dark .leaders-empty-v150{
+    background:#111827 !important;
+    border-color:#334155 !important;
+    color:#e5e7eb !important;
+  }
+  body.theme-dark .leader-main-v150 b,
+  body.theme-dark .leader-val-v150{ color:#f8fafc !important; }
+  body.theme-dark .leader-main-v150 span,
+  body.theme-dark .leader-val-v150 small{ color:#94a3b8 !important; }
+</style>
+
+<script id="mesaha-v150-leaders-modal-fix">
+(function(){
+  "use strict";
+  var APP_BUILD = "v155";
+  var APP_VISIBLE_VERSION = "Mesaha İO v1.87";
+
+  function esc(v){
+    try { if (typeof escapeHtml === "function") return escapeHtml(v); } catch(e) {}
+    return String(v == null ? "" : v).replace(/[&<>\"']/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[c]; });
+  }
+  function fmtInt(v){ return Math.round(Number(v)||0).toLocaleString("tr-TR"); }
+  function fmtM3(v){ return (Number(v)||0).toLocaleString("tr-TR", {minimumFractionDigits:3, maximumFractionDigits:3}) + " m³"; }
+  function userKeyLocal(d){
+    try { if (typeof firebaseUserKey === "function") return firebaseUserKey(d && d.name, d && d.seflik); } catch(e) {}
+    return String(((d&&d.name)||"") + "__" + ((d&&d.seflik)||"")).toLocaleLowerCase("tr-TR").replace(/[^a-z0-9ğüşöçıİĞÜŞÖÇ_-]+/gi,"_").replace(/^_+|_+$/g,"") || "bos";
+  }
+  function maskText(v){
+    var s = String(v || "").trim();
+    if (!s) return "**";
+    var a = Array.from(s);
+    return a.slice(0,2).join("") + "*".repeat(Math.max(2, a.length - 2));
+  }
+  function normalizeTree(v){
+    var s = String(v || "Bilinmiyor").trim();
+    var l = s.toLocaleLowerCase("tr-TR");
+    if (l.includes("sarı") || l.includes("sari")) return "Sarıçam";
+    if (l.includes("kara")) return "Karaçam";
+    if (l.includes("kızıl") || l.includes("kizil")) return "Kızılçam";
+    if (l.includes("göknar") || l.includes("goknar")) return "Göknar";
+    if (l.includes("sedir")) return "Sedir";
+    return s || "Bilinmiyor";
+  }
+  function weekStartIso(){
+    var d = new Date();
+    var day = (d.getDay()+6)%7;
+    d.setHours(0,0,0,0);
+    d.setDate(d.getDate()-day);
+    return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+  }
+  function statMs(d){
+    return Number((d && (d.updatedAtMs || d.exportAtMs || d.createdAtMs || d.lastSeenMs || d.lastLoginMs)) || 0) || 0;
+  }
+  function pickTreeRows(d){
+    var rows = [];
+    try { if (d && d.weekSummary && Array.isArray(d.weekSummary.trees)) rows = d.weekSummary.trees; } catch(e) {}
+    if (!rows.length) {
+      try { if (d && d.todaySummary && Array.isArray(d.todaySummary.trees)) rows = d.todaySummary.trees; } catch(e) {}
+    }
+    if (!rows.length) {
+      try { if (d && Array.isArray(d.trees)) rows = d.trees; } catch(e) {}
+    }
+    return rows || [];
+  }
+  async function loadTopLeadersV150(){
+    var ready = await Promise.race([
+      Promise.resolve().then(function(){ return ensureFirebaseReady(); }),
+      new Promise(function(_, reject){ setTimeout(function(){ reject(new Error("Liderler bağlantı zaman aşımı")); }, 6500); })
+    ]);
+    var db = ready && ready.db;
+    if (!db) throw new Error("Firebase hazır değil");
+    var col = (typeof FIREBASE_USAGE_COLLECTION !== "undefined") ? FIREBASE_USAGE_COLLECTION : "usageStats";
+    var start = weekStartIso();
+    var snap = await db.collection(col).where("date", ">=", start).get();
+    var latest = new Map();
+    snap.forEach(function(doc){
+      var d = doc.data() || {};
+      var key = d.userKey || userKeyLocal(d);
+      var ms = statMs(d);
+      var old = latest.get(key);
+      if (!old || ms >= old.ms) latest.set(key, {ms:ms, d:d});
+    });
+    var map = new Map();
+    latest.forEach(function(item){
+      var d = item.d || {};
+      var name = d.name || d.userName || "Kullanıcı";
+      var seflik = d.seflik || d.region || "Şeflik";
+      pickTreeRows(d).forEach(function(t){
+        var tree = normalizeTree(t.name || t.agacAdi || t.tree || t.agac || "Bilinmiyor");
+        var adet = Number(t.adet || t.count || t.totalAdet || 0) || 0;
+        var m3 = Number(t.m3 || t.hacim || t.volume || 0) || 0;
+        if (!adet && !m3) return;
+        var k = userKeyLocal({name:name, seflik:seflik}) + "__" + tree;
+        var old = map.get(k) || {name:name, seflik:seflik, tree:tree, adet:0, m3:0};
+        old.adet += adet;
+        old.m3 = Number((old.m3 + m3).toFixed(3));
+        map.set(k, old);
+      });
+    });
+    return Array.from(map.values()).sort(function(a,b){ return (b.adet-a.adet) || (b.m3-a.m3); }).slice(0,3);
+  }
+  function ensureOverlayV150(){
+    var ov = document.getElementById("leaderOverlayV150");
+    if (ov) return ov;
+    ov = document.createElement("div");
+    ov.id = "leaderOverlayV150";
+    ov.className = "issue-report-overlay leaders-overlay-v150";
+    ov.setAttribute("role", "dialog");
+    ov.setAttribute("aria-modal", "true");
+    ov.setAttribute("aria-label", "Mesaha Liderleri");
+    ov.innerHTML = '<div class="issue-report-card leaders-card-v150"><div class="issue-report-head"><div><h2>Mesaha Liderleri</h2><p class="leaders-sub-v150">Haftalık ilk 3 kullanıcı. İsim ve şeflik gizlenir.</p></div><button id="leaderCloseBtnV150" class="ghost issue-report-close" type="button">×</button></div><div id="leadersModalListV150" class="leaders-list-v150"><div class="leaders-empty-v150">Pano yükleniyor...</div></div></div>';
+    document.body.appendChild(ov);
+    ov.addEventListener("click", function(ev){ if (ev.target === ov) closeLeadersV150(); });
+    var close = ov.querySelector("#leaderCloseBtnV150");
+    if (close) close.addEventListener("click", closeLeadersV150);
+    return ov;
+  }
+  function closeLeadersV150(){
+    var ov = document.getElementById("leaderOverlayV150");
+    if (ov) ov.classList.remove("show");
+  }
+  async function openLeadersV150(){
+    hideOldInlinePanelV150();
+    var ov = ensureOverlayV150();
+    var list = ov.querySelector("#leadersModalListV150");
+    ov.classList.add("show");
+    if (list) list.innerHTML = '<div class="leaders-empty-v150">Haftalık liderler yükleniyor...</div>';
+    try {
+      var rows = await loadTopLeadersV150();
+      if (!rows.length) {
+        if (list) list.innerHTML = '<div class="leaders-empty-v150">Bu hafta pano verisi yok. Kullanıcılar Mesaha dosyası indirdikçe veya kullanım özeti geldikçe burası dolacak.</div>';
+        return;
+      }
+      if (list) list.innerHTML = rows.map(function(r,i){
+        return '<div class="leader-row-v150 modal-v150"><div class="leader-rank-v150">'+(i+1)+'</div><div class="leader-main-v150"><b>'+esc(maskText(r.name))+' • '+esc(maskText(r.seflik))+'</b><span>'+esc(r.tree)+'</span></div><div class="leader-val-v150">'+fmtInt(r.adet)+' adet<small>'+fmtM3(r.m3)+'</small></div></div>';
+      }).join("");
+    } catch(err) {
+      if (list) list.innerHTML = '<div class="leaders-empty-v150">Liderler alınamadı. İnternet bağlantısını kontrol edip tekrar deneyin.</div>';
+    }
+  }
+  function hideOldInlinePanelV150(){
+    try {
+      var p = document.getElementById("userLeadersPanelV145");
+      if (p) p.remove();
+    } catch(e) {}
+  }
+  function ensureButtonV150(){
+    hideOldInlinePanelV150();
+    var card = document.querySelector("#userPanelOverlay .user-panel-card");
+    var actions = card && card.querySelector(".user-panel-actions");
+    if (!actions) return;
+    var btn = document.getElementById("userLeadersToggleV148");
+    if (!btn) {
+      btn = document.createElement("button");
+      btn.id = "userLeadersToggleV148";
+      btn.className = "secondary";
+      btn.type = "button";
+      btn.textContent = "📊 Mesaha Liderleri";
+      actions.insertBefore(btn, actions.firstChild);
+    }
+    btn.textContent = "📊 Mesaha Liderleri";
+    btn.type = "button";
+  }
+  function installClickGuardV150(){
+    if (document.__leaderClickGuardV150) return;
+    document.__leaderClickGuardV150 = true;
+    document.addEventListener("click", function(ev){
+      var target = ev.target && ev.target.closest ? ev.target.closest("#userLeadersToggleV148") : null;
+      if (!target) return;
+      ev.preventDefault();
+      ev.stopPropagation();
+      if (typeof ev.stopImmediatePropagation === "function") ev.stopImmediatePropagation();
+      openLeadersV150();
+    }, true);
+  }
+  function applyVersionV150(){
+    try { document.title = "Mesaha App v158"; } catch(e) {}
+    try { var h1 = document.querySelector(".brand h1"); if (h1) h1.textContent = APP_VISIBLE_VERSION; } catch(e) {}
+    try { window.MESAHA_BUILD_INFO = Object.assign({}, window.MESAHA_BUILD_INFO||{}, {fileVersion:APP_BUILD, visibleVersion:APP_VISIBLE_VERSION, leadersModal:true, updatedMs:Date.now()}); } catch(e) {}
+  }
+  function bootV150(){
+    applyVersionV150();
+    ensureButtonV150();
+    installClickGuardV150();
+  }
+  try {
+    var oldOpen = (typeof openUserPanel === "function") ? openUserPanel : null;
+    if (oldOpen && !oldOpen.__v150LeadersModal) {
+      openUserPanel = function(){
+        var r = oldOpen.apply(this, arguments);
+        setTimeout(bootV150, 60);
+        setTimeout(bootV150, 240);
+        return r;
+      };
+      openUserPanel.__v150LeadersModal = true;
+    }
+  } catch(e) {}
+  window.openMesahaLeadersV150 = openLeadersV150;
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", bootV150); else bootV150();
+  [300, 900, 1800, 3500, 5800, 8500].forEach(function(ms){ setTimeout(bootV150, ms); });
+})();
+</script>
+
+
+
+<script id="mesaha-v151-single-version-stabilizer">
+(function(){
+  "use strict";
+  var APP_BUILD = "v155";
+  var APP_VISIBLE_VERSION = "Mesaha İO v1.87";
+  var APP_TITLE = "Mesaha App v158";
+  function applyStableVersionV151(){
+    try{ document.title = APP_TITLE; }catch(e){}
+    try{
+      var h1 = document.querySelector(".brand h1");
+      if(h1 && h1.textContent !== APP_VISIBLE_VERSION) h1.textContent = APP_VISIBLE_VERSION;
+    }catch(e){}
+    try{
+      window.MESAHA_BUILD_INFO = Object.assign({}, window.MESAHA_BUILD_INFO || {}, {
+        fileVersion: APP_BUILD,
+        visibleVersion: APP_VISIBLE_VERSION,
+        cleanupBuild: true,
+        versionStabilizer: true,
+        updatedMs: Date.now()
+      });
+    }catch(e){}
+  }
+  var oldDevice = null;
+  try{ oldDevice = (typeof currentDeviceInfoPayload === "function") ? currentDeviceInfoPayload : null; }catch(e){}
+  try{
+    if(oldDevice && !oldDevice.__v151VersionWrapper){
+      currentDeviceInfoPayload = function(){
+        var info = {};
+        try{ info = oldDevice.apply(this, arguments) || {}; }catch(e){ info = {}; }
+        info.appVersion = APP_VISIBLE_VERSION;
+        info.fileVersion = APP_BUILD;
+        info.versionStabilizer = true;
+        info.updatedMs = Date.now();
+        return info;
+      };
+      currentDeviceInfoPayload.__v151VersionWrapper = true;
+    }
+  }catch(e){}
+  window.applyStableVersionV151 = applyStableVersionV151;
+  applyStableVersionV151();
+  if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", applyStableVersionV151);
+  setTimeout(applyStableVersionV151, 250);
+  setTimeout(applyStableVersionV151, 1200);
+})();
+</script>
+
+
+<style id="v155-click-fix-style">
+  .info-details summary::after,
+  .info-details[open] summary::after{display:none !important; content:"" !important; width:0 !important; height:0 !important; padding:0 !important; border:0 !important;}
+  .info-details summary{pointer-events:none !important; cursor:default !important;}
+  .tree-toggle-fixed-v155{font-weight:950 !important; border-color:#cbd5e1 !important;}
+  #treeTypePanel.open{display:grid !important; grid-template-columns:1fr 1fr !important; max-height:none !important; opacity:1 !important; visibility:visible !important;}
+  #cleanTreePanelV146.open{display:block !important; max-height:none !important; opacity:1 !important; visibility:visible !important;}
+</style>
+</body>
+</html>
+
+<style id="mesaha-v153-ui-fix-style">
+  /* v153: Dosya bilgileri artık aç/kapa değil, sabit açık. */
+  details.info-details{display:block !important;}
+  details.info-details > summary{display:none !important;}
+  details.info-details .info-body{display:block !important;}
+
+  /* Yerel yedek alma/yükleme yan yana ve anlaşılır dursun. */
+  .tools .local-backup-pair-v153{display:contents;}
+  #backupBtn,#restoreBtn{min-width:120px;}
+
+  .mesaha-info-overlay-v153{
+    position:fixed; inset:0; z-index:1500; display:none; align-items:center; justify-content:center;
+    padding:18px; background:rgba(15,23,42,.45); backdrop-filter:blur(8px);
+  }
+  .mesaha-info-overlay-v153.show{display:flex;}
+  .mesaha-info-card-v153{
+    width:min(620px,100%); max-height:min(86vh,720px); overflow:auto;
+    border-radius:24px; background:#fff; color:#0f172a; border:1px solid #dbe4ef;
+    box-shadow:0 28px 80px rgba(15,23,42,.28); padding:20px;
+  }
+  .mesaha-info-head-v153{display:flex; justify-content:space-between; gap:12px; align-items:flex-start; margin-bottom:12px;}
+  .mesaha-info-title-v153{margin:0; color:#16a34a; font-size:22px; font-weight:1000;}
+  .mesaha-info-close-v153{width:48px;height:48px;border-radius:16px;border:1px solid #dbe4ef;background:#f8fafc;color:#0f172a;font-size:26px;font-weight:1000;}
+  .mesaha-info-body-v153{font-size:16px; line-height:1.55; color:#334155; font-weight:750;}
+  .mesaha-info-body-v153 h3{margin:8px 0 10px; color:#0f172a; font-size:18px; font-weight:1000;}
+  .mesaha-info-body-v153 ol,.mesaha-info-body-v153 ul{padding-left:22px; margin:10px 0;}
+  .mesaha-info-body-v153 li{margin:7px 0;}
+  body.theme-dark .mesaha-info-card-v153{background:#111827;color:#f8fafc;border-color:#334155;}
+  body.theme-dark .mesaha-info-body-v153{color:#cbd5e1;}
+  body.theme-dark .mesaha-info-body-v153 h3{color:#f8fafc;}
+  body.theme-dark .mesaha-info-close-v153{background:#0b1220;color:#f8fafc;border-color:#334155;}
+
+  .leaders-overlay-v153{z-index:1510 !important;}
+  .leaders-card-v153{width:min(560px,100%) !important;}
+  .leaders-list-v153{display:grid; gap:10px;}
+  .leader-row-v153{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;border:1px solid #e2e8f0;border-radius:18px;background:#f8fafc;padding:12px;}
+  .leader-rank-v153{width:42px;height:42px;border-radius:16px;display:grid;place-items:center;background:#2563eb;color:#fff;font-weight:1000;box-shadow:0 10px 24px rgba(37,99,235,.18);}
+  .leader-main-v153 b{display:block;color:#0f172a;font-weight:1000;font-size:15px;}
+  .leader-main-v153 span{display:block;color:#64748b;font-weight:850;margin-top:2px;}
+  .leader-val-v153{text-align:right;color:#0f172a;font-weight:1000;white-space:nowrap;}
+  .leader-val-v153 small{display:block;color:#64748b;font-weight:900;margin-top:2px;}
+  .leaders-empty-v153{border:1px dashed #cbd5e1;border-radius:18px;padding:14px;color:#64748b;font-weight:850;background:#f8fafc;}
+  body.theme-dark .leader-row-v153, body.theme-dark .leaders-empty-v153{background:#111827;border-color:#334155;color:#e5e7eb;}
+  body.theme-dark .leader-main-v153 b, body.theme-dark .leader-val-v153{color:#f8fafc;}
+  body.theme-dark .leader-main-v153 span, body.theme-dark .leader-val-v153 small{color:#94a3b8;}
+</style>
+
+<script id="mesaha-v153-final-polish">
+(function(){
+  "use strict";
+  var APP_BUILD = "v155";
+  var APP_VISIBLE_VERSION = "Mesaha İO v1.87";
+  var APP_TITLE = "Mesaha App v158";
+
+  function $(id){ return document.getElementById(id); }
+  function esc(v){ try{ if(typeof escapeHtml === "function") return escapeHtml(v); }catch(e){} return String(v == null ? "" : v).replace(/[&<>\"']/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[c]; }); }
+  function n(v){ var x = Number(String(v == null ? "" : v).replace(",",".")); return Number.isFinite(x) ? x : 0; }
+  function fmtInt(v){ return Math.round(n(v)).toLocaleString("tr-TR"); }
+  function fmtM3(v){ return n(v).toLocaleString("tr-TR", {minimumFractionDigits:3, maximumFractionDigits:3}) + " m³"; }
+  function todayCompact(){ var d = new Date(); return d.getFullYear()+String(d.getMonth()+1).padStart(2,"0")+String(d.getDate()).padStart(2,"0"); }
+  function cleanPart(v){ return String(v || "").trim().replace(/ı/g,"i").replace(/İ/g,"I").replace(/[ğĞ]/g,"g").replace(/[üÜ]/g,"u").replace(/[şŞ]/g,"s").replace(/[öÖ]/g,"o").replace(/[çÇ]/g,"c").replace(/[^a-zA-Z0-9_-]+/g,"").slice(0,40); }
+  function bolmePart(){ var raw=""; try{ raw = (($("bolmeNo") && $("bolmeNo").value) || (state && state.settings && state.settings.bolmeNo) || ""); }catch(e){} raw = cleanPart(raw); return raw ? raw + "bolme" : ""; }
+  function nextCounter(kind){ var key = "mesaha_file_counter_v153_" + kind + "_" + todayCompact(); var x = 0; try{ x = Number(localStorage.getItem(key) || "0") || 0; x += 1; localStorage.setItem(key, String(x)); }catch(e){ x = 1; } return String(x).padStart(3,"0"); }
+  function mesahaXlsName(){ var parts=["Mesaha"]; var b=bolmePart(); if(b) parts.push(b); parts.push(todayCompact()); parts.push(nextCounter("xls")); return parts.join("_") + ".xls"; }
+  function mesahaBackupName(){ var parts=["Yedek"]; var b=bolmePart(); if(b) parts.push(b); parts.push(todayCompact()); parts.push(nextCounter("backup")); return parts.join("_") + ".json"; }
+
+  function applyVersion(){
+    try{ document.title = APP_TITLE; }catch(e){}
+    try{ var h1=document.querySelector(".brand h1"); if(h1) h1.textContent = APP_VISIBLE_VERSION; }catch(e){}
+    try{ window.MESAHA_BUILD_INFO = Object.assign({}, window.MESAHA_BUILD_INFO || {}, {fileVersion:APP_BUILD, visibleVersion:APP_VISIBLE_VERSION, v153:true, updatedMs:Date.now()}); }catch(e){}
+  }
+  var oldDevice = null;
+  try{ oldDevice = (typeof currentDeviceInfoPayload === "function") ? currentDeviceInfoPayload : null; }catch(e){}
+  try{
+    currentDeviceInfoPayload = function(){
+      var info = {}; try{ info = oldDevice ? (oldDevice.apply(this, arguments) || {}) : {}; }catch(e){ info = {}; }
+      info.appVersion = APP_VISIBLE_VERSION; info.fileVersion = APP_BUILD; info.v153 = true; info.updatedMs = Date.now(); return info;
+    };
+  }catch(e){}
+
+  function ensureInfoModal(){
+    var ov = $("mesahaInfoOverlayV153");
+    if(ov) return ov;
+    ov = document.createElement("div");
+    ov.id = "mesahaInfoOverlayV153";
+    ov.className = "mesaha-info-overlay-v153";
+    ov.setAttribute("role","dialog"); ov.setAttribute("aria-modal","true");
+    ov.innerHTML = '<div class="mesaha-info-card-v153"><div class="mesaha-info-head-v153"><h2 id="mesahaInfoTitleV153" class="mesaha-info-title-v153">Başarılı</h2><button id="mesahaInfoCloseV153" type="button" class="mesaha-info-close-v153">×</button></div><div id="mesahaInfoBodyV153" class="mesaha-info-body-v153"></div></div>';
+    document.body.appendChild(ov);
+    ov.addEventListener("click", function(ev){ if(ev.target === ov) ov.classList.remove("show"); });
+    var c = $("mesahaInfoCloseV153"); if(c) c.addEventListener("click", function(){ ov.classList.remove("show"); });
+    return ov;
+  }
+  function showInfo(title, html){
+    var ov = ensureInfoModal(); var t = $("mesahaInfoTitleV153"); var b = $("mesahaInfoBodyV153");
+    if(t) t.textContent = title; if(b) b.innerHTML = html; ov.classList.add("show");
+  }
+  function showOrbisHelp(){
+    showInfo("Dosya indirme başarılı", '<h3>ORBİS’e Aktarma</h3><ol><li>Mesaha dosyasını indirdikten sonra dosyayı bilgisayara aktarınız.</li><li>ORBİS sistemine bilgisayardan giriş yapıp <b>İşletme Pazarlama</b> modülüne giriniz.</li><li><b>Kesme Faaliyetleri Raporu</b> ekranını açınız.</li><li>Şeflik ve bölme bilgilerini giriniz.</li><li>Bölmenin üzerine çift tıklayınız.</li><li>Dosya yükleme bölümünden mesaha dosyasını seçip <b>Excel’den Aktar</b> deyiniz.</li></ol>');
+  }
+  function showBackupHelp(){
+    showInfo("Yedek başarılı", '<p>Yedek excel formatında alınmaz. JSON formatında alınmış olup sadece bu program üzerindeki <b>Yedek Yükle</b> ile bu programa geri yükleyebilirsiniz.</p><p>Excel olarak çıktı almak için <b>Mesaha Dosyasını İndir</b> butonunu kullanınız.</p>');
+  }
+
+  // Excel veri oluşturma mantığına dokunmadan sadece dosya adını ve başarı penceresini düzenle.
+  try{
+    exportSystemXls = function(){
+      if(!state || !Array.isArray(state.records) || !state.records.length) return (typeof showToast === "function" ? showToast("Çıktı için kayıt yok.") : alert("Çıktı için kayıt yok."));
+      var ordered = state.records.slice().reverse().map(s12RecordToRow);
+      var xlsBytes = s12MakeSystemXls(ordered);
+      s12DownloadBytes(xlsBytes, mesahaXlsName());
+      try{ if(typeof showToast === "function") showToast("Mesaha dosyası indirildi."); }catch(e){}
+      setTimeout(showOrbisHelp, 250);
+    };
+  }catch(e){}
+
+  function backupLocalV153(){
+    try{
+      var data = { app:"Mesaha App", version:153, exportedAt:(typeof formatDateTime === "function" ? formatDateTime() : new Date().toLocaleString("tr-TR")), systemHeaders:(typeof HEADERS !== "undefined" ? HEADERS : []), settings:(state && state.settings) || {}, records:(state && state.records) || [] };
+      var content = JSON.stringify(data, null, 2);
+      var filename = mesahaBackupName();
+      if(typeof downloadFile === "function") downloadFile(content, filename, "application/json");
+      else { var blob = new Blob([content], {type:"application/json"}); var url=URL.createObjectURL(blob); var a=document.createElement("a"); a.href=url; a.download=filename; document.body.appendChild(a); a.click(); a.remove(); setTimeout(function(){URL.revokeObjectURL(url);},1000); }
+      try{ if(typeof showToast === "function") showToast("Yedek indirildi."); }catch(e){}
+      setTimeout(showBackupHelp, 250);
+    }catch(err){ try{ if(typeof showToast === "function") showToast("Yedek alınamadı."); }catch(e){} }
+  }
+  function bindBackupButtons(){
+    var backupBtn = $("backupBtn"), restoreBtn = $("restoreBtn"), input = $("restoreInput");
+    if(backupBtn && !backupBtn.__v153){ var b = backupBtn.cloneNode(true); b.__v153 = true; backupBtn.parentNode.replaceChild(b, backupBtn); try{ if(typeof els !== "undefined") els.backupBtn = b; }catch(e){} b.addEventListener("click", function(ev){ ev.preventDefault(); ev.stopPropagation(); backupLocalV153(); }); backupBtn = b; }
+    if(restoreBtn && !restoreBtn.__v153){ var r = restoreBtn.cloneNode(true); r.__v153 = true; restoreBtn.parentNode.replaceChild(r, restoreBtn); try{ if(typeof els !== "undefined") els.restoreBtn = r; }catch(e){} r.addEventListener("click", function(ev){ ev.preventDefault(); ev.stopPropagation(); var inp=$("restoreInput"); if(inp) inp.click(); }); restoreBtn = r; }
+    try{
+      var tools = backupBtn && backupBtn.parentElement;
+      var cloudBackup = $("cloudBackupBtn"), cloudRestore = $("cloudRestoreBtn"), printBtn = $("printBtn"), delBtn = $("deleteAllBtn"), exportBtn = $("exportSystemXlsBtn");
+      if(tools && exportBtn && backupBtn && restoreBtn){
+        tools.insertBefore(backupBtn, cloudBackup || printBtn || null);
+        tools.insertBefore(restoreBtn, cloudBackup || printBtn || null);
+        if(cloudBackup && cloudRestore) tools.insertBefore(cloudRestore, printBtn || delBtn || null);
+      }
+    }catch(e){}
+  }
+
+  function forceFileInfoOpen(){
+    try{ document.querySelectorAll("details.info-details").forEach(function(d){ d.open = true; }); }catch(e){}
+  }
+
+  function mask(v){ var s=String(v||"").trim(); if(!s) return "**"; var a=Array.from(s); return a.slice(0,2).join("") + "*".repeat(Math.max(2, a.length-2)); }
+  function userKeyLocal(d){ try{ if(typeof firebaseUserKey === "function") return firebaseUserKey(d && d.name, d && d.seflik); }catch(e){} return String(((d&&d.name)||"")+"__"+((d&&d.seflik)||"")).toLocaleLowerCase("tr-TR").replace(/[^a-z0-9ğüşöçıİĞÜŞÖÇ_-]+/gi,"_").replace(/^_+|_+$/g,"") || "bos"; }
+  function normTree(v){ var s=String(v||"Karaçam").trim(); var l=s.toLocaleLowerCase("tr-TR"); if(l.includes("sarı")||l.includes("sari")) return "Sarıçam"; if(l.includes("kızıl")||l.includes("kizil")) return "Kızılçam"; if(l.includes("göknar")||l.includes("goknar")) return "Göknar"; if(l.includes("sedir")) return "Sedir"; if(l.includes("kara")) return "Karaçam"; return s || "Karaçam"; }
+  function recordTree(r){ return normTree(r && (r.treeType || r.species || r.agacAdi || r.agac || r.tree)); }
+  function safeRecordM3(r){
+    var desi = n(r && r.desi); if(desi > 0) return desi / 1000;
+    var hv = n(String((r && (r.hacim || r.volume)) || "").replace(/[^0-9.,-]/g,"")); if(hv > 0 && hv < 99999) return hv;
+    var d = n(r && (r.diameter || r.cap)); var l = n(r && (r.length || r.boy)); var q = Math.max(1, n(r && (r.quantity || r.adet)) || 1);
+    if(d <= 0 || d > 200 || l <= 0 || l > 50 || q <= 0) return 0;
+    try{ if(typeof calculateDesi === "function") return (n(calculateDesi(d,l,q)) || 0) / 1000; }catch(e){}
+    return 0.00007854 * d * d * l * q;
+  }
+  function addLeader(map, name, seflik, tree, adet, m3){
+    tree = normTree(tree); var k = userKeyLocal({name:name,seflik:seflik}) + "__" + tree; var old = map.get(k) || {name:name||"Kullanıcı", seflik:seflik||"Şeflik", tree:tree, adet:0, m3:0};
+    old.adet += n(adet); old.m3 = Number((old.m3 + n(m3)).toFixed(3)); map.set(k, old);
+  }
+  function rowsFromUsageDocs(docs){
+    var map = new Map();
+    docs.forEach(function(d){
+      var name=d.name||d.userName||"Kullanıcı", seflik=d.seflik||"Şeflik";
+      var rows=[]; try{ if(d.weekSummary && Array.isArray(d.weekSummary.trees)) rows=d.weekSummary.trees; }catch(e){}
+      if(!rows.length){ try{ if(d.todaySummary && Array.isArray(d.todaySummary.trees)) rows=d.todaySummary.trees; }catch(e){} }
+      if(!rows.length){ try{ if(Array.isArray(d.trees)) rows=d.trees; }catch(e){} }
+      rows.forEach(function(t){ addLeader(map,name,seflik,t.name||t.agacAdi||t.tree,t.adet||t.count||t.totalAdet,t.m3||t.hacim||t.volume); });
+    });
+    return Array.from(map.values()).filter(function(x){return x.adet||x.m3;}).sort(function(a,b){ return (b.adet-a.adet)||(b.m3-a.m3); });
+  }
+  function rowsFromBackupPayloads(items){
+    var latest = new Map();
+    items.forEach(function(item){
+      var d=item.d||{}; var payload=item.payload; if(!payload || !Array.isArray(payload.records)) return;
+      var name=d.name || (payload.user && payload.user.name) || "Kullanıcı"; var seflik=d.seflik || (payload.user && payload.user.seflik) || "Şeflik";
+      var k=d.userKey || userKeyLocal({name:name,seflik:seflik}); var ms=n(d.createdAtMs||d.updatedAtMs||0); var old=latest.get(k); if(!old || ms>=old.ms) latest.set(k,{ms:ms,name:name,seflik:seflik,records:payload.records});
+    });
+    var map = new Map();
+    latest.forEach(function(x){
+      (x.records||[]).forEach(function(r){ var q=Math.max(0,n(r && (r.quantity||r.adet))||1); addLeader(map,x.name,x.seflik,recordTree(r),q,safeRecordM3(r)); });
+    });
+    return Array.from(map.values()).filter(function(x){return x.adet||x.m3;}).sort(function(a,b){ return (b.adet-a.adet)||(b.m3-a.m3); });
+  }
+  async function loadLeaderRows(){
+    var ready = await Promise.race([Promise.resolve().then(function(){ return ensureFirebaseReady(); }), new Promise(function(_,rej){ setTimeout(function(){rej(new Error("zaman aşımı"));}, 7000); })]);
+    var db = ready && ready.db; if(!db) throw new Error("Firebase hazır değil");
+    var usageRows=[];
+    try{
+      var start = (function(){ var d=new Date(); var day=(d.getDay()+6)%7; d.setHours(0,0,0,0); d.setDate(d.getDate()-day); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); })();
+      var us = await db.collection(typeof FIREBASE_USAGE_COLLECTION!=="undefined"?FIREBASE_USAGE_COLLECTION:"usageStats").where("date",">=",start).get(); var docs=[]; us.forEach(function(doc){ var d=doc.data()||{}; if(d && d.type!=="statsResetMarker") docs.push(d); }); usageRows = rowsFromUsageDocs(docs);
+    }catch(e){}
+    if(usageRows.length >= 3) return usageRows.slice(0,3);
+    var backupRows=[];
+    try{
+      var snap = await db.collection(typeof FIREBASE_BACKUPS_COLLECTION!=="undefined"?FIREBASE_BACKUPS_COLLECTION:"backups").get(); var payloads=[];
+      snap.forEach(function(doc){ try{ var d=doc.data()||{}; var p=d.payload || (d.payloadText ? JSON.parse(d.payloadText) : null); payloads.push({d:d,payload:p}); }catch(e){} });
+      backupRows = rowsFromBackupPayloads(payloads);
+    }catch(e){}
+    return (backupRows.length ? backupRows : usageRows).slice(0,3);
+  }
+  function ensureLeaderOverlay(){
+    var ov = $("leaderOverlayV153"); if(ov) return ov;
+    ov = document.createElement("div"); ov.id="leaderOverlayV153"; ov.className="issue-report-overlay leaders-overlay-v153"; ov.setAttribute("role","dialog"); ov.setAttribute("aria-modal","true"); ov.setAttribute("aria-label","Mesaha Liderleri");
+    ov.innerHTML = '<div class="issue-report-card leaders-card-v153"><div class="issue-report-head"><div><h2>Mesaha Liderleri</h2><p class="leaders-sub-v150">Haftalık ilk 3 kullanıcı. İsim ve şeflik gizlenir.</p></div><button id="leaderCloseBtnV153" class="ghost issue-report-close" type="button">×</button></div><div id="leadersModalListV153" class="leaders-list-v153"><div class="leaders-empty-v153">Pano yükleniyor...</div></div></div>';
+    document.body.appendChild(ov); ov.addEventListener("click", function(ev){ if(ev.target===ov) closeLeaders(); }); var c=$("leaderCloseBtnV153"); if(c) c.addEventListener("click", closeLeaders); return ov;
+  }
+  function closeLeaders(){ var ov=$("leaderOverlayV153"); if(ov) ov.classList.remove("show"); }
+  async function openLeaders(){
+    try{ var up=$("userPanelOverlay"); if(up) up.classList.remove("show"); }catch(e){}
+    try{ var old=$("leaderOverlayV150"); if(old) old.classList.remove("show"); }catch(e){}
+    var ov=ensureLeaderOverlay(); var list=$("leadersModalListV153"); ov.classList.add("show"); if(list) list.innerHTML='<div class="leaders-empty-v153">Mesaha liderleri yükleniyor...</div>';
+    try{ var rows=await loadLeaderRows(); if(!rows.length){ if(list) list.innerHTML='<div class="leaders-empty-v153">Pano verisi bulunamadı. Kullanıcılar yedek aldıkça veya mesaha dosyası indirdikçe burası dolacak.</div>'; return; } if(list) list.innerHTML=rows.map(function(r,i){ return '<div class="leader-row-v153"><div class="leader-rank-v153">'+(i+1)+'</div><div class="leader-main-v153"><b>'+esc(mask(r.name))+' • '+esc(mask(r.seflik))+'</b><span>'+esc(r.tree)+'</span></div><div class="leader-val-v153">'+fmtInt(r.adet)+' adet<small>'+fmtM3(r.m3)+'</small></div></div>'; }).join(""); }catch(err){ if(list) list.innerHTML='<div class="leaders-empty-v153">Liderler alınamadı. İnternet bağlantısını kontrol edip tekrar deneyin.</div>'; }
+  }
+  function ensureLeaderButton(){
+    try{ var oldInline=$("userLeadersPanelV145"); if(oldInline) oldInline.remove(); }catch(e){}
+    var card=document.querySelector("#userPanelOverlay .user-panel-card"), actions=card&&card.querySelector(".user-panel-actions"); if(!actions) return;
+    var old=$("userLeadersToggleV148"); if(old){ old.id="userLeadersToggleV153"; old.textContent="📊 Mesaha Liderleri"; }
+    var btn=$("userLeadersToggleV153"); if(!btn){ btn=document.createElement("button"); btn.id="userLeadersToggleV153"; btn.className="secondary"; btn.type="button"; btn.textContent="📊 Mesaha Liderleri"; actions.insertBefore(btn, actions.firstChild); }
+    if(!btn.__v153){ btn.__v153=true; btn.addEventListener("click", function(ev){ ev.preventDefault(); ev.stopPropagation(); openLeaders(); }); }
+  }
+
   function updateActiveUserCloudVersion(){
     setTimeout(function(){ try{ var user = (state && state.activeUser) || (typeof findActiveUser === "function" ? findActiveUser() : null); if(user && typeof logOnlineUser === "function") logOnlineUser(user); }catch(e){} }, 1500);
   }
 
-  function boot(){ applyVersion(); forceFileInfoOpen(); bindBackupButtons(); updateActiveUserCloudVersion(); }
- 
+  function boot(){ applyVersion(); forceFileInfoOpen(); bindBackupButtons(); ensureLeaderButton(); updateActiveUserCloudVersion(); }
+  window.openMesahaLeadersV153 = openLeaders;
   window.showMesahaDownloadHelpV153 = showOrbisHelp;
   window.showMesahaBackupHelpV153 = showBackupHelp;
   if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot); else boot();
@@ -19956,10 +21072,819 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 
 
 
+<style id="v154-stabil-style">
+  /* v154: Kullanıcı paneli sade; dosya bilgileri sabit açık */
+  #userPanelOverlay .user-panel-actions #panelPasswordBtn,
+  #userPanelOverlay .user-panel-actions #panelCloudBackupBtn{
+    display:none !important;
+  }
+  #userPanelOverlay .user-panel-actions .leader-duplicate-v154{
+    display:none !important;
+  }
+  .info-details summary::after{display:none !important; content:"" !important;}
+  .info-details[open] summary::after{display:none !important; content:"" !important;}
+  .info-details summary{cursor:default !important; pointer-events:none !important;}
+  .leaders-overlay-v154{z-index:99999 !important;}
+  .leaders-card-v154{max-width:780px;width:min(92vw,780px);}
+  .leaders-list-v154{display:grid;gap:10px;margin-top:14px;}
+  .leader-row-v154{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;border:1px solid #e2e8f0;border-radius:18px;background:#fff;padding:12px;}
+  .leader-rank-v154{width:46px;height:46px;border-radius:16px;background:#2563eb;color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:1000;}
+  .leader-main-v154 b{display:block;color:#0f172a;font-size:16px;font-weight:1000;}
+  .leader-main-v154 span{display:block;color:#64748b;font-weight:900;margin-top:2px;}
+  .leader-val-v154{text-align:right;color:#0f172a;font-size:18px;font-weight:1000;white-space:nowrap;}
+  .leader-val-v154 small{display:block;color:#64748b;font-size:13px;font-weight:900;margin-top:2px;}
+  .leaders-empty-v154{border:1px dashed #cbd5e1;border-radius:18px;padding:18px;color:#64748b;font-weight:900;background:#f8fafc;}
+  body.theme-dark .leader-row-v154{background:#111827;border-color:#334155;}
+  body.theme-dark .leader-main-v154 b, body.theme-dark .leader-val-v154{color:#f8fafc;}
+  body.theme-dark .leader-main-v154 span, body.theme-dark .leader-val-v154 small{color:#cbd5e1;}
+  body.theme-dark .leaders-empty-v154{background:#0b1220;border-color:#334155;color:#cbd5e1;}
+</style>
+<script id="v154-stabil-fixes">
+(function(){
+  "use strict";
+  var APP_VISIBLE_VERSION = "Mesaha İO v1.87";
+  var APP_FILE_VERSION = "v158";
+  var APP_TITLE = "Mesaha App v158";
+  var TREE_OPEN_KEY = "mesaha_tree_panel_open_v154";
+  var CLEAN_TREE_OPEN_KEY = "mesaha_clean_tree_panel_open_v154";
+  var cleaningPanel = false;
+  function $(id){ return document.getElementById(id); }
+  function esc(v){ return String(v==null?"":v).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];}); }
+  function n(v){ if(v==null || v==="") return 0; if(typeof v==="number") return isFinite(v)?v:0; var s=String(v).replace(/[^0-9,.-]/g,"").replace(/\./g,"").replace(",","."); var x=parseFloat(s); return isFinite(x)?x:0; }
+  function fmtInt(v){ try{return Math.round(n(v)).toLocaleString("tr-TR");}catch(e){return String(Math.round(n(v)));} }
+  function fmtM3(v){ try{return n(v).toLocaleString("tr-TR",{minimumFractionDigits:3,maximumFractionDigits:3})+" m³";}catch(e){return (Math.round(n(v)*1000)/1000)+" m³";} }
+  function mask(v){ var s=String(v||"").trim(); if(!s) return "**"; var arr=Array.from(s); return arr.slice(0,2).join("") + "*".repeat(Math.max(2, arr.length-2)); }
+  function userKey(name,seflik){ try{ if(typeof firebaseUserKey==="function") return firebaseUserKey(name,seflik); }catch(e){} return String((name||"")+"__"+(seflik||"")).toLocaleLowerCase("tr-TR").replace(/[^a-z0-9ğüşöçıİĞÜŞÖÇ_-]+/gi,"_").replace(/^_+|_+$/g,"") || "kullanici"; }
+  function normTree(v){ var s=String(v||"Karaçam").trim(); var l=s.toLocaleLowerCase("tr-TR"); if(l.includes("sarı")||l.includes("sari")) return "Sarıçam"; if(l.includes("kızıl")||l.includes("kizil")) return "Kızılçam"; if(l.includes("göknar")||l.includes("goknar")) return "Göknar"; if(l.includes("sedir")) return "Sedir"; if(l.includes("kara")) return "Karaçam"; return s || "Karaçam"; }
+  function recTree(r){ return normTree(r && (r.treeType || r.species || r.agacAdi || r.agac || r.tree || r.ağaç)); }
+  function safeM3(r){
+    var desi=n(r && r.desi); if(desi>0 && desi<99999999) return desi/1000;
+    var hv=n(r && (r.hacim||r.volume)); if(hv>0 && hv<99999) return hv;
+    var d=n(r && (r.diameter||r.cap)); var l=n(r && (r.length||r.boy)); var q=Math.max(1,n(r && (r.quantity||r.adet))||1);
+    if(d<=0 || d>200 || l<=0 || l>50 || q<=0 || q>99999) return 0;
+    try{ if(typeof calculateDesi==="function") return (n(calculateDesi(d,l,q))||0)/1000; }catch(e){}
+    return 0.00007854*d*d*l*q;
+  }
+  function qty(r){ var q=n(r && (r.quantity||r.adet)); return q>0?q:1; }
+  function setVersion(){
+    try{ document.title = APP_TITLE; var h1=document.querySelector(".brand h1"); if(h1) h1.textContent=APP_VISIBLE_VERSION; }catch(e){}
+    try{ window.MESAHA_BUILD_INFO = Object.assign({}, window.MESAHA_BUILD_INFO||{}, {fileVersion:APP_FILE_VERSION, visibleVersion:APP_VISIBLE_VERSION, cleanupV154:true}); }catch(e){}
+  }
+  var oldDevice = (typeof currentDeviceInfoPayload === "function") ? currentDeviceInfoPayload : null;
+  if(oldDevice && !oldDevice.__v154Version){
+    currentDeviceInfoPayload = function(){ var info=oldDevice.apply(this,arguments)||{}; info.appVersion=APP_VISIBLE_VERSION; info.fileVersion=APP_FILE_VERSION; info.cleanupV154=true; return info; };
+    currentDeviceInfoPayload.__v154Version=true;
+  }
+
+  function cleanupUserPanel(){
+    if(cleaningPanel) return; cleaningPanel=true;
+    try{
+      var actions=document.querySelector("#userPanelOverlay .user-panel-actions");
+      if(!actions) return;
+      ["panelPasswordBtn","panelCloudBackupBtn"].forEach(function(id){ var el=$(id); if(el) el.remove(); });
+      Array.from(actions.children).forEach(function(el){
+        var txt=(el.textContent||"").trim();
+        if(el.tagName==="P" && txt.includes("Bulut yedekleme şifresizdir")) el.remove();
+      });
+      // Eski yamalardan çoğalan tüm lider butonlarını temizle ve tek buton bırak.
+      Array.from(actions.querySelectorAll("button")).forEach(function(btn){
+        var txt=(btn.textContent||"").trim();
+        if((txt.includes("Mesaha Liderleri") || /^userLeadersToggle/.test(btn.id||"")) && btn.id!=="userLeadersToggleV154") btn.remove();
+      });
+      var btn=$("userLeadersToggleV154");
+      if(!btn){
+        btn=document.createElement("button");
+        btn.id="userLeadersToggleV154"; btn.type="button"; btn.className="secondary"; btn.textContent="📊 Mesaha Liderleri";
+        actions.insertBefore(btn, actions.firstChild);
+      }
+      if(!btn.__v154Bound){
+        btn.__v154Bound=true;
+        btn.addEventListener("click", function(ev){ ev.preventDefault(); ev.stopPropagation(); openLeadersV154(); }, true);
+      }
+    }catch(e){} finally { cleaningPanel=false; }
+  }
+
+  function getPayloadRecords(payload){
+    if(!payload) return [];
+    if(Array.isArray(payload.records)) return payload.records;
+    if(Array.isArray(payload.kayitlar)) return payload.kayitlar;
+    if(Array.isArray(payload.data)) return payload.data;
+    if(payload.payload && payload.payload!==payload) return getPayloadRecords(payload.payload);
+    return [];
+  }
+  function addUserAgg(map, name, seflik, records, fallbackAdet, fallbackM3, fallbackTree){
+    var k=userKey(name,seflik); var row=map.get(k) || {name:name||"Kullanıcı", seflik:seflik||"Şeflik", adet:0, m3:0, trees:{}};
+    if(Array.isArray(records) && records.length){
+      records.forEach(function(r){
+        var q=qty(r); var m=safeM3(r); var t=recTree(r);
+        row.adet += q; row.m3 += m; row.trees[t]=(row.trees[t]||0)+q;
+      });
+    }else{
+      var q=n(fallbackAdet), m=n(fallbackM3), t=normTree(fallbackTree||"Kayıt");
+      row.adet += q; row.m3 += m; if(q||m) row.trees[t]=(row.trees[t]||0)+q;
+    }
+    map.set(k,row);
+  }
+  function finishRows(map){
+    return Array.from(map.values()).map(function(r){
+      var topTree="Kayıt", best=-1;
+      Object.keys(r.trees||{}).forEach(function(t){ if(r.trees[t]>best){best=r.trees[t]; topTree=t;} });
+      r.tree=topTree; r.m3=Number((n(r.m3)).toFixed(3)); return r;
+    }).filter(function(r){ return n(r.adet)>0 || n(r.m3)>0; }).sort(function(a,b){ return (n(b.adet)-n(a.adet)) || (n(b.m3)-n(a.m3)); }).slice(0,3);
+  }
+  async function loadLeaderRowsV154(){
+    var map=new Map();
+    // Önce mevcut admin verisi varsa anlık bilgilerden doldur.
+    try{
+      var adminUsers=(window.state && Array.isArray(state.adminOnlineUsers)) ? state.adminOnlineUsers : [];
+      adminUsers.forEach(function(u){ addUserAgg(map,u.name,u.seflik,null,u.weekInputAdet||u.todayInputAdet,u.weekInputM3||u.todayInputM3,"Kayıt"); });
+    }catch(e){}
+    var ready=null;
+    try{ ready = await Promise.race([Promise.resolve().then(function(){return ensureFirebaseReady();}), new Promise(function(_,rej){setTimeout(function(){rej(new Error("Firebase zaman aşımı"));},8000);})]); }catch(e){}
+    var db=ready && ready.db;
+    if(db){
+      // En güvenilir kaynak: her kullanıcının son bulut yedeğindeki gerçek kayıtlar.
+      try{
+        var latest=new Map();
+        var snap=await db.collection(typeof FIREBASE_BACKUPS_COLLECTION!=="undefined"?FIREBASE_BACKUPS_COLLECTION:"backups").get();
+        snap.forEach(function(doc){
+          try{
+            var d=doc.data()||{}; var payload=d.payload || (d.payloadText ? JSON.parse(d.payloadText) : null) || d;
+            var records=getPayloadRecords(payload); if(!records.length) return;
+            var name=d.name || d.userName || (payload.user && payload.user.name) || "Kullanıcı";
+            var seflik=d.seflik || (payload.user && payload.user.seflik) || "Şeflik";
+            var k=d.userKey || userKey(name,seflik);
+            var ms=n(d.createdAtMs||d.updatedAtMs||Date.parse(d.createdAt||d.updatedAt||""));
+            var old=latest.get(k); if(!old || ms>=old.ms) latest.set(k,{ms:ms,name:name,seflik:seflik,records:records});
+          }catch(e){}
+        });
+        latest.forEach(function(x){ addUserAgg(map,x.name,x.seflik,x.records); });
+      }catch(e){}
+      // Yedek yoksa veya eksikse usageStats ile tamamla.
+      try{
+        var us=await db.collection(typeof FIREBASE_USAGE_COLLECTION!=="undefined"?FIREBASE_USAGE_COLLECTION:"usageStats").get();
+        us.forEach(function(doc){
+          var d=doc.data()||{}; if(d.type==="statsResetMarker") return;
+          var name=d.name||d.userName||"Kullanıcı", seflik=d.seflik||"Şeflik";
+          var trees=[]; try{ if(d.weekSummary && Array.isArray(d.weekSummary.trees)) trees=d.weekSummary.trees; }catch(e){}
+          if(!trees.length){ try{ if(d.todaySummary && Array.isArray(d.todaySummary.trees)) trees=d.todaySummary.trees; }catch(e){} }
+          if(trees.length) trees.forEach(function(t){ addUserAgg(map,name,seflik,null,t.adet||t.count||t.totalAdet,t.m3||t.hacim||t.volume,t.name||t.agacAdi||t.tree); });
+          else addUserAgg(map,name,seflik,null,d.weekInputAdet||d.todayInputAdet,d.weekInputM3||d.todayInputM3,"Kayıt");
+        });
+      }catch(e){}
+    }
+    return finishRows(map);
+  }
+  function removeOldLeaderOverlays(){
+    ["leaderOverlayV150","leaderOverlayV153"].forEach(function(id){ var el=$(id); if(el) el.remove(); });
+  }
+  function ensureLeaderOverlayV154(){
+    removeOldLeaderOverlays();
+    var ov=$("leaderOverlayV154"); if(ov) return ov;
+    ov=document.createElement("div"); ov.id="leaderOverlayV154"; ov.className="issue-report-overlay leaders-overlay-v154"; ov.setAttribute("role","dialog"); ov.setAttribute("aria-modal","true"); ov.setAttribute("aria-label","Mesaha Liderleri");
+    ov.innerHTML='<div class="issue-report-card leaders-card-v154"><div class="issue-report-head"><div><h2>Mesaha Liderleri</h2><p class="leaders-sub-v150">İlk 3 kullanıcı. İsim ve şeflik gizlenir.</p></div><button id="leaderCloseBtnV154" class="ghost issue-report-close" type="button">×</button></div><div id="leadersModalListV154" class="leaders-list-v154"><div class="leaders-empty-v154">Pano yükleniyor...</div></div></div>';
+    document.body.appendChild(ov);
+    ov.addEventListener("click",function(ev){ if(ev.target===ov) closeLeadersV154(); });
+    var c=$("leaderCloseBtnV154"); if(c) c.addEventListener("click",closeLeadersV154);
+    return ov;
+  }
+  function closeLeadersV154(){ var ov=$("leaderOverlayV154"); if(ov) ov.classList.remove("show"); }
+  async function openLeadersV154(){
+    try{ var up=$("userPanelOverlay"); if(up) up.classList.remove("show"); }catch(e){}
+    var ov=ensureLeaderOverlayV154(), list=$("leadersModalListV154"); ov.classList.add("show");
+    if(list) list.innerHTML='<div class="leaders-empty-v154">Mesaha liderleri yükleniyor...</div>';
+    try{
+      var rows=await loadLeaderRowsV154();
+      if(!rows.length){ if(list) list.innerHTML='<div class="leaders-empty-v154">Pano verisi bulunamadı. Kullanıcılar yedek aldıkça veya mesaha dosyası indirdikçe burası dolacak.</div>'; return; }
+      if(list) list.innerHTML=rows.map(function(r,i){ return '<div class="leader-row-v154"><div class="leader-rank-v154">'+(i+1)+'</div><div class="leader-main-v154"><b>'+esc(mask(r.name))+' • '+esc(mask(r.seflik))+'</b><span>'+esc(r.tree||"Kayıt")+'</span></div><div class="leader-val-v154">'+fmtInt(r.adet)+' adet<small>'+fmtM3(r.m3)+'</small></div></div>'; }).join("");
+    }catch(e){ if(list) list.innerHTML='<div class="leaders-empty-v154">Liderler alınamadı. İnternet bağlantısını kontrol edip tekrar deneyin.</div>'; }
+  }
+
+  function isOpenKey(key){ try{return localStorage.getItem(key)==="1";}catch(e){return false;} }
+  function setOpenKey(key,val){ try{localStorage.setItem(key,val?"1":"0");}catch(e){} }
+  function currentTree(){ var inp=$("treeType"); return normTree((inp&&inp.value)||"Karaçam"); }
+  function updateMainTreeUi(){
+    var btn=$("treeTypeSelectBtn"), panel=$("treeTypePanel"); if(!btn||!panel) return;
+    var open=isOpenKey(TREE_OPEN_KEY);
+    if(panel.classList.contains("open")!==open) panel.classList.toggle("open",open);
+    var exp=open?"true":"false"; if(btn.getAttribute("aria-expanded")!==exp) btn.setAttribute("aria-expanded",exp);
+    var label="Ağaç Türü: "+currentTree()+" • "+(open?"Kapat":"Aç");
+    if(btn.textContent!==label) btn.textContent=label;
+    btn.classList.add("tree-toggle-fixed-v155");
+  }
+  function bindMainTreeToggle(){
+    var btn=$("treeTypeSelectBtn"), panel=$("treeTypePanel"), apply=$("treeTypeApplyBtn"); if(!btn||!panel) return;
+    if(apply) apply.style.setProperty("display","none","important");
+    if(!btn.__v154MainTree){ btn.__v154MainTree=true; btn.addEventListener("click",function(ev){ ev.preventDefault(); ev.stopPropagation(); if(ev.stopImmediatePropagation) ev.stopImmediatePropagation(); var open=!isOpenKey(TREE_OPEN_KEY); setOpenKey(TREE_OPEN_KEY,open); try{ if(typeof syncTreeTypePanel==="function") syncTreeTypePanel(); }catch(e){} updateMainTreeUi(); }, true); }
+    panel.querySelectorAll("label.wood-check").forEach(function(label){ if(label.__v154TreeChoice) return; label.__v154TreeChoice=true; label.addEventListener("click",function(ev){ var input=label.querySelector("input[type='radio']"); if(!input) return; ev.preventDefault(); ev.stopPropagation(); if(ev.stopImmediatePropagation) ev.stopImmediatePropagation(); input.checked=true; try{ if(typeof setTreeType==="function") setTreeType(input.value,true); else {var t=$("treeType"); if(t) t.value=input.value;} }catch(e){} try{ if(typeof syncTreeTypePanel==="function") syncTreeTypePanel(); }catch(e){} updateMainTreeUi(); try{ if(typeof showToast==="function") showToast(input.value+" seçildi."); }catch(e){} }, true); });
+    updateMainTreeUi();
+  }
+  function updateCleanTreeUi(){
+    var btn=$("cleanTreeToggleV146"), panel=$("cleanTreePanelV146"); if(!btn||!panel) return;
+    var open=isOpenKey(CLEAN_TREE_OPEN_KEY);
+    if(panel.classList.contains("open")!==open) panel.classList.toggle("open",open);
+    var label="Ağaç Türü: "+currentTree()+" • "+(open?"Kapat":"Aç"); if(btn.textContent!==label) btn.textContent=label;
+    var exp=open?"true":"false"; if(btn.getAttribute("aria-expanded")!==exp) btn.setAttribute("aria-expanded",exp);
+    btn.classList.add("tree-toggle-fixed-v155");
+    panel.querySelectorAll("[data-clean-tree]").forEach(function(b){ var on=normTree(b.getAttribute("data-clean-tree"))===currentTree(); if(b.classList.contains("active")!==on) b.classList.toggle("active", on); });
+  }
+  function bindCleanTreeToggle(){
+    var btn=$("cleanTreeToggleV146"), panel=$("cleanTreePanelV146"); if(!btn||!panel) return;
+    if(!btn.__v154CleanTree){ btn.__v154CleanTree=true; btn.addEventListener("click",function(ev){ ev.preventDefault(); ev.stopPropagation(); if(ev.stopImmediatePropagation) ev.stopImmediatePropagation(); var open=!isOpenKey(CLEAN_TREE_OPEN_KEY); setOpenKey(CLEAN_TREE_OPEN_KEY,open); updateCleanTreeUi(); }, true); }
+    if(!panel.__v154CleanTree){ panel.__v154CleanTree=true; panel.addEventListener("click",function(ev){ var b=ev.target.closest("[data-clean-tree]"); if(!b) return; ev.preventDefault(); ev.stopPropagation(); if(ev.stopImmediatePropagation) ev.stopImmediatePropagation(); var t=b.getAttribute("data-clean-tree")||"Karaçam"; try{ if(typeof setTreeType==="function") setTreeType(t,true); else {var inp=$("treeType"); if(inp) inp.value=t;} }catch(e){} updateCleanTreeUi(); try{ if(typeof renderCleanAutoV111==="function") renderCleanAutoV111(); }catch(e){} try{ if(typeof showToast==="function") showToast(t+" seçildi."); }catch(e){} }, true); }
+    updateCleanTreeUi();
+  }
+  var oldSetTree = (typeof setTreeType==="function") ? setTreeType : null;
+  if(oldSetTree && !oldSetTree.__v154KeepOpen){
+    setTreeType=function(){ var res=oldSetTree.apply(this,arguments); setTimeout(function(){ updateMainTreeUi(); updateCleanTreeUi(); },0); return res; };
+    setTreeType.__v154KeepOpen=true;
+  }
+  function forceFileInfoOpen(){ try{ document.querySelectorAll("details.info-details").forEach(function(d){ d.open=true; }); }catch(e){} }
+  var bootTimerV155 = null;
+  function boot(){
+    if(bootTimerV155) return;
+    bootTimerV155 = setTimeout(function(){
+      bootTimerV155 = null;
+      setVersion();
+      cleanupUserPanel();
+      bindMainTreeToggle();
+      bindCleanTreeToggle();
+      forceFileInfoOpen();
+    }, 40);
+  }
+  window.openMesahaLeadersV154=openLeadersV154; window.openMesahaLeadersV153=openLeadersV154; window.openMesahaLeadersV150=openLeadersV154;
+  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded", boot); else boot();
+  [250,1000,2500,5000].forEach(function(ms){ setTimeout(boot,ms); });
+  document.addEventListener("click", function(ev){
+    try{
+      if(ev.target && ev.target.closest && ev.target.closest("#userPanelOverlay")) setTimeout(boot, 0);
+    }catch(e){}
+  }, true);
+})();
+</script>
 
 
-<!-- v159 clean leaders + stable tree selector (no old leader code) -->
-<style id="mesaha-v159-style">
+<!-- v157 final user panel + tree toggle stabilization -->
+<style id="mesaha-v157-style">
+  body.user-panel-force-hidden #userPanelOverlay{
+    display:none !important;
+    opacity:0 !important;
+    pointer-events:none !important;
+  }
+  #userPanelOverlay .user-panel-actions{
+    display:flex !important;
+    flex-direction:column !important;
+    gap:12px !important;
+  }
+  #userPanelOverlay .user-panel-actions .user-update-offline-note{
+    order:99 !important;
+    margin-top:4px !important;
+  }
+  #userPanelOverlay .user-panel-actions button{
+    width:100%;
+  }
+  #leaderOverlayV157 .leaders-list-v157{
+    display:grid;
+    gap:14px;
+  }
+  #leaderOverlayV157 .leader-row-v157{
+    display:grid;
+    grid-template-columns:64px 1fr auto;
+    gap:14px;
+    align-items:center;
+    padding:16px 18px;
+    border:1px solid var(--line);
+    border-radius:22px;
+    background:var(--card-soft,#fff);
+  }
+  #leaderOverlayV157 .leader-rank-v157{
+    width:56px;
+    height:56px;
+    border-radius:18px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:900;
+    font-size:1.8rem;
+    background:var(--brand);
+    color:#fff;
+    box-shadow:var(--shadow-soft);
+  }
+  #leaderOverlayV157 .leader-main-v157{
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+    min-width:0;
+  }
+  #leaderOverlayV157 .leader-main-v157 b{
+    font-size:1.05rem;
+    line-height:1.2;
+  }
+  #leaderOverlayV157 .leader-main-v157 span{
+    color:var(--muted);
+    font-weight:800;
+  }
+  #leaderOverlayV157 .leader-val-v157{
+    text-align:right;
+    font-size:1.05rem;
+    font-weight:900;
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+    white-space:nowrap;
+  }
+  #leaderOverlayV157 .leader-val-v157 small{
+    font-size:1rem;
+    color:var(--muted);
+    font-weight:800;
+  }
+  #leaderOverlayV157 .leaders-empty-v157{
+    padding:18px;
+    border:1px dashed var(--line);
+    border-radius:20px;
+    color:var(--muted);
+    font-weight:800;
+    background:var(--card-soft,#fff);
+  }
+</style>
+<script id="mesaha-v157-script">
+(function(){
+  var APP_VISIBLE_VERSION = "Mesaha İO v1.87";
+  var APP_FILE_VERSION = "v158";
+  var TREE_OPEN_KEY = "mesaha_tree_panel_open_v157";
+  var CLEAN_TREE_OPEN_KEY = "mesaha_clean_tree_panel_open_v157";
+  var normalizeBusy = false;
+
+  function $(id){ return document.getElementById(id); }
+  function n(v){
+    var x = Number(String(v == null ? "" : v).replace(/\./g, "").replace(",", "."));
+    return isFinite(x) ? x : 0;
+  }
+  function esc(s){
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function(m){
+      return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m];
+    });
+  }
+  function fmtInt(v){
+    try { return Number(v || 0).toLocaleString("tr-TR"); } catch(e) { return String(v || 0); }
+  }
+  function fmtM3(v){
+    try { return Number(v || 0).toLocaleString("tr-TR", {minimumFractionDigits:3, maximumFractionDigits:3}) + " m³"; }
+    catch(e) { return String(v || 0) + " m³"; }
+  }
+  function mask(v){
+    v = String(v || "").trim();
+    if(!v) return "-";
+    if(v.length <= 2) return v;
+    return v.slice(0,2) + "*".repeat(Math.max(1, v.length - 2));
+  }
+  function getAdminCode(){
+    try { return (window.state && state.lastAdminCode) || sessionStorage.getItem("mesaha_admin_code") || window.ADMIN_CODE || ""; }
+    catch(e) { return window.ADMIN_CODE || ""; }
+  }
+
+  function setVersionV157(){
+    try { document.title = "Mesaha App v158"; } catch(e) {}
+    try {
+      var h1 = document.querySelector(".brand h1");
+      if(h1) h1.textContent = APP_VISIBLE_VERSION;
+    } catch(e) {}
+    try {
+      window.MESAHA_BUILD_INFO = Object.assign({}, window.MESAHA_BUILD_INFO || {}, {
+        visibleVersion: APP_VISIBLE_VERSION,
+        fileVersion: APP_FILE_VERSION,
+        v157: true,
+        updatedMs: Date.now()
+      });
+    } catch(e) {}
+    try {
+      if(typeof currentDeviceInfoPayload === "function" && !currentDeviceInfoPayload.__v157Wrap){
+        var old = currentDeviceInfoPayload;
+        currentDeviceInfoPayload = function(){
+          var info = old.apply(this, arguments) || {};
+          info.appVersion = APP_VISIBLE_VERSION;
+          info.fileVersion = APP_FILE_VERSION;
+          info.v157 = true;
+          return info;
+        };
+        currentDeviceInfoPayload.__v157Wrap = true;
+      }
+    } catch(e) {}
+  }
+
+  function closeUserPanelHard(){
+    try { if(typeof closeUserPanel === "function") closeUserPanel(); } catch(e) {}
+    document.body.classList.remove("user-panel-open");
+    document.body.classList.add("user-panel-force-hidden");
+  }
+  function releaseUserPanel(){
+    document.body.classList.remove("user-panel-force-hidden");
+  }
+
+  function removeOldLeaderArtifacts(){
+    ["leaderOverlayV150","leaderOverlayV153","leaderOverlayV154","leaderOverlayV156"].forEach(function(id){
+      var el = $(id);
+      if(el) el.remove();
+    });
+    document.querySelectorAll("#userPanelOverlay [id^='userLeadersPanel'], #userPanelOverlay [id^='userLeadersList']").forEach(function(el){
+      el.remove();
+    });
+  }
+
+  function normalizeUserPanelV157(){
+    if(normalizeBusy) return;
+    normalizeBusy = true;
+    try {
+      removeOldLeaderArtifacts();
+
+      var actions = document.querySelector("#userPanelOverlay .user-panel-actions");
+      if(!actions) return;
+
+      var changeBtn = $("panelChangeUserBtn");
+      var reportBtn = $("panelReportIssueBtn");
+      var adminBtn = $("panelAdminOpenBtn");
+      var updateBtn = $("userMenuForceUpdateBtn");
+      var note = actions.querySelector(".user-update-offline-note");
+
+      // Eski yamaların ve eski butonların tamamını kaldır.
+      Array.from(actions.children).forEach(function(el){
+        var txt = (el.textContent || "").replace(/\s+/g, " ").trim();
+        var id = el.id || "";
+        var isLeader = /Mesaha Liderleri/i.test(txt) || /^userLeadersToggle/i.test(id);
+        var isCloud = /Buluta Yedekle|Bulut Yedeklerini Getir/i.test(txt) || id === "panelCloudBackupBtn" || id === "panelPasswordBtn" || id === "panelCloudRestoreBtn";
+        var keep = el === changeBtn || el === reportBtn || el === adminBtn || el === updateBtn || el === note;
+        if(isLeader || isCloud || (!keep && el.tagName === "BUTTON")) el.remove();
+      });
+
+      // Tek liderler butonu.
+      var leaderBtn = $("userLeadersToggleV157");
+      if(!leaderBtn){
+        leaderBtn = document.createElement("button");
+        leaderBtn.id = "userLeadersToggleV157";
+        leaderBtn.className = "secondary";
+        leaderBtn.type = "button";
+      }
+      leaderBtn.textContent = "📊 Mesaha Liderleri";
+      leaderBtn.onclick = null;
+      leaderBtn.onpointerdown = null;
+      leaderBtn.onmousedown = null;
+      leaderBtn.__v157Bound = true;
+      leaderBtn.addEventListener("click", function(ev){
+        ev.preventDefault();
+        ev.stopPropagation();
+        if(ev.stopImmediatePropagation) ev.stopImmediatePropagation();
+        openLeadersV157();
+      }, true);
+
+      // Sıra kesin: liderler, kullanıcı değiştir, sorun bildir, admin, güncelle, not.
+      var ordered = [leaderBtn, changeBtn, reportBtn, adminBtn, updateBtn].filter(Boolean);
+      ordered.forEach(function(el){ actions.appendChild(el); });
+      if(note) actions.appendChild(note);
+
+      // Son bir kez kontrol: lider butonu sayısı 1 olacak.
+      var seenLeader = false;
+      Array.from(actions.children).forEach(function(el){
+        var txt = (el.textContent || "").replace(/\s+/g, " ").trim();
+        var isLeader = /Mesaha Liderleri/i.test(txt) || /^userLeadersToggle/i.test(el.id || "");
+        if(isLeader){
+          if(!seenLeader && el.id === "userLeadersToggleV157") seenLeader = true;
+          else el.remove();
+        }
+      });
+    } catch(e) {
+    } finally {
+      normalizeBusy = false;
+    }
+  }
+
+  var normalizeTimer = 0;
+  function scheduleNormalizeV157(){
+    clearTimeout(normalizeTimer);
+    normalizeTimer = setTimeout(normalizeUserPanelV157, 30);
+  }
+
+  function watchUserPanelV157(){
+    var actions = document.querySelector("#userPanelOverlay .user-panel-actions");
+    if(!actions || actions.__v157Observer) return;
+    var obs = new MutationObserver(function(){ scheduleNormalizeV157(); });
+    obs.observe(actions, { childList:true });
+    actions.__v157Observer = obs;
+  }
+
+  function isOpenKey(key){
+    try { return localStorage.getItem(key) === "1"; } catch(e) { return false; }
+  }
+  function setOpenKey(key, val){
+    try { localStorage.setItem(key, val ? "1" : "0"); } catch(e) {}
+  }
+  function currentTree(){
+    var inp = $("treeType");
+    return String((inp && inp.value) || "Karaçam").trim() || "Karaçam";
+  }
+
+  function updateMainTreeUiV157(){
+    var btn = $("treeTypeSelectBtn");
+    var panel = $("treeTypePanel");
+    if(!btn || !panel) return;
+    var apply = $("treeTypeApplyBtn");
+    if(apply) apply.style.setProperty("display", "none", "important");
+
+    var open = isOpenKey(TREE_OPEN_KEY);
+    panel.classList.toggle("open", open);
+    btn.setAttribute("aria-expanded", open ? "true" : "false");
+    btn.textContent = "Ağaç Türü: " + currentTree() + " • " + (open ? "Kapat" : "Aç");
+  }
+
+  function bindMainTreeToggleV157(){
+    var btn = $("treeTypeSelectBtn");
+    var panel = $("treeTypePanel");
+    if(!btn || !panel) return;
+
+    // Eski toggle eventlerini baypas etmek için düğmeyi klonla.
+    if(!btn.__v157Cloned){
+      var clone = btn.cloneNode(true);
+      clone.__v157Cloned = true;
+      btn.replaceWith(clone);
+      btn = clone;
+    }
+
+    if(!btn.__v157Bound){
+      btn.__v157Bound = true;
+      btn.addEventListener("click", function(ev){
+        ev.preventDefault();
+        ev.stopPropagation();
+        if(ev.stopImmediatePropagation) ev.stopImmediatePropagation();
+        setOpenKey(TREE_OPEN_KEY, !isOpenKey(TREE_OPEN_KEY));
+        updateMainTreeUiV157();
+      }, true);
+    }
+
+    panel.querySelectorAll("label.wood-check").forEach(function(label){
+      if(label.__v157Bound) return;
+      label.__v157Bound = true;
+      label.addEventListener("click", function(ev){
+        var input = label.querySelector("input[type='radio']");
+        if(!input) return;
+        ev.preventDefault();
+        ev.stopPropagation();
+        if(ev.stopImmediatePropagation) ev.stopImmediatePropagation();
+        input.checked = true;
+        try {
+          if(typeof setTreeType === "function") setTreeType(input.value, true);
+          else {
+            var t = $("treeType");
+            if(t) t.value = input.value;
+          }
+        } catch(e) {}
+        try { if(typeof syncTreeTypePanel === "function") syncTreeTypePanel(); } catch(e) {}
+        updateMainTreeUiV157();
+      }, true);
+    });
+
+    updateMainTreeUiV157();
+  }
+
+  function updateCleanTreeUiV157(){
+    var btn = $("cleanTreeToggleV146");
+    var panel = $("cleanTreePanelV146");
+    if(!btn || !panel) return;
+
+    var open = isOpenKey(CLEAN_TREE_OPEN_KEY);
+    panel.classList.toggle("open", open);
+    btn.setAttribute("aria-expanded", open ? "true" : "false");
+    btn.textContent = "Ağaç Türü: " + currentTree() + " • " + (open ? "Kapat" : "Aç");
+
+    panel.querySelectorAll("[data-clean-tree]").forEach(function(b){
+      b.classList.toggle("active", String(b.getAttribute("data-clean-tree") || "").trim() === currentTree());
+    });
+  }
+
+  function bindCleanTreeToggleV157(){
+    var btn = $("cleanTreeToggleV146");
+    var panel = $("cleanTreePanelV146");
+    if(!btn || !panel) return;
+
+    if(!btn.__v157Cloned){
+      var clone = btn.cloneNode(true);
+      clone.__v157Cloned = true;
+      btn.replaceWith(clone);
+      btn = clone;
+    }
+
+    if(!btn.__v157Bound){
+      btn.__v157Bound = true;
+      btn.addEventListener("click", function(ev){
+        ev.preventDefault();
+        ev.stopPropagation();
+        if(ev.stopImmediatePropagation) ev.stopImmediatePropagation();
+        setOpenKey(CLEAN_TREE_OPEN_KEY, !isOpenKey(CLEAN_TREE_OPEN_KEY));
+        updateCleanTreeUiV157();
+      }, true);
+    }
+
+    if(!panel.__v157Bound){
+      panel.__v157Bound = true;
+      panel.addEventListener("click", function(ev){
+        var b = ev.target.closest("[data-clean-tree]");
+        if(!b) return;
+        ev.preventDefault();
+        ev.stopPropagation();
+        if(ev.stopImmediatePropagation) ev.stopImmediatePropagation();
+        var t = b.getAttribute("data-clean-tree") || "Karaçam";
+        try {
+          if(typeof setTreeType === "function") setTreeType(t, true);
+          else {
+            var inp = $("treeType");
+            if(inp) inp.value = t;
+          }
+        } catch(e) {}
+        try { if(typeof renderCleanAutoV111 === "function") renderCleanAutoV111(); } catch(e) {}
+        updateCleanTreeUiV157();
+      }, true);
+    }
+
+    updateCleanTreeUiV157();
+  }
+
+  function ensureLeaderOverlayV157(){
+    removeOldLeaderArtifacts();
+    var ov = $("leaderOverlayV157");
+    if(ov) return ov;
+
+    ov = document.createElement("div");
+    ov.id = "leaderOverlayV157";
+    ov.className = "issue-report-overlay leaders-overlay-v157";
+    ov.setAttribute("role", "dialog");
+    ov.setAttribute("aria-modal", "true");
+    ov.setAttribute("aria-label", "Mesaha Liderleri");
+    ov.innerHTML = '<div class="issue-report-card leaders-card-v157"><div class="issue-report-head"><div><h2>Mesaha Liderleri</h2><p class="leaders-sub-v150">İlk 3 kullanıcı. İsim ve şeflik gizlenir.</p></div><button id="leaderCloseBtnV157" class="ghost issue-report-close" type="button">×</button></div><div id="leadersModalListV157" class="leaders-list-v157"><div class="leaders-empty-v157">Pano yükleniyor...</div></div></div>';
+    document.body.appendChild(ov);
+
+    ov.addEventListener("click", function(ev){
+      if(ev.target === ov) closeLeadersV157();
+    });
+    var close = $("leaderCloseBtnV157");
+    if(close) close.addEventListener("click", closeLeadersV157);
+    return ov;
+  }
+
+  function closeLeadersV157(){
+    var ov = $("leaderOverlayV157");
+    if(ov) ov.classList.remove("show");
+    releaseUserPanel();
+  }
+
+  function userTreeRows(user){
+    try {
+      if(user && user.weekSummary && Array.isArray(user.weekSummary.trees)) return user.weekSummary.trees;
+      if(user && user.todaySummary && Array.isArray(user.todaySummary.trees)) return user.todaySummary.trees;
+      if(user && Array.isArray(user.treeTotals)) return user.treeTotals;
+      if(user && user.allSummary && Array.isArray(user.allSummary.trees)) return user.allSummary.trees;
+    } catch(e) {}
+    return [];
+  }
+
+  function chooseTopTree(user){
+    var rows = userTreeRows(user);
+    if(!rows.length) return "-";
+    var best = rows.slice().sort(function(a,b){
+      return (n(b.adet || b.count || b.totalAdet) - n(a.adet || a.count || a.totalAdet)) ||
+             (n(b.m3 || b.hacim || b.volume) - n(a.m3 || a.hacim || a.volume));
+    })[0] || {};
+    return String(best.name || best.agacAdi || best.tree || "-");
+  }
+
+  async function fetchUsersForLeadersV157(){
+    var users = [];
+    try {
+      if(window.state && Array.isArray(state.adminOnlineUsers) && state.adminOnlineUsers.length) {
+        users = state.adminOnlineUsers.slice();
+      }
+    } catch(e) {}
+
+    if(!users.length){
+      try {
+        var cached = JSON.parse(localStorage.getItem("mesaha_admin_users_cache_v1") || "null");
+        if(cached && Array.isArray(cached.users)) users = cached.users.slice();
+      } catch(e) {}
+    }
+
+    try {
+      if(typeof loadOnlineUsers === "function"){
+        var fresh = await Promise.race([
+          loadOnlineUsers(getAdminCode()),
+          new Promise(function(_, reject){ setTimeout(function(){ reject(new Error("timeout")); }, 8000); })
+        ]);
+        if(Array.isArray(fresh) && fresh.length){
+          users = fresh.slice();
+          try { if(window.state) state.adminOnlineUsers = fresh.slice(); } catch(e) {}
+          try {
+            localStorage.setItem("mesaha_admin_users_cache_v1", JSON.stringify({
+              time: new Date().toLocaleTimeString("tr-TR", {hour:"2-digit", minute:"2-digit"}),
+              users: fresh
+            }));
+          } catch(e) {}
+        }
+      }
+    } catch(e) {}
+
+    return Array.isArray(users) ? users : [];
+  }
+
+  function leaderScore(user){
+    return {
+      adet: n(user && (user.todayInputAdet || user.weekInputAdet || user.inputAdet || user.adet)),
+      m3: n(user && (user.todayInputM3 || user.weekInputM3 || user.inputM3 || user.m3))
+    };
+  }
+  function leaderLastSeenMs(user){
+    return n(user && (user.lastUsageMs || user.lastLoginMs || user.updatedAtMs || user.createdAtMs));
+  }
+
+  async function loadLeaderRowsV157(){
+    var users = await fetchUsersForLeadersV157();
+    var rows = users.map(function(u){
+      var s = leaderScore(u);
+      return {
+        name: String(u.name || "Kullanıcı"),
+        seflik: String(u.seflik || "Şeflik"),
+        adet: s.adet,
+        m3: Number((s.m3 || 0).toFixed(3)),
+        tree: chooseTopTree(u),
+        lastSeen: leaderLastSeenMs(u)
+      };
+    }).filter(function(r){
+      return r.adet > 0 || r.m3 > 0;
+    });
+
+    rows.sort(function(a,b){
+      return (b.adet - a.adet) ||
+             (b.m3 - a.m3) ||
+             (b.lastSeen - a.lastSeen) ||
+             String(a.name).localeCompare(String(b.name), "tr");
+    });
+
+    return rows.slice(0, 3);
+  }
+
+  async function openLeadersV157(){
+    closeUserPanelHard();
+
+    var ov = ensureLeaderOverlayV157();
+    var list = $("leadersModalListV157");
+    ov.classList.add("show");
+
+    if(list) list.innerHTML = '<div class="leaders-empty-v157">Mesaha liderleri yükleniyor...</div>';
+
+    try {
+      var rows = await loadLeaderRowsV157();
+      if(!rows.length){
+        if(list) list.innerHTML = '<div class="leaders-empty-v157">Henüz uygun lider verisi bulunamadı.</div>';
+        return;
+      }
+
+      if(list){
+        list.innerHTML = rows.map(function(r,i){
+          return '<div class="leader-row-v157"><div class="leader-rank-v157">' + (i+1) + '</div><div class="leader-main-v157"><b>' + esc(mask(r.name)) + ' • ' + esc(mask(r.seflik)) + '</b><span>' + esc(r.tree || "-") + '</span></div><div class="leader-val-v157">' + fmtInt(r.adet) + ' adet<small>' + fmtM3(r.m3) + '</small></div></div>';
+        }).join("");
+      }
+    } catch(e) {
+      if(list) list.innerHTML = '<div class="leaders-empty-v157">Liderler alınamadı. İnterneti kontrol edip tekrar deneyin.</div>';
+    }
+  }
+
+  function forceFileInfoOpen(){
+    try { document.querySelectorAll("details.info-details").forEach(function(d){ d.open = true; }); } catch(e) {}
+  }
+
+  function bootV157(){
+    setVersionV157();
+    normalizeUserPanelV157();
+    watchUserPanelV157();
+    bindMainTreeToggleV157();
+    bindCleanTreeToggleV157();
+    forceFileInfoOpen();
+  }
+
+  window.openMesahaLeadersV157 = openLeadersV157;
+  window.openMesahaLeadersV156 = openLeadersV157;
+  window.openMesahaLeadersV154 = openLeadersV157;
+  window.openMesahaLeadersV153 = openLeadersV157;
+  window.openMesahaLeadersV150 = openLeadersV157;
+
+  if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", bootV157);
+  else bootV157();
+
+  [100, 400, 900, 1600, 2800, 5200, 7600, 11000].forEach(function(ms){
+    setTimeout(bootV157, ms);
+  });
+})();
+</script>
+
+
+<!-- v158 final leaders data + stable tree selector -->
+<style id="mesaha-v158-style">
+  /* Eski ağaç seçimini tamamen gizleyip kendi sabit panelimizi gösteriyoruz. */
   #treeTypeSelectBtn,
   #treeTypePanel,
   #cleanTreeToggleV146,
@@ -19970,227 +21895,473 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     opacity:0 !important;
     pointer-events:none !important;
   }
-  .tree-stable-v159{display:block;margin-top:8px;}
-  .tree-stable-toggle-v159{
-    width:100%;border-radius:18px;padding:16px 18px;font-weight:950;
-    border:1px solid var(--line);background:var(--card-soft,#fff);color:var(--text,#0f172a);text-align:left;
+  .tree-stable-v158{
+    display:block;
+    margin-top:8px;
   }
-  .tree-stable-toggle-v159 b{float:right;font-weight:950;}
-  .tree-stable-panel-v159{display:none;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:10px;}
-  .tree-stable-panel-v159.open{display:grid;}
-  .tree-stable-panel-v159 button{
-    border:1px solid var(--line);border-radius:16px;padding:14px;font-weight:900;background:var(--card-soft,#fff);color:var(--text,#0f172a);
+  .tree-stable-toggle-v158{
+    width:100%;
+    border-radius:18px;
+    padding:16px 18px;
+    font-weight:950;
+    border:1px solid var(--line);
+    background:var(--card-soft,#fff);
+    color:var(--text,#0f172a);
+    text-align:left;
   }
-  .tree-stable-panel-v159 button.active{border-color:#22c55e;background:rgba(34,197,94,.16);color:#166534;}
-  body.theme-dark .tree-stable-toggle-v159,body.theme-dark .tree-stable-panel-v159 button{background:#151922;color:#eef2f7;border-color:#2b3340;}
-  body.theme-dark .tree-stable-panel-v159 button.active{background:rgba(34,197,94,.18);color:#bbf7d0;border-color:#22c55e;}
-  body.user-panel-force-hidden #userPanelOverlay{display:none !important;opacity:0 !important;pointer-events:none !important;}
-  #userPanelOverlay .user-panel-actions{display:flex !important;flex-direction:column !important;gap:12px !important;}
-  #userPanelOverlay .user-panel-actions .user-update-offline-note{order:99 !important;margin-top:4px !important;}
-  #leaderOverlayV159 .leaders-list-v159{display:grid;gap:14px;}
-  #leaderOverlayV159 .leader-row-v159{
-    display:grid;grid-template-columns:64px 1fr auto;gap:14px;align-items:center;padding:16px 18px;
-    border:1px solid var(--line);border-radius:22px;background:var(--card-soft,#fff);
+  .tree-stable-toggle-v158 b{
+    float:right;
+    font-weight:950;
   }
-  #leaderOverlayV159 .leader-rank-v159{
-    width:56px;height:56px;border-radius:18px;display:flex;align-items:center;justify-content:center;
-    font-weight:900;font-size:1.8rem;background:var(--brand);color:#fff;
+  .tree-stable-panel-v158{
+    display:none;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:10px;
+    margin-top:10px;
   }
-  #leaderOverlayV159 .leader-main-v159{display:flex;flex-direction:column;gap:4px;min-width:0;}
-  #leaderOverlayV159 .leader-main-v159 b{font-size:1.05rem;line-height:1.2;}
-  #leaderOverlayV159 .leader-main-v159 span{color:var(--muted);font-weight:850;}
-  #leaderOverlayV159 .leader-val-v159{text-align:right;font-size:1.05rem;font-weight:950;display:flex;flex-direction:column;gap:4px;white-space:nowrap;}
-  #leaderOverlayV159 .leader-val-v159 small{font-size:1rem;color:var(--muted);font-weight:850;}
-  #leaderOverlayV159 .leaders-empty-v159{padding:18px;border:1px dashed var(--line);border-radius:20px;color:var(--muted);font-weight:850;background:var(--card-soft,#fff);}
+  .tree-stable-panel-v158.open{
+    display:grid;
+  }
+  .tree-stable-panel-v158 button{
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:14px;
+    font-weight:900;
+    background:var(--card-soft,#fff);
+    color:var(--text,#0f172a);
+  }
+  .tree-stable-panel-v158 button.active{
+    border-color:#22c55e;
+    background:rgba(34,197,94,.16);
+    color:#166534;
+  }
+  body.theme-dark .tree-stable-toggle-v158,
+  body.theme-dark .tree-stable-panel-v158 button{
+    background:#151922;
+    color:#eef2f7;
+    border-color:#2b3340;
+  }
+  body.theme-dark .tree-stable-panel-v158 button.active{
+    background:rgba(34,197,94,.18);
+    color:#bbf7d0;
+    border-color:#22c55e;
+  }
+  body.user-panel-force-hidden #userPanelOverlay{
+    display:none !important;
+    opacity:0 !important;
+    pointer-events:none !important;
+  }
+  #userPanelOverlay .user-panel-actions{
+    display:flex !important;
+    flex-direction:column !important;
+    gap:12px !important;
+  }
+  #userPanelOverlay .user-panel-actions .user-update-offline-note{
+    order:99 !important;
+    margin-top:4px !important;
+  }
+  #leaderOverlayV158 .leaders-list-v158{
+    display:grid;
+    gap:14px;
+  }
+  #leaderOverlayV158 .leader-row-v158{
+    display:grid;
+    grid-template-columns:64px 1fr auto;
+    gap:14px;
+    align-items:center;
+    padding:16px 18px;
+    border:1px solid var(--line);
+    border-radius:22px;
+    background:var(--card-soft,#fff);
+  }
+  #leaderOverlayV158 .leader-rank-v158{
+    width:56px;
+    height:56px;
+    border-radius:18px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:900;
+    font-size:1.8rem;
+    background:var(--brand);
+    color:#fff;
+  }
+  #leaderOverlayV158 .leader-main-v158{
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+    min-width:0;
+  }
+  #leaderOverlayV158 .leader-main-v158 b{
+    font-size:1.05rem;
+    line-height:1.2;
+  }
+  #leaderOverlayV158 .leader-main-v158 span{
+    color:var(--muted);
+    font-weight:850;
+  }
+  #leaderOverlayV158 .leader-val-v158{
+    text-align:right;
+    font-size:1.05rem;
+    font-weight:950;
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+    white-space:nowrap;
+  }
+  #leaderOverlayV158 .leader-val-v158 small{
+    font-size:1rem;
+    color:var(--muted);
+    font-weight:850;
+  }
+  #leaderOverlayV158 .leaders-empty-v158{
+    padding:18px;
+    border:1px dashed var(--line);
+    border-radius:20px;
+    color:var(--muted);
+    font-weight:850;
+    background:var(--card-soft,#fff);
+  }
 </style>
-<script id="mesaha-v159-script">
+<script id="mesaha-v158-script">
 (function(){
-  "use strict";
-  var APP_VISIBLE_VERSION="Mesaha İO v1.88";
-  var APP_FILE_VERSION="v159";
-  var TREE_MAIN_KEY="mesaha_stable_tree_main_open_v159";
-  var TREE_CLEAN_KEY="mesaha_stable_tree_clean_open_v159";
-  var TREE_NAMES=["Karaçam","Sarıçam","Sedir","Göknar","Kızılçam"];
+  var APP_VISIBLE_VERSION = "Mesaha İO v1.87";
+  var APP_FILE_VERSION = "v158";
+  var TREE_MAIN_KEY = "mesaha_stable_tree_main_open_v158";
+  var TREE_CLEAN_KEY = "mesaha_stable_tree_clean_open_v158";
+  var TREE_NAMES = ["Karaçam","Sarıçam","Sedir","Göknar","Kızılçam"];
 
-  function $(id){return document.getElementById(id);}
-  function q(sel,root){return (root||document).querySelector(sel);}
-  function qa(sel,root){return Array.from((root||document).querySelectorAll(sel));}
-  function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(m){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m];});}
+  function $(id){ return document.getElementById(id); }
+  function q(sel, root){ return (root || document).querySelector(sel); }
+  function qa(sel, root){ return Array.from((root || document).querySelectorAll(sel)); }
+
+  function esc(s){
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function(m){
+      return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m];
+    });
+  }
   function smartNumber(v){
-    if(v==null) return 0;
-    var s=String(v).replace(/m³|m3|adet|Giriş|Süre|Adet|dk|sa/gi,"").replace(/\s+/g,"").trim();
+    if(v == null) return 0;
+    var s = String(v).replace(/m³|m3|adet|Giriş|Süre|Adet|dk|sa/gi, "").replace(/\s+/g, "").trim();
     if(!s) return 0;
-    s=s.replace(/[^0-9,.\-]/g,"");
-    if(!s||s==="-"||s===","||s===".") return 0;
-    var hasComma=s.indexOf(",")>=0, hasDot=s.indexOf(".")>=0;
-    if(hasComma&&hasDot){s=s.replace(/\./g,"").replace(",",".");}
-    else if(hasComma){s=s.replace(",",".");}
-    else if(hasDot){var parts=s.split("."); if(parts.length>2) s=parts.join(""); else if(parts[1]&&parts[1].length===3&&parts[0].length>2) s=parts.join("");}
-    var n=Number(s); return isFinite(n)?n:0;
+    s = s.replace(/[^0-9,.\-]/g, "");
+    if(!s || s === "-" || s === "," || s === ".") return 0;
+    var hasComma = s.indexOf(",") >= 0;
+    var hasDot = s.indexOf(".") >= 0;
+    if(hasComma && hasDot){
+      s = s.replace(/\./g, "").replace(",", ".");
+    }else if(hasComma){
+      s = s.replace(",", ".");
+    }else if(hasDot){
+      var parts = s.split(".");
+      if(parts.length > 2) s = parts.join("");
+      else if(parts[1] && parts[1].length === 3 && parts[0].length > 2) s = parts.join("");
+    }
+    var n = Number(s);
+    return isFinite(n) ? n : 0;
   }
-  function fmtInt(v){try{return Math.round(Number(v||0)).toLocaleString("tr-TR");}catch(e){return String(v||0);}}
-  function fmtM3(v){try{return Number(v||0).toLocaleString("tr-TR",{minimumFractionDigits:3,maximumFractionDigits:3})+" m³";}catch(e){return String(v||0)+" m³";}}
-  function mask(v){v=String(v||"").trim(); if(!v) return "-"; if(v.length<=2) return v; return v.slice(0,2)+"*".repeat(Math.max(1,v.length-2));}
-
-  function setVersion(){
-    try{document.title="Mesaha App v159";}catch(e){}
-    try{var h1=q(".brand h1"); if(h1) h1.textContent=APP_VISIBLE_VERSION;}catch(e){}
-    try{window.MESAHA_BUILD_INFO=Object.assign({},window.MESAHA_BUILD_INFO||{},{visibleVersion:APP_VISIBLE_VERSION,fileVersion:APP_FILE_VERSION,v159:true});}catch(e){}
-    try{
-      if(typeof currentDeviceInfoPayload==="function"&&!currentDeviceInfoPayload.__v159Wrap){
-        var old=currentDeviceInfoPayload;
-        currentDeviceInfoPayload=function(){var info=old.apply(this,arguments)||{}; info.appVersion=APP_VISIBLE_VERSION; info.fileVersion=APP_FILE_VERSION; info.v159=true; return info;};
-        currentDeviceInfoPayload.__v159Wrap=true;
-      }
-    }catch(e){}
+  function fmtInt(v){
+    try { return Math.round(Number(v || 0)).toLocaleString("tr-TR"); } catch(e){ return String(v || 0); }
   }
-
-  function getTreeValue(){var inp=$("treeType"); return String((inp&&inp.value)||"Karaçam").trim()||"Karaçam";}
-  function isOpen(key){try{return localStorage.getItem(key)==="1";}catch(e){return false;}}
-  function setOpen(key,val){try{localStorage.setItem(key,val?"1":"0");}catch(e){}}
-
+  function fmtM3(v){
+    try { return Number(v || 0).toLocaleString("tr-TR", { minimumFractionDigits:3, maximumFractionDigits:3 }) + " m³"; }
+    catch(e){ return String(v || 0) + " m³"; }
+  }
+  function mask(v){
+    v = String(v || "").trim();
+    if(!v) return "-";
+    if(v.length <= 2) return v;
+    return v.slice(0,2) + "*".repeat(Math.max(1, v.length - 2));
+  }
+  function getTreeValue(){
+    var inp = $("treeType");
+    return String((inp && inp.value) || "Karaçam").trim() || "Karaçam";
+  }
   function setTreeValue(name){
     try{
-      if(typeof setTreeType==="function") setTreeType(name,true);
-      else {var inp=$("treeType"); if(inp) inp.value=name;}
+      if(typeof setTreeType === "function") setTreeType(name, true);
+      else {
+        var inp = $("treeType");
+        if(inp) inp.value = name;
+      }
     }catch(e){}
-    try{if(typeof syncTreeTypePanel==="function") syncTreeTypePanel();}catch(e){}
-    try{if(typeof renderCleanAutoV111==="function") renderCleanAutoV111();}catch(e){}
-    updateStableTrees();
+    try{ if(typeof syncTreeTypePanel === "function") syncTreeTypePanel(); }catch(e){}
+    try{ if(typeof renderCleanAutoV111 === "function") renderCleanAutoV111(); }catch(e){}
+    updateStableTreesV158();
   }
-
+  function isOpen(key){
+    try { return localStorage.getItem(key) === "1"; } catch(e){ return false; }
+  }
+  function setOpen(key, val){
+    try { localStorage.setItem(key, val ? "1" : "0"); } catch(e){}
+  }
   function stableTreeHtml(kind){
-    return '<div id="stableTreeWrap'+kind+'V159" class="tree-stable-v159"><button id="stableTreeToggle'+kind+'V159" class="tree-stable-toggle-v159" type="button"></button><div id="stableTreePanel'+kind+'V159" class="tree-stable-panel-v159">'+TREE_NAMES.map(function(t){return '<button type="button" data-stable-tree-v159="'+esc(t)+'">'+esc(t)+'</button>';}).join("")+'</div></div>';
+    return '<div id="stableTreeWrap'+kind+'V158" class="tree-stable-v158">' +
+      '<button id="stableTreeToggle'+kind+'V158" class="tree-stable-toggle-v158" type="button"></button>' +
+      '<div id="stableTreePanel'+kind+'V158" class="tree-stable-panel-v158">' +
+      TREE_NAMES.map(function(t){ return '<button type="button" data-stable-tree-v158="'+esc(t)+'">'+esc(t)+'</button>'; }).join("") +
+      '</div></div>';
   }
   function ensureStableMainTree(){
-    var oldBtn=$("treeTypeSelectBtn"); if(!oldBtn) return;
-    var head=oldBtn.closest(".product-select-head")||oldBtn.parentElement; if(!head) return;
-    if(!$("stableTreeWrapMainV159")) head.insertAdjacentHTML("afterend",stableTreeHtml("Main"));
-    var toggle=$("stableTreeToggleMainV159"), panel=$("stableTreePanelMainV159");
-    if(toggle&&!toggle.__v159){toggle.__v159=true; toggle.addEventListener("click",function(ev){ev.preventDefault();ev.stopPropagation();setOpen(TREE_MAIN_KEY,!isOpen(TREE_MAIN_KEY));updateStableTrees();});}
-    if(panel&&!panel.__v159){panel.__v159=true; panel.addEventListener("click",function(ev){var b=ev.target.closest("[data-stable-tree-v159]"); if(!b)return; ev.preventDefault();ev.stopPropagation();setTreeValue(b.getAttribute("data-stable-tree-v159")||"Karaçam");});}
+    var oldBtn = $("treeTypeSelectBtn");
+    if(!oldBtn) return;
+    var head = oldBtn.closest(".product-select-head") || oldBtn.parentElement;
+    if(!head) return;
+    if(!$("stableTreeWrapMainV158")){
+      head.insertAdjacentHTML("afterend", stableTreeHtml("Main"));
+    }
+    var toggle = $("stableTreeToggleMainV158");
+    var panel = $("stableTreePanelMainV158");
+    if(toggle && !toggle.__v158){
+      toggle.__v158 = true;
+      toggle.addEventListener("click", function(ev){
+        ev.preventDefault();
+        ev.stopPropagation();
+        setOpen(TREE_MAIN_KEY, !isOpen(TREE_MAIN_KEY));
+        updateStableTreesV158();
+      });
+    }
+    if(panel && !panel.__v158){
+      panel.__v158 = true;
+      panel.addEventListener("click", function(ev){
+        var b = ev.target.closest("[data-stable-tree-v158]");
+        if(!b) return;
+        ev.preventDefault();
+        ev.stopPropagation();
+        setTreeValue(b.getAttribute("data-stable-tree-v158") || "Karaçam");
+      });
+    }
   }
   function ensureStableCleanTree(){
-    var oldBtn=$("cleanTreeToggleV146"); if(!oldBtn) return;
-    var holder=oldBtn.closest(".quick-tree-head-v146")||oldBtn.parentElement; if(!holder) return;
-    if(!$("stableTreeWrapCleanV159")) holder.insertAdjacentHTML("afterend",stableTreeHtml("Clean"));
-    var toggle=$("stableTreeToggleCleanV159"), panel=$("stableTreePanelCleanV159");
-    if(toggle&&!toggle.__v159){toggle.__v159=true; toggle.addEventListener("click",function(ev){ev.preventDefault();ev.stopPropagation();setOpen(TREE_CLEAN_KEY,!isOpen(TREE_CLEAN_KEY));updateStableTrees();});}
-    if(panel&&!panel.__v159){panel.__v159=true; panel.addEventListener("click",function(ev){var b=ev.target.closest("[data-stable-tree-v159]"); if(!b)return; ev.preventDefault();ev.stopPropagation();setTreeValue(b.getAttribute("data-stable-tree-v159")||"Karaçam");});}
+    var oldBtn = $("cleanTreeToggleV146");
+    if(!oldBtn) return;
+    var holder = oldBtn.closest(".quick-tree-head-v146") || oldBtn.parentElement;
+    if(!holder) return;
+    if(!$("stableTreeWrapCleanV158")){
+      holder.insertAdjacentHTML("afterend", stableTreeHtml("Clean"));
+    }
+    var toggle = $("stableTreeToggleCleanV158");
+    var panel = $("stableTreePanelCleanV158");
+    if(toggle && !toggle.__v158){
+      toggle.__v158 = true;
+      toggle.addEventListener("click", function(ev){
+        ev.preventDefault();
+        ev.stopPropagation();
+        setOpen(TREE_CLEAN_KEY, !isOpen(TREE_CLEAN_KEY));
+        updateStableTreesV158();
+      });
+    }
+    if(panel && !panel.__v158){
+      panel.__v158 = true;
+      panel.addEventListener("click", function(ev){
+        var b = ev.target.closest("[data-stable-tree-v158]");
+        if(!b) return;
+        ev.preventDefault();
+        ev.stopPropagation();
+        setTreeValue(b.getAttribute("data-stable-tree-v158") || "Karaçam");
+      });
+    }
   }
-  function updateStableTrees(){
-    var current=getTreeValue();
-    [{kind:"Main",key:TREE_MAIN_KEY},{kind:"Clean",key:TREE_CLEAN_KEY}].forEach(function(x){
-      var toggle=$("stableTreeToggle"+x.kind+"V159"), panel=$("stableTreePanel"+x.kind+"V159"); if(!toggle||!panel)return;
-      var open=isOpen(x.key);
-      toggle.innerHTML='Ağaç Türü: <strong>'+esc(current)+'</strong> <b>'+(open?"Kapat":"Aç")+'</b>';
-      panel.classList.toggle("open",open);
-      panel.querySelectorAll("[data-stable-tree-v159]").forEach(function(b){b.classList.toggle("active",b.getAttribute("data-stable-tree-v159")===current);});
+  function updateStableTreesV158(){
+    var current = getTreeValue();
+    [
+      {kind:"Main", key:TREE_MAIN_KEY},
+      {kind:"Clean", key:TREE_CLEAN_KEY}
+    ].forEach(function(x){
+      var toggle = $("stableTreeToggle"+x.kind+"V158");
+      var panel = $("stableTreePanel"+x.kind+"V158");
+      if(!toggle || !panel) return;
+      var open = isOpen(x.key);
+      toggle.innerHTML = 'Ağaç Türü: <strong>'+esc(current)+'</strong> <b>'+(open ? "Kapat" : "Aç")+'</b>';
+      panel.classList.toggle("open", open);
+      panel.querySelectorAll("[data-stable-tree-v158]").forEach(function(b){
+        b.classList.toggle("active", b.getAttribute("data-stable-tree-v158") === current);
+      });
     });
   }
 
   function removeOldLeaderStuff(){
-    ["leaderOverlayV150","leaderOverlayV153","leaderOverlayV154","leaderOverlayV156","leaderOverlayV157","leaderOverlayV158"].forEach(function(id){var el=$(id); if(el) el.remove();});
-    qa("#userPanelOverlay [id^='userLeadersPanel'], #userPanelOverlay [id^='userLeadersList']").forEach(function(el){el.remove();});
+    ["leaderOverlayV150","leaderOverlayV153","leaderOverlayV154","leaderOverlayV156","leaderOverlayV157"].forEach(function(id){
+      var el = $(id);
+      if(el) el.remove();
+    });
+    qa("#userPanelOverlay [id^='userLeadersPanel'], #userPanelOverlay [id^='userLeadersList']").forEach(function(el){ el.remove(); });
   }
   function normalizeUserPanel(){
-    var actions=q("#userPanelOverlay .user-panel-actions"); if(!actions) return;
+    var actions = q("#userPanelOverlay .user-panel-actions");
+    if(!actions) return;
     removeOldLeaderStuff();
-    var note=q(".user-update-offline-note",actions);
-    var changeBtn=$("panelChangeUserBtn"), reportBtn=$("panelReportIssueBtn"), adminBtn=$("panelAdminOpenBtn"), updateBtn=$("userMenuForceUpdateBtn");
-    qa("button",actions).forEach(function(btn){
-      var txt=(btn.textContent||"").replace(/\s+/g," ").trim(), id=btn.id||"";
-      var oldLeader=/Mesaha Liderleri/i.test(txt)||/^userLeadersToggle/i.test(id);
-      var oldCloud=/Buluta Yedekle|Bulut Yedeklerini Getir/i.test(txt)||id==="panelCloudBackupBtn"||id==="panelPasswordBtn"||id==="panelCloudRestoreBtn";
-      var keep=btn===changeBtn||btn===reportBtn||btn===adminBtn||btn===updateBtn;
-      if(oldLeader||oldCloud||!keep) btn.remove();
+    var note = q(".user-update-offline-note", actions);
+    var changeBtn = $("panelChangeUserBtn");
+    var reportBtn = $("panelReportIssueBtn");
+    var adminBtn = $("panelAdminOpenBtn");
+    var updateBtn = $("userMenuForceUpdateBtn");
+
+    qa("button", actions).forEach(function(btn){
+      var txt = (btn.textContent || "").replace(/\s+/g, " ").trim();
+      var id = btn.id || "";
+      var oldLeader = /Mesaha Liderleri/i.test(txt) || /^userLeadersToggle/i.test(id);
+      var oldCloud = /Buluta Yedekle|Bulut Yedeklerini Getir/i.test(txt) || id === "panelCloudBackupBtn" || id === "panelPasswordBtn" || id === "panelCloudRestoreBtn";
+      var keep = btn === changeBtn || btn === reportBtn || btn === adminBtn || btn === updateBtn;
+      if(oldLeader || oldCloud || !keep) btn.remove();
     });
-    var leaderBtn=document.createElement("button");
-    leaderBtn.id="userLeadersToggleV159"; leaderBtn.type="button"; leaderBtn.className="secondary"; leaderBtn.textContent="📊 Mesaha Liderleri";
-    leaderBtn.addEventListener("click",function(ev){ev.preventDefault();ev.stopPropagation();if(ev.stopImmediatePropagation)ev.stopImmediatePropagation();openLeaders();},true);
-    actions.innerHTML="";
-    [leaderBtn,changeBtn,reportBtn,adminBtn,updateBtn].filter(Boolean).forEach(function(el){actions.appendChild(el);});
+
+    var leaderBtn = $("userLeadersToggleV158");
+    if(!leaderBtn){
+      leaderBtn = document.createElement("button");
+      leaderBtn.id = "userLeadersToggleV158";
+      leaderBtn.type = "button";
+      leaderBtn.className = "secondary";
+    }else{
+      leaderBtn = leaderBtn.cloneNode(true);
+    }
+    leaderBtn.textContent = "📊 Mesaha Liderleri";
+    leaderBtn.addEventListener("click", function(ev){
+      ev.preventDefault();
+      ev.stopPropagation();
+      if(ev.stopImmediatePropagation) ev.stopImmediatePropagation();
+      openLeadersV158();
+    }, true);
+
+    actions.innerHTML = "";
+    [leaderBtn, changeBtn, reportBtn, adminBtn, updateBtn].filter(Boolean).forEach(function(el){ actions.appendChild(el); });
     if(note) actions.appendChild(note);
   }
-
   function closeUserPanelHard(){
-    try{if(typeof closeUserPanel==="function")closeUserPanel();}catch(e){}
+    try { if(typeof closeUserPanel === "function") closeUserPanel(); } catch(e){}
     document.body.classList.remove("user-panel-open");
     document.body.classList.add("user-panel-force-hidden");
   }
-  function releaseUserPanel(){document.body.classList.remove("user-panel-force-hidden");}
+  function releaseUserPanel(){
+    document.body.classList.remove("user-panel-force-hidden");
+  }
   function ensureLeaderOverlay(){
     removeOldLeaderStuff();
-    var ov=$("leaderOverlayV159"); if(ov)return ov;
-    ov=document.createElement("div"); ov.id="leaderOverlayV159"; ov.className="issue-report-overlay leaders-overlay-v159"; ov.setAttribute("role","dialog"); ov.setAttribute("aria-modal","true"); ov.setAttribute("aria-label","Mesaha Liderleri");
-    ov.innerHTML='<div class="issue-report-card leaders-card-v159"><div class="issue-report-head"><div><h2>Mesaha Liderleri</h2><p class="leaders-sub-v150">İlk 3 kullanıcı. İsim ve şeflik gizlenir.</p></div><button id="leaderCloseBtnV159" class="ghost issue-report-close" type="button">×</button></div><div id="leadersModalListV159" class="leaders-list-v159"><div class="leaders-empty-v159">Pano yükleniyor...</div></div></div>';
+    var ov = $("leaderOverlayV158");
+    if(ov) return ov;
+    ov = document.createElement("div");
+    ov.id = "leaderOverlayV158";
+    ov.className = "issue-report-overlay leaders-overlay-v158";
+    ov.setAttribute("role", "dialog");
+    ov.setAttribute("aria-modal", "true");
+    ov.setAttribute("aria-label", "Mesaha Liderleri");
+    ov.innerHTML = '<div class="issue-report-card leaders-card-v158"><div class="issue-report-head"><div><h2>Mesaha Liderleri</h2><p class="leaders-sub-v150">İlk 3 kullanıcı. İsim ve şeflik gizlenir.</p></div><button id="leaderCloseBtnV158" class="ghost issue-report-close" type="button">×</button></div><div id="leadersModalListV158" class="leaders-list-v158"><div class="leaders-empty-v158">Pano yükleniyor...</div></div></div>';
     document.body.appendChild(ov);
-    ov.addEventListener("click",function(ev){if(ev.target===ov)closeLeaders();});
-    var c=$("leaderCloseBtnV159"); if(c)c.addEventListener("click",closeLeaders);
+    ov.addEventListener("click", function(ev){ if(ev.target === ov) closeLeadersV158(); });
+    var close = $("leaderCloseBtnV158");
+    if(close) close.addEventListener("click", closeLeadersV158);
     return ov;
   }
-  function closeLeaders(){var ov=$("leaderOverlayV159"); if(ov)ov.classList.remove("show"); releaseUserPanel();}
-
+  function closeLeadersV158(){
+    var ov = $("leaderOverlayV158");
+    if(ov) ov.classList.remove("show");
+    releaseUserPanel();
+  }
   function parseAdminRows(){
-    var rows=[];
+    var rows = [];
     qa(".admin-user-row-v131").forEach(function(row){
-      var name=(q(".admin-user-main-v131 b",row)||{}).textContent||"";
-      var seflikLine=(q(".admin-user-main-v131 span",row)||{}).textContent||"";
-      var seflik=seflikLine.split("•")[0].trim();
-      var adet=0,m3=0;
-      qa(".admin-user-stats-v131 span",row).forEach(function(span){
-        var txt=(span.textContent||"").replace(/\s+/g," ").trim();
-        if(/^Adet\b/i.test(txt)) adet=smartNumber(txt);
-        if(/^m³|^m3/i.test(txt)) m3=smartNumber(txt);
+      var name = (q(".admin-user-main-v131 b", row) || {}).textContent || "";
+      var seflikLine = (q(".admin-user-main-v131 span", row) || {}).textContent || "";
+      var seflik = seflikLine.split("•")[0].trim();
+      var adet = 0, m3 = 0;
+      qa(".admin-user-stats-v131 span", row).forEach(function(span){
+        var txt = (span.textContent || "").replace(/\s+/g, " ").trim();
+        if(/^Adet\b/i.test(txt)) adet = smartNumber(txt);
+        if(/^m³|^m3/i.test(txt)) m3 = smartNumber(txt);
       });
-      if(name&&(adet>0||m3>0)){
-        if(adet>0&&m3/adet>5)m3=0;
-        if(m3>10000)m3=0;
-        rows.push({name:name,seflik:seflik||"-",adet:adet,m3:m3,tree:"Toplam"});
+      if(name && (adet > 0 || m3 > 0)){
+        // Aşırı bozuk m³ verilerini lider panosunda göstermiyoruz.
+        if(adet > 0 && m3 / adet > 5) m3 = 0;
+        if(m3 > 10000) m3 = 0;
+        rows.push({name:name, seflik:seflik || "-", adet:adet, m3:m3, tree:"Toplam"});
       }
     });
     return rows;
   }
   function parseCachedUsers(){
-    var users=[];
-    try{if(window.state&&Array.isArray(state.adminOnlineUsers))users=state.adminOnlineUsers.slice();}catch(e){}
+    var users = [];
+    try {
+      if(window.state && Array.isArray(state.adminOnlineUsers)) users = state.adminOnlineUsers.slice();
+    } catch(e){}
     if(!users.length){
-      try{var cached=JSON.parse(localStorage.getItem("mesaha_admin_users_cache_v1")||"null"); if(cached&&Array.isArray(cached.users))users=cached.users.slice();}catch(e){}
+      try {
+        var cached = JSON.parse(localStorage.getItem("mesaha_admin_users_cache_v1") || "null");
+        if(cached && Array.isArray(cached.users)) users = cached.users.slice();
+      } catch(e){}
     }
     return users.map(function(u){
-      var adet=smartNumber(u&&(u.todayInputAdet||u.weekInputAdet||u.inputAdet||u.adet));
-      var m3=smartNumber(u&&(u.todayInputM3||u.weekInputM3||u.inputM3||u.m3));
-      if(adet>0&&m3/adet>5)m3=0;
-      if(m3>10000)m3=0;
-      return {name:String((u&&u.name)||"Kullanıcı"),seflik:String((u&&u.seflik)||"Şeflik"),adet:adet,m3:m3,tree:"Toplam",ms:smartNumber(u&&(u.lastUsageMs||u.lastLoginMs||u.updatedAtMs))};
-    }).filter(function(r){return r.adet>0||r.m3>0;});
+      var adet = smartNumber(u && (u.todayInputAdet || u.weekInputAdet || u.inputAdet || u.adet));
+      var m3 = smartNumber(u && (u.todayInputM3 || u.weekInputM3 || u.inputM3 || u.m3));
+      if(adet > 0 && m3 / adet > 5) m3 = 0;
+      if(m3 > 10000) m3 = 0;
+      return {
+        name: String((u && u.name) || "Kullanıcı"),
+        seflik: String((u && u.seflik) || "Şeflik"),
+        adet: adet,
+        m3: m3,
+        tree: "Toplam",
+        ms: smartNumber(u && (u.lastUsageMs || u.lastLoginMs || u.updatedAtMs))
+      };
+    }).filter(function(r){ return r.adet > 0 || r.m3 > 0; });
   }
   function loadLeaderRows(){
-    var rows=parseAdminRows();
-    if(!rows.length)rows=parseCachedUsers();
-    rows.sort(function(a,b){return (b.adet-a.adet)||(b.m3-a.m3)||((b.ms||0)-(a.ms||0))||String(a.name).localeCompare(String(b.name),"tr");});
+    var rows = parseAdminRows();
+    if(!rows.length) rows = parseCachedUsers();
+    rows.sort(function(a,b){
+      return (b.adet - a.adet) || (b.m3 - a.m3) || ((b.ms||0) - (a.ms||0)) || String(a.name).localeCompare(String(b.name), "tr");
+    });
     return rows.slice(0,3);
   }
-  function openLeaders(){
+  function openLeadersV158(){
     closeUserPanelHard();
-    var ov=ensureLeaderOverlay(),list=$("leadersModalListV159"); ov.classList.add("show");
-    try{
-      var rows=loadLeaderRows();
-      if(!rows.length){if(list)list.innerHTML='<div class="leaders-empty-v159">Henüz uygun lider verisi bulunamadı.</div>';return;}
-      if(list)list.innerHTML=rows.map(function(r,i){return '<div class="leader-row-v159"><div class="leader-rank-v159">'+(i+1)+'</div><div class="leader-main-v159"><b>'+esc(mask(r.name))+' • '+esc(mask(r.seflik))+'</b><span>'+esc(r.tree||"Toplam")+'</span></div><div class="leader-val-v159">'+fmtInt(r.adet)+' adet<small>'+fmtM3(r.m3)+'</small></div></div>';}).join("");
-    }catch(e){if(list)list.innerHTML='<div class="leaders-empty-v159">Liderler alınamadı.</div>';}
+    var ov = ensureLeaderOverlay();
+    var list = $("leadersModalListV158");
+    ov.classList.add("show");
+    try {
+      var rows = loadLeaderRows();
+      if(!rows.length){
+        if(list) list.innerHTML = '<div class="leaders-empty-v158">Henüz uygun lider verisi bulunamadı.</div>';
+        return;
+      }
+      if(list){
+        list.innerHTML = rows.map(function(r,i){
+          return '<div class="leader-row-v158"><div class="leader-rank-v158">'+(i+1)+'</div><div class="leader-main-v158"><b>'+esc(mask(r.name))+' • '+esc(mask(r.seflik))+'</b><span>'+esc(r.tree || "Toplam")+'</span></div><div class="leader-val-v158">'+fmtInt(r.adet)+' adet<small>'+fmtM3(r.m3)+'</small></div></div>';
+        }).join("");
+      }
+    } catch(e){
+      if(list) list.innerHTML = '<div class="leaders-empty-v158">Liderler alınamadı.</div>';
+    }
   }
-
+  function setVersion(){
+    try { document.title = "Mesaha App v158"; } catch(e){}
+    try {
+      var h1 = q(".brand h1");
+      if(h1) h1.textContent = APP_VISIBLE_VERSION;
+    } catch(e){}
+    try {
+      window.MESAHA_BUILD_INFO = Object.assign({}, window.MESAHA_BUILD_INFO || {}, {visibleVersion:APP_VISIBLE_VERSION, fileVersion:"v158", v158:true});
+    } catch(e){}
+  }
   function boot(){
     setVersion();
     normalizeUserPanel();
     ensureStableMainTree();
     ensureStableCleanTree();
-    updateStableTrees();
-    try{document.querySelectorAll("details.info-details").forEach(function(d){d.open=true;});}catch(e){}
+    updateStableTreesV158();
+    try { document.querySelectorAll("details.info-details").forEach(function(d){ d.open = true; }); } catch(e){}
   }
-  window.openMesahaLeadersV159=openLeaders;
-  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot);else boot();
-  [100,400,900,1600,2800,5200,8000].forEach(function(ms){setTimeout(boot,ms);});
+  window.openMesahaLeadersV158 = openLeadersV158;
+  window.openMesahaLeadersV157 = openLeadersV158;
+  window.openMesahaLeadersV156 = openLeadersV158;
+  window.openMesahaLeadersV154 = openLeadersV158;
+  window.openMesahaLeadersV153 = openLeadersV158;
+  window.openMesahaLeadersV150 = openLeadersV158;
+
+  if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
+  else boot();
+
+  [100, 400, 900, 1600, 2800, 5200, 8000, 12000].forEach(function(ms){
+    setTimeout(boot, ms);
+  });
 })();
 </script>
