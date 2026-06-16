@@ -1,10 +1,10 @@
 {
-  "version": "v160",
-  "appVersion": "Mesaha İO v1.89",
-  "visibleVersion": "Mesaha İO v1.89",
-  "build": "v160",
-  "fileVersion": "v160",
-  "cache": "mesaha-app-v160",
+  "version": "v161",
+  "appVersion": "Mesaha İO v1.90",
+  "visibleVersion": "Mesaha İO v1.90",
+  "build": "v161",
+  "fileVersion": "v161",
+  "cache": "mesaha-app-v161",
   "updatedAt": "2026-06-17",
-  "notes": "Final stabilizasyon: tek Mesaha Liderleri butonu, kullanıcı paneli kesin kapanışı, sabit ağaç türü aç/kapat, not en altta, offline/Firebase 3 sn koruması. Excel/Mesaha dosyası indirme içeriğine dokunulmadı."
+  "notes": "Ağaç türü paneli kilitlendi: eski açık kalma kayıtları temizlenir, panel sadece butona basınca açılır, seçim yapılınca/dışarı tıklanınca kapanır. Excel/Mesaha dosyası indirme içeriğine dokunulmadı."
 }
