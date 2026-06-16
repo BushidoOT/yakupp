@@ -1,7 +1,7 @@
 {
-  "version": 146,
-  "visibleVersion": "Mesaha İO v1.75",
-  "cache": "mesaha-app-v146",
-  "builtAt": "2026-06-16",
-  "notes": "v146 hızlı girişe ağaç seçimi, kayıtlar sekmesine ağaç filtresi ve filtreli yazdırma"
+  "version": "v147",
+  "appVersion": "Mesaha İO v1.76",
+  "build": "v147-clean-base-tree-filter",
+  "updatedAt": "2026-06-16T15:45:00Z",
+  "notes": "v145/v146 ham kod görünme ve bozuk buton temiz taban düzeltmesi; hızlı giriş ağaç seçimi; kayıtlar ağaç filtresi; filtreli yazdırma; Excel tüm kayıtlar."
 }
