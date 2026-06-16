@@ -6,5 +6,5 @@
   "fileVersion": "v159",
   "cache": "mesaha-app-v159",
   "updatedAt": "2026-06-17",
-  "notes": "Optimizasyon: Minify edilmiş HTML/JS/CSS, daha hızlı yükleme. Performans iyileştirmeleri."
+  "notes": "Mesaha Liderleri hatalı m³ verisi düzeltildi; liderler admin listesindeki görünen temiz veriden hesaplanır. Ağaç türü aç/kapat için eski oynayan panel gizlendi ve sabit panel eklendi."
 }
