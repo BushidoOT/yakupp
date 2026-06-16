@@ -1,7 +1,7 @@
 {
-  "version": "v149",
-  "appVersion": "Mesaha İO v1.78",
-  "build": "v149-kod-temizligi-stabilizasyon",
-  "updatedAt": "2026-06-16T16:30:00Z",
-  "notes": "v148 tabanı üstünde özellik eklemeden kod temizliği/stabilizasyon: eski v137/v138 tekrar patchleri kaldırıldı, post-html scriptler body içine alındı, sürüm bilgisi tek son katmanda sabitlendi, zip ve cache güncellendi."
+  "version": "v150",
+  "appVersion": "Mesaha İO v1.79",
+  "build": "v150-liderler-ayri-pencere",
+  "updatedAt": "2026-06-16T16:45:00Z",
+  "notes": "v149 temiz taban üstünde Mesaha Liderleri kullanıcı panelinden ayrıldı: butona basınca ayrı modal/pencere açılır, yalnızca haftalık ilk 3 kullanıcı gösterilir; eski gömülü liderler paneli gizlendi."
 }

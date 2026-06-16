@@ -10363,6 +10363,9 @@ body.theme-dark .admin-stats-note-v134{ color:#a8b3c2; }
   </div>
 
 
+
+
+
 </body>
 </html>`;
     }
@@ -20480,6 +20483,287 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", applyVersion);
   setTimeout(applyVersion, 500);
   setTimeout(applyVersion, 1500);
+})();
+</script>
+
+
+<style id="mesaha-v150-leaders-modal-style">
+  /* v150: Mesaha Liderleri artık kullanıcı paneline gömülü değil, ayrı pencere. */
+  #userLeadersPanelV145,
+  #userLeadersPanelV145.open-v148{
+    display:none !important;
+  }
+  .leaders-overlay-v150{
+    z-index:96 !important;
+  }
+  .leaders-card-v150{
+    width:min(540px, 100%) !important;
+  }
+  .leaders-sub-v150{
+    margin:0 0 12px !important;
+    color:#64748b !important;
+    font-weight:750 !important;
+    line-height:1.35 !important;
+  }
+  .leaders-list-v150{
+    display:grid !important;
+    gap:10px !important;
+  }
+  .leader-row-v150.modal-v150{
+    display:grid !important;
+    grid-template-columns:auto 1fr auto !important;
+    gap:12px !important;
+    align-items:center !important;
+    border:1px solid #e2e8f0 !important;
+    border-radius:18px !important;
+    background:#f8fafc !important;
+    padding:12px !important;
+  }
+  .leader-rank-v150{
+    width:40px !important;
+    height:40px !important;
+    border-radius:16px !important;
+    display:grid !important;
+    place-items:center !important;
+    background:#2563eb !important;
+    color:#fff !important;
+    font-weight:1000 !important;
+    box-shadow:0 10px 24px rgba(37,99,235,.18) !important;
+  }
+  .leader-main-v150 b{
+    display:block !important;
+    color:#0f172a !important;
+    font-weight:1000 !important;
+    font-size:15px !important;
+  }
+  .leader-main-v150 span{
+    display:block !important;
+    color:#64748b !important;
+    font-weight:850 !important;
+    margin-top:2px !important;
+  }
+  .leader-val-v150{
+    text-align:right !important;
+    color:#0f172a !important;
+    font-weight:1000 !important;
+    white-space:nowrap !important;
+  }
+  .leader-val-v150 small{
+    display:block !important;
+    color:#64748b !important;
+    font-weight:900 !important;
+    margin-top:2px !important;
+  }
+  .leaders-empty-v150{
+    border:1px dashed #cbd5e1 !important;
+    border-radius:18px !important;
+    padding:14px !important;
+    color:#64748b !important;
+    font-weight:850 !important;
+    background:#f8fafc !important;
+  }
+  body.theme-dark .leaders-sub-v150{ color:#94a3b8 !important; }
+  body.theme-dark .leader-row-v150.modal-v150,
+  body.theme-dark .leaders-empty-v150{
+    background:#111827 !important;
+    border-color:#334155 !important;
+    color:#e5e7eb !important;
+  }
+  body.theme-dark .leader-main-v150 b,
+  body.theme-dark .leader-val-v150{ color:#f8fafc !important; }
+  body.theme-dark .leader-main-v150 span,
+  body.theme-dark .leader-val-v150 small{ color:#94a3b8 !important; }
+</style>
+
+<script id="mesaha-v150-leaders-modal-fix">
+(function(){
+  "use strict";
+  var APP_BUILD = "v150";
+  var APP_VISIBLE_VERSION = "Mesaha İO v1.79";
+
+  function esc(v){
+    try { if (typeof escapeHtml === "function") return escapeHtml(v); } catch(e) {}
+    return String(v == null ? "" : v).replace(/[&<>\"']/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[c]; });
+  }
+  function fmtInt(v){ return Math.round(Number(v)||0).toLocaleString("tr-TR"); }
+  function fmtM3(v){ return (Number(v)||0).toLocaleString("tr-TR", {minimumFractionDigits:3, maximumFractionDigits:3}) + " m³"; }
+  function userKeyLocal(d){
+    try { if (typeof firebaseUserKey === "function") return firebaseUserKey(d && d.name, d && d.seflik); } catch(e) {}
+    return String(((d&&d.name)||"") + "__" + ((d&&d.seflik)||"")).toLocaleLowerCase("tr-TR").replace(/[^a-z0-9ğüşöçıİĞÜŞÖÇ_-]+/gi,"_").replace(/^_+|_+$/g,"") || "bos";
+  }
+  function maskText(v){
+    var s = String(v || "").trim();
+    if (!s) return "**";
+    var a = Array.from(s);
+    return a.slice(0,2).join("") + "*".repeat(Math.max(2, a.length - 2));
+  }
+  function normalizeTree(v){
+    var s = String(v || "Bilinmiyor").trim();
+    var l = s.toLocaleLowerCase("tr-TR");
+    if (l.includes("sarı") || l.includes("sari")) return "Sarıçam";
+    if (l.includes("kara")) return "Karaçam";
+    if (l.includes("kızıl") || l.includes("kizil")) return "Kızılçam";
+    if (l.includes("göknar") || l.includes("goknar")) return "Göknar";
+    if (l.includes("sedir")) return "Sedir";
+    return s || "Bilinmiyor";
+  }
+  function weekStartIso(){
+    var d = new Date();
+    var day = (d.getDay()+6)%7;
+    d.setHours(0,0,0,0);
+    d.setDate(d.getDate()-day);
+    return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+  }
+  function statMs(d){
+    return Number((d && (d.updatedAtMs || d.exportAtMs || d.createdAtMs || d.lastSeenMs || d.lastLoginMs)) || 0) || 0;
+  }
+  function pickTreeRows(d){
+    var rows = [];
+    try { if (d && d.weekSummary && Array.isArray(d.weekSummary.trees)) rows = d.weekSummary.trees; } catch(e) {}
+    if (!rows.length) {
+      try { if (d && d.todaySummary && Array.isArray(d.todaySummary.trees)) rows = d.todaySummary.trees; } catch(e) {}
+    }
+    if (!rows.length) {
+      try { if (d && Array.isArray(d.trees)) rows = d.trees; } catch(e) {}
+    }
+    return rows || [];
+  }
+  async function loadTopLeadersV150(){
+    var ready = await Promise.race([
+      Promise.resolve().then(function(){ return ensureFirebaseReady(); }),
+      new Promise(function(_, reject){ setTimeout(function(){ reject(new Error("Liderler bağlantı zaman aşımı")); }, 6500); })
+    ]);
+    var db = ready && ready.db;
+    if (!db) throw new Error("Firebase hazır değil");
+    var col = (typeof FIREBASE_USAGE_COLLECTION !== "undefined") ? FIREBASE_USAGE_COLLECTION : "usageStats";
+    var start = weekStartIso();
+    var snap = await db.collection(col).where("date", ">=", start).get();
+    var latest = new Map();
+    snap.forEach(function(doc){
+      var d = doc.data() || {};
+      var key = d.userKey || userKeyLocal(d);
+      var ms = statMs(d);
+      var old = latest.get(key);
+      if (!old || ms >= old.ms) latest.set(key, {ms:ms, d:d});
+    });
+    var map = new Map();
+    latest.forEach(function(item){
+      var d = item.d || {};
+      var name = d.name || d.userName || "Kullanıcı";
+      var seflik = d.seflik || d.region || "Şeflik";
+      pickTreeRows(d).forEach(function(t){
+        var tree = normalizeTree(t.name || t.agacAdi || t.tree || t.agac || "Bilinmiyor");
+        var adet = Number(t.adet || t.count || t.totalAdet || 0) || 0;
+        var m3 = Number(t.m3 || t.hacim || t.volume || 0) || 0;
+        if (!adet && !m3) return;
+        var k = userKeyLocal({name:name, seflik:seflik}) + "__" + tree;
+        var old = map.get(k) || {name:name, seflik:seflik, tree:tree, adet:0, m3:0};
+        old.adet += adet;
+        old.m3 = Number((old.m3 + m3).toFixed(3));
+        map.set(k, old);
+      });
+    });
+    return Array.from(map.values()).sort(function(a,b){ return (b.adet-a.adet) || (b.m3-a.m3); }).slice(0,3);
+  }
+  function ensureOverlayV150(){
+    var ov = document.getElementById("leaderOverlayV150");
+    if (ov) return ov;
+    ov = document.createElement("div");
+    ov.id = "leaderOverlayV150";
+    ov.className = "issue-report-overlay leaders-overlay-v150";
+    ov.setAttribute("role", "dialog");
+    ov.setAttribute("aria-modal", "true");
+    ov.setAttribute("aria-label", "Mesaha Liderleri");
+    ov.innerHTML = '<div class="issue-report-card leaders-card-v150"><div class="issue-report-head"><div><h2>Mesaha Liderleri</h2><p class="leaders-sub-v150">Haftalık ilk 3 kullanıcı. İsim ve şeflik gizlenir.</p></div><button id="leaderCloseBtnV150" class="ghost issue-report-close" type="button">×</button></div><div id="leadersModalListV150" class="leaders-list-v150"><div class="leaders-empty-v150">Pano yükleniyor...</div></div></div>';
+    document.body.appendChild(ov);
+    ov.addEventListener("click", function(ev){ if (ev.target === ov) closeLeadersV150(); });
+    var close = ov.querySelector("#leaderCloseBtnV150");
+    if (close) close.addEventListener("click", closeLeadersV150);
+    return ov;
+  }
+  function closeLeadersV150(){
+    var ov = document.getElementById("leaderOverlayV150");
+    if (ov) ov.classList.remove("show");
+  }
+  async function openLeadersV150(){
+    hideOldInlinePanelV150();
+    var ov = ensureOverlayV150();
+    var list = ov.querySelector("#leadersModalListV150");
+    ov.classList.add("show");
+    if (list) list.innerHTML = '<div class="leaders-empty-v150">Haftalık liderler yükleniyor...</div>';
+    try {
+      var rows = await loadTopLeadersV150();
+      if (!rows.length) {
+        if (list) list.innerHTML = '<div class="leaders-empty-v150">Bu hafta pano verisi yok. Kullanıcılar Mesaha dosyası indirdikçe veya kullanım özeti geldikçe burası dolacak.</div>';
+        return;
+      }
+      if (list) list.innerHTML = rows.map(function(r,i){
+        return '<div class="leader-row-v150 modal-v150"><div class="leader-rank-v150">'+(i+1)+'</div><div class="leader-main-v150"><b>'+esc(maskText(r.name))+' • '+esc(maskText(r.seflik))+'</b><span>'+esc(r.tree)+'</span></div><div class="leader-val-v150">'+fmtInt(r.adet)+' adet<small>'+fmtM3(r.m3)+'</small></div></div>';
+      }).join("");
+    } catch(err) {
+      if (list) list.innerHTML = '<div class="leaders-empty-v150">Liderler alınamadı. İnternet bağlantısını kontrol edip tekrar deneyin.</div>';
+    }
+  }
+  function hideOldInlinePanelV150(){
+    try {
+      var p = document.getElementById("userLeadersPanelV145");
+      if (p) p.remove();
+    } catch(e) {}
+  }
+  function ensureButtonV150(){
+    hideOldInlinePanelV150();
+    var card = document.querySelector("#userPanelOverlay .user-panel-card");
+    var actions = card && card.querySelector(".user-panel-actions");
+    if (!actions) return;
+    var btn = document.getElementById("userLeadersToggleV148");
+    if (!btn) {
+      btn = document.createElement("button");
+      btn.id = "userLeadersToggleV148";
+      btn.className = "secondary";
+      btn.type = "button";
+      btn.textContent = "📊 Mesaha Liderleri";
+      actions.insertBefore(btn, actions.firstChild);
+    }
+    btn.textContent = "📊 Mesaha Liderleri";
+    btn.type = "button";
+  }
+  function installClickGuardV150(){
+    if (document.__leaderClickGuardV150) return;
+    document.__leaderClickGuardV150 = true;
+    document.addEventListener("click", function(ev){
+      var target = ev.target && ev.target.closest ? ev.target.closest("#userLeadersToggleV148") : null;
+      if (!target) return;
+      ev.preventDefault();
+      ev.stopPropagation();
+      if (typeof ev.stopImmediatePropagation === "function") ev.stopImmediatePropagation();
+      openLeadersV150();
+    }, true);
+  }
+  function applyVersionV150(){
+    try { document.title = "Mesaha App v150"; } catch(e) {}
+    try { var h1 = document.querySelector(".brand h1"); if (h1) h1.textContent = APP_VISIBLE_VERSION; } catch(e) {}
+    try { window.MESAHA_BUILD_INFO = Object.assign({}, window.MESAHA_BUILD_INFO||{}, {fileVersion:APP_BUILD, visibleVersion:APP_VISIBLE_VERSION, leadersModal:true, updatedMs:Date.now()}); } catch(e) {}
+  }
+  function bootV150(){
+    applyVersionV150();
+    ensureButtonV150();
+    installClickGuardV150();
+  }
+  try {
+    var oldOpen = (typeof openUserPanel === "function") ? openUserPanel : null;
+    if (oldOpen && !oldOpen.__v150LeadersModal) {
+      openUserPanel = function(){
+        var r = oldOpen.apply(this, arguments);
+        setTimeout(bootV150, 60);
+        setTimeout(bootV150, 240);
+        return r;
+      };
+      openUserPanel.__v150LeadersModal = true;
+    }
+  } catch(e) {}
+  window.openMesahaLeadersV150 = openLeadersV150;
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", bootV150); else bootV150();
+  [300, 900, 1800, 3500, 5800, 8500].forEach(function(ms){ setTimeout(bootV150, ms); });
 })();
 </script>
 
