@@ -1,10 +1,10 @@
 {
-  "version": "v152",
-  "appVersion": "Mesaha İO v1.81",
-  "build": "v152",
-  "updatedAt": "2026-06-16T17:15:00Z",
-  "notes": "v151 temiz taban üstünde Mesaha Liderleri ayrı pencere düzeltmesi; mevcut yedeklerden lider hesaplama; ağaç türü aç/kapat seçimi kalıcı yapıldı. Excel/Mesaha export koduna dokunulmadı.",
-  "visibleVersion": "Mesaha İO v1.81",
-  "fileVersion": "v152",
-  "cache": "mesaha-app-v152"
+  "version": "v153",
+  "appVersion": "Mesaha İO v1.82",
+  "build": "v153",
+  "updatedAt": "2026-06-16T20:35:00Z",
+  "notes": "v152 üstünde liderler ilk 3 düzeltmesi, dosya/yedek başarı pencereleri, yeni dosya adları, dosya bilgileri aç/kapa temizliği ve admin sürüm/success düzenlemeleri.",
+  "visibleVersion": "Mesaha İO v1.82",
+  "fileVersion": "v153",
+  "cache": "mesaha-app-v153"
 }
