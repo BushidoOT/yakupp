@@ -1,10 +1,10 @@
 {
-  "version": "v166",
-  "appVersion": "Mesaha İO v1.95",
-  "visibleVersion": "Mesaha İO v1.95",
-  "build": "v166",
-  "fileVersion": "v166",
-  "cache": "mesaha-app-v166",
+  "version": "v167",
+  "appVersion": "Mesaha İO v1.96",
+  "visibleVersion": "Mesaha İO v1.96",
+  "build": "v167",
+  "fileVersion": "v167",
+  "cache": "mesaha-app-v167",
   "updatedAt": "2026-06-17",
-  "notes": "v165 stabil yapı korunarak ilk logo modern üst bara eklendi, sağ üstte karanlık mod konumlandırıldı, orman arka planlı hızlı alan içine kullanıcı paneli ve Giriş Modu yerleştirildi. Merhaba/Yerel Depolama/Çevrimdışı kartları eklenmedi. Excel/Mesaha export içeriğine dokunulmadı."
+  "notes": "v166 modern üst bar korunarak orman/dağ arka kapak görünürleştirildi, Kullanıcı Paneli ve Giriş Modu eşit boy kartlara alındı, Yedek Al/Yedek Yükle butonları diğer araç butonlarıyla aynı akışa ve boyuta getirildi. Excel/Mesaha export içeriğine dokunulmadı."
 }
