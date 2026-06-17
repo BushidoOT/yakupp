@@ -1,7 +1,7 @@
 {
-  "version": 146,
-  "visibleVersion": "Mesaha İO v1.75",
-  "cache": "mesaha-app-v146-home-simple-no-keyboard",
+  "version": 147,
+  "visibleVersion": "Mesaha İO v1.76",
+  "cache": "mesaha-app-v147-source-fix-home-simple",
   "builtAt": "2026-06-18",
-  "notes": "Ana Sayfa tuşu klavye açmaz. Ana sayfadaki Yerel Depolama alanı Giriş Modu hızlı kayıt butonu olarak yenilendi."
+  "notes": "Ekranda JavaScript kodu görünmesine ve butonların çalışmamasına neden olan paket yerleşimi düzeltildi. Ana Sayfa klavye açmaz, Yerel Depolama yerine Giriş Modu butonu korunur."
 }
