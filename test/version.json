@@ -1,10 +1,8 @@
 {
-  "version": "v160",
-  "appVersion": "Mesaha İO v1.89",
-  "visibleVersion": "Mesaha İO v1.89",
-  "build": "v160",
-  "fileVersion": "v160",
-  "cache": "mesaha-app-v160",
-  "updatedAt": "2026-06-17",
-  "notes": "Kurtarma/stabil sürüm: v147 temiz tabana dönüldü, Mesaha Liderleri geçici kaldırıldı, JSON yedek geri yükleme güçlendirildi, Excel export çekirdeğine dokunulmadı."
+  "version": 175,
+  "visibleVersion": "Mesaha İO v2.04 Stabil",
+  "cache": "mesaha-app-v175-stabil",
+  "builtAt": "2026-06-17",
+  "base": "v142 stabil",
+  "notes": "v142 stabil kaydetme mantığı korunarak modern üst bar, ağaç türü paneli ve buton düzenleri eklendi"
 }
