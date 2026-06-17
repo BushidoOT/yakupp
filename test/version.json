@@ -1,7 +1,7 @@
 {
-  "version": 145,
-  "visibleVersion": "Mesaha İO v1.74",
-  "cache": "mesaha-app-v145-tree-open-total-m3",
+  "version": 146,
+  "visibleVersion": "Mesaha İO v1.75",
+  "cache": "mesaha-app-v146-home-simple-no-keyboard",
   "builtAt": "2026-06-18",
-  "notes": "Ağaç türü seçimi seçince açık kalır; Ağaç Türü Seç düğmesine tekrar basınca kapanır. Giriş Modu toplam adet alanına toplam m³ eklendi."
+  "notes": "Ana Sayfa tuşu klavye açmaz. Ana sayfadaki Yerel Depolama alanı Giriş Modu hızlı kayıt butonu olarak yenilendi."
 }

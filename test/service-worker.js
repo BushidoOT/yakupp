@@ -1,4 +1,4 @@
-const CACHE_NAME = "mesaha-app-v145-tree-open-total-m3";
+const CACHE_NAME = "mesaha-app-v146-home-simple-no-keyboard";
 const ASSETS = [
   "./",
   "./index.html",
