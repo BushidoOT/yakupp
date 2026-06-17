@@ -1,7 +1,7 @@
 {
-  "version": 154,
-  "visibleVersion": "Mesaha İO v1.83",
-  "cache": "mesaha-app-v154-records-20",
+  "version": 155,
+  "visibleVersion": "Mesaha İO v1.84",
+  "cache": "mesaha-app-v155-script-leak-fix",
   "builtAt": "2026-06-18",
-  "notes": "v153 klavye düzeltmesi ve v152 stabil ZIP yedek sistemi korundu. Ölçümler/Beyan sayfalama 20 kayıt olacak şekilde güncellendi. ORBİS Excel formatına dokunulmadı."
+  "notes": "v154 üzerindeki ölçümler 20 kayıt sayfalama ve v152 ZIP yedek sistemi korundu. Ekranda kod görünmesine ve butonların çalışmamasına sebep olan script sızıntısı düzeltildi. ORBİS Excel formatına dokunulmadı."
 }

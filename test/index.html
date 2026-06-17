@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha İO v1.83</title>
+  <title>Mesaha İO v1.84</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -8991,7 +8991,7 @@ body.theme-dark .admin-stats-note-v134{ color:#a8b3c2; }
 
   <link rel="apple-touch-icon" href="./icon-192.png" />
   <style id="mesaha-v143-mobile-ui-css">
-    /* Mesaha İO v1.83: mobil ana sayfa + logo + açık tema */
+    /* Mesaha İO v1.84: mobil ana sayfa + logo + açık tema */
     :root{
       --mio-bg:#f4f8f6;
       --mio-card:#ffffff;
@@ -9261,7 +9261,7 @@ body.theme-dark .admin-stats-note-v134{ color:#a8b3c2; }
       <div class="brand app-brand-v143">
         <img class="brand-logo-v143" src="./mesaha_logo.png" alt="Mesaha İO logosu" loading="eager" />
         <div class="brand-copy-v143">
-          <h1>Mesaha İO v1.83</h1>
+          <h1>Mesaha İO v1.84</h1>
           <span>Orman ölçüm kayıt sistemi</span>
         </div>
       </div>
@@ -10407,66 +10407,8 @@ body.theme-dark .admin-stats-note-v134{ color:#a8b3c2; }
     </div>
   </div>
 
-<script id="mesaha-v153-keyboard-save-fix-js">
-/* v154: Kaydetten sonra çap klavyesi açık kalsın + ölçümler 20 kayıt/sayfa */
-(function(){
-  'use strict';
-  const VERSION_TEXT_V153 = 'Mesaha İO v1.83';
-  const FILE_VERSION_V153 = 'v154';
-  function safe(fn){ try { return fn(); } catch(e) { return undefined; } }
-  function ready(fn){ if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn, { once:true }); else fn(); }
-  function keepDiameterFocus(){
-    safe(function(){
-      const d = document.getElementById('diameter');
-      if (!d) return;
-      d.focus({ preventScroll:true });
-      const len = String(d.value || '').length;
-      try { d.setSelectionRange(len, len); } catch(e) {}
-    });
-  }
-  function applyVersion(){
-    safe(function(){ document.title = VERSION_TEXT_V153; });
-    safe(function(){ const h1 = document.querySelector('.brand h1'); if (h1) h1.textContent = VERSION_TEXT_V153; });
-    safe(function(){
-      window.MESAHA_BUILD_INFO = Object.assign({}, window.MESAHA_BUILD_INFO || {}, {
-        fileVersion: FILE_VERSION_V153,
-        visibleVersion: VERSION_TEXT_V153,
-        keyboardStayOpenAfterSave: true
-      });
-    });
-  }
-  function bind(){
-    const form = document.getElementById('measureForm');
-    const submit = document.getElementById('submitBtn');
-    if (submit && !submit.__v153KeyboardBound) {
-      submit.__v153KeyboardBound = true;
-      submit.addEventListener('pointerdown', function(){
-        keepDiameterFocus();
-        setTimeout(keepDiameterFocus, 30);
-        setTimeout(keepDiameterFocus, 120);
-        setTimeout(keepDiameterFocus, 260);
-      }, true);
-      submit.addEventListener('click', function(){
-        setTimeout(keepDiameterFocus, 30);
-        setTimeout(keepDiameterFocus, 160);
-        setTimeout(keepDiameterFocus, 320);
-      }, true);
-    }
-    if (form && !form.__v153KeyboardBound) {
-      form.__v153KeyboardBound = true;
-      form.addEventListener('submit', function(){
-        keepDiameterFocus();
-        setTimeout(keepDiameterFocus, 40);
-        setTimeout(keepDiameterFocus, 160);
-        setTimeout(keepDiameterFocus, 320);
-      }, false);
-    }
-  }
-  ready(function(){ bind(); applyVersion(); });
-  [80,240,700,1400,2600].forEach(function(ms){ setTimeout(function(){ bind(); applyVersion(); }, ms); });
-  setInterval(applyVersion, 1200);
-})();
-</script>
+
+
 
 </body>
 </html>`;
@@ -10831,7 +10773,7 @@ body.theme-dark .admin-stats-note-v134{ color:#a8b3c2; }
     function currentDeviceInfoPayload() {
       const active = state.activeUser || findActiveUser();
       return {
-        appVersion: "Mesaha İO v1.83",
+        appVersion: "Mesaha İO v1.84",
         fileVersion: "v135",
         userName: active && active.name ? cleanUserText(active.name) : "",
         seflik: active && active.seflik ? cleanUserText(active.seflik) : "",
@@ -16708,7 +16650,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     function usageTouchStatV128(stat){
       stat.updatedAt = (typeof firebaseDateText === "function") ? firebaseDateText() : new Date().toLocaleString("tr-TR");
       stat.updatedAtMs = Date.now();
-      stat.appVersion = "Mesaha İO v1.83";
+      stat.appVersion = "Mesaha İO v1.84";
       stat.fileVersion = "v135";
       stat.recordCount = Array.isArray(state.records) ? state.records.length : 0;
       return stat;
@@ -16791,7 +16733,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
             inputM3: Number(usageCleanNumberV128(stat.inputM3).toFixed(3)),
             recordEntryCount: Math.round(usageCleanNumberV128(stat.recordEntryCount)),
             recordCount: Math.round(usageCleanNumberV128(stat.recordCount)),
-            appVersion: "Mesaha İO v1.83",
+            appVersion: "Mesaha İO v1.84",
             fileVersion: "v135",
             createdAt: stat.createdAt || firebaseDateText(),
             createdAtMs: Number(stat.createdAtMs || Date.now()),
@@ -17026,7 +16968,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     const prevCurrentDeviceInfoPayloadV128 = typeof currentDeviceInfoPayload === "function" ? currentDeviceInfoPayload : null;
     currentDeviceInfoPayload = function(){
       const info = prevCurrentDeviceInfoPayloadV128 ? prevCurrentDeviceInfoPayloadV128() : {};
-      info.appVersion = "Mesaha İO v1.83";
+      info.appVersion = "Mesaha İO v1.84";
       info.fileVersion = "v135";
       info.recordCount = Array.isArray(state.records) ? state.records.length : (Number(info.recordCount) || 0);
       info.updatedMs = Date.now();
@@ -17040,7 +16982,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 
     window.MESAHA_BUILD_INFO = {
       fileVersion: "v135",
-      visibleVersion: "Mesaha İO v1.83",
+      visibleVersion: "Mesaha İO v1.84",
       stableBuild: true
     };
 
@@ -17049,7 +16991,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     const prevCurrentDeviceInfoPayloadV129 = typeof currentDeviceInfoPayload === "function" ? currentDeviceInfoPayload : null;
     currentDeviceInfoPayload = function(){
       const info = prevCurrentDeviceInfoPayloadV129 ? prevCurrentDeviceInfoPayloadV129() : {};
-      info.appVersion = "Mesaha İO v1.83";
+      info.appVersion = "Mesaha İO v1.84";
       info.fileVersion = "v135";
       info.recordCount = Array.isArray(state.records) ? state.records.length : (Number(info.recordCount) || 0);
       info.updatedMs = Date.now();
@@ -17058,7 +17000,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     };
     window.MESAHA_BUILD_INFO = {
       fileVersion: "v135",
-      visibleVersion: "Mesaha İO v1.83",
+      visibleVersion: "Mesaha İO v1.84",
       stableBuild: true,
       offlineFirstTimeoutMs: MESAHA_STARTUP_TIMEOUT_V129
     };
@@ -17067,7 +17009,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 
     /* v130: Boy kısayol butonlarında klavye kapanmasını engelle + küçük stabilite denetimi */
     (function(){
-      const BUILD_VERSION_V130 = "Mesaha İO v1.83";
+      const BUILD_VERSION_V130 = "Mesaha İO v1.84";
       const FILE_VERSION_V130 = "v134";
 
       function safeFocusV130(input, selectMode){
@@ -17216,7 +17158,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 
     /* v131: Admin sade liste, kullanıcı panelinden şifreli açılış, onaylı-yüklemeli yenileme */
     (function(){
-      const BUILD_VERSION_V131 = "Mesaha İO v1.83";
+      const BUILD_VERSION_V131 = "Mesaha İO v1.84";
       const FILE_VERSION_V131 = "v135";
 
       function adminSetLoadingV131(show, text){
@@ -17423,7 +17365,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 
     /* v132: Admin istatistik - en çok ağaç/odun türü, adet ve m³ */
     (function(){
-      const BUILD_VERSION_V132 = "Mesaha İO v1.83";
+      const BUILD_VERSION_V132 = "Mesaha İO v1.84";
       const FILE_VERSION_V132 = "v135";
 
       function adminStatsSetLoadingV132(show, text){
@@ -17684,7 +17626,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 
     /* v133: Admin panelinde Sorun Bildirimleri alanı */
     (function(){
-      const BUILD_VERSION_V133 = "Mesaha İO v1.83";
+      const BUILD_VERSION_V133 = "Mesaha İO v1.84";
       const FILE_VERSION_V133 = "v134";
 
       function supportSetLoadingV133(show, text){
@@ -17821,7 +17763,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 
     /* v134: Admin detayları, güvenli kullanıcı silme, rozetler, dönemli istatistik ve offline sorun kuyruğu */
     (function(){
-      const BUILD_VERSION_V134 = "Mesaha İO v1.83";
+      const BUILD_VERSION_V134 = "Mesaha İO v1.84";
       const FILE_VERSION_V134 = "v134";
       const CURRENT_FILE_NO_V134 = 134;
       const CURRENT_VISIBLE_NO_V134 = 1.63;
@@ -18368,7 +18310,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 
     /* v135: performans/test temizliği + Mesaha dosyası indirirken özet veri gönderimi */
     (function(){
-      const BUILD_VERSION_V135 = "Mesaha İO v1.83";
+      const BUILD_VERSION_V135 = "Mesaha İO v1.84";
       const FILE_VERSION_V135 = "v135";
       const EXPORT_QUEUE_KEY_V135 = "mesaha_export_stats_queue_v135";
       const RECORD_RENDER_LIMIT_KEY_V135 = "mesaha_record_render_limit_v135";
@@ -18921,7 +18863,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 
 /* Mesaha v140 - admin son aktif sıralama + süre ölçüm düzeltmesi */
 (function(){
-  const BUILD_VERSION="Mesaha İO v1.83", FILE_VERSION="v140";
+  const BUILD_VERSION="Mesaha İO v1.84", FILE_VERSION="v140";
   const MAX_VISIBLE_TICK_MS=60*1000;
   function num(v){ const n=Number(v); return Number.isFinite(n)?n:0; }
   function clean(v){ return String(v||"").trim(); }
@@ -19032,7 +18974,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 /* Mesaha v137 active stats reset fix */
 (function(){
   "use strict";
-  const BUILD_VERSION_V137 = "Mesaha İO v1.83";
+  const BUILD_VERSION_V137 = "Mesaha İO v1.84";
   const FILE_VERSION_V137 = "v137";
   const STATS_RESET_DOC_V137 = "__stats_reset_marker__";
   const EXPORT_QUEUE_KEY_V137 = "mesaha_export_stats_queue_v135";
@@ -19403,7 +19345,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 /* Mesaha v138 - aktif istatistik sıfırlama kesin düzeltme */
 (function(){
   "use strict";
-  const BUILD_VERSION_V138 = "Mesaha İO v1.83";
+  const BUILD_VERSION_V138 = "Mesaha İO v1.84";
   const FILE_VERSION_V138 = "v138";
   const STATS_RESET_DOC_V138 = "__stats_reset_marker__";
   const EXPORT_QUEUE_KEY_V138 = "mesaha_export_stats_queue_v135";
@@ -20234,11 +20176,11 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 
 
 <script id="mesaha-v153-keyboard-save-fix-js">
-/* v154: Kaydetten sonra çap klavyesi açık kalsın + ölçümler 20 kayıt/sayfa */
+/* v155: Kod sızıntısı düzeltildi + klavye açık kalsın + ölçümler 20 kayıt/sayfa */
 (function(){
   'use strict';
-  const VERSION_TEXT_V153 = 'Mesaha İO v1.83';
-  const FILE_VERSION_V153 = 'v154';
+  const VERSION_TEXT_V153 = 'Mesaha İO v1.84';
+  const FILE_VERSION_V153 = 'v155';
   function safe(fn){ try { return fn(); } catch(e) { return undefined; } }
   function ready(fn){ if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn, { once:true }); else fn(); }
   function keepDiameterFocus(){
@@ -20301,7 +20243,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 /* Mesaha v139 - istatistik sıfırlama admin ana liste/özet kesin düzeltme */
 (function(){
   "use strict";
-  const BUILD_VERSION="Mesaha İO v1.83", FILE_VERSION="v139", MARKER="__stats_reset_marker__";
+  const BUILD_VERSION="Mesaha İO v1.84", FILE_VERSION="v139", MARKER="__stats_reset_marker__";
   const EXPORT_QUEUE="mesaha_export_stats_queue_v135", USAGE_LOCAL="mesaha_usage_stats_v128";
   const usageColl=()=>{try{return FIREBASE_USAGE_COLLECTION||"usageStats";}catch{return"usageStats";}};
   const usersColl=()=>{try{return FIREBASE_USERS_COLLECTION||"users";}catch{return"users";}};
@@ -20381,7 +20323,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 /* Mesaha v141 - admin son görülen + arka plan süre senkronu */
 (function(){
   "use strict";
-  const BUILD_VERSION = "Mesaha İO v1.83";
+  const BUILD_VERSION = "Mesaha İO v1.84";
   const FILE_VERSION = "v141";
   const LIVE_QUEUE_KEY = "mesaha_live_usage_queue_v141";
   const LIVE_LAST_SYNC_KEY = "mesaha_live_usage_last_sync_v141";
@@ -20601,7 +20543,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 /* Mesaha v142 - admin üst özet: Son Görülen kişi yerine bugün görülen kullanıcı sayısı */
 (function(){
   "use strict";
-  const BUILD_VERSION = "Mesaha İO v1.83";
+  const BUILD_VERSION = "Mesaha İO v1.84";
   const FILE_VERSION = "v142";
   const esc = (v) => { try { return escapeHtml(v); } catch { return String(v ?? "").replace(/[&<>\"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[c])); } };
   const n = (v) => { const x = Number(String(v ?? "").replace(",", ".").replace(/[^0-9.\-]/g, "")); return Number.isFinite(x) ? x : 0; };
@@ -20681,7 +20623,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 <script id="mesaha-v143-mobile-ui-js">
 (function(){
   "use strict";
-  const VERSION_TEXT = "Mesaha İO v1.83";
+  const VERSION_TEXT = "Mesaha İO v1.84";
   function $(id){ return document.getElementById(id); }
   function fmt(n){ try { return Number(n || 0).toLocaleString("tr-TR"); } catch { return String(n || 0); } }
   function m3FromDesi(v){ try { if (typeof formatHacimFromDesi === "function") return formatHacimFromDesi(v); } catch {} return ((Number(v)||0)/1000).toFixed(3).replace(/0+$/,"").replace(/\.$/,"") || "0"; }
@@ -20765,7 +20707,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     });
   }
   function applyVersion(){
-    try { document.title = "Mesaha İO v1.83"; } catch {}
+    try { document.title = "Mesaha İO v1.84"; } catch {}
     try { const h1 = document.querySelector(".brand h1"); if(h1) h1.textContent = VERSION_TEXT; } catch {}
     try { window.MESAHA_BUILD_INFO = Object.assign({}, window.MESAHA_BUILD_INFO || {}, { fileVersion:"v143-ui", visibleVersion:VERSION_TEXT, uiMode:"mobile-home-logo" }); } catch {}
   }
@@ -21326,7 +21268,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 <script id="mesaha-v145-tree-total-js">
 (function(){
   'use strict';
-  const VERSION_TEXT_V145 = 'Mesaha İO v1.83';
+  const VERSION_TEXT_V145 = 'Mesaha İO v1.84';
   const FILE_VERSION_V145 = 'v145';
   function safeV145(fn){ try { return fn(); } catch(e) { return undefined; } }
   function readyV145(fn){
@@ -21509,7 +21451,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 <script id="mesaha-v146-home-simple-js">
 (function(){
   'use strict';
-  const VERSION_TEXT_V146 = 'Mesaha İO v1.83';
+  const VERSION_TEXT_V146 = 'Mesaha İO v1.84';
   const FILE_VERSION_V146 = 'v146';
 
   function readyV146(fn){
@@ -21676,7 +21618,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 <script id="mesaha-v147-fix-js">
 (function(){
   'use strict';
-  const VERSION_TEXT_V147 = 'Mesaha İO v1.83';
+  const VERSION_TEXT_V147 = 'Mesaha İO v1.84';
   const FILE_VERSION_V147 = 'v147';
   function safe(fn){ try { return fn(); } catch(e) { return undefined; } }
   function ready(fn){ if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn, {once:true}); else fn(); }
@@ -21725,7 +21667,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 <script id="mesaha-v149-tree-filter-position-js">
 (function(){
   'use strict';
-  const VERSION_TEXT_V149 = 'Mesaha İO v1.83';
+  const VERSION_TEXT_V149 = 'Mesaha İO v1.84';
   const FILE_VERSION_V149 = 'v149';
   function safeV149(fn){ try { return fn(); } catch(e) { return undefined; } }
   function readyV149(fn){ if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn, { once:true }); else fn(); }
@@ -21841,7 +21783,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
   }
   .brand h1::after,
   .brand-copy-v143 h1::after{
-    content:'Mesaha İO v1.83';
+    content:'Mesaha İO v1.84';
     font-size:21px !important;
     line-height:1.05 !important;
   }
@@ -21959,7 +21901,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 <script id="mesaha-v151-loading-button-fix-js">
 (function(){
   'use strict';
-  const VERSION_TEXT_V151 = 'Mesaha İO v1.83';
+  const VERSION_TEXT_V151 = 'Mesaha İO v1.84';
   const FILE_VERSION_V151 = 'v151';
   function safe(fn){ try { return fn(); } catch(e) { return undefined; } }
   function ready(fn){ if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn, { once:true }); else fn(); }
@@ -22174,9 +22116,9 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 /* v152: Stabilite paketi - ZIP yedek, parçalı geri yükleme, sayfalı kayıt listesi, yükleme göstergesi */
 (function(){
   'use strict';
-  const BUILD_VERSION_V152 = 'Mesaha İO v1.83';
-  const FILE_VERSION_V152 = 'v154';
-  const CACHE_TAG_V152 = 'mesaha-app-v154-records-20';
+  const BUILD_VERSION_V152 = 'Mesaha İO v1.84';
+  const FILE_VERSION_V152 = 'v155';
+  const CACHE_TAG_V152 = 'mesaha-app-v155-script-leak-fix';
   const PAGE_SIZE_V152 = 20;
   const CHUNK_SIZE_V152 = 500;
   const IDB_NAME_V152 = 'mesaha_io_stabil_v152';
@@ -22865,11 +22807,11 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 </script>
 
 <script id="mesaha-v153-keyboard-save-fix-js">
-/* v154: Kaydetten sonra çap klavyesi açık kalsın + ölçümler 20 kayıt/sayfa */
+/* v155: Kod sızıntısı düzeltildi + klavye açık kalsın + ölçümler 20 kayıt/sayfa */
 (function(){
   'use strict';
-  const VERSION_TEXT_V153 = 'Mesaha İO v1.83';
-  const FILE_VERSION_V153 = 'v154';
+  const VERSION_TEXT_V153 = 'Mesaha İO v1.84';
+  const FILE_VERSION_V153 = 'v155';
   function safe(fn){ try { return fn(); } catch(e) { return undefined; } }
   function ready(fn){ if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn, { once:true }); else fn(); }
   function keepDiameterFocus(){
@@ -22925,5 +22867,26 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 })();
 </script>
 
+
+<script id="mesaha-v155-stability-fix-js">
+(function(){
+  'use strict';
+  var VERSION='Mesaha İO v1.84';
+  function safe(fn){ try{return fn();}catch(e){} }
+  function apply(){
+    safe(function(){ document.title=VERSION; });
+    safe(function(){ var h=document.querySelector('.brand h1'); if(h) h.textContent=VERSION; });
+    safe(function(){
+      document.querySelectorAll('button, a, .chip, .nav-item, .seg-btn, .bottom-nav button').forEach(function(el){
+        if ((el.textContent||'').trim()==='↩ Normal' || (el.textContent||'').trim()==='Normal') { el.textContent='🏠 Ana Sayfaya Dön'; }
+      });
+    });
+    safe(function(){ window.MESAHA_RECORDS_PAGE_SIZE=20; });
+    safe(function(){ window.MESAHA_BUILD_INFO=Object.assign({}, window.MESAHA_BUILD_INFO||{}, {fileVersion:'v155', visibleVersion:VERSION, leakFix:true, recordsPageSize:20}); });
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', apply, {once:true}); else apply();
+  [100,400,1200,2500].forEach(function(ms){ setTimeout(apply, ms); });
+})();
+</script>
 </body>
 </html>
