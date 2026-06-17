@@ -1,7 +1,7 @@
 {
-  "version": 177,
-  "visibleVersion": "Mesaha İO v2.06 Stabil",
-  "cache": "mesaha-app-v177",
+  "version": 178,
+  "visibleVersion": "Mesaha İO v2.07 Stabil",
+  "cache": "mesaha-app-v178",
   "builtAt": "2026-06-17",
-  "notes": "v142 stabil kaydetme/XLS çekirdeği korunarak giriş modu ağaç seçimi, beyan ağaç filtresi, toplam m3, bilgi pencereleri ve versiyon görünümü düzeltildi"
+  "notes": "v142 stabil kaydetme/XLS çekirdeği korunarak beyan ağaç filtresi, üst versiyon, toplam m3, bilgi pencereleri ve buton temizliği gerçek fonksiyonlara bağlandı"
 }
