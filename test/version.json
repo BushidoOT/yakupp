@@ -1,7 +1,7 @@
 {
-  "version": 150,
-  "visibleVersion": "Mesaha İO v1.79",
-  "cache": "mesaha-app-v150-info-modal-version-lock",
+  "version": 151,
+  "visibleVersion": "Mesaha İO v1.80",
+  "cache": "mesaha-app-v151-loading-button-fix",
   "builtAt": "2026-06-18",
-  "notes": "Mesaha dosyası indir ve yedek al işlemleri için bilgi kutuları eklendi. Sürüm bilgisi sabitlendi ve giriş modundaki Ana Sayfaya Dön yazısı düzeltilmiştir."
+  "notes": "v150 paketindeki yükleniyor/çalışmayan buton sorunu düzeltildi. Bilgi kutuları eklendi, giriş modu ana sayfaya dönüş yazısı ve sürüm görünümü sabitlendi."
 }
