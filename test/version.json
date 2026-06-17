@@ -1,7 +1,10 @@
 {
-  "version": 139,
-  "visibleVersion": "Mesaha İO v1.68",
-  "cache": "mesaha-app-v139",
-  "builtAt": "2026-06-13",
-  "notes": "v139 istatistik sıfırlama admin ana özet ve kullanıcı listesi fix; usageStats, kullanıcı günlük özetleri ve local kuyruk birlikte temizlenir"
+  "version": "v160",
+  "appVersion": "Mesaha İO v1.89",
+  "visibleVersion": "Mesaha İO v1.89",
+  "build": "v160",
+  "fileVersion": "v160",
+  "cache": "mesaha-app-v160",
+  "updatedAt": "2026-06-17",
+  "notes": "Kurtarma/stabil sürüm: v147 temiz tabana dönüldü, Mesaha Liderleri geçici kaldırıldı, JSON yedek geri yükleme güçlendirildi, Excel export çekirdeğine dokunulmadı."
 }

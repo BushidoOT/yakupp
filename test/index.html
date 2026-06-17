@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha App v139</title>
+  <title>Mesaha App v160</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -10212,6 +10212,128 @@ body.theme-dark .admin-stats-note-v134{ color:#a8b3c2; }
     html,body{ width:210mm; min-height:297mm; }
   }
 </style>
+
+<style id="mesaha-v146-tree-filter-style">
+  /* v146: Hızlı Giriş ağaç seçimi + Kayıtlar ağaç filtresi */
+  .quick-tree-v146{
+    border:1px solid #dbe4ef;
+    border-radius:18px;
+    padding:12px;
+    margin:10px 0 12px;
+    background:#f8fafc;
+    box-shadow:0 10px 22px rgba(15,23,42,.05);
+  }
+  .quick-tree-head-v146{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+  }
+  .quick-tree-head-v146 b{font-size:14px;font-weight:1000;color:#0f172a;}
+  .quick-tree-toggle-v146{
+    border:1px solid #cbd5e1;
+    background:#fff;
+    color:#0f172a;
+    border-radius:14px;
+    padding:10px 12px;
+    font-weight:1000;
+    min-height:42px;
+  }
+  .quick-tree-panel-v146{
+    display:none;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:8px;
+    margin-top:10px;
+  }
+  .quick-tree-panel-v146.open{display:grid;}
+  .quick-tree-option-v146{
+    border:1px solid #dbe4ef;
+    border-left:6px solid #22c55e;
+    background:#fff;
+    color:#0f172a;
+    border-radius:14px;
+    padding:12px 10px;
+    font-weight:1000;
+    min-height:44px;
+    text-align:left;
+  }
+  .quick-tree-option-v146.active{border-color:#22c55e;box-shadow:0 0 0 3px rgba(34,197,94,.14);}
+  .records-tree-filter-v146{
+    margin:12px 0 14px;
+    padding:12px;
+    border:1px solid #dbe4ef;
+    border-radius:20px;
+    background:#f8fafc;
+    box-shadow:0 12px 30px rgba(15,23,42,.05);
+  }
+  .records-tree-filter-head-v146{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:12px;
+    margin-bottom:10px;
+  }
+  .records-tree-filter-head-v146 b{display:block;font-size:15px;font-weight:1000;color:#0f172a;}
+  .records-tree-filter-head-v146 span{display:block;margin-top:2px;color:#64748b;font-weight:850;font-size:13px;}
+  .records-tree-buttons-v146{
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:8px;
+  }
+  .records-tree-buttons-v146 button{
+    border:1px solid #dbe4ef;
+    border-left:6px solid #22c55e;
+    border-radius:16px;
+    background:#fff;
+    color:#0f172a;
+    padding:10px 9px;
+    font-weight:1000;
+    min-height:44px;
+    text-align:left;
+  }
+  .records-tree-buttons-v146 button[data-tree-filter="all"]{border-left-color:#64748b;}
+  .records-tree-buttons-v146 button[data-tree-filter="Sarıçam"]{border-left-color:#eab308;}
+  .records-tree-buttons-v146 button[data-tree-filter="Sedir"]{border-left-color:#10b981;}
+  .records-tree-buttons-v146 button[data-tree-filter="Göknar"]{border-left-color:#38bdf8;}
+  .records-tree-buttons-v146 button[data-tree-filter="Kızılçam"]{border-left-color:#f97316;}
+  .records-tree-buttons-v146 button.active{
+    border-color:#2563eb;
+    background:#eff6ff;
+    box-shadow:0 0 0 3px rgba(37,99,235,.12);
+  }
+  .records-tree-summary-v146{
+    margin-top:10px;
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:8px;
+  }
+  .records-tree-summary-v146 .mini-stat-v146{
+    border:1px solid #e2e8f0;
+    border-radius:15px;
+    padding:10px;
+    background:#fff;
+  }
+  .records-tree-summary-v146 small{display:block;color:#64748b;font-size:12px;font-weight:900;}
+  .records-tree-summary-v146 strong{display:block;margin-top:3px;color:#0f172a;font-size:18px;font-weight:1000;}
+  @media(max-width:640px){
+    .records-tree-buttons-v146{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .records-tree-summary-v146{grid-template-columns:1fr 1fr;}
+    .records-tree-summary-v146 .mini-stat-v146:first-child{grid-column:1 / -1;}
+  }
+  body.theme-dark .quick-tree-v146,
+  body.theme-dark .records-tree-filter-v146{background:#111827;border-color:#334155;box-shadow:none;}
+  body.theme-dark .quick-tree-head-v146 b,
+  body.theme-dark .records-tree-filter-head-v146 b{color:#f8fafc;}
+  body.theme-dark .records-tree-filter-head-v146 span{color:#cbd5e1;}
+  body.theme-dark .quick-tree-toggle-v146,
+  body.theme-dark .quick-tree-option-v146,
+  body.theme-dark .records-tree-buttons-v146 button,
+  body.theme-dark .records-tree-summary-v146 .mini-stat-v146{background:#0b1220;border-color:#334155;color:#f8fafc;}
+  body.theme-dark .quick-tree-option-v146.active,
+  body.theme-dark .records-tree-buttons-v146 button.active{background:#152033;border-color:#3b82f6;}
+  body.theme-dark .records-tree-summary-v146 small{color:#cbd5e1;}
+  body.theme-dark .records-tree-summary-v146 strong{color:#f8fafc;}
+</style>
 </head>
 <body>
   <div class="page">
@@ -10240,6 +10362,277 @@ body.theme-dark .admin-stats-note-v134{ color:#a8b3c2; }
     </div>
   </div>
 
+
+
+<script>
+/* Mesaha v143 - istatistik doğruluk düzeltmesi: dönem filtresi + tekilleştirme + isim normalizasyonu */
+(function(){
+  "use strict";
+  const BUILD_VERSION = "Mesaha İO v1.72";
+  const FILE_VERSION = "v160";
+  const RESET_DOC = "__stats_reset_marker__";
+
+  const esc = (v) => { try { return escapeHtml(v); } catch { return String(v ?? "").replace(/[&<>\"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[c])); } };
+  const n = (v) => { const x = Number(String(v ?? "").replace(",", ".").replace(/[^0-9.\-]/g, "")); return Number.isFinite(x) ? x : 0; };
+  const intText = (v) => Math.round(Number(v) || 0).toLocaleString("tr-TR");
+  const m3Text = (v) => `${(Number(v) || 0).toLocaleString("tr-TR", {minimumFractionDigits:3, maximumFractionDigits:3})} m³`;
+  const toast = (m) => { try { if (typeof showToast === "function") showToast(m); } catch {} };
+  const usageColl = () => { try { return FIREBASE_USAGE_COLLECTION || "usageStats"; } catch { return "usageStats"; } };
+  const backupColl = () => { try { return FIREBASE_BACKUPS_COLLECTION || "backups"; } catch { return "backups"; } };
+  const todayISO = () => { try { if (typeof usageTodayISOv128 === "function") return usageTodayISOv128(); } catch {} const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; };
+  const weekStartISO = () => { const d = new Date(); const day = (d.getDay()+6)%7; d.setHours(0,0,0,0); d.setDate(d.getDate()-day); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; };
+  const periodLabel = (p) => p === "today" ? "Bugün" : (p === "week" ? "Bu Hafta" : "Tüm Zamanlar");
+
+  function toMs(v){
+    try{
+      if(!v) return 0;
+      if(typeof v === "number") return Number.isFinite(v) ? v : 0;
+      if(v instanceof Date) return Number.isFinite(v.getTime()) ? v.getTime() : 0;
+      if(typeof v.toDate === "function") { const d = v.toDate(); return d && Number.isFinite(d.getTime()) ? d.getTime() : 0; }
+      if(typeof v === "object" && Number.isFinite(Number(v.seconds))) return Number(v.seconds) * 1000;
+      const s = String(v || "").trim();
+      if(!s || s === "-" || s.toLocaleLowerCase("tr-TR") === "bilinmiyor") return 0;
+      const tr = s.match(/^(\d{1,2})[.\/-](\d{1,2})[.\/-](20\d{2})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?/);
+      if(tr){ const d = new Date(Number(tr[3]), Number(tr[2])-1, Number(tr[1]), Number(tr[4]||0), Number(tr[5]||0), Number(tr[6]||0)); return Number.isFinite(d.getTime()) ? d.getTime() : 0; }
+      const t = Date.parse(s); return Number.isFinite(t) ? t : 0;
+    }catch{ return 0; }
+  }
+  function dateISOFromMs(ms){ if(!ms) return ""; const d = new Date(ms); if(!Number.isFinite(d.getTime())) return ""; return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; }
+  function docGeneratedMs(d){ return n(d && (d.exportAtMs || d.generatedAtMs || d.createdAtMs || d.queuedAtMs || d.updatedAtMs)); }
+  function docDateISO(d){
+    const direct = String((d && d.date) || "").slice(0,10);
+    if(/^20\d{2}-\d{2}-\d{2}$/.test(direct)) return direct;
+    const ms = docGeneratedMs(d) || toMs(d && (d.exportAt || d.createdAt || d.updatedAt));
+    return dateISOFromMs(ms);
+  }
+  function inSelectedPeriodByDoc(d, period){
+    if(period === "all") return true;
+    const iso = docDateISO(d);
+    if(!iso) return false;
+    if(period === "today") return iso === todayISO();
+    if(period === "week") return iso >= weekStartISO();
+    return true;
+  }
+  function recordDateISO(r){
+    try{
+      const raw = r || {};
+      const isoRaw = String(raw.productionDate || raw.date || raw.createdAtIso || raw.savedAtIso || "").slice(0,10);
+      if(/^20\d{2}-\d{2}-\d{2}$/.test(isoRaw)) return isoRaw;
+      const trText = String(raw.uretimTarihi || raw.createdAt || raw.savedAt || "").trim();
+      const tr = trText.match(/(\d{1,2})[.\/-](\d{1,2})[.\/-](20\d{2})/);
+      if(tr) return `${tr[3]}-${String(tr[2]).padStart(2,"0")}-${String(tr[1]).padStart(2,"0")}`;
+      const ms = toMs(trText || raw.createdAtMs || raw.updatedAtMs); return dateISOFromMs(ms);
+    }catch{ return ""; }
+  }
+  function recordInPeriod(r, period){
+    if(period === "all") return true;
+    const iso = recordDateISO(r);
+    if(!iso) return false;
+    if(period === "today") return iso === todayISO();
+    if(period === "week") return iso >= weekStartISO();
+    return true;
+  }
+  function userKeyFrom(d){
+    const rawKey = String((d && d.userKey) || "").trim();
+    if(rawKey) return rawKey.toLocaleLowerCase("tr-TR").replace(/[^a-z0-9ğüşöçıİĞÜŞÖÇ_-]+/gi,"_").replace(/^_+|_+$/g,"");
+    const name = String((d && (d.name || d.userName || d.displayName)) || "").trim();
+    const seflik = String((d && d.seflik) || "").trim();
+    try { if (typeof firebaseUserKey === "function") return firebaseUserKey(name, seflik); } catch {}
+    return `${name}_${seflik}`.toLocaleLowerCase("tr-TR").replace(/[^a-z0-9ğüşöçıİĞÜŞÖÇ_-]+/gi,"_").replace(/^_+|_+$/g,"") || "bilinmeyen";
+  }
+  function normTree(name, r){
+    const id = String((r && (r.agacId || r.treeId)) || "").trim();
+    if(id === "1") return "Karaçam"; if(id === "2") return "Sarıçam"; if(id === "5") return "Sedir"; if(id === "6") return "Göknar"; if(id === "26") return "Kızılçam";
+    let s = String(name || (r && (r.treeType || r.species || r.agacAdi || r.agac)) || "").trim();
+    if(!s) return "Bilinmiyor";
+    const l = s.toLocaleLowerCase("tr-TR");
+    if(l.includes("sarı") || l.includes("sari") || l === "çs") return "Sarıçam";
+    if(l.includes("kara") || l === "çk") return "Karaçam";
+    if(l.includes("kızıl") || l.includes("kizil") || l === "çz") return "Kızılçam";
+    if(l.includes("sedir") || l === "s") return "Sedir";
+    if(l.includes("göknar") || l.includes("goknar") || l === "gn") return "Göknar";
+    return s;
+  }
+  function normProduct(name, r){
+    const id = String((r && (r.odunId || r.productId)) || "").trim();
+    if(id === "1") return "Tomruk"; if(id === "2") return "Tel Direği"; if(id === "3") return "Maden Direği"; if(id === "4") return "Sanayi Odunu"; if(id === "5") return "Kağıtlık";
+    let s = String(name || (r && (r.productType || r.odunAdi || r.odun || r.product)) || "").trim();
+    if(!s) return "Bilinmiyor";
+    const l = s.toLocaleLowerCase("tr-TR");
+    if(l.includes("tom") || l === "tmrk") return "Tomruk";
+    if(l.includes("maden")) return "Maden Direği";
+    if(l.includes("kağı") || l.includes("kagit")) return "Kağıtlık";
+    if(l.includes("sanayi")) return "Sanayi Odunu";
+    if(l.includes("tel")) return "Tel Direği";
+    return s;
+  }
+  function qty(r){ return Math.max(0, n(r && (r.quantity ?? r.adet ?? r.count)) || 1); }
+  function recM3(r){
+    if(!r) return 0;
+    const desi = n(r.desi); if(desi > 0) return desi / 1000;
+    const h = n(r.hacim ?? r.volume ?? r.m3); if(h > 0) return h;
+    try { const cap = n(r.diameter ?? r.cap), boy = n(r.length ?? r.boy), q = qty(r); if(typeof calculateDesi === "function") return (Number(calculateDesi(cap,boy,q)) || 0) / 1000; } catch {}
+    return 0;
+  }
+  function add(map, name, adet, m3){
+    const key = String(name || "Bilinmiyor").trim() || "Bilinmiyor";
+    const row = map.get(key) || {name:key, adet:0, m3:0};
+    row.adet += Number(adet) || 0;
+    row.m3 = Number(((Number(row.m3)||0) + (Number(m3)||0)).toFixed(3));
+    map.set(key,row);
+  }
+  function sorted(map){ return Array.from(map.values()).sort((a,b)=>((b.adet||0)-(a.adet||0)) || ((b.m3||0)-(a.m3||0)) || String(a.name).localeCompare(String(b.name), "tr")); }
+  function summarizeRecords(records, period){
+    const treeMap = new Map(), productMap = new Map(); let recordCount=0, adet=0, m3=0;
+    (Array.isArray(records)?records:[]).forEach(r => {
+      if(!recordInPeriod(r, period)) return;
+      const q = qty(r), vol = recM3(r);
+      recordCount += 1; adet += q; m3 += vol;
+      add(treeMap, normTree(null,r), q, vol);
+      add(productMap, normProduct(null,r), q, vol);
+    });
+    return {recordCount, adet, m3:Number(m3.toFixed(3)), trees:sorted(treeMap), products:sorted(productMap)};
+  }
+  function addSummaryRows(map, rows, normalizer){
+    (Array.isArray(rows)?rows:[]).forEach(row => add(map, normalizer(row && row.name, row), n(row && row.adet), n(row && row.m3)));
+  }
+  function summaryHasData(summary){ return !!(summary && (n(summary.recordCount) || n(summary.adet) || n(summary.m3) || (Array.isArray(summary.trees)&&summary.trees.length) || (Array.isArray(summary.products)&&summary.products.length))); }
+
+  async function readReset(db){
+    try{ const doc = await db.collection(usageColl()).doc(RESET_DOC).get(); if(!doc.exists) return {resetAtMs:0, resetAt:""}; const d = doc.data() || {}; return {resetAtMs:n(d.resetAtMs), resetAt:d.resetAt || ""}; }catch{return {resetAtMs:0, resetAt:""};}
+  }
+  async function loadExportStats(period, db, reset){
+    let snap;
+    try { snap = await db.collection(usageColl()).where("type", "==", "dailyExportSummary").get(); }
+    catch { snap = await db.collection(usageColl()).get(); }
+    const resetAtMs = n(reset && reset.resetAtMs);
+    const latest = new Map();
+    snap.forEach(doc => {
+      try{
+        if(doc.id === RESET_DOC) return;
+        const d = doc.data() || {};
+        if(d.type && d.type !== "dailyExportSummary") return;
+        if(!d.allSummary && !d.treeTotals && !d.productTotals) return;
+        const ms = docGeneratedMs(d);
+        if(resetAtMs && (!ms || ms <= resetAtMs)) return;
+        if(!inSelectedPeriodByDoc(d, period)) return;
+        const key = userKeyFrom(d) || doc.id;
+        const old = latest.get(key);
+        if(!old || ms >= old.ms) latest.set(key, {ms, data:d});
+      }catch{}
+    });
+    const treeMap = new Map(), productMap = new Map(); let users=0, recordCount=0, adet=0, m3=0;
+    latest.forEach(item => {
+      const d = item.data || {};
+      const summary = period === "today" ? d.todaySummary : (period === "week" ? d.weekSummary : d.allSummary);
+      if(period !== "all" && !summaryHasData(summary)) return;
+      const useTrees = (summary && summary.trees) || (period === "all" ? (d.treeTotals || []) : []);
+      const useProducts = (summary && summary.products) || (period === "all" ? (d.productTotals || []) : []);
+      const rc = n((summary && summary.recordCount) ?? (period === "all" ? d.recordCount : 0));
+      const qa = n((summary && summary.adet) ?? (period === "all" ? d.totalAdet : 0));
+      const vm = n((summary && summary.m3) ?? (period === "all" ? d.totalM3 : 0));
+      if(!rc && !qa && !vm && !useTrees.length && !useProducts.length) return;
+      users += 1; recordCount += rc; adet += qa; m3 += vm;
+      addSummaryRows(treeMap, useTrees, normTree); addSummaryRows(productMap, useProducts, normProduct);
+    });
+    return {users, recordCount, adet, m3:Number(m3.toFixed(3)), trees:sorted(treeMap), products:sorted(productMap), period, source:"downloadSummaryStrict", resetAtMs, resetAt:(reset&&reset.resetAt)||"", loadedAt:new Date().toLocaleString("tr-TR")};
+  }
+  async function loadBackupStats(period, db){
+    const snap = await db.collection(backupColl()).get();
+    const latest = new Map();
+    snap.forEach(doc=>{
+      try{
+        const d = doc.data() || {}; let payload = d.payload || null; if(!payload && d.payloadText) payload = JSON.parse(d.payloadText);
+        if(!payload || !Array.isArray(payload.records) || !payload.records.length) return;
+        const key = d.userKey || userKeyFrom({name:d.name || (payload.user&&payload.user.name), seflik:d.seflik || (payload.user&&payload.user.seflik)}) || doc.id;
+        const ms = n(d.createdAtMs || d.backupAtMs || d.updatedAtMs) || toMs(d.createdAtIso || d.createdAt || d.updatedAt);
+        const old = latest.get(key); if(!old || ms >= old.ms) latest.set(key, {ms, payload});
+      }catch{}
+    });
+    const records=[]; latest.forEach(x => records.push(...((x.payload && x.payload.records) || [])));
+    const s = summarizeRecords(records, period);
+    return {users:s.recordCount ? latest.size : 0, recordCount:s.recordCount, adet:s.adet, m3:s.m3, trees:s.trees, products:s.products, period, source:"backupFallbackStrict", resetAtMs:0, resetAt:"", loadedAt:new Date().toLocaleString("tr-TR")};
+  }
+  async function loadStats(period){
+    const p = (period === "today" || period === "week") ? period : "all";
+    const {db} = await ensureFirebaseReady();
+    const reset = await readReset(db);
+    const exportStats = await loadExportStats(p, db, reset);
+    if(reset.resetAtMs) return exportStats;
+    if(exportStats.recordCount || exportStats.trees.length || exportStats.products.length) return exportStats;
+    return await loadBackupStats(p, db);
+  }
+  function rows(list){
+    if(!list || !list.length) return `<div class="admin-stats-empty-v132">Veri bulunamadı.</div>`;
+    return list.map(r=>`<div class="admin-stat-row-v132"><div class="admin-stat-name-v132">${esc(r.name)}</div><div class="admin-stat-val-v132">${intText(r.adet)} adet</div><div class="admin-stat-val-v132">${m3Text(r.m3)}</div></div>`).join("");
+  }
+  function panel(){
+    let p = document.getElementById("adminStatsPanelV132");
+    if(!p){ const s = document.querySelector(".admin-summary-grid-clean") || document.querySelector(".admin-panel-top-clean"); if(s){ p=document.createElement("div"); p.id="adminStatsPanelV132"; p.className="admin-stats-panel-v132"; s.insertAdjacentElement("afterend", p); } }
+    return p;
+  }
+  function render(stats, message){
+    const p = panel(); if(!p) return;
+    if(message){ p.innerHTML = `<div class="admin-stats-empty-v132">${esc(message)}</div>`; return; }
+    const period = stats.period || window.adminStatsPeriodV134 || "all";
+    const topTree = (stats.trees || [])[0] || {name:"-", adet:0, m3:0};
+    const topProd = (stats.products || [])[0] || {name:"-", adet:0, m3:0};
+    const sourceText = stats.source === "downloadSummaryStrict" ? "Mesaha dosyası indirme özetleri" : "Firebase yedekleri";
+    const resetNote = stats.resetAtMs ? `<div class="admin-stats-reset-note-v138">İstatistik ${esc(stats.resetAt || "yakın zamanda")} tarihinde sıfırlandı. Bu ekranda sadece sıfırlamadan sonra gelen yeni özetler sayılır.</div>` : "";
+    const emptyNote = (!stats.recordCount && !stats.adet && !stats.m3) ? `<div class="admin-stats-reset-note-v138">Bu dönem için istatistik yok. Kullanıcı Mesaha Dosyasını İndir dediğinde yeni özet oluşur.</div>` : "";
+    p.innerHTML = `
+      <div class="admin-stats-head-v132">
+        <div>
+          <b>Toplu İstatistik</b>
+          <span>Dönem: ${esc(periodLabel(period))} • Kaynak: ${esc(sourceText)} • Son yenileme: ${esc(stats.loadedAt || "-")}</span>
+          <div class="admin-stats-period-v134">
+            <button type="button" class="${period === "today" ? "active" : ""}" onclick="adminSetStatsPeriodV134('today')">Bugün</button>
+            <button type="button" class="${period === "week" ? "active" : ""}" onclick="adminSetStatsPeriodV134('week')">Bu Hafta</button>
+            <button type="button" class="${period === "all" ? "active" : ""}" onclick="adminSetStatsPeriodV134('all')">Tüm Zamanlar</button>
+          </div>
+          <div class="admin-stats-note-v134">Bugün/hafta hesabı artık sadece o dönem içinde gönderilen özetleri sayar; eski günün “bugün” verisi bugüne taşınmaz.</div>
+          ${resetNote}${emptyNote}
+        </div>
+        <div class="admin-stats-actions-v138"><button type="button" class="secondary" onclick="adminRefreshStatsV132()">Yenile</button><button type="button" class="danger" onclick="adminResetStatsV139()">İstatistiği Sıfırla</button></div>
+      </div>
+      <div class="admin-stats-cards-v132">
+        <div class="admin-stat-top-card-v132"><span>En fazla ağaç türü</span><b>${esc(topTree.name)}</b><small>${intText(topTree.adet)} adet • ${m3Text(topTree.m3)}</small></div>
+        <div class="admin-stat-top-card-v132"><span>En fazla odun türü</span><b>${esc(topProd.name)}</b><small>${intText(topProd.adet)} adet • ${m3Text(topProd.m3)}</small></div>
+        <div class="admin-stat-top-card-v132"><span>Kapsam</span><b>${intText(stats.users)} kullanıcı</b><small>${intText(stats.recordCount)} kayıt</small></div>
+        <div class="admin-stat-top-card-v132"><span>Toplam</span><b>${intText(stats.adet)} adet</b><small>${m3Text(stats.m3)}</small></div>
+      </div>
+      <div class="admin-stats-columns-v132">
+        <div class="admin-stats-section-v132"><h4>Ağaç türleri</h4>${rows(stats.trees)}</div>
+        <div class="admin-stats-section-v132"><h4>Odun türleri</h4>${rows(stats.products)}</div>
+      </div>`;
+  }
+  async function loadAndRender(force){
+    window.adminStatsPeriodV134 = window.adminStatsPeriodV134 || "all";
+    const p = panel(); const btn = document.getElementById("adminStatsBtnV132");
+    if(p) p.classList.add("open"); if(btn) btn.classList.add("active");
+    const period = window.adminStatsPeriodV134;
+    const key = `adminStatsV143_${period}`;
+    if(!force && window.__mesahaStatsCacheV143 && window.__mesahaStatsCacheV143[key]) return render(window.__mesahaStatsCacheV143[key]);
+    try { if(typeof setCloudLoading === "function") setCloudLoading(true, "İstatistikler hazırlanıyor..."); } catch {}
+    render(null, "İstatistikler hazırlanıyor...");
+    try{
+      window.__mesahaStatsCacheV143 = window.__mesahaStatsCacheV143 || {};
+      window.__mesahaStatsCacheV143[key] = await loadStats(period);
+      render(window.__mesahaStatsCacheV143[key]);
+    }catch(err){ console.warn("v143 stats error", err); render(null, "İstatistik alınamadı. İnternet/Firebase bağlantısı veya Firestore Rules alanını kontrol et."); toast("İstatistik alınamadı."); }
+    finally { try { if(typeof setCloudLoading === "function") setCloudLoading(false); } catch {} }
+  }
+  window.adminRefreshStatsV132 = function(){ window.__mesahaStatsCacheV143 = {}; return loadAndRender(true); };
+  window.adminSetStatsPeriodV134 = function(period){ window.adminStatsPeriodV134 = (period === "today" || period === "week") ? period : "all"; window.__mesahaStatsCacheV143 = {}; return loadAndRender(true); };
+  const oldReset = typeof window.adminResetStatsV139 === "function" ? window.adminResetStatsV139 : null;
+  if(oldReset){ window.adminResetStatsV139 = async function(){ const r = await oldReset.apply(this, arguments); window.__mesahaStatsCacheV143 = {}; try { await loadAndRender(true); } catch {} return r; }; }
+
+  const oldDevice = typeof currentDeviceInfoPayload === "function" ? currentDeviceInfoPayload : null;
+  try { currentDeviceInfoPayload = function(){ const info = oldDevice ? oldDevice() : {}; info.appVersion = BUILD_VERSION; info.fileVersion = FILE_VERSION; info.statsStrictPeriodFix = true; info.updatedMs = Date.now(); return info; }; } catch {}
+  window.MESAHA_BUILD_INFO = Object.assign({}, window.MESAHA_BUILD_INFO || {}, {fileVersion:FILE_VERSION, visibleVersion:BUILD_VERSION, statsStrictPeriodFix:true});
+  try { document.title = "Mesaha App v160"; const h1 = document.querySelector(".brand h1"); if(h1) h1.textContent = BUILD_VERSION; } catch {}
+})();
+</script>
 
 </body>
 </html>`;
@@ -13793,20 +14186,45 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
       reader.onload = () => {
         try {
           const data = JSON.parse(reader.result);
-          if (!Array.isArray(data.records)) throw new Error("Geçersiz yedek.");
-          if (!confirm(`${data.records.length} kayıt yüklensin mi? Mevcut kayıtlar değişir.`)) return;
+          const incomingRecords = Array.isArray(data) ? data : data.records;
+          if (!Array.isArray(incomingRecords)) throw new Error("Yedek içinde records listesi yok.");
+          if (!incomingRecords.length) throw new Error("Yedek içinde kayıt yok.");
 
-          state.records = data.records;
+          const normalizedRecords = incomingRecords.map((r) => {
+            const rec = { ...(r || {}) };
+            rec.id = rec.id || (crypto && crypto.randomUUID ? crypto.randomUUID() : String(Date.now() + Math.random()));
+            rec.barcode = String(rec.barcode || rec.barkodNo || "").trim();
+            rec.treeType = rec.treeType || rec.species || rec.agacAdi || "Karaçam";
+            rec.species = rec.species || rec.treeType;
+            rec.productType = rec.productType || rec.odunAdi || "Tomruk";
+            rec.qualityClass = rec.qualityClass || rec.kaliteSinifi || "";
+            rec.length = Number(String(rec.length ?? rec.boy ?? "").replace(",", ".")) || 0;
+            rec.diameter = Number(String(rec.diameter ?? rec.cap ?? "").replace(",", ".")) || 0;
+            rec.quantity = Number(rec.quantity ?? rec.adet ?? 1) || 1;
+            rec.productionDate = rec.productionDate || trDateToISO(rec.uretimTarihi) || todayISO();
+            rec.uretimTarihi = rec.uretimTarihi || isoToTRDate(rec.productionDate);
+            if (rec.desi === undefined || rec.desi === null || rec.desi === "") {
+              try { rec.desi = calculateDesi(rec.diameter, rec.length, rec.quantity); } catch (_) { rec.desi = 0; }
+            }
+            if (!rec.hacim && rec.desi) rec.hacim = String(Number(rec.desi || 0) / 1000);
+            rec.createdAt = rec.createdAt || formatDateTime();
+            return rec;
+          });
+
+          if (!confirm(`${normalizedRecords.length} kayıt yüklensin mi? Mevcut kayıtlar değişir.`)) return;
+
+          state.records = normalizedRecords;
           state.settings = { ...state.settings, ...(data.settings || {}) };
           saveRecords();
           localStorage.setItem(SETTINGS_KEY, JSON.stringify(state.settings));
           load();
-          showToast("Yedek yüklendi.");
+          showToast(`${normalizedRecords.length} kayıt yedekten yüklendi.`);
         } catch (err) {
-          showToast("Yedek dosyası okunamadı.");
+          showToast("Yedek dosyası okunamadı: " + ((err && err.message) ? err.message : "Geçersiz JSON"));
         }
       };
-      reader.readAsText(file);
+      reader.onerror = () => showToast("Yedek dosyası seçildi ama okunamadı.");
+      reader.readAsText(file, "utf-8");
     }
 
     function downloadFile(content, filename, type) {
@@ -18123,7 +18541,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
         supportOfflineQueue: true,
         stableBuild: true
       });
-      try { document.title = "Mesaha App v138"; document.querySelector(".brand h1") && (document.querySelector(".brand h1").textContent = BUILD_VERSION_V134); } catch {}
+      try { document.title = "Mesaha App v160"; document.querySelector(".brand h1") && (document.querySelector(".brand h1").textContent = BUILD_VERSION_V134); } catch {}
       v134EnsureStatsUi();
       v134LoadSupportTickets().then(() => { try { renderAdminUsers(); } catch {} }).catch(()=>{});
       setTimeout(() => { try { v134EnsureStatsUi(); renderAdminUsers(); } catch {} }, 500);
@@ -18677,12 +19095,121 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
         exportSummaryOnDownload: true,
         usageSyncMode: "onMesahaDownload"
       };
-      try { document.title = "Mesaha App v138"; } catch {}
+      try { document.title = "Mesaha App v160"; } catch {}
       try { const h1 = document.querySelector(".brand h1"); if (h1) h1.textContent = BUILD_VERSION_V135; } catch {}
       setTimeout(v135BindExportButton, 80);
       setTimeout(v135BindExportButton, 800);
       setTimeout(() => v135FlushExportQueue(true).catch(() => {}), 1800);
     })();
+
+
+/* Mesaha v140 - admin son aktif sıralama + süre ölçüm düzeltmesi */
+(function(){
+  const BUILD_VERSION="Mesaha İO v1.69", FILE_VERSION = "v160";
+  const MAX_VISIBLE_TICK_MS=60*1000;
+  function num(v){ const n=Number(v); return Number.isFinite(n)?n:0; }
+  function clean(v){ return String(v||"").trim(); }
+  function parseTrDateMs(v){
+    if(!v) return 0;
+    if(typeof v === "number") return Number.isFinite(v)?v:0;
+    const s=String(v||"").trim();
+    if(!s || s==="-" || s.toLowerCase()==="bilinmiyor") return 0;
+    let m=s.match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?/);
+    if(m){
+      const d=new Date(Number(m[3]), Number(m[2])-1, Number(m[1]), Number(m[4]||0), Number(m[5]||0), Number(m[6]||0));
+      const ms=d.getTime(); return Number.isFinite(ms)?ms:0;
+    }
+    const t=Date.parse(s);
+    return Number.isFinite(t)?t:0;
+  }
+  function userRecentMs(u){
+    if(!u) return 0;
+    const tu=(u.todayUsage&&typeof u.todayUsage==="object")?u.todayUsage:{};
+    return Math.max(
+      num(u.lastUsageMs), num(u.lastActiveMs), num(u.updatedAtMs), num(u.lastSeenMs),
+      num(u.lastLoginMs), num(u.lastLoginAtMs), num(u.loginAtMs),
+      num(tu.updatedAtMs), num(tu.exportAtMs), num(tu.createdAtMs),
+      parseTrDateMs(u.lastUsageAt), parseTrDateMs(u.lastActiveAt), parseTrDateMs(u.lastLogin), parseTrDateMs(u.updatedAt), parseTrDateMs(tu.updatedAt)
+    );
+  }
+  function userSortName(u){ return clean((u&&u.name)||"").toLocaleLowerCase("tr-TR") + " " + clean((u&&u.seflik)||"").toLocaleLowerCase("tr-TR"); }
+
+  // Kullanıcı listesi: en son giriş/son aktif en üstte.
+  const oldAdminFiltered = typeof adminFilteredUsers === "function" ? adminFilteredUsers : null;
+  try{
+    adminFilteredUsers=function(){
+      let list=[];
+      try{ list = oldAdminFiltered ? oldAdminFiltered() : ((state&&Array.isArray(state.adminOnlineUsers))?state.adminOnlineUsers.slice():[]); }catch{ list=((state&&Array.isArray(state.adminOnlineUsers))?state.adminOnlineUsers.slice():[]); }
+      return (Array.isArray(list)?list:[]).sort((a,b)=>{
+        const diff=userRecentMs(b)-userRecentMs(a);
+        if(diff) return diff;
+        return userSortName(a).localeCompare(userSortName(b),"tr");
+      });
+    };
+  }catch{}
+
+  // Süre ölçümü: sayfa görünürken süre biriksin. Firebase'e gönderim yine Mesaha dosyası indirirken / kuyrukla yapılır.
+  function forceUsageTickV140(){
+    try{
+      if(typeof usageLastTickMsV128 === "undefined" || typeof usageAddActiveMsV128 !== "function") return false;
+      const now=Date.now();
+      const elapsed=now-Number(usageLastTickMsV128||now);
+      usageLastTickMsV128=now;
+      if(document.visibilityState === "hidden") return false;
+      if(elapsed>900 && elapsed<30*60*1000){
+        usageAddActiveMsV128(Math.min(elapsed, MAX_VISIBLE_TICK_MS));
+        return true;
+      }
+    }catch{}
+    return false;
+  }
+  window.forceUsageTickV140=forceUsageTickV140;
+
+  try{
+    usageTickV128=function(){
+      try{
+        const now=Date.now();
+        const elapsed=now-Number(usageLastTickMsV128||now);
+        usageLastTickMsV128=now;
+        if(document.visibilityState === "hidden") return;
+        if(elapsed>900) usageAddActiveMsV128(Math.min(elapsed, MAX_VISIBLE_TICK_MS));
+      }catch{}
+    };
+  }catch{}
+
+  // Export özetinden hemen önce o ana kadar geçen görünür süreyi de local sayaçlara işle.
+  document.addEventListener("pointerdown", function(ev){
+    try{ if(ev.target && ev.target.closest && ev.target.closest("#exportSystemXlsBtn")) forceUsageTickV140(); }catch{}
+  }, {capture:true, passive:true});
+  document.addEventListener("click", function(ev){
+    try{ if(ev.target && ev.target.closest && ev.target.closest("#exportSystemXlsBtn")) forceUsageTickV140(); }catch{}
+  }, {capture:true, passive:true});
+  document.addEventListener("visibilitychange", function(){ try{ forceUsageTickV140(); }catch{} }, {capture:true});
+
+  // Cihaz/Firebase payload sürümünü güncelle.
+  const oldDevice = typeof currentDeviceInfoPayload === "function" ? currentDeviceInfoPayload : null;
+  try{
+    currentDeviceInfoPayload=function(){
+      const info=oldDevice?oldDevice():{};
+      info.appVersion=BUILD_VERSION;
+      info.fileVersion=FILE_VERSION;
+      info.activeTimeMode="visibleTimeLocal_exportSync";
+      info.adminSortMode="lastLoginOrActiveDesc";
+      info.updatedMs=Date.now();
+      return info;
+    };
+  }catch{}
+
+  window.MESAHA_BUILD_INFO=Object.assign({}, window.MESAHA_BUILD_INFO||{}, {
+    fileVersion:FILE_VERSION,
+    visibleVersion:BUILD_VERSION,
+    activeTimeMode:"visibleTimeLocal_exportSync",
+    adminSortMode:"lastLoginOrActiveDesc"
+  });
+  try{ document.title="Mesaha App v160"; const h1=document.querySelector(".brand h1"); if(h1) h1.textContent=BUILD_VERSION; }catch{}
+  setTimeout(()=>{ try{ if(typeof renderAdminUsers==="function") renderAdminUsers(); }catch{} }, 500);
+})();
+
 </script>
 
 <script>
@@ -19050,7 +19577,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     statsResetFix: true,
     stableBuild: true
   });
-  try { document.title = "Mesaha App v138"; } catch {}
+  try { document.title = "Mesaha App v160"; } catch {}
   try { const h1 = document.querySelector(".brand h1"); if (h1) h1.textContent = BUILD_VERSION_V137; } catch {}
 })();
 </script>
@@ -19398,9 +19925,280 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     statsResetFix: true,
     stableBuild: true
   });
-  try { document.title = "Mesaha App v138"; const h1 = document.querySelector(".brand h1"); if (h1) h1.textContent = BUILD_VERSION_V138; } catch {}
+  try { document.title = "Mesaha App v160"; const h1 = document.querySelector(".brand h1"); if (h1) h1.textContent = BUILD_VERSION_V138; } catch {}
 })();
 </script>
+
+<script>
+/* Mesaha v143 - istatistik doğruluk düzeltmesi: dönem filtresi + tekilleştirme + isim normalizasyonu */
+(function(){
+  "use strict";
+  const BUILD_VERSION = "Mesaha İO v1.72";
+  const FILE_VERSION = "v160";
+  const RESET_DOC = "__stats_reset_marker__";
+
+  const esc = (v) => { try { return escapeHtml(v); } catch { return String(v ?? "").replace(/[&<>\"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[c])); } };
+  const n = (v) => { const x = Number(String(v ?? "").replace(",", ".").replace(/[^0-9.\-]/g, "")); return Number.isFinite(x) ? x : 0; };
+  const intText = (v) => Math.round(Number(v) || 0).toLocaleString("tr-TR");
+  const m3Text = (v) => `${(Number(v) || 0).toLocaleString("tr-TR", {minimumFractionDigits:3, maximumFractionDigits:3})} m³`;
+  const toast = (m) => { try { if (typeof showToast === "function") showToast(m); } catch {} };
+  const usageColl = () => { try { return FIREBASE_USAGE_COLLECTION || "usageStats"; } catch { return "usageStats"; } };
+  const backupColl = () => { try { return FIREBASE_BACKUPS_COLLECTION || "backups"; } catch { return "backups"; } };
+  const todayISO = () => { try { if (typeof usageTodayISOv128 === "function") return usageTodayISOv128(); } catch {} const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; };
+  const weekStartISO = () => { const d = new Date(); const day = (d.getDay()+6)%7; d.setHours(0,0,0,0); d.setDate(d.getDate()-day); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; };
+  const periodLabel = (p) => p === "today" ? "Bugün" : (p === "week" ? "Bu Hafta" : "Tüm Zamanlar");
+
+  function toMs(v){
+    try{
+      if(!v) return 0;
+      if(typeof v === "number") return Number.isFinite(v) ? v : 0;
+      if(v instanceof Date) return Number.isFinite(v.getTime()) ? v.getTime() : 0;
+      if(typeof v.toDate === "function") { const d = v.toDate(); return d && Number.isFinite(d.getTime()) ? d.getTime() : 0; }
+      if(typeof v === "object" && Number.isFinite(Number(v.seconds))) return Number(v.seconds) * 1000;
+      const s = String(v || "").trim();
+      if(!s || s === "-" || s.toLocaleLowerCase("tr-TR") === "bilinmiyor") return 0;
+      const tr = s.match(/^(\d{1,2})[.\/-](\d{1,2})[.\/-](20\d{2})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?/);
+      if(tr){ const d = new Date(Number(tr[3]), Number(tr[2])-1, Number(tr[1]), Number(tr[4]||0), Number(tr[5]||0), Number(tr[6]||0)); return Number.isFinite(d.getTime()) ? d.getTime() : 0; }
+      const t = Date.parse(s); return Number.isFinite(t) ? t : 0;
+    }catch{ return 0; }
+  }
+  function dateISOFromMs(ms){ if(!ms) return ""; const d = new Date(ms); if(!Number.isFinite(d.getTime())) return ""; return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; }
+  function docGeneratedMs(d){ return n(d && (d.exportAtMs || d.generatedAtMs || d.createdAtMs || d.queuedAtMs || d.updatedAtMs)); }
+  function docDateISO(d){
+    const direct = String((d && d.date) || "").slice(0,10);
+    if(/^20\d{2}-\d{2}-\d{2}$/.test(direct)) return direct;
+    const ms = docGeneratedMs(d) || toMs(d && (d.exportAt || d.createdAt || d.updatedAt));
+    return dateISOFromMs(ms);
+  }
+  function inSelectedPeriodByDoc(d, period){
+    if(period === "all") return true;
+    const iso = docDateISO(d);
+    if(!iso) return false;
+    if(period === "today") return iso === todayISO();
+    if(period === "week") return iso >= weekStartISO();
+    return true;
+  }
+  function recordDateISO(r){
+    try{
+      const raw = r || {};
+      const isoRaw = String(raw.productionDate || raw.date || raw.createdAtIso || raw.savedAtIso || "").slice(0,10);
+      if(/^20\d{2}-\d{2}-\d{2}$/.test(isoRaw)) return isoRaw;
+      const trText = String(raw.uretimTarihi || raw.createdAt || raw.savedAt || "").trim();
+      const tr = trText.match(/(\d{1,2})[.\/-](\d{1,2})[.\/-](20\d{2})/);
+      if(tr) return `${tr[3]}-${String(tr[2]).padStart(2,"0")}-${String(tr[1]).padStart(2,"0")}`;
+      const ms = toMs(trText || raw.createdAtMs || raw.updatedAtMs); return dateISOFromMs(ms);
+    }catch{ return ""; }
+  }
+  function recordInPeriod(r, period){
+    if(period === "all") return true;
+    const iso = recordDateISO(r);
+    if(!iso) return false;
+    if(period === "today") return iso === todayISO();
+    if(period === "week") return iso >= weekStartISO();
+    return true;
+  }
+  function userKeyFrom(d){
+    const rawKey = String((d && d.userKey) || "").trim();
+    if(rawKey) return rawKey.toLocaleLowerCase("tr-TR").replace(/[^a-z0-9ğüşöçıİĞÜŞÖÇ_-]+/gi,"_").replace(/^_+|_+$/g,"");
+    const name = String((d && (d.name || d.userName || d.displayName)) || "").trim();
+    const seflik = String((d && d.seflik) || "").trim();
+    try { if (typeof firebaseUserKey === "function") return firebaseUserKey(name, seflik); } catch {}
+    return `${name}_${seflik}`.toLocaleLowerCase("tr-TR").replace(/[^a-z0-9ğüşöçıİĞÜŞÖÇ_-]+/gi,"_").replace(/^_+|_+$/g,"") || "bilinmeyen";
+  }
+  function normTree(name, r){
+    const id = String((r && (r.agacId || r.treeId)) || "").trim();
+    if(id === "1") return "Karaçam"; if(id === "2") return "Sarıçam"; if(id === "5") return "Sedir"; if(id === "6") return "Göknar"; if(id === "26") return "Kızılçam";
+    let s = String(name || (r && (r.treeType || r.species || r.agacAdi || r.agac)) || "").trim();
+    if(!s) return "Bilinmiyor";
+    const l = s.toLocaleLowerCase("tr-TR");
+    if(l.includes("sarı") || l.includes("sari") || l === "çs") return "Sarıçam";
+    if(l.includes("kara") || l === "çk") return "Karaçam";
+    if(l.includes("kızıl") || l.includes("kizil") || l === "çz") return "Kızılçam";
+    if(l.includes("sedir") || l === "s") return "Sedir";
+    if(l.includes("göknar") || l.includes("goknar") || l === "gn") return "Göknar";
+    return s;
+  }
+  function normProduct(name, r){
+    const id = String((r && (r.odunId || r.productId)) || "").trim();
+    if(id === "1") return "Tomruk"; if(id === "2") return "Tel Direği"; if(id === "3") return "Maden Direği"; if(id === "4") return "Sanayi Odunu"; if(id === "5") return "Kağıtlık";
+    let s = String(name || (r && (r.productType || r.odunAdi || r.odun || r.product)) || "").trim();
+    if(!s) return "Bilinmiyor";
+    const l = s.toLocaleLowerCase("tr-TR");
+    if(l.includes("tom") || l === "tmrk") return "Tomruk";
+    if(l.includes("maden")) return "Maden Direği";
+    if(l.includes("kağı") || l.includes("kagit")) return "Kağıtlık";
+    if(l.includes("sanayi")) return "Sanayi Odunu";
+    if(l.includes("tel")) return "Tel Direği";
+    return s;
+  }
+  function qty(r){ return Math.max(0, n(r && (r.quantity ?? r.adet ?? r.count)) || 1); }
+  function recM3(r){
+    if(!r) return 0;
+    const desi = n(r.desi); if(desi > 0) return desi / 1000;
+    const h = n(r.hacim ?? r.volume ?? r.m3); if(h > 0) return h;
+    try { const cap = n(r.diameter ?? r.cap), boy = n(r.length ?? r.boy), q = qty(r); if(typeof calculateDesi === "function") return (Number(calculateDesi(cap,boy,q)) || 0) / 1000; } catch {}
+    return 0;
+  }
+  function add(map, name, adet, m3){
+    const key = String(name || "Bilinmiyor").trim() || "Bilinmiyor";
+    const row = map.get(key) || {name:key, adet:0, m3:0};
+    row.adet += Number(adet) || 0;
+    row.m3 = Number(((Number(row.m3)||0) + (Number(m3)||0)).toFixed(3));
+    map.set(key,row);
+  }
+  function sorted(map){ return Array.from(map.values()).sort((a,b)=>((b.adet||0)-(a.adet||0)) || ((b.m3||0)-(a.m3||0)) || String(a.name).localeCompare(String(b.name), "tr")); }
+  function summarizeRecords(records, period){
+    const treeMap = new Map(), productMap = new Map(); let recordCount=0, adet=0, m3=0;
+    (Array.isArray(records)?records:[]).forEach(r => {
+      if(!recordInPeriod(r, period)) return;
+      const q = qty(r), vol = recM3(r);
+      recordCount += 1; adet += q; m3 += vol;
+      add(treeMap, normTree(null,r), q, vol);
+      add(productMap, normProduct(null,r), q, vol);
+    });
+    return {recordCount, adet, m3:Number(m3.toFixed(3)), trees:sorted(treeMap), products:sorted(productMap)};
+  }
+  function addSummaryRows(map, rows, normalizer){
+    (Array.isArray(rows)?rows:[]).forEach(row => add(map, normalizer(row && row.name, row), n(row && row.adet), n(row && row.m3)));
+  }
+  function summaryHasData(summary){ return !!(summary && (n(summary.recordCount) || n(summary.adet) || n(summary.m3) || (Array.isArray(summary.trees)&&summary.trees.length) || (Array.isArray(summary.products)&&summary.products.length))); }
+
+  async function readReset(db){
+    try{ const doc = await db.collection(usageColl()).doc(RESET_DOC).get(); if(!doc.exists) return {resetAtMs:0, resetAt:""}; const d = doc.data() || {}; return {resetAtMs:n(d.resetAtMs), resetAt:d.resetAt || ""}; }catch{return {resetAtMs:0, resetAt:""};}
+  }
+  async function loadExportStats(period, db, reset){
+    let snap;
+    try { snap = await db.collection(usageColl()).where("type", "==", "dailyExportSummary").get(); }
+    catch { snap = await db.collection(usageColl()).get(); }
+    const resetAtMs = n(reset && reset.resetAtMs);
+    const latest = new Map();
+    snap.forEach(doc => {
+      try{
+        if(doc.id === RESET_DOC) return;
+        const d = doc.data() || {};
+        if(d.type && d.type !== "dailyExportSummary") return;
+        if(!d.allSummary && !d.treeTotals && !d.productTotals) return;
+        const ms = docGeneratedMs(d);
+        if(resetAtMs && (!ms || ms <= resetAtMs)) return;
+        if(!inSelectedPeriodByDoc(d, period)) return;
+        const key = userKeyFrom(d) || doc.id;
+        const old = latest.get(key);
+        if(!old || ms >= old.ms) latest.set(key, {ms, data:d});
+      }catch{}
+    });
+    const treeMap = new Map(), productMap = new Map(); let users=0, recordCount=0, adet=0, m3=0;
+    latest.forEach(item => {
+      const d = item.data || {};
+      const summary = period === "today" ? d.todaySummary : (period === "week" ? d.weekSummary : d.allSummary);
+      if(period !== "all" && !summaryHasData(summary)) return;
+      const useTrees = (summary && summary.trees) || (period === "all" ? (d.treeTotals || []) : []);
+      const useProducts = (summary && summary.products) || (period === "all" ? (d.productTotals || []) : []);
+      const rc = n((summary && summary.recordCount) ?? (period === "all" ? d.recordCount : 0));
+      const qa = n((summary && summary.adet) ?? (period === "all" ? d.totalAdet : 0));
+      const vm = n((summary && summary.m3) ?? (period === "all" ? d.totalM3 : 0));
+      if(!rc && !qa && !vm && !useTrees.length && !useProducts.length) return;
+      users += 1; recordCount += rc; adet += qa; m3 += vm;
+      addSummaryRows(treeMap, useTrees, normTree); addSummaryRows(productMap, useProducts, normProduct);
+    });
+    return {users, recordCount, adet, m3:Number(m3.toFixed(3)), trees:sorted(treeMap), products:sorted(productMap), period, source:"downloadSummaryStrict", resetAtMs, resetAt:(reset&&reset.resetAt)||"", loadedAt:new Date().toLocaleString("tr-TR")};
+  }
+  async function loadBackupStats(period, db){
+    const snap = await db.collection(backupColl()).get();
+    const latest = new Map();
+    snap.forEach(doc=>{
+      try{
+        const d = doc.data() || {}; let payload = d.payload || null; if(!payload && d.payloadText) payload = JSON.parse(d.payloadText);
+        if(!payload || !Array.isArray(payload.records) || !payload.records.length) return;
+        const key = d.userKey || userKeyFrom({name:d.name || (payload.user&&payload.user.name), seflik:d.seflik || (payload.user&&payload.user.seflik)}) || doc.id;
+        const ms = n(d.createdAtMs || d.backupAtMs || d.updatedAtMs) || toMs(d.createdAtIso || d.createdAt || d.updatedAt);
+        const old = latest.get(key); if(!old || ms >= old.ms) latest.set(key, {ms, payload});
+      }catch{}
+    });
+    const records=[]; latest.forEach(x => records.push(...((x.payload && x.payload.records) || [])));
+    const s = summarizeRecords(records, period);
+    return {users:s.recordCount ? latest.size : 0, recordCount:s.recordCount, adet:s.adet, m3:s.m3, trees:s.trees, products:s.products, period, source:"backupFallbackStrict", resetAtMs:0, resetAt:"", loadedAt:new Date().toLocaleString("tr-TR")};
+  }
+  async function loadStats(period){
+    const p = (period === "today" || period === "week") ? period : "all";
+    const {db} = await ensureFirebaseReady();
+    const reset = await readReset(db);
+    const exportStats = await loadExportStats(p, db, reset);
+    if(reset.resetAtMs) return exportStats;
+    if(exportStats.recordCount || exportStats.trees.length || exportStats.products.length) return exportStats;
+    return await loadBackupStats(p, db);
+  }
+  function rows(list){
+    if(!list || !list.length) return `<div class="admin-stats-empty-v132">Veri bulunamadı.</div>`;
+    return list.map(r=>`<div class="admin-stat-row-v132"><div class="admin-stat-name-v132">${esc(r.name)}</div><div class="admin-stat-val-v132">${intText(r.adet)} adet</div><div class="admin-stat-val-v132">${m3Text(r.m3)}</div></div>`).join("");
+  }
+  function panel(){
+    let p = document.getElementById("adminStatsPanelV132");
+    if(!p){ const s = document.querySelector(".admin-summary-grid-clean") || document.querySelector(".admin-panel-top-clean"); if(s){ p=document.createElement("div"); p.id="adminStatsPanelV132"; p.className="admin-stats-panel-v132"; s.insertAdjacentElement("afterend", p); } }
+    return p;
+  }
+  function render(stats, message){
+    const p = panel(); if(!p) return;
+    if(message){ p.innerHTML = `<div class="admin-stats-empty-v132">${esc(message)}</div>`; return; }
+    const period = stats.period || window.adminStatsPeriodV134 || "all";
+    const topTree = (stats.trees || [])[0] || {name:"-", adet:0, m3:0};
+    const topProd = (stats.products || [])[0] || {name:"-", adet:0, m3:0};
+    const sourceText = stats.source === "downloadSummaryStrict" ? "Mesaha dosyası indirme özetleri" : "Firebase yedekleri";
+    const resetNote = stats.resetAtMs ? `<div class="admin-stats-reset-note-v138">İstatistik ${esc(stats.resetAt || "yakın zamanda")} tarihinde sıfırlandı. Bu ekranda sadece sıfırlamadan sonra gelen yeni özetler sayılır.</div>` : "";
+    const emptyNote = (!stats.recordCount && !stats.adet && !stats.m3) ? `<div class="admin-stats-reset-note-v138">Bu dönem için istatistik yok. Kullanıcı Mesaha Dosyasını İndir dediğinde yeni özet oluşur.</div>` : "";
+    p.innerHTML = `
+      <div class="admin-stats-head-v132">
+        <div>
+          <b>Toplu İstatistik</b>
+          <span>Dönem: ${esc(periodLabel(period))} • Kaynak: ${esc(sourceText)} • Son yenileme: ${esc(stats.loadedAt || "-")}</span>
+          <div class="admin-stats-period-v134">
+            <button type="button" class="${period === "today" ? "active" : ""}" onclick="adminSetStatsPeriodV134('today')">Bugün</button>
+            <button type="button" class="${period === "week" ? "active" : ""}" onclick="adminSetStatsPeriodV134('week')">Bu Hafta</button>
+            <button type="button" class="${period === "all" ? "active" : ""}" onclick="adminSetStatsPeriodV134('all')">Tüm Zamanlar</button>
+          </div>
+          <div class="admin-stats-note-v134">Bugün/hafta hesabı artık sadece o dönem içinde gönderilen özetleri sayar; eski günün “bugün” verisi bugüne taşınmaz.</div>
+          ${resetNote}${emptyNote}
+        </div>
+        <div class="admin-stats-actions-v138"><button type="button" class="secondary" onclick="adminRefreshStatsV132()">Yenile</button><button type="button" class="danger" onclick="adminResetStatsV139()">İstatistiği Sıfırla</button></div>
+      </div>
+      <div class="admin-stats-cards-v132">
+        <div class="admin-stat-top-card-v132"><span>En fazla ağaç türü</span><b>${esc(topTree.name)}</b><small>${intText(topTree.adet)} adet • ${m3Text(topTree.m3)}</small></div>
+        <div class="admin-stat-top-card-v132"><span>En fazla odun türü</span><b>${esc(topProd.name)}</b><small>${intText(topProd.adet)} adet • ${m3Text(topProd.m3)}</small></div>
+        <div class="admin-stat-top-card-v132"><span>Kapsam</span><b>${intText(stats.users)} kullanıcı</b><small>${intText(stats.recordCount)} kayıt</small></div>
+        <div class="admin-stat-top-card-v132"><span>Toplam</span><b>${intText(stats.adet)} adet</b><small>${m3Text(stats.m3)}</small></div>
+      </div>
+      <div class="admin-stats-columns-v132">
+        <div class="admin-stats-section-v132"><h4>Ağaç türleri</h4>${rows(stats.trees)}</div>
+        <div class="admin-stats-section-v132"><h4>Odun türleri</h4>${rows(stats.products)}</div>
+      </div>`;
+  }
+  async function loadAndRender(force){
+    window.adminStatsPeriodV134 = window.adminStatsPeriodV134 || "all";
+    const p = panel(); const btn = document.getElementById("adminStatsBtnV132");
+    if(p) p.classList.add("open"); if(btn) btn.classList.add("active");
+    const period = window.adminStatsPeriodV134;
+    const key = `adminStatsV143_${period}`;
+    if(!force && window.__mesahaStatsCacheV143 && window.__mesahaStatsCacheV143[key]) return render(window.__mesahaStatsCacheV143[key]);
+    try { if(typeof setCloudLoading === "function") setCloudLoading(true, "İstatistikler hazırlanıyor..."); } catch {}
+    render(null, "İstatistikler hazırlanıyor...");
+    try{
+      window.__mesahaStatsCacheV143 = window.__mesahaStatsCacheV143 || {};
+      window.__mesahaStatsCacheV143[key] = await loadStats(period);
+      render(window.__mesahaStatsCacheV143[key]);
+    }catch(err){ console.warn("v143 stats error", err); render(null, "İstatistik alınamadı. İnternet/Firebase bağlantısı veya Firestore Rules alanını kontrol et."); toast("İstatistik alınamadı."); }
+    finally { try { if(typeof setCloudLoading === "function") setCloudLoading(false); } catch {} }
+  }
+  window.adminRefreshStatsV132 = function(){ window.__mesahaStatsCacheV143 = {}; return loadAndRender(true); };
+  window.adminSetStatsPeriodV134 = function(period){ window.adminStatsPeriodV134 = (period === "today" || period === "week") ? period : "all"; window.__mesahaStatsCacheV143 = {}; return loadAndRender(true); };
+  const oldReset = typeof window.adminResetStatsV139 === "function" ? window.adminResetStatsV139 : null;
+  if(oldReset){ window.adminResetStatsV139 = async function(){ const r = await oldReset.apply(this, arguments); window.__mesahaStatsCacheV143 = {}; try { await loadAndRender(true); } catch {} return r; }; }
+
+  const oldDevice = typeof currentDeviceInfoPayload === "function" ? currentDeviceInfoPayload : null;
+  try { currentDeviceInfoPayload = function(){ const info = oldDevice ? oldDevice() : {}; info.appVersion = BUILD_VERSION; info.fileVersion = FILE_VERSION; info.statsStrictPeriodFix = true; info.updatedMs = Date.now(); return info; }; } catch {}
+  window.MESAHA_BUILD_INFO = Object.assign({}, window.MESAHA_BUILD_INFO || {}, {fileVersion:FILE_VERSION, visibleVersion:BUILD_VERSION, statsStrictPeriodFix:true});
+  try { document.title = "Mesaha App v160"; const h1 = document.querySelector(".brand h1"); if(h1) h1.textContent = BUILD_VERSION; } catch {}
+})();
+</script>
+
 </body>
 </html>
 
@@ -19408,7 +20206,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 /* Mesaha v139 - istatistik sıfırlama admin ana liste/özet kesin düzeltme */
 (function(){
   "use strict";
-  const BUILD_VERSION="Mesaha İO v1.68", FILE_VERSION="v139", MARKER="__stats_reset_marker__";
+  const BUILD_VERSION="Mesaha İO v1.68", FILE_VERSION = "v160", MARKER="__stats_reset_marker__";
   const EXPORT_QUEUE="mesaha_export_stats_queue_v135", USAGE_LOCAL="mesaha_usage_stats_v128";
   const usageColl=()=>{try{return FIREBASE_USAGE_COLLECTION||"usageStats";}catch{return"usageStats";}};
   const usersColl=()=>{try{return FIREBASE_USERS_COLLECTION||"users";}catch{return"users";}};
@@ -19477,8 +20275,1105 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
   const oldRefresh=typeof adminRefreshStatsV132==="function"?adminRefreshStatsV132:null;if(oldRefresh){adminRefreshStatsV132=async function(){try{setLocalReset(await readMarker());}catch{}return oldRefresh();};}
   const oldDevice=typeof currentDeviceInfoPayload==="function"?currentDeviceInfoPayload:null;try{currentDeviceInfoPayload=function(){const info=oldDevice?oldDevice():{};info.appVersion=BUILD_VERSION;info.fileVersion=FILE_VERSION;info.statsResetAdminListFix=true;info.updatedMs=Date.now();return info;};}catch{}
   window.MESAHA_BUILD_INFO=Object.assign({},window.MESAHA_BUILD_INFO||{},{fileVersion:FILE_VERSION,visibleVersion:BUILD_VERSION,statsResetAdminListFix:true,stableBuild:true});
-  try{document.title="Mesaha App v139";const h1=document.querySelector(".brand h1");if(h1)h1.textContent=BUILD_VERSION;}catch{}
+  try{document.title="Mesaha App v160";const h1=document.querySelector(".brand h1");if(h1)h1.textContent=BUILD_VERSION;}catch{}
   setTimeout(()=>{readMarker().then(marker=>{if(marker&&marker.resetAtMs){try{state.adminOnlineUsers=sanitizeUsers(state.adminOnlineUsers||[],marker);renderAdminUsers();}catch{}}}).catch(()=>{});},1200);
 })();
 
+</script>
+
+
+<script>
+/* Mesaha v141 - admin son görülen + arka plan süre senkronu */
+(function(){
+  "use strict";
+  const BUILD_VERSION = "Mesaha İO v1.70";
+  const FILE_VERSION = "v160";
+  const LIVE_QUEUE_KEY = "mesaha_live_usage_queue_v141";
+  const LIVE_LAST_SYNC_KEY = "mesaha_live_usage_last_sync_v141";
+  const LIVE_MIN_SYNC_MS = 60 * 1000;
+  let liveTimer = null;
+  let liveSyncing = false;
+
+  const n = (v) => { const x = Number(String(v ?? "").replace(",", ".").replace(/[^0-9.\-]/g, "")); return Number.isFinite(x) ? x : 0; };
+  const esc = (v) => { try { return escapeHtml(v); } catch { return String(v ?? "").replace(/[&<>\"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[c])); } };
+  const fmtInt = (v) => Math.round(Number(v) || 0).toLocaleString("tr-TR");
+  const fmtM3 = (v) => `${(Number(v) || 0).toLocaleString("tr-TR", { minimumFractionDigits:3, maximumFractionDigits:3 })} m³`;
+  const dur = (ms) => { try { if (typeof adminDurationTextV128 === "function") return adminDurationTextV128(ms); } catch {} const m = Math.round((Number(ms)||0)/60000); return m ? `${m} dk` : "0 dk"; };
+  const trNow = () => { try { return firebaseDateText(); } catch { return new Date().toLocaleString("tr-TR"); } };
+  const todayIso = () => { try { return usageTodayISOv128(); } catch { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; } };
+  const collUsage = () => { try { return FIREBASE_USAGE_COLLECTION || "usageStats"; } catch { return "usageStats"; } };
+  const collUsers = () => { try { return FIREBASE_USERS_COLLECTION || "users"; } catch { return "users"; } };
+  const toast = (t) => { try { if (typeof showToast === "function") showToast(t); } catch {} };
+
+  function parseTrDateMs(v){
+    if(!v) return 0;
+    if(typeof v === "number") return Number.isFinite(v) ? v : 0;
+    const s = String(v || "").trim();
+    if(!s || s === "-" || s.toLocaleLowerCase("tr-TR") === "bilinmiyor") return 0;
+    let m = s.match(/^(\d{1,2})[.\/-](\d{1,2})[.\/-](\d{4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?/);
+    if(m){ const d = new Date(Number(m[3]), Number(m[2])-1, Number(m[1]), Number(m[4]||0), Number(m[5]||0), Number(m[6]||0)); const ms = d.getTime(); return Number.isFinite(ms) ? ms : 0; }
+    const t = Date.parse(s); return Number.isFinite(t) ? t : 0;
+  }
+  function loginMs(u){
+    if(!u) return 0;
+    return Math.max(
+      n(u.lastLoginMs), n(u.lastLoginAtMs), n(u.loginAtMs),
+      parseTrDateMs(u.lastLogin), parseTrDateMs(u.loginAt), parseTrDateMs(u.firstLogin)
+    );
+  }
+  function loginDate(u){ const ms = loginMs(u); return ms ? new Date(ms) : null; }
+  function sameDay(a,b){ return a && b && a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate(); }
+  function timeText(d){ return d ? d.toLocaleTimeString("tr-TR", { hour:"2-digit", minute:"2-digit" }) : "-"; }
+  function seenLabel(u){
+    const d = loginDate(u); if(!d) return "Son görülen bilinmiyor";
+    const now = new Date(); const one = 24*60*60*1000;
+    const diffDays = Math.floor((new Date(now.getFullYear(),now.getMonth(),now.getDate()) - new Date(d.getFullYear(),d.getMonth(),d.getDate()))/one);
+    if(sameDay(d, now)) return `Son görülen ${timeText(d)}`;
+    if(diffDays === 1) return "Son görülen dün";
+    if(diffDays > 1 && diffDays <= 7) return `Son görülen ${diffDays} gün önce`;
+    return "Son görülen eski";
+  }
+  function statusFromLogin(u){
+    const d = loginDate(u); if(!d) return { key:"old", label:"Son görülen bilinmiyor" };
+    const now = new Date(); const one = 24*60*60*1000;
+    const diffDays = Math.floor((new Date(now.getFullYear(),now.getMonth(),now.getDate()) - new Date(d.getFullYear(),d.getMonth(),d.getDate()))/one);
+    if(diffDays <= 0) return { key:"today", label: seenLabel(u) };
+    if(diffDays <= 7) return { key:"warning", label: seenLabel(u) };
+    return { key:"old", label: seenLabel(u) };
+  }
+  function sourceText(u){ const s = (u && (u.sourceLabel || u.source)) || ""; if(String(s).toLowerCase().includes("firebase")) return "Firebase"; if(String(s).toLowerCase().includes("apps") || String(s).toLowerCase().includes("eski")) return "Eski"; return ""; }
+  function deviceText(u){ return (u && u.lastDeviceInfo && (u.lastDeviceInfo.platform || u.lastDeviceInfo.userAgent)) || (u && u.lastDevice) || `${fmtInt(Number(u && u.deviceCount) || 0)} cihaz`; }
+  function arg(v){ return String(v||"").replace(/\\/g,"\\\\").replace(/'/g,"\\'"); }
+  function keyOf(u){ try { return firebaseUserKey(u && u.name, u && u.seflik); } catch {} return String(`${(u&&u.name)||""}__${(u&&u.seflik)||""}`).toLocaleLowerCase("tr-TR").replace(/[^a-z0-9ğüşöçıİĞÜŞÖÇ_-]+/gi,"_").replace(/^_+|_+$/g,"") || "bos"; }
+  function issueCount(u){ try { const rows = Array.isArray(state.adminSupportTicketsV134) ? state.adminSupportTicketsV134 : []; const k = keyOf(u); return rows.filter(r => String(r.userKey || keyOf(r)) === String(k) && String(r.status || "new") !== "done").length; } catch { return 0; } }
+  function sanitizedUsers(list){ try { if(typeof mesahaSanitizeUsersByResetV139 === "function") return mesahaSanitizeUsersByResetV139(list || [], window.__mesahaStatsResetMarkerV139 || {}); } catch {} return Array.isArray(list) ? list : []; }
+  function badges(u){
+    const st = statusFromLogin(u);
+    const parts = [`<span class="admin-badge-v134 ${st.key === "today" ? "active" : (st.key === "warning" ? "week" : "inactive")}">${esc(st.label)}</span>`];
+    const bc = Number(u && u.backupCount || 0);
+    parts.push(bc ? `<span class="admin-badge-v134 ok">Yedek var</span>` : `<span class="admin-badge-v134 backup">Yedek yok</span>`);
+    const is = issueCount(u); if(is) parts.push(`<span class="admin-badge-v134 issue">${fmtInt(is)} açık sorun</span>`);
+    return `<div class="admin-user-badges-v134">${parts.join("")}</div>`;
+  }
+
+  // Admin listesi: artık son aktif/süre değil, son giriş/son görülen sırasına göre.
+  try{
+    adminFilteredUsers = function(){
+      const list = sanitizedUsers(Array.isArray(state && state.adminOnlineUsers) ? state.adminOnlineUsers.slice() : []);
+      return list.sort((a,b) => {
+        const diff = loginMs(b) - loginMs(a);
+        if(diff) return diff;
+        return String((a&&a.name)||"").localeCompare(String((b&&b.name)||""), "tr");
+      });
+    };
+  }catch{}
+
+  try{
+    updateAdminTopSummary = function(){
+      const users = adminFilteredUsers();
+      if(state) state.adminOnlineUsers = users;
+      const backups = (state && state.adminBackups) || [];
+      const latest = users[0] || null;
+      const todayAdet = users.reduce((s,u)=>s+n(u.todayInputAdet),0);
+      const todayM3 = users.reduce((s,u)=>s+n(u.todayInputM3),0);
+      const lastBackup = backups[0] && backups[0].createdAt ? backups[0].createdAt : "-";
+      const setLabel = (el,label) => { try { const x = el && el.parentElement && el.parentElement.querySelector("span"); if(x) x.textContent = label; } catch {} };
+      setLabel(els.adminTotalUsers,"Kullanıcı");
+      setLabel(els.adminTodayUsers,"Son Görülen");
+      setLabel(els.adminWeekUsers,"Bugün Adet");
+      setLabel(els.adminTotalBackups,"Bugün m³");
+      setLabel(els.adminLastBackup,"Son Yedek");
+      if(els.adminTotalUsers) els.adminTotalUsers.textContent = users.length.toLocaleString("tr-TR");
+      if(els.adminTodayUsers) els.adminTodayUsers.textContent = latest ? `${latest.name || "-"} • ${timeText(loginDate(latest))}` : "-";
+      if(els.adminWeekUsers) els.adminWeekUsers.textContent = todayAdet.toLocaleString("tr-TR");
+      if(els.adminTotalBackups) els.adminTotalBackups.textContent = fmtM3(todayM3).replace(" m³", "");
+      if(els.adminLastBackup) els.adminLastBackup.textContent = lastBackup;
+    };
+  }catch{}
+
+  try{
+    renderAdminUsers = function(){
+      if(!els || !els.registeredUsersList) return;
+      try { updateAdminTopSummary(); } catch {}
+      const list = adminFilteredUsers();
+      window.__adminListV141 = window.__adminListV139 = window.__adminListV134 = window.__adminListV131 = list;
+      els.registeredUsersList.classList.add("admin-list-v131");
+      if(!list.length){ els.registeredUsersList.innerHTML = `<div class="empty-user-list">Kullanıcı bulunamadı.</div>`; return; }
+      els.registeredUsersList.innerHTML = list.map((u,idx)=>{
+        const st = statusFromLogin(u), is = issueCount(u), source = sourceText(u), dev = deviceText(u);
+        return `
+        <div class="admin-user-row-v131 status-${esc(st.key || "today")} ${is ? "has-open-issue-v134" : ""}" data-admin-row-v131="${idx}">
+          <div class="admin-user-main-v131"><b>${esc(u.name || "-")}</b><span>${esc(u.seflik || "-")} ${source ? `• ${esc(source)}` : ""}</span>${badges(u)}</div>
+          <div class="admin-user-stats-v131"><span>Süre <b>${esc(dur(u.todayActiveMs))}</b></span><span>Adet <b>${esc(fmtInt(u.todayInputAdet))}</b></span><span>m³ <b>${esc(fmtM3(u.todayInputM3))}</b></span></div>
+          <button class="admin-detail-bubble-v131" type="button" onclick="adminToggleDetailV131(${idx})">Detay</button>
+          <div class="admin-user-detail-panel-v131"><div class="admin-detail-grid-v131">
+            <span>Durum <b>${esc(st.label || "-")}</b></span><span>İlk kayıt <b>${esc(u.firstLogin || u.createdAt || "Bilinmiyor")}</b></span><span>Son görülen <b>${esc(u.lastLogin || "-")}</b></span><span>Süre güncelleme <b>${esc(u.lastUsageAt || "-")}</b></span><span>Son yedek <b>${esc(u.lastBackupAt || "-")}</b></span><span>Yedek sayısı <b>${fmtInt(u.backupCount)}</b></span><span>Açık sorun <b>${fmtInt(is)}</b></span><span>7 gün adet <b>${fmtInt(u.weekInputAdet)}</b></span><span>7 gün m³ <b>${esc(fmtM3(u.weekInputM3))}</b></span><span>Sürüm <b>${esc(u.appVersion || u.fileVersion || "-")}</b></span><span>Cihaz <b>${esc(dev || "-")}</b></span>
+          </div><div class="admin-detail-actions-v131"><button class="secondary" type="button" onclick="adminOpenUserBackups('${arg(u.name)}','${arg(u.seflik)}')">Yedekleri Gör</button>${is ? `<button class="issue-v134" type="button" onclick="adminOpenUserReportsV134(${idx})">Sorunları Gör</button>` : ""}<button class="danger-v134" type="button" onclick="adminDeleteUserV134(${idx})">Kullanıcıyı Sil</button><button class="ghost" type="button" onclick="adminToggleDetailV131(${idx})">Kapat</button></div></div>
+        </div>`;
+      }).join("");
+    };
+  }catch{}
+
+  // Kullanım süresi artık Mesaha Dosyasını İndir beklemeden, arka planda güvenli kuyrukla gönderilir.
+  function qRead(){ try { const q = JSON.parse(localStorage.getItem(LIVE_QUEUE_KEY) || "{}"); return q && typeof q === "object" ? q : {}; } catch { return {}; } }
+  function qWrite(q){ try { localStorage.setItem(LIVE_QUEUE_KEY, JSON.stringify(q || {})); } catch {} }
+  function withTimeout(p, ms){ return Promise.race([p, new Promise((_,rej)=>setTimeout(()=>rej(new Error("timeout")), ms || 7000))]); }
+  function queueCurrentUsage(){
+    try{
+      if(typeof forceUsageTickV140 === "function") forceUsageTickV140();
+      if(typeof usageGetDailyV128 !== "function") return false;
+      const user = (typeof usageActiveUserV128 === "function") ? usageActiveUserV128() : ((state && state.activeUser) || null);
+      if(!user || !String(user.name||"").trim() || !String(user.seflik||"").trim()) return false;
+      const got = usageGetDailyV128(todayIso(), user);
+      const stat = got && got.stat ? got.stat : null;
+      if(!stat) return false;
+      const userKey = stat.userKey || got.key || keyOf(user);
+      const deviceId = stat.deviceId || (typeof getOrCreateDeviceId === "function" ? getOrCreateDeviceId() : "cihaz");
+      const nowMs = Date.now(), nowText = trNow();
+      const id = `live_usage_${String(stat.date || todayIso()).replace(/[^0-9-]/g,"")}_${String(userKey||"bos").replace(/[^a-zA-Z0-9_-]/g,"_")}_${String(deviceId||"cihaz").replace(/[^a-zA-Z0-9_-]/g,"_")}`.slice(0,180);
+      const payload = {
+        id, type:"liveUsageSummary", source:"liveUsage", date:stat.date || todayIso(), userKey,
+        name:String(stat.name || user.name || "").trim(), seflik:String(stat.seflik || user.seflik || "").trim(), deviceId,
+        activeMs:Math.round(n(stat.activeMs)), activeMinutes:Math.round(n(stat.activeMs)/60000),
+        inputAdet:Math.round(n(stat.inputAdet)), inputM3:Number(n(stat.inputM3).toFixed(3)),
+        recordEntryCount:Math.round(n(stat.recordEntryCount)), recordCount:Array.isArray(state && state.records) ? state.records.length : Math.round(n(stat.recordCount)),
+        appVersion:BUILD_VERSION, fileVersion:FILE_VERSION,
+        createdAt:stat.createdAt || nowText, createdAtMs:Number(stat.createdAtMs || nowMs),
+        updatedAt:nowText, updatedAtMs:nowMs, queuedAtMs:nowMs
+      };
+      if(!payload.name || !payload.seflik) return false;
+      const q = qRead(); q[id] = payload; qWrite(q); return true;
+    }catch(err){ return false; }
+  }
+  async function flushLiveUsage(force){
+    if(liveSyncing) return false;
+    if(!navigator.onLine) { queueCurrentUsage(); return false; }
+    const last = Number(localStorage.getItem(LIVE_LAST_SYNC_KEY) || 0) || 0;
+    if(!force && Date.now() - last < LIVE_MIN_SYNC_MS) return false;
+    queueCurrentUsage();
+    const q = qRead(); const ids = Object.keys(q);
+    if(!ids.length) return false;
+    liveSyncing = true;
+    try{
+      const ready = await withTimeout(ensureFirebaseReady(), 6500);
+      const db = ready && ready.db;
+      if(!db) throw new Error("firebase yok");
+      let sent = 0;
+      for(const id of ids){
+        const p = q[id]; if(!p || !p.userKey) { delete q[id]; continue; }
+        p.updatedAt = trNow(); p.updatedAtMs = Date.now(); p.appVersion = BUILD_VERSION; p.fileVersion = FILE_VERSION;
+        await withTimeout(db.collection(collUsage()).doc(id).set(p, { merge:true }), 6500);
+        await withTimeout(db.collection(collUsers()).doc(p.userKey).set({
+          userKey:p.userKey, name:p.name, seflik:p.seflik, appVersion:BUILD_VERSION, fileVersion:FILE_VERSION,
+          todayUsage:{ date:p.date, activeMs:p.activeMs, activeMinutes:p.activeMinutes, inputAdet:p.inputAdet, inputM3:p.inputM3, recordEntryCount:p.recordEntryCount, updatedAt:p.updatedAt, updatedAtMs:p.updatedAtMs, liveSync:true },
+          lastUsageAt:p.updatedAt, lastUsageMs:p.updatedAtMs, liveUsageAt:p.updatedAt, liveUsageMs:p.updatedAtMs
+        }, { merge:true }), 6500);
+        delete q[id]; sent++;
+      }
+      qWrite(q); localStorage.setItem(LIVE_LAST_SYNC_KEY, String(Date.now())); return sent > 0;
+    }catch(err){
+      return false;
+    }finally{ liveSyncing = false; }
+  }
+  window.mesahaFlushLiveUsageV141 = flushLiveUsage;
+  function scheduleLive(delay){ clearTimeout(liveTimer); liveTimer = setTimeout(()=>flushLiveUsage(false).catch(()=>{}), Math.max(1000, Number(delay)||60000)); }
+
+  try{
+    const oldAdd = typeof usageAddActiveMsV128 === "function" ? usageAddActiveMsV128 : null;
+    if(oldAdd){ usageAddActiveMsV128 = function(ms){ const r = oldAdd(ms); scheduleLive(65000); return r; }; }
+    const oldRecord = typeof usageRecordEntryV128 === "function" ? usageRecordEntryV128 : null;
+    if(oldRecord){ usageRecordEntryV128 = function(record){ const r = oldRecord(record); scheduleLive(8000); return r; }; }
+    const oldSync = typeof usageSyncNowV128 === "function" ? usageSyncNowV128 : null;
+    usageSyncNowV128 = async function(){ try { queueCurrentUsage(); await flushLiveUsage(true); } catch {} try { if(typeof v135FlushExportQueue === "function") return await v135FlushExportQueue(true); } catch {} try { return oldSync ? await oldSync() : false; } catch { return false; } };
+  }catch{}
+
+  document.addEventListener("visibilitychange", function(){ try { queueCurrentUsage(); if(document.visibilityState === "hidden") flushLiveUsage(true).catch(()=>{}); else scheduleLive(12000); } catch {} }, {capture:true});
+  window.addEventListener("online", function(){ setTimeout(()=>flushLiveUsage(true).catch(()=>{}), 1200); });
+  window.addEventListener("pagehide", function(){ try { queueCurrentUsage(); flushLiveUsage(true).catch(()=>{}); } catch {} });
+  setInterval(function(){ try { flushLiveUsage(false).catch(()=>{}); } catch {} }, 90000);
+  setTimeout(function(){ try { flushLiveUsage(false).catch(()=>{}); } catch {} }, 10000);
+
+  const oldDevice = typeof currentDeviceInfoPayload === "function" ? currentDeviceInfoPayload : null;
+  try{ currentDeviceInfoPayload = function(){ const info = oldDevice ? oldDevice() : {}; info.appVersion = BUILD_VERSION; info.fileVersion = FILE_VERSION; info.adminSortMode = "lastLoginOnlyDesc"; info.activeTimeMode = "backgroundQueueLiveSync"; info.updatedMs = Date.now(); return info; }; }catch{}
+  window.MESAHA_BUILD_INFO = Object.assign({}, window.MESAHA_BUILD_INFO || {}, { fileVersion:FILE_VERSION, visibleVersion:BUILD_VERSION, adminSortMode:"lastLoginOnlyDesc", activeTimeMode:"backgroundQueueLiveSync" });
+  try { document.title = "Mesaha App v160"; const h1 = document.querySelector(".brand h1"); if(h1) h1.textContent = BUILD_VERSION; } catch {}
+  try { setTimeout(()=>{ if(typeof renderAdminUsers === "function") renderAdminUsers(); }, 1200); } catch {}
+})();
+</script>
+
+
+<script>
+/* Mesaha v142 - admin üst özet: Son Görülen kişi yerine bugün görülen kullanıcı sayısı */
+(function(){
+  "use strict";
+  const BUILD_VERSION = "Mesaha İO v1.71";
+  const FILE_VERSION = "v160";
+  const esc = (v) => { try { return escapeHtml(v); } catch { return String(v ?? "").replace(/[&<>\"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[c])); } };
+  const n = (v) => { const x = Number(String(v ?? "").replace(",", ".").replace(/[^0-9.\-]/g, "")); return Number.isFinite(x) ? x : 0; };
+  const fmtM3 = (v) => `${(Number(v) || 0).toLocaleString("tr-TR", { minimumFractionDigits:3, maximumFractionDigits:3 })} m³`;
+  function toMs(v){
+    try{
+      if(!v) return 0;
+      if(typeof v === "number") return Number.isFinite(v) ? v : 0;
+      if(v instanceof Date) return Number.isFinite(v.getTime()) ? v.getTime() : 0;
+      if(typeof v.toDate === "function") { const d = v.toDate(); return d && Number.isFinite(d.getTime()) ? d.getTime() : 0; }
+      if(typeof v === "object" && Number.isFinite(Number(v.seconds))) return Number(v.seconds) * 1000;
+      const s = String(v || "").trim();
+      if(!s || s === "-" || s.toLocaleLowerCase("tr-TR") === "bilinmiyor") return 0;
+      const m = s.match(/^(\d{1,2})[.\/-](\d{1,2})[.\/-](\d{4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?/);
+      if(m){ const d = new Date(Number(m[3]), Number(m[2])-1, Number(m[1]), Number(m[4]||0), Number(m[5]||0), Number(m[6]||0)); return Number.isFinite(d.getTime()) ? d.getTime() : 0; }
+      const t = Date.parse(s); return Number.isFinite(t) ? t : 0;
+    }catch{ return 0; }
+  }
+  function loginMs(u){
+    if(!u) return 0;
+    return Math.max(
+      toMs(u.lastLoginMs), toMs(u.lastLoginAtMs), toMs(u.loginAtMs), toMs(u.lastSeenMs), toMs(u.lastSeenAtMs),
+      toMs(u.lastLogin), toMs(u.loginAt), toMs(u.lastSeen), toMs(u.firstLogin)
+    );
+  }
+  function isToday(ms){
+    if(!ms) return false;
+    const d = new Date(ms), now = new Date();
+    return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth() && d.getDate() === now.getDate();
+  }
+  function sanitizedUsers(list){
+    try { if(typeof mesahaSanitizeUsersByResetV139 === "function") return mesahaSanitizeUsersByResetV139(list || [], window.__mesahaStatsResetMarkerV139 || {}); } catch {}
+    return Array.isArray(list) ? list : [];
+  }
+  function setLabel(el, label){
+    try { const x = el && el.parentElement && el.parentElement.querySelector("span"); if(x) x.textContent = label; } catch {}
+  }
+  try{
+    updateAdminTopSummary = function(){
+      const users = sanitizedUsers(Array.isArray(state && state.adminOnlineUsers) ? state.adminOnlineUsers : []);
+      if(state) state.adminOnlineUsers = users;
+      const backups = (state && state.adminBackups) || [];
+      const todaySeen = users.filter(u => isToday(loginMs(u))).length;
+      const todayAdet = users.reduce((s,u)=>s+n(u && u.todayInputAdet),0);
+      const todayM3 = users.reduce((s,u)=>s+n(u && u.todayInputM3),0);
+      const lastBackup = backups[0] && backups[0].createdAt ? backups[0].createdAt : "-";
+      setLabel(els.adminTotalUsers, "Kullanıcı");
+      setLabel(els.adminTodayUsers, "Bugün Görülen");
+      setLabel(els.adminWeekUsers, "Bugün Adet");
+      setLabel(els.adminTotalBackups, "Bugün m³");
+      setLabel(els.adminLastBackup, "Son Yedek");
+      if(els.adminTotalUsers) els.adminTotalUsers.textContent = users.length.toLocaleString("tr-TR");
+      if(els.adminTodayUsers) els.adminTodayUsers.textContent = `${todaySeen.toLocaleString("tr-TR")} kullanıcı`;
+      if(els.adminWeekUsers) els.adminWeekUsers.textContent = Math.round(todayAdet).toLocaleString("tr-TR");
+      if(els.adminTotalBackups) els.adminTotalBackups.textContent = fmtM3(todayM3).replace(" m³", "");
+      if(els.adminLastBackup) els.adminLastBackup.textContent = lastBackup;
+    };
+  }catch{}
+  const oldDevice = typeof currentDeviceInfoPayload === "function" ? currentDeviceInfoPayload : null;
+  try { currentDeviceInfoPayload = function(){ const info = oldDevice ? oldDevice() : {}; info.appVersion = BUILD_VERSION; info.fileVersion = FILE_VERSION; info.adminTopSummaryMode = "todaySeenUserCount"; info.updatedMs = Date.now(); return info; }; } catch {}
+  window.MESAHA_BUILD_INFO = Object.assign({}, window.MESAHA_BUILD_INFO || {}, { fileVersion:FILE_VERSION, visibleVersion:BUILD_VERSION, adminTopSummaryMode:"todaySeenUserCount" });
+  try { document.title = "Mesaha App v160"; const h1 = document.querySelector(".brand h1"); if(h1) h1.textContent = BUILD_VERSION; } catch {}
+  try { setTimeout(()=>{ updateAdminTopSummary(); if(typeof renderAdminUsers === "function") renderAdminUsers(); }, 500); setTimeout(()=>{ updateAdminTopSummary(); }, 1800); } catch {}
+})();
+</script>
+
+
+<!-- v147 clean appended patches: v144 + v145 + v146 -->
+<script>
+/* Mesaha v144 - m³ doğruluk düzeltmesi: güvenli hacim, çap kontrolü, admin yedekten doğrulama */
+(function(){
+  "use strict";
+  const BUILD_VERSION = "Mesaha İO v1.89";
+  const FILE_VERSION = "v160";
+  const MAX_DIAMETER_CM = 200;
+  const MAX_LENGTH_M = 30;
+  const EXPORT_QUEUE_KEY = "mesaha_export_stats_queue_v135";
+
+  const log = (...a) => { try { console.log("[v144]", ...a); } catch {} };
+  const toast = (t) => { try { if (typeof showToast === "function") showToast(t); } catch {} };
+  const esc = (v) => { try { return escapeHtml(v); } catch { return String(v ?? "").replace(/[&<>\"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[c])); } };
+  const clean = (v) => { try { return cleanUserText(v); } catch { return String(v || "").trim(); } };
+  function num(v){
+    if (typeof v === "number") return Number.isFinite(v) ? v : 0;
+    let s = String(v ?? "").trim();
+    if (!s) return 0;
+    // 2.457,112 -> 2457.112, 0,249 -> 0.249
+    if (s.includes(",")) s = s.replace(/\./g, "").replace(",", ".");
+    s = s.replace(/[^0-9.\-]/g, "");
+    const n = Number(s);
+    return Number.isFinite(n) ? n : 0;
+  }
+  function intText(v){ return Math.round(Number(v) || 0).toLocaleString("tr-TR"); }
+  function m3Text(v){ return (Number(v) || 0).toLocaleString("tr-TR", { minimumFractionDigits:3, maximumFractionDigits:3 }) + " m³"; }
+  function todayIso(){
+    try { if (typeof todayISO === "function") return todayISO(); } catch {}
+    const d = new Date(), p = x => String(x).padStart(2,"0");
+    return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`;
+  }
+  function weekStartIso(){
+    const d = new Date();
+    const day = (d.getDay() + 6) % 7;
+    d.setDate(d.getDate() - day);
+    const p = x => String(x).padStart(2,"0");
+    return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`;
+  }
+  function toMs(v){
+    try{
+      if (!v) return 0;
+      if (typeof v === "number") return Number.isFinite(v) ? v : 0;
+      if (v instanceof Date) return Number.isFinite(v.getTime()) ? v.getTime() : 0;
+      if (typeof v.toDate === "function") { const d = v.toDate(); return d && Number.isFinite(d.getTime()) ? d.getTime() : 0; }
+      if (typeof v === "object" && Number.isFinite(Number(v.seconds))) return Number(v.seconds) * 1000;
+      const s = String(v || "").trim();
+      if (!s || s === "-" || s.toLocaleLowerCase("tr-TR") === "bilinmiyor") return 0;
+      let m = s.match(/^(\d{1,2})[.\/-](\d{1,2})[.\/-](\d{4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?/);
+      if (m) { const d = new Date(Number(m[3]), Number(m[2])-1, Number(m[1]), Number(m[4]||0), Number(m[5]||0), Number(m[6]||0)); return Number.isFinite(d.getTime()) ? d.getTime() : 0; }
+      const t = Date.parse(s); return Number.isFinite(t) ? t : 0;
+    } catch { return 0; }
+  }
+  function isoFromMs(ms){
+    if (!ms) return "";
+    const d = new Date(ms); if (!Number.isFinite(d.getTime())) return "";
+    const p = x => String(x).padStart(2,"0");
+    return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`;
+  }
+  function recordCreatedIso(r, backupMs){
+    const ms = Math.max(toMs(r && r.createdAtMs), toMs(r && r.createdAtIso), toMs(r && r.createdAt), toMs(r && r.updatedAtMs), toMs(r && r.updatedAt));
+    if (ms) return isoFromMs(ms);
+    // Eski kayıtlarda createdAt yoksa üretim tarihine düş, o da yoksa yedek zamanı.
+    try {
+      const prod = String((r && (r.productionDate || r.date)) || "").slice(0,10);
+      if (/^\d{4}-\d{2}-\d{2}$/.test(prod)) return prod;
+      if (r && r.uretimTarihi && typeof trDateToISO === "function") return trDateToISO(r.uretimTarihi) || "";
+    } catch {}
+    return backupMs ? isoFromMs(backupMs) : "";
+  }
+  function userKey(u){
+    try { return firebaseUserKey(u && u.name, u && u.seflik); } catch {}
+    const raw = `${clean(u && u.name)}__${clean(u && u.seflik)}`;
+    return raw.toLocaleLowerCase("tr-TR").replace(/[^a-z0-9ğüşöçıİĞÜŞÖÇ_-]+/gi,"_").replace(/^_+|_+$/g,"") || "bos";
+  }
+  function activeUser(){
+    try {
+      const u = (state && state.activeUser) || (typeof findActiveUser === "function" ? findActiveUser() : null) || {};
+      return { name: clean(u.name), seflik: clean(u.seflik), deviceId: u.deviceId || (typeof getOrCreateDeviceId === "function" ? getOrCreateDeviceId() : "cihaz") };
+    } catch { return { name:"", seflik:"", deviceId:"cihaz" }; }
+  }
+  function qty(r){ return Math.max(0, num(r && (r.quantity ?? r.adet ?? r.count)) || 1); }
+  function diameter(r){ return num(r && (r.diameter ?? r.cap ?? r.capCm ?? r.diam)); }
+  function lengthM(r){ return num(r && (r.length ?? r.boy ?? r.lengthM)); }
+  function safeRecordM3(r){
+    if (!r) return 0;
+    const d = diameter(r), l = lengthM(r), q = qty(r) || 1;
+    if (!d || !l || !q) return 0;
+    if (d > MAX_DIAMETER_CM || l > MAX_LENGTH_M || q > 100000) return 0;
+    try {
+      const desi = (typeof calculateDesi === "function") ? Number(calculateDesi(d, l, q)) : Math.round(0.00007854 * d * d * l * 1000 * q);
+      return Number.isFinite(desi) && desi > 0 ? Number((desi / 1000).toFixed(3)) : 0;
+    } catch { return Number((0.00007854 * d * d * l * q).toFixed(3)); }
+  }
+  function productName(r){
+    const raw = String((r && (r.productType || r.odunAdi || r.odun || r.product)) || "").trim();
+    if (!raw) return "Bilinmiyor";
+    try { if (typeof PRODUCT_MAP !== "undefined" && PRODUCT_MAP[raw]) return PRODUCT_MAP[raw].odunAdi || raw; } catch {}
+    try { if (typeof productDisplayName === "function") return productDisplayName(raw) || raw; } catch {}
+    const low = raw.toLocaleLowerCase("tr-TR");
+    if (low.includes("maden")) return "Maden Direği";
+    if (low.includes("kağ") || low.includes("kag")) return "Kağıtlık";
+    if (low.includes("sanayi")) return "Sanayi Odunu";
+    if (low.includes("tel")) return "Tel Direği";
+    return raw;
+  }
+  function treeName(r){
+    const raw = String((r && (r.treeType || r.species || r.agacAdi || r.agac)) || "").trim();
+    if (!raw) return "Bilinmiyor";
+    try { return (typeof getTreeInfo === "function" ? getTreeInfo(raw).agacAdi : raw) || raw; } catch { return raw; }
+  }
+  function addTotal(map, name, adet, m3){
+    const key = String(name || "Bilinmiyor").trim() || "Bilinmiyor";
+    const old = map.get(key) || { name:key, adet:0, m3:0 };
+    old.adet += Number(adet) || 0;
+    old.m3 = Number((old.m3 + (Number(m3)||0)).toFixed(3));
+    map.set(key, old);
+  }
+  function sorted(map){
+    return Array.from(map.values()).sort((a,b)=>((b.m3||0)-(a.m3||0)) || ((b.adet||0)-(a.adet||0)) || String(a.name).localeCompare(String(b.name),"tr"));
+  }
+  function summarizeRecords(records, period, backupMs){
+    const today = todayIso(), week = weekStartIso();
+    const treeMap = new Map(), productMap = new Map();
+    let recordCount = 0, adet = 0, m3 = 0, invalidM3 = 0;
+    (Array.isArray(records) ? records : []).forEach(r => {
+      const date = recordCreatedIso(r, backupMs);
+      if (period === "today" && date && date !== today) return;
+      if (period === "week" && date && date < week) return;
+      const q = qty(r);
+      const vol = safeRecordM3(r);
+      if (vol <= 0 && diameter(r) > MAX_DIAMETER_CM) invalidM3 += 1;
+      recordCount += 1;
+      adet += q;
+      m3 += vol;
+      addTotal(treeMap, treeName(r), q, vol);
+      addTotal(productMap, productName(r), q, vol);
+    });
+    return { recordCount, adet, m3:Number(m3.toFixed(3)), invalidM3, trees:sorted(treeMap), products:sorted(productMap) };
+  }
+
+  // Gelecek hatalı kayıtları engelle: 2422 gibi çaplar artık kaydedilmeyecek.
+  try {
+    const oldValidate = typeof validateDiameterByProduct === "function" ? validateDiameterByProduct : null;
+    validateDiameterByProduct = function(productType, d, l){
+      const cap = num(d), len = num(l);
+      if (cap > MAX_DIAMETER_CM) {
+        toast(`Çap ${MAX_DIAMETER_CM} cm'den büyük olamaz. Çap kısayolunda birleşme olduysa alanı temizleyip tekrar seç.`);
+        try { if (typeof focusDiameterKeepKeyboard === "function") focusDiameterKeepKeyboard(); } catch {}
+        return false;
+      }
+      if (len > MAX_LENGTH_M) {
+        toast(`Boy ${MAX_LENGTH_M} metreden büyük olamaz.`);
+        return false;
+      }
+      return oldValidate ? oldValidate(productType, d, l) : true;
+    };
+  } catch {}
+  try {
+    const oldCalc = typeof calculateDesi === "function" ? calculateDesi : null;
+    if (oldCalc) calculateDesi = function(d, l, q){
+      const cap = num(d), len = num(l), qtyNum = num(q || 1) || 1;
+      if (cap > MAX_DIAMETER_CM || len > MAX_LENGTH_M) return 0;
+      return oldCalc(cap, len, qtyNum);
+    };
+  } catch {}
+  try {
+    // Eski 2422 gibi çap kısayolları listeden temizlensin.
+    if (state && state.settings && Array.isArray(state.settings.recentDiameters)) {
+      state.settings.recentDiameters = state.settings.recentDiameters.filter(v => { const d = num(v); return d > 0 && d <= MAX_DIAMETER_CM; });
+      try { if (typeof saveSettings === "function") saveSettings(); } catch {}
+      try { if (typeof renderRecentChips === "function") renderRecentChips(); } catch {}
+    }
+  } catch {}
+
+  function recalcTodayUsageFromLocal(){
+    try{
+      if (typeof usageGetDailyV128 !== "function" || typeof usageSaveStoreV128 !== "function") return false;
+      const user = (typeof usageActiveUserV128 === "function") ? usageActiveUserV128() : activeUser();
+      const got = usageGetDailyV128(todayIso(), user);
+      const summary = summarizeRecords((state && state.records) || [], "today", Date.now());
+      got.stat.inputAdet = Math.round(summary.adet);
+      got.stat.inputM3 = Number(summary.m3.toFixed(3));
+      got.stat.recordEntryCount = Math.round(summary.recordCount);
+      got.stat.appVersion = BUILD_VERSION;
+      got.stat.fileVersion = FILE_VERSION;
+      got.stat.recordCount = Array.isArray(state && state.records) ? state.records.length : 0;
+      got.stat.invalidM3Records = summary.invalidM3 || 0;
+      got.stat.updatedAt = (typeof firebaseDateText === "function") ? firebaseDateText() : new Date().toLocaleString("tr-TR");
+      got.stat.updatedAtMs = Date.now();
+      usageSaveStoreV128(got.store);
+      return true;
+    } catch { return false; }
+  }
+  window.mesahaRecalcTodayUsageV144 = recalcTodayUsageFromLocal;
+
+  // Kayıt girince eski birikmiş bozuk m³ yerine kayıt listesinden güvenli m³ yeniden hesaplansın.
+  try {
+    const oldRecord = typeof usageRecordEntryV128 === "function" ? usageRecordEntryV128 : null;
+    usageRecordEntryV128 = function(record){
+      const ok = recalcTodayUsageFromLocal();
+      if (!ok && oldRecord) { try { return oldRecord(record); } catch {} }
+      try { if (typeof mesahaFlushLiveUsageV141 === "function") setTimeout(()=>mesahaFlushLiveUsageV141(false).catch(()=>{}), 2500); } catch {}
+      return true;
+    };
+  } catch {}
+  try {
+    const oldSync = typeof usageSyncNowV128 === "function" ? usageSyncNowV128 : null;
+    usageSyncNowV128 = async function(){
+      recalcTodayUsageFromLocal();
+      try { if (typeof mesahaFlushLiveUsageV141 === "function") await mesahaFlushLiveUsageV141(true); } catch {}
+      try { if (typeof v144FlushExportQueue === "function") await v144FlushExportQueue(true); } catch {}
+      return oldSync ? oldSync() : true;
+    };
+  } catch {}
+
+  function queueRead(){ try { const d = JSON.parse(localStorage.getItem(EXPORT_QUEUE_KEY) || "{}"); return d && typeof d === "object" ? d : {}; } catch { return {}; } }
+  function queueWrite(d){ try { localStorage.setItem(EXPORT_QUEUE_KEY, JSON.stringify(d || {})); } catch {} }
+  function buildExportPayload(kind){
+    recalcTodayUsageFromLocal();
+    const user = activeUser(), uKey = userKey(user), deviceId = user.deviceId || "cihaz", date = todayIso();
+    const id = (typeof usageDocIdV128 === "function") ? usageDocIdV128(date, uKey, deviceId) : `usage_${date}_${uKey}_${deviceId}`.replace(/[^a-zA-Z0-9_-]+/g,"_").slice(0,180);
+    let daily = {};
+    try { if (typeof usageGetDailyV128 === "function") daily = usageGetDailyV128(date, user).stat || {}; } catch {}
+    const summaryAll = summarizeRecords((state && state.records) || [], "all", Date.now());
+    const summaryToday = summarizeRecords((state && state.records) || [], "today", Date.now());
+    const summaryWeek = summarizeRecords((state && state.records) || [], "week", Date.now());
+    const now = Date.now(), nowText = (typeof firebaseDateText === "function") ? firebaseDateText() : new Date().toLocaleString("tr-TR");
+    return {
+      id, date, userKey:uKey, name:user.name, seflik:user.seflik, deviceId,
+      type:"dailyExportSummary", source:"mesahaDownload", exportKind:kind || "xls",
+      exportCount:(num(daily.exportCount) || 0) + 1,
+      exportAt:nowText, exportAtMs:now, activeMs:Math.round(num(daily.activeMs)), activeMinutes:Math.round(num(daily.activeMs)/60000),
+      inputAdet:Math.round(summaryToday.adet), inputM3:Number(summaryToday.m3.toFixed(3)), recordEntryCount:Math.round(summaryToday.recordCount),
+      recordCount:summaryAll.recordCount, totalAdet:Math.round(summaryAll.adet), totalM3:Number(summaryAll.m3.toFixed(3)),
+      todaySummary:summaryToday, weekSummary:summaryWeek, allSummary:summaryAll, treeTotals:summaryAll.trees, productTotals:summaryAll.products,
+      invalidM3Records:summaryAll.invalidM3 || 0,
+      appVersion:BUILD_VERSION, fileVersion:FILE_VERSION, m3FixVersion:FILE_VERSION,
+      createdAt:daily.createdAt || nowText, createdAtMs:Number(daily.createdAtMs || now), updatedAt:nowText, updatedAtMs:now, queuedAtMs:now
+    };
+  }
+  function queueExportSummary(kind){
+    try{
+      if (!state || !Array.isArray(state.records) || !state.records.length) return false;
+      const payload = buildExportPayload(kind);
+      const q = queueRead(); q[payload.id] = payload; queueWrite(q);
+      setTimeout(()=>v144FlushExportQueue(true).catch(()=>{}), 600);
+      return true;
+    } catch(err) { log("queue error", err); return false; }
+  }
+  async function v144FlushExportQueue(silent){
+    if (!navigator.onLine) return false;
+    const q = queueRead(); const ids = Object.keys(q); if (!ids.length) return false;
+    const ready = await ensureFirebaseReady(); const db = ready && ready.db; if (!db) return false;
+    let sent = 0;
+    for (const id of ids) {
+      const p = q[id]; if (!p || !p.userKey) { delete q[id]; continue; }
+      p.updatedAt = (typeof firebaseDateText === "function") ? firebaseDateText() : new Date().toLocaleString("tr-TR");
+      p.updatedAtMs = Date.now(); p.appVersion = BUILD_VERSION; p.fileVersion = FILE_VERSION; p.m3FixVersion = FILE_VERSION;
+      await db.collection(typeof FIREBASE_USAGE_COLLECTION !== "undefined" ? FIREBASE_USAGE_COLLECTION : "usageStats").doc(id).set(p, { merge:true });
+      await db.collection(typeof FIREBASE_USERS_COLLECTION !== "undefined" ? FIREBASE_USERS_COLLECTION : "users").doc(p.userKey).set({
+        userKey:p.userKey, name:p.name, seflik:p.seflik, appVersion:BUILD_VERSION, fileVersion:FILE_VERSION,
+        recordCount:p.recordCount,
+        todayUsage:{ date:p.date, activeMs:p.activeMs, activeMinutes:p.activeMinutes, inputAdet:p.inputAdet, inputM3:p.inputM3, recordEntryCount:p.recordEntryCount, updatedAt:p.updatedAt, updatedAtMs:p.updatedAtMs, m3FixVersion:FILE_VERSION },
+        lastUsageAt:p.updatedAt, lastUsageMs:p.updatedAtMs, lastExportAt:p.exportAt, lastExportAtMs:p.exportAtMs,
+        lastExportSummary:{ recordCount:p.recordCount, totalAdet:p.totalAdet, totalM3:p.totalM3, exportKind:p.exportKind, exportAt:p.exportAt, exportAtMs:p.exportAtMs, m3FixVersion:FILE_VERSION }
+      }, { merge:true });
+      delete q[id]; sent++;
+    }
+    queueWrite(q);
+    if (sent && !silent) toast(`${sent} güvenli kullanım özeti gönderildi.`);
+    return sent > 0;
+  }
+  window.v144FlushExportQueue = v144FlushExportQueue;
+  window.addEventListener("online", () => setTimeout(()=>v144FlushExportQueue(true).catch(()=>{}), 1400));
+
+  // Mesaha dosyası indirme butonunu son kez güvenli özetle bağla.
+  function bindExport(){
+    const btn = document.getElementById("exportSystemXlsBtn");
+    if (!btn || btn.__v144Bound) return;
+    const clone = btn.cloneNode(true); clone.__v144Bound = true;
+    btn.parentNode.replaceChild(clone, btn);
+    try { if (typeof els !== "undefined") els.exportSystemXlsBtn = clone; } catch {}
+    clone.addEventListener("click", function(ev){
+      ev.preventDefault(); ev.stopPropagation();
+      try { if (typeof forceUsageTickV140 === "function") forceUsageTickV140(); } catch {}
+      recalcTodayUsageFromLocal();
+      try {
+        if (typeof exportSystemXls === "function") exportSystemXls();
+        queueExportSummary("xls");
+      } catch(err) { toast(err && err.message ? err.message : "Dosya indirilemedi."); }
+    });
+  }
+
+  async function backupCorrections(){
+    const out = new Map();
+    try{
+      if (!navigator.onLine) return out;
+      const ready = await ensureFirebaseReady(); const db = ready && ready.db; if (!db) return out;
+      const snap = await db.collection(typeof FIREBASE_BACKUPS_COLLECTION !== "undefined" ? FIREBASE_BACKUPS_COLLECTION : "backups").get();
+      const latest = new Map();
+      snap.forEach(doc => {
+        try{
+          const d = doc.data() || {};
+          let payload = d.payload || null; if (!payload && d.payloadText) payload = JSON.parse(d.payloadText);
+          if (!payload || !Array.isArray(payload.records)) return;
+          const name = clean(d.name || (payload.user && payload.user.name) || "");
+          const seflik = clean(d.seflik || (payload.user && payload.user.seflik) || "");
+          const key = d.userKey || userKey({name, seflik});
+          const ms = num(d.createdAtMs) || toMs(d.createdAtIso) || toMs(d.createdAt) || 0;
+          const old = latest.get(key);
+          if (!old || ms >= old.ms) latest.set(key, { key, ms, name, seflik, records:payload.records, createdAt:d.createdAt || "" });
+        }catch{}
+      });
+      latest.forEach(item => {
+        const today = summarizeRecords(item.records, "today", item.ms);
+        const week = summarizeRecords(item.records, "week", item.ms);
+        // Sadece bugüne ait kayıt varsa admin günlük kartlarını yedekten düzelt; yoksa canlı kullanım verisini ezme.
+        if (today.recordCount || today.adet || today.m3) {
+          out.set(item.key, { today, week, backupCreatedAt:item.createdAt, backupMs:item.ms });
+        }
+      });
+    } catch(err) { log("backup corrections error", err && err.message ? err.message : err); }
+    return out;
+  }
+  async function applyBackupCorrections(){
+    try{
+      const map = await backupCorrections();
+      if (!map.size || !state || !Array.isArray(state.adminOnlineUsers)) return false;
+      state.adminOnlineUsers = state.adminOnlineUsers.map(u => {
+        const c = map.get(userKey(u)); if (!c) return u;
+        const today = c.today || {}, week = c.week || {};
+        return Object.assign({}, u, {
+          todayInputAdet: Math.round(today.adet || 0), todayInputM3: Number((today.m3 || 0).toFixed(3)), todayRecordEntryCount: Math.round(today.recordCount || 0),
+          weekInputAdet: Math.round(week.adet || 0), weekInputM3: Number((week.m3 || 0).toFixed(3)),
+          __m3CorrectedV144: true, __invalidM3RecordsV144: today.invalidM3 || week.invalidM3 || 0
+        });
+      });
+      try { if (typeof updateAdminTopSummary === "function") updateAdminTopSummary(); } catch {}
+      try { if (typeof renderAdminUsers === "function") renderAdminUsers(); } catch {}
+      return true;
+    } catch { return false; }
+  }
+  window.mesahaApplyBackupM3FixV144 = applyBackupCorrections;
+
+  const oldLoadAdmin = typeof loadAdminPanelData === "function" ? loadAdminPanelData : null;
+  if (oldLoadAdmin) {
+    loadAdminPanelData = async function(){
+      const r = await oldLoadAdmin.apply(this, arguments);
+      await applyBackupCorrections();
+      return r;
+    };
+  }
+
+  // Üst özet m³ artık düzeltilmiş kullanıcı değerlerinden toplansın.
+  const oldTopSummary = typeof updateAdminTopSummary === "function" ? updateAdminTopSummary : null;
+  try {
+    updateAdminTopSummary = function(){
+      try {
+        const users = Array.isArray(state && state.adminOnlineUsers) ? state.adminOnlineUsers : [];
+        const backups = (state && state.adminBackups) || [];
+        const todayAdet = users.reduce((s,u)=>s+num(u && u.todayInputAdet),0);
+        const todayM3 = users.reduce((s,u)=>s+num(u && u.todayInputM3),0);
+        const todaySeen = users.filter(u => {
+          const ms = Math.max(toMs(u && u.lastLoginMs), toMs(u && u.lastLogin), toMs(u && u.lastSeenMs), toMs(u && u.lastSeen));
+          return isoFromMs(ms) === todayIso();
+        }).length;
+        const setLabel = (el,label)=>{ try { const x = el && el.parentElement && el.parentElement.querySelector("span"); if (x) x.textContent = label; } catch {} };
+        setLabel(els.adminTotalUsers, "Kullanıcı"); setLabel(els.adminTodayUsers, "Bugün Görülen"); setLabel(els.adminWeekUsers, "Bugün Adet"); setLabel(els.adminTotalBackups, "Bugün m³"); setLabel(els.adminLastBackup, "Son Yedek");
+        if (els.adminTotalUsers) els.adminTotalUsers.textContent = users.length.toLocaleString("tr-TR");
+        if (els.adminTodayUsers) els.adminTodayUsers.textContent = `${todaySeen.toLocaleString("tr-TR")} kullanıcı`;
+        if (els.adminWeekUsers) els.adminWeekUsers.textContent = Math.round(todayAdet).toLocaleString("tr-TR");
+        if (els.adminTotalBackups) els.adminTotalBackups.textContent = m3Text(todayM3).replace(" m³", "");
+        if (els.adminLastBackup) els.adminLastBackup.textContent = backups[0] && backups[0].createdAt ? backups[0].createdAt : "-";
+      } catch { if (oldTopSummary) oldTopSummary(); }
+    };
+  } catch {}
+
+  // İstatistik paneli: mümkünse güvenli yedek hesabı kullan; eski bozuk usageStats m³ toplamlarını tekrar şişirme.
+  async function loadSafeStats(period){
+    const map = new Map();
+    try{
+      const ready = await ensureFirebaseReady(); const db = ready && ready.db;
+      const snap = await db.collection(typeof FIREBASE_BACKUPS_COLLECTION !== "undefined" ? FIREBASE_BACKUPS_COLLECTION : "backups").get();
+      snap.forEach(doc => {
+        try{
+          const d = doc.data() || {};
+          let payload = d.payload || null; if (!payload && d.payloadText) payload = JSON.parse(d.payloadText);
+          if (!payload || !Array.isArray(payload.records)) return;
+          const name = clean(d.name || (payload.user && payload.user.name) || "");
+          const seflik = clean(d.seflik || (payload.user && payload.user.seflik) || "");
+          const key = d.userKey || userKey({name,seflik});
+          const ms = num(d.createdAtMs) || toMs(d.createdAtIso) || toMs(d.createdAt) || 0;
+          const old = map.get(key); if (!old || ms >= old.ms) map.set(key, { key, ms, records:payload.records });
+        }catch{}
+      });
+    } catch {}
+    const treeMap = new Map(), productMap = new Map();
+    let users = 0, recordCount = 0, adet = 0, m3 = 0, invalid = 0;
+    map.forEach(item => {
+      const s = summarizeRecords(item.records, period || "all", item.ms);
+      if (!s.recordCount && !s.adet && !s.m3) return;
+      users += 1; recordCount += s.recordCount; adet += s.adet; m3 += s.m3; invalid += s.invalidM3 || 0;
+      (s.trees || []).forEach(r => addTotal(treeMap, r.name, r.adet, r.m3));
+      (s.products || []).forEach(r => addTotal(productMap, r.name, r.adet, r.m3));
+    });
+    return { users, recordCount, adet, m3:Number(m3.toFixed(3)), invalidM3Records:invalid, trees:sorted(treeMap), products:sorted(productMap), period:period||"all", source:"safeBackup", loadedAt:new Date().toLocaleString("tr-TR") };
+  }
+  function rowsHtml(rows, type){
+    if (!rows || !rows.length) return `<div class="admin-stats-empty-v132">Veri bulunamadı.</div>`;
+    const cls = (name) => { try { if (typeof adminStatsClassV132 === "function") return adminStatsClassV132(name, type); } catch {} return ""; };
+    return rows.map(r => `<div class="admin-stat-row-v132 ${esc(cls(r.name))}"><div><b>${esc(r.name)}</b><span>${type === "tree" ? "Ağaç türü" : "Odun türü"}</span></div><div class="admin-stat-val-v132">${intText(r.adet)} adet</div><div class="admin-stat-val-v132">${m3Text(r.m3)}</div></div>`).join("");
+  }
+  function renderSafeStats(stats, message){
+    const panel = document.getElementById("adminStatsPanelV132"); if (!panel) return;
+    if (message) { panel.innerHTML = `<div class="admin-stats-empty-v132">${esc(message)}</div>`; return; }
+    if (!stats || (!stats.trees.length && !stats.products.length)) { panel.innerHTML = `<div class="admin-stats-empty-v132">Güvenli istatistik için uygun yedek bulunamadı.</div>`; return; }
+    const period = window.adminStatsPeriodV134 || "all";
+    const label = period === "today" ? "Bugün" : (period === "week" ? "Bu Hafta" : "Tüm Zamanlar");
+    const topTree = stats.trees[0] || {name:"-", adet:0, m3:0};
+    const topProduct = stats.products[0] || {name:"-", adet:0, m3:0};
+    panel.innerHTML = `<div class="admin-stats-head-v132"><div><b>Toplu İstatistik</b><span>Dönem: ${esc(label)} • Kaynak: Güvenli Firebase yedekleri • Son yenileme: ${esc(stats.loadedAt || "-")}</span><div class="admin-stats-period-v134"><button type="button" class="${period === "today" ? "active" : ""}" onclick="adminSetStatsPeriodV134('today')">Bugün</button><button type="button" class="${period === "week" ? "active" : ""}" onclick="adminSetStatsPeriodV134('week')">Bu Hafta</button><button type="button" class="${period === "all" ? "active" : ""}" onclick="adminSetStatsPeriodV134('all')">Tüm Zamanlar</button></div><div class="admin-stats-note-v134">m³ hesabında 200 cm üzeri hatalı çap girişleri yok sayılır. ${stats.invalidM3Records ? intText(stats.invalidM3Records) + " hatalı çap kaydı m³ hesabına katılmadı." : ""}</div></div><div class="admin-stats-actions-v138"><button type="button" class="secondary" onclick="adminRefreshStatsV132()">Yenile</button>${typeof adminResetStatsV138 === "function" ? `<button type="button" class="danger" onclick="adminResetStatsV138()">İstatistiği Sıfırla</button>` : ""}</div></div><div class="admin-stats-cards-v132"><div class="admin-stat-top-card-v132"><span>En fazla ağaç türü</span><b>${esc(topTree.name)}</b><small>${intText(topTree.adet)} adet • ${m3Text(topTree.m3)}</small></div><div class="admin-stat-top-card-v132"><span>En fazla odun türü</span><b>${esc(topProduct.name)}</b><small>${intText(topProduct.adet)} adet • ${m3Text(topProduct.m3)}</small></div><div class="admin-stat-top-card-v132"><span>Kapsam</span><b>${intText(stats.users)} kullanıcı</b><small>${intText(stats.recordCount)} kayıt</small></div><div class="admin-stat-top-card-v132"><span>Toplam</span><b>${intText(stats.adet)} adet</b><small>${m3Text(stats.m3)}</small></div></div><div class="admin-stats-columns-v132"><div class="admin-stats-section-v132"><h4>Ağaç türleri</h4>${rowsHtml(stats.trees,"tree")}</div><div class="admin-stats-section-v132"><h4>Odun türleri</h4>${rowsHtml(stats.products,"product")}</div></div>`;
+  }
+  async function loadAndRenderSafeStats(force){
+    try { if (typeof ensureAdminStatsUiV132 === "function") ensureAdminStatsUiV132(); } catch {}
+    const panel = document.getElementById("adminStatsPanelV132"); const btn = document.getElementById("adminStatsBtnV132");
+    if (panel) panel.classList.add("open"); if (btn) btn.classList.add("active");
+    const period = (window.adminStatsPeriodV134 === "today" || window.adminStatsPeriodV134 === "week") ? window.adminStatsPeriodV134 : "all";
+    const key = `adminStatsV144_${period}`;
+    if (!force && state && state[key]) return renderSafeStats(state[key]);
+    try { if (typeof setCloudLoading === "function") setCloudLoading(true, "İstatistikler güvenli hesaplanıyor..."); } catch {}
+    renderSafeStats(null, "İstatistikler güvenli hesaplanıyor...");
+    try { const stats = await loadSafeStats(period); if (state) state[key] = stats; renderSafeStats(stats); }
+    catch(err) { renderSafeStats(null, "İstatistikler alınamadı. Firebase bağlantısını veya yedekleri kontrol et."); }
+    finally { try { if (typeof setCloudLoading === "function") setCloudLoading(false); } catch {} }
+  }
+  window.adminSetStatsPeriodV134 = function(period){ window.adminStatsPeriodV134 = (period === "today" || period === "week") ? period : "all"; return loadAndRenderSafeStats(true); };
+  window.adminRefreshStatsV132 = function(){ return loadAndRenderSafeStats(true); };
+  window.adminToggleStatsV132 = function(){
+    const p = document.getElementById("adminStatsPanelV132"), b = document.getElementById("adminStatsBtnV132"); if (!p) return;
+    const willOpen = !p.classList.contains("open"); p.classList.toggle("open", willOpen); if (b) b.classList.toggle("active", willOpen); if (willOpen) loadAndRenderSafeStats(false);
+  };
+
+  // Sürüm bilgileri.
+  const oldDevice = typeof currentDeviceInfoPayload === "function" ? currentDeviceInfoPayload : null;
+  try { currentDeviceInfoPayload = function(){ const info = oldDevice ? oldDevice() : {}; info.appVersion = BUILD_VERSION; info.fileVersion = FILE_VERSION; info.m3AccuracyFix = true; info.updatedMs = Date.now(); return info; }; } catch {}
+  window.MESAHA_BUILD_INFO = Object.assign({}, window.MESAHA_BUILD_INFO || {}, { fileVersion:FILE_VERSION, visibleVersion:BUILD_VERSION, m3AccuracyFix:true, stableBuild:true });
+  try { document.title = "Mesaha App v160"; const h1 = document.querySelector(".brand h1"); if (h1) h1.textContent = BUILD_VERSION; } catch {}
+  setTimeout(bindExport, 100); setTimeout(bindExport, 1000); setTimeout(()=>{ recalcTodayUsageFromLocal(); v144FlushExportQueue(true).catch(()=>{}); }, 2500);
+  setTimeout(()=>applyBackupCorrections().catch(()=>{}), 3500);
+})();
+</script>
+<script>
+/* Mesaha v145 - giriş sayısı, liderler panosu, ağaç seçimi ve UI küçük düzenlemeler */
+(function(){
+  "use strict";
+  const BUILD_VERSION = "Mesaha İO v1.89";
+  const FILE_VERSION = "v160";
+  const LOGIN_QUEUE_KEY = "mesaha_today_login_queue_v145";
+  const LOGIN_MARKED = new Set();
+
+  const esc = (v) => { try { return escapeHtml(v); } catch { return String(v ?? "").replace(/[&<>\"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[c])); } };
+  const clean = (v) => { try { return cleanUserText(v); } catch { return String(v || "").trim(); } };
+  const toast = (t) => { try { if (typeof showToast === "function") showToast(t); } catch {} };
+  const fmtInt = (v) => Math.round(Number(v)||0).toLocaleString("tr-TR");
+  const fmtM3 = (v) => `${(Number(v)||0).toLocaleString("tr-TR", {minimumFractionDigits:3, maximumFractionDigits:3})} m³`;
+  const dur = (ms) => { try { if (typeof adminDurationTextV128 === "function") return adminDurationTextV128(ms); } catch {} const m=Math.round((Number(ms)||0)/60000); if(!m) return "0 dk"; const h=Math.floor(m/60), r=m%60; return h?`${h} sa ${r} dk`:`${m} dk`; };
+  const todayIso = () => { try { if (typeof usageTodayISOv128 === "function") return usageTodayISOv128(); } catch {} const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; };
+  const weekStartIso = () => { const d=new Date(); const day=(d.getDay()+6)%7; d.setHours(0,0,0,0); d.setDate(d.getDate()-day); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; };
+  function toMs(v){
+    try{ if(!v) return 0; if(typeof v==="number") return Number.isFinite(v)?v:0; if(v instanceof Date) return v.getTime(); if(typeof v.toDate==="function") return v.toDate().getTime(); if(typeof v==="object"&&Number.isFinite(Number(v.seconds))) return Number(v.seconds)*1000; const s=String(v||"").trim(); const m=s.match(/^(\d{1,2})[.\/-](\d{1,2})[.\/-](\d{4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?/); if(m){const d=new Date(Number(m[3]),Number(m[2])-1,Number(m[1]),Number(m[4]||0),Number(m[5]||0),Number(m[6]||0)); return Number.isFinite(d.getTime())?d.getTime():0;} const t=Date.parse(s); return Number.isFinite(t)?t:0; }catch{return 0;}
+  }
+  function loginMs(u){ return Math.max(toMs(u&&u.lastLoginMs), toMs(u&&u.lastLogin), toMs(u&&u.loginAt), toMs(u&&u.firstLogin)); }
+  function isTodayMs(ms){ const d=ms?new Date(ms):null, n=new Date(); return !!d && d.getFullYear()===n.getFullYear() && d.getMonth()===n.getMonth() && d.getDate()===n.getDate(); }
+  function timeText(ms){ if(!ms) return "-"; return new Date(ms).toLocaleTimeString("tr-TR", {hour:"2-digit", minute:"2-digit"}); }
+  function seenLabel(u){ const ms=loginMs(u); if(!ms) return "Son görülen bilinmiyor"; const d=new Date(ms), now=new Date(); const one=86400000; const diff=Math.floor((new Date(now.getFullYear(),now.getMonth(),now.getDate())-new Date(d.getFullYear(),d.getMonth(),d.getDate()))/one); if(diff<=0) return `Son görülen ${timeText(ms)}`; if(diff===1) return "Son görülen dün"; if(diff<=7) return `Son görülen ${diff} gün önce`; return "Son görülen eski"; }
+  function statusKey(u){ const ms=loginMs(u); if(!ms) return "old"; const d=new Date(ms), now=new Date(); const diff=Math.floor((new Date(now.getFullYear(),now.getMonth(),now.getDate())-new Date(d.getFullYear(),d.getMonth(),d.getDate()))/86400000); return diff<=0?"today":(diff<=7?"warning":"old"); }
+  function userKey(u){ try { return firebaseUserKey(u && u.name, u && u.seflik); } catch {} return String(`${clean(u&&u.name)}__${clean(u&&u.seflik)}`).toLocaleLowerCase("tr-TR").replace(/[^a-z0-9ğüşöçıİĞÜŞÖÇ_-]+/gi,"_").replace(/^_+|_+$/g,"") || "bos"; }
+  function activeUser(){ try { const u=(state&&state.activeUser)||(typeof findActiveUser==="function"?findActiveUser():null)||{}; return {name:clean(u.name), seflik:clean(u.seflik), deviceId:(u.deviceId||(typeof getOrCreateDeviceId==="function"?getOrCreateDeviceId():"cihaz"))}; } catch { return {name:"",seflik:"",deviceId:"cihaz"}; } }
+  function issueCount(u){ try { const rows=Array.isArray(state.adminSupportTicketsV134)?state.adminSupportTicketsV134:[]; const k=userKey(u); return rows.filter(r=>String(r.userKey||userKey(r))===String(k)&&String(r.status||"new")!=="done").length; } catch { return 0; } }
+  function todayLoginCount(u){ const t=(u&&u.todayLogin)||{}; if(t.date && t.date!==todayIso()) return 0; return Number((u&&u.todayLoginCount) || t.count || (u&&u.todayUsage&&u.todayUsage.loginCount) || 0) || 0; }
+
+  function setVersions(){
+    try { document.title = "Mesaha App v160"; const h1=document.querySelector(".brand h1"); if(h1) h1.textContent=BUILD_VERSION; } catch {}
+    try { window.MESAHA_BUILD_INFO = Object.assign({}, window.MESAHA_BUILD_INFO||{}, {fileVersion:FILE_VERSION, visibleVersion:BUILD_VERSION, dailyLoginCount:true, leadersPanel:true}); } catch {}
+    try { const old = typeof currentDeviceInfoPayload === "function" ? currentDeviceInfoPayload : null; if(old && !old.__v145){ currentDeviceInfoPayload = function(){ const info=old?old():{}; info.appVersion=BUILD_VERSION; info.fileVersion=FILE_VERSION; info.dailyLoginCount=true; info.leadersPanel=true; info.updatedMs=Date.now(); return info; }; currentDeviceInfoPayload.__v145=true; } } catch {}
+  }
+
+  function readLoginQueue(){ try { const d=JSON.parse(localStorage.getItem(LOGIN_QUEUE_KEY)||"{}"); return d&&typeof d==="object"?d:{}; } catch { return {}; } }
+  function writeLoginQueue(d){ try { localStorage.setItem(LOGIN_QUEUE_KEY, JSON.stringify(d||{})); } catch {} }
+  function markTodayLogin(user){
+    try{
+      const u = user && (user.name||user.seflik) ? user : activeUser();
+      if(!u || !u.name || !u.seflik) return false;
+      const day=todayIso(), key=userKey(u), deviceId=u.deviceId || (typeof getOrCreateDeviceId==="function"?getOrCreateDeviceId():"cihaz");
+      const memKey=`${day}_${key}_${deviceId}`;
+      if(LOGIN_MARKED.has(memKey)) return false;
+      LOGIN_MARKED.add(memKey);
+      let got=null;
+      try { if(typeof usageGetDailyV128==="function") got=usageGetDailyV128(day,u); } catch {}
+      if(got && got.stat){
+        got.stat.todayLoginCount = Number(got.stat.todayLoginCount || got.stat.loginCountToday || 0) + 1;
+        got.stat.loginCountToday = got.stat.todayLoginCount;
+        got.stat.updatedAt = (typeof firebaseDateText==="function") ? firebaseDateText() : new Date().toLocaleString("tr-TR");
+        got.stat.updatedAtMs = Date.now();
+        got.stat.appVersion = BUILD_VERSION; got.stat.fileVersion = FILE_VERSION;
+        try { if(typeof usageSaveStoreV128==="function") usageSaveStoreV128(got.store); } catch {}
+        const q=readLoginQueue(); q[memKey]={day,key,deviceId,name:clean(u.name),seflik:clean(u.seflik),count:got.stat.todayLoginCount,updatedAt:got.stat.updatedAt,updatedAtMs:got.stat.updatedAtMs}; writeLoginQueue(q);
+      } else {
+        const q=readLoginQueue(); const old=q[memKey]||{}; q[memKey]={day,key,deviceId,name:clean(u.name),seflik:clean(u.seflik),count:Number(old.count||0)+1,updatedAt:new Date().toLocaleString("tr-TR"),updatedAtMs:Date.now()}; writeLoginQueue(q);
+      }
+      setTimeout(()=>flushTodayLoginV145(true).catch(()=>{}), 1800);
+      return true;
+    }catch{return false;}
+  }
+  async function flushTodayLoginV145(silent){
+    if(!navigator.onLine) return false;
+    const q=readLoginQueue(); const ids=Object.keys(q); if(!ids.length) return false;
+    const ready = await ensureFirebaseReady(); const db=ready&&ready.db; if(!db) return false;
+    const nowText=(typeof firebaseDateText==="function")?firebaseDateText():new Date().toLocaleString("tr-TR"); const nowMs=Date.now(); let sent=0;
+    for(const id of ids){
+      const p=q[id]; if(!p||!p.key){delete q[id]; continue;}
+      const docId=(typeof usageDocIdV128==="function") ? usageDocIdV128(p.day,p.key,p.deviceId) : `usage_${p.day}_${p.key}_${p.deviceId}`.replace(/[^a-zA-Z0-9_-]+/g,"_").slice(0,180);
+      await db.collection(typeof FIREBASE_USAGE_COLLECTION!=="undefined"?FIREBASE_USAGE_COLLECTION:"usageStats").doc(docId).set({
+        id:docId,date:p.day,userKey:p.key,name:p.name,seflik:p.seflik,deviceId:p.deviceId,
+        todayLoginCount:Number(p.count||0),loginCountToday:Number(p.count||0),
+        appVersion:BUILD_VERSION,fileVersion:FILE_VERSION,source:"dailyLogin",updatedAt:nowText,updatedAtMs:nowMs
+      }, {merge:true});
+      await db.collection(typeof FIREBASE_USERS_COLLECTION!=="undefined"?FIREBASE_USERS_COLLECTION:"users").doc(p.key).set({
+        userKey:p.key,name:p.name,seflik:p.seflik,appVersion:BUILD_VERSION,fileVersion:FILE_VERSION,
+        todayLogin:{date:p.day,count:Number(p.count||0),updatedAt:nowText,updatedAtMs:nowMs},
+        todayLoginCount:Number(p.count||0),lastLogin:nowText,lastLoginMs:nowMs
+      }, {merge:true});
+      delete q[id]; sent++;
+    }
+    writeLoginQueue(q);
+    if(sent && !silent) toast(`${sent} giriş sayısı gönderildi.`);
+    return sent>0;
+  }
+  window.mesahaFlushTodayLoginV145 = flushTodayLoginV145;
+  window.addEventListener("online",()=>setTimeout(()=>flushTodayLoginV145(true).catch(()=>{}),1200));
+
+  try{
+    const oldLog = typeof logOnlineUser === "function" ? logOnlineUser : null;
+    if(oldLog && !oldLog.__v145){
+      logOnlineUser = function(user){ try { markTodayLogin(user); } catch {} try { return oldLog(user); } catch {} };
+      logOnlineUser.__v145 = true;
+    }
+  }catch{}
+  setTimeout(()=>markTodayLogin(activeUser()), 1600);
+
+  async function loadLoginCountsForUsers(users){
+    const out=(users||[]).map(u=>Object.assign({},u));
+    try{
+      const ready=await ensureFirebaseReady(); const db=ready&&ready.db; if(!db) return out;
+      const today=todayIso();
+      const userDocs=new Map();
+      try{ const us=await db.collection(typeof FIREBASE_USERS_COLLECTION!=="undefined"?FIREBASE_USERS_COLLECTION:"users").get(); us.forEach(doc=>{ const d=doc.data()||{}; userDocs.set(doc.id,d); }); }catch{}
+      const agg=new Map();
+      try{
+        const snap=await db.collection(typeof FIREBASE_USAGE_COLLECTION!=="undefined"?FIREBASE_USAGE_COLLECTION:"usageStats").where("date","==",today).get();
+        snap.forEach(doc=>{ const d=doc.data()||{}; const k=d.userKey||userKey(d); const c=Number(d.todayLoginCount||d.loginCountToday||0)||0; if(c) agg.set(k,(agg.get(k)||0)+c); });
+      }catch{}
+      out.forEach(u=>{ const k=userKey(u); const d=userDocs.get(k)||{}; const td=(d.todayLogin&&d.todayLogin.date===today)?Number(d.todayLogin.count||0):0; const c=Math.max(Number(u.todayLoginCount||0), td, Number(agg.get(k)||0)); u.todayLoginCount=c; u.todayLogin={date:today,count:c}; });
+    }catch{}
+    return out;
+  }
+  try{
+    const oldLoad = typeof loadOnlineUsers === "function" ? loadOnlineUsers : null;
+    if(oldLoad && !oldLoad.__v145){
+      loadOnlineUsers = async function(adminCode){ const users=await oldLoad(adminCode); return loadLoginCountsForUsers(users); };
+      loadOnlineUsers.__v145 = true;
+    }
+  }catch{}
+
+  function badges(u){
+    const st=statusKey(u); const cls=st==="today"?"active":(st==="warning"?"week":"inactive");
+    const parts=[`<span class="admin-badge-v134 ${cls}">${esc(seenLabel(u))}</span>`];
+    const bc=Number(u&&u.backupCount||0); parts.push(bc?`<span class="admin-badge-v134 ok">Yedek var</span>`:`<span class="admin-badge-v134 backup">Yedek yok</span>`);
+    const is=issueCount(u); if(is) parts.push(`<span class="admin-badge-v134 issue">${fmtInt(is)} açık sorun</span>`);
+    return `<div class="admin-user-badges-v134">${parts.join("")}</div>`;
+  }
+  function renderUsersV145(){
+    if(!els || !els.registeredUsersList) return;
+    try { updateAdminTopSummary(); } catch {}
+    const list=(Array.isArray(state&&state.adminOnlineUsers)?state.adminOnlineUsers.slice():[]).sort((a,b)=>(loginMs(b)-loginMs(a))||String(a.name||"").localeCompare(String(b.name||""),"tr"));
+    window.__adminListV145=window.__adminListV139=window.__adminListV134=window.__adminListV131=list;
+    els.registeredUsersList.classList.add("admin-list-v131");
+    if(!list.length){ els.registeredUsersList.innerHTML=`<div class="empty-user-list">Kullanıcı bulunamadı.</div>`; return; }
+    els.registeredUsersList.innerHTML=list.map((u,idx)=>{
+      const is=issueCount(u); const src=String(u.sourceLabel||u.source||"").toLocaleLowerCase("tr-TR").includes("firebase")?"Firebase":(u.sourceLabel||u.source||"");
+      const st=statusKey(u); const tlog=todayLoginCount(u);
+      const dev=(u.lastDeviceInfo&&(u.lastDeviceInfo.platform||u.lastDeviceInfo.userAgent))||u.lastDevice||`${fmtInt(u.deviceCount)} cihaz`;
+      return `<div class="admin-user-row-v131 status-${esc(st)} ${is?"has-open-issue-v134":""}" data-admin-row-v131="${idx}">
+        <div class="admin-user-main-v131"><b>${esc(u.name||"-")}</b><span>${esc(u.seflik||"-")} ${src?`• ${esc(src)}`:""}</span>${badges(u)}</div>
+        <div class="admin-user-stats-v131 stats-v145"><span>Giriş <b>${fmtInt(tlog)}</b></span><span>Süre <b>${esc(dur(u.todayActiveMs))}</b></span><span>Adet <b>${fmtInt(u.todayInputAdet)}</b></span><span>m³ <b>${fmtM3(u.todayInputM3)}</b></span></div>
+        <button class="admin-detail-bubble-v131" type="button" onclick="adminToggleDetailV131(${idx})">Detay</button>
+        <div class="admin-user-detail-panel-v131"><div class="admin-detail-grid-v131">
+          <span>Bugün giriş <b>${fmtInt(tlog)}</b></span><span>Durum <b>${esc(seenLabel(u))}</b></span><span>İlk kayıt <b>${esc(u.firstLogin||u.createdAt||"Bilinmiyor")}</b></span><span>Son giriş <b>${esc(u.lastLogin||"-")}</b></span><span>Son görülen <b>${esc(seenLabel(u))}</b></span><span>Son yedek <b>${esc(u.lastBackupAt||"-")}</b></span><span>Yedek sayısı <b>${fmtInt(u.backupCount)}</b></span><span>Açık sorun <b>${fmtInt(is)}</b></span><span>7 gün adet <b>${fmtInt(u.weekInputAdet)}</b></span><span>7 gün m³ <b>${fmtM3(u.weekInputM3)}</b></span><span>Sürüm <b>${esc(u.appVersion||u.fileVersion||"-")}</b></span><span>Cihaz <b>${esc(dev||"-")}</b></span>
+        </div><div class="admin-detail-actions-v131"><button class="secondary" type="button" onclick="adminOpenUserBackups('${String(u.name||"").replace(/\\/g,"\\\\").replace(/'/g,"\\'")}','${String(u.seflik||"").replace(/\\/g,"\\\\").replace(/'/g,"\\'")}')">Yedekleri Gör</button>${is?`<button class="issue-v134" type="button" onclick="adminOpenUserReportsV134(${idx})">Sorunları Gör</button>`:""}<button class="danger-v134" type="button" onclick="adminDeleteUserV134(${idx})">Kullanıcıyı Sil</button><button class="ghost" type="button" onclick="adminToggleDetailV131(${idx})">Kapat</button></div></div>
+      </div>`;
+    }).join("");
+  }
+  try{ renderAdminUsers = renderUsersV145; }catch{}
+  try{
+    const oldSummary = typeof updateAdminTopSummary === "function" ? updateAdminTopSummary : null;
+    updateAdminTopSummary = function(){
+      const users=Array.isArray(state&&state.adminOnlineUsers)?state.adminOnlineUsers:[]; const backups=(state&&state.adminBackups)||[];
+      const todaySeen=users.filter(u=>isTodayMs(loginMs(u))).length; const todayAdet=users.reduce((s,u)=>s+(Number(u.todayInputAdet)||0),0); const todayM3=users.reduce((s,u)=>s+(Number(u.todayInputM3)||0),0); const lastBackup=backups[0]&&backups[0].createdAt?backups[0].createdAt:"-";
+      const setLabel=(el,label)=>{try{const x=el&&el.parentElement&&el.parentElement.querySelector("span"); if(x)x.textContent=label;}catch{}};
+      try{ setLabel(els.adminTotalUsers,"Kullanıcı"); setLabel(els.adminTodayUsers,"Bugün Görülen"); setLabel(els.adminWeekUsers,"Bugün Adet"); setLabel(els.adminTotalBackups,"Bugün m³"); setLabel(els.adminLastBackup,"Son Yedek");
+        if(els.adminTotalUsers)els.adminTotalUsers.textContent=fmtInt(users.length); if(els.adminTodayUsers)els.adminTodayUsers.textContent=`${fmtInt(todaySeen)} kullanıcı`; if(els.adminWeekUsers)els.adminWeekUsers.textContent=fmtInt(todayAdet); if(els.adminTotalBackups)els.adminTotalBackups.textContent=fmtM3(todayM3).replace(" m³",""); if(els.adminLastBackup)els.adminLastBackup.textContent=lastBackup;
+      }catch{ if(oldSummary)oldSummary(); }
+    };
+  }catch{}
+  function enhanceTreeSelection(){
+    const panel=document.getElementById("treeTypePanel"); if(!panel||panel.__v145) return; panel.__v145=true; const apply=document.getElementById("treeTypeApplyBtn"); if(apply) apply.style.display="none";
+    panel.querySelectorAll("label.wood-check").forEach(label=>{ label.addEventListener("click", function(ev){ const input=label.querySelector("input[type='radio']"); if(!input) return; ev.preventDefault(); ev.stopPropagation(); if(typeof ev.stopImmediatePropagation==="function") ev.stopImmediatePropagation(); input.checked=true; try{ if(typeof setTreeType==="function") setTreeType(input.value,true); }catch{} try{ panel.classList.remove("open"); }catch{} toast(`${input.value} seçildi.`); }, true); });
+  }
+  function forceFileInfoOpen(){ document.querySelectorAll("details.info-details").forEach(d=>{ d.open=true; d.setAttribute("data-force-open-v145","1"); const sum=d.querySelector("summary"); if(sum&&!sum.__v145){ sum.__v145=true; sum.addEventListener("click", ev=>{ ev.preventDefault(); ev.stopPropagation(); d.open=true; }, true); } }); }
+  function bindClearButton(){
+    const btn=document.getElementById("clearInputsBtn"); if(!btn||btn.__v145) return; const clone=btn.cloneNode(true); clone.__v145=true; btn.parentNode.replaceChild(clone,btn); try{ if(typeof els!=="undefined") els.clearInputsBtn=clone; }catch{}
+    clone.addEventListener("click", function(){ if(!confirm("Giriş alanları, barkod ve son kısayol butonları temizlensin mi?")) return; try{ if(els.length) els.length.value=""; if(els.diameter) els.diameter.value=""; if(els.barcode) els.barcode.value=""; if(els.quantity) els.quantity.value="1"; }catch{} try{ state.settings.recentLengths=[]; state.settings.recentDiameters=[]; state.settings.lastLength=""; state.settings.lastDiameter=""; if(typeof saveSettings==="function") saveSettings(); if(typeof renderRecentChips==="function") renderRecentChips(); }catch{} try{ if(typeof updateInputPlaceholders==="function") updateInputPlaceholders(); if(typeof updateLiveDesi==="function") updateLiveDesi(); if(typeof updateDuplicateWarning==="function") updateDuplicateWarning(); }catch{} try{ if(els.barcode) els.barcode.focus({preventScroll:true}); }catch{} toast("Alanlar ve kısayol bilgileri temizlendi."); });
+  }
+  function updateBadge(){ try{ const badge=document.getElementById("activeUserBadge"); const u=activeUser(); if(badge&&u.name){ badge.textContent=`${u.name} • ${u.seflik}`; badge.style.display="block"; } }catch{} }
+  try{ const oldApply=typeof applyActiveUserToScreen==="function"?applyActiveUserToScreen:null; if(oldApply&&!oldApply.__v145){ applyActiveUserToScreen=function(){ const r=oldApply.apply(this,arguments); updateBadge(); setTimeout(()=>markTodayLogin(activeUser()),300); return r; }; applyActiveUserToScreen.__v145=true; } }catch{}
+
+  function boot(){ setVersions(); forceFileInfoOpen(); enhanceTreeSelection(); bindClearButton(); updateBadge(); }
+  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",boot); else boot();
+  setTimeout(boot,800); setTimeout(()=>{ try{ if(typeof renderAdminUsers==="function") renderAdminUsers(); if(typeof updateAdminTopSummary==="function") updateAdminTopSummary(); }catch{} },1800);
+})();
+</script>
+<script id="mesaha-v146-tree-filter-script">
+(function(){
+  const BUILD_VERSION="Mesaha İO v1.89";
+  const FILE_VERSION = "v160";
+  const FILTER_KEY="mesaha_records_tree_filter_v146";
+  const TREE_NAMES=["Karaçam","Sarıçam","Sedir","Göknar","Kızılçam"];
+  function $(id){return document.getElementById(id);}
+  function esc(v){try{ if(typeof escapeHtml==="function") return escapeHtml(v); }catch{} return String(v??"").replace(/[&<>\"']/g, m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m]));}
+  function toNum(v){const n=Number(v); return Number.isFinite(n)?n:0;}
+  function m3TextFromDesi(desi){try{return formatHacimFromDesi(desi)+" m³";}catch{return (toNum(desi)/1000).toLocaleString("tr-TR",{minimumFractionDigits:3,maximumFractionDigits:3})+" m³";}}
+  function normTree(v){try{return normalizeTreeType(v||"Karaçam");}catch{const s=String(v||"Karaçam").trim(); return TREE_NAMES.includes(s)?s:"Karaçam";}}
+  function treeInfo(v){try{return getTreeInfo(v);}catch{return {agacAdi:normTree(v)};}}
+  function recTree(r){return normTree(r && (r.treeType||r.species||r.agacAdi||r.agac||r.tree));}
+  function allRecords(){try{return (state&&Array.isArray(state.records))?state.records:[];}catch{return [];}}
+  function getFilter(){try{const v=localStorage.getItem(FILTER_KEY)||"all"; return v==="all"?"all":normTree(v);}catch{return "all";}}
+  function setFilter(v){const key=(v==="all")?"all":normTree(v); try{localStorage.setItem(FILTER_KEY,key);}catch{} return key;}
+  function applyTreeFilter(list){const f=getFilter(); const arr=Array.isArray(list)?list:[]; return f==="all"?arr:arr.filter(r=>recTree(r)===f);}
+  function calcTotals(list){
+    const totals={all:0,adet:0,products:{"Tomruk":{vol:0,adet:0},"Maden Direk":{vol:0,adet:0},"Kağıtlık":{vol:0,adet:0},"Sanayi Odunu":{vol:0,adet:0},"Tel Direk":{vol:0,adet:0}}};
+    (Array.isArray(list)?list:[]).forEach(r=>{const q=toNum(r&&r.quantity)||toNum(r&&r.adet)||0; const vol=toNum(r&&r.desi); let key="Tomruk"; try{key=normalizeProductType((r&&r.productType)||"Tomruk");}catch{} totals.all+=vol; totals.adet+=q; if(totals.products[key]){totals.products[key].vol+=vol; totals.products[key].adet+=q;}});
+    return totals;
+  }
+  function setText(id, value){const el=$(id); if(el) el.textContent=value;}
+  function updateMainTotalsForTree(){
+    const selected=getFilter();
+    const list=applyTreeFilter(allRecords());
+    const totals=calcTotals(list);
+    setText("totalDesi", m3TextFromDesi(totals.all).replace(" m³", ""));
+    setText("totalAdet", Math.round(totals.adet).toLocaleString("tr-TR"));
+    setText("totalTomruk", m3TextFromDesi(totals.products["Tomruk"].vol));
+    setText("totalTomrukAdet", Math.round(totals.products["Tomruk"].adet).toLocaleString("tr-TR")+" adet");
+    setText("totalMaden", m3TextFromDesi(totals.products["Maden Direk"].vol));
+    setText("totalMadenAdet", Math.round(totals.products["Maden Direk"].adet).toLocaleString("tr-TR")+" adet");
+    setText("totalKagit", m3TextFromDesi(totals.products["Kağıtlık"].vol));
+    setText("totalKagitAdet", Math.round(totals.products["Kağıtlık"].adet).toLocaleString("tr-TR")+" adet");
+    setText("totalSanayi", m3TextFromDesi(totals.products["Sanayi Odunu"].vol));
+    setText("totalSanayiAdet", Math.round(totals.products["Sanayi Odunu"].adet).toLocaleString("tr-TR")+" adet");
+    setText("totalTel", m3TextFromDesi(totals.products["Tel Direk"].vol));
+    setText("totalTelAdet", Math.round(totals.products["Tel Direk"].adet).toLocaleString("tr-TR")+" adet");
+    const rc=$("recordCount"); if(rc) rc.textContent = selected==="all" ? `${allRecords().length.toLocaleString("tr-TR")} kayıt` : `${list.length.toLocaleString("tr-TR")} / ${allRecords().length.toLocaleString("tr-TR")} kayıt`;
+    return {selected,list,totals};
+  }
+  function ensureRecordsFilter(){
+    const body=document.querySelector(".records-panel .panel-body");
+    const totals=document.querySelector(".records-panel .totals");
+    if(!body||!totals) return;
+    let box=$("recordTreeFilterV146");
+    if(!box){
+      box=document.createElement("div");
+      box.id="recordTreeFilterV146";
+      box.className="records-tree-filter-v146";
+      box.innerHTML=`<div class="records-tree-filter-head-v146"><div><b>Ağaç türü seç</b><span id="recordTreeFilterLabelV146">Tüm kayıtlar gösteriliyor</span></div></div><div class="records-tree-buttons-v146"><button type="button" data-tree-filter="all">Tümünü göster</button>${TREE_NAMES.map(t=>`<button type="button" data-tree-filter="${esc(t)}">${esc(t)}</button>`).join("")}</div><div id="recordTreeSummaryV146" class="records-tree-summary-v146"></div>`;
+      totals.parentNode.insertBefore(box, totals.nextSibling);
+      box.addEventListener("click", ev=>{const btn=ev.target.closest("[data-tree-filter]"); if(!btn) return; ev.preventDefault(); const value=btn.getAttribute("data-tree-filter")||"all"; setFilter(value); try{ if(state&&state.selectedRecordIds) state.selectedRecordIds.clear(); }catch{} if(typeof render==="function") render(); else updateRecordsFilterUi(); try{showToast(value==="all"?"Tüm ağaç türleri gösteriliyor.":`${value} kayıtları gösteriliyor.`);}catch{} });
+    }
+    updateRecordsFilterUi();
+  }
+  function updateRecordsFilterUi(){
+    const box=$("recordTreeFilterV146"); if(!box) return;
+    const f=getFilter(); const all=allRecords(); const list=applyTreeFilter(all); const totals=calcTotals(list);
+    box.querySelectorAll("[data-tree-filter]").forEach(btn=>btn.classList.toggle("active", (btn.getAttribute("data-tree-filter")||"all")===f));
+    const label=$("recordTreeFilterLabelV146");
+    if(label) label.textContent = f==="all" ? "Tüm kayıtlar gösteriliyor" : `${f} seçili; yazdırma sadece bu ağaç türüyle yapılacak`;
+    const summary=$("recordTreeSummaryV146");
+    if(summary){
+      summary.innerHTML=`<div class="mini-stat-v146"><small>${f==="all"?"Tüm ağaçlar":"Seçili ağaç"}</small><strong>${esc(f==="all"?"Tümü":f)}</strong></div><div class="mini-stat-v146"><small>Adet</small><strong>${Math.round(totals.adet).toLocaleString("tr-TR")}</strong></div><div class="mini-stat-v146"><small>Hacim</small><strong>${m3TextFromDesi(totals.all)}</strong></div>`;
+    }
+    updateMainTotalsForTree();
+  }
+  const oldGetFilteredRecords = (typeof getFilteredRecords==="function") ? getFilteredRecords : null;
+  if(oldGetFilteredRecords && !oldGetFilteredRecords.__v146TreeFilter){
+    getFilteredRecords=function(){return applyTreeFilter(oldGetFilteredRecords.apply(this,arguments));};
+    getFilteredRecords.__v146TreeFilter=true;
+  }
+  const oldRender = (typeof render==="function") ? render : null;
+  if(oldRender && !oldRender.__v146TreeFilter){
+    render=function(){const res=oldRender.apply(this,arguments); setTimeout(()=>{try{ensureRecordsFilter(); updateRecordsFilterUi(); if(typeof renderMobileRecordsV111==="function") renderMobileRecordsV111(true);}catch(e){console.warn("v146 render update",e);}},30); return res;};
+    render.__v146TreeFilter=true;
+  }
+  const oldPrintBeyanOnly = (typeof printBeyanOnly==="function") ? printBeyanOnly : null;
+  if(oldPrintBeyanOnly && !oldPrintBeyanOnly.__v146TreePrint){
+    printBeyanOnly=function(){
+      const f=getFilter();
+      if(f==="all") return oldPrintBeyanOnly.apply(this,arguments);
+      const old=allRecords(); const filtered=old.filter(r=>recTree(r)===f);
+      if(!filtered.length){try{showErrorToast(`${f} için yazdırılacak kayıt yok.`);}catch{alert(`${f} için yazdırılacak kayıt yok.`);} return;}
+      try{state.records=filtered; return oldPrintBeyanOnly.apply(this,arguments);}finally{state.records=old; setTimeout(()=>{try{render();}catch{}},80);}
+    };
+    printBeyanOnly.__v146TreePrint=true;
+  }
+  function ensureCleanTreeSelector(){
+    const card=document.querySelector(".clean-simple-card-v111"); const grid=$("cleanProductGridV111"); if(!card||!grid) return;
+    let box=$("cleanTreeSelectorV146");
+    if(!box){
+      box=document.createElement("div"); box.id="cleanTreeSelectorV146"; box.className="quick-tree-v146";
+      box.innerHTML=`<div class="quick-tree-head-v146"><b>Ağaç Türü</b><button id="cleanTreeToggleV146" class="quick-tree-toggle-v146" type="button">Ağaç Türü Seç</button></div><div id="cleanTreePanelV146" class="quick-tree-panel-v146">${TREE_NAMES.map(t=>`<button type="button" class="quick-tree-option-v146" data-clean-tree="${esc(t)}">${esc(t)}</button>`).join("")}</div>`;
+      card.insertBefore(box, grid);
+      const toggle=$("cleanTreeToggleV146"), panel=$("cleanTreePanelV146");
+      toggle&&toggle.addEventListener("click", ev=>{ev.preventDefault(); ev.stopPropagation(); panel&&panel.classList.toggle("open"); updateCleanTreeSelector();});
+      panel&&panel.addEventListener("click", ev=>{const btn=ev.target.closest("[data-clean-tree]"); if(!btn) return; ev.preventDefault(); const t=btn.getAttribute("data-clean-tree")||"Karaçam"; try{ if(typeof setTreeType==="function") setTreeType(t,true); else {const inp=$("treeType"); if(inp) inp.value=t;} }catch{} panel.classList.remove("open"); updateCleanTreeSelector(); try{ if(typeof renderCleanAutoV111==="function") renderCleanAutoV111(); }catch{} try{showToast(`${t} seçildi.`);}catch{} });
+    }
+    updateCleanTreeSelector();
+  }
+  function updateCleanTreeSelector(){
+    const current=normTree(($("treeType")&&$("treeType").value)||"Karaçam");
+    const toggle=$("cleanTreeToggleV146"); if(toggle) toggle.textContent="Ağaç Türü Seç: "+current;
+    const panel=$("cleanTreePanelV146"); if(panel) panel.querySelectorAll("[data-clean-tree]").forEach(btn=>btn.classList.toggle("active", normTree(btn.getAttribute("data-clean-tree"))===current));
+  }
+  const oldOpenClean = (typeof openCleanSimpleV111==="function") ? openCleanSimpleV111 : null;
+  if(oldOpenClean && !oldOpenClean.__v146Tree){
+    openCleanSimpleV111=function(){const res=oldOpenClean.apply(this,arguments); setTimeout(()=>{ensureCleanTreeSelector(); updateCleanTreeSelector();},40); return res;};
+    openCleanSimpleV111.__v146Tree=true;
+  }
+  const oldSetTree = (typeof setTreeType==="function") ? setTreeType : null;
+  if(oldSetTree && !oldSetTree.__v146Tree){
+    setTreeType=function(){const res=oldSetTree.apply(this,arguments); setTimeout(()=>{updateCleanTreeSelector(); try{ if(typeof renderCleanAutoV111==="function") renderCleanAutoV111(); }catch{}},10); return res;};
+    setTreeType.__v146Tree=true;
+  }
+  function setVersions(){
+    try{document.title="Mesaha App v160"; const h1=document.querySelector(".brand h1"); if(h1) h1.textContent=BUILD_VERSION;}catch{}
+    try{window.MESAHA_BUILD_INFO=Object.assign({},window.MESAHA_BUILD_INFO||{},{fileVersion:FILE_VERSION,visibleVersion:BUILD_VERSION,treeFilter:true,quickTree:true});}catch{}
+  }
+  const oldDevice = (typeof currentDeviceInfoPayload==="function") ? currentDeviceInfoPayload : null;
+  if(oldDevice && !oldDevice.__v146Version){
+    currentDeviceInfoPayload=function(){const info=oldDevice.apply(this,arguments)||{}; info.appVersion=BUILD_VERSION; info.fileVersion=FILE_VERSION; info.treeFilterV146=true; return info;};
+    currentDeviceInfoPayload.__v146Version=true;
+  }
+  function boot(){setVersions(); ensureRecordsFilter(); updateRecordsFilterUi(); ensureCleanTreeSelector(); updateCleanTreeSelector();}
+  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",boot); else boot();
+  setTimeout(boot,600); setTimeout(()=>{try{if(typeof render==="function") render();}catch{}},1200);
+})();
+</script>
+
+<script>
+/* Mesaha v147 - temiz taban düzeltme: ham kod görünme hatası fix + sürüm sabitleme */
+(function(){
+  "use strict";
+  const BUILD_VERSION = "Mesaha İO v1.89";
+  const FILE_VERSION = "v160";
+  function setVersion(){
+    try { document.title = "Mesaha App v160"; const h1=document.querySelector(".brand h1"); if(h1) h1.textContent=BUILD_VERSION; } catch {}
+    try { window.MESAHA_BUILD_INFO = Object.assign({}, window.MESAHA_BUILD_INFO||{}, {fileVersion:FILE_VERSION, visibleVersion:BUILD_VERSION, cleanBaseFix:true, treeFilter:true, quickTree:true}); } catch {}
+  }
+  const oldDevice = (typeof currentDeviceInfoPayload === "function") ? currentDeviceInfoPayload : null;
+  if (oldDevice && !oldDevice.__v147Version) {
+    currentDeviceInfoPayload = function(){ const info = oldDevice.apply(this, arguments) || {}; info.appVersion = BUILD_VERSION; info.fileVersion = FILE_VERSION; info.cleanBaseFixV147 = true; return info; };
+    currentDeviceInfoPayload.__v147Version = true;
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", setVersion); else setVersion();
+  setTimeout(setVersion, 500); setTimeout(setVersion, 1600);
+})();
+</script>
+
+<!-- v160 recovery stabilizer -->
+<style id="mesaha-v160-recovery-style">
+  #userLeadersPanelV145, #userLeadersToggleV145, #userLeadersToggleV148, #userLeadersToggleV150, #userLeadersToggleV153, #leaderOverlayV150, #leaderOverlayV153, #leaderOverlayV154{display:none !important;}
+</style>
+<script id="mesaha-v160-recovery-script">
+(function(){
+  var APP_VISIBLE_VERSION="Mesaha İO v1.89";
+  var APP_TITLE="Mesaha App v160";
+  function applyVersion(){try{document.title=APP_TITLE;}catch(e){} try{var h=document.querySelector('.brand h1'); if(h)h.textContent=APP_VISIBLE_VERSION;}catch(e){} try{window.MESAHA_BUILD_INFO=Object.assign({},window.MESAHA_BUILD_INFO||{},{visibleVersion:APP_VISIBLE_VERSION,fileVersion:'v160',recovery:true});}catch(e){}}
+  function cleanLeaders(){
+    try{document.querySelectorAll('#userPanelOverlay button').forEach(function(b){if(/Mesaha Liderleri/i.test(b.textContent||'')) b.remove();});}catch(e){}
+    try{document.querySelectorAll('#userLeadersPanelV145,#userLeadersPanelV148,#leaderOverlayV150,#leaderOverlayV153,#leaderOverlayV154').forEach(function(x){x.remove();});}catch(e){}
+  }
+  function boot(){applyVersion();cleanLeaders();try{document.querySelectorAll('details.info-details').forEach(function(d){d.open=true;});}catch(e){}}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
+  [300,1000,2500,5000].forEach(function(ms){setTimeout(boot,ms);});
+})();
 </script>
