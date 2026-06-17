@@ -1,10 +1,10 @@
 {
-  "version": "v169",
-  "appVersion": "Mesaha İO v1.98",
-  "visibleVersion": "Mesaha İO v1.98",
-  "build": "v169",
-  "fileVersion": "v169",
-  "cache": "mesaha-app-v169",
+  "version": "v170",
+  "appVersion": "Mesaha İO v1.99",
+  "visibleVersion": "Mesaha İO v1.99",
+  "build": "v170",
+  "fileVersion": "v170",
+  "cache": "mesaha-app-v170",
   "updatedAt": "2026-06-17",
-  "notes": "Mesaha Dosyasını İndir butonu yerel yedek satırıyla aynı genişliğe uzatıldı. Modern üst bar, logo, arka kapak, kullanıcı/giriş kartları, yedek buton düzeni ve Excel/Mesaha export içeriği korundu."
+  "notes": "Mesaha Liderleri penceresindeki açıklama metni kaldırıldı. v169 buton genişliği, modern üst bar, logo, arka kapak, kullanıcı/giriş kartları, yedek buton düzeni ve Excel/Mesaha export içeriği korundu."
 }
