@@ -20596,3 +20596,360 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 })();
 </script>
 
+
+<style id="mesaha-v207-duzeltme-css">
+  /* v2.07 düzeltme: yedek butonları, ağaç paneli ve filtre */
+  #treeTypeApplyBtn{ display:none !important; }
+  #treeTypePanel.open{ display:flex !important; }
+  #treeTypePanel .wood-check{ user-select:none; }
+  .records-panel .tools{ display:flex !important; flex-wrap:wrap !important; gap:8px !important; align-items:stretch !important; }
+  #exportSystemXlsBtn{ order:1 !important; flex:1 1 100% !important; }
+  #backupBtn{ order:2 !important; flex:1 1 calc(50% - 4px) !important; min-width:0 !important; }
+  #restoreBtn{ order:3 !important; flex:1 1 calc(50% - 4px) !important; min-width:0 !important; }
+  #cloudBackupBtn{ order:4 !important; flex:1 1 calc(50% - 4px) !important; min-width:0 !important; }
+  #cloudRestoreBtn{ order:5 !important; flex:1 1 calc(50% - 4px) !important; min-width:0 !important; }
+  #printBtn{ order:6 !important; flex:1 1 calc(50% - 4px) !important; min-width:0 !important; }
+  #deleteAllBtn{ order:7 !important; flex:1 1 calc(50% - 4px) !important; min-width:0 !important; }
+  .beyan-tree-filter-v207 button.active,
+  .beyan-tree-filter-v207 button[data-tree-filter-v208].active{
+    background:#166534 !important;
+    color:#fff !important;
+    border-color:#166534 !important;
+    box-shadow:0 8px 18px rgba(22,101,52,.18) !important;
+  }
+</style>
+
+<script id="mesaha-v207-duzeltme-script">
+/* Mesaha İO v2.07 düzeltme - filtre, yazdırma, tek tık ağaç seçimi, yedek buton sırası ve temizleme */
+(function(){
+  "use strict";
+
+  const STORE_KEY = "mesaha_beyan_tree_filter_v208";
+  const TREE_OPTIONS = [
+    { code:"TÜMÜ", label:"Tümünü Göster", name:"" },
+    { code:"ÇK", label:"ÇK", name:"Karaçam" },
+    { code:"ÇS", label:"ÇS", name:"Sarıçam" },
+    { code:"S", label:"S", name:"Sedir" },
+    { code:"GN", label:"GN", name:"Göknar" },
+    { code:"ÇZ", label:"ÇZ", name:"Kızılçam" }
+  ];
+
+  function qs(sel, root){ return (root || document).querySelector(sel); }
+  function qsa(sel, root){ return Array.from((root || document).querySelectorAll(sel)); }
+  function trLower(v){ return String(v == null ? "" : v).trim().toLocaleLowerCase("tr-TR"); }
+  function fold(v){
+    let s = trLower(v);
+    try { s = s.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); } catch {}
+    return s.replace(/ı/g,"i").replace(/ğ/g,"g").replace(/ü/g,"u").replace(/ş/g,"s").replace(/ö/g,"o").replace(/ç/g,"c").replace(/[^a-z0-9]+/g, "");
+  }
+  function esc(v){
+    try { if (typeof escapeHtml === "function") return escapeHtml(v); } catch {}
+    return String(v == null ? "" : v).replace(/[&<>\"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[c]));
+  }
+  function normalizeTreeName(v){
+    const raw = String(v == null ? "" : v).trim();
+    const f = fold(raw);
+    if (!f || f === "tum" || f === "tumu" || f === "tumunugoster") return "";
+    const map = {
+      "ck":"Karaçam", "karacam":"Karaçam", "karacamlar":"Karaçam", "karacamı":"Karaçam", "karacami":"Karaçam",
+      "cs":"Sarıçam", "saricam":"Sarıçam", "saricamlar":"Sarıçam", "saricami":"Sarıçam",
+      "s":"Sedir", "sedir":"Sedir",
+      "gn":"Göknar", "goknar":"Göknar", "goknari":"Göknar",
+      "cz":"Kızılçam", "kizilcam":"Kızılçam", "kizilcami":"Kızılçam"
+    };
+    if (map[f]) return map[f];
+    try {
+      if (typeof getTreeInfo === "function") {
+        const info = getTreeInfo(raw);
+        if (info && info.agacAdi) return info.agacAdi;
+      }
+    } catch {}
+    return raw;
+  }
+  function treeCode(name){
+    const n = normalizeTreeName(name);
+    const found = TREE_OPTIONS.find(o => o.name === n);
+    return found ? found.code : (n || "TÜMÜ");
+  }
+  function activeTree(){
+    const current = normalizeTreeName(window.__mesahaBeyanTreeFilterV208 || localStorage.getItem(STORE_KEY) || "");
+    window.__mesahaBeyanTreeFilterV208 = current;
+    return current;
+  }
+  function recordTree(r){
+    return normalizeTreeName(r && (r.treeType || r.species || r.agacAdi || r.agac || "Karaçam"));
+  }
+  function treeFilteredRecords(list){
+    const selected = activeTree();
+    const arr = Array.isArray(list) ? list : [];
+    if (!selected) return arr;
+    return arr.filter(r => recordTree(r) === selected);
+  }
+  function printRecordsForActiveTree(){
+    try { return treeFilteredRecords((state && Array.isArray(state.records)) ? state.records : []); } catch {}
+    return [];
+  }
+
+  function updateFilterButtons(){
+    const selected = activeTree();
+    qsa("[data-tree-filter-v208],[data-tree-filter-v207]").forEach(btn => {
+      const val = normalizeTreeName(btn.getAttribute("data-tree-filter-v208") || btn.getAttribute("data-tree-filter-v207") || "");
+      btn.classList.toggle("active", val === selected);
+    });
+    const count = printRecordsForActiveTree().length;
+    const total = (state && Array.isArray(state.records)) ? state.records.length : count;
+    const pill = qs("#recordCount");
+    if (pill) {
+      pill.textContent = selected ? `${count.toLocaleString("tr-TR")} / ${total.toLocaleString("tr-TR")} kayıt` : `${total.toLocaleString("tr-TR")} kayıt`;
+    }
+  }
+
+  function installBeyanFilter(){
+    const body = qs(".records-panel .panel-body");
+    if (!body) return;
+    let filter = qs("#beyanTreeFilterV207", body);
+    if (!filter) {
+      filter = document.createElement("div");
+      filter.id = "beyanTreeFilterV207";
+      filter.className = "beyan-tree-filter-v207";
+      const tools = qs(".records-panel .tools", body);
+      if (tools) body.insertBefore(filter, tools); else body.prepend(filter);
+    }
+    if (filter.__v208Ready) { updateFilterButtons(); return; }
+
+    const clean = filter.cloneNode(false);
+    clean.id = "beyanTreeFilterV207";
+    clean.className = "beyan-tree-filter-v207";
+    clean.setAttribute("aria-label", "Beyan ağaç filtresi");
+    clean.innerHTML = '<span class="filter-title-v207">Ağaç Filtresi</span>' + TREE_OPTIONS.map(o => (
+      `<button type="button" data-tree-filter-v208="${esc(o.name)}" title="${esc(o.name || "Tüm kayıtlar")}">${esc(o.label || o.code)}</button>`
+    )).join("");
+    clean.__v208Ready = true;
+    filter.replaceWith(clean);
+
+    clean.addEventListener("click", function(event){
+      const btn = event.target && event.target.closest ? event.target.closest("[data-tree-filter-v208]") : null;
+      if (!btn) return;
+      event.preventDefault();
+      event.stopPropagation();
+      const selected = normalizeTreeName(btn.getAttribute("data-tree-filter-v208") || "");
+      window.__mesahaBeyanTreeFilterV208 = selected;
+      try { localStorage.setItem(STORE_KEY, selected); } catch {}
+      try { if (typeof clearRecordSelection === "function") clearRecordSelection(); }
+      catch { try { if (state && state.selectedRecordIds) state.selectedRecordIds.clear(); } catch {} }
+      try { if (typeof render === "function") render(); } catch {}
+      setTimeout(function(){ updateFilterButtons(); }, 30);
+      try {
+        const msg = selected ? `${treeCode(selected)} kayıtları gösteriliyor.` : "Tüm kayıtlar gösteriliyor.";
+        if (typeof showToast === "function") showToast(msg);
+      } catch {}
+    });
+
+    updateFilterButtons();
+  }
+
+  function wrapListFilter(){
+    try {
+      if (typeof getFilteredRecords === "function" && !getFilteredRecords.__v208TreeWrapped) {
+        const previous = getFilteredRecords;
+        getFilteredRecords = function(){
+          const list = previous.apply(this, arguments) || [];
+          return treeFilteredRecords(list);
+        };
+        getFilteredRecords.__v208TreeWrapped = true;
+      }
+    } catch {}
+  }
+
+  function wrapTotalsForPrint(){
+    try {
+      if (typeof getBeyanTotals === "function" && !getBeyanTotals.__v208TreeWrapped) {
+        getBeyanTotals = function(){
+          const totals = {
+            all: 0,
+            adet: 0,
+            products: {
+              "Tomruk": { label: "Tomruk", className: "tomruk", volume: 0, adet: 0 },
+              "Maden Direk": { label: "Maden Direği", className: "maden", volume: 0, adet: 0 },
+              "Kağıtlık": { label: "Kağıtlık", className: "kagit", volume: 0, adet: 0 },
+              "Sanayi Odunu": { label: "Sanayi Odunu", className: "sanayi", volume: 0, adet: 0 },
+              "Tel Direk": { label: "Tel Direği", className: "tel", volume: 0, adet: 0 }
+            }
+          };
+          printRecordsForActiveTree().forEach(r => {
+            const qty = Number(r && r.quantity) || 0;
+            const vol = Number(r && r.desi) || 0;
+            let key = r && r.productType ? r.productType : "Tomruk";
+            try { if (typeof normalizeProductType === "function") key = normalizeProductType(key); } catch {}
+            totals.all += vol;
+            totals.adet += qty;
+            if (totals.products[key]) {
+              totals.products[key].volume += vol;
+              totals.products[key].adet += qty;
+            }
+          });
+          return totals;
+        };
+        getBeyanTotals.__v208TreeWrapped = true;
+      }
+    } catch {}
+  }
+
+  function wrapRender(){
+    try {
+      if (typeof render === "function" && !render.__v208Wrapped) {
+        const previous = render;
+        render = function(){
+          const result = previous.apply(this, arguments);
+          setTimeout(function(){ installBeyanFilter(); updateFilterButtons(); }, 30);
+          return result;
+        };
+        render.__v208Wrapped = true;
+      }
+    } catch {}
+  }
+
+  function bindPrintButton(){
+    const btn = qs("#printBtn");
+    if (!btn || btn.__v208PrintBound) return;
+    btn.__v208PrintBound = true;
+    btn.addEventListener("click", function(event){
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      const records = printRecordsForActiveTree();
+      if (!records.length) {
+        try {
+          if (typeof showErrorToast === "function") showErrorToast(activeTree() ? "Seçili ağaçta yazdırılacak kayıt yok." : "Yazdırılacak kayıt yok.");
+          else if (typeof showToast === "function") showToast("Yazdırılacak kayıt yok.");
+        } catch {}
+        return;
+      }
+      try { if (typeof render === "function") render(); } catch {}
+      try { if (typeof forceRefreshSummaryCards === "function") forceRefreshSummaryCards(); } catch {}
+      try { if (typeof printBeyanOnly === "function") printBeyanOnly(); else window.print(); } catch { try { window.print(); } catch {} }
+    }, true);
+  }
+
+  function keepTreePanelOpen(){
+    const btn = qs("#treeTypeSelectBtn");
+    const panel = qs("#treeTypePanel");
+    if (!panel) return;
+    const applyBtn = qs("#treeTypeApplyBtn");
+    if (applyBtn) applyBtn.remove();
+
+    function openPanel(){
+      try { if (typeof syncTreeTypePanel === "function") syncTreeTypePanel(); } catch {}
+      panel.classList.add("open");
+      panel.style.display = "flex";
+    }
+    function choose(value){
+      const selected = normalizeTreeName(value || "Karaçam") || "Karaçam";
+      qsa("input[type='radio']", panel).forEach(input => { input.checked = normalizeTreeName(input.value) === selected; });
+      try { if (typeof setTreeType === "function") setTreeType(selected, true); }
+      catch {
+        const hidden = qs("#treeType");
+        if (hidden) hidden.value = selected;
+        const current = qs("#treeTypeCurrent");
+        if (current) current.textContent = selected;
+        const pill = qs("#speciesPill");
+        if (pill) pill.textContent = selected;
+      }
+      qsa(".wood-check", panel).forEach(label => {
+        const input = label.querySelector("input[type='radio']");
+        label.classList.toggle("tree-selected", !!input && normalizeTreeName(input.value) === selected);
+      });
+      const visibleBtn = qs("#treeTypeSelectBtn");
+      if (visibleBtn) visibleBtn.textContent = "Ağaç Türü Seç: " + selected;
+      const current = qs("#treeTypeCurrent");
+      if (current) current.textContent = selected;
+      const species = qs("#speciesPill");
+      if (species) species.textContent = selected;
+      openPanel();
+      try { if (typeof showSuccessToast === "function") showSuccessToast("Ağaç türü seçildi: " + treeCode(selected)); }
+      catch { try { if (typeof showToast === "function") showToast("Ağaç türü seçildi: " + treeCode(selected)); } catch {} }
+    }
+
+    if (btn && !btn.__v208KeepOpen) {
+      btn.__v208KeepOpen = true;
+      btn.addEventListener("click", function(event){
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        openPanel();
+      }, true);
+    }
+    if (!panel.__v208DirectPick) {
+      panel.__v208DirectPick = true;
+      panel.addEventListener("click", function(event){
+        const label = event.target && event.target.closest ? event.target.closest(".wood-check") : null;
+        const input = event.target && event.target.closest ? event.target.closest("input[type='radio']") : null;
+        const targetInput = input || (label ? label.querySelector("input[type='radio']") : null);
+        if (!targetInput) return;
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        choose(targetInput.value);
+      }, true);
+      panel.addEventListener("change", function(event){
+        const input = event.target && event.target.closest ? event.target.closest("input[type='radio']") : null;
+        if (!input) return;
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        choose(input.value);
+      }, true);
+    }
+  }
+
+  function replaceClearButton(){
+    const oldBtn = qs("#clearInputsBtn");
+    if (!oldBtn || oldBtn.__v208ClearReady) return;
+    const btn = oldBtn.cloneNode(true);
+    btn.__v208ClearReady = true;
+    oldBtn.replaceWith(btn);
+    btn.addEventListener("click", function(event){
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      if (!confirm("Giriş alanları ve boy/çap kısayolları temizlensin mi?")) return;
+      const values = { barcode:"", length:"", diameter:"", quantity:"1" };
+      Object.keys(values).forEach(id => { const el = qs("#" + id); if (el) el.value = values[id]; });
+      try {
+        if (state && state.settings) {
+          state.settings.lastBarcode = "";
+          state.settings.lastLength = "";
+          state.settings.lastDiameter = "";
+          state.settings.lastQuantity = "1";
+          state.settings.recentLengths = [];
+          state.settings.recentDiameters = [];
+        }
+      } catch {}
+      try { if (typeof saveSettings === "function") saveSettings(); } catch {}
+      try { if (typeof renderRecentChips === "function") renderRecentChips(); } catch {}
+      try { if (typeof updateInputPlaceholders === "function") updateInputPlaceholders(); } catch {}
+      try { if (typeof updateLiveDesi === "function") updateLiveDesi(); } catch {}
+      try { if (typeof updateDuplicateWarning === "function") updateDuplicateWarning(); } catch {}
+      try { if (typeof focusDiameterKeepKeyboard === "function") focusDiameterKeepKeyboard(); } catch {}
+      try { if (typeof showToast === "function") showToast("Barkod, boy, çap, adet ve kısayollar temizlendi."); } catch {}
+    }, true);
+  }
+
+  function boot(){
+    wrapListFilter();
+    wrapTotalsForPrint();
+    wrapRender();
+    installBeyanFilter();
+    updateFilterButtons();
+    bindPrintButton();
+    keepTreePanelOpen();
+    replaceClearButton();
+    try { if (typeof render === "function") render(); } catch {}
+  }
+
+  boot();
+  setTimeout(boot, 300);
+  setTimeout(boot, 1200);
+  setInterval(function(){
+    installBeyanFilter();
+    updateFilterButtons();
+    keepTreePanelOpen();
+    replaceClearButton();
+  }, 1600);
+})();
+</script>
