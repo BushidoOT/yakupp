@@ -1,8 +1,7 @@
 {
-  "version": 208,
-  "visibleVersion": "Mesaha İO v2.07 Stabil",
-  "cache": "mesaha-app-v179",
+  "version": 143,
+  "visibleVersion": "Mesaha İO v1.72",
+  "cache": "mesaha-app-v143-ui-logo",
   "builtAt": "2026-06-17",
-  "stableBase": "v142 / Mesaha İO v1.71",
-  "notes": "v142 stabil taban üzerine eklenen v2.07 düzenlemelerine ek olarak BEYAN ağaç filtresi, filtreye göre yazdırma, tek tık ağaç seçimi, yedek buton dizilimi ve Alanları Temizle kısayol sıfırlaması düzeltildi. Kaydetme ve ORBİS XLS export çekirdeğine dokunulmadı."
+  "notes": "Logo eklendi; mobil ana sayfa, hızlı işlemler, kayıt/ölçüm özeti ve açık tema tasarımı yenilendi."
 }

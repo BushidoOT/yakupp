@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha App v207</title>
+  <title>Mesaha İO v1.72</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -8989,337 +8989,116 @@ body.theme-dark .admin-stats-note-v134{ color:#a8b3c2; }
   </style>
 
 
-  <style id="mesaha-v207-stabil-css">
-    /* Mesaha İO v2.07 Stabil - v142 stabil taban üzerine güvenli görünüm ve filtre yaması */
+  <link rel="apple-touch-icon" href="./icon-192.png" />
+  <style id="mesaha-v143-mobile-ui-css">
+    /* Mesaha İO v1.72: mobil ana sayfa + logo + açık tema */
     :root{
-      --v207-green:#166534;
-      --v207-green2:#22c55e;
-      --v207-blue:#2563eb;
-      --v207-bg:#f3f7f1;
-      --v207-card:#ffffff;
-      --v207-text:#0f172a;
-      --v207-muted:#64748b;
-      --v207-border:rgba(15,23,42,.10);
+      --mio-bg:#f4f8f6;
+      --mio-card:#ffffff;
+      --mio-ink:#0f172a;
+      --mio-muted:#667085;
+      --mio-line:#e1e8f0;
+      --mio-green:#18753d;
+      --mio-green-soft:#eaf7ef;
+      --mio-blue:#174f83;
+      --mio-blue-soft:#eef5ff;
+      --mio-red:#dc2626;
+      --mio-yellow:#f3c339;
+      --mio-shadow:0 16px 44px rgba(15,23,42,.08);
+      --mio-shadow-soft:0 8px 22px rgba(15,23,42,.06);
     }
+    html,body{background:var(--mio-bg) !important;color:var(--mio-ink) !important;color-scheme:light;}
+    body:not(.theme-dark){
+      background:
+        radial-gradient(circle at 15% 0%, rgba(24,117,61,.08), transparent 28%),
+        radial-gradient(circle at 100% 12%, rgba(23,79,131,.08), transparent 26%),
+        linear-gradient(180deg,#fbfdfc 0%,#f4f8f6 44%,#eef5f2 100%) !important;
+    }
+    body:not(.theme-dark)::before{
+      content:"";position:fixed;inset:auto 0 0 0;height:36vh;pointer-events:none;z-index:-1;opacity:.42;
+      background:
+        linear-gradient(135deg, transparent 0 56%, rgba(24,117,61,.10) 57% 60%, transparent 61%),
+        radial-gradient(ellipse at 78% 40%, rgba(24,117,61,.13), transparent 38%);
+      filter:blur(.1px);
+    }
+    .app{max-width:1040px !important;padding:12px 12px calc(112px + env(safe-area-inset-bottom,0px)) !important;margin:0 auto !important;}
     .topbar{
-      position:relative !important;
-      overflow:hidden !important;
-      border:1px solid rgba(255,255,255,.62) !important;
-      background:
-        linear-gradient(135deg, rgba(236,253,245,.96), rgba(219,234,254,.93) 52%, rgba(240,253,244,.96)) !important;
-      box-shadow:0 14px 38px rgba(15,23,42,.10) !important;
-      min-height:82px !important;
+      position:sticky !important;top:0 !important;z-index:220 !important;margin:0 -12px 12px !important;padding:12px 16px !important;
+      min-height:72px !important;border:0 !important;border-bottom:1px solid rgba(15,23,42,.08) !important;border-radius:0 0 24px 24px !important;
+      background:rgba(255,255,255,.92) !important;backdrop-filter:blur(18px) saturate(165%) !important;-webkit-backdrop-filter:blur(18px) saturate(165%) !important;
+      box-shadow:0 12px 28px rgba(15,23,42,.06) !important;align-items:center !important;
     }
-    .topbar::before{
-      content:"";
-      position:absolute;
-      inset:auto -18px -2px -18px;
-      height:58px;
-      pointer-events:none;
-      background:
-        radial-gradient(90px 42px at 12% 92%, rgba(22,101,52,.34) 0 58%, transparent 59%),
-        radial-gradient(120px 54px at 36% 98%, rgba(21,128,61,.28) 0 57%, transparent 58%),
-        radial-gradient(150px 64px at 74% 100%, rgba(37,99,235,.18) 0 56%, transparent 57%),
-        linear-gradient(180deg, transparent 0%, rgba(22,101,52,.09) 100%);
-      opacity:.95;
+    .app-brand-v143{display:flex !important;flex-direction:row !important;align-items:center !important;gap:10px !important;min-width:0 !important;}
+    .brand-logo-v143{width:52px !important;height:52px !important;object-fit:contain !important;border-radius:16px !important;filter:drop-shadow(0 8px 10px rgba(15,23,42,.10));flex:0 0 auto;}
+    .brand-copy-v143{display:flex;flex-direction:column;gap:1px;min-width:0;}
+    .brand-copy-v143 h1,.brand h1{font-size:20px !important;line-height:1.05 !important;margin:0 !important;font-weight:950 !important;letter-spacing:-.3px !important;color:var(--mio-green) !important;white-space:nowrap !important;overflow:hidden !important;text-overflow:ellipsis !important;}
+    .brand-copy-v143 span{font-size:11px !important;color:#64748b !important;font-weight:800 !important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    #activeUserBadge{background:#f1f7f4 !important;color:var(--mio-green) !important;border:1px solid #dcebe3 !important;border-radius:999px !important;box-shadow:none !important;}
+    .top-actions-v112{display:flex !important;align-items:center !important;justify-content:flex-end !important;gap:7px !important;min-width:0 !important;}
+    .top-actions-v112 button{
+      min-height:40px !important;padding:8px 10px !important;border-radius:14px !important;border:1px solid #dce6f0 !important;
+      background:#f7fafc !important;color:#174f83 !important;font-size:12px !important;font-weight:900 !important;box-shadow:none !important;white-space:nowrap !important;
     }
-    .topbar::after{
-      content:"";
-      position:absolute;
-      right:18px;
-      bottom:10px;
-      width:150px;
-      height:54px;
-      pointer-events:none;
-      clip-path:polygon(0 100%,18% 58%,30% 82%,45% 36%,58% 78%,72% 48%,100% 100%);
-      background:linear-gradient(135deg, rgba(22,101,52,.22), rgba(37,99,235,.18));
-      opacity:.65;
+    #themeToggleV112{width:40px !important;min-width:40px !important;padding:0 !important;font-size:0 !important;}
+    #themeToggleV112::before{content:"◐";font-size:19px;color:#174f83;}
+    body:not(.theme-dark) :is(input,select,textarea){background:#ffffff !important;color:#0f172a !important;border:1px solid #dbe5ee !important;border-radius:17px !important;box-shadow:inset 0 1px 0 rgba(15,23,42,.03) !important;}
+    body:not(.theme-dark) :is(input,select,textarea):focus{border-color:#8bb7d8 !important;box-shadow:0 0 0 4px rgba(23,79,131,.10) !important;}
+    body:not(.theme-dark) label{color:#344054 !important;font-weight:900 !important;}
+    body:not(.theme-dark) .hint{color:#667085 !important;}
+    body:not(.theme-dark) :is(.panel,.panel-header,.panel-body,.product-compact,.measure-field,.barcode-field-final,.save-field-final,.recent-barcodes-box,.tomruk-class-panel,.tools,.bulk-actions,.daily-work-summary,.guide-card,.usage-card,.searchbar,.admin-panel-top-clean,.admin-summary-card,.registered-user-item,.record-row-v111,.record-val-v111,.mobile-records-v111,.info-details,.info-body,.wood-type-panel,.wood-check){
+      background:#ffffff !important;border-color:var(--mio-line) !important;color:var(--mio-ink) !important;box-shadow:var(--mio-shadow-soft) !important;border-radius:22px !important;
     }
-    .brand{
-      position:relative !important;
-      z-index:1 !important;
-      display:flex !important;
-      align-items:center !important;
-      flex-direction:row !important;
-      gap:10px !important;
-      min-width:0 !important;
-    }
-    .brand-logo-v207{
-      width:42px;
-      height:42px;
-      border-radius:15px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      flex:0 0 auto;
-      color:#fff;
-      font-weight:950;
-      letter-spacing:-.06em;
-      background:linear-gradient(145deg, #166534, #22c55e 58%, #2563eb);
-      box-shadow:0 10px 24px rgba(22,101,52,.22);
-    }
-    .brand-title-wrap-v207{
-      min-width:0;
-      display:flex;
-      flex-direction:column;
-      gap:2px;
-    }
-    .brand h1{
-      color:#0f172a !important;
-      font-size:23px !important;
-      font-weight:950 !important;
-      letter-spacing:-.04em !important;
-      line-height:1.05 !important;
-      white-space:nowrap;
-    }
-    .brand-version-v207{
-      display:inline-flex !important;
-      width:max-content;
-      max-width:100%;
-      align-items:center;
-      border-radius:999px;
-      padding:3px 8px;
-      background:rgba(255,255,255,.70);
-      border:1px solid rgba(15,23,42,.08);
-      color:#166534 !important;
-      font-size:11px !important;
-      line-height:1.1;
-      font-weight:900;
-      box-shadow:0 4px 12px rgba(15,23,42,.06);
-    }
-    .top-actions-v112{
-      position:relative !important;
-      z-index:2 !important;
-      display:flex !important;
-      align-items:center !important;
-      justify-content:flex-end !important;
-      gap:8px !important;
-      flex-wrap:nowrap !important;
-    }
-    #openSimpleV112,#themeToggleV112,.active-user-badge{
-      border-radius:999px !important;
-      min-height:38px !important;
-      padding:9px 12px !important;
-      font-weight:950 !important;
-      box-shadow:0 8px 18px rgba(15,23,42,.08) !important;
-    }
-    #openSimpleV112{
-      background:#166534 !important;
-      border-color:#166534 !important;
-      color:#fff !important;
-    }
-    #themeToggleV112{
-      background:rgba(255,255,255,.74) !important;
-      color:#0f172a !important;
-      border:1px solid rgba(15,23,42,.10) !important;
-    }
-    .active-user-badge{
-      position:relative !important;
-      z-index:2 !important;
-      background:rgba(255,255,255,.78) !important;
-      border:1px solid rgba(15,23,42,.10) !important;
-      color:#0f172a !important;
-      max-width:210px;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      white-space:nowrap;
-    }
-    .active-user-badge::before{
-      content:"Kullanıcı Paneli • ";
-      color:#166534;
-      font-weight:950;
-    }
-
-    .tree-compact{ position:relative; }
-    .tree-type-panel{
-      gap:7px !important;
-      align-items:center !important;
-      flex-wrap:wrap !important;
-      padding:10px !important;
-      border-radius:18px !important;
-    }
-    .tree-type-panel .wood-check{
-      display:inline-flex !important;
-      width:auto !important;
-      min-width:52px !important;
-      min-height:34px !important;
-      justify-content:center !important;
-      align-items:center !important;
-      padding:8px 10px !important;
-      border-radius:999px !important;
-      font-weight:950 !important;
-      line-height:1 !important;
-      cursor:pointer !important;
-    }
-    .tree-type-panel .wood-check input{ margin-right:5px !important; }
-    .tree-type-panel .wood-check.tree-selected,
-    .tree-type-panel .wood-check:has(input:checked){
-      background:#166534 !important;
-      color:#fff !important;
-      border-color:#166534 !important;
-      box-shadow:0 8px 18px rgba(22,101,52,.18) !important;
-    }
-    #treeTypeApplyBtn{
-      min-width:96px !important;
-      border-radius:999px !important;
-    }
-
-    .beyan-tree-filter-v207{
-      display:flex;
-      align-items:center;
-      gap:7px;
-      flex-wrap:wrap;
-      padding:9px;
-      border:1px solid rgba(15,23,42,.08);
-      border-radius:18px;
-      background:rgba(255,255,255,.78);
-      box-shadow:0 8px 22px rgba(15,23,42,.04);
-      margin:10px 0 10px;
-    }
-    .beyan-tree-filter-v207 .filter-title-v207{
-      flex:0 0 auto;
-      font-weight:950;
-      color:#475569;
-      font-size:12px;
-      padding:0 2px;
-    }
-    .beyan-tree-filter-v207 button{
-      min-height:34px;
-      border-radius:999px;
-      padding:8px 11px;
-      border:1px solid rgba(15,23,42,.10);
-      background:#fff;
-      color:#0f172a;
-      font-weight:950;
-      font-size:12px;
-      box-shadow:none;
-    }
-    .beyan-tree-filter-v207 button.active{
-      background:#166534 !important;
-      color:#fff !important;
-      border-color:#166534 !important;
-      box-shadow:0 8px 18px rgba(22,101,52,.18) !important;
-    }
-
-    body.inline-simple-v119 .tree-compact{
-      display:block !important;
-      margin-top:6px !important;
-      margin-bottom:8px !important;
-    }
-    body.inline-simple-v119 .tree-compact label,
-    body.inline-simple-v119 .tree-compact .product-select-head{
-      display:flex !important;
-    }
-    body.inline-simple-v119 .tree-compact .hint{
-      display:none !important;
-    }
-    body.inline-simple-v119 .product-compact.tree-compact{
-      padding:10px !important;
-    }
-    body.inline-simple-v119 #treeTypePanel.open{
-      display:flex !important;
-    }
-    body.inline-simple-v119 #treeTypeSelectBtn{
-      min-height:36px !important;
-      border-radius:999px !important;
-      padding:8px 11px !important;
-      font-size:12px !important;
-    }
-    body.inline-simple-v119 #treeTypeCurrent{
-      min-height:32px !important;
-      border-radius:999px !important;
-      padding:7px 10px !important;
-      font-weight:950 !important;
-    }
-    .simple-total-adet-v126{
-      flex-wrap:wrap !important;
-      justify-content:center !important;
-      gap:8px !important;
-    }
-    .simple-total-pair-v207{
-      min-width:126px;
-      flex:1 1 126px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:8px;
-      border-radius:16px;
-      border:1px solid rgba(15,23,42,.08);
-      background:rgba(255,255,255,.72);
-      padding:8px 10px;
-    }
-    .simple-total-pair-v207 span{
-      font-size:12px;
-      font-weight:950;
-      color:#64748b;
-    }
-    .simple-total-pair-v207 strong{
-      font-size:20px;
-      font-weight:950;
-      color:#0f172a;
-      line-height:1;
-    }
-    .tools{
-      align-items:stretch !important;
-      gap:8px !important;
-    }
-    #exportSystemXlsBtn{
-      flex:2 1 230px !important;
-      min-height:44px !important;
-      font-size:15px !important;
-      border-radius:16px !important;
-    }
-    #backupBtn,#restoreBtn{
-      flex:1 1 136px !important;
-      min-height:42px !important;
-      border-radius:16px !important;
-    }
-
-    body.theme-dark .topbar{
-      background:linear-gradient(135deg, rgba(15,23,42,.98), rgba(15,52,74,.94) 56%, rgba(20,83,45,.92)) !important;
-      border-color:rgba(255,255,255,.10) !important;
-    }
-    body.theme-dark .brand h1{ color:#f8fafc !important; }
-    body.theme-dark .brand-version-v207,
-    body.theme-dark .active-user-badge,
-    body.theme-dark #themeToggleV112,
-    body.theme-dark .beyan-tree-filter-v207,
-    body.theme-dark .simple-total-pair-v207{
-      background:rgba(15,23,42,.72) !important;
-      color:#e2e8f0 !important;
-      border-color:rgba(255,255,255,.10) !important;
-    }
-    body.theme-dark .brand-version-v207,
-    body.theme-dark .active-user-badge::before{ color:#86efac !important; }
-    body.theme-dark .beyan-tree-filter-v207 button{
-      background:#111827 !important;
-      color:#e2e8f0 !important;
-      border-color:rgba(255,255,255,.10) !important;
-    }
-    body.theme-dark .simple-total-pair-v207 span{ color:#a8b3c2 !important; }
-    body.theme-dark .simple-total-pair-v207 strong{ color:#ffffff !important; }
-
-    @media (max-width:640px){
-      .topbar{
-        display:grid !important;
-        grid-template-columns:1fr !important;
-        gap:10px !important;
-        padding:12px !important;
-      }
-      .brand h1{ font-size:21px !important; }
-      .brand-logo-v207{ width:38px; height:38px; border-radius:14px; }
-      .top-actions-v112{
-        width:100%;
-        display:grid !important;
-        grid-template-columns:1fr 1fr !important;
-      }
-      #openSimpleV112,#themeToggleV112{ width:100% !important; }
-      .active-user-badge{ max-width:100%; width:100%; }
-      .beyan-tree-filter-v207{ gap:6px; padding:8px; }
-      .beyan-tree-filter-v207 .filter-title-v207{ width:100%; }
-      .beyan-tree-filter-v207 button{ flex:1 1 auto; padding:8px 9px; }
-      .tree-type-panel .wood-check{ flex:1 1 72px !important; }
-    }
+    .panel{overflow:hidden !important;}
+    .panel-header{padding:15px 16px !important;border-bottom:1px solid #e7edf4 !important;box-shadow:none !important;border-radius:22px 22px 0 0 !important;}
+    .panel-header h2{font-size:18px !important;color:#101828 !important;font-weight:950 !important;}
+    .panel-body{padding:15px !important;border-radius:0 0 22px 22px !important;}
+    .grid{gap:14px !important;align-items:start !important;}
+    .mesaha-home-v143{display:block;margin:6px 0 14px;}
+    body.show-records .mesaha-home-v143,body.show-guide .mesaha-home-v143,body.show-admin .mesaha-home-v143,body.inline-simple-v119 .mesaha-home-v143{display:none !important;}
+    .home-hero-v143{position:relative;min-height:132px;padding:28px 24px 24px;overflow:hidden;border-radius:28px;background:linear-gradient(135deg,#ffffff 0%,#f7fbf8 55%,#eef7f0 100%);box-shadow:var(--mio-shadow-soft);border:1px solid #e8f0ec;}
+    .home-hero-copy-v143 h2{margin:0 0 8px;font-size:30px;line-height:1;font-weight:950;letter-spacing:-.7px;color:#0f172a;}
+    .home-hero-copy-v143 p{margin:0;max-width:280px;color:#5f6c7b;font-size:17px;line-height:1.35;font-weight:650;}
+    .home-forest-v143{position:absolute;right:0;bottom:0;width:48%;height:100%;opacity:.82;background:linear-gradient(135deg,transparent 35%,rgba(23,79,131,.08) 35% 48%,transparent 49%),linear-gradient(150deg,transparent 24%,rgba(24,117,61,.10) 25% 36%,transparent 37%);}
+    .home-forest-v143 span{position:absolute;bottom:0;width:0;height:0;border-left:18px solid transparent;border-right:18px solid transparent;border-bottom:94px solid rgba(24,117,61,.46);filter:drop-shadow(18px 0 0 rgba(24,117,61,.28));}
+    .home-forest-v143 span:nth-child(1){right:12px;border-bottom-width:100px;transform:scale(1.25);}
+    .home-forest-v143 span:nth-child(2){right:64px;transform:scale(1.05);opacity:.72;}
+    .home-forest-v143 span:nth-child(3){right:112px;transform:scale(.82);opacity:.46;}
+    .home-status-v143{display:grid;grid-template-columns:1fr 1px 1fr;align-items:center;gap:14px;margin:-18px 8px 26px;padding:18px 16px;position:relative;z-index:2;border-radius:22px;background:rgba(255,255,255,.96);box-shadow:var(--mio-shadow);border:1px solid #e7eef4;}
+    .home-divider-v143{height:56px;background:#e5edf4;}
+    .home-status-item-v143{display:flex;align-items:center;gap:12px;min-width:0;}
+    .home-icon-v143{width:54px;height:54px;border-radius:50%;display:grid;place-items:center;font-size:28px;font-weight:950;flex:0 0 auto;}
+    .home-icon-v143.network{background:#edf8ef;color:#18753d;}
+    .home-icon-v143.storage{background:#eef5ff;color:#174f83;}
+    .home-status-item-v143 small{display:block;color:#475569;font-size:13px;font-weight:850;}
+    .home-status-item-v143 b{display:block;margin-top:2px;color:#18753d;font-size:20px;line-height:1;font-weight:950;white-space:nowrap;}
+    .home-status-item-v143 em{display:block;margin-top:4px;color:#667085;font-style:normal;font-size:12px;font-weight:750;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .home-card-v143{margin:0 0 14px;padding:18px;border-radius:24px;background:#fff;border:1px solid #e7eef4;box-shadow:var(--mio-shadow-soft);}
+    .home-card-head-v143{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px;}
+    .home-card-head-v143 h3{margin:0;font-size:18px;color:#101828;font-weight:950;letter-spacing:-.2px;}
+    .home-card-head-v143 button{border:0;background:#f5f7fa;color:#174f83;border-radius:13px;padding:8px 11px;font-size:13px;font-weight:950;}
+    .home-quick-grid-v143{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;}
+    .home-quick-grid-v143 button{min-height:106px;border:0;border-radius:20px;background:#f2f8f4;color:#1d5f37;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:12px 8px;font-weight:950;box-shadow:inset 0 1px 0 rgba(255,255,255,.7);}
+    .home-quick-grid-v143 button:nth-child(2){background:#f0f5ff;color:#174f83;}.home-quick-grid-v143 button:nth-child(3){background:#effaf5;color:#0f766e;}.home-quick-grid-v143 button:nth-child(4){background:#f4f7fb;color:#174f83;}
+    .home-quick-grid-v143 span{font-size:31px;line-height:1;}.home-quick-grid-v143 b{font-size:14px;line-height:1.15;}
+    .home-list-v143{display:grid;gap:0;}
+    .home-list-v143 button{display:grid;grid-template-columns:48px minmax(0,1fr) auto 16px;align-items:center;gap:12px;width:100%;min-height:70px;padding:10px 0;border:0;border-bottom:1px solid #edf2f6;background:transparent;text-align:left;color:#101828;}
+    .home-list-v143 button:last-child{border-bottom:0;}.home-list-v143 b{display:block;font-size:15px;font-weight:950;}.home-list-v143 small{display:block;margin-top:3px;font-size:12px;color:#667085;font-weight:750;}.home-list-v143 strong{font-size:18px;color:#18753d;font-weight:950;white-space:nowrap;}.home-list-v143 i{font-style:normal;color:#98a2b3;font-size:26px;}
+    .home-mini-icon-v143{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:#edf8ef;color:#18753d;font-size:22px;}.home-mini-icon-v143.stack{background:#eef5ff;color:#174f83;}.home-mini-icon-v143.ruler{background:#f0fdf4;color:#15803d;}
+    .home-summary-grid-v143{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;}.home-summary-grid-v143 div{min-height:128px;border-radius:20px;padding:16px;background:linear-gradient(180deg,#f1faf4,#ffffff);position:relative;overflow:hidden;border:1px solid #e7f0ec;}.home-summary-grid-v143 div:nth-child(2){background:linear-gradient(180deg,#f1f6ff,#ffffff);}.home-summary-grid-v143 div:nth-child(3){background:linear-gradient(180deg,#eef9f3,#ffffff);}.home-summary-grid-v143 span{display:block;font-size:27px;}.home-summary-grid-v143 b{display:block;margin-top:10px;font-size:25px;line-height:1;color:#18753d;font-weight:950;white-space:nowrap;}.home-summary-grid-v143 div:nth-child(2) b{color:#174f83;}.home-summary-grid-v143 small{display:block;margin-top:9px;color:#667085;font-size:13px;font-weight:850;}
+    .flow-tabs-v111{position:fixed !important;left:50% !important;right:auto !important;bottom:calc(10px + env(safe-area-inset-bottom,0px)) !important;transform:translateX(-50%) !important;width:min(680px,calc(100vw - 22px)) !important;z-index:420 !important;display:grid !important;grid-auto-flow:column !important;grid-auto-columns:1fr !important;gap:4px !important;margin:0 !important;padding:8px 10px !important;min-height:72px !important;border:1px solid rgba(15,23,42,.08) !important;border-radius:30px !important;background:rgba(255,255,255,.94) !important;backdrop-filter:blur(18px) saturate(165%) !important;-webkit-backdrop-filter:blur(18px) saturate(165%) !important;box-shadow:0 20px 45px rgba(15,23,42,.15) !important;}
+    .flow-tabs-v111 button{min-width:0 !important;border:0 !important;background:transparent !important;color:#64748b !important;border-radius:22px !important;padding:5px 6px !important;font-size:11px !important;font-weight:900 !important;line-height:1.1 !important;display:flex !important;flex-direction:column !important;align-items:center !important;justify-content:center !important;gap:4px !important;box-shadow:none !important;}
+    .flow-tabs-v111 button .tab-ico-v143{font-size:23px;line-height:1;display:block;}.flow-tabs-v111 button .tab-label-v143{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;}
+    .flow-tabs-v111 button.active{background:#f0f8f2 !important;color:#18753d !important;box-shadow:none !important;}
+    .bottom-nav{display:none !important;}
+    .primary,#submitBtn{background:linear-gradient(135deg,#18753d,#229b59) !important;border-color:#18753d !important;color:#fff !important;border-radius:17px !important;box-shadow:0 10px 22px rgba(24,117,61,.20) !important;}
+    .secondary{background:#eef5ff !important;border-color:#d6e6f8 !important;color:#174f83 !important;}.ghost{background:#f7fafc !important;border-color:#dce6f0 !important;color:#344054 !important;}.warning{background:#fff6df !important;border-color:#fde6a8 !important;color:#92400e !important;}.danger{background:#fff1f2 !important;border-color:#fecdd3 !important;color:#b91c1c !important;}
+    .product-box[data-product="Tomruk"],.clean-product-v111.tomruk{border-left:7px solid #f3c339 !important;}.product-box[data-product="Maden Direk"],.clean-product-v111.maden{border-left:7px solid #2563eb !important;}.product-box[data-product="Kağıtlık"],.clean-product-v111.kagit{border-left:7px solid #dc2626 !important;}.product-box[data-product="Sanayi Odunu"],.clean-product-v111.sanayi{border-left:7px solid #16a34a !important;}.product-box[data-product="Tel Direk"],.clean-product-v111.tel{border-left:7px solid #7c3aed !important;}
+    .product-box,.class-box,.clean-product-v111{background:#ffffff !important;color:#0f172a !important;border-color:#dfe8f0 !important;box-shadow:0 7px 16px rgba(15,23,42,.05) !important;}.product-box.active,.class-box.active,.clean-product-v111.active{background:#eef8f2 !important;border-color:#92d0aa !important;color:#14532d !important;box-shadow:0 0 0 4px rgba(24,117,61,.08) !important;}
+    .tools{display:grid !important;grid-template-columns:repeat(2,minmax(0,1fr)) !important;gap:10px !important;padding:12px !important;}.tools button{min-height:46px !important;}
+    .user-login-card::before{content:"";display:block;width:86px;height:86px;margin:-8px auto 10px;background:url('./mesaha_logo.png') center/contain no-repeat;filter:drop-shadow(0 8px 12px rgba(15,23,42,.12));}.user-login-card h2{text-align:center;color:#18753d !important;font-weight:950 !important;}
+    @media (min-width:900px){body:not(.show-records):not(.show-guide):not(.show-admin) .grid{grid-template-columns:minmax(370px,.88fr) minmax(0,1.12fr) !important;}.mesaha-home-v143{max-width:100%;}.home-hero-v143{min-height:150px;}}
+    @media (max-width:720px){.app{padding-left:10px !important;padding-right:10px !important;}.topbar{margin-left:-10px !important;margin-right:-10px !important;padding:10px 13px !important;border-radius:0 0 22px 22px !important;}.brand-logo-v143{width:48px !important;height:48px !important;}.brand-copy-v143 h1,.brand h1{font-size:19px !important;}.brand-copy-v143 span{display:none !important;}.top-actions-v112 button{font-size:11px !important;padding:7px 8px !important;}.grid{grid-template-columns:1fr !important;}.home-quick-grid-v143{grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;}.home-quick-grid-v143 button{min-height:96px;}.home-summary-grid-v143{gap:10px;}.home-summary-grid-v143 div{min-height:118px;padding:14px 12px;}.home-summary-grid-v143 b{font-size:21px;}.tools{grid-template-columns:1fr 1fr !important;}.panel-body{padding:13px !important;}}
+    @media (max-width:430px){.home-status-v143{grid-template-columns:1fr;gap:10px;margin-left:4px;margin-right:4px;padding:14px;}.home-divider-v143{display:none;}.home-status-item-v143 b{font-size:18px;}.home-quick-grid-v143{gap:8px;}.home-quick-grid-v143 button{min-height:86px;border-radius:17px;}.home-quick-grid-v143 span{font-size:26px;}.home-quick-grid-v143 b{font-size:12px;}.home-card-v143{padding:14px;border-radius:22px;}.home-hero-v143{padding:24px 18px 20px;min-height:124px;border-radius:24px;}.home-hero-copy-v143 h2{font-size:28px;}.home-hero-copy-v143 p{font-size:15px;max-width:220px;}.home-summary-grid-v143{grid-template-columns:1fr 1fr 1fr;}.home-summary-grid-v143 div{min-height:106px;padding:12px 9px;border-radius:17px;}.home-summary-grid-v143 span{font-size:22px;}.home-summary-grid-v143 b{font-size:18px;}.home-summary-grid-v143 small{font-size:11px;}.flow-tabs-v111{min-height:70px !important;border-radius:28px !important;}.flow-tabs-v111 button .tab-ico-v143{font-size:22px;}.flow-tabs-v111 button .tab-label-v143{font-size:10px;}}
   </style>
 
 </head>
@@ -9479,13 +9258,12 @@ body.theme-dark .admin-stats-note-v134{ color:#a8b3c2; }
 
 <div class="app">
     <header class="topbar">
-      <div class="brand">
-        <div class="brand-logo-v207" aria-hidden="true">Mİ</div>
-        <div class="brand-title-wrap-v207">
-          <h1>Mesaha İO</h1>
-          <span class="brand-version-v207">Mesaha İO v2.07 Stabil</span>
+      <div class="brand app-brand-v143">
+        <img class="brand-logo-v143" src="./mesaha_logo.png" alt="Mesaha İO logosu" loading="eager" />
+        <div class="brand-copy-v143">
+          <h1>Mesaha İO v1.72</h1>
+          <span>Orman ölçüm kayıt sistemi</span>
         </div>
-        
       </div>
       <div id="activeUserBadge" class="active-user-badge" role="button" tabindex="0" title="Kullanıcı panelini aç" style="display:none"></div>
 
@@ -9495,6 +9273,57 @@ body.theme-dark .admin-stats-note-v134{ color:#a8b3c2; }
       </div>
 
     </header>
+
+    <section id="mesahaHomeV143" class="mesaha-home-v143" aria-label="Ana sayfa özeti">
+      <div class="home-hero-v143">
+        <div class="home-hero-copy-v143">
+          <h2>Merhaba!</h2>
+          <p>Orman ölçümlerini kolayca kaydedin ve yönetin.</p>
+        </div>
+        <div class="home-forest-v143" aria-hidden="true"><span></span><span></span><span></span></div>
+      </div>
+
+      <div class="home-status-v143">
+        <div class="home-status-item-v143">
+          <span class="home-icon-v143 network">⌁</span>
+          <div><small>Bağlantı durumu</small><b id="homeNetworkV143">Çevrimdışı</b><em>Veriler cihazınızda güvende</em></div>
+        </div>
+        <div class="home-divider-v143"></div>
+        <div class="home-status-item-v143">
+          <span class="home-icon-v143 storage">▤</span>
+          <div><small>Yerel Depolama</small><b id="homeStorageV143">Hazır</b><em>Kullanılabilir</em></div>
+        </div>
+      </div>
+
+      <div class="home-card-v143 quick-v143">
+        <div class="home-card-head-v143"><h3>Hızlı İşlemler</h3><button type="button" data-home-action-v143="records">Tümü ›</button></div>
+        <div class="home-quick-grid-v143">
+          <button type="button" data-home-action-v143="new"><span>🌲</span><b>Yeni Ölçüm</b></button>
+          <button type="button" data-home-action-v143="diameter"><span>⌀</span><b>Çap Ölçümü</b></button>
+          <button type="button" data-home-action-v143="records"><span>☷</span><b>Kayıtlar</b></button>
+          <button type="button" data-home-action-v143="backup"><span>⇪</span><b>Yedek Al</b></button>
+        </div>
+      </div>
+
+      <div class="home-card-v143 records-v143">
+        <div class="home-card-head-v143"><h3>Kayıtlarım</h3><button type="button" data-home-action-v143="records">Tümü ›</button></div>
+        <div class="home-list-v143">
+          <button type="button" data-home-action-v143="records"><span class="home-mini-icon-v143 tree">🌲</span><div><b>Toplam Ölçüm</b><small>Bu cihazda kayıtlı ölçümler</small></div><strong id="homeRecordCountV143">0</strong><i>›</i></button>
+          <button type="button" data-home-action-v143="records"><span class="home-mini-icon-v143 stack">▱</span><div><b>Toplam Adet</b><small>Kayıtlı ürün adedi</small></div><strong id="homeAdetV143">0</strong><i>›</i></button>
+          <button type="button" data-home-action-v143="records"><span class="home-mini-icon-v143 ruler">⌁</span><div><b>Son Ölçüm</b><small id="homeLastDateV143">Henüz kayıt yok</small></div><strong id="homeLastTreeV143">-</strong><i>›</i></button>
+        </div>
+      </div>
+
+      <div class="home-card-v143 summary-v143">
+        <div class="home-card-head-v143"><h3>Ölçüm Özeti</h3><button type="button" data-home-action-v143="records">Bu Hafta⌄</button></div>
+        <div class="home-summary-grid-v143">
+          <div><span>🌲</span><b id="homeWeekCountV143">0</b><small>Ölçüm</small></div>
+          <div><span>⌀</span><b id="homeAvgDiameterV143">0 cm</b><small>Ort. Çap</small></div>
+          <div><span>◉</span><b id="homeTotalM3V143">0 m³</b><small>Tahmini Hacim</small></div>
+        </div>
+      </div>
+    </section>
+
 
       <nav id="flowTabsV111" class="flow-tabs-v111" aria-label="Ana menü">
         <button type="button" data-flow-tab="entry">Yeni Kayıt</button>
@@ -20223,733 +20052,118 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 </script>
 
 
-
-<script id="mesaha-v207-stabil-script">
-/* Mesaha İO v2.07 Stabil - v142 stabil tabana güvenli ekleme. Kaydetme ve XLS çekirdeğine dokunmaz. */
-(function(){
-  "use strict";
-  const BUILD_VERSION_V207 = "Mesaha İO v2.07 Stabil";
-  const FILE_VERSION_V207 = "v178";
-  const TREE_OPTIONS_V207 = [
-    { code:"TÜMÜ", short:"Tümünü Göster", name:"", aliases:[] },
-    { code:"ÇK", short:"ÇK", name:"Karaçam", aliases:["karacam","karaçam","ck","çk"] },
-    { code:"ÇS", short:"ÇS", name:"Sarıçam", aliases:["saricam","sarıçam","cs","çs"] },
-    { code:"S", short:"S", name:"Sedir", aliases:["sedir","s"] },
-    { code:"GN", short:"GN", name:"Göknar", aliases:["goknar","göknar","gn"] },
-    { code:"ÇZ", short:"ÇZ", name:"Kızılçam", aliases:["kizilcam","kızılçam","cz","çz"] }
-  ];
-  let beyanTreeFilterV207 = "";
-
-  function qs(sel, root){ return (root || document).querySelector(sel); }
-  function qsa(sel, root){ return Array.from((root || document).querySelectorAll(sel)); }
-  function esc(v){
-    try { return escapeHtml(v); } catch {}
-    return String(v ?? "").replace(/[&<>\"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[c]));
-  }
-  function fold(v){
-    try { if (typeof foldLocalText === "function") return foldLocalText(v); } catch {}
-    return String(v || "").toLocaleLowerCase("tr-TR")
-      .replaceAll("ı","i").replaceAll("İ","i").replaceAll("ğ","g").replaceAll("Ğ","g")
-      .replaceAll("ü","u").replaceAll("Ü","u").replaceAll("ş","s").replaceAll("Ş","s")
-      .replaceAll("ö","o").replaceAll("Ö","o").replaceAll("ç","c").replaceAll("Ç","c")
-      .trim();
-  }
-  function normalizeTreeV207(v){
-    const raw = String(v || "").trim();
-    if (!raw) return "Karaçam";
-    try { if (typeof normalizeTreeType === "function") return normalizeTreeType(raw); } catch {}
-    const f = fold(raw);
-    const found = TREE_OPTIONS_V207.find(o => o.name && (fold(o.name) === f || o.aliases.includes(f)));
-    return found ? found.name : raw;
-  }
-  function treeCodeFromNameV207(name){
-    const key = normalizeTreeV207(name);
-    const row = TREE_OPTIONS_V207.find(o => o.name && o.name === key);
-    return row ? row.code : "ÇK";
-  }
-  function m3FromRecordV207(r){
-    if (!r) return 0;
-    const desi = Number(String(r.desi ?? "").replace(",", "."));
-    if (Number.isFinite(desi) && desi > 0) return desi / 1000;
-    const vol = Number(String(r.hacim ?? r.volume ?? "").replace(/[^0-9,.-]/g, "").replace(",", "."));
-    if (Number.isFinite(vol) && vol > 0) return vol;
-    try {
-      if (typeof calculateDesi === "function") {
-        const d = Number(r.diameter || r.cap || 0);
-        const l = Number(r.length || r.boy || 0);
-        const q = Number(r.quantity || r.adet || 1);
-        return (Number(calculateDesi(d, l, q)) || 0) / 1000;
-      }
-    } catch {}
-    return 0;
-  }
-  function totalAdetV207(){
-    try { return (state.records || []).reduce((s,r)=>s+(Number(r.quantity || r.adet || 0) || 0), 0); } catch { return 0; }
-  }
-  function totalM3V207(){
-    try { return (state.records || []).reduce((s,r)=>s+m3FromRecordV207(r), 0); } catch { return 0; }
-  }
-  function fmtM3V207(v){ return (Number(v) || 0).toLocaleString("tr-TR", { minimumFractionDigits:3, maximumFractionDigits:3 }); }
-
-  function setBuildV207(){
-    try { document.title = "Mesaha App v207"; } catch {}
-    const h1 = qs(".brand h1");
-    if (h1) h1.textContent = "Mesaha İO";
-    let version = qs(".brand-version-v207");
-    const brand = qs(".brand");
-    if (brand && !qs(".brand-logo-v207", brand)) {
-      const logo = document.createElement("div");
-      logo.className = "brand-logo-v207";
-      logo.setAttribute("aria-hidden", "true");
-      logo.textContent = "Mİ";
-      brand.insertBefore(logo, brand.firstChild);
-    }
-    if (!version && h1) {
-      const wrap = document.createElement("div");
-      wrap.className = "brand-title-wrap-v207";
-      h1.parentNode.insertBefore(wrap, h1);
-      wrap.appendChild(h1);
-      version = document.createElement("span");
-      version.className = "brand-version-v207";
-      wrap.appendChild(version);
-    }
-    if (version) version.textContent = BUILD_VERSION_V207;
-    try {
-      window.MESAHA_BUILD_INFO = Object.assign({}, window.MESAHA_BUILD_INFO || {}, {
-        fileVersion: FILE_VERSION_V207,
-        visibleVersion: BUILD_VERSION_V207,
-        stableBase: "v142 / Mesaha İO v1.71",
-        safeSaveCore: true,
-        safeXlsCore: true,
-        beyanTreeFilter: true,
-        inlineTreeSelect: true
-      });
-    } catch {}
-  }
-
-  function compactTreePanelV207(){
-    const panel = qs("#treeTypePanel");
-    if (!panel) return;
-    qsa(".wood-check", panel).forEach(label => {
-      const input = label.querySelector("input");
-      if (!input) return;
-      const name = normalizeTreeV207(input.value);
-      const code = treeCodeFromNameV207(name);
-      label.title = name;
-      if (!label.dataset.fullTextV207) label.dataset.fullTextV207 = label.textContent.trim();
-      const inputHtml = input.outerHTML;
-      label.innerHTML = inputHtml + " " + code;
-      const newInput = label.querySelector("input");
-      if (newInput) newInput.checked = normalizeTreeV207((document.getElementById("treeType") || {}).value || "Karaçam") === name;
-    });
-    if (!panel.__v207NoAutoClose) {
-      panel.__v207NoAutoClose = true;
-      panel.addEventListener("click", (event) => {
-        const input = event.target && event.target.closest ? event.target.closest("input[type='radio']") : null;
-        const label = event.target && event.target.closest ? event.target.closest(".wood-check") : null;
-        if (input || label) {
-          setTimeout(() => {
-            try { panel.classList.add("open"); } catch {}
-            try { if (typeof initTreeTypePanel === "function") initTreeTypePanel(); } catch {}
-          }, 30);
-        }
-      }, true);
-    }
-  }
-
-  function syncTreeSelectedV207(){
-    try { if (typeof initTreeTypePanel === "function") initTreeTypePanel(); } catch {}
-    compactTreePanelV207();
-    const current = normalizeTreeV207((document.getElementById("treeType") || {}).value || "Karaçam");
-    qsa("#treeTypePanel .wood-check").forEach(label => {
-      const input = label.querySelector("input");
-      const on = input && normalizeTreeV207(input.value) === current;
-      label.classList.toggle("tree-selected", !!on);
-      if (input) input.checked = !!on;
-    });
-  }
-
-  function ensureInlineTreeVisibleV207(){
-    const treeBox = qs(".tree-compact");
-    if (!treeBox) return;
-    treeBox.classList.add("tree-visible-v207");
-    compactTreePanelV207();
-  }
-
-  function ensureBeyanFilterV207(){
-    const panelBody = qs(".records-panel .panel-body");
-    if (!panelBody || qs("#beyanTreeFilterV207")) return;
-    const filter = document.createElement("div");
-    filter.id = "beyanTreeFilterV207";
-    filter.className = "beyan-tree-filter-v207";
-    filter.setAttribute("aria-label", "Beyan ağaç filtresi");
-    filter.innerHTML = '<span class="filter-title-v207">Ağaç Filtresi</span>' + TREE_OPTIONS_V207.map((o, i) => {
-      const value = o.name || "";
-      const label = i === 0 ? "Tümünü Göster" : o.code;
-      return `<button type="button" data-tree-filter-v207="${esc(value)}" class="${i===0 ? "active" : ""}" title="${esc(o.name || "Tüm kayıtlar")}">${esc(label)}</button>`;
-    }).join("");
-    const tools = qs(".records-panel .tools", panelBody);
-    if (tools) panelBody.insertBefore(filter, tools);
-    else panelBody.prepend(filter);
-    filter.addEventListener("click", (event) => {
-      const btn = event.target.closest("[data-tree-filter-v207]");
-      if (!btn) return;
-      beyanTreeFilterV207 = normalizeTreeV207(btn.dataset.treeFilterV207 || "");
-      if (!btn.dataset.treeFilterV207) beyanTreeFilterV207 = "";
-      qsa("button", filter).forEach(b => b.classList.toggle("active", b === btn));
-      try { if (state && state.selectedRecordIds) state.selectedRecordIds.clear(); } catch {}
-      try { if (typeof render === "function") render(); } catch {}
-      try { if (typeof renderMobileRecordsV111 === "function") renderMobileRecordsV111(true); } catch {}
-      const msg = beyanTreeFilterV207 ? `${btn.textContent.trim()} kayıtları gösteriliyor.` : "Tüm kayıtlar gösteriliyor.";
-      try { if (typeof showToast === "function") showToast(msg); } catch {}
-    });
-  }
-
-  function wrapFilterV207(){
-    if (typeof getFilteredRecords !== "function" || getFilteredRecords.__v207TreeWrapped) return;
-    const oldGet = getFilteredRecords;
-    getFilteredRecords = function(){
-      const list = oldGet.apply(this, arguments) || [];
-      if (!beyanTreeFilterV207) return list;
-      return list.filter(r => normalizeTreeV207((r && (r.treeType || r.species || r.agacAdi || r.agac)) || "Karaçam") === beyanTreeFilterV207);
-    };
-    getFilteredRecords.__v207TreeWrapped = true;
-  }
-
-  function updateSimpleTotalsV207(){
-    const header = qs(".entry-panel .panel-header");
-    if (!header) return;
-    let box = qs("#simpleTotalAdetV126");
-    if (!box) {
-      box = document.createElement("div");
-      box.id = "simpleTotalAdetV126";
-      box.className = "simple-total-adet-v126";
-      header.appendChild(box);
-    }
-    box.innerHTML = `
-      <div class="simple-total-pair-v207"><span>Toplam Adet</span><strong id="simpleTotalAdetValueV126">${totalAdetV207().toLocaleString("tr-TR")}</strong></div>
-      <div class="simple-total-pair-v207"><span>Toplam m³</span><strong id="simpleTotalM3ValueV207">${fmtM3V207(totalM3V207())}</strong></div>
-    `;
-  }
-
-  function wrapRenderV207(){
-    if (typeof render !== "function" || render.__v207Wrapped) return;
-    const oldRender = render;
-    render = function(){
-      const result = oldRender.apply(this, arguments);
-      setTimeout(() => {
-        ensureBeyanFilterV207();
-        updateSimpleTotalsV207();
-        syncTreeSelectedV207();
-      }, 20);
-      setTimeout(updateSimpleTotalsV207, 160);
-      return result;
-    };
-    render.__v207Wrapped = true;
-  }
-
-  function infoExportV207(){
-    alert([
-      "Mesaha dosyası indiriliyor.",
-      "",
-      "ORBİS’e Aktarma",
-      "Mesaha dosyasını indirdikten sonra dosyayı bilgisayara aktarınız.",
-      "ORBİS’e bilgisayar üzerinden giriş yapınız.",
-      "İşletme Pazarlama modülüne giriniz.",
-      "Kesme Faaliyetleri Raporu ekranını açınız.",
-      "Şeflik ve bölme bilgilerini giriniz.",
-      "Bölmenin üzerine çift tıklayınız.",
-      "Dosya yükleme bölümünden mesaha dosyasını seçip Excel’den Aktar deyiniz."
-    ].join("\n"));
-  }
-  function infoBackupV207(){
-    alert([
-      "Yedek Al",
-      "",
-      "Yedek metin / JSON formatında alınır.",
-      "Sadece bu programda kayıtları geri getirmek için kullanılır.",
-      "Excel dosyası olarak yedek almamaktadır.",
-      "Excel için Mesaha Dosyasını İndir kullanılmalıdır."
-    ].join("\n"));
-  }
-  function infoRestoreV207(){
-    alert([
-      "Yedek Yükle",
-      "",
-      "Yükleyeceğiniz dosya Excel değildir.",
-      "Sadece bu programdan alınan JSON uygulama yedeği yüklenmelidir.",
-      "Mesaha / ORBİS Excel dosyası burada geri yükleme için kullanılmaz."
-    ].join("\n"));
-  }
-  function rebindFileButtonsV207(){
-    const exportBtn = qs("#exportSystemXlsBtn");
-    if (exportBtn && !exportBtn.__v207Bound) {
-      exportBtn.__v207Bound = true;
-      try { if (typeof exportSystemXls === "function") exportBtn.removeEventListener("click", exportSystemXls); } catch {}
-      exportBtn.addEventListener("click", (event) => {
-        event.preventDefault();
-        event.stopPropagation();
-        try { if (typeof exportSystemXls === "function") exportSystemXls(); } catch (err) { try { showToast("Mesaha dosyası indirilemedi."); } catch {} }
-        setTimeout(infoExportV207, 120);
-      });
-    }
-    const backupBtn = qs("#backupBtn");
-    if (backupBtn && !backupBtn.__v207Bound) {
-      backupBtn.__v207Bound = true;
-      try { if (typeof backup === "function") backupBtn.removeEventListener("click", backup); } catch {}
-      backupBtn.addEventListener("click", (event) => {
-        event.preventDefault();
-        event.stopPropagation();
-        try { if (typeof backup === "function") backup(); } catch { try { showToast("Yedek alınamadı."); } catch {} }
-        setTimeout(infoBackupV207, 120);
-      });
-    }
-    const restoreBtn = qs("#restoreBtn");
-    if (restoreBtn && !restoreBtn.__v207Bound) {
-      restoreBtn.__v207Bound = true;
-      restoreBtn.addEventListener("click", (event) => {
-        event.preventDefault();
-        event.stopImmediatePropagation();
-        infoRestoreV207();
-        setTimeout(() => { try { (qs("#restoreInput") || {}).click(); } catch {} }, 80);
-      }, true);
-    }
-  }
-
-  function overrideClearInputsV207(){
-    const btn = qs("#clearInputsBtn");
-    if (!btn || btn.__v207ClearBound) return;
-    btn.__v207ClearBound = true;
-    btn.addEventListener("click", (event) => {
-      event.preventDefault();
-      event.stopImmediatePropagation();
-      if (!confirm("Giriş alanları temizlensin mi?")) return;
-      const fields = ["barcode", "length", "diameter", "quantity"];
-      fields.forEach(id => { const el = document.getElementById(id); if (el) el.value = id === "quantity" ? "1" : ""; });
-      try { if (state && state.settings) { state.settings.lastBarcode = ""; state.settings.lastLength = ""; state.settings.lastDiameter = ""; state.settings.lastQuantity = "1"; } } catch {}
-      try { if (typeof saveSettings === "function") saveSettings(); } catch {}
-      try { if (typeof renderRecentChips === "function") renderRecentChips(); } catch {}
-      try { if (typeof updateInputPlaceholders === "function") updateInputPlaceholders(); } catch {}
-      try { if (typeof updateLiveDesi === "function") updateLiveDesi(); } catch {}
-      try { if (typeof updateDuplicateWarning === "function") updateDuplicateWarning(); } catch {}
-      try { if (typeof focusDiameterKeepKeyboard === "function") focusDiameterKeepKeyboard(); } catch {}
-      try { if (typeof showToast === "function") showToast("Barkod, boy, çap ve adet temizlendi."); } catch {}
-    }, true);
-  }
-
-  function bindTreeLiveV207(){
-    const btn = qs("#treeTypeSelectBtn");
-    const panel = qs("#treeTypePanel");
-    if (btn && panel && !btn.__v207TreeToggle) {
-      btn.__v207TreeToggle = true;
-      btn.addEventListener("click", () => { setTimeout(() => { compactTreePanelV207(); panel.classList.toggle("open", true); }, 20); }, true);
-    }
-    if (panel && !panel.__v207RadioLive) {
-      panel.__v207RadioLive = true;
-      panel.addEventListener("change", (event) => {
-        const input = event.target && event.target.closest ? event.target.closest("input[type='radio']") : null;
-        if (!input) return;
-        const value = normalizeTreeV207(input.value);
-        try { if (typeof setTreeType === "function") setTreeType(value, true); else { const el = qs("#treeType"); if (el) el.value = value; } } catch {}
-        syncTreeSelectedV207();
-        setTimeout(() => panel.classList.add("open"), 20);
-        try { if (typeof render === "function") render(); } catch {}
-      }, true);
-    }
-  }
-
-  function hardRemoveChangeButtonsV207(){
-    qsa("button").forEach(btn => {
-      const t = String(btn.textContent || "").trim().toLocaleLowerCase("tr-TR");
-      if (t === "ürün değiştir" || t === "urun degistir" || t === "ağaç değiştir" || t === "agac degistir") {
-        btn.remove();
-      }
-    });
-  }
-
-  function bootV207(){
-    setBuildV207();
-    wrapFilterV207();
-    wrapRenderV207();
-    ensureBeyanFilterV207();
-    ensureInlineTreeVisibleV207();
-    compactTreePanelV207();
-    syncTreeSelectedV207();
-    updateSimpleTotalsV207();
-    rebindFileButtonsV207();
-    overrideClearInputsV207();
-    bindTreeLiveV207();
-    hardRemoveChangeButtonsV207();
-    try { if (typeof render === "function") render(); } catch {}
-  }
-
-  bootV207();
-  setTimeout(bootV207, 400);
-  setTimeout(bootV207, 1200);
-  setInterval(() => {
-    setBuildV207();
-    ensureBeyanFilterV207();
-    updateSimpleTotalsV207();
-    syncTreeSelectedV207();
-    hardRemoveChangeButtonsV207();
-  }, 1800);
-})();
-</script>
-
-
-<style id="mesaha-v207-duzeltme-css">
-  /* v2.07 düzeltme: yedek butonları, ağaç paneli ve filtre */
-  #treeTypeApplyBtn{ display:none !important; }
-  #treeTypePanel.open{ display:flex !important; }
-  #treeTypePanel .wood-check{ user-select:none; }
-  .records-panel .tools{ display:flex !important; flex-wrap:wrap !important; gap:8px !important; align-items:stretch !important; }
-  #exportSystemXlsBtn{ order:1 !important; flex:1 1 100% !important; }
-  #backupBtn{ order:2 !important; flex:1 1 calc(50% - 4px) !important; min-width:0 !important; }
-  #restoreBtn{ order:3 !important; flex:1 1 calc(50% - 4px) !important; min-width:0 !important; }
-  #cloudBackupBtn{ order:4 !important; flex:1 1 calc(50% - 4px) !important; min-width:0 !important; }
-  #cloudRestoreBtn{ order:5 !important; flex:1 1 calc(50% - 4px) !important; min-width:0 !important; }
-  #printBtn{ order:6 !important; flex:1 1 calc(50% - 4px) !important; min-width:0 !important; }
-  #deleteAllBtn{ order:7 !important; flex:1 1 calc(50% - 4px) !important; min-width:0 !important; }
-  .beyan-tree-filter-v207 button.active,
-  .beyan-tree-filter-v207 button[data-tree-filter-v208].active{
-    background:#166534 !important;
-    color:#fff !important;
-    border-color:#166534 !important;
-    box-shadow:0 8px 18px rgba(22,101,52,.18) !important;
-  }
+<style id="mesaha-v143-dark-polish-css">
+  body.theme-dark .mesaha-home-v143{filter:none;}
+  body.theme-dark .home-hero-v143,body.theme-dark .home-status-v143,body.theme-dark .home-card-v143{background:#171b22 !important;border-color:#2b323d !important;color:#f8fafc !important;box-shadow:0 14px 32px rgba(0,0,0,.22) !important;}
+  body.theme-dark .home-hero-copy-v143 h2,body.theme-dark .home-card-head-v143 h3,body.theme-dark .home-list-v143 b{color:#f8fafc !important;}
+  body.theme-dark .home-hero-copy-v143 p,body.theme-dark .home-list-v143 small,body.theme-dark .home-summary-grid-v143 small,body.theme-dark .home-status-item-v143 small,body.theme-dark .home-status-item-v143 em{color:#a8b3c2 !important;}
+  body.theme-dark .home-summary-grid-v143 div,body.theme-dark .home-quick-grid-v143 button,body.theme-dark .home-card-head-v143 button{background:#11151b !important;border-color:#2b323d !important;}
+  body.theme-dark .flow-tabs-v111{background:rgba(23,27,34,.94) !important;border-color:#2b323d !important;}
+  body.theme-dark .flow-tabs-v111 button.active{background:rgba(34,197,94,.14) !important;color:#86efac !important;}
 </style>
-
-<script id="mesaha-v207-duzeltme-script">
-/* Mesaha İO v2.07 düzeltme - filtre, yazdırma, tek tık ağaç seçimi, yedek buton sırası ve temizleme */
+<script id="mesaha-v143-mobile-ui-js">
 (function(){
   "use strict";
-
-  const STORE_KEY = "mesaha_beyan_tree_filter_v208";
-  const TREE_OPTIONS = [
-    { code:"TÜMÜ", label:"Tümünü Göster", name:"" },
-    { code:"ÇK", label:"ÇK", name:"Karaçam" },
-    { code:"ÇS", label:"ÇS", name:"Sarıçam" },
-    { code:"S", label:"S", name:"Sedir" },
-    { code:"GN", label:"GN", name:"Göknar" },
-    { code:"ÇZ", label:"ÇZ", name:"Kızılçam" }
-  ];
-
-  function qs(sel, root){ return (root || document).querySelector(sel); }
-  function qsa(sel, root){ return Array.from((root || document).querySelectorAll(sel)); }
-  function trLower(v){ return String(v == null ? "" : v).trim().toLocaleLowerCase("tr-TR"); }
-  function fold(v){
-    let s = trLower(v);
-    try { s = s.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); } catch {}
-    return s.replace(/ı/g,"i").replace(/ğ/g,"g").replace(/ü/g,"u").replace(/ş/g,"s").replace(/ö/g,"o").replace(/ç/g,"c").replace(/[^a-z0-9]+/g, "");
+  const VERSION_TEXT = "Mesaha İO v1.72";
+  function $(id){ return document.getElementById(id); }
+  function fmt(n){ try { return Number(n || 0).toLocaleString("tr-TR"); } catch { return String(n || 0); } }
+  function m3FromDesi(v){ try { if (typeof formatHacimFromDesi === "function") return formatHacimFromDesi(v); } catch {} return ((Number(v)||0)/1000).toFixed(3).replace(/0+$/,"").replace(/\.$/,"") || "0"; }
+  function getRecords(){ try { if (typeof state !== "undefined" && Array.isArray(state.records)) return state.records; } catch {} try { return JSON.parse(localStorage.getItem("cam_mesaha_kayitlari_v1") || "[]") || []; } catch { return []; } }
+  function qty(r){ return Number(r && (r.quantity ?? r.adet ?? r.count)) || 0; }
+  function desi(r){ return Number(r && (r.desi ?? 0)) || 0; }
+  function isThisWeek(rec){
+    try{
+      const raw = rec && rec.productionDate;
+      const d = raw ? new Date(raw + "T00:00:00") : null;
+      if(!d || !Number.isFinite(d.getTime())) return false;
+      const now = new Date();
+      const day = (now.getDay()+6)%7;
+      const start = new Date(now.getFullYear(), now.getMonth(), now.getDate()-day);
+      start.setHours(0,0,0,0);
+      return d >= start;
+    }catch{ return false; }
   }
-  function esc(v){
-    try { if (typeof escapeHtml === "function") return escapeHtml(v); } catch {}
-    return String(v == null ? "" : v).replace(/[&<>\"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[c]));
+  function updateNetwork(){
+    const el=$("homeNetworkV143"); if(!el) return;
+    const online = !!navigator.onLine;
+    el.textContent = online ? "Çevrimiçi" : "Çevrimdışı";
+    el.style.color = online ? "#18753d" : "#174f83";
   }
-  function normalizeTreeName(v){
-    const raw = String(v == null ? "" : v).trim();
-    const f = fold(raw);
-    if (!f || f === "tum" || f === "tumu" || f === "tumunugoster") return "";
+  function updateStorage(){
+    const el=$("homeStorageV143"); if(!el) return;
+    if(navigator.storage && navigator.storage.estimate){
+      navigator.storage.estimate().then(e=>{
+        const quota = Number(e.quota || 0);
+        const usage = Number(e.usage || 0);
+        if(!quota) { el.textContent = "Hazır"; return; }
+        const left = Math.max(0, quota-usage);
+        const gb = left / (1024*1024*1024);
+        const mb = left / (1024*1024);
+        el.textContent = gb >= 1 ? gb.toFixed(2) + " GB" : Math.round(mb) + " MB";
+      }).catch(()=>{ el.textContent="Hazır"; });
+    } else el.textContent="Hazır";
+  }
+  function updateHome(){
+    const records = getRecords();
+    const totalQty = records.reduce((s,r)=>s+qty(r),0);
+    const totalDesi = records.reduce((s,r)=>s+desi(r),0);
+    const diameters = records.map(r=>Number(r && r.diameter)).filter(Number.isFinite);
+    const avgD = diameters.length ? diameters.reduce((s,v)=>s+v,0)/diameters.length : 0;
+    const week = records.filter(isThisWeek).length;
+    const last = records[0] || null;
+    const lastTree = last ? (last.treeType || last.species || "-") : "-";
+    const lastDate = last ? (last.uretimTarihi || last.productionDate || last.createdAt || "Son kayıt") : "Henüz kayıt yok";
     const map = {
-      "ck":"Karaçam", "karacam":"Karaçam", "karacamlar":"Karaçam", "karacamı":"Karaçam", "karacami":"Karaçam",
-      "cs":"Sarıçam", "saricam":"Sarıçam", "saricamlar":"Sarıçam", "saricami":"Sarıçam",
-      "s":"Sedir", "sedir":"Sedir",
-      "gn":"Göknar", "goknar":"Göknar", "goknari":"Göknar",
-      "cz":"Kızılçam", "kizilcam":"Kızılçam", "kizilcami":"Kızılçam"
+      homeRecordCountV143: fmt(records.length),
+      homeAdetV143: fmt(totalQty),
+      homeLastTreeV143: lastTree,
+      homeLastDateV143: lastDate,
+      homeWeekCountV143: fmt(week),
+      homeAvgDiameterV143: (avgD ? avgD.toFixed(1).replace(".",",") : "0") + " cm",
+      homeTotalM3V143: m3FromDesi(totalDesi) + " m³"
     };
-    if (map[f]) return map[f];
-    try {
-      if (typeof getTreeInfo === "function") {
-        const info = getTreeInfo(raw);
-        if (info && info.agacAdi) return info.agacAdi;
-      }
-    } catch {}
-    return raw;
+    Object.keys(map).forEach(id=>{ const el=$(id); if(el) el.textContent = map[id]; });
+    updateNetwork();
   }
-  function treeCode(name){
-    const n = normalizeTreeName(name);
-    const found = TREE_OPTIONS.find(o => o.name === n);
-    return found ? found.code : (n || "TÜMÜ");
-  }
-  function activeTree(){
-    const current = normalizeTreeName(window.__mesahaBeyanTreeFilterV208 || localStorage.getItem(STORE_KEY) || "");
-    window.__mesahaBeyanTreeFilterV208 = current;
-    return current;
-  }
-  function recordTree(r){
-    return normalizeTreeName(r && (r.treeType || r.species || r.agacAdi || r.agac || "Karaçam"));
-  }
-  function treeFilteredRecords(list){
-    const selected = activeTree();
-    const arr = Array.isArray(list) ? list : [];
-    if (!selected) return arr;
-    return arr.filter(r => recordTree(r) === selected);
-  }
-  function printRecordsForActiveTree(){
-    try { return treeFilteredRecords((state && Array.isArray(state.records)) ? state.records : []); } catch {}
-    return [];
-  }
-
-  function updateFilterButtons(){
-    const selected = activeTree();
-    qsa("[data-tree-filter-v208],[data-tree-filter-v207]").forEach(btn => {
-      const val = normalizeTreeName(btn.getAttribute("data-tree-filter-v208") || btn.getAttribute("data-tree-filter-v207") || "");
-      btn.classList.toggle("active", val === selected);
+  function beautifyTabs(){
+    const tabs = document.getElementById("flowTabsV111"); if(!tabs) return;
+    const labels = { entry:["🏠","Ana Sayfa"], records:["📏","Ölçümler"], guide:["▱","Kılavuz"], admin:["⚙","Admin"] };
+    tabs.querySelectorAll("button[data-flow-tab]").forEach(btn=>{
+      if(btn.__v143Done) return;
+      const item = labels[btn.dataset.flowTab] || ["•", btn.textContent.trim()];
+      btn.innerHTML = '<span class="tab-ico-v143">'+item[0]+'</span><span class="tab-label-v143">'+item[1]+'</span>';
+      btn.__v143Done = true;
     });
-    const count = printRecordsForActiveTree().length;
-    const total = (state && Array.isArray(state.records)) ? state.records.length : count;
-    const pill = qs("#recordCount");
-    if (pill) {
-      pill.textContent = selected ? `${count.toLocaleString("tr-TR")} / ${total.toLocaleString("tr-TR")} kayıt` : `${total.toLocaleString("tr-TR")} kayıt`;
-    }
   }
-
-  function installBeyanFilter(){
-    const body = qs(".records-panel .panel-body");
-    if (!body) return;
-    let filter = qs("#beyanTreeFilterV207", body);
-    if (!filter) {
-      filter = document.createElement("div");
-      filter.id = "beyanTreeFilterV207";
-      filter.className = "beyan-tree-filter-v207";
-      const tools = qs(".records-panel .tools", body);
-      if (tools) body.insertBefore(filter, tools); else body.prepend(filter);
-    }
-    if (filter.__v208Ready) { updateFilterButtons(); return; }
-
-    const clean = filter.cloneNode(false);
-    clean.id = "beyanTreeFilterV207";
-    clean.className = "beyan-tree-filter-v207";
-    clean.setAttribute("aria-label", "Beyan ağaç filtresi");
-    clean.innerHTML = '<span class="filter-title-v207">Ağaç Filtresi</span>' + TREE_OPTIONS.map(o => (
-      `<button type="button" data-tree-filter-v208="${esc(o.name)}" title="${esc(o.name || "Tüm kayıtlar")}">${esc(o.label || o.code)}</button>`
-    )).join("");
-    clean.__v208Ready = true;
-    filter.replaceWith(clean);
-
-    clean.addEventListener("click", function(event){
-      const btn = event.target && event.target.closest ? event.target.closest("[data-tree-filter-v208]") : null;
-      if (!btn) return;
-      event.preventDefault();
-      event.stopPropagation();
-      const selected = normalizeTreeName(btn.getAttribute("data-tree-filter-v208") || "");
-      window.__mesahaBeyanTreeFilterV208 = selected;
-      try { localStorage.setItem(STORE_KEY, selected); } catch {}
-      try { if (typeof clearRecordSelection === "function") clearRecordSelection(); }
-      catch { try { if (state && state.selectedRecordIds) state.selectedRecordIds.clear(); } catch {} }
-      try { if (typeof render === "function") render(); } catch {}
-      setTimeout(function(){ updateFilterButtons(); }, 30);
-      try {
-        const msg = selected ? `${treeCode(selected)} kayıtları gösteriliyor.` : "Tüm kayıtlar gösteriliyor.";
-        if (typeof showToast === "function") showToast(msg);
-      } catch {}
-    });
-
-    updateFilterButtons();
-  }
-
-  function wrapListFilter(){
-    try {
-      if (typeof getFilteredRecords === "function" && !getFilteredRecords.__v208TreeWrapped) {
-        const previous = getFilteredRecords;
-        getFilteredRecords = function(){
-          const list = previous.apply(this, arguments) || [];
-          return treeFilteredRecords(list);
-        };
-        getFilteredRecords.__v208TreeWrapped = true;
-      }
-    } catch {}
-  }
-
-  function wrapTotalsForPrint(){
-    try {
-      if (typeof getBeyanTotals === "function" && !getBeyanTotals.__v208TreeWrapped) {
-        getBeyanTotals = function(){
-          const totals = {
-            all: 0,
-            adet: 0,
-            products: {
-              "Tomruk": { label: "Tomruk", className: "tomruk", volume: 0, adet: 0 },
-              "Maden Direk": { label: "Maden Direği", className: "maden", volume: 0, adet: 0 },
-              "Kağıtlık": { label: "Kağıtlık", className: "kagit", volume: 0, adet: 0 },
-              "Sanayi Odunu": { label: "Sanayi Odunu", className: "sanayi", volume: 0, adet: 0 },
-              "Tel Direk": { label: "Tel Direği", className: "tel", volume: 0, adet: 0 }
-            }
-          };
-          printRecordsForActiveTree().forEach(r => {
-            const qty = Number(r && r.quantity) || 0;
-            const vol = Number(r && r.desi) || 0;
-            let key = r && r.productType ? r.productType : "Tomruk";
-            try { if (typeof normalizeProductType === "function") key = normalizeProductType(key); } catch {}
-            totals.all += vol;
-            totals.adet += qty;
-            if (totals.products[key]) {
-              totals.products[key].volume += vol;
-              totals.products[key].adet += qty;
-            }
-          });
-          return totals;
-        };
-        getBeyanTotals.__v208TreeWrapped = true;
-      }
-    } catch {}
-  }
-
-  function wrapRender(){
-    try {
-      if (typeof render === "function" && !render.__v208Wrapped) {
-        const previous = render;
-        render = function(){
-          const result = previous.apply(this, arguments);
-          setTimeout(function(){ installBeyanFilter(); updateFilterButtons(); }, 30);
-          return result;
-        };
-        render.__v208Wrapped = true;
-      }
-    } catch {}
-  }
-
-  function bindPrintButton(){
-    const btn = qs("#printBtn");
-    if (!btn || btn.__v208PrintBound) return;
-    btn.__v208PrintBound = true;
-    btn.addEventListener("click", function(event){
-      event.preventDefault();
-      event.stopImmediatePropagation();
-      const records = printRecordsForActiveTree();
-      if (!records.length) {
-        try {
-          if (typeof showErrorToast === "function") showErrorToast(activeTree() ? "Seçili ağaçta yazdırılacak kayıt yok." : "Yazdırılacak kayıt yok.");
-          else if (typeof showToast === "function") showToast("Yazdırılacak kayıt yok.");
-        } catch {}
-        return;
-      }
-      try { if (typeof render === "function") render(); } catch {}
-      try { if (typeof forceRefreshSummaryCards === "function") forceRefreshSummaryCards(); } catch {}
-      try { if (typeof printBeyanOnly === "function") printBeyanOnly(); else window.print(); } catch { try { window.print(); } catch {} }
-    }, true);
-  }
-
-  function keepTreePanelOpen(){
-    const btn = qs("#treeTypeSelectBtn");
-    const panel = qs("#treeTypePanel");
-    if (!panel) return;
-    const applyBtn = qs("#treeTypeApplyBtn");
-    if (applyBtn) applyBtn.remove();
-
-    function openPanel(){
-      try { if (typeof syncTreeTypePanel === "function") syncTreeTypePanel(); } catch {}
-      panel.classList.add("open");
-      panel.style.display = "flex";
-    }
-    function choose(value){
-      const selected = normalizeTreeName(value || "Karaçam") || "Karaçam";
-      qsa("input[type='radio']", panel).forEach(input => { input.checked = normalizeTreeName(input.value) === selected; });
-      try { if (typeof setTreeType === "function") setTreeType(selected, true); }
-      catch {
-        const hidden = qs("#treeType");
-        if (hidden) hidden.value = selected;
-        const current = qs("#treeTypeCurrent");
-        if (current) current.textContent = selected;
-        const pill = qs("#speciesPill");
-        if (pill) pill.textContent = selected;
-      }
-      qsa(".wood-check", panel).forEach(label => {
-        const input = label.querySelector("input[type='radio']");
-        label.classList.toggle("tree-selected", !!input && normalizeTreeName(input.value) === selected);
+  function bindQuickActions(){
+    document.querySelectorAll("[data-home-action-v143]").forEach(btn=>{
+      if(btn.__homeActionV143) return; btn.__homeActionV143 = true;
+      btn.addEventListener("click", function(){
+        const action = this.getAttribute("data-home-action-v143");
+        if(action === "records") { try { document.querySelector('[data-flow-tab="records"]')?.click(); } catch{} return; }
+        if(action === "backup") { const b = document.getElementById("backupBtn"); if(b) b.click(); return; }
+        if(action === "diameter") { try { document.querySelector('[data-flow-tab="entry"]')?.click(); } catch{} setTimeout(()=>{ const d=$("diameter"); if(d) { d.scrollIntoView({behavior:"smooth", block:"center"}); d.focus(); } },180); return; }
+        if(action === "new") { try { document.querySelector('[data-flow-tab="entry"]')?.click(); } catch{} setTimeout(()=>{ const f=document.querySelector(".entry-panel"); if(f) f.scrollIntoView({behavior:"smooth", block:"start"}); const b=$("barcode"); if(b) b.focus(); },160); }
       });
-      const visibleBtn = qs("#treeTypeSelectBtn");
-      if (visibleBtn) visibleBtn.textContent = "Ağaç Türü Seç: " + selected;
-      const current = qs("#treeTypeCurrent");
-      if (current) current.textContent = selected;
-      const species = qs("#speciesPill");
-      if (species) species.textContent = selected;
-      openPanel();
-      try { if (typeof showSuccessToast === "function") showSuccessToast("Ağaç türü seçildi: " + treeCode(selected)); }
-      catch { try { if (typeof showToast === "function") showToast("Ağaç türü seçildi: " + treeCode(selected)); } catch {} }
-    }
-
-    if (btn && !btn.__v208KeepOpen) {
-      btn.__v208KeepOpen = true;
-      btn.addEventListener("click", function(event){
-        event.preventDefault();
-        event.stopImmediatePropagation();
-        openPanel();
-      }, true);
-    }
-    if (!panel.__v208DirectPick) {
-      panel.__v208DirectPick = true;
-      panel.addEventListener("click", function(event){
-        const label = event.target && event.target.closest ? event.target.closest(".wood-check") : null;
-        const input = event.target && event.target.closest ? event.target.closest("input[type='radio']") : null;
-        const targetInput = input || (label ? label.querySelector("input[type='radio']") : null);
-        if (!targetInput) return;
-        event.preventDefault();
-        event.stopImmediatePropagation();
-        choose(targetInput.value);
-      }, true);
-      panel.addEventListener("change", function(event){
-        const input = event.target && event.target.closest ? event.target.closest("input[type='radio']") : null;
-        if (!input) return;
-        event.preventDefault();
-        event.stopImmediatePropagation();
-        choose(input.value);
-      }, true);
-    }
+    });
   }
-
-  function replaceClearButton(){
-    const oldBtn = qs("#clearInputsBtn");
-    if (!oldBtn || oldBtn.__v208ClearReady) return;
-    const btn = oldBtn.cloneNode(true);
-    btn.__v208ClearReady = true;
-    oldBtn.replaceWith(btn);
-    btn.addEventListener("click", function(event){
-      event.preventDefault();
-      event.stopImmediatePropagation();
-      if (!confirm("Giriş alanları ve boy/çap kısayolları temizlensin mi?")) return;
-      const values = { barcode:"", length:"", diameter:"", quantity:"1" };
-      Object.keys(values).forEach(id => { const el = qs("#" + id); if (el) el.value = values[id]; });
-      try {
-        if (state && state.settings) {
-          state.settings.lastBarcode = "";
-          state.settings.lastLength = "";
-          state.settings.lastDiameter = "";
-          state.settings.lastQuantity = "1";
-          state.settings.recentLengths = [];
-          state.settings.recentDiameters = [];
-        }
-      } catch {}
-      try { if (typeof saveSettings === "function") saveSettings(); } catch {}
-      try { if (typeof renderRecentChips === "function") renderRecentChips(); } catch {}
-      try { if (typeof updateInputPlaceholders === "function") updateInputPlaceholders(); } catch {}
-      try { if (typeof updateLiveDesi === "function") updateLiveDesi(); } catch {}
-      try { if (typeof updateDuplicateWarning === "function") updateDuplicateWarning(); } catch {}
-      try { if (typeof focusDiameterKeepKeyboard === "function") focusDiameterKeepKeyboard(); } catch {}
-      try { if (typeof showToast === "function") showToast("Barkod, boy, çap, adet ve kısayollar temizlendi."); } catch {}
-    }, true);
+  function applyVersion(){
+    try { document.title = "Mesaha İO v1.72"; } catch {}
+    try { const h1 = document.querySelector(".brand h1"); if(h1) h1.textContent = VERSION_TEXT; } catch {}
+    try { window.MESAHA_BUILD_INFO = Object.assign({}, window.MESAHA_BUILD_INFO || {}, { fileVersion:"v143-ui", visibleVersion:VERSION_TEXT, uiMode:"mobile-home-logo" }); } catch {}
   }
-
-  function boot(){
-    wrapListFilter();
-    wrapTotalsForPrint();
-    wrapRender();
-    installBeyanFilter();
-    updateFilterButtons();
-    bindPrintButton();
-    keepTreePanelOpen();
-    replaceClearButton();
-    try { if (typeof render === "function") render(); } catch {}
-  }
-
-  boot();
-  setTimeout(boot, 300);
-  setTimeout(boot, 1200);
-  setInterval(function(){
-    installBeyanFilter();
-    updateFilterButtons();
-    keepTreePanelOpen();
-    replaceClearButton();
-  }, 1600);
+  function init(){ beautifyTabs(); bindQuickActions(); updateHome(); updateStorage(); applyVersion(); }
+  document.addEventListener("DOMContentLoaded", init);
+  window.addEventListener("online", updateNetwork); window.addEventListener("offline", updateNetwork);
+  setTimeout(init, 50); setTimeout(init, 800); setInterval(updateHome, 2500);
+  try{
+    if(typeof render === "function" && !render.__v143Wrapped){
+      const oldRender = render;
+      render = function(){ const out = oldRender.apply(this, arguments); try { requestAnimationFrame(updateHome); } catch{} return out; };
+      render.__v143Wrapped = true;
+    }
+  }catch{}
 })();
 </script>
+</body>
+</html>

@@ -1,11 +1,14 @@
-const CACHE_NAME = "mesaha-app-v179";
+const CACHE_NAME = "mesaha-app-v143-ui-logo";
 const ASSETS = [
   "./",
   "./index.html",
   "./manifest.json",
   "./service-worker.js",
   "./version.json",
-  "./.nojekyll"
+  "./.nojekyll",
+  "./mesaha_logo.png",
+  "./icon-192.png",
+  "./icon-512.png"
 ];
 
 self.addEventListener("install", (event) => {
