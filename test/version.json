@@ -1,10 +1,10 @@
 {
-  "version": "v168",
-  "appVersion": "Mesaha İO v1.97",
-  "visibleVersion": "Mesaha İO v1.97",
-  "build": "v168",
-  "fileVersion": "v168",
-  "cache": "mesaha-app-v168",
+  "version": "v169",
+  "appVersion": "Mesaha İO v1.98",
+  "visibleVersion": "Mesaha İO v1.98",
+  "build": "v169",
+  "fileVersion": "v169",
+  "cache": "mesaha-app-v169",
   "updatedAt": "2026-06-17",
-  "notes": "v167 paketindeki sayfa altında JavaScript kodu görünmesine ve butonların çalışmamasına neden olan hatalı script yerleşimi düzeltildi. Modern üst bar, logo, arka kapak, kullanıcı/giriş kartları ve yedek buton boyutları korundu. Excel/Mesaha export içeriğine dokunulmadı."
+  "notes": "Mesaha Dosyasını İndir butonu yerel yedek satırıyla aynı genişliğe uzatıldı. Modern üst bar, logo, arka kapak, kullanıcı/giriş kartları, yedek buton düzeni ve Excel/Mesaha export içeriği korundu."
 }
