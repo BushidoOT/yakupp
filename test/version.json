@@ -1,10 +1,10 @@
 {
-  "version": "v164",
-  "appVersion": "Mesaha İO v1.93",
-  "visibleVersion": "Mesaha İO v1.93",
-  "build": "v164",
-  "fileVersion": "v164",
-  "cache": "mesaha-app-v164",
+  "version": "v165",
+  "appVersion": "Mesaha İO v1.94",
+  "visibleVersion": "Mesaha İO v1.94",
+  "build": "v165",
+  "fileVersion": "v165",
+  "cache": "mesaha-app-v165",
   "updatedAt": "2026-06-17",
-  "notes": "v163 stabil yapı korunarak Mesaha Liderleri penceresindeki açıklama metni kaldırıldı. Ağaç paneli kompakt ve açık kalma davranışı korunur. Offline/service-worker cache v164 yapıldı. Excel/Mesaha export içeriğine dokunulmadı."
+  "notes": "v164 stabil yapı korunarak Yedek Al/Yedek Yükle yan yana alındı, Dosya Bilgileri Aç/Kapat rozeti gizlendi ve giriş modunda Ağaç Türü Seç panelinin kesin açılması düzeltildi. Ağaç seçince panel açık kalır. Excel/Mesaha export içeriğine dokunulmadı."
 }
