@@ -1,4 +1,4 @@
-const CACHE_NAME = "mesaha-app-v151-loading-button-fix";
+const CACHE_NAME = "mesaha-app-v152-stabil-zip-yedek";
 const ASSETS = [
   "./",
   "./index.html",

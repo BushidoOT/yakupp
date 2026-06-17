@@ -1,7 +1,7 @@
 {
-  "version": 151,
-  "visibleVersion": "Mesaha İO v1.80",
-  "cache": "mesaha-app-v151-loading-button-fix",
+  "version": 152,
+  "visibleVersion": "Mesaha İO v1.81",
+  "cache": "mesaha-app-v152-stabil-zip-yedek",
   "builtAt": "2026-06-18",
-  "notes": "v150 paketindeki yükleniyor/çalışmayan buton sorunu düzeltildi. Bilgi kutuları eklendi, giriş modu ana sayfaya dönüş yazısı ve sürüm görünümü sabitlendi."
+  "notes": "ZIP yedek sistemi, parçalı geri yükleme, sayfalı kayıt listesi, IndexedDB güvenli depolama aynası ve Mesaha indirme hazırlık göstergesi eklendi. ORBİS Excel formatı değiştirilmedi."
 }
