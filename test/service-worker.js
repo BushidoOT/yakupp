@@ -1,4 +1,4 @@
-const CACHE_NAME = "mesaha-app-v144-tree-filter-clear";
+const CACHE_NAME = "mesaha-app-v145-tree-open-total-m3";
 const ASSETS = [
   "./",
   "./index.html",
@@ -7,7 +7,6 @@ const ASSETS = [
   "./version.json",
   "./.nojekyll",
   "./mesaha_logo.png",
-  "./mesaha_brand.png",
   "./icon-192.png",
   "./icon-512.png"
 ];

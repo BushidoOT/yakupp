@@ -1,7 +1,7 @@
 {
-  "version": 144,
-  "visibleVersion": "Mesaha İO v1.73",
-  "cache": "mesaha-app-v144-tree-filter-clear",
+  "version": 145,
+  "visibleVersion": "Mesaha İO v1.74",
+  "cache": "mesaha-app-v145-tree-open-total-m3",
   "builtAt": "2026-06-18",
-  "notes": "Ana sayfa sadeleştirildi; ölçüm özeti alta alındı; ağaç seçimi doğrudan yapılır; Beyan bölümüne ağaç filtresi eklendi; Alanları Temizle barkod ve kısayol butonlarını da temizler."
+  "notes": "Ağaç türü seçimi seçince açık kalır; Ağaç Türü Seç düğmesine tekrar basınca kapanır. Giriş Modu toplam adet alanına toplam m³ eklendi."
 }
