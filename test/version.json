@@ -1,7 +1,7 @@
 {
-  "version": 143,
-  "visibleVersion": "Mesaha İO v1.72",
-  "cache": "mesaha-app-v143-ui-logo",
-  "builtAt": "2026-06-17",
-  "notes": "Logo eklendi; mobil ana sayfa, hızlı işlemler, kayıt/ölçüm özeti ve açık tema tasarımı yenilendi."
+  "version": 144,
+  "visibleVersion": "Mesaha İO v1.73",
+  "cache": "mesaha-app-v144-tree-filter-clear",
+  "builtAt": "2026-06-18",
+  "notes": "Ana sayfa sadeleştirildi; ölçüm özeti alta alındı; ağaç seçimi doğrudan yapılır; Beyan bölümüne ağaç filtresi eklendi; Alanları Temizle barkod ve kısayol butonlarını da temizler."
 }
