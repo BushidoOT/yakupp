@@ -1,7 +1,7 @@
 {
-  "version": 147,
-  "visibleVersion": "Mesaha İO v1.76",
-  "cache": "mesaha-app-v147-source-fix-home-simple",
+  "version": 148,
+  "visibleVersion": "Mesaha İO v1.77",
+  "cache": "mesaha-app-v148-giris-home-button-fix",
   "builtAt": "2026-06-18",
-  "notes": "Ekranda JavaScript kodu görünmesine ve butonların çalışmamasına neden olan paket yerleşimi düzeltildi. Ana Sayfa klavye açmaz, Yerel Depolama yerine Giriş Modu butonu korunur."
+  "notes": "Üstteki eski Giriş Modu butonu ana ekranda gizlendi. Giriş modunda Normal yerine Ana Sayfaya Dön butonu gösterildi. Giriş modu kapatılınca ana sayfa kartındaki Aktif durumu doğru şekilde kapanır."
 }

@@ -1,4 +1,4 @@
-const CACHE_NAME = "mesaha-app-v147-source-fix-home-simple";
+const CACHE_NAME = "mesaha-app-v148-giris-home-button-fix";
 const ASSETS = [
   "./",
   "./index.html",
