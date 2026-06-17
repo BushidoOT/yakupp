@@ -1,8 +1,7 @@
 {
-  "version": 175,
-  "visibleVersion": "Mesaha İO v2.04 Stabil",
-  "cache": "mesaha-app-v175-stabil",
+  "version": 176,
+  "visibleVersion": "Mesaha İO v2.05 Stabil",
+  "cache": "mesaha-app-v176",
   "builtAt": "2026-06-17",
-  "base": "v142 stabil",
-  "notes": "v142 stabil kaydetme mantığı korunarak modern üst bar, ağaç türü paneli ve buton düzenleri eklendi"
+  "notes": "v142 stabil kaydetme/XLS çekirdeği korunarak ağaç seçimi, giriş modu ağaç seçimi, alan temizleme, bilgi panelleri ve buton düzeni düzeltildi"
 }
