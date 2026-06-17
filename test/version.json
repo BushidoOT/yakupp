@@ -1,10 +1,10 @@
 {
-  "version": "v165",
-  "appVersion": "Mesaha İO v1.94",
-  "visibleVersion": "Mesaha İO v1.94",
-  "build": "v165",
-  "fileVersion": "v165",
-  "cache": "mesaha-app-v165",
+  "version": "v166",
+  "appVersion": "Mesaha İO v1.95",
+  "visibleVersion": "Mesaha İO v1.95",
+  "build": "v166",
+  "fileVersion": "v166",
+  "cache": "mesaha-app-v166",
   "updatedAt": "2026-06-17",
-  "notes": "v164 stabil yapı korunarak Yedek Al/Yedek Yükle yan yana alındı, Dosya Bilgileri Aç/Kapat rozeti gizlendi ve giriş modunda Ağaç Türü Seç panelinin kesin açılması düzeltildi. Ağaç seçince panel açık kalır. Excel/Mesaha export içeriğine dokunulmadı."
+  "notes": "v165 stabil yapı korunarak ilk logo modern üst bara eklendi, sağ üstte karanlık mod konumlandırıldı, orman arka planlı hızlı alan içine kullanıcı paneli ve Giriş Modu yerleştirildi. Merhaba/Yerel Depolama/Çevrimdışı kartları eklenmedi. Excel/Mesaha export içeriğine dokunulmadı."
 }
