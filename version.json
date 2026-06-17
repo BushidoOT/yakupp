@@ -1,7 +1,7 @@
 {
-  "version": 142,
-  "visibleVersion": "Mesaha İO v1.71",
-  "cache": "mesaha-app-v142",
-  "builtAt": "2026-06-14",
-  "notes": "v142 admin üst özetinde Son Görülen kişi yerine bugün görülen kullanıcı sayısı gösterilir"
+  "version": 151,
+  "visibleVersion": "Mesaha İO v1.80",
+  "cache": "mesaha-app-v151-loading-button-fix",
+  "builtAt": "2026-06-18",
+  "notes": "v150 paketindeki yükleniyor/çalışmayan buton sorunu düzeltildi. Bilgi kutuları eklendi, giriş modu ana sayfaya dönüş yazısı ve sürüm görünümü sabitlendi."
 }

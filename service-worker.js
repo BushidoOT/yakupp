@@ -1,11 +1,14 @@
-const CACHE_NAME = "mesaha-app-v142";
+const CACHE_NAME = "mesaha-app-v151-loading-button-fix";
 const ASSETS = [
   "./",
   "./index.html",
   "./manifest.json",
   "./service-worker.js",
   "./version.json",
-  "./.nojekyll"
+  "./.nojekyll",
+  "./mesaha_logo.png",
+  "./icon-192.png",
+  "./icon-512.png"
 ];
 
 self.addEventListener("install", (event) => {
