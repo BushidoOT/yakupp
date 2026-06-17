@@ -1,10 +1,10 @@
 {
-  "version": "v163",
-  "appVersion": "Mesaha İO v1.92",
-  "visibleVersion": "Mesaha İO v1.92",
-  "build": "v163",
-  "fileVersion": "v163",
-  "cache": "mesaha-app-v163",
+  "version": "v164",
+  "appVersion": "Mesaha İO v1.93",
+  "visibleVersion": "Mesaha İO v1.93",
+  "build": "v164",
+  "fileVersion": "v164",
+  "cache": "mesaha-app-v164",
   "updatedAt": "2026-06-17",
-  "notes": "v162 stabil yapı korunarak ağaç türü paneli düzeltildi. Ağaç seçince panel artık kapanmaz; panel yalnızca aç/kapat butonu veya dış tıklama ile kapanır. Ağaç türü seçenekleri yan yana küçük/kompakt butonlar haline getirildi. Offline/service-worker cache v163 yapıldı. Excel/Mesaha export içeriğine dokunulmadı."
+  "notes": "v163 stabil yapı korunarak Mesaha Liderleri penceresindeki açıklama metni kaldırıldı. Ağaç paneli kompakt ve açık kalma davranışı korunur. Offline/service-worker cache v164 yapıldı. Excel/Mesaha export içeriğine dokunulmadı."
 }
