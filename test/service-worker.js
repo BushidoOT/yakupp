@@ -1,4 +1,4 @@
-const CACHE_NAME = "mesaha-app-v142";
+const CACHE_NAME = "mesaha-app-v139";
 const ASSETS = [
   "./",
   "./index.html",

@@ -1,7 +1,7 @@
 {
-  "version": 142,
-  "visibleVersion": "Mesaha İO v1.71",
-  "cache": "mesaha-app-v142",
-  "builtAt": "2026-06-14",
-  "notes": "v142 admin üst özetinde Son Görülen kişi yerine bugün görülen kullanıcı sayısı gösterilir"
+  "version": 139,
+  "visibleVersion": "Mesaha İO v1.68",
+  "cache": "mesaha-app-v139",
+  "builtAt": "2026-06-13",
+  "notes": "v139 istatistik sıfırlama admin ana özet ve kullanıcı listesi fix; usageStats, kullanıcı günlük özetleri ve local kuyruk birlikte temizlenir"
 }
