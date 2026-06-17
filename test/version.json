@@ -1,7 +1,8 @@
 {
-  "version": 178,
+  "version": 207,
   "visibleVersion": "Mesaha İO v2.07 Stabil",
   "cache": "mesaha-app-v178",
   "builtAt": "2026-06-17",
-  "notes": "v142 stabil kaydetme/XLS çekirdeği korunarak beyan ağaç filtresi, üst versiyon, toplam m3, bilgi pencereleri ve buton temizliği gerçek fonksiyonlara bağlandı"
+  "stableBase": "v142 / Mesaha İO v1.71",
+  "notes": "v142 stabil taban üzerine üst bar, küçük versiyon yazısı, giriş modu ağaç alanı, toplam adet/m³, BEYAN ağaç filtresi ve yedek/ORBİS bilgi pencereleri eklendi. Kaydetme ve ORBİS XLS export çekirdeğine dokunulmadı."
 }
