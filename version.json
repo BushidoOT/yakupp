@@ -1,11 +1,7 @@
 {
-  "version": "v172",
-  "appVersion": "Mesaha İO v2.01",
-  "visibleVersion": "Mesaha İO v2.01",
-  "build": "v172",
-  "fileVersion": "v172",
-  "cache": "mesaha-io-v172",
-  "updatedAt": "2026-06-17T06:05:00+03:00",
-  "notes": "Giriş modu ağaç türü paneli ve logo çakışma final düzeltmesi",
-  "label": "Mesaha İO v2.01"
+  "version": 142,
+  "visibleVersion": "Mesaha İO v1.71",
+  "cache": "mesaha-app-v142",
+  "builtAt": "2026-06-14",
+  "notes": "v142 admin üst özetinde Son Görülen kişi yerine bugün görülen kullanıcı sayısı gösterilir"
 }
