@@ -1,4 +1,4 @@
-const CACHE_NAME = "mesaha-app-v152-stabil-zip-yedek";
+const CACHE_NAME = "mesaha-app-v153-keyboard-save-fix";
 const ASSETS = [
   "./",
   "./index.html",
