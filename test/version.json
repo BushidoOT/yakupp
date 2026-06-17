@@ -1,10 +1,10 @@
 {
-  "version": "v167",
-  "appVersion": "Mesaha İO v1.96",
-  "visibleVersion": "Mesaha İO v1.96",
-  "build": "v167",
-  "fileVersion": "v167",
-  "cache": "mesaha-app-v167",
+  "version": "v168",
+  "appVersion": "Mesaha İO v1.97",
+  "visibleVersion": "Mesaha İO v1.97",
+  "build": "v168",
+  "fileVersion": "v168",
+  "cache": "mesaha-app-v168",
   "updatedAt": "2026-06-17",
-  "notes": "v166 modern üst bar korunarak orman/dağ arka kapak görünürleştirildi, Kullanıcı Paneli ve Giriş Modu eşit boy kartlara alındı, Yedek Al/Yedek Yükle butonları diğer araç butonlarıyla aynı akışa ve boyuta getirildi. Excel/Mesaha export içeriğine dokunulmadı."
+  "notes": "v167 paketindeki sayfa altında JavaScript kodu görünmesine ve butonların çalışmamasına neden olan hatalı script yerleşimi düzeltildi. Modern üst bar, logo, arka kapak, kullanıcı/giriş kartları ve yedek buton boyutları korundu. Excel/Mesaha export içeriğine dokunulmadı."
 }
