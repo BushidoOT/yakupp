@@ -1,4 +1,4 @@
-const CACHE_NAME = "mesaha-app-v149-tree-filter-position";
+const CACHE_NAME = "mesaha-app-v150-info-modal-version-lock";
 const ASSETS = [
   "./",
   "./index.html",
