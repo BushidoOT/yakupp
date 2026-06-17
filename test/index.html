@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha İO v1.77</title>
+  <title>Mesaha İO v1.78</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -9261,7 +9261,7 @@ body.theme-dark .admin-stats-note-v134{ color:#a8b3c2; }
       <div class="brand app-brand-v143">
         <img class="brand-logo-v143" src="./mesaha_logo.png" alt="Mesaha İO logosu" loading="eager" />
         <div class="brand-copy-v143">
-          <h1>Mesaha İO v1.77</h1>
+          <h1>Mesaha İO v1.75</h1>
           <span>Orman ölçüm kayıt sistemi</span>
         </div>
       </div>
@@ -19901,8 +19901,9 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
         wrap = document.createElement('div');
         wrap.id = 'treeFilterV144';
         wrap.className = 'tree-filter-v144';
-        const search = document.querySelector('.records-panel .searchbar');
-        panelBody.insertBefore(wrap, search || panelBody.firstChild);
+        const tools = document.querySelector('.records-panel .tools');
+        const totals = document.querySelector('.records-panel .totals');
+        panelBody.insertBefore(wrap, tools || (totals ? totals.nextSibling : panelBody.firstChild));
       }
       if (!wrap.__v144Bound) {
         wrap.__v144Bound = true;
@@ -20876,8 +20877,9 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
         wrap = document.createElement('div');
         wrap.id = 'treeFilterV144';
         wrap.className = 'tree-filter-v144';
-        const search = document.querySelector('.records-panel .searchbar');
-        panelBody.insertBefore(wrap, search || panelBody.firstChild);
+        const tools = document.querySelector('.records-panel .tools');
+        const totals = document.querySelector('.records-panel .totals');
+        panelBody.insertBefore(wrap, tools || (totals ? totals.nextSibling : panelBody.firstChild));
       }
       if (!wrap.__v144Bound) {
         wrap.__v144Bound = true;
@@ -21376,7 +21378,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 <script id="mesaha-v146-home-simple-js">
 (function(){
   'use strict';
-  const VERSION_TEXT_V146 = 'Mesaha İO v1.77';
+  const VERSION_TEXT_V146 = 'Mesaha İO v1.75';
   const FILE_VERSION_V146 = 'v146';
 
   function readyV146(fn){
@@ -21543,7 +21545,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 <script id="mesaha-v147-fix-js">
 (function(){
   'use strict';
-  const VERSION_TEXT_V147 = 'Mesaha İO v1.77';
+  const VERSION_TEXT_V147 = 'Mesaha İO v1.76';
   const FILE_VERSION_V147 = 'v147';
   function safe(fn){ try { return fn(); } catch(e) { return undefined; } }
   function ready(fn){ if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn, {once:true}); else fn(); }
@@ -21580,191 +21582,74 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 </script>
 
 
-<style id="mesaha-v148-giris-home-css">
-  /* v148: Üstteki eski Giriş Modu butonunu ana ekranda gizle, giriş modunda Ana Sayfaya Dön olarak göster */
-  .top-actions-v112 #openSimpleV112{
-    display:none !important;
+<style id="mesaha-v149-tree-filter-position-css">
+  /* v149: Beyan ağaç filtresi, Mesaha Dosyasını İndir butonunun üstünde */
+  .records-panel #treeFilterV144.tree-filter-v144{
+    margin:10px 0 12px !important;
   }
-  body.inline-simple-v119 .top-actions-v112 #openSimpleV112{
-    display:inline-flex !important;
-    align-items:center !important;
-    justify-content:center !important;
-    min-height:42px !important;
-    padding:0 14px !important;
-    border:0 !important;
-    border-radius:999px !important;
-    background:linear-gradient(135deg,#18753d,#174f83) !important;
-    color:#ffffff !important;
-    font-weight:950 !important;
-    font-size:14px !important;
-    box-shadow:0 10px 22px rgba(23,79,131,.18) !important;
-    -webkit-tap-highlight-color:transparent !important;
-    touch-action:manipulation !important;
-  }
-  body.inline-simple-v119 .top-actions-v112 #openSimpleV112:active{
-    transform:translateY(1px) !important;
-  }
-  body.theme-dark.inline-simple-v119 .top-actions-v112 #openSimpleV112{
-    background:linear-gradient(135deg,#1f8f4c,#2563eb) !important;
-    color:#ffffff !important;
-    box-shadow:0 12px 24px rgba(0,0,0,.32) !important;
-  }
-  body.inline-simple-v119 .top-actions-v112{
-    display:flex !important;
-    gap:8px !important;
-    align-items:center !important;
-  }
-  body.inline-simple-v119 .top-actions-v112 #themeToggleV112{
-    display:none !important;
+  .records-panel .totals + #treeFilterV144.tree-filter-v144{
+    margin-top:12px !important;
   }
 </style>
-
-<script id="mesaha-v148-giris-home-js">
+<script id="mesaha-v149-tree-filter-position-js">
 (function(){
   'use strict';
-  const VERSION_TEXT_V148 = 'Mesaha İO v1.77';
-  const FILE_VERSION_V148 = 'v148';
-
-  function safe(fn){ try { return fn(); } catch(err) { return undefined; } }
-  function ready(fn){ if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn, { once:true }); else fn(); }
-  function isSimpleOn(){
-    return document.body.classList.contains('inline-simple-v119') ||
-           document.body.classList.contains('clean-simple-open-v111');
-  }
-  function blurActive(){
-    safe(() => {
-      const a = document.activeElement;
-      if (a && a !== document.body && typeof a.blur === 'function') a.blur();
-    });
-  }
-  function setNavHomeActive(){
-    safe(() => {
-      const entry = (typeof els !== 'undefined' && els && els.navEntry) ? els.navEntry : document.getElementById('navEntry');
-      const records = (typeof els !== 'undefined' && els && els.navRecords) ? els.navRecords : document.getElementById('navRecords');
-      const guide = (typeof els !== 'undefined' && els && els.navGuide) ? els.navGuide : document.getElementById('navGuide');
-      const admin = (typeof els !== 'undefined' && els && els.navAdmin) ? els.navAdmin : document.getElementById('navAdmin');
-      if (entry) entry.classList.add('active');
-      if (records) records.classList.remove('active');
-      if (guide) guide.classList.remove('active');
-      if (admin) admin.classList.remove('active');
-    });
-    safe(() => { if (typeof updateFlowTabsV111 === 'function') updateFlowTabsV111(); });
-  }
-  function closeSimpleOnly(){
-    safe(() => {
-      if (typeof setInlineSimpleV126 === 'function') { setInlineSimpleV126(false); return; }
-      if (typeof setInlineSimpleV122 === 'function') { setInlineSimpleV122(false); return; }
-      if (typeof setInlineSimpleV119 === 'function') { setInlineSimpleV119(false); return; }
-      if (typeof closeInlineSimpleV119 === 'function') { closeInlineSimpleV119(); return; }
-    });
-    safe(() => {
-      document.body.classList.remove('inline-simple-v119','clean-simple-open-v111','clean-keyboard-v118');
-      const overlay = document.getElementById('cleanSimpleOverlayV111');
-      if (overlay) {
-        overlay.classList.remove('show');
-        overlay.style.setProperty('display','none','important');
-        overlay.style.setProperty('visibility','hidden','important');
-        overlay.style.setProperty('pointer-events','none','important');
-      }
-    });
-  }
-  function goHomeFromSimple(event){
-    if (event) {
-      event.preventDefault();
-      event.stopPropagation();
-      if (typeof event.stopImmediatePropagation === 'function') event.stopImmediatePropagation();
+  const VERSION_TEXT_V149 = 'Mesaha İO v1.78';
+  const FILE_VERSION_V149 = 'v149';
+  function safeV149(fn){ try { return fn(); } catch(e) { return undefined; } }
+  function readyV149(fn){ if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn, { once:true }); else fn(); }
+  function moveTreeFilterV149(){
+    const panelBody = document.querySelector('.records-panel .panel-body');
+    const filter = document.getElementById('treeFilterV144');
+    if (!panelBody || !filter) return false;
+    const tools = panelBody.querySelector('.tools');
+    const totals = panelBody.querySelector('.totals');
+    if (tools) {
+      if (filter.nextElementSibling !== tools) panelBody.insertBefore(filter, tools);
+      return true;
     }
-    blurActive();
-    closeSimpleOnly();
-    safe(() => document.body.classList.remove('show-records','show-guide','show-admin'));
-    setNavHomeActive();
-    safe(() => { const home = document.getElementById('mesahaHomeV143'); if (home) home.scrollIntoView({ block:'start', behavior:'smooth' }); });
-    [0, 60, 160, 320].forEach(ms => setTimeout(blurActive, ms));
-    [0, 60, 160, 320].forEach(ms => setTimeout(syncGirisHomeV148, ms));
-  }
-  function syncGirisHomeV148(){
-    const on = isSimpleOn();
-    const topBtn = document.getElementById('openSimpleV112');
-    if (topBtn) {
-      topBtn.type = 'button';
-      topBtn.textContent = on ? '🏠 Ana Sayfaya Dön' : '⚡ Giriş Modu';
-      topBtn.setAttribute('aria-label', on ? 'Ana sayfaya dön' : 'Giriş modunu aç');
-      topBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
-      topBtn.classList.toggle('active', on);
+    if (totals) {
+      const afterTotals = totals.nextSibling;
+      if (afterTotals !== filter) panelBody.insertBefore(filter, afterTotals);
+      return true;
     }
-    const homeBtn = document.querySelector('[data-home-simple-v146]');
-    if (homeBtn) {
-      homeBtn.classList.toggle('is-active', on);
-      homeBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
-      homeBtn.setAttribute('aria-label', on ? 'Giriş modunu kapat ve ana sayfaya dön' : 'Giriş modunu aç');
-    }
-    const title = document.getElementById('homeSimpleV146');
-    const hint = document.getElementById('homeSimpleHintV146');
-    if (title) title.textContent = on ? 'Aktif' : 'Hızlı Kayıt';
-    if (hint) hint.textContent = on ? 'Dokununca ana sayfaya döner' : 'Dokun ve hızlı girişe geç';
+    return false;
   }
-  function bindTopButtonV148(){
-    const topBtn = document.getElementById('openSimpleV112');
-    if (topBtn && !topBtn.__v148HomeBound) {
-      topBtn.__v148HomeBound = true;
-      topBtn.addEventListener('click', function(event){
-        if (!isSimpleOn()) return;
-        goHomeFromSimple(event);
-      }, true);
-    }
-  }
-  function bindHomeCardV148(){
-    const homeBtn = document.querySelector('[data-home-simple-v146]');
-    if (homeBtn && !homeBtn.__v148HomeCardBound) {
-      homeBtn.__v148HomeCardBound = true;
-      homeBtn.addEventListener('click', function(event){
-        if (!isSimpleOn()) return;
-        goHomeFromSimple(event);
-      }, true);
-    }
-  }
-  function applyVersionV148(){
-    safe(() => { document.title = VERSION_TEXT_V148; });
-    safe(() => { const h1 = document.querySelector('.brand h1'); if (h1) h1.textContent = VERSION_TEXT_V148; });
-    safe(() => {
+  function applyVersionV149(){
+    safeV149(() => { document.title = VERSION_TEXT_V149; });
+    safeV149(() => { const h1 = document.querySelector('.brand h1'); if (h1) h1.textContent = VERSION_TEXT_V149; });
+    safeV149(() => {
       window.MESAHA_BUILD_INFO = Object.assign({}, window.MESAHA_BUILD_INFO || {}, {
-        fileVersion: FILE_VERSION_V148,
-        visibleVersion: VERSION_TEXT_V148,
-        hideOldTopGirisButton: true,
-        simpleBackToHomeButton: true
+        fileVersion: FILE_VERSION_V149,
+        visibleVersion: VERSION_TEXT_V149,
+        treeFilterAboveExport: true
       });
     });
   }
-  function bootV148(){
-    bindTopButtonV148();
-    bindHomeCardV148();
-    syncGirisHomeV148();
-    applyVersionV148();
+  function bootV149(){
+    moveTreeFilterV149();
+    applyVersionV149();
   }
-  ready(bootV148);
-  [60, 180, 420, 900, 1600, 2600].forEach(ms => setTimeout(bootV148, ms));
-  setInterval(syncGirisHomeV148, 700);
-  setInterval(applyVersionV148, 2600);
-  safe(() => {
-    if (window.MutationObserver && !document.body.__v148SimpleObserver) {
-      document.body.__v148SimpleObserver = new MutationObserver(() => setTimeout(syncGirisHomeV148, 30));
-      document.body.__v148SimpleObserver.observe(document.body, { attributes:true, attributeFilter:['class'] });
-    }
-  });
+  readyV149(bootV149);
+  [50, 150, 350, 800, 1400, 2400].forEach(ms => setTimeout(bootV149, ms));
   document.addEventListener('click', function(event){
-    const target = event.target;
-    const hitTopButton = target && target.closest ? target.closest('#openSimpleV112') : null;
-    const hitHomeCard = target && target.closest ? target.closest('[data-home-simple-v146]') : null;
-    if ((hitTopButton || hitHomeCard) && isSimpleOn()) {
-      goHomeFromSimple(event);
-      return;
-    }
-    if (target && target.closest && target.closest('#openSimpleV112,[data-home-simple-v146],#navEntry,[data-flow-tab="entry"]')) {
-      setTimeout(syncGirisHomeV148, 60);
-      setTimeout(syncGirisHomeV148, 180);
-      setTimeout(blurActive, 220);
+    if (event.target && event.target.closest && event.target.closest('#navRecords,[data-flow-tab="records"],#treeFilterV144,.records-panel')) {
+      setTimeout(moveTreeFilterV149, 60);
+      setTimeout(moveTreeFilterV149, 180);
     }
   }, true);
+  safeV149(() => {
+    if (typeof render === 'function' && !render.__v149TreeFilterPositionWrapped) {
+      const oldRenderV149 = render;
+      render = function(){
+        const result = oldRenderV149.apply(this, arguments);
+        setTimeout(moveTreeFilterV149, 20);
+        setTimeout(applyVersionV149, 40);
+        return result;
+      };
+      render.__v149TreeFilterPositionWrapped = true;
+    }
+  });
 })();
 </script>
 

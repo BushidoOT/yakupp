@@ -1,7 +1,7 @@
 {
-  "version": 148,
-  "visibleVersion": "Mesaha İO v1.77",
-  "cache": "mesaha-app-v148-giris-home-button-fix",
+  "version": 149,
+  "visibleVersion": "Mesaha İO v1.78",
+  "cache": "mesaha-app-v149-tree-filter-position",
   "builtAt": "2026-06-18",
-  "notes": "Üstteki eski Giriş Modu butonu ana ekranda gizlendi. Giriş modunda Normal yerine Ana Sayfaya Dön butonu gösterildi. Giriş modu kapatılınca ana sayfa kartındaki Aktif durumu doğru şekilde kapanır."
+  "notes": "Beyan/Ölçümler bölümündeki ağaç filtresi Mesaha Dosyasını İndir butonunun üstüne taşındı. Filtreler BEYAN toplamları ile indirme butonları arasında görünür."
 }
