@@ -1,10 +1,10 @@
 {
-  "version": "v161",
-  "appVersion": "Mesaha İO v1.90",
-  "visibleVersion": "Mesaha İO v1.90",
-  "build": "v161",
-  "fileVersion": "v161",
-  "cache": "mesaha-app-v161",
+  "version": "v162",
+  "appVersion": "Mesaha İO v1.91",
+  "visibleVersion": "Mesaha İO v1.91",
+  "build": "v162",
+  "fileVersion": "v162",
+  "cache": "mesaha-app-v162",
   "updatedAt": "2026-06-17",
-  "notes": "Ağaç türü paneli kilitlendi: eski açık kalma kayıtları temizlenir, panel sadece butona basınca açılır, seçim yapılınca/dışarı tıklanınca kapanır. Excel/Mesaha dosyası indirme içeriğine dokunulmadı."
+  "notes": "Eski çakışan lider/ağaç/version yamaları temizlendi. Tek v162 final controller eklendi. Ağaç paneli localStorage açık kalma mantığından çıkarıldı; sadece butonla açılır, seçim/dış tık ile kapanır. Offline açılış ve Firebase zaman aşımı 3 saniye civarında korunur. Excel/Mesaha export içeriğine dokunulmadı."
 }

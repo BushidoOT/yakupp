@@ -1,4 +1,4 @@
-const CACHE_NAME = "mesaha-app-v161";
+const CACHE_NAME = "mesaha-app-v162";
 const ASSETS = [
   "./",
   "./index.html",
@@ -41,6 +41,7 @@ self.addEventListener("fetch", (event) => {
   if (request.method !== "GET") return;
 
   const url = new URL(request.url);
+  const sameOrigin = url.origin === self.location.origin;
   const isNavigation = request.mode === "navigate" || url.pathname.endsWith("/") || url.pathname.endsWith("/index.html");
 
   if (isNavigation) {
@@ -58,6 +59,8 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
+  if (!sameOrigin) return;
+
   event.respondWith((async () => {
     const cached = await caches.match(request);
     if (cached) {
@@ -67,7 +70,7 @@ self.addEventListener("fetch", (event) => {
       return cached;
     }
     try {
-      const response = await fetch(request);
+      const response = await networkWithTimeout(request, 3000);
       if (response && response.ok) caches.open(CACHE_NAME).then((cache) => cache.put(request, response.clone()).catch(() => {}));
       return response;
     } catch (err) {
