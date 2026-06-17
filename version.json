@@ -1,7 +1,10 @@
 {
-  "version": 142,
-  "visibleVersion": "Mesaha İO v1.71",
-  "cache": "mesaha-app-v142",
-  "builtAt": "2026-06-14",
-  "notes": "v142 admin üst özetinde Son Görülen kişi yerine bugün görülen kullanıcı sayısı gösterilir"
+  "version": "v171",
+  "appVersion": "Mesaha İO v2.00",
+  "visibleVersion": "Mesaha İO v2.00",
+  "build": "v171",
+  "fileVersion": "v171",
+  "cache": "mesaha-app-v171",
+  "updatedAt": "2026-06-17",
+  "notes": "Giriş modundaki Ağaç Türü Seç butonu final katmanda düzeltildi. Aç deyince panel açık kalır, ağaç seçince kapanmaz. v170 lider açıklama temizliği, v169 buton düzeni, modern üst bar ve Excel/Mesaha export içeriği korundu."
 }
