@@ -1,4 +1,4 @@
-const CACHE_NAME = "mesaha-app-v153-keyboard-save-fix";
+const CACHE_NAME = "mesaha-app-v154-records-20";
 const ASSETS = [
   "./",
   "./index.html",

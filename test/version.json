@@ -1,7 +1,7 @@
 {
-  "version": 153,
-  "visibleVersion": "Mesaha İO v1.82",
-  "cache": "mesaha-app-v153-keyboard-save-fix",
+  "version": 154,
+  "visibleVersion": "Mesaha İO v1.83",
+  "cache": "mesaha-app-v154-records-20",
   "builtAt": "2026-06-18",
-  "notes": "v152 stabil ZIP yedek paketi korundu. Kaydetten sonra çap alanında klavyenin kapanmaması için odak davranışı düzeltildi. ORBİS Excel formatına dokunulmadı."
+  "notes": "v153 klavye düzeltmesi ve v152 stabil ZIP yedek sistemi korundu. Ölçümler/Beyan sayfalama 20 kayıt olacak şekilde güncellendi. ORBİS Excel formatına dokunulmadı."
 }
