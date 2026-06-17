@@ -1,10 +1,10 @@
 {
-  "version": "v170",
-  "appVersion": "Mesaha İO v1.99",
-  "visibleVersion": "Mesaha İO v1.99",
-  "build": "v170",
-  "fileVersion": "v170",
-  "cache": "mesaha-app-v170",
+  "version": "v171",
+  "appVersion": "Mesaha İO v2.00",
+  "visibleVersion": "Mesaha İO v2.00",
+  "build": "v171",
+  "fileVersion": "v171",
+  "cache": "mesaha-app-v171",
   "updatedAt": "2026-06-17",
-  "notes": "Mesaha Liderleri penceresindeki açıklama metni kaldırıldı. v169 buton genişliği, modern üst bar, logo, arka kapak, kullanıcı/giriş kartları, yedek buton düzeni ve Excel/Mesaha export içeriği korundu."
+  "notes": "Giriş modundaki Ağaç Türü Seç butonu final katmanda düzeltildi. Aç deyince panel açık kalır, ağaç seçince kapanmaz. v170 lider açıklama temizliği, v169 buton düzeni, modern üst bar ve Excel/Mesaha export içeriği korundu."
 }
