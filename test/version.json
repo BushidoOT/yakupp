@@ -1,7 +1,7 @@
 {
-  "version": 155,
-  "visibleVersion": "Mesaha İO v1.84",
-  "cache": "mesaha-app-v155-script-leak-fix",
+  "version": 156,
+  "visibleVersion": "Mesaha İO v1.85",
+  "cache": "mesaha-app-v156-filter-keyboard-fix",
   "builtAt": "2026-06-18",
-  "notes": "v154 üzerindeki ölçümler 20 kayıt sayfalama ve v152 ZIP yedek sistemi korundu. Ekranda kod görünmesine ve butonların çalışmamasına sebep olan script sızıntısı düzeltildi. ORBİS Excel formatına dokunulmadı."
+  "notes": "Ölçümler/Beyan ağaç filtresi seçilen ağaca göre listeyi ve toplamları kesin filtreler. Hızlı girişte Kaydet sonrası çap klavyesinin kapanmaması güçlendirildi. Her sayfada 20 kayıt korunur. ZIP yedek ve ORBİS Excel formatı korunmuştur."
 }
