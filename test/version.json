@@ -1,7 +1,7 @@
 {
-  "version": 157,
-  "visibleVersion": "Mesaha İO v1.86",
-  "cache": "mesaha-app-v157-tarih-yedek-yukle-fix",
+  "version": 158,
+  "visibleVersion": "Mesaha İO v1.87",
+  "cache": "mesaha-app-v158-kesimci-filtre",
   "builtAt": "2026-06-18",
-  "notes": "Tarih alanı uygulama açılışında varsayılan olarak bugünün tarihine gelir. Yedek yükleme bilgi kutusu sadeleştirildi ve ZIP yedek seçme anlatımı yapıldı. v156 ağaç filtresi, hızlı giriş klavye düzeltmesi, 20 kayıt/sayfa ve ZIP yedek sistemi korunmuştur. Mesaha Excel/ORBİS formatına dokunulmamıştır."
+  "notes": "Kesimci ekleme alanı eklendi. Kayıtlar isteğe bağlı kesimci adıyla saklanır. Ölçümler/BEYAN kısmında kesimci filtresi eklendi; seçilen kesimciye göre adet ve m³ toplamları gösterilir. Ağaç filtresi, hızlı giriş klavye düzeltmesi, 20 kayıt/sayfa ve ZIP yedek sistemi korunmuştur. Mesaha Excel/ORBİS formatına dokunulmamıştır."
 }
