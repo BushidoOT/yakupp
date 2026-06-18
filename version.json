@@ -1,7 +1,7 @@
 {
-  "version": 151,
-  "visibleVersion": "Mesaha İO v1.80",
-  "cache": "mesaha-app-v151-loading-button-fix",
+  "version": 157,
+  "visibleVersion": "Mesaha İO v1.86",
+  "cache": "mesaha-app-v157-tarih-yedek-yukle-fix",
   "builtAt": "2026-06-18",
-  "notes": "v150 paketindeki yükleniyor/çalışmayan buton sorunu düzeltildi. Bilgi kutuları eklendi, giriş modu ana sayfaya dönüş yazısı ve sürüm görünümü sabitlendi."
+  "notes": "Tarih alanı uygulama açılışında varsayılan olarak bugünün tarihine gelir. Yedek yükleme bilgi kutusu sadeleştirildi ve ZIP yedek seçme anlatımı yapıldı. v156 ağaç filtresi, hızlı giriş klavye düzeltmesi, 20 kayıt/sayfa ve ZIP yedek sistemi korunmuştur. Mesaha Excel/ORBİS formatına dokunulmamıştır."
 }
