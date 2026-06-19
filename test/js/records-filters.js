@@ -593,7 +593,7 @@
     btn.classList.toggle('is-active', on);
     const title = document.getElementById('homeSimpleV146');
     const hint = document.getElementById('homeSimpleHintV146');
-    if (title) title.textContent = on ? 'Aktif' : 'Hızlı Kayıt';
+    if (title) title.textContent = 'Mesaha Gir';
     if (hint) hint.textContent = on ? 'Giriş modu açık' : 'Dokun ve hızlı girişe geç';
   }
   function applyVersionV146(){

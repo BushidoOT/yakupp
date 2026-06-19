@@ -1,5 +1,5 @@
-importScripts('./js/version.js?v=195');
-const CACHE_NAME = (self.MESAHA_VERSION && self.MESAHA_VERSION.cacheName) || 'mesaha-app-v195-home-tree-multi';
+importScripts('./js/version.js?v=196');
+const CACHE_NAME = (self.MESAHA_VERSION && self.MESAHA_VERSION.cacheName) || 'mesaha-app-v196-clear-size-fix';
 const CORE_ASSETS = [
   './',
   './index.html',
@@ -14,30 +14,30 @@ const CORE_ASSETS = [
   './assets/mesaha_logo.png',
   './assets/icon-192.png',
   './assets/icon-512.png',
-  './css/style.css?v=195',
-  './css/dark.css?v=195',
-  './css/ios-entry.css?v=195',
-  './css/entry-mode.css?v=195',
-  './js/version.js?v=195',
-  './js/admin-access.js?v=195',
-  './js/startup-offline.js?v=195',
-  './js/core.js?v=195',
-  './js/admin-cloud.js?v=195',
-  './js/tree-entry.js?v=195',
-  './js/ui-mobile.js?v=195',
-  './js/records-filters.js?v=195',
-  './js/backup-storage.js?v=195',
-  './js/keyboard-filters.js?v=195',
-  './js/cutters.js?v=195',
-  './js/filters-stability.js?v=195',
-  './js/stability-base.js?v=195',
-  './js/control-test.js?v=195',
-  './js/stability-admin.js?v=195',
-  './js/offline-admin.js?v=195',
-  './js/app-stability.js?v=195',
-  './js/auto-update.js?v=195',
-  './js/ios-entry.js?v=195',
-  './js/entry-mode.js?v=195'
+  './css/style.css?v=196',
+  './css/dark.css?v=196',
+  './css/ios-entry.css?v=196',
+  './css/entry-mode.css?v=196',
+  './js/version.js?v=196',
+  './js/admin-access.js?v=196',
+  './js/startup-offline.js?v=196',
+  './js/core.js?v=196',
+  './js/admin-cloud.js?v=196',
+  './js/tree-entry.js?v=196',
+  './js/ui-mobile.js?v=196',
+  './js/records-filters.js?v=196',
+  './js/backup-storage.js?v=196',
+  './js/keyboard-filters.js?v=196',
+  './js/cutters.js?v=196',
+  './js/filters-stability.js?v=196',
+  './js/stability-base.js?v=196',
+  './js/control-test.js?v=196',
+  './js/stability-admin.js?v=196',
+  './js/offline-admin.js?v=196',
+  './js/app-stability.js?v=196',
+  './js/auto-update.js?v=196',
+  './js/ios-entry.js?v=196',
+  './js/entry-mode.js?v=196'
 ];
 const FALLBACK_INDEX = './index.html';
 const FALLBACK_ADMIN = './admin.html';

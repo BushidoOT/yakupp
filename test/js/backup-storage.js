@@ -42,7 +42,7 @@
     }
     const title = document.getElementById('homeSimpleV146');
     const hint = document.getElementById('homeSimpleHintV146');
-    if (title) title.textContent = on ? 'Aktif' : 'Hızlı Kayıt';
+    if (title) title.textContent = 'Mesaha Gir';
     if (hint) hint.textContent = on ? 'Dokununca ana sayfaya döner' : 'Dokun ve hızlı girişe geç';
   }
   function applyVersion(){
