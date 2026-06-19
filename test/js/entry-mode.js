@@ -1,6 +1,6 @@
 (function(){
   'use strict';
-  var TAG = 'v188-entry-mode';
+  var TAG = 'v191-entry-mode';
   var SAVE_BOUND = false;
   var layoutDone = false;
   var timer = null;
@@ -97,7 +97,7 @@
       var homeBtn = document.createElement('button');
       homeBtn.id = 'cleanHomeBtnV188';
       homeBtn.type = 'button';
-      homeBtn.className = 'clean-home-btn-v188';
+      homeBtn.className = 'clean-home-btn-v189';
       homeBtn.textContent = 'Ana Ekran';
       var closeBtn = byId('cleanSimpleCloseV111');
       if(closeBtn && closeBtn.parentNode === head) head.insertBefore(homeBtn, closeBtn); else head.appendChild(homeBtn);
@@ -147,7 +147,7 @@
       productSection.className = 'clean-block-v187 clean-product-section-v187';
       productSection.innerHTML = '<span class="clean-product-title-v187">Odun Türü</span>';
       productSection.appendChild(grid);
-      card.insertBefore(productSection, save);
+      card.insertBefore(productSection, measure.nextSibling);
     }
 
     var clear = byId('cleanClearV187');
@@ -262,8 +262,8 @@
     if(!card){
       card = document.createElement('div');
       card.id = 'homeEntrySettingsV188';
-      card.className = 'home-entry-settings-v188 home-card-v143';
-      card.innerHTML = '<div class="home-card-head-v143"><h3>Giriş Ayarları</h3><button type="button" id="homeOpenCleanV188">Giriş Modu ›</button></div><div class="home-entry-settings-grid-v188"></div>';
+      card.className = 'home-entry-settings-v189 home-card-v143';
+      card.innerHTML = '<div class="home-card-head-v143"><h3>Giriş Ayarları</h3></div><div class="home-entry-settings-grid-v189"></div>';
       var fileInfo = home.querySelector('.info-details.file-info-v187') || home.querySelector('.file-info-v187');
       if(fileInfo && fileInfo.nextSibling) home.insertBefore(card, fileInfo.nextSibling); else {
         var status = home.querySelector('.home-status-v143');
@@ -272,13 +272,13 @@
       var openBtn = card.querySelector('#homeOpenCleanV188');
       if(openBtn) openBtn.addEventListener('click', function(ev){ ev.preventDefault(); openClean(); }, true);
     }
-    var grid = card.querySelector('.home-entry-settings-grid-v188');
+    var grid = card.querySelector('.home-entry-settings-grid-v189');
     if(!grid) return;
     var dateBlock = byId('homeDateBlockV188');
     if(!dateBlock && dateInput){
       dateBlock = document.createElement('div');
       dateBlock.id = 'homeDateBlockV188';
-      dateBlock.className = 'home-setting-block-v188';
+      dateBlock.className = 'home-setting-block-v189';
       dateBlock.innerHTML = '<label for="productionDate">Mesaha Tarihi</label>';
       dateBlock.appendChild(dateInput);
       grid.appendChild(dateBlock);
@@ -287,19 +287,24 @@
     if(!woodBlock && woodPanel){
       woodBlock = document.createElement('div');
       woodBlock.id = 'homeWoodBlockV188';
-      woodBlock.className = 'home-setting-block-v188 home-wood-block-v188';
-      woodBlock.innerHTML = '<div class="home-setting-title-v188">Odun Türleri</div><p class="home-setting-hint-v188">Tikli olan odun türleri Giriş Modu içinde görünür.</p>';
-      woodPanel.classList.add('open','home-wood-panel-v188');
+      woodBlock.className = 'home-setting-block-v189 home-wood-block-v189';
+      woodBlock.innerHTML = '<div class="home-setting-title-v189">Odun Türleri</div><p class="home-setting-hint-v189">Tikli olan odun türleri Giriş Modu içinde görünür.</p>';
+      woodPanel.classList.add('open','home-wood-panel-v189');
       woodBlock.appendChild(woodPanel);
       grid.appendChild(woodBlock);
       var apply = byId('woodTypeApplyBtn');
-      if(apply && !apply.__v188Refresh){
-        apply.__v188Refresh = true;
+      if(apply){
+        apply.style.setProperty('display','none','important');
+        apply.setAttribute('aria-hidden','true');
+        apply.tabIndex = -1;
+      }
+      if(apply && !apply.__v191Refresh){
+        apply.__v191Refresh = true;
         apply.addEventListener('click', refreshCleanProductsSoon, false);
       }
       woodPanel.querySelectorAll('input[type="checkbox"]').forEach(function(ch){
-        if(ch.__v188Check) return;
-        ch.__v188Check = true;
+        if(ch.__v189Check) return;
+        ch.__v189Check = true;
         ch.addEventListener('change', function(){
           var applyBtn = byId('woodTypeApplyBtn');
           if(applyBtn) setTimeout(function(){ try{ applyBtn.click(); }catch(_){} }, 0);
@@ -325,8 +330,9 @@
     if(status && status.nextSibling) home.insertBefore(details, status.nextSibling); else home.insertBefore(details, home.firstChild);
   }
   function patchBrand(){
-    var shortV = (window.MESAHA_VERSION && window.MESAHA_VERSION.shortVersion) || 'v2.17';
-    var buildV = (window.MESAHA_VERSION && window.MESAHA_VERSION.version) || 'v188';
+    var shortV = (window.MESAHA_VERSION && window.MESAHA_VERSION.shortVersion) || 'v2.20';
+    var buildV = (window.MESAHA_VERSION && window.MESAHA_VERSION.version) || 'v191';
+    safe(function(){ document.title = shortV; });
     var h = document.querySelector('.app-brand-v143 .brand-copy-v143 h1');
     var s = document.querySelector('.app-brand-v143 .brand-copy-v143 span');
     if(h){ h.textContent = shortV; h.setAttribute('data-version-no-auto','1'); h.setAttribute('data-app-version-short',''); }
@@ -338,21 +344,32 @@
     var splashP = document.querySelector('.mesaha-startup-logo-v178 p'); if(splashP) splashP.textContent = 'Uygulama hazırlanıyor';
   }
   function patchNavigation(){
-    document.body.classList.add('mesaha-v187-entry-only','mesaha-v188-entry-only');
+    document.body.classList.add('mesaha-v187-entry-only','mesaha-v188-entry-only','mesaha-v189-entry-only');
     var navEntry = byId('navEntry');
-    if(navEntry && !navEntry.__v188Home){
-      navEntry.__v188Home = true;
+    if(navEntry && !navEntry.__v189Home){
+      navEntry.__v189Home = true;
       navEntry.textContent = 'Ana Ekran';
       navEntry.addEventListener('click', function(ev){ ev.preventDefault(); ev.stopPropagation(); if(ev.stopImmediatePropagation) ev.stopImmediatePropagation(); goHome(); }, true);
     } else if(navEntry) {
       navEntry.textContent = 'Ana Ekran';
     }
     document.querySelectorAll('[data-home-action-v143="new"],[data-home-action-v143="diameter"],[data-home-simple-v146],#openSimpleV112').forEach(function(btn){
-      if(btn.__v188Open) return;
-      btn.__v188Open = true;
+      if(btn.__v189Open) return;
+      btn.__v189Open = true;
       btn.addEventListener('click', function(ev){ ev.preventDefault(); ev.stopPropagation(); if(ev.stopImmediatePropagation) ev.stopImmediatePropagation(); openClean(); }, true);
     });
-    var entryTab = document.querySelector('#flowTabsV111 [data-flow-tab="entry"]'); if(entryTab) entryTab.style.display = 'none';
+    var entryTab = document.querySelector('#flowTabsV111 [data-flow-tab="entry"]');
+    if(entryTab){
+      entryTab.style.removeProperty('display');
+      entryTab.style.setProperty('display','flex','important');
+      entryTab.style.setProperty('visibility','visible','important');
+      entryTab.style.setProperty('pointer-events','auto','important');
+      entryTab.innerHTML = '<span class="tab-ico-v143">🏠</span><span class="tab-label-v143">Ana Ekran</span>';
+      if(!entryTab.__v189Home){
+        entryTab.__v189Home = true;
+        entryTab.addEventListener('click', function(ev){ ev.preventDefault(); ev.stopPropagation(); if(ev.stopImmediatePropagation) ev.stopImmediatePropagation(); goHome(); }, true);
+      }
+    }
   }
   function openClean(){
     safe(function(){ if(typeof openCleanSimpleV111 === 'function') openCleanSimpleV111(); else byId('cleanSimpleOverlayV111').classList.add('show'); });
@@ -385,4 +402,139 @@
   setInterval(function(){ patchBrand(); patchNavigation(); patchCleanSave(); moveEntrySettingsToHome(); }, 1800);
   window.mesahaEntryModeV188 = { boot:boot, open:openClean, clear:clearEntryFields, home:goHome };
   window.mesahaEntryModeV187 = window.mesahaEntryModeV188;
+})();
+
+
+/* v189 final guard: Ana Ekran sekmesi + sıralama + başlık sabitleme */
+(function(){
+  'use strict';
+  function byId(id){ return document.getElementById(id); }
+  function safe(fn){ try{return fn();}catch(e){} }
+  function goHome(){
+    safe(function(){
+      var overlay = byId('cleanSimpleOverlayV111');
+      if(overlay){ overlay.classList.remove('show','active','open'); overlay.style.removeProperty('display'); overlay.style.removeProperty('visibility'); overlay.style.removeProperty('pointer-events'); }
+      document.body.classList.remove('clean-simple-open-v111','clean-simple-active-v111','show-records','show-guide','show-admin');
+      document.body.classList.add('mesaha-v189-entry-only');
+      document.querySelectorAll('#flowTabsV111 button,.bottom-nav button').forEach(function(b){ b.classList.remove('active'); });
+      var entry = document.querySelector('#flowTabsV111 [data-flow-tab="entry"]') || byId('navEntry');
+      if(entry) entry.classList.add('active');
+      var home = byId('mesahaHomeV143');
+      if(home) home.scrollIntoView({block:'start'}); else window.scrollTo(0,0);
+    });
+  }
+  function titleFix(){
+    safe(function(){ document.title = 'v2.20'; });
+    safe(function(){
+      document.querySelectorAll('.app-brand-v143 .brand-copy-v143,[data-app-version-short],[data-app-version-build]').forEach(function(el){
+        if(!el) return;
+        if(/Mesaha\s*İ?O/i.test(el.textContent || '')) el.textContent = el.matches('[data-app-version-build], .app-brand-v143 .brand-copy-v143 span') ? 'v191' : 'v2.20';
+      });
+      var h = document.querySelector('.app-brand-v143 .brand-copy-v143 h1'); if(h) h.textContent = 'v2.20';
+      var s = document.querySelector('.app-brand-v143 .brand-copy-v143 span'); if(s) s.textContent = 'v191';
+      var splashH = document.querySelector('.mesaha-startup-logo-v178 h2'); if(splashH) splashH.textContent = 'v2.20';
+    });
+  }
+  function navFix(){
+    safe(function(){
+      document.body.classList.add('mesaha-v187-entry-only','mesaha-v188-entry-only','mesaha-v189-entry-only');
+      var entry = document.querySelector('#flowTabsV111 [data-flow-tab="entry"]');
+      if(entry){
+        entry.style.removeProperty('display');
+        entry.style.setProperty('display','flex','important');
+        entry.style.setProperty('visibility','visible','important');
+        entry.style.setProperty('pointer-events','auto','important');
+        entry.innerHTML = '<span class="tab-ico-v143">🏠</span><span class="tab-label-v143">Ana Ekran</span>';
+        if(!entry.__v189FinalHome){
+          entry.__v189FinalHome = true;
+          entry.addEventListener('click', function(ev){ ev.preventDefault(); ev.stopPropagation(); if(ev.stopImmediatePropagation) ev.stopImmediatePropagation(); goHome(); }, true);
+        }
+      }
+      var navEntry = byId('navEntry');
+      if(navEntry){ navEntry.textContent = 'Ana Ekran'; if(!navEntry.__v189FinalHome){ navEntry.__v189FinalHome = true; navEntry.addEventListener('click', function(ev){ ev.preventDefault(); ev.stopPropagation(); if(ev.stopImmediatePropagation) ev.stopImmediatePropagation(); goHome(); }, true); } }
+    });
+  }
+  function hideUnusedHomeControls(){
+    safe(function(){
+      var btn = byId('homeOpenCleanV188');
+      if(btn) btn.remove();
+      var apply = byId('woodTypeApplyBtn');
+      if(apply){
+        apply.style.setProperty('display','none','important');
+        apply.style.setProperty('visibility','hidden','important');
+        apply.setAttribute('aria-hidden','true');
+        apply.tabIndex = -1;
+      }
+    });
+  }
+  function forceEditRecordToClean(){
+    safe(function(){
+      var old = window.editRecord;
+      if(typeof old !== 'function' || old.__v191CleanOpen) return;
+      var wrapped = function(id){
+        var result = old.apply(this, arguments);
+        setTimeout(function(){
+          try{ syncCleanFromMain(); }catch(_){ }
+          try{ ensureCleanLayout(); }catch(_){ }
+          try{ openClean(); }catch(_){ }
+          setTimeout(function(){
+            var dia = byId('cleanDiameterV111');
+            if(dia){ try{ dia.focus({preventScroll:true}); dia.select && dia.select(); }catch(_){ try{ dia.focus(); }catch(__){} } }
+          }, 80);
+        }, 80);
+        return result;
+      };
+      wrapped.__v191CleanOpen = true;
+      wrapped.__v191Old = old;
+      window.editRecord = wrapped;
+      try{ editRecord = wrapped; }catch(_){ }
+    });
+  }
+  function orderFix(){
+    safe(function(){
+      var card = document.querySelector('#cleanSimpleOverlayV111 .clean-simple-card-v111');
+      var top = byId('cleanTopFieldsV187');
+      var measure = card && card.querySelector('.clean-measure-grid-v111');
+      var grid = byId('cleanProductGridV111');
+      var save = byId('cleanSaveV111');
+      if(!card || !measure || !grid || !save) return;
+      measure.classList.add('v187-reordered');
+      measure.style.setProperty('order','2','important');
+      save.style.setProperty('order','4','important');
+      if(top){ top.style.setProperty('order','1','important'); }
+      if(top && top.parentNode === card){
+        if(top.nextSibling !== measure) card.insertBefore(measure, top.nextSibling);
+      } else if(measure.parentNode === card){
+        var before = byId('cleanProductSectionV187') || grid || save;
+        if(before && measure.nextSibling !== before) card.insertBefore(measure, before);
+      }
+      var section = byId('cleanProductSectionV187');
+      if(!section){
+        section = document.createElement('div');
+        section.id = 'cleanProductSectionV187';
+        section.className = 'clean-block-v187 clean-product-section-v187';
+        section.innerHTML = '<span class="clean-product-title-v187">Odun Türü</span>';
+      }
+      section.style.setProperty('order','3','important');
+      grid.style.setProperty('order','0','important');
+      if(grid.parentNode !== section) section.appendChild(grid);
+      if(section.parentNode !== card || section.previousElementSibling !== measure){
+        card.insertBefore(section, measure.nextSibling);
+      }
+      if(save.parentNode === card && save.previousElementSibling !== section){
+        card.insertBefore(save, section.nextSibling);
+      }
+      var auto = byId('cleanAutoInfoV111'); if(auto) auto.style.setProperty('order','5','important');
+      var recent = card.querySelector('.clean-recent-area-v111'); if(recent) recent.style.setProperty('order','6','important');
+      var clear = byId('cleanClearV187'); if(clear) clear.style.setProperty('order','7','important');
+      var lenWrap = byId('cleanLengthV111') ? byId('cleanLengthV111').closest('div') : null;
+      var diaWrap = byId('cleanDiameterV111') ? byId('cleanDiameterV111').closest('div') : null;
+      if(lenWrap && diaWrap && measure.firstElementChild !== diaWrap) measure.insertBefore(diaWrap, lenWrap);
+    });
+  }
+  function run(){ titleFix(); navFix(); orderFix(); hideUnusedHomeControls(); forceEditRecordToClean(); }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run, {once:true}); else run();
+  [50,150,350,800,1500,2600,5200].forEach(function(ms){ setTimeout(run, ms); });
+  setInterval(run, 900);
+  window.mesahaV190GoHome = goHome; window.mesahaV190OpenClean = openClean;
 })();

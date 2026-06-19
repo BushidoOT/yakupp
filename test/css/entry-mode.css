@@ -1,4 +1,4 @@
-/* v189: Yeni Kayıt kaldırıldı, tüm giriş Giriş Modu'na taşındı */
+/* v191: Yeni Kayıt kaldırıldı, tüm giriş Giriş Modu'na taşındı */
 body.mesaha-v187-entry-only .entry-panel{display:none!important;}
 body.mesaha-v187-entry-only #flowTabsV111 button[data-flow-tab="entry"]{display:none!important;}
 body.mesaha-v187-entry-only .bottom-nav #navEntry{font-size:0!important;}
@@ -122,3 +122,26 @@ body.clean-simple-open-v111 .clean-recent-area-v111{order:6!important;}
 body.clean-simple-open-v111 #cleanClearV187{order:7!important;}
 body.clean-simple-open-v111 #cleanProductSectionV187{margin-top:2px!important;}
 body.clean-simple-open-v111 .clean-measure-grid-v111{margin-bottom:8px!important;}
+
+
+/* v191: Seçimi Uygula görünmez, Giriş Modu sırası kesin, ana menüde Giriş Modu başlık butonu yok */
+#homeOpenCleanV188{display:none!important;visibility:hidden!important;pointer-events:none!important;}
+#homeEntrySettingsV188 .home-card-head-v143{justify-content:flex-start!important;}
+#homeEntrySettingsV188 .home-card-head-v143 button{display:none!important;}
+#homeWoodBlockV188 #woodTypeApplyBtn,
+.home-wood-panel-v189 #woodTypeApplyBtn,
+#woodTypePanel.home-wood-panel-v189 #woodTypeApplyBtn{display:none!important;visibility:hidden!important;height:0!important;min-height:0!important;margin:0!important;padding:0!important;border:0!important;overflow:hidden!important;}
+body.clean-simple-open-v111 .clean-simple-card-v111{display:flex!important;flex-direction:column!important;}
+body.clean-simple-open-v111 .clean-simple-head-v111{order:0!important;}
+body.clean-simple-open-v111 #cleanTopFieldsV187{order:1!important;}
+body.clean-simple-open-v111 .clean-measure-grid-v111,
+body.clean-simple-open-v111 .clean-measure-grid-v111.v187-reordered{order:2!important;display:grid!important;}
+body.clean-simple-open-v111 #cleanProductSectionV187{order:3!important;display:block!important;}
+body.clean-simple-open-v111 #cleanProductSectionV187 #cleanProductGridV111{order:0!important;display:grid!important;}
+body.clean-simple-open-v111 .clean-simple-card-v111 > #cleanProductGridV111{order:3!important;}
+body.clean-simple-open-v111 #cleanSaveV111{order:4!important;}
+body.clean-simple-open-v111 #cleanAutoInfoV111{order:5!important;}
+body.clean-simple-open-v111 .clean-recent-area-v111{order:6!important;}
+body.clean-simple-open-v111 #cleanClearV187{order:7!important;}
+body.clean-simple-open-v111 .clean-measure-grid-v111{margin-top:8px!important;margin-bottom:8px!important;}
+body.clean-simple-open-v111 #cleanProductSectionV187{margin-top:0!important;margin-bottom:8px!important;}

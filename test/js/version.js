@@ -1,16 +1,16 @@
 (function(root){
   'use strict';
   var info = {
-    appName: 'v2.19',
-    version: 'v190',
-    build: 'v190',
-    assetVersion: '190',
-    visibleVersion: 'v2.19',
-    shortVersion: 'v2.19',
-    name: 'v2.19',
-    cacheName: 'mesaha-app-v190-giris-modu-duzen',
+    appName: 'v2.20',
+    version: 'v191',
+    build: 'v191',
+    assetVersion: '191',
+    visibleVersion: 'v2.20',
+    shortVersion: 'v2.20',
+    name: 'v2.20',
+    cacheName: 'mesaha-app-v191-temiz-paket',
     builtAt: '2026-06-19',
-    notes: 'Seçimi Uygula kaldırıldı; Giriş Modu sıra düzeltildi; kayıtlardan Düzelt hızlı girişe yönlendirir.'
+    notes: 'Gereksiz eski modül dosyaları temizlendi; Giriş Modu tek ekran düzeni korundu.'
   };
   root.MESAHA_VERSION = info;
   root.MESAHA_VERSION_TEXT = info.visibleVersion;
