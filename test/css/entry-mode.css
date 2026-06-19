@@ -812,3 +812,116 @@ body.theme-dark.inline-simple-v119 #treeTypePanel.tree-panel-v202 .tree-radio-v2
   border-color:#166534!important;
   color:#bbf7d0!important;
 }
+
+
+/* v203: Ağaç türü görünümü eski haline dönmesin + başlangıçta alt menü yok */
+.home-tree-panel-v201,
+.home-tree-panel-v202,
+.home-tree-panel-v203{
+  display:grid!important;
+  grid-template-columns:1fr 1fr!important;
+  gap:8px!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  background:transparent!important;
+}
+
+.home-tree-panel-v201 label,
+.home-tree-panel-v202 label,
+.home-tree-panel-v203 label,
+.home-tree-panel-v201 .home-tree-check-v201,
+.home-tree-panel-v202 .home-tree-check-v202,
+.home-tree-panel-v203 .home-tree-check-v203{
+  display:flex!important;
+  align-items:center!important;
+  gap:8px!important;
+  border:1px solid #e2e8f0!important;
+  border-radius:14px!important;
+  background:#f8fafc!important;
+  padding:9px 10px!important;
+  font-weight:900!important;
+  color:#0f172a!important;
+  min-height:40px!important;
+  box-shadow:0 8px 18px rgba(15,23,42,.04)!important;
+}
+
+.home-tree-panel-v201 input,
+.home-tree-panel-v202 input,
+.home-tree-panel-v203 input{
+  width:18px!important;
+  height:18px!important;
+  accent-color:#16a34a!important;
+  flex:0 0 auto!important;
+  margin:0!important;
+}
+
+.home-tree-panel-v201 label:has(input:checked),
+.home-tree-panel-v202 label:has(input:checked),
+.home-tree-panel-v203 label:has(input:checked),
+.home-tree-panel-v201 .is-checked,
+.home-tree-panel-v202 .is-checked,
+.home-tree-panel-v203 .is-checked{
+  background:#ffffff!important;
+  border-color:#bbf7d0!important;
+  box-shadow:0 8px 18px rgba(22,163,74,.08)!important;
+}
+
+body.theme-dark .home-tree-panel-v201 label,
+body.theme-dark .home-tree-panel-v202 label,
+body.theme-dark .home-tree-panel-v203 label{
+  background:#0f172a!important;
+  border-color:#334155!important;
+  color:#f8fafc!important;
+}
+
+body.theme-dark .home-tree-panel-v201 label:has(input:checked),
+body.theme-dark .home-tree-panel-v202 label:has(input:checked),
+body.theme-dark .home-tree-panel-v203 label:has(input:checked){
+  background:#10251b!important;
+  border-color:#166534!important;
+}
+
+body.inline-simple-v119 #treeTypePanel.tree-panel-v203.open{
+  display:grid!important;
+  grid-template-columns:1fr 1fr!important;
+  gap:8px!important;
+}
+
+body.inline-simple-v119 #treeTypePanel.tree-panel-v203.closed-v203{
+  display:none!important;
+}
+
+body.inline-simple-v119 #treeTypePanel.tree-panel-v203 .tree-radio-v203{
+  display:flex!important;
+  align-items:center!important;
+  gap:8px!important;
+  border:1px solid #e2e8f0!important;
+  border-radius:14px!important;
+  background:#f8fafc!important;
+  min-height:40px!important;
+  padding:9px 10px!important;
+  font-weight:900!important;
+  color:#0f172a!important;
+}
+
+body.inline-simple-v119 #treeTypePanel.tree-panel-v203 .tree-radio-v203 input{
+  width:18px!important;
+  height:18px!important;
+  accent-color:#16a34a!important;
+  margin:0!important;
+}
+
+body.inline-simple-v119 #treeTypePanel.tree-panel-v203 .tree-radio-v203.is-active{
+  background:#ecfdf5!important;
+  border-color:#86efac!important;
+  color:#166534!important;
+}
+
+#mesahaStartupV178:not(.hide) ~ #stableBottomNavV200,
+#mesahaStartupV178:not(.hide) ~ #stableBottomNavV201{
+  display:none!important;
+  visibility:hidden!important;
+  opacity:0!important;
+  pointer-events:none!important;
+}

@@ -1,16 +1,16 @@
 (function(root){
   'use strict';
   var info = {
-    appName: 'v2.30',
-    version: 'v202',
-    build: 'v202',
-    assetVersion: '202',
-    visibleVersion: 'v2.30',
-    shortVersion: 'v2.30',
-    name: 'v2.30',
-    cacheName: 'mesaha-app-v202-tree-final-fix',
+    appName: 'v2.31',
+    version: 'v203',
+    build: 'v203',
+    assetVersion: '203',
+    visibleVersion: 'v2.31',
+    shortVersion: 'v2.31',
+    name: 'v2.31',
+    cacheName: 'mesaha-app-v203-tree-stable-startup-nav',
     builtAt: '2026-06-19',
-    notes: 'Ağaç türleri ana menüde odun türleri gibi kart/tik stiline alındı; hızlı giriş ağaç aç/kapa sabitlendi.'
+    notes: 'Ağaç türü seçim görünümü sabitlendi; başlangıç ekranında alt menü gizlendi.'
   };
   root.MESAHA_VERSION = info;
   root.MESAHA_VERSION_TEXT = info.visibleVersion;

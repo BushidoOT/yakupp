@@ -1,5 +1,5 @@
-importScripts('./js/version.js?v=202');
-const CACHE_NAME = (self.MESAHA_VERSION && self.MESAHA_VERSION.cacheName) || 'mesaha-app-v202-tree-final-fix';
+importScripts('./js/version.js?v=203');
+const CACHE_NAME = (self.MESAHA_VERSION && self.MESAHA_VERSION.cacheName) || 'mesaha-app-v203-tree-stable-startup-nav';
 const CORE_ASSETS = [
   './',
   './index.html',
@@ -14,30 +14,30 @@ const CORE_ASSETS = [
   './assets/mesaha_logo.png',
   './assets/icon-192.png',
   './assets/icon-512.png',
-  './css/style.css?v=202',
-  './css/dark.css?v=202',
-  './css/ios-entry.css?v=202',
-  './css/entry-mode.css?v=202',
-  './js/version.js?v=202',
-  './js/admin-access.js?v=202',
-  './js/startup-offline.js?v=202',
-  './js/core.js?v=202',
-  './js/admin-cloud.js?v=202',
-  './js/tree-entry.js?v=202',
-  './js/ui-mobile.js?v=202',
-  './js/records-filters.js?v=202',
-  './js/backup-storage.js?v=202',
-  './js/keyboard-filters.js?v=202',
-  './js/cutters.js?v=202',
-  './js/filters-stability.js?v=202',
-  './js/stability-base.js?v=202',
-  './js/control-test.js?v=202',
-  './js/stability-admin.js?v=202',
-  './js/offline-admin.js?v=202',
-  './js/app-stability.js?v=202',
-  './js/auto-update.js?v=202',
-  './js/ios-entry.js?v=202',
-  './js/entry-mode.js?v=202'
+  './css/style.css?v=203',
+  './css/dark.css?v=203',
+  './css/ios-entry.css?v=203',
+  './css/entry-mode.css?v=203',
+  './js/version.js?v=203',
+  './js/admin-access.js?v=203',
+  './js/startup-offline.js?v=203',
+  './js/core.js?v=203',
+  './js/admin-cloud.js?v=203',
+  './js/tree-entry.js?v=203',
+  './js/ui-mobile.js?v=203',
+  './js/records-filters.js?v=203',
+  './js/backup-storage.js?v=203',
+  './js/keyboard-filters.js?v=203',
+  './js/cutters.js?v=203',
+  './js/filters-stability.js?v=203',
+  './js/stability-base.js?v=203',
+  './js/control-test.js?v=203',
+  './js/stability-admin.js?v=203',
+  './js/offline-admin.js?v=203',
+  './js/app-stability.js?v=203',
+  './js/auto-update.js?v=203',
+  './js/ios-entry.js?v=203',
+  './js/entry-mode.js?v=203'
 ];
 const FALLBACK_INDEX = './index.html';
 const FALLBACK_ADMIN = './admin.html';
