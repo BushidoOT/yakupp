@@ -1,10 +1,10 @@
 {
-  "version": "v171",
-  "visibleVersion": "Mesaha İO v2.00",
-  "cache": "mesaha-app-v171-stabil-kontrol",
+  "version": "v172",
+  "visibleVersion": "Mesaha İO v2.01",
+  "cache": "mesaha-app-v172-stabil-mimari-admin",
   "builtAt": "2026-06-19",
-  "notes": "v170 modüler taban üzerine Stabil Kontrol paneli, test kayıt oluşturma/silme, kesimci raporu ve ZIP yedek sağlık kontrolü eklendi. ZIP yedek yüklemede silip yükle veya üstüne ekle seçeneği vardır. ORBİS Excel formatına dokunulmadı.",
-  "name": "Mesaha İO v2.00",
-  "build": "v171",
+  "notes": "v171 stabil kontrol tabanı korundu. Kodlar kontrollü modüler dosyalara ayrıldı, açılış kontrolü ve hata günlüğü eklendi. Admin yetkisi sadece Yakup / Yaylacık şefliği kullanıcısına sınırlandı. ORBİS Excel formatına dokunulmadı.",
+  "name": "Mesaha İO v2.01",
+  "build": "v172",
   "updatedAt": "2026-06-19"
 }

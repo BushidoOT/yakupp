@@ -1,4 +1,4 @@
-const CACHE_NAME = "mesaha-app-v171-stabil-kontrol";
+const CACHE_NAME = "mesaha-app-v172-stabil-mimari-admin";
 const ASSETS = [
   "./",
   "./index.html",
@@ -12,10 +12,18 @@ const ASSETS = [
   "./assets/mesaha_logo.png",
   "./assets/icon-192.png",
   "./assets/icon-512.png",
-  "./css/style.css?v=171",
-  "./js/app.js?v=171",
-  "./js/app-fixes.js?v=171",
-  "./js/app-v171.js?v=171"
+  "./css/style.css?v=172",
+  "./js/core.js?v=172",
+  "./js/admin-cloud.js?v=172",
+  "./js/tree-entry.js?v=172",
+  "./js/ui-mobile.js?v=172",
+  "./js/records-filters.js?v=172",
+  "./js/backup-storage.js?v=172",
+  "./js/keyboard-filters.js?v=172",
+  "./js/cutters.js?v=172",
+  "./js/stability-base.js?v=172",
+  "./js/control-test.js?v=172",
+  "./js/stability-admin.js?v=172"
 ];
 
 self.addEventListener("install", (event) => {
