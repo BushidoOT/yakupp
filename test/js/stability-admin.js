@@ -102,29 +102,8 @@
     safe(function(){ window.MESAHA_BUILD_INFO = Object.assign({}, window.MESAHA_BUILD_INFO || {}, {fileVersion:FILE_VERSION, visibleVersion:VISIBLE_VERSION, modularStable:true, adminOwner:ADMIN_NAME+' / '+ADMIN_SEFLIK, bootCheck:true, errorLog:true}); });
   }
   function injectMaintenance(){
-    if(byId('v172MaintenanceBtn')) return;
-    var host = document.querySelector('.admin-panel .panel-header') || document.querySelector('.admin-panel .admin-panel-top') || null;
-    if(!host) return;
-    var wrap = document.createElement('div');
-    wrap.className = 'v172-maint-actions';
-    wrap.innerHTML = '<button type="button" id="v172MaintenanceBtn" class="secondary">Hata Günlüğü</button><button type="button" id="v172BootBtn" class="secondary">Açılış Kontrolü</button>';
-    host.appendChild(wrap);
-    var style = document.createElement('style');
-    style.textContent = '.v172-maint-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}.v172-logbox{position:fixed;inset:0;z-index:100500;background:rgba(15,23,42,.45);display:flex;align-items:center;justify-content:center;padding:14px}.v172-logcard{background:#fff;border-radius:24px;max-width:900px;width:96vw;max-height:88vh;overflow:auto;padding:18px;box-shadow:0 25px 80px rgba(15,23,42,.35)}.v172-logcard h2{margin:0 0 8px;color:#164d2c}.v172-logcard pre{white-space:pre-wrap;background:#f8fafc;border:1px solid #e2e8f0;border-radius:16px;padding:12px;max-height:60vh;overflow:auto}.v172-logcard button{border:0;border-radius:14px;padding:10px 13px;font-weight:900;background:#18753d;color:#fff;margin-right:8px}.v172-logcard button.secondary{background:#f1f5f9;color:#334155}';
-    document.head.appendChild(style);
-    function openBox(title, text){
-      var box=document.createElement('div'); box.className='v172-logbox';
-      box.innerHTML='<div class="v172-logcard"><h2>'+esc(title)+'</h2><pre>'+esc(text)+'</pre><button type="button" data-close>KapT</button><button type="button" class="secondary" data-clear>Günlüğü Temizle</button></div>'.replace('KapT','Kapat');
-      document.body.appendChild(box);
-      box.addEventListener('click', function(e){ if(e.target===box || e.target.hasAttribute('data-close')) box.remove(); if(e.target.hasAttribute('data-clear')){ localStorage.removeItem(ERROR_KEY); box.remove(); toast('Hata günlüğü temizlendi.'); } });
-    }
-    byId('v172MaintenanceBtn').addEventListener('click', function(){
-      var list = safe(function(){ return JSON.parse(localStorage.getItem(ERROR_KEY)||'[]'); }, []);
-      openBox('Hata Günlüğü', list.length ? JSON.stringify(list, null, 2) : 'Kayıtlı hata yok.');
-    });
-    byId('v172BootBtn').addEventListener('click', function(){
-      openBox('Açılış Kontrolü', JSON.stringify(bootCheck(), null, 2));
-    });
+    // v181: Bakım/Hata butonları offline-admin.js tarafında tek merkezden gösterilir.
+    return;
   }
   function install(){
     patchVersion(); wrapAdminFunctions(); guardAdminClick(); showAdminIfAllowed(); bootCheck();

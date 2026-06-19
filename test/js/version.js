@@ -2,14 +2,14 @@
   'use strict';
   var info = {
     appName: 'Mesaha İO',
-    version: 'v180',
-    build: 'v180',
-    assetVersion: '180',
-    visibleVersion: 'Mesaha İO v2.09',
-    name: 'Mesaha İO v2.09',
-    cacheName: 'mesaha-app-v180-theme-filter-stabil',
+    version: 'v181',
+    build: 'v181',
+    assetVersion: '181',
+    visibleVersion: 'Mesaha İO v2.10',
+    name: 'Mesaha İO v2.10',
+    cacheName: 'mesaha-app-v181-dark-admin-clean',
     builtAt: '2026-06-19',
-    notes: 'Karanlık mod ayrı dark.css dosyasına alındı; ölçümlerde ağaç filtresi sadece kayıt olan ağaçları gösterir; ağaç filtresi üstte, kesimci filtresi altta sabitlendi. ORBİS Excel formatına dokunulmadı.'
+    notes: 'Karanlık mod renkleri iyileştirildi; admin panelindeki tekrar eden bakım/hata butonları tekilleştirildi. ORBİS Excel formatına dokunulmadı.'
   };
   root.MESAHA_VERSION = info;
   root.MESAHA_VERSION_TEXT = info.visibleVersion;

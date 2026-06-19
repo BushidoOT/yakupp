@@ -271,7 +271,7 @@
     var wrap = document.createElement('div');
     wrap.id = 'v175AdminTools';
     wrap.className = 'v175-admin-tools';
-    wrap.innerHTML = '<button type="button" data-v175="errors">Hata Günlüğü</button><button type="button" data-v175="boot">Stabil Kontrol</button><button type="button" data-v175="offline">Offline Kontrol</button><button type="button" class="secondary" data-v175="cache">Önbelleği Temizle</button>';
+    wrap.innerHTML = '<button type="button" data-v175="errors">Hata Günlüğü</button><button type="button" data-v175="boot">Açılış Kontrolü</button><button type="button" data-v175="offline">Offline Kontrol</button><button type="button" class="secondary" data-v175="cache">Önbelleği Temizle</button>';
     host.appendChild(wrap);
     wrap.addEventListener('click', function(e){
       var btn = e.target && e.target.closest ? e.target.closest('[data-v175]') : null;
