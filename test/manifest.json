@@ -1,7 +1,7 @@
 {
-  "name": "v2.18",
-  "short_name": "v2.18",
-  "start_url": "./index.html?v=189",
+  "name": "v2.19",
+  "short_name": "v2.19",
+  "start_url": "./index.html?v=190",
   "scope": "./",
   "display": "standalone",
   "icons": [
@@ -21,7 +21,7 @@
   "description": "Orman ölçüm kayıt sistemi",
   "theme_color": "#0f172a",
   "background_color": "#0f172a",
-  "version": "v189",
+  "version": "v190",
   "id": "./index.html",
   "display_override": [
     "fullscreen",

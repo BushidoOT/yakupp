@@ -1,16 +1,16 @@
 (function(root){
   'use strict';
   var info = {
-    appName: 'v2.18',
-    version: 'v189',
-    build: 'v189',
-    assetVersion: '189',
-    visibleVersion: 'v2.18',
-    shortVersion: 'v2.18',
-    name: 'v2.18',
-    cacheName: 'mesaha-app-v189-ana-ekran-sabit',
+    appName: 'v2.19',
+    version: 'v190',
+    build: 'v190',
+    assetVersion: '190',
+    visibleVersion: 'v2.19',
+    shortVersion: 'v2.19',
+    name: 'v2.19',
+    cacheName: 'mesaha-app-v190-giris-modu-duzen',
     builtAt: '2026-06-19',
-    notes: 'Ana Ekran sekmesi geri getirildi; Giriş Modu sıralaması çap/boy üstte, odun türleri altta olacak şekilde sabitlendi. Uygulama adı görünür başlık ve sekme adından kaldırıldı.'
+    notes: 'Seçimi Uygula kaldırıldı; Giriş Modu sıra düzeltildi; kayıtlardan Düzelt hızlı girişe yönlendirir.'
   };
   root.MESAHA_VERSION = info;
   root.MESAHA_VERSION_TEXT = info.visibleVersion;

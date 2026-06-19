@@ -1,5 +1,5 @@
-importScripts('./js/version.js?v=189');
-const CACHE_NAME = (self.MESAHA_VERSION && self.MESAHA_VERSION.cacheName) || 'mesaha-app-v189-ana-ekran-sabit';
+importScripts('./js/version.js?v=190');
+const CACHE_NAME = (self.MESAHA_VERSION && self.MESAHA_VERSION.cacheName) || 'mesaha-app-v190-giris-modu-duzen';
 const CORE_ASSETS = [
   './',
   './index.html',
@@ -14,30 +14,30 @@ const CORE_ASSETS = [
   './assets/mesaha_logo.png',
   './assets/icon-192.png',
   './assets/icon-512.png',
-  './css/style.css?v=189',
-  './css/dark.css?v=189',
-  './css/ios-ultra-entry-v186.css?v=189',
-  './css/entry-mode-v189.css?v=189',
-  './js/version.js?v=189',
-  './js/admin-access.js?v=189',
-  './js/startup-offline.js?v=189',
-  './js/core.js?v=189',
-  './js/admin-cloud.js?v=189',
-  './js/tree-entry.js?v=189',
-  './js/ui-mobile.js?v=189',
-  './js/records-filters.js?v=189',
-  './js/backup-storage.js?v=189',
-  './js/keyboard-filters.js?v=189',
-  './js/cutters.js?v=189',
-  './js/filters-stability.js?v=189',
-  './js/stability-base.js?v=189',
-  './js/control-test.js?v=189',
-  './js/stability-admin.js?v=189',
-  './js/offline-admin.js?v=189',
-  './js/app-stability.js?v=189',
-  './js/auto-update.js?v=189',
-  './js/ios-ultra-entry-v186.js?v=189',
-  './js/entry-mode-v189.js?v=189'
+  './css/style.css?v=190',
+  './css/dark.css?v=190',
+  './css/ios-ultra-entry-v186.css?v=190',
+  './css/entry-mode-v190.css?v=190',
+  './js/version.js?v=190',
+  './js/admin-access.js?v=190',
+  './js/startup-offline.js?v=190',
+  './js/core.js?v=190',
+  './js/admin-cloud.js?v=190',
+  './js/tree-entry.js?v=190',
+  './js/ui-mobile.js?v=190',
+  './js/records-filters.js?v=190',
+  './js/backup-storage.js?v=190',
+  './js/keyboard-filters.js?v=190',
+  './js/cutters.js?v=190',
+  './js/filters-stability.js?v=190',
+  './js/stability-base.js?v=190',
+  './js/control-test.js?v=190',
+  './js/stability-admin.js?v=190',
+  './js/offline-admin.js?v=190',
+  './js/app-stability.js?v=190',
+  './js/auto-update.js?v=190',
+  './js/ios-ultra-entry-v186.js?v=190',
+  './js/entry-mode-v190.js?v=190'
 ];
 const FALLBACK_INDEX = './index.html';
 const FALLBACK_ADMIN = './admin.html';
