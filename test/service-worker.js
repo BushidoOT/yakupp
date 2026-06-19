@@ -1,4 +1,4 @@
-const CACHE_NAME = "mesaha-app-v163-kesimci-kayit-fix";
+const CACHE_NAME = "mesaha-app-v164-kesimci-sil-sira-fix";
 const ASSETS = [
   "./",
   "./index.html",
