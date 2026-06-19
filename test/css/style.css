@@ -1,4 +1,5 @@
-/* Mesaha İO v169 Modüler Stabil - tüm stil kodları tek dosyada toplandı. */
+/* style block 1  */
+
     :root{
       --bg:#0f172a;
       --panel:#111c33;
@@ -8865,6 +8866,10 @@ body.theme-dark .admin-stats-note-v134{ color:#a8b3c2; }
   .admin-stats-period-v134 button{ padding:8px 6px; }
 }
 
+
+
+/* style block 2 id="mesaha-v126-giris-modu-css" */
+
     /* v126: Sade Mod yerine Giriş Modu + toplam adet başlığı + kaydet yukarı */
     .simple-total-adet-v126{
       display:none;
@@ -8975,7 +8980,10 @@ body.theme-dark .admin-stats-note-v134{ color:#a8b3c2; }
     }
   
 
-    /* Mesaha İO v1.98: mobil ana sayfa + logo + açık tema */
+
+/* style block 3 id="mesaha-v143-mobile-ui-css" */
+
+    /* Mesaha İO v1.99: mobil ana sayfa + logo + açık tema */
     :root{
       --mio-bg:#f4f8f6;
       --mio-card:#ffffff;
@@ -9084,6 +9092,37 @@ body.theme-dark .admin-stats-note-v134{ color:#a8b3c2; }
     @media (max-width:720px){.app{padding-left:10px !important;padding-right:10px !important;}.topbar{margin-left:-10px !important;margin-right:-10px !important;padding:10px 13px !important;border-radius:0 0 22px 22px !important;}.brand-logo-v143{width:48px !important;height:48px !important;}.brand-copy-v143 h1,.brand h1{font-size:19px !important;}.brand-copy-v143 span{display:none !important;}.top-actions-v112 button{font-size:11px !important;padding:7px 8px !important;}.grid{grid-template-columns:1fr !important;}.home-quick-grid-v143{grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;}.home-quick-grid-v143 button{min-height:96px;}.home-summary-grid-v143{gap:10px;}.home-summary-grid-v143 div{min-height:118px;padding:14px 12px;}.home-summary-grid-v143 b{font-size:21px;}.tools{grid-template-columns:1fr 1fr !important;}.panel-body{padding:13px !important;}}
     @media (max-width:430px){.home-status-v143{grid-template-columns:1fr;gap:10px;margin-left:4px;margin-right:4px;padding:14px;}.home-divider-v143{display:none;}.home-status-item-v143 b{font-size:18px;}.home-quick-grid-v143{gap:8px;}.home-quick-grid-v143 button{min-height:86px;border-radius:17px;}.home-quick-grid-v143 span{font-size:26px;}.home-quick-grid-v143 b{font-size:12px;}.home-card-v143{padding:14px;border-radius:22px;}.home-hero-v143{padding:24px 18px 20px;min-height:124px;border-radius:24px;}.home-hero-copy-v143 h2{font-size:28px;}.home-hero-copy-v143 p{font-size:15px;max-width:220px;}.home-summary-grid-v143{grid-template-columns:1fr 1fr 1fr;}.home-summary-grid-v143 div{min-height:106px;padding:12px 9px;border-radius:17px;}.home-summary-grid-v143 span{font-size:22px;}.home-summary-grid-v143 b{font-size:18px;}.home-summary-grid-v143 small{font-size:11px;}.flow-tabs-v111{min-height:70px !important;border-radius:28px !important;}.flow-tabs-v111 button .tab-ico-v143{font-size:22px;}.flow-tabs-v111 button .tab-label-v143{font-size:10px;}}
   
+
+
+/* style block 4  */
+
+  @page{ size:A4 portrait; margin:14mm; }
+  *{ box-sizing:border-box; }
+  body{ margin:0; background:#fff; color:#111827; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif; }
+  h1{ margin:0 0 18px; text-align:center; font-size:26px; font-weight:950; letter-spacing:.4px; }
+  .meta{ display:flex; justify-content:space-between; gap:12px; margin-bottom:14px; color:#334155; font-size:13px; font-weight:800; }
+  .top-grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:14px; }
+  .summary-card,.product-card{ border:1px solid #d7dee8; border-radius:12px; padding:14px; page-break-inside:avoid; }
+  .summary-card small{ display:block; color:#334155; font-size:14px; font-weight:900; margin-bottom:9px; }
+  .summary-card strong{ display:block; color:#000; font-size:30px; font-weight:950; line-height:1; }
+  .summary-card .unit{ margin-top:7px; color:#334155; font-size:15px; font-weight:900; }
+  .filters{ border:1px solid #d7dee8; border-radius:12px; padding:12px 14px; margin-bottom:14px; font-size:14px; font-weight:900; color:#111827; }
+  .filters span{ color:#166534; }
+  .products{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .product-card{ min-height:96px; background:#fff; border-left-width:8px; }
+  .product-card.tomruk{ border-left-color:#f2b705; background:#fff9e8; }
+  .product-card.maden{ border-left-color:#2563eb; background:#eff6ff; }
+  .product-card.kagit{ border-left-color:#dc2626; background:#fff1f2; }
+  .product-card.sanayi{ border-left-color:#16a34a; background:#f0fdf4; }
+  .product-card.tel{ border-left-color:#7c3aed; background:#f5f3ff; }
+  .product-title{ font-size:16px; font-weight:950; margin-bottom:10px; }
+  .product-value{ font-size:25px; font-weight:950; }
+  .product-adet{ margin-top:5px; font-size:13px; font-weight:900; color:#334155; }
+  .empty{ padding:18px; border:1px dashed #cbd5e1; border-radius:12px; color:#64748b; font-weight:900; }
+
+
+
+/* style block 5 id="mesaha-v144-istek-css" */
 
     /* v144: Ana sayfa sadeleştirme + ağaç filtresi + doğrudan ağaç seçimi */
     .home-card-v143.quick-v143,
@@ -9226,6 +9265,9 @@ body.theme-dark .admin-stats-note-v134{ color:#a8b3c2; }
       .tree-filter-v144 button{ flex:1 1 calc(33.333% - 6px); padding:8px 7px; font-size:11px; }
     }
   
+
+
+/* style block 6 id="mesaha-v158-kesimci-css" */
 
   /* v158: Kesimci seçimi ve ölçümlerde kesimci filtresi */
   .cutter-panel-v158{
@@ -9348,6 +9390,10 @@ body.theme-dark .admin-stats-note-v134{ color:#a8b3c2; }
     .cutter-filter-title-v158 small{display:block; margin-top:3px;}
   }
 
+
+
+/* style block 7 id="mesaha-v143-dark-polish-css" */
+
   body.theme-dark .mesaha-home-v143{filter:none;}
   body.theme-dark .home-hero-v143,body.theme-dark .home-status-v143,body.theme-dark .home-card-v143{background:#171b22 !important;border-color:#2b323d !important;color:#f8fafc !important;box-shadow:0 14px 32px rgba(0,0,0,.22) !important;}
   body.theme-dark .home-hero-copy-v143 h2,body.theme-dark .home-card-head-v143 h3,body.theme-dark .home-list-v143 b{color:#f8fafc !important;}
@@ -9355,6 +9401,10 @@ body.theme-dark .admin-stats-note-v134{ color:#a8b3c2; }
   body.theme-dark .home-summary-grid-v143 div,body.theme-dark .home-quick-grid-v143 button,body.theme-dark .home-card-head-v143 button{background:#11151b !important;border-color:#2b323d !important;}
   body.theme-dark .flow-tabs-v111{background:rgba(23,27,34,.94) !important;border-color:#2b323d !important;}
   body.theme-dark .flow-tabs-v111 button.active{background:rgba(34,197,94,.14) !important;color:#86efac !important;}
+
+
+
+/* style block 8 id="mesaha-v144-istek-css" */
 
     /* v144: Ana sayfa sadeleştirme + ağaç filtresi + doğrudan ağaç seçimi */
     .home-card-v143.quick-v143,
@@ -9498,6 +9548,9 @@ body.theme-dark .admin-stats-note-v134{ color:#a8b3c2; }
     }
   
 
+
+/* style block 9 id="mesaha-v145-tree-total-css" */
+
   /* v145: Ağaç seçim paneli açık kalsın + Giriş Modu toplam adet / toplam m³ */
   .simple-total-adet-v126.simple-total-dual-v145{
     justify-content:stretch !important;
@@ -9546,6 +9599,10 @@ body.theme-dark .admin-stats-note-v134{ color:#a8b3c2; }
       font-size:19px !important;
     }
   }
+
+
+
+/* style block 10 id="mesaha-v146-home-simple-css" */
 
   /* v146: Ana Sayfa klavye açmasın + ana sayfada Giriş Modu kart butonu */
   .home-status-item-v143.home-simple-v146{
@@ -9600,7 +9657,15 @@ body.theme-dark .admin-stats-note-v134{ color:#a8b3c2; }
     color:#93c5fd !important;
   }
 
+
+
+/* style block 11 id="mesaha-v147-fix-css" */
+
   /* v147: kodun ekranda görünmesini engelleyen paket düzeltmesi */
+
+
+
+/* style block 12 id="mesaha-v149-tree-filter-position-css" */
 
   /* v149: Beyan ağaç filtresi, Mesaha Dosyasını İndir butonunun üstünde */
   .records-panel #treeFilterV144.tree-filter-v144{
@@ -9609,6 +9674,10 @@ body.theme-dark .admin-stats-note-v134{ color:#a8b3c2; }
   .records-panel .totals + #treeFilterV144.tree-filter-v144{
     margin-top:12px !important;
   }
+
+
+
+/* style block 13 id="mesaha-v151-loading-button-fix-css" */
 
   /* v151: sağlam paket, bilgi kutuları, sabit sürüm ve giriş modu dönüş butonu */
   .top-actions-v112 #openSimpleV112{
@@ -9664,7 +9733,7 @@ body.theme-dark .admin-stats-note-v134{ color:#a8b3c2; }
   }
   .brand h1::after,
   .brand-copy-v143 h1::after{
-    content:'Mesaha İO v1.98';
+    content:'Mesaha İO v1.99';
     font-size:21px !important;
     line-height:1.05 !important;
   }
@@ -9779,6 +9848,10 @@ body.theme-dark .admin-stats-note-v134{ color:#a8b3c2; }
   body.theme-dark .mesaha-info-note-v151{background:#0f172a;border-color:#263449;color:#cbd5e1;}
   body.theme-dark .mesaha-info-cancel-v151{background:#1e293b;color:#e2e8f0;}
 
+
+
+/* style block 14 id="mesaha-v158-kesimci-css" */
+
   /* v158: Kesimci seçimi ve ölçümlerde kesimci filtresi */
   .cutter-panel-v158{
     margin:10px 0 12px !important;
@@ -9900,6 +9973,10 @@ body.theme-dark .admin-stats-note-v134{ color:#a8b3c2; }
     .cutter-filter-title-v158 small{display:block; margin-top:3px;}
   }
 
+
+
+/* style block 15 id="mesaha-v163-kesimci-buton-css" */
+
   /* v163: Kesimci butonlu seçim + direkt kayda yazma düzeltmesi */
   .cutter-panel-v158.cutter-panel-v163{
     margin:10px 0 12px !important;
@@ -9928,8 +10005,3 @@ body.theme-dark .admin-stats-note-v134{ color:#a8b3c2; }
   body.inline-simple-v119 .cutter-add-v163{min-height:34px !important; font-size:12px !important; padding:7px 9px !important;}
   @media (max-width:520px){.cutter-actions-v163{gap:7px !important;}.cutter-chip-v163{max-width:100% !important;}.cutter-add-v163{flex:1 1 160px !important;}}
 
-/* v169: Ölçümler filtresi sabit sıra */
-.records-panel .panel-body{ display:flex; flex-direction:column; }
-#treeFilterV144{ order:10 !important; }
-#cutterFilterV158{ order:20 !important; }
-.records-panel .tools{ order:30 !important; }
