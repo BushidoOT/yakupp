@@ -10081,3 +10081,111 @@ body{
 
 /* v184: Üst kullanıcı panelindeki bağlantı rozeti kaldırıldı; ana ekrandaki durum korunur. */
 .topbar #mesahaNetBadgeV178, header #mesahaNetBadgeV178{display:none!important;visibility:hidden!important;pointer-events:none!important;}
+
+
+/* v197: kayıt modu kökten sabit - artık ürün/çap sırası HTML + CSS ile kilitli */
+body.inline-simple-v119 form#entryForm,
+body.inline-simple-v119 form#entryForm.entry-form-v197-hard{
+  display:flex!important;
+  flex-direction:column!important;
+  gap:8px!important;
+}
+
+body.inline-simple-v119 form#entryForm .product-compact.tree-compact{order:1!important;}
+body.inline-simple-v119 form#entryForm .measure-compact{
+  order:2!important;
+  display:grid!important;
+  grid-template-columns:1fr 1fr!important;
+  gap:7px!important;
+  margin:0!important;
+}
+body.inline-simple-v119 form#entryForm .product-compact:not(.tree-compact){
+  order:3!important;
+  display:block!important;
+}
+body.inline-simple-v119 form#entryForm .barcode-save-row-final{
+  order:4!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) 152px!important;
+  gap:7px!important;
+  align-items:stretch!important;
+  margin:0!important;
+}
+body.inline-simple-v119 form#entryForm .recent-barcodes-box{order:5!important;}
+body.inline-simple-v119 form#entryForm .btn-row.clear-row-v197{
+  order:6!important;
+  display:flex!important;
+  margin:0!important;
+}
+body.inline-simple-v119 form#entryForm .btn-row.sound-row-v197{
+  order:7!important;
+  display:flex!important;
+  margin:0!important;
+}
+body.inline-simple-v119 #sameBarcodeBtn{display:none!important;}
+body.inline-simple-v119 #clearInputsBtn{
+  display:flex!important;
+  width:100%!important;
+  min-height:44px!important;
+  align-items:center!important;
+  justify-content:center!important;
+  border-radius:15px!important;
+  font-weight:950!important;
+  font-size:15px!important;
+  background:#fff7ed!important;
+  color:#9a3412!important;
+  border:1px solid #fed7aa!important;
+}
+body.inline-simple-v119 .measure-field{
+  padding:6px!important;
+  border-radius:15px!important;
+}
+body.inline-simple-v119 #length,
+body.inline-simple-v119 #diameter{
+  height:38px!important;
+  border-radius:12px!important;
+  font-size:17px!important;
+  padding:4px 8px!important;
+}
+body.inline-simple-v119 .chip-row{
+  gap:5px!important;
+  margin-top:5px!important;
+}
+body.inline-simple-v119 .chip-row button,
+body.inline-simple-v119 .chip,
+body.inline-simple-v119 .quick-chip{
+  min-height:27px!important;
+  border-radius:10px!important;
+  font-size:12px!important;
+  padding:3px!important;
+}
+body.inline-simple-v119 .barcode-field-final,
+body.inline-simple-v119 .save-field-final{
+  padding:6px!important;
+  border-radius:15px!important;
+}
+body.inline-simple-v119 #barcode{
+  height:40px!important;
+  border-radius:12px!important;
+  font-size:17px!important;
+  letter-spacing:.2px!important;
+}
+body.inline-simple-v119 #submitBtn{
+  min-height:74px!important;
+  border-radius:18px!important;
+  font-size:18px!important;
+  font-weight:950!important;
+}
+body.inline-simple-v119 .entry-panel .panel-header h2::after{content:""!important;}
+
+.home-status-item-v143.home-simple-v146 b{font-size:24px!important;color:#166534!important;}
+.home-status-item-v143.home-simple-v146{
+  min-height:86px!important;
+  border:1px solid rgba(22,163,74,.24)!important;
+  background:linear-gradient(135deg,#e8fff1 0%,#ecfdf5 48%,#eef5ff 100%)!important;
+  box-shadow:0 12px 26px rgba(22,163,74,.11), inset 0 1px 0 rgba(255,255,255,.82)!important;
+}
+@media (max-width:430px){
+  body.inline-simple-v119 form#entryForm .barcode-save-row-final{grid-template-columns:minmax(0,1fr) 148px!important;}
+  body.inline-simple-v119 #submitBtn{min-height:70px!important;font-size:17px!important;}
+}
