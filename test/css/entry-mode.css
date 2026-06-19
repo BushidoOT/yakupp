@@ -532,3 +532,126 @@ body.admin-unlocked-v131 .bottom-nav{
 #flowTabsV111,.flow-tabs-v111{display:none!important;visibility:hidden!important;pointer-events:none!important;}
 body.inline-simple-v119 .app{padding-bottom:150px!important;}
 body.inline-simple-v119.keyboard-lock-v199{scroll-behavior:auto!important;}
+
+
+/* v200: Eski görünümlü sabit alt menü - gidip gelme yok */
+.bottom-nav,
+#flowTabsV111,
+.flow-tabs-v111{
+  display:none!important;
+  visibility:hidden!important;
+  opacity:0!important;
+  pointer-events:none!important;
+}
+
+#stableBottomNavV200{
+  position:fixed!important;
+  left:16px!important;
+  right:16px!important;
+  bottom:calc(env(safe-area-inset-bottom,0px) + 10px)!important;
+  z-index:2147483000!important;
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:8px!important;
+  padding:10px!important;
+  border-radius:28px!important;
+  background:rgba(255,255,255,.96)!important;
+  border:1px solid #d9e2ec!important;
+  box-shadow:0 14px 34px rgba(15,23,42,.13)!important;
+  backdrop-filter:blur(16px)!important;
+  -webkit-backdrop-filter:blur(16px)!important;
+  transform:translateZ(0)!important;
+  transition:none!important;
+  animation:none!important;
+  will-change:transform!important;
+}
+
+#stableBottomNavV200 button{
+  appearance:none!important;
+  -webkit-appearance:none!important;
+  min-width:0!important;
+  min-height:70px!important;
+  border-radius:22px!important;
+  border:1px solid #d9e2ec!important;
+  background:#f8fafc!important;
+  color:#334155!important;
+  font-size:0!important;
+  font-weight:950!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:6px!important;
+  padding:8px 6px!important;
+  box-shadow:none!important;
+  touch-action:manipulation!important;
+  -webkit-tap-highlight-color:transparent!important;
+  transition:none!important;
+  animation:none!important;
+}
+
+#stableBottomNavV200 button::before{
+  display:block!important;
+  font-size:25px!important;
+  line-height:1!important;
+}
+
+#stableBottomNavV200 button::after{
+  display:block!important;
+  font-size:12px!important;
+  line-height:1.1!important;
+  font-weight:950!important;
+  white-space:nowrap!important;
+}
+
+#stableBottomNavV200 [data-stable-nav-v200="home"]::before{content:"🏠"!important;}
+#stableBottomNavV200 [data-stable-nav-v200="home"]::after{content:"Ana Ekran"!important;}
+#stableBottomNavV200 [data-stable-nav-v200="records"]::before{content:"📏"!important;}
+#stableBottomNavV200 [data-stable-nav-v200="records"]::after{content:"Ölçümler"!important;}
+#stableBottomNavV200 [data-stable-nav-v200="guide"]::before{content:"▰"!important;font-size:27px!important;transform:rotate(-4deg)!important;}
+#stableBottomNavV200 [data-stable-nav-v200="guide"]::after{content:"Kılavuz"!important;}
+
+#stableBottomNavV200 button.active{
+  background:#2563eb!important;
+  border-color:#2563eb!important;
+  color:#ffffff!important;
+  box-shadow:0 10px 22px rgba(37,99,235,.24)!important;
+}
+
+body.theme-dark #stableBottomNavV200{
+  background:rgba(16,28,46,.96)!important;
+  border-color:#3e526d!important;
+  box-shadow:0 14px 34px rgba(0,0,0,.32)!important;
+}
+
+body.theme-dark #stableBottomNavV200 button{
+  background:#0b1525!important;
+  color:#dbeafe!important;
+  border-color:#3e526d!important;
+}
+
+body.theme-dark #stableBottomNavV200 button.active{
+  background:#2563eb!important;
+  border-color:#60a5fa!important;
+  color:#ffffff!important;
+}
+
+.app{padding-bottom:118px!important;}
+body.inline-simple-v119 .app{padding-bottom:142px!important;}
+
+@media (max-width:430px){
+  #stableBottomNavV200{
+    left:14px!important;
+    right:14px!important;
+    bottom:calc(env(safe-area-inset-bottom,0px) + 8px)!important;
+    border-radius:26px!important;
+    padding:8px!important;
+    gap:7px!important;
+  }
+  #stableBottomNavV200 button{
+    min-height:68px!important;
+    border-radius:20px!important;
+  }
+  #stableBottomNavV200 button::before{font-size:24px!important;}
+  #stableBottomNavV200 button::after{font-size:11px!important;}
+}

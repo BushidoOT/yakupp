@@ -1,16 +1,16 @@
 (function(root){
   'use strict';
   var info = {
-    appName: 'v2.27',
-    version: 'v199',
-    build: 'v199',
-    assetVersion: '199',
-    visibleVersion: 'v2.27',
-    shortVersion: 'v2.27',
-    name: 'v2.27',
-    cacheName: 'mesaha-app-v199-bottom-nav-scroll-fix',
+    appName: 'v2.28',
+    version: 'v200',
+    build: 'v200',
+    assetVersion: '200',
+    visibleVersion: 'v2.28',
+    shortVersion: 'v2.28',
+    name: 'v2.28',
+    cacheName: 'mesaha-app-v200-stable-old-nav',
     builtAt: '2026-06-19',
-    notes: 'Gereksiz eski modül dosyaları temizlendi; Giriş Modu tek ekran düzeni korundu.'
+    notes: 'Alt menü eski tuş görünümüne sabitlendi; gidip gelme engellendi.'
   };
   root.MESAHA_VERSION = info;
   root.MESAHA_VERSION_TEXT = info.visibleVersion;
