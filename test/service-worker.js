@@ -1,8 +1,8 @@
-importScripts('./js/version.js?v=305');
-const CACHE_NAME = (self.MESAHA_VERSION && self.MESAHA_VERSION.cacheName) || 'mesaha-app-v305-entry-filter-fix';
+importScripts('./js/version.js?v=306');
+const CACHE_NAME = (self.MESAHA_VERSION && self.MESAHA_VERSION.cacheName) || 'mesaha-app-v306-mobile-keyboard-fix';
 const ASSETS = [
   './','./index.html','./manifest.json','./version.json','./service-worker.js',
-  './css/style.css?v=305','./js/version.js?v=305','./js/orbis-xls.js?v=305','./js/app.js?v=305',
+  './css/style.css?v=306','./js/version.js?v=306','./js/orbis-xls.js?v=306','./js/app.js?v=306',
   './assets/icon-192.png','./assets/icon-512.png','./assets/mesaha_logo.png',
   './icon-192.png','./icon-512.png','./mesaha_logo.png'
 ];

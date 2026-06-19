@@ -1,11 +1,11 @@
 {
-  "app": "v3.05",
-  "version": "v305-entry-filter",
-  "build": "v305",
-  "visibleVersion": "v3.05",
-  "shortVersion": "v3.05",
-  "name": "v3.05",
-  "cacheName": "mesaha-app-v305-entry-filter-fix",
+  "app": "v3.06",
+  "version": "v306-mobile",
+  "build": "v306",
+  "visibleVersion": "v3.06",
+  "shortVersion": "v3.06",
+  "name": "v3.06",
+  "cacheName": "mesaha-app-v306-mobile-keyboard-fix",
   "builtAt": "2026-06-20",
-  "notes": "Mesaha Gir alan sırası, klavye/odak, düzenlemede barkod devamı ve BEYAN filtre toplamları düzeltildi."
+  "notes": "Mobil ekran uyumu güçlendirildi; çap/boy kısayollarında klavye kapanmaması düzeltildi."
 }

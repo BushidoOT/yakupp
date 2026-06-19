@@ -2,7 +2,7 @@
 'use strict';
 const STORAGE_KEY = 'cam_mesaha_kayitlari_v1';
 const SETTINGS_KEY = 'cam_mesaha_ayarlar_v1';
-const VERSION = window.MESAHA_VERSION || {shortVersion:'v3.05', version:'v305-entry-filter'};
+const VERSION = window.MESAHA_VERSION || {shortVersion:'v3.06', version:'v306-mobile'};
 const PRODUCTS = [
   {key:'Tomruk', label:'Tomruk', cls:'tomruk', rule:'Tomruk: çap 21 ve üzeri olmalı.'},
   {key:'Maden Direk', label:'Maden', cls:'maden', rule:'Maden: çap 20 ve altı olmalı.'},
@@ -304,7 +304,7 @@ function exportXls(){
   const file=`Mesaha_${bolme?bolme+'_':''}${formatDateFile()}.xls`;
   if(window.OrbisXls) window.OrbisXls.downloadXls(ordered, file); else toast('XLS modülü yüklenmedi.');
 }
-function backupJson(){ const data={version:'v3.05-extras', exportedAt:new Date().toISOString(), records:state.records, settings:state.settings}; downloadText(JSON.stringify(data,null,2), `mesaha_yedek_${formatDateFile()}.json`, 'application/json'); toast('Yedek indirildi.'); }
+function backupJson(){ const data={version:'v3.06-extras', exportedAt:new Date().toISOString(), records:state.records, settings:state.settings}; downloadText(JSON.stringify(data,null,2), `mesaha_yedek_${formatDateFile()}.json`, 'application/json'); toast('Yedek indirildi.'); }
 function restoreJson(e){ const file=e.target.files && e.target.files[0]; if(!file) return; const reader=new FileReader(); reader.onload=()=>{ try{ const data=JSON.parse(reader.result); const records=Array.isArray(data) ? data : data.records; if(!Array.isArray(records)) throw new Error('records yok'); state.records=records.map(migrateRecord).filter(Boolean); if(data.settings) state.settings={...state.settings,...data.settings}; saveRecords(); saveSettings(); renderAll(); toast('Yedek yüklendi.'); }catch(err){ toast('Yedek okunamadı.'); } e.target.value=''; }; reader.readAsText(file); }
 function downloadText(content, filename, type){ const blob=new Blob([content],{type}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=filename; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),1000); }
 window.state = state;
@@ -322,7 +322,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 })();
 
 
-/* v305: admin hariç eksik parçalar - canlı ölçüm, aynı barkod, seçimli kayıtlar, bakım, özet */
+/* v306: admin hariç eksik parçalar - canlı ölçüm, aynı barkod, seçimli kayıtlar, bakım, özet */
 (function(){
   'use strict';
 
@@ -431,8 +431,8 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   }
 
   function patchSaveEntry(){
-    if(window.__v305SavePatched) return;
-    window.__v305SavePatched = true;
+    if(window.__v306SavePatched) return;
+    window.__v306SavePatched = true;
 
     const old = window.saveEntry;
     if(typeof old !== 'function') return;
@@ -550,14 +550,14 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   function bindV303(){
     const d=$('diameterInput'), l=$('lengthInput'), q=$('quantityInput'), b=$('barcodeInput');
     [d,l,q,b].filter(Boolean).forEach(el => {
-      if(el.__v305Live) return;
-      el.__v305Live = true;
+      if(el.__v306Live) return;
+      el.__v306Live = true;
       el.addEventListener('input', updateLiveBox);
       el.addEventListener('change', updateLiveBox);
     });
 
-    if(q && !q.__v305Qty){
-      q.__v305Qty = true;
+    if(q && !q.__v306Qty){
+      q.__v306Qty = true;
       q.addEventListener('input', () => {
         let v = String(q.value||'').replace(/\D/g,'').slice(0,3);
         if(!v || Number(v)<1) v='1';
@@ -566,8 +566,8 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     }
 
     const same = $('sameBarcodeBtn');
-    if(same && !same.__v305Same){
-      same.__v305Same = true;
+    if(same && !same.__v306Same){
+      same.__v306Same = true;
       same.addEventListener('click', () => {
         settings().sameBarcodeMode = settings().sameBarcodeMode !== true;
         saveSettings();
@@ -576,8 +576,8 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     }
 
     const save = $('saveBtn');
-    if(save && !save.__v305SameRestore){
-      save.__v305SameRestore = true;
+    if(save && !save.__v306SameRestore){
+      save.__v306SameRestore = true;
       save.addEventListener('click', () => {
         const beforeBarcode = norm($('barcodeInput') && $('barcodeInput').value).toUpperCase();
         const beforeCount = records().length;
@@ -595,14 +595,14 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     }
 
     const search = $('recordSearch');
-    if(search && !search.__v305Search){
-      search.__v305Search = true;
+    if(search && !search.__v306Search){
+      search.__v306Search = true;
       search.addEventListener('input', () => { currentPage=1; renderRecordsV303(); });
     }
 
     const selectFiltered = $('selectFilteredBtn');
-    if(selectFiltered && !selectFiltered.__v305){
-      selectFiltered.__v305 = true;
+    if(selectFiltered && !selectFiltered.__v306){
+      selectFiltered.__v306 = true;
       selectFiltered.addEventListener('click', () => {
         filteredRecordsV303().forEach(r => selectedIds.add(r.id));
         renderRecordsV303();
@@ -610,14 +610,14 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     }
 
     const clearSel = $('clearSelectionBtn');
-    if(clearSel && !clearSel.__v305){
-      clearSel.__v305 = true;
+    if(clearSel && !clearSel.__v306){
+      clearSel.__v306 = true;
       clearSel.addEventListener('click', () => { selectedIds.clear(); renderRecordsV303(); });
     }
 
     const bulk = $('bulkDeleteBtn');
-    if(bulk && !bulk.__v305){
-      bulk.__v305 = true;
+    if(bulk && !bulk.__v306){
+      bulk.__v306 = true;
       bulk.addEventListener('click', () => {
         const list = selectedList();
         if(!list.length) return toast('Seçili kayıt yok.');
@@ -634,8 +634,8 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     }
 
     const undo = $('undoDeleteBtn');
-    if(undo && !undo.__v305){
-      undo.__v305 = true;
+    if(undo && !undo.__v306){
+      undo.__v306 = true;
       undo.addEventListener('click', () => {
         if(!lastDeleted || !lastDeleted.records) return;
         const s = appState();
@@ -648,8 +648,8 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     }
 
     const delAll = $('deleteAllBtn');
-    if(delAll && !delAll.__v305){
-      delAll.__v305 = true;
+    if(delAll && !delAll.__v306){
+      delAll.__v306 = true;
       delAll.addEventListener('click', () => {
         if(!records().length) return toast('Silinecek kayıt yok.');
         if(!confirm('Tüm kayıtlar silinsin mi?')) return;
@@ -666,42 +666,42 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     document.addEventListener('click', ev => { if(ev.target && ev.target.closest && ev.target.closest('[data-tree-filter],[data-cutter-filter]')) setTimeout(renderRecordsV303, 60); }, true);
 
     document.querySelectorAll('[data-nav="records"]').forEach(btn => {
-      if(btn.__v305Nav) return;
-      btn.__v305Nav = true;
+      if(btn.__v306Nav) return;
+      btn.__v306Nav = true;
       btn.addEventListener('click', () => setTimeout(renderRecordsV303, 80));
     });
 
     const update = $('forceUpdateBtn');
-    if(update && !update.__v305){
-      update.__v305 = true;
+    if(update && !update.__v306){
+      update.__v306 = true;
       update.addEventListener('click', forceUpdate);
     }
 
     const cache = $('clearCacheBtn');
-    if(cache && !cache.__v305){
-      cache.__v305 = true;
+    if(cache && !cache.__v306){
+      cache.__v306 = true;
       cache.addEventListener('click', clearCacheOnly);
     }
 
     const backup = $('backupBtn');
-    if(backup && !backup.__v305Info){
-      backup.__v305Info = true;
+    if(backup && !backup.__v306Info){
+      backup.__v306Info = true;
       backup.addEventListener('click', () => {
         setTimeout(()=>alert('Yedek dosyası metin/JSON formatındadır. Sadece Mesaha İO içinde geri yükleme içindir. Excel yedeği değildir. Excel için Mesaha Dosyasını İndir butonunu kullanınız.'), 50);
       }, true);
     }
 
     const restore = $('restoreBtn');
-    if(restore && !restore.__v305Info){
-      restore.__v305Info = true;
+    if(restore && !restore.__v306Info){
+      restore.__v306Info = true;
       restore.addEventListener('click', () => {
         setTimeout(()=>alert('Yedek Yükle: Daha önce Mesaha İO ile alınan JSON yedeğini seçiniz. Bu işlem mevcut kayıtları yedekteki kayıtlarla değiştirir.'), 50);
       }, true);
     }
 
     const xls = $('downloadXlsBtn');
-    if(xls && !xls.__v305Info){
-      xls.__v305Info = true;
+    if(xls && !xls.__v306Info){
+      xls.__v306Info = true;
       xls.addEventListener('click', () => {
         setTimeout(()=>alert('Mesaha dosyası indiriliyor\\n\\nORBİS’e Aktarma:\\n1. Dosyayı bilgisayara aktarınız.\\n2. ORBİS’e bilgisayar üzerinden giriş yapınız.\\n3. İşletme Pazarlama > Kesme Faaliyetleri Raporu ekranına giriniz.\\n4. Şeflik ve bölme bilgilerini giriniz, bölmeye çift tıklayınız.\\n5. Dosya yükleme bölümünden Excel’den Aktar deyiniz.'), 50);
       }, true);
@@ -764,7 +764,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 })();
 
 
-/* v305: modern pencereler + yedek zip + başlangıç/güncelleme + seçili/filtreli bilgi */
+/* v306: modern pencereler + yedek zip + başlangıç/güncelleme + seçili/filtreli bilgi */
 (function(){
   'use strict';
 
@@ -1050,7 +1050,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   }
   function backupZip(){
     const data = {
-      version:'v3.05-modern',
+      version:'v3.06-modern',
       exportedAt:new Date().toISOString(),
       records:records(),
       settings:settings()
@@ -1319,7 +1319,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 })();
 
 
-/* v305: Boy solda / Çap sağda, klavye kapanmasın, seçili filtre BEYAN toplamı, düzenlemede barkod devamı */
+/* v306: Boy solda / Çap sağda, klavye kapanmasın, seçili filtre BEYAN toplamı, düzenlemede barkod devamı */
 (function(){
   'use strict';
 
@@ -1370,8 +1370,8 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   function bindSelectOnTap(){
     ['diameterInput','lengthInput','barcodeInput'].forEach(id => {
       const el = $(id);
-      if(!el || el.__v305Select) return;
-      el.__v305Select = true;
+      if(!el || el.__v306Select) return;
+      el.__v306Select = true;
       ['focus','click','pointerup','touchend'].forEach(evt => {
         el.addEventListener(evt, () => selectInput(el), {passive:true});
       });
@@ -1391,8 +1391,8 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 
   function bindSaveKeepKeyboard(){
     const btn = $('saveBtn');
-    if(!btn || btn.__v305KeepKeyboard) return;
-    btn.__v305KeepKeyboard = true;
+    if(!btn || btn.__v306KeepKeyboard) return;
+    btn.__v306KeepKeyboard = true;
 
     let handled = false;
     function run(ev){
@@ -1464,8 +1464,8 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   }
 
   function patchOpenEntryRuntime(){
-    if(window.__v305OpenEntryPatched || typeof window.openEntry !== 'function') return;
-    window.__v305OpenEntryPatched = true;
+    if(window.__v306OpenEntryPatched || typeof window.openEntry !== 'function') return;
+    window.__v306OpenEntryPatched = true;
     const old = window.openEntry;
     window.openEntry = function(record){
       if(record && appState()){
@@ -1495,4 +1495,100 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   setInterval(updateBeyanTotals, 900);
 
   window.mesahaV305 = {focusDiameter, updateBeyanTotals};
+})();
+
+
+/* v306: mobil oturum + ölçüm kısayollarında klavye kapanmasın */
+(function(){
+  'use strict';
+
+  const $ = id => document.getElementById(id);
+
+  function focusAndSelect(el){
+    if(!el) return;
+    try{
+      el.focus({preventScroll:true});
+      setTimeout(()=>{ try{ el.select(); }catch{} }, 0);
+    }catch{
+      try{ el.focus(); el.select(); }catch{}
+    }
+  }
+
+  function bindMeasureButtons(){
+    const diameter = $('diameterInput');
+    const length = $('lengthInput');
+
+    document.querySelectorAll('#diameterChips button,[data-dia]').forEach(btn => {
+      if(btn.__v306Measure) return;
+      btn.__v306Measure = true;
+      const run = ev => {
+        if(ev){
+          ev.preventDefault();
+          ev.stopPropagation();
+          if(ev.stopImmediatePropagation) ev.stopImmediatePropagation();
+        }
+        if(diameter){
+          diameter.value = btn.dataset.dia || btn.textContent.trim();
+          try{ if(typeof entryInputChanged === 'function') entryInputChanged(); }catch{}
+          focusAndSelect(diameter);
+          setTimeout(()=>focusAndSelect(diameter), 80);
+        }
+      };
+      btn.addEventListener('pointerdown', run, true);
+      btn.addEventListener('touchstart', run, true);
+      btn.addEventListener('click', run, true);
+    });
+
+    document.querySelectorAll('#lengthChips button,[data-len]').forEach(btn => {
+      if(btn.__v306Measure) return;
+      btn.__v306Measure = true;
+      const run = ev => {
+        if(ev){
+          ev.preventDefault();
+          ev.stopPropagation();
+          if(ev.stopImmediatePropagation) ev.stopImmediatePropagation();
+        }
+        if(length){
+          length.value = btn.dataset.len || btn.textContent.trim();
+          try{ if(typeof entryInputChanged === 'function') entryInputChanged(); }catch{}
+          focusAndSelect(length);
+          setTimeout(()=>focusAndSelect(length), 80);
+        }
+      };
+      btn.addEventListener('pointerdown', run, true);
+      btn.addEventListener('touchstart', run, true);
+      btn.addEventListener('click', run, true);
+    });
+
+    ['diameterInput','lengthInput','barcodeInput'].forEach(id => {
+      const el = $(id);
+      if(!el || el.__v306Tap) return;
+      el.__v306Tap = true;
+      el.addEventListener('focus', () => focusAndSelect(el), true);
+      el.addEventListener('click', () => focusAndSelect(el), true);
+    });
+  }
+
+  function stabilizeViewport(){
+    document.documentElement.style.setProperty('--vh', (window.innerHeight * 0.01) + 'px');
+    document.body.classList.toggle('keyboard-open-v306', window.visualViewport ? window.visualViewport.height < window.innerHeight - 120 : false);
+  }
+
+  function boot(){
+    bindMeasureButtons();
+    stabilizeViewport();
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, {once:true});
+  else boot();
+
+  document.addEventListener('click', () => setTimeout(bindMeasureButtons, 50), true);
+  document.addEventListener('focusin', () => setTimeout(bindMeasureButtons, 50), true);
+  [100,400,1000,2200,4200].forEach(ms => setTimeout(boot, ms));
+  setInterval(bindMeasureButtons, 900);
+
+  window.addEventListener('resize', stabilizeViewport);
+  if(window.visualViewport) window.visualViewport.addEventListener('resize', stabilizeViewport);
+
+  window.mesahaV306 = {bindMeasureButtons, focusAndSelect};
 })();
