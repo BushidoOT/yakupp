@@ -1,0 +1,246 @@
+/* Mesaha İO v180 - Karanlık mod ayrılmış tema dosyası
+   Sadece body.theme-dark / html.theme-dark görünümünü yönetir.
+   Kayıt, yedek ve ORBİS Excel üretim kodlarına dokunmaz. */
+
+html.theme-dark,
+body.theme-dark{
+  color-scheme: dark;
+  background:#0b0f14 !important;
+  color:#eef2f7 !important;
+}
+
+body.theme-dark .app,
+body.theme-dark main,
+body.theme-dark .topbar,
+body.theme-dark .panel,
+body.theme-dark .card,
+body.theme-dark .home-card-v143,
+body.theme-dark .summary-card,
+body.theme-dark .daily-work-summary,
+body.theme-dark .records-panel,
+body.theme-dark .entry-panel,
+body.theme-dark .guide-card,
+body.theme-dark .user-panel-card,
+body.theme-dark .cloud-restore-card,
+body.theme-dark .issue-report-card,
+body.theme-dark .modal,
+body.theme-dark .sheet,
+body.theme-dark .box{
+  background:#121922 !important;
+  color:#eef2f7 !important;
+  border-color:rgba(255,255,255,.10) !important;
+  box-shadow:0 18px 48px rgba(0,0,0,.32) !important;
+}
+
+body.theme-dark .topbar{
+  background:rgba(18,25,34,.94) !important;
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+}
+
+body.theme-dark h1,
+body.theme-dark h2,
+body.theme-dark h3,
+body.theme-dark h4,
+body.theme-dark label,
+body.theme-dark .card-title,
+body.theme-dark .section-title,
+body.theme-dark .brand-copy-v143 h1,
+body.theme-dark .record-main-v111 b,
+body.theme-dark .record-val-v111 strong{
+  color:#f8fafc !important;
+}
+
+body.theme-dark p,
+body.theme-dark small,
+body.theme-dark .hint,
+body.theme-dark .muted,
+body.theme-dark .sub,
+body.theme-dark .help,
+body.theme-dark .brand-copy-v143 span,
+body.theme-dark .record-val-v111 small{
+  color:#bac6d3 !important;
+}
+
+body.theme-dark input,
+body.theme-dark textarea,
+body.theme-dark select{
+  background:#0b1119 !important;
+  color:#f8fafc !important;
+  border-color:rgba(148,163,184,.35) !important;
+  box-shadow:none !important;
+}
+
+body.theme-dark input:focus,
+body.theme-dark textarea:focus,
+body.theme-dark select:focus{
+  border-color:#34d399 !important;
+  box-shadow:0 0 0 3px rgba(52,211,153,.18) !important;
+}
+
+body.theme-dark input::placeholder,
+body.theme-dark textarea::placeholder{
+  color:#748295 !important;
+}
+
+body.theme-dark button:not(.clean-product-v111):not(.clean-chip-v111):not(.clean-save-v111):not(.record-edit-v111):not(.record-delete-v111):not(.mini-btn):not(.cutter-delete-v163),
+body.theme-dark .btn,
+body.theme-dark .chip,
+body.theme-dark .pill,
+body.theme-dark .tag{
+  background:#1b2633 !important;
+  color:#e5edf6 !important;
+  border-color:rgba(255,255,255,.12) !important;
+}
+
+body.theme-dark button.primary,
+body.theme-dark .primary,
+body.theme-dark .btn-primary,
+body.theme-dark .clean-save-v111{
+  background:linear-gradient(135deg,#16a34a,#22c55e) !important;
+  color:#052e16 !important;
+  border-color:rgba(34,197,94,.55) !important;
+}
+
+body.theme-dark button.secondary,
+body.theme-dark .secondary,
+body.theme-dark button.ghost,
+body.theme-dark .ghost{
+  background:#172231 !important;
+  color:#dff7e8 !important;
+  border-color:rgba(148,163,184,.22) !important;
+}
+
+body.theme-dark button.danger,
+body.theme-dark .danger{
+  background:#7f1d1d !important;
+  color:#fee2e2 !important;
+  border-color:rgba(248,113,113,.35) !important;
+}
+
+body.theme-dark .bottom-nav{
+  background:rgba(18,25,34,.96) !important;
+  border-top-color:rgba(255,255,255,.10) !important;
+}
+body.theme-dark .bottom-nav button{
+  color:#b6c2cf !important;
+}
+body.theme-dark .bottom-nav button.active{
+  background:#16a34a !important;
+  color:#052e16 !important;
+}
+
+body.theme-dark table,
+body.theme-dark thead,
+body.theme-dark tbody,
+body.theme-dark tr,
+body.theme-dark th,
+body.theme-dark td{
+  background:#121922 !important;
+  color:#edf2f7 !important;
+  border-color:rgba(255,255,255,.09) !important;
+}
+body.theme-dark th,
+body.theme-dark .table-total-row td{
+  background:#172231 !important;
+  color:#f8fafc !important;
+}
+
+body.theme-dark .record-row-v111{
+  background:#121922 !important;
+  color:#f8fafc !important;
+  border-color:rgba(255,255,255,.10) !important;
+  box-shadow:0 14px 34px rgba(0,0,0,.24) !important;
+}
+body.theme-dark .record-row-v111.selected{
+  border-color:#34d399 !important;
+  box-shadow:0 0 0 3px rgba(52,211,153,.16) !important;
+}
+
+body.theme-dark .record-row-v111.tomruk{border-left:5px solid #facc15 !important;}
+body.theme-dark .record-row-v111.maden{border-left:5px solid #60a5fa !important;}
+body.theme-dark .record-row-v111.kagit{border-left:5px solid #f87171 !important;}
+body.theme-dark .record-row-v111.sanayi{border-left:5px solid #34d399 !important;}
+body.theme-dark .record-row-v111.tel{border-left:5px solid #a78bfa !important;}
+
+body.theme-dark .mini-tag-v111.tomruk,
+body.theme-dark .tag.tomruk{background:#facc15 !important;color:#422006 !important;border-color:#ca8a04 !important;}
+body.theme-dark .mini-tag-v111.maden,
+body.theme-dark .tag.maden{background:#93c5fd !important;color:#172554 !important;border-color:#2563eb !important;}
+body.theme-dark .mini-tag-v111.kagit,
+body.theme-dark .tag.kagit{background:#fca5a5 !important;color:#450a0a !important;border-color:#dc2626 !important;}
+body.theme-dark .mini-tag-v111.sanayi,
+body.theme-dark .tag.sanayi{background:#86efac !important;color:#052e16 !important;border-color:#16a34a !important;}
+body.theme-dark .mini-tag-v111.tree,
+body.theme-dark .tree-tag{background:#bbf7d0 !important;color:#052e16 !important;border-color:#16a34a !important;}
+
+body.theme-dark .tree-filter-v144,
+body.theme-dark .cutter-filter-v158,
+body.theme-dark .records-pager-v152,
+body.theme-dark .cutter-panel-v158,
+body.theme-dark .cutter-panel-v163{
+  background:#111a25 !important;
+  color:#f8fafc !important;
+  border-color:rgba(255,255,255,.10) !important;
+}
+
+body.theme-dark .tree-filter-v144 button,
+body.theme-dark .cutter-filter-v158 button,
+body.theme-dark .cutter-chip-v163{
+  background:#1b2633 !important;
+  color:#e5edf6 !important;
+  border-color:rgba(255,255,255,.12) !important;
+}
+
+body.theme-dark .tree-filter-v144 button.active,
+body.theme-dark .cutter-filter-v158 button.active,
+body.theme-dark .cutter-chip-v163.active{
+  background:#22c55e !important;
+  color:#052e16 !important;
+  border-color:#86efac !important;
+}
+
+body.theme-dark .cutter-delete-v163{
+  background:rgba(248,113,113,.18) !important;
+  color:#fecaca !important;
+  border-color:rgba(248,113,113,.35) !important;
+}
+
+body.theme-dark .clean-simple-overlay-v111{
+  background:rgba(2,6,23,.76) !important;
+}
+body.theme-dark .clean-simple-card-v111,
+body.theme-dark .clean-recent-area-v111,
+body.theme-dark .clean-auto-info-v111{
+  background:#121922 !important;
+  color:#f8fafc !important;
+  border-color:rgba(255,255,255,.10) !important;
+}
+body.theme-dark .clean-measure-grid-v111 input{
+  background:#0b1119 !important;
+  color:#f8fafc !important;
+  border-color:rgba(148,163,184,.35) !important;
+}
+body.theme-dark .clean-chip-v111,
+body.theme-dark .clean-product-v111{
+  background:#1b2633 !important;
+  color:#e5edf6 !important;
+  border-color:rgba(255,255,255,.12) !important;
+}
+body.theme-dark .clean-chip-v111.active,
+body.theme-dark .clean-product-v111.active{
+  background:#22c55e !important;
+  color:#052e16 !important;
+  border-color:#86efac !important;
+}
+
+body.theme-dark .mesaha-net-badge-v178.online{
+  background:#052e16 !important;
+  color:#bbf7d0 !important;
+  border-color:rgba(34,197,94,.35) !important;
+}
+body.theme-dark .mesaha-net-badge-v178.offline{
+  background:#431407 !important;
+  color:#fed7aa !important;
+  border-color:rgba(251,146,60,.35) !important;
+}

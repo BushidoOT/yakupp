@@ -10005,3 +10005,20 @@ body.theme-dark .admin-stats-note-v134{ color:#a8b3c2; }
   body.inline-simple-v119 .cutter-add-v163{min-height:34px !important; font-size:12px !important; padding:7px 9px !important;}
   @media (max-width:520px){.cutter-actions-v163{gap:7px !important;}.cutter-chip-v163{max-width:100% !important;}.cutter-add-v163{flex:1 1 160px !important;}}
 
+
+/* v180 - Ölçümler filtre sabitleme kutusu */
+.records-filter-box-v180{
+  display:grid;
+  gap:10px;
+  margin:12px 0 14px;
+}
+.records-filter-box-v180 .tree-filter-v144,
+.records-filter-box-v180 .cutter-filter-v158{
+  margin:0 !important;
+}
+.records-filter-box-v180 .tree-filter-v144{
+  order:1;
+}
+.records-filter-box-v180 .cutter-filter-v158{
+  order:2;
+}
