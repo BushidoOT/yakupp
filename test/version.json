@@ -1,11 +1,11 @@
 {
-  "app": "v2.31",
-  "version": "v203",
-  "build": "v203",
-  "visibleVersion": "v2.31",
-  "shortVersion": "v2.31",
-  "name": "v2.31",
-  "cacheName": "mesaha-app-v203-tree-stable-startup-nav",
-  "builtAt": "2026-06-19",
-  "notes": "Ağaç türü seçim görünümü sabitlendi; başlangıç ekranında alt menü gizlendi."
+  "app": "v3.00",
+  "version": "v300-clean",
+  "build": "v300-clean",
+  "visibleVersion": "v3.00",
+  "shortVersion": "v3.00",
+  "name": "v3.00",
+  "cacheName": "mesaha-app-v300-clean-rewrite",
+  "builtAt": "2026-06-20",
+  "notes": "Kod tabanı temiz yeniden yazıldı; tekrar eden eski giriş/menü yamaları kaldırıldı. ORBİS XLS çekirdeği ayrı modüle alındı."
 }

@@ -1,31 +1,12 @@
 {
-  "name": "v2.20",
-  "short_name": "v2.20",
-  "start_url": "./index.html?v=191",
-  "scope": "./",
+  "name": "Mesaha İO",
+  "short_name": "Mesaha İO",
+  "start_url": "./index.html",
   "display": "standalone",
+  "background_color": "#f6f9fc",
+  "theme_color": "#166534",
   "icons": [
-    {
-      "src": "./icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "./icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
-    }
-  ],
-  "description": "Orman ölçüm kayıt sistemi",
-  "theme_color": "#0f172a",
-  "background_color": "#0f172a",
-  "version": "v191",
-  "id": "./index.html",
-  "display_override": [
-    "fullscreen",
-    "standalone"
-  ],
-  "orientation": "portrait-primary"
+    {"src":"./assets/icon-192.png","sizes":"192x192","type":"image/png"},
+    {"src":"./assets/icon-512.png","sizes":"512x512","type":"image/png"}
+  ]
 }

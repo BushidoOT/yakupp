@@ -1,99 +1,22 @@
-importScripts('./js/version.js?v=203');
-const CACHE_NAME = (self.MESAHA_VERSION && self.MESAHA_VERSION.cacheName) || 'mesaha-app-v203-tree-stable-startup-nav';
-const CORE_ASSETS = [
-  './',
-  './index.html',
-  './admin.html',
-  './manifest.json',
-  './service-worker.js',
-  './version.json',
-  './.nojekyll',
-  './mesaha_logo.png',
-  './icon-192.png',
-  './icon-512.png',
-  './assets/mesaha_logo.png',
-  './assets/icon-192.png',
-  './assets/icon-512.png',
-  './css/style.css?v=203',
-  './css/dark.css?v=203',
-  './css/ios-entry.css?v=203',
-  './css/entry-mode.css?v=203',
-  './js/version.js?v=203',
-  './js/admin-access.js?v=203',
-  './js/startup-offline.js?v=203',
-  './js/core.js?v=203',
-  './js/admin-cloud.js?v=203',
-  './js/tree-entry.js?v=203',
-  './js/ui-mobile.js?v=203',
-  './js/records-filters.js?v=203',
-  './js/backup-storage.js?v=203',
-  './js/keyboard-filters.js?v=203',
-  './js/cutters.js?v=203',
-  './js/filters-stability.js?v=203',
-  './js/stability-base.js?v=203',
-  './js/control-test.js?v=203',
-  './js/stability-admin.js?v=203',
-  './js/offline-admin.js?v=203',
-  './js/app-stability.js?v=203',
-  './js/auto-update.js?v=203',
-  './js/ios-entry.js?v=203',
-  './js/entry-mode.js?v=203'
+importScripts('./js/version.js?v=300');
+const CACHE_NAME = (self.MESAHA_VERSION && self.MESAHA_VERSION.cacheName) || 'mesaha-app-v300-clean-rewrite';
+const ASSETS = [
+  './','./index.html','./manifest.json','./version.json','./service-worker.js',
+  './css/style.css?v=300','./js/version.js?v=300','./js/orbis-xls.js?v=300','./js/app.js?v=300',
+  './assets/icon-192.png','./assets/icon-512.png','./assets/mesaha_logo.png',
+  './icon-192.png','./icon-512.png','./mesaha_logo.png'
 ];
-const FALLBACK_INDEX = './index.html';
-const FALLBACK_ADMIN = './admin.html';
-const TIMEOUT_MS = 5000;
-function timeout(ms){ return new Promise((_, reject) => setTimeout(() => reject(new Error('network-timeout')), ms)); }
-async function putSafe(cache, request, response){ try{ if(response && response.ok) await cache.put(request, response.clone()); }catch(_){ } }
-async function installCore(){
-  const cache = await caches.open(CACHE_NAME);
-  await Promise.all(CORE_ASSETS.map(async (asset) => {
-    try{ const res = await fetch(asset, {cache:'reload'}); if(res && res.ok) await cache.put(asset, res.clone()); }catch(_){ }
-  }));
-}
-self.addEventListener('install', (event) => {
-  event.waitUntil(installCore().then(() => self.skipWaiting()));
+self.addEventListener('install', event => {
+  event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS)).then(() => self.skipWaiting()));
 });
-self.addEventListener('activate', (event) => {
-  event.waitUntil((async () => {
-    const keys = await caches.keys();
-    await Promise.all(keys.map(k => k !== CACHE_NAME ? caches.delete(k) : Promise.resolve(false)));
-    await self.clients.claim();
-  })());
+self.addEventListener('activate', event => {
+  event.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE_NAME && k.startsWith('mesaha-app-')).map(k => caches.delete(k)))).then(() => self.clients.claim()));
 });
-async function networkFirst(request){
-  const cache = await caches.open(CACHE_NAME);
-  try{
-    const response = await Promise.race([fetch(request), timeout(TIMEOUT_MS)]);
-    await putSafe(cache, request, response);
+self.addEventListener('fetch', event => {
+  if (event.request.method !== 'GET') return;
+  event.respondWith(fetch(event.request).then(response => {
+    const clone = response.clone();
+    caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone)).catch(()=>{});
     return response;
-  }catch(_){
-    const cached = await cache.match(request, {ignoreSearch:true});
-    if(cached) return cached;
-    const url = new URL(request.url);
-    if(request.mode === 'navigate') return (url.pathname.endsWith('/admin.html') ? await cache.match(FALLBACK_ADMIN) : await cache.match(FALLBACK_INDEX)) || Response.error();
-    return Response.error();
-  }
-}
-async function cacheFirst(request){
-  const cache = await caches.open(CACHE_NAME);
-  const cached = await cache.match(request, {ignoreSearch:true});
-  if(cached) return cached;
-  try{
-    const response = await fetch(request);
-    await putSafe(cache, request, response);
-    return response;
-  }catch(_){ return Response.error(); }
-}
-self.addEventListener('fetch', (event) => {
-  const request = event.request;
-  if(request.method !== 'GET') return;
-  const url = new URL(request.url);
-  if(url.origin !== location.origin) return;
-  if(request.mode === 'navigate' || url.pathname.endsWith('/version.json')) event.respondWith(networkFirst(request));
-  else event.respondWith(cacheFirst(request));
-});
-self.addEventListener('message', (event) => {
-  const data = event.data || {};
-  if(data.type === 'SKIP_WAITING') self.skipWaiting();
-  if(data.type === 'CACHE_REFRESH') event.waitUntil(installCore());
+  }).catch(() => caches.match(event.request).then(r => r || caches.match('./index.html'))));
 });
