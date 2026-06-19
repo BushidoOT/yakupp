@@ -349,7 +349,7 @@
 
 (function(){
   'use strict';
-  const VERSION_TEXT_V145 = 'Mesaha İO v1.99';
+  const VERSION_TEXT_V145 = (window.MESAHA_VERSION_TEXT || 'Mesaha İO');
   const FILE_VERSION_V145 = 'v145';
   function safeV145(fn){ try { return fn(); } catch(e) { return undefined; } }
   function readyV145(fn){
@@ -479,7 +479,7 @@
 
 (function(){
   'use strict';
-  const VERSION_TEXT_V146 = 'Mesaha İO v1.99';
+  const VERSION_TEXT_V146 = (window.MESAHA_VERSION_TEXT || 'Mesaha İO');
   const FILE_VERSION_V146 = 'v146';
 
   function readyV146(fn){
@@ -645,7 +645,7 @@
 
 (function(){
   'use strict';
-  const VERSION_TEXT_V147 = 'Mesaha İO v1.99';
+  const VERSION_TEXT_V147 = (window.MESAHA_VERSION_TEXT || 'Mesaha İO');
   const FILE_VERSION_V147 = 'v147';
   function safe(fn){ try { return fn(); } catch(e) { return undefined; } }
   function ready(fn){ if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn, {once:true}); else fn(); }
@@ -688,7 +688,7 @@
 
 (function(){
   'use strict';
-  const VERSION_TEXT_V149 = 'Mesaha İO v1.99';
+  const VERSION_TEXT_V149 = (window.MESAHA_VERSION_TEXT || 'Mesaha İO');
   const FILE_VERSION_V149 = 'v149';
   function safeV149(fn){ try { return fn(); } catch(e) { return undefined; } }
   function readyV149(fn){ if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn, { once:true }); else fn(); }

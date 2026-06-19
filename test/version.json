@@ -1,10 +1,10 @@
 {
-  "version": "v173",
-  "visibleVersion": "Mesaha İO v2.02",
-  "cache": "mesaha-app-v173-stabilizasyon",
+  "app": "Mesaha İO",
+  "version": "v178",
+  "build": "v178",
+  "visibleVersion": "Mesaha İO v2.07",
+  "name": "Mesaha İO v2.07",
+  "cacheName": "mesaha-app-v178-offline-acilis",
   "builtAt": "2026-06-19",
-  "notes": "Stabilizasyon paketi: admin görünürlüğü sadece Yakup / Yaylacık kullanıcısına alındı, Stabil Kontrol ve Hata Günlüğü admin içine taşındı, açılış hata yakalama ve önbellek temizleme eklendi. Kayıt/yedek/filtre/kesimci kontrolü güçlendirildi. ORBİS Excel formatına dokunulmadı.",
-  "name": "Mesaha İO v2.02",
-  "build": "v173",
-  "updatedAt": "2026-06-19"
+  "notes": "Offline açılış ekranı, 5 saniye zayıf internet fallback ve çevrim içi/dışı durum göstergesi düzeltildi. ORBİS Excel formatına dokunulmadı."
 }

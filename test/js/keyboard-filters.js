@@ -3,7 +3,7 @@
 /* v154: Kaydetten sonra çap klavyesi açık kalsın + ölçümler 20 kayıt/sayfa */
 (function(){
   'use strict';
-  const VERSION_TEXT_V153 = 'Mesaha İO v1.99';
+  const VERSION_TEXT_V153 = (window.MESAHA_VERSION_TEXT || 'Mesaha İO');
   const FILE_VERSION_V153 = 'v154';
   function safe(fn){ try { return fn(); } catch(e) { return undefined; } }
   function ready(fn){ if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn, { once:true }); else fn(); }
@@ -67,7 +67,7 @@
 
 (function(){
   'use strict';
-  var VERSION='Mesaha İO v1.99';
+  var VERSION=(window.MESAHA_VERSION_TEXT || 'Mesaha İO');
   function safe(fn){ try{return fn();}catch(e){} }
   function apply(){
     safe(function(){ document.title=VERSION; });
@@ -93,7 +93,7 @@
 /* v156: Ölçümler ağaç filtresi kesin düzeltme + hızlı girişte klavye açık kalsın */
 (function(){
   'use strict';
-  var VERSION_V156 = 'Mesaha İO v1.99';
+  var VERSION_V156 = (window.MESAHA_VERSION_TEXT || 'Mesaha İO');
   var FILE_VERSION_V156 = 'v157';
   var TREE_FILTER_KEY_V156 = 'mesaha_tree_filter_v144';
   var PAGE_SIZE_V156 = 20;

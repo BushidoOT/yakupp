@@ -1,12 +1,13 @@
 
 (function(){
   'use strict';
-  var FILE_VERSION = 'v173';
-  var VISIBLE_VERSION = 'Mesaha İO v2.02';
+  var INFO = window.MESAHA_VERSION || {};
+  var FILE_VERSION = INFO.version || 'v178';
+  var VISIBLE_VERSION = INFO.visibleVersion || (window.MESAHA_VERSION_TEXT || 'Mesaha İO');
   var ADMIN_NAME = 'Yakup';
   var ADMIN_SEFLIK = 'Yaylacık';
-  var ERROR_KEY = 'mesaha_error_log_v173';
-  var BOOT_KEY = 'mesaha_boot_status_v173';
+  var ERROR_KEY = 'mesaha_error_log_' + FILE_VERSION;
+  var BOOT_KEY = 'mesaha_boot_status_' + FILE_VERSION;
 
   function ready(fn){ if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn, {once:true}); else fn(); }
   function safe(fn, fallback){ try { return fn(); } catch(e){ logError('safe', e); return fallback; } }

@@ -350,7 +350,7 @@
 /* v154: Kaydetten sonra çap klavyesi açık kalsın + ölçümler 20 kayıt/sayfa */
 (function(){
   'use strict';
-  const VERSION_TEXT_V153 = 'Mesaha İO v1.99';
+  const VERSION_TEXT_V153 = (window.MESAHA_VERSION_TEXT || 'Mesaha İO');
   const FILE_VERSION_V153 = 'v154';
   function safe(fn){ try { return fn(); } catch(e) { return undefined; } }
   function ready(fn){ if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn, { once:true }); else fn(); }
@@ -414,7 +414,7 @@
 
 (function(){
   'use strict';
-  var VERSION_V158 = 'Mesaha İO v1.99';
+  var VERSION_V158 = (window.MESAHA_VERSION_TEXT || 'Mesaha İO');
   var FILE_VERSION_V158 = 'v158';
   var PAGE_SIZE_V158 = 20;
   var CUTTER_FILTER_KEY_V158 = 'mesaha_cutter_filter_v158';

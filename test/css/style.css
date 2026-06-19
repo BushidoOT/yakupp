@@ -8983,7 +8983,7 @@ body.theme-dark .admin-stats-note-v134{ color:#a8b3c2; }
 
 /* style block 3 id="mesaha-v143-mobile-ui-css" */
 
-    /* Mesaha İO v1.99: mobil ana sayfa + logo + açık tema */
+    /* Mesaha İO: mobil ana sayfa + logo + açık tema */
     :root{
       --mio-bg:#f4f8f6;
       --mio-card:#ffffff;
@@ -9733,7 +9733,7 @@ body.theme-dark .admin-stats-note-v134{ color:#a8b3c2; }
   }
   .brand h1::after,
   .brand-copy-v143 h1::after{
-    content:'Mesaha İO v1.99';
+    content:'';
     font-size:21px !important;
     line-height:1.05 !important;
   }

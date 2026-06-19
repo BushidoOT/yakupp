@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha İO v2.02</title>
-  <meta name="mesaha-build" content="v173-stabilizasyon" />
+  <title>Mesaha İO</title>
+  <meta name="mesaha-build" content="v178" />
   
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -18,9 +18,43 @@
   <link rel="apple-touch-icon" href="./icon-192.png" />
   
 
-  <link rel="stylesheet" href="./css/style.css?v=173" />
+  <link rel="stylesheet" href="./css/style.css?v=178" />
+  <script src="./js/version.js?v=178"></script>
+  <script src="./js/admin-access.js?v=178"></script>
+  <script src="./js/startup-offline.js?v=178" defer></script>
+
+  <style id="mesahaStartupV178Css">
+    .mesaha-startup-v178{position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 30% 20%,#1b7a43 0,#0f5130 26%,#071b12 72%);color:#fff;padding:18px;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;transition:opacity .28s ease,visibility .28s ease}.mesaha-startup-v178.hide{opacity:0;visibility:hidden;pointer-events:none}.mesaha-startup-card-v178{width:min(440px,94vw);background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.18);border-radius:28px;padding:22px;box-shadow:0 28px 85px rgba(0,0,0,.35);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}.mesaha-startup-logo-v178{display:flex;gap:12px;align-items:center;margin-bottom:14px}.mesaha-startup-logo-v178 img{width:54px;height:54px;border-radius:18px;background:#fff;object-fit:contain;padding:5px}.mesaha-startup-logo-v178 h2{margin:0;font-size:22px;letter-spacing:.2px}.mesaha-startup-logo-v178 p{margin:3px 0 0;color:rgba(255,255,255,.72);font-weight:750;font-size:13px}.mesaha-startup-spinner-v178{width:34px;height:34px;border-radius:999px;border:4px solid rgba(255,255,255,.22);border-top-color:#fff;animation:mesahaSpinV178 .85s linear infinite;margin:10px auto 16px}.mesaha-startup-status-v178{text-align:center;font-weight:900;margin:0 0 13px;font-size:15px}.mesaha-startup-steps-v178{display:grid;gap:8px}.mesaha-startup-step-v178{display:flex;align-items:center;gap:9px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.10);border-radius:15px;padding:9px 11px;color:rgba(255,255,255,.82);font-size:13px;font-weight:800}.mesaha-startup-step-v178 .step-icon{width:22px;height:22px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;background:rgba(255,255,255,.14);font-size:12px;font-weight:950}.mesaha-startup-step-v178.done{color:#dcfce7}.mesaha-startup-step-v178.done .step-icon{background:#22c55e;color:#052e16}.mesaha-startup-step-v178.active .step-icon{background:#facc15;color:#422006}.mesaha-startup-step-v178.warn{color:#ffedd5}.mesaha-startup-step-v178.warn .step-icon{background:#fb923c;color:#431407}.mesaha-startup-log-v178{min-height:18px;margin-top:12px;color:rgba(255,255,255,.62);font-size:11px;font-weight:750;line-height:1.35}.mesaha-startup-actions-v178{display:none;gap:8px;flex-wrap:wrap;margin-top:13px}.mesaha-startup-actions-v178 button{flex:1 1 150px;border:0;border-radius:14px;padding:10px 12px;font-weight:950;background:#fff;color:#14532d}.mesaha-startup-actions-v178 button.secondary{background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.20)}.mesaha-net-badge-v178{display:inline-flex;align-items:center;justify-content:center;min-width:92px;padding:7px 11px;border-radius:999px;font-size:12px;font-weight:950;background:#ecfdf5;color:#166534;border:1px solid rgba(22,101,52,.18);box-shadow:0 8px 22px rgba(15,23,42,.08)}.mesaha-net-badge-v178.offline{background:#fff7ed;color:#9a3412;border-color:#fed7aa}.mesaha-net-badge-v178.online:before{content:"●";font-size:9px;margin-right:6px;color:#16a34a}.mesaha-net-badge-v178.offline:before{content:"●";font-size:9px;margin-right:6px;color:#f97316}@keyframes mesahaSpinV178{to{transform:rotate(360deg)}}
+  </style>
 </head>
 <body class="product-tomruk">
+
+  <div id="mesahaStartupV178" class="mesaha-startup-v178" role="status" aria-live="polite" aria-label="Mesaha İO açılış kontrolü">
+    <div class="mesaha-startup-card-v178">
+      <div class="mesaha-startup-logo-v178">
+        <img src="./mesaha_logo.png" alt="Mesaha İO" />
+        <div>
+          <h2>Mesaha İO</h2>
+          <p>Açılış kontrolleri yapılıyor</p>
+        </div>
+      </div>
+      <div class="mesaha-startup-spinner-v178"></div>
+      <p id="startupStatusV178" class="mesaha-startup-status-v178">Uygulama hazırlanıyor...</p>
+      <div class="mesaha-startup-steps-v178">
+        <div id="startupStepAppV178" class="mesaha-startup-step-v178 active"><span class="step-icon">•</span><span class="step-text">Uygulama başlatılıyor</span></div>
+        <div id="startupStepNetV178" class="mesaha-startup-step-v178 active"><span class="step-icon">•</span><span class="step-text">İnternet bağlantısı kontrol ediliyor</span></div>
+        <div id="startupStepFilesV178" class="mesaha-startup-step-v178 active"><span class="step-icon">•</span><span class="step-text">Offline dosyalar kontrol ediliyor</span></div>
+        <div id="startupStepRecordsV178" class="mesaha-startup-step-v178 active"><span class="step-icon">•</span><span class="step-text">Kayıt sistemi hazırlanıyor</span></div>
+        <div id="startupStepBackupV178" class="mesaha-startup-step-v178 active"><span class="step-icon">•</span><span class="step-text">Yedek sistemi hazırlanıyor</span></div>
+      </div>
+      <div id="startupLogV178" class="mesaha-startup-log-v178"></div>
+      <div id="startupActionsV178" class="mesaha-startup-actions-v178">
+        <button id="startupOfflineBtnV178" type="button">Çevrimdışı Devam Et</button>
+        <button id="startupClearCacheBtnV178" class="secondary" type="button">Önbelleği Temizle</button>
+      </div>
+    </div>
+  </div>
+
 
   <div id="userLoginOverlay" class="user-login-overlay" role="dialog" aria-modal="true" aria-label="Kullanıcı girişi">
     <div class="user-login-card">
@@ -56,7 +90,6 @@
         <button id="panelPasswordBtn" class="warning" type="button">Bulut Yedeklerini Getir</button>
         <button id="panelCloudBackupBtn" class="primary" type="button">Buluta Yedekle</button>
         <button id="panelReportIssueBtn" class="secondary" type="button">Sorun Bildir</button>
-        <button id="panelAdminOpenBtn" class="secondary" type="button" onclick="openAdminFromUserPanel()">Yönetici Panelini Aç</button>
         <button id="userMenuForceUpdateBtn" class="secondary" type="button">Yeni Sürümü Güncelle</button>
         <p class="hint user-update-offline-note">Not: Güncelle butonunu sadece internet varken kullanınız. Arazide veya internet yokken güncelleme yapmayınız; aksi halde uygulama yeniden açılmayabilir.</p>
       </div>
@@ -179,11 +212,12 @@
       <div class="brand app-brand-v143">
         <img class="brand-logo-v143" src="./mesaha_logo.png" alt="Mesaha İO logosu" loading="eager" />
         <div class="brand-copy-v143">
-          <h1>Mesaha İO v2.02</h1>
+          <h1 data-app-version-text>Mesaha İO</h1>
           <span>Orman ölçüm kayıt sistemi</span>
         </div>
       </div>
       <div id="activeUserBadge" class="active-user-badge" role="button" tabindex="0" title="Kullanıcı panelini aç" style="display:none"></div>
+      <div id="mesahaNetBadgeV178" class="mesaha-net-badge-v178 offline" aria-live="polite">Kontrol ediliyor</div>
 
       <div class="top-actions-v112">
         <button id="openSimpleV112" type="button">⚡ Giriş Modu</button>
@@ -247,7 +281,6 @@
         <button type="button" data-flow-tab="entry">Yeni Kayıt</button>
         <button type="button" data-flow-tab="records">Kayıtlar</button>
         <button type="button" data-flow-tab="guide">Kılavuz</button>
-        <button type="button" data-flow-tab="admin" style="display:none">Admin</button>
       </nav>
 
 
@@ -624,90 +657,23 @@
           </div>
         </div>
       </section>
-
-    
-      
-      <section class="panel admin-panel" style="display:none">
-        <div class="panel-header">
-          <h2>Admin Paneli</h2>
-          <span class="pill" style="display:inline-flex">Yönetim</span>
-        </div>
-        <div class="panel-body">
-          <div class="admin-panel-top admin-panel-top-clean">
-            <div>
-              <h3>Yönetim Özeti</h3>
-              <p id="adminSyncInfo" class="hint">Firebase ve eski sistem birlikte kontrol edilir.</p>
-            </div>
-            <button type="button" id="adminRefreshBtn" class="secondary">Yenile</button>
-          </div>
-
-          <div class="admin-summary-grid admin-summary-grid-clean">
-            <div class="admin-summary-card"><span>Toplam Kullanıcı</span><b id="adminTotalUsers">0</b></div>
-            <div class="admin-summary-card"><span>Bugün Giriş</span><b id="adminTodayUsers">0</b></div>
-            <div class="admin-summary-card"><span>Son 7 Gün</span><b id="adminWeekUsers">0</b></div>
-            <div class="admin-summary-card"><span>Toplam Yedek</span><b id="adminTotalBackups">0</b></div>
-            <div class="admin-summary-card wide"><span>En Son Yedek</span><b id="adminLastBackup">-</b></div>
-          </div>
-
-          <div class="admin-filters admin-filters-clean">
-            <input id="adminUserSearch" type="text" placeholder="Kullanıcı veya şeflik ara..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
-            <select id="adminSeflikFilter">
-              <option value="">Tüm şeflikler</option>
-            </select>
-          </div>
-
-          <div class="admin-quick-filters admin-quick-filters-clean">
-            <button type="button" class="admin-quick active" data-admin-quick="all">Tümü</button>
-            <button type="button" class="admin-quick" data-admin-quick="today">Bugün aktif</button>
-            <button type="button" class="admin-quick" data-admin-quick="noBackup">Yedeği olmayan</button>
-            <button type="button" class="admin-quick" data-admin-quick="inactive">7+ gün girmeyen</button>
-          </div>
-
-          <div class="admin-tabs admin-tabs-clean">
-            <button class="admin-tab active" type="button" data-admin-tab="users">Kullanıcılar</button>
-            <button class="admin-tab" type="button" data-admin-tab="notes">Notlar</button>
-            <button class="admin-tab" type="button" data-admin-tab="reports">Bildirimler</button>
-          </div>
-
-          <div id="adminUsersView" class="admin-view">
-            <div id="registeredUsersList" class="registered-users-list"></div>
-          </div>
-
-          <div id="adminNotesView" class="admin-view" style="display:none">
-            <div id="adminNotesList" class="admin-notes-list"></div>
-          </div>
-
-          <div id="adminReportsView" class="admin-view" style="display:none">
-            <div class="admin-report-toolbar">
-              <button type="button" class="admin-report-filter active" data-report-filter="open">Açık</button>
-              <button type="button" class="admin-report-filter" data-report-filter="all">Tümü</button>
-              <button type="button" class="admin-report-filter" data-report-filter="done">Çözüldü</button>
-            </div>
-            <div id="adminReportsList" class="admin-reports-list"></div>
-          </div>
-        </div>
-      </section>
-
-    </main>
+</main>
   </div>
 
   <nav class="bottom-nav">
     <button id="navEntry" class="active" type="button">Yeni Kayıt</button>
     <button id="navRecords" type="button">Kayıtlar</button>
     <button id="navGuide" type="button">Kullanım Kılavuzu</button>
-    <button id="navAdmin" type="button" style="display:none">Admin Paneli</button>
   </nav>
-  <script src="./js/core.js?v=173"></script>
-  <script src="./js/admin-cloud.js?v=173"></script>
-  <script src="./js/tree-entry.js?v=173"></script>
-  <script src="./js/ui-mobile.js?v=173"></script>
-  <script src="./js/records-filters.js?v=173"></script>
-  <script src="./js/backup-storage.js?v=173"></script>
-  <script src="./js/keyboard-filters.js?v=173"></script>
-  <script src="./js/cutters.js?v=173"></script>
-  <script src="./js/stability-base.js?v=173"></script>
-  <script src="./js/control-test.js?v=173"></script>
-  <script src="./js/stability-admin.js?v=173"></script>
-  <script src="./js/stabilize-v173.js?v=173"></script>
+  <script src="./js/core.js?v=178"></script>
+  <script src="./js/admin-cloud.js?v=178"></script>
+  <script src="./js/tree-entry.js?v=178"></script>
+  <script src="./js/ui-mobile.js?v=178"></script>
+  <script src="./js/records-filters.js?v=178"></script>
+  <script src="./js/backup-storage.js?v=178"></script>
+  <script src="./js/keyboard-filters.js?v=178"></script>
+  <script src="./js/cutters.js?v=178"></script>
+  <script src="./js/stability-base.js?v=178"></script>
+  <script src="./js/app-stability.js?v=178"></script>
 </body>
 </html>

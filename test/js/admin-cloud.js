@@ -3,7 +3,7 @@
 /* Mesaha v137 active stats reset fix */
 (function(){
   "use strict";
-  const BUILD_VERSION_V137 = "Mesaha İO v1.99";
+  const BUILD_VERSION_V137 = (window.MESAHA_VERSION_TEXT || 'Mesaha İO');
   const FILE_VERSION_V137 = "v137";
   const STATS_RESET_DOC_V137 = "__stats_reset_marker__";
   const EXPORT_QUEUE_KEY_V137 = "mesaha_export_stats_queue_v135";
@@ -377,7 +377,7 @@
 /* Mesaha v138 - aktif istatistik sıfırlama kesin düzeltme */
 (function(){
   "use strict";
-  const BUILD_VERSION_V138 = "Mesaha İO v1.99";
+  const BUILD_VERSION_V138 = (window.MESAHA_VERSION_TEXT || 'Mesaha İO');
   const FILE_VERSION_V138 = "v138";
   const STATS_RESET_DOC_V138 = "__stats_reset_marker__";
   const EXPORT_QUEUE_KEY_V138 = "mesaha_export_stats_queue_v135";

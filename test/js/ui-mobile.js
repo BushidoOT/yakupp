@@ -3,7 +3,7 @@
 /* Mesaha v139 - istatistik sıfırlama admin ana liste/özet kesin düzeltme */
 (function(){
   "use strict";
-  const BUILD_VERSION="Mesaha İO v1.99", FILE_VERSION="v139", MARKER="__stats_reset_marker__";
+  const BUILD_VERSION=(window.MESAHA_VERSION_TEXT || 'Mesaha İO'), FILE_VERSION="v139", MARKER="__stats_reset_marker__";
   const EXPORT_QUEUE="mesaha_export_stats_queue_v135", USAGE_LOCAL="mesaha_usage_stats_v128";
   const usageColl=()=>{try{return FIREBASE_USAGE_COLLECTION||"usageStats";}catch{return"usageStats";}};
   const usersColl=()=>{try{return FIREBASE_USERS_COLLECTION||"users";}catch{return"users";}};
@@ -86,7 +86,7 @@
 /* Mesaha v141 - admin son görülen + arka plan süre senkronu */
 (function(){
   "use strict";
-  const BUILD_VERSION = "Mesaha İO v1.99";
+  const BUILD_VERSION = (window.MESAHA_VERSION_TEXT || 'Mesaha İO');
   const FILE_VERSION = "v141";
   const LIVE_QUEUE_KEY = "mesaha_live_usage_queue_v141";
   const LIVE_LAST_SYNC_KEY = "mesaha_live_usage_last_sync_v141";
@@ -309,7 +309,7 @@
 /* Mesaha v142 - admin üst özet: Son Görülen kişi yerine bugün görülen kullanıcı sayısı */
 (function(){
   "use strict";
-  const BUILD_VERSION = "Mesaha İO v1.99";
+  const BUILD_VERSION = (window.MESAHA_VERSION_TEXT || 'Mesaha İO');
   const FILE_VERSION = "v142";
   const esc = (v) => { try { return escapeHtml(v); } catch { return String(v ?? "").replace(/[&<>\"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[c])); } };
   const n = (v) => { const x = Number(String(v ?? "").replace(",", ".").replace(/[^0-9.\-]/g, "")); return Number.isFinite(x) ? x : 0; };
@@ -383,7 +383,7 @@
 
 (function(){
   "use strict";
-  const VERSION_TEXT = "Mesaha İO v1.99";
+  const VERSION_TEXT = (window.MESAHA_VERSION_TEXT || 'Mesaha İO');
   function $(id){ return document.getElementById(id); }
   function fmt(n){ try { return Number(n || 0).toLocaleString("tr-TR"); } catch { return String(n || 0); } }
   function m3FromDesi(v){ try { if (typeof formatHacimFromDesi === "function") return formatHacimFromDesi(v); } catch {} return ((Number(v)||0)/1000).toFixed(3).replace(/0+$/,"").replace(/\.$/,"") || "0"; }
@@ -467,7 +467,7 @@
     });
   }
   function applyVersion(){
-    try { document.title = "Mesaha İO v1.99"; } catch {}
+    try { document.title = (window.MESAHA_VERSION_TEXT || 'Mesaha İO'); } catch {}
     try { const h1 = document.querySelector(".brand h1"); if(h1) h1.textContent = VERSION_TEXT; } catch {}
     try { window.MESAHA_BUILD_INFO = Object.assign({}, window.MESAHA_BUILD_INFO || {}, { fileVersion:"v143-ui", visibleVersion:VERSION_TEXT, uiMode:"mobile-home-logo" }); } catch {}
   }

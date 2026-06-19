@@ -2,7 +2,7 @@
 
 (function(){
   'use strict';
-  var VERSION_V158 = 'Mesaha İO v1.99';
+  var VERSION_V158 = (window.MESAHA_VERSION_TEXT || 'Mesaha İO');
   var FILE_VERSION_V158 = 'v158';
   var PAGE_SIZE_V158 = 20;
   var CUTTER_FILTER_KEY_V158 = 'mesaha_cutter_filter_v158';
@@ -469,7 +469,7 @@
 
 (function(){
   'use strict';
-  var VISIBLE_VERSION='Mesaha İO v1.99', FILE_VERSION='v170';
+  var VISIBLE_VERSION=(window.MESAHA_VERSION_TEXT || 'Mesaha İO'), FILE_VERSION='v170';
   function ready(fn){ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',fn,{once:true}); else fn(); }
   function safe(fn,fallback){ try{return fn();}catch(e){return fallback;} }
   function byId(id){ return document.getElementById(id); }

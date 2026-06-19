@@ -1,7 +1,8 @@
 (function(){
   'use strict';
-  var VISIBLE_VERSION = 'Mesaha İO v2.02';
-  var FILE_VERSION = 'v173';
+  var INFO = window.MESAHA_VERSION || {};
+  var VISIBLE_VERSION = INFO.visibleVersion || (window.MESAHA_VERSION_TEXT || 'Mesaha İO');
+  var FILE_VERSION = INFO.version || 'v178';
   var CONTROL_KEY = 'mesaha_v171_control_log';
   var LAST_BACKUP_KEY = 'mesaha_v171_last_backup_info';
   var LAST_RESTORE_KEY = 'mesaha_v171_last_restore_info';

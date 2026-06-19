@@ -2,7 +2,7 @@
 
 (function(){
   'use strict';
-  const VERSION_TEXT_V151 = 'Mesaha İO v1.99';
+  const VERSION_TEXT_V151 = (window.MESAHA_VERSION_TEXT || 'Mesaha İO');
   const FILE_VERSION_V151 = 'v151';
   function safe(fn){ try { return fn(); } catch(e) { return undefined; } }
   function ready(fn){ if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn, { once:true }); else fn(); }
@@ -221,7 +221,7 @@
 /* v152: Stabilite paketi - ZIP yedek, parçalı geri yükleme, sayfalı kayıt listesi, yükleme göstergesi */
 (function(){
   'use strict';
-  const BUILD_VERSION_V152 = 'Mesaha İO v1.99';
+  const BUILD_VERSION_V152 = (window.MESAHA_VERSION_TEXT || 'Mesaha İO');
   const FILE_VERSION_V152 = 'v157';
   const CACHE_TAG_V152 = 'mesaha-app-v157-tarih-yedek-yukle-fix';
   const PAGE_SIZE_V152 = 20;

@@ -874,7 +874,7 @@
     function currentDeviceInfoPayload() {
       const active = state.activeUser || findActiveUser();
       return {
-        appVersion: "Mesaha İO v1.99",
+        appVersion: (window.MESAHA_VERSION_TEXT || 'Mesaha İO'),
         fileVersion: "v135",
         userName: active && active.name ? cleanUserText(active.name) : "",
         seflik: active && active.seflik ? cleanUserText(active.seflik) : "",
@@ -6789,7 +6789,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     function usageTouchStatV128(stat){
       stat.updatedAt = (typeof firebaseDateText === "function") ? firebaseDateText() : new Date().toLocaleString("tr-TR");
       stat.updatedAtMs = Date.now();
-      stat.appVersion = "Mesaha İO v1.99";
+      stat.appVersion = (window.MESAHA_VERSION_TEXT || 'Mesaha İO');
       stat.fileVersion = "v135";
       stat.recordCount = Array.isArray(state.records) ? state.records.length : 0;
       return stat;
@@ -6872,7 +6872,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
             inputM3: Number(usageCleanNumberV128(stat.inputM3).toFixed(3)),
             recordEntryCount: Math.round(usageCleanNumberV128(stat.recordEntryCount)),
             recordCount: Math.round(usageCleanNumberV128(stat.recordCount)),
-            appVersion: "Mesaha İO v1.99",
+            appVersion: (window.MESAHA_VERSION_TEXT || 'Mesaha İO'),
             fileVersion: "v135",
             createdAt: stat.createdAt || firebaseDateText(),
             createdAtMs: Number(stat.createdAtMs || Date.now()),
@@ -7107,7 +7107,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     const prevCurrentDeviceInfoPayloadV128 = typeof currentDeviceInfoPayload === "function" ? currentDeviceInfoPayload : null;
     currentDeviceInfoPayload = function(){
       const info = prevCurrentDeviceInfoPayloadV128 ? prevCurrentDeviceInfoPayloadV128() : {};
-      info.appVersion = "Mesaha İO v1.99";
+      info.appVersion = (window.MESAHA_VERSION_TEXT || 'Mesaha İO');
       info.fileVersion = "v135";
       info.recordCount = Array.isArray(state.records) ? state.records.length : (Number(info.recordCount) || 0);
       info.updatedMs = Date.now();
@@ -7121,7 +7121,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 
     window.MESAHA_BUILD_INFO = {
       fileVersion: "v135",
-      visibleVersion: "Mesaha İO v1.99",
+      visibleVersion: (window.MESAHA_VERSION_TEXT || 'Mesaha İO'),
       stableBuild: true
     };
 
@@ -7130,7 +7130,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     const prevCurrentDeviceInfoPayloadV129 = typeof currentDeviceInfoPayload === "function" ? currentDeviceInfoPayload : null;
     currentDeviceInfoPayload = function(){
       const info = prevCurrentDeviceInfoPayloadV129 ? prevCurrentDeviceInfoPayloadV129() : {};
-      info.appVersion = "Mesaha İO v1.99";
+      info.appVersion = (window.MESAHA_VERSION_TEXT || 'Mesaha İO');
       info.fileVersion = "v135";
       info.recordCount = Array.isArray(state.records) ? state.records.length : (Number(info.recordCount) || 0);
       info.updatedMs = Date.now();
@@ -7139,7 +7139,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     };
     window.MESAHA_BUILD_INFO = {
       fileVersion: "v135",
-      visibleVersion: "Mesaha İO v1.99",
+      visibleVersion: (window.MESAHA_VERSION_TEXT || 'Mesaha İO'),
       stableBuild: true,
       offlineFirstTimeoutMs: MESAHA_STARTUP_TIMEOUT_V129
     };
@@ -7148,7 +7148,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 
     /* v130: Boy kısayol butonlarında klavye kapanmasını engelle + küçük stabilite denetimi */
     (function(){
-      const BUILD_VERSION_V130 = "Mesaha İO v1.99";
+      const BUILD_VERSION_V130 = (window.MESAHA_VERSION_TEXT || 'Mesaha İO');
       const FILE_VERSION_V130 = "v134";
 
       function safeFocusV130(input, selectMode){
@@ -7297,7 +7297,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 
     /* v131: Admin sade liste, kullanıcı panelinden şifreli açılış, onaylı-yüklemeli yenileme */
     (function(){
-      const BUILD_VERSION_V131 = "Mesaha İO v1.99";
+      const BUILD_VERSION_V131 = (window.MESAHA_VERSION_TEXT || 'Mesaha İO');
       const FILE_VERSION_V131 = "v135";
 
       function adminSetLoadingV131(show, text){
@@ -7504,7 +7504,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 
     /* v132: Admin istatistik - en çok ağaç/odun türü, adet ve m³ */
     (function(){
-      const BUILD_VERSION_V132 = "Mesaha İO v1.99";
+      const BUILD_VERSION_V132 = (window.MESAHA_VERSION_TEXT || 'Mesaha İO');
       const FILE_VERSION_V132 = "v135";
 
       function adminStatsSetLoadingV132(show, text){
@@ -7765,7 +7765,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 
     /* v133: Admin panelinde Sorun Bildirimleri alanı */
     (function(){
-      const BUILD_VERSION_V133 = "Mesaha İO v1.99";
+      const BUILD_VERSION_V133 = (window.MESAHA_VERSION_TEXT || 'Mesaha İO');
       const FILE_VERSION_V133 = "v134";
 
       function supportSetLoadingV133(show, text){
@@ -7902,7 +7902,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 
     /* v134: Admin detayları, güvenli kullanıcı silme, rozetler, dönemli istatistik ve offline sorun kuyruğu */
     (function(){
-      const BUILD_VERSION_V134 = "Mesaha İO v1.99";
+      const BUILD_VERSION_V134 = (window.MESAHA_VERSION_TEXT || 'Mesaha İO');
       const FILE_VERSION_V134 = "v134";
       const CURRENT_FILE_NO_V134 = 134;
       const CURRENT_VISIBLE_NO_V134 = 1.63;
@@ -8449,7 +8449,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 
     /* v135: performans/test temizliği + Mesaha dosyası indirirken özet veri gönderimi */
     (function(){
-      const BUILD_VERSION_V135 = "Mesaha İO v1.99";
+      const BUILD_VERSION_V135 = (window.MESAHA_VERSION_TEXT || 'Mesaha İO');
       const FILE_VERSION_V135 = "v135";
       const EXPORT_QUEUE_KEY_V135 = "mesaha_export_stats_queue_v135";
       const RECORD_RENDER_LIMIT_KEY_V135 = "mesaha_record_render_limit_v135";
@@ -9002,7 +9002,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 
 /* Mesaha v140 - admin son aktif sıralama + süre ölçüm düzeltmesi */
 (function(){
-  const BUILD_VERSION="Mesaha İO v1.99", FILE_VERSION="v140";
+  const BUILD_VERSION=(window.MESAHA_VERSION_TEXT || 'Mesaha İO'), FILE_VERSION="v140";
   const MAX_VISIBLE_TICK_MS=60*1000;
   function num(v){ const n=Number(v); return Number.isFinite(n)?n:0; }
   function clean(v){ return String(v||"").trim(); }
