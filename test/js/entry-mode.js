@@ -1,6 +1,6 @@
 (function(){
   'use strict';
-  var TAG = 'v191-entry-mode';
+  var TAG = 'v192-entry-mode';
   var SAVE_BOUND = false;
   var layoutDone = false;
   var timer = null;
@@ -157,8 +157,12 @@
       clear.type = 'button';
       clear.className = 'clean-clear-v187';
       clear.textContent = 'Alanları Temizle';
-      if(recent && recent.parentNode) recent.parentNode.insertBefore(clear, recent.nextSibling); else card.appendChild(clear);
+      if(save && save.parentNode) save.parentNode.insertBefore(clear, save.nextSibling);
+      else if(recent && recent.parentNode) recent.parentNode.insertBefore(clear, recent);
+      else card.appendChild(clear);
       clear.addEventListener('click', function(ev){ ev.preventDefault(); clearEntryFields(); });
+    } else if(save && save.parentNode && clear.previousElementSibling !== save){
+      save.parentNode.insertBefore(clear, save.nextSibling);
     }
     layoutDone = true;
   }
@@ -298,8 +302,8 @@
         apply.setAttribute('aria-hidden','true');
         apply.tabIndex = -1;
       }
-      if(apply && !apply.__v191Refresh){
-        apply.__v191Refresh = true;
+      if(apply && !apply.__v192Refresh){
+        apply.__v192Refresh = true;
         apply.addEventListener('click', refreshCleanProductsSoon, false);
       }
       woodPanel.querySelectorAll('input[type="checkbox"]').forEach(function(ch){
@@ -330,8 +334,8 @@
     if(status && status.nextSibling) home.insertBefore(details, status.nextSibling); else home.insertBefore(details, home.firstChild);
   }
   function patchBrand(){
-    var shortV = (window.MESAHA_VERSION && window.MESAHA_VERSION.shortVersion) || 'v2.20';
-    var buildV = (window.MESAHA_VERSION && window.MESAHA_VERSION.version) || 'v191';
+    var shortV = (window.MESAHA_VERSION && window.MESAHA_VERSION.shortVersion) || 'v2.21';
+    var buildV = (window.MESAHA_VERSION && window.MESAHA_VERSION.version) || 'v192';
     safe(function(){ document.title = shortV; });
     var h = document.querySelector('.app-brand-v143 .brand-copy-v143 h1');
     var s = document.querySelector('.app-brand-v143 .brand-copy-v143 span');
@@ -424,15 +428,15 @@
     });
   }
   function titleFix(){
-    safe(function(){ document.title = 'v2.20'; });
+    safe(function(){ document.title = 'v2.21'; });
     safe(function(){
       document.querySelectorAll('.app-brand-v143 .brand-copy-v143,[data-app-version-short],[data-app-version-build]').forEach(function(el){
         if(!el) return;
-        if(/Mesaha\s*İ?O/i.test(el.textContent || '')) el.textContent = el.matches('[data-app-version-build], .app-brand-v143 .brand-copy-v143 span') ? 'v191' : 'v2.20';
+        if(/Mesaha\s*İ?O/i.test(el.textContent || '')) el.textContent = el.matches('[data-app-version-build], .app-brand-v143 .brand-copy-v143 span') ? 'v192' : 'v2.21';
       });
-      var h = document.querySelector('.app-brand-v143 .brand-copy-v143 h1'); if(h) h.textContent = 'v2.20';
-      var s = document.querySelector('.app-brand-v143 .brand-copy-v143 span'); if(s) s.textContent = 'v191';
-      var splashH = document.querySelector('.mesaha-startup-logo-v178 h2'); if(splashH) splashH.textContent = 'v2.20';
+      var h = document.querySelector('.app-brand-v143 .brand-copy-v143 h1'); if(h) h.textContent = 'v2.21';
+      var s = document.querySelector('.app-brand-v143 .brand-copy-v143 span'); if(s) s.textContent = 'v192';
+      var splashH = document.querySelector('.mesaha-startup-logo-v178 h2'); if(splashH) splashH.textContent = 'v2.21';
     });
   }
   function navFix(){
@@ -454,6 +458,21 @@
       if(navEntry){ navEntry.textContent = 'Ana Ekran'; if(!navEntry.__v189FinalHome){ navEntry.__v189FinalHome = true; navEntry.addEventListener('click', function(ev){ ev.preventDefault(); ev.stopPropagation(); if(ev.stopImmediatePropagation) ev.stopImmediatePropagation(); goHome(); }, true); } }
     });
   }
+  function syncCleanSafe(){
+    safe(function(){ if(window.mesahaEntryModeV188 && typeof window.mesahaEntryModeV188.boot === 'function') window.mesahaEntryModeV188.boot(); });
+  }
+  function openCleanSafe(){
+    safe(function(){
+      if(window.mesahaEntryModeV188 && typeof window.mesahaEntryModeV188.open === 'function') window.mesahaEntryModeV188.open();
+      else if(typeof window.openCleanSimpleV111 === 'function') window.openCleanSimpleV111();
+      else {
+        var overlay = byId('cleanSimpleOverlayV111');
+        if(overlay) overlay.classList.add('show','active','open');
+        document.body.classList.add('clean-simple-open-v111','clean-simple-active-v111');
+      }
+    });
+  }
+
   function hideUnusedHomeControls(){
     safe(function(){
       var btn = byId('homeOpenCleanV188');
@@ -470,22 +489,21 @@
   function forceEditRecordToClean(){
     safe(function(){
       var old = window.editRecord;
-      if(typeof old !== 'function' || old.__v191CleanOpen) return;
+      if(typeof old !== 'function' || old.__v192CleanOpen) return;
       var wrapped = function(id){
         var result = old.apply(this, arguments);
         setTimeout(function(){
-          try{ syncCleanFromMain(); }catch(_){ }
-          try{ ensureCleanLayout(); }catch(_){ }
-          try{ openClean(); }catch(_){ }
+          syncCleanSafe();
+          openCleanSafe();
           setTimeout(function(){
-            var dia = byId('cleanDiameterV111');
+            var dia = byId('cleanDiameterV111') || byId('cleanLengthV111') || byId('cleanBarcodeV187');
             if(dia){ try{ dia.focus({preventScroll:true}); dia.select && dia.select(); }catch(_){ try{ dia.focus(); }catch(__){} } }
-          }, 80);
-        }, 80);
+          }, 120);
+        }, 60);
         return result;
       };
-      wrapped.__v191CleanOpen = true;
-      wrapped.__v191Old = old;
+      wrapped.__v192CleanOpen = true;
+      wrapped.__v192Old = old;
       window.editRecord = wrapped;
       try{ editRecord = wrapped; }catch(_){ }
     });
@@ -497,17 +515,19 @@
       var measure = card && card.querySelector('.clean-measure-grid-v111');
       var grid = byId('cleanProductGridV111');
       var save = byId('cleanSaveV111');
+      var clear = byId('cleanClearV187');
+      var auto = byId('cleanAutoInfoV111');
+      var recent = card && card.querySelector('.clean-recent-area-v111');
       if(!card || !measure || !grid || !save) return;
+      card.style.setProperty('display','flex','important');
+      card.style.setProperty('flex-direction','column','important');
+      if(top && top.parentNode === card) card.appendChild(top);
+      card.insertBefore(top, card.firstChild.nextSibling);
       measure.classList.add('v187-reordered');
-      measure.style.setProperty('order','2','important');
-      save.style.setProperty('order','4','important');
-      if(top){ top.style.setProperty('order','1','important'); }
-      if(top && top.parentNode === card){
-        if(top.nextSibling !== measure) card.insertBefore(measure, top.nextSibling);
-      } else if(measure.parentNode === card){
-        var before = byId('cleanProductSectionV187') || grid || save;
-        if(before && measure.nextSibling !== before) card.insertBefore(measure, before);
-      }
+      var lenWrap = byId('cleanLengthV111') ? byId('cleanLengthV111').closest('div') : null;
+      var diaWrap = byId('cleanDiameterV111') ? byId('cleanDiameterV111').closest('div') : null;
+      if(lenWrap && diaWrap){ measure.insertBefore(diaWrap, measure.firstChild); if(diaWrap.nextSibling !== lenWrap) measure.insertBefore(lenWrap, diaWrap.nextSibling); }
+
       var section = byId('cleanProductSectionV187');
       if(!section){
         section = document.createElement('div');
@@ -515,26 +535,30 @@
         section.className = 'clean-block-v187 clean-product-section-v187';
         section.innerHTML = '<span class="clean-product-title-v187">Odun Türü</span>';
       }
-      section.style.setProperty('order','3','important');
-      grid.style.setProperty('order','0','important');
       if(grid.parentNode !== section) section.appendChild(grid);
-      if(section.parentNode !== card || section.previousElementSibling !== measure){
-        card.insertBefore(section, measure.nextSibling);
+
+      // sıra: başlık -> üst alanlar -> ölçü -> ürün -> kaydet -> temizle -> otomatik bilgi -> son 3
+      if(top && top.parentNode === card) card.insertBefore(top, measure);
+      if(measure.parentNode === card) card.insertBefore(measure, card.querySelector('#cleanProductSectionV187') || save);
+      if(section.parentNode !== card) card.insertBefore(section, save);
+      if(section.previousElementSibling !== measure) card.insertBefore(section, measure.nextSibling);
+      if(save.previousElementSibling !== section) card.insertBefore(save, section.nextSibling);
+      if(clear){
+        if(clear.parentNode !== card) card.insertBefore(clear, auto || recent || null);
+        if(save.nextElementSibling !== clear) card.insertBefore(clear, save.nextSibling);
       }
-      if(save.parentNode === card && save.previousElementSibling !== section){
-        card.insertBefore(save, section.nextSibling);
+      if(auto){
+        if(clear && auto.previousElementSibling !== clear) card.insertBefore(auto, clear.nextSibling);
+        else if(!clear && save.nextElementSibling !== auto) card.insertBefore(auto, save.nextSibling);
       }
-      var auto = byId('cleanAutoInfoV111'); if(auto) auto.style.setProperty('order','5','important');
-      var recent = card.querySelector('.clean-recent-area-v111'); if(recent) recent.style.setProperty('order','6','important');
-      var clear = byId('cleanClearV187'); if(clear) clear.style.setProperty('order','7','important');
-      var lenWrap = byId('cleanLengthV111') ? byId('cleanLengthV111').closest('div') : null;
-      var diaWrap = byId('cleanDiameterV111') ? byId('cleanDiameterV111').closest('div') : null;
-      if(lenWrap && diaWrap && measure.firstElementChild !== diaWrap) measure.insertBefore(diaWrap, lenWrap);
+      if(recent){ card.appendChild(recent); }
+
+      [top, measure, section, save, clear, auto, recent].forEach(function(el, idx){ if(el) el.style.setProperty('order', String(idx+1), 'important'); });
     });
   }
   function run(){ titleFix(); navFix(); orderFix(); hideUnusedHomeControls(); forceEditRecordToClean(); }
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run, {once:true}); else run();
   [50,150,350,800,1500,2600,5200].forEach(function(ms){ setTimeout(run, ms); });
   setInterval(run, 900);
-  window.mesahaV190GoHome = goHome; window.mesahaV190OpenClean = openClean;
+  window.mesahaV190GoHome = goHome; window.mesahaV190OpenClean = openCleanSafe;
 })();
