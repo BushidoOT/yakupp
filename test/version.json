@@ -1,7 +1,10 @@
 {
-  "version": 162,
-  "visibleVersion": "Mesaha İO v1.91",
-  "cache": "mesaha-app-v162-kesimci-buton-sira-fix",
+  "version": "v163",
+  "visibleVersion": "Mesaha İO v1.92",
+  "cache": "mesaha-app-v163-kesimci-kayit-fix",
   "builtAt": "2026-06-19",
-  "notes": "Kesimci seçimi açılır liste yerine butonlu hale getirildi, kesimci silme butonu görünür yapıldı. Ölçümler bölümünde ağaç filtresi üstte, kesimci filtresi onun altında sabitlendi. 20 kayıt/sayfa, ZIP yedek ve ORBİS Excel formatı korunmuştur."
+  "notes": "Kesimci seçimi butonlu ve silmeli hale getirildi. Seçili kesimci artık yeni kayda doğrudan yazılır; kayıt atloma sorunu giderildi. Ölçümlerde filtre sırası ağaç üstte, kesimci altta olacak şekilde sabitlendi. 20 kayıt/sayfa, ZIP yedek ve ORBİS Excel formatı korunmuştur.",
+  "name": "Mesaha İO v1.92",
+  "build": "v163",
+  "updatedAt": "2026-06-19"
 }

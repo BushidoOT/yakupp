@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Mesaha İO v1.91</title>
+  <title>Mesaha İO v1.92</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -12692,6 +12692,39 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
       };
     }
 
+
+    function getActiveKesimciForSaveV163() {
+      try {
+        const s = state && state.settings ? String(state.settings.activeKesimciV158 || "").trim().replace(/\s+/g, " ") : "";
+        if (s) return s;
+      } catch {}
+      try {
+        const btn = document.querySelector(".cutter-chip-v163.active[data-cutter-select-v163], .cutter-chip-v162.active[data-cutter-select-v162]");
+        const val = btn ? String(btn.getAttribute("data-cutter-select-v163") || btn.getAttribute("data-cutter-select-v162") || "").trim().replace(/\s+/g, " ") : "";
+        if (val) return val;
+      } catch {}
+      try {
+        const sel = document.getElementById("cutterSelectV158");
+        const val = sel ? String(sel.value || "").trim().replace(/\s+/g, " ") : "";
+        if (val) return val;
+      } catch {}
+      return "";
+    }
+
+    function applyKesimciToRecordV163(rec, name) {
+      if (!rec) return;
+      const cutter = String(name || "").trim().replace(/\s+/g, " ");
+      if (cutter) {
+        rec.kesimci = cutter;
+        rec.kesimciAdi = cutter;
+        rec.cutterName = cutter;
+      } else {
+        delete rec.kesimci;
+        delete rec.kesimciAdi;
+        delete rec.cutterName;
+      }
+    }
+
     function addRecord(event) {
       event.preventDefault();
 
@@ -12704,6 +12737,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
       limitDiameterToTwoDigits();
       const diameter = Number(els.diameter.value);
       const quantity = Number(els.quantity.value || 1);
+      const selectedKesimciV163 = getActiveKesimciForSaveV163();
 
       if (!barcode) return showErrorToast("Barkod boş olamaz.");
       if (!validateBarcode(barcode)) return;
@@ -12753,6 +12787,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
         rec.desi = desi;
         rec.hacim = formatHacimFromDesi(desi);
         rec.updatedAt = formatDateTime();
+        applyKesimciToRecordV163(rec, selectedKesimciV163);
 
         addRecentValue("recentLengths", length);
         addRecentValue("recentDiameters", diameter);
@@ -12787,7 +12822,10 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
         quantity,
         desi,
         hacim: formatHacimFromDesi(desi),
-        createdAt: formatDateTime()
+        createdAt: formatDateTime(),
+        kesimci: selectedKesimciV163 || "",
+        kesimciAdi: selectedKesimciV163 || "",
+        cutterName: selectedKesimciV163 || ""
       };
 
       state.records.unshift(record);
@@ -20267,7 +20305,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 <script id="mesaha-v158-kesimci-js">
 (function(){
   'use strict';
-  var VERSION_V158 = 'Mesaha İO v1.91';
+  var VERSION_V158 = 'Mesaha İO v1.92';
   var FILE_VERSION_V158 = 'v158';
   var PAGE_SIZE_V158 = 20;
   var CUTTER_FILTER_KEY_V158 = 'mesaha_cutter_filter_v158';
@@ -23824,7 +23862,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 <script id="mesaha-v158-kesimci-js">
 (function(){
   'use strict';
-  var VERSION_V158 = 'Mesaha İO v1.91';
+  var VERSION_V158 = 'Mesaha İO v1.92';
   var FILE_VERSION_V158 = 'v158';
   var PAGE_SIZE_V158 = 20;
   var CUTTER_FILTER_KEY_V158 = 'mesaha_cutter_filter_v158';
@@ -24284,12 +24322,9 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 })();
 </script>
 
-</body>
-</html>
-
-<style id="mesaha-v162-kesimci-buton-css">
-  /* v162: Kesimci seçimi butonlu + silme, kayıt filtre sıra sabitleme */
-  .cutter-panel-v158.cutter-panel-v162{
+<style id="mesaha-v163-kesimci-buton-css">
+  /* v163: Kesimci butonlu seçim + direkt kayda yazma düzeltmesi */
+  .cutter-panel-v158.cutter-panel-v163{
     margin:10px 0 12px !important;
     border:1px solid #d7dee8 !important;
     border-radius:17px !important;
@@ -24297,234 +24332,57 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     padding:12px !important;
     box-shadow:0 3px 10px rgba(16,24,40,.04) !important;
   }
-  .cutter-panel-v162 .cutter-head-v162{
-    display:flex !important;
-    align-items:center !important;
-    justify-content:space-between !important;
-    gap:10px !important;
-    margin-bottom:8px !important;
+  .cutter-panel-v163 .cutter-head-v163{
+    display:flex !important; align-items:center !important; justify-content:space-between !important; gap:10px !important; margin-bottom:8px !important;
   }
-  .cutter-panel-v162 .cutter-title-v162{
-    font-weight:950 !important;
-    color:#172033 !important;
-  }
-  .cutter-panel-v162 .cutter-sub-v162{
-    color:#64748b !important;
-    font-size:12px !important;
-    font-weight:850 !important;
-  }
-  .cutter-actions-v162{
-    display:flex !important;
-    align-items:center !important;
-    flex-wrap:wrap !important;
-    gap:8px !important;
-  }
-  .cutter-chip-v162{
-    display:inline-flex !important;
-    align-items:center !important;
-    justify-content:center !important;
-    gap:7px !important;
-    min-height:38px !important;
-    border-radius:999px !important;
-    border:1px solid #cbd5e1 !important;
-    background:#fff !important;
-    color:#172033 !important;
-    padding:8px 11px !important;
-    font-weight:950 !important;
-    font-size:13px !important;
-    line-height:1 !important;
-    box-shadow:0 3px 9px rgba(16,24,40,.04) !important;
-  }
-  .cutter-chip-v162.active{
-    background:#eaf8ef !important;
-    border-color:#b6e5c7 !important;
-    color:#146b38 !important;
-    box-shadow:0 6px 15px rgba(24,117,61,.12) !important;
-  }
-  .cutter-delete-v162{
-    display:inline-flex !important;
-    align-items:center !important;
-    justify-content:center !important;
-    width:21px !important;
-    height:21px !important;
-    border-radius:999px !important;
-    border:1px solid rgba(220,38,38,.25) !important;
-    background:#fff3f3 !important;
-    color:#b42318 !important;
-    font-size:15px !important;
-    font-weight:950 !important;
-    line-height:1 !important;
-    padding:0 !important;
-    margin-left:2px !important;
-  }
-  .cutter-add-v162{
-    display:inline-flex !important;
-    align-items:center !important;
-    justify-content:center !important;
-    gap:7px !important;
-    min-height:38px !important;
-    white-space:nowrap !important;
-    border-radius:14px !important;
-    background:#18753d !important;
-    color:#fff !important;
-    border:1px solid #18753d !important;
-    font-weight:950 !important;
-    padding:8px 12px !important;
-    box-shadow:0 8px 18px rgba(24,117,61,.18) !important;
-  }
-  .cutter-add-v162 .plus-v162{
-    display:inline-flex !important;
-    align-items:center !important;
-    justify-content:center !important;
-    width:22px !important;
-    height:22px !important;
-    border-radius:999px !important;
-    background:rgba(255,255,255,.22) !important;
-    font-size:17px !important;
-    line-height:1 !important;
-  }
-  .cutter-hint-v162{
-    margin:8px 0 0 !important;
-    color:#64748b !important;
-    font-size:12px !important;
-    font-weight:650 !important;
-  }
-  body.inline-simple-v119 .cutter-panel-v162 .cutter-head-v162,
-  body.inline-simple-v119 .cutter-panel-v162 .cutter-hint-v162{display:none !important;}
-  body.inline-simple-v119 .cutter-panel-v162{padding:9px !important; margin:8px 0 !important;}
-  body.inline-simple-v119 .cutter-chip-v162,
-  body.inline-simple-v119 .cutter-add-v162{min-height:34px !important; font-size:12px !important; padding:7px 9px !important;}
-  @media (max-width:520px){
-    .cutter-actions-v162{gap:7px !important;}
-    .cutter-chip-v162{max-width:100% !important;}
-    .cutter-add-v162{flex:1 1 160px !important;}
-  }
+  .cutter-panel-v163 .cutter-title-v163{font-weight:950 !important; color:#172033 !important;}
+  .cutter-panel-v163 .cutter-sub-v163{color:#64748b !important; font-size:12px !important; font-weight:850 !important;}
+  .cutter-actions-v163{display:flex !important; align-items:center !important; flex-wrap:wrap !important; gap:8px !important;}
+  .cutter-chip-v163{display:inline-flex !important; align-items:center !important; justify-content:center !important; gap:7px !important; min-height:38px !important; border-radius:999px !important; border:1px solid #cbd5e1 !important; background:#fff !important; color:#172033 !important; padding:8px 11px !important; font-weight:950 !important; font-size:13px !important; line-height:1 !important; box-shadow:0 3px 9px rgba(16,24,40,.04) !important;}
+  .cutter-chip-v163.active{background:#eaf8ef !important; border-color:#b6e5c7 !important; color:#146b38 !important; box-shadow:0 6px 15px rgba(24,117,61,.12) !important;}
+  .cutter-delete-v163{display:inline-flex !important; align-items:center !important; justify-content:center !important; width:21px !important; height:21px !important; border-radius:999px !important; border:1px solid rgba(220,38,38,.25) !important; background:#fff3f3 !important; color:#b42318 !important; font-size:15px !important; font-weight:950 !important; line-height:1 !important; padding:0 !important; margin-left:2px !important;}
+  .cutter-add-v163{display:inline-flex !important; align-items:center !important; justify-content:center !important; gap:7px !important; min-height:38px !important; white-space:nowrap !important; border-radius:14px !important; background:#18753d !important; color:#fff !important; border:1px solid #18753d !important; font-weight:950 !important; padding:8px 12px !important; box-shadow:0 8px 18px rgba(24,117,61,.18) !important;}
+  .cutter-add-v163 .plus-v163{display:inline-flex !important; align-items:center !important; justify-content:center !important; width:22px !important; height:22px !important; border-radius:999px !important; background:rgba(255,255,255,.22) !important; font-size:17px !important; line-height:1 !important;}
+  .cutter-hint-v163{margin:8px 0 0 !important; color:#64748b !important; font-size:12px !important; font-weight:650 !important;}
+  body.inline-simple-v119 .cutter-panel-v163 .cutter-head-v163,
+  body.inline-simple-v119 .cutter-panel-v163 .cutter-hint-v163{display:none !important;}
+  body.inline-simple-v119 .cutter-panel-v163{padding:9px !important; margin:8px 0 !important;}
+  body.inline-simple-v119 .cutter-chip-v163,
+  body.inline-simple-v119 .cutter-add-v163{min-height:34px !important; font-size:12px !important; padding:7px 9px !important;}
+  @media (max-width:520px){.cutter-actions-v163{gap:7px !important;}.cutter-chip-v163{max-width:100% !important;}.cutter-add-v163{flex:1 1 160px !important;}}
 </style>
-<script id="mesaha-v162-kesimci-buton-js">
+<script id="mesaha-v163-kesimci-buton-js">
 (function(){
   'use strict';
-  var VISIBLE_VERSION = 'Mesaha İO v1.91';
-  var FILE_VERSION = 'v162';
-  function ready(fn){ if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn, {once:true}); else fn(); }
-  function safe(fn, fallback){ try { return fn(); } catch(e) { return fallback; } }
+  var VISIBLE_VERSION='Mesaha İO v1.92', FILE_VERSION='v163';
+  function ready(fn){ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',fn,{once:true}); else fn(); }
+  function safe(fn,fallback){ try{return fn();}catch(e){return fallback;} }
   function byId(id){ return document.getElementById(id); }
-  function esc(v){ return String(v == null ? '' : v).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]; }); }
-  function norm(v){ return String(v == null ? '' : v).trim().replace(/\s+/g,' '); }
+  function esc(v){ return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c];}); }
+  function norm(v){ return String(v==null?'':v).trim().replace(/\s+/g,' '); }
   function lower(v){ return norm(v).toLocaleLowerCase('tr-TR'); }
-  function toast(msg){ safe(function(){ if (typeof showSuccessToast === 'function') showSuccessToast(msg); else if (typeof showToast === 'function') showToast(msg); }); }
-  function errorToast(msg){ safe(function(){ if (typeof showErrorToast === 'function') showErrorToast(msg); else if (typeof showToast === 'function') showToast(msg); }); }
-  function ensureState(){ safe(function(){ if (!window.state) return; if (!state.settings) state.settings = {}; if (!Array.isArray(state.settings.kesimcilerV158)) state.settings.kesimcilerV158 = []; if (typeof state.settings.activeKesimciV158 !== 'string') state.settings.activeKesimciV158 = ''; }); }
-  function saveSettingsSafe(){ safe(function(){ if (typeof saveSettings === 'function') saveSettings(); }); safe(function(){ localStorage.setItem('mesaha_settings', JSON.stringify(state.settings || {})); }); }
-  function configuredCutters(){
-    ensureState();
-    var list = safe(function(){ return Array.isArray(state.settings.kesimcilerV158) ? state.settings.kesimcilerV158 : []; }, []);
-    var seen = Object.create(null), out=[];
-    list.forEach(function(n){ n=norm(n); var k=lower(n); if(n && !seen[k]){ seen[k]=true; out.push(n); } });
-    out.sort(function(a,b){ return a.localeCompare(b, 'tr-TR'); });
-    safe(function(){ state.settings.kesimcilerV158 = out; });
-    return out;
-  }
-  function activeCutter(){ return norm(safe(function(){ return state.settings.activeKesimciV158; }, '') || ''); }
-  function setActiveCutter(name){ ensureState(); name = norm(name); safe(function(){ state.settings.activeKesimciV158 = name; }); saveSettingsSafe(); renderCutterButtons(); safe(function(){ if (typeof focusDiameterKeepKeyboard === 'function') focusDiameterKeepKeyboard(); }); }
-  function addCutter(){
-    ensureState();
-    var name = window.prompt('Kesimci ismini yazınız:');
-    if (name === null) return;
-    name = norm(name);
-    if (!name) { errorToast('Kesimci ismi boş olamaz.'); return; }
-    var list = configuredCutters();
-    if (!list.some(function(x){ return lower(x) === lower(name); })) list.push(name);
-    list.sort(function(a,b){ return a.localeCompare(b, 'tr-TR'); });
-    safe(function(){ state.settings.kesimcilerV158 = list; state.settings.activeKesimciV158 = name; });
-    saveSettingsSafe();
-    renderCutterButtons();
-    toast('Kesimci eklendi: ' + name);
-    safe(function(){ if (typeof render === 'function') render(); });
-  }
-  function deleteCutter(name){
-    ensureState(); name = norm(name); if (!name) return;
-    var ok = window.confirm(name + ' kesimci seçeneklerden silinsin mi?\n\nEski kayıtlardaki kesimci bilgisi korunur.');
-    if (!ok) return;
-    var list = configuredCutters().filter(function(x){ return lower(x) !== lower(name); });
-    safe(function(){ state.settings.kesimcilerV158 = list; if (lower(state.settings.activeKesimciV158) === lower(name)) state.settings.activeKesimciV158 = ''; });
-    saveSettingsSafe();
-    renderCutterButtons();
-    toast('Kesimci silindi: ' + name);
-    safe(function(){ if (typeof render === 'function') render(); });
-  }
-  function ensureCutterPanel(){
-    var form = byId('entryForm');
-    if (!form) return null;
-    var panel = byId('cutterPanelV158');
-    if (!panel) {
-      panel = document.createElement('div');
-      panel.id = 'cutterPanelV158';
-      panel.className = 'cutter-panel-v158 cutter-panel-v162';
-      var treePanel = form.querySelector('.tree-compact') || byId('treeType') || form.firstElementChild;
-      if (treePanel && treePanel.parentNode === form) form.insertBefore(panel, treePanel); else form.insertBefore(panel, form.firstChild);
-    }
-    panel.classList.add('cutter-panel-v162');
-    if (!panel.__v162Bound) {
-      panel.__v162Bound = true;
-      panel.addEventListener('click', function(event){
-        var del = event.target && event.target.closest ? event.target.closest('[data-cutter-delete-v162]') : null;
-        if (del) { event.preventDefault(); event.stopPropagation(); deleteCutter(del.getAttribute('data-cutter-delete-v162') || ''); return; }
-        var select = event.target && event.target.closest ? event.target.closest('[data-cutter-select-v162]') : null;
-        if (select) { event.preventDefault(); event.stopPropagation(); setActiveCutter(select.getAttribute('data-cutter-select-v162') || ''); return; }
-        var add = event.target && event.target.closest ? event.target.closest('#cutterAddBtnV162') : null;
-        if (add) { event.preventDefault(); event.stopPropagation(); addCutter(); return; }
-      }, true);
-    }
-    return panel;
-  }
-  function renderCutterButtons(){
-    var panel = ensureCutterPanel();
-    if (!panel) return;
-    var active = activeCutter();
-    var list = configuredCutters();
-    var html = '<div class="cutter-head-v162"><span class="cutter-title-v162">Kesimci</span><span class="cutter-sub-v162">İsteğe bağlı</span></div>';
-    html += '<div class="cutter-actions-v162">';
-    html += '<button type="button" class="cutter-chip-v162 ' + (!active ? 'active' : '') + '" data-cutter-select-v162="">Kesimci seçilmedi</button>';
-    list.forEach(function(n){
-      var isActive = lower(n) === lower(active);
-      html += '<button type="button" class="cutter-chip-v162 ' + (isActive ? 'active' : '') + '" data-cutter-select-v162="' + esc(n) + '"><span>' + esc(n) + '</span><span type="button" class="cutter-delete-v162" data-cutter-delete-v162="' + esc(n) + '" aria-label="Kesimci sil">×</span></button>';
-    });
-    html += '<button type="button" id="cutterAddBtnV162" class="cutter-add-v162"><span class="plus-v162">+</span> Kesimci Ekle</button>';
-    html += '</div><p class="cutter-hint-v162">Kayıt seçili kesimci adına kaydedilir. Ölçümlerden kesimciye göre adet ve m³ filtrelenir.</p>';
-    panel.innerHTML = html;
-  }
-  function orderRecordFilters(){
-    var body = document.querySelector('.records-panel .panel-body');
-    if (!body) return;
-    var tree = byId('treeFilterV144');
-    var cutter = byId('cutterFilterV158');
-    var tools = document.querySelector('.records-panel .tools') || body.querySelector('.tools');
-    if (tree && tree.parentNode !== body) body.insertBefore(tree, tools || body.firstChild);
-    if (cutter && cutter.parentNode !== body) body.insertBefore(cutter, tools || null);
-    if (tree && cutter && tree.nextSibling !== cutter) body.insertBefore(cutter, tree.nextSibling);
-    if (tools && cutter && cutter.nextSibling !== tools) body.insertBefore(tools, cutter.nextSibling);
-  }
-  function patchVersion(){
-    safe(function(){ document.title = VISIBLE_VERSION; });
-    safe(function(){ var h = document.querySelector('.brand h1'); if (h) h.textContent = VISIBLE_VERSION; });
-    safe(function(){ window.MESAHA_BUILD_INFO = Object.assign({}, window.MESAHA_BUILD_INFO || {}, { fileVersion:FILE_VERSION, visibleVersion:VISIBLE_VERSION, cutterButtonSelect:true, cutterDelete:true }); });
-  }
+  function toast(msg){ safe(function(){ if(typeof showSuccessToast==='function') showSuccessToast(msg); else if(typeof showToast==='function') showToast(msg); }); }
+  function err(msg){ safe(function(){ if(typeof showErrorToast==='function') showErrorToast(msg); else if(typeof showToast==='function') showToast(msg); }); }
+  function ensureState(){ safe(function(){ if(!window.state) return; if(!state.settings) state.settings={}; if(!Array.isArray(state.settings.kesimcilerV158)) state.settings.kesimcilerV158=[]; if(typeof state.settings.activeKesimciV158!=='string') state.settings.activeKesimciV158=''; }); }
+  function records(){ return safe(function(){ return Array.isArray(state.records)?state.records:[]; }, []); }
+  function recCutter(r){ return norm(r && (r.kesimci || r.kesimciAdi || r.cutterName || r.cutter || r.kesimciIsmi) || ''); }
+  function saveSettingsSafe(){ safe(function(){ if(typeof saveSettings==='function') saveSettings(); }); safe(function(){ localStorage.setItem('mesaha_settings', JSON.stringify(state.settings||{})); }); }
+  function configuredCutters(){ ensureState(); var list=safe(function(){return Array.isArray(state.settings.kesimcilerV158)?state.settings.kesimcilerV158:[];},[]); var seen=Object.create(null), out=[]; list.concat(records().map(recCutter)).forEach(function(n){n=norm(n);var k=lower(n);if(n&&!seen[k]){seen[k]=true;out.push(n);}}); out.sort(function(a,b){return a.localeCompare(b,'tr-TR');}); safe(function(){state.settings.kesimcilerV158=out;}); return out; }
+  function activeCutter(){ return norm(safe(function(){return state.settings.activeKesimciV158;},'')||''); }
+  function setActiveCutter(name){ ensureState(); name=norm(name); safe(function(){state.settings.activeKesimciV158=name;}); saveSettingsSafe(); renderCutterButtons(); safe(function(){ if(typeof focusDiameterKeepKeyboard==='function') focusDiameterKeepKeyboard(); }); }
+  window.getActiveKesimciNameV163=function(){ return activeCutter(); };
+  function addCutter(){ ensureState(); var name=window.prompt('Kesimci ismini yazınız:'); if(name===null) return; name=norm(name); if(!name){err('Kesimci ismi boş olamaz.'); return;} var list=configuredCutters(); if(!list.some(function(x){return lower(x)===lower(name);})){ list.push(name); } list.sort(function(a,b){return a.localeCompare(b,'tr-TR');}); safe(function(){state.settings.kesimcilerV158=list; state.settings.activeKesimciV158=name;}); saveSettingsSafe(); renderCutterButtons(); toast('Kesimci eklendi: '+name); safe(function(){ if(typeof render==='function') render(); }); }
+  function deleteCutter(name){ ensureState(); name=norm(name); if(!name) return; if(!window.confirm(name+' kesimci seçeneklerden silinsin mi?\n\nEski kayıtlardaki kesimci bilgisi korunur.')) return; var list=configuredCutters().filter(function(x){return lower(x)!==lower(name);}); safe(function(){state.settings.kesimcilerV158=list; if(lower(state.settings.activeKesimciV158)===lower(name)) state.settings.activeKesimciV158='';}); saveSettingsSafe(); renderCutterButtons(); toast('Kesimci silindi: '+name); safe(function(){ if(typeof render==='function') render(); }); }
+  function ensureCutterPanel(){ var form=byId('entryForm'); if(!form) return null; var panel=byId('cutterPanelV158'); if(!panel){ panel=document.createElement('div'); panel.id='cutterPanelV158'; var treePanel=form.querySelector('.tree-compact')||byId('treeType')||form.firstElementChild; if(treePanel&&treePanel.parentNode===form) form.insertBefore(panel,treePanel); else form.insertBefore(panel,form.firstChild); } panel.className='cutter-panel-v158 cutter-panel-v163'; if(!panel.__v163Bound){ panel.__v163Bound=true; panel.addEventListener('click',function(event){ var del=event.target&&event.target.closest?event.target.closest('[data-cutter-delete-v163]'):null; if(del){event.preventDefault();event.stopPropagation();deleteCutter(del.getAttribute('data-cutter-delete-v163')||'');return;} var sel=event.target&&event.target.closest?event.target.closest('[data-cutter-select-v163]'):null; if(sel){event.preventDefault();event.stopPropagation();setActiveCutter(sel.getAttribute('data-cutter-select-v163')||'');return;} var add=event.target&&event.target.closest?event.target.closest('#cutterAddBtnV163'):null; if(add){event.preventDefault();event.stopPropagation();addCutter();return;} },true); } return panel; }
+  function renderCutterButtons(){ var panel=ensureCutterPanel(); if(!panel) return; var active=activeCutter(); var list=configuredCutters(); var html='<div class="cutter-head-v163"><span class="cutter-title-v163">Kesimci</span><span class="cutter-sub-v163">İsteğe bağlı</span></div><div class="cutter-actions-v163">'; html+='<button type="button" class="cutter-chip-v163 '+(!active?'active':'')+'" data-cutter-select-v163="">Kesimci seçilmedi</button>'; list.forEach(function(n){ var a=lower(n)===lower(active); html+='<button type="button" class="cutter-chip-v163 '+(a?'active':'')+'" data-cutter-select-v163="'+esc(n)+'"><span>'+esc(n)+'</span><span class="cutter-delete-v163" data-cutter-delete-v163="'+esc(n)+'" aria-label="Kesimci sil">×</span></button>'; }); html+='<button type="button" id="cutterAddBtnV163" class="cutter-add-v163"><span class="plus-v163">+</span> Kesimci Ekle</button></div><p class="cutter-hint-v163">Kayıt seçili kesimci adına kaydedilir. Ölçümlerden kesimciye göre adet ve m³ filtrelenir.</p>'; panel.innerHTML=html; }
+  function orderRecordFilters(){ var body=document.querySelector('.records-panel .panel-body'); if(!body) return; var tree=byId('treeFilterV144'), cutter=byId('cutterFilterV158'); var tools=document.querySelector('.records-panel .tools')||body.querySelector('.tools'); if(tree&&tree.parentNode!==body) body.insertBefore(tree,tools||body.firstChild); if(cutter&&cutter.parentNode!==body) body.insertBefore(cutter,tools||null); if(tree&&cutter&&tree.nextSibling!==cutter) body.insertBefore(cutter,tree.nextSibling); if(tools&&cutter&&cutter.nextSibling!==tools) body.insertBefore(tools,cutter.nextSibling); }
+  function patchVersion(){ safe(function(){document.title=VISIBLE_VERSION;}); safe(function(){var h=document.querySelector('.brand h1'); if(h) h.textContent=VISIBLE_VERSION;}); safe(function(){window.MESAHA_BUILD_INFO=Object.assign({},window.MESAHA_BUILD_INFO||{},{fileVersion:FILE_VERSION,visibleVersion:VISIBLE_VERSION,cutterButtonSelect:true,cutterDelete:true,cutterDirectSave:true});}); }
   function afterRender(){ renderCutterButtons(); orderRecordFilters(); patchVersion(); }
-  function wrapRender(){
-    safe(function(){
-      if (typeof window.render !== 'function' || window.render.__v162Wrapped) return;
-      var old = window.render;
-      window.render = function(){ var result = old.apply(this, arguments); setTimeout(afterRender, 0); return result; };
-      window.render.__v162Wrapped = true;
-    });
-  }
-  function install(){
-    ensureState(); wrapRender(); afterRender();
-    setTimeout(function(){ wrapRender(); afterRender(); }, 250);
-    setTimeout(function(){ wrapRender(); afterRender(); }, 900);
-    setTimeout(function(){ wrapRender(); afterRender(); }, 1800);
-  }
-  ready(install);
-  window.addEventListener('load', install, {once:true});
+  function wrapRender(){ safe(function(){ if(typeof window.render!=='function'||window.render.__v163Wrapped) return; var old=window.render; window.render=function(){ var result=old.apply(this,arguments); setTimeout(afterRender,0); return result; }; window.render.__v163Wrapped=true; }); }
+  function install(){ ensureState(); wrapRender(); afterRender(); [200,700,1500,3000].forEach(function(ms){setTimeout(function(){wrapRender();afterRender();},ms);}); }
+  ready(install); window.addEventListener('load',install,{once:true}); setInterval(function(){wrapRender();afterRender();},2500);
 })();
 </script>
+
+</body>
+</html>
