@@ -1,16 +1,16 @@
 (function(root){
   'use strict';
   const info = {
-    appName: 'v3.00',
-    version: 'v300-clean',
-    build: 'v300-clean',
-    assetVersion: '300',
-    visibleVersion: 'v3.00',
-    shortVersion: 'v3.00',
-    name: 'v3.00',
-    cacheName: 'mesaha-app-v300-clean-rewrite',
+    appName: 'v3.01',
+    version: 'v301-inline',
+    build: 'v301-inline',
+    assetVersion: '301',
+    visibleVersion: 'v3.01',
+    shortVersion: 'v3.01',
+    name: 'v3.01',
+    cacheName: 'mesaha-app-v301-inline-clean',
     builtAt: '2026-06-20',
-    notes: 'Kod tabanı temiz yeniden yazıldı; tekrar eden eski giriş/menü yamaları kaldırıldı. ORBİS XLS çekirdeği ayrı modüle alındı.'
+    notes: 'Temiz sürüm tek dosya güvenli hale getirildi; CSS/JS index içine gömüldü.'
   };
   root.MESAHA_VERSION = info;
   root.MESAHA_VERSION_TEXT = info.visibleVersion;

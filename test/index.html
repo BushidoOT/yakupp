@@ -3,20 +3,46 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>v3.00</title>
+  <title>v3.01</title>
   <meta name="theme-color" content="#166534" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-title" content="Mesaha İO" />
+  <meta name="apple-mobile-web-app-title" content="v3.01" />
   <link rel="manifest" href="./manifest.json" />
   <link rel="apple-touch-icon" href="./assets/icon-192.png" />
-  <link rel="stylesheet" href="./css/style.css?v=300" />
-  <script src="./js/version.js?v=300"></script>
+
+  <style id="mesaha-inline-style-v301">
+:root{--bg:#f6f9fc;--card:#fff;--text:#0f172a;--muted:#64748b;--line:#dbe5ef;--green:#16a34a;--green-dark:#166534;--blue:#2563eb;--red:#dc2626;--yellow:#f4c20d;--orange:#f59e0b;--shadow:0 14px 34px rgba(15,23,42,.08);--radius:24px;}
+*{box-sizing:border-box}html{scroll-behavior:auto;-webkit-text-size-adjust:100%}body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-weight:750}button,input{font:inherit}button{cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation}input{width:100%;border:1px solid var(--line);border-radius:18px;padding:13px 16px;background:#fff;color:var(--text);font-weight:850;outline:none}input:focus{border-color:#93c5fd;box-shadow:0 0 0 4px rgba(37,99,235,.09)}body.dark{--bg:#07111f;--card:#0f172a;--text:#f8fafc;--muted:#cbd5e1;--line:#334155;--shadow:0 16px 38px rgba(0,0,0,.35)}body.dark input{background:#111827;color:#f8fafc;border-color:#334155}.hidden{display:none!important}.app{max-width:980px;margin:0 auto;padding:14px 14px 128px}.startup{position:fixed;inset:0;background:var(--bg);display:grid;place-items:center;z-index:9999}.startup.hide{display:none}.startup-card{display:grid;gap:10px;place-items:center;background:var(--card);border:1px solid var(--line);border-radius:28px;padding:30px;box-shadow:var(--shadow)}.startup-card img{width:78px}.startup-card strong{font-size:24px}.startup-card span{color:var(--muted)}.topbar{position:sticky;top:0;z-index:50;margin:0 -14px 18px;padding:14px 16px;background:rgba(255,255,255,.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:12px}body.dark .topbar{background:rgba(15,23,42,.92)}.brand{display:flex;align-items:center;gap:10px}.brand img{width:62px;height:62px;object-fit:contain}.version-card{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:18px;padding:9px 12px;background:#f8fafc;box-shadow:0 8px 20px rgba(15,23,42,.06)}body.dark .version-card{background:#111827}.version-card b{font-size:15px}.version-card small{font-size:12px;color:#94a3b8;background:#edf2f7;padding:3px 7px;border-radius:999px}body.dark .version-card small{background:#1e293b}.user-badge{border:1px solid #dcefe4;background:#f0fdf4;color:#166534;border-radius:999px;padding:10px 18px;font-weight:950;white-space:nowrap}.icon-btn{width:54px;height:54px;border-radius:18px;border:1px solid var(--line);background:var(--card);color:#174f83;font-size:22px}.view{display:none}.view.active{display:block}.card,.hero-card,.status-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px;margin:16px 0}.hero-card{min-height:170px;display:flex;justify-content:space-between;overflow:hidden;position:relative;background:linear-gradient(135deg,#fff,#ecfdf5)}body.dark .hero-card{background:linear-gradient(135deg,#0f172a,#12301f)}.hero-card h1{font-size:42px;line-height:1;margin:12px 0 12px}.hero-card p{max-width:420px;margin:0;color:var(--muted);font-size:22px}.hero-forest{position:absolute;right:18px;bottom:0;display:flex;gap:14px;opacity:.35}.hero-forest span{display:block;width:0;height:0;border-left:34px solid transparent;border-right:34px solid transparent;border-bottom:130px solid #166534}.hero-forest span:nth-child(2){border-bottom-height:100px;transform:scale(.78);opacity:.8}.hero-forest span:nth-child(3){transform:scale(1.2);opacity:.7}.status-card{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:-44px;position:relative;z-index:2}.status-item{display:flex;align-items:center;gap:16px;border:0;background:transparent;text-align:left;padding:16px;border-radius:22px}.status-icon{width:60px;height:60px;display:grid;place-items:center;border-radius:50%;background:#dcfce7;color:#166534;font-size:28px}.status-item small{display:block;color:var(--muted);font-size:15px}.status-item b{display:block;font-size:28px;line-height:1.05}.status-item em{display:block;color:var(--muted);font-style:normal}.entry-launch{border:1px solid #bbf7d0;background:linear-gradient(135deg,#ecfdf5,#f0f9ff);box-shadow:0 12px 24px rgba(22,163,74,.08)}body.dark .entry-launch{background:linear-gradient(135deg,#052e16,#0f172a)}.entry-launch b{color:#064e3b}.flash{background:#eafff3;color:#ca8a04}.section-head{display:flex;align-items:center;justify-content:space-between;gap:10px}.section-head h2,.card h2{margin:0 0 14px;font-size:26px}.section-head span{background:#dcfce7;color:#166534;border-radius:999px;padding:7px 13px;font-weight:950}.grid{display:grid;gap:16px}.grid.two{grid-template-columns:1fr 1fr}label{display:block;font-weight:950;margin:8px 0}label input{margin-top:8px}.hint,.setting-block p{color:var(--muted);font-weight:700;margin:8px 0 0}.setting-block{display:block;border:1px solid var(--line);border-radius:22px;background:rgba(248,250,252,.72);padding:16px;margin:16px 0}body.dark .setting-block{background:#111827}.check-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.check-card{display:flex;align-items:center;gap:12px;min-height:54px;border:1px solid var(--line);border-radius:18px;background:#fff;padding:12px 14px;box-shadow:0 8px 18px rgba(15,23,42,.04);font-weight:950}body.dark .check-card{background:#0b1220}.check-card input{width:22px;height:22px;margin:0;accent-color:var(--green)}.summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.summary-grid>div{border:1px solid var(--line);border-radius:22px;background:linear-gradient(135deg,#f0fdf4,#fff);padding:22px}.summary-grid.small{grid-template-columns:1fr 1fr}.summary-grid span{display:block;font-size:28px}.summary-grid b{display:block;font-size:30px;margin:8px 0}.summary-grid small{color:var(--muted)}.btn{border:1px solid var(--line);border-radius:18px;min-height:48px;padding:12px 16px;background:#fff;color:var(--text);font-weight:950;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}.btn.primary{background:#166534;border-color:#166534;color:#fff}.btn.green{background:#16a34a;border-color:#16a34a;color:#fff}.btn.orange{background:#f59e0b;border-color:#f59e0b;color:#111827}.btn.soft{background:#edf4fb}.btn.ghost{background:#f8fafc}.btn.warning{background:#fff7ed;border-color:#fed7aa;color:#9a3412}.btn.full{width:100%}.entry-view{padding-bottom:30px}.entry-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}.entry-total{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line);border-radius:22px;background:var(--card);box-shadow:var(--shadow);overflow:hidden;margin-bottom:16px}.entry-total div{text-align:center;padding:14px}.entry-total div+div{border-left:1px solid var(--line)}.entry-total small{display:block;color:var(--muted)}.entry-total b{font-size:28px}.entry-form{display:grid;gap:14px}.cutter-row{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:start}.chip-wrap,.filter-chips{display:flex;gap:8px;flex-wrap:wrap}.chip,.filter-chip{border:1px solid var(--line);border-radius:999px;background:#fff;color:var(--text);padding:10px 14px;font-weight:950}.chip.active,.filter-chip.active,.pill{background:#dcfce7;color:#166534;border-color:#bbf7d0}.tree-head{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.tree-panel{display:none;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.tree-panel.open{display:grid}.tree-option{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:16px;background:#fff;padding:11px;font-weight:950}.tree-option input{width:20px;height:20px;margin:0;accent-color:var(--green)}body.dark .tree-option{background:#0b1220}.measure-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.measure-grid label{border:1px solid var(--line);border-radius:20px;padding:10px;background:#fff}body.dark .measure-grid label{background:#0b1220}.measure-grid input{height:44px;text-align:center;font-size:21px;border-radius:15px;padding:8px}.quick-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:8px}.quick-grid button{min-height:32px;border:1px solid var(--line);border-radius:12px;background:#f8fafc;font-weight:950}.product-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.product-btn{min-height:58px;border:2px solid;border-radius:18px;background:#fff;font-weight:950;position:relative}.product-btn.active::after{content:'✓';position:absolute;top:-10px;right:12px;background:#111827;color:#fff;border:3px solid #fff;border-radius:999px;padding:1px 12px}.product-tomruk{border-color:#eab308;background:#fff9db;color:#5f4200}.product-maden{border-color:#2563eb;background:#e7f0ff;color:#0f3d70}.product-kagit{border-color:#dc2626;background:#fee2e2;color:#7f1d1d}.product-sanayi{border-color:#16a34a;background:#dcfce7;color:#14532d}.product-tel{border-color:#7c3aed;background:#ede9fe;color:#4c1d95}.barcode-save{display:grid;grid-template-columns:1fr 150px;gap:10px;align-items:stretch}.barcode-save label{margin:0;border:1px solid var(--line);border-radius:20px;padding:10px;background:#fff}body.dark .barcode-save label{background:#0b1220}.barcode-save input{height:46px;text-align:center;font-size:22px;letter-spacing:.5px}.save-btn{border:0;border-radius:22px;background:#16a34a;color:#fff;font-size:24px;font-weight:950;box-shadow:0 12px 24px rgba(22,163,74,.2)}.recent-box{border:1px solid var(--line);border-radius:22px;padding:14px}.recent-box h3{margin:0 0 10px}.recent-list{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.recent-item{border:1px solid var(--line);border-radius:16px;padding:10px;background:#fff;min-width:0;overflow:hidden}.recent-item b{display:block;white-space:nowrap;text-overflow:ellipsis;overflow:hidden}.recent-item small{color:var(--muted)}.product-totals{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}.prod-total{border:1px solid var(--line);border-radius:20px;padding:16px;background:#fff;box-shadow:0 8px 18px rgba(15,23,42,.04);border-left-width:10px}.prod-total b{display:block;font-size:24px}.prod-total small{color:var(--muted)}.filter-box{border:1px solid var(--line);border-radius:20px;padding:14px;margin:14px 0}.filter-head{display:flex;justify-content:space-between;margin-bottom:10px}.action-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.record-list{display:grid;gap:10px;margin-top:16px}.record-card{border:1px solid var(--line);border-radius:18px;background:#fff;padding:12px;display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;border-left-width:8px}body.dark .record-card{background:#0b1220}.record-main b{display:block;font-size:16px}.record-main small{display:block;color:var(--muted);margin-top:4px}.record-actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}.record-actions button{border:1px solid var(--line);border-radius:12px;background:#f8fafc;padding:8px 10px;font-weight:950}.bottom-nav{position:fixed;left:16px;right:16px;bottom:calc(env(safe-area-inset-bottom,0px) + 10px);z-index:100;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:10px;border-radius:28px;background:rgba(255,255,255,.96);border:1px solid var(--line);box-shadow:0 14px 34px rgba(15,23,42,.13);backdrop-filter:blur(16px)}body.dark .bottom-nav{background:rgba(15,23,42,.96)}body.entry-open .bottom-nav,.startup:not(.hide)~.bottom-nav{display:none!important}.bottom-nav button{min-height:70px;border:1px solid var(--line);border-radius:22px;background:#f8fafc;color:#334155;font-weight:950;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px}body.dark .bottom-nav button{background:#0b1220;color:#dbeafe}.bottom-nav button.active{background:#2563eb;border-color:#2563eb;color:#fff;box-shadow:0 10px 22px rgba(37,99,235,.24)}.bottom-nav span{font-size:24px}.bottom-nav b{font-size:12px}.toast{position:fixed;left:50%;bottom:112px;transform:translateX(-50%) translateY(40px);opacity:0;pointer-events:none;background:#0f172a;color:#fff;border-radius:999px;padding:12px 18px;font-weight:950;z-index:200;transition:.2s}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}@media(max-width:620px){.app{padding:12px 12px 122px}.topbar{padding:12px}.brand img{width:56px;height:56px}.user-badge{font-size:14px;padding:8px 12px}.hero-card{min-height:160px}.hero-card h1{font-size:34px}.hero-card p{font-size:20px}.status-card{grid-template-columns:1fr;gap:10px}.grid.two,.summary-grid,.summary-grid.small,.product-totals{grid-template-columns:1fr 1fr}.section-head h2,.card h2{font-size:24px}.check-grid{grid-template-columns:1fr 1fr}.cutter-row{grid-template-columns:1fr}.measure-grid{gap:8px}.measure-grid input{height:40px;font-size:18px}.quick-grid button{min-height:29px;font-size:13px}.barcode-save{grid-template-columns:1fr 150px}.barcode-save input{height:42px;font-size:18px}.save-btn{font-size:22px}.recent-list{grid-template-columns:1fr 1fr 1fr}.action-grid{grid-template-columns:1fr 1fr}.bottom-nav{left:14px;right:14px;padding:8px}.bottom-nav button{min-height:68px}}@media(max-width:380px){.barcode-save{grid-template-columns:1fr 130px}.save-btn{font-size:19px}.check-grid,.product-grid,.tree-panel{grid-template-columns:1fr}.summary-grid{grid-template-columns:1fr}.recent-list{grid-template-columns:1fr 1fr}.bottom-nav button{min-height:62px}}
+
+  </style>
+  <script id="mesaha-inline-version-v301">
+(function(root){
+  'use strict';
+  const info = {
+    appName: 'v3.01',
+    version: 'v301-inline',
+    build: 'v301-inline',
+    assetVersion: '301',
+    visibleVersion: 'v3.01',
+    shortVersion: 'v3.01',
+    name: 'v3.01',
+    cacheName: 'mesaha-app-v301-inline-clean',
+    builtAt: '2026-06-20',
+    notes: 'Temiz sürüm tek dosya güvenli hale getirildi; CSS/JS index içine gömüldü.'
+  };
+  root.MESAHA_VERSION = info;
+  root.MESAHA_VERSION_TEXT = info.visibleVersion;
+  root.MESAHA_VERSION_SHORT = info.shortVersion;
+})(window);
+
+  </script>
+
 </head>
 <body>
   <div id="startup" class="startup">
     <div class="startup-card">
       <img src="./assets/mesaha_logo.png" alt="" />
-      <strong>v3.00</strong>
+      <strong>v3.01</strong>
       <span>Temiz sürüm yükleniyor…</span>
     </div>
   </div>
@@ -25,7 +51,7 @@
     <header class="topbar">
       <div class="brand">
         <img src="./assets/mesaha_logo.png" alt="Mesaha İO" />
-        <div class="version-card"><b id="versionText">v3.00</b><small>v300-clean</small></div>
+        <div class="version-card"><b id="versionText">v3.01</b><small>v301-inline</small></div>
       </div>
       <div id="userBadge" class="user-badge">Yakup • Yaylacık</div>
       <button id="themeBtn" class="icon-btn" type="button" aria-label="Tema">◐</button>
@@ -79,7 +105,7 @@
       </section>
 
       <section id="entryView" class="view entry-view">
-        <header class="entry-top"><div class="version-card"><b>v3.00</b><small>v300-clean</small></div><button id="entryHomeBtn" class="btn primary" type="button">🏠 Ana Sayfaya Dön</button></header>
+        <header class="entry-top"><div class="version-card"><b>v3.01</b><small>v301-inline</small></div><button id="entryHomeBtn" class="btn primary" type="button">🏠 Ana Sayfaya Dön</button></header>
         <section class="entry-total"><div><small>Toplam Adet</small><b id="entryTotalCount">0</b></div><div><small>Toplam m³</small><b id="entryTotalM3">0 m³</b></div></section>
         <section class="entry-form card">
           <div class="cutter-row"><div id="cutterChips" class="chip-wrap"></div><button id="addCutterBtn" class="btn primary" type="button">＋ Kesimci Ekle</button></div>
@@ -147,7 +173,791 @@
   </nav>
 
   <div id="toast" class="toast"></div>
-  <script src="./js/orbis-xls.js?v=300"></script>
-  <script src="./js/app.js?v=300"></script>
+
+  <script id="mesaha-inline-orbis-v301">
+(function(root){
+'use strict';
+const HEADERS = ["agacId","agacAdi","odunId","odunAdi","kaliteSinifi","boySinifi","adet","cap","boy","hacim","uretimTarihi","barkodNo"];
+const PRODUCT_MAP = {
+  "Tomruk": { odunId: 1, odunAdi: "Tomruk", shortName: "Tomruk" },
+  "Tel Direk": { odunId: 2, odunAdi: "Tel Direği", shortName: "Tel" },
+  "Maden Direk": { odunId: 3, odunAdi: "Maden Direği", shortName: "Maden" },
+  "Sanayi Odunu": { odunId: 4, odunAdi: "Sanayi Odunu", shortName: "Sanayi" },
+  "Kağıtlık": { odunId: 5, odunAdi: "Kağıtlık Odun", shortName: "Kağıtlık" }
+};
+const TREE_MAP = {
+  "Karaçam": { agacId: 1, agacAdi: "Karaçam" },
+  "Sarıçam": { agacId: 2, agacAdi: "Sarıçam" },
+  "Sedir": { agacId: 5, agacAdi: "Sedir" },
+  "Göknar": { agacId: 6, agacAdi: "Göknar" },
+  "Kızılçam": { agacId: 26, agacAdi: "Kızılçam" }
+};
+function normalizeTreeType(type){
+  const raw = String(type || '').trim();
+  if (TREE_MAP[raw]) return raw;
+  const low = raw.toLocaleLowerCase('tr-TR').replaceAll('ı','i').replaceAll('ğ','g').replaceAll('ö','o').replaceAll('ü','u').replaceAll('ş','s').replaceAll('ç','c');
+  if (low.includes('sari')) return 'Sarıçam';
+  if (low.includes('kizil')) return 'Kızılçam';
+  if (low.includes('sedir')) return 'Sedir';
+  if (low.includes('goknar')) return 'Göknar';
+  return 'Karaçam';
+}
+function getTreeInfo(type){ return TREE_MAP[normalizeTreeType(type)] || TREE_MAP['Karaçam']; }
+function todayISO(){ const d = new Date(); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0,10); }
+function isoToTRDate(iso){ if(!iso) return ''; const p=String(iso).slice(0,10).split('-'); return p.length===3 ? `${p[2]}.${p[1]}.${p[0]}` : String(iso); }
+function trDateToISO(date){ if(!date) return ''; const p=String(date).split('.'); return p.length===3 ? `${p[2]}-${p[1].padStart(2,'0')}-${p[0].padStart(2,'0')}` : String(date); }
+function formatBoy(value){ const n=Number(String(value).replace(',','.')); if(!Number.isFinite(n)) return String(value || ''); return (Math.round(n*100)/100).toFixed(1).replace('.', '.'); }
+
+// v12: Sistemin verdiği Mesaha_Ornek_Temp dosyasına göre gerçek BIFF8 .xls üretir.
+// Ana Mesaha sayfasında boy, hacim ve uretimTarihi SAYI olarak yazılır.
+const S12_GLOBAL_PREFIX_B64 = "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AAAEqyDgABQABwAAAPX/IAAAtAAAAAAAAAAErCDgABQABwAAAPX/IAAAtAAAAAAAAAAEqyDgABQABwAAAPX/IAAAtAAAAAAAAAAEsSDgABQABwAAAPX/IAAAtAAAAAAAAAAEryDgABQABwAAAPX/IAAAtAAAAAAAAAAEliDgABQABwAAAPX/IAAAtAAAAAAAAAAEqyDgABQABwAAAPX/IAAAtAAAAAAAAAAErCDgABQABwAAAPX/IAAAtAAAAAAAAAAEuSDgABQACAAAAPX/IAAA9AAAAAAAAAAAwCDgABQACQAAAPX/IAAA9AAAAAAAAAAAwCDgABQACgAAAPX/IAAA1ABgAAAAGgAAwCDgABQACwAAAPX/IAAA1ABQAAAAHwAAwCDgABQADAAAAPX/IAAA1ABQAAAAFgAAwCDgABQADQAAAPX/IAAA1AAgAACAGAAAwCDgABQADQAAAPX/IAAA9AAAAAAAAAAAwCDgABQAAQCpAPX/IAAA+AAAAAAAAAAAwCDgABQADgAAAPX/IAAAlBERvx+/HwAEliDgABQADwAAAPX/IAAAlBERlwuXCwAEryDgABQAEAAAAPX/IAAAlBERlwuXCwAEliDgABQAEQAAAPX/IAAAlGZmvx+/HwAEtyDgABQAEgAAAPX/IAAAtAAAAAAAAAAEqiDgABQAGQAAAPX/IAAA9AAAAAAAAAAAwCDgABQAGAAAAPX/IAAA9AAAAAAAAAAAwCDgABQAEwAAAPX/IAAAtAAAAAAAAAAErSDgABQABgAAAPX/IAAAnBERFgsWCwAEmiDgABQAFAAAAPX/IAAAtAAAAAAAAAAEqyDgABQAAQCqAPX/IAAA+AAAAAAAAAAAwCDgABQAAQCoAPX/IAAA+AAAAAAAAAAAwCDgABQAFQAAAPX/IAAA1ABhAAA+HwAAwCDgABQAFgAAAPX/IAAA9AAAAAAAAAAAwCDgABQAAQCrAPX/IAAA+AAAAAAAAAAAwCDgABQAFwAAAPX/IAAAtAAAAAAAAAAEviDgABQAFwAAAPX/IAAAtAAAAAAAAAAEtSDgABQAFwAAAPX/IAAAtAAAAAAAAAAEtyDgABQAFwAAAPX/IAAAtAAAAAAAAAAEsyDgABQAFwAAAPX/IAAAtAAAAAAAAAAEsSDgABQAFwAAAPX/IAAAtAAAAAAAAAAEuSDgABQAAQAJ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";
+const S12_GLOBAL_MID_B64 = "mggYAJoIAAAAAAAAAAAAAAEAAAAAAAAAFAAAAKMIEACjCAAAAAAAAAAAAAAAAAAAjAAEAFoAWgCuAQQAAgABBBcACAABAAAAAAAAAMEBCADBAQAAJcMCAA==";
+const S12_GLOBAL_AFTER_SST_B64 = "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";
+const S12_SHEET1_BOF_B64 = "CQgQAAAGEABaT80HyQACAAYIAAA=";
+const S12_SHEET1_PREFIX_B64 = "DQACAAEADAACAGQADwACAAEAEQACAAAAEAAIAPyp8dJNYlA/XwACAAEAKgACAAAAKwACAAAAggACAAEAgAAIAAAAAAAAAAAAJQIEAAAA/wCBAAIAwQQUAAAAFQAAAIMAAgAAAIQAAgAAACYACAAAAAAAAADoPycACAAAAAAAAADoPygACAAAAAAAAADwPykACAAAAAAAAADwP6EAIgABAGQAAQABAAEAAgAsASwBAAAAAAAA4D8AAAAAAADgPwEAnAgmAJwIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAVQACAAgAfQAMAAAACQC2Cw8AAgAAAH0ADAAKAAoAAA4PAAIAAAB9AAwACwALALYLDwACAAAA";
+const S12_SHEET1_TAIL_B64 = "PgISALYGAAAAAEAAAAAAAAAADwAAAIsIEACLCAAAAAAAAAAAAAAAAAoAHQAPAAMDAAgAAAABAAMAAwAICGcIFwBnCAAAAAAAAAAAAAACAAH/////A0QAAAoAAAA=";
+const S12_SHEET2_BOF_B64 = "CQgQAAAGEABaT80HyQACAAYIAAA=";
+const S12_SHEET2_PREFIX_B64 = "DQACAAEADAACAGQADwACAAEAEQACAAAAEAAIAPyp8dJNYlA/XwACAAEAKgACAAAAKwACAAAAggACAAEAgAAIAAAAAAAAAAAAJQIEAAAA/wCBAAIAwQQUAAAAFQAAAIMAAgAAAIQAAgAAACYACABmZmZmZmbmPycACABmZmZmZmbmPygACAAAAAAAAADoPykACAAAAAAAAADoP6EAIgAAAP8AAQABAAEABAACAAH/MzMzMzMz0z8zMzMzMzPTP0EAnAgmAJwIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8MwAAAAAAAAAAVQACAAgAfQAMAAAACQC2Cw8AAgAAAH0ADAAKAAoAtg8PAAIAAAB9AAwACwALALYLDwACAAAA";
+const S12_SHEET2_TAIL_B64 = "PgISALYAAAAAAEAAAAAAAAAADwAAAIsIEACLCAAAAAAAAAAAAAAAAAoAHQAPAAMiAAIAAAABACIAIgACAmcIFwBnCAAAAAAAAAAAAAACAAH/////A0QAAAoAAAA=";
+const S12_SUMMARY_B64 = "/v8AAAoAAgAAAAAAAAAAAAAAAAAAAAAAAQAAAOCFn/L5T2gQq5EIACsns9kwAAAAWAAAAAQAAAABAAAAKAAAAAgAAAAwAAAADQAAAEQAAAATAAAAUAAAAAIAAADmBAAAHgAAAAwAAABIYWthbiBTRVJBWQBAAAAAgKeBetNw3AEDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==";
+const S12_DOCSUMMARY_B64 = "/v8AAAoAAgAAAAAAAAAAAAAAAAAAAAAAAQAAAALVzdWcLhsQk5cIACss+a4wAAAAyAAAAAgAAAABAAAASAAAABcAAABQAAAACwAAAFgAAAAQAAAAYAAAABMAAABoAAAAFgAAAHAAAAANAAAAeAAAAAwAAACcAAAAAgAAAOYEAAADAAAAAAAQAAsAAAAAAAAACwAAAAAAAAALAAAAAAAAAAsAAAAAAAAAHhAAAAIAAAAHAAAATWVzYWhhAA0AAADWcm5layBNZXNhaGEADBAAAAIAAAAeAAAAEgAAAMdhbP3+bWEgU2F5ZmFsYXL9AAMAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==";
+
+function s12BytesFromBase64(base64) {
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i) & 255;
+  return bytes;
+}
+
+function s12Concat(parts) {
+  const total = parts.reduce((sum, p) => sum + p.length, 0);
+  const out = new Uint8Array(total);
+  let offset = 0;
+  for (const part of parts) {
+    const arr = part instanceof Uint8Array ? part : Uint8Array.from(part);
+    out.set(arr, offset);
+    offset += arr.length;
+  }
+  return out;
+}
+
+function s12PushU16(arr, value) {
+  arr.push(Number(value) & 255, (Number(value) >>> 8) & 255);
+}
+
+function s12PushU32(arr, value) {
+  const v = Number(value) >>> 0;
+  arr.push(v & 255, (v >>> 8) & 255, (v >>> 16) & 255, (v >>> 24) & 255);
+}
+
+function s12PushF64(arr, value) {
+  const buffer = new ArrayBuffer(8);
+  const view = new DataView(buffer);
+  view.setFloat64(0, Number(value) || 0, true);
+  arr.push(...new Uint8Array(buffer));
+}
+
+function s12WriteU16(bytes, offset, value) {
+  new DataView(bytes.buffer).setUint16(offset, Number(value) & 65535, true);
+}
+
+function s12WriteU32(bytes, offset, value) {
+  new DataView(bytes.buffer).setUint32(offset, Number(value) >>> 0, true);
+}
+
+function s12BiffRecord(opcode, data) {
+  const d = data instanceof Uint8Array ? Array.from(data) : data;
+  const out = [];
+  s12PushU16(out, opcode);
+  s12PushU16(out, d.length);
+  out.push(...d);
+  return Uint8Array.from(out);
+}
+
+function s12BoundSheet(offset, sheetName) {
+  const name = String(sheetName || "Mesaha");
+  const d = [];
+  s12PushU32(d, offset);
+  d.push(0);
+  d.push(0);
+
+  let canCompress = true;
+  for (let i = 0; i < name.length; i++) {
+    if (name.charCodeAt(i) > 255) {
+      canCompress = false;
+      break;
+    }
+  }
+
+  d.push(name.length);
+  d.push(canCompress ? 0 : 1);
+
+  if (canCompress) {
+    for (let i = 0; i < name.length; i++) d.push(name.charCodeAt(i) & 255);
+  } else {
+    for (let i = 0; i < name.length; i++) {
+      const code = name.charCodeAt(i);
+      d.push(code & 255, (code >>> 8) & 255);
+    }
+  }
+
+  return s12BiffRecord(0x0085, d);
+}
+
+function s12XlStringBytes(value) {
+  const s = String(value ?? "");
+  const d = [];
+  s12PushU16(d, s.length);
+
+  let canCompress = true;
+  for (let i = 0; i < s.length; i++) {
+    if (s.charCodeAt(i) > 255) {
+      canCompress = false;
+      break;
+    }
+  }
+
+  d.push(canCompress ? 0 : 1);
+
+  if (canCompress) {
+    for (let i = 0; i < s.length; i++) d.push(s.charCodeAt(i) & 255);
+  } else {
+    for (let i = 0; i < s.length; i++) {
+      const code = s.charCodeAt(i);
+      d.push(code & 255, (code >>> 8) & 255);
+    }
+  }
+
+  return d;
+}
+
+function s12MakeSst(items) {
+  const occurrences = [];
+
+  for (const item of items) {
+    for (let r = 0; r < item.rows.length; r++) {
+      for (let c = 0; c < item.rows[r].length; c++) {
+        const value = item.rows[r][c];
+        if (item.types[r][c] === "str" && value !== "" && value !== null && value !== undefined) {
+          occurrences.push(String(value));
+        }
+      }
+    }
+  }
+
+  const unique = [];
+  const index = new Map();
+
+  for (const s of occurrences) {
+    if (!index.has(s)) {
+      index.set(s, unique.length);
+      unique.push(s);
+    }
+  }
+
+  const payload = [];
+  s12PushU32(payload, occurrences.length);
+  s12PushU32(payload, unique.length);
+
+  for (const s of unique) {
+    payload.push(...s12XlStringBytes(s));
+  }
+
+  return {
+    bytes: s12BiffRecord(0x00FC, payload),
+    index
+  };
+}
+
+function s12Dimensions(rowCount) {
+  const d = [];
+  s12PushU32(d, 0);
+  s12PushU32(d, rowCount);
+  s12PushU16(d, 0);
+  s12PushU16(d, 12);
+  s12PushU16(d, 0);
+  return s12BiffRecord(0x0200, d);
+}
+
+function s12Row(rowIndex) {
+  const d = [];
+  s12PushU16(d, rowIndex);
+  s12PushU16(d, 0);
+  s12PushU16(d, 12);
+  s12PushU16(d, 0x00FF);
+  s12PushU16(d, 0);
+  s12PushU16(d, 0);
+  s12PushU16(d, 0x0F01);
+  s12PushU16(d, 0);
+  return s12BiffRecord(0x0208, d);
+}
+
+function s12LabelSst(row, col, sstIndex, xfIndex) {
+  const d = [];
+  s12PushU16(d, row);
+  s12PushU16(d, col);
+  s12PushU16(d, xfIndex);
+  s12PushU32(d, sstIndex);
+  return s12BiffRecord(0x00FD, d);
+}
+
+function s12Number(row, col, value, xfIndex) {
+  const d = [];
+  s12PushU16(d, row);
+  s12PushU16(d, col);
+  s12PushU16(d, xfIndex);
+  s12PushF64(d, Number(value) || 0);
+  return s12BiffRecord(0x0203, d);
+}
+
+function s12Index(rowCount, dbCellPositions) {
+  const d = [];
+  s12PushU32(d, 0);
+  s12PushU32(d, 0);
+  s12PushU32(d, rowCount);
+  s12PushU32(d, 0);
+  for (const pos of dbCellPositions) s12PushU32(d, pos);
+  return s12BiffRecord(0x020B, d);
+}
+
+function s12DbCell(dbCellAbsPos, firstRowAbsPos, firstCellAbsPositions) {
+  const d = [];
+  s12PushU32(d, dbCellAbsPos - firstRowAbsPos);
+  let previous = firstRowAbsPos + 20;
+
+  for (const cellPos of firstCellAbsPositions) {
+    s12PushU16(d, cellPos - previous);
+    previous = cellPos;
+  }
+
+  return s12BiffRecord(0x00D7, d);
+}
+
+function s12MakeSheet(rows, types, sheetOffset, bofBytes, prefixAfterIndexBytes, tailBytes, sstIndex) {
+  const parts = [];
+  let absolutePos = sheetOffset;
+
+  parts.push(bofBytes);
+  absolutePos += bofBytes.length;
+
+  const indexPartIndex = parts.length;
+  const indexPlaceholder = s12Index(rows.length, []);
+  parts.push(indexPlaceholder);
+  absolutePos += indexPlaceholder.length;
+
+  parts.push(prefixAfterIndexBytes);
+  absolutePos += prefixAfterIndexBytes.length;
+
+  const dim = s12Dimensions(rows.length);
+  parts.push(dim);
+  absolutePos += dim.length;
+
+  const dbCellPositions = [];
+
+  for (let startRow = 0; startRow < rows.length; startRow += 32) {
+    const endRow = Math.min(startRow + 32, rows.length);
+    const firstRowAbsPos = absolutePos;
+
+    for (let r = startRow; r < endRow; r++) {
+      const rowRecord = s12Row(r);
+      parts.push(rowRecord);
+      absolutePos += rowRecord.length;
+    }
+
+    const firstCellPositions = [];
+
+    for (let r = startRow; r < endRow; r++) {
+      firstCellPositions.push(absolutePos);
+      const xf = r === 0 ? 64 : 15;
+
+      for (let c = 0; c < rows[r].length; c++) {
+        const value = rows[r][c];
+        const type = types[r][c];
+
+        if (value === "" || value === null || value === undefined || type === "blank") {
+          continue;
+        }
+
+        let cell;
+        if (type === "str") {
+          cell = s12LabelSst(r, c, sstIndex.get(String(value)), xf);
+        } else {
+          cell = s12Number(r, c, Number(value) || 0, xf);
+        }
+
+        parts.push(cell);
+        absolutePos += cell.length;
+      }
+    }
+
+    const dbCellAbsPos = absolutePos;
+    dbCellPositions.push(dbCellAbsPos);
+    const dbCell = s12DbCell(dbCellAbsPos, firstRowAbsPos, firstCellPositions);
+    parts.push(dbCell);
+    absolutePos += dbCell.length;
+  }
+
+  parts[indexPartIndex] = s12Index(rows.length, dbCellPositions);
+  parts.push(tailBytes);
+  return s12Concat(parts);
+}
+
+function s12ExcelSerialFromISO(isoDate) {
+  const iso = isoDate || todayISO();
+  const parts = String(iso).split("-");
+  if (parts.length !== 3) return s12ExcelSerialFromISO(todayISO());
+
+  const y = Number(parts[0]);
+  const m = Number(parts[1]);
+  const d = Number(parts[2]);
+  const utc = Date.UTC(y, m - 1, d);
+  const base = Date.UTC(1899, 11, 30);
+  return Math.round((utc - base) / 86400000);
+}
+
+function s12RecordToRow(record) {
+  const product = PRODUCT_MAP[record.productType] || PRODUCT_MAP["Tomruk"];
+  const tree = getTreeInfo(record.treeType || record.species || "Karaçam");
+  const hacim = "";
+  const kalite = "";
+
+  return [
+    tree.agacId,
+    tree.agacAdi,
+    product.odunId,
+    product.odunAdi,
+    kalite,
+    "",
+    Number(record.quantity || 1),
+    Number(record.diameter || 0),
+    formatBoy(record.length),
+    hacim,
+    isoToTRDate(record.productionDate || trDateToISO(record.uretimTarihi) || todayISO()),
+    record.barcode || ""
+  ];
+}
+
+function s12MainTypes(rows) {
+  return rows.map((row, r) => {
+    if (r === 0) return row.map(() => "str");
+
+    return row.map((value, c) => {
+      if (value === "" || value === null || value === undefined) return "blank";
+      // Tomrukta kaliteSinifi sistem tarafından sayı gibi bekleniyor olabilir.
+      // Bu yüzden kaliteSinifi doluysa sayı, tarih ise 03.06.2026 şeklinde metin gider.
+      return [1, 3, 5, 8, 10, 11].includes(c) ? "str" : "num";
+    });
+  });
+}
+
+function s12ExampleRowsAndTypes() {
+  const rows = [
+    HEADERS,
+    [1, "Karaçam", 5, "Kağıtlık Odun", "", "", 1, 38, "2.5", "", "08.06.2026", "A12345678"],
+    [1, "Karaçam", 3, "Maden Direği", "", "", 1, 19, "3.0", "", "08.06.2026", "A12345670"],
+    [1, "Karaçam", 4, "Sanayi Odunu", "", "", 1, 21, "1.0", "", "08.06.2026", "A12345672"],
+    [1, "Karaçam", 2, "Tel Direği", "", "", 1, 22, "6.5", "", "08.06.2026", "A12345674"]
+  ];
+
+  const types = rows.map((row, r) => {
+    if (r === 0) return row.map(() => "str");
+
+    return row.map((value, c) => {
+      if (value === "" || value === null || value === undefined) return "blank";
+      return [1, 3, 4, 5, 8, 9, 10, 11].includes(c) ? "str" : "num";
+    });
+  });
+
+  return { rows, types };
+}
+
+function s12Utf16Bytes(value) {
+  const s = String(value || "") + "\u0000";
+  const arr = [];
+  for (let i = 0; i < s.length; i++) {
+    const code = s.charCodeAt(i);
+    arr.push(code & 255, (code >>> 8) & 255);
+  }
+  return arr;
+}
+
+function s12DirectoryEntry(name, type, color, left, right, child, startSector, streamSize) {
+  const bytes = new Uint8Array(128);
+  const nameBytes = s12Utf16Bytes(name).slice(0, 64);
+  bytes.set(Uint8Array.from(nameBytes), 0);
+  s12WriteU16(bytes, 64, Math.min(nameBytes.length, 64));
+  bytes[66] = type;
+  bytes[67] = color;
+  s12WriteU32(bytes, 68, left);
+  s12WriteU32(bytes, 72, right);
+  s12WriteU32(bytes, 76, child);
+  s12WriteU32(bytes, 116, startSector);
+  s12WriteU32(bytes, 120, streamSize >>> 0);
+  s12WriteU32(bytes, 124, Math.floor(streamSize / 0x100000000));
+  return bytes;
+}
+
+function s12MakeCfb(streams) {
+  const FREESECT = 0xFFFFFFFF;
+  const ENDOFCHAIN = 0xFFFFFFFE;
+  const FATSECT = 0xFFFFFFFD;
+  const NOSTREAM = 0xFFFFFFFF;
+  const sectorSize = 512;
+
+  const sectorCounts = streams.map(s => Math.ceil(s.data.length / sectorSize));
+  const directorySectorCount = 1;
+  let fatSectorCount = 1;
+
+  while (true) {
+    const totalSectors = fatSectorCount + directorySectorCount + sectorCounts.reduce((a, b) => a + b, 0);
+    const neededFatSectors = Math.ceil(totalSectors / 128);
+    if (neededFatSectors === fatSectorCount) break;
+    fatSectorCount = neededFatSectors;
+  }
+
+  const directorySector = fatSectorCount;
+  let nextSector = fatSectorCount + directorySectorCount;
+  const starts = sectorCounts.map(count => {
+    const start = nextSector;
+    nextSector += count;
+    return start;
+  });
+  const totalSectors = nextSector;
+
+  const header = new Uint8Array(512);
+  header.set(Uint8Array.from([0xD0,0xCF,0x11,0xE0,0xA1,0xB1,0x1A,0xE1]), 0);
+  s12WriteU16(header, 24, 0x003E);
+  s12WriteU16(header, 26, 0x0003);
+  s12WriteU16(header, 28, 0xFFFE);
+  s12WriteU16(header, 30, 9);
+  s12WriteU16(header, 32, 6);
+  s12WriteU32(header, 40, 0);
+  s12WriteU32(header, 44, fatSectorCount);
+  s12WriteU32(header, 48, directorySector);
+  s12WriteU32(header, 52, 0);
+  s12WriteU32(header, 56, 4096);
+  s12WriteU32(header, 60, ENDOFCHAIN);
+  s12WriteU32(header, 64, 0);
+  s12WriteU32(header, 68, ENDOFCHAIN);
+  s12WriteU32(header, 72, 0);
+
+  for (let i = 0; i < 109; i++) {
+    s12WriteU32(header, 76 + i * 4, i < fatSectorCount ? i : FREESECT);
+  }
+
+  const fat = new Uint8Array(fatSectorCount * sectorSize);
+  for (let i = 0; i < fatSectorCount * 128; i++) {
+    let value = FREESECT;
+    if (i < totalSectors) {
+      if (i < fatSectorCount) value = FATSECT;
+      else if (i === directorySector) value = ENDOFCHAIN;
+      else {
+        value = ENDOFCHAIN;
+        for (let s = 0; s < streams.length; s++) {
+          const start = starts[s];
+          const count = sectorCounts[s];
+          if (i >= start && i < start + count) {
+            value = i < start + count - 1 ? i + 1 : ENDOFCHAIN;
+            break;
+          }
+        }
+      }
+    }
+    s12WriteU32(fat, i * 4, value);
+  }
+
+  const entries = [];
+  entries.push(s12DirectoryEntry("Root Entry", 5, 1, NOSTREAM, NOSTREAM, 1, ENDOFCHAIN, 0));
+
+  for (let i = 0; i < streams.length; i++) {
+    const right = i < streams.length - 1 ? i + 2 : NOSTREAM;
+    entries.push(s12DirectoryEntry(streams[i].name, 2, 1, NOSTREAM, right, NOSTREAM, starts[i], streams[i].data.length));
+  }
+
+  while (entries.length < 4) {
+    entries.push(s12DirectoryEntry("", 0, 0, NOSTREAM, NOSTREAM, NOSTREAM, ENDOFCHAIN, 0));
+  }
+
+  let directory = s12Concat(entries);
+  if (directory.length < sectorSize) {
+    const padded = new Uint8Array(sectorSize);
+    padded.set(directory, 0);
+    directory = padded;
+  }
+
+  const streamBytes = streams.map((s, i) => {
+    const padded = new Uint8Array(sectorCounts[i] * sectorSize);
+    padded.set(s.data, 0);
+    return padded;
+  });
+
+  return s12Concat([header, fat, directory, ...streamBytes]);
+}
+
+function s12MakeWorkbook(dataRows) {
+  const mainRows = [HEADERS, ...dataRows];
+  const mainTypes = s12MainTypes(mainRows);
+  const example = s12ExampleRowsAndTypes();
+
+  const sst = s12MakeSst([
+    { rows: mainRows, types: mainTypes },
+    { rows: example.rows, types: example.types }
+  ]);
+
+  const globalPrefix = s12BytesFromBase64(S12_GLOBAL_PREFIX_B64);
+  const globalMid = s12BytesFromBase64(S12_GLOBAL_MID_B64);
+  const globalAfterSst = s12BytesFromBase64(S12_GLOBAL_AFTER_SST_B64);
+
+  const bof1 = s12BytesFromBase64(S12_SHEET1_BOF_B64);
+  const prefix1 = s12BytesFromBase64(S12_SHEET1_PREFIX_B64);
+  const tail1 = s12BytesFromBase64(S12_SHEET1_TAIL_B64);
+  const bof2 = s12BytesFromBase64(S12_SHEET2_BOF_B64);
+  const prefix2 = s12BytesFromBase64(S12_SHEET2_PREFIX_B64);
+  const tail2 = s12BytesFromBase64(S12_SHEET2_TAIL_B64);
+
+  const b1 = s12BoundSheet(0, "Mesaha");
+  const b2 = s12BoundSheet(0, "Örnek Mesaha");
+
+  const globalLength =
+    globalPrefix.length +
+    b1.length +
+    b2.length +
+    globalMid.length +
+    sst.bytes.length +
+    globalAfterSst.length;
+
+  const sheet1Offset = globalLength;
+  const sheet1 = s12MakeSheet(mainRows, mainTypes, sheet1Offset, bof1, prefix1, tail1, sst.index);
+  const sheet2Offset = sheet1Offset + sheet1.length;
+  const sheet2 = s12MakeSheet(example.rows, example.types, sheet2Offset, bof2, prefix2, tail2, sst.index);
+
+  const globals = s12Concat([
+    globalPrefix,
+    s12BoundSheet(sheet1Offset, "Mesaha"),
+    s12BoundSheet(sheet2Offset, "Örnek Mesaha"),
+    globalMid,
+    sst.bytes,
+    globalAfterSst
+  ]);
+
+  return s12Concat([globals, sheet1, sheet2]);
+}
+
+function s12MakeSystemXls(dataRows) {
+  const workbook = s12MakeWorkbook(dataRows);
+  return s12MakeCfb([
+    { name: "Workbook", data: workbook },
+    { name: "\u0005SummaryInformation", data: s12BytesFromBase64(S12_SUMMARY_B64) },
+    { name: "\u0005DocumentSummaryInformation", data: s12BytesFromBase64(S12_DOCSUMMARY_B64) }
+  ]);
+}
+
+function s12DownloadBytes(bytes, filename) {
+  const blob = new Blob([bytes], { type: "application/vnd.ms-excel" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+
+
+function makeRows(records){ return (records || []).map(s12RecordToRow); }
+function downloadXls(records, filename){
+  const rows = makeRows(records);
+  const bytes = s12MakeSystemXls(rows);
+  s12DownloadBytes(bytes, filename || 'Mesaha.xls');
+}
+function makeXls(records){ return s12MakeSystemXls(makeRows(records)); }
+root.OrbisXls = { downloadXls, makeXls, headers: HEADERS };
+})(window);
+
+  </script>
+  <script id="mesaha-inline-app-v301">
+(function(){
+'use strict';
+const STORAGE_KEY = 'cam_mesaha_kayitlari_v1';
+const SETTINGS_KEY = 'cam_mesaha_ayarlar_v1';
+const VERSION = window.MESAHA_VERSION || {shortVersion:'v3.01', version:'v301-inline'};
+const PRODUCTS = [
+  {key:'Tomruk', label:'Tomruk', cls:'tomruk'},
+  {key:'Maden Direk', label:'Maden', cls:'maden'},
+  {key:'Kağıtlık', label:'Kağıtlık', cls:'kagit'},
+  {key:'Sanayi Odunu', label:'Sanayi', cls:'sanayi'},
+  {key:'Tel Direk', label:'Tel', cls:'tel'}
+];
+const TREES = ['Karaçam','Sarıçam','Sedir','Göknar','Kızılçam'];
+const defaults = {
+  bolmeNo:'', seflik:'Yaylacık', ekipNot:'Yakup', mesahaDate: todayISO(),
+  visibleProducts:['Tomruk','Maden Direk','Kağıtlık'], visibleTrees:TREES.slice(),
+  currentProduct:'Tomruk', currentTree:'Karaçam', treePanelOpen:false,
+  length:'3', diameter:'', barcode:'', recentLengths:['3'], recentDiameters:[],
+  cutters:[], activeCutter:'', soundEnabled:true, theme:'light', treeFilter:'Tümü', cutterFilter:'Tümü'
+};
+const state = { records:[], settings:{...defaults}, view:'home', editingId:null, toastTimer:null };
+const $ = id => document.getElementById(id);
+function todayISO(){ const d=new Date(); d.setMinutes(d.getMinutes()-d.getTimezoneOffset()); return d.toISOString().slice(0,10); }
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,8); }
+function norm(v){ return String(v ?? '').trim().replace(/\s+/g,' '); }
+function num(v){ const n=Number(String(v ?? '').replace(',','.')); return Number.isFinite(n) ? n : 0; }
+function esc(v){ return String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c])); }
+function fmt(n, d=3){ return Number(n||0).toLocaleString('tr-TR',{maximumFractionDigits:d}); }
+function formatDateFile(){ const d=new Date(); const p=n=>String(n).padStart(2,'0'); return `${d.getFullYear()}${p(d.getMonth()+1)}${p(d.getDate())}_${p(d.getHours())}${p(d.getMinutes())}`; }
+function cleanFile(v){ return norm(v).replace(/[ıİ]/g,'i').replace(/[ğĞ]/g,'g').replace(/[üÜ]/g,'u').replace(/[şŞ]/g,'s').replace(/[öÖ]/g,'o').replace(/[çÇ]/g,'c').replace(/[^a-zA-Z0-9_-]+/g,'_').replace(/^_+|_+$/g,'').slice(0,40); }
+function volume(r){ const d=num(r.diameter), l=num(r.length), q=num(r.quantity||1); if(!d||!l) return 0; return Math.PI*Math.pow(d/100,2)/4*l*q; }
+function productInfo(key){ return PRODUCTS.find(p=>p.key===key) || PRODUCTS[0]; }
+function isThisWeek(r){ const dt = new Date(r.createdAt || r.productionDate || todayISO()); if(Number.isNaN(dt.getTime())) return false; const now=new Date(); const day=(now.getDay()+6)%7; const start=new Date(now); start.setHours(0,0,0,0); start.setDate(start.getDate()-day); return dt >= start; }
+function toast(msg){ const el=$('toast'); if(!el) return; el.textContent=msg; el.classList.add('show'); clearTimeout(state.toastTimer); state.toastTimer=setTimeout(()=>el.classList.remove('show'),2200); }
+function load(){
+  try{ const r=JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]'); state.records = Array.isArray(r) ? r.map(migrateRecord).filter(Boolean) : []; }catch{ state.records=[]; }
+  try{ const s=JSON.parse(localStorage.getItem(SETTINGS_KEY)||'{}'); state.settings = {...defaults, ...s}; }catch{ state.settings={...defaults}; }
+  if(!state.settings.mesahaDate) state.settings.mesahaDate=todayISO();
+  if(!Array.isArray(state.settings.visibleProducts) || !state.settings.visibleProducts.length) state.settings.visibleProducts=defaults.visibleProducts.slice();
+  if(!Array.isArray(state.settings.visibleTrees) || !state.settings.visibleTrees.length) state.settings.visibleTrees=TREES.slice();
+  if(!Array.isArray(state.settings.cutters)) state.settings.cutters=[];
+  document.body.classList.toggle('dark', state.settings.theme==='dark');
+}
+function migrateRecord(r){ if(!r) return null; return {
+  id:r.id || uid(), barcode:norm(r.barcode || r.barkodNo), diameter:String(r.diameter || r.cap || ''), length:String(r.length || r.boy || ''), quantity:Number(r.quantity || r.adet || 1),
+  productType:r.productType || r.odunTuru || 'Tomruk', treeType:r.treeType || r.species || r.agacTuru || 'Karaçam', cutter:r.cutter || r.kesimci || '', productionDate:r.productionDate || r.uretimTarihi || state.settings?.mesahaDate || todayISO(),
+  createdAt:r.createdAt || new Date().toISOString(), updatedAt:r.updatedAt || ''
+}; }
+function saveRecords(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state.records)); }
+function saveSettings(){ localStorage.setItem(SETTINGS_KEY, JSON.stringify(state.settings)); }
+function bind(){
+  $('openEntryBtn').addEventListener('click', () => openEntry());
+  $('entryHomeBtn').addEventListener('click', () => showView('home'));
+  $('themeBtn').addEventListener('click', () => { state.settings.theme = state.settings.theme==='dark'?'light':'dark'; document.body.classList.toggle('dark', state.settings.theme==='dark'); saveSettings(); });
+  $('soundBtn').addEventListener('click', () => { state.settings.soundEnabled=!state.settings.soundEnabled; saveSettings(); renderSound(); });
+  $('treeToggleBtn').addEventListener('click', () => { state.settings.treePanelOpen=!state.settings.treePanelOpen; saveSettings(); renderEntryTrees(); });
+  $('addCutterBtn').addEventListener('click', addCutter);
+  $('saveBtn').addEventListener('click', saveEntry);
+  $('clearBtn').addEventListener('click', clearEntry);
+  $('cancelEditBtn').addEventListener('click', () => { state.editingId=null; $('cancelEditBtn').classList.add('hidden'); clearEntry(false); toast('Düzenleme iptal edildi.'); });
+  $('downloadXlsBtn').addEventListener('click', exportXls);
+  $('backupBtn').addEventListener('click', backupJson);
+  $('restoreBtn').addEventListener('click', () => $('restoreInput').click());
+  $('restoreInput').addEventListener('change', restoreJson);
+  $('printBtn').addEventListener('click', () => window.print());
+  $('bottomNav').addEventListener('click', e => { const b=e.target.closest('[data-nav]'); if(b) showView(b.dataset.nav); });
+  ['bolmeNo','seflik','ekipNot','mesahaDate'].forEach(id => $(id).addEventListener('input', settingsFromInputs));
+  ['diameterInput','lengthInput','barcodeInput'].forEach(id => {
+    $(id).addEventListener('input', entryInputChanged);
+    $(id).addEventListener('focus', () => document.body.classList.add('typing'));
+    $(id).addEventListener('blur', () => setTimeout(()=>document.body.classList.remove('typing'), 160));
+  });
+  window.addEventListener('online', renderNetwork); window.addEventListener('offline', renderNetwork);
+}
+function settingsFromInputs(){ state.settings.bolmeNo=$('bolmeNo').value; state.settings.seflik=$('seflik').value; state.settings.ekipNot=$('ekipNot').value; state.settings.mesahaDate=$('mesahaDate').value || todayISO(); saveSettings(); renderUser(); }
+function entryInputChanged(){ state.settings.diameter=$('diameterInput').value; state.settings.length=$('lengthInput').value; state.settings.barcode=$('barcodeInput').value.toUpperCase(); if($('barcodeInput').value!==state.settings.barcode) $('barcodeInput').value=state.settings.barcode; saveSettings(); }
+function showView(view){
+  state.view=view; document.body.classList.toggle('entry-open', view==='entry');
+  ['home','entry','records','guide'].forEach(v => $(`${v}View`)?.classList.toggle('active', v===view));
+  document.querySelectorAll('#bottomNav button').forEach(b => b.classList.toggle('active', b.dataset.nav===view));
+  if(view==='records') renderRecords();
+  if(view==='home') renderHome();
+  try{ window.scrollTo({top:0, behavior:'auto'}); }catch{ window.scrollTo(0,0); }
+}
+function openEntry(record){
+  if(record){ state.editingId=record.id; state.settings.currentTree=record.treeType; state.settings.currentProduct=record.productType; state.settings.length=record.length; state.settings.diameter=record.diameter; state.settings.barcode=record.barcode; state.settings.activeCutter=record.cutter||''; $('cancelEditBtn').classList.remove('hidden'); }
+  else { state.editingId=null; $('cancelEditBtn').classList.add('hidden'); }
+  renderEntry(); showView('entry'); setTimeout(()=>{ try{$('diameterInput').focus({preventScroll:true});}catch{} },80);
+}
+function renderAll(){ renderVersion(); renderUser(); renderNetwork(); renderHome(); renderEntry(); renderRecords(); renderSound(); }
+function renderVersion(){ $('versionText').textContent=VERSION.shortVersion || 'v3.00'; document.querySelectorAll('.version-card b').forEach(b=>b.textContent=VERSION.shortVersion||'v3.00'); document.querySelectorAll('.version-card small').forEach(s=>s.textContent=VERSION.version||'v300-clean'); }
+function renderUser(){ $('userBadge').textContent = `${norm(state.settings.ekipNot)||'Yakup'} • ${norm(state.settings.seflik)||'Yaylacık'}`; }
+function renderNetwork(){ $('netText').textContent = navigator.onLine ? 'Çevrim içi' : 'Çevrimdışı'; }
+function renderSound(){ $('soundBtn').textContent = state.settings.soundEnabled===false ? 'Ses: Kapalı' : 'Ses: Açık'; }
+function renderHome(){
+  $('bolmeNo').value=state.settings.bolmeNo||''; $('seflik').value=state.settings.seflik||''; $('ekipNot').value=state.settings.ekipNot||''; $('mesahaDate').value=state.settings.mesahaDate||todayISO();
+  renderHomeChecks(); renderSummary(); renderSound(); renderUser();
+}
+function renderHomeChecks(){
+  $('homeProductChecks').innerHTML = PRODUCTS.map(p => checkCard('product', p.key, p.label, state.settings.visibleProducts.includes(p.key))).join('');
+  $('homeTreeChecks').innerHTML = TREES.map(t => checkCard('tree', t, t, state.settings.visibleTrees.includes(t))).join('');
+  document.querySelectorAll('[data-check-kind]').forEach(ch => ch.addEventListener('change', checkChanged));
+}
+function checkCard(kind, value, label, checked){ return `<label class="check-card"><input type="checkbox" data-check-kind="${kind}" value="${esc(value)}" ${checked?'checked':''}><span>${esc(label)}</span></label>`; }
+function checkChanged(e){
+  const kind=e.target.dataset.checkKind; const boxes=[...document.querySelectorAll(`[data-check-kind="${kind}"]:checked`)].map(i=>i.value);
+  if(!boxes.length){ e.target.checked=true; toast('En az bir seçim açık kalmalı.'); return; }
+  if(kind==='product'){ state.settings.visibleProducts=boxes; if(!boxes.includes(state.settings.currentProduct)) state.settings.currentProduct=boxes[0]; }
+  else { state.settings.visibleTrees=boxes; if(!boxes.includes(state.settings.currentTree)) state.settings.currentTree=boxes[0]; }
+  saveSettings(); renderEntry(); renderHomeChecks();
+}
+function renderSummary(){ const total=totals(state.records), week=state.records.filter(isThisWeek); const avg=state.records.length ? state.records.reduce((s,r)=>s+num(r.diameter),0)/state.records.length : 0; $('sumCount').textContent=week.length.toLocaleString('tr-TR'); $('sumAvg').textContent=`${fmt(avg,1)} cm`; $('sumM3').textContent=`${fmt(total.m3,3)} m³`; }
+function totals(list){ return list.reduce((a,r)=>{ a.count+=Number(r.quantity||1); a.m3+=volume(r); return a; },{count:0,m3:0}); }
+function renderEntry(){
+  $('diameterInput').value=state.settings.diameter||''; $('lengthInput').value=state.settings.length||''; $('barcodeInput').value=state.settings.barcode||'';
+  renderCutters(); renderEntryTrees(); renderQuickChips(); renderProducts(); renderRecent(); const t=totals(state.records); $('entryTotalCount').textContent=t.count.toLocaleString('tr-TR'); $('entryTotalM3').textContent=`${fmt(t.m3,3)} m³`;
+}
+function renderCutters(){
+  const list = [...new Set([...(state.settings.cutters||[]), state.settings.activeCutter].filter(Boolean))]; state.settings.cutters=list; saveSettings();
+  $('cutterChips').innerHTML = `<button class="chip ${!state.settings.activeCutter?'active':''}" data-cutter="">Kesimci seçilmedi</button>` + list.map(c => `<button class="chip ${c===state.settings.activeCutter?'active':''}" data-cutter="${esc(c)}">${esc(c)} ✕</button>`).join('');
+  $('cutterChips').querySelectorAll('[data-cutter]').forEach(b => b.addEventListener('click', () => { const c=b.dataset.cutter; if(c && state.settings.activeCutter===c){ state.settings.cutters=state.settings.cutters.filter(x=>x!==c); state.settings.activeCutter=''; } else state.settings.activeCutter=c; saveSettings(); renderCutters(); }));
+}
+function addCutter(){ const name=norm(prompt('Kesimci ismini yazınız:')); if(!name) return; if(!state.settings.cutters.includes(name)) state.settings.cutters.push(name); state.settings.activeCutter=name; saveSettings(); renderCutters(); }
+function renderEntryTrees(){
+  $('treeCurrent').textContent=state.settings.currentTree; $('treeToggleBtn').textContent='Ağaç Türü Seç: '+state.settings.currentTree;
+  $('treePanel').classList.toggle('open', !!state.settings.treePanelOpen);
+  $('treePanel').innerHTML = state.settings.visibleTrees.map(t => `<label class="tree-option"><input type="radio" name="entryTree" value="${esc(t)}" ${t===state.settings.currentTree?'checked':''}><span>${esc(t)}</span></label>`).join('');
+  $('treePanel').querySelectorAll('input').forEach(r => r.addEventListener('change', () => { state.settings.currentTree=r.value; state.settings.treePanelOpen=true; saveSettings(); renderEntryTrees(); }));
+}
+function renderQuickChips(){
+  $('diameterChips').innerHTML = (state.settings.recentDiameters||[]).slice(0,5).map(v=>`<button data-dia="${esc(v)}">${esc(v)}</button>`).join('');
+  $('lengthChips').innerHTML = (state.settings.recentLengths||['3']).slice(0,5).map(v=>`<button data-len="${esc(v)}">${esc(v)}</button>`).join('');
+  $('diameterChips').querySelectorAll('[data-dia]').forEach(b=>b.addEventListener('click',()=>{ $('diameterInput').value=b.dataset.dia; entryInputChanged(); }));
+  $('lengthChips').querySelectorAll('[data-len]').forEach(b=>b.addEventListener('click',()=>{ $('lengthInput').value=b.dataset.len; entryInputChanged(); }));
+}
+function renderProducts(){
+  const list = state.settings.visibleProducts.filter(k=>PRODUCTS.some(p=>p.key===k)); if(!list.includes(state.settings.currentProduct)) state.settings.currentProduct=list[0]||'Tomruk';
+  $('productButtons').innerHTML = list.map(k => { const p=productInfo(k); return `<button class="product-btn product-${p.cls} ${k===state.settings.currentProduct?'active':''}" data-product="${esc(k)}" type="button">${esc(p.label)}</button>`; }).join('');
+  $('productButtons').querySelectorAll('[data-product]').forEach(b => b.addEventListener('click', () => { state.settings.currentProduct=b.dataset.product; saveSettings(); renderProducts(); }));
+}
+function renderRecent(){ const recent=state.records.slice(-3).reverse(); $('recentList').innerHTML = recent.length ? recent.map(r=>`<button class="recent-item product-${productInfo(r.productType).cls}" data-edit="${r.id}" type="button"><b>${esc(r.barcode)}</b><small>${esc(r.treeType)} • ${esc(productInfo(r.productType).label)} • ${esc(r.diameter)} çap / ${esc(r.length)} boy</small></button>`).join('') : '<p class="hint">Henüz kayıt yok.</p>'; $('recentList').querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click',()=>{ const r=state.records.find(x=>x.id===b.dataset.edit); if(r) openEntry(r); })); }
+function saveEntry(){
+  const barcode=norm($('barcodeInput').value).toUpperCase(); const diameter=norm($('diameterInput').value); const length=norm($('lengthInput').value);
+  if(!barcode || barcode.length<5) return toast('Barkod boş veya kısa.'); if(!diameter) return toast('Çap giriniz.'); if(!length) return toast('Boy giriniz.');
+  const duplicate = state.records.find(r => r.barcode===barcode && r.id!==state.editingId); if(duplicate) return toast('Bu barkod daha önce kayıtlı.');
+  const rec = { id: state.editingId || uid(), barcode, diameter, length, quantity:1, productType:state.settings.currentProduct, treeType:state.settings.currentTree, cutter:state.settings.activeCutter||'', productionDate:state.settings.mesahaDate||todayISO(), createdAt:new Date().toISOString(), updatedAt: state.editingId ? new Date().toISOString() : '' };
+  if(state.editingId){ const i=state.records.findIndex(r=>r.id===state.editingId); if(i>=0) state.records[i]=rec; state.editingId=null; $('cancelEditBtn').classList.add('hidden'); }
+  else state.records.push(rec);
+  rememberChip('recentDiameters', diameter); rememberChip('recentLengths', length); state.settings.barcode=nextBarcode(barcode); $('barcodeInput').value=state.settings.barcode; saveRecords(); saveSettings(); renderAll(); toast('Kayıt alındı.'); if(state.settings.soundEnabled!==false) beep();
+}
+function rememberChip(key, val){ const arr=[val, ...(state.settings[key]||[]).filter(x=>String(x)!==String(val))].slice(0,5); state.settings[key]=arr; }
+function nextBarcode(b){ const m=String(b).match(/^(.*?)(\d+)$/); if(!m) return ''; return m[1]+String(Number(m[2])+1).padStart(m[2].length,'0'); }
+function clearEntry(show=true){ state.settings.diameter=''; state.settings.length=''; state.settings.barcode=''; $('diameterInput').value=''; $('lengthInput').value=''; $('barcodeInput').value=''; saveSettings(); if(show) toast('Alanlar temizlendi.'); }
+function beep(){ try{ const ctx=new (window.AudioContext||window.webkitAudioContext)(); const osc=ctx.createOscillator(); const gain=ctx.createGain(); osc.frequency.value=880; gain.gain.value=.08; osc.connect(gain); gain.connect(ctx.destination); osc.start(); setTimeout(()=>{osc.stop(); ctx.close();},70); }catch{} }
+function filteredRecords(){ return state.records.filter(r => (state.settings.treeFilter==='Tümü'||r.treeType===state.settings.treeFilter) && (state.settings.cutterFilter==='Tümü'||(state.settings.cutterFilter==='Kesimci kaydı yok' ? !r.cutter : r.cutter===state.settings.cutterFilter))); }
+function renderRecords(){
+  const list=filteredRecords(); const all=totals(list), totalAll=totals(state.records); $('recordCountPill').textContent=`${state.records.length} kayıt`; $('recTotalM3').textContent=`${fmt(totalAll.m3,3)} m³`; $('recTotalCount').textContent=totalAll.count.toLocaleString('tr-TR');
+  renderProductTotals(); renderFilters();
+  $('recordList').innerHTML = list.length ? list.slice().reverse().map(r => recordCard(r)).join('') : '<p class="hint">Kayıt bulunamadı.</p>';
+  $('recordList').querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click',()=>{ const r=state.records.find(x=>x.id===b.dataset.edit); if(r) openEntry(r); }));
+  $('recordList').querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',()=>{ if(confirm('Kayıt silinsin mi?')){ state.records=state.records.filter(x=>x.id!==b.dataset.del); saveRecords(); renderAll(); }}));
+}
+function renderProductTotals(){ const html=PRODUCTS.map(p=>{ const list=state.records.filter(r=>r.productType===p.key); const t=totals(list); return `<div class="prod-total product-${p.cls}"><small>${esc(p.label)}</small><b>${fmt(t.m3,3)} m³</b><small>${t.count} adet</small></div>`; }).join(''); $('productTotals').innerHTML=html; }
+function renderFilters(){
+  const trees=['Tümü',...TREES.filter(t=>state.records.some(r=>r.treeType===t))]; $('treeFilters').innerHTML=trees.map(t=>`<button class="filter-chip ${state.settings.treeFilter===t?'active':''}" data-tree-filter="${esc(t)}">${esc(t)} (${t==='Tümü'?state.records.length:state.records.filter(r=>r.treeType===t).length})</button>`).join('');
+  $('treeFilterText').textContent='Seçili: '+state.settings.treeFilter; $('treeFilters').querySelectorAll('[data-tree-filter]').forEach(b=>b.addEventListener('click',()=>{ state.settings.treeFilter=b.dataset.treeFilter; saveSettings(); renderRecords(); }));
+  const cutters=['Tümü']; if(state.records.some(r=>!r.cutter)) cutters.push('Kesimci kaydı yok'); [...new Set(state.records.map(r=>r.cutter).filter(Boolean))].forEach(c=>cutters.push(c));
+  $('cutterFilters').innerHTML=cutters.map(c=>`<button class="filter-chip ${state.settings.cutterFilter===c?'active':''}" data-cutter-filter="${esc(c)}">${esc(c)}</button>`).join('');
+  $('cutterFilterText').textContent='Seçili: '+state.settings.cutterFilter; $('cutterFilters').querySelectorAll('[data-cutter-filter]').forEach(b=>b.addEventListener('click',()=>{ state.settings.cutterFilter=b.dataset.cutterFilter; saveSettings(); renderRecords(); }));
+}
+function recordCard(r){ const p=productInfo(r.productType); return `<article class="record-card product-${p.cls}"><input type="checkbox"><div class="record-main"><b>${esc(r.barcode)} • ${esc(r.treeType)} • ${esc(p.label)}</b><small>${esc(r.diameter)} çap / ${esc(r.length)} boy • ${esc(r.cutter||'Kesimci yok')} • ${esc(r.productionDate)}</small></div><div class="record-actions"><button data-edit="${r.id}">Düzelt</button><button data-del="${r.id}">Sil</button></div></article>`; }
+function exportXls(){ const list=filteredRecords(); if(!list.length) return toast('Çıktı için kayıt yok.'); const ordered=list.slice(); const bolme=cleanFile(state.settings.bolmeNo); const file=`Mesaha_${bolme?bolme+'_':''}${formatDateFile()}.xls`; if(window.OrbisXls) window.OrbisXls.downloadXls(ordered, file); else toast('XLS modülü yüklenmedi.'); }
+function backupJson(){ const data={version:'v3.01-inline', exportedAt:new Date().toISOString(), records:state.records, settings:state.settings}; downloadText(JSON.stringify(data,null,2), `mesaha_yedek_${formatDateFile()}.json`, 'application/json'); toast('Yedek indirildi.'); }
+function restoreJson(e){ const file=e.target.files && e.target.files[0]; if(!file) return; const reader=new FileReader(); reader.onload=()=>{ try{ const data=JSON.parse(reader.result); const records=Array.isArray(data) ? data : data.records; if(!Array.isArray(records)) throw new Error('records yok'); state.records=records.map(migrateRecord).filter(Boolean); if(data.settings) state.settings={...state.settings,...data.settings}; saveRecords(); saveSettings(); renderAll(); toast('Yedek yüklendi.'); }catch(err){ toast('Yedek okunamadı.'); } e.target.value=''; }; reader.readAsText(file); }
+function downloadText(content, filename, type){ const blob=new Blob([content],{type}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=filename; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),1000); }
+function boot(){ load(); bind(); renderAll(); showView('home'); setTimeout(()=>$('startup').classList.add('hide'),350); if('serviceWorker' in navigator) navigator.serviceWorker.register('./service-worker.js').catch(()=>{}); }
+if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true}); else boot();
+})();
+
+  </script>
+
 </body>
 </html>
