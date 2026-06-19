@@ -1,14 +1,14 @@
 (function(root){
   'use strict';
   var info = {
-    appName: 'v2.22',
-    version: 'v193',
-    build: 'v193',
-    assetVersion: '193',
-    visibleVersion: 'v2.22',
-    shortVersion: 'v2.22',
-    name: 'v2.22',
-    cacheName: 'mesaha-app-v193-temiz-paket',
+    appName: 'v2.23',
+    version: 'v194',
+    build: 'v194',
+    assetVersion: '194',
+    visibleVersion: 'v2.23',
+    shortVersion: 'v2.23',
+    name: 'v2.23',
+    cacheName: 'mesaha-app-v194-menu-tree-layout',
     builtAt: '2026-06-19',
     notes: 'Gereksiz eski modül dosyaları temizlendi; Giriş Modu tek ekran düzeni korundu.'
   };

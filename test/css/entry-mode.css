@@ -210,3 +210,47 @@ body.theme-dark.inline-simple-v119 form#entryForm .btn-row.clear-row-v193 #clear
   color:#ffedd5!important;
   border-color:#9a3412!important;
 }
+
+
+/* v194: sık istenen son düzenler */
+@media (max-width:430px){
+  .home-wood-panel-v189{grid-template-columns:1fr 1fr!important;}
+}
+.home-tree-panel-v194{display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important;}
+.home-tree-chip-v194{display:flex!important;align-items:center!important;justify-content:center!important;min-height:40px!important;padding:9px 10px!important;border-radius:14px!important;border:1px solid #cbd5e1!important;background:#f8fafc!important;color:#0f172a!important;font-weight:900!important;}
+.home-tree-chip-v194.active{background:#166534!important;color:#fff!important;border-color:#166534!important;}
+body.theme-dark .home-tree-chip-v194{background:#0f172a!important;color:#f8fafc!important;border-color:#334155!important;}
+body.theme-dark .home-tree-chip-v194.active{background:#166534!important;color:#fff!important;border-color:#16a34a!important;}
+
+body.inline-simple-v119 .tree-compact{display:block!important;order:1!important;}
+body.inline-simple-v119 .tree-compact .product-select-head{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:8px!important;}
+body.inline-simple-v119 .tree-compact #treeTypeSelectBtn{display:none!important;}
+body.inline-simple-v119 .tree-compact #treeTypePanel{display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important;margin-top:8px!important;}
+body.inline-simple-v119 .tree-compact #treeTypePanel .wood-check{display:flex!important;align-items:center!important;gap:8px!important;border:1px solid #e2e8f0!important;border-radius:14px!important;background:#f8fafc!important;padding:9px 10px!important;font-weight:900!important;color:#0f172a!important;min-height:40px!important;}
+body.inline-simple-v119 .tree-compact #treeTypePanel #treeTypeApplyBtn{display:none!important;}
+body.theme-dark.inline-simple-v119 .tree-compact #treeTypePanel .wood-check{background:#0f172a!important;border-color:#334155!important;color:#f8fafc!important;}
+
+body.inline-simple-v119 .measure-field{padding:8px!important;border-radius:18px!important;}
+body.inline-simple-v119 #length,
+body.inline-simple-v119 #diameter{height:46px!important;border-radius:14px!important;font-size:20px!important;}
+body.inline-simple-v119 .chip-row button,
+body.inline-simple-v119 .chip,
+body.inline-simple-v119 .quick-chip{min-height:34px!important;border-radius:12px!important;font-size:13px!important;padding:5px 4px!important;}
+body.inline-simple-v119 .barcode-save-row-final{grid-template-columns:minmax(0,1fr) 128px!important;gap:8px!important;}
+body.inline-simple-v119 .barcode-field-final,
+body.inline-simple-v119 .save-field-final{padding:8px!important;border-radius:18px!important;}
+body.inline-simple-v119 #barcode{height:48px!important;border-radius:14px!important;font-size:19px!important;}
+body.inline-simple-v119 #submitBtn{min-height:66px!important;border-radius:18px!important;font-size:17px!important;}
+
+body.inline-simple-v119 .home-hero-v143,
+body.inline-simple-v119 .home-status-v143,
+body.inline-simple-v119 .home-card-v143.quick-v143,
+body.inline-simple-v119 .home-card-v143.records-v143{display:none!important;}
+
+#mesahaHomeV143 .home-hero-v143,
+#mesahaHomeV143 .home-status-v143,
+#mesahaHomeV143 .home-card-v143.quick-v143,
+#mesahaHomeV143 .home-card-v143.records-v143{display:none!important;}
+.home-sound-card-v194 .home-card-head-v143{margin-bottom:10px!important;}
+.home-sound-btn-v194{width:100%!important;min-height:46px!important;border-radius:16px!important;border:1px solid #cbd5e1!important;background:#fff!important;color:#0f172a!important;font-size:16px!important;font-weight:950!important;}
+body.theme-dark .home-sound-btn-v194{background:#0f172a!important;color:#f8fafc!important;border-color:#334155!important;}

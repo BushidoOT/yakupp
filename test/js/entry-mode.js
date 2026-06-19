@@ -1,6 +1,6 @@
 (function(){
   'use strict';
-  var TAG = 'v193-entry-mode';
+  var TAG = 'v194-entry-mode';
   var SAVE_BOUND = false;
   var layoutDone = false;
   var timer = null;
@@ -257,6 +257,69 @@
       syncCleanFromMain();
     }, 60);
   }
+
+  function renderHomeTreeButtonsV194(){
+    var panel = byId('homeTreePanelV194');
+    if(!panel) return;
+    var active = activeTree();
+    panel.innerHTML = TREES.map(function(t){ return '<button type="button" class="home-tree-chip-v194 '+(lower(t)===lower(active)?'active':'')+'" data-home-tree-v194="'+esc(t)+'">'+esc(t)+'</button>'; }).join('');
+    panel.querySelectorAll('[data-home-tree-v194]').forEach(function(btn){
+      if(btn.__v194Tree) return;
+      btn.__v194Tree = true;
+      btn.addEventListener('click', function(ev){
+        ev.preventDefault();
+        setTree(btn.getAttribute('data-home-tree-v194') || 'Karaçam');
+        renderHomeTreeButtonsV194();
+      }, false);
+    });
+  }
+  function ensureHomeSoundCardV194(){
+    var home = byId('mesahaHomeV143');
+    if(!home) return;
+    var summary = home.querySelector('.home-card-v143.summary-v143');
+    var card = byId('homeSoundCardV194');
+    if(!card){
+      card = document.createElement('div');
+      card.id = 'homeSoundCardV194';
+      card.className = 'home-card-v143 home-sound-card-v194';
+      card.innerHTML = '<div class="home-card-head-v143"><h3>Ses Ayarı</h3></div><button type="button" id="homeSoundToggleBtnV194" class="home-sound-btn-v194">Ses: Açık</button>';
+      if(summary) home.insertBefore(card, summary); else home.appendChild(card);
+    }
+    var source = byId('soundToggleBtn');
+    var btn = byId('homeSoundToggleBtnV194');
+    if(btn){
+      if(source) btn.textContent = source.textContent || 'Ses: Açık';
+      if(!btn.__v194Sound){
+        btn.__v194Sound = true;
+        btn.addEventListener('click', function(ev){
+          ev.preventDefault();
+          var s = byId('soundToggleBtn');
+          if(s) s.click();
+          setTimeout(function(){ var s2 = byId('soundToggleBtn'); if(s2) btn.textContent = s2.textContent || btn.textContent; }, 60);
+        }, false);
+      }
+    }
+  }
+  function enhanceInlineTreeV194(){
+    var treeCompact = document.querySelector('.tree-compact');
+    var panel = byId('treeTypePanel');
+    var apply = byId('treeTypeApplyBtn');
+    var selectBtn = byId('treeTypeSelectBtn');
+    if(treeCompact) treeCompact.classList.add('tree-compact-v194');
+    if(panel){
+      panel.classList.add('open','tree-panel-v194');
+      panel.querySelectorAll('input[type="radio"]').forEach(function(r){
+        if(r.__v194TreeChange) return;
+        r.__v194TreeChange = true;
+        r.addEventListener('change', function(){
+          setTree(r.value || 'Karaçam');
+          renderHomeTreeButtonsV194();
+        }, false);
+      });
+    }
+    if(selectBtn){ selectBtn.style.setProperty('display','none','important'); selectBtn.tabIndex = -1; }
+    if(apply){ apply.style.setProperty('display','none','important'); apply.tabIndex = -1; }
+  }
   function moveEntrySettingsToHome(){
     var home = byId('mesahaHomeV143');
     var dateInput = byId('productionDate');
@@ -302,8 +365,8 @@
         apply.setAttribute('aria-hidden','true');
         apply.tabIndex = -1;
       }
-      if(apply && !apply.__v193Refresh){
-        apply.__v193Refresh = true;
+      if(apply && !apply.__v194Refresh){
+        apply.__v194Refresh = true;
         apply.addEventListener('click', refreshCleanProductsSoon, false);
       }
       woodPanel.querySelectorAll('input[type="checkbox"]').forEach(function(ch){
@@ -316,6 +379,17 @@
         }, false);
       });
     }
+    var treeBlock = byId('homeTreeBlockV194');
+    if(!treeBlock){
+      treeBlock = document.createElement('div');
+      treeBlock.id = 'homeTreeBlockV194';
+      treeBlock.className = 'home-setting-block-v189 home-tree-block-v194';
+      treeBlock.innerHTML = '<div class="home-setting-title-v189">Ağaç Türleri</div><p class="home-setting-hint-v189">Seçili ağaç türü Giriş Modu içinde aktif olur.</p><div id="homeTreePanelV194" class="home-tree-panel-v194"></div>';
+      grid.appendChild(treeBlock);
+    }
+    renderHomeTreeButtonsV194();
+    ensureHomeSoundCardV194();
+    enhanceInlineTreeV194();
   }
   function moveFileInfoToHome(){
     var home = byId('mesahaHomeV143');
@@ -334,8 +408,8 @@
     if(status && status.nextSibling) home.insertBefore(details, status.nextSibling); else home.insertBefore(details, home.firstChild);
   }
   function patchBrand(){
-    var shortV = (window.MESAHA_VERSION && window.MESAHA_VERSION.shortVersion) || 'v2.22';
-    var buildV = (window.MESAHA_VERSION && window.MESAHA_VERSION.version) || 'v193';
+    var shortV = (window.MESAHA_VERSION && window.MESAHA_VERSION.shortVersion) || 'v2.23';
+    var buildV = (window.MESAHA_VERSION && window.MESAHA_VERSION.version) || 'v194';
     safe(function(){ document.title = shortV; });
     var h = document.querySelector('.app-brand-v143 .brand-copy-v143 h1');
     var s = document.querySelector('.app-brand-v143 .brand-copy-v143 span');
@@ -428,15 +502,15 @@
     });
   }
   function titleFix(){
-    safe(function(){ document.title = 'v2.22'; });
+    safe(function(){ document.title = 'v2.23'; });
     safe(function(){
       document.querySelectorAll('.app-brand-v143 .brand-copy-v143,[data-app-version-short],[data-app-version-build]').forEach(function(el){
         if(!el) return;
-        if(/Mesaha\s*İ?O/i.test(el.textContent || '')) el.textContent = el.matches('[data-app-version-build], .app-brand-v143 .brand-copy-v143 span') ? 'v193' : 'v2.22';
+        if(/Mesaha\s*İ?O/i.test(el.textContent || '')) el.textContent = el.matches('[data-app-version-build], .app-brand-v143 .brand-copy-v143 span') ? 'v194' : 'v2.23';
       });
-      var h = document.querySelector('.app-brand-v143 .brand-copy-v143 h1'); if(h) h.textContent = 'v2.22';
-      var s = document.querySelector('.app-brand-v143 .brand-copy-v143 span'); if(s) s.textContent = 'v193';
-      var splashH = document.querySelector('.mesaha-startup-logo-v178 h2'); if(splashH) splashH.textContent = 'v2.22';
+      var h = document.querySelector('.app-brand-v143 .brand-copy-v143 h1'); if(h) h.textContent = 'v2.23';
+      var s = document.querySelector('.app-brand-v143 .brand-copy-v143 span'); if(s) s.textContent = 'v194';
+      var splashH = document.querySelector('.mesaha-startup-logo-v178 h2'); if(splashH) splashH.textContent = 'v2.23';
     });
   }
   function navFix(){
@@ -489,7 +563,7 @@
   function forceEditRecordToClean(){
     safe(function(){
       var old = window.editRecord;
-      if(typeof old !== 'function' || old.__v193CleanOpen) return;
+      if(typeof old !== 'function' || old.__v194CleanOpen) return;
       var wrapped = function(id){
         var result = old.apply(this, arguments);
         setTimeout(function(){
@@ -502,8 +576,8 @@
         }, 60);
         return result;
       };
-      wrapped.__v193CleanOpen = true;
-      wrapped.__v193Old = old;
+      wrapped.__v194CleanOpen = true;
+      wrapped.__v194Old = old;
       window.editRecord = wrapped;
       try{ editRecord = wrapped; }catch(_){ }
     });
@@ -556,7 +630,7 @@
       [top, measure, section, save, clear, auto, recent].forEach(function(el, idx){ if(el) el.style.setProperty('order', String(idx+1), 'important'); });
     });
   }
-  function run(){ titleFix(); navFix(); orderFix(); hideUnusedHomeControls(); forceEditRecordToClean(); }
+  function run(){ titleFix(); navFix(); orderFix(); hideUnusedHomeControls(); forceEditRecordToClean(); moveEntrySettingsToHome(); moveFileInfoToHome(); ensureHomeSoundCardV194(); enhanceInlineTreeV194(); renderHomeTreeButtonsV194(); }
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run, {once:true}); else run();
   [50,150,350,800,1500,2600,5200].forEach(function(ms){ setTimeout(run, ms); });
   setInterval(run, 900);
@@ -564,19 +638,19 @@
 })();
 
 
-/* v193: gerçek Giriş Modu inline form düzeltmesi
+/* v194: gerçek Giriş Modu inline form düzeltmesi
    Ürün Türü / Çap-Boy sırası artık temiz overlay değil, aktif kullanılan entryForm üzerinde düzeltilir. */
 (function(){
   'use strict';
   function byId(id){ return document.getElementById(id); }
-  function safe(fn){ try{return fn();}catch(e){ try{ console.warn('[Mesaha İO v193 inline fix]', e); }catch(_){} } }
+  function safe(fn){ try{return fn();}catch(e){ try{ console.warn('[Mesaha İO v194 inline fix]', e); }catch(_){} } }
   function q(sel, root){ return (root || document).querySelector(sel); }
 
   function forceInlineOrder(){
     safe(function(){
       var form = byId('entryForm');
       if(!form) return;
-      form.classList.add('entry-form-v193-fixed');
+      form.classList.add('entry-form-v194-fixed');
 
       var tree = q('.product-compact.tree-compact', form);
       var product = q('.product-compact:not(.tree-compact)', form);
@@ -603,7 +677,7 @@
 
       // Alanları Temizle giriş modunda görünür kalsın.
       if(clearRow){
-        clearRow.classList.add('clear-row-v193');
+        clearRow.classList.add('clear-row-v194');
         if(recent && clearRow.previousElementSibling !== recent){
           form.insertBefore(clearRow, recent.nextSibling);
         }
@@ -632,7 +706,7 @@
         overlay.style.setProperty('display','none','important');
       }
       document.body.classList.remove('show-records','show-guide','show-admin','clean-simple-open-v111','clean-simple-active-v111','clean-keyboard-v118');
-      document.body.classList.add('inline-simple-v119','mesaha-v193-edit-entry');
+      document.body.classList.add('inline-simple-v119','mesaha-v194-edit-entry');
       var entry = q('.panel.entry-panel');
       if(entry) entry.style.setProperty('display','block','important');
       document.querySelectorAll('#flowTabsV111 button,.bottom-nav button').forEach(function(b){ b.classList.remove('active'); });
@@ -650,15 +724,15 @@
   function wrapEditRecord(){
     safe(function(){
       var old = window.editRecord;
-      if(typeof old !== 'function' || old.__v193InlineEdit) return;
+      if(typeof old !== 'function' || old.__v194InlineEdit) return;
       var wrapped = function(id){
         var result = old.apply(this, arguments);
         setTimeout(openInlineEntry, 40);
         setTimeout(openInlineEntry, 180);
         return result;
       };
-      wrapped.__v193InlineEdit = true;
-      wrapped.__v193Old = old;
+      wrapped.__v194InlineEdit = true;
+      wrapped.__v194Old = old;
       window.editRecord = wrapped;
       try{ editRecord = wrapped; }catch(_){}
     });
