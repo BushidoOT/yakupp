@@ -145,3 +145,68 @@ body.clean-simple-open-v111 .clean-recent-area-v111{order:6!important;}
 body.clean-simple-open-v111 #cleanClearV187{order:7!important;}
 body.clean-simple-open-v111 .clean-measure-grid-v111{margin-top:8px!important;margin-bottom:8px!important;}
 body.clean-simple-open-v111 #cleanProductSectionV187{margin-top:0!important;margin-bottom:8px!important;}
+
+
+/* v193: Aktif kullanılan Giriş Modu aslında inline entryForm'dur.
+   Bu yüzden sıra doğrudan entryForm üzerinde sabitlenir. */
+body.inline-simple-v119 form#entryForm.entry-form-v193-fixed,
+body.inline-simple-v119 form#entryForm{
+  display:flex!important;
+  flex-direction:column!important;
+  gap:10px!important;
+}
+
+body.inline-simple-v119 form#entryForm .product-compact.tree-compact{
+  order:1!important;
+}
+
+body.inline-simple-v119 form#entryForm .measure-compact{
+  order:2!important;
+  display:grid!important;
+  grid-template-columns:1fr 1fr!important;
+  gap:10px!important;
+  margin:0!important;
+}
+
+body.inline-simple-v119 form#entryForm .product-compact:not(.tree-compact){
+  order:3!important;
+  display:block!important;
+}
+
+body.inline-simple-v119 form#entryForm .barcode-save-row-final{
+  order:4!important;
+}
+
+body.inline-simple-v119 form#entryForm .recent-barcodes-box{
+  order:5!important;
+}
+
+body.inline-simple-v119 form#entryForm .btn-row.clear-row-v193{
+  order:6!important;
+  display:flex!important;
+  margin:0!important;
+}
+
+body.inline-simple-v119 form#entryForm .btn-row.clear-row-v193 #sameBarcodeBtn{
+  display:none!important;
+}
+
+body.inline-simple-v119 form#entryForm .btn-row.clear-row-v193 #clearInputsBtn{
+  display:flex!important;
+  width:100%!important;
+  min-height:50px!important;
+  align-items:center!important;
+  justify-content:center!important;
+  border-radius:18px!important;
+  font-weight:950!important;
+  font-size:16px!important;
+  background:#fff7ed!important;
+  color:#9a3412!important;
+  border:1px solid #fed7aa!important;
+}
+
+body.theme-dark.inline-simple-v119 form#entryForm .btn-row.clear-row-v193 #clearInputsBtn{
+  background:#431407!important;
+  color:#ffedd5!important;
+  border-color:#9a3412!important;
+}
