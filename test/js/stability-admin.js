@@ -102,7 +102,7 @@
     safe(function(){ window.MESAHA_BUILD_INFO = Object.assign({}, window.MESAHA_BUILD_INFO || {}, {fileVersion:FILE_VERSION, visibleVersion:VISIBLE_VERSION, modularStable:true, adminOwner:ADMIN_NAME+' / '+ADMIN_SEFLIK, bootCheck:true, errorLog:true}); });
   }
   function injectMaintenance(){
-    // v182: Bakım/Hata butonları offline-admin.js tarafında tek merkezden gösterilir.
+    // v184: Bakım/Hata butonları offline-admin.js tarafında tek merkezden gösterilir.
     return;
   }
   function install(){

@@ -1,12 +1,12 @@
 (function(){
   'use strict';
-  var PERF_TAG = 'v183';
+  var PERF_TAG = 'v184';
   var IDB_NAME = 'mesaha_io_stabil_v152';
   var IDB_STORE = 'kv';
   var IDB_RECORDS_KEY = 'records';
   var IDB_SETTINGS_KEY = 'settings';
   var IDB_MARKER_KEY = 'mesaha_records_indexeddb_marker_v152';
-  var BIG_RECORD_LIMIT = 600;
+  var BIG_RECORD_LIMIT = 5;
   var idbTimer = null;
   var summaryTimer = null;
   var renderTimer = null;
@@ -46,7 +46,7 @@
   }
   function patchSaveRecords(){
     safe(function(){
-      if(typeof saveRecords !== 'function' || saveRecords.__v183Patched) return;
+      if(typeof saveRecords !== 'function' || saveRecords.__v184Patched) return;
       var oldSave = saveRecords;
       saveRecords = function(){
         var records = safe(function(){ return Array.isArray(state.records) ? state.records : []; }, []);
@@ -66,14 +66,14 @@
           try{ if(typeof STORAGE_KEY !== 'undefined') localStorage.removeItem(STORAGE_KEY); localStorage.setItem(IDB_MARKER_KEY, '1'); }catch(_){}
         }
       };
-      saveRecords.__v183Patched = true;
-      saveRecords.__v183Old = oldSave;
+      saveRecords.__v184Patched = true;
+      saveRecords.__v184Old = oldSave;
       log(PERF_TAG, 'saveRecords optimize edildi');
     });
   }
   function patchRender(){
     safe(function(){
-      if(typeof render === 'function' && !render.__v183Patched){
+      if(typeof render === 'function' && !render.__v184Patched){
         var oldRender = render;
         render = function(){
           var args = arguments;
@@ -82,26 +82,26 @@
           var isFastInput = /^(diameter|length|quantity|cleanDiameterV111|cleanLengthV111)$/.test(id) || document.body.classList.contains('clean-simple-open-v111');
           if(isFastInput){
             clearTimeout(renderTimer);
-            renderTimer = setTimeout(function(){ safe(function(){ oldRender.apply(null, args); }); }, 70);
+            renderTimer = setTimeout(function(){ safe(function(){ oldRender.apply(null, args); }); }, 180);
             return;
           }
           return oldRender.apply(null, args);
         };
-        render.__v183Patched = true;
+        render.__v184Patched = true;
       }
-      if(typeof forceRefreshSummaryCards === 'function' && !forceRefreshSummaryCards.__v183Patched){
+      if(typeof forceRefreshSummaryCards === 'function' && !forceRefreshSummaryCards.__v184Patched){
         var oldSummary = forceRefreshSummaryCards;
         forceRefreshSummaryCards = function(){
           clearTimeout(summaryTimer);
           summaryTimer = setTimeout(function(){ safe(function(){ oldSummary(); }); }, 120);
         };
-        forceRefreshSummaryCards.__v183Patched = true;
+        forceRefreshSummaryCards.__v184Patched = true;
       }
     });
   }
   function patchCleanChips(){
     safe(function(){
-      if(typeof renderCleanChipsV111 !== 'function' || renderCleanChipsV111.__v183Patched) return;
+      if(typeof renderCleanChipsV111 !== 'function' || renderCleanChipsV111.__v184Patched) return;
       renderCleanChipsV111 = function(){
         var c = (typeof cleanElsV111 === 'function') ? cleanElsV111() : {};
         var esc = (typeof escapeHtml === 'function') ? escapeHtml : function(v){ return String(v == null ? '' : v).replace(/[&<>"']/g, function(ch){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[ch]; }); };
@@ -119,7 +119,7 @@
         if(c.lenChips) c.lenChips.innerHTML = lenVals.map(function(v){ return '<button type="button" class="clean-chip-v111 boy" data-clean-length="'+esc(v)+'">'+esc(v)+'</button>'; }).join('');
         if(c.diaChips) c.diaChips.innerHTML = diaVals.map(function(v){ return '<button type="button" class="clean-chip-v111 cap" data-clean-diameter="'+esc(v)+'">'+esc(v)+'</button>'; }).join('');
       };
-      renderCleanChipsV111.__v183Patched = true;
+      renderCleanChipsV111.__v184Patched = true;
     });
   }
   function patchInputLag(){
@@ -162,7 +162,7 @@
     safe(function(){
       var topBadge = byId('mesahaNetBadgeV178');
       if(topBadge){
-        topBadge.setAttribute('data-removed-v183','1');
+        topBadge.setAttribute('data-removed-v184','1');
         topBadge.style.display = 'none';
         topBadge.setAttribute('aria-hidden','true');
       }
@@ -175,6 +175,7 @@
     patchRender();
     patchCleanChips();
     patchInputLag();
+    patchMobileRecordRender();
     removeTopNetworkBadge();
   }
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, {once:true});

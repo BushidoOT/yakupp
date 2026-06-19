@@ -10006,25 +10006,25 @@ body.theme-dark .admin-stats-note-v134{ color:#a8b3c2; }
   @media (max-width:520px){.cutter-actions-v163{gap:7px !important;}.cutter-chip-v163{max-width:100% !important;}.cutter-add-v163{flex:1 1 160px !important;}}
 
 
-/* v180 - Ölçümler filtre sabitleme kutusu */
-.records-filter-box-v180{
+/* v184 - Ölçümler filtre sabitleme kutusu */
+.records-filter-box-v184{
   display:grid;
   gap:10px;
   margin:12px 0 14px;
 }
-.records-filter-box-v180 .tree-filter-v144,
-.records-filter-box-v180 .cutter-filter-v158{
+.records-filter-box-v184 .tree-filter-v144,
+.records-filter-box-v184 .cutter-filter-v158{
   margin:0 !important;
 }
-.records-filter-box-v180 .tree-filter-v144{
+.records-filter-box-v184 .tree-filter-v144{
   order:1;
 }
-.records-filter-box-v180 .cutter-filter-v158{
+.records-filter-box-v184 .cutter-filter-v158{
   order:2;
 }
 
 
-/* v182 - PWA tam ekran / iOS safe-area / Android standalone düzeni */
+/* v184 - PWA tam ekran / iOS safe-area / Android standalone düzeni */
 html{
   min-height:100%;
   height:100%;
@@ -10079,5 +10079,5 @@ body{
   }
 }
 
-/* v183: Üst kullanıcı panelindeki bağlantı rozeti kaldırıldı; ana ekrandaki durum korunur. */
+/* v184: Üst kullanıcı panelindeki bağlantı rozeti kaldırıldı; ana ekrandaki durum korunur. */
 .topbar #mesahaNetBadgeV178, header #mesahaNetBadgeV178{display:none!important;visibility:hidden!important;pointer-events:none!important;}

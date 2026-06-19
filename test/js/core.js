@@ -6526,6 +6526,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     }
 
     function applyProductSideStripesV125() {
+      return;
       if (!document.body.classList.contains('theme-dark')) {
         clearV125StripeInline();
         return;
@@ -6586,11 +6587,8 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
       }
     }, true);
 
-    setTimeout(applyProductSideStripesV125, 200);
-    setTimeout(applyProductSideStripesV125, 800);
-    setInterval(() => {
-      if (document.body.classList.contains('theme-dark')) applyProductSideStripesV125();
-    }, 1400);
+    /* v184: eski inline stripe ilk taramaları kapalı. */
+    /* v184: dark.css ayrıldı; eski inline tarama kapatıldı. */
 
 
 
@@ -9103,7 +9101,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     activeTimeMode:"visibleTimeLocal_exportSync",
     adminSortMode:"lastLoginOrActiveDesc"
   });
-  try{ document.title="Mesaha App v140"; const h1=document.querySelector(".brand h1"); if(h1) h1.textContent=BUILD_VERSION; }catch{}
+  try{ document.title="Mesaha İO v2.13"; const h1=document.querySelector(".brand h1"); if(h1) h1.textContent=BUILD_VERSION; }catch{}
   setTimeout(()=>{ try{ if(typeof renderAdminUsers==="function") renderAdminUsers(); }catch{} }, 500);
 })();
 

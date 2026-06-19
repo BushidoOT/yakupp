@@ -1,10 +1,10 @@
 (function(){
   'use strict';
   var INFO = window.MESAHA_VERSION || {};
-  var CURRENT = String(INFO.version || 'v179');
+  var CURRENT = String(INFO.version || 'v184');
   var AUTO_PREFIX = 'mesaha_auto_update_done_';
   var CHECK_LOCK = false;
-  var TIMEOUT_MS = 5000;
+  var TIMEOUT_MS = 6500;
   function ready(fn){ if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn, {once:true}); else fn(); }
   function byId(id){ return document.getElementById(id); }
   function safe(fn, fallback){ try{ return fn(); }catch(e){ try{ console.warn('[mesaha-auto-update]', e); }catch(_){} return fallback; } }
@@ -74,50 +74,52 @@
       await Promise.all(keys.map(function(k){ return caches.delete(k).catch(function(){ return false; }); }));
     }
   }
-  async function refreshServiceWorkers(remoteVersion){
+  async function unregisterWorkers(){
     if(!('serviceWorker' in navigator)) return;
     try{
       var regs = await navigator.serviceWorker.getRegistrations();
-      await Promise.all(regs.map(async function(reg){
-        try{ if(reg.waiting) reg.waiting.postMessage({type:'SKIP_WAITING'}); }catch(_){ }
-        try{ await reg.update(); }catch(_){ }
-      }));
-      try{ await navigator.serviceWorker.register('./service-worker.js?v=' + encodeURIComponent(remoteVersion || Date.now())); }catch(_){ }
+      await Promise.all(regs.map(function(reg){ try{ if(reg.waiting) reg.waiting.postMessage({type:'SKIP_WAITING'}); }catch(_){} return reg.unregister().catch(function(){ return false; }); }));
     }catch(_){ }
+  }
+  async function refreshServiceWorkers(remoteVersion){
+    if(!('serviceWorker' in navigator)) return;
+    try{ await navigator.serviceWorker.register('./service-worker.js?v=' + encodeURIComponent(remoteVersion || Date.now()), {updateViaCache:'none'}); }catch(_){ }
   }
   function reloadToVersion(remoteVersion){
     var url = new URL(location.href);
     url.searchParams.set('v', String(remoteVersion || '').replace(/^v/i,'') || String(Date.now()));
+    url.searchParams.set('reset', '1');
     url.searchParams.set('appUpdate', Date.now().toString());
-    url.searchParams.delete('reset');
     url.hash = '';
     location.replace(url.toString());
   }
-  async function applyUpdate(info){
+  async function applyUpdate(info, manual){
     var rv = String(info && info.version || '');
-    if(!rv || !isNewer(rv, CURRENT)) return false;
+    if(!rv || !isNewer(rv, CURRENT)){ if(manual) toast('Güncel sürüm kullanılıyor.'); return false; }
     var key = AUTO_PREFIX + rv;
-    if(sessionStorage.getItem(key) === '1') return false;
+    if(sessionStorage.getItem(key) === '1' && !manual) return false;
     sessionStorage.setItem(key, '1');
     localStorage.setItem('mesaha_last_auto_update_check', new Date().toISOString());
-    overlayLog('Yeni sürüm bulundu: ' + (info.visibleVersion || rv) + '. Dosyalar güncelleniyor...', false);
+    overlayLog('Yeni sürüm bulundu: ' + (info.visibleVersion || rv) + '. Güncelleme hazırlanıyor...', false);
     updateHomeStatus('Güncelleme yapılıyor');
-    await refreshServiceWorkers(rv);
     overlayLog('Eski önbellek temizleniyor...', false);
     await clearRuntimeCaches();
+    overlayLog('Service worker yenileniyor...', false);
+    await unregisterWorkers();
+    await refreshServiceWorkers(rv);
     localStorage.setItem('mesaha_last_auto_update', new Date().toISOString());
     overlayLog('Güncelleme tamamlandı. Uygulama yeniden açılıyor...', false);
-    setTimeout(function(){ reloadToVersion(rv); }, 700);
+    setTimeout(function(){ reloadToVersion(rv); }, 850);
     return true;
   }
-  async function check(reason){
+  async function check(reason, manual){
     if(CHECK_LOCK) return false;
     if(!navigator.onLine) return false;
     CHECK_LOCK = true;
     try{
       log('kontrol: ' + (reason || 'auto'));
       var info = await fetchRemoteVersion();
-      if(info && info.version && isNewer(info.version, CURRENT)) return await applyUpdate(info);
+      if(info && info.version && isNewer(info.version, CURRENT)) return await applyUpdate(info, manual);
       localStorage.setItem('mesaha_last_auto_update_check', new Date().toISOString());
       return false;
     }catch(e){
@@ -134,7 +136,7 @@
     var btn = byId('userMenuForceUpdateBtn');
     if(btn){
       btn.addEventListener('click', function(){
-        setTimeout(function(){ check('manual-panel').then(function(updated){ if(!updated) toast('Güncel sürüm kullanılıyor veya bağlantı zayıf.'); }); }, 50);
+        setTimeout(function(){ check('manual-panel', true).then(function(updated){ if(!updated) toast('Güncel sürüm kullanılıyor veya bağlantı zayıf.'); }); }, 50);
       }, true);
     }
   });

@@ -2,14 +2,14 @@
   'use strict';
   var info = {
     appName: 'Mesaha İO',
-    version: 'v183',
-    build: 'v183',
-    assetVersion: '183',
-    visibleVersion: 'Mesaha İO v2.12',
-    name: 'Mesaha İO v2.12',
-    cacheName: 'mesaha-app-v183-ios-performans',
+    version: 'v184',
+    build: 'v184',
+    assetVersion: '184',
+    visibleVersion: 'Mesaha İO v2.13',
+    name: 'Mesaha İO v2.13',
+    cacheName: 'mesaha-app-v184-ios-hiz-guncelleme',
     builtAt: '2026-06-19',
-    notes: 'iOS kayıt giriş performansı iyileştirildi; çap/boy gecikmesi azaltıldı; üst kullanıcı panelindeki bağlantı rozeti kaldırıldı. ORBİS Excel formatına dokunulmadı.'
+    notes: 'iOS kayıt girişinde ürün/çap-boy tepkisi hızlandırıldı; otomatik güncelleme penceresi ve cache yenileme düzeltildi. ORBİS Excel formatına dokunulmadı.'
   };
   root.MESAHA_VERSION = info;
   root.MESAHA_VERSION_TEXT = info.visibleVersion;

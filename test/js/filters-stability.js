@@ -1,4 +1,4 @@
-/* Mesaha İO v180 - Ölçümler filtre sırası ve boş ağaç seçeneği düzeltmesi
+/* Mesaha İO v184 - Ölçümler filtre sırası ve boş ağaç seçeneği düzeltmesi
    Yeni özellik eklemez; sadece mevcut ağaç/kesimci filtrelerini sabit ve temiz tutar. */
 (function(){
   'use strict';
@@ -48,9 +48,9 @@
     var body = panelBody(); if(!body) return null;
     var tree = byId('treeFilterV144');
     if(!tree){ tree = document.createElement('div'); tree.id = 'treeFilterV144'; tree.className = 'tree-filter-v144'; }
-    tree.classList.add('tree-filter-v180-clean');
-    if(!tree.__v180Click){
-      tree.__v180Click = true;
+    tree.classList.add('tree-filter-v184-clean');
+    if(!tree.__v184Click){
+      tree.__v184Click = true;
       tree.addEventListener('click', function(event){
         var btn = event.target && event.target.closest ? event.target.closest('button[data-tree-filter-v144]') : null;
         if(!btn) return;
@@ -68,7 +68,7 @@
     var body = panelBody(); if(!body) return null;
     var cutter = byId('cutterFilterV158');
     if(!cutter){ cutter = document.createElement('div'); cutter.id = 'cutterFilterV158'; cutter.className = 'cutter-filter-v158'; }
-    cutter.classList.add('cutter-filter-v180-clean');
+    cutter.classList.add('cutter-filter-v184-clean');
     return cutter;
   }
   function orderFilters(){
@@ -124,7 +124,7 @@
   }
   function wrapRender(){
     safe(function(){
-      if(typeof window.render !== 'function' || window.render.__v180FilterStable) return;
+      if(typeof window.render !== 'function' || window.render.__v184FilterStable) return;
       var old = window.render;
       window.render = function(){
         var out = old.apply(this, arguments);
@@ -132,15 +132,15 @@
         setTimeout(stabilize, 50);
         return out;
       };
-      window.render.__v180FilterStable = true;
+      window.render.__v184FilterStable = true;
     });
   }
   function install(){
     wrapRender();
     stabilize();
     var body = panelBody();
-    if(body && !body.__v180FilterObserver){
-      body.__v180FilterObserver = true;
+    if(body && !body.__v184FilterObserver){
+      body.__v184FilterObserver = true;
       var mo = new MutationObserver(function(){ setTimeout(stabilize, 0); });
       mo.observe(body, { childList:true });
     }

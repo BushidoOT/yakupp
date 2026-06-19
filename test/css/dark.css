@@ -1,4 +1,4 @@
-/* Mesaha İO v180 - Karanlık mod ayrılmış tema dosyası
+/* Mesaha İO v184 - Karanlık mod ayrılmış tema dosyası
    Sadece body.theme-dark / html.theme-dark görünümünü yönetir.
    Kayıt, yedek ve ORBİS Excel üretim kodlarına dokunmaz. */
 
@@ -245,7 +245,7 @@ body.theme-dark .mesaha-net-badge-v178.offline{
   border-color:rgba(251,146,60,.35) !important;
 }
 
-/* v182 - PWA/safe-area sonrası karanlık mod uyumu */
+/* v184 - PWA/safe-area sonrası karanlık mod uyumu */
 html.theme-dark,
 body.theme-dark{
   --dm-bg:#0b1016;
