@@ -1,8 +1,8 @@
 
 (function(){
   'use strict';
-  var VISIBLE_VERSION = 'Mesaha İO v2.00';
-  var FILE_VERSION = 'v171';
+  var VISIBLE_VERSION = 'Mesaha İO v2.02';
+  var FILE_VERSION = 'v173';
   function safe(fn){ try { return fn(); } catch(e){ try { console.warn('[v171]', e); } catch(_){} } }
   function ready(fn){ if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn, {once:true}); else fn(); }
   function esc(v){ return String(v==null?'':v).replace(/[&<>"']/g, function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c];}); }

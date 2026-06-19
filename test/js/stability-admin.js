@@ -1,20 +1,20 @@
 
 (function(){
   'use strict';
-  var FILE_VERSION = 'v172';
-  var VISIBLE_VERSION = 'Mesaha İO v2.01';
+  var FILE_VERSION = 'v173';
+  var VISIBLE_VERSION = 'Mesaha İO v2.02';
   var ADMIN_NAME = 'Yakup';
   var ADMIN_SEFLIK = 'Yaylacık';
-  var ERROR_KEY = 'mesaha_error_log_v172';
-  var BOOT_KEY = 'mesaha_boot_status_v172';
+  var ERROR_KEY = 'mesaha_error_log_v173';
+  var BOOT_KEY = 'mesaha_boot_status_v173';
 
   function ready(fn){ if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn, {once:true}); else fn(); }
   function safe(fn, fallback){ try { return fn(); } catch(e){ logError('safe', e); return fallback; } }
   function byId(id){ return document.getElementById(id); }
   function norm(v){ return String(v == null ? '' : v).trim().replace(/\s+/g,' '); }
-  function key(v){ return norm(v).toLocaleLowerCase('tr-TR').replace(/[ıiİ]/g,'i').replace(/ğ/g,'g').replace(/ü/g,'u').replace(/ş/g,'s').replace(/ö/g,'o').replace(/ç/g,'c'); }
+  function key(v){ return norm(v).toLocaleLowerCase('tr-TR'); }
   function isAdminUser(){
-    var user = safe(function(){ return (typeof state !== 'undefined' && state.activeUser) ? state.activeUser : null; }, null) || {};
+    var user = safe(function(){ return window.state && state.activeUser ? state.activeUser : null; }, null) || {};
     var name = norm(user.name || safe(function(){ return (byId('loginUserName')||{}).value; }, '') || safe(function(){ return JSON.parse(localStorage.getItem('mesaha_active_user_v1')||'{}').name; }, ''));
     var seflik = norm(user.seflik || safe(function(){ return (byId('loginSeflik')||{}).value; }, '') || safe(function(){ return JSON.parse(localStorage.getItem('mesaha_active_user_v1')||'{}').seflik; }, ''));
     return key(name) === key(ADMIN_NAME) && key(seflik) === key(ADMIN_SEFLIK);
@@ -37,7 +37,7 @@
     var panel = document.querySelector('.admin-panel');
     if(panel) panel.style.display = 'none';
     safe(function(){ if(sessionStorage.getItem('mesaha_admin_code') && !isAdminUser()) sessionStorage.removeItem('mesaha_admin_code'); });
-    safe(function(){ if(typeof state !== 'undefined' && state.lastAdminCode && !isAdminUser()) state.lastAdminCode=''; });
+    safe(function(){ if(window.state && state.lastAdminCode && !isAdminUser()) state.lastAdminCode=''; });
   }
   function showAdminIfAllowed(){
     var nav = byId('navAdmin');
