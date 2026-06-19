@@ -108,3 +108,11 @@ body.dark .export-scope-info{background:#052e16;color:#bbf7d0;border-color:#1665
 .recent-item.product-tomruk{background:#fff9db!important}.recent-item.product-maden{background:#e7f0ff!important}.recent-item.product-kagit{background:#fee2e2!important}.recent-item.product-sanayi{background:#dcfce7!important}.recent-item.product-tel{background:#ede9fe!important}
 body.dark .recent-item.product-tomruk{background:#31260a!important}body.dark .recent-item.product-maden{background:#0b1d3a!important}body.dark .recent-item.product-kagit{background:#3a1111!important}body.dark .recent-item.product-sanayi{background:#082513!important}body.dark .recent-item.product-tel{background:#22143a!important}
 .pager::before{content:'20 kayıt / sayfa';font-size:13px;color:var(--muted);font-weight:950;margin-right:4px}
+
+
+/* v305 giriş sırası ve beyan filtre özeti */
+.measure-grid-v305 label:first-child{order:1}
+.measure-grid-v305 label:last-child{order:2}
+#recordCountPill{font-weight:950}
+#productTotals .prod-total{transition:background .15s ease, transform .15s ease}
+#diameterInput:focus,#lengthInput:focus,#barcodeInput:focus{outline:3px solid rgba(22,163,74,.18)!important;border-color:#16a34a!important}

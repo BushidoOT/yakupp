@@ -2,7 +2,7 @@
 'use strict';
 const STORAGE_KEY = 'cam_mesaha_kayitlari_v1';
 const SETTINGS_KEY = 'cam_mesaha_ayarlar_v1';
-const VERSION = window.MESAHA_VERSION || {shortVersion:'v3.04', version:'v304-modern'};
+const VERSION = window.MESAHA_VERSION || {shortVersion:'v3.05', version:'v305-entry-filter'};
 const PRODUCTS = [
   {key:'Tomruk', label:'Tomruk', cls:'tomruk', rule:'Tomruk: çap 21 ve üzeri olmalı.'},
   {key:'Maden Direk', label:'Maden', cls:'maden', rule:'Maden: çap 20 ve altı olmalı.'},
@@ -181,9 +181,12 @@ function showView(view){
   try{ window.scrollTo({top:0, behavior:'auto'}); }catch{ window.scrollTo(0,0); }
 }
 function openEntry(record){
-  if(record){ state.editingId=record.id; state.settings.currentTree=record.treeType; state.settings.currentProduct=record.productType; state.settings.length=record.length; state.settings.diameter=record.diameter; state.settings.barcode=record.barcode; state.settings.activeCutter=record.cutter||''; $('cancelEditBtn').classList.remove('hidden'); }
-  else { state.editingId=null; $('cancelEditBtn').classList.add('hidden'); }
-  renderEntry(); showView('entry'); setTimeout(()=>{ try{$('diameterInput').focus({preventScroll:true});}catch{} },80);
+  if(record){
+    state.editingReturnBarcode = state.settings.barcode || (($('barcodeInput') && $('barcodeInput').value) || '');
+    state.editingId=record.id; state.settings.currentTree=record.treeType; state.settings.currentProduct=record.productType; state.settings.length=record.length; state.settings.diameter=record.diameter; state.settings.barcode=record.barcode; state.settings.activeCutter=record.cutter||''; $('cancelEditBtn').classList.remove('hidden');
+  }
+  else { state.editingId=null; state.editingReturnBarcode=''; $('cancelEditBtn').classList.add('hidden'); }
+  renderEntry(); showView('entry'); setTimeout(()=>{ try{$('diameterInput').focus({preventScroll:true}); $('diameterInput').select();}catch{} },80);
 }
 function renderAll(){ renderVersion(); renderUser(); renderNetwork(); renderHome(); renderEntry(); renderRecords(); renderSound(); }
 function renderVersion(){ $('versionText').textContent=VERSION.shortVersion || 'v3.00'; document.querySelectorAll('.version-card b').forEach(b=>b.textContent=VERSION.shortVersion||'v3.00'); document.querySelectorAll('.version-card small').forEach(s=>s.textContent=VERSION.version||'v300-clean'); }
@@ -253,6 +256,8 @@ function renderProducts(){
 }
 function renderRecent(){ const recent=state.records.slice(-3).reverse(); $('recentList').innerHTML = recent.length ? recent.map(r=>`<button class="recent-item product-${productInfo(r.productType).cls}" data-edit="${r.id}" type="button"><b>${esc(r.barcode)}</b><small>${esc(r.treeType)} • ${esc(productInfo(r.productType).label)} • ${esc(r.diameter)} çap / ${esc(r.length)} boy</small></button>`).join('') : '<p class="hint">Henüz kayıt yok.</p>'; $('recentList').querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click',()=>{ const r=state.records.find(x=>x.id===b.dataset.edit); if(r) openEntry(r); })); }
 function saveEntry(){
+  const wasEditing = Boolean(state.editingId);
+  const returnBarcodeAfterEdit = state.editingReturnBarcode || state.settings.barcode || '';
   const barcode=norm($('barcodeInput').value).toUpperCase(); const diameter=norm($('diameterInput').value); const length=norm($('lengthInput').value);
   if(!barcode) return toast('Barkod giriniz.');
   if(!validateBarcode(barcode)) return;
@@ -261,9 +266,9 @@ function saveEntry(){
   if(!validateProductRules(state.settings.currentProduct, diameter, length)) return;
   const duplicate = state.records.find(r => String(r.barcode||'').toUpperCase()===barcode && r.id!==state.editingId); if(duplicate) return toast('Bu barkod daha önce kayıtlı.');
   const rec = { id: state.editingId || uid(), barcode, diameter, length, quantity:Math.max(1, num($('quantityInput') && $('quantityInput').value || 1)), productType:normalizeProductType(state.settings.currentProduct), treeType:state.settings.currentTree, cutter:state.settings.activeCutter||'', productionDate:state.settings.mesahaDate||todayISO(), createdAt:new Date().toISOString(), updatedAt: state.editingId ? new Date().toISOString() : '' };
-  if(state.editingId){ const i=state.records.findIndex(r=>r.id===state.editingId); if(i>=0) state.records[i]=rec; state.editingId=null; $('cancelEditBtn').classList.add('hidden'); }
+  if(state.editingId){ const i=state.records.findIndex(r=>r.id===state.editingId); if(i>=0) state.records[i]=rec; state.editingId=null; state.editingReturnBarcode=''; $('cancelEditBtn').classList.add('hidden'); }
   else state.records.push(rec);
-  state.settings.quantity = String(Math.max(1, num($('quantityInput') && $('quantityInput').value || 1))); rememberChip('recentDiameters', diameter); rememberChip('recentLengths', length); state.settings.barcode=nextBarcode(barcode); $('barcodeInput').value=state.settings.barcode; saveRecords(); saveSettings(); renderAll(); toast('Kayıt alındı.'); if(state.settings.soundEnabled!==false) beep();
+  state.settings.quantity = '1'; rememberChip('recentDiameters', diameter); rememberChip('recentLengths', length); state.settings.barcode = wasEditing ? (returnBarcodeAfterEdit || nextBarcode(barcode)) : nextBarcode(barcode); $('barcodeInput').value=state.settings.barcode; saveRecords(); saveSettings(); renderAll(); toast(wasEditing ? 'Kayıt güncellendi.' : 'Kayıt alındı.'); try{ setTimeout(()=>{ $('diameterInput').value=''; $('diameterInput').focus({preventScroll:true}); $('diameterInput').select(); }, 0); }catch{} if(state.settings.soundEnabled!==false) beep();
 }
 function rememberChip(key, val){ const arr=[val, ...(state.settings[key]||[]).filter(x=>String(x)!==String(val))].slice(0,5); state.settings[key]=arr; }
 function nextBarcode(b){ const m=String(b).match(/^(.*?)(\d+)$/); if(!m) return ''; return m[1]+String(Number(m[2])+1).padStart(m[2].length,'0'); }
@@ -299,7 +304,7 @@ function exportXls(){
   const file=`Mesaha_${bolme?bolme+'_':''}${formatDateFile()}.xls`;
   if(window.OrbisXls) window.OrbisXls.downloadXls(ordered, file); else toast('XLS modülü yüklenmedi.');
 }
-function backupJson(){ const data={version:'v3.04-extras', exportedAt:new Date().toISOString(), records:state.records, settings:state.settings}; downloadText(JSON.stringify(data,null,2), `mesaha_yedek_${formatDateFile()}.json`, 'application/json'); toast('Yedek indirildi.'); }
+function backupJson(){ const data={version:'v3.05-extras', exportedAt:new Date().toISOString(), records:state.records, settings:state.settings}; downloadText(JSON.stringify(data,null,2), `mesaha_yedek_${formatDateFile()}.json`, 'application/json'); toast('Yedek indirildi.'); }
 function restoreJson(e){ const file=e.target.files && e.target.files[0]; if(!file) return; const reader=new FileReader(); reader.onload=()=>{ try{ const data=JSON.parse(reader.result); const records=Array.isArray(data) ? data : data.records; if(!Array.isArray(records)) throw new Error('records yok'); state.records=records.map(migrateRecord).filter(Boolean); if(data.settings) state.settings={...state.settings,...data.settings}; saveRecords(); saveSettings(); renderAll(); toast('Yedek yüklendi.'); }catch(err){ toast('Yedek okunamadı.'); } e.target.value=''; }; reader.readAsText(file); }
 function downloadText(content, filename, type){ const blob=new Blob([content],{type}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=filename; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),1000); }
 window.state = state;
@@ -317,7 +322,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 })();
 
 
-/* v304: admin hariç eksik parçalar - canlı ölçüm, aynı barkod, seçimli kayıtlar, bakım, özet */
+/* v305: admin hariç eksik parçalar - canlı ölçüm, aynı barkod, seçimli kayıtlar, bakım, özet */
 (function(){
   'use strict';
 
@@ -426,8 +431,8 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   }
 
   function patchSaveEntry(){
-    if(window.__v304SavePatched) return;
-    window.__v304SavePatched = true;
+    if(window.__v305SavePatched) return;
+    window.__v305SavePatched = true;
 
     const old = window.saveEntry;
     if(typeof old !== 'function') return;
@@ -545,14 +550,14 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   function bindV303(){
     const d=$('diameterInput'), l=$('lengthInput'), q=$('quantityInput'), b=$('barcodeInput');
     [d,l,q,b].filter(Boolean).forEach(el => {
-      if(el.__v304Live) return;
-      el.__v304Live = true;
+      if(el.__v305Live) return;
+      el.__v305Live = true;
       el.addEventListener('input', updateLiveBox);
       el.addEventListener('change', updateLiveBox);
     });
 
-    if(q && !q.__v304Qty){
-      q.__v304Qty = true;
+    if(q && !q.__v305Qty){
+      q.__v305Qty = true;
       q.addEventListener('input', () => {
         let v = String(q.value||'').replace(/\D/g,'').slice(0,3);
         if(!v || Number(v)<1) v='1';
@@ -561,8 +566,8 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     }
 
     const same = $('sameBarcodeBtn');
-    if(same && !same.__v304Same){
-      same.__v304Same = true;
+    if(same && !same.__v305Same){
+      same.__v305Same = true;
       same.addEventListener('click', () => {
         settings().sameBarcodeMode = settings().sameBarcodeMode !== true;
         saveSettings();
@@ -571,8 +576,8 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     }
 
     const save = $('saveBtn');
-    if(save && !save.__v304SameRestore){
-      save.__v304SameRestore = true;
+    if(save && !save.__v305SameRestore){
+      save.__v305SameRestore = true;
       save.addEventListener('click', () => {
         const beforeBarcode = norm($('barcodeInput') && $('barcodeInput').value).toUpperCase();
         const beforeCount = records().length;
@@ -590,14 +595,14 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     }
 
     const search = $('recordSearch');
-    if(search && !search.__v304Search){
-      search.__v304Search = true;
+    if(search && !search.__v305Search){
+      search.__v305Search = true;
       search.addEventListener('input', () => { currentPage=1; renderRecordsV303(); });
     }
 
     const selectFiltered = $('selectFilteredBtn');
-    if(selectFiltered && !selectFiltered.__v304){
-      selectFiltered.__v304 = true;
+    if(selectFiltered && !selectFiltered.__v305){
+      selectFiltered.__v305 = true;
       selectFiltered.addEventListener('click', () => {
         filteredRecordsV303().forEach(r => selectedIds.add(r.id));
         renderRecordsV303();
@@ -605,14 +610,14 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     }
 
     const clearSel = $('clearSelectionBtn');
-    if(clearSel && !clearSel.__v304){
-      clearSel.__v304 = true;
+    if(clearSel && !clearSel.__v305){
+      clearSel.__v305 = true;
       clearSel.addEventListener('click', () => { selectedIds.clear(); renderRecordsV303(); });
     }
 
     const bulk = $('bulkDeleteBtn');
-    if(bulk && !bulk.__v304){
-      bulk.__v304 = true;
+    if(bulk && !bulk.__v305){
+      bulk.__v305 = true;
       bulk.addEventListener('click', () => {
         const list = selectedList();
         if(!list.length) return toast('Seçili kayıt yok.');
@@ -629,8 +634,8 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     }
 
     const undo = $('undoDeleteBtn');
-    if(undo && !undo.__v304){
-      undo.__v304 = true;
+    if(undo && !undo.__v305){
+      undo.__v305 = true;
       undo.addEventListener('click', () => {
         if(!lastDeleted || !lastDeleted.records) return;
         const s = appState();
@@ -643,8 +648,8 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     }
 
     const delAll = $('deleteAllBtn');
-    if(delAll && !delAll.__v304){
-      delAll.__v304 = true;
+    if(delAll && !delAll.__v305){
+      delAll.__v305 = true;
       delAll.addEventListener('click', () => {
         if(!records().length) return toast('Silinecek kayıt yok.');
         if(!confirm('Tüm kayıtlar silinsin mi?')) return;
@@ -661,42 +666,42 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     document.addEventListener('click', ev => { if(ev.target && ev.target.closest && ev.target.closest('[data-tree-filter],[data-cutter-filter]')) setTimeout(renderRecordsV303, 60); }, true);
 
     document.querySelectorAll('[data-nav="records"]').forEach(btn => {
-      if(btn.__v304Nav) return;
-      btn.__v304Nav = true;
+      if(btn.__v305Nav) return;
+      btn.__v305Nav = true;
       btn.addEventListener('click', () => setTimeout(renderRecordsV303, 80));
     });
 
     const update = $('forceUpdateBtn');
-    if(update && !update.__v304){
-      update.__v304 = true;
+    if(update && !update.__v305){
+      update.__v305 = true;
       update.addEventListener('click', forceUpdate);
     }
 
     const cache = $('clearCacheBtn');
-    if(cache && !cache.__v304){
-      cache.__v304 = true;
+    if(cache && !cache.__v305){
+      cache.__v305 = true;
       cache.addEventListener('click', clearCacheOnly);
     }
 
     const backup = $('backupBtn');
-    if(backup && !backup.__v304Info){
-      backup.__v304Info = true;
+    if(backup && !backup.__v305Info){
+      backup.__v305Info = true;
       backup.addEventListener('click', () => {
         setTimeout(()=>alert('Yedek dosyası metin/JSON formatındadır. Sadece Mesaha İO içinde geri yükleme içindir. Excel yedeği değildir. Excel için Mesaha Dosyasını İndir butonunu kullanınız.'), 50);
       }, true);
     }
 
     const restore = $('restoreBtn');
-    if(restore && !restore.__v304Info){
-      restore.__v304Info = true;
+    if(restore && !restore.__v305Info){
+      restore.__v305Info = true;
       restore.addEventListener('click', () => {
         setTimeout(()=>alert('Yedek Yükle: Daha önce Mesaha İO ile alınan JSON yedeğini seçiniz. Bu işlem mevcut kayıtları yedekteki kayıtlarla değiştirir.'), 50);
       }, true);
     }
 
     const xls = $('downloadXlsBtn');
-    if(xls && !xls.__v304Info){
-      xls.__v304Info = true;
+    if(xls && !xls.__v305Info){
+      xls.__v305Info = true;
       xls.addEventListener('click', () => {
         setTimeout(()=>alert('Mesaha dosyası indiriliyor\\n\\nORBİS’e Aktarma:\\n1. Dosyayı bilgisayara aktarınız.\\n2. ORBİS’e bilgisayar üzerinden giriş yapınız.\\n3. İşletme Pazarlama > Kesme Faaliyetleri Raporu ekranına giriniz.\\n4. Şeflik ve bölme bilgilerini giriniz, bölmeye çift tıklayınız.\\n5. Dosya yükleme bölümünden Excel’den Aktar deyiniz.'), 50);
       }, true);
@@ -759,7 +764,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 })();
 
 
-/* v304: modern pencereler + yedek zip + başlangıç/güncelleme + seçili/filtreli bilgi */
+/* v305: modern pencereler + yedek zip + başlangıç/güncelleme + seçili/filtreli bilgi */
 (function(){
   'use strict';
 
@@ -1045,7 +1050,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   }
   function backupZip(){
     const data = {
-      version:'v3.04-modern',
+      version:'v3.05-modern',
       exportedAt:new Date().toISOString(),
       records:records(),
       settings:settings()
@@ -1311,4 +1316,183 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   setInterval(updateExportScopeInfo, 1200);
 
   window.mesahaV304 = {modal, backupZip, clearCacheFlow, forceUpdateFlow, updateExportScopeInfo};
+})();
+
+
+/* v305: Boy solda / Çap sağda, klavye kapanmasın, seçili filtre BEYAN toplamı, düzenlemede barkod devamı */
+(function(){
+  'use strict';
+
+  const $ = id => document.getElementById(id);
+  const norm = v => String(v ?? '').trim().replace(/\s+/g,' ');
+  const num = v => { const n = Number(String(v ?? '').replace(',','.')); return Number.isFinite(n) ? n : 0; };
+  const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+  const fmt = (n,d=3) => Number(n||0).toLocaleString('tr-TR',{maximumFractionDigits:d});
+  const appState = () => window.state || null;
+  const records = () => (appState() && Array.isArray(appState().records)) ? appState().records : [];
+  const settings = () => (appState() && appState().settings) ? appState().settings : {};
+  const productInfo = key => {
+    if(typeof window.productInfo === 'function') return window.productInfo(key);
+    const map = {'Tomruk':{label:'Tomruk',cls:'tomruk'},'Maden Direk':{label:'Maden',cls:'maden'},'Kağıtlık':{label:'Kağıtlık',cls:'kagit'},'Sanayi Odunu':{label:'Sanayi',cls:'sanayi'},'Tel Direk':{label:'Tel',cls:'tel'}};
+    return map[key] || map['Tomruk'];
+  };
+  function volumeOf(r){
+    const d=num(r.diameter), l=num(r.length), q=num(r.quantity||1);
+    if(!d || !l || !q) return 0;
+    return Math.PI*Math.pow(d/100,2)/4*l*q;
+  }
+  function totals(list){
+    return (list||[]).reduce((a,r)=>{ a.count += Number(r.quantity||1); a.m3 += volumeOf(r); return a; }, {count:0,m3:0});
+  }
+  function filtered(){
+    if(window.mesahaV303 && typeof window.mesahaV303.filtered === 'function'){
+      try{return window.mesahaV303.filtered() || [];}catch{}
+    }
+    const s = settings();
+    return records().filter(r => (!s.treeFilter || s.treeFilter==='Tümü' || r.treeType===s.treeFilter) && (!s.cutterFilter || s.cutterFilter==='Tümü' || (s.cutterFilter==='Kesimci kaydı yok' ? !r.cutter : r.cutter===s.cutterFilter)));
+  }
+  function isFiltered(list){
+    const s = settings();
+    const q = norm(($('recordSearch') && $('recordSearch').value) || '');
+    return Boolean(q || (s.treeFilter && s.treeFilter !== 'Tümü') || (s.cutterFilter && s.cutterFilter !== 'Tümü') || (list.length !== records().length));
+  }
+
+  function selectInput(el){
+    if(!el) return;
+    try{
+      el.focus({preventScroll:true});
+      setTimeout(()=>{ try{ el.select(); }catch{} }, 0);
+    }catch{
+      try{ el.focus(); el.select(); }catch{}
+    }
+  }
+
+  function bindSelectOnTap(){
+    ['diameterInput','lengthInput','barcodeInput'].forEach(id => {
+      const el = $(id);
+      if(!el || el.__v305Select) return;
+      el.__v305Select = true;
+      ['focus','click','pointerup','touchend'].forEach(evt => {
+        el.addEventListener(evt, () => selectInput(el), {passive:true});
+      });
+    });
+  }
+
+  function focusDiameter(){
+    const d = $('diameterInput');
+    if(!d) return;
+    try{
+      d.focus({preventScroll:true});
+      d.select();
+    }catch{
+      try{ d.focus(); d.select(); }catch{}
+    }
+  }
+
+  function bindSaveKeepKeyboard(){
+    const btn = $('saveBtn');
+    if(!btn || btn.__v305KeepKeyboard) return;
+    btn.__v305KeepKeyboard = true;
+
+    let handled = false;
+    function run(ev){
+      if(ev){
+        ev.preventDefault();
+        ev.stopPropagation();
+        if(ev.stopImmediatePropagation) ev.stopImmediatePropagation();
+      }
+      if(handled) return;
+      handled = true;
+      try{
+        if(typeof window.saveEntry === 'function') window.saveEntry();
+        else if(typeof saveEntry === 'function') saveEntry();
+      }catch(e){ console.error(e); }
+      setTimeout(() => {
+        focusDiameter();
+        updateBeyanTotals();
+      }, 80);
+      setTimeout(() => { handled = false; }, 550);
+    }
+
+    btn.addEventListener('pointerdown', run, true);
+    btn.addEventListener('touchstart', run, true);
+    btn.addEventListener('click', function(ev){
+      if(handled){
+        ev.preventDefault();
+        ev.stopPropagation();
+        if(ev.stopImmediatePropagation) ev.stopImmediatePropagation();
+      }
+    }, true);
+  }
+
+  function updateBeyanTotals(){
+    const list = filtered();
+    const t = totals(list);
+    const total = records().length;
+    const filteredMode = isFiltered(list);
+
+    const countPill = $('recordCountPill');
+    if(countPill) countPill.textContent = filteredMode ? `${list.length} / ${total} kayıt` : `${total} kayıt`;
+    const m3 = $('recTotalM3');
+    if(m3) m3.textContent = `${fmt(t.m3,3)} m³`;
+    const count = $('recTotalCount');
+    if(count) count.textContent = t.count.toLocaleString('tr-TR');
+
+    const scope = $('exportScopeInfo');
+    if(scope){
+      const selected = window.mesahaV303 && typeof window.mesahaV303.selected === 'function' ? window.mesahaV303.selected() : [];
+      if(selected && selected.length) scope.textContent = `İndirilecek: Seçili kayıtlar (${selected.length})`;
+      else if(filteredMode) scope.textContent = `İndirilecek: Filtrelenen kayıtlar (${list.length})`;
+      else scope.textContent = `İndirilecek: Tüm kayıtlar (${total})`;
+    }
+
+    const productTotals = $('productTotals');
+    if(productTotals){
+      const order = [
+        ['Tomruk','Tomruk','tomruk'],
+        ['Maden Direk','Maden','maden'],
+        ['Kağıtlık','Kağıtlık','kagit'],
+        ['Sanayi Odunu','Sanayi','sanayi'],
+        ['Tel Direk','Tel','tel']
+      ];
+      productTotals.innerHTML = order.map(([key,label,cls]) => {
+        const part = list.filter(r => r.productType === key);
+        const pt = totals(part);
+        return `<div class="prod-total product-${cls}"><small>${esc(label)}</small><b>${fmt(pt.m3,3)} m³</b><small>${pt.count} adet</small></div>`;
+      }).join('');
+    }
+  }
+
+  function patchOpenEntryRuntime(){
+    if(window.__v305OpenEntryPatched || typeof window.openEntry !== 'function') return;
+    window.__v305OpenEntryPatched = true;
+    const old = window.openEntry;
+    window.openEntry = function(record){
+      if(record && appState()){
+        appState().editingReturnBarcode = settings().barcode || (($('barcodeInput') && $('barcodeInput').value) || '');
+      }
+      const res = old.apply(this, arguments);
+      setTimeout(focusDiameter, 100);
+      return res;
+    };
+    try{ openEntry = window.openEntry; }catch{}
+  }
+
+  function boot(){
+    bindSelectOnTap();
+    bindSaveKeepKeyboard();
+    patchOpenEntryRuntime();
+    updateBeyanTotals();
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, {once:true});
+  else boot();
+
+  document.addEventListener('click', () => setTimeout(updateBeyanTotals, 80), true);
+  document.addEventListener('input', () => setTimeout(updateBeyanTotals, 80), true);
+  document.addEventListener('change', () => setTimeout(updateBeyanTotals, 80), true);
+  [100,400,1000,2200].forEach(ms => setTimeout(boot, ms));
+  setInterval(updateBeyanTotals, 900);
+
+  window.mesahaV305 = {focusDiameter, updateBeyanTotals};
 })();

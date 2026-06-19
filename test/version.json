@@ -1,11 +1,11 @@
 {
-  "app": "v3.04",
-  "version": "v304-modern",
-  "build": "v304",
-  "visibleVersion": "v3.04",
-  "shortVersion": "v3.04",
-  "name": "v3.04",
-  "cacheName": "mesaha-app-v304-modern-startup-backup",
+  "app": "v3.05",
+  "version": "v305-entry-filter",
+  "build": "v305",
+  "visibleVersion": "v3.05",
+  "shortVersion": "v3.05",
+  "name": "v3.05",
+  "cacheName": "mesaha-app-v305-entry-filter-fix",
   "builtAt": "2026-06-20",
-  "notes": "Modern bilgi pencereleri, ZIP yedek, başlangıç/güncelleme sistemi, son barkod ve indirilecek kayıt bilgisi eklendi; canlı hacim/aynı barkod/adet kaldırıldı."
+  "notes": "Mesaha Gir alan sırası, klavye/odak, düzenlemede barkod devamı ve BEYAN filtre toplamları düzeltildi."
 }
