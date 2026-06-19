@@ -385,8 +385,8 @@
     if(status && status.nextSibling) home.insertBefore(details, status.nextSibling); else home.insertBefore(details, home.firstChild);
   }
   function patchBrand(){
-    var shortV = (window.MESAHA_VERSION && window.MESAHA_VERSION.shortVersion) || 'v2.29';
-    var buildV = (window.MESAHA_VERSION && window.MESAHA_VERSION.version) || 'v201';
+    var shortV = (window.MESAHA_VERSION && window.MESAHA_VERSION.shortVersion) || 'v2.30';
+    var buildV = (window.MESAHA_VERSION && window.MESAHA_VERSION.version) || 'v202';
     safe(function(){ document.title = shortV; });
     var h = document.querySelector('.app-brand-v143 .brand-copy-v143 h1');
     var s = document.querySelector('.app-brand-v143 .brand-copy-v143 span');
@@ -479,15 +479,15 @@
     });
   }
   function titleFix(){
-    safe(function(){ document.title = 'v2.29'; });
+    safe(function(){ document.title = 'v2.30'; });
     safe(function(){
       document.querySelectorAll('.app-brand-v143 .brand-copy-v143,[data-app-version-short],[data-app-version-build]').forEach(function(el){
         if(!el) return;
-        if(/Mesaha\s*İ?O/i.test(el.textContent || '')) el.textContent = el.matches('[data-app-version-build], .app-brand-v143 .brand-copy-v143 span') ? 'v201' : 'v2.29';
+        if(/Mesaha\s*İ?O/i.test(el.textContent || '')) el.textContent = el.matches('[data-app-version-build], .app-brand-v143 .brand-copy-v143 span') ? 'v202' : 'v2.30';
       });
-      var h = document.querySelector('.app-brand-v143 .brand-copy-v143 h1'); if(h) h.textContent = 'v2.29';
+      var h = document.querySelector('.app-brand-v143 .brand-copy-v143 h1'); if(h) h.textContent = 'v2.30';
       var s = document.querySelector('.app-brand-v143 .brand-copy-v143 span'); if(s) s.textContent = 'v201';
-      var splashH = document.querySelector('.mesaha-startup-logo-v178 h2'); if(splashH) splashH.textContent = 'v2.29';
+      var splashH = document.querySelector('.mesaha-startup-logo-v178 h2'); if(splashH) splashH.textContent = 'v2.30';
     });
   }
   function navFix(){
@@ -934,8 +934,7 @@
   }
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, {once:true}); else boot();
   [50,160,420,900,1800,3200,5200].forEach(function(ms){ setTimeout(boot, ms); });
-  setInterval(boot, 900);
-  window.mesahaV198RenderTrees = boot;
+  window.mesahaV198RenderTrees = function(){};
 })();
 
 
@@ -1062,8 +1061,7 @@
   function boot(){ renderHomeTreeMulti(); syncFastTreePanel(); adminMenuFix(); }
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, {once:true}); else boot();
   [80,240,700,1500,3000,5200].forEach(function(ms){ setTimeout(boot, ms); });
-  setInterval(boot, 500);
-  window.mesahaV198TreeMenu = { render:renderHomeTreeMulti, sync:syncFastTreePanel, selected:selectedTrees };
+  window.mesahaV198TreeMenu = { render:function(){}, sync:function(){}, selected:selectedTrees };
 })();
 
 
@@ -1411,4 +1409,157 @@
   }, true);
 
   window.mesahaV201NavGuard = {guard:guard, hide:hideStableNav, show:showStableNav, isFastEntryOpen:isFastEntryOpen};
+})();
+
+
+/* v202: Ağaç türleri görünümü ve hızlı giriş aç/kapa son sabitleme */
+(function(){
+  'use strict';
+  var TREES = ['Karaçam','Sarıçam','Sedir','Göknar','Kızılçam'];
+  var STORE = 'mesaha_visible_trees_v201';
+  var OPEN_STORE = 'mesaha_tree_panel_open_v201';
+
+  function byId(id){ return document.getElementById(id); }
+  function norm(v){ return String(v == null ? '' : v).trim().replace(/\s+/g,' '); }
+  function lower(v){ return norm(v).toLocaleLowerCase('tr-TR'); }
+  function esc(v){ return String(v == null ? '' : v).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]; }); }
+  function safe(fn, fb){ try{return fn();}catch(e){ try{ console.warn('[Mesaha İO v202 tree final]', e); }catch(_){} return fb; } }
+  function settings(){ return safe(function(){ return window.state && state.settings ? state.settings : {}; }, {}); }
+  function saveSettingsSafe(){ safe(function(){ if(typeof saveSettings === 'function') saveSettings(); }); }
+  function currentTree(){ return norm((byId('treeType') && byId('treeType').value) || settings().lastTreeType || 'Karaçam') || 'Karaçam'; }
+
+  function selectedTrees(){
+    var arr = safe(function(){ return JSON.parse(localStorage.getItem(STORE) || 'null'); }, null);
+    if(!Array.isArray(arr) || !arr.length){
+      arr = Array.isArray(settings().visibleTreesV198) && settings().visibleTreesV198.length ? settings().visibleTreesV198.slice() : TREES.slice();
+    }
+    arr = arr.map(norm).filter(function(x){ return TREES.some(function(t){ return lower(t) === lower(x); }); });
+    if(!arr.length) arr = ['Karaçam'];
+    return arr.filter(function(x,i,a){ return a.findIndex(function(y){ return lower(y) === lower(x); }) === i; });
+  }
+
+  function saveSelectedTrees(arr){
+    arr = (Array.isArray(arr) ? arr : []).map(norm).filter(function(x){ return TREES.some(function(t){ return lower(t) === lower(x); }); });
+    if(!arr.length) arr = [currentTree() || 'Karaçam'];
+    if(!arr.length) arr = ['Karaçam'];
+    safe(function(){ localStorage.setItem(STORE, JSON.stringify(arr)); });
+    safe(function(){ settings().visibleTreesV198 = arr.slice(); });
+    saveSettingsSafe();
+    if(!arr.some(function(t){ return lower(t) === lower(currentTree()); })) setTree(arr[0] || 'Karaçam', false);
+    return arr;
+  }
+
+  function setTree(name, keepOpen){
+    name = norm(name) || 'Karaçam';
+    var hidden = byId('treeType'); if(hidden) hidden.value = name;
+    var cur = byId('treeTypeCurrent'); if(cur) cur.textContent = name;
+    safe(function(){ settings().lastTreeType = name; });
+    document.querySelectorAll('input[name="treeTypeRadio"]').forEach(function(r){ r.checked = lower(r.value) === lower(name); });
+    saveSettingsSafe();
+    if(keepOpen) setOpen(true);
+    renderHomeTrees();
+    renderFastTree();
+  }
+
+  function isOpen(){ return safe(function(){ return localStorage.getItem(OPEN_STORE) === '1'; }, false); }
+  function setOpen(on){ safe(function(){ localStorage.setItem(OPEN_STORE, on ? '1' : '0'); }); }
+
+  function renderHomeTrees(){
+    var panel = byId('homeTreePanelV194');
+    if(!panel) return;
+    var arr = selectedTrees();
+    panel.className = 'home-tree-panel-v202 home-wood-panel-v189';
+    panel.innerHTML = TREES.map(function(t){
+      var checked = arr.some(function(x){ return lower(x) === lower(t); });
+      return '<label class="wood-check home-tree-check-v202 '+(checked ? 'is-checked' : '')+'"><input type="checkbox" value="'+esc(t)+'" '+(checked ? 'checked' : '')+' /> <span>'+esc(t)+'</span></label>';
+    }).join('');
+
+    panel.querySelectorAll('input[type="checkbox"]').forEach(function(ch){
+      ch.addEventListener('change', function(){
+        var vals = Array.prototype.slice.call(panel.querySelectorAll('input[type="checkbox"]:checked')).map(function(i){ return i.value; });
+        saveSelectedTrees(vals);
+        renderHomeTrees();
+        renderFastTree();
+      }, false);
+    });
+
+    var block = byId('homeTreeBlockV194');
+    if(block){
+      var hint = block.querySelector('.home-setting-hint-v189');
+      if(hint) hint.textContent = 'Tikli olan ağaç türleri Hızlı Giriş içinde görünür.';
+    }
+  }
+
+  function renderFastTree(){
+    var wrap = document.querySelector('.product-compact.tree-compact');
+    var head = wrap && wrap.querySelector('.product-select-head');
+    var oldBtn = byId('treeTypeSelectBtn');
+    var panel = byId('treeTypePanel');
+    if(!wrap || !head || !oldBtn || !panel) return;
+
+    wrap.classList.add('tree-dropdown-v202');
+    head.style.setProperty('display','flex','important');
+    head.style.setProperty('align-items','center','important');
+    head.style.setProperty('gap','8px','important');
+
+    var btn = oldBtn;
+    if(!oldBtn.__v202Final){
+      btn = oldBtn.cloneNode(true);
+      btn.__v202Final = true;
+      oldBtn.parentNode.replaceChild(btn, oldBtn);
+      btn.addEventListener('click', function(ev){
+        ev.preventDefault();
+        ev.stopPropagation();
+        if(ev.stopImmediatePropagation) ev.stopImmediatePropagation();
+        setOpen(!isOpen());
+        renderFastTree();
+      }, true);
+    }
+
+    btn.style.setProperty('display','inline-flex','important');
+    btn.style.setProperty('align-items','center','important');
+    btn.style.setProperty('justify-content','center','important');
+    btn.style.setProperty('min-height','42px','important');
+    btn.textContent = 'Ağaç Türü Seç: ' + currentTree();
+
+    var apply = byId('treeTypeApplyBtn');
+    if(apply){
+      apply.style.setProperty('display','none','important');
+      apply.setAttribute('aria-hidden','true');
+      apply.tabIndex = -1;
+    }
+
+    var arr = selectedTrees();
+    if(!arr.some(function(t){ return lower(t) === lower(currentTree()); })) setTree(arr[0] || 'Karaçam', false);
+
+    var open = isOpen();
+    panel.className = 'wood-type-panel tree-type-panel tree-panel-v202 ' + (open ? 'open' : 'closed-v202');
+    panel.innerHTML = arr.map(function(t){
+      var active = lower(t) === lower(currentTree());
+      return '<label class="wood-check tree-radio-v202 '+(active ? 'is-active' : '')+'"><input type="radio" name="treeTypeRadio" value="'+esc(t)+'" '+(active ? 'checked' : '')+' /> <span>'+esc(t)+'</span></label>';
+    }).join('');
+
+    panel.style.setProperty('display', open ? 'grid' : 'none', 'important');
+    panel.style.setProperty('grid-template-columns','1fr 1fr','important');
+    panel.style.setProperty('gap','8px','important');
+
+    panel.querySelectorAll('input[type="radio"]').forEach(function(r){
+      r.addEventListener('change', function(){
+        if(r.checked) setTree(r.value || 'Karaçam', true);
+      }, false);
+    });
+  }
+
+  function boot(){
+    renderHomeTrees();
+    renderFastTree();
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, {once:true});
+  else boot();
+
+  [40,120,260,520,900,1600,3000,5200].forEach(function(ms){ setTimeout(boot, ms); });
+  setInterval(boot, 350);
+
+  window.mesahaV202TreeFinal = {home:renderHomeTrees, fast:renderFastTree, selected:selectedTrees};
 })();

@@ -1,16 +1,16 @@
 (function(root){
   'use strict';
   var info = {
-    appName: 'v2.29',
-    version: 'v201',
-    build: 'v201',
-    assetVersion: '201',
-    visibleVersion: 'v2.29',
-    shortVersion: 'v2.29',
-    name: 'v2.29',
-    cacheName: 'mesaha-app-v201-hide-nav-fast-entry',
+    appName: 'v2.30',
+    version: 'v202',
+    build: 'v202',
+    assetVersion: '202',
+    visibleVersion: 'v2.30',
+    shortVersion: 'v2.30',
+    name: 'v2.30',
+    cacheName: 'mesaha-app-v202-tree-final-fix',
     builtAt: '2026-06-19',
-    notes: 'Hızlı girişte alt menü gizlendi; eski görünümlü alt menü ana/ölçümler/kılavuzda sabitlendi.'
+    notes: 'Ağaç türleri ana menüde odun türleri gibi kart/tik stiline alındı; hızlı giriş ağaç aç/kapa sabitlendi.'
   };
   root.MESAHA_VERSION = info;
   root.MESAHA_VERSION_TEXT = info.visibleVersion;
