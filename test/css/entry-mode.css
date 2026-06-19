@@ -483,3 +483,52 @@ body.inline-simple-v119 .tree-compact #treeTypePanel.tree-panel-v198 #treeTypeAp
 body.theme-dark.inline-simple-v119 .tree-compact #treeTypeSelectBtn{background:#0f172a!important;color:#f8fafc!important;border-color:#334155!important;}
 body.theme-dark.inline-simple-v119 .tree-compact #treeTypePanel.tree-panel-v198 .wood-check{background:#0f172a!important;border-color:#334155!important;color:#f8fafc!important;}
 @media(max-width:430px){.home-tree-panel-v198{grid-template-columns:1fr 1fr!important}.home-tree-check-v198{min-height:44px!important;padding:9px 10px!important}.home-tree-check-v198 input{width:20px!important;height:20px!important}}
+
+
+/* v199: alt menü geri + yeni kayıt yok + girişte scroll zıplama azaltma */
+#flowTabsV111.flow-tabs-v111,
+.flow-tabs-v111{display:grid!important;visibility:visible!important;pointer-events:auto!important;}
+#flowTabsV111 [data-flow-tab="entry"]{display:flex!important;visibility:visible!important;pointer-events:auto!important;}
+#flowTabsV111 [data-flow-tab="records"],
+#flowTabsV111 [data-flow-tab="guide"]{display:flex!important;visibility:visible!important;pointer-events:auto!important;}
+body.show-admin #flowTabsV111,
+body.admin-unlocked-v131 #flowTabsV111{display:grid!important;visibility:visible!important;pointer-events:auto!important;}
+/* eski yeni kayıt/bottom-nav saklı kalsın, sadece modern alt menü görünsün */
+.bottom-nav{display:none!important;}
+
+body.inline-simple-v119 .measure-compact,
+body.inline-simple-v119 .barcode-save-row-final,
+body.inline-simple-v119 .product-compact,
+body.inline-simple-v119 .tree-compact{scroll-margin-top:140px!important;}
+html.mesaha-lock-scroll-v199, body.mesaha-lock-scroll-v199{overscroll-behavior:none!important;}
+
+
+/* v199: Alt menü geri + Yeni Kayıt sekmesi yok + klavye scroll sabitleme */
+.bottom-nav{
+  display:flex!important;
+  visibility:visible!important;
+  opacity:1!important;
+  pointer-events:auto!important;
+  position:fixed!important;
+  left:16px!important;
+  right:16px!important;
+  bottom:calc(env(safe-area-inset-bottom,0px) + 10px)!important;
+  z-index:2147482500!important;
+}
+body.inline-simple-v119 .bottom-nav,
+body.show-admin .bottom-nav,
+body.admin-unlocked-v131 .bottom-nav{
+  display:flex!important;
+  visibility:visible!important;
+  opacity:1!important;
+  pointer-events:auto!important;
+}
+.bottom-nav #navEntry{font-size:0!important;}
+.bottom-nav #navEntry::after{content:"Ana Ekran"!important;font-size:12px!important;font-weight:950!important;}
+.bottom-nav #navRecords{font-size:0!important;}
+.bottom-nav #navRecords::after{content:"Ölçümler"!important;font-size:12px!important;font-weight:950!important;}
+.bottom-nav #navGuide{font-size:0!important;}
+.bottom-nav #navGuide::after{content:"Kılavuz"!important;font-size:12px!important;font-weight:950!important;}
+#flowTabsV111,.flow-tabs-v111{display:none!important;visibility:hidden!important;pointer-events:none!important;}
+body.inline-simple-v119 .app{padding-bottom:150px!important;}
+body.inline-simple-v119.keyboard-lock-v199{scroll-behavior:auto!important;}
