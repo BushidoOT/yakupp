@@ -1,7 +1,7 @@
 (function(){
   'use strict';
   var INFO = window.MESAHA_VERSION || {};
-  var FILE_VERSION = INFO.version || 'v178';
+  var FILE_VERSION = INFO.version || 'v179';
   var VISIBLE_VERSION = INFO.visibleVersion || (window.MESAHA_VERSION_TEXT || 'Mesaha İO');
   var ERROR_KEY = 'mesaha_error_log_' + FILE_VERSION;
   var BOOT_KEY = 'mesaha_boot_status_' + FILE_VERSION;
@@ -104,7 +104,15 @@
   }
   function versionCheckBackground(){
     if(!navigator.onLine) return;
-    setTimeout(function(){ safe('versionCheckBackground', function(){ fetch('./version.json?v=' + Date.now(), {cache:'no-store'}).then(function(r){ return r.ok ? r.json() : null; }).then(function(v){ if(v && v.version && String(v.version) !== FILE_VERSION){ toast('Yeni sürüm görünüyor. İnternet varken Yeni Sürümü Güncelle kullanabilirsiniz.'); } }).catch(function(e){ logError('versionCheck fetch', e); }); }); }, 3000);
+    setTimeout(function(){ safe('versionCheckBackground', function(){
+      if(window.mesahaAutoUpdateCheck && typeof window.mesahaAutoUpdateCheck === 'function'){
+        window.mesahaAutoUpdateCheck('background');
+        return;
+      }
+      fetch('./version.json?v=' + Date.now(), {cache:'no-store'}).then(function(r){ return r.ok ? r.json() : null; }).then(function(v){
+        if(v && v.version && String(v.version) !== FILE_VERSION){ toast('Yeni sürüm görünüyor. Güncelleme hazırlanıyor...'); }
+      }).catch(function(e){ logError('versionCheck fetch', e); });
+    }); }, 3000);
   }
   function loadingWatchdog(){
     setTimeout(function(){ safe('loadingWatchdog', function(){

@@ -1,5 +1,5 @@
-importScripts('./js/version.js?v=178');
-const CACHE_NAME = (self.MESAHA_VERSION && self.MESAHA_VERSION.cacheName) || "mesaha-app-v178-offline-acilis";
+importScripts('./js/version.js?v=179');
+const CACHE_NAME = (self.MESAHA_VERSION && self.MESAHA_VERSION.cacheName) || "mesaha-app-v179-auto-update";
 const CORE_ASSETS = [
   "./",
   "./index.html",
@@ -14,23 +14,24 @@ const CORE_ASSETS = [
   "./assets/mesaha_logo.png",
   "./assets/icon-192.png",
   "./assets/icon-512.png",
-  "./css/style.css?v=178",
-  "./js/version.js?v=178",
-  "./js/admin-access.js?v=178",
-  "./js/startup-offline.js?v=178",
-  "./js/core.js?v=178",
-  "./js/admin-cloud.js?v=178",
-  "./js/tree-entry.js?v=178",
-  "./js/ui-mobile.js?v=178",
-  "./js/records-filters.js?v=178",
-  "./js/backup-storage.js?v=178",
-  "./js/keyboard-filters.js?v=178",
-  "./js/cutters.js?v=178",
-  "./js/stability-base.js?v=178",
-  "./js/control-test.js?v=178",
-  "./js/stability-admin.js?v=178",
-  "./js/offline-admin.js?v=178",
-  "./js/app-stability.js?v=178"
+  "./css/style.css?v=179",
+  "./js/version.js?v=179",
+  "./js/admin-access.js?v=179",
+  "./js/startup-offline.js?v=179",
+  "./js/core.js?v=179",
+  "./js/admin-cloud.js?v=179",
+  "./js/tree-entry.js?v=179",
+  "./js/ui-mobile.js?v=179",
+  "./js/records-filters.js?v=179",
+  "./js/backup-storage.js?v=179",
+  "./js/keyboard-filters.js?v=179",
+  "./js/cutters.js?v=179",
+  "./js/stability-base.js?v=179",
+  "./js/control-test.js?v=179",
+  "./js/stability-admin.js?v=179",
+  "./js/offline-admin.js?v=179",
+  "./js/app-stability.js?v=179",
+  "./js/auto-update.js?v=179"
 ];
 const FALLBACK_INDEX = "./index.html";
 const FALLBACK_ADMIN = "./admin.html";

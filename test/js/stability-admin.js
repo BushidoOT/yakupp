@@ -2,7 +2,7 @@
 (function(){
   'use strict';
   var INFO = window.MESAHA_VERSION || {};
-  var FILE_VERSION = INFO.version || 'v178';
+  var FILE_VERSION = INFO.version || 'v179';
   var VISIBLE_VERSION = INFO.visibleVersion || (window.MESAHA_VERSION_TEXT || 'Mesaha İO');
   var ADMIN_NAME = 'Yakup';
   var ADMIN_SEFLIK = 'Yaylacık';

@@ -2,14 +2,14 @@
   'use strict';
   var info = {
     appName: 'Mesaha İO',
-    version: 'v178',
-    build: 'v178',
-    assetVersion: '178',
-    visibleVersion: 'Mesaha İO v2.07',
-    name: 'Mesaha İO v2.07',
-    cacheName: 'mesaha-app-v178-offline-acilis',
+    version: 'v179',
+    build: 'v179',
+    assetVersion: '179',
+    visibleVersion: 'Mesaha İO v2.08',
+    name: 'Mesaha İO v2.08',
+    cacheName: 'mesaha-app-v179-auto-update',
     builtAt: '2026-06-19',
-    notes: 'Offline açılış ekranı, 5 saniye zayıf internet fallback ve çevrim içi/dışı durum göstergesi düzeltildi. ORBİS Excel formatına dokunulmadı.'
+    notes: 'Online açılışta otomatik güncelleme kontrolü eklendi; üst bardaki bağlantı rozeti kaldırıldı. ORBİS Excel formatına dokunulmadı.'
   };
   root.MESAHA_VERSION = info;
   root.MESAHA_VERSION_TEXT = info.visibleVersion;
