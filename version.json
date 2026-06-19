@@ -1,7 +1,7 @@
 {
-  "version": 156,
-  "visibleVersion": "Mesaha İO v1.85",
-  "cache": "mesaha-app-v156-filter-keyboard-fix",
+  "version": 157,
+  "visibleVersion": "Mesaha İO v1.86",
+  "cache": "mesaha-app-v157-tarih-yedek-yukle-fix",
   "builtAt": "2026-06-18",
-  "notes": "Ölçümler/Beyan ağaç filtresi seçilen ağaca göre listeyi ve toplamları kesin filtreler. Hızlı girişte Kaydet sonrası çap klavyesinin kapanmaması güçlendirildi. Her sayfada 20 kayıt korunur. ZIP yedek ve ORBİS Excel formatı korunmuştur."
+  "notes": "Tarih alanı uygulama açılışında varsayılan olarak bugünün tarihine gelir. Yedek yükleme bilgi kutusu sadeleştirildi ve ZIP yedek seçme anlatımı yapıldı. v156 ağaç filtresi, hızlı giriş klavye düzeltmesi, 20 kayıt/sayfa ve ZIP yedek sistemi korunmuştur. Mesaha Excel/ORBİS formatına dokunulmamıştır."
 }
