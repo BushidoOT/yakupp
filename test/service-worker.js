@@ -1,5 +1,5 @@
-importScripts('./js/version.js?v=182');
-const CACHE_NAME = (self.MESAHA_VERSION && self.MESAHA_VERSION.cacheName) || "mesaha-app-v182-pwa-fullscreen";
+importScripts('./js/version.js?v=183');
+const CACHE_NAME = (self.MESAHA_VERSION && self.MESAHA_VERSION.cacheName) || "mesaha-app-v183-ios-performans";
 const CORE_ASSETS = [
   "./",
   "./index.html",
@@ -14,26 +14,27 @@ const CORE_ASSETS = [
   "./assets/mesaha_logo.png",
   "./assets/icon-192.png",
   "./assets/icon-512.png",
-  "./css/style.css?v=182",
-  "./css/dark.css?v=182",
-  "./js/version.js?v=182",
-  "./js/admin-access.js?v=182",
-  "./js/startup-offline.js?v=182",
-  "./js/core.js?v=182",
-  "./js/admin-cloud.js?v=182",
-  "./js/tree-entry.js?v=182",
-  "./js/ui-mobile.js?v=182",
-  "./js/records-filters.js?v=182",
-  "./js/backup-storage.js?v=182",
-  "./js/keyboard-filters.js?v=182",
-  "./js/cutters.js?v=182",
-  "./js/filters-stability.js?v=182",
-  "./js/stability-base.js?v=182",
-  "./js/control-test.js?v=182",
-  "./js/stability-admin.js?v=182",
-  "./js/offline-admin.js?v=182",
-  "./js/app-stability.js?v=182",
-  "./js/auto-update.js?v=182"
+  "./css/style.css?v=183",
+  "./css/dark.css?v=183",
+  "./js/version.js?v=183",
+  "./js/admin-access.js?v=183",
+  "./js/startup-offline.js?v=183",
+  "./js/core.js?v=183",
+  "./js/admin-cloud.js?v=183",
+  "./js/tree-entry.js?v=183",
+  "./js/ui-mobile.js?v=183",
+  "./js/records-filters.js?v=183",
+  "./js/backup-storage.js?v=183",
+  "./js/keyboard-filters.js?v=183",
+  "./js/cutters.js?v=183",
+  "./js/filters-stability.js?v=183",
+  "./js/stability-base.js?v=183",
+  "./js/control-test.js?v=183",
+  "./js/stability-admin.js?v=183",
+  "./js/offline-admin.js?v=183",
+  "./js/app-stability.js?v=183",
+  "./js/ios-performance.js?v=183",
+  "./js/auto-update.js?v=183"
 ];
 const FALLBACK_INDEX = "./index.html";
 const FALLBACK_ADMIN = "./admin.html";

@@ -10078,3 +10078,6 @@ body{
     padding-bottom:calc(98px + env(safe-area-inset-bottom, 0px));
   }
 }
+
+/* v183: Üst kullanıcı panelindeki bağlantı rozeti kaldırıldı; ana ekrandaki durum korunur. */
+.topbar #mesahaNetBadgeV178, header #mesahaNetBadgeV178{display:none!important;visibility:hidden!important;pointer-events:none!important;}

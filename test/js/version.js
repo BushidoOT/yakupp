@@ -2,14 +2,14 @@
   'use strict';
   var info = {
     appName: 'Mesaha İO',
-    version: 'v182',
-    build: 'v182',
-    assetVersion: '182',
-    visibleVersion: 'Mesaha İO v2.11',
-    name: 'Mesaha İO v2.11',
-    cacheName: 'mesaha-app-v182-pwa-fullscreen',
+    version: 'v183',
+    build: 'v183',
+    assetVersion: '183',
+    visibleVersion: 'Mesaha İO v2.12',
+    name: 'Mesaha İO v2.12',
+    cacheName: 'mesaha-app-v183-ios-performans',
     builtAt: '2026-06-19',
-    notes: 'PWA tam ekran/standalone açılış desteği güçlendirildi; iOS safe-area ve Android Chrome ana ekran görünümü iyileştirildi. ORBİS Excel formatına dokunulmadı.'
+    notes: 'iOS kayıt giriş performansı iyileştirildi; çap/boy gecikmesi azaltıldı; üst kullanıcı panelindeki bağlantı rozeti kaldırıldı. ORBİS Excel formatına dokunulmadı.'
   };
   root.MESAHA_VERSION = info;
   root.MESAHA_VERSION_TEXT = info.visibleVersion;
