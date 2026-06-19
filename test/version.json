@@ -1,10 +1,7 @@
 {
-  "version": "v167",
-  "visibleVersion": "Mesaha İO v1.96",
-  "cache": "mesaha-app-v167-stabil-kesimci-filtre-fix",
-  "builtAt": "2026-06-19",
-  "notes": "Temiz v165 tabanı korundu. Yükleniyorda kalma ve kod sızması yaşamamak için v166 değişikliği temizlendi. Kesimci silmede kayıt varsa uyarı verilir. Ölçümlerde filtre sırası sabit: önce ağaç filtresi, altında kesimci filtresi.",
-  "name": "Mesaha İO v1.96",
-  "build": "v167",
-  "updatedAt": "2026-06-19"
+  "version": "v168",
+  "name": "Mesaha İO v1.97",
+  "cache": "mesaha-app-v168-stabil-final",
+  "updated": "2026-06-19",
+  "note": "Çalışan v165 taban; yüklenme ve filtre sırası düzeltmesi"
 }
