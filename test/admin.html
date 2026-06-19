@@ -5,18 +5,19 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
 <title>Mesaha İO Admin</title>
-<meta content="v184" name="mesaha-build"/>
+<meta content="v185" name="mesaha-build"/>
 <meta content="#ffffff" name="theme-color"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
 <meta content="Mesaha App" name="apple-mobile-web-app-title"/>
 <meta content="default" name="apple-mobile-web-app-status-bar-style"/>
 <link href="./manifest.json" rel="manifest"/>
 <link href="./icon-192.png" rel="apple-touch-icon"/>
-<link href="./css/style.css?v=184" rel="stylesheet"/>
-<link href="./css/dark.css?v=184" rel="stylesheet"/>
-  <script src="./js/version.js?v=184"></script>
-  <script src="./js/admin-access.js?v=184"></script>
-  <script src="./js/startup-offline.js?v=184" defer></script>
+<link href="./css/style.css?v=185" rel="stylesheet"/>
+<link href="./css/dark.css?v=185" rel="stylesheet"/>
+<link href="./css/ios-ultra-entry-v185.css?v=185" rel="stylesheet"/>
+  <script src="./js/version.js?v=185"></script>
+  <script src="./js/admin-access.js?v=185"></script>
+  <script src="./js/startup-offline.js?v=185" defer></script>
 
   <style id="mesahaStartupV178Css">
     .mesaha-startup-v178{position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 30% 20%,#1b7a43 0,#0f5130 26%,#071b12 72%);color:#fff;padding:18px;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;transition:opacity .28s ease,visibility .28s ease}.mesaha-startup-v178.hide{opacity:0;visibility:hidden;pointer-events:none}.mesaha-startup-card-v178{width:min(440px,94vw);background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.18);border-radius:28px;padding:22px;box-shadow:0 28px 85px rgba(0,0,0,.35);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}.mesaha-startup-logo-v178{display:flex;gap:12px;align-items:center;margin-bottom:14px}.mesaha-startup-logo-v178 img{width:54px;height:54px;border-radius:18px;background:#fff;object-fit:contain;padding:5px}.mesaha-startup-logo-v178 h2{margin:0;font-size:22px;letter-spacing:.2px}.mesaha-startup-logo-v178 p{margin:3px 0 0;color:rgba(255,255,255,.72);font-weight:750;font-size:13px}.mesaha-startup-spinner-v178{width:34px;height:34px;border-radius:999px;border:4px solid rgba(255,255,255,.22);border-top-color:#fff;animation:mesahaSpinV178 .85s linear infinite;margin:10px auto 16px}.mesaha-startup-status-v178{text-align:center;font-weight:900;margin:0 0 13px;font-size:15px}.mesaha-startup-steps-v178{display:grid;gap:8px}.mesaha-startup-step-v178{display:flex;align-items:center;gap:9px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.10);border-radius:15px;padding:9px 11px;color:rgba(255,255,255,.82);font-size:13px;font-weight:800}.mesaha-startup-step-v178 .step-icon{width:22px;height:22px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;background:rgba(255,255,255,.14);font-size:12px;font-weight:950}.mesaha-startup-step-v178.done{color:#dcfce7}.mesaha-startup-step-v178.done .step-icon{background:#22c55e;color:#052e16}.mesaha-startup-step-v178.active .step-icon{background:#facc15;color:#422006}.mesaha-startup-step-v178.warn{color:#ffedd5}.mesaha-startup-step-v178.warn .step-icon{background:#fb923c;color:#431407}.mesaha-startup-log-v178{min-height:18px;margin-top:12px;color:rgba(255,255,255,.62);font-size:11px;font-weight:750;line-height:1.35}.mesaha-startup-actions-v178{display:none;gap:8px;flex-wrap:wrap;margin-top:13px}.mesaha-startup-actions-v178 button{flex:1 1 150px;border:0;border-radius:14px;padding:10px 12px;font-weight:950;background:#fff;color:#14532d}.mesaha-startup-actions-v178 button.secondary{background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.20)}.mesaha-net-badge-v178{display:inline-flex;align-items:center;justify-content:center;min-width:92px;padding:7px 11px;border-radius:999px;font-size:12px;font-weight:950;background:#ecfdf5;color:#166534;border:1px solid rgba(22,101,52,.18);box-shadow:0 8px 22px rgba(15,23,42,.08)}.mesaha-net-badge-v178.offline{background:#fff7ed;color:#9a3412;border-color:#fed7aa}.mesaha-net-badge-v178.online:before{content:"●";font-size:9px;margin-right:6px;color:#16a34a}.mesaha-net-badge-v178.offline:before{content:"●";font-size:9px;margin-right:6px;color:#f97316}@keyframes mesahaSpinV178{to{transform:rotate(360deg)}}
@@ -639,22 +640,18 @@
 <button id="navGuide" type="button">Kullanım Kılavuzu</button>
 <button id="navAdmin" style="display:none" type="button">Admin Paneli</button>
 </nav>
-  <script src="./js/core.js?v=184"></script>
-  <script src="./js/admin-cloud.js?v=184"></script>
-  <script src="./js/tree-entry.js?v=184"></script>
-  <script src="./js/ui-mobile.js?v=184"></script>
-  <script src="./js/records-filters.js?v=184"></script>
-  <script src="./js/backup-storage.js?v=184"></script>
-  <script src="./js/keyboard-filters.js?v=184"></script>
-  <script src="./js/cutters.js?v=184"></script>
-  <script src="./js/filters-stability.js?v=184"></script>
-  <script src="./js/stability-base.js?v=184"></script>
-  <script src="./js/control-test.js?v=184"></script>
-  <script src="./js/stability-admin.js?v=184"></script>
-  <script src="./js/offline-admin.js?v=184"></script>
-  <script src="./js/auto-update.js?v=184"></script>
-  <script src="./js/app-stability.js?v=184"></script>
-  <script src="./js/ios-performance.js?v=184"></script>
-  <script src="./js/ios-fast-entry-v184.js?v=184"></script>
+<script src="./js/core.js?v=185"></script>
+<script src="./js/admin-cloud.js?v=185"></script>
+<script src="./js/tree-entry.js?v=185"></script>
+<script src="./js/ui-mobile.js?v=185"></script>
+<script src="./js/records-filters.js?v=185"></script>
+<script src="./js/backup-storage.js?v=185"></script>
+<script src="./js/keyboard-filters.js?v=185"></script>
+<script src="./js/cutters.js?v=185"></script>
+<script src="./js/stability-base.js?v=185"></script>
+<script src="./js/control-test.js?v=185"></script>
+<script src="./js/stability-admin.js?v=185"></script>
+<script src="./js/offline-admin.js?v=185"></script>
+<script src="./js/app-stability.js?v=185"></script>
 </body>
 </html>

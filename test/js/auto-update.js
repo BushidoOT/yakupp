@@ -1,7 +1,7 @@
 (function(){
   'use strict';
   var INFO = window.MESAHA_VERSION || {};
-  var CURRENT = String(INFO.version || 'v184');
+  var CURRENT = String(INFO.version || 'v185');
   var AUTO_PREFIX = 'mesaha_auto_update_done_';
   var CHECK_LOCK = false;
   var TIMEOUT_MS = 6500;

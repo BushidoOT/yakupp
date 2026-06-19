@@ -1,10 +1,11 @@
 {
   "app": "Mesaha İO",
-  "version": "v184",
-  "build": "v184",
-  "visibleVersion": "Mesaha İO v2.13",
-  "name": "Mesaha İO v2.13",
-  "cacheName": "mesaha-app-v184-ios-hiz-guncelleme",
+  "version": "v185",
+  "build": "v185",
+  "visibleVersion": "Mesaha İO v2.14",
+  "shortVersion": "v2.14",
+  "name": "Mesaha İO v2.14",
+  "cacheName": "mesaha-app-v185-ios-ultra-hafif",
   "builtAt": "2026-06-19",
-  "notes": "iOS kayıt girişinde ürün/çap-boy tepkisi hızlandırıldı; otomatik güncelleme penceresi ve cache yenileme düzeltildi. ORBİS Excel formatına dokunulmadı."
+  "notes": "iOS giriş modu ultra hafifletildi; ürün butonları ve çap/boy girişleri hızlandırıldı; ana versiyon etiketi küçültüldü. ORBİS Excel formatına dokunulmadı."
 }
