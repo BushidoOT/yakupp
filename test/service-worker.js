@@ -1,8 +1,8 @@
-importScripts('./js/version.js?v=301');
-const CACHE_NAME = (self.MESAHA_VERSION && self.MESAHA_VERSION.cacheName) || 'mesaha-app-v301-inline-clean';
+importScripts('./js/version.js?v=302');
+const CACHE_NAME = (self.MESAHA_VERSION && self.MESAHA_VERSION.cacheName) || 'mesaha-app-v302-rules-colors';
 const ASSETS = [
   './','./index.html','./manifest.json','./version.json','./service-worker.js',
-  './css/style.css?v=301','./js/version.js?v=301','./js/orbis-xls.js?v=301','./js/app.js?v=301',
+  './css/style.css?v=302','./js/version.js?v=302','./js/orbis-xls.js?v=302','./js/app.js?v=302',
   './assets/icon-192.png','./assets/icon-512.png','./assets/mesaha_logo.png',
   './icon-192.png','./icon-512.png','./mesaha_logo.png'
 ];

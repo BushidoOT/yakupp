@@ -1,14 +1,14 @@
 (function(root){
   'use strict';
   const info = {
-    appName: 'v3.01',
-    version: 'v301-inline',
-    build: 'v301-inline',
-    assetVersion: '301',
-    visibleVersion: 'v3.01',
-    shortVersion: 'v3.01',
-    name: 'v3.01',
-    cacheName: 'mesaha-app-v301-inline-clean',
+    appName: 'v3.02',
+    version: 'v302-rules',
+    build: 'v302',
+    assetVersion: '302',
+    visibleVersion: 'v3.02',
+    shortVersion: 'v3.02',
+    name: 'v3.02',
+    cacheName: 'mesaha-app-v302-rules-colors',
     builtAt: '2026-06-20',
     notes: 'Temiz sürüm tek dosya güvenli hale getirildi; CSS/JS index içine gömüldü.'
   };

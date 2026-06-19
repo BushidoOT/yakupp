@@ -2,13 +2,13 @@
 'use strict';
 const STORAGE_KEY = 'cam_mesaha_kayitlari_v1';
 const SETTINGS_KEY = 'cam_mesaha_ayarlar_v1';
-const VERSION = window.MESAHA_VERSION || {shortVersion:'v3.01', version:'v301-inline'};
+const VERSION = window.MESAHA_VERSION || {shortVersion:'v3.02', version:'v302-rules'};
 const PRODUCTS = [
-  {key:'Tomruk', label:'Tomruk', cls:'tomruk'},
-  {key:'Maden Direk', label:'Maden', cls:'maden'},
-  {key:'Kağıtlık', label:'Kağıtlık', cls:'kagit'},
-  {key:'Sanayi Odunu', label:'Sanayi', cls:'sanayi'},
-  {key:'Tel Direk', label:'Tel', cls:'tel'}
+  {key:'Tomruk', label:'Tomruk', cls:'tomruk', rule:'Tomruk: çap 21 ve üzeri olmalı.'},
+  {key:'Maden Direk', label:'Maden', cls:'maden', rule:'Maden: çap 20 ve altı olmalı.'},
+  {key:'Kağıtlık', label:'Kağıtlık', cls:'kagit', rule:'Kağıtlık: özel çap kilidi yok.'},
+  {key:'Sanayi Odunu', label:'Sanayi', cls:'sanayi', rule:'Sanayi: çap en az 12, boy 0,50 - 1,45 m olmalı.'},
+  {key:'Tel Direk', label:'Tel', cls:'tel', rule:'Tel: çap 12 - 40, boy 6,5 - 25 m olmalı.'}
 ];
 const TREES = ['Karaçam','Sarıçam','Sedir','Göknar','Kızılçam'];
 const defaults = {
@@ -30,6 +30,101 @@ function formatDateFile(){ const d=new Date(); const p=n=>String(n).padStart(2,'
 function cleanFile(v){ return norm(v).replace(/[ıİ]/g,'i').replace(/[ğĞ]/g,'g').replace(/[üÜ]/g,'u').replace(/[şŞ]/g,'s').replace(/[öÖ]/g,'o').replace(/[çÇ]/g,'c').replace(/[^a-zA-Z0-9_-]+/g,'_').replace(/^_+|_+$/g,'').slice(0,40); }
 function volume(r){ const d=num(r.diameter), l=num(r.length), q=num(r.quantity||1); if(!d||!l) return 0; return Math.PI*Math.pow(d/100,2)/4*l*q; }
 function productInfo(key){ return PRODUCTS.find(p=>p.key===key) || PRODUCTS[0]; }
+function normalizeProductType(value){
+  const v = norm(value).toLocaleLowerCase('tr-TR');
+  if(!v) return 'Tomruk';
+  if(v==='tomruk') return 'Tomruk';
+  if(v==='maden' || v==='maden direk' || v==='maden direği' || v==='maden diregi') return 'Maden Direk';
+  if(v==='kağıtlık' || v==='kagitlik' || v==='kağıtlık odun' || v==='kagitlik odun') return 'Kağıtlık';
+  if(v==='sanayi' || v==='sanayi odunu') return 'Sanayi Odunu';
+  if(v==='tel' || v==='tel direk' || v==='tel direği' || v==='tel diregi') return 'Tel Direk';
+  return PRODUCTS.some(p=>p.key===value) ? value : 'Tomruk';
+}
+function focusDiameter(){
+  const el = $('diameterInput');
+  if(!el) return;
+  try{ el.focus({preventScroll:true}); el.select && el.select(); }catch{ try{ el.focus(); }catch{} }
+}
+function focusLength(){
+  const el = $('lengthInput');
+  if(!el) return;
+  try{ el.focus({preventScroll:true}); el.select && el.select(); }catch{ try{ el.focus(); }catch{} }
+}
+function validateBarcode(value){
+  const barcode = norm(value);
+  if(barcode.length < 9){
+    toast('Barkod en az 9 karakter olmalı. Örn: A17265597');
+    try{ $('barcodeInput').focus({preventScroll:true}); }catch{ try{ $('barcodeInput').focus(); }catch{} }
+    return false;
+  }
+  return true;
+}
+function validateProductRules(productType, diameter, length){
+  const product = normalizeProductType(productType);
+  const d = num(diameter);
+  const l = num(length);
+
+  if(product === 'Tomruk' && d < 21){
+    toast('Tomruk 21 çapından küçük olmaz.');
+    focusDiameter();
+    return false;
+  }
+
+  if(product === 'Maden Direk' && d > 20){
+    toast('Maden direği 20 çapından büyük olmaz.');
+    focusDiameter();
+    return false;
+  }
+
+  if(product === 'Sanayi Odunu'){
+    if(d < 12){
+      toast('Sanayi odunu 12 çapından küçük olmaz.');
+      focusDiameter();
+      return false;
+    }
+    if(l < 0.5 || l > 1.45){
+      toast('Sanayi odununda boy 0,50 ile 1,45 metre arasında olmalı.');
+      focusLength();
+      return false;
+    }
+  }
+
+  if(product === 'Tel Direk'){
+    if(d < 12 || d > 40){
+      toast('Tel direği çapı 12 ile 40 arasında olmalı.');
+      focusDiameter();
+      return false;
+    }
+    if(l < 6.5 || l > 25){
+      toast('Tel direğinde boy 6,5 ile 25 metre arasında olmalı.');
+      focusLength();
+      return false;
+    }
+  }
+
+  return true;
+}
+function productRuleText(){
+  const p = productInfo(state.settings.currentProduct);
+  return p.rule || '';
+}
+function syncProductBodyClass(){
+  const cls = productInfo(state.settings.currentProduct).cls;
+  document.body.classList.remove('product-tomruk-active','product-maden-active','product-kagit-active','product-sanayi-active','product-tel-active');
+  document.body.classList.add('product-'+cls+'-active');
+}
+function ensureProductRuleHint(){
+  const grid = $('productButtons');
+  if(!grid) return;
+  let hint = $('productRuleHint');
+  if(!hint){
+    hint = document.createElement('p');
+    hint.id = 'productRuleHint';
+    hint.className = 'product-rule-hint';
+    grid.parentNode.insertBefore(hint, grid.nextSibling);
+  }
+  hint.textContent = productRuleText();
+}
 function isThisWeek(r){ const dt = new Date(r.createdAt || r.productionDate || todayISO()); if(Number.isNaN(dt.getTime())) return false; const now=new Date(); const day=(now.getDay()+6)%7; const start=new Date(now); start.setHours(0,0,0,0); start.setDate(start.getDate()-day); return dt >= start; }
 function toast(msg){ const el=$('toast'); if(!el) return; el.textContent=msg; el.classList.add('show'); clearTimeout(state.toastTimer); state.toastTimer=setTimeout(()=>el.classList.remove('show'),2200); }
 function load(){
@@ -43,7 +138,7 @@ function load(){
 }
 function migrateRecord(r){ if(!r) return null; return {
   id:r.id || uid(), barcode:norm(r.barcode || r.barkodNo), diameter:String(r.diameter || r.cap || ''), length:String(r.length || r.boy || ''), quantity:Number(r.quantity || r.adet || 1),
-  productType:r.productType || r.odunTuru || 'Tomruk', treeType:r.treeType || r.species || r.agacTuru || 'Karaçam', cutter:r.cutter || r.kesimci || '', productionDate:r.productionDate || r.uretimTarihi || state.settings?.mesahaDate || todayISO(),
+  productType:normalizeProductType(r.productType || r.odunTuru || r.odunAdi || r.product || 'Tomruk'), treeType:r.treeType || r.species || r.agacTuru || r.agacAdi || 'Karaçam', cutter:r.cutter || r.kesimci || '', productionDate:r.productionDate || r.uretimTarihi || state.settings?.mesahaDate || todayISO(),
   createdAt:r.createdAt || new Date().toISOString(), updatedAt:r.updatedAt || ''
 }; }
 function saveRecords(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state.records)); }
@@ -56,6 +151,9 @@ function bind(){
   $('treeToggleBtn').addEventListener('click', () => { state.settings.treePanelOpen=!state.settings.treePanelOpen; saveSettings(); renderEntryTrees(); });
   $('addCutterBtn').addEventListener('click', addCutter);
   $('saveBtn').addEventListener('click', saveEntry);
+  $('diameterInput').addEventListener('input', () => { const clean = String($('diameterInput').value||'').replace(/\D/g,'').slice(0,2); if($('diameterInput').value !== clean) $('diameterInput').value = clean; state.settings.diameter=clean; saveSettings(); });
+  $('lengthInput').addEventListener('input', () => { state.settings.length=String($('lengthInput').value||'').replace(',', '.'); saveSettings(); });
+  $('barcodeInput').addEventListener('input', () => { state.settings.barcode=String($('barcodeInput').value||'').toUpperCase(); $('barcodeInput').value=state.settings.barcode; saveSettings(); });
   $('clearBtn').addEventListener('click', clearEntry);
   $('cancelEditBtn').addEventListener('click', () => { state.editingId=null; $('cancelEditBtn').classList.add('hidden'); clearEntry(false); toast('Düzenleme iptal edildi.'); });
   $('downloadXlsBtn').addEventListener('click', exportXls);
@@ -113,7 +211,7 @@ function renderSummary(){ const total=totals(state.records), week=state.records.
 function totals(list){ return list.reduce((a,r)=>{ a.count+=Number(r.quantity||1); a.m3+=volume(r); return a; },{count:0,m3:0}); }
 function renderEntry(){
   $('diameterInput').value=state.settings.diameter||''; $('lengthInput').value=state.settings.length||''; $('barcodeInput').value=state.settings.barcode||'';
-  renderCutters(); renderEntryTrees(); renderQuickChips(); renderProducts(); renderRecent(); const t=totals(state.records); $('entryTotalCount').textContent=t.count.toLocaleString('tr-TR'); $('entryTotalM3').textContent=`${fmt(t.m3,3)} m³`;
+  renderCutters(); renderEntryTrees(); renderQuickChips(); renderProducts(); syncProductBodyClass(); ensureProductRuleHint(); renderRecent(); const t=totals(state.records); $('entryTotalCount').textContent=t.count.toLocaleString('tr-TR'); $('entryTotalM3').textContent=`${fmt(t.m3,3)} m³`;
 }
 function renderCutters(){
   const list = [...new Set([...(state.settings.cutters||[]), state.settings.activeCutter].filter(Boolean))]; state.settings.cutters=list; saveSettings();
@@ -134,16 +232,35 @@ function renderQuickChips(){
   $('lengthChips').querySelectorAll('[data-len]').forEach(b=>b.addEventListener('click',()=>{ $('lengthInput').value=b.dataset.len; entryInputChanged(); }));
 }
 function renderProducts(){
-  const list = state.settings.visibleProducts.filter(k=>PRODUCTS.some(p=>p.key===k)); if(!list.includes(state.settings.currentProduct)) state.settings.currentProduct=list[0]||'Tomruk';
+  state.settings.visibleProducts = (state.settings.visibleProducts||[]).map(normalizeProductType).filter(k=>PRODUCTS.some(p=>p.key===k));
+  if(!state.settings.visibleProducts.length) state.settings.visibleProducts=defaults.visibleProducts.slice();
+  const list = state.settings.visibleProducts.filter(k=>PRODUCTS.some(p=>p.key===k));
+  state.settings.currentProduct = normalizeProductType(state.settings.currentProduct);
+  if(!list.includes(state.settings.currentProduct)) state.settings.currentProduct=list[0]||'Tomruk';
   $('productButtons').innerHTML = list.map(k => { const p=productInfo(k); return `<button class="product-btn product-${p.cls} ${k===state.settings.currentProduct?'active':''}" data-product="${esc(k)}" type="button">${esc(p.label)}</button>`; }).join('');
-  $('productButtons').querySelectorAll('[data-product]').forEach(b => b.addEventListener('click', () => { state.settings.currentProduct=b.dataset.product; saveSettings(); renderProducts(); }));
+  $('productButtons').querySelectorAll('[data-product]').forEach(b => b.addEventListener('click', () => {
+    state.settings.currentProduct=normalizeProductType(b.dataset.product);
+    saveSettings();
+    syncProductBodyClass();
+    renderProducts();
+    ensureProductRuleHint();
+    const d=$('diameterInput').value, l=$('lengthInput').value;
+    if(d) validateProductRules(state.settings.currentProduct, d, l || 0);
+    try{ $('diameterInput').focus({preventScroll:true}); }catch{}
+  }));
+  syncProductBodyClass();
+  ensureProductRuleHint();
 }
 function renderRecent(){ const recent=state.records.slice(-3).reverse(); $('recentList').innerHTML = recent.length ? recent.map(r=>`<button class="recent-item product-${productInfo(r.productType).cls}" data-edit="${r.id}" type="button"><b>${esc(r.barcode)}</b><small>${esc(r.treeType)} • ${esc(productInfo(r.productType).label)} • ${esc(r.diameter)} çap / ${esc(r.length)} boy</small></button>`).join('') : '<p class="hint">Henüz kayıt yok.</p>'; $('recentList').querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click',()=>{ const r=state.records.find(x=>x.id===b.dataset.edit); if(r) openEntry(r); })); }
 function saveEntry(){
   const barcode=norm($('barcodeInput').value).toUpperCase(); const diameter=norm($('diameterInput').value); const length=norm($('lengthInput').value);
-  if(!barcode || barcode.length<5) return toast('Barkod boş veya kısa.'); if(!diameter) return toast('Çap giriniz.'); if(!length) return toast('Boy giriniz.');
+  if(!barcode) return toast('Barkod giriniz.');
+  if(!validateBarcode(barcode)) return;
+  if(!diameter) return toast('Çap giriniz.');
+  if(!length) return toast('Boy giriniz.');
+  if(!validateProductRules(state.settings.currentProduct, diameter, length)) return;
   const duplicate = state.records.find(r => r.barcode===barcode && r.id!==state.editingId); if(duplicate) return toast('Bu barkod daha önce kayıtlı.');
-  const rec = { id: state.editingId || uid(), barcode, diameter, length, quantity:1, productType:state.settings.currentProduct, treeType:state.settings.currentTree, cutter:state.settings.activeCutter||'', productionDate:state.settings.mesahaDate||todayISO(), createdAt:new Date().toISOString(), updatedAt: state.editingId ? new Date().toISOString() : '' };
+  const rec = { id: state.editingId || uid(), barcode, diameter, length, quantity:1, productType:normalizeProductType(state.settings.currentProduct), treeType:state.settings.currentTree, cutter:state.settings.activeCutter||'', productionDate:state.settings.mesahaDate||todayISO(), createdAt:new Date().toISOString(), updatedAt: state.editingId ? new Date().toISOString() : '' };
   if(state.editingId){ const i=state.records.findIndex(r=>r.id===state.editingId); if(i>=0) state.records[i]=rec; state.editingId=null; $('cancelEditBtn').classList.add('hidden'); }
   else state.records.push(rec);
   rememberChip('recentDiameters', diameter); rememberChip('recentLengths', length); state.settings.barcode=nextBarcode(barcode); $('barcodeInput').value=state.settings.barcode; saveRecords(); saveSettings(); renderAll(); toast('Kayıt alındı.'); if(state.settings.soundEnabled!==false) beep();
@@ -170,7 +287,7 @@ function renderFilters(){
 }
 function recordCard(r){ const p=productInfo(r.productType); return `<article class="record-card product-${p.cls}"><input type="checkbox"><div class="record-main"><b>${esc(r.barcode)} • ${esc(r.treeType)} • ${esc(p.label)}</b><small>${esc(r.diameter)} çap / ${esc(r.length)} boy • ${esc(r.cutter||'Kesimci yok')} • ${esc(r.productionDate)}</small></div><div class="record-actions"><button data-edit="${r.id}">Düzelt</button><button data-del="${r.id}">Sil</button></div></article>`; }
 function exportXls(){ const list=filteredRecords(); if(!list.length) return toast('Çıktı için kayıt yok.'); const ordered=list.slice(); const bolme=cleanFile(state.settings.bolmeNo); const file=`Mesaha_${bolme?bolme+'_':''}${formatDateFile()}.xls`; if(window.OrbisXls) window.OrbisXls.downloadXls(ordered, file); else toast('XLS modülü yüklenmedi.'); }
-function backupJson(){ const data={version:'v3.01-inline', exportedAt:new Date().toISOString(), records:state.records, settings:state.settings}; downloadText(JSON.stringify(data,null,2), `mesaha_yedek_${formatDateFile()}.json`, 'application/json'); toast('Yedek indirildi.'); }
+function backupJson(){ const data={version:'v3.02-rules', exportedAt:new Date().toISOString(), records:state.records, settings:state.settings}; downloadText(JSON.stringify(data,null,2), `mesaha_yedek_${formatDateFile()}.json`, 'application/json'); toast('Yedek indirildi.'); }
 function restoreJson(e){ const file=e.target.files && e.target.files[0]; if(!file) return; const reader=new FileReader(); reader.onload=()=>{ try{ const data=JSON.parse(reader.result); const records=Array.isArray(data) ? data : data.records; if(!Array.isArray(records)) throw new Error('records yok'); state.records=records.map(migrateRecord).filter(Boolean); if(data.settings) state.settings={...state.settings,...data.settings}; saveRecords(); saveSettings(); renderAll(); toast('Yedek yüklendi.'); }catch(err){ toast('Yedek okunamadı.'); } e.target.value=''; }; reader.readAsText(file); }
 function downloadText(content, filename, type){ const blob=new Blob([content],{type}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=filename; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),1000); }
 function boot(){ load(); bind(); renderAll(); showView('home'); setTimeout(()=>$('startup').classList.add('hide'),350); if('serviceWorker' in navigator) navigator.serviceWorker.register('./service-worker.js').catch(()=>{}); }
