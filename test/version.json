@@ -1,10 +1,10 @@
 {
-  "version": "v165",
-  "visibleVersion": "Mesaha İO v1.94",
-  "cache": "mesaha-app-v165-kesimci-sil-sira-kod-fix",
+  "version": "v166",
+  "visibleVersion": "Mesaha İO v1.95",
+  "cache": "mesaha-app-v166-filtre-sira-sabit-fix",
   "builtAt": "2026-06-19",
-  "notes": "Kod sızması temiz tabandan düzeltildi. Kesimciye ait kayıt varsa kesimci silinmez ve uyarı verilir. Ölçümler bölümünde filtre sırası sabitlendi: önce ağaç filtresi, altında kesimci filtresi. 20 kayıt/sayfa, ZIP yedek ve ORBİS Excel formatı korunmuştur.",
-  "name": "Mesaha İO v1.94",
-  "build": "v165",
+  "notes": "Ölçümler bölümünde ağaç filtresi ve kesimci filtresinin yer değiştirmesi engellendi. Filtre tıklamalarında sıra sabit: önce ağaç filtresi, altında kesimci filtresi. Kesimci silme, 20 kayıt/sayfa, ZIP yedek ve ORBİS Excel formatı korunmuştur.",
+  "name": "Mesaha İO v1.95",
+  "build": "v166",
   "updatedAt": "2026-06-19"
 }
