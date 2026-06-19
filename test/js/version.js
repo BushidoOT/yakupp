@@ -1,16 +1,16 @@
 (function(root){
   'use strict';
   var info = {
-    appName: 'Mesaha İO',
-    version: 'v188',
-    build: 'v188',
-    assetVersion: '188',
-    visibleVersion: 'v2.17',
-    shortVersion: 'v2.17',
-    name: 'v2.17',
-    cacheName: 'mesaha-app-v188-ana-ekran-ayarlar',
+    appName: 'v2.18',
+    version: 'v189',
+    build: 'v189',
+    assetVersion: '189',
+    visibleVersion: 'v2.18',
+    shortVersion: 'v2.18',
+    name: 'v2.18',
+    cacheName: 'mesaha-app-v189-ana-ekran-sabit',
     builtAt: '2026-06-19',
-    notes: 'Ana Ekran butonu geri getirildi. Mesaha Tarihi ve odun türü tikli seçim alanı ana ekrana alındı; tikli odun türleri Giriş Modu içinde görünür. Üst versiyon kartındaki Mesaha İO yazısı kaldırıldı; sadece sürüm bilgisi kaldı. Giriş Modu sıralamasında çap/boy odun türlerinin üstünde tutuldu.'
+    notes: 'Ana Ekran sekmesi geri getirildi; Giriş Modu sıralaması çap/boy üstte, odun türleri altta olacak şekilde sabitlendi. Uygulama adı görünür başlık ve sekme adından kaldırıldı.'
   };
   root.MESAHA_VERSION = info;
   root.MESAHA_VERSION_TEXT = info.visibleVersion;
@@ -28,7 +28,7 @@
   function applyVersionText(){
     try{
       if(root.document){
-        document.title = 'Mesaha İO';
+        document.title = info.visibleVersion;
         var meta = document.querySelector('meta[name="mesaha-build"]');
         if(meta) meta.setAttribute('content', info.build);
         Array.prototype.forEach.call(document.querySelectorAll('[data-app-version-short]'), function(el){ if(el && !el.hasAttribute('data-version-no-auto')) el.textContent = info.shortVersion; });
