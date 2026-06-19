@@ -480,9 +480,11 @@
   function err(msg){ safe(function(){ if(typeof showErrorToast==='function') showErrorToast(msg); else if(typeof showToast==='function') showToast(msg); }); }
   function ensureState(){ safe(function(){ if(!window.state) return; if(!state.settings) state.settings={}; if(!Array.isArray(state.settings.kesimcilerV158)) state.settings.kesimcilerV158=[]; if(typeof state.settings.activeKesimciV158!=='string') state.settings.activeKesimciV158=''; }); }
   function records(){ return safe(function(){ return Array.isArray(state.records)?state.records:[]; }, []); }
+  var __v186CutterCacheLen = -1, __v186CutterCache = [];
   function recCutter(r){ return norm(r && (r.kesimci || r.kesimciAdi || r.cutterName || r.cutter || r.kesimciIsmi) || ''); }
+  function recordCuttersCachedV186(){ var rows=records(); if(__v186CutterCacheLen===rows.length) return __v186CutterCache; __v186CutterCacheLen=rows.length; __v186CutterCache=rows.map(recCutter); return __v186CutterCache; }
   function saveSettingsSafe(){ safe(function(){ if(typeof saveSettings==='function') saveSettings(); }); safe(function(){ localStorage.setItem('mesaha_settings', JSON.stringify(state.settings||{})); }); }
-  function configuredCutters(){ ensureState(); var list=safe(function(){return Array.isArray(state.settings.kesimcilerV158)?state.settings.kesimcilerV158:[];},[]); var seen=Object.create(null), out=[]; list.concat(records().map(recCutter)).forEach(function(n){n=norm(n);var k=lower(n);if(n&&!seen[k]){seen[k]=true;out.push(n);}}); out.sort(function(a,b){return a.localeCompare(b,'tr-TR');}); safe(function(){state.settings.kesimcilerV158=out;}); return out; }
+  function configuredCutters(){ ensureState(); var list=safe(function(){return Array.isArray(state.settings.kesimcilerV158)?state.settings.kesimcilerV158:[];},[]); var seen=Object.create(null), out=[]; list.concat(recordCuttersCachedV186()).forEach(function(n){n=norm(n);var k=lower(n);if(n&&!seen[k]){seen[k]=true;out.push(n);}}); out.sort(function(a,b){return a.localeCompare(b,'tr-TR');}); safe(function(){state.settings.kesimcilerV158=out;}); return out; }
   function activeCutter(){ return norm(safe(function(){return state.settings.activeKesimciV158;},'')||''); }
   function setActiveCutter(name){ ensureState(); name=norm(name); safe(function(){state.settings.activeKesimciV158=name;}); saveSettingsSafe(); renderCutterButtons(); safe(function(){ if(typeof focusDiameterKeepKeyboard==='function') focusDiameterKeepKeyboard(); }); }
   window.getActiveKesimciNameV163=function(){ return activeCutter(); };
@@ -544,7 +546,7 @@
     }
   }
   function patchVersion(){ safe(function(){document.title=VISIBLE_VERSION;}); safe(function(){var h=document.querySelector('.brand h1'); if(h) h.textContent=VISIBLE_VERSION;}); safe(function(){window.MESAHA_BUILD_INFO=Object.assign({},window.MESAHA_BUILD_INFO||{},{fileVersion:FILE_VERSION,visibleVersion:VISIBLE_VERSION,cutterButtonSelect:true,cutterDelete:true,cutterDeleteLockedWhenRecords:true,cutterDirectSave:true,recordFiltersFixedOrder:true});}); }
-  function afterRender(){ renderCutterButtons(); orderRecordFilters(); patchVersion(); }
+  function afterRender(){ if(document.body.classList.contains('clean-simple-open-v111') || document.body.classList.contains('inline-simple-v119')){ patchVersion(); return; } renderCutterButtons(); if(document.body.classList.contains('show-records') || document.body.classList.contains('show-admin')) orderRecordFilters(); patchVersion(); }
   function wrapRender(){ safe(function(){ if(typeof window.render!=='function'||window.render.__v163Wrapped) return; var old=window.render; window.render=function(){ var result=old.apply(this,arguments); setTimeout(afterRender,0); return result; }; window.render.__v163Wrapped=true; }); }
   function install(){ ensureState(); wrapRender(); afterRender(); [120,350,800,1600,3200,5200].forEach(function(ms){setTimeout(function(){wrapRender();afterRender();},ms);}); }
   ready(install); window.addEventListener('load',install,{once:true}); setInterval(function(){wrapRender();afterRender();},900);

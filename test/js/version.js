@@ -2,15 +2,15 @@
   'use strict';
   var info = {
     appName: 'Mesaha İO',
-    version: 'v185',
-    build: 'v185',
-    assetVersion: '185',
-    visibleVersion: 'Mesaha İO v2.14',
-    shortVersion: 'v2.14',
-    name: 'Mesaha İO v2.14',
-    cacheName: 'mesaha-app-v185-ios-ultra-hafif',
+    version: 'v186',
+    build: 'v186',
+    assetVersion: '186',
+    visibleVersion: 'Mesaha İO v2.15',
+    shortVersion: 'v2.15',
+    name: 'Mesaha İO v2.15',
+    cacheName: 'mesaha-app-v186-ios-sabit-hiz',
     builtAt: '2026-06-19',
-    notes: 'iOS giriş modu ultra hafifletildi; ürün butonları ve çap/boy girişleri hızlandırıldı; ana versiyon etiketi küçültüldü. ORBİS Excel formatına dokunulmadı.'
+    notes: 'iOS kayıt girişinde geciken çap/boy ve odun türü dokunmaları için arka plan render, toplam tarama ve kayıt listesi çizimi Giriş Modu açıkken durduruldu. ORBİS Excel formatına dokunulmadı.'
   };
   root.MESAHA_VERSION = info;
   root.MESAHA_VERSION_TEXT = info.visibleVersion;
@@ -21,7 +21,8 @@
     shortVersion: info.shortVersion,
     cacheName: info.cacheName,
     centralizedVersion: true,
-    excelLocked: true
+    excelLocked: true,
+    iosInputLagFixed: true
   });
   function applyVersionText(){
     try{

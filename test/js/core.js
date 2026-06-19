@@ -5727,6 +5727,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     renderCleanRecentV111 = renderCleanRecentV114;
 
     function repaintDarkInlineV114() {
+      if (document.body.classList.contains("clean-simple-open-v111") || document.body.classList.contains("inline-simple-v119")) return;
       if (!document.body.classList.contains("theme-dark")) return;
 
       document.querySelectorAll('[style*="background"]').forEach(el => {
@@ -5784,6 +5785,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
     }
 
     function forceDarkPanelsV115() {
+      if (document.body.classList.contains("clean-simple-open-v111") || document.body.classList.contains("inline-simple-v119")) return;
       if (!document.body.classList.contains("theme-dark")) return;
 
       const whiteLike = ["rgb(255, 255, 255)", "white", "#fff", "#ffffff", "rgb(248, 250, 252)", "rgb(241, 245, 249)", "rgba(255, 255, 255"];
@@ -5863,6 +5865,7 @@ if (els.panelAdminOpenBtn) els.panelAdminOpenBtn.addEventListener("click", openA
 
     /* v116: Karanlık mod sonrası dinamik üretilen Admin/Kılavuz/Beyan alanlarını tekrar boyama */
     function forceDarkReadableV116() {
+      if (document.body.classList.contains("clean-simple-open-v111") || document.body.classList.contains("inline-simple-v119")) return;
       if (!document.body.classList.contains("theme-dark")) return;
       const setMany = (selector, props) => {
         document.querySelectorAll(selector).forEach(el => {

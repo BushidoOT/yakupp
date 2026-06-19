@@ -1,0 +1,71 @@
+/* v186: iOS giriş modu ultra hafif görünüm - sadece performans odaklı küçük dokunuşlar */
+body.clean-simple-open-v111 .clean-simple-card-v111,
+body.clean-simple-open-v111 .clean-product-v111,
+body.clean-simple-open-v111 .clean-chip-v111,
+body.clean-simple-open-v111 .clean-save-v111,
+body.ios-ultra-lite-v186 .product-box{
+  transition: none !important;
+  animation: none !important;
+}
+body.clean-simple-open-v111 .clean-simple-card-v111{
+  box-shadow: 0 12px 34px rgba(15,23,42,.16) !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+body.clean-simple-open-v111 .clean-product-v111,
+body.clean-simple-open-v111 .clean-chip-v111,
+body.ios-ultra-lite-v186 .product-box{
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  will-change: auto !important;
+}
+.app-brand-v143 .brand-copy-v143 h1{
+  font-size: 13px !important;
+  line-height: 1.05 !important;
+  letter-spacing: .2px !important;
+  white-space: nowrap !important;
+  max-width: 82px !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+.app-brand-v143 .brand-copy-v143 span{
+  font-size: 10px !important;
+  line-height: 1 !important;
+  font-weight: 900 !important;
+  opacity: .72 !important;
+}
+.app-brand-v143 .brand-logo-v143{
+  width: 42px !important;
+  height: 42px !important;
+  flex: 0 0 42px !important;
+}
+@media (max-width: 420px){
+  .topbar{gap: 8px !important;}
+  .app-brand-v143{gap: 7px !important; min-width: 0 !important;}
+  .app-brand-v143 .brand-copy-v143{min-width: 0 !important;}
+  .top-actions-v112 button{padding-left: 9px !important; padding-right: 9px !important;}
+}
+/* Üst kullanıcı paneli yanında bağlantı rozeti görünmesin; bağlantı bilgisi ana ekranda kalsın. */
+.topbar #mesahaNetBadgeV178,
+header #mesahaNetBadgeV178{
+  display: none !important;
+}
+
+/* v186: giriş sırasında ağır arka plan çizimlerini ve dokunma gecikmesini daha da azalt */
+body.clean-simple-open-v111 *,
+body.inline-simple-v119 *{
+  -webkit-tap-highlight-color: transparent;
+}
+body.clean-simple-open-v111 .records-panel,
+body.inline-simple-v119 .records-panel{
+  content-visibility: hidden;
+}
+body.clean-simple-open-v111 .clean-save-v111,
+body.clean-simple-open-v111 #cleanDiameterV111,
+body.clean-simple-open-v111 #cleanLengthV111,
+body.clean-simple-open-v111 .clean-product-v111,
+body.inline-simple-v119 #diameter,
+body.inline-simple-v119 #length,
+body.inline-simple-v119 .product-box{
+  touch-action: manipulation !important;
+}

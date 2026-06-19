@@ -423,6 +423,7 @@
     } else el.textContent="Hazır";
   }
   function updateHome(){
+    if(document.body.classList.contains('clean-simple-open-v111') || document.body.classList.contains('inline-simple-v119')){ updateNetwork(); return; }
     const records = getRecords();
     const totalQty = records.reduce((s,r)=>s+qty(r),0);
     const totalDesi = records.reduce((s,r)=>s+desi(r),0);

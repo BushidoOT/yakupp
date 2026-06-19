@@ -112,6 +112,7 @@
     if(wrap.__lastV180Html !== html){ wrap.innerHTML = html; wrap.__lastV180Html = html; }
   }
   function stabilize(){
+    if(!(document.body.classList.contains('show-records') || document.body.classList.contains('show-admin'))) return;
     if(BUSY) return;
     BUSY = true;
     try{
