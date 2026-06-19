@@ -1,6 +1,6 @@
 (function(){
   'use strict';
-  var TAG = 'v200-entry-mode';
+  var TAG = 'v201-entry-mode';
   var SAVE_BOUND = false;
   var layoutDone = false;
   var timer = null;
@@ -259,9 +259,9 @@
   }
 
   function renderHomeTreeButtonsV194(){
-    // v200 çoklu ağaç seçimi ayrı IIFE tarafından çizilir.
+    // v201 çoklu ağaç seçimi ayrı IIFE tarafından çizilir.
     var panel = byId('homeTreePanelV194');
-    if(panel) panel.className = 'home-tree-panel-v200';
+    if(panel) panel.className = 'home-tree-panel-v201';
   }
   function ensureHomeSoundCardV194(){
     var home = byId('mesahaHomeV143');
@@ -271,16 +271,16 @@
     if(!card){
       card = document.createElement('div');
       card.id = 'homeSoundCardV194';
-      card.className = 'home-card-v143 home-sound-card-v200';
-      card.innerHTML = '<div class="home-card-head-v143"><h3>Ses Ayarı</h3></div><button type="button" id="homeSoundToggleBtnV194" class="home-sound-btn-v200">Ses: Açık</button>';
+      card.className = 'home-card-v143 home-sound-card-v201';
+      card.innerHTML = '<div class="home-card-head-v143"><h3>Ses Ayarı</h3></div><button type="button" id="homeSoundToggleBtnV194" class="home-sound-btn-v201">Ses: Açık</button>';
       if(summary) home.insertBefore(card, summary); else home.appendChild(card);
     }
     var source = byId('soundToggleBtn');
     var btn = byId('homeSoundToggleBtnV194');
     if(btn){
       if(source) btn.textContent = source.textContent || 'Ses: Açık';
-      if(!btn.__v200Sound){
-        btn.__v200Sound = true;
+      if(!btn.__v201Sound){
+        btn.__v201Sound = true;
         btn.addEventListener('click', function(ev){
           ev.preventDefault();
           var s = byId('soundToggleBtn');
@@ -291,9 +291,9 @@
     }
   }
   function enhanceInlineTreeV194(){
-    // v200 yönetiyor: ağaç paneli artık çoklu seçim + aç/kapa mantığında.
+    // v201 yönetiyor: ağaç paneli artık çoklu seçim + aç/kapa mantığında.
     var treeCompact = document.querySelector('.tree-compact');
-    if(treeCompact) treeCompact.classList.add('tree-compact-v200');
+    if(treeCompact) treeCompact.classList.add('tree-compact-v201');
     var apply = byId('treeTypeApplyBtn');
     if(apply){ apply.style.setProperty('display','none','important'); apply.tabIndex = -1; }
   }
@@ -342,8 +342,8 @@
         apply.setAttribute('aria-hidden','true');
         apply.tabIndex = -1;
       }
-      if(apply && !apply.__v200Refresh){
-        apply.__v200Refresh = true;
+      if(apply && !apply.__v201Refresh){
+        apply.__v201Refresh = true;
         apply.addEventListener('click', refreshCleanProductsSoon, false);
       }
       woodPanel.querySelectorAll('input[type="checkbox"]').forEach(function(ch){
@@ -360,8 +360,8 @@
     if(!treeBlock){
       treeBlock = document.createElement('div');
       treeBlock.id = 'homeTreeBlockV194';
-      treeBlock.className = 'home-setting-block-v189 home-tree-block-v200';
-      treeBlock.innerHTML = '<div class="home-setting-title-v189">Ağaç Türleri</div><p class="home-setting-hint-v189">Seçili ağaç türü Giriş Modu içinde aktif olur.</p><div id="homeTreePanelV194" class="home-tree-panel-v200"></div>';
+      treeBlock.className = 'home-setting-block-v189 home-tree-block-v201';
+      treeBlock.innerHTML = '<div class="home-setting-title-v189">Ağaç Türleri</div><p class="home-setting-hint-v189">Seçili ağaç türü Giriş Modu içinde aktif olur.</p><div id="homeTreePanelV194" class="home-tree-panel-v201"></div>';
       grid.appendChild(treeBlock);
     }
     renderHomeTreeButtonsV194();
@@ -385,8 +385,8 @@
     if(status && status.nextSibling) home.insertBefore(details, status.nextSibling); else home.insertBefore(details, home.firstChild);
   }
   function patchBrand(){
-    var shortV = (window.MESAHA_VERSION && window.MESAHA_VERSION.shortVersion) || 'v2.28';
-    var buildV = (window.MESAHA_VERSION && window.MESAHA_VERSION.version) || 'v200';
+    var shortV = (window.MESAHA_VERSION && window.MESAHA_VERSION.shortVersion) || 'v2.29';
+    var buildV = (window.MESAHA_VERSION && window.MESAHA_VERSION.version) || 'v201';
     safe(function(){ document.title = shortV; });
     var h = document.querySelector('.app-brand-v143 .brand-copy-v143 h1');
     var s = document.querySelector('.app-brand-v143 .brand-copy-v143 span');
@@ -479,15 +479,15 @@
     });
   }
   function titleFix(){
-    safe(function(){ document.title = 'v2.28'; });
+    safe(function(){ document.title = 'v2.29'; });
     safe(function(){
       document.querySelectorAll('.app-brand-v143 .brand-copy-v143,[data-app-version-short],[data-app-version-build]').forEach(function(el){
         if(!el) return;
-        if(/Mesaha\s*İ?O/i.test(el.textContent || '')) el.textContent = el.matches('[data-app-version-build], .app-brand-v143 .brand-copy-v143 span') ? 'v200' : 'v2.28';
+        if(/Mesaha\s*İ?O/i.test(el.textContent || '')) el.textContent = el.matches('[data-app-version-build], .app-brand-v143 .brand-copy-v143 span') ? 'v201' : 'v2.29';
       });
-      var h = document.querySelector('.app-brand-v143 .brand-copy-v143 h1'); if(h) h.textContent = 'v2.28';
-      var s = document.querySelector('.app-brand-v143 .brand-copy-v143 span'); if(s) s.textContent = 'v200';
-      var splashH = document.querySelector('.mesaha-startup-logo-v178 h2'); if(splashH) splashH.textContent = 'v2.28';
+      var h = document.querySelector('.app-brand-v143 .brand-copy-v143 h1'); if(h) h.textContent = 'v2.29';
+      var s = document.querySelector('.app-brand-v143 .brand-copy-v143 span'); if(s) s.textContent = 'v201';
+      var splashH = document.querySelector('.mesaha-startup-logo-v178 h2'); if(splashH) splashH.textContent = 'v2.29';
     });
   }
   function navFix(){
@@ -540,7 +540,7 @@
   function forceEditRecordToClean(){
     safe(function(){
       var old = window.editRecord;
-      if(typeof old !== 'function' || old.__v200CleanOpen) return;
+      if(typeof old !== 'function' || old.__v201CleanOpen) return;
       var wrapped = function(id){
         var result = old.apply(this, arguments);
         setTimeout(function(){
@@ -553,8 +553,8 @@
         }, 60);
         return result;
       };
-      wrapped.__v200CleanOpen = true;
-      wrapped.__v200Old = old;
+      wrapped.__v201CleanOpen = true;
+      wrapped.__v201Old = old;
       window.editRecord = wrapped;
       try{ editRecord = wrapped; }catch(_){ }
     });
@@ -615,19 +615,19 @@
 })();
 
 
-/* v200: gerçek Giriş Modu inline form düzeltmesi
+/* v201: gerçek Giriş Modu inline form düzeltmesi
    Ürün Türü / Çap-Boy sırası artık temiz overlay değil, aktif kullanılan entryForm üzerinde düzeltilir. */
 (function(){
   'use strict';
   function byId(id){ return document.getElementById(id); }
-  function safe(fn){ try{return fn();}catch(e){ try{ console.warn('[Mesaha İO v200 inline fix]', e); }catch(_){} } }
+  function safe(fn){ try{return fn();}catch(e){ try{ console.warn('[Mesaha İO v201 inline fix]', e); }catch(_){} } }
   function q(sel, root){ return (root || document).querySelector(sel); }
 
   function forceInlineOrder(){
     safe(function(){
       var form = byId('entryForm');
       if(!form) return;
-      form.classList.add('entry-form-v200-fixed');
+      form.classList.add('entry-form-v201-fixed');
 
       var tree = q('.product-compact.tree-compact', form);
       var product = q('.product-compact:not(.tree-compact)', form);
@@ -654,7 +654,7 @@
 
       // Alanları Temizle giriş modunda görünür kalsın.
       if(clearRow){
-        clearRow.classList.add('clear-row-v200');
+        clearRow.classList.add('clear-row-v201');
         if(recent && clearRow.previousElementSibling !== recent){
           form.insertBefore(clearRow, recent.nextSibling);
         }
@@ -683,7 +683,7 @@
         overlay.style.setProperty('display','none','important');
       }
       document.body.classList.remove('show-records','show-guide','show-admin','clean-simple-open-v111','clean-simple-active-v111','clean-keyboard-v118');
-      document.body.classList.add('inline-simple-v119','mesaha-v200-edit-entry');
+      document.body.classList.add('inline-simple-v119','mesaha-v201-edit-entry');
       var entry = q('.panel.entry-panel');
       if(entry) entry.style.setProperty('display','block','important');
       document.querySelectorAll('#flowTabsV111 button,.bottom-nav button').forEach(function(b){ b.classList.remove('active'); });
@@ -701,15 +701,15 @@
   function wrapEditRecord(){
     safe(function(){
       var old = window.editRecord;
-      if(typeof old !== 'function' || old.__v200InlineEdit) return;
+      if(typeof old !== 'function' || old.__v201InlineEdit) return;
       var wrapped = function(id){
         var result = old.apply(this, arguments);
         setTimeout(openInlineEntry, 40);
         setTimeout(openInlineEntry, 180);
         return result;
       };
-      wrapped.__v200InlineEdit = true;
-      wrapped.__v200Old = old;
+      wrapped.__v201InlineEdit = true;
+      wrapped.__v201Old = old;
       window.editRecord = wrapped;
       try{ editRecord = wrapped; }catch(_){}
     });
@@ -748,17 +748,17 @@
 })();
 
 
-/* v200: kayıt modu kök sabitleme - fiziksel form sırası ve alan boyutları */
+/* v201: kayıt modu kök sabitleme - fiziksel form sırası ve alan boyutları */
 (function(){
   'use strict';
   function byId(id){ return document.getElementById(id); }
   function q(sel, root){ return (root || document).querySelector(sel); }
-  function safe(fn){ try{return fn();}catch(e){ try{ console.warn('[Mesaha v200]', e); }catch(_){} } }
+  function safe(fn){ try{return fn();}catch(e){ try{ console.warn('[Mesaha v201]', e); }catch(_){} } }
   function hardFix(){
     safe(function(){
       var form = byId('entryForm');
       if(!form) return;
-      form.classList.add('entry-form-v200-hard');
+      form.classList.add('entry-form-v201-hard');
       var tree = q('.product-compact.tree-compact', form);
       var product = q('.product-compact:not(.tree-compact)', form);
       var measure = q('.measure-compact', form);
@@ -775,11 +775,11 @@
       if(product && barcode && product.nextElementSibling !== barcode) form.insertBefore(barcode, product.nextSibling);
       if(barcode && recent && barcode.nextElementSibling !== recent) form.insertBefore(recent, barcode.nextSibling);
       if(clearRow){
-        clearRow.classList.add('clear-row-v200');
+        clearRow.classList.add('clear-row-v201');
         if(recent && clearRow.previousElementSibling !== recent) form.insertBefore(clearRow, recent.nextSibling);
       }
       if(soundRow){
-        soundRow.classList.add('sound-row-v200');
+        soundRow.classList.add('sound-row-v201');
         if(clearRow && soundRow.previousElementSibling !== clearRow) form.insertBefore(soundRow, clearRow.nextSibling);
       }
       if(same) same.style.setProperty('display','none','important');
@@ -807,14 +807,14 @@
 })();
 
 
-/* v200: Ağaç türleri çoklu seçim + girişte aç/kapa + Yeni Kayıt menüsünü tamamen gizle */
+/* v201: Ağaç türleri çoklu seçim + girişte aç/kapa + Yeni Kayıt menüsünü tamamen gizle */
 (function(){
   'use strict';
   var TREES = ['Karaçam','Sarıçam','Sedir','Göknar','Kızılçam'];
-  var STORE = 'mesaha_visible_trees_v200';
-  var PANEL_STORE = 'mesaha_tree_panel_open_v200';
+  var STORE = 'mesaha_visible_trees_v201';
+  var PANEL_STORE = 'mesaha_tree_panel_open_v201';
   function byId(id){ return document.getElementById(id); }
-  function safe(fn,fb){ try{return fn();}catch(e){ try{console.warn('[Mesaha v200]',e);}catch(_){} return fb; } }
+  function safe(fn,fb){ try{return fn();}catch(e){ try{console.warn('[Mesaha v201]',e);}catch(_){} return fb; } }
   function esc(v){ return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c];}); }
   function norm(v){ return String(v==null?'':v).trim().replace(/\s+/g,' '); }
   function lower(v){ return norm(v).toLocaleLowerCase('tr-TR'); }
@@ -853,15 +853,15 @@
   function renderHomeTrees(){
     var panel = byId('homeTreePanelV194');
     if(!panel) return;
-    panel.className = 'home-tree-panel-v200';
+    panel.className = 'home-tree-panel-v201';
     var list = readList();
     panel.innerHTML = TREES.map(function(t){
       var checked = list.some(function(x){return lower(x)===lower(t);});
-      return '<label class="home-tree-check-v200 '+(checked?'is-checked':'')+'"><input type="checkbox" value="'+esc(t)+'" '+(checked?'checked':'')+' /> <span>'+esc(t)+'</span></label>';
+      return '<label class="home-tree-check-v201 '+(checked?'is-checked':'')+'"><input type="checkbox" value="'+esc(t)+'" '+(checked?'checked':'')+' /> <span>'+esc(t)+'</span></label>';
     }).join('');
     panel.querySelectorAll('input[type="checkbox"]').forEach(function(ch){
-      if(ch.__v200HomeTree) return;
-      ch.__v200HomeTree = true;
+      if(ch.__v201HomeTree) return;
+      ch.__v201HomeTree = true;
       ch.addEventListener('change', function(){
         var selected = Array.prototype.slice.call(panel.querySelectorAll('input[type="checkbox"]:checked')).map(function(i){return i.value;});
         writeList(selected);
@@ -883,33 +883,33 @@
     var btn = byId('treeTypeSelectBtn');
     var panel = byId('treeTypePanel');
     if(!wrap || !head || !btn || !panel) return;
-    wrap.classList.add('tree-dropdown-v200');
+    wrap.classList.add('tree-dropdown-v201');
     btn.style.removeProperty('display');
     btn.style.setProperty('display','inline-flex','important');
     btn.textContent = 'Ağaç Türü Seç: ' + currentTree();
     var open = isPanelOpen();
     panel.classList.toggle('open', open);
-    panel.classList.toggle('closed-v200', !open);
+    panel.classList.toggle('closed-v201', !open);
     var list = readList();
     var cur = currentTree();
     if(!list.some(function(t){return lower(t)===lower(cur);})) cur = list[0] || 'Karaçam';
     panel.innerHTML = list.map(function(t){
-      return '<label class="wood-check tree-radio-v200 '+(lower(t)===lower(cur)?'is-active':'')+'"><input type="radio" name="treeTypeRadio" value="'+esc(t)+'" '+(lower(t)===lower(cur)?'checked':'')+' /> '+esc(t)+'</label>';
+      return '<label class="wood-check tree-radio-v201 '+(lower(t)===lower(cur)?'is-active':'')+'"><input type="radio" name="treeTypeRadio" value="'+esc(t)+'" '+(lower(t)===lower(cur)?'checked':'')+' /> '+esc(t)+'</label>';
     }).join('');
     panel.querySelectorAll('input[type="radio"]').forEach(function(r){
       r.addEventListener('change', function(ev){
         setTree(r.value || 'Karaçam');
         setPanelOpen(true);
-        var p = byId('treeTypePanel'); if(p){ p.classList.add('open'); p.classList.remove('closed-v200'); }
+        var p = byId('treeTypePanel'); if(p){ p.classList.add('open'); p.classList.remove('closed-v201'); }
       }, false);
     });
     var apply = byId('treeTypeApplyBtn'); if(apply) apply.style.setProperty('display','none','important');
   }
   function bindTreeButton(){
     var old = byId('treeTypeSelectBtn');
-    if(!old || old.__v200Bound) return;
+    if(!old || old.__v201Bound) return;
     var btn = old.cloneNode(true);
-    btn.__v200Bound = true;
+    btn.__v201Bound = true;
     old.parentNode.replaceChild(btn, old);
     btn.addEventListener('click', function(ev){
       ev.preventDefault(); ev.stopPropagation(); if(ev.stopImmediatePropagation) ev.stopImmediatePropagation();
@@ -939,17 +939,17 @@
 })();
 
 
-/* v200: Ana menü ağaç türü çoklu seçim + hızlı giriş ağaç aç/kapa + admin yeni kayıt menüsü kapatma */
+/* v201: Ana menü ağaç türü çoklu seçim + hızlı giriş ağaç aç/kapa + admin yeni kayıt menüsü kapatma */
 (function(){
   'use strict';
   var TREES = ['Karaçam','Sarıçam','Sedir','Göknar','Kızılçam'];
-  var STORE = 'mesaha_visible_trees_v200';
-  var OPEN_STORE = 'mesaha_tree_panel_open_v200';
+  var STORE = 'mesaha_visible_trees_v201';
+  var OPEN_STORE = 'mesaha_tree_panel_open_v201';
   function byId(id){ return document.getElementById(id); }
   function norm(v){ return String(v == null ? '' : v).trim(); }
   function lower(v){ return norm(v).toLocaleLowerCase('tr-TR'); }
   function esc(v){ return String(v == null ? '' : v).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]; }); }
-  function safe(fn){ try{return fn();}catch(e){ try{ console.warn('[Mesaha İO v200]', e); }catch(_){} } }
+  function safe(fn){ try{return fn();}catch(e){ try{ console.warn('[Mesaha İO v201]', e); }catch(_){} } }
   function currentTree(){ return norm((byId('treeType') && byId('treeType').value) || (typeof state !== 'undefined' && state.settings && state.settings.lastTreeType) || 'Karaçam') || 'Karaçam'; }
   function selectedTrees(){
     var arr = null;
@@ -984,14 +984,14 @@
     if(!panel) return;
     var arr = selectedTrees();
     ensureCurrentAllowed(arr);
-    panel.className = 'home-tree-panel-v200';
+    panel.className = 'home-tree-panel-v201';
     panel.innerHTML = TREES.map(function(t){
       var checked = arr.some(function(x){ return lower(x) === lower(t); });
-      return '<label class="home-tree-check-v200 '+(checked?'active':'')+'"><input type="checkbox" value="'+esc(t)+'" '+(checked?'checked':'')+' /> <span>'+esc(t)+'</span></label>';
+      return '<label class="home-tree-check-v201 '+(checked?'active':'')+'"><input type="checkbox" value="'+esc(t)+'" '+(checked?'checked':'')+' /> <span>'+esc(t)+'</span></label>';
     }).join('');
     panel.querySelectorAll('input[type="checkbox"]').forEach(function(ch){
-      if(ch.__v200TreeCheck) return;
-      ch.__v200TreeCheck = true;
+      if(ch.__v201TreeCheck) return;
+      ch.__v201TreeCheck = true;
       ch.addEventListener('change', function(){
         var vals = Array.prototype.slice.call(panel.querySelectorAll('input[type="checkbox"]:checked')).map(function(i){ return i.value; });
         vals = saveSelectedTrees(vals);
@@ -1010,15 +1010,15 @@
     var apply = byId('treeTypeApplyBtn');
     var arr = selectedTrees();
     ensureCurrentAllowed(arr);
-    if(compact) compact.classList.add('tree-compact-v200');
+    if(compact) compact.classList.add('tree-compact-v201');
     if(btn){
       btn.style.setProperty('display','inline-flex','important');
       btn.style.setProperty('align-items','center','important');
       btn.style.setProperty('justify-content','center','important');
       btn.tabIndex = 0;
       btn.textContent = 'Ağaç Türü Seç: ' + currentTree();
-      if(!btn.__v200Toggle){
-        btn.__v200Toggle = true;
+      if(!btn.__v201Toggle){
+        btn.__v201Toggle = true;
         btn.addEventListener('click', function(ev){
           ev.preventDefault();
           setTreePanelOpen(!treePanelOpen());
@@ -1028,16 +1028,16 @@
     }
     if(apply){ apply.style.setProperty('display','none','important'); apply.tabIndex = -1; }
     if(panel){
-      panel.classList.add('tree-panel-v200');
+      panel.classList.add('tree-panel-v201');
       panel.classList.toggle('open', treePanelOpen());
       panel.querySelectorAll('label.wood-check').forEach(function(label){
         var r = label.querySelector('input[type="radio"]');
         var val = r ? r.value : '';
         var show = arr.some(function(x){ return lower(x) === lower(val); });
-        label.classList.toggle('tree-hidden-v200', !show);
+        label.classList.toggle('tree-hidden-v201', !show);
         label.style.setProperty('display', show ? 'flex' : 'none', 'important');
-        if(r && !r.__v200Radio){
-          r.__v200Radio = true;
+        if(r && !r.__v201Radio){
+          r.__v201Radio = true;
           r.addEventListener('change', function(){
             if(r.checked){
               setTreeValue(r.value || 'Karaçam');
@@ -1067,11 +1067,11 @@
 })();
 
 
-/* v200: flow tabs görünür + input focus scroll zıplama azaltma */
+/* v201: flow tabs görünür + input focus scroll zıplama azaltma */
 (function(){
   'use strict';
   function byId(id){ return document.getElementById(id); }
-  function safe(fn){ try{return fn();}catch(e){ try{ console.warn('[Mesaha İO v200 scroll/nav fix]', e); }catch(_){}} }
+  function safe(fn){ try{return fn();}catch(e){ try{ console.warn('[Mesaha İO v201 scroll/nav fix]', e); }catch(_){}} }
   function ensureFlowTabsVisibleV199(){
     safe(function(){
       var tabs = byId('flowTabsV111');
@@ -1095,19 +1095,19 @@
     var lastY = 0, timer = null;
     function stabilize(){
       var count = 0;
-      document.documentElement.classList.add('mesaha-lock-scroll-v200');
-      document.body.classList.add('mesaha-lock-scroll-v200');
+      document.documentElement.classList.add('mesaha-lock-scroll-v201');
+      document.body.classList.add('mesaha-lock-scroll-v201');
       clearInterval(timer);
       timer = setInterval(function(){
         try{ window.scrollTo(0, lastY); }catch(_){ }
         count++;
-        if(count > 8){ clearInterval(timer); document.documentElement.classList.remove('mesaha-lock-scroll-v200'); document.body.classList.remove('mesaha-lock-scroll-v200'); }
+        if(count > 8){ clearInterval(timer); document.documentElement.classList.remove('mesaha-lock-scroll-v201'); document.body.classList.remove('mesaha-lock-scroll-v201'); }
       }, 80);
     }
     ['length','diameter','barcode'].forEach(function(id){
       var el = byId(id);
-      if(!el || el.__v200Bound) return;
-      el.__v200Bound = true;
+      if(!el || el.__v201Bound) return;
+      el.__v201Bound = true;
       ['touchstart','mousedown','focus'].forEach(function(evName){
         el.addEventListener(evName, function(){
           if(!document.body.classList.contains('inline-simple-v119')) return;
@@ -1115,7 +1115,7 @@
           setTimeout(stabilize, 20);
         }, true);
       });
-      el.addEventListener('blur', function(){ clearInterval(timer); document.documentElement.classList.remove('mesaha-lock-scroll-v200'); document.body.classList.remove('mesaha-lock-scroll-v200'); }, true);
+      el.addEventListener('blur', function(){ clearInterval(timer); document.documentElement.classList.remove('mesaha-lock-scroll-v201'); document.body.classList.remove('mesaha-lock-scroll-v201'); }, true);
     });
   }
   function bootV199(){ ensureFlowTabsVisibleV199(); bindScrollLockV199(); }
@@ -1125,7 +1125,7 @@
 })();
 
 
-/* v200: alt menü sabit + Boy/Çap/Barkod odakta sayfa yukarı zıplamasın */
+/* v201: alt menü sabit + Boy/Çap/Barkod odakta sayfa yukarı zıplamasın */
 (function(){
   'use strict';
   function byId(id){ return document.getElementById(id); }
@@ -1157,7 +1157,7 @@
     if(!shouldLockTarget(el)) return;
     lastY = window.scrollY || document.documentElement.scrollTop || 0;
     lockUntil = Date.now() + 900;
-    document.body.classList.add('keyboard-lock-v200');
+    document.body.classList.add('keyboard-lock-v201');
     [0,40,90,160,260,420,650,900].forEach(function(ms){ setTimeout(function(){ if(Date.now() <= lockUntil + 80) restoreY(lastY); }, ms); });
   }
   document.addEventListener('touchstart', function(ev){
@@ -1167,7 +1167,7 @@
   document.addEventListener('focusin', function(ev){ startKeyboardLock(ev.target); }, true);
   document.addEventListener('focusout', function(){
     lockUntil = 0;
-    setTimeout(function(){ document.body.classList.remove('keyboard-lock-v200'); }, 120);
+    setTimeout(function(){ document.body.classList.remove('keyboard-lock-v201'); }, 120);
   }, true);
   if(window.visualViewport){
     window.visualViewport.addEventListener('resize', function(){ if(Date.now() < lockUntil) restoreY(lastY); });
@@ -1181,11 +1181,11 @@
 })();
 
 
-/* v200: Alt menü eski görünümlü sabit menü; orijinal menünün gidip gelmesini engeller */
+/* v201: Alt menü eski görünümlü sabit menü; orijinal menünün gidip gelmesini engeller */
 (function(){
   'use strict';
   function byId(id){ return document.getElementById(id); }
-  function safe(fn){ try{return fn();}catch(e){ try{ console.warn('[Mesaha İO v200 nav]', e); }catch(_){} } }
+  function safe(fn){ try{return fn();}catch(e){ try{ console.warn('[Mesaha İO v201 nav]', e); }catch(_){} } }
 
   function hideOldNavs(){
     safe(function(){
@@ -1247,6 +1247,19 @@
 
   function ensureStableNav(){
     hideOldNavs();
+    if(document.body.classList.contains('inline-simple-v119') ||
+       document.body.classList.contains('clean-simple-open-v111') ||
+       document.body.classList.contains('clean-simple-active-v111') ||
+       document.body.classList.contains('clean-keyboard-v118')){
+      var existingNav = byId('stableBottomNavV200');
+      if(existingNav){
+        existingNav.style.setProperty('display','none','important');
+        existingNav.style.setProperty('visibility','hidden','important');
+        existingNav.style.setProperty('opacity','0','important');
+        existingNav.style.setProperty('pointer-events','none','important');
+      }
+      return;
+    }
     var nav = byId('stableBottomNavV200');
     if(!nav){
       nav = document.createElement('nav');
@@ -1286,5 +1299,116 @@
   else boot();
   [60,200,500,1000,1800,3000,5200].forEach(function(ms){ setTimeout(boot, ms); });
   setInterval(boot, 1000);
-  window.mesahaV200StableNav = {home:showHome, records:showRecords, guide:showGuide, sync:syncActive};
+  window.mesahaV200StableNav = {home:showHome, records:showRecords, guide:showGuide, sync:syncActive}; window.mesahaV201StableNav = window.mesahaV200StableNav;
+})();
+
+
+/* v201: Hızlı girişte alt menü kesin gizli; ana ekran/ölçümler/kılavuzda sabit */
+(function(){
+  'use strict';
+  function byId(id){ return document.getElementById(id); }
+  function safe(fn){ try{return fn();}catch(e){ try{ console.warn('[Mesaha İO v201 nav guard]', e); }catch(_){} } }
+
+  function isFastEntryOpen(){
+    return !!(
+      document.body.classList.contains('inline-simple-v119') ||
+      document.body.classList.contains('clean-simple-open-v111') ||
+      document.body.classList.contains('clean-simple-active-v111') ||
+      document.body.classList.contains('clean-keyboard-v118')
+    );
+  }
+
+  function nav(){
+    return byId('stableBottomNavV200') || byId('stableBottomNavV200');
+  }
+
+  function hideStableNav(){
+    safe(function(){
+      var n = nav();
+      if(!n) return;
+      n.style.setProperty('display','none','important');
+      n.style.setProperty('visibility','hidden','important');
+      n.style.setProperty('opacity','0','important');
+      n.style.setProperty('pointer-events','none','important');
+    });
+  }
+
+  function showStableNav(){
+    safe(function(){
+      if(isFastEntryOpen()) { hideStableNav(); return; }
+      var n = nav();
+      if(!n) {
+        if(typeof window.mesahaV200StableNav === 'object' && window.mesahaV200StableNav && typeof window.mesahaV200StableNav.sync === 'function') {
+          try { window.mesahaV200StableNav.sync(); } catch(_){}
+        }
+        n = nav();
+      }
+      if(!n) return;
+      n.style.setProperty('display','grid','important');
+      n.style.setProperty('visibility','visible','important');
+      n.style.setProperty('opacity','1','important');
+      n.style.setProperty('pointer-events','auto','important');
+    });
+  }
+
+  function hideOldNavs(){
+    safe(function(){
+      document.querySelectorAll('.bottom-nav,#flowTabsV111,.flow-tabs-v111').forEach(function(el){
+        if(!el || el.id === 'stableBottomNavV200' || el.id === 'stableBottomNavV200') return;
+        el.style.setProperty('display','none','important');
+        el.style.setProperty('visibility','hidden','important');
+        el.style.setProperty('opacity','0','important');
+        el.style.setProperty('pointer-events','none','important');
+      });
+    });
+  }
+
+  function guard(){
+    hideOldNavs();
+    if(isFastEntryOpen()) hideStableNav();
+    else showStableNav();
+  }
+
+  // Hızlı girişe giren ana fonksiyonları sarmala: açılınca menüyü anında gizle.
+  function wrapOpeners(){
+    safe(function(){
+      ['openCleanSimpleV111','openCleanSimpleV113','setInlineSimpleV119','setInlineSimpleV122','setInlineSimpleV126'].forEach(function(name){
+        var fn = window[name];
+        if(typeof fn !== 'function' || fn.__v201NavWrapped) return;
+        var wrapped = function(){
+          var result = fn.apply(this, arguments);
+          setTimeout(guard, 0);
+          setTimeout(guard, 80);
+          setTimeout(guard, 220);
+          return result;
+        };
+        wrapped.__v201NavWrapped = true;
+        wrapped.__v201Old = fn;
+        try { window[name] = wrapped; } catch(_){}
+        try { eval(name + ' = wrapped'); } catch(_){}
+      });
+    });
+  }
+
+  function boot(){
+    wrapOpeners();
+    guard();
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, {once:true});
+  else boot();
+
+  [30,80,160,320,700,1200,2400,5200].forEach(function(ms){ setTimeout(boot, ms); });
+  setInterval(boot, 700);
+
+  document.addEventListener('click', function(ev){
+    var t = ev.target && ev.target.closest ? ev.target.closest('#openSimpleV112,[data-home-simple-v146],.home-simple-v146') : null;
+    if(t){
+      setTimeout(guard, 0);
+      setTimeout(guard, 120);
+      setTimeout(guard, 300);
+    }
+  }, true);
+
+  window.mesahaV201NavGuard = {guard:guard, hide:hideStableNav, show:showStableNav, isFastEntryOpen:isFastEntryOpen};
 })();

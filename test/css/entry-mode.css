@@ -655,3 +655,25 @@ body.inline-simple-v119 .app{padding-bottom:142px!important;}
   #stableBottomNavV200 button::before{font-size:24px!important;}
   #stableBottomNavV200 button::after{font-size:11px!important;}
 }
+
+
+/* v201: Hızlı girişte sabit alt menü görünmez, diğer sayfalarda görünür */
+body.inline-simple-v119 #stableBottomNavV200,
+body.inline-simple-v119 #stableBottomNavV201,
+body.clean-simple-open-v111 #stableBottomNavV200,
+body.clean-simple-open-v111 #stableBottomNavV201,
+body.clean-simple-active-v111 #stableBottomNavV200,
+body.clean-simple-active-v111 #stableBottomNavV201,
+body.clean-keyboard-v118 #stableBottomNavV200,
+body.clean-keyboard-v118 #stableBottomNavV201{
+  display:none!important;
+  visibility:hidden!important;
+  opacity:0!important;
+  pointer-events:none!important;
+}
+
+#stableBottomNavV200,
+#stableBottomNavV201{
+  transition:none!important;
+  animation:none!important;
+}
