@@ -2,15 +2,15 @@
   'use strict';
   var info = {
     appName: 'Mesaha İO',
-    version: 'v187',
-    build: 'v187',
-    assetVersion: '187',
-    visibleVersion: 'Mesaha İO v2.16',
-    shortVersion: 'v2.16',
-    name: 'Mesaha İO v2.16',
-    cacheName: 'mesaha-app-v187-giris-modu-tek-ekran',
+    version: 'v188',
+    build: 'v188',
+    assetVersion: '188',
+    visibleVersion: 'v2.17',
+    shortVersion: 'v2.17',
+    name: 'v2.17',
+    cacheName: 'mesaha-app-v188-ana-ekran-ayarlar',
     builtAt: '2026-06-19',
-    notes: 'Yeni Kayıt ekranındaki giriş alanları kaldırıldı; barkod, çap, boy, odun türü, ağaç türü, kesimci, son 3 barkod ve Alanları Temizle Giriş Modu içine alındı. Dosya Bilgileri ana sayfada açık kart oldu. Logo yanında küçük versiyon kartı eklendi. ORBİS Excel formatına dokunulmadı.'
+    notes: 'Ana Ekran butonu geri getirildi. Mesaha Tarihi ve odun türü tikli seçim alanı ana ekrana alındı; tikli odun türleri Giriş Modu içinde görünür. Üst versiyon kartındaki Mesaha İO yazısı kaldırıldı; sadece sürüm bilgisi kaldı. Giriş Modu sıralamasında çap/boy odun türlerinin üstünde tutuldu.'
   };
   root.MESAHA_VERSION = info;
   root.MESAHA_VERSION_TEXT = info.visibleVersion;
@@ -28,7 +28,7 @@
   function applyVersionText(){
     try{
       if(root.document){
-        document.title = info.visibleVersion;
+        document.title = 'Mesaha İO';
         var meta = document.querySelector('meta[name="mesaha-build"]');
         if(meta) meta.setAttribute('content', info.build);
         Array.prototype.forEach.call(document.querySelectorAll('[data-app-version-short]'), function(el){ if(el && !el.hasAttribute('data-version-no-auto')) el.textContent = info.shortVersion; });
