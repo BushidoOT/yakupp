@@ -59,3 +59,52 @@ body.dark #recordSearch{background:#111827}
   .record-select-actions{display:grid;grid-template-columns:1fr 1fr}
   #selectedInfo{justify-content:center}
 }
+
+
+/* v304 modern pencereler, başlangıç ve seçili bilgiler */
+.startup-card-v304{min-width:min(340px, calc(100vw - 36px));text-align:center}
+.startup-steps{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:7px;width:100%}
+.startup-steps li{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:14px;background:#f8fafc;padding:8px 10px;color:#64748b;font-size:13px;font-weight:850;text-align:left}
+body.dark .startup-steps li{background:#111827}
+.startup-steps li::before{content:'○';font-weight:950;color:#94a3b8}
+.startup-steps li.ok{color:#166534;background:#ecfdf5;border-color:#bbf7d0}
+.startup-steps li.ok::before{content:'✓';color:#16a34a}
+.startup-steps li.warn{color:#92400e;background:#fffbeb;border-color:#fde68a}
+.startup-steps li.warn::before{content:'!';color:#d97706}
+
+.modal-backdrop{position:fixed;inset:0;z-index:10000;background:rgba(15,23,42,.45);backdrop-filter:blur(8px);display:grid;place-items:center;padding:18px}
+.modal-backdrop.hidden{display:none!important}
+.modal-card{width:min(540px,100%);max-height:min(86vh,760px);overflow:auto;background:var(--card);border:1px solid var(--line);border-radius:28px;box-shadow:0 28px 80px rgba(15,23,42,.28);padding:22px;position:relative}
+.modal-close{position:absolute;right:14px;top:14px;width:42px;height:42px;border:1px solid var(--line);border-radius:16px;background:#f8fafc;color:var(--text);font-size:28px;line-height:1}
+body.dark .modal-close{background:#111827}
+.modal-icon{width:54px;height:54px;border-radius:20px;display:grid;place-items:center;background:#ecfdf5;color:#166534;font-size:26px;font-weight:950;margin-bottom:10px}
+.modal-card.warn .modal-icon{background:#fffbeb;color:#b45309}
+.modal-card.danger .modal-icon{background:#fee2e2;color:#b91c1c}
+.modal-card.success .modal-icon{background:#ecfdf5;color:#166534}
+.modal-card h2{margin:0 46px 10px 0;font-size:24px}
+.modal-body{color:#475569;font-size:15px;line-height:1.5}
+body.dark .modal-body{color:#cbd5e1}
+.modal-body p{margin:0 0 10px}
+.modal-body ol,.modal-body ul{margin:8px 0 0;padding-left:21px}
+.modal-body li{margin:7px 0}
+.modal-note{border:1px solid var(--line);border-radius:18px;background:#f8fafc;padding:12px;margin-top:12px;font-weight:850}
+body.dark .modal-note{background:#111827}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:18px}
+.modal-actions button{border:1px solid var(--line);border-radius:16px;padding:12px 16px;font-weight:950;background:#f8fafc;color:var(--text)}
+.modal-actions .primary{background:#16a34a;color:#fff;border-color:#16a34a}
+.modal-actions .danger{background:#dc2626;color:#fff;border-color:#dc2626}
+.modal-actions .ghost{background:transparent}
+
+.entry-live-box,.entry-tools-row{display:none!important}
+
+.last-barcode-card{position:relative;overflow:hidden}
+.last-barcode-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:10px;background:#16a34a}
+.last-barcode-main b{display:block;font-size:28px;letter-spacing:.5px}
+.last-barcode-main small{display:block;margin-top:6px;color:var(--muted);font-weight:850}
+.last-barcode-card.product-tomruk::before{background:#eab308}.last-barcode-card.product-maden::before{background:#2563eb}.last-barcode-card.product-kagit::before{background:#dc2626}.last-barcode-card.product-sanayi::before{background:#16a34a}.last-barcode-card.product-tel::before{background:#7c3aed}
+.export-scope-info{border:1px dashed #bbf7d0;border-radius:16px;background:#ecfdf5;color:#166534;font-weight:950;padding:10px 12px}
+body.dark .export-scope-info{background:#052e16;color:#bbf7d0;border-color:#166534}
+.recent-item{border-left-width:9px!important;box-shadow:0 8px 18px rgba(15,23,42,.06)}
+.recent-item.product-tomruk{background:#fff9db!important}.recent-item.product-maden{background:#e7f0ff!important}.recent-item.product-kagit{background:#fee2e2!important}.recent-item.product-sanayi{background:#dcfce7!important}.recent-item.product-tel{background:#ede9fe!important}
+body.dark .recent-item.product-tomruk{background:#31260a!important}body.dark .recent-item.product-maden{background:#0b1d3a!important}body.dark .recent-item.product-kagit{background:#3a1111!important}body.dark .recent-item.product-sanayi{background:#082513!important}body.dark .recent-item.product-tel{background:#22143a!important}
+.pager::before{content:'20 kayıt / sayfa';font-size:13px;color:var(--muted);font-weight:950;margin-right:4px}

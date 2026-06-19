@@ -1,11 +1,11 @@
 {
-  "app": "v3.03",
-  "version": "v303-extras",
-  "build": "v303",
-  "visibleVersion": "v3.03",
-  "shortVersion": "v3.03",
-  "name": "v3.03",
-  "cacheName": "mesaha-app-v303-extras-no-admin",
+  "app": "v3.04",
+  "version": "v304-modern",
+  "build": "v304",
+  "visibleVersion": "v3.04",
+  "shortVersion": "v3.04",
+  "name": "v3.04",
+  "cacheName": "mesaha-app-v304-modern-startup-backup",
   "builtAt": "2026-06-20",
-  "notes": "Admin hariç eksikler eklendi: canlı hacim, kopya uyarısı, aynı barkod, seçili kayıtlar, bakım, yedek bilgi ve detaylı özet."
+  "notes": "Modern bilgi pencereleri, ZIP yedek, başlangıç/güncelleme sistemi, son barkod ve indirilecek kayıt bilgisi eklendi; canlı hacim/aynı barkod/adet kaldırıldı."
 }

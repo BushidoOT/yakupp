@@ -2,7 +2,7 @@
 'use strict';
 const STORAGE_KEY = 'cam_mesaha_kayitlari_v1';
 const SETTINGS_KEY = 'cam_mesaha_ayarlar_v1';
-const VERSION = window.MESAHA_VERSION || {shortVersion:'v3.03', version:'v303-extras'};
+const VERSION = window.MESAHA_VERSION || {shortVersion:'v3.04', version:'v304-modern'};
 const PRODUCTS = [
   {key:'Tomruk', label:'Tomruk', cls:'tomruk', rule:'Tomruk: çap 21 ve üzeri olmalı.'},
   {key:'Maden Direk', label:'Maden', cls:'maden', rule:'Maden: çap 20 ve altı olmalı.'},
@@ -259,7 +259,7 @@ function saveEntry(){
   if(!diameter) return toast('Çap giriniz.');
   if(!length) return toast('Boy giriniz.');
   if(!validateProductRules(state.settings.currentProduct, diameter, length)) return;
-  const duplicate = state.records.find(r => r.barcode===barcode && r.id!==state.editingId); if(duplicate) return toast('Bu barkod daha önce kayıtlı.');
+  const duplicate = state.records.find(r => String(r.barcode||'').toUpperCase()===barcode && r.id!==state.editingId); if(duplicate) return toast('Bu barkod daha önce kayıtlı.');
   const rec = { id: state.editingId || uid(), barcode, diameter, length, quantity:Math.max(1, num($('quantityInput') && $('quantityInput').value || 1)), productType:normalizeProductType(state.settings.currentProduct), treeType:state.settings.currentTree, cutter:state.settings.activeCutter||'', productionDate:state.settings.mesahaDate||todayISO(), createdAt:new Date().toISOString(), updatedAt: state.editingId ? new Date().toISOString() : '' };
   if(state.editingId){ const i=state.records.findIndex(r=>r.id===state.editingId); if(i>=0) state.records[i]=rec; state.editingId=null; $('cancelEditBtn').classList.add('hidden'); }
   else state.records.push(rec);
@@ -299,7 +299,7 @@ function exportXls(){
   const file=`Mesaha_${bolme?bolme+'_':''}${formatDateFile()}.xls`;
   if(window.OrbisXls) window.OrbisXls.downloadXls(ordered, file); else toast('XLS modülü yüklenmedi.');
 }
-function backupJson(){ const data={version:'v3.03-extras', exportedAt:new Date().toISOString(), records:state.records, settings:state.settings}; downloadText(JSON.stringify(data,null,2), `mesaha_yedek_${formatDateFile()}.json`, 'application/json'); toast('Yedek indirildi.'); }
+function backupJson(){ const data={version:'v3.04-extras', exportedAt:new Date().toISOString(), records:state.records, settings:state.settings}; downloadText(JSON.stringify(data,null,2), `mesaha_yedek_${formatDateFile()}.json`, 'application/json'); toast('Yedek indirildi.'); }
 function restoreJson(e){ const file=e.target.files && e.target.files[0]; if(!file) return; const reader=new FileReader(); reader.onload=()=>{ try{ const data=JSON.parse(reader.result); const records=Array.isArray(data) ? data : data.records; if(!Array.isArray(records)) throw new Error('records yok'); state.records=records.map(migrateRecord).filter(Boolean); if(data.settings) state.settings={...state.settings,...data.settings}; saveRecords(); saveSettings(); renderAll(); toast('Yedek yüklendi.'); }catch(err){ toast('Yedek okunamadı.'); } e.target.value=''; }; reader.readAsText(file); }
 function downloadText(content, filename, type){ const blob=new Blob([content],{type}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=filename; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),1000); }
 window.state = state;
@@ -312,12 +312,12 @@ window.toast = toast;
 window.productInfo = productInfo;
 window.volume = volume;
 window.saveEntry = saveEntry;
-function boot(){ load(); bind(); renderAll(); showView('home'); setTimeout(()=>$('startup').classList.add('hide'),350); if('serviceWorker' in navigator) navigator.serviceWorker.register('./service-worker.js').catch(()=>{}); }
+function boot(){ load(); bind(); renderAll(); showView('home'); setTimeout(()=>$('startup').classList.add('hide'),1100); if('serviceWorker' in navigator) navigator.serviceWorker.register('./service-worker.js').catch(()=>{}); }
 if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true}); else boot();
 })();
 
 
-/* v303: admin hariç eksik parçalar - canlı ölçüm, aynı barkod, seçimli kayıtlar, bakım, özet */
+/* v304: admin hariç eksik parçalar - canlı ölçüm, aynı barkod, seçimli kayıtlar, bakım, özet */
 (function(){
   'use strict';
 
@@ -426,8 +426,8 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   }
 
   function patchSaveEntry(){
-    if(window.__v303SavePatched) return;
-    window.__v303SavePatched = true;
+    if(window.__v304SavePatched) return;
+    window.__v304SavePatched = true;
 
     const old = window.saveEntry;
     if(typeof old !== 'function') return;
@@ -545,14 +545,14 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   function bindV303(){
     const d=$('diameterInput'), l=$('lengthInput'), q=$('quantityInput'), b=$('barcodeInput');
     [d,l,q,b].filter(Boolean).forEach(el => {
-      if(el.__v303Live) return;
-      el.__v303Live = true;
+      if(el.__v304Live) return;
+      el.__v304Live = true;
       el.addEventListener('input', updateLiveBox);
       el.addEventListener('change', updateLiveBox);
     });
 
-    if(q && !q.__v303Qty){
-      q.__v303Qty = true;
+    if(q && !q.__v304Qty){
+      q.__v304Qty = true;
       q.addEventListener('input', () => {
         let v = String(q.value||'').replace(/\D/g,'').slice(0,3);
         if(!v || Number(v)<1) v='1';
@@ -561,8 +561,8 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     }
 
     const same = $('sameBarcodeBtn');
-    if(same && !same.__v303Same){
-      same.__v303Same = true;
+    if(same && !same.__v304Same){
+      same.__v304Same = true;
       same.addEventListener('click', () => {
         settings().sameBarcodeMode = settings().sameBarcodeMode !== true;
         saveSettings();
@@ -571,8 +571,8 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     }
 
     const save = $('saveBtn');
-    if(save && !save.__v303SameRestore){
-      save.__v303SameRestore = true;
+    if(save && !save.__v304SameRestore){
+      save.__v304SameRestore = true;
       save.addEventListener('click', () => {
         const beforeBarcode = norm($('barcodeInput') && $('barcodeInput').value).toUpperCase();
         const beforeCount = records().length;
@@ -590,14 +590,14 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     }
 
     const search = $('recordSearch');
-    if(search && !search.__v303Search){
-      search.__v303Search = true;
+    if(search && !search.__v304Search){
+      search.__v304Search = true;
       search.addEventListener('input', () => { currentPage=1; renderRecordsV303(); });
     }
 
     const selectFiltered = $('selectFilteredBtn');
-    if(selectFiltered && !selectFiltered.__v303){
-      selectFiltered.__v303 = true;
+    if(selectFiltered && !selectFiltered.__v304){
+      selectFiltered.__v304 = true;
       selectFiltered.addEventListener('click', () => {
         filteredRecordsV303().forEach(r => selectedIds.add(r.id));
         renderRecordsV303();
@@ -605,14 +605,14 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     }
 
     const clearSel = $('clearSelectionBtn');
-    if(clearSel && !clearSel.__v303){
-      clearSel.__v303 = true;
+    if(clearSel && !clearSel.__v304){
+      clearSel.__v304 = true;
       clearSel.addEventListener('click', () => { selectedIds.clear(); renderRecordsV303(); });
     }
 
     const bulk = $('bulkDeleteBtn');
-    if(bulk && !bulk.__v303){
-      bulk.__v303 = true;
+    if(bulk && !bulk.__v304){
+      bulk.__v304 = true;
       bulk.addEventListener('click', () => {
         const list = selectedList();
         if(!list.length) return toast('Seçili kayıt yok.');
@@ -629,8 +629,8 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     }
 
     const undo = $('undoDeleteBtn');
-    if(undo && !undo.__v303){
-      undo.__v303 = true;
+    if(undo && !undo.__v304){
+      undo.__v304 = true;
       undo.addEventListener('click', () => {
         if(!lastDeleted || !lastDeleted.records) return;
         const s = appState();
@@ -643,8 +643,8 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     }
 
     const delAll = $('deleteAllBtn');
-    if(delAll && !delAll.__v303){
-      delAll.__v303 = true;
+    if(delAll && !delAll.__v304){
+      delAll.__v304 = true;
       delAll.addEventListener('click', () => {
         if(!records().length) return toast('Silinecek kayıt yok.');
         if(!confirm('Tüm kayıtlar silinsin mi?')) return;
@@ -661,42 +661,42 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     document.addEventListener('click', ev => { if(ev.target && ev.target.closest && ev.target.closest('[data-tree-filter],[data-cutter-filter]')) setTimeout(renderRecordsV303, 60); }, true);
 
     document.querySelectorAll('[data-nav="records"]').forEach(btn => {
-      if(btn.__v303Nav) return;
-      btn.__v303Nav = true;
+      if(btn.__v304Nav) return;
+      btn.__v304Nav = true;
       btn.addEventListener('click', () => setTimeout(renderRecordsV303, 80));
     });
 
     const update = $('forceUpdateBtn');
-    if(update && !update.__v303){
-      update.__v303 = true;
+    if(update && !update.__v304){
+      update.__v304 = true;
       update.addEventListener('click', forceUpdate);
     }
 
     const cache = $('clearCacheBtn');
-    if(cache && !cache.__v303){
-      cache.__v303 = true;
+    if(cache && !cache.__v304){
+      cache.__v304 = true;
       cache.addEventListener('click', clearCacheOnly);
     }
 
     const backup = $('backupBtn');
-    if(backup && !backup.__v303Info){
-      backup.__v303Info = true;
+    if(backup && !backup.__v304Info){
+      backup.__v304Info = true;
       backup.addEventListener('click', () => {
         setTimeout(()=>alert('Yedek dosyası metin/JSON formatındadır. Sadece Mesaha İO içinde geri yükleme içindir. Excel yedeği değildir. Excel için Mesaha Dosyasını İndir butonunu kullanınız.'), 50);
       }, true);
     }
 
     const restore = $('restoreBtn');
-    if(restore && !restore.__v303Info){
-      restore.__v303Info = true;
+    if(restore && !restore.__v304Info){
+      restore.__v304Info = true;
       restore.addEventListener('click', () => {
         setTimeout(()=>alert('Yedek Yükle: Daha önce Mesaha İO ile alınan JSON yedeğini seçiniz. Bu işlem mevcut kayıtları yedekteki kayıtlarla değiştirir.'), 50);
       }, true);
     }
 
     const xls = $('downloadXlsBtn');
-    if(xls && !xls.__v303Info){
-      xls.__v303Info = true;
+    if(xls && !xls.__v304Info){
+      xls.__v304Info = true;
       xls.addEventListener('click', () => {
         setTimeout(()=>alert('Mesaha dosyası indiriliyor\\n\\nORBİS’e Aktarma:\\n1. Dosyayı bilgisayara aktarınız.\\n2. ORBİS’e bilgisayar üzerinden giriş yapınız.\\n3. İşletme Pazarlama > Kesme Faaliyetleri Raporu ekranına giriniz.\\n4. Şeflik ve bölme bilgilerini giriniz, bölmeye çift tıklayınız.\\n5. Dosya yükleme bölümünden Excel’den Aktar deyiniz.'), 50);
       }, true);
@@ -756,4 +756,559 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 
   [100,300,800,1600,3000].forEach(ms => setTimeout(boot, ms));
   window.mesahaV303 = {render:renderAllV303, live:updateLiveBox, records:renderRecordsV303, selected:selectedList, filtered:filteredRecordsV303};
+})();
+
+
+/* v304: modern pencereler + yedek zip + başlangıç/güncelleme + seçili/filtreli bilgi */
+(function(){
+  'use strict';
+
+  const STORAGE_KEY = 'cam_mesaha_kayitlari_v1';
+  const SETTINGS_KEY = 'cam_mesaha_ayarlar_v1';
+  let lastDeletedV304 = null;
+
+  const $ = id => document.getElementById(id);
+  const norm = v => String(v ?? '').trim().replace(/\s+/g,' ');
+  const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+  const num = v => { const n = Number(String(v ?? '').replace(',','.')); return Number.isFinite(n) ? n : 0; };
+  const fmt = (n,d=3) => Number(n||0).toLocaleString('tr-TR',{maximumFractionDigits:d});
+  const appState = () => window.state || null;
+  const records = () => (appState() && Array.isArray(appState().records)) ? appState().records : [];
+  const settings = () => (appState() && appState().settings) ? appState().settings : {};
+  const productInfo = key => {
+    if(typeof window.productInfo === 'function') return window.productInfo(key);
+    const map = {
+      'Tomruk':{label:'Tomruk', cls:'tomruk'},
+      'Maden Direk':{label:'Maden', cls:'maden'},
+      'Kağıtlık':{label:'Kağıtlık', cls:'kagit'},
+      'Sanayi Odunu':{label:'Sanayi', cls:'sanayi'},
+      'Tel Direk':{label:'Tel', cls:'tel'}
+    };
+    return map[key] || map['Tomruk'];
+  };
+  function saveRecords(){
+    if(typeof window.saveRecords === 'function') return window.saveRecords();
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(records()));
+  }
+  function saveSettings(){
+    if(typeof window.saveSettings === 'function') return window.saveSettings();
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings()));
+  }
+  function toast(msg){
+    if(typeof window.toast === 'function') return window.toast(msg);
+    const el = $('toast');
+    if(!el) return;
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(el.__t);
+    el.__t = setTimeout(()=>el.classList.remove('show'), 2200);
+  }
+  function cleanFile(v){
+    return norm(v).replace(/[ıİ]/g,'i').replace(/[ğĞ]/g,'g').replace(/[üÜ]/g,'u').replace(/[şŞ]/g,'s').replace(/[öÖ]/g,'o').replace(/[çÇ]/g,'c').replace(/[^a-zA-Z0-9_-]+/g,'_').replace(/^_+|_+$/g,'').slice(0,44);
+  }
+  function dateFile(){
+    const d = new Date();
+    const p = n => String(n).padStart(2,'0');
+    return `${d.getFullYear()}${p(d.getMonth()+1)}${p(d.getDate())}_${p(d.getHours())}${p(d.getMinutes())}`;
+  }
+  function volumeOf(r){
+    const d=num(r.diameter), l=num(r.length), q=num(r.quantity||1);
+    if(!d || !l || !q) return 0;
+    return Math.PI*Math.pow(d/100,2)/4*l*q;
+  }
+
+  function modal(opts){
+    opts = opts || {};
+    return new Promise(resolve => {
+      const back = $('modernModal');
+      if(!back) { resolve(confirm(String(opts.title||'Devam edilsin mi?'))); return; }
+      const card = back.querySelector('.modal-card');
+      const close = $('modalCloseBtn');
+      const icon = $('modalIcon');
+      const title = $('modalTitle');
+      const body = $('modalBody');
+      const actions = $('modalActions');
+      card.classList.remove('warn','danger','success');
+      if(opts.type) card.classList.add(opts.type);
+      icon.textContent = opts.icon || (opts.type==='danger' ? '!' : opts.type==='success' ? '✓' : opts.type==='warn' ? '!' : 'ℹ');
+      title.textContent = opts.title || 'Bilgi';
+      body.innerHTML = opts.html || `<p>${esc(opts.message || '')}</p>`;
+      actions.innerHTML = '';
+      const buttons = opts.buttons || [{text:'Tamam', value:true, cls:'primary'}];
+      function done(v){
+        back.classList.add('hidden');
+        document.body.classList.remove('modal-open');
+        back.onclick = null;
+        close.onclick = null;
+        resolve(v);
+      }
+      buttons.forEach(b => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.textContent = b.text;
+        btn.className = b.cls || '';
+        btn.addEventListener('click', () => done(b.value));
+        actions.appendChild(btn);
+      });
+      close.onclick = () => done(false);
+      back.onclick = ev => { if(ev.target === back) done(false); };
+      back.classList.remove('hidden');
+      document.body.classList.add('modal-open');
+    });
+  }
+
+  window.mesahaModal = modal;
+  window.alert = function(message){ modal({title:'Bilgi', message:String(message||''), icon:'ℹ'}); };
+
+  function setStep(name, cls, text){
+    const el = document.querySelector(`#startupSteps [data-step="${name}"]`);
+    if(!el) return;
+    el.classList.remove('ok','warn');
+    if(cls) el.classList.add(cls);
+    if(text) el.textContent = text;
+  }
+
+  async function startupChecks(){
+    try{
+      setStep('files','ok','Dosyalar hazır');
+      let count = 0;
+      try{ count = JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]').length || 0; }catch{}
+      setStep('records','ok', count + ' kayıt hazır');
+      if(navigator.onLine){
+        setStep('offline','ok','Online / offline çalışma hazır');
+        try{
+          const ctrl = new AbortController();
+          const timer = setTimeout(()=>ctrl.abort(), 2500);
+          const res = await fetch('./version.json?v=' + Date.now(), {cache:'no-store', signal:ctrl.signal});
+          clearTimeout(timer);
+          if(res.ok){
+            const remote = await res.json();
+            setStep('version','ok','Sürüm kontrol edildi');
+            const current = window.MESAHA_VERSION || {};
+            if(remote && remote.version && current.version && remote.version !== current.version){
+              setTimeout(() => modal({
+                title:'Yeni sürüm var',
+                type:'success',
+                icon:'↻',
+                html:`<p>Yeni sürüm bulundu: <b>${esc(remote.visibleVersion || remote.app || remote.version)}</b></p><p>Güncellemek için aşağıdaki butona basabilirsin.</p>`,
+                buttons:[{text:'Sonra', value:false, cls:'ghost'}, {text:'Güncelle', value:true, cls:'primary'}]
+              }).then(ok => { if(ok) forceUpdateFlow(); }), 800);
+            }
+          }else{
+            setStep('version','warn','Sürüm kontrolü yapılamadı');
+          }
+        }catch{
+          setStep('version','warn','Sürüm kontrolü offline geçildi');
+        }
+      }else{
+        setStep('version','warn','Offline açıldı, sürüm sonra kontrol edilir');
+        setStep('offline','ok','Offline mod hazır');
+      }
+    }catch{}
+  }
+
+  function updateNetwork(){
+    const el = $('netText');
+    if(el) el.textContent = navigator.onLine ? 'Çevrim içi' : 'Offline';
+  }
+
+  function exportScope(){
+    const selected = (window.mesahaV303 && typeof window.mesahaV303.selected === 'function') ? window.mesahaV303.selected() : [];
+    const filtered = (window.mesahaV303 && typeof window.mesahaV303.filtered === 'function') ? window.mesahaV303.filtered() : records();
+    const q = norm(($('recordSearch') && $('recordSearch').value) || '');
+    const s = settings();
+    const filteredMode = q || (s.treeFilter && s.treeFilter !== 'Tümü') || (s.cutterFilter && s.cutterFilter !== 'Tümü');
+    if(selected && selected.length) return {list:selected, text:`Seçili kayıtlar (${selected.length})`, mode:'selected'};
+    if(filteredMode) return {list:filtered, text:`Filtrelenen kayıtlar (${filtered.length})`, mode:'filtered'};
+    return {list:records(), text:`Tüm kayıtlar (${records().length})`, mode:'all'};
+  }
+
+  function updateExportScopeInfo(){
+    const el = $('exportScopeInfo');
+    if(el) el.textContent = 'İndirilecek: ' + exportScope().text;
+    updateLastBarcodeCard();
+  }
+
+  function updateLastBarcodeCard(){
+    const card = $('homeLastBarcode');
+    if(!card) return;
+    const last = records().length ? records()[records().length - 1] : null;
+    const txt = $('lastBarcodeText');
+    const meta = $('lastBarcodeMeta');
+    const prod = $('lastBarcodeProduct');
+    card.classList.remove('product-tomruk','product-maden','product-kagit','product-sanayi','product-tel');
+    if(!last){
+      if(txt) txt.textContent = '-';
+      if(meta) meta.textContent = 'Henüz kayıt yok';
+      if(prod) prod.textContent = '-';
+      return;
+    }
+    const p = productInfo(last.productType);
+    card.classList.add('product-' + p.cls);
+    if(txt) txt.textContent = last.barcode || '-';
+    if(meta) meta.textContent = `${last.treeType || '-'} • ${p.label} • ${last.diameter || '-'} çap / ${last.length || '-'} boy`;
+    if(prod) prod.textContent = p.label;
+  }
+
+  function selectedIdsFromCheckboxes(){
+    return Array.from(document.querySelectorAll('[data-select]:checked')).map(x => x.getAttribute('data-select')).filter(Boolean);
+  }
+
+  function renderAfterChange(){
+    try{ if(typeof window.renderAll === 'function') window.renderAll(); }catch{}
+    try{ if(window.mesahaV303 && typeof window.mesahaV303.render === 'function') window.mesahaV303.render(); }catch{}
+    updateExportScopeInfo();
+    const undo = $('undoDeleteBtn');
+    if(undo) undo.classList.toggle('hidden', !lastDeletedV304);
+  }
+
+  function downloadBlob(blob, filename){
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url), 1200);
+  }
+
+  function downloadText(content, filename, type='text/plain;charset=utf-8'){
+    downloadBlob(new Blob([content], {type}), filename);
+  }
+
+  function makeXlsDownload(){
+    const scope = exportScope();
+    if(!scope.list.length){ toast('Çıktı için kayıt yok.'); return; }
+    const bolme = cleanFile(settings().bolmeNo || '');
+    const file = `Mesaha_${bolme ? bolme + '_' : ''}${dateFile()}.xls`;
+    if(window.OrbisXls) window.OrbisXls.downloadXls(scope.list.slice(), file);
+    else toast('XLS modülü yüklenmedi.');
+  }
+
+  function crc32(bytes){
+    if(!crc32.table){
+      crc32.table = new Uint32Array(256);
+      for(let i=0;i<256;i++){
+        let c=i;
+        for(let k=0;k<8;k++) c = (c&1) ? (0xEDB88320 ^ (c>>>1)) : (c>>>1);
+        crc32.table[i]=c>>>0;
+      }
+    }
+    let c = 0xffffffff;
+    for(let i=0;i<bytes.length;i++) c = crc32.table[(c ^ bytes[i]) & 0xff] ^ (c >>> 8);
+    return (c ^ 0xffffffff) >>> 0;
+  }
+  function u16(v){ const b=new Uint8Array(2); new DataView(b.buffer).setUint16(0, v, true); return b; }
+  function u32(v){ const b=new Uint8Array(4); new DataView(b.buffer).setUint32(0, v>>>0, true); return b; }
+  function dosTimeDate(){
+    const d = new Date();
+    return {
+      time: (d.getHours()<<11) | (d.getMinutes()<<5) | Math.floor(d.getSeconds()/2),
+      date: ((d.getFullYear()-1980)<<9) | ((d.getMonth()+1)<<5) | d.getDate()
+    };
+  }
+  function concatBytes(parts){
+    const len = parts.reduce((s,p)=>s+p.length,0);
+    const out = new Uint8Array(len);
+    let off=0;
+    parts.forEach(p=>{ out.set(p, off); off += p.length; });
+    return out;
+  }
+  function makeZip(files){
+    const enc = new TextEncoder();
+    const localParts = [];
+    const centralParts = [];
+    let offset = 0;
+    const dt = dosTimeDate();
+    files.forEach(file => {
+      const nameBytes = enc.encode(file.name);
+      const data = typeof file.data === 'string' ? enc.encode(file.data) : file.data;
+      const crc = crc32(data);
+      const local = concatBytes([
+        u32(0x04034b50), u16(20), u16(0), u16(0), u16(dt.time), u16(dt.date),
+        u32(crc), u32(data.length), u32(data.length), u16(nameBytes.length), u16(0), nameBytes, data
+      ]);
+      localParts.push(local);
+      const central = concatBytes([
+        u32(0x02014b50), u16(20), u16(20), u16(0), u16(0), u16(dt.time), u16(dt.date),
+        u32(crc), u32(data.length), u32(data.length), u16(nameBytes.length), u16(0), u16(0), u16(0), u16(0), u32(0), u32(offset), nameBytes
+      ]);
+      centralParts.push(central);
+      offset += local.length;
+    });
+    const centralSize = centralParts.reduce((s,p)=>s+p.length,0);
+    const end = concatBytes([u32(0x06054b50), u16(0), u16(0), u16(files.length), u16(files.length), u32(centralSize), u32(offset), u16(0)]);
+    return new Blob([...localParts, ...centralParts, end], {type:'application/zip'});
+  }
+  function backupFilename(ext='zip'){
+    const bolme = cleanFile(settings().bolmeNo || '');
+    const sef = cleanFile(settings().seflik || '');
+    return `mesaha_yedek_${bolme ? bolme + '_' : ''}${sef ? sef + '_' : ''}${dateFile()}.${ext}`;
+  }
+  function backupZip(){
+    const data = {
+      version:'v3.04-modern',
+      exportedAt:new Date().toISOString(),
+      records:records(),
+      settings:settings()
+    };
+    const jsonName = backupFilename('json');
+    const zip = makeZip([{name:jsonName, data:JSON.stringify(data,null,2)}]);
+    downloadBlob(zip, backupFilename('zip'));
+    toast('ZIP yedek indirildi.');
+  }
+  async function readZipJson(file){
+    const buffer = await file.arrayBuffer();
+    const bytes = new Uint8Array(buffer);
+    const dec = new TextDecoder();
+    let pos = 0;
+    while(pos + 30 <= bytes.length){
+      const dv = new DataView(bytes.buffer, bytes.byteOffset + pos);
+      const sig = dv.getUint32(0, true);
+      if(sig !== 0x04034b50) break;
+      const method = dv.getUint16(8, true);
+      const size = dv.getUint32(18, true);
+      const nameLen = dv.getUint16(26, true);
+      const extraLen = dv.getUint16(28, true);
+      const nameStart = pos + 30;
+      const name = dec.decode(bytes.slice(nameStart, nameStart + nameLen));
+      const dataStart = nameStart + nameLen + extraLen;
+      const dataEnd = dataStart + size;
+      if(dataEnd > bytes.length) throw new Error('ZIP dosyası eksik veya bozuk.');
+      if(/\.json$/i.test(name)){
+        if(method !== 0) throw new Error('Bu ZIP sıkıştırılmış. Mesaha İO ile alınan ZIP yedeğini seçiniz.');
+        return JSON.parse(dec.decode(bytes.slice(dataStart, dataEnd)));
+      }
+      pos = dataEnd;
+    }
+    throw new Error('ZIP içinde JSON yedek bulunamadı.');
+  }
+  async function readBackupFile(file){
+    if(/\.zip$/i.test(file.name) || /zip/i.test(file.type||'')) return await readZipJson(file);
+    const text = await file.text();
+    return JSON.parse(text);
+  }
+  function restoreData(data){
+    const recs = Array.isArray(data) ? data : data.records;
+    if(!Array.isArray(recs)) throw new Error('Yedek içinde kayıt listesi bulunamadı.');
+    const s = appState();
+    if(!s) throw new Error('Uygulama hazır değil.');
+    s.records = recs.map(r => ({
+      id:r.id || (Date.now().toString(36)+Math.random().toString(36).slice(2,8)),
+      barcode:norm(r.barcode || r.barkodNo),
+      diameter:String(r.diameter || r.cap || ''),
+      length:String(r.length || r.boy || ''),
+      quantity:Number(r.quantity || r.adet || 1),
+      productType:r.productType || r.odunTuru || r.odunAdi || 'Tomruk',
+      treeType:r.treeType || r.species || r.agacTuru || r.agacAdi || 'Karaçam',
+      cutter:r.cutter || r.kesimci || '',
+      productionDate:r.productionDate || r.uretimTarihi || settings().mesahaDate || new Date().toISOString().slice(0,10),
+      createdAt:r.createdAt || new Date().toISOString(),
+      updatedAt:r.updatedAt || ''
+    })).filter(r => r.barcode);
+    if(data.settings && typeof data.settings === 'object'){
+      s.settings = {...s.settings, ...data.settings, sameBarcodeMode:false, quantity:'1'};
+      window.state = s;
+    }
+    saveRecords(); saveSettings(); renderAfterChange();
+  }
+
+  async function clearCacheFlow(){
+    const ok = await modal({
+      title:'Ön Bellek Temizle',
+      type:'warn',
+      icon:'♻',
+      html:'<p>Bu işlem eski uygulama dosyalarını temizler. Kayıtların ve yedeklerin silinmez.</p><div class="modal-note">Temizledikten sonra sayfayı kapatıp tekrar açman en sağlıklısıdır.</div>',
+      buttons:[{text:'Vazgeç', value:false, cls:'ghost'}, {text:'Temizle', value:true, cls:'primary'}]
+    });
+    if(!ok) return;
+    try{
+      if('caches' in window){
+        const keys = await caches.keys();
+        await Promise.all(keys.map(k => caches.delete(k)));
+      }
+      await modal({title:'Ön bellek temizlendi', type:'success', icon:'✓', html:'<p>Eski dosyalar temizlendi. Sayfayı yenileyerek yeni dosyaları alabilirsin.</p>', buttons:[{text:'Tamam', value:true, cls:'primary'}]});
+    }catch{
+      modal({title:'Temizleme başarısız', type:'danger', icon:'!', message:'Ön bellek temizlenemedi.'});
+    }
+  }
+  async function forceUpdateFlow(){
+    const ok = await modal({
+      title:'Yeni Sürümü Güncelle',
+      type:'warn',
+      icon:'↻',
+      html:'<p>Uygulama son dosyaları kontrol edecek, ön belleği temizleyecek ve kontrollü şekilde yenilenecek.</p><div class="modal-note">Kayıtların cihazda kalır; sadece uygulama dosyaları yenilenir.</div>',
+      buttons:[{text:'Vazgeç', value:false, cls:'ghost'}, {text:'Güncelle', value:true, cls:'primary'}]
+    });
+    if(!ok) return;
+    try{
+      if('serviceWorker' in navigator){
+        const regs = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(regs.map(r => r.update()));
+      }
+      if('caches' in window){
+        const keys = await caches.keys();
+        await Promise.all(keys.map(k => caches.delete(k)));
+      }
+      await modal({title:'Güncelleme hazır', type:'success', icon:'✓', html:'<p>Yeni sürüm dosyaları kontrol edildi. Şimdi sayfa yenilenecek.</p>', buttons:[{text:'Yenile', value:true, cls:'primary'}]});
+      location.reload();
+    }catch{
+      modal({title:'Güncelleme yapılamadı', type:'danger', icon:'!', message:'Bağlantı veya tarayıcı önbelleği nedeniyle güncelleme tamamlanamadı.'});
+    }
+  }
+
+  function bindIntercepts(){
+    document.addEventListener('click', async ev => {
+      const target = ev.target && ev.target.closest ? ev.target.closest('button,[data-del]') : null;
+      if(!target) return;
+
+      if(target.id === 'downloadXlsBtn'){
+        ev.preventDefault(); ev.stopPropagation(); ev.stopImmediatePropagation();
+        const scope = exportScope();
+        const ok = await modal({
+          title:'Mesaha dosyası indiriliyor',
+          icon:'▣',
+          html:`<p><b>${esc(scope.text)}</b> ORBİS uyumlu .xls olarak indirilecek.</p>
+            <ol>
+              <li>Dosyayı bilgisayara aktarınız.</li>
+              <li>ORBİS’e bilgisayar üzerinden giriş yapınız.</li>
+              <li>İşletme Pazarlama modülüne giriniz.</li>
+              <li>Kesme Faaliyetleri Raporu ekranında şeflik ve bölme bilgilerini giriniz.</li>
+              <li>Bölmeye çift tıklayıp dosya yükleme bölümünden <b>Excel’den Aktar</b> deyiniz.</li>
+            </ol>`,
+          buttons:[{text:'Vazgeç', value:false, cls:'ghost'}, {text:'Dosyayı İndir', value:true, cls:'primary'}]
+        });
+        if(ok) makeXlsDownload();
+        return;
+      }
+
+      if(target.id === 'backupBtn'){
+        ev.preventDefault(); ev.stopPropagation(); ev.stopImmediatePropagation();
+        const ok = await modal({
+          title:'Yedek Al',
+          icon:'↧',
+          html:'<p>Yedek ZIP formatında indirilecek. İçinde JSON yedek dosyası bulunur.</p><div class="modal-note">Bu yedek sadece Mesaha İO içinde geri yükleme içindir. Excel yedeği değildir. Excel için Mesaha Dosyasını İndir butonunu kullanınız.</div>',
+          buttons:[{text:'Vazgeç', value:false, cls:'ghost'}, {text:'ZIP Yedek Al', value:true, cls:'primary'}]
+        });
+        if(ok) backupZip();
+        return;
+      }
+
+      if(target.id === 'restoreBtn'){
+        ev.preventDefault(); ev.stopPropagation(); ev.stopImmediatePropagation();
+        const ok = await modal({
+          title:'Yedek Yükle',
+          type:'warn',
+          icon:'!',
+          html:'<p>JSON veya Mesaha İO ZIP yedeği seçebilirsiniz.</p><div class="modal-note">Yedek yüklenince mevcut kayıtlar yedekteki kayıtlarla değiştirilir. Devam etmeden önce mevcut verilerinizden emin olun.</div>',
+          buttons:[{text:'Vazgeç', value:false, cls:'ghost'}, {text:'Dosya Seç', value:true, cls:'primary'}]
+        });
+        if(ok && $('restoreInput')) $('restoreInput').click();
+        return;
+      }
+
+      if(target.id === 'clearCacheBtn'){
+        ev.preventDefault(); ev.stopPropagation(); ev.stopImmediatePropagation();
+        clearCacheFlow();
+        return;
+      }
+
+      if(target.id === 'forceUpdateBtn'){
+        ev.preventDefault(); ev.stopPropagation(); ev.stopImmediatePropagation();
+        forceUpdateFlow();
+        return;
+      }
+
+      if(target.id === 'bulkDeleteBtn'){
+        ev.preventDefault(); ev.stopPropagation(); ev.stopImmediatePropagation();
+        const list = (window.mesahaV303 && typeof window.mesahaV303.selected === 'function') ? window.mesahaV303.selected() : [];
+        if(!list.length){ toast('Seçili kayıt yok.'); return; }
+        const ok = await modal({title:'Seçilileri Sil', type:'danger', icon:'!', html:`<p><b>${list.length}</b> kayıt silinecek.</p><div class="modal-note">Yanlışlık olursa Geri Al butonuyla son silmeyi geri alabilirsin.</div>`, buttons:[{text:'Vazgeç', value:false, cls:'ghost'}, {text:'Sil', value:true, cls:'danger'}]});
+        if(!ok) return;
+        const ids = new Set(list.map(r => r.id));
+        lastDeletedV304 = list.slice();
+        const s = appState(); s.records = records().filter(r => !ids.has(r.id)); window.state = s;
+        saveRecords(); renderAfterChange(); toast('Seçili kayıtlar silindi.');
+        return;
+      }
+
+      if(target.id === 'deleteAllBtn'){
+        ev.preventDefault(); ev.stopPropagation(); ev.stopImmediatePropagation();
+        if(!records().length){ toast('Silinecek kayıt yok.'); return; }
+        const ok = await modal({title:'Tümünü Sil', type:'danger', icon:'!', html:`<p><b>${records().length}</b> kayıt tamamen silinecek.</p><div class="modal-note">Bu işlemden sonra Geri Al butonuyla son silmeyi geri alabilirsin.</div>`, buttons:[{text:'Vazgeç', value:false, cls:'ghost'}, {text:'Tümünü Sil', value:true, cls:'danger'}]});
+        if(!ok) return;
+        lastDeletedV304 = records().slice();
+        const s = appState(); s.records = []; window.state = s;
+        saveRecords(); renderAfterChange(); toast('Tüm kayıtlar silindi.');
+        return;
+      }
+
+      if(target.id === 'undoDeleteBtn'){
+        ev.preventDefault(); ev.stopPropagation(); ev.stopImmediatePropagation();
+        if(!lastDeletedV304 || !lastDeletedV304.length){ toast('Geri alınacak silme yok.'); return; }
+        const s = appState(); s.records = records().concat(lastDeletedV304); window.state = s;
+        lastDeletedV304 = null;
+        saveRecords(); renderAfterChange(); toast('Silme geri alındı.');
+        return;
+      }
+
+      if(target.matches && target.matches('[data-del]')){
+        ev.preventDefault(); ev.stopPropagation(); ev.stopImmediatePropagation();
+        const id = target.getAttribute('data-del');
+        const rec = records().find(r => r.id === id);
+        if(!rec) return;
+        const ok = await modal({title:'Kayıt Sil', type:'danger', icon:'!', html:`<p><b>${esc(rec.barcode)}</b> barkodlu kayıt silinsin mi?</p>`, buttons:[{text:'Vazgeç', value:false, cls:'ghost'}, {text:'Sil', value:true, cls:'danger'}]});
+        if(!ok) return;
+        lastDeletedV304 = [rec];
+        const s = appState(); s.records = records().filter(r => r.id !== id); window.state = s;
+        saveRecords(); renderAfterChange(); toast('Kayıt silindi.');
+        return;
+      }
+    }, true);
+
+    document.addEventListener('change', async ev => {
+      const input = ev.target;
+      if(!input || input.id !== 'restoreInput') return;
+      ev.preventDefault(); ev.stopPropagation(); ev.stopImmediatePropagation();
+      const file = input.files && input.files[0];
+      input.value = '';
+      if(!file) return;
+      try{
+        const data = await readBackupFile(file);
+        restoreData(data);
+        await modal({title:'Yedek yüklendi', type:'success', icon:'✓', html:`<p>Yedek başarıyla yüklendi.</p><div class="modal-note">Toplam kayıt: ${records().length}</div>`, buttons:[{text:'Tamam', value:true, cls:'primary'}]});
+      }catch(err){
+        modal({title:'Yedek okunamadı', type:'danger', icon:'!', html:`<p>Seçilen dosya geri yüklenemedi.</p><div class="modal-note">${esc(err && err.message ? err.message : 'Dosya hatalı veya uyumsuz.')}</div>`});
+      }
+    }, true);
+
+    document.addEventListener('change', updateExportScopeInfo, true);
+    document.addEventListener('input', updateExportScopeInfo, true);
+  }
+
+  function removeSameBarcodeAndQuantity(){
+    const s = settings();
+    s.sameBarcodeMode = false;
+    s.quantity = '1';
+    saveSettings();
+    const q = $('quantityInput'); if(q) q.value = '1';
+  }
+
+  function boot(){
+    removeSameBarcodeAndQuantity();
+    bindIntercepts();
+    updateNetwork();
+    updateExportScopeInfo();
+    startupChecks();
+    window.addEventListener('online', () => { updateNetwork(); setStep('offline','ok','Online / offline çalışma hazır'); });
+    window.addEventListener('offline', () => { updateNetwork(); setStep('offline','ok','Offline mod hazır'); });
+    setTimeout(updateExportScopeInfo, 400);
+    setTimeout(updateExportScopeInfo, 1200);
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, {once:true});
+  else boot();
+
+  [600,1600,3200].forEach(ms => setTimeout(updateExportScopeInfo, ms));
+  setInterval(updateExportScopeInfo, 1200);
+
+  window.mesahaV304 = {modal, backupZip, clearCacheFlow, forceUpdateFlow, updateExportScopeInfo};
 })();
