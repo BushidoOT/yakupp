@@ -1,4 +1,4 @@
-const CACHE_NAME = "mesaha-app-v166-filtre-sira-sabit-fix";
+const CACHE_NAME = "mesaha-app-v167-stabil-kesimci-filtre-fix";
 const ASSETS = [
   "./",
   "./index.html",
