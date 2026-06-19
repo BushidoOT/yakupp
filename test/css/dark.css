@@ -245,7 +245,7 @@ body.theme-dark .mesaha-net-badge-v178.offline{
   border-color:rgba(251,146,60,.35) !important;
 }
 
-/* v181 - Karanlık mod renk oturtma / okunabilirlik düzeltmeleri */
+/* v182 - PWA/safe-area sonrası karanlık mod uyumu */
 html.theme-dark,
 body.theme-dark{
   --dm-bg:#0b1016;

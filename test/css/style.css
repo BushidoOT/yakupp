@@ -10022,3 +10022,59 @@ body.theme-dark .admin-stats-note-v134{ color:#a8b3c2; }
 .records-filter-box-v180 .cutter-filter-v158{
   order:2;
 }
+
+
+/* v182 - PWA tam ekran / iOS safe-area / Android standalone düzeni */
+html{
+  min-height:100%;
+  height:100%;
+  background:var(--bg, #0f172a);
+}
+body{
+  min-height:100vh;
+  min-height:100dvh;
+  overscroll-behavior-y:contain;
+  -webkit-overflow-scrolling:touch;
+  padding-left:env(safe-area-inset-left, 0px);
+  padding-right:env(safe-area-inset-right, 0px);
+}
+.app{
+  min-height:100vh;
+  min-height:100dvh;
+  padding-top:calc(18px + env(safe-area-inset-top, 0px));
+  padding-left:max(18px, env(safe-area-inset-left, 0px));
+  padding-right:max(18px, env(safe-area-inset-right, 0px));
+  padding-bottom:calc(96px + env(safe-area-inset-bottom, 0px));
+}
+.bottom-nav{
+  left:max(12px, env(safe-area-inset-left, 0px)) !important;
+  right:max(12px, env(safe-area-inset-right, 0px)) !important;
+  bottom:calc(12px + env(safe-area-inset-bottom, 0px)) !important;
+}
+.toast{
+  bottom:calc(22px + env(safe-area-inset-bottom, 0px)) !important;
+}
+.mesaha-startup-v178{
+  min-height:100vh;
+  min-height:100dvh;
+  padding-top:calc(18px + env(safe-area-inset-top, 0px)) !important;
+  padding-bottom:calc(18px + env(safe-area-inset-bottom, 0px)) !important;
+  padding-left:calc(18px + env(safe-area-inset-left, 0px)) !important;
+  padding-right:calc(18px + env(safe-area-inset-right, 0px)) !important;
+}
+@supports (height:100svh){
+  body,
+  .app,
+  .mesaha-startup-v178{min-height:100svh;}
+}
+@media (display-mode: standalone), (display-mode: fullscreen){
+  body{background-attachment:fixed;}
+  .app{max-width:1220px;}
+}
+@media (max-width:520px){
+  .app{
+    padding-left:max(12px, env(safe-area-inset-left, 0px));
+    padding-right:max(12px, env(safe-area-inset-right, 0px));
+    padding-bottom:calc(98px + env(safe-area-inset-bottom, 0px));
+  }
+}

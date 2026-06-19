@@ -2,14 +2,14 @@
   'use strict';
   var info = {
     appName: 'Mesaha İO',
-    version: 'v181',
-    build: 'v181',
-    assetVersion: '181',
-    visibleVersion: 'Mesaha İO v2.10',
-    name: 'Mesaha İO v2.10',
-    cacheName: 'mesaha-app-v181-dark-admin-clean',
+    version: 'v182',
+    build: 'v182',
+    assetVersion: '182',
+    visibleVersion: 'Mesaha İO v2.11',
+    name: 'Mesaha İO v2.11',
+    cacheName: 'mesaha-app-v182-pwa-fullscreen',
     builtAt: '2026-06-19',
-    notes: 'Karanlık mod renkleri iyileştirildi; admin panelindeki tekrar eden bakım/hata butonları tekilleştirildi. ORBİS Excel formatına dokunulmadı.'
+    notes: 'PWA tam ekran/standalone açılış desteği güçlendirildi; iOS safe-area ve Android Chrome ana ekran görünümü iyileştirildi. ORBİS Excel formatına dokunulmadı.'
   };
   root.MESAHA_VERSION = info;
   root.MESAHA_VERSION_TEXT = info.visibleVersion;
