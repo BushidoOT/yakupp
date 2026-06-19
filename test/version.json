@@ -1,11 +1,10 @@
 {
-  "version": "v169",
-  "visibleVersion": "Mesaha İO v1.98",
-  "cache": "mesaha-app-v169-moduler-stabil",
+  "version": "v170",
+  "visibleVersion": "Mesaha İO v1.99",
+  "cache": "mesaha-app-v170-moduler-optimize",
   "builtAt": "2026-06-19",
-  "notes": "Modüler stabil taban: index.html temizlendi, CSS ve JS ayrı dosyalara bölündü. Kesimci sistemi, filtre sırası, ZIP yedek, 20 kayıt/sayfa ve ORBİS Excel formatı korunmuştur.",
-  "name": "Mesaha İO v1.98",
-  "build": "moduler-stabil",
-  "updatedAt": "2026-06-19",
-  "appVersion": "Mesaha İO v1.98"
+  "notes": "v165 sağlam tabanı korunarak CSS ve JavaScript ayrı dosyalara alındı. Çok parçalı JS yerine tek app.js kullanıldı; eksik özellik ve buton sorunları için v170 güvenlik düzeltmeleri eklendi. ORBİS Excel formatına dokunulmadı.",
+  "name": "Mesaha İO v1.99",
+  "build": "v170",
+  "updatedAt": "2026-06-19"
 }
