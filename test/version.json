@@ -1,11 +1,11 @@
 {
-  "app": "v2.2223",
-  "version": "v194",
-  "build": "v194",
-  "visibleVersion": "v2.23",
-  "shortVersion": "v2.23",
-  "name": "v2.23",
-  "cacheName": "mesaha-app-v194-menu-tree-layout",
+  "app": "v2.24",
+  "version": "v195",
+  "build": "v195",
+  "visibleVersion": "v2.24",
+  "shortVersion": "v2.24",
+  "name": "v2.24",
+  "cacheName": "mesaha-app-v195-home-tree-multi",
   "builtAt": "2026-06-19",
   "notes": "Gereksiz eski modül dosyaları temizlendi; Giriş Modu tek ekran düzeni korundu."
 }
