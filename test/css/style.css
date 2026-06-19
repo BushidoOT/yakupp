@@ -24,3 +24,38 @@ body.product-maden-active .entry-form{box-shadow:0 12px 34px rgba(37,99,235,.12)
 body.product-kagit-active .entry-form{box-shadow:0 12px 34px rgba(220,38,38,.12)}
 body.product-sanayi-active .entry-form{box-shadow:0 12px 34px rgba(22,163,74,.12)}
 body.product-tel-active .entry-form{box-shadow:0 12px 34px rgba(124,58,237,.12)}
+
+
+/* v303 eksik parçalar */
+.maintenance-card .action-grid{margin-top:8px}
+.detail-summary-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.detail-summary-grid div{border:1px solid var(--line);border-radius:18px;background:#fff;padding:12px;box-shadow:0 8px 18px rgba(15,23,42,.04)}
+body.dark .detail-summary-grid div{background:#0b1220}
+.detail-summary-grid small{display:block;color:var(--muted);font-weight:850;margin-bottom:5px}
+.detail-summary-grid b{display:block;font-size:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.entry-live-box{display:flex;align-items:center;justify-content:space-between;gap:8px;border:1px solid var(--line);border-radius:18px;background:#f8fafc;padding:10px 12px;font-size:14px;font-weight:900;color:#334155}
+body.dark .entry-live-box{background:#0b1220;color:#cbd5e1}
+#duplicateWarnText{color:#dc2626;font-weight:950}
+#duplicateWarnText.show{padding:4px 8px;border-radius:999px;background:#fee2e2}
+.entry-tools-row{display:grid;grid-template-columns:105px 1fr;gap:10px;align-items:stretch}
+.qty-box{margin:0!important;border:1px solid var(--line);border-radius:18px;padding:8px 10px;background:#fff;font-weight:950}
+body.dark .qty-box{background:#0b1220}
+.qty-box input{height:36px;text-align:center;font-size:20px;font-weight:950}
+#sameBarcodeBtn.active{background:#dcfce7!important;color:#166534!important;border-color:#86efac!important}
+.record-toolbar{border:1px solid var(--line);border-radius:20px;padding:12px;margin:14px 0;background:#fff;display:grid;gap:10px}
+body.dark .record-toolbar{background:#0b1220}
+#recordSearch{height:44px;border-radius:16px;border:1px solid var(--line);padding:0 12px;font-size:16px;background:#f8fafc;color:var(--text)}
+body.dark #recordSearch{background:#111827}
+.record-select-actions{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+.record-select-actions .btn{min-height:38px;padding:8px 10px;font-size:13px}
+#selectedInfo{display:inline-flex;min-height:36px;align-items:center;padding:0 10px;border-radius:999px;background:#ecfdf5;color:#166534;font-weight:950}
+.btn.danger{background:#dc2626;color:#fff;border-color:#dc2626}
+.record-select{width:22px;height:22px;accent-color:#2563eb}
+.pager{display:flex;justify-content:center;align-items:center;gap:10px;margin:14px 0 0}
+.pager span{font-weight:950;color:var(--muted)}
+.hidden{display:none!important}
+@media(max-width:540px){
+  .detail-summary-grid{grid-template-columns:1fr 1fr}
+  .record-select-actions{display:grid;grid-template-columns:1fr 1fr}
+  #selectedInfo{justify-content:center}
+}

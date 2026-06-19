@@ -1,11 +1,11 @@
 {
-  "app": "v3.02",
-  "version": "v302-rules",
-  "build": "v302",
-  "visibleVersion": "v3.02",
-  "shortVersion": "v3.02",
-  "name": "v3.02",
-  "cacheName": "mesaha-app-v302-rules-colors",
+  "app": "v3.03",
+  "version": "v303-extras",
+  "build": "v303",
+  "visibleVersion": "v3.03",
+  "shortVersion": "v3.03",
+  "name": "v3.03",
+  "cacheName": "mesaha-app-v303-extras-no-admin",
   "builtAt": "2026-06-20",
-  "notes": "Mesaha ürün kilitleri ve ürün renkleri eski çalışan mantığa göre eklendi."
+  "notes": "Admin hariç eksikler eklendi: canlı hacim, kopya uyarısı, aynı barkod, seçili kayıtlar, bakım, yedek bilgi ve detaylı özet."
 }
