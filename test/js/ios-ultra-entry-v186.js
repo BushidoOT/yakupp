@@ -161,12 +161,12 @@
   function callbackLooksLikeQty(fn){
     var s = '';
     try{ s = Function.prototype.toString.call(fn); }catch(_){}
-    return s.indexOf('quantity') >= 0 || s.indexOf('adet') >= 0 || s.indexOf('qtyV145') >= 0 || s.indexOf('qty(') >= 0;
+    return s.indexOf('quantity') >= 0 || s.indexOf('adet') >= 0 || s.indexOf('qtyV145') >= 0;
   }
   function callbackLooksLikeDesi(fn){
     var s = '';
     try{ s = Function.prototype.toString.call(fn); }catch(_){}
-    return s.indexOf('desi') >= 0 || s.indexOf('hacim') >= 0 || s.indexOf('totalDesi') >= 0 || s.indexOf('desiV145') >= 0 || s.indexOf('desi(') >= 0;
+    return s.indexOf('desi') >= 0 || s.indexOf('hacim') >= 0 || s.indexOf('totalDesi') >= 0 || s.indexOf('desiV145') >= 0;
   }
   function patchRecordArray(){
     safe(function(){
@@ -181,8 +181,8 @@
           }
           return nativeReduce.apply(this, arguments);
         }});
-        Object.defineProperty(arr, 'unshift', { configurable:true, writable:true, value:function(){ var res = nativeUnshift.apply(this, arguments); if(this.__v186Cache && !this.__v186CacheDirty){ for(var i=0;i<arguments.length;i++){ var r=arguments[i]||{}; this.__v186Cache.qty += Number(r.quantity != null ? r.quantity : (r.adet || 0)) || 0; this.__v186Cache.desi += Number(r.desi != null ? r.desi : 0) || 0; } this.__v186Cache.len = this.__v186CacheLen = this.length; this.__v186CacheQty = this.__v186Cache.qty; this.__v186CacheDesi = this.__v186Cache.desi; } else { this.__v186CacheDirty = true; } return res; }});
-        Object.defineProperty(arr, 'push', { configurable:true, writable:true, value:function(){ var res = nativePush.apply(this, arguments); if(this.__v186Cache && !this.__v186CacheDirty){ for(var i=0;i<arguments.length;i++){ var r=arguments[i]||{}; this.__v186Cache.qty += Number(r.quantity != null ? r.quantity : (r.adet || 0)) || 0; this.__v186Cache.desi += Number(r.desi != null ? r.desi : 0) || 0; } this.__v186Cache.len = this.__v186CacheLen = this.length; this.__v186CacheQty = this.__v186Cache.qty; this.__v186CacheDesi = this.__v186Cache.desi; } else { this.__v186CacheDirty = true; } return res; }});
+        Object.defineProperty(arr, 'unshift', { configurable:true, writable:true, value:function(){ this.__v186CacheDirty = true; return nativeUnshift.apply(this, arguments); }});
+        Object.defineProperty(arr, 'push', { configurable:true, writable:true, value:function(){ this.__v186CacheDirty = true; return nativePush.apply(this, arguments); }});
         Object.defineProperty(arr, 'splice', { configurable:true, writable:true, value:function(){ this.__v186CacheDirty = true; return nativeSplice.apply(this, arguments); }});
         Object.defineProperty(arr, 'pop', { configurable:true, writable:true, value:function(){ this.__v186CacheDirty = true; return nativePop.apply(this, arguments); }});
         Object.defineProperty(arr, 'shift', { configurable:true, writable:true, value:function(){ this.__v186CacheDirty = true; return nativeShift.apply(this, arguments); }});
@@ -196,7 +196,7 @@
       if(typeof saveRecords !== 'function' || saveRecords.__v186Lite) return;
       var oldSave = saveRecords;
       saveRecords = function(){
-        if(!isFastEntry()) markRecordCacheDirty();
+        markRecordCacheDirty();
         patchRecordArray();
         var delay = isFastEntry() ? 120 : 45;
         clearTimeout(idbTimer);
@@ -407,7 +407,6 @@
   }
   function boot(){
     patchRecordArray();
-    safe(function(){ if(typeof state !== 'undefined' && Array.isArray(state.records)) cacheFor(state.records); });
     patchProduct();
     patchStorage();
     patchHeavyRender();
