@@ -319,9 +319,9 @@ body.theme-dark .home-status-item-v143.home-simple-v146 small{color:#86efac!impo
 body.theme-dark .home-status-item-v143.home-simple-v146 em{color:#cbd5e1!important;}
 
 
-/* v197: kayıt modu kökten sabit - artık ürün/çap sırası HTML + CSS ile kilitli */
+/* v198: kayıt modu kökten sabit - artık ürün/çap sırası HTML + CSS ile kilitli */
 body.inline-simple-v119 form#entryForm,
-body.inline-simple-v119 form#entryForm.entry-form-v197-hard{
+body.inline-simple-v119 form#entryForm.entry-form-v198-hard{
   display:flex!important;
   flex-direction:column!important;
   gap:8px!important;
@@ -348,12 +348,12 @@ body.inline-simple-v119 form#entryForm .barcode-save-row-final{
   margin:0!important;
 }
 body.inline-simple-v119 form#entryForm .recent-barcodes-box{order:5!important;}
-body.inline-simple-v119 form#entryForm .btn-row.clear-row-v197{
+body.inline-simple-v119 form#entryForm .btn-row.clear-row-v198{
   order:6!important;
   display:flex!important;
   margin:0!important;
 }
-body.inline-simple-v119 form#entryForm .btn-row.sound-row-v197{
+body.inline-simple-v119 form#entryForm .btn-row.sound-row-v198{
   order:7!important;
   display:flex!important;
   margin:0!important;
@@ -425,3 +425,61 @@ body.inline-simple-v119 .entry-panel .panel-header h2::after{content:""!importan
   body.inline-simple-v119 form#entryForm .barcode-save-row-final{grid-template-columns:minmax(0,1fr) 148px!important;}
   body.inline-simple-v119 #submitBtn{min-height:70px!important;font-size:17px!important;}
 }
+
+
+/* v198: Ağaç türü seçimi odun türü gibi net tikli + hızlı giriş aç/kapa */
+#flowTabsV111{display:none!important;visibility:hidden!important;pointer-events:none!important;}
+#flowTabsV111 [data-flow-tab="entry"],
+#flowTabsV111 [data-flow-tab="admin"]{display:none!important;visibility:hidden!important;pointer-events:none!important;}
+body.show-admin .entry-panel,
+body.admin-unlocked-v131 .entry-panel{display:none!important;visibility:hidden!important;pointer-events:none!important;}
+body.show-admin #flowTabsV111,
+body.admin-unlocked-v131 #flowTabsV111{display:none!important;visibility:hidden!important;pointer-events:none!important;}
+
+.home-tree-panel-v198{display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important;margin:0!important;padding:0!important;border:0!important;background:transparent!important;}
+.home-tree-check-v198{display:flex!important;align-items:center!important;gap:8px!important;border:1px solid #e2e8f0!important;border-radius:14px!important;background:#f8fafc!important;padding:9px 10px!important;font-weight:900!important;color:#0f172a!important;min-height:40px!important;box-shadow:0 8px 18px rgba(15,23,42,.04)!important;}
+.home-tree-check-v198 input{width:20px!important;height:20px!important;accent-color:#16a34a!important;flex:0 0 auto!important;}
+.home-tree-check-v198.is-checked{background:#ecfdf5!important;border-color:#86efac!important;color:#14532d!important;box-shadow:0 0 0 3px rgba(34,197,94,.08)!important;}
+body.theme-dark .home-tree-check-v198{background:#0f172a!important;color:#f8fafc!important;border-color:#334155!important;}
+body.theme-dark .home-tree-check-v198.is-checked{background:#052e16!important;color:#bbf7d0!important;border-color:#166534!important;}
+
+body.inline-simple-v119 .tree-compact{display:block!important;order:1!important;}
+body.inline-simple-v119 .tree-compact .product-select-head{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:8px!important;}
+body.inline-simple-v119 .tree-compact #treeTypeSelectBtn{display:inline-flex!important;align-items:center!important;justify-content:center!important;min-height:40px!important;padding:8px 12px!important;border-radius:14px!important;font-weight:950!important;background:#f8fafc!important;color:#0f172a!important;border:1px solid #cbd5e1!important;}
+body.inline-simple-v119 .tree-compact #treeTypePanel.closed-v198{display:none!important;}
+body.inline-simple-v119 .tree-compact #treeTypePanel.open{display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important;margin-top:8px!important;}
+body.inline-simple-v119 .tree-compact #treeTypePanel .tree-radio-v198{display:flex!important;align-items:center!important;gap:8px!important;border:1px solid #e2e8f0!important;border-radius:14px!important;background:#f8fafc!important;padding:9px 10px!important;font-weight:900!important;color:#0f172a!important;min-height:40px!important;}
+body.inline-simple-v119 .tree-compact #treeTypePanel .tree-radio-v198 input{width:18px!important;height:18px!important;accent-color:#16a34a!important;}
+body.inline-simple-v119 .tree-compact #treeTypePanel .tree-radio-v198.is-active{background:#ecfdf5!important;border-color:#86efac!important;color:#14532d!important;}
+body.inline-simple-v119 .tree-compact #treeTypePanel #treeTypeApplyBtn{display:none!important;}
+body.theme-dark.inline-simple-v119 .tree-compact #treeTypeSelectBtn{background:#0f172a!important;color:#f8fafc!important;border-color:#334155!important;}
+body.theme-dark.inline-simple-v119 .tree-compact #treeTypePanel .tree-radio-v198{background:#0f172a!important;border-color:#334155!important;color:#f8fafc!important;}
+body.theme-dark.inline-simple-v119 .tree-compact #treeTypePanel .tree-radio-v198.is-active{background:#052e16!important;color:#bbf7d0!important;border-color:#166534!important;}
+@media(max-width:430px){.home-tree-panel-v198{grid-template-columns:1fr 1fr!important}.home-tree-check-v198{padding:9px!important;font-size:14px!important}}
+
+
+/* v198: Ağaç türü seçimleri odun türü gibi tikli + hızlı giriş aç/kapa */
+#flowTabsV111,.flow-tabs-v111{display:none!important;visibility:hidden!important;pointer-events:none!important;}
+body.show-admin:not(.inline-simple-v119) .entry-panel{display:none!important;visibility:hidden!important;pointer-events:none!important;}
+.entry-panel .panel-header h2{font-size:0!important;}
+.entry-panel .panel-header h2::after{content:"Mesaha Gir";font-size:22px!important;font-weight:950!important;}
+
+.home-tree-panel-v198{display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important;margin-top:8px!important;}
+.home-tree-check-v198{display:flex!important;align-items:center!important;gap:10px!important;min-height:48px!important;padding:10px 12px!important;border-radius:16px!important;border:1px solid #e2e8f0!important;background:#f8fafc!important;color:#0f172a!important;font-weight:950!important;box-shadow:0 8px 18px rgba(15,23,42,.04)!important;}
+.home-tree-check-v198 input{width:22px!important;height:22px!important;accent-color:#16a34a!important;flex:0 0 auto!important;}
+.home-tree-check-v198.active{background:#ecfdf5!important;border-color:#86efac!important;color:#14532d!important;box-shadow:0 0 0 3px rgba(22,163,74,.08)!important;}
+body.theme-dark .home-tree-check-v198{background:#0f172a!important;border-color:#334155!important;color:#f8fafc!important;box-shadow:none!important;}
+body.theme-dark .home-tree-check-v198.active{background:#052e16!important;border-color:#16a34a!important;color:#bbf7d0!important;}
+
+body.inline-simple-v119 .tree-compact{display:block!important;order:1!important;}
+body.inline-simple-v119 .tree-compact .product-select-head{display:flex!important;align-items:center!important;gap:8px!important;margin-top:8px!important;}
+body.inline-simple-v119 .tree-compact #treeTypeSelectBtn{display:inline-flex!important;align-items:center!important;justify-content:center!important;min-height:42px!important;padding:9px 12px!important;border-radius:14px!important;font-weight:950!important;background:#f8fafc!important;color:#0f172a!important;border:1px solid #cbd5e1!important;}
+body.inline-simple-v119 .tree-compact #treeTypeCurrent{display:inline-flex!important;}
+body.inline-simple-v119 .tree-compact #treeTypePanel.tree-panel-v198{display:none!important;grid-template-columns:1fr 1fr!important;gap:8px!important;margin-top:8px!important;}
+body.inline-simple-v119 .tree-compact #treeTypePanel.tree-panel-v198.open{display:grid!important;}
+body.inline-simple-v119 .tree-compact #treeTypePanel.tree-panel-v198 .wood-check{display:flex!important;align-items:center!important;gap:8px!important;min-height:40px!important;padding:9px 10px!important;border-radius:14px!important;border:1px solid #e2e8f0!important;background:#f8fafc!important;color:#0f172a!important;font-weight:900!important;}
+body.inline-simple-v119 .tree-compact #treeTypePanel.tree-panel-v198 .tree-hidden-v198{display:none!important;}
+body.inline-simple-v119 .tree-compact #treeTypePanel.tree-panel-v198 #treeTypeApplyBtn{display:none!important;}
+body.theme-dark.inline-simple-v119 .tree-compact #treeTypeSelectBtn{background:#0f172a!important;color:#f8fafc!important;border-color:#334155!important;}
+body.theme-dark.inline-simple-v119 .tree-compact #treeTypePanel.tree-panel-v198 .wood-check{background:#0f172a!important;border-color:#334155!important;color:#f8fafc!important;}
+@media(max-width:430px){.home-tree-panel-v198{grid-template-columns:1fr 1fr!important}.home-tree-check-v198{min-height:44px!important;padding:9px 10px!important}.home-tree-check-v198 input{width:20px!important;height:20px!important}}

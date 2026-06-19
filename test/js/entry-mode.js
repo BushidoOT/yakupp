@@ -1,6 +1,6 @@
 (function(){
   'use strict';
-  var TAG = 'v197-entry-mode';
+  var TAG = 'v198-entry-mode';
   var SAVE_BOUND = false;
   var layoutDone = false;
   var timer = null;
@@ -259,19 +259,9 @@
   }
 
   function renderHomeTreeButtonsV194(){
+    // v198 çoklu ağaç seçimi ayrı IIFE tarafından çizilir.
     var panel = byId('homeTreePanelV194');
-    if(!panel) return;
-    var active = activeTree();
-    panel.innerHTML = TREES.map(function(t){ return '<button type="button" class="home-tree-chip-v197 '+(lower(t)===lower(active)?'active':'')+'" data-home-tree-v197="'+esc(t)+'">'+esc(t)+'</button>'; }).join('');
-    panel.querySelectorAll('[data-home-tree-v197]').forEach(function(btn){
-      if(btn.__v197Tree) return;
-      btn.__v197Tree = true;
-      btn.addEventListener('click', function(ev){
-        ev.preventDefault();
-        setTree(btn.getAttribute('data-home-tree-v197') || 'Karaçam');
-        renderHomeTreeButtonsV194();
-      }, false);
-    });
+    if(panel) panel.className = 'home-tree-panel-v198';
   }
   function ensureHomeSoundCardV194(){
     var home = byId('mesahaHomeV143');
@@ -281,16 +271,16 @@
     if(!card){
       card = document.createElement('div');
       card.id = 'homeSoundCardV194';
-      card.className = 'home-card-v143 home-sound-card-v197';
-      card.innerHTML = '<div class="home-card-head-v143"><h3>Ses Ayarı</h3></div><button type="button" id="homeSoundToggleBtnV194" class="home-sound-btn-v197">Ses: Açık</button>';
+      card.className = 'home-card-v143 home-sound-card-v198';
+      card.innerHTML = '<div class="home-card-head-v143"><h3>Ses Ayarı</h3></div><button type="button" id="homeSoundToggleBtnV194" class="home-sound-btn-v198">Ses: Açık</button>';
       if(summary) home.insertBefore(card, summary); else home.appendChild(card);
     }
     var source = byId('soundToggleBtn');
     var btn = byId('homeSoundToggleBtnV194');
     if(btn){
       if(source) btn.textContent = source.textContent || 'Ses: Açık';
-      if(!btn.__v197Sound){
-        btn.__v197Sound = true;
+      if(!btn.__v198Sound){
+        btn.__v198Sound = true;
         btn.addEventListener('click', function(ev){
           ev.preventDefault();
           var s = byId('soundToggleBtn');
@@ -301,23 +291,10 @@
     }
   }
   function enhanceInlineTreeV194(){
+    // v198 yönetiyor: ağaç paneli artık çoklu seçim + aç/kapa mantığında.
     var treeCompact = document.querySelector('.tree-compact');
-    var panel = byId('treeTypePanel');
+    if(treeCompact) treeCompact.classList.add('tree-compact-v198');
     var apply = byId('treeTypeApplyBtn');
-    var selectBtn = byId('treeTypeSelectBtn');
-    if(treeCompact) treeCompact.classList.add('tree-compact-v197');
-    if(panel){
-      panel.classList.add('open','tree-panel-v197');
-      panel.querySelectorAll('input[type="radio"]').forEach(function(r){
-        if(r.__v197TreeChange) return;
-        r.__v197TreeChange = true;
-        r.addEventListener('change', function(){
-          setTree(r.value || 'Karaçam');
-          renderHomeTreeButtonsV194();
-        }, false);
-      });
-    }
-    if(selectBtn){ selectBtn.style.setProperty('display','none','important'); selectBtn.tabIndex = -1; }
     if(apply){ apply.style.setProperty('display','none','important'); apply.tabIndex = -1; }
   }
   function moveEntrySettingsToHome(){
@@ -365,8 +342,8 @@
         apply.setAttribute('aria-hidden','true');
         apply.tabIndex = -1;
       }
-      if(apply && !apply.__v197Refresh){
-        apply.__v197Refresh = true;
+      if(apply && !apply.__v198Refresh){
+        apply.__v198Refresh = true;
         apply.addEventListener('click', refreshCleanProductsSoon, false);
       }
       woodPanel.querySelectorAll('input[type="checkbox"]').forEach(function(ch){
@@ -383,8 +360,8 @@
     if(!treeBlock){
       treeBlock = document.createElement('div');
       treeBlock.id = 'homeTreeBlockV194';
-      treeBlock.className = 'home-setting-block-v189 home-tree-block-v197';
-      treeBlock.innerHTML = '<div class="home-setting-title-v189">Ağaç Türleri</div><p class="home-setting-hint-v189">Seçili ağaç türü Giriş Modu içinde aktif olur.</p><div id="homeTreePanelV194" class="home-tree-panel-v197"></div>';
+      treeBlock.className = 'home-setting-block-v189 home-tree-block-v198';
+      treeBlock.innerHTML = '<div class="home-setting-title-v189">Ağaç Türleri</div><p class="home-setting-hint-v189">Seçili ağaç türü Giriş Modu içinde aktif olur.</p><div id="homeTreePanelV194" class="home-tree-panel-v198"></div>';
       grid.appendChild(treeBlock);
     }
     renderHomeTreeButtonsV194();
@@ -408,8 +385,8 @@
     if(status && status.nextSibling) home.insertBefore(details, status.nextSibling); else home.insertBefore(details, home.firstChild);
   }
   function patchBrand(){
-    var shortV = (window.MESAHA_VERSION && window.MESAHA_VERSION.shortVersion) || 'v2.25';
-    var buildV = (window.MESAHA_VERSION && window.MESAHA_VERSION.version) || 'v197';
+    var shortV = (window.MESAHA_VERSION && window.MESAHA_VERSION.shortVersion) || 'v2.26';
+    var buildV = (window.MESAHA_VERSION && window.MESAHA_VERSION.version) || 'v198';
     safe(function(){ document.title = shortV; });
     var h = document.querySelector('.app-brand-v143 .brand-copy-v143 h1');
     var s = document.querySelector('.app-brand-v143 .brand-copy-v143 span');
@@ -502,15 +479,15 @@
     });
   }
   function titleFix(){
-    safe(function(){ document.title = 'v2.25'; });
+    safe(function(){ document.title = 'v2.26'; });
     safe(function(){
       document.querySelectorAll('.app-brand-v143 .brand-copy-v143,[data-app-version-short],[data-app-version-build]').forEach(function(el){
         if(!el) return;
-        if(/Mesaha\s*İ?O/i.test(el.textContent || '')) el.textContent = el.matches('[data-app-version-build], .app-brand-v143 .brand-copy-v143 span') ? 'v197' : 'v2.25';
+        if(/Mesaha\s*İ?O/i.test(el.textContent || '')) el.textContent = el.matches('[data-app-version-build], .app-brand-v143 .brand-copy-v143 span') ? 'v198' : 'v2.26';
       });
-      var h = document.querySelector('.app-brand-v143 .brand-copy-v143 h1'); if(h) h.textContent = 'v2.25';
-      var s = document.querySelector('.app-brand-v143 .brand-copy-v143 span'); if(s) s.textContent = 'v197';
-      var splashH = document.querySelector('.mesaha-startup-logo-v178 h2'); if(splashH) splashH.textContent = 'v2.25';
+      var h = document.querySelector('.app-brand-v143 .brand-copy-v143 h1'); if(h) h.textContent = 'v2.26';
+      var s = document.querySelector('.app-brand-v143 .brand-copy-v143 span'); if(s) s.textContent = 'v198';
+      var splashH = document.querySelector('.mesaha-startup-logo-v178 h2'); if(splashH) splashH.textContent = 'v2.26';
     });
   }
   function navFix(){
@@ -563,7 +540,7 @@
   function forceEditRecordToClean(){
     safe(function(){
       var old = window.editRecord;
-      if(typeof old !== 'function' || old.__v197CleanOpen) return;
+      if(typeof old !== 'function' || old.__v198CleanOpen) return;
       var wrapped = function(id){
         var result = old.apply(this, arguments);
         setTimeout(function(){
@@ -576,8 +553,8 @@
         }, 60);
         return result;
       };
-      wrapped.__v197CleanOpen = true;
-      wrapped.__v197Old = old;
+      wrapped.__v198CleanOpen = true;
+      wrapped.__v198Old = old;
       window.editRecord = wrapped;
       try{ editRecord = wrapped; }catch(_){ }
     });
@@ -638,19 +615,19 @@
 })();
 
 
-/* v197: gerçek Giriş Modu inline form düzeltmesi
+/* v198: gerçek Giriş Modu inline form düzeltmesi
    Ürün Türü / Çap-Boy sırası artık temiz overlay değil, aktif kullanılan entryForm üzerinde düzeltilir. */
 (function(){
   'use strict';
   function byId(id){ return document.getElementById(id); }
-  function safe(fn){ try{return fn();}catch(e){ try{ console.warn('[Mesaha İO v197 inline fix]', e); }catch(_){} } }
+  function safe(fn){ try{return fn();}catch(e){ try{ console.warn('[Mesaha İO v198 inline fix]', e); }catch(_){} } }
   function q(sel, root){ return (root || document).querySelector(sel); }
 
   function forceInlineOrder(){
     safe(function(){
       var form = byId('entryForm');
       if(!form) return;
-      form.classList.add('entry-form-v197-fixed');
+      form.classList.add('entry-form-v198-fixed');
 
       var tree = q('.product-compact.tree-compact', form);
       var product = q('.product-compact:not(.tree-compact)', form);
@@ -677,7 +654,7 @@
 
       // Alanları Temizle giriş modunda görünür kalsın.
       if(clearRow){
-        clearRow.classList.add('clear-row-v197');
+        clearRow.classList.add('clear-row-v198');
         if(recent && clearRow.previousElementSibling !== recent){
           form.insertBefore(clearRow, recent.nextSibling);
         }
@@ -706,7 +683,7 @@
         overlay.style.setProperty('display','none','important');
       }
       document.body.classList.remove('show-records','show-guide','show-admin','clean-simple-open-v111','clean-simple-active-v111','clean-keyboard-v118');
-      document.body.classList.add('inline-simple-v119','mesaha-v197-edit-entry');
+      document.body.classList.add('inline-simple-v119','mesaha-v198-edit-entry');
       var entry = q('.panel.entry-panel');
       if(entry) entry.style.setProperty('display','block','important');
       document.querySelectorAll('#flowTabsV111 button,.bottom-nav button').forEach(function(b){ b.classList.remove('active'); });
@@ -724,15 +701,15 @@
   function wrapEditRecord(){
     safe(function(){
       var old = window.editRecord;
-      if(typeof old !== 'function' || old.__v197InlineEdit) return;
+      if(typeof old !== 'function' || old.__v198InlineEdit) return;
       var wrapped = function(id){
         var result = old.apply(this, arguments);
         setTimeout(openInlineEntry, 40);
         setTimeout(openInlineEntry, 180);
         return result;
       };
-      wrapped.__v197InlineEdit = true;
-      wrapped.__v197Old = old;
+      wrapped.__v198InlineEdit = true;
+      wrapped.__v198Old = old;
       window.editRecord = wrapped;
       try{ editRecord = wrapped; }catch(_){}
     });
@@ -771,17 +748,17 @@
 })();
 
 
-/* v197: kayıt modu kök sabitleme - fiziksel form sırası ve alan boyutları */
+/* v198: kayıt modu kök sabitleme - fiziksel form sırası ve alan boyutları */
 (function(){
   'use strict';
   function byId(id){ return document.getElementById(id); }
   function q(sel, root){ return (root || document).querySelector(sel); }
-  function safe(fn){ try{return fn();}catch(e){ try{ console.warn('[Mesaha v197]', e); }catch(_){} } }
+  function safe(fn){ try{return fn();}catch(e){ try{ console.warn('[Mesaha v198]', e); }catch(_){} } }
   function hardFix(){
     safe(function(){
       var form = byId('entryForm');
       if(!form) return;
-      form.classList.add('entry-form-v197-hard');
+      form.classList.add('entry-form-v198-hard');
       var tree = q('.product-compact.tree-compact', form);
       var product = q('.product-compact:not(.tree-compact)', form);
       var measure = q('.measure-compact', form);
@@ -798,11 +775,11 @@
       if(product && barcode && product.nextElementSibling !== barcode) form.insertBefore(barcode, product.nextSibling);
       if(barcode && recent && barcode.nextElementSibling !== recent) form.insertBefore(recent, barcode.nextSibling);
       if(clearRow){
-        clearRow.classList.add('clear-row-v197');
+        clearRow.classList.add('clear-row-v198');
         if(recent && clearRow.previousElementSibling !== recent) form.insertBefore(clearRow, recent.nextSibling);
       }
       if(soundRow){
-        soundRow.classList.add('sound-row-v197');
+        soundRow.classList.add('sound-row-v198');
         if(clearRow && soundRow.previousElementSibling !== clearRow) form.insertBefore(soundRow, clearRow.nextSibling);
       }
       if(same) same.style.setProperty('display','none','important');
@@ -827,4 +804,264 @@
   [50,150,300,700,1200,2500,5000].forEach(function(ms){ setTimeout(hardFix, ms); });
   setInterval(hardFix, 700);
   window.mesahaV197HardFix = hardFix;
+})();
+
+
+/* v198: Ağaç türleri çoklu seçim + girişte aç/kapa + Yeni Kayıt menüsünü tamamen gizle */
+(function(){
+  'use strict';
+  var TREES = ['Karaçam','Sarıçam','Sedir','Göknar','Kızılçam'];
+  var STORE = 'mesaha_visible_trees_v198';
+  var PANEL_STORE = 'mesaha_tree_panel_open_v198';
+  function byId(id){ return document.getElementById(id); }
+  function safe(fn,fb){ try{return fn();}catch(e){ try{console.warn('[Mesaha v198]',e);}catch(_){} return fb; } }
+  function esc(v){ return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c];}); }
+  function norm(v){ return String(v==null?'':v).trim().replace(/\s+/g,' '); }
+  function lower(v){ return norm(v).toLocaleLowerCase('tr-TR'); }
+  function settings(){ return safe(function(){ return window.state && state.settings ? state.settings : {}; },{}); }
+  function saveSettingsSafe(){ safe(function(){ if(typeof saveSettings === 'function') saveSettings(); }); }
+  function readList(){
+    var s = settings();
+    var arr = Array.isArray(s.visibleTreesV198) ? s.visibleTreesV198 : null;
+    if(!arr){ arr = safe(function(){ return JSON.parse(localStorage.getItem(STORE)||'null'); }, null); }
+    if(!Array.isArray(arr) || !arr.length) arr = TREES.slice();
+    arr = arr.map(norm).filter(function(t){ return TREES.some(function(x){ return lower(x)===lower(t); }); });
+    if(!arr.length) arr = TREES.slice();
+    return arr.filter(function(t,i,a){ return a.findIndex(function(x){return lower(x)===lower(t);})===i; });
+  }
+  function writeList(arr){
+    arr = (Array.isArray(arr)?arr:[]).map(norm).filter(function(t){ return TREES.some(function(x){ return lower(x)===lower(t); }); });
+    if(!arr.length) arr = [currentTree() || 'Karaçam'];
+    if(!arr.length) arr = ['Karaçam'];
+    safe(function(){ settings().visibleTreesV198 = arr.slice(); });
+    safe(function(){ localStorage.setItem(STORE, JSON.stringify(arr)); });
+    saveSettingsSafe();
+    var cur = currentTree();
+    if(cur && !arr.some(function(t){return lower(t)===lower(cur);})){ setTree(arr[0]); }
+  }
+  function currentTree(){ return norm((byId('treeType') && byId('treeType').value) || (settings().lastTreeType) || 'Karaçam') || 'Karaçam'; }
+  function setTree(name){
+    name = norm(name) || 'Karaçam';
+    var hidden = byId('treeType'); if(hidden) hidden.value = name;
+    var cur = byId('treeTypeCurrent'); if(cur) cur.textContent = name;
+    safe(function(){ settings().lastTreeType = name; });
+    document.querySelectorAll('input[name="treeTypeRadio"]').forEach(function(r){ r.checked = lower(r.value)===lower(name); });
+    saveSettingsSafe();
+    renderHomeTrees();
+    renderInlineTreePanel();
+  }
+  function renderHomeTrees(){
+    var panel = byId('homeTreePanelV194');
+    if(!panel) return;
+    panel.className = 'home-tree-panel-v198';
+    var list = readList();
+    panel.innerHTML = TREES.map(function(t){
+      var checked = list.some(function(x){return lower(x)===lower(t);});
+      return '<label class="home-tree-check-v198 '+(checked?'is-checked':'')+'"><input type="checkbox" value="'+esc(t)+'" '+(checked?'checked':'')+' /> <span>'+esc(t)+'</span></label>';
+    }).join('');
+    panel.querySelectorAll('input[type="checkbox"]').forEach(function(ch){
+      if(ch.__v198HomeTree) return;
+      ch.__v198HomeTree = true;
+      ch.addEventListener('change', function(){
+        var selected = Array.prototype.slice.call(panel.querySelectorAll('input[type="checkbox"]:checked')).map(function(i){return i.value;});
+        writeList(selected);
+        renderHomeTrees();
+        renderInlineTreePanel();
+      }, false);
+    });
+    var block = byId('homeTreeBlockV194');
+    if(block){
+      var hint = block.querySelector('.home-setting-hint-v189');
+      if(hint) hint.textContent = 'Tikli olan ağaç türleri Hızlı Giriş içinde görünür.';
+    }
+  }
+  function isPanelOpen(){ return safe(function(){ return localStorage.getItem(PANEL_STORE)==='1'; }, false); }
+  function setPanelOpen(on){ safe(function(){ localStorage.setItem(PANEL_STORE, on?'1':'0'); }); }
+  function renderInlineTreePanel(){
+    var wrap = document.querySelector('.product-compact.tree-compact');
+    var head = wrap && wrap.querySelector('.product-select-head');
+    var btn = byId('treeTypeSelectBtn');
+    var panel = byId('treeTypePanel');
+    if(!wrap || !head || !btn || !panel) return;
+    wrap.classList.add('tree-dropdown-v198');
+    btn.style.removeProperty('display');
+    btn.style.setProperty('display','inline-flex','important');
+    btn.textContent = 'Ağaç Türü Seç: ' + currentTree();
+    var open = isPanelOpen();
+    panel.classList.toggle('open', open);
+    panel.classList.toggle('closed-v198', !open);
+    var list = readList();
+    var cur = currentTree();
+    if(!list.some(function(t){return lower(t)===lower(cur);})) cur = list[0] || 'Karaçam';
+    panel.innerHTML = list.map(function(t){
+      return '<label class="wood-check tree-radio-v198 '+(lower(t)===lower(cur)?'is-active':'')+'"><input type="radio" name="treeTypeRadio" value="'+esc(t)+'" '+(lower(t)===lower(cur)?'checked':'')+' /> '+esc(t)+'</label>';
+    }).join('');
+    panel.querySelectorAll('input[type="radio"]').forEach(function(r){
+      r.addEventListener('change', function(ev){
+        setTree(r.value || 'Karaçam');
+        setPanelOpen(true);
+        var p = byId('treeTypePanel'); if(p){ p.classList.add('open'); p.classList.remove('closed-v198'); }
+      }, false);
+    });
+    var apply = byId('treeTypeApplyBtn'); if(apply) apply.style.setProperty('display','none','important');
+  }
+  function bindTreeButton(){
+    var old = byId('treeTypeSelectBtn');
+    if(!old || old.__v198Bound) return;
+    var btn = old.cloneNode(true);
+    btn.__v198Bound = true;
+    old.parentNode.replaceChild(btn, old);
+    btn.addEventListener('click', function(ev){
+      ev.preventDefault(); ev.stopPropagation(); if(ev.stopImmediatePropagation) ev.stopImmediatePropagation();
+      var on = !isPanelOpen();
+      setPanelOpen(on);
+      renderInlineTreePanel();
+    }, true);
+  }
+  function killYeniKayitMenu(){
+    document.querySelectorAll('#flowTabsV111,[data-flow-tab="entry"],#navAdmin,[data-flow-tab="admin"]').forEach(function(el){
+      if(el && el.id === 'flowTabsV111') el.style.setProperty('display','none','important');
+      if(el && el.getAttribute && el.getAttribute('data-flow-tab') === 'entry') el.style.setProperty('display','none','important');
+    });
+    document.querySelectorAll('.entry-panel .panel-header h2').forEach(function(h){ if(/Yeni\s*Kayıt/i.test(h.textContent||'')) h.textContent = 'Mesaha Gir'; });
+    document.querySelectorAll('button,a,span,h2,h3').forEach(function(el){ if((el.textContent||'').trim()==='Yeni Kayıt') el.textContent='Mesaha Gir'; });
+  }
+  function boot(){
+    renderHomeTrees();
+    bindTreeButton();
+    renderInlineTreePanel();
+    killYeniKayitMenu();
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, {once:true}); else boot();
+  [50,160,420,900,1800,3200,5200].forEach(function(ms){ setTimeout(boot, ms); });
+  setInterval(boot, 900);
+  window.mesahaV198RenderTrees = boot;
+})();
+
+
+/* v198: Ana menü ağaç türü çoklu seçim + hızlı giriş ağaç aç/kapa + admin yeni kayıt menüsü kapatma */
+(function(){
+  'use strict';
+  var TREES = ['Karaçam','Sarıçam','Sedir','Göknar','Kızılçam'];
+  var STORE = 'mesaha_visible_trees_v198';
+  var OPEN_STORE = 'mesaha_tree_panel_open_v198';
+  function byId(id){ return document.getElementById(id); }
+  function norm(v){ return String(v == null ? '' : v).trim(); }
+  function lower(v){ return norm(v).toLocaleLowerCase('tr-TR'); }
+  function esc(v){ return String(v == null ? '' : v).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]; }); }
+  function safe(fn){ try{return fn();}catch(e){ try{ console.warn('[Mesaha İO v198]', e); }catch(_){} } }
+  function currentTree(){ return norm((byId('treeType') && byId('treeType').value) || (typeof state !== 'undefined' && state.settings && state.settings.lastTreeType) || 'Karaçam') || 'Karaçam'; }
+  function selectedTrees(){
+    var arr = null;
+    safe(function(){ arr = JSON.parse(localStorage.getItem(STORE) || 'null'); });
+    if(!Array.isArray(arr) || !arr.length) arr = (typeof state !== 'undefined' && state.settings && Array.isArray(state.settings.visibleTreesV198) && state.settings.visibleTreesV198.length) ? state.settings.visibleTreesV198.slice() : TREES.slice();
+    arr = arr.map(norm).filter(function(x){ return TREES.some(function(t){ return lower(t) === lower(x); }); });
+    if(!arr.length) arr = TREES.slice();
+    return arr.filter(function(x,i,a){ return a.findIndex(function(y){ return lower(x)===lower(y); }) === i; });
+  }
+  function saveSelectedTrees(arr){
+    arr = (arr || []).map(norm).filter(Boolean);
+    if(!arr.length) arr = [currentTree() || 'Karaçam'];
+    arr = arr.filter(function(x){ return TREES.some(function(t){ return lower(t) === lower(x); }); });
+    if(!arr.length) arr = ['Karaçam'];
+    safe(function(){ localStorage.setItem(STORE, JSON.stringify(arr)); });
+    safe(function(){ if(typeof state !== 'undefined' && state.settings) state.settings.visibleTreesV198 = arr.slice(); if(typeof saveSettings === 'function') saveSettings(); });
+    return arr;
+  }
+  function setTreeValue(t){
+    t = norm(t) || 'Karaçam';
+    var input = byId('treeType'); if(input) input.value = t;
+    var current = byId('treeTypeCurrent'); if(current) current.textContent = t;
+    document.querySelectorAll('input[name="treeTypeRadio"]').forEach(function(r){ r.checked = lower(r.value) === lower(t); });
+    safe(function(){ if(typeof state !== 'undefined' && state.settings) state.settings.lastTreeType = t; if(typeof saveSettings === 'function') saveSettings(); });
+  }
+  function ensureCurrentAllowed(arr){
+    var cur = currentTree();
+    if(!arr.some(function(t){ return lower(t) === lower(cur); })) setTreeValue(arr[0] || 'Karaçam');
+  }
+  function renderHomeTreeMulti(){
+    var panel = byId('homeTreePanelV194');
+    if(!panel) return;
+    var arr = selectedTrees();
+    ensureCurrentAllowed(arr);
+    panel.className = 'home-tree-panel-v198';
+    panel.innerHTML = TREES.map(function(t){
+      var checked = arr.some(function(x){ return lower(x) === lower(t); });
+      return '<label class="home-tree-check-v198 '+(checked?'active':'')+'"><input type="checkbox" value="'+esc(t)+'" '+(checked?'checked':'')+' /> <span>'+esc(t)+'</span></label>';
+    }).join('');
+    panel.querySelectorAll('input[type="checkbox"]').forEach(function(ch){
+      if(ch.__v198TreeCheck) return;
+      ch.__v198TreeCheck = true;
+      ch.addEventListener('change', function(){
+        var vals = Array.prototype.slice.call(panel.querySelectorAll('input[type="checkbox"]:checked')).map(function(i){ return i.value; });
+        vals = saveSelectedTrees(vals);
+        ensureCurrentAllowed(vals);
+        renderHomeTreeMulti();
+        syncFastTreePanel();
+      }, false);
+    });
+  }
+  function treePanelOpen(){ return localStorage.getItem(OPEN_STORE) === '1'; }
+  function setTreePanelOpen(on){ localStorage.setItem(OPEN_STORE, on ? '1' : '0'); }
+  function syncFastTreePanel(){
+    var compact = document.querySelector('.tree-compact');
+    var panel = byId('treeTypePanel');
+    var btn = byId('treeTypeSelectBtn');
+    var apply = byId('treeTypeApplyBtn');
+    var arr = selectedTrees();
+    ensureCurrentAllowed(arr);
+    if(compact) compact.classList.add('tree-compact-v198');
+    if(btn){
+      btn.style.setProperty('display','inline-flex','important');
+      btn.style.setProperty('align-items','center','important');
+      btn.style.setProperty('justify-content','center','important');
+      btn.tabIndex = 0;
+      btn.textContent = 'Ağaç Türü Seç: ' + currentTree();
+      if(!btn.__v198Toggle){
+        btn.__v198Toggle = true;
+        btn.addEventListener('click', function(ev){
+          ev.preventDefault();
+          setTreePanelOpen(!treePanelOpen());
+          syncFastTreePanel();
+        }, true);
+      }
+    }
+    if(apply){ apply.style.setProperty('display','none','important'); apply.tabIndex = -1; }
+    if(panel){
+      panel.classList.add('tree-panel-v198');
+      panel.classList.toggle('open', treePanelOpen());
+      panel.querySelectorAll('label.wood-check').forEach(function(label){
+        var r = label.querySelector('input[type="radio"]');
+        var val = r ? r.value : '';
+        var show = arr.some(function(x){ return lower(x) === lower(val); });
+        label.classList.toggle('tree-hidden-v198', !show);
+        label.style.setProperty('display', show ? 'flex' : 'none', 'important');
+        if(r && !r.__v198Radio){
+          r.__v198Radio = true;
+          r.addEventListener('change', function(){
+            if(r.checked){
+              setTreeValue(r.value || 'Karaçam');
+              // açıkken açık kalır, kapalıyken kapalı kalır
+              syncFastTreePanel();
+              renderHomeTreeMulti();
+            }
+          }, false);
+        }
+      });
+    }
+  }
+  function adminMenuFix(){
+    // Eski üst sekme menüsünde Yeni Kayıt/Admin açılmasın; gerçek alt menü kalsın.
+    var tabs = byId('flowTabsV111');
+    if(tabs){ tabs.style.setProperty('display','none','important'); tabs.setAttribute('aria-hidden','true'); }
+    if(document.body && document.body.classList.contains('show-admin') && !document.body.classList.contains('inline-simple-v119')){
+      var entry = document.querySelector('.panel.entry-panel');
+      if(entry) entry.style.setProperty('display','none','important');
+    }
+  }
+  function boot(){ renderHomeTreeMulti(); syncFastTreePanel(); adminMenuFix(); }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, {once:true}); else boot();
+  [80,240,700,1500,3000,5200].forEach(function(ms){ setTimeout(boot, ms); });
+  setInterval(boot, 500);
+  window.mesahaV198TreeMenu = { render:renderHomeTreeMulti, sync:syncFastTreePanel, selected:selectedTrees };
 })();
