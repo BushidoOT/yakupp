@@ -1,7 +1,7 @@
 {
-  "version": 160,
-  "visibleVersion": "Mesaha İO v1.89",
-  "cache": "mesaha-app-v160-kesimci-ui-beyan-fix",
+  "version": 161,
+  "visibleVersion": "Mesaha İO v1.90",
+  "cache": "mesaha-app-v161-kesimci-ui-beyan-fix",
   "builtAt": "2026-06-19",
   "notes": "Kesimci seçimi açılır liste yerine ölçümlerdeki gibi butonlu hale getirildi. Kesimci silme görünür yapıldı. Kesimciye göre beyan/mesaha dosyası indirme filtresi güçlendirildi. 20 kayıt/sayfa, ZIP yedek, tarih ve ORBİS Excel formatı korunmuştur."
 }
