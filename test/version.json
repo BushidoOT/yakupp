@@ -1,11 +1,11 @@
 {
-  "app": "v3.06",
-  "version": "v306-mobile",
-  "build": "v306",
-  "visibleVersion": "v3.06",
-  "shortVersion": "v3.06",
-  "name": "v3.06",
-  "cacheName": "mesaha-app-v306-mobile-keyboard-fix",
+  "app": "v3.07",
+  "version": "v307-keyboard-save",
+  "build": "v307",
+  "visibleVersion": "v3.07",
+  "shortVersion": "v3.07",
+  "name": "v3.07",
+  "cacheName": "mesaha-app-v307-keyboard-save-fix",
   "builtAt": "2026-06-20",
-  "notes": "Mobil ekran uyumu güçlendirildi; çap/boy kısayollarında klavye kapanmaması düzeltildi."
+  "notes": "iOS/mobil klavye açıkken Kaydet butonu klavye üstünde sabit kalacak şekilde düzeltildi."
 }

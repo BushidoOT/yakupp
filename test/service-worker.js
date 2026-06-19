@@ -1,8 +1,8 @@
-importScripts('./js/version.js?v=306');
-const CACHE_NAME = (self.MESAHA_VERSION && self.MESAHA_VERSION.cacheName) || 'mesaha-app-v306-mobile-keyboard-fix';
+importScripts('./js/version.js?v=307');
+const CACHE_NAME = (self.MESAHA_VERSION && self.MESAHA_VERSION.cacheName) || 'mesaha-app-v307-keyboard-save-fix';
 const ASSETS = [
   './','./index.html','./manifest.json','./version.json','./service-worker.js',
-  './css/style.css?v=306','./js/version.js?v=306','./js/orbis-xls.js?v=306','./js/app.js?v=306',
+  './css/style.css?v=307','./js/version.js?v=307','./js/orbis-xls.js?v=307','./js/app.js?v=307',
   './assets/icon-192.png','./assets/icon-512.png','./assets/mesaha_logo.png',
   './icon-192.png','./icon-512.png','./mesaha_logo.png'
 ];
