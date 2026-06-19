@@ -1,4 +1,4 @@
-const CACHE_NAME = "mesaha-app-v170-moduler-optimize";
+const CACHE_NAME = "mesaha-app-v171-stabil-kontrol";
 const ASSETS = [
   "./",
   "./index.html",
@@ -12,9 +12,10 @@ const ASSETS = [
   "./assets/mesaha_logo.png",
   "./assets/icon-192.png",
   "./assets/icon-512.png",
-  "./css/style.css?v=170",
-  "./js/app.js?v=170",
-  "./js/app-fixes.js?v=170"
+  "./css/style.css?v=171",
+  "./js/app.js?v=171",
+  "./js/app-fixes.js?v=171",
+  "./js/app-v171.js?v=171"
 ];
 
 self.addEventListener("install", (event) => {

@@ -1,10 +1,10 @@
 {
-  "version": "v170",
-  "visibleVersion": "Mesaha İO v1.99",
-  "cache": "mesaha-app-v170-moduler-optimize",
+  "version": "v171",
+  "visibleVersion": "Mesaha İO v2.00",
+  "cache": "mesaha-app-v171-stabil-kontrol",
   "builtAt": "2026-06-19",
-  "notes": "v165 sağlam tabanı korunarak CSS ve JavaScript ayrı dosyalara alındı. Çok parçalı JS yerine tek app.js kullanıldı; eksik özellik ve buton sorunları için v170 güvenlik düzeltmeleri eklendi. ORBİS Excel formatına dokunulmadı.",
-  "name": "Mesaha İO v1.99",
-  "build": "v170",
+  "notes": "v170 modüler taban üzerine Stabil Kontrol paneli, test kayıt oluşturma/silme, kesimci raporu ve ZIP yedek sağlık kontrolü eklendi. ZIP yedek yüklemede silip yükle veya üstüne ekle seçeneği vardır. ORBİS Excel formatına dokunulmadı.",
+  "name": "Mesaha İO v2.00",
+  "build": "v171",
   "updatedAt": "2026-06-19"
 }
