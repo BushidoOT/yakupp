@@ -1,11 +1,11 @@
 {
-  "app": "v3.07",
-  "version": "v307-keyboard-save",
-  "build": "v307",
-  "visibleVersion": "v3.07",
-  "shortVersion": "v3.07",
-  "name": "v3.07",
-  "cacheName": "mesaha-app-v307-keyboard-save-fix",
+  "app": "v3.08",
+  "version": "v308-mobile-font",
+  "build": "v308",
+  "visibleVersion": "v3.08",
+  "shortVersion": "v3.08",
+  "name": "v3.08",
+  "cacheName": "mesaha-app-v308-mobile-font-scale",
   "builtAt": "2026-06-20",
-  "notes": "iOS/mobil klavye açıkken Kaydet butonu klavye üstünde sabit kalacak şekilde düzeltildi."
+  "notes": "Mobilde yazı, buton ve kart ölçekleri telefona göre küçültüldü."
 }
