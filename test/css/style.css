@@ -341,7 +341,7 @@ body.dark .update-status-box{background:#111827;color:#cbd5e1}
 }
 
 
-/* v311 kayıt bildirimi ve ölçümler yerleşimi */
+/* v312 kayıt bildirimi ve ölçümler yerleşimi */
 .record-tools-lower{margin-top:14px!important}
 .records-card > .action-grid{margin:12px 0 14px!important}
 .save-float-toast-v310{
@@ -356,12 +356,12 @@ body.dark .update-status-box{background:#111827;color:#cbd5e1}
 }
 
 
-/* v311 kayıt bildirimi klavye üstünde + kayıt işlem butonları üstte */
+/* v312 kayıt bildirimi klavye üstünde + kayıt işlem butonları üstte */
 .records-card{display:flex!important;flex-direction:column!important}
 .records-card>.section-head{order:1}.records-card>.summary-grid{order:2}.records-card>#productTotals{order:3}.records-card>.action-grid{order:4}.records-card>.record-toolbar{order:5}.records-card>.filter-box{order:6}.records-card>#recordList{order:7}.records-card>#pager{order:8}
 .records-card>.action-grid{margin:10px 0 8px!important}
 .records-card>.record-toolbar{margin:8px 0 10px!important}
-.save-float-toast-v310.save-float-toast-v311{position:fixed!important;bottom:auto!important;left:10px!important;right:auto!important;width:min(64vw,330px)!important;max-width:calc(100vw - 165px)!important;background:rgba(30,41,59,.48)!important;border:1px solid rgba(255,255,255,.34)!important;backdrop-filter:blur(18px)!important;-webkit-backdrop-filter:blur(18px)!important;z-index:11000!important;color:#fff!important}
-.save-float-toast-v310.save-float-toast-v311 b{font-size:14px!important;max-width:100%!important}
-.save-float-toast-v310.save-float-toast-v311 small{font-size:11px!important}
-@media(max-width:430px){.save-float-toast-v310.save-float-toast-v311{left:8px!important;width:calc(100vw - 150px)!important;max-width:calc(100vw - 150px)!important;padding:8px 9px!important}.save-float-toast-v310.save-float-toast-v311 .ico{width:32px!important;height:32px!important}.save-float-toast-v310.save-float-toast-v311 b{font-size:12.5px!important}.save-float-toast-v310.save-float-toast-v311 small{font-size:10px!important}}
+.save-float-toast-v310.save-float-toast-v312{position:fixed!important;bottom:auto!important;left:10px!important;right:auto!important;width:min(64vw,330px)!important;max-width:calc(100vw - 165px)!important;background:rgba(30,41,59,.48)!important;border:1px solid rgba(255,255,255,.34)!important;backdrop-filter:blur(18px)!important;-webkit-backdrop-filter:blur(18px)!important;z-index:11000!important;color:#fff!important}
+.save-float-toast-v310.save-float-toast-v312 b{font-size:14px!important;max-width:100%!important}
+.save-float-toast-v310.save-float-toast-v312 small{font-size:11px!important}
+@media(max-width:430px){.save-float-toast-v310.save-float-toast-v312{left:8px!important;width:calc(100vw - 150px)!important;max-width:calc(100vw - 150px)!important;padding:8px 9px!important}.save-float-toast-v310.save-float-toast-v312 .ico{width:32px!important;height:32px!important}.save-float-toast-v310.save-float-toast-v312 b{font-size:12.5px!important}.save-float-toast-v310.save-float-toast-v312 small{font-size:10px!important}}
