@@ -1,9 +1,9 @@
-/* Mesaha İO v189 - performans paketi
+/* Mesaha İO v190 - performans paketi
    Amaç: Giriş Modu/Yeni Kayıt sırasında ağır liste ve özet tekrarlarını azaltmak.
    ORBİS XLS, kayıt veri modeli ve yedek formatı değiştirilmedi. */
 (function(){
   'use strict';
-  var BUILD = 'v189';
+  var BUILD = 'v190';
   var VISIBLE = 'Mesaha İO v2.18 Performans';
   var SHORT = 'v2.18';
 
@@ -29,20 +29,20 @@
 
   // Kayıt yazımlarını işaretle; aynı kayıt işleminde özet tekrarını tek hesaplamaya indir.
   safe(function(){
-    if (typeof saveRecords === 'function' && !saveRecords.__v189Perf) {
+    if (typeof saveRecords === 'function' && !saveRecords.__v190Perf) {
       var oldSave = saveRecords;
       saveRecords = function(){
         markRecordsChanged();
         return oldSave.apply(this, arguments);
       };
-      saveRecords.__v189Perf = true;
+      saveRecords.__v190Perf = true;
       saveRecords.__old = oldSave;
     }
   });
 
   // Özet kartları aynı revizyonda art arda çağrılırsa tekrar hesaplama yapma.
   safe(function(){
-    if (typeof forceRefreshSummaryCards === 'function' && !forceRefreshSummaryCards.__v189Perf) {
+    if (typeof forceRefreshSummaryCards === 'function' && !forceRefreshSummaryCards.__v190Perf) {
       var oldSummary = forceRefreshSummaryCards;
       forceRefreshSummaryCards = function(){
         var rev = Number(window.__mesahaRecordsRevisionV189) || 0;
@@ -53,14 +53,14 @@
         forceRefreshSummaryCards.__lastAt = now();
         return result;
       };
-      forceRefreshSummaryCards.__v189Perf = true;
+      forceRefreshSummaryCards.__v190Perf = true;
       forceRefreshSummaryCards.__old = oldSummary;
     }
   });
 
   // Günlük özet de hızlı girişte aynı revizyonda üst üste çalışmasın.
   safe(function(){
-    if (typeof renderDailyWorkSummary === 'function' && !renderDailyWorkSummary.__v189Perf) {
+    if (typeof renderDailyWorkSummary === 'function' && !renderDailyWorkSummary.__v190Perf) {
       var oldDaily = renderDailyWorkSummary;
       renderDailyWorkSummary = function(){
         var rev = Number(window.__mesahaRecordsRevisionV189) || 0;
@@ -71,7 +71,7 @@
         renderDailyWorkSummary.__lastAt = now();
         return result;
       };
-      renderDailyWorkSummary.__v189Perf = true;
+      renderDailyWorkSummary.__v190Perf = true;
       renderDailyWorkSummary.__old = oldDaily;
     }
   });
@@ -87,8 +87,8 @@
   }
   safe(function(){
     var nav = document.getElementById('navRecords');
-    if (nav && !nav.__v189PerfBound) {
-      nav.__v189PerfBound = true;
+    if (nav && !nav.__v190PerfBound) {
+      nav.__v190PerfBound = true;
       nav.addEventListener('click', forceRecordsRenderSoon, {passive:true});
     }
     document.addEventListener('click', function(ev){
@@ -99,7 +99,7 @@
 
   // Hızlı girişte son kayıt kutucuğunu hafif ve seyrek yenile.
   safe(function(){
-    if (typeof renderCleanRecentV111 === 'function' && !renderCleanRecentV111.__v189Perf) {
+    if (typeof renderCleanRecentV111 === 'function' && !renderCleanRecentV111.__v190Perf) {
       var oldCleanRecent = renderCleanRecentV111;
       renderCleanRecentV111 = function(){
         var t = now();
@@ -107,7 +107,7 @@
         renderCleanRecentV111.__lastAt = t;
         return oldCleanRecent.apply(this, arguments);
       };
-      renderCleanRecentV111.__v189Perf = true;
+      renderCleanRecentV111.__v190Perf = true;
       renderCleanRecentV111.__old = oldCleanRecent;
     }
   });

@@ -1,7 +1,7 @@
 {
-  "name": "Mesaha İO v2.18 Performans",
+  "name": "Mesaha İO v2.19 Orman Tasarım",
   "short_name": "Mesaha İO",
-  "start_url": "./index.html?v=189",
+  "start_url": "./index.html?v=190",
   "scope": "./",
   "display": "standalone",
   "icons": [
@@ -19,9 +19,9 @@
     }
   ],
   "description": "Orman ölçüm kayıt sistemi",
-  "theme_color": "#0f172a",
-  "background_color": "#0f172a",
-  "version": "v189",
+  "theme_color": "#f7fbf7",
+  "background_color": "#f7fbf7",
+  "version": "v190",
   "id": "./index.html",
   "display_override": [
     "fullscreen",

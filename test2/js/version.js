@@ -2,15 +2,15 @@
   'use strict';
   var info = {
     appName: 'Mesaha İO',
-    version: 'v189',
-    build: 'v189',
-    assetVersion: '189',
-    visibleVersion: 'Mesaha İO v2.18 Performans',
-    shortVersion: 'v2.18',
-    name: 'Mesaha İO v2.18 Performans',
-    cacheName: 'mesaha-app-v189-performance',
+    version: 'v190',
+    build: 'v190',
+    assetVersion: '190',
+    visibleVersion: 'Mesaha İO v2.19 Orman Tasarım',
+    shortVersion: 'v2.19',
+    name: 'Mesaha İO v2.19 Orman Tasarım',
+    cacheName: 'mesaha-app-v190-forest-ui',
     builtAt: '2026-06-21',
-    notes: 'v188 hafif temizlik üzerine v189 performans paketi: giriş modunda ağır kayıt tablosu ertelendi; kayıtlar sekmesine girince tam çizim yapılır; özet/günlük hesaplar aynı kayıt işleminde tekrarlanmaz; ikon ve logo PNG dosyaları optimize edildi. ORBİS XLS çekirdeği, kayıt veri modeli ve yedek formatı değiştirilmedi.'
+    notes: 'v189 performans paketi üzerine orman temalı modern arayüz düzeni eklendi. Odun türlerinde resim/ikon kullanılmadı; metin seçenekleri korundu. ORBİS XLS çekirdeği, kayıt veri modeli ve yedek formatı değiştirilmedi.'
   };
   root.MESAHA_VERSION = info;
   root.MESAHA_VERSION_TEXT = info.visibleVersion;
@@ -25,7 +25,8 @@
     iosInputLagFixed: true,
     finalFixesV187: true,
     liteCleanupV188: true,
-    performanceBuildV189: true
+    performanceBuildV189: true,
+    forestUiV190: true
   });
   function applyVersionText(){
     try{
@@ -39,9 +40,9 @@
           if(el && !el.hasAttribute('data-version-no-auto')) el.textContent = info.visibleVersion;
         });
         var brandH1 = document.querySelector('.app-brand-v143 .brand-copy-v143 h1');
-        if(brandH1 && !brandH1.hasAttribute('data-version-no-auto')) brandH1.textContent = info.shortVersion;
+        if(brandH1 && !brandH1.hasAttribute('data-version-no-auto')) brandH1.textContent = 'Mesaha İO';
         var brandSub = document.querySelector('.app-brand-v143 .brand-copy-v143 span');
-        if(brandSub && !brandSub.hasAttribute('data-version-no-auto')) brandSub.textContent = info.build;
+        if(brandSub && !brandSub.hasAttribute('data-version-no-auto')) brandSub.textContent = info.shortVersion;
       }
     }catch(_){}
   }

@@ -3382,7 +3382,7 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
     function render() {
       const recordsVisibleV189 = !!(document.body.classList.contains("show-records") || (els.navRecords && els.navRecords.classList.contains("active")));
 
-      // v189 performans: Giriş Modu / Yeni Kayıt açıkken ağır kayıt tablosunu yeniden çizme.
+      // v190 performans: Giriş Modu / Yeni Kayıt açıkken ağır kayıt tablosunu yeniden çizme.
       // Tablo sadece Kayıtlar sekmesine girildiğinde üretilir; özetler ve sayaçlar güncel kalır.
       if (!recordsVisibleV189 && !window.__mesahaForceFullRenderV189) {
         cleanSelectedRecordIds();

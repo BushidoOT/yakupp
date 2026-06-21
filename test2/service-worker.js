@@ -1,9 +1,8 @@
-importScripts('./js/version.js?v=189');
-const CACHE_NAME = (self.MESAHA_VERSION && self.MESAHA_VERSION.cacheName) || 'mesaha-app-v189-performance';
+importScripts('./js/version.js?v=190');
+const CACHE_NAME = (self.MESAHA_VERSION && self.MESAHA_VERSION.cacheName) || 'mesaha-app-v190-forest-ui';
 
-// v189 performans + hafif temizlik:
+// v190 orman tasarım + v189 performans:
 // Sadece ana uygulama için gerekli dosyalar ön cache'e alınır.
-// Admin/test dosyaları ve çift assets görselleri ilk açılış yükünü şişirmesin diye çıkarıldı.
 const CORE_ASSETS = [
   './',
   './index.html',
@@ -13,28 +12,30 @@ const CORE_ASSETS = [
   './mesaha_logo.png',
   './icon-192.png',
   './icon-512.png',
-  './css/style.css?v=189',
-  './css/dark.css?v=189',
-  './css/ios-ultra-entry-v186.css?v=189',
-  './css/mesaha-v187-final-fixes.css?v=189',
-  './js/version.js?v=189',
-  './js/admin-access.js?v=189',
-  './js/startup-offline.js?v=189',
-  './js/core.js?v=189',
-  './js/admin-cloud.js?v=189',
-  './js/tree-entry.js?v=189',
-  './js/ui-mobile.js?v=189',
-  './js/records-filters.js?v=189',
-  './js/backup-storage.js?v=189',
-  './js/keyboard-filters.js?v=189',
-  './js/cutters.js?v=189',
-  './js/filters-stability.js?v=189',
-  './js/stability-base.js?v=189',
-  './js/app-stability.js?v=189',
-  './js/auto-update.js?v=189',
-  './js/ios-ultra-entry-v186.js?v=189',
-  './js/mesaha-v187-final-fixes.js?v=189',
-  './js/mesaha-v189-performance.js?v=189'
+  './css/style.css?v=190',
+  './css/dark.css?v=190',
+  './css/ios-ultra-entry-v186.css?v=190',
+  './css/mesaha-v187-final-fixes.css?v=190',
+  './css/mesaha-v190-forest-ui.css?v=190',
+  './js/version.js?v=190',
+  './js/admin-access.js?v=190',
+  './js/startup-offline.js?v=190',
+  './js/core.js?v=190',
+  './js/admin-cloud.js?v=190',
+  './js/tree-entry.js?v=190',
+  './js/ui-mobile.js?v=190',
+  './js/records-filters.js?v=190',
+  './js/backup-storage.js?v=190',
+  './js/keyboard-filters.js?v=190',
+  './js/cutters.js?v=190',
+  './js/filters-stability.js?v=190',
+  './js/stability-base.js?v=190',
+  './js/app-stability.js?v=190',
+  './js/auto-update.js?v=190',
+  './js/ios-ultra-entry-v186.js?v=190',
+  './js/mesaha-v187-final-fixes.js?v=190',
+  './js/mesaha-v189-performance.js?v=190',
+  './js/mesaha-v190-forest-ui.js?v=190'
 ];
 
 const FALLBACK_INDEX = './index.html';

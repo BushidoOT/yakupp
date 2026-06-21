@@ -1,11 +1,11 @@
 {
   "app": "Mesaha İO",
-  "version": "v189",
-  "build": "v189",
-  "visibleVersion": "Mesaha İO v2.18 Performans",
-  "shortVersion": "v2.18",
-  "name": "Mesaha İO v2.18 Performans",
-  "cacheName": "mesaha-app-v189-performance",
+  "version": "v190",
+  "build": "v190",
+  "visibleVersion": "Mesaha İO v2.19 Orman Tasarım",
+  "shortVersion": "v2.19",
+  "name": "Mesaha İO v2.19 Orman Tasarım",
+  "cacheName": "mesaha-app-v190-forest-ui",
   "builtAt": "2026-06-21",
-  "notes": "v188 hafif temizlik üzerine v189 performans paketi: giriş modunda ağır kayıt tablosu ertelendi; kayıtlar sekmesine girince tam çizim yapılır; özet/günlük hesaplar aynı kayıt işleminde tekrarlanmaz; ikon ve logo PNG dosyaları optimize edildi. ORBİS XLS çekirdeği, kayıt veri modeli ve yedek formatı değiştirilmedi."
+  "notes": "v189 performans paketi üzerine orman temalı modern arayüz düzeni eklendi. Odun türlerinde resim/ikon kullanılmadı; metin seçenekleri korundu. ORBİS XLS çekirdeği, kayıt veri modeli ve yedek formatı değiştirilmedi."
 }
