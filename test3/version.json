@@ -1,12 +1,12 @@
 {
-  "app": "v3.23",
-  "version": "v326-user-fixes",
-  "build": 326,
-  "visibleVersion": "v3.23",
-  "shortVersion": "v3.23",
-  "name": "Mesaha İO v3.23",
-  "cacheName": "mesaha-app-v326-user-fixes",
+  "app": "v3.29",
+  "version": "v329-ui-fix",
+  "build": 329,
+  "visibleVersion": "v3.29",
+  "shortVersion": "v3.29",
+  "name": "Mesaha İO v3.29",
+  "cacheName": "mesaha-app-v329-ui-fix",
   "builtAt": "2026-06-21T00:00:00+03:00",
-  "notes": "Lovable referans tasarımı v3.23 paketinin üzerine daha birebir uygulandı; giriş butonları küçültüldü, kullanıcı paneli sadeleştirildi, bulut yükleme tek tık kilitli hale getirildi.",
-  "assetVersion": "326"
+  "notes": "Giriş modu ürün butonları, ayarlar görünümü ve mobil Mesaha Tarihi düzeni düzeltildi.",
+  "assetVersion": "329"
 }

@@ -935,7 +935,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
             const remote = await res.json();
             setStep('version','ok','Sürüm kontrol edildi');
             const current = window.MESAHA_VERSION || {};
-            if(remote && remote.version && current.version && remote.version !== current.version){
+            if(remote && current && (Number(remote.build||0) > Number(current.build||0))){
               setTimeout(() => modal({
                 title:'Yeni sürüm var',
                 type:'success',
@@ -1205,7 +1205,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     let remote = null;
     try{ remote = await fetchRemoteVersion(); }catch{}
     const remoteText = remote ? (remote.visibleVersion || remote.app || remote.version || 'Yeni sürüm') : 'Sürüm bilgisi alınamadı';
-    const same = remote && current.version && remote.version === current.version;
+    const same = !!(remote && current && !(Number(remote.build||0) > Number(current.build||0)));
     const ok = await modal({
       title: same ? 'Sürüm Güncel' : 'Yeni Sürümü Güncelle',
       type: same ? 'success' : 'warn',
@@ -1804,7 +1804,10 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 
   function versionDifferent(remote){
     const current = window.MESAHA_VERSION || {};
-    if(!remote || !remote.version || !current.version) return false;
+    if(!remote || !current) return false;
+    var rb = Number(remote.build || 0), cb = Number(current.build || 0);
+    if(rb || cb) return rb > cb;
+    if(!remote.version || !current.version) return false;
     return String(remote.version) !== String(current.version);
   }
 
