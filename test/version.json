@@ -1,12 +1,12 @@
 {
-  "app": "v3.16",
-  "version": "v316-user-admin-panel-fix",
-  "build": "v316",
-  "visibleVersion": "v3.16",
-  "shortVersion": "v3.16",
-  "name": "v3.16",
-  "cacheName": "mesaha-app-v316-user-admin-panel-fix",
+  "app": "v3.17",
+  "version": "v317-online-firebase-fix",
+  "build": "v317",
+  "visibleVersion": "v3.17",
+  "shortVersion": "v3.17",
+  "name": "v3.17",
+  "cacheName": "mesaha-app-v317-online-firebase-fix",
   "builtAt": "2026-06-21",
-  "notes": "Kullanıcı paneli, admin paneli, bulut kullanıcı istatistikleri ve uzun uyarı toast yazı sığdırma düzeltmesi eklendi.",
-  "assetVersion": "316"
+  "notes": "Firebase online bağlantısı, admin paneli güncellenmesi ve bulut yedekleme akışı düzeltildi.",
+  "assetVersion": "317"
 }

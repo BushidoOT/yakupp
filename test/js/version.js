@@ -1,18 +1,13 @@
-(function(root){
-  'use strict';
-  const info = {
-    appName: 'v3.16',
-    version: 'v316-user-admin-panel-fix',
-    build: 'v316',
-    assetVersion: '316',
-    visibleVersion: 'v3.16',
-    shortVersion: 'v3.16',
-    name: 'v3.16',
-    cacheName: 'mesaha-app-v316-user-admin-panel-fix',
-    builtAt: '2026-06-21',
-    notes: 'Kullanıcı paneli, admin paneli, bulut kullanıcı istatistikleri ve uzun uyarı toast yazı sığdırma düzeltmesi eklendi.'
-  };
-  root.MESAHA_VERSION = info;
-  root.MESAHA_VERSION_TEXT = info.visibleVersion;
-  root.MESAHA_VERSION_SHORT = info.shortVersion;
-})(typeof self !== 'undefined' ? self : window);
+self.MESAHA_VERSION = {
+  app: 'v3.17',
+  version: 'v317-online-firebase-fix',
+  build: 'v317',
+  visibleVersion: 'v3.17',
+  shortVersion: 'v3.17',
+  name: 'v3.17',
+  cacheName: 'mesaha-app-v317-online-firebase-fix',
+  builtAt: '2026-06-21',
+  notes: 'Firebase online bağlantısı, admin paneli güncellenmesi ve bulut yedekleme akışı düzeltildi.',
+  assetVersion: '317'
+};
+if (typeof window !== 'undefined') window.MESAHA_VERSION = self.MESAHA_VERSION;

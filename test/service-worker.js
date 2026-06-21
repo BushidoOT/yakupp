@@ -1,8 +1,8 @@
-importScripts('./js/version.js?v=316');
-const CACHE_NAME = (self.MESAHA_VERSION && self.MESAHA_VERSION.cacheName) || 'mesaha-app-v316-user-admin-panel-fix';
+importScripts('./js/version.js?v=317');
+const CACHE_NAME = (self.MESAHA_VERSION && self.MESAHA_VERSION.cacheName) || 'mesaha-app-v317-online-firebase-fix';
 const ASSETS = [
   './','./index.html','./admin.html','./manifest.json','./version.json','./service-worker.js',
-  './css/style.css?v=316','./js/version.js?v=316','./js/orbis-xls.js?v=316','./js/app.js?v=316',
+  './css/style.css?v=317','./js/version.js?v=317','./js/orbis-xls.js?v=317','./js/app.js?v=317',
   './assets/icon-192.png','./assets/icon-512.png','./assets/mesaha_logo.png',
   './icon-192.png','./icon-512.png','./mesaha_logo.png'
 ];
@@ -14,6 +14,8 @@ self.addEventListener('activate', event => {
 });
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
+  const url = new URL(event.request.url);
+  if (url.origin !== self.location.origin) return;
   event.respondWith(fetch(event.request).then(response => {
     const clone = response.clone();
     caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone)).catch(()=>{});
