@@ -2,7 +2,7 @@
 'use strict';
 const STORAGE_KEY = 'cam_mesaha_kayitlari_v1';
 const SETTINGS_KEY = 'cam_mesaha_ayarlar_v1';
-const VERSION = window.MESAHA_VERSION || {shortVersion:'v3.08', version:'v308-mobile-font'};
+const VERSION = window.MESAHA_VERSION || {shortVersion:'v3.10', version:'v310-toast-update'};
 const PRODUCTS = [
   {key:'Tomruk', label:'Tomruk', cls:'tomruk', rule:'Tomruk: çap 21 ve üzeri olmalı.'},
   {key:'Maden Direk', label:'Maden', cls:'maden', rule:'Maden: çap 20 ve altı olmalı.'},
@@ -163,7 +163,7 @@ function bind(){
   $('printBtn').addEventListener('click', () => window.print());
   $('bottomNav').addEventListener('click', e => { const b=e.target.closest('[data-nav]'); if(b) showView(b.dataset.nav); });
   ['bolmeNo','seflik','ekipNot','mesahaDate'].forEach(id => $(id).addEventListener('input', settingsFromInputs));
-  ['diameterInput','lengthInput'].forEach(id => {
+  ['lengthInput'].forEach(id => {
     $(id).addEventListener('input', entryInputChanged);
     $(id).addEventListener('focus', () => document.body.classList.add('typing'));
     $(id).addEventListener('blur', () => setTimeout(()=>document.body.classList.remove('typing'), 160));
@@ -268,7 +268,7 @@ function saveEntry(){
   const rec = { id: state.editingId || uid(), barcode, diameter, length, quantity:Math.max(1, num($('quantityInput') && $('quantityInput').value || 1)), productType:normalizeProductType(state.settings.currentProduct), treeType:state.settings.currentTree, cutter:state.settings.activeCutter||'', productionDate:state.settings.mesahaDate||todayISO(), createdAt:new Date().toISOString(), updatedAt: state.editingId ? new Date().toISOString() : '' };
   if(state.editingId){ const i=state.records.findIndex(r=>r.id===state.editingId); if(i>=0) state.records[i]=rec; state.editingId=null; state.editingReturnBarcode=''; $('cancelEditBtn').classList.add('hidden'); }
   else state.records.push(rec);
-  state.settings.quantity = '1'; rememberChip('recentDiameters', diameter); rememberChip('recentLengths', length); state.settings.barcode = wasEditing ? (returnBarcodeAfterEdit || nextBarcode(barcode)) : nextBarcode(barcode); $('barcodeInput').value=state.settings.barcode; saveRecords(); saveSettings(); renderAll(); toast(wasEditing ? 'Kayıt güncellendi.' : 'Kayıt alındı.'); try{ setTimeout(()=>{ $('diameterInput').value=''; $('diameterInput').focus({preventScroll:true}); $('diameterInput').select(); }, 0); }catch{} if(state.settings.soundEnabled!==false) beep();
+  state.settings.quantity = '1'; rememberChip('recentDiameters', diameter); rememberChip('recentLengths', length); state.settings.barcode = wasEditing ? (returnBarcodeAfterEdit || nextBarcode(barcode)) : nextBarcode(barcode); $('barcodeInput').value=state.settings.barcode; saveRecords(); saveSettings(); renderAll(); if(window.mesahaV310SavedToast){ window.mesahaV310SavedToast(rec, wasEditing); } else toast(wasEditing ? 'Kayıt güncellendi.' : 'Kayıt alındı.'); try{ setTimeout(()=>{ $('diameterInput').value=''; $('diameterInput').focus({preventScroll:true}); $('diameterInput').select(); }, 0); }catch{} if(state.settings.soundEnabled!==false) beep();
 }
 function rememberChip(key, val){ const arr=[val, ...(state.settings[key]||[]).filter(x=>String(x)!==String(val))].slice(0,5); state.settings[key]=arr; }
 function nextBarcode(b){ const m=String(b).match(/^(.*?)(\d+)$/); if(!m) return ''; return m[1]+String(Number(m[2])+1).padStart(m[2].length,'0'); }
@@ -304,7 +304,7 @@ function exportXls(){
   const file=`Mesaha_${bolme?bolme+'_':''}${formatDateFile()}.xls`;
   if(window.OrbisXls) window.OrbisXls.downloadXls(ordered, file); else toast('XLS modülü yüklenmedi.');
 }
-function backupJson(){ const data={version:'v3.08-extras', exportedAt:new Date().toISOString(), records:state.records, settings:state.settings}; downloadText(JSON.stringify(data,null,2), `mesaha_yedek_${formatDateFile()}.json`, 'application/json'); toast('Yedek indirildi.'); }
+function backupJson(){ const data={version:'v3.10-extras', exportedAt:new Date().toISOString(), records:state.records, settings:state.settings}; downloadText(JSON.stringify(data,null,2), `mesaha_yedek_${formatDateFile()}.json`, 'application/json'); toast('Yedek indirildi.'); }
 function restoreJson(e){ const file=e.target.files && e.target.files[0]; if(!file) return; const reader=new FileReader(); reader.onload=()=>{ try{ const data=JSON.parse(reader.result); const records=Array.isArray(data) ? data : data.records; if(!Array.isArray(records)) throw new Error('records yok'); state.records=records.map(migrateRecord).filter(Boolean); if(data.settings) state.settings={...state.settings,...data.settings}; saveRecords(); saveSettings(); renderAll(); toast('Yedek yüklendi.'); }catch(err){ toast('Yedek okunamadı.'); } e.target.value=''; }; reader.readAsText(file); }
 function downloadText(content, filename, type){ const blob=new Blob([content],{type}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=filename; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),1000); }
 window.state = state;
@@ -322,7 +322,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 })();
 
 
-/* v308: admin hariç eksik parçalar - canlı ölçüm, aynı barkod, seçimli kayıtlar, bakım, özet */
+/* v310: admin hariç eksik parçalar - canlı ölçüm, aynı barkod, seçimli kayıtlar, bakım, özet */
 (function(){
   'use strict';
 
@@ -431,8 +431,8 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   }
 
   function patchSaveEntry(){
-    if(window.__v308SavePatched) return;
-    window.__v308SavePatched = true;
+    if(window.__v310SavePatched) return;
+    window.__v310SavePatched = true;
 
     const old = window.saveEntry;
     if(typeof old !== 'function') return;
@@ -550,14 +550,14 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   function bindV303(){
     const d=$('diameterInput'), l=$('lengthInput'), q=$('quantityInput'), b=$('barcodeInput');
     [d,l,q,b].filter(Boolean).forEach(el => {
-      if(el.__v308Live) return;
-      el.__v308Live = true;
+      if(el.__v310Live) return;
+      el.__v310Live = true;
       el.addEventListener('input', updateLiveBox);
       el.addEventListener('change', updateLiveBox);
     });
 
-    if(q && !q.__v308Qty){
-      q.__v308Qty = true;
+    if(q && !q.__v310Qty){
+      q.__v310Qty = true;
       q.addEventListener('input', () => {
         let v = String(q.value||'').replace(/\D/g,'').slice(0,3);
         if(!v || Number(v)<1) v='1';
@@ -566,8 +566,8 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     }
 
     const same = $('sameBarcodeBtn');
-    if(same && !same.__v308Same){
-      same.__v308Same = true;
+    if(same && !same.__v310Same){
+      same.__v310Same = true;
       same.addEventListener('click', () => {
         settings().sameBarcodeMode = settings().sameBarcodeMode !== true;
         saveSettings();
@@ -576,8 +576,8 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     }
 
     const save = $('saveBtn');
-    if(save && !save.__v308SameRestore){
-      save.__v308SameRestore = true;
+    if(save && !save.__v310SameRestore){
+      save.__v310SameRestore = true;
       save.addEventListener('click', () => {
         const beforeBarcode = norm($('barcodeInput') && $('barcodeInput').value).toUpperCase();
         const beforeCount = records().length;
@@ -595,14 +595,14 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     }
 
     const search = $('recordSearch');
-    if(search && !search.__v308Search){
-      search.__v308Search = true;
+    if(search && !search.__v310Search){
+      search.__v310Search = true;
       search.addEventListener('input', () => { currentPage=1; renderRecordsV303(); });
     }
 
     const selectFiltered = $('selectFilteredBtn');
-    if(selectFiltered && !selectFiltered.__v308){
-      selectFiltered.__v308 = true;
+    if(selectFiltered && !selectFiltered.__v310){
+      selectFiltered.__v310 = true;
       selectFiltered.addEventListener('click', () => {
         filteredRecordsV303().forEach(r => selectedIds.add(r.id));
         renderRecordsV303();
@@ -610,14 +610,14 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     }
 
     const clearSel = $('clearSelectionBtn');
-    if(clearSel && !clearSel.__v308){
-      clearSel.__v308 = true;
+    if(clearSel && !clearSel.__v310){
+      clearSel.__v310 = true;
       clearSel.addEventListener('click', () => { selectedIds.clear(); renderRecordsV303(); });
     }
 
     const bulk = $('bulkDeleteBtn');
-    if(bulk && !bulk.__v308){
-      bulk.__v308 = true;
+    if(bulk && !bulk.__v310){
+      bulk.__v310 = true;
       bulk.addEventListener('click', () => {
         const list = selectedList();
         if(!list.length) return toast('Seçili kayıt yok.');
@@ -634,8 +634,8 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     }
 
     const undo = $('undoDeleteBtn');
-    if(undo && !undo.__v308){
-      undo.__v308 = true;
+    if(undo && !undo.__v310){
+      undo.__v310 = true;
       undo.addEventListener('click', () => {
         if(!lastDeleted || !lastDeleted.records) return;
         const s = appState();
@@ -648,8 +648,8 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     }
 
     const delAll = $('deleteAllBtn');
-    if(delAll && !delAll.__v308){
-      delAll.__v308 = true;
+    if(delAll && !delAll.__v310){
+      delAll.__v310 = true;
       delAll.addEventListener('click', () => {
         if(!records().length) return toast('Silinecek kayıt yok.');
         if(!confirm('Tüm kayıtlar silinsin mi?')) return;
@@ -666,42 +666,42 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     document.addEventListener('click', ev => { if(ev.target && ev.target.closest && ev.target.closest('[data-tree-filter],[data-cutter-filter]')) setTimeout(renderRecordsV303, 60); }, true);
 
     document.querySelectorAll('[data-nav="records"]').forEach(btn => {
-      if(btn.__v308Nav) return;
-      btn.__v308Nav = true;
+      if(btn.__v310Nav) return;
+      btn.__v310Nav = true;
       btn.addEventListener('click', () => setTimeout(renderRecordsV303, 80));
     });
 
     const update = $('forceUpdateBtn');
-    if(update && !update.__v308){
-      update.__v308 = true;
+    if(update && !update.__v310){
+      update.__v310 = true;
       update.addEventListener('click', forceUpdate);
     }
 
     const cache = $('clearCacheBtn');
-    if(cache && !cache.__v308){
-      cache.__v308 = true;
+    if(cache && !cache.__v310){
+      cache.__v310 = true;
       cache.addEventListener('click', clearCacheOnly);
     }
 
     const backup = $('backupBtn');
-    if(backup && !backup.__v308Info){
-      backup.__v308Info = true;
+    if(backup && !backup.__v310Info){
+      backup.__v310Info = true;
       backup.addEventListener('click', () => {
         setTimeout(()=>alert('Yedek dosyası metin/JSON formatındadır. Sadece Mesaha İO içinde geri yükleme içindir. Excel yedeği değildir. Excel için Mesaha Dosyasını İndir butonunu kullanınız.'), 50);
       }, true);
     }
 
     const restore = $('restoreBtn');
-    if(restore && !restore.__v308Info){
-      restore.__v308Info = true;
+    if(restore && !restore.__v310Info){
+      restore.__v310Info = true;
       restore.addEventListener('click', () => {
         setTimeout(()=>alert('Yedek Yükle: Daha önce Mesaha İO ile alınan JSON yedeğini seçiniz. Bu işlem mevcut kayıtları yedekteki kayıtlarla değiştirir.'), 50);
       }, true);
     }
 
     const xls = $('downloadXlsBtn');
-    if(xls && !xls.__v308Info){
-      xls.__v308Info = true;
+    if(xls && !xls.__v310Info){
+      xls.__v310Info = true;
       xls.addEventListener('click', () => {
         setTimeout(()=>alert('Mesaha dosyası indiriliyor\\n\\nORBİS’e Aktarma:\\n1. Dosyayı bilgisayara aktarınız.\\n2. ORBİS’e bilgisayar üzerinden giriş yapınız.\\n3. İşletme Pazarlama > Kesme Faaliyetleri Raporu ekranına giriniz.\\n4. Şeflik ve bölme bilgilerini giriniz, bölmeye çift tıklayınız.\\n5. Dosya yükleme bölümünden Excel’den Aktar deyiniz.'), 50);
       }, true);
@@ -764,7 +764,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 })();
 
 
-/* v308: modern pencereler + yedek zip + başlangıç/güncelleme + seçili/filtreli bilgi */
+/* v310: modern pencereler + yedek zip + başlangıç/güncelleme + seçili/filtreli bilgi */
 (function(){
   'use strict';
 
@@ -1050,7 +1050,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   }
   function backupZip(){
     const data = {
-      version:'v3.08-modern',
+      version:'v3.10-modern',
       exportedAt:new Date().toISOString(),
       records:records(),
       settings:settings()
@@ -1117,44 +1117,76 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   }
 
   async function clearCacheFlow(){
+    if(!navigator.onLine){
+      await modal({
+        title:'İnternet yok',
+        type:'danger',
+        icon:'!',
+        html:'<p>Ön bellek temizleme işlemini internet yokken uygulamayın.</p><div class="modal-note">Ön bellek temizlendikten sonra uygulama yeni dosyaları internetten tekrar alır. İnternet yoksa uygulama eksik açılabilir.</div>',
+        buttons:[{text:'Tamam', value:true, cls:'primary'}]
+      });
+      return;
+    }
     const ok = await modal({
       title:'Ön Bellek Temizle',
       type:'warn',
       icon:'♻',
-      html:'<p>Bu işlem eski uygulama dosyalarını temizler. Kayıtların ve yedeklerin silinmez.</p><div class="modal-note">Temizledikten sonra sayfayı kapatıp tekrar açman en sağlıklısıdır.</div>',
-      buttons:[{text:'Vazgeç', value:false, cls:'ghost'}, {text:'Temizle', value:true, cls:'primary'}]
-    });
-    if(!ok) return;
-    try{
-      if('caches' in window){
-        const keys = await caches.keys();
-        await Promise.all(keys.map(k => caches.delete(k)));
-      }
-      await modal({title:'Ön bellek temizlendi', type:'success', icon:'✓', html:'<p>Eski dosyalar temizlendi. Sayfayı yenileyerek yeni dosyaları alabilirsin.</p>', buttons:[{text:'Tamam', value:true, cls:'primary'}]});
-    }catch{
-      modal({title:'Temizleme başarısız', type:'danger', icon:'!', message:'Ön bellek temizlenemedi.'});
-    }
-  }
-  async function forceUpdateFlow(){
-    const ok = await modal({
-      title:'Yeni Sürümü Güncelle',
-      type:'warn',
-      icon:'↻',
-      html:'<p>Uygulama son dosyaları kontrol edecek, ön belleği temizleyecek ve kontrollü şekilde yenilenecek.</p><div class="modal-note">Kayıtların cihazda kalır; sadece uygulama dosyaları yenilenir.</div>',
-      buttons:[{text:'Vazgeç', value:false, cls:'ghost'}, {text:'Güncelle', value:true, cls:'primary'}]
+      html:'<p>Bu işlem eski uygulama dosyalarını temizler. Kayıtların ve yedeklerin silinmez.</p><div class="modal-note">Dikkat: İnternet yokken uygulamayın. Temizleme bitince sistem kendini otomatik yeniden başlatır.</div>',
+      buttons:[{text:'Vazgeç', value:false, cls:'ghost'}, {text:'Temizle ve Yeniden Başlat', value:true, cls:'primary'}]
     });
     if(!ok) return;
     try{
       if('serviceWorker' in navigator){
         const regs = await navigator.serviceWorker.getRegistrations();
-        await Promise.all(regs.map(r => r.update()));
+        await Promise.all(regs.map(r => r.unregister().catch(()=>{})));
       }
       if('caches' in window){
         const keys = await caches.keys();
         await Promise.all(keys.map(k => caches.delete(k)));
       }
-      await modal({title:'Güncelleme hazır', type:'success', icon:'✓', html:'<p>Yeni sürüm dosyaları kontrol edildi. Şimdi sayfa yenilenecek.</p>', buttons:[{text:'Yenile', value:true, cls:'primary'}]});
-      location.reload();
+      await modal({title:'Ön bellek temizlendi', type:'success', icon:'✓', html:'<p>Eski dosyalar temizlendi. Uygulama şimdi kendini yeniden başlatacak.</p>', buttons:[{text:'Yeniden Başlat', value:true, cls:'primary'}]});
+      location.replace(location.pathname + '?v=' + Date.now());
+    }catch{
+      modal({title:'Temizleme başarısız', type:'danger', icon:'!', message:'Ön bellek temizlenemedi.'});
+    }
+  }
+  async function forceUpdateFlow(){
+    async function fetchRemoteVersion(){
+      const res = await fetch('./version.json?check=' + Date.now(), {cache:'no-store', headers:{'Cache-Control':'no-cache'}});
+      if(!res.ok) throw new Error('version.json okunamadı');
+      return await res.json();
+    }
+    const current = window.MESAHA_VERSION || {};
+    let remote = null;
+    try{ remote = await fetchRemoteVersion(); }catch{}
+    const remoteText = remote ? (remote.visibleVersion || remote.app || remote.version || 'Yeni sürüm') : 'Sürüm bilgisi alınamadı';
+    const same = remote && current.version && remote.version === current.version;
+    const ok = await modal({
+      title: same ? 'Sürüm Güncel' : 'Yeni Sürümü Güncelle',
+      type: same ? 'success' : 'warn',
+      icon:'↻',
+      html:(same
+        ? `<p>Şu anki sürüm güncel görünüyor: <b>${remoteText}</b></p><div class="modal-note">Yine de takılma varsa ön belleği temizleyip yeniden başlatabilirsin.</div>`
+        : `<p>Uygulama son dosyaları kontrol edecek ve ön belleği temizleyip yeniden başlatacak.</p><div class="modal-note">Bulunan sürüm: <b>${remoteText}</b><br>İşlem için internet bağlantısı açık olmalı.</div>`),
+      buttons:[{text:'Vazgeç', value:false, cls:'ghost'}, {text:same ? 'Yine De Yenile' : 'Güncelle', value:true, cls:'primary'}]
+    });
+    if(!ok) return;
+    if(!navigator.onLine){
+      await modal({title:'İnternet yok', type:'danger', icon:'!', html:'<p>Güncelleme için internet bağlantısı gerekiyor.</p>', buttons:[{text:'Tamam', value:true, cls:'primary'}]});
+      return;
+    }
+    try{
+      if('serviceWorker' in navigator){
+        const regs = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(regs.map(r => r.unregister().catch(()=>{})));
+      }
+      if('caches' in window){
+        const keys = await caches.keys();
+        await Promise.all(keys.map(k => caches.delete(k)));
+      }
+      await fetch('./index.html?preload=' + Date.now(), {cache:'reload'}).catch(()=>{});
+      await modal({title:'Güncelleme hazır', type:'success', icon:'✓', html:'<p>Dosyalar yenilendi. Uygulama şimdi yeniden başlatılacak.</p>', buttons:[{text:'Yeniden Başlat', value:true, cls:'primary'}]});
+      location.replace(location.pathname + '?v=' + Date.now());
     }catch{
       modal({title:'Güncelleme yapılamadı', type:'danger', icon:'!', message:'Bağlantı veya tarayıcı önbelleği nedeniyle güncelleme tamamlanamadı.'});
     }
@@ -1319,7 +1351,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 })();
 
 
-/* v308: Boy solda / Çap sağda, klavye kapanmasın, seçili filtre BEYAN toplamı, düzenlemede barkod devamı */
+/* v310: Boy solda / Çap sağda, klavye kapanmasın, seçili filtre BEYAN toplamı, düzenlemede barkod devamı */
 (function(){
   'use strict';
 
@@ -1368,10 +1400,10 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   }
 
   function bindSelectOnTap(){
-    ['diameterInput','lengthInput'].forEach(id => {
+    ['lengthInput'].forEach(id => {
       const el = $(id);
-      if(!el || el.__v308Select) return;
-      el.__v308Select = true;
+      if(!el || el.__v310Select) return;
+      el.__v310Select = true;
       ['focus','click','pointerup','touchend'].forEach(evt => {
         el.addEventListener(evt, () => selectInput(el), {passive:true});
       });
@@ -1383,16 +1415,17 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     if(!d) return;
     try{
       d.focus({preventScroll:true});
-      d.select();
+      const len = String(d.value || '').length;
+      try{ d.setSelectionRange(len, len); }catch{}
     }catch{
-      try{ d.focus(); d.select(); }catch{}
+      try{ d.focus(); }catch{}
     }
   }
 
   function bindSaveKeepKeyboard(){
     const btn = $('saveBtn');
-    if(!btn || btn.__v308KeepKeyboard) return;
-    btn.__v308KeepKeyboard = true;
+    if(!btn || btn.__v310KeepKeyboard) return;
+    btn.__v310KeepKeyboard = true;
 
     let handled = false;
     function run(ev){
@@ -1464,8 +1497,8 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   }
 
   function patchOpenEntryRuntime(){
-    if(window.__v308OpenEntryPatched || typeof window.openEntry !== 'function') return;
-    window.__v308OpenEntryPatched = true;
+    if(window.__v310OpenEntryPatched || typeof window.openEntry !== 'function') return;
+    window.__v310OpenEntryPatched = true;
     const old = window.openEntry;
     window.openEntry = function(record){
       if(record && appState()){
@@ -1498,11 +1531,20 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 })();
 
 
-/* v308: mobil oturum + ölçüm kısayollarında klavye kapanmasın */
+/* v310: mobil oturum + ölçüm kısayollarında klavye kapanmasın */
 (function(){
   'use strict';
 
   const $ = id => document.getElementById(id);
+
+  function focusNoSelectV309(el){
+    if(!el) return;
+    try{
+      el.focus({preventScroll:true});
+      const len = String(el.value || '').length;
+      try{ el.setSelectionRange(len, len); }catch{}
+    }catch{ try{ el.focus(); }catch{} }
+  }
 
   function focusAndSelect(el){
     if(!el) return;
@@ -1519,8 +1561,8 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     const length = $('lengthInput');
 
     document.querySelectorAll('#diameterChips button,[data-dia]').forEach(btn => {
-      if(btn.__v308Measure) return;
-      btn.__v308Measure = true;
+      if(btn.__v310Measure) return;
+      btn.__v310Measure = true;
       const run = ev => {
         if(ev){
           ev.preventDefault();
@@ -1530,8 +1572,8 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
         if(diameter){
           diameter.value = btn.dataset.dia || btn.textContent.trim();
           try{ if(typeof entryInputChanged === 'function') entryInputChanged(); }catch{}
-          focusAndSelect(diameter);
-          setTimeout(()=>focusAndSelect(diameter), 80);
+          focusNoSelectV309(diameter);
+          setTimeout(()=>focusNoSelectV309(diameter), 80);
         }
       };
       btn.addEventListener('pointerdown', run, true);
@@ -1540,8 +1582,8 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     });
 
     document.querySelectorAll('#lengthChips button,[data-len]').forEach(btn => {
-      if(btn.__v308Measure) return;
-      btn.__v308Measure = true;
+      if(btn.__v310Measure) return;
+      btn.__v310Measure = true;
       const run = ev => {
         if(ev){
           ev.preventDefault();
@@ -1562,8 +1604,8 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 
     ['diameterInput','lengthInput'].forEach(id => {
       const el = $(id);
-      if(!el || el.__v308Tap) return;
-      el.__v308Tap = true;
+      if(!el || el.__v310Tap) return;
+      el.__v310Tap = true;
       el.addEventListener('focus', () => focusAndSelect(el), true);
       el.addEventListener('click', () => focusAndSelect(el), true);
     });
@@ -1571,7 +1613,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 
   function stabilizeViewport(){
     document.documentElement.style.setProperty('--vh', (window.innerHeight * 0.01) + 'px');
-    document.body.classList.toggle('keyboard-open-v308', window.visualViewport ? window.visualViewport.height < window.innerHeight - 120 : false);
+    document.body.classList.toggle('keyboard-open-v310', window.visualViewport ? window.visualViewport.height < window.innerHeight - 120 : false);
   }
 
   function boot(){
@@ -1594,7 +1636,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 })();
 
 
-/* v308: iOS klavyede Kaydet butonunu klavye üstünde tut */
+/* v310: iOS klavyede Kaydet butonunu klavye üstünde tut */
 (function(){
   'use strict';
 
@@ -1619,9 +1661,9 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 
   function updateKeyboardState(){
     const inset = keyboardInset();
-    const open = isEntryOpen() && activeIsMeasureInput() && (inset > 80 || document.body.classList.contains('keyboard-open-v308'));
-    document.body.classList.toggle('keyboard-open-v308', open);
-    document.documentElement.style.setProperty('--keyboard-bottom-v308', open ? inset + 'px' : '0px');
+    const open = isEntryOpen() && activeIsMeasureInput() && (inset > 80 || document.body.classList.contains('keyboard-open-v310'));
+    document.body.classList.toggle('keyboard-open-v310', open);
+    document.documentElement.style.setProperty('--keyboard-bottom-v310', open ? inset + 'px' : '0px');
 
     const btn = document.getElementById('saveBtn');
     if(btn && open){
@@ -1632,10 +1674,10 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   }
 
   function bind(){
-    ['diameterInput','lengthInput'].forEach(id => {
+    ['diameterInput','lengthInput','barcodeInput'].forEach(id => {
       const el = document.getElementById(id);
-      if(!el || el.__v308Keyboard) return;
-      el.__v308Keyboard = true;
+      if(!el || el.__v310Keyboard) return;
+      el.__v310Keyboard = true;
       el.addEventListener('focus', () => setTimeout(updateKeyboardState, 80), true);
       el.addEventListener('blur', () => setTimeout(updateKeyboardState, 220), true);
       el.addEventListener('input', () => setTimeout(updateKeyboardState, 40), true);
@@ -1643,8 +1685,8 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     });
 
     const save = document.getElementById('saveBtn');
-    if(save && !save.__v308Keep){
-      save.__v308Keep = true;
+    if(save && !save.__v310Keep){
+      save.__v310Keep = true;
       save.addEventListener('pointerdown', () => setTimeout(updateKeyboardState, 20), true);
       save.addEventListener('touchstart', () => setTimeout(updateKeyboardState, 20), true);
       save.addEventListener('click', () => setTimeout(updateKeyboardState, 120), true);
@@ -1671,4 +1713,93 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   [100,400,1000,2200].forEach(ms => setTimeout(boot, ms));
 
   window.mesahaV307 = {updateKeyboardState};
+})();
+
+
+/* v310: detaylı kayıt toast + bakım güncelleme bildirimi */
+(function(){
+  'use strict';
+
+  const $ = id => document.getElementById(id);
+  const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+  const productLabel = key => {
+    const map = {'Tomruk':'Tomruk','Maden Direk':'Maden','Kağıtlık':'Kağıtlık','Sanayi Odunu':'Sanayi','Tel Direk':'Tel'};
+    return map[key] || key || '';
+  };
+
+  function ensureSaveToast(){
+    let el = $('saveFloatToastV310');
+    if(el) return el;
+    el = document.createElement('div');
+    el.id = 'saveFloatToastV310';
+    el.className = 'save-float-toast-v310';
+    el.innerHTML = '<span class="ico">✓</span><span class="txt"><b></b><small></small></span>';
+    document.body.appendChild(el);
+    return el;
+  }
+
+  window.mesahaV310SavedToast = function(rec, wasEditing){
+    const el = ensureSaveToast();
+    const title = `${rec.barcode || ''} ${rec.diameter || ''}Ç ${rec.length || ''}B ${productLabel(rec.productType)}`.trim();
+    const action = wasEditing ? 'Güncellendi' : 'Eklendi';
+    const b = el.querySelector('b');
+    const s = el.querySelector('small');
+    if(b) b.textContent = title;
+    if(s) s.textContent = action;
+    el.classList.add('show');
+    clearTimeout(el.__timer);
+    el.__timer = setTimeout(() => el.classList.remove('show'), 2300);
+  };
+
+  async function remoteVersion(){
+    const res = await fetch('./version.json?check=' + Date.now(), {cache:'no-store', headers:{'Cache-Control':'no-cache'}});
+    if(!res.ok) throw new Error('version.json okunamadı');
+    return await res.json();
+  }
+
+  function versionDifferent(remote){
+    const current = window.MESAHA_VERSION || {};
+    if(!remote || !remote.version || !current.version) return false;
+    return String(remote.version) !== String(current.version);
+  }
+
+  function setUpdateStatus(text, cls){
+    const el = $('updateStatusBox');
+    if(!el) return;
+    el.classList.remove('update-available','update-ok','update-offline');
+    if(cls) el.classList.add(cls);
+    el.textContent = text;
+  }
+
+  async function checkUpdateStatus(){
+    if(!navigator.onLine){
+      setUpdateStatus('Offline: sürüm kontrolü internet gelince yapılır.', 'update-offline');
+      return;
+    }
+    try{
+      const remote = await remoteVersion();
+      const label = remote.visibleVersion || remote.app || remote.version || 'Yeni sürüm';
+      if(versionDifferent(remote)){
+        setUpdateStatus('Yeni sürüm hazır: ' + label + ' — Güncelle butonuna bas.', 'update-available');
+      }else{
+        setUpdateStatus('Uygulama güncel: ' + (window.MESAHA_VERSION?.visibleVersion || label), 'update-ok');
+      }
+    }catch{
+      setUpdateStatus('Sürüm kontrolü yapılamadı. İnternet varsa tekrar deneyin.', 'update-offline');
+    }
+  }
+
+  function boot(){
+    checkUpdateStatus();
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, {once:true});
+  else boot();
+
+  window.addEventListener('online', checkUpdateStatus);
+  window.addEventListener('offline', checkUpdateStatus);
+  setTimeout(checkUpdateStatus, 1500);
+  setInterval(checkUpdateStatus, 60000);
+
+  window.mesahaV310 = {checkUpdateStatus, savedToast:window.mesahaV310SavedToast};
 })();
