@@ -1,9 +1,9 @@
-importScripts('./js/version.js?v=332');
-const CACHE_NAME = (self.MESAHA_VERSION && self.MESAHA_VERSION.cacheName) || 'mesaha-app-v332-print-version-admin-fix';
+importScripts('./js/version.js?v=333');
+const CACHE_NAME = (self.MESAHA_VERSION && self.MESAHA_VERSION.cacheName) || 'mesaha-app-v333-ses-onay-hata-fix';
 const ASSETS = [
   './','./index.html','./admin.html','./manifest.json','./version.json','./service-worker.js',
-  './css/style.css?v=332','./js/version.js?v=332','./js/orbis-xls.js?v=332','./js/app.js?v=332',
-  './assets/icon-192.png','./assets/icon-512.png','./assets/mesaha_logo.png',
+  './css/style.css?v=333','./js/version.js?v=333','./js/orbis-xls.js?v=333','./js/app.js?v=333',
+  './assets/icon-192.png','./assets/icon-512.png','./assets/mesaha_logo.png','./assets/06_net_islem_onayi.wav','./assets/08_hata_uyari_onaydan_farkli.wav',
   './icon-192.png','./icon-512.png','./mesaha_logo.png'
 ];
 self.addEventListener('install', event => {

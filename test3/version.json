@@ -1,12 +1,12 @@
 {
-  "app": "v3.32",
-  "version": "v332-print-version-admin-fix",
-  "build": 332,
-  "visibleVersion": "v3.32",
-  "shortVersion": "v3.32",
-  "name": "Mesaha İO v3.32",
-  "cacheName": "mesaha-app-v332-print-version-admin-fix",
-  "builtAt": "2026-06-21T21:45:00+03:00",
-  "notes": "Yazdır sayfası beyan özeti düzenine getirildi, yüzen kaydet/uyarı konumu aşağı alındı, sürüm kontrolü düzeltildi ve admin paneline ana sayfaya dönüş butonu eklendi.",
-  "assetVersion": "332"
+  "app": "v3.33",
+  "version": "v333-ses-onay-hata-fix",
+  "build": 333,
+  "visibleVersion": "v3.33",
+  "shortVersion": "v3.33",
+  "name": "Mesaha İO v3.33",
+  "cacheName": "mesaha-app-v333-ses-onay-hata-fix",
+  "builtAt": "2026-06-21T22:15:00+03:00",
+  "notes": "Onay sesi 06, hata/uyarı sesi 08 olarak eklendi. Sesler kayıt, işlem onayı, uyarı ve hata bildirimlerinde çalışır.",
+  "assetVersion": "333"
 }

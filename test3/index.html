@@ -3,10 +3,10 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Mesaha İO v3.32</title>
+  <title>Mesaha İO v3.33</title>
   <meta name="theme-color" content="#166534" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-title" content="v3.32" />
+  <meta name="apple-mobile-web-app-title" content="v3.33" />
   <link rel="manifest" href="./manifest.json" />
   <link rel="apple-touch-icon" href="./assets/icon-192.png" />
 
@@ -17,9 +17,9 @@
       Promise.resolve().then(async function(){
         try{ if('serviceWorker' in navigator){ var regs = await navigator.serviceWorker.getRegistrations(); await Promise.all(regs.map(function(r){ return r.unregister(); })); } }catch(e){}
         try{ if('caches' in window){ var keys = await caches.keys(); await Promise.all(keys.map(function(k){ return caches.delete(k); })); } }catch(e){}
-        if(!sessionStorage.getItem('mesaha_reset_done_v330')){
-          sessionStorage.setItem('mesaha_reset_done_v330','1');
-          location.replace('./index.html?v=327&fresh=' + Date.now());
+        if(!sessionStorage.getItem('mesaha_reset_done_v333')){
+          sessionStorage.setItem('mesaha_reset_done_v333','1');
+          location.replace('./index.html?v=333&fresh=' + Date.now());
         }
       });
     }
@@ -4637,7 +4637,7 @@ body:not(.entry-open) #entryView:not(.active){display:none!important;}
 </script>
 
 
-<style id="mesaha-v332-final-style">
+<style id="mesaha-v333-final-style">
 /* v332 — son dokunuşlar */
 body.keyboard-open-v311.entry-open .save-btn,
 body.keyboard-open-v311 .entry-view.active .save-btn{
@@ -4688,7 +4688,7 @@ body.keyboard-open-v311 .entry-view.active .save-btn{
   body.print-beyan-v332 .app{display:none!important}
 }
 </style>
-<script id="mesaha-v332-final-script">
+<script id="mesaha-v333-final-script">
 (function(){
   'use strict';
   function $(id){return document.getElementById(id)}
@@ -4697,17 +4697,17 @@ body.keyboard-open-v311 .entry-view.active .save-btn{
   function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[ch]})}
   function txt(id,fallback){var el=$(id); return el?String(el.textContent||el.value||fallback||'').trim():(fallback||'')}
   function val(id,fallback){var el=$(id); return el?String(el.value||fallback||'').trim():(fallback||'')}
-  var VERSION={app:'v3.32',version:'v332-print-version-admin-fix',build:332,visibleVersion:'v3.32',shortVersion:'v3.32',name:'Mesaha İO v3.32',cacheName:'mesaha-app-v332-print-version-admin-fix',builtAt:'2026-06-21T21:45:00+03:00',assetVersion:'332'};
+  var VERSION={app:'v3.33',version:'v333-ses-onay-hata-fix',build:333,visibleVersion:'v3.33',shortVersion:'v3.33',name:'Mesaha İO v3.33',cacheName:'mesaha-app-v333-ses-onay-hata-fix',builtAt:'2026-06-21T21:45:00+03:00',assetVersion:'333'};
   window.MESAHA_VERSION=VERSION;
   window.MESAHA_VERSION_TEXT=VERSION.visibleVersion;
   window.MESAHA_VERSION_SHORT=VERSION.shortVersion;
   function applyVersion(){
-    var title=document.querySelector('title'); if(title) title.textContent='Mesaha İO v3.32';
-    var apple=document.querySelector('meta[name="apple-mobile-web-app-title"]'); if(apple) apple.setAttribute('content','v3.32');
-    var startup=document.querySelector('#startup strong'); if(startup) startup.textContent='v3.32';
-    var vt=$('versionText'); if(vt) vt.textContent='v3.32';
-    qsa('.version-card b').forEach(function(b){ if(/^v3\./.test((b.textContent||'').trim())) b.textContent='v3.32'; });
-    qsa('.version-card small').forEach(function(s){ if(/v\d+/.test(s.textContent||'')||/fix/i.test(s.textContent||'')) s.textContent='v332-fix'; });
+    var title=document.querySelector('title'); if(title) title.textContent='Mesaha İO v3.33';
+    var apple=document.querySelector('meta[name="apple-mobile-web-app-title"]'); if(apple) apple.setAttribute('content','v3.33');
+    var startup=document.querySelector('#startup strong'); if(startup) startup.textContent='v3.33';
+    var vt=$('versionText'); if(vt) vt.textContent='v3.33';
+    qsa('.version-card b').forEach(function(b){ if(/^v3\./.test((b.textContent||'').trim())) b.textContent='v3.33'; });
+    qsa('.version-card small').forEach(function(s){ if(/v\d+/.test(s.textContent||'')||/fix/i.test(s.textContent||'')) s.textContent='v333-fix'; });
     var homeBtn=document.querySelector('#panelAdminOpenV316'); if(homeBtn) homeBtn.textContent='Yönetici Paneli';
   }
   function todayTR(){ return new Date().toLocaleDateString('tr-TR'); }
@@ -4794,6 +4794,84 @@ body.keyboard-open-v311 .entry-view.active .save-btn{
   setInterval(function(){ applyVersion(); updateStatusOnce(); bindPrint(); }, 15000);
   window.addEventListener('online', updateStatusOnce);
   window.addEventListener('offline', updateStatusOnce);
+})();
+</script>
+
+
+<script id="mesaha-v333-sound-feedback">
+(function(){
+  'use strict';
+  var SOUND_VERSION='333';
+  var sources={
+    success:'./assets/06_net_islem_onayi.wav?v='+SOUND_VERSION,
+    warning:'./assets/08_hata_uyari_onaydan_farkli.wav?v='+SOUND_VERSION,
+    error:'./assets/08_hata_uyari_onaydan_farkli.wav?v='+SOUND_VERSION
+  };
+  var last={success:0,warning:0,error:0};
+  var warmed=false;
+  function now(){return Date.now?Date.now():(new Date()).getTime();}
+  function makeAudio(kind){
+    var a=new Audio(sources[kind]||sources.warning);
+    a.preload='auto';
+    a.volume=1;
+    return a;
+  }
+  var pool={success:makeAudio('success'),warning:makeAudio('warning'),error:makeAudio('error')};
+  function play(kind){
+    kind=(kind==='success'||kind==='warning'||kind==='error')?kind:'warning';
+    var t=now();
+    if(t-(last[kind]||0)<450) return;
+    last[kind]=t;
+    try{
+      var a=pool[kind]||makeAudio(kind);
+      try{a.pause(); a.currentTime=0;}catch(e){}
+      var p=a.play();
+      if(p&&p.catch) p.catch(function(){
+        try{ var b=makeAudio(kind); b.play().catch(function(){}); }catch(e){}
+      });
+    }catch(e){}
+  }
+  function kindFrom(title, detail, kind){
+    var k=String(kind||'').toLowerCase();
+    if(k.indexOf('success')>-1 || k.indexOf('ok')>-1) return 'success';
+    if(k.indexOf('error')>-1 || k.indexOf('danger')>-1) return 'error';
+    if(k.indexOf('warn')>-1) return 'warning';
+    var msg=(String(title||'')+' '+String(detail||'')).toLocaleLowerCase('tr-TR');
+    if(/hata|olmadı|olamaz|okunamadı|yüklenmedi|alınamadı|giriniz|küçük|büyük|arasında|kayıtlı|gerekli|boş|offline|kontrol|uyarı|başarısız|silinsin mi|emin misin/.test(msg)) return 'warning';
+    if(/eklendi|güncellendi|kaydedildi|alındı|indirildi|yüklendi|gönderildi|tamamlandı|güncel|başarılı|bulut yedeği/.test(msg)) return 'success';
+    return 'warning';
+  }
+  function warm(){
+    if(warmed) return; warmed=true;
+    Object.keys(pool).forEach(function(k){ try{ pool[k].load(); }catch(e){} });
+  }
+  ['touchstart','pointerdown','click','keydown'].forEach(function(type){
+    document.addEventListener(type, warm, {capture:true, passive:true, once:false});
+  });
+  var oldSaved=window.mesahaV310SavedToast;
+  window.mesahaV310SavedToast=function(rec, wasEditing){
+    play('success');
+    if(typeof oldSaved==='function') return oldSaved.apply(this, arguments);
+  };
+  var oldToast=window.toast;
+  window.toast=function(title, detail, kind){
+    play(kindFrom(title, detail, kind));
+    if(typeof oldToast==='function') return oldToast.apply(this, arguments);
+  };
+  var wrapFloat=function(name){
+    var old=window[name];
+    if(typeof old!=='function' || old.__mesahaV333SoundWrapped) return;
+    var wrapped=function(title, detail, kind){
+      play(kindFrom(title, detail, kind));
+      return old.apply(this, arguments);
+    };
+    wrapped.__mesahaV333SoundWrapped=true;
+    window[name]=wrapped;
+  };
+  function bind(){wrapFloat('mesahaFloatToastV314');wrapFloat('mesahaFloatToastV315');}
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',bind,{once:true}); else bind();
+  [200,700,1500,3000].forEach(function(ms){setTimeout(bind,ms)});
+  window.mesahaSoundFeedbackV333={play:play,bind:bind,sources:sources};
 })();
 </script>
 

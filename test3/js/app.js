@@ -2157,3 +2157,15 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   }
 })();
 
+
+/* v333: onay/hata sesleri */
+(function(){
+  'use strict';
+  var sources={success:'./assets/06_net_islem_onayi.wav?v=333',warning:'./assets/08_hata_uyari_onaydan_farkli.wav?v=333',error:'./assets/08_hata_uyari_onaydan_farkli.wav?v=333'};
+  var last={success:0,warning:0,error:0};
+  function kindFrom(title,detail,kind){var k=String(kind||'').toLowerCase(); if(k.indexOf('success')>-1||k.indexOf('ok')>-1)return 'success'; if(k.indexOf('error')>-1||k.indexOf('danger')>-1)return 'error'; if(k.indexOf('warn')>-1)return 'warning'; var msg=(String(title||'')+' '+String(detail||'')).toLocaleLowerCase('tr-TR'); if(/hata|olmadı|olamaz|okunamadı|yüklenmedi|alınamadı|giriniz|küçük|büyük|arasında|kayıtlı|gerekli|boş|offline|kontrol|uyarı|başarısız/.test(msg))return 'warning'; if(/eklendi|güncellendi|kaydedildi|alındı|indirildi|yüklendi|gönderildi|tamamlandı|güncel|başarılı/.test(msg))return 'success'; return 'warning';}
+  function play(kind){kind=(kind==='success'||kind==='warning'||kind==='error')?kind:'warning'; var t=Date.now(); if(t-(last[kind]||0)<450)return; last[kind]=t; try{var a=new Audio(sources[kind]||sources.warning); a.volume=1; a.play().catch(function(){});}catch(e){}}
+  var oldSaved=window.mesahaV310SavedToast; window.mesahaV310SavedToast=function(rec,wasEditing){play('success'); if(typeof oldSaved==='function')return oldSaved.apply(this,arguments);};
+  var oldToast=window.toast; window.toast=function(title,detail,kind){play(kindFrom(title,detail,kind)); if(typeof oldToast==='function')return oldToast.apply(this,arguments);};
+  window.mesahaSoundFeedbackV333={play:play,sources:sources};
+})();
