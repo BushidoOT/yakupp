@@ -1,12 +1,12 @@
 {
   "app": "v3.23",
-  "version": "v325-lovable-exact",
-  "build": 325,
+  "version": "v326-user-fixes",
+  "build": 326,
   "visibleVersion": "v3.23",
   "shortVersion": "v3.23",
   "name": "Mesaha İO v3.23",
-  "cacheName": "mesaha-app-v325-lovable-exact",
+  "cacheName": "mesaha-app-v326-user-fixes",
   "builtAt": "2026-06-21T00:00:00+03:00",
-  "notes": "Lovable referans tasarımı v3.23 paketinin üzerine daha birebir uygulandı; ORBİS XLS, yedekleme, bulut ve admin istatistik akışı korunur.",
-  "assetVersion": "325"
+  "notes": "Lovable referans tasarımı v3.23 paketinin üzerine daha birebir uygulandı; giriş butonları küçültüldü, kullanıcı paneli sadeleştirildi, bulut yükleme tek tık kilitli hale getirildi.",
+  "assetVersion": "326"
 }
