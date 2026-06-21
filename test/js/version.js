@@ -1,14 +1,14 @@
 (function(root){
   'use strict';
   const info = {
-    appName: 'v3.10',
-    version: 'v310-toast-update',
-    build: 'v310',
-    assetVersion: '310',
-    visibleVersion: 'v3.10',
-    shortVersion: 'v3.10',
-    name: 'v3.10',
-    cacheName: 'mesaha-app-v310-toast-update-fix',
+    appName: 'v3.11',
+    version: 'v311-toast-order',
+    build: 'v311',
+    assetVersion: '311',
+    visibleVersion: 'v3.11',
+    shortVersion: 'v3.11',
+    name: 'v3.11',
+    cacheName: 'mesaha-app-v311-toast-order-fix',
     builtAt: '2026-06-20',
     notes: 'Modern pencereler, ZIP yedek ve başlangıç/güncelleme sistemi eklendi.'
   };
