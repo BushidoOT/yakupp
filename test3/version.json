@@ -1,12 +1,12 @@
 {
   "app": "v3.34",
-  "version": "v334-print-android-version-fix",
-  "build": 334,
+  "version": "v336-android-print-hard-fix",
+  "build": 336,
   "visibleVersion": "v3.34",
   "shortVersion": "v3.34",
   "name": "Mesaha İO v3.34",
-  "cacheName": "mesaha-app-v334-print-android-version-fix",
-  "builtAt": "2026-06-21T22:10:00+03:00",
-  "notes": "Android yazdırma sadece beyan özeti olacak şekilde sertleştirildi; sürüm adının sayfada değişmesi engellendi; onay/hata sesleri korunuyor.",
-  "assetVersion": "334"
+  "cacheName": "mesaha-app-v336-android-print-hard-fix",
+  "builtAt": "2026-06-21T22:35:00+03:00",
+  "notes": "Android yazdırmada gövde geçici olarak sadece BEYAN ÖZETİ sayfasına çevrildi; kayıtlar ve uygulama ekranı yazdırmaya girmeyecek. Görünür sürüm adı sabit bırakıldı.",
+  "assetVersion": "336"
 }

@@ -1,9 +1,9 @@
-importScripts('./js/version.js?v=334');
-const CACHE_NAME = (self.MESAHA_VERSION && self.MESAHA_VERSION.cacheName) || 'mesaha-app-v334-print-android-version-fix';
+importScripts('./js/version.js?v=336');
+const CACHE_NAME = (self.MESAHA_VERSION && self.MESAHA_VERSION.cacheName) || 'mesaha-app-v336-android-print-hard-fix';
 const ASSETS = [
-  './','./index.html','./admin.html','./manifest.json','./version.json','./service-worker.js',
-  './css/style.css?v=334','./js/version.js?v=334','./js/orbis-xls.js?v=334','./js/app.js?v=334',
-  './assets/icon-192.png','./assets/icon-512.png','./assets/mesaha_logo.png','./assets/06_net_islem_onayi.wav','./assets/08_hata_uyari_onaydan_farkli.wav',
+  './','./index.html','./admin.html','./manifest.json','./version.json','./service-worker.js','./temizle.html',
+  './css/style.css?v=336','./js/version.js?v=336','./js/orbis-xls.js?v=336','./js/app.js?v=336',
+  './assets/icon-192.png','./assets/icon-512.png','./assets/mesaha_logo.png','./assets/06_net_islem_onayi.wav?v=336','./assets/08_hata_uyari_onaydan_farkli.wav?v=336',
   './icon-192.png','./icon-512.png','./mesaha_logo.png'
 ];
 self.addEventListener('install', event => {
