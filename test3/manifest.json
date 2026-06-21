@@ -1,10 +1,10 @@
 {
   "name": "Mesaha İO v3.23",
   "short_name": "Mesaha İO",
-  "start_url": "./index.html?v=324",
+  "start_url": "./index.html?v=323",
   "display": "standalone",
   "background_color": "#eef8f2",
-  "theme_color": "#0f6b42",
+  "theme_color": "#0d5f3b",
   "icons": [
     {
       "src": "./assets/icon-192.png",

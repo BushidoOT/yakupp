@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>v3.23</title>
+  <title>Mesaha İO v3.23</title>
   <meta name="theme-color" content="#166534" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-title" content="v3.23" />
@@ -504,13 +504,13 @@ body.dark .prod-total.product-tel{background:#1d1233!important;color:#ddd6fe!imp
   'use strict';
   const info = {
     appName: 'v3.23',
-    version: 'v323-lovable-design',
+    version: 'v325-lovable-exact',
     build: 'v323',
-    assetVersion: '324',
+    assetVersion: '318',
     visibleVersion: 'v3.23',
     shortVersion: 'v3.23',
     name: 'v3.23',
-    cacheName: 'mesaha-app-v323-lovable-design',
+    cacheName: 'mesaha-app-v325-lovable-exact',
     builtAt: '2026-06-21',
     notes: 'Güçlü admin paneli, kullanıcı yedek silme, bulut yönetimi ve sade kontrol merkezi eklendi.'
   };
@@ -547,7 +547,7 @@ body.dark .user-badge.login-needed{background:#451a03;color:#fed7aa;border-color
     <header class="topbar">
       <div class="brand">
         <img src="./assets/mesaha_logo.png" alt="Mesaha İO" />
-        <div class="version-card"><b id="versionText">v3.23</b><small>v323-lovable-design</small></div>
+        <div class="version-card"><b id="versionText">v3.23</b><small>v325-lovable-exact</small></div>
       </div>
       <div id="userBadge" class="user-badge login-needed">Giriş Yap</div>
       <div class="top-actions-v316"><button id="userPanelBtnV316" class="panel-btn-v316" type="button">👤 Kullanıcı Paneli</button></div>
@@ -570,7 +570,7 @@ body.dark .user-badge.login-needed{background:#451a03;color:#fed7aa;border-color
         </section>
 
         <section class="card file-card">
-          <div class="section-head"><h2>Dosya Bilgileri</h2><span>Düzenle</span></div>
+          <div class="section-head"><h2>Dosya Bilgileri</h2><span>Açık</span></div>
           <div class="grid two">
             <label>Bölme No<input id="bolmeNo" type="text" inputmode="text" autocomplete="off" /></label>
             <label>Şeflik<input id="seflik" type="text" inputmode="text" autocomplete="off" /></label>
@@ -616,7 +616,7 @@ body.dark .user-badge.login-needed{background:#451a03;color:#fed7aa;border-color
       </section>
 
       <section id="entryView" class="view entry-view">
-        <header class="entry-top"><div class="version-card"><b>v3.23</b><small>v323-lovable-design</small></div><button id="entryHomeBtn" class="btn primary" type="button">🏠 Ana Sayfaya Dön</button></header>
+        <header class="entry-top"><div class="version-card"><b>v3.23</b><small>v325-lovable-exact</small></div><button id="entryHomeBtn" class="btn primary" type="button">🏠 Ana Sayfaya Dön</button></header>
         <section class="entry-total"><div><small>Toplam Adet</small><b id="entryTotalCount">0</b></div><div><small>Toplam m³</small><b id="entryTotalM3">0 m³</b></div></section>
         <section class="entry-form card">
           <div class="cutter-row"><div id="cutterChips" class="chip-wrap"></div><button id="addCutterBtn" class="btn primary" type="button">＋ Kesimci Ekle</button></div>
@@ -640,7 +640,7 @@ body.dark .user-badge.login-needed{background:#451a03;color:#fed7aa;border-color
 
       <section id="recordsView" class="view">
         <section class="card records-card">
-          <div class="section-head"><h2>BEYAN / ÖZET</h2><span id="recordCountPill">0 kayıt</span></div>
+          <div class="section-head"><h2>BEYAN</h2><span id="recordCountPill">0 kayıt</span></div>
           <div class="summary-grid small"><div><small>Toplam m³</small><b id="recTotalM3">0 m³</b></div><div><small>Toplam Adet</small><b id="recTotalCount">0</b></div></div>
           <div id="productTotals" class="product-totals"></div>
 
@@ -695,9 +695,9 @@ body.dark .user-badge.login-needed{background:#451a03;color:#fed7aa;border-color
   </div>
 
   <nav id="bottomNav" class="bottom-nav">
-    <button data-nav="home" class="active" type="button"><span>⌂</span><b>Ana Sayfa</b></button>
-    <button data-nav="records" type="button"><span>◷</span><b>Ölçümler</b></button>
-    <button data-nav="guide" type="button"><span>▣</span><b>Kılavuz</b></button>
+    <button data-nav="home" class="active" type="button"><span>🏠</span><b>Ana Ekran</b></button>
+    <button data-nav="records" type="button"><span>📏</span><b>Ölçümler</b></button>
+    <button data-nav="guide" type="button"><span>▰</span><b>Kılavuz</b></button>
   </nav>
 
   <div id="modernModal" class="modal-backdrop hidden" role="dialog" aria-modal="true">
@@ -1360,7 +1360,7 @@ root.OrbisXls = { downloadXls, makeXls, headers: HEADERS };
 'use strict';
 const STORAGE_KEY = 'cam_mesaha_kayitlari_v1';
 const SETTINGS_KEY = 'cam_mesaha_ayarlar_v1';
-const VERSION = window.MESAHA_VERSION || {shortVersion:'v3.23', version:'v323-lovable-design'};
+const VERSION = window.MESAHA_VERSION || {shortVersion:'v3.23', version:'v325-lovable-exact'};
 const PRODUCTS = [
   {key:'Tomruk', label:'Tomruk', cls:'tomruk', rule:'Tomruk: çap 21 ve üzeri olmalı.'},
   {key:'Maden Direk', label:'Maden', cls:'maden', rule:'Maden: çap 20 ve altı olmalı.'},
@@ -3592,7 +3592,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   function fold(s){ return clean(s).toLocaleLowerCase('tr-TR').replace(/[ç]/g,'c').replace(/[ğ]/g,'g').replace(/[ı]/g,'i').replace(/[ö]/g,'o').replace(/[ş]/g,'s').replace(/[ü]/g,'u'); }
   function userKey(name,seflik){ return (fold(name)+'__'+fold(seflik)).replace(/[^a-z0-9_-]+/g,'_').slice(0,120) || 'bos'; }
   function getDeviceId(){ let id=''; try{id=localStorage.getItem(DEVICE_ID_KEY)||'';}catch{} if(!id){ id='cihaz_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,8); try{localStorage.setItem(DEVICE_ID_KEY,id);}catch{} } return id; }
-  function deviceInfo(){ const ua=navigator.userAgent||''; const plat=navigator.platform||''; const sw=screen&&screen.width?screen.width:'?'; const sh=screen&&screen.height?screen.height:'?'; return {deviceId:getDeviceId(), userAgent:ua, platform:plat, screen:sw+'x'+sh, appVersion:'v3.23', fileVersion:'v323-lovable-design'}; }
+  function deviceInfo(){ const ua=navigator.userAgent||''; const plat=navigator.platform||''; const sw=screen&&screen.width?screen.width:'?'; const sh=screen&&screen.height?screen.height:'?'; return {deviceId:getDeviceId(), userAgent:ua, platform:plat, screen:sw+'x'+sh, appVersion:'v3.23', fileVersion:'v325-lovable-exact'}; }
   function readPanelUser(){ const u=jsonGet(PANEL_USER_KEY, {}); return {name:clean(u.name), seflik:clean(u.seflik), bolmeNo:clean(u.bolmeNo)}; }
   function writePanelUser(u){ const current=settings(); const name=clean(u.name), seflik=clean(u.seflik); const next=Object.assign({}, current, {ekipNot:name, seflik:seflik, bolmeNo:clean(u.bolmeNo)||''}); saveSettings(next); jsonSet(PANEL_USER_KEY, {name:next.ekipNot,seflik:next.seflik,bolmeNo:next.bolmeNo,updatedAt:new Date().toISOString()}); try{localStorage.setItem('mesaha_user_confirmed_v319','1')}catch{} ['ekipNot','seflik','bolmeNo'].forEach(id=>{ const el=$(id); if(el){ el.value=next[id]||''; try{el.dispatchEvent(new Event('input',{bubbles:true}));}catch{} } }); try{ if(typeof window.renderUser==='function') window.renderUser(); }catch{} const badge=$('userBadge'); if(badge){ badge.textContent=(next.ekipNot&&next.seflik)?(next.ekipNot+' • '+next.seflik):'Giriş Yap'; badge.classList.toggle('login-needed', !(next.ekipNot&&next.seflik)); } return true; }
   function volume(r){ const d=Number(String(r.diameter||r.cap||0).replace(',','.')); const l=Number(String(r.length||r.boy||0).replace(',','.')); const q=Number(r.quantity||r.adet||1); if(!d||!l) return 0; return Math.PI*Math.pow(d/100,2)/4*l*q; }
@@ -3607,7 +3607,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   function loadScript(src){ return new Promise((resolve,reject)=>{ if(document.querySelector('script[src="'+src+'"]')) return resolve(); const s=document.createElement('script'); s.src=src; s.async=true; s.onload=resolve; s.onerror=()=>reject(new Error('Firebase kütüphanesi yüklenemedi')); document.head.appendChild(s); }); }
   async function firebaseReady(){ if(!navigator.onLine) throw new Error('İnternet bağlantısı yok'); if(!firebaseReadyPromise){ firebaseReadyPromise=(async()=>{ if(!window.firebase || !window.firebase.apps){ const b='https://www.gstatic.com/firebasejs/'+FIREBASE_SDK_VERSION; await loadScript(b+'/firebase-app-compat.js'); await loadScript(b+'/firebase-auth-compat.js'); await loadScript(b+'/firebase-firestore-compat.js'); } if(!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG); const auth=firebase.auth(); if(!auth.currentUser) await auth.signInAnonymously(); const db=firebase.firestore(); try{db.settings({experimentalForceLongPolling:true, merge:true});}catch{} return {db,auth}; })(); } return firebaseReadyPromise; }
   async function resetAtMs(){ try{ const {db}=await firebaseReady(); const doc=await db.collection('adminSettings').doc('statsReset').get(); const d=doc.exists?(doc.data()||{}):{}; return Number(d.resetAtMs||0); }catch{ return Number(localStorage.getItem('mesaha_stats_reset_at_v316')||0); } }
-  async function syncUser(reason){ const usage=flushUsage(); const user=readPanelUser(); if(!user.name||!user.seflik){setSyncText('Önce kullanıcı girişi yap');return false} const reset=await resetAtMs(); const stats=summarize(reset); const info=deviceInfo(); const nowMs=Date.now(); const key=userKey(user.name,user.seflik); const {db}=await firebaseReady(); await db.collection('users').doc(key).set({id:key,userKey:key,name:user.name,seflik:user.seflik,bolmeNo:user.bolmeNo,firstLogin:firebase.firestore.FieldValue.serverTimestamp(),lastSeen:trText(),lastSeenMs:nowMs,lastLogin:trText(),lastLoginMs:nowMs,todayLoginCount:Number(usage.todayLoginCount||0),totalLoginCount:Number(usage.totalLoginCount||0),usageMs:Number(usage.totalMs||0),todayUsageMs:Number(usage.todayMs||0),recordCount:stats.recordCount,totalRecords:stats.recordCount,adet:stats.adet,totalM3:stats.m3,m3:stats.m3,todayRecords:stats.todayRecords,weekKey:weekKey(new Date()),weekRecordCount:stats.weekRecordCount,weekM3:stats.weekM3,treeTotals:stats.treeTotals,productTotals:stats.productTotals,deviceId:info.deviceId,lastDevice:info.platform+' • '+info.screen,lastDeviceInfo:info,appVersion:'v3.23',fileVersion:'v323-lovable-design',updatedBy:reason||'sync',updatedAt:trText(),updatedAtMs:nowMs,source:'firebase'}, {merge:true}); setSyncText('Bulut eşitlendi • '+new Date().toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'})); return true; }
+  async function syncUser(reason){ const usage=flushUsage(); const user=readPanelUser(); if(!user.name||!user.seflik){setSyncText('Önce kullanıcı girişi yap');return false} const reset=await resetAtMs(); const stats=summarize(reset); const info=deviceInfo(); const nowMs=Date.now(); const key=userKey(user.name,user.seflik); const {db}=await firebaseReady(); await db.collection('users').doc(key).set({id:key,userKey:key,name:user.name,seflik:user.seflik,bolmeNo:user.bolmeNo,firstLogin:firebase.firestore.FieldValue.serverTimestamp(),lastSeen:trText(),lastSeenMs:nowMs,lastLogin:trText(),lastLoginMs:nowMs,todayLoginCount:Number(usage.todayLoginCount||0),totalLoginCount:Number(usage.totalLoginCount||0),usageMs:Number(usage.totalMs||0),todayUsageMs:Number(usage.todayMs||0),recordCount:stats.recordCount,totalRecords:stats.recordCount,adet:stats.adet,totalM3:stats.m3,m3:stats.m3,todayRecords:stats.todayRecords,weekKey:weekKey(new Date()),weekRecordCount:stats.weekRecordCount,weekM3:stats.weekM3,treeTotals:stats.treeTotals,productTotals:stats.productTotals,deviceId:info.deviceId,lastDevice:info.platform+' • '+info.screen,lastDeviceInfo:info,appVersion:'v3.23',fileVersion:'v325-lovable-exact',updatedBy:reason||'sync',updatedAt:trText(),updatedAtMs:nowMs,source:'firebase'}, {merge:true}); setSyncText('Bulut eşitlendi • '+new Date().toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'})); return true; }
   function setSyncText(t){ const el=$('panelSyncTextV316'); if(el) el.textContent=t; }
   function renderPanelStats(){ const usage=flushUsage(); const stats=summarize(Number(localStorage.getItem('mesaha_stats_reset_at_v316')||0)); const u=readPanelUser(); const box=$('panelStatsV316'); if(box) box.innerHTML=[['Toplam Kayıt', stats.recordCount.toLocaleString('tr-TR')],['Toplam m³', fmtM3(stats.m3)],['Bugün Giriş', Number(usage.todayLoginCount||0).toLocaleString('tr-TR')],['Bugün Süre', fmtMs(usage.todayMs)],['Toplam Süre', fmtMs(usage.totalMs)],['Son Görülme', usage.lastSeen||'-']].map(a=>'<div class="panel-stat-v316"><small>'+a[0]+'</small><b>'+a[1]+'</b></div>').join(''); const dev=$('panelDeviceV316'); if(dev) dev.value=(deviceInfo().platform||'Cihaz')+' • '+(deviceInfo().screen||''); const n=$('panelNameV316'), s=$('panelSeflikV316'), b=$('panelBolmeV316'); if(n) n.value=u.name; if(s) s.value=u.seflik; if(b) b.value=u.bolmeNo; }
   function openPanel(){ renderPanelStats(); const ov=$('userPanelOverlayV316'); if(ov) ov.classList.remove('hidden'); setSyncText('İstatistikler Mesaha dosyası indirince gönderilir'); }
@@ -3636,7 +3636,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   const FIREBASE_CONFIG={apiKey:'AIzaSyCKveylTPgKmWEMmYf-aFj6yLXB5CKAiJ0',authDomain:'mesaha-io.firebaseapp.com',projectId:'mesaha-io',storageBucket:'mesaha-io.firebasestorage.app',messagingSenderId:'840655878243',appId:'1:840655878243:web:add76f52bbf55ad9dd6056',measurementId:'G-81JPD5ZY44'};
   const SDK='9.23.0';
   const APP_VERSION='v3.23';
-  const FILE_VERSION='v323-lovable-design';
+  const FILE_VERSION='v325-lovable-exact';
   let readyPromise=null;
   let lastTick=Date.now();
   function $(id){return document.getElementById(id)}
@@ -3975,7 +3975,7 @@ body.dark #panelSyncTextV316.export-only-v323{color:#cbd5e1!important}
   const FIREBASE_CONFIG={apiKey:'AIzaSyCKveylTPgKmWEMmYf-aFj6yLXB5CKAiJ0',authDomain:'mesaha-io.firebaseapp.com',projectId:'mesaha-io',storageBucket:'mesaha-io.firebasestorage.app',messagingSenderId:'840655878243',appId:'1:840655878243:web:add76f52bbf55ad9dd6056',measurementId:'G-81JPD5ZY44'};
   const SDK='10.12.2';
   const APP_VERSION='v3.23';
-  const FILE_VERSION='v323-lovable-design';
+  const FILE_VERSION='v325-lovable-exact';
   let readyPromise=null;
   let lastTick=Date.now();
   function $(id){return document.getElementById(id)}
@@ -4013,191 +4013,168 @@ body.dark #panelSyncTextV316.export-only-v323{color:#cbd5e1!important}
 
 
 
-<style id="mesaha-lovable-design-overlay-v324">
-/* Lovable görselindeki Mesaha İO tasarımı mevcut v3.23 paketinin üzerine uygulanır. */
+<style id="mesaha-lovable-exact-pass-v325">
+/* v325 — Lovable referans tasarımı doğrudan v3.23 paketinin üstüne uygulanır. */
 :root{
-  --bg:#eef8f2!important;
-  --card:#fffffff2!important;
-  --text:#12241d!important;
-  --muted:#66756f!important;
-  --line:#dcebe4!important;
-  --green:#0f6b42!important;
-  --green-dark:#0b5a38!important;
-  --blue:#2f80ed!important;
-  --red:#e34848!important;
-  --yellow:#f59e0b!important;
-  --orange:#f59e0b!important;
-  --shadow:0 18px 42px rgba(23,74,50,.12)!important;
-  --radius:22px!important;
-  --mint:#f4fbf7!important;
-  --mint2:#e7f6ee!important;
-  --tomruk:#f59e0b;--maden:#2f80ed;--kagit:#e34848;--sanayi:#2fb36f;--tel:#7c5cff;
+  --forest:#0d5f3b!important; --forest-2:#0a4d31!important; --mint:#effaf4!important; --mint-2:#e5f5ec!important;
+  --paper:#ffffff!important; --ink:#162b23!important; --muted:#66756f!important; --line:#dcebe4!important;
+  --tomruk:#f5a400!important; --maden:#2f80ed!important; --kagit:#e14b4b!important; --sanayi:#2fb36f!important; --tel:#7b61ff!important;
+  --bg:#eef8f2!important; --card:rgba(255,255,255,.94)!important; --text:#162b23!important; --green:#0d5f3b!important; --green-dark:#0a4d31!important;
+  --shadow:0 16px 42px rgba(14,80,52,.11)!important; --radius:22px!important;
 }
-html,body{min-height:100dvh!important;overflow-x:hidden!important;background:#dfeee6!important;}
+html,body{width:100%!important;max-width:100%!important;overflow-x:hidden!important;min-height:100dvh!important;}
 body{
-  color:var(--text)!important;
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,Arial,sans-serif!important;
-  font-weight:780!important;
+  margin:0!important;color:var(--ink)!important;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Arial,sans-serif!important;font-weight:780!important;
   background:
-    radial-gradient(circle at 8% 8%,rgba(255,255,255,.95) 0 6%,transparent 17%),
-    radial-gradient(circle at 92% 3%,rgba(255,255,255,.85) 0 9%,transparent 24%),
-    linear-gradient(180deg,#f5fbf7 0%,#e7f4ec 38%,#b3d0bf 100%)!important;
+    radial-gradient(circle at 10% 4%,rgba(255,255,255,.96) 0 7%,transparent 22%),
+    radial-gradient(circle at 92% 0%,rgba(255,255,255,.90) 0 10%,transparent 26%),
+    linear-gradient(180deg,#f7fbf8 0%,#eef8f2 42%,#bfd9c9 100%)!important;
 }
-body:before,body:after{content:"";position:fixed;left:0;right:0;bottom:0;pointer-events:none;z-index:-2;}
-body:before{height:70vh;background:
-  linear-gradient(135deg,transparent 0 58%,rgba(11,74,47,.18) 58% 60%,transparent 60%) 0 100%/126px 210px repeat-x,
-  linear-gradient(140deg,transparent 0 56%,rgba(11,74,47,.16) 56% 59%,transparent 59%) 25px 100%/170px 280px repeat-x,
-  linear-gradient(180deg,transparent 0%,rgba(13,61,42,.16) 60%,rgba(9,45,32,.30) 100%);opacity:.42;}
-body:after{height:32vh;background:radial-gradient(ellipse at 10% 100%,rgba(11,74,47,.34) 0 17%,transparent 43%),radial-gradient(ellipse at 90% 100%,rgba(11,74,47,.28) 0 23%,transparent 50%);opacity:.44;z-index:-1;}
-body.dark{--bg:#071611!important;--card:#10231cf2!important;--text:#eefcf5!important;--muted:#b9cfc5!important;--line:#244538!important;background:#071611!important;}
-body.dark:before,body.dark:after{opacity:.16!important;}
-#app.app{width:min(100%,430px)!important;max-width:430px!important;min-height:100dvh!important;margin:0 auto!important;padding:14px 12px calc(94px + env(safe-area-inset-bottom,0px))!important;background:linear-gradient(180deg,rgba(255,255,255,.88),rgba(248,253,250,.94))!important;box-shadow:0 0 0 1px rgba(255,255,255,.56),0 26px 80px rgba(12,62,40,.18)!important;position:relative!important;}
-body.dark #app.app{background:linear-gradient(180deg,rgba(8,22,18,.96),rgba(7,19,16,.98))!important;}
-.topbar{position:sticky!important;top:0!important;z-index:80!important;margin:-14px -12px 12px!important;padding:12px 12px 9px!important;background:linear-gradient(180deg,rgba(255,255,255,.86),rgba(255,255,255,.70))!important;border:0!important;box-shadow:none!important;backdrop-filter:blur(18px)!important;display:flex!important;gap:8px!important;align-items:center!important;}
-body.dark .topbar{background:linear-gradient(180deg,rgba(16,35,28,.92),rgba(16,35,28,.75))!important;}
-.brand{min-width:0!important;gap:7px!important;flex:1 1 auto!important;}
-.brand img{width:34px!important;height:34px!important;border-radius:50%!important;object-fit:cover!important;background:#fff!important;box-shadow:0 6px 14px rgba(15,107,66,.18)!important;}
-.version-card{min-width:auto!important;padding:5px 7px!important;border-radius:14px!important;background:transparent!important;border:0!important;box-shadow:none!important;gap:5px!important;color:#263b34!important;}
-.version-card b{font-size:12px!important;font-weight:950!important;line-height:1!important;}
-.version-card small{display:none!important;}
-#userBadge{display:inline-flex!important;align-items:center!important;justify-content:center!important;white-space:nowrap!important;max-width:145px!important;overflow:hidden!important;text-overflow:ellipsis!important;padding:8px 10px!important;border-radius:14px!important;background:#e3f6eb!important;border:1px solid #d2eddd!important;color:#0f6b42!important;font-size:11px!important;font-weight:950!important;box-shadow:0 8px 18px rgba(15,107,66,.08)!important;}
-#userBadge:before{content:"♟";font-size:10px;margin-right:4px;opacity:.8;}
-.top-actions-v316{display:none!important;}
-.icon-btn,#themeBtn{width:34px!important;height:34px!important;border-radius:14px!important;background:#fff!important;border:1px solid var(--line)!important;color:#0f6b42!important;font-size:16px!important;box-shadow:0 8px 18px rgba(23,74,50,.07)!important;}
-.card,.hero-card,.status-card,.entry-form,.records-card,.guide-card,.panel-card-v316{background:var(--card)!important;border:1px solid rgba(220,235,228,.95)!important;border-radius:22px!important;box-shadow:0 12px 30px rgba(23,74,50,.09)!important;margin:10px 0!important;padding:14px!important;}
-.hero-card{min-height:132px!important;display:flex!important;align-items:flex-start!important;overflow:hidden!important;background:linear-gradient(135deg,#ffffff 0%,#f2fbf6 58%,#e8f5ee 100%)!important;}
-.hero-card:before{content:"";position:absolute;right:-8px;bottom:-16px;width:180px;height:112px;background:radial-gradient(ellipse at 45% 72%,rgba(15,107,66,.12) 0 34%,transparent 35%),linear-gradient(150deg,transparent 0 52%,rgba(15,107,66,.20) 52% 56%,transparent 56%) 15px 22px/42px 72px repeat-x;opacity:.9;}
-.hero-card h1{font-size:18px!important;line-height:1.1!important;margin:4px 0 8px!important;color:#162b23!important;letter-spacing:-.02em!important;font-weight:950!important;}
-.hero-card h1:after{content:" Yakup";}
-.hero-card p{font-size:12px!important;line-height:1.35!important;max-width:210px!important;color:#66756f!important;font-weight:780!important;}
-.hero-forest{right:10px!important;bottom:4px!important;gap:6px!important;opacity:.26!important;transform:scale(.5)!important;transform-origin:bottom right!important;}
-.status-card{display:grid!important;grid-template-columns:1fr!important;gap:8px!important;margin-top:-14px!important;position:relative!important;z-index:2!important;background:#ffffffd8!important;}
-.status-item{min-height:70px!important;padding:11px!important;border-radius:18px!important;background:#fff!important;border:1px solid #e2eee8!important;box-shadow:0 7px 18px rgba(23,74,50,.05)!important;display:flex!important;align-items:center!important;gap:11px!important;}
-.status-icon{width:40px!important;height:40px!important;border-radius:18px!important;background:#eaf8f0!important;color:#0f6b42!important;font-size:20px!important;flex:0 0 auto!important;}
-.status-item small{font-size:10px!important;color:#73827d!important;margin-bottom:1px!important;text-transform:none!important;font-weight:850!important;}
-.status-item b{font-size:16px!important;line-height:1.05!important;color:#173b2d!important;font-weight:950!important;}
-.status-item em{font-size:11px!important;color:#66756f!important;line-height:1.25!important;font-weight:760!important;}
-.entry-launch{background:#fbfefc!important;border-color:#dfeee6!important;}
-.entry-launch .status-icon{background:#fff8dd!important;color:#e5a400!important;}
-.section-head{align-items:center!important;margin-bottom:8px!important;}
-.section-head h2,.card h2,.guide-card h2{font-size:16px!important;line-height:1.16!important;margin:0 0 10px!important;color:#1e342d!important;font-weight:950!important;letter-spacing:-.01em!important;}
-.section-head span,.pill,#recordCountPill,#todayText,#weekBtn{background:#e7f6ee!important;color:#0f6b42!important;border:1px solid #d6edde!important;border-radius:999px!important;padding:6px 10px!important;font-size:10px!important;font-weight:950!important;min-height:auto!important;}
-.file-card .grid.two{grid-template-columns:1fr 1fr!important;gap:8px!important;}
-label{font-size:11px!important;color:#5e6f68!important;font-weight:900!important;margin:6px 0!important;}
-input,textarea{height:42px!important;background:#fff!important;border:1px solid #dfeae5!important;border-radius:14px!important;color:#173b2d!important;font-size:13px!important;font-weight:850!important;padding:9px 11px!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.9)!important;}
-textarea{height:auto!important;min-height:86px!important;}
-input:focus,textarea:focus{border-color:#9bd8b8!important;box-shadow:0 0 0 4px rgba(15,107,66,.10)!important;}
-.hint,.setting-block p{font-size:10px!important;line-height:1.35!important;color:#6b7b76!important;font-weight:760!important;}
-.settings-card,.sound-card,.maintenance-card{background:#fff!important;}
-.setting-block{background:#fbfefc!important;border:0!important;border-top:1px solid #edf4f0!important;border-radius:0!important;padding:12px 0!important;margin:0!important;box-shadow:none!important;}
-.setting-block>b{display:block;font-size:13px!important;color:#223832!important;margin-bottom:2px!important;}
-.check-grid{grid-template-columns:1fr 1fr!important;gap:8px!important;margin-top:10px!important;}
-.check-card{min-height:42px!important;border-radius:13px!important;background:#fff!important;border:1px solid #dfeae5!important;box-shadow:0 6px 14px rgba(23,74,50,.04)!important;padding:8px 9px!important;font-size:11px!important;color:#253b34!important;font-weight:950!important;}
-.check-card input{width:16px!important;height:16px!important;margin:0!important;accent-color:#0f6b42!important;}
-.check-card:has(input:checked){background:#f1fbf5!important;border-color:#bde6cd!important;box-shadow:0 8px 18px rgba(15,107,66,.08)!important;}
-.btn{min-height:42px!important;border-radius:14px!important;padding:9px 12px!important;font-size:12px!important;font-weight:950!important;border-color:#dfeae5!important;box-shadow:0 7px 16px rgba(23,74,50,.05)!important;}
-.btn.primary,.btn.green,#downloadXlsBtn{background:linear-gradient(180deg,#15945a,#0f6b42)!important;border-color:#0f6b42!important;color:#fff!important;}
-.btn.soft{background:#eff7fb!important;color:#22505c!important;border-color:#dceaf2!important;}
-.btn.warning{background:#fff4e4!important;color:#9a5a0e!important;border-color:#f4dfbd!important;}
-.btn.orange,#printBtn{background:#f5a400!important;color:#fff!important;border-color:#f5a400!important;}
-.btn.danger,#deleteAllBtn{background:#fee2e2!important;color:#b91c1c!important;border-color:#fecaca!important;}
-.summary-grid.small,.summary-grid{grid-template-columns:1fr 1fr!important;gap:9px!important;}
-.summary-grid>div{background:linear-gradient(135deg,#f6fcf8,#ffffff)!important;border:1px solid #e1eee8!important;border-radius:17px!important;padding:13px!important;box-shadow:0 6px 16px rgba(23,74,50,.04)!important;}
-.summary-grid span{font-size:19px!important;color:#0f6b42!important;}.summary-grid b{font-size:23px!important;color:#12241d!important;margin:3px 0!important;}.summary-grid small{font-size:10px!important;color:#72837d!important;}
-.product-totals{grid-template-columns:1fr 1fr!important;gap:9px!important;margin:11px 0!important;}
-.prod-total{border-radius:17px!important;background:#fff!important;border:1px solid #e3eee8!important;border-left-width:6px!important;padding:12px!important;box-shadow:0 7px 18px rgba(23,74,50,.05)!important;}
-.prod-total b{font-size:20px!important;color:#13271f!important;margin:4px 0!important;}.prod-total small{font-size:10px!important;color:#697b74!important;}
-.prod-total.product-tomruk,.record-card.product-tomruk,.recent-item.product-tomruk{border-left-color:var(--tomruk)!important}.prod-total.product-maden,.record-card.product-maden,.recent-item.product-maden{border-left-color:var(--maden)!important}.prod-total.product-kagit,.record-card.product-kagit,.recent-item.product-kagit{border-left-color:var(--kagit)!important}.prod-total.product-sanayi,.record-card.product-sanayi,.recent-item.product-sanayi{border-left-color:var(--sanayi)!important}.prod-total.product-tel,.record-card.product-tel,.recent-item.product-tel{border-left-color:var(--tel)!important}
-.action-grid{grid-template-columns:1fr 1fr!important;gap:8px!important;}#downloadXlsBtn{grid-column:1/-1!important;}
-.record-toolbar{background:transparent!important;border:0!important;padding:0!important;margin-top:10px!important;box-shadow:none!important;}
-#recordSearch{padding-left:34px!important;background:#fff!important;background-image:linear-gradient(transparent,transparent)!important;}
-.record-toolbar:before{content:"⌕";position:absolute;margin:12px 0 0 12px;color:#8a9b94;z-index:1;}
-.record-select-actions{grid-template-columns:1fr 1fr!important;gap:7px!important;margin-top:8px!important;}
-#selectedInfo{background:#f7fbf9!important;border:1px solid #e3eee8!important;border-radius:14px!important;color:#6c7c76!important;font-size:11px!important;}
-.filter-box{background:transparent!important;border:0!important;padding:2px 0!important;margin:9px 0!important;}
-.filter-head{font-size:11px!important;color:#273d36!important;margin-bottom:8px!important;}
-.filter-chips,.chip-wrap{gap:7px!important;flex-wrap:wrap!important;overflow:visible!important;}
-.filter-chip,.chip{min-height:32px!important;border-radius:999px!important;background:#fff!important;border:1px solid #dfeae5!important;color:#49615a!important;padding:7px 10px!important;font-size:10px!important;box-shadow:0 5px 12px rgba(23,74,50,.04)!important;}
-.filter-chip.active,.chip.active{background:#0f6b42!important;color:#fff!important;border-color:#0f6b42!important;}
-.product-grid{grid-template-columns:1fr 1fr!important;gap:8px!important;}.product-btn{min-height:46px!important;border-radius:15px!important;font-size:12px!important;border-width:1px!important;box-shadow:0 7px 16px rgba(23,74,50,.05)!important;}
-.product-btn.active:after{top:-6px!important;right:9px!important;border-width:2px!important;font-size:10px!important;padding:0 7px!important;background:#0f6b42!important;}
-.product-tomruk{border-color:rgba(245,158,11,.35)!important;background:#fff9e8!important;color:#7a4d08!important}.product-maden{border-color:rgba(47,128,237,.32)!important;background:#eef6ff!important;color:#14508f!important}.product-kagit{border-color:rgba(227,72,72,.30)!important;background:#fff0f0!important;color:#8f2626!important}.product-sanayi{border-color:rgba(47,179,111,.32)!important;background:#effbf5!important;color:#14633b!important}.product-tel{border-color:rgba(124,92,255,.30)!important;background:#f4f1ff!important;color:#4b34a3!important}
-.entry-view{padding-bottom:0!important}.entry-top{position:sticky!important;top:0!important;z-index:60!important;background:rgba(248,253,250,.88)!important;backdrop-filter:blur(16px)!important;border-radius:0 0 18px 18px!important;margin:0 -8px 10px!important;padding:10px 8px!important;}.entry-total{border-radius:18px!important;background:#fff!important;border:1px solid #e3eee8!important;box-shadow:0 10px 24px rgba(23,74,50,.07)!important;}.entry-total div{padding:11px!important;}.entry-total b{font-size:21px!important;color:#0f6b42!important;}.entry-total small{font-size:10px!important;}
-.entry-form{gap:12px!important;}.cutter-row{grid-template-columns:1fr!important;gap:8px!important;}.tree-head{grid-template-columns:1fr auto!important;gap:8px!important;}.tree-panel.open{grid-template-columns:1fr 1fr!important;gap:8px!important;}.tree-option{min-height:38px!important;border-radius:13px!important;background:#fff!important;border:1px solid #dfeae5!important;font-size:11px!important;}.tree-option input{width:16px!important;height:16px!important;}
-.measure-grid,.measure-grid-v311,.measure-grid-v306{grid-template-columns:1fr 1fr!important;gap:8px!important;}.measure-grid label{border:1px solid #e1eee8!important;border-radius:16px!important;background:#fff!important;padding:9px!important;}.measure-grid input{height:38px!important;text-align:center!important;font-size:18px!important;border-radius:12px!important;}.quick-grid{grid-template-columns:repeat(3,1fr)!important;gap:5px!important;}.quick-grid button{min-height:30px!important;border-radius:10px!important;font-size:12px!important;background:#f7fbf9!important;border:1px solid #e1eee8!important;}
-.barcode-save{grid-template-columns:1fr 105px!important;gap:8px!important;}.barcode-save label{border-radius:16px!important;padding:8px!important;background:#fff!important;border:1px solid #e1eee8!important;}.barcode-save input{height:38px!important;font-size:17px!important;}.save-btn{min-height:58px!important;border-radius:18px!important;background:linear-gradient(180deg,#18a664,#0f6b42)!important;font-size:17px!important;box-shadow:0 14px 30px rgba(15,107,66,.22)!important;}
-.recent-box{border-radius:18px!important;background:#fbfefc!important;border:1px solid #e3eee8!important;padding:12px!important;}.recent-box h3{font-size:13px!important;margin:0 0 8px!important;}.recent-list{grid-template-columns:1fr!important;gap:7px!important;}.recent-item{border-radius:14px!important;background:#fff!important;border:1px solid #e3eee8!important;border-left-width:6px!important;min-height:54px!important;}.recent-item b{font-size:13px!important;}.recent-item small{font-size:10px!important;}
-.record-list{gap:8px!important;margin-top:12px!important;}.record-card{grid-template-columns:auto 1fr!important;border-radius:16px!important;background:#fff!important;border:1px solid #e3eee8!important;border-left-width:6px!important;padding:10px!important;box-shadow:0 7px 17px rgba(23,74,50,.05)!important;}.record-main b{font-size:12px!important;}.record-main small{font-size:10px!important;line-height:1.35!important;}.record-actions{grid-column:2!important;justify-content:flex-start!important;}.record-actions button{font-size:10px!important;padding:7px 9px!important;border-radius:11px!important;background:#f7fbf9!important;}
-#recordList>p.hint{min-height:230px!important;margin:12px 0!important;border-radius:22px!important;background:linear-gradient(180deg,#ffffff,#fbfefc)!important;border:1px solid #e3eee8!important;display:flex!important;align-items:flex-end!important;justify-content:center!important;text-align:center!important;padding:155px 16px 30px!important;font-size:0!important;color:#66756f!important;position:relative!important;box-shadow:0 8px 20px rgba(23,74,50,.05)!important;}
-#recordList>p.hint:before{content:"";position:absolute;top:32px;left:50%;transform:translateX(-50%);width:156px;height:104px;border-radius:50% 45% 48% 45%;background:radial-gradient(ellipse at 50% 90%,rgba(15,107,66,.10) 0 45%,transparent 46%),linear-gradient(150deg,transparent 0 52%,rgba(15,107,66,.28) 52% 56%,transparent 56%) 16px 23px/36px 64px repeat-x,linear-gradient(180deg,#eef8f2,#d8eee2);}
-#recordList>p.hint:after{content:"Kayıt bulunamadı\A Henüz ölçüm kaydı oluşturulmamış.";white-space:pre-line;font-size:13px!important;line-height:1.55;color:#51635d;font-weight:900;}
-.pager{font-size:11px!important;color:#6d7d77!important;}.pager .btn{min-height:34px!important;}
-.bottom-nav{left:50%!important;right:auto!important;transform:translateX(-50%)!important;bottom:calc(env(safe-area-inset-bottom,0px) + 8px)!important;width:min(calc(100% - 20px),410px)!important;grid-template-columns:repeat(4,1fr)!important;gap:4px!important;padding:7px!important;border-radius:22px!important;background:rgba(255,255,255,.92)!important;border:1px solid rgba(220,235,228,.92)!important;box-shadow:0 16px 42px rgba(23,74,50,.16)!important;backdrop-filter:blur(18px)!important;}
-.bottom-nav button{min-height:54px!important;border:0!important;border-radius:16px!important;background:transparent!important;color:#7b8a85!important;gap:2px!important;box-shadow:none!important;padding:4px!important;}.bottom-nav button.active{background:#edf9f2!important;color:#0f6b42!important;border:0!important;box-shadow:none!important;}.bottom-nav span{font-size:20px!important;line-height:1!important;}.bottom-nav b{font-size:9px!important;font-weight:950!important;}
-.toast,.float-toast-v315{bottom:calc(84px + env(safe-area-inset-bottom,0px))!important;z-index:10060!important;border-radius:18px!important;background:rgba(15,107,66,.96)!important;box-shadow:0 16px 36px rgba(15,107,66,.28)!important;}
-.update-status-box{border-radius:14px!important;background:#fff7d8!important;border:1px solid #f2df9f!important;color:#8a650b!important;font-size:10px!important;padding:9px!important;}
-.export-scope-info{border-radius:14px!important;background:#ecfdf5!important;border:1px dashed #a9dfbd!important;color:#0f6b42!important;font-size:10px!important;}
-.panel-overlay-v316,.modal-backdrop{backdrop-filter:blur(8px)!important;}.modal-card,.panel-card-v316{width:min(92vw,400px)!important;border-radius:24px!important;background:#fff!important;}.modal-icon{background:#eaf8f0!important;color:#0f6b42!important;}
-#settingsView .settings-title-v324{display:flex;align-items:center;gap:10px;margin:4px 0 10px;}#settingsView .settings-title-v324 .back{width:34px;height:34px;border-radius:14px;border:1px solid #dfeae5;background:#fff;color:#0f6b42;font-weight:950;box-shadow:0 7px 16px rgba(23,74,50,.05);}#settingsView .settings-title-v324 h2{font-size:17px;margin:0;color:#1e342d;font-weight:950;}
-#settingsView .settings-card,#settingsView .sound-card,#settingsView .maintenance-card{margin:10px 0!important;}
-#guideView .guide-card{font-size:12px!important;line-height:1.5!important;}#guideView ol{padding-left:20px!important;color:#44564f!important;}#guideView li{margin:8px 0!important;}
-@media(max-width:430px){#app.app{max-width:100%!important;box-shadow:none!important}.topbar{margin-left:-12px!important;margin-right:-12px!important}.file-card .grid.two{grid-template-columns:1fr 1fr!important}.summary-grid,.summary-grid.small,.product-totals{grid-template-columns:1fr 1fr!important}.action-grid{grid-template-columns:1fr 1fr!important}.barcode-save{grid-template-columns:1fr 100px!important}.bottom-nav{width:calc(100% - 16px)!important}.check-grid{grid-template-columns:1fr 1fr!important;}}
-@media(max-width:360px){#userBadge{max-width:118px!important;font-size:10px!important}.check-grid,.product-grid{grid-template-columns:1fr!important}.measure-grid,.measure-grid-v311{grid-template-columns:1fr 1fr!important}.barcode-save{grid-template-columns:1fr 92px!important}.bottom-nav b{font-size:8px!important}}
+body::before,body::after{content:"";position:fixed;pointer-events:none;z-index:-2;left:0;right:0;bottom:0;}
+body::before{height:70vh;opacity:.34;background:
+  linear-gradient(145deg,transparent 0 54%,rgba(12,84,52,.22) 55% 59%,transparent 60%) 0 100%/120px 210px repeat-x,
+  linear-gradient(145deg,transparent 0 55%,rgba(12,84,52,.16) 56% 60%,transparent 61%) 36px 100%/164px 270px repeat-x,
+  linear-gradient(180deg,transparent 0%,rgba(11,74,47,.18) 65%,rgba(5,45,29,.38) 100%);
+}
+body::after{height:30vh;z-index:-1;opacity:.46;background:radial-gradient(ellipse at 8% 100%,rgba(12,84,52,.34) 0 18%,transparent 44%),radial-gradient(ellipse at 94% 100%,rgba(12,84,52,.28) 0 24%,transparent 52%);}
+body.dark{--bg:#081713!important;--card:rgba(13,33,27,.95)!important;--text:#eefcf5!important;--ink:#eefcf5!important;--muted:#b9cfc5!important;--line:#244538!important;background:#081713!important;}
+body.dark::before,body.dark::after{opacity:.12!important;}
+*{box-sizing:border-box!important;-webkit-tap-highlight-color:transparent!important;}
+button,input,textarea{font:inherit!important;}button{touch-action:manipulation!important;cursor:pointer!important;}input,textarea{outline:none!important;}
+#startup{background:linear-gradient(180deg,#f7fbf8,#e7f5ed)!important;}.startup-card{border-radius:30px!important;background:#ffffffee!important;border:1px solid var(--line)!important;box-shadow:0 24px 80px rgba(14,80,52,.16)!important;}.startup-card img{width:68px!important;height:68px!important;border-radius:50%!important;object-fit:cover!important;}.startup-card strong{font-size:18px!important;color:var(--forest)!important;}
+#app.app{width:min(100%,430px)!important;max-width:430px!important;min-height:100dvh!important;margin:0 auto!important;padding:12px 12px calc(92px + env(safe-area-inset-bottom,0px))!important;background:linear-gradient(180deg,rgba(255,255,255,.78),rgba(250,254,252,.94))!important;box-shadow:0 0 0 1px rgba(255,255,255,.58),0 26px 90px rgba(12,62,40,.18)!important;position:relative!important;}
+@media(max-width:430px){#app.app{box-shadow:none!important;max-width:100%!important;}}
+.topbar{position:sticky!important;top:0!important;z-index:90!important;margin:-12px -12px 8px!important;padding:12px 10px 7px!important;background:linear-gradient(180deg,rgba(255,255,255,.92),rgba(255,255,255,.72))!important;backdrop-filter:blur(18px)!important;-webkit-backdrop-filter:blur(18px)!important;border:0!important;box-shadow:none!important;display:grid!important;grid-template-columns:auto auto 1fr!important;align-items:start!important;gap:7px!important;}
+body.dark .topbar{background:linear-gradient(180deg,rgba(13,33,27,.94),rgba(13,33,27,.70))!important;}
+.brand{display:flex!important;align-items:center!important;gap:7px!important;min-width:0!important;grid-column:1/3!important;grid-row:1!important;}
+.brand img{width:34px!important;height:34px!important;border-radius:50%!important;object-fit:cover!important;background:#fff!important;box-shadow:0 6px 14px rgba(13,95,59,.18)!important;}
+.version-card{display:flex!important;align-items:center!important;gap:5px!important;background:transparent!important;border:0!important;box-shadow:none!important;padding:4px 4px!important;border-radius:12px!important;color:#233d33!important;}
+.version-card b{font-size:12px!important;font-weight:950!important;line-height:1!important;color:#233d33!important;}.version-card small{display:none!important;}
+#userBadge{grid-column:3!important;grid-row:1!important;justify-self:end!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;max-width:150px!important;min-height:32px!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;padding:7px 10px!important;border-radius:13px!important;background:#e4f6ec!important;border:1px solid #d4eedf!important;color:var(--forest)!important;font-size:11px!important;font-weight:950!important;box-shadow:0 8px 18px rgba(13,95,59,.08)!important;}
+#userBadge::before{content:"♟";font-size:10px;margin-right:4px;opacity:.78;}.login-needed{opacity:1!important;}
+.online-pill-v325{grid-column:3!important;grid-row:2!important;justify-self:end!important;margin-top:2px!important;border:1px solid #cfebdc!important;background:#e8f8ef!important;color:var(--forest)!important;border-radius:999px!important;padding:5px 10px!important;font-size:10px!important;font-weight:950!important;line-height:1!important;}
+.top-actions-v316{display:none!important;}#themeBtn{display:none!important;}
+.view{display:none!important;}.view.active{display:block!important;}
+.card,.hero-card,.status-card,.entry-form,.records-card,.guide-card,.settings-card,.sound-card,.maintenance-card,.panel-card-v316{background:var(--card)!important;border:1px solid rgba(220,235,228,.96)!important;border-radius:22px!important;box-shadow:0 12px 30px rgba(23,74,50,.085)!important;margin:10px 0!important;padding:14px!important;}
+.hero-card{position:relative!important;min-height:132px!important;overflow:hidden!important;display:flex!important;align-items:flex-start!important;justify-content:space-between!important;background:linear-gradient(135deg,#fff 0%,#f4fbf7 58%,#e8f5ee 100%)!important;border-color:#e1efe8!important;}
+.hero-card::before{content:"";position:absolute;right:-22px;bottom:-18px;width:220px;height:130px;opacity:.80;background:radial-gradient(ellipse at 48% 78%,rgba(13,95,59,.12) 0 32%,transparent 33%),linear-gradient(145deg,transparent 0 52%,rgba(13,95,59,.22) 53% 57%,transparent 58%) 14px 24px/40px 76px repeat-x;}
+.hero-card h1{position:relative!important;z-index:1!important;font-size:18px!important;line-height:1.08!important;margin:4px 0 8px!important;color:#162b23!important;font-weight:950!important;letter-spacing:-.02em!important;}.hero-card p{position:relative!important;z-index:1!important;max-width:220px!important;margin:0!important;font-size:12px!important;line-height:1.36!important;color:#66756f!important;font-weight:780!important;}.hero-forest{display:none!important;}
+.status-card{display:grid!important;grid-template-columns:1fr!important;gap:8px!important;margin-top:-16px!important;position:relative!important;z-index:2!important;background:rgba(255,255,255,.82)!important;}
+.status-item{display:flex!important;align-items:center!important;gap:11px!important;min-height:68px!important;border:1px solid #e1eee8!important;background:#fff!important;border-radius:18px!important;box-shadow:0 7px 18px rgba(23,74,50,.045)!important;padding:11px!important;text-align:left!important;color:var(--ink)!important;}
+.status-icon{width:40px!important;height:40px!important;flex:0 0 40px!important;display:grid!important;place-items:center!important;border-radius:18px!important;background:#eaf8f0!important;color:var(--forest)!important;font-size:20px!important;}.flash,.entry-launch .status-icon{background:#fff7d9!important;color:#e7a500!important;}.status-item small{display:block!important;font-size:10px!important;color:#71817b!important;font-weight:850!important;line-height:1.2!important;margin:0 0 2px!important;}.status-item b{display:block!important;font-size:16px!important;line-height:1.05!important;color:#173b2d!important;font-weight:950!important;}.status-item em{display:block!important;margin-top:2px!important;font-size:11px!important;color:#66756f!important;line-height:1.25!important;font-style:normal!important;font-weight:760!important;}.entry-launch{background:#fbfefc!important;border-color:#dfeee6!important;}
+.section-head{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:8px!important;margin-bottom:9px!important;}.section-head h2,.card h2,.guide-card h2,.settings-card h2,.sound-card h2,.maintenance-card h2{font-size:16px!important;line-height:1.16!important;margin:0 0 10px!important;color:#1e342d!important;font-weight:950!important;letter-spacing:-.01em!important;}.section-head h2{margin:0!important;}.section-head span,.pill,#recordCountPill,#todayText,#weekBtn{background:#e7f6ee!important;color:var(--forest)!important;border:1px solid #d6edde!important;border-radius:999px!important;padding:6px 10px!important;font-size:10px!important;font-weight:950!important;min-height:auto!important;}.file-card .section-head span{font-size:0!important;}.file-card .section-head span::after{content:"Düzenle";font-size:10px!important;}
+.grid.two{grid-template-columns:1fr 1fr!important;gap:8px!important;}label{display:block!important;font-size:11px!important;color:#5e6f68!important;font-weight:900!important;margin:6px 0!important;}input,textarea{width:100%!important;height:42px!important;background:#fff!important;border:1px solid #dfeae5!important;border-radius:14px!important;color:#173b2d!important;font-size:13px!important;font-weight:850!important;padding:9px 11px!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.9)!important;}input:focus,textarea:focus{border-color:#9bd8b8!important;box-shadow:0 0 0 4px rgba(13,95,59,.10)!important;}.hint,.setting-block p{font-size:10px!important;line-height:1.35!important;color:#6b7b76!important;font-weight:760!important;}
+.settings-card,.sound-card,.maintenance-card{background:#fff!important;}.setting-block{background:#fbfefc!important;border:0!important;border-top:1px solid #edf4f0!important;border-radius:0!important;padding:12px 0!important;margin:0!important;box-shadow:none!important;}.setting-block:first-of-type{border-top:0!important;padding-top:0!important;}.setting-block>b{display:block!important;font-size:13px!important;color:#223832!important;margin-bottom:2px!important;}.check-grid{display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important;margin-top:10px!important;}.check-card{position:relative!important;min-height:42px!important;border-radius:13px!important;background:#fff!important;border:1px solid #dfeae5!important;box-shadow:0 6px 14px rgba(23,74,50,.04)!important;padding:8px 9px!important;font-size:11px!important;color:#253b34!important;font-weight:950!important;display:flex!important;align-items:center!important;gap:8px!important;}.check-card input{width:16px!important;height:16px!important;margin:0!important;accent-color:var(--forest)!important;}.check-card:has(input:checked){background:#f1fbf5!important;border-color:#bde6cd!important;box-shadow:0 8px 18px rgba(13,95,59,.08)!important;}.check-card:has(input:checked)::after{content:"✓";margin-left:auto;color:#65a984;font-size:11px;}
+.btn{min-height:42px!important;border-radius:14px!important;padding:9px 12px!important;font-size:12px!important;font-weight:950!important;border:1px solid #dfeae5!important;background:#fff!important;color:#244238!important;box-shadow:0 7px 16px rgba(23,74,50,.05)!important;text-decoration:none!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;}.btn.primary,.btn.green,#downloadXlsBtn{background:linear-gradient(180deg,#15945a,#0d5f3b)!important;border-color:#0d5f3b!important;color:#fff!important;}.btn.soft{background:#eff7fb!important;color:#22505c!important;border-color:#dceaf2!important;}.btn.warning{background:#fff6ed!important;color:#9a4b13!important;border-color:#f5dec9!important;}.btn.orange{background:linear-gradient(180deg,#ffb31f,#f59e0b)!important;color:#fff!important;border-color:#f59e0b!important;}.btn.full{width:100%!important;}
+.summary-grid{display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important;}.summary-grid>div,.detail-summary-grid>div{min-height:72px!important;border:1px solid #e3eee8!important;border-radius:17px!important;background:linear-gradient(135deg,#fbfefc,#f1fbf5)!important;padding:12px!important;box-shadow:0 7px 16px rgba(23,74,50,.04)!important;}.summary-grid span{display:block!important;font-size:20px!important;line-height:1!important;color:var(--forest)!important;}.summary-grid b,.detail-summary-grid b{display:block!important;margin:5px 0 0!important;font-size:19px!important;line-height:1.08!important;color:#142b22!important;font-weight:950!important;}.summary-grid small,.detail-summary-grid small{font-size:10px!important;color:#6b7b76!important;font-weight:850!important;}.summary-card .section-head h2::after{content:" / Bakım";}.summary-card .summary-grid>div:nth-child(3){grid-column:auto!important;}.summary-card .summary-grid::after{content:"0";display:block;min-height:72px;border:1px solid #e3eee8;border-radius:17px;background:linear-gradient(135deg,#fbfefc,#f1fbf5);padding:28px 12px 12px;box-shadow:0 7px 16px rgba(23,74,50,.04);font-size:19px;line-height:1.08;color:#142b22;font-weight:950;}.summary-card .summary-grid{position:relative!important;}.summary-card .summary-grid::before{content:"Kayıt";position:absolute;right:calc(25% - 26px);bottom:48px;font-size:10px;color:#6b7b76;font-weight:850;z-index:1;}
+.detail-summary-grid{display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important;}.detail-summary-card{background:#fff!important;}.detail-summary-card .section-head h2{font-size:15px!important;}
+.records-card>.section-head h2{font-size:17px!important;text-transform:uppercase!important;}.records-card>.section-head h2::after{content:" / ÖZET";}.summary-grid.small{grid-template-columns:1fr 1fr!important;}.records-card .summary-grid.small>div{min-height:82px!important;background:linear-gradient(135deg,#f0faf4,#fff)!important;}.records-card .summary-grid.small b{font-size:22px!important;}.product-totals{display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important;margin:10px 0 12px!important;}.prod-total{position:relative!important;min-height:78px!important;border:1px solid #e3eee8!important;border-left-width:6px!important;border-radius:17px!important;background:#fff!important;padding:12px!important;box-shadow:0 7px 16px rgba(23,74,50,.045)!important;}.prod-total.product-tomruk{border-left-color:var(--tomruk)!important}.prod-total.product-maden{border-left-color:var(--maden)!important}.prod-total.product-kagit{border-left-color:var(--kagit)!important}.prod-total.product-sanayi{border-left-color:var(--sanayi)!important}.prod-total.product-tel{border-left-color:var(--tel)!important}.prod-total b{font-size:18px!important;margin:4px 0!important;color:#152c23!important;}.prod-total small{font-size:10px!important;color:#6b7b76!important;font-weight:850!important;}
+.action-grid{display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important;margin-top:10px!important;}#downloadXlsBtn{grid-column:1/-1!important;min-height:46px!important;}#backupBtn{order:5!important;}#restoreBtn{order:2!important;}#cloudBackupBtnV316{order:3!important;}#cloudRestoreBtnV316{order:4!important;}#printBtn{order:6!important;}.record-tools-lower{margin-top:12px!important;}.record-toolbar{background:#fff!important;border:1px solid #e3eee8!important;border-radius:20px!important;padding:12px!important;box-shadow:0 8px 20px rgba(23,74,50,.055)!important;}.record-toolbar::before{content:"Ölçümler";display:block;font-size:17px;font-weight:950;color:#1e342d;margin:0 0 9px;}.record-toolbar input[type=search]{padding-left:34px!important;background:#fbfefc!important;}.record-toolbar{position:relative!important;}.record-toolbar::after{content:"⌕";position:absolute;top:55px;left:22px;color:#9aa9a3;font-size:14px;}.record-select-actions{display:grid!important;grid-template-columns:1fr 1fr!important;gap:7px!important;margin-top:8px!important;}.record-select-actions .btn,#selectedInfo{width:100%!important;justify-content:center!important;text-align:center!important;font-size:11px!important;}.export-scope-info{border-radius:14px!important;background:#ecfdf5!important;border:1px dashed #a9dfbd!important;color:var(--forest)!important;font-size:10px!important;padding:9px!important;margin-top:8px!important;}.filter-box{border:0!important;background:transparent!important;padding:0!important;margin:8px 0!important;}.filter-head{font-size:11px!important;color:#55665f!important;}.filter-chips,.chip-wrap{display:flex!important;gap:7px!important;overflow-x:auto!important;flex-wrap:nowrap!important;padding-bottom:2px!important;-webkit-overflow-scrolling:touch!important;}.filter-chip,.chip{white-space:nowrap!important;border-radius:999px!important;border:1px solid #dfeae5!important;background:#fff!important;color:#365348!important;min-height:34px!important;padding:8px 11px!important;font-size:11px!important;font-weight:950!important;box-shadow:0 5px 12px rgba(23,74,50,.04)!important;}.filter-chip.active,.chip.active{background:#0d5f3b!important;color:#fff!important;border-color:#0d5f3b!important;}
+.product-filter-v325{display:flex;gap:7px;overflow-x:auto;flex-wrap:nowrap;padding:0 0 8px;margin:4px 0 3px;-webkit-overflow-scrolling:touch;}.product-filter-v325 button{white-space:nowrap;border-radius:999px;border:1px solid #dfeae5;background:#fff;color:#365348;min-height:34px;padding:8px 11px;font-size:11px;font-weight:950;box-shadow:0 5px 12px rgba(23,74,50,.04);}.product-filter-v325 button.active{background:#0d5f3b;color:#fff;border-color:#0d5f3b;}.product-filter-v325 .tomruk{background:#fff6d8;color:#805700;border-color:#ffe3a0}.product-filter-v325 .maden{background:#eaf3ff;color:#1458a6;border-color:#d3e6ff}.product-filter-v325 .kagit{background:#fff0f0;color:#a13a3a;border-color:#ffd9d9}.product-filter-v325 .sanayi{background:#ecfbf2;color:#1d7d4e;border-color:#cef0dc}.product-filter-v325 .tel{background:#f0edff;color:#5b49c9;border-color:#ddd7ff}
+.record-list{display:grid!important;gap:8px!important;margin-top:10px!important;}.record-card{display:grid!important;grid-template-columns:auto 1fr!important;gap:8px!important;border-radius:16px!important;background:#fff!important;border:1px solid #e3eee8!important;border-left-width:6px!important;padding:10px!important;box-shadow:0 7px 17px rgba(23,74,50,.05)!important;}.record-card.product-tomruk{border-left-color:var(--tomruk)!important}.record-card.product-maden{border-left-color:var(--maden)!important}.record-card.product-kagit{border-left-color:var(--kagit)!important}.record-card.product-sanayi{border-left-color:var(--sanayi)!important}.record-card.product-tel{border-left-color:var(--tel)!important}.record-main b{font-size:12px!important;}.record-main small{font-size:10px!important;line-height:1.35!important;}.record-actions{grid-column:2!important;justify-content:flex-start!important;display:flex!important;gap:6px!important;}.record-actions button{font-size:10px!important;padding:7px 9px!important;border-radius:11px!important;border:1px solid #dfeae5!important;background:#f7fbf9!important;}
+#recordList>p.hint{min-height:246px!important;margin:12px 0!important;border-radius:22px!important;background:linear-gradient(180deg,#ffffff,#fbfefc)!important;border:1px solid #e3eee8!important;display:flex!important;align-items:flex-end!important;justify-content:center!important;text-align:center!important;padding:162px 16px 58px!important;font-size:0!important;color:#66756f!important;position:relative!important;box-shadow:0 8px 20px rgba(23,74,50,.05)!important;}#recordList>p.hint::before{content:"";position:absolute;top:30px;left:50%;transform:translateX(-50%);width:156px;height:104px;border-radius:50% 45% 48% 45%;background:radial-gradient(ellipse at 50% 90%,rgba(13,95,59,.10) 0 45%,transparent 46%),linear-gradient(150deg,transparent 0 52%,rgba(13,95,59,.28) 52% 56%,transparent 56%) 16px 23px/36px 64px repeat-x,linear-gradient(180deg,#eef8f2,#d8eee2);}#recordList>p.hint::after{content:"Kayıt bulunamadı\A Henüz ölçüm kaydı oluşturulmamış.";white-space:pre-line;font-size:13px!important;line-height:1.55;color:#51635d;font-weight:900;}#recordList>p.hint .new-btn-v325{display:none!important;}.empty-new-btn-v325{position:absolute;left:50%;bottom:20px;transform:translateX(-50%);border:0;border-radius:14px;background:linear-gradient(180deg,#15945a,#0d5f3b);color:#fff;padding:11px 20px;font-size:12px;font-weight:950;box-shadow:0 12px 24px rgba(13,95,59,.20);}
+.entry-top{position:sticky!important;top:0!important;z-index:70!important;background:linear-gradient(180deg,rgba(255,255,255,.95),rgba(255,255,255,.82))!important;padding:9px 0 7px!important;margin-bottom:8px!important;display:flex!important;align-items:center!important;justify-content:space-between!important;gap:8px!important;}.entry-top .version-card{background:#e7f6ee!important;border:1px solid #d6edde!important;padding:8px 10px!important;}.entry-top .btn{min-height:38px!important;}.entry-total{display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important;background:transparent!important;border:0!important;box-shadow:none!important;margin:8px 0!important;}.entry-total div{border:1px solid #e3eee8!important;border-radius:17px!important;background:linear-gradient(135deg,#fbfefc,#f1fbf5)!important;padding:10px!important;text-align:center!important;box-shadow:0 7px 16px rgba(23,74,50,.04)!important;}.entry-total b{font-size:20px!important;color:#142b22!important;}.entry-total small{font-size:10px!important;color:#6b7b76!important;}.entry-form{display:grid!important;gap:10px!important;padding:12px!important;}.cutter-row{grid-template-columns:1fr auto!important;gap:8px!important;}.tree-head{display:grid!important;grid-template-columns:1fr auto!important;gap:8px!important;}.tree-panel.open{display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important;}.tree-option{min-height:40px!important;border-radius:14px!important;border:1px solid #dfeae5!important;background:#fff!important;padding:9px!important;font-size:11px!important;}.tree-option input{width:16px!important;height:16px!important;}.measure-grid,.measure-grid-v311{display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important;}.measure-grid label,.measure-grid-v311 label{background:#fff!important;border:1px solid #e1eee8!important;border-radius:16px!important;padding:9px!important;}.measure-grid input{height:38px!important;text-align:center!important;font-size:20px!important;font-weight:950!important;border-radius:13px!important;}.quick-grid{display:grid!important;grid-template-columns:repeat(3,1fr)!important;gap:5px!important;margin-top:6px!important;}.quick-grid button{min-height:34px!important;border:1px solid #dfeae5!important;border-radius:11px!important;background:#f7fbf9!important;font-size:14px!important;font-weight:950!important;}.product-grid{display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important;}.product-btn{min-height:48px!important;border-radius:16px!important;font-size:14px!important;font-weight:950!important;border-width:1.5px!important;}.product-btn.active::after{top:-8px!important;right:9px!important;font-size:10px!important;padding:1px 8px!important;background:#0d5f3b!important;border:2px solid #fff!important;}.product-tomruk{border-color:var(--tomruk)!important;background:#fff6d8!important;color:#805700!important}.product-maden{border-color:var(--maden)!important;background:#eaf3ff!important;color:#1458a6!important}.product-kagit{border-color:var(--kagit)!important;background:#fff0f0!important;color:#a13a3a!important}.product-sanayi{border-color:var(--sanayi)!important;background:#ecfbf2!important;color:#1d7d4e!important}.product-tel{border-color:var(--tel)!important;background:#f0edff!important;color:#5b49c9!important}.barcode-save{display:grid!important;grid-template-columns:1fr 104px!important;gap:8px!important;}.barcode-save label{background:#fff!important;border:1px solid #e1eee8!important;border-radius:16px!important;padding:8px!important;margin:0!important;}.barcode-save input{height:38px!important;text-align:center!important;font-size:17px!important;text-transform:uppercase!important;}.save-btn{min-height:58px!important;border:0!important;border-radius:18px!important;background:linear-gradient(180deg,#18a664,#0d5f3b)!important;color:#fff!important;font-size:17px!important;font-weight:950!important;box-shadow:0 14px 30px rgba(13,95,59,.24)!important;}.recent-box{border-radius:18px!important;background:#fbfefc!important;border:1px solid #e3eee8!important;padding:12px!important;}.recent-box h3{font-size:13px!important;margin:0 0 8px!important;color:#1e342d!important;}.recent-list{grid-template-columns:1fr!important;gap:7px!important;}.recent-item{border-radius:14px!important;background:#fff!important;border:1px solid #e3eee8!important;border-left-width:6px!important;min-height:54px!important;}.recent-item b{font-size:13px!important;}.recent-item small{font-size:10px!important;}.recent-item.product-tomruk{border-left-color:var(--tomruk)!important;background:#fffaf0!important}.recent-item.product-maden{border-left-color:var(--maden)!important;background:#f2f8ff!important}.recent-item.product-kagit{border-left-color:var(--kagit)!important;background:#fff6f6!important}.recent-item.product-sanayi{border-left-color:var(--sanayi)!important;background:#f3fbf6!important}.recent-item.product-tel{border-left-color:var(--tel)!important;background:#f7f5ff!important}
+.bottom-nav{position:fixed!important;left:50%!important;right:auto!important;transform:translateX(-50%)!important;bottom:calc(env(safe-area-inset-bottom,0px) + 8px)!important;width:min(calc(100% - 16px),410px)!important;display:grid!important;grid-template-columns:repeat(4,1fr)!important;gap:4px!important;padding:7px!important;border-radius:22px!important;background:rgba(255,255,255,.94)!important;border:1px solid rgba(220,235,228,.95)!important;box-shadow:0 16px 42px rgba(23,74,50,.16)!important;backdrop-filter:blur(18px)!important;-webkit-backdrop-filter:blur(18px)!important;z-index:1000!important;}.bottom-nav button{min-height:54px!important;border:0!important;border-radius:16px!important;background:transparent!important;color:#7b8a85!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:2px!important;box-shadow:none!important;padding:4px!important;}.bottom-nav button.active{background:#edf9f2!important;color:var(--forest)!important;}.bottom-nav span{font-size:19px!important;line-height:1!important;}.bottom-nav b{font-size:9px!important;font-weight:950!important;}
+.toast,.float-toast-v315{left:50%!important;transform:translateX(-50%)!important;width:min(calc(100% - 24px),390px)!important;bottom:calc(82px + env(safe-area-inset-bottom,0px))!important;z-index:10060!important;border-radius:18px!important;background:rgba(13,95,59,.96)!important;color:#fff!important;box-shadow:0 16px 36px rgba(13,95,59,.28)!important;}.update-status-box{border-radius:14px!important;background:#fff7d8!important;border:1px solid #f2df9f!important;color:#8a650b!important;font-size:10px!important;padding:9px!important;margin-top:8px!important;}.modal-backdrop,.panel-overlay-v316{backdrop-filter:blur(8px)!important;-webkit-backdrop-filter:blur(8px)!important;}.modal-card,.panel-card-v316{width:min(92vw,400px)!important;border-radius:24px!important;background:#fff!important;color:#162b23!important;}.modal-icon{background:#eaf8f0!important;color:var(--forest)!important;}.guide-card{font-size:12px!important;line-height:1.5!important;}.guide-card ol{padding-left:20px!important;color:#44564f!important;}.guide-card li{margin:8px 0!important;}
+.settings-title-v325{display:flex;align-items:center;gap:10px;margin:4px 0 10px;}.settings-title-v325 .back{width:34px;height:34px;border-radius:14px;border:1px solid #dfeae5;background:#fff;color:var(--forest);font-weight:950;box-shadow:0 7px 16px rgba(23,74,50,.05);}.settings-title-v325 h2{font-size:17px;margin:0;color:#1e342d;font-weight:950;}.home-date-card-v325 .calendar-mark{position:absolute;right:24px;bottom:22px;color:#84958e;font-size:15px;}.home-date-card-v325{position:relative;}
+@media(max-width:370px){#userBadge{max-width:122px!important;font-size:10px!important}.check-grid{grid-template-columns:1fr 1fr!important}.product-grid{grid-template-columns:1fr 1fr!important}.barcode-save{grid-template-columns:1fr 92px!important}.bottom-nav b{font-size:8px!important}.bottom-nav span{font-size:17px!important}.grid.two{grid-template-columns:1fr 1fr!important}}
 </style>
-<script id="mesaha-lovable-design-overlay-v324">
+<script id="mesaha-lovable-exact-pass-v325">
 (function(){
   'use strict';
   function $(id){return document.getElementById(id)}
+  function qs(s,root){return (root||document).querySelector(s)}
+  function qsa(s,root){return Array.prototype.slice.call((root||document).querySelectorAll(s))}
   function ready(fn){document.readyState==='loading'?document.addEventListener('DOMContentLoaded',fn,{once:true}):fn()}
-  ready(function(){
-    try{
-      var bottom=$('bottomNav');
-      if(bottom && !bottom.querySelector('[data-nav="settings"]')){
-        var btn=document.createElement('button');btn.type='button';btn.dataset.nav='settings';btn.innerHTML='<span>⚙</span><b>Ayarlar</b>';bottom.appendChild(btn);
-      }
-      var app=$('app'), main=app&&app.querySelector('main');
-      if(main && !$('settingsView')){
-        var view=document.createElement('section');view.id='settingsView';view.className='view';
-        view.innerHTML='<div class="settings-title-v324"><button class="back" type="button" aria-label="Geri">←</button><h2>Giriş Ayarları</h2></div>';
-        main.appendChild(view);
-        var s=document.querySelector('#homeView .settings-card');
-        var sound=document.querySelector('#homeView .sound-card');
-        var maint=document.querySelector('#homeView .maintenance-card');
-        if(s) view.appendChild(s);
-        if(sound) view.appendChild(sound);
-        if(maint) view.appendChild(maint);
-        view.querySelector('.back').addEventListener('click',function(){ window.showView ? window.showView('home') : null; });
-      }
-      var h=document.querySelector('.hero-card h1'); if(h && /^Merhaba!?\s*$/.test(h.textContent.trim())) h.textContent='Merhaba,';
-      var net=$('netText'); if(net) net.textContent = navigator.onLine ? 'Çevrim içi' : 'Çevrim dışı';
-      var user=$('userBadge');
-      if(user && (/Giriş Yap|Giris Yap/i).test(user.textContent.trim())) user.textContent='Yakup • Yaylacık';
-      var title=document.querySelector('title'); if(title) title.textContent='Mesaha İO v3.23';
-      function localShow(view){
-        var ids=['home','entry','records','guide','settings'];
-        ids.forEach(function(v){ var el=$(v+'View'); if(el) el.classList.toggle('active',v===view); });
-        document.body.classList.toggle('entry-open', view==='entry');
-        document.querySelectorAll('#bottomNav button').forEach(function(b){ b.classList.toggle('active', b.dataset.nav===view); });
-        try{ if(view==='records' && typeof window.renderRecords==='function') window.renderRecords(); }catch(e){}
-        try{ if((view==='home'||view==='settings') && typeof window.renderHome==='function') window.renderHome(); }catch(e){}
-        try{ if(view==='entry' && typeof window.renderEntry==='function') window.renderEntry(); }catch(e){}
-        try{ if(window.state) window.state.view=view; }catch(e){}
-      }
-      var oldShow=window.showView;
-      window.showView=function(view){
-        if(view==='settings'){ localShow(view); return; }
-        if(typeof oldShow==='function') oldShow(view); else localShow(view);
-        var sv=$('settingsView'); if(sv) sv.classList.remove('active');
-        document.querySelectorAll('#bottomNav button').forEach(function(b){ b.classList.toggle('active', b.dataset.nav===view); });
-      };
-      if(bottom && !bottom.dataset.lovableBound){
-        bottom.dataset.lovableBound='1';
-        bottom.addEventListener('click',function(e){var b=e.target.closest('[data-nav]'); if(b && b.dataset.nav==='settings'){ e.preventDefault(); e.stopPropagation(); window.showView('settings');}},true);
-      }
-      // Records ekranında arama ve filtreler beyan kartının altında Lovable tarzında kalır; boş liste butonu işlevsiz kalmasın diye kayıt yoksa çift tıklama ile giriş açılır.
-      var rl=$('recordList'); if(rl && !rl.dataset.lovableBound){ rl.dataset.lovableBound='1'; rl.addEventListener('dblclick',function(){ if(typeof window.openEntry==='function') window.openEntry(); }); }
-    }catch(e){ console.warn('Mesaha Lovable tasarım yaması çalışmadı',e); }
-  });
+  function setText(el,t){if(el && el.textContent!==t) el.textContent=t}
+  function norm(s){return String(s||'').trim().toLocaleLowerCase('tr-TR')}
+  var productFilter='Tümü';
+  var products=[['Tümü','all',''],['Tomruk','tomruk','Tomruk'],['Maden','maden','Maden'],['Kağıtlık','kagit','Kağıtlık'],['Sanayi','sanayi','Sanayi'],['Tel','tel','Tel']];
+  function productLabelOf(r){
+    var raw=String((r&&r.productType)||'');
+    if(window.productInfo){try{return String(window.productInfo(raw).label||raw)}catch(e){}}
+    var x=norm(raw); if(x.indexOf('maden')>-1)return 'Maden'; if(x.indexOf('kağı')>-1||x.indexOf('kagit')>-1)return 'Kağıtlık'; if(x.indexOf('sanayi')>-1)return 'Sanayi'; if(x.indexOf('tel')>-1)return 'Tel'; return 'Tomruk';
+  }
+  function records(){try{return window.state&&Array.isArray(window.state.records)?window.state.records:[]}catch(e){return[]}}
+  function rebuildTop(){
+    var user=$('userBadge'); if(user && (!user.textContent || /Giriş Yap|Giris Yap/i.test(user.textContent))) user.textContent='Yakup • Yaylacık';
+    var top=qs('.topbar'); if(top && !$('onlinePillV325')){var p=document.createElement('div');p.id='onlinePillV325';p.className='online-pill-v325';p.textContent=navigator.onLine?'Çevrim içi':'Çevrim dışı';top.appendChild(p);} 
+    setText($('versionText'),'v3.23'); var title=qs('title'); if(title) title.textContent='Mesaha İO v3.23';
+  }
+  function rebuildBottomNav(){
+    var nav=$('bottomNav'); if(!nav) return;
+    var defs=[['home','⌂','Ana Sayfa'],['records','◷','Ölçümler'],['guide','▣','Kılavuz'],['settings','⚙','Ayarlar']];
+    defs.forEach(function(d){var b=nav.querySelector('[data-nav="'+d[0]+'"]'); if(!b){b=document.createElement('button');b.type='button';b.dataset.nav=d[0];nav.appendChild(b);} b.innerHTML='<span>'+d[1]+'</span><b>'+d[2]+'</b>';});
+    qsa('button',nav).forEach(function(b){if(!defs.some(function(d){return d[0]===b.dataset.nav;})) b.remove();});
+    if(!nav.__v325){nav.__v325=true;nav.addEventListener('click',function(e){var b=e.target.closest('[data-nav]'); if(!b)return; if(b.dataset.nav==='settings'){e.preventDefault();e.stopImmediatePropagation();showLocal('settings');}},true);}
+  }
+  function buildSettingsView(){
+    var main=qs('#app main'); if(!main)return;
+    var view=$('settingsView'); if(!view){view=document.createElement('section');view.id='settingsView';view.className='view';main.appendChild(view);} 
+    if(!qs('.settings-title-v325',view)){var title=document.createElement('div');title.className='settings-title-v325';title.innerHTML='<button class="back" type="button">←</button><h2>Giriş Ayarları</h2>';view.prepend(title);title.querySelector('button').addEventListener('click',function(){showLocal('home');});}
+    var homeSettings=qs('#homeView .settings-card');
+    if(homeSettings){
+      var blocks=qsa('.setting-block',homeSettings);
+      blocks.forEach(function(bl){ if(bl.querySelector('#homeProductChecks') || bl.querySelector('#homeTreeChecks')){ view.appendChild(bl); }});
+      var h=qs('h2',homeSettings); if(h) h.textContent='Giriş Ayarları';
+      homeSettings.classList.add('home-date-card-v325');
+      if(!qs('.calendar-mark',homeSettings)){var c=document.createElement('span');c.className='calendar-mark';c.textContent='▣';homeSettings.appendChild(c);} 
+    }
+    ['sound-card','maintenance-card'].forEach(function(cls){var el=qs('#homeView .'+cls)||qs('#settingsView .'+cls); if(el)view.appendChild(el);});
+    qsa('#settingsView .setting-block').forEach(function(bl){ if(bl.querySelector('#homeProductChecks')){var b=qs('b',bl); if(b)b.textContent='Odun Türleri';} if(bl.querySelector('#homeTreeChecks')){var b2=qs('b',bl); if(b2)b2.textContent='Ağaç Türleri';} });
+  }
+  function polishHome(){
+    var h=qs('.hero-card h1'); if(h) h.textContent='Merhaba, Yakup';
+    var net=$('netText'); if(net) net.textContent=navigator.onLine?'Çevrim içi':'Çevrim dışı';
+    var file=qs('.file-card .section-head span'); if(file) file.textContent='Düzenle';
+    var sec=qs('.summary-card .section-head h2'); if(sec && sec.textContent.indexOf('Ölçüm Özeti')===-1) sec.textContent='Ölçüm Özeti';
+    // Ana sayfa sırası referansa göre kalsın: hero, bağlantı/giriş, dosya, tarih, özet, detay.
+    var home=$('homeView'); if(home){
+      var order=['.hero-card','.status-card','.file-card','.settings-card','.summary-card','.detail-summary-card'];
+      order.forEach(function(sel){var el=qs(sel,home); if(el) home.appendChild(el);});
+    }
+  }
+  function buildProductFilter(){
+    var toolbar=qs('.record-toolbar'); if(!toolbar)return;
+    if(!$('productFilterV325')){var bar=document.createElement('div');bar.id='productFilterV325';bar.className='product-filter-v325';bar.innerHTML=products.map(function(p,i){return '<button type="button" data-prod="'+p[0]+'" class="'+(i===0?'active ':'')+p[1]+'">'+p[0]+'</button>';}).join('');
+      var search=$('recordSearch'); if(search && search.parentNode===toolbar) toolbar.insertBefore(bar, search.nextSibling); else toolbar.prepend(bar);
+      bar.addEventListener('click',function(e){var b=e.target.closest('[data-prod]'); if(!b)return; productFilter=b.dataset.prod; qsa('button',bar).forEach(function(x){x.classList.toggle('active',x===b);}); filterRecordCards();});
+    }
+  }
+  function filterRecordCards(){
+    var list=records();
+    var active=productFilter;
+    qsa('#recordList .record-card').forEach(function(card){
+      if(active==='Tümü'){card.style.display=''; return;}
+      var txt=card.textContent||''; card.style.display=(txt.toLocaleLowerCase('tr-TR').indexOf(active.toLocaleLowerCase('tr-TR'))>-1)?'':'none';
+    });
+    var empty=qs('#recordList>p.hint');
+    if(empty && !$('emptyNewBtnV325')){var btn=document.createElement('button');btn.id='emptyNewBtnV325';btn.className='empty-new-btn-v325';btn.type='button';btn.textContent='Yeni Mesaha Gir';empty.appendChild(btn);btn.addEventListener('click',function(){if(window.openEntry)window.openEntry();});}
+  }
+  function polishRecords(){
+    var head=qs('.records-card>.section-head h2'); if(head) head.textContent='BEYAN';
+    buildProductFilter(); filterRecordCards();
+    var restore=$('restoreBtn'); if(restore) restore.textContent='Yedek Yükle';
+    var backup=$('backupBtn'); if(backup) backup.textContent='Yedek Al';
+  }
+  function showLocal(view){
+    ['home','entry','records','guide','settings'].forEach(function(v){var el=$(v+'View'); if(el) el.classList.toggle('active',v===view);});
+    document.body.classList.toggle('entry-open',view==='entry');
+    qsa('#bottomNav button').forEach(function(b){b.classList.toggle('active',b.dataset.nav===view);});
+    try{if(view==='records'&&window.mesahaV303&&window.mesahaV303.records)window.mesahaV303.records();else if(view==='records'&&window.renderRecords)window.renderRecords();}catch(e){}
+    try{if(view==='home'&&window.renderAll)window.renderAll();}catch(e){}
+    setTimeout(function(){rebuildTop();polishHome();polishRecords();},80);
+  }
+  function patchShowView(){
+    if(window.__mesahaShowV325)return; window.__mesahaShowV325=true;
+    var old=window.showView;
+    window.showView=function(view){ if(view==='settings'){showLocal('settings');return;} if(typeof old==='function'){old(view);} else showLocal(view); setTimeout(function(){qsa('#bottomNav button').forEach(function(b){b.classList.toggle('active',b.dataset.nav===view);}); var sv=$('settingsView'); if(sv&&view!=='settings') sv.classList.remove('active'); polishHome();polishRecords();},80); };
+  }
+  function observeRecords(){
+    var rl=$('recordList'); if(!rl || rl.__obsV325)return; rl.__obsV325=true; new MutationObserver(function(){filterRecordCards();}).observe(rl,{childList:true,subtree:false});
+  }
+  function init(){rebuildTop();rebuildBottomNav();buildSettingsView();polishHome();polishRecords();patchShowView();observeRecords();}
+  ready(function(){setTimeout(init,900);setTimeout(init,1800);window.addEventListener('online',rebuildTop);window.addEventListener('offline',rebuildTop);});
 })();
 </script>
 
