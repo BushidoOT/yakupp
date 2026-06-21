@@ -1,10 +1,10 @@
-importScripts('./js/version.js?v=337');
-const CACHE_NAME = (self.MESAHA_VERSION && self.MESAHA_VERSION.cacheName) || 'mesaha-app-v337-beyan-pdf-fix';
+importScripts('./js/version.js?v=338');
+const CACHE_NAME = (self.MESAHA_VERSION && self.MESAHA_VERSION.cacheName) || 'mesaha-app-v338-yayin-kilavuz-optimizasyon';
 const ASSETS = [
-  './','./index.html','./admin.html','./manifest.json','./version.json','./service-worker.js','./temizle.html',
-  './css/style.css?v=337','./js/version.js?v=337','./js/orbis-xls.js?v=337','./js/app.js?v=337',
-  './assets/icon-192.png','./assets/icon-512.png','./assets/mesaha_logo.png','./assets/06_net_islem_onayi.wav?v=337','./assets/08_hata_uyari_onaydan_farkli.wav?v=337',
-  './icon-192.png','./icon-512.png','./mesaha_logo.png'
+  './','./index.html','./admin.html','./manifest.json','./version.json','./service-worker.js',
+  './js/version.js?v=338',
+  './assets/icon-192.png','./assets/icon-512.png','./assets/mesaha_logo.png',
+  './assets/06_net_islem_onayi.wav','./assets/08_hata_uyari_onaydan_farkli.wav'
 ];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS)).then(() => self.skipWaiting()));
