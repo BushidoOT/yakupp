@@ -1,8 +1,8 @@
-importScripts('./js/version.js?v=333');
-const CACHE_NAME = (self.MESAHA_VERSION && self.MESAHA_VERSION.cacheName) || 'mesaha-app-v333-ses-onay-hata-fix';
+importScripts('./js/version.js?v=334');
+const CACHE_NAME = (self.MESAHA_VERSION && self.MESAHA_VERSION.cacheName) || 'mesaha-app-v334-print-android-version-fix';
 const ASSETS = [
   './','./index.html','./admin.html','./manifest.json','./version.json','./service-worker.js',
-  './css/style.css?v=333','./js/version.js?v=333','./js/orbis-xls.js?v=333','./js/app.js?v=333',
+  './css/style.css?v=334','./js/version.js?v=334','./js/orbis-xls.js?v=334','./js/app.js?v=334',
   './assets/icon-192.png','./assets/icon-512.png','./assets/mesaha_logo.png','./assets/06_net_islem_onayi.wav','./assets/08_hata_uyari_onaydan_farkli.wav',
   './icon-192.png','./icon-512.png','./mesaha_logo.png'
 ];

@@ -1,12 +1,12 @@
 self.MESAHA_VERSION = {
-  "app": "v3.33",
-  "version": "v333-ses-onay-hata-fix",
-  "build": 333,
-  "visibleVersion": "v3.33",
-  "shortVersion": "v3.33",
-  "name": "Mesaha İO v3.33",
-  "cacheName": "mesaha-app-v333-ses-onay-hata-fix",
-  "builtAt": "2026-06-21T22:15:00+03:00",
-  "notes": "Onay sesi 06, hata/uyarı sesi 08 olarak eklendi. Sesler kayıt, işlem onayı, uyarı ve hata bildirimlerinde çalışır.",
-  "assetVersion": "333"
+  "app": "v3.34",
+  "version": "v334-print-android-version-fix",
+  "build": 334,
+  "visibleVersion": "v3.34",
+  "shortVersion": "v3.34",
+  "name": "Mesaha İO v3.34",
+  "cacheName": "mesaha-app-v334-print-android-version-fix",
+  "builtAt": "2026-06-21T22:10:00+03:00",
+  "notes": "Android yazdırma sadece beyan özeti olacak şekilde sertleştirildi; sürüm adının sayfada değişmesi engellendi; onay/hata sesleri korunuyor.",
+  "assetVersion": "334"
 };
