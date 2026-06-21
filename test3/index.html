@@ -666,7 +666,7 @@ body.dark .user-badge.login-needed{background:#451a03;color:#fed7aa;border-color
             <button id="restoreBtn" class="btn soft" type="button">Yedek Yükle</button>
             <button id="cloudBackupBtnV316" class="btn primary" type="button">Buluta Yedekle</button>
             <button id="cloudRestoreBtnV316" class="btn soft" type="button">Buluttan Getir</button>
-            <button id="printBtn" class="btn orange" type="button">Yazdır</button>
+            <button id="printBtn" class="btn orange" type="button">Beyan İndir</button>
           </div>
           <div class="record-toolbar record-tools-lower">
             <input id="recordSearch" type="search" placeholder="Barkod, ağaç, ürün veya kesimci ara..." autocomplete="off" />
@@ -1579,7 +1579,7 @@ function bind(){
   $('backupBtn').addEventListener('click', backupJson);
   $('restoreBtn').addEventListener('click', () => $('restoreInput').click());
   $('restoreInput').addEventListener('change', restoreJson);
-  $('printBtn').addEventListener('click', () => window.print());
+  $('printBtn').addEventListener('click', () => void 0);
   $('bottomNav').addEventListener('click', e => { const b=e.target.closest('[data-nav]'); if(b) showView(b.dataset.nav); });
   ['bolmeNo','seflik','ekipNot','mesahaDate'].forEach(id => $(id).addEventListener('input', settingsFromInputs));
   ['lengthInput'].forEach(id => {
@@ -3532,7 +3532,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     };
     window.addEventListener('afterprint', cleanup);
     setTimeout(() => {
-      try{ window.print(); }
+      try{ void 0; }
       finally{ setTimeout(cleanup, 1200); }
     }, 60);
   }
@@ -4531,273 +4531,6 @@ body:not(.entry-open) #entryView:not(.active){display:none!important;}
 </script>
 
 
-<style id="mesaha-v330-print-ios-fix">
-/* v330 — iOS hızlı yazdırma + sadece BEYAN/ÖZET üst beyaz alanı yazdır */
-.print-beyan-page-v330{display:none!important;}
-.print-card-v330{background:#fff!important;color:#0f172a!important;border:1px solid #d9e8df!important;border-radius:22px!important;padding:16px!important;box-shadow:none!important;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif!important;}
-.print-head-v330{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:10px!important;margin-bottom:12px!important;padding-bottom:10px!important;border-bottom:1px solid #dfeae5!important;}
-.print-head-v330 h1{margin:0!important;font-size:20px!important;line-height:1.1!important;color:#14382a!important;font-weight:950!important;letter-spacing:.2px!important;}
-.print-head-v330 span{display:inline-flex!important;align-items:center!important;justify-content:center!important;border-radius:999px!important;background:#e9f8ef!important;color:#0d6b42!important;border:1px solid #ccebd8!important;padding:7px 10px!important;font-size:12px!important;font-weight:950!important;white-space:nowrap!important;}
-.print-main-grid-v330{display:grid!important;grid-template-columns:1fr 1fr!important;gap:10px!important;margin-bottom:10px!important;}
-.print-box-v330{background:#fff!important;border:1px solid #dfeae5!important;border-radius:16px!important;padding:12px!important;min-height:58px!important;break-inside:avoid!important;color:#0f172a!important;}
-.print-box-v330 small{display:block!important;font-size:11px!important;font-weight:850!important;color:#6b7d73!important;margin:0 0 6px!important;}
-.print-box-v330 b{display:block!important;font-size:23px!important;line-height:1!important;font-weight:950!important;color:#0f172a!important;}
-.print-products-v330{display:grid!important;grid-template-columns:1fr 1fr!important;gap:10px!important;}
-.print-product-v330{position:relative!important;background:#fff!important;border:1px solid #e4ede8!important;border-radius:16px!important;padding:11px 11px 11px 14px!important;min-height:66px!important;break-inside:avoid!important;overflow:hidden!important;}
-.print-product-v330::before{content:""!important;position:absolute!important;left:0!important;top:0!important;bottom:0!important;width:6px!important;background:#94a3b8!important;}
-.print-product-v330.tomruk::before{background:#f59e0b!important;}.print-product-v330.maden::before{background:#38a3e8!important;}.print-product-v330.kagitlik::before{background:#ef4444!important;}.print-product-v330.sanayi::before{background:#22c55e!important;}.print-product-v330.tel::before{background:#8b5cf6!important;}
-.print-product-v330 small{display:block!important;font-size:11px!important;color:#64756d!important;font-weight:900!important;margin-bottom:5px!important;}
-.print-product-v330 b{display:block!important;font-size:19px!important;line-height:1!important;color:#0f172a!important;font-weight:950!important;margin-bottom:5px!important;}
-.print-product-v330 em{display:block!important;font-style:normal!important;font-size:11px!important;color:#64748b!important;font-weight:850!important;}
-@media print{
-  @page{margin:10mm;size:auto;}
-  html,body{background:#fff!important;}
-  body.print-beyan-v330 *{visibility:hidden!important;}
-  body.print-beyan-v330 .print-beyan-page-v330,
-  body.print-beyan-v330 .print-beyan-page-v330 *{visibility:visible!important;}
-  body.print-beyan-v330 .print-beyan-page-v330{display:block!important;position:absolute!important;left:0!important;top:0!important;width:100%!important;margin:0!important;padding:0!important;background:#fff!important;}
-  body.print-beyan-v330 .app,
-  body.print-beyan-v330 .bottom-nav,
-  body.print-beyan-v330 .modal-backdrop,
-  body.print-beyan-v330 #toast,
-  body.print-beyan-v330 #saveFloatToastV310{display:none!important;}
-}
-@media(max-width:430px){.print-main-grid-v330,.print-products-v330{grid-template-columns:1fr 1fr!important;gap:8px!important}.print-card-v330{border-radius:18px!important;padding:12px!important}.print-box-v330 b{font-size:20px!important}}
-</style>
-<script id="mesaha-v330-print-ios-fix">
-(function(){
-  'use strict';
-  function $(id){return document.getElementById(id)}
-  function txt(id,fallback){var el=$(id); return el?String(el.textContent||el.value||fallback||'').trim():(fallback||'');}
-  function esc(v){return String(v==null?'':v).replace(/[&<>"]/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]});}
-  function clsFromLabel(label){
-    label=String(label||'').toLocaleLowerCase('tr-TR');
-    if(label.indexOf('tomruk')>-1) return 'tomruk';
-    if(label.indexOf('maden')>-1) return 'maden';
-    if(label.indexOf('kağıt')>-1||label.indexOf('kagit')>-1) return 'kagitlik';
-    if(label.indexOf('sanayi')>-1) return 'sanayi';
-    if(label.indexOf('tel')>-1) return 'tel';
-    return '';
-  }
-  function productBoxes(){
-    var cards=Array.prototype.slice.call(document.querySelectorAll('#productTotals .prod-total'));
-    if(!cards.length){return '<div class="print-product-v330"><small>Ürün toplamı</small><b>0 m³</b><em>0 adet</em></div>';}
-    return cards.map(function(card){
-      var parts=Array.prototype.slice.call(card.querySelectorAll('small,b')).map(function(x){return (x.textContent||'').trim();}).filter(Boolean);
-      var label=parts[0]||'Ürün';
-      var m3=parts[1]||'0 m³';
-      var adet=parts[2]||'0 adet';
-      return '<div class="print-product-v330 '+clsFromLabel(label)+'"><small>'+esc(label)+'</small><b>'+esc(m3)+'</b><em>'+esc(adet)+'</em></div>';
-    }).join('');
-  }
-  function buildPrintArea(){
-    try{window.mesahaV305&&window.mesahaV305.updateBeyanTotals&&window.mesahaV305.updateBeyanTotals();}catch(e){}
-    var holder=$('printBeyanPageV330');
-    if(!holder){holder=document.createElement('section'); holder.id='printBeyanPageV330'; holder.className='print-beyan-page-v330'; document.body.appendChild(holder);}
-    holder.innerHTML='<section class="print-card-v330">'
-      +'<div class="print-head-v330"><h1>BEYAN / ÖZET</h1><span>'+esc(txt('recordCountPill','0 kayıt'))+'</span></div>'
-      +'<div class="print-main-grid-v330">'
-      +'<div class="print-box-v330"><small>Toplam</small><b>'+esc(txt('recTotalM3','0 m³'))+'</b></div>'
-      +'<div class="print-box-v330"><small>Toplam Adet</small><b>'+esc(txt('recTotalCount','0'))+'</b></div>'
-      +'</div>'
-      +'<div class="print-products-v330">'+productBoxes()+'</div>'
-      +'</section>';
-    return holder;
-  }
-  var lastPrintAt=0;
-  function cleanup(){document.body.classList.remove('print-beyan-v330');}
-  function doPrint(ev){
-    if(ev){ev.preventDefault(); ev.stopPropagation(); if(ev.stopImmediatePropagation) ev.stopImmediatePropagation();}
-    var now=Date.now(); if(now-lastPrintAt<1400) return false; lastPrintAt=now;
-    buildPrintArea();
-    document.body.classList.remove('print-beyan-v315');
-    document.body.classList.add('print-beyan-v330');
-    window.removeEventListener('afterprint',cleanup);
-    window.addEventListener('afterprint',cleanup,{once:true});
-    try{ window.print(); }catch(e){ cleanup(); }
-    setTimeout(cleanup,5000);
-    return false;
-  }
-  function bind(){
-    var old=$('printBtn'); if(!old || old.__v330PrintReady) return;
-    var btn=old.cloneNode(true);
-    btn.id='printBtn';
-    btn.textContent='Yazdır';
-    btn.__v315PrintBound=true;
-    btn.__v330PrintReady=true;
-    old.parentNode.replaceChild(btn,old);
-    ['touchend','pointerup','click'].forEach(function(type){
-      btn.addEventListener(type,doPrint,{capture:true,passive:false});
-    });
-  }
-  function boot(){bind(); buildPrintArea();}
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true}); else boot();
-  [250,800,1600,3200].forEach(function(ms){setTimeout(boot,ms)});
-})();
-</script>
-
-
-<style id="mesaha-v333-final-style">
-/* v332 — son dokunuşlar */
-body.keyboard-open-v311.entry-open .save-btn,
-body.keyboard-open-v311 .entry-view.active .save-btn{
-  bottom:calc(var(--keyboard-bottom-v311, 0px) + env(safe-area-inset-bottom,0px) + 6px)!important;
-}
-.save-float-toast-v310,
-.save-float-toast-v311,
-.save-float-toast-v313,
-.save-float-toast-v315{
-  transform:translateY(10px)!important;
-}
-.print-beyan-page-v332{display:none!important}
-.print-sheet-v332{background:#fff!important;color:#1f2937!important;padding:0!important;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif!important}
-.print-wrap-v332{border:1px solid #dbe4ee!important;border-radius:0!important;padding:20px 18px 12px!important;min-height:250mm!important;position:relative!important}
-.print-head-v332{display:flex!important;align-items:center!important;gap:10px!important;padding-bottom:8px!important;border-bottom:2px solid #1f2937!important;margin-bottom:12px!important}
-.print-head-v332 img{width:42px!important;height:42px!important;object-fit:contain!important;flex:0 0 auto!important}
-.print-head-v332 h1{margin:0!important;font-size:24px!important;line-height:1!important;font-weight:950!important;color:#1f2937!important;letter-spacing:.2px!important}
-.print-head-v332 small{display:block!important;margin-top:4px!important;font-size:12px!important;color:#475569!important;font-weight:700!important}
-.print-grid-v332{display:grid!important;grid-template-columns:repeat(4,1fr)!important;gap:10px!important;margin:0 0 10px!important}
-.print-box-v332{border:1px solid #cbd5e1!important;border-radius:14px!important;background:#fff!important;padding:10px 12px!important;min-height:72px!important;break-inside:avoid!important}
-.print-box-v332 small{display:block!important;font-size:11px!important;font-weight:800!important;color:#64748b!important;margin:0 0 6px!important}
-.print-box-v332 b{display:block!important;font-size:22px!important;font-weight:950!important;line-height:1.06!important;color:#111827!important}
-.print-box-v332 b.compact{font-size:20px!important}
-.print-products-v332{display:grid!important;grid-template-columns:1fr 1fr!important;gap:10px!important;margin-top:6px!important}
-.print-product-v332{position:relative!important;border:1px solid #cbd5e1!important;border-radius:14px!important;background:#fff!important;padding:10px 12px 10px 16px!important;min-height:92px!important;overflow:hidden!important;break-inside:avoid!important}
-.print-product-v332:before{content:""!important;position:absolute!important;left:0!important;top:0!important;bottom:0!important;width:8px!important;background:#94a3b8!important}
-.print-product-v332.tomruk:before{background:#64748b!important}
-.print-product-v332.maden:before{background:#64748b!important}
-.print-product-v332.kagitlik:before{background:#64748b!important}
-.print-product-v332.sanayi:before{background:#64748b!important}
-.print-product-v332.tel:before{background:#64748b!important}
-.print-product-v332 small{display:block!important;font-size:11px!important;font-weight:800!important;color:#64748b!important;margin-bottom:5px!important}
-.print-product-v332 b{display:block!important;font-size:17px!important;font-weight:950!important;color:#111827!important;line-height:1.05!important;margin-bottom:5px!important}
-.print-product-v332 em{display:block!important;font-size:11px!important;font-style:normal!important;font-weight:800!important;color:#475569!important}
-.print-scope-v332{margin-top:10px!important;font-size:13px!important;font-weight:800!important;color:#334155!important}
-.print-footer-v332{position:absolute!important;left:18px!important;right:18px!important;bottom:10px!important;display:flex!important;justify-content:space-between!important;gap:8px!important;font-size:10px!important;color:#9ca3af!important}
-@media print{
-  @page{margin:8mm;size:auto}
-  html,body{background:#fff!important}
-  body.print-beyan-v332 *{visibility:hidden!important}
-  body.print-beyan-v332 .print-beyan-page-v332,
-  body.print-beyan-v332 .print-beyan-page-v332 *{visibility:visible!important}
-  body.print-beyan-v332 .print-beyan-page-v332{display:block!important;position:absolute!important;left:0!important;top:0!important;width:100%!important;padding:0!important;margin:0!important;background:#fff!important}
-  body.print-beyan-v332 .bottom-nav,
-  body.print-beyan-v332 .modal-backdrop,
-  body.print-beyan-v332 #toast,
-  body.print-beyan-v332 #saveFloatToastV310,
-  body.print-beyan-v332 .app{display:none!important}
-}
-</style>
-<script id="mesaha-v333-final-script">
-(function(){
-  'use strict';
-  function $(id){return document.getElementById(id)}
-  function qsa(sel,root){return Array.prototype.slice.call((root||document).querySelectorAll(sel))}
-  function ready(fn){document.readyState==='loading'?document.addEventListener('DOMContentLoaded',fn,{once:true}):fn()}
-  function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[ch]})}
-  function txt(id,fallback){var el=$(id); return el?String(el.textContent||el.value||fallback||'').trim():(fallback||'')}
-  function val(id,fallback){var el=$(id); return el?String(el.value||fallback||'').trim():(fallback||'')}
-  var VERSION={app:'v3.33',version:'v333-ses-onay-hata-fix',build:333,visibleVersion:'v3.33',shortVersion:'v3.33',name:'Mesaha İO v3.33',cacheName:'mesaha-app-v333-ses-onay-hata-fix',builtAt:'2026-06-21T21:45:00+03:00',assetVersion:'333'};
-  window.MESAHA_VERSION=VERSION;
-  window.MESAHA_VERSION_TEXT=VERSION.visibleVersion;
-  window.MESAHA_VERSION_SHORT=VERSION.shortVersion;
-  function applyVersion(){
-    var title=document.querySelector('title'); if(title) title.textContent='Mesaha İO v3.33';
-    var apple=document.querySelector('meta[name="apple-mobile-web-app-title"]'); if(apple) apple.setAttribute('content','v3.33');
-    var startup=document.querySelector('#startup strong'); if(startup) startup.textContent='v3.33';
-    var vt=$('versionText'); if(vt) vt.textContent='v3.33';
-    qsa('.version-card b').forEach(function(b){ if(/^v3\./.test((b.textContent||'').trim())) b.textContent='v3.33'; });
-    qsa('.version-card small').forEach(function(s){ if(/v\d+/.test(s.textContent||'')||/fix/i.test(s.textContent||'')) s.textContent='v333-fix'; });
-    var homeBtn=document.querySelector('#panelAdminOpenV316'); if(homeBtn) homeBtn.textContent='Yönetici Paneli';
-  }
-  function todayTR(){ return new Date().toLocaleDateString('tr-TR'); }
-  function nowFoot(){ return new Date().toLocaleString('tr-TR',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}); }
-  function cleanSelected(raw, fallback){ var s=String(raw||'').replace(/^Seçili:\s*/,'').trim(); return s || fallback; }
-  function clsFromLabel(label){ label=String(label||'').toLocaleLowerCase('tr-TR'); if(label.indexOf('tomruk')>-1) return 'tomruk'; if(label.indexOf('maden')>-1) return 'maden'; if(label.indexOf('kağıt')>-1||label.indexOf('kagit')>-1) return 'kagitlik'; if(label.indexOf('sanayi')>-1) return 'sanayi'; if(label.indexOf('tel')>-1) return 'tel'; return ''; }
-  function productBoxes(){
-    var cards=qsa('#productTotals .prod-total');
-    if(!cards.length){ return '<div class="print-product-v332"><small>Tomruk</small><b>0 m³</b><em>0 adet</em></div>'; }
-    return cards.map(function(card){
-      var nodes=Array.prototype.slice.call(card.querySelectorAll('small,b')).map(function(n){return (n.textContent||'').trim()}).filter(Boolean);
-      var label=nodes[0]||'Ürün';
-      var m3=nodes[1]||'0 m³';
-      var adet=nodes[2]||'0 adet';
-      return '<div class="print-product-v332 '+clsFromLabel(label)+'"><small>'+esc(label)+'</small><b>'+esc(m3)+'</b><em>'+esc(adet)+'</em></div>';
-    }).join('');
-  }
-  function buildPrint(){
-    try{ if(window.mesahaV305&&window.mesahaV305.updateBeyanTotals) window.mesahaV305.updateBeyanTotals(); }catch(e){}
-    var holder=$('printBeyanPageV332');
-    if(!holder){ holder=document.createElement('section'); holder.id='printBeyanPageV332'; holder.className='print-beyan-page-v332'; document.body.appendChild(holder); }
-    var tree=cleanSelected(txt('treeFilterText','Tümü'),'Tümü');
-    var cutter=cleanSelected(txt('cutterFilterText','Tümü'),'Tümü');
-    var date=val('mesahaDate', todayTR()) || todayTR();
-    var recCount=txt('recordCountPill','0 kayıt');
-    var scope=txt('exportScopeInfo','İndirilecek: Tüm kayıtlar');
-    holder.innerHTML=''
-      +'<section class="print-sheet-v332"><div class="print-wrap-v332">'
-      +'<div class="print-head-v332"><img src="./assets/mesaha_logo.png" alt=""><div><h1>BEYAN ÖZETİ</h1><small>Mesaha İO • '+esc(todayTR())+'</small></div></div>'
-      +'<div class="print-grid-v332">'
-      +'<div class="print-box-v332"><small>Toplam m³</small><b>'+esc(txt('recTotalM3','0 m³'))+'</b></div>'
-      +'<div class="print-box-v332"><small>Toplam Adet</small><b>'+esc(txt('recTotalCount','0'))+'</b></div>'
-      +'<div class="print-box-v332"><small>Kayıt</small><b class="compact">'+esc(recCount)+'</b></div>'
-      +'<div class="print-box-v332"><small>Mesaha Tarihi</small><b class="compact">'+esc(date)+'</b></div>'
-      +'<div class="print-box-v332"><small>Ağaç filtresi</small><b class="compact">'+esc(tree)+'</b></div>'
-      +'<div class="print-box-v332"><small>Kesimci filtresi</small><b class="compact">'+esc(cutter)+'</b></div>'
-      +'<div class="print-box-v332"><small>Bölme No</small><b class="compact">'+esc(val('bolmeNo','-')||'-')+'</b></div>'
-      +'<div class="print-box-v332"><small>Şeflik</small><b class="compact">'+esc(val('seflik','-')||'-')+'</b></div>'
-      +'</div>'
-      +'<div class="print-products-v332">'+productBoxes()+'</div>'
-      +'<div class="print-scope-v332">'+esc(scope)+'</div>'
-      +'<div class="print-footer-v332"><span>'+esc(location.href.split('#')[0])+'</span><span>'+esc(nowFoot())+'</span><span>Sayfa 1 / 1</span></div>'
-      +'</div></section>';
-    return holder;
-  }
-  var lastPrintAt=0;
-  function cleanupPrint(){ document.body.classList.remove('print-beyan-v315'); document.body.classList.remove('print-beyan-v330'); document.body.classList.remove('print-beyan-v332'); }
-  function doPrint(ev){
-    if(ev){ ev.preventDefault(); ev.stopPropagation(); if(ev.stopImmediatePropagation) ev.stopImmediatePropagation(); }
-    var now=Date.now(); if(now-lastPrintAt<1200) return false; lastPrintAt=now;
-    buildPrint(); cleanupPrint(); document.body.classList.add('print-beyan-v332');
-    window.removeEventListener('afterprint', cleanupPrint);
-    window.addEventListener('afterprint', cleanupPrint, {once:true});
-    try{ window.print(); }catch(e){ cleanupPrint(); }
-    setTimeout(cleanupPrint, 4000);
-    return false;
-  }
-  function bindPrint(){
-    var old=$('printBtn'); if(!old || old.__v332Bound) return;
-    var btn=old.cloneNode(true);
-    btn.id='printBtn'; btn.textContent='Yazdır'; btn.__v332Bound=true;
-    old.parentNode.replaceChild(btn, old);
-    ['touchend','pointerup','click'].forEach(function(type){ btn.addEventListener(type, doPrint, {capture:true,passive:false}); });
-  }
-  async function updateStatusOnce(){
-    var box=$('updateStatusBox'); if(!box) return;
-    if(!navigator.onLine){ box.className='update-status-box update-offline'; box.textContent='Offline: sürüm kontrolü internet gelince yapılır.'; return; }
-    try{
-      var res=await fetch('./version.json?v='+Date.now(), {cache:'no-store', headers:{'Cache-Control':'no-cache'}});
-      if(!res.ok) throw new Error('version');
-      var remote=await res.json();
-      var remoteBuild=Number(remote.build||0), currentBuild=Number(VERSION.build||0);
-      if(remoteBuild>currentBuild){ box.className='update-status-box update-available'; box.textContent='Yeni sürüm hazır: '+(remote.visibleVersion||remote.app||'Yeni sürüm')+' — Güncelle butonuna bas.'; }
-      else { box.className='update-status-box update-ok'; box.textContent='Uygulama güncel: '+VERSION.visibleVersion; }
-    }catch(e){ box.className='update-status-box update-offline'; box.textContent='Sürüm kontrolü yapılamadı. İnternet varsa tekrar deneyin.'; }
-  }
-  function forceUpdatePatch(){
-    var btn=$('forceUpdateBtn'); if(!btn || btn.__v332ForceBound) return; btn.__v332ForceBound=true;
-    btn.addEventListener('click', function(){ setTimeout(updateStatusOnce, 1200); }, true);
-  }
-  function boot(){ applyVersion(); bindPrint(); buildPrint(); updateStatusOnce(); forceUpdatePatch(); }
-  ready(boot);
-  [300,900,1800,3200].forEach(function(ms){ setTimeout(boot, ms); });
-  setInterval(function(){ applyVersion(); updateStatusOnce(); bindPrint(); }, 15000);
-  window.addEventListener('online', updateStatusOnce);
-  window.addEventListener('offline', updateStatusOnce);
-})();
-</script>
-
-
 <script id="mesaha-v333-sound-feedback">
 (function(){
   'use strict';
@@ -4944,165 +4677,211 @@ body.keyboard-open-v311 .entry-view.active .save-btn{
 </script>
 
 
-<style id="mesaha-v336-android-print-hard-style">
-/* v336 Android kesin yazdırma modu: uygulama gövdesi geçici olarak yalnız BEYAN ÖZETİ olur */
-.mesaha-print-only-screen-v336{
-  min-height:100vh;background:#fff;color:#1f2937;
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;padding:14px;
-}
-.mesaha-print-toolbar-v336{
-  display:flex;gap:10px;align-items:center;justify-content:space-between;
-  position:sticky;top:0;background:#fff;border:1px solid #dbe4ee;border-radius:16px;
-  padding:10px;margin:0 0 12px;box-shadow:0 10px 24px rgba(15,23,42,.08);z-index:10
-}
-.mesaha-print-toolbar-v336 b{font-size:14px}
-.mesaha-print-toolbar-v336 button{
-  border:0;border-radius:14px;background:#166534;color:#fff;font-weight:950;
-  padding:10px 13px
-}
-.print-sheet-v336{background:#fff!important;color:#1f2937!important;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif!important}
-.print-wrap-v336{background:#fff!important;border:0!important;padding:18px 18px 12px!important;min-height:255mm!important;position:relative!important}
-.print-head-v336{display:flex!important;align-items:center!important;gap:10px!important;padding-bottom:9px!important;border-bottom:2px solid #1f2937!important;margin-bottom:12px!important}
-.print-head-v336 img{width:42px!important;height:42px!important;object-fit:contain!important;flex:0 0 auto!important}
-.print-head-v336 h1{margin:0!important;font-size:24px!important;line-height:1!important;font-weight:950!important;color:#1f2937!important;letter-spacing:.2px!important}
-.print-head-v336 small{display:block!important;margin-top:4px!important;font-size:12px!important;color:#475569!important;font-weight:750!important}
-.print-grid-v336{display:grid!important;grid-template-columns:repeat(4,1fr)!important;gap:10px!important;margin:0 0 10px!important}
-.print-box-v336{border:1px solid #cbd5e1!important;border-radius:14px!important;background:#fff!important;padding:10px 12px!important;min-height:72px!important;break-inside:avoid!important;page-break-inside:avoid!important}
-.print-box-v336 small{display:block!important;font-size:11px!important;font-weight:850!important;color:#64748b!important;margin:0 0 6px!important}
-.print-box-v336 b{display:block!important;font-size:22px!important;font-weight:950!important;line-height:1.06!important;color:#111827!important}
-.print-box-v336 b.compact{font-size:20px!important}
-.print-products-v336{display:grid!important;grid-template-columns:1fr 1fr!important;gap:10px!important;margin-top:6px!important}
-.print-product-v336{position:relative!important;border:1px solid #cbd5e1!important;border-radius:14px!important;background:#fff!important;padding:10px 12px 10px 16px!important;min-height:88px!important;overflow:hidden!important;break-inside:avoid!important;page-break-inside:avoid!important}
-.print-product-v336:before{content:""!important;position:absolute!important;left:0!important;top:0!important;bottom:0!important;width:8px!important;background:#64748b!important}
-.print-product-v336.tomruk:before{background:#64748b!important}.print-product-v336.maden:before{background:#64748b!important}.print-product-v336.kagitlik:before{background:#64748b!important}.print-product-v336.sanayi:before{background:#64748b!important}.print-product-v336.tel:before{background:#64748b!important}
-.print-product-v336 small{display:block!important;font-size:11px!important;font-weight:850!important;color:#64748b!important;margin-bottom:5px!important}
-.print-product-v336 b{display:block!important;font-size:17px!important;font-weight:950!important;color:#111827!important;line-height:1.05!important;margin-bottom:5px!important}
-.print-product-v336 em{display:block!important;font-size:11px!important;font-style:normal!important;font-weight:850!important;color:#475569!important}
-.print-scope-v336{margin-top:10px!important;font-size:13px!important;font-weight:850!important;color:#334155!important}
-.print-footer-v336{position:absolute!important;left:18px!important;right:18px!important;bottom:10px!important;display:flex!important;justify-content:space-between!important;gap:8px!important;font-size:10px!important;color:#9ca3af!important}
-@media print{
-  @page{margin:8mm;size:auto}
-  html,body{background:#fff!important}
-  .mesaha-print-toolbar-v336{display:none!important}
-  .mesaha-print-only-screen-v336{padding:0!important;margin:0!important;background:#fff!important}
-  .print-wrap-v336{padding:0!important;min-height:250mm!important}
-}
+
+<style id="mesaha-v337-beyan-pdf-style">
+/* v337 — Yazdır iptal, Beyan PDF indir */
+#legacyPrintAreaV337,.print-beyan-page-v315,.print-beyan-page-v330,.print-beyan-page-v332,.print-beyan-page-v336{display:none!important}
+#printBtn{background:linear-gradient(180deg,#fbbf24,#f59e0b)!important;color:#173429!important;border-color:#f59e0b!important;font-weight:950!important}
+#printBtn::before{content:"📄";margin-right:6px;font-size:14px}
 </style>
-<script id="mesaha-v336-android-hard-print">
+<script id="mesaha-v337-beyan-pdf-script">
 (function(){
   'use strict';
   var STABLE_VISIBLE='v3.34';
-  var BUILD=336;
-  var versionInfo={app:STABLE_VISIBLE,version:'v336-android-print-hard-fix',build:BUILD,visibleVersion:STABLE_VISIBLE,shortVersion:STABLE_VISIBLE,name:'Mesaha İO '+STABLE_VISIBLE,cacheName:'mesaha-app-v336-android-print-hard-fix',assetVersion:String(BUILD)};
+  var BUILD=337;
+  var versionInfo={app:STABLE_VISIBLE,version:'v337-beyan-pdf-fix',build:BUILD,visibleVersion:STABLE_VISIBLE,shortVersion:STABLE_VISIBLE,name:'Mesaha İO '+STABLE_VISIBLE,cacheName:'mesaha-app-v337-beyan-pdf-fix',assetVersion:String(BUILD)};
   window.MESAHA_VERSION=versionInfo;
   window.MESAHA_VERSION_TEXT=STABLE_VISIBLE;
   window.MESAHA_VERSION_SHORT=STABLE_VISIBLE;
   function $(id){return document.getElementById(id)}
   function qsa(sel,root){return Array.prototype.slice.call((root||document).querySelectorAll(sel))}
-  function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[ch]})}
-  function txt(id,fallback){var el=$(id); return el?String(el.textContent||el.value||fallback||'').trim():(fallback||'')}
+  function ready(fn){document.readyState==='loading'?document.addEventListener('DOMContentLoaded',fn,{once:true}):fn()}
+  function escFile(s){return String(s||'').trim().replace(/[ÇçĞğİıÖöŞşÜü]/g,function(ch){return {'Ç':'C','ç':'c','Ğ':'G','ğ':'g','İ':'I','ı':'i','Ö':'O','ö':'o','Ş':'S','ş':'s','Ü':'U','ü':'u'}[ch]||ch}).replace(/[^A-Za-z0-9_-]+/g,'_').replace(/^_+|_+$/g,'')}
+  function text(id,fallback){var el=$(id); return el?String(el.textContent||el.value||fallback||'').trim():(fallback||'')}
   function val(id,fallback){var el=$(id); return el?String(el.value||fallback||'').trim():(fallback||'')}
-  function selectedText(id,fallback){return String(txt(id,fallback)||fallback).replace(/^Seçili:\s*/,'').trim()||fallback}
+  function cleanSelected(id,fallback){return String(text(id,fallback)||fallback).replace(/^Seçili:\s*/,'').trim()||fallback}
   function todayTR(){return new Date().toLocaleDateString('tr-TR')}
+  function dateFile(){var d=new Date();var y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');return y+m+day}
   function nowTR(){return new Date().toLocaleString('tr-TR',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'})}
+  function notify(title,detail,kind){
+    try{ if(typeof window.mesahaFloatToastV315==='function') return window.mesahaFloatToastV315(title,detail||'',kind||'success'); }catch(e){}
+    try{ if(typeof window.toast==='function') return window.toast(title); }catch(e){}
+  }
+  function play(kind){try{ if(window.mesahaSoundFeedbackV333&&typeof window.mesahaSoundFeedbackV333.play==='function') window.mesahaSoundFeedbackV333.play(kind||'success'); }catch(e){}}
   function applyVersion(){
     document.title='Mesaha İO '+STABLE_VISIBLE;
     var apple=document.querySelector('meta[name="apple-mobile-web-app-title"]'); if(apple) apple.setAttribute('content',STABLE_VISIBLE);
     var startup=document.querySelector('#startup strong'); if(startup) startup.textContent=STABLE_VISIBLE;
     var vt=$('versionText'); if(vt) vt.textContent=STABLE_VISIBLE;
     qsa('.version-card b').forEach(function(b){ if(/^v3\./.test((b.textContent||'').trim())) b.textContent=STABLE_VISIBLE; });
-    qsa('.version-card small').forEach(function(s){ if(/v\d+|fix|ui|filter|ses|android|onay|sabit/i.test(s.textContent||'')) s.textContent='sabit'; });
+    qsa('.version-card small').forEach(function(s){ if(/v\d+|fix|ui|filter|ses|android|onay|pdf|beyan|sabit/i.test(s.textContent||'')) s.textContent='sabit'; });
   }
-  function clsFromLabel(label){
-    label=String(label||'').toLocaleLowerCase('tr-TR');
-    if(label.indexOf('tomruk')>-1) return 'tomruk';
-    if(label.indexOf('maden')>-1) return 'maden';
-    if(label.indexOf('kağıt')>-1||label.indexOf('kagit')>-1) return 'kagitlik';
-    if(label.indexOf('sanayi')>-1) return 'sanayi';
-    if(label.indexOf('tel')>-1) return 'tel';
-    return '';
+  function ensureButton(){
+    var btn=$('printBtn');
+    if(!btn) return;
+    btn.textContent='Beyan İndir';
+    btn.setAttribute('aria-label','Beyan özetini PDF indir');
+    btn.setAttribute('title','Beyan özetini PDF indir');
+    btn.type='button';
   }
-  function productBoxes(){
+  function forceUpdateStatus(){
+    var box=$('updateStatusBox'); if(!box) return;
+    box.className='update-status-box update-ok';
+    box.textContent='Uygulama güncel: '+STABLE_VISIBLE;
+  }
+  function productData(){
     var cards=qsa('#productTotals .prod-total');
-    if(!cards.length){return '<div class="print-product-v336"><small>Ürün toplamı</small><b>0 m³</b><em>0 adet</em></div>'}
+    if(!cards.length) return [{label:'Tomruk',m3:'0 m³',adet:'0 adet'}];
     return cards.map(function(card){
       var parts=qsa('small,b',card).map(function(x){return (x.textContent||'').trim()}).filter(Boolean);
-      var label=parts[0]||'Ürün', m3=parts[1]||'0 m³', adet=parts[2]||'0 adet';
-      return '<div class="print-product-v336 '+clsFromLabel(label)+'"><small>'+esc(label)+'</small><b>'+esc(m3)+'</b><em>'+esc(adet)+'</em></div>';
-    }).join('');
-  }
-  function printMarkup(){
-    try{ if(window.mesahaV305&&window.mesahaV305.updateBeyanTotals) window.mesahaV305.updateBeyanTotals(); }catch(e){}
-    var scope=txt('exportScopeInfo','İndirilecek: Tüm kayıtlar');
-    return ''+
-      '<section class="print-sheet-v336"><div class="print-wrap-v336">'+
-      '<div class="print-head-v336"><img src="./assets/mesaha_logo.png" alt=""><div><h1>BEYAN ÖZETİ</h1><small>Mesaha İO • '+esc(todayTR())+'</small></div></div>'+
-      '<div class="print-grid-v336">'+
-      '<div class="print-box-v336"><small>Toplam m³</small><b>'+esc(txt('recTotalM3','0 m³'))+'</b></div>'+
-      '<div class="print-box-v336"><small>Toplam Adet</small><b>'+esc(txt('recTotalCount','0'))+'</b></div>'+
-      '<div class="print-box-v336"><small>Kayıt</small><b class="compact">'+esc(txt('recordCountPill','0 kayıt'))+'</b></div>'+
-      '<div class="print-box-v336"><small>Mesaha Tarihi</small><b class="compact">'+esc(val('mesahaDate',todayTR())||todayTR())+'</b></div>'+
-      '<div class="print-box-v336"><small>Ağaç filtresi</small><b class="compact">'+esc(selectedText('treeFilterText','Tümü'))+'</b></div>'+
-      '<div class="print-box-v336"><small>Kesimci filtresi</small><b class="compact">'+esc(selectedText('cutterFilterText','Tümü'))+'</b></div>'+
-      '<div class="print-box-v336"><small>Bölme No</small><b class="compact">'+esc(val('bolmeNo','-')||'-')+'</b></div>'+
-      '<div class="print-box-v336"><small>Şeflik</small><b class="compact">'+esc(val('seflik','-')||'-')+'</b></div>'+
-      '</div><div class="print-products-v336">'+productBoxes()+'</div>'+
-      '<div class="print-scope-v336">'+esc(scope)+'</div>'+
-      '<div class="print-footer-v336"><span>'+esc(location.href.split('#')[0])+'</span><span>'+esc(nowTR())+'</span><span>Sayfa 1 / 1</span></div>'+
-      '</div></section>';
-  }
-  var restoreHtml=null, restoreClass=null, restoreScroll=0, printing=false, lastPrintAt=0;
-  function restoreApp(){
-    if(!printing) return;
-    printing=false;
-    try{
-      if(restoreHtml!=null){
-        document.body.innerHTML=restoreHtml;
-        document.body.className=restoreClass||'';
-        setTimeout(function(){ window.scrollTo(0,restoreScroll||0); },50);
-        setTimeout(bind,80);
-        setTimeout(applyVersion,100);
-      }else{
-        location.reload();
-      }
-    }catch(e){ location.reload(); }
-  }
-  function hardPrint(ev){
-    if(ev){ev.preventDefault();ev.stopPropagation();if(ev.stopImmediatePropagation)ev.stopImmediatePropagation();}
-    var t=Date.now(); if(t-lastPrintAt<1600) return false; lastPrintAt=t;
-    var markup=printMarkup();
-    restoreHtml=document.body.innerHTML;
-    restoreClass=document.body.className||'';
-    restoreScroll=window.scrollY||0;
-    printing=true;
-    document.body.className='';
-    document.body.innerHTML='<main class="mesaha-print-only-screen-v336"><div class="mesaha-print-toolbar-v336"><b>Yazdırma özeti hazır</b><button id="mesahaPrintBackV336" type="button">Uygulamaya Dön</button></div>'+markup+'</main>';
-    var back=$('mesahaPrintBackV336'); if(back) back.addEventListener('click',restoreApp);
-    window.removeEventListener('afterprint',restoreApp);
-    window.addEventListener('afterprint',restoreApp,{once:true});
-    setTimeout(function(){ try{window.print();}catch(e){restoreApp();} },220);
-    // Android bazı cihazlarda afterprint vermiyor; kullanıcı geri dönünce restore et.
-    var restoreOnFocus=function(){ setTimeout(function(){ if(printing) restoreApp(); },850); window.removeEventListener('focus',restoreOnFocus); document.removeEventListener('visibilitychange',vis); };
-    var vis=function(){ if(!document.hidden){ restoreOnFocus(); } };
-    window.addEventListener('focus',restoreOnFocus);
-    document.addEventListener('visibilitychange',vis);
-    return false;
-  }
-  function bind(){
-    applyVersion();
-    var old=$('printBtn'); if(!old || old.__v336HardBound) return;
-    var btn=old.cloneNode(true);
-    btn.id='printBtn';
-    btn.textContent='Yazdır';
-    btn.__v336HardBound=true;
-    old.parentNode.replaceChild(btn,old);
-    ['pointerup','touchend','click'].forEach(function(type){
-      btn.addEventListener(type,hardPrint,{capture:true,passive:false});
+      return {label:parts[0]||'Ürün',m3:parts[1]||'0 m³',adet:parts[2]||'0 adet'};
     });
   }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',bind,{once:true}); else bind();
-  [250,800,1600,3200,5000].forEach(function(ms){setTimeout(bind,ms)});
-  setInterval(applyVersion,12000);
+  function clsColor(label){
+    label=String(label||'').toLocaleLowerCase('tr-TR');
+    if(label.indexOf('tomruk')>-1) return '#64748b';
+    if(label.indexOf('maden')>-1) return '#64748b';
+    if(label.indexOf('kağıt')>-1||label.indexOf('kagit')>-1) return '#64748b';
+    if(label.indexOf('sanayi')>-1) return '#64748b';
+    if(label.indexOf('tel')>-1) return '#64748b';
+    return '#64748b';
+  }
+  function snapshotData(){
+    try{ if(window.mesahaV305&&window.mesahaV305.updateBeyanTotals) window.mesahaV305.updateBeyanTotals(); }catch(e){}
+    return {
+      totalM3:text('recTotalM3','0 m³'),
+      totalCount:text('recTotalCount','0'),
+      count:text('recordCountPill','0 kayıt'),
+      date:val('mesahaDate',todayTR())||todayTR(),
+      tree:cleanSelected('treeFilterText','Tümü'),
+      cutter:cleanSelected('cutterFilterText','Tümü'),
+      bolme:val('bolmeNo','-')||'-',
+      seflik:val('seflik','-')||'-',
+      scope:text('exportScopeInfo','İndirilecek: Tüm kayıtlar'),
+      products:productData(),
+      footerUrl:location.href.split('#')[0],
+      footerDate:nowTR()
+    };
+  }
+  function roundRect(ctx,x,y,w,h,r){
+    r=Math.min(r,w/2,h/2);ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();
+  }
+  function drawCard(ctx,x,y,w,h,title,value,compact){
+    roundRect(ctx,x,y,w,h,18);ctx.fillStyle='#ffffff';ctx.fill();ctx.strokeStyle='#cbd5e1';ctx.lineWidth=2;ctx.stroke();
+    ctx.fillStyle='#64748b';ctx.font='700 20px system-ui, -apple-system, Segoe UI, Arial';ctx.fillText(title,x+18,y+28);
+    ctx.fillStyle='#111827';ctx.font=(compact?'800 29px':'900 34px')+' system-ui, -apple-system, Segoe UI, Arial';ctx.fillText(value,x+18,y+68);
+  }
+  function drawProduct(ctx,x,y,w,h,p){
+    roundRect(ctx,x,y,w,h,18);ctx.fillStyle='#ffffff';ctx.fill();ctx.strokeStyle='#cbd5e1';ctx.lineWidth=2;ctx.stroke();
+    ctx.fillStyle=clsColor(p.label);ctx.fillRect(x,y,10,h);ctx.save();ctx.beginPath();roundRect(ctx,x,y,w,h,18);ctx.clip();ctx.fillStyle=clsColor(p.label);ctx.fillRect(x,y,10,h);ctx.restore();
+    ctx.fillStyle='#64748b';ctx.font='800 20px system-ui, -apple-system, Segoe UI, Arial';ctx.fillText(p.label,x+22,y+30);
+    ctx.fillStyle='#111827';ctx.font='900 32px system-ui, -apple-system, Segoe UI, Arial';ctx.fillText(p.m3,x+22,y+70);
+    ctx.fillStyle='#475569';ctx.font='800 19px system-ui, -apple-system, Segoe UI, Arial';ctx.fillText(p.adet,x+22,y+102);
+  }
+  function loadLogo(){
+    return new Promise(function(resolve){
+      var img=new Image();img.onload=function(){resolve(img)};img.onerror=function(){resolve(null)};img.src='./assets/mesaha_logo.png?v=337';
+      setTimeout(function(){resolve(null)},1200);
+    });
+  }
+  async function renderCanvas(data){
+    var canvas=document.createElement('canvas');
+    canvas.width=1240; canvas.height=1754;
+    var ctx=canvas.getContext('2d');
+    ctx.fillStyle='#ffffff';ctx.fillRect(0,0,canvas.width,canvas.height);
+    var x=105,y=95,w=1030;
+    var logo=await loadLogo();
+    if(logo){ctx.drawImage(logo,x,y,62,62)}else{ctx.fillStyle='#e2e8f0';ctx.beginPath();ctx.arc(x+31,y+31,31,0,Math.PI*2);ctx.fill();}
+    ctx.fillStyle='#1f2937';ctx.font='900 36px system-ui, -apple-system, Segoe UI, Arial';ctx.fillText('BEYAN ÖZETİ',x+78,y+38);
+    ctx.fillStyle='#475569';ctx.font='750 18px system-ui, -apple-system, Segoe UI, Arial';ctx.fillText('Mesaha İO • '+todayTR(),x+78,y+64);
+    ctx.strokeStyle='#1f2937';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(x,y+83);ctx.lineTo(x+w,y+83);ctx.stroke();
+    y+=110;
+    var gap=16,cw=(w-gap*3)/4,ch=88;
+    drawCard(ctx,x,y,cw,ch,'Toplam m³',data.totalM3,false);
+    drawCard(ctx,x+cw+gap,y,cw,ch,'Toplam Adet',data.totalCount,false);
+    drawCard(ctx,x+(cw+gap)*2,y,cw,ch,'Kayıt',data.count,true);
+    drawCard(ctx,x+(cw+gap)*3,y,cw,ch,'Mesaha Tarihi',data.date,true);
+    y+=ch+20;
+    drawCard(ctx,x,y,cw,ch,'Ağaç filtresi',data.tree,true);
+    drawCard(ctx,x+cw+gap,y,cw,ch,'Kesimci filtresi',data.cutter,true);
+    drawCard(ctx,x+(cw+gap)*2,y,cw,ch,'Bölme No',data.bolme,true);
+    drawCard(ctx,x+(cw+gap)*3,y,cw,ch,'Şeflik',data.seflik,true);
+    y+=ch+22;
+    var pw=(w-gap)/2, ph=112;
+    data.products.forEach(function(p,i){
+      var px=x+(i%2)*(pw+gap), py=y+Math.floor(i/2)*(ph+18);
+      drawProduct(ctx,px,py,pw,ph,p);
+    });
+    y += Math.ceil(data.products.length/2)*(ph+18)+10;
+    ctx.fillStyle='#334155';ctx.font='800 22px system-ui, -apple-system, Segoe UI, Arial';ctx.fillText(data.scope,x,y+20);
+    ctx.fillStyle='#9ca3af';ctx.font='700 15px system-ui, -apple-system, Segoe UI, Arial';
+    ctx.fillText(data.footerUrl,x,canvas.height-70);
+    ctx.textAlign='right';ctx.fillText(data.footerDate,w+x-110,canvas.height-70);ctx.fillText('Sayfa 1 / 1',w+x,canvas.height-48);ctx.textAlign='left';
+    return canvas;
+  }
+  function dataUrlToBytes(dataUrl){
+    var b64=dataUrl.split(',')[1];var bin=atob(b64);var arr=new Uint8Array(bin.length);for(var i=0;i<bin.length;i++)arr[i]=bin.charCodeAt(i);return arr;
+  }
+  function asciiBytes(str){var arr=new Uint8Array(str.length);for(var i=0;i<str.length;i++)arr[i]=str.charCodeAt(i)&255;return arr}
+  function concat(parts){var len=parts.reduce(function(s,p){return s+p.length},0),out=new Uint8Array(len),off=0;parts.forEach(function(p){out.set(p,off);off+=p.length});return out}
+  function makePdf(jpegBytes,imgW,imgH){
+    var objs=[];
+    function add(s){objs.push(typeof s==='string'?asciiBytes(s):s)}
+    var header=asciiBytes('%PDF-1.4\n%\xE2\xE3\xCF\xD3\n');
+    var parts=[header], offsets=[0], pos=header.length;
+    function obj(n,bodyParts){
+      offsets[n]=pos;var start=asciiBytes(n+' 0 obj\n');parts.push(start);pos+=start.length;
+      bodyParts.forEach(function(p){p=typeof p==='string'?asciiBytes(p):p;parts.push(p);pos+=p.length});
+      var end=asciiBytes('\nendobj\n');parts.push(end);pos+=end.length;
+    }
+    var pageW=595.28,pageH=841.89;
+    var content='q\n'+pageW.toFixed(2)+' 0 0 '+pageH.toFixed(2)+' 0 0 cm\n/Im0 Do\nQ\n';
+    obj(1,['<< /Type /Catalog /Pages 2 0 R >>']);
+    obj(2,['<< /Type /Pages /Kids [3 0 R] /Count 1 >>']);
+    obj(3,['<< /Type /Page /Parent 2 0 R /MediaBox [0 0 '+pageW.toFixed(2)+' '+pageH.toFixed(2)+'] /Resources << /XObject << /Im0 5 0 R >> >> /Contents 4 0 R >>']);
+    obj(4,['<< /Length '+content.length+' >>\nstream\n'+content+'endstream']);
+    obj(5,['<< /Type /XObject /Subtype /Image /Width '+imgW+' /Height '+imgH+' /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length '+jpegBytes.length+' >>\nstream\n',jpegBytes,'\nendstream']);
+    var xrefPos=pos;var xref='xref\n0 6\n0000000000 65535 f \n';for(var i=1;i<=5;i++)xref+=String(offsets[i]).padStart(10,'0')+' 00000 n \n';
+    xref+='trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n'+xrefPos+'\n%%EOF';parts.push(asciiBytes(xref));
+    return concat(parts);
+  }
+  function downloadBytes(bytes,filename){
+    var blob=new Blob([bytes],{type:'application/pdf'});var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url)},1500);
+  }
+  var lastPdfAt=0;
+  async function beyanPdf(ev){
+    if(ev){ev.preventDefault();ev.stopPropagation();if(ev.stopImmediatePropagation)ev.stopImmediatePropagation();}
+    var now=Date.now(); if(now-lastPdfAt<1500) return false; lastPdfAt=now;
+    try{
+      ensureButton();
+      var btn=$('printBtn'); if(btn){btn.disabled=true;btn.textContent='PDF hazırlanıyor…'}
+      var data=snapshotData();
+      var canvas=await renderCanvas(data);
+      var jpg=canvas.toDataURL('image/jpeg',0.92);
+      var bytes=makePdf(dataUrlToBytes(jpg),canvas.width,canvas.height);
+      var name='Beyan_Ozeti_'+escFile(data.bolme||'Bolme')+'_'+escFile(data.seflik||'Seflik')+'_'+dateFile()+'.pdf';
+      downloadBytes(bytes,name);
+      notify('Beyan PDF indirildi.','Yazdırılabilir PDF hazır','success'); play('success');
+    }catch(e){
+      notify('Beyan PDF indirilemedi.',(e&&e.message)||'Tekrar deneyin','error'); play('error');
+    }finally{
+      var b=$('printBtn'); if(b){b.disabled=false;b.textContent='Beyan İndir'}
+    }
+    return false;
+  }
+  function intercept(ev){
+    var btn=ev.target&&ev.target.closest&&ev.target.closest('#printBtn');
+    if(!btn) return;
+    beyanPdf(ev);
+  }
+  function boot(){
+    applyVersion();ensureButton();forceUpdateStatus();
+    document.removeEventListener('click',intercept,true);document.removeEventListener('touchend',intercept,true);document.removeEventListener('pointerup',intercept,true);
+    document.addEventListener('click',intercept,true);document.addEventListener('touchend',intercept,true);document.addEventListener('pointerup',intercept,true);
+  }
+  ready(boot);
+  [100,400,1000,2000,4200,6500].forEach(function(ms){setTimeout(boot,ms)});
+  setInterval(boot,12000);
 })();
 </script>
 
