@@ -445,3 +445,37 @@ body.dark .prod-total.product-kagit{background:#2b0d0d!important;color:#fecaca!i
 body.dark .prod-total.product-sanayi{background:#082513!important;color:#bbf7d0!important}
 body.dark .prod-total.product-tel{background:#1d1233!important;color:#ddd6fe!important}
 
+/* v314: uyarılar kayıt alındı barına taşındı + sadece BEYAN özetini yazdır */
+#toast{display:none!important;opacity:0!important;pointer-events:none!important}
+.save-float-toast-v314{
+  border-radius:20px!important;
+  box-shadow:0 20px 50px rgba(15,23,42,.28)!important;
+}
+.save-float-toast-v314.warning .ico{background:rgba(245,158,11,.95)!important;color:#111827!important}
+.save-float-toast-v314.error .ico{background:rgba(220,38,38,.95)!important;color:#fff!important}
+.save-float-toast-v314.success .ico{background:rgba(22,163,74,.95)!important;color:#fff!important}
+.save-float-toast-v314.warning{border-color:rgba(251,191,36,.62)!important;background:rgba(30,41,59,.68)!important}
+.save-float-toast-v314.error{border-color:rgba(248,113,113,.62)!important;background:rgba(30,41,59,.72)!important}
+.print-beyan-page-v314{display:none}
+@media print{
+  @page{margin:10mm;size:auto}
+  body.print-beyan-v314{background:#fff!important;color:#111827!important}
+  body.print-beyan-v314 .app,
+  body.print-beyan-v314 .bottom-nav,
+  body.print-beyan-v314 .modal-backdrop,
+  body.print-beyan-v314 #toast,
+  body.print-beyan-v314 #saveFloatToastV310{display:none!important}
+  body.print-beyan-v314 .print-beyan-page-v314{display:block!important;background:#fff!important;color:#111827!important;font-family:Arial,system-ui,sans-serif!important;font-weight:700!important;padding:0!important}
+  .print-beyan-head-v314{display:flex!important;align-items:center!important;gap:10px!important;border-bottom:2px solid #111827!important;padding-bottom:8px!important;margin-bottom:12px!important}
+  .print-beyan-head-v314 img{width:34px!important;height:34px!important;object-fit:contain!important;flex:0 0 auto!important}
+  .print-beyan-head-v314 h1{font-size:20px!important;line-height:1!important;margin:0!important;color:#111827!important}
+  .print-beyan-head-v314 small{display:block!important;margin-top:4px!important;font-size:11px!important;color:#475569!important}
+  .print-beyan-meta-v314{display:grid!important;grid-template-columns:repeat(4,1fr)!important;gap:8px!important;margin:10px 0 12px!important}
+  .print-beyan-box-v314{border:1px solid #cbd5e1!important;border-radius:10px!important;padding:8px!important;break-inside:avoid!important;background:#fff!important;color:#111827!important}
+  .print-beyan-box-v314 small{display:block!important;font-size:10px!important;color:#475569!important;margin-bottom:4px!important}
+  .print-beyan-box-v314 b{font-size:16px!important;color:#111827!important}
+  .print-beyan-products-v314{display:grid!important;grid-template-columns:repeat(2,1fr)!important;gap:8px!important;margin-top:10px!important}
+  .print-beyan-products-v314 .print-beyan-box-v314{border-left:6px solid #64748b!important}
+  .print-scope-v314{font-size:12px!important;color:#334155!important;margin-top:8px!important}
+}
+

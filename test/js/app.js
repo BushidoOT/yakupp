@@ -2,7 +2,7 @@
 'use strict';
 const STORAGE_KEY = 'cam_mesaha_kayitlari_v1';
 const SETTINGS_KEY = 'cam_mesaha_ayarlar_v1';
-const VERSION = window.MESAHA_VERSION || {shortVersion:'v3.13', version:'v313-toast-date-dark-fix'};
+const VERSION = window.MESAHA_VERSION || {shortVersion:'v3.14', version:'v314-toast-warning-print-fix'};
 const PRODUCTS = [
   {key:'Tomruk', label:'Tomruk', cls:'tomruk', rule:'Tomruk: çap 21 ve üzeri olmalı.'},
   {key:'Maden Direk', label:'Maden', cls:'maden', rule:'Maden: çap 20 ve altı olmalı.'},
@@ -304,7 +304,7 @@ function exportXls(){
   const file=`Mesaha_${bolme?bolme+'_':''}${formatDateFile()}.xls`;
   if(window.OrbisXls) window.OrbisXls.downloadXls(ordered, file); else toast('XLS modülü yüklenmedi.');
 }
-function backupJson(){ const data={version:'v3.13-extras', exportedAt:new Date().toISOString(), records:state.records, settings:state.settings}; downloadText(JSON.stringify(data,null,2), `mesaha_yedek_${formatDateFile()}.json`, 'application/json'); toast('Yedek indirildi.'); }
+function backupJson(){ const data={version:'v3.14-extras', exportedAt:new Date().toISOString(), records:state.records, settings:state.settings}; downloadText(JSON.stringify(data,null,2), `mesaha_yedek_${formatDateFile()}.json`, 'application/json'); toast('Yedek indirildi.'); }
 function restoreJson(e){ const file=e.target.files && e.target.files[0]; if(!file) return; const reader=new FileReader(); reader.onload=()=>{ try{ const data=JSON.parse(reader.result); const records=Array.isArray(data) ? data : data.records; if(!Array.isArray(records)) throw new Error('records yok'); state.records=records.map(migrateRecord).filter(Boolean); if(data.settings) state.settings={...state.settings,...data.settings}; saveRecords(); saveSettings(); renderAll(); toast('Yedek yüklendi.'); }catch(err){ toast('Yedek okunamadı.'); } e.target.value=''; }; reader.readAsText(file); }
 function downloadText(content, filename, type){ const blob=new Blob([content],{type}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=filename; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),1000); }
 window.state = state;
@@ -1050,7 +1050,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   }
   function backupZip(){
     const data = {
-      version:'v3.13-modern',
+      version:'v3.14-modern',
       exportedAt:new Date().toISOString(),
       records:records(),
       settings:settings()
@@ -1940,6 +1940,172 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   if(window.visualViewport){
     window.visualViewport.addEventListener('resize', () => { const el=$('saveFloatToastV310'); if(el) placeToast(el); }, {passive:true});
     window.visualViewport.addEventListener('scroll', () => { const el=$('saveFloatToastV310'); if(el) placeToast(el); }, {passive:true});
+  }
+})();
+
+/* v314: ürün/çap uyarıları aynı kayan barda + BEYAN üst özeti yazdır */
+(function(){
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const esc = value => String(value ?? '').replace(/[&<>"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));
+  function keyboardInset(){
+    try{
+      if(window.visualViewport){
+        const vv = window.visualViewport;
+        return Math.max(0, Math.round(window.innerHeight - vv.height - vv.offsetTop));
+      }
+    }catch{}
+    return 0;
+  }
+  function ensureFloatToast(){
+    let el = $('saveFloatToastV310') || $('saveFloatToastV313') || $('saveFloatToastV314');
+    if(!el){
+      el = document.createElement('div');
+      el.id = 'saveFloatToastV310';
+      document.body.appendChild(el);
+    }
+    el.className = 'save-float-toast-v310 save-float-toast-v313 save-float-toast-v314';
+    if(!el.querySelector('.txt')) el.innerHTML = '<span class="ico">✓</span><span class="txt"><b></b><small></small></span>';
+    return el;
+  }
+  function placeFloatToast(el){
+    const inset = keyboardInset();
+    const activeId = document.activeElement && document.activeElement.id;
+    const entryActive = document.body.classList.contains('entry-open') || ['diameterInput','lengthInput','barcodeInput'].includes(activeId);
+    const bottom = entryActive ? Math.max(inset + 14, 118) : 104;
+    document.documentElement.style.setProperty('--save-toast-bottom-v313', bottom + 'px');
+    el.style.setProperty('bottom', `calc(${bottom}px + env(safe-area-inset-bottom,0px))`, 'important');
+    el.style.setProperty('top', 'auto', 'important');
+    el.style.setProperty('left', window.innerWidth <= 430 ? '8px' : '10px', 'important');
+    el.style.setProperty('right', 'auto', 'important');
+  }
+  function showFloatToast(title, detail, type){
+    const el = ensureFloatToast();
+    const cleanTitle = String(title || '').trim();
+    const cleanDetail = String(detail || '').trim();
+    const kind = type || 'warning';
+    el.className = 'save-float-toast-v310 save-float-toast-v313 save-float-toast-v314 ' + kind;
+    const icon = el.querySelector('.ico');
+    const b = el.querySelector('b');
+    const s = el.querySelector('small');
+    if(icon) icon.textContent = kind === 'success' ? '✓' : (kind === 'error' ? '!' : '⚠');
+    if(b) b.textContent = cleanTitle || 'Uyarı';
+    if(s) s.textContent = cleanDetail || 'Kontrol et';
+    placeFloatToast(el);
+    el.classList.remove('show');
+    void el.offsetWidth;
+    el.classList.add('show');
+    clearTimeout(el.__timer);
+    el.__timer = setTimeout(() => el.classList.remove('show'), kind === 'success' ? 2600 : 3200);
+  }
+  function productLabel(key){
+    return ({'Tomruk':'Tomruk','Maden Direk':'Maden','Kağıtlık':'Kağıtlık','Sanayi Odunu':'Sanayi','Tel Direk':'Tel'}[key] || key || '');
+  }
+  function patchToasts(){
+    const legacy = $('toast');
+    if(legacy) legacy.classList.remove('show');
+    window.mesahaFloatToastV314 = showFloatToast;
+    window.mesahaV310SavedToast = function(rec, wasEditing){
+      const title = `${rec && rec.barcode || ''} ${rec && rec.diameter || ''}Ç ${rec && rec.length || ''}B ${productLabel(rec && rec.productType)}`.trim();
+      showFloatToast(title || 'Kayıt', wasEditing ? 'Güncellendi' : 'Eklendi', 'success');
+    };
+    const unifiedToast = function(message){
+      const msg = String(message || '').trim();
+      if(!msg) return;
+      showFloatToast(msg, 'Kontrol et', /hata|olmadı|okunamadı|yüklenmedi|giriniz|küçük|büyük|arasında|kayıtlı/i.test(msg) ? 'warning' : 'warning');
+    };
+    window.toast = unifiedToast;
+    try{ toast = unifiedToast; }catch{}
+  }
+  function text(id, fallback=''){
+    const el = $(id);
+    return el ? (el.textContent || el.value || fallback).trim() : fallback;
+  }
+  function inputValue(id, fallback=''){
+    const el = $(id);
+    return el ? String(el.value || fallback).trim() : fallback;
+  }
+  function todayTR(){
+    const d = new Date();
+    return d.toLocaleDateString('tr-TR');
+  }
+  function productPrintBoxes(){
+    const cards = Array.from(document.querySelectorAll('#productTotals .prod-total'));
+    if(!cards.length) return '<div class="print-beyan-box-v314"><small>Ürün toplamı</small><b>Kayıt yok</b></div>';
+    return cards.map(card => {
+      const lines = Array.from(card.querySelectorAll('small,b')).map(x => (x.textContent || '').trim()).filter(Boolean);
+      const label = lines[0] || 'Ürün';
+      const m3 = lines[1] || '0 m³';
+      const adet = lines[2] || '0 adet';
+      return `<div class="print-beyan-box-v314"><small>${esc(label)}</small><b>${esc(m3)}</b><small>${esc(adet)}</small></div>`;
+    }).join('');
+  }
+  function buildPrintPage(){
+    try{ window.mesahaV305 && window.mesahaV305.updateBeyanTotals && window.mesahaV305.updateBeyanTotals(); }catch{}
+    let holder = $('printBeyanPageV314');
+    if(!holder){
+      holder = document.createElement('section');
+      holder.id = 'printBeyanPageV314';
+      holder.className = 'print-beyan-page-v314';
+      document.body.appendChild(holder);
+    }
+    const tree = text('treeFilterText','Seçili: Tümü').replace(/^Seçili:\s*/,'');
+    const cutter = text('cutterFilterText','Seçili: Tümü').replace(/^Seçili:\s*/,'');
+    holder.innerHTML = `
+      <div class="print-beyan-head-v314">
+        <img src="./assets/mesaha_logo.png" alt="Mesaha İO">
+        <div><h1>BEYAN ÖZETİ</h1><small>Mesaha İO • ${esc(todayTR())}</small></div>
+      </div>
+      <div class="print-beyan-meta-v314">
+        <div class="print-beyan-box-v314"><small>Toplam m³</small><b>${esc(text('recTotalM3','0 m³'))}</b></div>
+        <div class="print-beyan-box-v314"><small>Toplam Adet</small><b>${esc(text('recTotalCount','0'))}</b></div>
+        <div class="print-beyan-box-v314"><small>Kayıt</small><b>${esc(text('recordCountPill','0 kayıt'))}</b></div>
+        <div class="print-beyan-box-v314"><small>Mesaha Tarihi</small><b>${esc(inputValue('mesahaDate','-'))}</b></div>
+      </div>
+      <div class="print-beyan-meta-v314">
+        <div class="print-beyan-box-v314"><small>Ağaç filtresi</small><b>${esc(tree || 'Tümü')}</b></div>
+        <div class="print-beyan-box-v314"><small>Kesimci filtresi</small><b>${esc(cutter || 'Tümü')}</b></div>
+        <div class="print-beyan-box-v314"><small>Bölme No</small><b>${esc(inputValue('bolmeNo','-') || '-')}</b></div>
+        <div class="print-beyan-box-v314"><small>Şeflik</small><b>${esc(inputValue('seflik','-') || '-')}</b></div>
+      </div>
+      <div class="print-beyan-products-v314">${productPrintBoxes()}</div>
+      <div class="print-scope-v314">${esc(text('exportScopeInfo','İndirilecek: Tüm kayıtlar'))}</div>`;
+    return holder;
+  }
+  function printBeyanOnly(){
+    buildPrintPage();
+    document.body.classList.add('print-beyan-v314');
+    const cleanup = () => {
+      document.body.classList.remove('print-beyan-v314');
+      window.removeEventListener('afterprint', cleanup);
+    };
+    window.addEventListener('afterprint', cleanup);
+    setTimeout(() => {
+      try{ window.print(); }
+      finally{ setTimeout(cleanup, 1200); }
+    }, 60);
+  }
+  function bindPrint(){
+    const btn = $('printBtn');
+    if(!btn || btn.__v314PrintBound) return;
+    btn.__v314PrintBound = true;
+    btn.addEventListener('click', ev => {
+      ev.preventDefault();
+      ev.stopImmediatePropagation();
+      printBeyanOnly();
+    }, true);
+  }
+  function boot(){
+    ensureFloatToast();
+    patchToasts();
+    bindPrint();
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, {once:true}); else boot();
+  [100,350,900,1800,3000].forEach(ms => setTimeout(boot, ms));
+  window.addEventListener('resize', () => { const el=$('saveFloatToastV310'); if(el) placeFloatToast(el); }, {passive:true});
+  if(window.visualViewport){
+    window.visualViewport.addEventListener('resize', () => { const el=$('saveFloatToastV310'); if(el) placeFloatToast(el); }, {passive:true});
+    window.visualViewport.addEventListener('scroll', () => { const el=$('saveFloatToastV310'); if(el) placeFloatToast(el); }, {passive:true});
   }
 })();
 
