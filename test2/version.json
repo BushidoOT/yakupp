@@ -1,0 +1,11 @@
+{
+  "app": "Mesaha İO",
+  "version": "v187",
+  "build": "v187",
+  "visibleVersion": "Mesaha İO v2.16",
+  "shortVersion": "v2.16",
+  "name": "Mesaha İO v2.16",
+  "cacheName": "mesaha-app-v187-final-fixes",
+  "builtAt": "2026-06-21",
+  "notes": "Kayıt mesajı klavye üstünde kayan detaylı bildirim oldu; son boy korunması güçlendirildi; ana ekranda son barkod/son ölçüm kartı gizlendi; Giriş Modu Kaydet butonu sol blur yapıldı; kayıtlar ekranında Mesaha İndir/Yedek Al öne alındı; manuel güncelleme akışı sağlamlaştırıldı. ORBİS XLS çekirdeğine dokunulmadı."
+}

@@ -1,0 +1,491 @@
+/* Mesaha İO v184 - Karanlık mod ayrılmış tema dosyası
+   Sadece body.theme-dark / html.theme-dark görünümünü yönetir.
+   Kayıt, yedek ve ORBİS Excel üretim kodlarına dokunmaz. */
+
+html.theme-dark,
+body.theme-dark{
+  color-scheme: dark;
+  background:#0b0f14 !important;
+  color:#eef2f7 !important;
+}
+
+body.theme-dark .app,
+body.theme-dark main,
+body.theme-dark .topbar,
+body.theme-dark .panel,
+body.theme-dark .card,
+body.theme-dark .home-card-v143,
+body.theme-dark .summary-card,
+body.theme-dark .daily-work-summary,
+body.theme-dark .records-panel,
+body.theme-dark .entry-panel,
+body.theme-dark .guide-card,
+body.theme-dark .user-panel-card,
+body.theme-dark .cloud-restore-card,
+body.theme-dark .issue-report-card,
+body.theme-dark .modal,
+body.theme-dark .sheet,
+body.theme-dark .box{
+  background:#121922 !important;
+  color:#eef2f7 !important;
+  border-color:rgba(255,255,255,.10) !important;
+  box-shadow:0 18px 48px rgba(0,0,0,.32) !important;
+}
+
+body.theme-dark .topbar{
+  background:rgba(18,25,34,.94) !important;
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+}
+
+body.theme-dark h1,
+body.theme-dark h2,
+body.theme-dark h3,
+body.theme-dark h4,
+body.theme-dark label,
+body.theme-dark .card-title,
+body.theme-dark .section-title,
+body.theme-dark .brand-copy-v143 h1,
+body.theme-dark .record-main-v111 b,
+body.theme-dark .record-val-v111 strong{
+  color:#f8fafc !important;
+}
+
+body.theme-dark p,
+body.theme-dark small,
+body.theme-dark .hint,
+body.theme-dark .muted,
+body.theme-dark .sub,
+body.theme-dark .help,
+body.theme-dark .brand-copy-v143 span,
+body.theme-dark .record-val-v111 small{
+  color:#bac6d3 !important;
+}
+
+body.theme-dark input,
+body.theme-dark textarea,
+body.theme-dark select{
+  background:#0b1119 !important;
+  color:#f8fafc !important;
+  border-color:rgba(148,163,184,.35) !important;
+  box-shadow:none !important;
+}
+
+body.theme-dark input:focus,
+body.theme-dark textarea:focus,
+body.theme-dark select:focus{
+  border-color:#34d399 !important;
+  box-shadow:0 0 0 3px rgba(52,211,153,.18) !important;
+}
+
+body.theme-dark input::placeholder,
+body.theme-dark textarea::placeholder{
+  color:#748295 !important;
+}
+
+body.theme-dark button:not(.clean-product-v111):not(.clean-chip-v111):not(.clean-save-v111):not(.record-edit-v111):not(.record-delete-v111):not(.mini-btn):not(.cutter-delete-v163),
+body.theme-dark .btn,
+body.theme-dark .chip,
+body.theme-dark .pill,
+body.theme-dark .tag{
+  background:#1b2633 !important;
+  color:#e5edf6 !important;
+  border-color:rgba(255,255,255,.12) !important;
+}
+
+body.theme-dark button.primary,
+body.theme-dark .primary,
+body.theme-dark .btn-primary,
+body.theme-dark .clean-save-v111{
+  background:linear-gradient(135deg,#16a34a,#22c55e) !important;
+  color:#052e16 !important;
+  border-color:rgba(34,197,94,.55) !important;
+}
+
+body.theme-dark button.secondary,
+body.theme-dark .secondary,
+body.theme-dark button.ghost,
+body.theme-dark .ghost{
+  background:#172231 !important;
+  color:#dff7e8 !important;
+  border-color:rgba(148,163,184,.22) !important;
+}
+
+body.theme-dark button.danger,
+body.theme-dark .danger{
+  background:#7f1d1d !important;
+  color:#fee2e2 !important;
+  border-color:rgba(248,113,113,.35) !important;
+}
+
+body.theme-dark .bottom-nav{
+  background:rgba(18,25,34,.96) !important;
+  border-top-color:rgba(255,255,255,.10) !important;
+}
+body.theme-dark .bottom-nav button{
+  color:#b6c2cf !important;
+}
+body.theme-dark .bottom-nav button.active{
+  background:#16a34a !important;
+  color:#052e16 !important;
+}
+
+body.theme-dark table,
+body.theme-dark thead,
+body.theme-dark tbody,
+body.theme-dark tr,
+body.theme-dark th,
+body.theme-dark td{
+  background:#121922 !important;
+  color:#edf2f7 !important;
+  border-color:rgba(255,255,255,.09) !important;
+}
+body.theme-dark th,
+body.theme-dark .table-total-row td{
+  background:#172231 !important;
+  color:#f8fafc !important;
+}
+
+body.theme-dark .record-row-v111{
+  background:#121922 !important;
+  color:#f8fafc !important;
+  border-color:rgba(255,255,255,.10) !important;
+  box-shadow:0 14px 34px rgba(0,0,0,.24) !important;
+}
+body.theme-dark .record-row-v111.selected{
+  border-color:#34d399 !important;
+  box-shadow:0 0 0 3px rgba(52,211,153,.16) !important;
+}
+
+body.theme-dark .record-row-v111.tomruk{border-left:5px solid #facc15 !important;}
+body.theme-dark .record-row-v111.maden{border-left:5px solid #60a5fa !important;}
+body.theme-dark .record-row-v111.kagit{border-left:5px solid #f87171 !important;}
+body.theme-dark .record-row-v111.sanayi{border-left:5px solid #34d399 !important;}
+body.theme-dark .record-row-v111.tel{border-left:5px solid #a78bfa !important;}
+
+body.theme-dark .mini-tag-v111.tomruk,
+body.theme-dark .tag.tomruk{background:#facc15 !important;color:#422006 !important;border-color:#ca8a04 !important;}
+body.theme-dark .mini-tag-v111.maden,
+body.theme-dark .tag.maden{background:#93c5fd !important;color:#172554 !important;border-color:#2563eb !important;}
+body.theme-dark .mini-tag-v111.kagit,
+body.theme-dark .tag.kagit{background:#fca5a5 !important;color:#450a0a !important;border-color:#dc2626 !important;}
+body.theme-dark .mini-tag-v111.sanayi,
+body.theme-dark .tag.sanayi{background:#86efac !important;color:#052e16 !important;border-color:#16a34a !important;}
+body.theme-dark .mini-tag-v111.tree,
+body.theme-dark .tree-tag{background:#bbf7d0 !important;color:#052e16 !important;border-color:#16a34a !important;}
+
+body.theme-dark .tree-filter-v144,
+body.theme-dark .cutter-filter-v158,
+body.theme-dark .records-pager-v152,
+body.theme-dark .cutter-panel-v158,
+body.theme-dark .cutter-panel-v163{
+  background:#111a25 !important;
+  color:#f8fafc !important;
+  border-color:rgba(255,255,255,.10) !important;
+}
+
+body.theme-dark .tree-filter-v144 button,
+body.theme-dark .cutter-filter-v158 button,
+body.theme-dark .cutter-chip-v163{
+  background:#1b2633 !important;
+  color:#e5edf6 !important;
+  border-color:rgba(255,255,255,.12) !important;
+}
+
+body.theme-dark .tree-filter-v144 button.active,
+body.theme-dark .cutter-filter-v158 button.active,
+body.theme-dark .cutter-chip-v163.active{
+  background:#22c55e !important;
+  color:#052e16 !important;
+  border-color:#86efac !important;
+}
+
+body.theme-dark .cutter-delete-v163{
+  background:rgba(248,113,113,.18) !important;
+  color:#fecaca !important;
+  border-color:rgba(248,113,113,.35) !important;
+}
+
+body.theme-dark .clean-simple-overlay-v111{
+  background:rgba(2,6,23,.76) !important;
+}
+body.theme-dark .clean-simple-card-v111,
+body.theme-dark .clean-recent-area-v111,
+body.theme-dark .clean-auto-info-v111{
+  background:#121922 !important;
+  color:#f8fafc !important;
+  border-color:rgba(255,255,255,.10) !important;
+}
+body.theme-dark .clean-measure-grid-v111 input{
+  background:#0b1119 !important;
+  color:#f8fafc !important;
+  border-color:rgba(148,163,184,.35) !important;
+}
+body.theme-dark .clean-chip-v111,
+body.theme-dark .clean-product-v111{
+  background:#1b2633 !important;
+  color:#e5edf6 !important;
+  border-color:rgba(255,255,255,.12) !important;
+}
+body.theme-dark .clean-chip-v111.active,
+body.theme-dark .clean-product-v111.active{
+  background:#22c55e !important;
+  color:#052e16 !important;
+  border-color:#86efac !important;
+}
+
+body.theme-dark .mesaha-net-badge-v178.online{
+  background:#052e16 !important;
+  color:#bbf7d0 !important;
+  border-color:rgba(34,197,94,.35) !important;
+}
+body.theme-dark .mesaha-net-badge-v178.offline{
+  background:#431407 !important;
+  color:#fed7aa !important;
+  border-color:rgba(251,146,60,.35) !important;
+}
+
+/* v184 - PWA/safe-area sonrası karanlık mod uyumu */
+html.theme-dark,
+body.theme-dark{
+  --dm-bg:#0b1016;
+  --dm-surface:#121a24;
+  --dm-surface-2:#172231;
+  --dm-surface-3:#1d2a3a;
+  --dm-border:rgba(148,163,184,.22);
+  --dm-border-soft:rgba(255,255,255,.10);
+  --dm-text:#f8fafc;
+  --dm-text-2:#d5dde8;
+  --dm-muted:#a8b4c3;
+  --dm-green:#22c55e;
+  --dm-green-soft:rgba(34,197,94,.16);
+  background:var(--dm-bg) !important;
+  color:var(--dm-text) !important;
+}
+
+body.theme-dark .app,
+body.theme-dark .panel,
+body.theme-dark .panel-body,
+body.theme-dark .entry-panel,
+body.theme-dark .records-panel,
+body.theme-dark .guide-panel,
+body.theme-dark .guide-card,
+body.theme-dark .home-card-v143,
+body.theme-dark .home-simple-v146,
+body.theme-dark .home-status-v143,
+body.theme-dark .home-list-v143,
+body.theme-dark .home-summary-grid-v143,
+body.theme-dark .summary-v143,
+body.theme-dark .daily-work-summary,
+body.theme-dark .daily-summary-item,
+body.theme-dark .stat,
+body.theme-dark .summary-card,
+body.theme-dark .tomruk-class-panel,
+body.theme-dark .tree-type-panel,
+body.theme-dark .wood-type-panel,
+body.theme-dark .cloud-backup-empty,
+body.theme-dark .cloud-loading-card,
+body.theme-dark .cloud-restore-active-info,
+body.theme-dark .issue-device-info,
+body.theme-dark .issue-my-reports,
+body.theme-dark .admin-panel,
+body.theme-dark .admin-panel-top-clean,
+body.theme-dark .admin-summary-card,
+body.theme-dark .admin-view,
+body.theme-dark .admin-notes-list,
+body.theme-dark .admin-reports-list{
+  background:var(--dm-surface) !important;
+  color:var(--dm-text) !important;
+  border-color:var(--dm-border-soft) !important;
+}
+
+body.theme-dark .home-hero-v143,
+body.theme-dark .home-forest-v143{
+  background:linear-gradient(135deg,#0f241a 0%,#122131 52%,#0b1016 100%) !important;
+  color:var(--dm-text) !important;
+  border-color:rgba(34,197,94,.18) !important;
+}
+body.theme-dark .home-hero-copy-v143 p,
+body.theme-dark .home-status-item-v143 small,
+body.theme-dark .home-list-v143 small,
+body.theme-dark .daily-summary-item small,
+body.theme-dark .summary-card small,
+body.theme-dark .admin-summary-card span,
+body.theme-dark .admin-summary-card small,
+body.theme-dark .admin-panel-top-clean p,
+body.theme-dark .admin-view .hint{
+  color:var(--dm-muted) !important;
+}
+
+body.theme-dark .panel-header,
+body.theme-dark .home-card-head-v143,
+body.theme-dark .admin-tabs-clean,
+body.theme-dark .admin-filters-clean,
+body.theme-dark .admin-quick-filters-clean,
+body.theme-dark .admin-report-toolbar,
+body.theme-dark .bulk-info,
+body.theme-dark .info-details,
+body.theme-dark .issue-report-actions,
+body.theme-dark .cloud-restore-head,
+body.theme-dark .user-panel-head,
+body.theme-dark .issue-report-head{
+  background:var(--dm-surface-2) !important;
+  color:var(--dm-text) !important;
+  border-color:var(--dm-border-soft) !important;
+}
+
+body.theme-dark .flow-tabs-v111,
+body.theme-dark .top-actions-v112,
+body.theme-dark .clean-chip-row-v111,
+body.theme-dark .clean-product-grid-v111,
+body.theme-dark .clean-recent-list-v111,
+body.theme-dark .row,
+body.theme-dark .form-row{
+  background:transparent !important;
+}
+
+body.theme-dark .flow-tabs-v111 button,
+body.theme-dark .admin-tab,
+body.theme-dark .admin-quick,
+body.theme-dark .admin-report-filter,
+body.theme-dark .record-more-v135,
+body.theme-dark .home-quick-grid-v143 button,
+body.theme-dark .home-list-v143 button,
+body.theme-dark .top-actions-v112 button,
+body.theme-dark .user-panel-actions button,
+body.theme-dark .cloud-restore-other-btn,
+body.theme-dark .pager-actions-v152 button{
+  background:var(--dm-surface-2) !important;
+  color:var(--dm-text-2) !important;
+  border-color:var(--dm-border) !important;
+}
+body.theme-dark .flow-tabs-v111 button.active,
+body.theme-dark .admin-tab.active,
+body.theme-dark .admin-quick.active,
+body.theme-dark .admin-report-filter.active,
+body.theme-dark .home-quick-grid-v143 button.active,
+body.theme-dark .tree-filter-v144 button.active,
+body.theme-dark .cutter-filter-v158 button.active,
+body.theme-dark .cutter-chip-v163.active{
+  background:linear-gradient(135deg,#16a34a,#22c55e) !important;
+  color:#052e16 !important;
+  border-color:rgba(134,239,172,.70) !important;
+}
+
+body.theme-dark input,
+body.theme-dark textarea,
+body.theme-dark select,
+body.theme-dark .field,
+body.theme-dark .tree-current,
+body.theme-dark .tree-compact{
+  background:#0a111a !important;
+  color:var(--dm-text) !important;
+  border-color:var(--dm-border) !important;
+}
+body.theme-dark input[type="date"]::-webkit-calendar-picker-indicator{
+  filter:invert(1) brightness(1.4);
+  opacity:.9;
+}
+
+body.theme-dark .empty,
+body.theme-dark .clean-empty-v111,
+body.theme-dark .form-toast,
+body.theme-dark .toast,
+body.theme-dark .login-error,
+body.theme-dark .cloud-loading-text,
+body.theme-dark .cloud-spinner,
+body.theme-dark .pager-info-v152,
+body.theme-dark .work-count-v152,
+body.theme-dark .info-body,
+body.theme-dark .info-body-v152{
+  background:var(--dm-surface-2) !important;
+  color:var(--dm-text-2) !important;
+  border-color:var(--dm-border-soft) !important;
+}
+
+body.theme-dark .info-card-v152,
+body.theme-dark .work-card-v152,
+body.theme-dark .v171-card,
+body.theme-dark .v171-section,
+body.theme-dark .v171-modal-card,
+body.theme-dark .v172-logcard,
+body.theme-dark .v175-card{
+  background:var(--dm-surface) !important;
+  color:var(--dm-text) !important;
+  border-color:var(--dm-border-soft) !important;
+}
+body.theme-dark .v172-logcard pre,
+body.theme-dark .v175-card pre,
+body.theme-dark .v171-table th,
+body.theme-dark .v171-stat,
+body.theme-dark .v171-empty{
+  background:#0a111a !important;
+  color:var(--dm-text-2) !important;
+  border-color:var(--dm-border-soft) !important;
+}
+
+body.theme-dark .clean-save-v111,
+body.theme-dark .clean-header-save-v113,
+body.theme-dark button.primary,
+body.theme-dark .primary{
+  background:linear-gradient(135deg,#22c55e,#4ade80) !important;
+  color:#052e16 !important;
+  border-color:rgba(134,239,172,.65) !important;
+  box-shadow:0 10px 24px rgba(34,197,94,.16) !important;
+}
+
+body.theme-dark .record-row-v111,
+body.theme-dark .mobile-records-v111 .record-row-v111{
+  background:linear-gradient(180deg,#141d29,#111923) !important;
+  color:var(--dm-text) !important;
+  border-color:var(--dm-border-soft) !important;
+}
+body.theme-dark .record-val-v111{
+  background:#0a111a !important;
+  color:var(--dm-text) !important;
+  border-color:rgba(148,163,184,.16) !important;
+}
+body.theme-dark .record-edit-v111{
+  background:#1d4ed8 !important;
+  color:#eff6ff !important;
+  border-color:rgba(147,197,253,.45) !important;
+}
+body.theme-dark .record-delete-v111,
+body.theme-dark .cutter-delete-v163{
+  background:#7f1d1d !important;
+  color:#fee2e2 !important;
+  border-color:rgba(248,113,113,.42) !important;
+}
+
+body.theme-dark .tree-filter-v144,
+body.theme-dark .cutter-filter-v158{
+  display:block;
+  background:linear-gradient(180deg,#111a25,#0d141d) !important;
+  border:1px solid var(--dm-border-soft) !important;
+  border-radius:18px !important;
+}
+body.theme-dark .tree-filter-v144::before,
+body.theme-dark .cutter-filter-v158::before{
+  color:var(--dm-muted) !important;
+}
+
+body.theme-dark .bottom-nav{
+  background:rgba(11,16,22,.96) !important;
+  border-top-color:var(--dm-border-soft) !important;
+  box-shadow:0 -14px 36px rgba(0,0,0,.30) !important;
+}
+body.theme-dark .bottom-nav button:not(.active){
+  background:transparent !important;
+  color:#a8b4c3 !important;
+}
+
+body.theme-dark .mesaha-net-badge-v178.online{
+  background:#052e16 !important;
+  color:#bbf7d0 !important;
+  border-color:rgba(34,197,94,.36) !important;
+}
+body.theme-dark .mesaha-net-badge-v178.offline{
+  background:#431407 !important;
+  color:#fed7aa !important;
+  border-color:rgba(251,146,60,.36) !important;
+}

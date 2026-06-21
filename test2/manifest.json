@@ -1,0 +1,31 @@
+{
+  "name": "Mesaha İO v2.16",
+  "short_name": "Mesaha İO",
+  "start_url": "./index.html?v=186",
+  "scope": "./",
+  "display": "standalone",
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "description": "Orman ölçüm kayıt sistemi",
+  "theme_color": "#0f172a",
+  "background_color": "#0f172a",
+  "version": "v186",
+  "id": "./index.html",
+  "display_override": [
+    "fullscreen",
+    "standalone"
+  ],
+  "orientation": "portrait-primary"
+}

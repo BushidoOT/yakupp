@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+
+<html lang="tr">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<title>Mesaha İO Admin</title>
+<meta content="v186" name="mesaha-build"/>
+<meta content="#ffffff" name="theme-color"/>
+<meta content="yes" name="apple-mobile-web-app-capable"/>
+<meta content="Mesaha App" name="apple-mobile-web-app-title"/>
+<meta content="default" name="apple-mobile-web-app-status-bar-style"/>
+<link href="./manifest.json" rel="manifest"/>
+<link href="./icon-192.png" rel="apple-touch-icon"/>
+<link href="./css/style.css?v=186" rel="stylesheet"/>
+<link href="./css/dark.css?v=186" rel="stylesheet"/>
+<link href="./css/ios-ultra-entry-v186.css?v=186" rel="stylesheet"/>
+  <script src="./js/version.js?v=186"></script>
+  <script src="./js/admin-access.js?v=186"></script>
+  <script src="./js/startup-offline.js?v=186" defer></script>
+
+  <style id="mesahaStartupV178Css">
+    .mesaha-startup-v178{position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 30% 20%,#1b7a43 0,#0f5130 26%,#071b12 72%);color:#fff;padding:18px;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;transition:opacity .28s ease,visibility .28s ease}.mesaha-startup-v178.hide{opacity:0;visibility:hidden;pointer-events:none}.mesaha-startup-card-v178{width:min(440px,94vw);background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.18);border-radius:28px;padding:22px;box-shadow:0 28px 85px rgba(0,0,0,.35);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}.mesaha-startup-logo-v178{display:flex;gap:12px;align-items:center;margin-bottom:14px}.mesaha-startup-logo-v178 img{width:54px;height:54px;border-radius:18px;background:#fff;object-fit:contain;padding:5px}.mesaha-startup-logo-v178 h2{margin:0;font-size:22px;letter-spacing:.2px}.mesaha-startup-logo-v178 p{margin:3px 0 0;color:rgba(255,255,255,.72);font-weight:750;font-size:13px}.mesaha-startup-spinner-v178{width:34px;height:34px;border-radius:999px;border:4px solid rgba(255,255,255,.22);border-top-color:#fff;animation:mesahaSpinV178 .85s linear infinite;margin:10px auto 16px}.mesaha-startup-status-v178{text-align:center;font-weight:900;margin:0 0 13px;font-size:15px}.mesaha-startup-steps-v178{display:grid;gap:8px}.mesaha-startup-step-v178{display:flex;align-items:center;gap:9px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.10);border-radius:15px;padding:9px 11px;color:rgba(255,255,255,.82);font-size:13px;font-weight:800}.mesaha-startup-step-v178 .step-icon{width:22px;height:22px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;background:rgba(255,255,255,.14);font-size:12px;font-weight:950}.mesaha-startup-step-v178.done{color:#dcfce7}.mesaha-startup-step-v178.done .step-icon{background:#22c55e;color:#052e16}.mesaha-startup-step-v178.active .step-icon{background:#facc15;color:#422006}.mesaha-startup-step-v178.warn{color:#ffedd5}.mesaha-startup-step-v178.warn .step-icon{background:#fb923c;color:#431407}.mesaha-startup-log-v178{min-height:18px;margin-top:12px;color:rgba(255,255,255,.62);font-size:11px;font-weight:750;line-height:1.35}.mesaha-startup-actions-v178{display:none;gap:8px;flex-wrap:wrap;margin-top:13px}.mesaha-startup-actions-v178 button{flex:1 1 150px;border:0;border-radius:14px;padding:10px 12px;font-weight:950;background:#fff;color:#14532d}.mesaha-startup-actions-v178 button.secondary{background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.20)}.mesaha-net-badge-v178{display:inline-flex;align-items:center;justify-content:center;min-width:92px;padding:7px 11px;border-radius:999px;font-size:12px;font-weight:950;background:#ecfdf5;color:#166534;border:1px solid rgba(22,101,52,.18);box-shadow:0 8px 22px rgba(15,23,42,.08)}.mesaha-net-badge-v178.offline{background:#fff7ed;color:#9a3412;border-color:#fed7aa}.mesaha-net-badge-v178.online:before{content:"●";font-size:9px;margin-right:6px;color:#16a34a}.mesaha-net-badge-v178.offline:before{content:"●";font-size:9px;margin-right:6px;color:#f97316}@keyframes mesahaSpinV178{to{transform:rotate(360deg)}}
+  </style>
+</head>
+<body class="product-tomruk">
+
+  <div id="mesahaStartupV178" class="mesaha-startup-v178" role="status" aria-live="polite" aria-label="Mesaha İO açılış kontrolü">
+    <div class="mesaha-startup-card-v178">
+      <div class="mesaha-startup-logo-v178">
+        <img src="./mesaha_logo.png" alt="Mesaha İO" />
+        <div>
+          <h2>Mesaha İO</h2>
+          <p>Açılış kontrolleri yapılıyor</p>
+        </div>
+      </div>
+      <div class="mesaha-startup-spinner-v178"></div>
+      <p id="startupStatusV178" class="mesaha-startup-status-v178">Uygulama hazırlanıyor...</p>
+      <div class="mesaha-startup-steps-v178">
+        <div id="startupStepAppV178" class="mesaha-startup-step-v178 active"><span class="step-icon">•</span><span class="step-text">Uygulama başlatılıyor</span></div>
+        <div id="startupStepNetV178" class="mesaha-startup-step-v178 active"><span class="step-icon">•</span><span class="step-text">İnternet bağlantısı kontrol ediliyor</span></div>
+        <div id="startupStepFilesV178" class="mesaha-startup-step-v178 active"><span class="step-icon">•</span><span class="step-text">Offline dosyalar kontrol ediliyor</span></div>
+        <div id="startupStepRecordsV178" class="mesaha-startup-step-v178 active"><span class="step-icon">•</span><span class="step-text">Kayıt sistemi hazırlanıyor</span></div>
+        <div id="startupStepBackupV178" class="mesaha-startup-step-v178 active"><span class="step-icon">•</span><span class="step-text">Yedek sistemi hazırlanıyor</span></div>
+      </div>
+      <div id="startupLogV178" class="mesaha-startup-log-v178"></div>
+      <div id="startupActionsV178" class="mesaha-startup-actions-v178">
+        <button id="startupOfflineBtnV178" type="button">Çevrimdışı Devam Et</button>
+        <button id="startupClearCacheBtnV178" class="secondary" type="button">Önbelleği Temizle</button>
+      </div>
+    </div>
+  </div>
+
+<div aria-label="Kullanıcı girişi" aria-modal="true" class="user-login-overlay" id="userLoginOverlay" role="dialog">
+<div class="user-login-card">
+<h2>Kullanıcı Girişi</h2>
+<p class="hint">Devam etmek için kullanıcı adı ve şeflik bilgisi giriniz. Şifre yoktur.</p>
+<label for="loginUserName">Kullanıcı Adı</label>
+<input autocapitalize="words" autocomplete="off" autocorrect="off" id="loginUserName" placeholder="Örn: Yakup" spellcheck="false" type="text"/>
+<label for="loginSeflik">Şeflik</label>
+<input autocapitalize="words" autocomplete="off" autocorrect="off" id="loginSeflik" placeholder="Örn: Tavşanlı" spellcheck="false" type="text"/>
+<div class="login-error" id="loginError"></div>
+<button class="primary" id="loginSaveBtn" type="button">Giriş Yap</button>
+<p class="hint small-login-note">Bu bilgiler sadece bu cihazda tutulur, ORBİS Excel dosyasına yazılmaz.</p>
+</div>
+</div>
+<div aria-label="Kullanıcı paneli" aria-modal="true" class="user-panel-overlay" id="userPanelOverlay" role="dialog">
+<div class="user-panel-card">
+<div class="user-panel-head">
+<div>
+<h2>Kullanıcı Paneli</h2>
+<p class="hint" id="userPanelInfo">Aktif kullanıcı bilgisi</p>
+</div>
+<button class="ghost user-panel-close" id="userPanelCloseBtn" type="button">×</button>
+</div>
+<div class="user-panel-actions">
+<button class="secondary" id="panelChangeUserBtn" type="button">Kullanıcı Adı / Şeflik Değiştir</button>
+<button class="warning" id="panelPasswordBtn" type="button">Bulut Yedeklerini Getir</button>
+<button class="primary" id="panelCloudBackupBtn" type="button">Buluta Yedekle</button>
+<button class="secondary" id="panelReportIssueBtn" type="button">Sorun Bildir</button>
+<button class="secondary" id="panelAdminOpenBtn" onclick="openAdminFromUserPanel()" type="button">Yönetici Panelini Aç</button>
+<button class="secondary" id="userMenuForceUpdateBtn" type="button">Yeni Sürümü Güncelle</button>
+<p class="hint user-update-offline-note">Not: Güncelle butonunu sadece internet varken kullanınız. Arazide veya internet yokken güncelleme yapmayınız; aksi halde uygulama yeniden açılmayabilir.</p>
+</div>
+<p class="hint">Bulut yedekleme şifresizdir. Kullanıcı adı ve şeflik ile yedekler listelenir.</p>
+</div>
+</div>
+<div aria-label="Sorun bildir" aria-modal="true" class="issue-report-overlay" id="issueReportOverlay" role="dialog">
+<div class="issue-report-card">
+<div class="issue-report-head">
+<div>
+<h2>Sorun Bildir</h2>
+<p class="hint" id="issueReportUserInfo">Kullanıcı bilgileri otomatik eklenir.</p>
+</div>
+<button class="ghost issue-report-close" id="issueReportCloseBtn" type="button">×</button>
+</div>
+<label for="issueReportMessage">Sorunu kısaca yazınız</label>
+<textarea autocomplete="off" id="issueReportMessage" placeholder="Örn: Yazdırma ekranında günlük özet çıkıyor, Excel inmiyor, yedek gelmiyor..." rows="5"></textarea>
+<div class="issue-device-info" id="issueDeviceInfo"></div>
+<div class="issue-report-actions">
+<button class="primary" id="issueReportSendBtn" type="button">Gönder</button>
+<button class="secondary" id="issueReportCancelBtn" type="button">Vazgeç</button>
+</div>
+<div class="issue-my-reports">
+<h3>Son Bildirimlerim</h3>
+<div class="issue-my-reports-list" id="issueMyReportsList">Henüz bildirim yok.</div>
+</div>
+</div>
+</div>
+<div aria-label="Buluttan getir" aria-modal="true" class="cloud-restore-overlay" id="cloudRestoreOverlay" role="dialog">
+<div class="cloud-restore-card">
+<div class="cloud-restore-head">
+<div>
+<h2>Buluttan Getir</h2>
+<p class="hint">Aktif kullanıcı varsa yedekler direkt listelenir. Başka cihazdaki/farklı kullanıcıdaki yedeği almak için Farklı Kullanıcı / Şeflik Ara butonu kullanılır.</p>
+</div>
+<button class="ghost cloud-restore-close" id="cloudRestoreCloseBtn" type="button">×</button>
+</div>
+<div class="cloud-restore-active-info" id="cloudRestoreActiveInfo"></div>
+<button class="ghost cloud-restore-other-btn" id="cloudRestoreOtherBtn" type="button">Farklı Kullanıcı / Şeflik Ara</button>
+<div class="row cloud-restore-manual-fields" id="cloudRestoreManualFields">
+<div>
+<label for="cloudRestoreUserName">Kullanıcı Adı</label>
+<input autocapitalize="words" autocomplete="off" autocorrect="off" id="cloudRestoreUserName" placeholder="Örn: Yakup" spellcheck="false" type="text"/>
+</div>
+<div>
+<label for="cloudRestoreSeflik">Şeflik</label>
+<input autocapitalize="words" autocomplete="off" autocorrect="off" id="cloudRestoreSeflik" placeholder="Örn: Yaylacık" spellcheck="false" type="text"/>
+</div>
+</div>
+<button class="secondary" id="cloudRestoreSearchBtn" type="button">Bulut Kayıtlarını Getir</button>
+<div class="cloud-backup-list" id="cloudBackupList">
+<div class="cloud-backup-empty">Henüz arama yapılmadı.</div>
+</div>
+</div>
+</div>
+<div aria-label="Bulut işlem bekleme" aria-live="polite" class="cloud-loading-overlay" id="cloudLoadingOverlay">
+<div class="cloud-loading-card">
+<div class="cloud-spinner"></div>
+<div class="cloud-loading-text" id="cloudLoadingText">Bulut işlemi yapılıyor...</div>
+</div>
+</div>
+<div aria-label="Giriş Modu" aria-modal="true" class="clean-simple-overlay-v111" id="cleanSimpleOverlayV111" role="dialog">
+<div class="clean-simple-card-v111">
+<div class="clean-simple-head-v111">
+<div>
+<h2>Giriş Modu</h2>
+<p>Barkod, tarih, adet, ağaç ve dosya bilgileri Yeni Kayıt ekranından otomatik alınır.</p>
+</div>
+<button class="clean-simple-close-v111" id="cleanSimpleCloseV111" type="button">×</button>
+</div>
+<div class="clean-product-grid-v111" id="cleanProductGridV111"></div>
+<div class="clean-measure-grid-v111">
+<div>
+<label for="cleanLengthV111">Boy</label>
+<input autocomplete="off" id="cleanLengthV111" inputmode="decimal" min="0" placeholder="3" step="0.01" type="number"/>
+<div class="clean-chip-row-v111" id="cleanLengthChipsV111"></div>
+</div>
+<div>
+<label for="cleanDiameterV111">Çap</label>
+<input autocomplete="off" id="cleanDiameterV111" inputmode="numeric" min="0" placeholder="22" step="1" type="number"/>
+<div class="clean-chip-row-v111" id="cleanDiameterChipsV111"></div>
+</div>
+</div>
+<button class="clean-save-v111" id="cleanSaveV111" type="button">Kaydet</button>
+<div class="clean-auto-info-v111" id="cleanAutoInfoV111"></div>
+<div class="clean-recent-area-v111">
+<h3>Son 3 Barkod</h3>
+<div class="clean-recent-list-v111" id="cleanRecentListV111">
+<div class="clean-empty-v111">Henüz kayıt yok</div>
+</div>
+</div>
+</div>
+</div>
+<div class="app">
+<header class="topbar">
+<div class="brand app-brand-v143">
+<img alt="Mesaha İO logosu" class="brand-logo-v143" loading="eager" src="./mesaha_logo.png"/>
+<div class="brand-copy-v143">
+<h1 data-app-version-text>Mesaha İO</h1>
+<span>Orman ölçüm kayıt sistemi</span>
+</div>
+</div>
+<div class="active-user-badge" id="activeUserBadge" role="button" style="display:none" tabindex="0" title="Kullanıcı panelini aç"></div>
+<div class="top-actions-v112">
+<button id="openSimpleV112" type="button">⚡ Giriş Modu</button>
+<button id="themeToggleV112" type="button">🌙 Karanlık</button>
+</div>
+</header>
+<section aria-label="Ana sayfa özeti" class="mesaha-home-v143" id="mesahaHomeV143">
+<div class="home-hero-v143">
+<div class="home-hero-copy-v143">
+<h2>Merhaba!</h2>
+<p>Orman ölçümlerini kolayca kaydedin ve yönetin.</p>
+</div>
+<div aria-hidden="true" class="home-forest-v143"><span></span><span></span><span></span></div>
+</div>
+<div class="home-status-v143">
+<div class="home-status-item-v143">
+<span class="home-icon-v143 network">⌁</span>
+<div><small>Bağlantı durumu</small><b id="homeNetworkV143">Çevrimdışı</b><em>Veriler cihazınızda güvende</em></div>
+</div>
+<div class="home-divider-v143"></div>
+<button aria-label="Giriş Modunu Aç" class="home-status-item-v143 home-simple-v146" data-home-simple-v146="1" type="button">
+<span class="home-icon-v143 simple">⚡</span>
+<div><small>Giriş Modu</small><b id="homeSimpleV146">Hızlı Kayıt</b><em id="homeSimpleHintV146">Dokun ve hızlı girişe geç</em></div>
+</button>
+</div>
+<div class="home-card-v143 quick-v143">
+<div class="home-card-head-v143"><h3>Hızlı İşlemler</h3><button data-home-action-v143="records" type="button">Tümü ›</button></div>
+<div class="home-quick-grid-v143">
+<button data-home-action-v143="new" type="button"><span>🌲</span><b>Yeni Ölçüm</b></button>
+<button data-home-action-v143="diameter" type="button"><span>⌀</span><b>Çap Ölçümü</b></button>
+<button data-home-action-v143="records" type="button"><span>☷</span><b>Kayıtlar</b></button>
+<button data-home-action-v143="backup" type="button"><span>⇪</span><b>Yedek Al</b></button>
+</div>
+</div>
+<div class="home-card-v143 records-v143">
+<div class="home-card-head-v143"><h3>Kayıtlarım</h3><button data-home-action-v143="records" type="button">Tümü ›</button></div>
+<div class="home-list-v143">
+<button data-home-action-v143="records" type="button"><span class="home-mini-icon-v143 tree">🌲</span><div><b>Toplam Ölçüm</b><small>Bu cihazda kayıtlı ölçümler</small></div><strong id="homeRecordCountV143">0</strong><i>›</i></button>
+<button data-home-action-v143="records" type="button"><span class="home-mini-icon-v143 stack">▱</span><div><b>Toplam Adet</b><small>Kayıtlı ürün adedi</small></div><strong id="homeAdetV143">0</strong><i>›</i></button>
+<button data-home-action-v143="records" type="button"><span class="home-mini-icon-v143 ruler">⌁</span><div><b>Son Ölçüm</b><small id="homeLastDateV143">Henüz kayıt yok</small></div><strong id="homeLastTreeV143">-</strong><i>›</i></button>
+</div>
+</div>
+<div class="home-card-v143 summary-v143">
+<div class="home-card-head-v143"><h3>Ölçüm Özeti</h3><button data-home-action-v143="records" type="button">Bu Hafta⌄</button></div>
+<div class="home-summary-grid-v143">
+<div><span>🌲</span><b id="homeWeekCountV143">0</b><small>Ölçüm</small></div>
+<div><span>⌀</span><b id="homeAvgDiameterV143">0 cm</b><small>Ort. Çap</small></div>
+<div><span>◉</span><b id="homeTotalM3V143">0 m³</b><small>Tahmini Hacim</small></div>
+</div>
+</div>
+</section>
+<nav aria-label="Ana menü" class="flow-tabs-v111" id="flowTabsV111">
+<button data-flow-tab="entry" type="button">Yeni Kayıt</button>
+<button data-flow-tab="records" type="button">Kayıtlar</button>
+<button data-flow-tab="guide" type="button">Kılavuz</button>
+<button data-flow-tab="admin" style="display:none" type="button">Admin</button>
+</nav>
+<main class="grid">
+<section class="panel entry-panel">
+<div class="panel-header">
+<h2>Yeni Kayıt</h2>
+<span class="pill" id="speciesPill" style="display:inline-flex">Karaçam</span>
+</div>
+<div class="panel-body">
+<form autocomplete="off" class="form" id="entryForm" novalidate="">
+<div class="edit-banner" id="editBanner">Düzenleme modu açık. Kaydet dediğinde seçili kayıt güncellenecek.</div>
+<details class="info-details">
+<summary>Dosya Bilgileri</summary>
+<div class="info-body">
+<div class="row">
+<div>
+<label for="bolmeNo">Bölme No</label>
+<input autocapitalize="off" autocomplete="off" autocorrect="off" id="bolmeNo" inputmode="text" name="bolmeNo" placeholder="Örn: 102" spellcheck="false"/>
+</div>
+<div>
+<label for="seflik">Şeflik</label>
+<input autocapitalize="off" autocomplete="off" autocorrect="off" id="seflik" inputmode="text" name="seflik" placeholder="Örn: Tavşanlı" spellcheck="false"/>
+</div>
+</div>
+<div>
+<label for="ekipNot">Not / Ekip Bilgisi</label>
+<input autocapitalize="off" autocomplete="off" autocorrect="off" id="ekipNot" inputmode="text" name="ekipNot" placeholder="İsteğe bağlı not" spellcheck="false"/>
+</div>
+<p class="hint">Bu bilgiler sistem Excel’ine yazılmaz; dosya adını düzenli oluşturmak ve takip kolaylığı için kullanılır.</p>
+</div>
+</details>
+<div class="toast form-toast" id="toast"></div>
+<div class="product-compact tree-compact">
+<label>Ağaç Türü</label>
+<input autocomplete="off" id="treeType" name="treeType" type="hidden" value="Karaçam"/>
+<div class="product-select-head">
+<button class="ghost small-action" id="treeTypeSelectBtn" type="button">Ağaç Türü Seç</button>
+<span class="pill tree-current" id="treeTypeCurrent">Karaçam</span>
+</div>
+<div aria-label="Ağaç türü seçimi" class="wood-type-panel tree-type-panel" id="treeTypePanel">
+<label class="wood-check"><input checked="" name="treeTypeRadio" type="radio" value="Karaçam"/> Karaçam</label>
+<label class="wood-check"><input name="treeTypeRadio" type="radio" value="Sarıçam"/> Sarıçam</label>
+<label class="wood-check"><input name="treeTypeRadio" type="radio" value="Sedir"/> Sedir</label>
+<label class="wood-check"><input name="treeTypeRadio" type="radio" value="Göknar"/> Göknar</label>
+<label class="wood-check"><input name="treeTypeRadio" type="radio" value="Kızılçam"/> Kızılçam</label>
+<button class="secondary small-action" id="treeTypeApplyBtn" type="button">Seçimi Uygula</button>
+</div>
+<p class="hint">Excel çıktısında seçilen ağaç türü gönderilir.</p>
+</div>
+<div class="product-compact">
+<label>Ürün Türü</label>
+<input autocapitalize="off" autocomplete="off" autocorrect="off" id="productType" name="productType" spellcheck="false" type="hidden" value="Tomruk"/>
+<input autocapitalize="off" autocomplete="off" autocorrect="off" id="qualityClass" name="qualityClass" spellcheck="false" type="hidden" value=""/>
+<div class="product-select-head">
+<button class="ghost small-action" id="woodTypeSelectBtn" type="button">Odun Türü Seç</button>
+</div>
+<div aria-label="Odun türü seçimi" class="wood-type-panel" id="woodTypePanel">
+<label class="wood-check"><input checked="" type="checkbox" value="Tomruk"/> Tomruk</label>
+<label class="wood-check"><input checked="" type="checkbox" value="Maden Direk"/> Maden Direği</label>
+<label class="wood-check"><input checked="" type="checkbox" value="Kağıtlık"/> Kağıtlık</label>
+<label class="wood-check"><input checked="" type="checkbox" value="Sanayi Odunu"/> Sanayi Odunu</label>
+<label class="wood-check"><input checked="" type="checkbox" value="Tel Direk"/> Tel Direği</label>
+<button class="secondary small-action" id="woodTypeApplyBtn" type="button">Seçimi Uygula</button>
+</div>
+<div class="product-boxes" id="productBoxes"></div>
+<p class="hint rule-hint" id="productRuleHint">Sadece seçtiğiniz odun türleri ana sayfada görünür.</p>
+</div>
+<div class="row measure-compact">
+<div class="measure-field">
+<label for="length">Boy</label>
+<input autocapitalize="off" autocomplete="off" autocorrect="off" enterkeyhint="next" id="length" inputmode="decimal" min="0" name="length" placeholder="3" spellcheck="false" step="0.01" type="number"/>
+<div class="chip-row" id="lengthChips"></div>
+</div>
+<div class="measure-field">
+<label for="diameter">Çap</label>
+<input autocapitalize="off" autocomplete="off" autocorrect="off" enterkeyhint="done" id="diameter" inputmode="numeric" min="0" name="diameter" placeholder="22" spellcheck="false" step="1" type="number"/>
+<div class="chip-row" id="diameterChips"></div>
+</div>
+</div>
+<div class="barcode-save-row-final">
+<div class="barcode-field-final">
+<label for="barcode">Barkod No</label>
+<input autocapitalize="off" autocomplete="off" autocorrect="off" enterkeyhint="done" id="barcode" name="barcode" placeholder="A17265597" spellcheck="false" type="text"/>
+<p class="hint">En az 9 karakter. Örn: A17265597</p>
+<div class="duplicate-warning" id="duplicateWarning"></div>
+</div>
+<div class="save-field-final">
+<label> </label>
+<button class="primary" id="submitBtn" type="submit">Kaydet</button>
+</div>
+</div>
+<div class="tomruk-class-panel" id="tomrukClassPanel">
+<label>Tomruk Kalite Sınıfı</label>
+<div class="class-boxes" id="classBoxes">
+<div class="class-box" data-class="1">1. Sınıf</div>
+<div class="class-box active" data-class="2">2. Sınıf</div>
+<div class="class-box" data-class="3">3. Sınıf</div>
+</div>
+<p class="hint">Tomrukta kalite sınıfı Excel’e gider. Maden ve kağıtlıkta boş bırakılır.</p>
+</div>
+<div class="row">
+<div>
+<label for="productionDate">Üretim Tarihi</label>
+<input autocapitalize="off" autocomplete="off" autocorrect="off" id="productionDate" name="productionDate" spellcheck="false" type="date"/>
+</div>
+<div>
+<label for="quantity">Adet</label>
+<input autocapitalize="off" autocomplete="off" autocorrect="off" enterkeyhint="done" id="quantity" inputmode="numeric" min="1" name="quantity" spellcheck="false" step="1" type="number" value="1"/>
+</div>
+</div>
+<div class="recent-barcodes-box">
+<div class="recent-title">Son Girilen 3 Barkod</div>
+<div class="recent-barcode-list" id="recentBarcodeList">
+<span class="hint">Henüz kayıt yok</span>
+</div>
+<p class="hint recent-note">Düzeltme yapmak için barkodun üzerine tıklayınız.</p>
+<span id="liveDesi" style="display:none">0</span>
+<span id="liveHacim" style="display:none">Boş</span>
+</div>
+<div class="btn-row">
+<button class="secondary" id="sameBarcodeBtn" type="button">Aynı Barkoda Ürün Ekle</button>
+<button class="ghost" id="clearInputsBtn" type="button">Alanları Temizle</button>
+</div>
+<div class="btn-row single">
+<button class="ghost" id="soundToggleBtn" type="button">Ses: Açık</button>
+</div>
+<div class="btn-row single">
+<button class="warning" id="cancelEditBtn" style="display:none" type="button">Düzenlemeyi İptal Et</button>
+</div>
+<p class="hint">
+              Hacim hesabı bilgi amaçlı m³ olarak gösterilir. Sistem Excel’inde hacim alanı boş gönderilir; ORBİS kendi hesaplar.
+            </p>
+</form>
+</div>
+</section>
+<section class="panel records-panel">
+<div class="panel-header">
+<h2>BEYAN</h2>
+<span class="pill" id="recordCount" style="display:inline-flex">0 kayıt</span>
+</div>
+<div class="panel-body">
+<div class="totals">
+<div class="stat">
+<small>Toplam m³</small>
+<strong id="totalDesi">0</strong>
+<div class="unit">m³</div>
+</div>
+<div class="stat">
+<small>Toplam Adet</small>
+<strong id="totalAdet">0</strong>
+<div class="unit">adet</div>
+</div>
+<div class="stat tomruk-stat">
+<small>Tomruk</small>
+<strong id="totalTomruk">0</strong>
+<div class="unit" id="totalTomrukAdet">0 adet</div>
+</div>
+<div class="stat maden-stat">
+<small>Maden Direği</small>
+<strong id="totalMaden">0</strong>
+<div class="unit" id="totalMadenAdet">0 adet</div>
+</div>
+<div class="stat kagit-stat">
+<small>Kağıtlık</small>
+<strong id="totalKagit">0</strong>
+<div class="unit" id="totalKagitAdet">0 adet</div>
+</div>
+<div class="stat sanayi-stat">
+<small>Sanayi Odunu</small>
+<strong id="totalSanayi">0</strong>
+<div class="unit" id="totalSanayiAdet">0 adet</div>
+</div>
+<div class="stat tel-stat">
+<small>Tel Direği</small>
+<strong id="totalTel">0</strong>
+<div class="unit" id="totalTelAdet">0 adet</div>
+</div>
+</div>
+<div class="tools">
+<button class="primary" id="exportSystemXlsBtn" type="button">Mesaha Dosyasını İndir</button>
+<button class="ghost" id="backupBtn" type="button">Yedek Al</button>
+<button class="secondary" id="cloudBackupBtn" type="button">Buluta Yedekle</button>
+<button class="secondary" id="cloudRestoreBtn" type="button">Buluttan Getir</button>
+<button class="ghost" id="restoreBtn" type="button">Yedek Yükle</button>
+<button class="warning" id="printBtn" type="button">Yazdır</button>
+<button class="danger" id="deleteAllBtn" type="button">Tümünü Sil</button>
+<input accept=".zip,application/zip" autocapitalize="off" autocomplete="off" autocorrect="off" id="restoreInput" spellcheck="false" style="display:none" type="file"/>
+</div>
+<div class="usage-card" id="usageCard"></div>
+<div class="undo-banner" id="undoBanner"><span id="undoMessage">Kayıt silindi.</span><button id="undoBtn" type="button">Geri Al</button></div>
+<div class="bulk-actions" id="bulkActions">
+<div class="bulk-info">
+<b id="selectedRecordCount">0 seçili</b>
+<span>Toplu işlem için kayıtları işaretleyin.</span>
+</div>
+<div class="bulk-buttons">
+<button class="ghost" id="selectFilteredBtn" type="button">Listedekileri Seç</button>
+<button class="ghost" id="clearSelectionBtn" type="button">Seçimi Temizle</button>
+<button class="danger" id="bulkDeleteBtn" type="button">Seçilenleri Sil</button>
+</div>
+</div>
+<div class="searchbar">
+<input autocapitalize="off" autocomplete="off" autocorrect="off" id="searchInput" placeholder="Barkod, ağaç, ürün, çap veya boy ara..." spellcheck="false"/>
+</div>
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th class="select-col"><input id="selectAllRecords" title="Listedekileri seç" type="checkbox"/></th>
+<th>Sıra</th>
+<th>Barkod</th>
+<th>Ağaç</th>
+<th>Ürün</th>
+<th class="num">Boy</th>
+<th class="num">Çap</th>
+<th class="num">Adet</th>
+<th class="num">m³</th>
+<th>Tarih</th>
+<th>İşlem</th>
+</tr>
+</thead>
+<tbody id="recordsBody"></tbody>
+<tfoot id="recordsFoot"></tfoot>
+</table>
+<div class="empty" id="emptyState">Henüz kayıt yok. İlk barkodu girip kaydet.</div>
+</div>
+<div class="mobile-records-v111" id="mobileRecordsV111"></div>
+<div class="daily-work-summary" id="dailyWorkSummary">
+<h3>Günlük İş Özeti</h3>
+<div class="daily-summary-grid">
+<div class="daily-summary-item">
+<span>Bugünkü Kayıt</span>
+<b id="dailyRecordCount">0</b>
+</div>
+<div class="daily-summary-item">
+<span>Bugünkü Adet</span>
+<b id="dailyAdetCount">0</b>
+</div>
+<div class="daily-summary-item">
+<span>Bugünkü m³</span>
+<b id="dailyM3Count">0</b>
+</div>
+<div class="daily-summary-item">
+<span>Son Barkod</span>
+<b id="dailyLastBarcode">-</b>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="panel guide-panel">
+<div class="panel-header">
+<h2>Kullanım Kılavuzu</h2>
+<span class="pill" style="display:inline-flex">Yardım</span>
+</div>
+<div class="panel-body">
+<div class="guide-content clean-guide">
+<div class="guide-card">
+<h3>1. Kurulum</h3>
+<ol>
+<li>Uygulamayı Chrome veya Safari üzerinden açınız.</li>
+<li>Adres olarak <b>https://bit.ly/mesahaio</b> bağlantısını kullanabilirsiniz.</li>
+<li>Android cihazda Chrome menüsünden <b>Ana ekrana ekle</b> seçiniz.</li>
+<li>iPhone / iOS cihazda Safari üzerinden açıp paylaş menüsünden <b>Ana Ekrana Ekle</b> seçiniz.</li>
+<li>Güncelleme sonrası sayfayı 2-3 kez yenileyiniz.</li>
+</ol>
+</div>
+<div class="guide-card">
+<h3>Terminal Kurulumu</h3>
+<ol>
+<li>Terminal cihazında uygulama/terminal menüsünü açınız.</li>
+<li>İlk gelen ekranda sağ alttaki en son seçeneğe dokununuz.</li>
+<li>Açılan bölümde <b>Yeşil Takip</b> yazan seçeneği açınız.</li>
+<li>Bu işlem sizi Chrome uygulamasına yönlendirir.</li>
+<li>Chrome’un arama/adres çubuğuna <b>bit.ly/mesahaio</b> yazıp aratınız.</li>
+<li>Terminal kendi internetiyle uygulamayı açmazsa terminali Wi‑Fi’ye bağlayıp tekrar deneyiniz.</li>
+<li>Uygulama açıldıktan sonra Chrome’da sağ üstteki <b>üç çizgi / menü</b> simgesine basınız.</li>
+<li>Menüdeki <b>yıldız</b> simgesine dokunup onaylayınız.</li>
+<li>Böylece uygulama <b>Mobil Yer İşaretleri</b> bölümüne kaydedilir.</li>
+<li>İnternetsiz arazide kullanmak için Chrome menüsünden <b>Mobil Yer İşaretleri</b> bölümüne girip uygulama adına basınız.</li>
+</ol>
+<p class="hint">Not: Uygulamayı arazide kullanmadan önce bir kez internet varken açıp hazır hale getirmeniz önerilir.</p>
+</div>
+<div class="guide-card">
+<h3>2. Yeni Kayıt</h3>
+<ol>
+<li>Ağaç türünü seçiniz.</li>
+<li>Ürün türünü seçiniz.</li>
+<li>Boy, çap, barkod, adet ve üretim tarihini giriniz.</li>
+<li><b>Kaydet</b> butonuna basınız.</li>
+<li>Aynı barkod iki kez kaydedilemez; uyarı verirse barkodu kontrol ediniz.</li>
+</ol>
+</div>
+<div class="guide-card">
+<h3>3. Kayıtlar</h3>
+<ol>
+<li><b>Kayıtlar</b> sekmesinde kayıtları görebilir ve arayabilirsiniz.</li>
+<li><b>Düzelt</b> ile kayıt düzenlenir, <b>Sil</b> ile tek kayıt silinir.</li>
+<li>Toplu seçim ile birden fazla kaydı silebilir, ürün veya ağaç türünü değiştirebilirsiniz.</li>
+<li><b>Mesaha Dosyasını İndir</b> butonu ORBİS uyumlu Excel dosyası oluşturur.</li>
+</ol>
+</div>
+<div class="guide-card">
+<h3>4. ORBİS’e Aktarma</h3>
+<ol>
+<li>Mesaha dosyasını indirdikten sonra dosyayı bilgisayara aktarınız.</li>
+<li>ORBİS sisteminde <b>İşletme Pazarlama</b> modülüne giriniz.</li>
+<li><b>Kesme Faaliyetleri Raporu</b> ekranını açınız.</li>
+<li>Şeflik ve bölme bilgilerini giriniz.</li>
+<li>Bölmenin üzerine çift tıklayınız.</li>
+<li>Dosya yükleme bölümünden mesaha dosyasını seçip <b>Excel’den Aktar</b> deyiniz.</li>
+</ol>
+</div>
+<div class="guide-card">
+<h3>5. Bulut Yedek</h3>
+<ol>
+<li><b>Buluta Yedekle</b> internet varsa kayıtları Drive’a gönderir.</li>
+<li><b>Buluttan Getir</b> aktif kullanıcıya ait yedekleri listeler.</li>
+<li>Başka cihazdaki yedekler için <b>Farklı Kullanıcı / Şeflik Ara</b> seçeneğini kullanınız.</li>
+<li>İnternet yoksa bulut çalışmaz; cihazdaki kayıtlar etkilenmez.</li>
+</ol>
+</div>
+<div class="guide-card">
+<h3>6. Sorun Çözme</h3>
+<ol>
+<li>Güncelleme görünmüyorsa sayfayı 2-3 kez yenileyiniz.</li>
+<li>Bulut çalışmıyorsa interneti ve Apps Script dağıtımını kontrol ediniz.</li>
+<li>Excel hatası alırsanız kayıtları kontrol edip tekrar dışa aktarınız.</li>
+<li>Yardım için Telegram: <b>@ExelanceX</b></li>
+</ol>
+</div>
+<div class="guide-card">
+<h3>7. Yeni Sürümü Güncelle</h3>
+<ol>
+<li>Yeni sürüm görünmüyorsa <b>Yeni Sürümü Güncelle</b> butonuna basınız.</li>
+<li>Bu işlem kayıtları silmez; sadece uygulama önbelleğini yeniler.</li>
+<li>iOS’ta ana ekrandan açılan uygulamalarda özellikle işe yarar.</li>
+</ol>
+<button class="secondary" id="guideForceUpdateBtn" type="button">Yeni Sürümü Güncelle</button>
+</div>
+</div>
+</div>
+</section>
+<section class="panel admin-panel" style="display:none">
+<div class="panel-header">
+<h2>Admin Paneli</h2>
+<span class="pill" style="display:inline-flex">Yönetim</span>
+</div>
+<div class="panel-body">
+<div class="admin-panel-top admin-panel-top-clean">
+<div>
+<h3>Yönetim Özeti</h3>
+<p class="hint" id="adminSyncInfo">Firebase ve eski sistem birlikte kontrol edilir.</p>
+</div>
+<button class="secondary" id="adminRefreshBtn" type="button">Yenile</button>
+</div>
+<div class="admin-summary-grid admin-summary-grid-clean">
+<div class="admin-summary-card"><span>Toplam Kullanıcı</span><b id="adminTotalUsers">0</b></div>
+<div class="admin-summary-card"><span>Bugün Giriş</span><b id="adminTodayUsers">0</b></div>
+<div class="admin-summary-card"><span>Son 7 Gün</span><b id="adminWeekUsers">0</b></div>
+<div class="admin-summary-card"><span>Toplam Yedek</span><b id="adminTotalBackups">0</b></div>
+<div class="admin-summary-card wide"><span>En Son Yedek</span><b id="adminLastBackup">-</b></div>
+</div>
+<div class="admin-filters admin-filters-clean">
+<input autocapitalize="off" autocomplete="off" autocorrect="off" id="adminUserSearch" placeholder="Kullanıcı veya şeflik ara..." spellcheck="false" type="text"/>
+<select id="adminSeflikFilter">
+<option value="">Tüm şeflikler</option>
+</select>
+</div>
+<div class="admin-quick-filters admin-quick-filters-clean">
+<button class="admin-quick active" data-admin-quick="all" type="button">Tümü</button>
+<button class="admin-quick" data-admin-quick="today" type="button">Bugün aktif</button>
+<button class="admin-quick" data-admin-quick="noBackup" type="button">Yedeği olmayan</button>
+<button class="admin-quick" data-admin-quick="inactive" type="button">7+ gün girmeyen</button>
+</div>
+<div class="admin-tabs admin-tabs-clean">
+<button class="admin-tab active" data-admin-tab="users" type="button">Kullanıcılar</button>
+<button class="admin-tab" data-admin-tab="notes" type="button">Notlar</button>
+<button class="admin-tab" data-admin-tab="reports" type="button">Bildirimler</button>
+</div>
+<div class="admin-view" id="adminUsersView">
+<div class="registered-users-list" id="registeredUsersList"></div>
+</div>
+<div class="admin-view" id="adminNotesView" style="display:none">
+<div class="admin-notes-list" id="adminNotesList"></div>
+</div>
+<div class="admin-view" id="adminReportsView" style="display:none">
+<div class="admin-report-toolbar">
+<button class="admin-report-filter active" data-report-filter="open" type="button">Açık</button>
+<button class="admin-report-filter" data-report-filter="all" type="button">Tümü</button>
+<button class="admin-report-filter" data-report-filter="done" type="button">Çözüldü</button>
+</div>
+<div class="admin-reports-list" id="adminReportsList"></div>
+</div>
+</div>
+</section>
+</main>
+</div>
+<nav class="bottom-nav">
+<button class="active" id="navEntry" type="button">Yeni Kayıt</button>
+<button id="navRecords" type="button">Kayıtlar</button>
+<button id="navGuide" type="button">Kullanım Kılavuzu</button>
+<button id="navAdmin" style="display:none" type="button">Admin Paneli</button>
+</nav>
+<script src="./js/core.js?v=186"></script>
+<script src="./js/admin-cloud.js?v=186"></script>
+<script src="./js/tree-entry.js?v=186"></script>
+<script src="./js/ui-mobile.js?v=186"></script>
+<script src="./js/records-filters.js?v=186"></script>
+<script src="./js/backup-storage.js?v=186"></script>
+<script src="./js/keyboard-filters.js?v=186"></script>
+<script src="./js/cutters.js?v=186"></script>
+<script src="./js/stability-base.js?v=186"></script>
+<script src="./js/control-test.js?v=186"></script>
+<script src="./js/stability-admin.js?v=186"></script>
+<script src="./js/offline-admin.js?v=186"></script>
+<script src="./js/app-stability.js?v=186"></script>
+</body>
+</html>
