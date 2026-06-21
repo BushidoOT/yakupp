@@ -3,10 +3,10 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>v3.12</title>
+  <title>v3.13</title>
   <meta name="theme-color" content="#166534" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-title" content="v3.12" />
+  <meta name="apple-mobile-web-app-title" content="v3.13" />
   <link rel="manifest" href="./manifest.json" />
   <link rel="apple-touch-icon" href="./assets/icon-192.png" />
 
@@ -379,21 +379,101 @@ body.dark .update-status-box{background:#111827;color:#cbd5e1}
 .save-float-toast-v311.save-float-toast-v311 small{font-size:11px!important}
 @media(max-width:430px){.save-float-toast-v311.save-float-toast-v311{left:8px!important;width:calc(100vw - 150px)!important;max-width:calc(100vw - 150px)!important;padding:8px 9px!important}.save-float-toast-v311.save-float-toast-v311 .ico{width:32px!important;height:32px!important}.save-float-toast-v311.save-float-toast-v311 b{font-size:12.5px!important}.save-float-toast-v311.save-float-toast-v311 small{font-size:10px!important}}
 
+
+/* v313: kayıt bildirimi kesin görünür + karanlık mod beyaz alan düzeltmeleri */
+.save-float-toast-v310.save-float-toast-v313,
+.save-float-toast-v311.save-float-toast-v313,
+.save-float-toast-v313{
+  position:fixed!important;
+  left:10px!important;
+  right:auto!important;
+  top:auto!important;
+  bottom:calc(var(--save-toast-bottom-v313, 118px) + env(safe-area-inset-bottom,0px))!important;
+  width:min(62vw, 330px)!important;
+  max-width:calc(100vw - 152px)!important;
+  min-height:52px!important;
+  z-index:2147483000!important;
+  display:none!important;
+  align-items:center!important;
+  gap:10px!important;
+  padding:9px 11px!important;
+  border-radius:20px!important;
+  border:1px solid rgba(255,255,255,.36)!important;
+  background:rgba(15,23,42,.62)!important;
+  color:#fff!important;
+  box-shadow:0 18px 48px rgba(0,0,0,.30)!important;
+  backdrop-filter:blur(18px)!important;
+  -webkit-backdrop-filter:blur(18px)!important;
+  pointer-events:none!important;
+  transform:translateZ(0)!important;
+}
+.save-float-toast-v313.show{display:flex!important;animation:saveToastV313 .16s ease-out!important}
+.save-float-toast-v313 .ico{width:34px!important;height:34px!important;border-radius:14px!important;display:grid!important;place-items:center!important;background:rgba(22,163,74,.95)!important;color:#fff!important;font-weight:950!important;flex:0 0 auto!important}
+.save-float-toast-v313 .txt{min-width:0!important;display:block!important}
+.save-float-toast-v313 b{display:block!important;font-size:14px!important;line-height:1.1!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;color:#fff!important}
+.save-float-toast-v313 small{display:block!important;margin-top:3px!important;font-size:11px!important;line-height:1.1!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;color:rgba(255,255,255,.88)!important}
+@keyframes saveToastV313{from{opacity:0;transform:translate3d(-4px,10px,0)}to{opacity:1;transform:translate3d(0,0,0)}}
+@media(max-width:430px){.save-float-toast-v313{left:8px!important;width:calc(100vw - 148px)!important;max-width:calc(100vw - 148px)!important;min-height:50px!important;padding:8px 9px!important}.save-float-toast-v313 .ico{width:31px!important;height:31px!important}.save-float-toast-v313 b{font-size:12.5px!important}.save-float-toast-v313 small{font-size:10px!important}}
+
+body.dark .summary-grid>div,
+body.dark .detail-summary-grid div,
+body.dark .btn:not(.primary):not(.green):not(.orange):not(.warning):not(.danger),
+body.dark .chip:not(.active),
+body.dark .filter-chip:not(.active),
+body.dark .quick-grid button,
+body.dark .recent-box,
+body.dark .recent-item:not(.product-tomruk):not(.product-maden):not(.product-kagit):not(.product-sanayi):not(.product-tel),
+body.dark .prod-total,
+body.dark .filter-box,
+body.dark .record-actions button,
+body.dark .record-toolbar,
+body.dark .barcode-save label,
+body.dark .measure-grid label,
+body.dark .check-card,
+body.dark .tree-option,
+body.dark .qty-box{
+  background:#0b1220!important;
+  color:#f8fafc!important;
+  border-color:#334155!important;
+}
+body.dark .summary-grid>div{background:linear-gradient(135deg,#0b1220,#0f172a)!important}
+body.dark .btn.soft, body.dark .btn.ghost{background:#111827!important;color:#f8fafc!important;border-color:#334155!important}
+body.dark input, body.dark select, body.dark textarea{background:#111827!important;color:#f8fafc!important;border-color:#334155!important;color-scheme:dark}
+body.dark input::placeholder, body.dark textarea::placeholder{color:#94a3b8!important}
+body.dark .section-head span, body.dark .pill, body.dark .chip.active, body.dark .filter-chip.active{background:#064e3b!important;color:#bbf7d0!important;border-color:#166534!important}
+body.dark .entry-launch b{color:#bbf7d0!important}
+body.dark .user-badge{background:#052e16!important;color:#bbf7d0!important;border-color:#166534!important}
+body.dark .update-status-box.update-available{background:#3b2f0a!important;color:#fde68a!important;border-color:#a16207!important}
+body.dark .update-status-box.update-ok{background:#052e16!important;color:#bbf7d0!important;border-color:#166534!important}
+body.dark .update-status-box.update-offline{background:#111827!important;color:#cbd5e1!important;border-color:#334155!important}
+body.dark .product-btn{background:#0b1220!important;color:#f8fafc!important;border-color:#334155!important}
+body.dark .product-btn.product-tomruk{border-color:#eab308!important;color:#fde68a!important;background:#241f09!important}
+body.dark .product-btn.product-maden{border-color:#2563eb!important;color:#bfdbfe!important;background:#081a33!important}
+body.dark .product-btn.product-kagit{border-color:#dc2626!important;color:#fecaca!important;background:#2b0d0d!important}
+body.dark .product-btn.product-sanayi{border-color:#16a34a!important;color:#bbf7d0!important;background:#082513!important}
+body.dark .product-btn.product-tel{border-color:#7c3aed!important;color:#ddd6fe!important;background:#1d1233!important}
+body.dark .product-btn.active::after{background:#f8fafc!important;color:#0f172a!important;border-color:#0f172a!important}
+body.dark .prod-total.product-tomruk{background:#241f09!important;color:#fde68a!important}
+body.dark .prod-total.product-maden{background:#081a33!important;color:#bfdbfe!important}
+body.dark .prod-total.product-kagit{background:#2b0d0d!important;color:#fecaca!important}
+body.dark .prod-total.product-sanayi{background:#082513!important;color:#bbf7d0!important}
+body.dark .prod-total.product-tel{background:#1d1233!important;color:#ddd6fe!important}
+
 </style>
-  <script id="mesaha-inline-version-v312">
+  <script id="mesaha-inline-version-v313">
 (function(root){
   'use strict';
   const info = {
-    appName: 'v3.12',
-    version: 'v312-lovable-update-fix',
-    build: 'v312',
-    assetVersion: '312',
-    visibleVersion: 'v3.12',
-    shortVersion: 'v3.12',
-    name: 'v3.12',
-    cacheName: 'mesaha-app-v312-lovable-update-fix',
+    appName: 'v3.13',
+    version: 'v313-toast-date-dark-fix',
+    build: 'v313',
+    assetVersion: '313',
+    visibleVersion: 'v3.13',
+    shortVersion: 'v3.13',
+    name: 'v3.13',
+    cacheName: 'mesaha-app-v313-toast-date-dark-fix',
     builtAt: '2026-06-21',
-    notes: 'Lovable güncelleme paketi: sürüm kontrolü eşitlendi, bakım güncelleme algısı düzeltildi, kayıt sonrası boy değeri korunup çap temiz kalacak şekilde güçlendirildi, tekrar eden inline script kimlikleri düzenlendi.'
+    notes: 'Kayıt alındı bildirimi görünür hale getirildi, mesaha tarihi açılışta güncel güne sabitlendi, karanlık modda beyaz kalan kart/buton/alanlar koyu temaya uyarlandı.'
   };
   root.MESAHA_VERSION = info;
   root.MESAHA_VERSION_TEXT = info.visibleVersion;
@@ -407,7 +487,7 @@ body.dark .update-status-box{background:#111827;color:#cbd5e1}
   <div id="startup" class="startup">
     <div class="startup-card startup-card-v311">
       <img src="./assets/mesaha_logo.png" alt="" />
-      <strong>v3.12</strong>
+      <strong>v3.13</strong>
       <span id="startupTitle">Mesaha İO hazırlanıyor…</span>
       <ul id="startupSteps" class="startup-steps">
         <li data-step="files">Dosyalar kontrol ediliyor</li>
@@ -422,7 +502,7 @@ body.dark .update-status-box{background:#111827;color:#cbd5e1}
     <header class="topbar">
       <div class="brand">
         <img src="./assets/mesaha_logo.png" alt="Mesaha İO" />
-        <div class="version-card"><b id="versionText">v3.12</b><small>v312-lovable-update-fix</small></div>
+        <div class="version-card"><b id="versionText">v3.13</b><small>v313-toast-date-dark-fix</small></div>
       </div>
       <div id="userBadge" class="user-badge">Yakup • Yaylacık</div>
       <button id="themeBtn" class="icon-btn" type="button" aria-label="Tema">◐</button>
@@ -490,7 +570,7 @@ body.dark .update-status-box{background:#111827;color:#cbd5e1}
       </section>
 
       <section id="entryView" class="view entry-view">
-        <header class="entry-top"><div class="version-card"><b>v3.12</b><small>v312-lovable-update-fix</small></div><button id="entryHomeBtn" class="btn primary" type="button">🏠 Ana Sayfaya Dön</button></header>
+        <header class="entry-top"><div class="version-card"><b>v3.13</b><small>v313-toast-date-dark-fix</small></div><button id="entryHomeBtn" class="btn primary" type="button">🏠 Ana Sayfaya Dön</button></header>
         <section class="entry-total"><div><small>Toplam Adet</small><b id="entryTotalCount">0</b></div><div><small>Toplam m³</small><b id="entryTotalM3">0 m³</b></div></section>
         <section class="entry-form card">
           <div class="cutter-row"><div id="cutterChips" class="chip-wrap"></div><button id="addCutterBtn" class="btn primary" type="button">＋ Kesimci Ekle</button></div>
@@ -584,7 +664,7 @@ body.dark .update-status-box{background:#111827;color:#cbd5e1}
 
   <div id="toast" class="toast"></div>
 
-  <script id="mesaha-inline-orbis-v312">
+  <script id="mesaha-inline-orbis-v313">
 (function(root){
 'use strict';
 const HEADERS = ["agacId","agacAdi","odunId","odunAdi","kaliteSinifi","boySinifi","adet","cap","boy","hacim","uretimTarihi","barkodNo"];
@@ -1187,12 +1267,12 @@ root.OrbisXls = { downloadXls, makeXls, headers: HEADERS };
 })(window);
 
   </script>
-  <script id="mesaha-inline-app-v312">
+  <script id="mesaha-inline-app-v313">
 (function(){
 'use strict';
 const STORAGE_KEY = 'cam_mesaha_kayitlari_v1';
 const SETTINGS_KEY = 'cam_mesaha_ayarlar_v1';
-const VERSION = window.MESAHA_VERSION || {shortVersion:'v3.12', version:'v312-lovable-update-fix'};
+const VERSION = window.MESAHA_VERSION || {shortVersion:'v3.13', version:'v313-toast-date-dark-fix'};
 const PRODUCTS = [
   {key:'Tomruk', label:'Tomruk', cls:'tomruk', rule:'Tomruk: çap 21 ve üzeri olmalı.'},
   {key:'Maden Direk', label:'Maden', cls:'maden', rule:'Maden: çap 20 ve altı olmalı.'},
@@ -1494,7 +1574,7 @@ function exportXls(){
   const file=`Mesaha_${bolme?bolme+'_':''}${formatDateFile()}.xls`;
   if(window.OrbisXls) window.OrbisXls.downloadXls(ordered, file); else toast('XLS modülü yüklenmedi.');
 }
-function backupJson(){ const data={version:'v3.12-extras', exportedAt:new Date().toISOString(), records:state.records, settings:state.settings}; downloadText(JSON.stringify(data,null,2), `mesaha_yedek_${formatDateFile()}.json`, 'application/json'); toast('Yedek indirildi.'); }
+function backupJson(){ const data={version:'v3.13-extras', exportedAt:new Date().toISOString(), records:state.records, settings:state.settings}; downloadText(JSON.stringify(data,null,2), `mesaha_yedek_${formatDateFile()}.json`, 'application/json'); toast('Yedek indirildi.'); }
 function restoreJson(e){ const file=e.target.files && e.target.files[0]; if(!file) return; const reader=new FileReader(); reader.onload=()=>{ try{ const data=JSON.parse(reader.result); const records=Array.isArray(data) ? data : data.records; if(!Array.isArray(records)) throw new Error('records yok'); state.records=records.map(migrateRecord).filter(Boolean); if(data.settings) state.settings={...state.settings,...data.settings}; saveRecords(); saveSettings(); renderAll(); toast('Yedek yüklendi.'); }catch(err){ toast('Yedek okunamadı.'); } e.target.value=''; }; reader.readAsText(file); }
 function downloadText(content, filename, type){ const blob=new Blob([content],{type}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=filename; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),1000); }
 window.state = state;
@@ -1513,7 +1593,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 
   </script>
 
-  <script id="mesaha-inline-v312-patch-1">
+  <script id="mesaha-inline-v313-patch-1">
 
 
 /* v311: admin hariç eksik parçalar - canlı ölçüm, aynı barkod, seçimli kayıtlar, bakım, özet */
@@ -1958,7 +2038,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 })();
 
   </script>
-  <script id="mesaha-inline-v312-patch-2">
+  <script id="mesaha-inline-v313-patch-2">
 
 
 /* v311: modern pencereler + yedek zip + başlangıç/güncelleme + seçili/filtreli bilgi */
@@ -2247,7 +2327,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   }
   function backupZip(){
     const data = {
-      version:'v3.12-modern',
+      version:'v3.13-modern',
       exportedAt:new Date().toISOString(),
       records:records(),
       settings:settings()
@@ -2548,7 +2628,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 })();
 
   </script>
-  <script id="mesaha-inline-v312-patch-3">
+  <script id="mesaha-inline-v313-patch-3">
 
 
 /* v311: Boy solda / Çap sağda, klavye kapanmasın, seçili filtre BEYAN toplamı, düzenlemede barkod devamı */
@@ -2731,7 +2811,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 })();
 
   </script>
-  <script id="mesaha-inline-v312-patch-4">
+  <script id="mesaha-inline-v313-patch-4">
 
 
 /* v311: mobil oturum + ölçüm kısayollarında klavye kapanmasın */
@@ -2839,7 +2919,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 })();
 
   </script>
-  <script id="mesaha-inline-v312-patch-5">
+  <script id="mesaha-inline-v313-patch-5">
 
 
 /* v311: iOS klavyede Kaydet butonunu klavye üstünde tut */
@@ -2922,7 +3002,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 })();
 
   </script>
-  <script id="mesaha-inline-v312-patch-6">
+  <script id="mesaha-inline-v313-patch-6">
 
 
 /* v311: detaylı kayıt toast + bakım güncelleme bildirimi */
@@ -3014,7 +3094,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 })();
 
   </script>
-  <script id="mesaha-inline-v312-patch-7">
+  <script id="mesaha-inline-v313-patch-7">
 
 
 /* v311: kayıt bildirimi klavye üstüne + boy son değer + ölçüm butonları üstte */
@@ -3078,6 +3158,85 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, {once:true});
   else boot();
   [200,700,1500].forEach(ms => setTimeout(boot, ms));
+})();
+
+  </script>
+  <script id="mesaha-inline-v313-toast-date-dark-fix">
+
+
+/* v313: kayıt alındı toast görünürlüğü + güncel mesaha tarihi */
+(function(){
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const productLabel = key => ({'Tomruk':'Tomruk','Maden Direk':'Maden','Kağıtlık':'Kağıtlık','Sanayi Odunu':'Sanayi','Tel Direk':'Tel'}[key] || key || '');
+  function todayISO(){ const d = new Date(); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0,10); }
+  function keyboardInset(){
+    try{
+      if(window.visualViewport){
+        const vv = window.visualViewport;
+        return Math.max(0, Math.round(window.innerHeight - vv.height - vv.offsetTop));
+      }
+    }catch{}
+    return 0;
+  }
+  function ensureToast(){
+    let el = $('saveFloatToastV310') || $('saveFloatToastV313');
+    if(!el){
+      el = document.createElement('div');
+      el.id = 'saveFloatToastV310';
+      document.body.appendChild(el);
+    }
+    el.className = 'save-float-toast-v310 save-float-toast-v313';
+    if(!el.querySelector('.txt')) el.innerHTML = '<span class="ico">✓</span><span class="txt"><b></b><small></small></span>';
+    return el;
+  }
+  function placeToast(el){
+    const inset = keyboardInset();
+    const activeId = document.activeElement && document.activeElement.id;
+    const entryActive = document.body.classList.contains('entry-open') || ['diameterInput','lengthInput','barcodeInput'].includes(activeId);
+    const bottom = entryActive ? Math.max(inset + 14, 118) : 104;
+    document.documentElement.style.setProperty('--save-toast-bottom-v313', bottom + 'px');
+    el.style.setProperty('bottom', `calc(${bottom}px + env(safe-area-inset-bottom,0px))`, 'important');
+    el.style.setProperty('top', 'auto', 'important');
+    el.style.setProperty('left', window.innerWidth <= 430 ? '8px' : '10px', 'important');
+    el.style.setProperty('right', 'auto', 'important');
+  }
+  window.mesahaV310SavedToast = function(rec, wasEditing){
+    const el = ensureToast();
+    const title = `${rec && rec.barcode || ''} ${rec && rec.diameter || ''}Ç ${rec && rec.length || ''}B ${productLabel(rec && rec.productType)}`.trim();
+    const b = el.querySelector('b');
+    const s = el.querySelector('small');
+    if(b) b.textContent = title || 'Kayıt';
+    if(s) s.textContent = wasEditing ? 'Güncellendi' : 'Eklendi';
+    placeToast(el);
+    el.classList.remove('show');
+    void el.offsetWidth;
+    el.classList.add('show');
+    clearTimeout(el.__timer);
+    el.__timer = setTimeout(() => el.classList.remove('show'), 2600);
+  };
+  function applyToday(){
+    const today = todayISO();
+    try{
+      if(window.state && window.state.settings){
+        window.state.settings.mesahaDate = today;
+        if(typeof window.saveSettings === 'function') window.saveSettings();
+      }
+    }catch{}
+    const input = $('mesahaDate');
+    if(input && input.value !== today) input.value = today;
+  }
+  function boot(){
+    ensureToast();
+    applyToday();
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, {once:true}); else boot();
+  [120,450,1000,1800].forEach(ms => setTimeout(boot, ms));
+  window.addEventListener('resize', () => { const el=$('saveFloatToastV310'); if(el) placeToast(el); }, {passive:true});
+  if(window.visualViewport){
+    window.visualViewport.addEventListener('resize', () => { const el=$('saveFloatToastV310'); if(el) placeToast(el); }, {passive:true});
+    window.visualViewport.addEventListener('scroll', () => { const el=$('saveFloatToastV310'); if(el) placeToast(el); }, {passive:true});
+  }
 })();
 
   </script>

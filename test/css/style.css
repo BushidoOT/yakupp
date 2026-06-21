@@ -365,3 +365,83 @@ body.dark .update-status-box{background:#111827;color:#cbd5e1}
 .save-float-toast-v310.save-float-toast-v312 b{font-size:14px!important;max-width:100%!important}
 .save-float-toast-v310.save-float-toast-v312 small{font-size:11px!important}
 @media(max-width:430px){.save-float-toast-v310.save-float-toast-v312{left:8px!important;width:calc(100vw - 150px)!important;max-width:calc(100vw - 150px)!important;padding:8px 9px!important}.save-float-toast-v310.save-float-toast-v312 .ico{width:32px!important;height:32px!important}.save-float-toast-v310.save-float-toast-v312 b{font-size:12.5px!important}.save-float-toast-v310.save-float-toast-v312 small{font-size:10px!important}}
+
+/* v313: kayıt bildirimi kesin görünür + karanlık mod beyaz alan düzeltmeleri */
+.save-float-toast-v310.save-float-toast-v313,
+.save-float-toast-v311.save-float-toast-v313,
+.save-float-toast-v313{
+  position:fixed!important;
+  left:10px!important;
+  right:auto!important;
+  top:auto!important;
+  bottom:calc(var(--save-toast-bottom-v313, 118px) + env(safe-area-inset-bottom,0px))!important;
+  width:min(62vw, 330px)!important;
+  max-width:calc(100vw - 152px)!important;
+  min-height:52px!important;
+  z-index:2147483000!important;
+  display:none!important;
+  align-items:center!important;
+  gap:10px!important;
+  padding:9px 11px!important;
+  border-radius:20px!important;
+  border:1px solid rgba(255,255,255,.36)!important;
+  background:rgba(15,23,42,.62)!important;
+  color:#fff!important;
+  box-shadow:0 18px 48px rgba(0,0,0,.30)!important;
+  backdrop-filter:blur(18px)!important;
+  -webkit-backdrop-filter:blur(18px)!important;
+  pointer-events:none!important;
+  transform:translateZ(0)!important;
+}
+.save-float-toast-v313.show{display:flex!important;animation:saveToastV313 .16s ease-out!important}
+.save-float-toast-v313 .ico{width:34px!important;height:34px!important;border-radius:14px!important;display:grid!important;place-items:center!important;background:rgba(22,163,74,.95)!important;color:#fff!important;font-weight:950!important;flex:0 0 auto!important}
+.save-float-toast-v313 .txt{min-width:0!important;display:block!important}
+.save-float-toast-v313 b{display:block!important;font-size:14px!important;line-height:1.1!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;color:#fff!important}
+.save-float-toast-v313 small{display:block!important;margin-top:3px!important;font-size:11px!important;line-height:1.1!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;color:rgba(255,255,255,.88)!important}
+@keyframes saveToastV313{from{opacity:0;transform:translate3d(-4px,10px,0)}to{opacity:1;transform:translate3d(0,0,0)}}
+@media(max-width:430px){.save-float-toast-v313{left:8px!important;width:calc(100vw - 148px)!important;max-width:calc(100vw - 148px)!important;min-height:50px!important;padding:8px 9px!important}.save-float-toast-v313 .ico{width:31px!important;height:31px!important}.save-float-toast-v313 b{font-size:12.5px!important}.save-float-toast-v313 small{font-size:10px!important}}
+
+body.dark .summary-grid>div,
+body.dark .detail-summary-grid div,
+body.dark .btn:not(.primary):not(.green):not(.orange):not(.warning):not(.danger),
+body.dark .chip:not(.active),
+body.dark .filter-chip:not(.active),
+body.dark .quick-grid button,
+body.dark .recent-box,
+body.dark .recent-item:not(.product-tomruk):not(.product-maden):not(.product-kagit):not(.product-sanayi):not(.product-tel),
+body.dark .prod-total,
+body.dark .filter-box,
+body.dark .record-actions button,
+body.dark .record-toolbar,
+body.dark .barcode-save label,
+body.dark .measure-grid label,
+body.dark .check-card,
+body.dark .tree-option,
+body.dark .qty-box{
+  background:#0b1220!important;
+  color:#f8fafc!important;
+  border-color:#334155!important;
+}
+body.dark .summary-grid>div{background:linear-gradient(135deg,#0b1220,#0f172a)!important}
+body.dark .btn.soft, body.dark .btn.ghost{background:#111827!important;color:#f8fafc!important;border-color:#334155!important}
+body.dark input, body.dark select, body.dark textarea{background:#111827!important;color:#f8fafc!important;border-color:#334155!important;color-scheme:dark}
+body.dark input::placeholder, body.dark textarea::placeholder{color:#94a3b8!important}
+body.dark .section-head span, body.dark .pill, body.dark .chip.active, body.dark .filter-chip.active{background:#064e3b!important;color:#bbf7d0!important;border-color:#166534!important}
+body.dark .entry-launch b{color:#bbf7d0!important}
+body.dark .user-badge{background:#052e16!important;color:#bbf7d0!important;border-color:#166534!important}
+body.dark .update-status-box.update-available{background:#3b2f0a!important;color:#fde68a!important;border-color:#a16207!important}
+body.dark .update-status-box.update-ok{background:#052e16!important;color:#bbf7d0!important;border-color:#166534!important}
+body.dark .update-status-box.update-offline{background:#111827!important;color:#cbd5e1!important;border-color:#334155!important}
+body.dark .product-btn{background:#0b1220!important;color:#f8fafc!important;border-color:#334155!important}
+body.dark .product-btn.product-tomruk{border-color:#eab308!important;color:#fde68a!important;background:#241f09!important}
+body.dark .product-btn.product-maden{border-color:#2563eb!important;color:#bfdbfe!important;background:#081a33!important}
+body.dark .product-btn.product-kagit{border-color:#dc2626!important;color:#fecaca!important;background:#2b0d0d!important}
+body.dark .product-btn.product-sanayi{border-color:#16a34a!important;color:#bbf7d0!important;background:#082513!important}
+body.dark .product-btn.product-tel{border-color:#7c3aed!important;color:#ddd6fe!important;background:#1d1233!important}
+body.dark .product-btn.active::after{background:#f8fafc!important;color:#0f172a!important;border-color:#0f172a!important}
+body.dark .prod-total.product-tomruk{background:#241f09!important;color:#fde68a!important}
+body.dark .prod-total.product-maden{background:#081a33!important;color:#bfdbfe!important}
+body.dark .prod-total.product-kagit{background:#2b0d0d!important;color:#fecaca!important}
+body.dark .prod-total.product-sanayi{background:#082513!important;color:#bbf7d0!important}
+body.dark .prod-total.product-tel{background:#1d1233!important;color:#ddd6fe!important}
+

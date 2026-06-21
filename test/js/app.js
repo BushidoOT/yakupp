@@ -2,7 +2,7 @@
 'use strict';
 const STORAGE_KEY = 'cam_mesaha_kayitlari_v1';
 const SETTINGS_KEY = 'cam_mesaha_ayarlar_v1';
-const VERSION = window.MESAHA_VERSION || {shortVersion:'v3.12', version:'v312-lovable-update-fix'};
+const VERSION = window.MESAHA_VERSION || {shortVersion:'v3.13', version:'v313-toast-date-dark-fix'};
 const PRODUCTS = [
   {key:'Tomruk', label:'Tomruk', cls:'tomruk', rule:'Tomruk: çap 21 ve üzeri olmalı.'},
   {key:'Maden Direk', label:'Maden', cls:'maden', rule:'Maden: çap 20 ve altı olmalı.'},
@@ -304,7 +304,7 @@ function exportXls(){
   const file=`Mesaha_${bolme?bolme+'_':''}${formatDateFile()}.xls`;
   if(window.OrbisXls) window.OrbisXls.downloadXls(ordered, file); else toast('XLS modülü yüklenmedi.');
 }
-function backupJson(){ const data={version:'v3.12-extras', exportedAt:new Date().toISOString(), records:state.records, settings:state.settings}; downloadText(JSON.stringify(data,null,2), `mesaha_yedek_${formatDateFile()}.json`, 'application/json'); toast('Yedek indirildi.'); }
+function backupJson(){ const data={version:'v3.13-extras', exportedAt:new Date().toISOString(), records:state.records, settings:state.settings}; downloadText(JSON.stringify(data,null,2), `mesaha_yedek_${formatDateFile()}.json`, 'application/json'); toast('Yedek indirildi.'); }
 function restoreJson(e){ const file=e.target.files && e.target.files[0]; if(!file) return; const reader=new FileReader(); reader.onload=()=>{ try{ const data=JSON.parse(reader.result); const records=Array.isArray(data) ? data : data.records; if(!Array.isArray(records)) throw new Error('records yok'); state.records=records.map(migrateRecord).filter(Boolean); if(data.settings) state.settings={...state.settings,...data.settings}; saveRecords(); saveSettings(); renderAll(); toast('Yedek yüklendi.'); }catch(err){ toast('Yedek okunamadı.'); } e.target.value=''; }; reader.readAsText(file); }
 function downloadText(content, filename, type){ const blob=new Blob([content],{type}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=filename; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),1000); }
 window.state = state;
@@ -1050,7 +1050,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   }
   function backupZip(){
     const data = {
-      version:'v3.12-modern',
+      version:'v3.13-modern',
       exportedAt:new Date().toISOString(),
       records:records(),
       settings:settings()
@@ -1867,3 +1867,79 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   else boot();
   [200,700,1500].forEach(ms => setTimeout(boot, ms));
 })();
+
+/* v313: kayıt alındı toast görünürlüğü + güncel mesaha tarihi */
+(function(){
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const productLabel = key => ({'Tomruk':'Tomruk','Maden Direk':'Maden','Kağıtlık':'Kağıtlık','Sanayi Odunu':'Sanayi','Tel Direk':'Tel'}[key] || key || '');
+  function todayISO(){ const d = new Date(); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0,10); }
+  function keyboardInset(){
+    try{
+      if(window.visualViewport){
+        const vv = window.visualViewport;
+        return Math.max(0, Math.round(window.innerHeight - vv.height - vv.offsetTop));
+      }
+    }catch{}
+    return 0;
+  }
+  function ensureToast(){
+    let el = $('saveFloatToastV310') || $('saveFloatToastV313');
+    if(!el){
+      el = document.createElement('div');
+      el.id = 'saveFloatToastV310';
+      document.body.appendChild(el);
+    }
+    el.className = 'save-float-toast-v310 save-float-toast-v313';
+    if(!el.querySelector('.txt')) el.innerHTML = '<span class="ico">✓</span><span class="txt"><b></b><small></small></span>';
+    return el;
+  }
+  function placeToast(el){
+    const inset = keyboardInset();
+    const activeId = document.activeElement && document.activeElement.id;
+    const entryActive = document.body.classList.contains('entry-open') || ['diameterInput','lengthInput','barcodeInput'].includes(activeId);
+    const bottom = entryActive ? Math.max(inset + 14, 118) : 104;
+    document.documentElement.style.setProperty('--save-toast-bottom-v313', bottom + 'px');
+    el.style.setProperty('bottom', `calc(${bottom}px + env(safe-area-inset-bottom,0px))`, 'important');
+    el.style.setProperty('top', 'auto', 'important');
+    el.style.setProperty('left', window.innerWidth <= 430 ? '8px' : '10px', 'important');
+    el.style.setProperty('right', 'auto', 'important');
+  }
+  window.mesahaV310SavedToast = function(rec, wasEditing){
+    const el = ensureToast();
+    const title = `${rec && rec.barcode || ''} ${rec && rec.diameter || ''}Ç ${rec && rec.length || ''}B ${productLabel(rec && rec.productType)}`.trim();
+    const b = el.querySelector('b');
+    const s = el.querySelector('small');
+    if(b) b.textContent = title || 'Kayıt';
+    if(s) s.textContent = wasEditing ? 'Güncellendi' : 'Eklendi';
+    placeToast(el);
+    el.classList.remove('show');
+    void el.offsetWidth;
+    el.classList.add('show');
+    clearTimeout(el.__timer);
+    el.__timer = setTimeout(() => el.classList.remove('show'), 2600);
+  };
+  function applyToday(){
+    const today = todayISO();
+    try{
+      if(window.state && window.state.settings){
+        window.state.settings.mesahaDate = today;
+        if(typeof window.saveSettings === 'function') window.saveSettings();
+      }
+    }catch{}
+    const input = $('mesahaDate');
+    if(input && input.value !== today) input.value = today;
+  }
+  function boot(){
+    ensureToast();
+    applyToday();
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, {once:true}); else boot();
+  [120,450,1000,1800].forEach(ms => setTimeout(boot, ms));
+  window.addEventListener('resize', () => { const el=$('saveFloatToastV310'); if(el) placeToast(el); }, {passive:true});
+  if(window.visualViewport){
+    window.visualViewport.addEventListener('resize', () => { const el=$('saveFloatToastV310'); if(el) placeToast(el); }, {passive:true});
+    window.visualViewport.addEventListener('scroll', () => { const el=$('saveFloatToastV310'); if(el) placeToast(el); }, {passive:true});
+  }
+})();
+
