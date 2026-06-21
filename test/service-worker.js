@@ -1,8 +1,8 @@
-importScripts('./js/version.js?v=318');
-const CACHE_NAME = (self.MESAHA_VERSION && self.MESAHA_VERSION.cacheName) || 'mesaha-app-v318-admin-pro-backup-delete';
+importScripts('./js/version.js?v=319');
+const CACHE_NAME = (self.MESAHA_VERSION && self.MESAHA_VERSION.cacheName) || 'mesaha-app-v319-first-login-fix';
 const ASSETS = [
   './','./index.html','./admin.html','./manifest.json','./version.json','./service-worker.js',
-  './css/style.css?v=318','./js/version.js?v=318','./js/orbis-xls.js?v=318','./js/app.js?v=318',
+  './css/style.css?v=319','./js/version.js?v=319','./js/orbis-xls.js?v=319','./js/app.js?v=319',
   './assets/icon-192.png','./assets/icon-512.png','./assets/mesaha_logo.png',
   './icon-192.png','./icon-512.png','./mesaha_logo.png'
 ];

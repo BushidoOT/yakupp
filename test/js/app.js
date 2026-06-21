@@ -2,7 +2,7 @@
 'use strict';
 const STORAGE_KEY = 'cam_mesaha_kayitlari_v1';
 const SETTINGS_KEY = 'cam_mesaha_ayarlar_v1';
-const VERSION = window.MESAHA_VERSION || {shortVersion:'v3.18', version:'v318-admin-pro-backup-delete'};
+const VERSION = window.MESAHA_VERSION || {shortVersion:'v3.19', version:'v319-first-login-fix'};
 const PRODUCTS = [
   {key:'Tomruk', label:'Tomruk', cls:'tomruk', rule:'Tomruk: çap 21 ve üzeri olmalı.'},
   {key:'Maden Direk', label:'Maden', cls:'maden', rule:'Maden: çap 20 ve altı olmalı.'},
@@ -12,7 +12,7 @@ const PRODUCTS = [
 ];
 const TREES = ['Karaçam','Sarıçam','Sedir','Göknar','Kızılçam'];
 const defaults = {
-  bolmeNo:'', seflik:'Yaylacık', ekipNot:'Yakup', mesahaDate: todayISO(),
+  bolmeNo:'', seflik:'', ekipNot:'', mesahaDate: todayISO(),
   visibleProducts:['Tomruk','Maden Direk','Kağıtlık'], visibleTrees:TREES.slice(),
   currentProduct:'Tomruk', currentTree:'Karaçam', treePanelOpen:false,
   length:'3', diameter:'', barcode:'', recentLengths:['3'], recentDiameters:[],
@@ -235,7 +235,7 @@ function openEntry(record){
 }
 function renderAll(){ renderVersion(); renderUser(); renderNetwork(); renderHome(); renderEntry(); renderRecords(); renderSound(); }
 function renderVersion(){ $('versionText').textContent=VERSION.shortVersion || 'v3.00'; document.querySelectorAll('.version-card b').forEach(b=>b.textContent=VERSION.shortVersion||'v3.00'); document.querySelectorAll('.version-card small').forEach(s=>s.textContent=VERSION.version||'v300-clean'); }
-function renderUser(){ $('userBadge').textContent = `${norm(state.settings.ekipNot)||'Yakup'} • ${norm(state.settings.seflik)||'Yaylacık'}`; }
+function renderUser(){ const n=norm(state.settings.ekipNot), sf=norm(state.settings.seflik); const badge=$('userBadge'); if(!badge) return; badge.textContent=(n||sf)?`${n||'Kullanıcı'} • ${sf||'Şeflik yok'}`:'Giriş Yap'; badge.classList.toggle('login-needed', !(n&&sf)); }
 function renderNetwork(){ $('netText').textContent = navigator.onLine ? 'Çevrim içi' : 'Çevrimdışı'; }
 function renderSound(){ $('soundBtn').textContent = state.settings.soundEnabled===false ? 'Ses: Kapalı' : 'Ses: Açık'; }
 function renderHome(){
@@ -349,7 +349,7 @@ function exportXls(){
   const file=`Mesaha_${bolme?bolme+'_':''}${formatDateFile()}.xls`;
   if(window.OrbisXls) window.OrbisXls.downloadXls(ordered, file); else toast('XLS modülü yüklenmedi.');
 }
-function backupJson(){ const data={version:'v3.18-extras', exportedAt:new Date().toISOString(), records:state.records, settings:state.settings}; downloadText(JSON.stringify(data,null,2), `mesaha_yedek_${formatDateFile()}.json`, 'application/json'); toast('Yedek indirildi.'); }
+function backupJson(){ const data={version:'v3.19-extras', exportedAt:new Date().toISOString(), records:state.records, settings:state.settings}; downloadText(JSON.stringify(data,null,2), `mesaha_yedek_${formatDateFile()}.json`, 'application/json'); toast('Yedek indirildi.'); }
 function restoreJson(e){ const file=e.target.files && e.target.files[0]; if(!file) return; const reader=new FileReader(); reader.onload=()=>{ try{ const data=JSON.parse(reader.result); const records=Array.isArray(data) ? data : data.records; if(!Array.isArray(records)) throw new Error('records yok'); state.records=records.map(migrateRecord).filter(Boolean); if(data.settings) state.settings={...state.settings,...data.settings}; saveRecords(); saveSettings(); renderAll(); toast('Yedek yüklendi.'); }catch(err){ toast('Yedek okunamadı.'); } e.target.value=''; }; reader.readAsText(file); }
 function downloadText(content, filename, type){ const blob=new Blob([content],{type}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=filename; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),1000); }
 window.state = state;
@@ -1095,7 +1095,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   }
   function backupZip(){
     const data = {
-      version:'v3.18-modern',
+      version:'v3.19-modern',
       exportedAt:new Date().toISOString(),
       records:records(),
       settings:settings()
