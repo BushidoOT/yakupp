@@ -494,7 +494,7 @@ body.dark .prod-total.product-tel{background:#1d1233!important;color:#ddd6fe!imp
   <script id="mesaha-inline-version-v315">
 (function(root){
   'use strict';
-  const info = {"app": "V3.35", "version": "v338-yayin-kilavuz-optimizasyon", "build": 338, "visibleVersion": "V3.35 •ExelanceX•", "shortVersion": "V3.35 •ExelanceX•", "name": "Mesaha İO V3.35 •ExelanceX•", "cacheName": "mesaha-app-v338-yayin-kilavuz-optimizasyon", "builtAt": "2026-06-21T22:30:00+03:00", "notes": "Yayın öncesi kılavuz güncellendi, Beyan İndir PDF akışı korundu, eski yazdırma kodları temizlendi, sürüm baloncuğu ExelanceX olarak düzenlendi ve gereksiz kök medya kopyaları kaldırıldı.", "assetVersion": "338"};
+  const info = {"app": "V3.35", "version": "v339-olcum-filtre-onay-sesi-fix", "build": 339, "visibleVersion": "V3.35 •ExelanceX•", "shortVersion": "V3.35 •ExelanceX•", "name": "Mesaha İO V3.35 •ExelanceX•", "cacheName": "mesaha-app-v339-olcum-filtre-onay-sesi-fix", "builtAt": "2026-06-21T22:30:00+03:00", "notes": "Yayın öncesi kılavuz güncellendi, Beyan İndir PDF akışı korundu, eski yazdırma kodları temizlendi, sürüm baloncuğu ExelanceX olarak düzenlendi ve gereksiz kök medya kopyaları kaldırıldı.", "assetVersion": "339"};
   root.MESAHA_VERSION = info;
   root.MESAHA_VERSION_TEXT = info.visibleVersion;
   root.MESAHA_VERSION_SHORT = info.shortVersion;
@@ -3513,9 +3513,55 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     const d = new Date();
     return d.toLocaleDateString('tr-TR');
   }
+  function productPrintBoxes(){
+    const cards = Array.from(document.querySelectorAll('#productTotals .prod-total'));
+    if(!cards.length) return '<div class="print-beyan-box-v315"><small>Ürün toplamı</small><b>Kayıt yok</b></div>';
+    return cards.map(card => {
+      const lines = Array.from(card.querySelectorAll('small,b')).map(x => (x.textContent || '').trim()).filter(Boolean);
+      const label = lines[0] || 'Ürün';
+      const m3 = lines[1] || '0 m³';
+      const adet = lines[2] || '0 adet';
+      return `<div class="print-beyan-box-v315"><small>${esc(label)}</small><b>${esc(m3)}</b><small>${esc(adet)}</small></div>`;
+    }).join('');
+  }
+  function buildPrintPage(){
+    try{ window.mesahaV305 && window.mesahaV305.updateBeyanTotals && window.mesahaV305.updateBeyanTotals(); }catch{}
+    let holder = $('printBeyanPageV314');
+    if(!holder){
+      holder = document.createElement('section');
+      holder.id = 'printBeyanPageV314';
+      holder.className = 'print-beyan-page-v315';
+      document.body.appendChild(holder);
+    }
+    const tree = text('treeFilterText','Seçili: Tümü').replace(/^Seçili:\s*/,'');
+    const cutter = text('cutterFilterText','Seçili: Tümü').replace(/^Seçili:\s*/,'');
+    holder.innerHTML = `
+      <div class="print-beyan-head-v315">
+        <img src="./assets/mesaha_logo.png" alt="Mesaha İO">
+        <div><h1>BEYAN ÖZETİ</h1><small>Mesaha İO • ${esc(todayTR())}</small></div>
+      </div>
+      <div class="print-beyan-meta-v315">
+        <div class="print-beyan-box-v315"><small>Toplam m³</small><b>${esc(text('recTotalM3','0 m³'))}</b></div>
+        <div class="print-beyan-box-v315"><small>Toplam Adet</small><b>${esc(text('recTotalCount','0'))}</b></div>
+        <div class="print-beyan-box-v315"><small>Kayıt</small><b>${esc(text('recordCountPill','0 kayıt'))}</b></div>
+        <div class="print-beyan-box-v315"><small>Mesaha Tarihi</small><b>${esc(inputValue('mesahaDate','-'))}</b></div>
+      </div>
+      <div class="print-beyan-meta-v315">
+        <div class="print-beyan-box-v315"><small>Ağaç filtresi</small><b>${esc(tree || 'Tümü')}</b></div>
+        <div class="print-beyan-box-v315"><small>Kesimci filtresi</small><b>${esc(cutter || 'Tümü')}</b></div>
+        <div class="print-beyan-box-v315"><small>Bölme No</small><b>${esc(inputValue('bolmeNo','-') || '-')}</b></div>
+        <div class="print-beyan-box-v315"><small>Şeflik</small><b>${esc(inputValue('seflik','-') || '-')}</b></div>
+      </div>
+      <div class="print-beyan-products-v315">${productPrintBoxes()}</div>
+      <div class="print-scope-v315">${esc(text('exportScopeInfo','İndirilecek: Tüm kayıtlar'))}</div>`;
+    return holder;
+  }
+  function printBeyanOnly(){ /* v338: yazdır iptal, PDF indir kullanılıyor */ }
+  function bindPrint(){ /* v338: eski yazdır bağlayıcısı kaldırıldı */ }
   function boot(){
     ensureFloatToast();
     patchToasts();
+    bindPrint();
   }
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, {once:true}); else boot();
   [100,350,900,1800,3000].forEach(ms => setTimeout(boot, ms));
@@ -3793,7 +3839,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 </style>
 <div id="firstLoginOverlayV321" class="first-login-v321 hidden" role="dialog" aria-modal="true" aria-labelledby="firstLoginTitleV321">
   <div class="first-login-card-v321">
-    <div class="first-login-logo-v321"><img src="./assets/mesaha_logo.png" alt=""><div><b id="firstLoginTitleV321">İlk Giriş</b><small>Sadece kullanıcı adı ve şeflik gir</small></div></div>
+    <div class="first-login-logo-v321"><img src="./mesaha_logo.png" alt=""><div><b id="firstLoginTitleV321">İlk Giriş</b><small>Sadece kullanıcı adı ve şeflik gir</small></div></div>
     <label>Kullanıcı Adı<input id="firstLoginNameV321" type="text" autocomplete="name" placeholder="Örn: Yakup"></label>
     <label>Şeflik<input id="firstLoginSeflikV321" type="text" autocomplete="organization" placeholder="Örn: Yaylacık"></label>
     <div class="first-login-actions-v321"><button id="firstLoginSaveV321" class="first-login-primary-v321" type="button">Giriş Yap</button></div>
@@ -4657,6 +4703,7 @@ body:not(.entry-open) #entryView:not(.active){display:none!important;}
 .guide-note-v338{margin:10px 0 0!important;padding:10px 12px!important;border-radius:14px!important;background:#ecfdf5!important;border:1px dashed #a7dfba!important;color:#14532d!important;font-weight:850!important}
 body.dark .guide-section-v338{background:linear-gradient(135deg,#0b1220,#0f2418)!important;border-color:#244236!important}
 body.dark .guide-section-v338 h3,body.dark .guide-section-v338 li,body.dark .guide-note-v338{color:#e8fff2!important}
+#legacyPrintAreaV337,.print-beyan-page-v315,.print-beyan-page-v330,.print-beyan-page-v332,.print-beyan-page-v336{display:none!important}
 #printBtn{background:linear-gradient(180deg,#fbbf24,#f59e0b)!important;color:#173429!important;border-color:#f59e0b!important;font-weight:950!important}
 #printBtn::before{content:"📄";margin-right:6px;font-size:14px}
 @media(max-width:430px){.version-card b{font-size:12px!important}.guide-section-v338{padding:12px!important;border-radius:18px!important}.guide-section-v338 h3{font-size:16px!important}.guide-section-v338 li{font-size:13px!important}}
@@ -4665,8 +4712,8 @@ body.dark .guide-section-v338 h3,body.dark .guide-section-v338 li,body.dark .gui
 (function(){
   'use strict';
   var DISPLAY="V3.35 •ExelanceX•";
-  var BUILD=338;
-  var info={"app": "V3.35", "version": "v338-yayin-kilavuz-optimizasyon", "build": 338, "visibleVersion": "V3.35 •ExelanceX•", "shortVersion": "V3.35 •ExelanceX•", "name": "Mesaha İO V3.35 •ExelanceX•", "cacheName": "mesaha-app-v338-yayin-kilavuz-optimizasyon", "builtAt": "2026-06-21T22:30:00+03:00", "notes": "Yayın öncesi kılavuz güncellendi, Beyan İndir PDF akışı korundu, eski yazdırma kodları temizlendi, sürüm baloncuğu ExelanceX olarak düzenlendi ve gereksiz kök medya kopyaları kaldırıldı.", "assetVersion": "338"};
+  var BUILD=339;
+  var info={"app": "V3.35", "version": "v339-olcum-filtre-onay-sesi-fix", "build": 339, "visibleVersion": "V3.35 •ExelanceX•", "shortVersion": "V3.35 •ExelanceX•", "name": "Mesaha İO V3.35 •ExelanceX•", "cacheName": "mesaha-app-v339-olcum-filtre-onay-sesi-fix", "builtAt": "2026-06-21T22:30:00+03:00", "notes": "Yayın öncesi kılavuz güncellendi, Beyan İndir PDF akışı korundu, eski yazdırma kodları temizlendi, sürüm baloncuğu ExelanceX olarak düzenlendi ve gereksiz kök medya kopyaları kaldırıldı.", "assetVersion": "339"};
   window.MESAHA_VERSION=info;
   window.MESAHA_VERSION_TEXT=DISPLAY;
   window.MESAHA_VERSION_SHORT=DISPLAY;
@@ -4737,6 +4784,111 @@ body.dark .guide-section-v338 h3,body.dark .guide-section-v338 li,body.dark .gui
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
   [150,600,1400,2600].forEach(function(ms){setTimeout(boot,ms)});
   setInterval(applyVersion,5000);
+})();
+</script>
+
+
+<style id="mesaha-v339-final-fix-style">
+/* v339: Ölçümler ürün filtreleri tamamen kaldırıldı */
+#productFilterV325,.product-filter-v325,.filter-chips.product-filter-v325{display:none!important;visibility:hidden!important;height:0!important;min-height:0!important;margin:0!important;padding:0!important;overflow:hidden!important;pointer-events:none!important;}
+#recordsView .record-toolbar #productFilterV325,
+#recordsView .record-toolbar .product-filter-v325{display:none!important;}
+</style>
+<script id="mesaha-v339-final-fix-script">
+(function(){
+  'use strict';
+  var DISPLAY='V3.35 •ExelanceX•';
+  var BUILD=339;
+  var SOUND_VERSION='339';
+  var successSrc='./assets/06_net_islem_onayi.wav?v='+SOUND_VERSION;
+  var warningSrc='./assets/08_hata_uyari_onaydan_farkli.wav?v='+SOUND_VERSION;
+  var lastSuccess=0,lastWarn=0,lastRecordCount=-1;
+  function $(id){return document.getElementById(id)}
+  function qsa(sel,root){return Array.prototype.slice.call((root||document).querySelectorAll(sel))}
+  function now(){return Date.now?Date.now():(new Date()).getTime()}
+  function recordsCount(){try{return window.state&&Array.isArray(window.state.records)?window.state.records.length:0}catch(e){return 0}}
+  function playFile(src,kind){
+    var t=now();
+    if(kind==='success'){ if(t-lastSuccess<520) return; lastSuccess=t; }
+    else { if(t-lastWarn<520) return; lastWarn=t; }
+    try{
+      var a=new Audio(src);
+      a.preload='auto'; a.volume=1;
+      var p=a.play(); if(p&&p.catch) p.catch(function(){});
+    }catch(e){}
+  }
+  function playSuccess(){ playFile(successSrc,'success'); }
+  function playWarning(){ playFile(warningSrc,'warning'); }
+  function removeProductFilters(){
+    qsa('#productFilterV325,.product-filter-v325').forEach(function(el){ try{el.remove();}catch(e){el.style.display='none';} });
+    // Eski render fonksiyonu yeniden eklerse aktif filtreyi görsel olarak sıfırla; kartları asla ürün filtresiyle gizleme.
+    qsa('#recordList .record-card').forEach(function(card){ card.style.display=''; });
+  }
+  function applyVersion(){
+    document.title='Mesaha İO '+DISPLAY;
+    var vt=$('versionText'); if(vt) vt.textContent=DISPLAY;
+    var st=document.querySelector('#startup strong'); if(st) st.textContent=DISPLAY;
+    qsa('.version-card b').forEach(function(b){ if(/^v|^V|^\d/.test((b.textContent||'').trim())) b.textContent=DISPLAY; });
+    qsa('.version-card small').forEach(function(s){s.textContent='';});
+    window.MESAHA_VERSION={app:'V3.35',version:'v339-olcum-filtre-onay-sesi-fix',build:BUILD,visibleVersion:DISPLAY,shortVersion:DISPLAY,name:'Mesaha İO '+DISPLAY,cacheName:'mesaha-app-v339-olcum-filtre-onay-sesi-fix',assetVersion:String(BUILD)};
+    window.MESAHA_VERSION_TEXT=DISPLAY; window.MESAHA_VERSION_SHORT=DISPLAY;
+  }
+  // Eski AudioContext bip sesini kayıt sonrası kapalı tut; 06 sesi doğrudan aşağıdaki tetiklerden gelir.
+  function disableLegacyBeep(){ try{window.beep=function(){};}catch(e){} try{beep=function(){};}catch(e){} }
+  function wrapSavedToast(){
+    if(window.mesahaV310SavedToast && !window.mesahaV310SavedToast.__v339Wrapped){
+      var old=window.mesahaV310SavedToast;
+      var wrapped=function(rec,wasEditing){
+        playSuccess();
+        return old.apply(this,arguments);
+      };
+      wrapped.__v339Wrapped=true;
+      window.mesahaV310SavedToast=wrapped;
+    }
+  }
+  function wrapGenericToasts(){
+    if(window.toast && !window.toast.__v339SoundWrapped){
+      var oldToast=window.toast;
+      var wrappedToast=function(title,detail,kind){
+        var msg=(String(title||'')+' '+String(detail||'')+' '+String(kind||'')).toLocaleLowerCase('tr-TR');
+        if(/eklendi|güncellendi|kaydedildi|alındı|indirildi|yüklendi|başarılı|tamamlandı/.test(msg)) playSuccess();
+        else if(/hata|uyarı|uyari|giriniz|küçük|kucuk|büyük|buyuk|arasında|okunamadı|yüklenmedi|başarısız|kayıtlı|boş/.test(msg)) playWarning();
+        return oldToast.apply(this,arguments);
+      };
+      wrappedToast.__v339SoundWrapped=true;
+      window.toast=wrappedToast;
+    }
+  }
+  function bindSaveSound(){
+    var btn=$('saveBtn');
+    if(!btn || btn.__v339SaveSound) return;
+    btn.__v339SaveSound=true;
+    btn.addEventListener('pointerdown',function(){lastRecordCount=recordsCount();},true);
+    btn.addEventListener('touchstart',function(){lastRecordCount=recordsCount();},true);
+    btn.addEventListener('click',function(){
+      var before=lastRecordCount>=0?lastRecordCount:recordsCount();
+      setTimeout(function(){
+        var after=recordsCount();
+        if(after>before) playSuccess();
+      },120);
+    },true);
+  }
+  function observeSaveToast(){
+    var el=$('saveFloatToastV310'); if(!el || el.__v339Obs) return;
+    el.__v339Obs=true;
+    var mo=new MutationObserver(function(){
+      var txt=(el.textContent||'').toLocaleLowerCase('tr-TR');
+      if(el.classList.contains('show') && /eklendi|güncellendi/.test(txt)) playSuccess();
+    });
+    mo.observe(el,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});
+  }
+  function boot(){applyVersion();disableLegacyBeep();removeProductFilters();wrapSavedToast();wrapGenericToasts();bindSaveSound();observeSaveToast();}
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true}); else boot();
+  [100,400,900,1600,3000].forEach(function(ms){setTimeout(boot,ms)});
+  setInterval(function(){removeProductFilters();wrapSavedToast();wrapGenericToasts();disableLegacyBeep();bindSaveSound();observeSaveToast();},1200);
+  var bodyObs=new MutationObserver(function(){removeProductFilters();observeSaveToast();});
+  try{bodyObs.observe(document.body,{childList:true,subtree:true});}catch(e){}
+  window.mesahaSoundFeedbackV339={playSuccess:playSuccess,playWarning:playWarning,successSrc:successSrc,warningSrc:warningSrc};
 })();
 </script>
 

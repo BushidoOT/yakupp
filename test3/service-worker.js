@@ -1,8 +1,8 @@
-importScripts('./js/version.js?v=338');
-const CACHE_NAME = (self.MESAHA_VERSION && self.MESAHA_VERSION.cacheName) || 'mesaha-app-v338-yayin-kilavuz-optimizasyon';
+importScripts('./js/version.js?v=339');
+const CACHE_NAME = (self.MESAHA_VERSION && self.MESAHA_VERSION.cacheName) || 'mesaha-app-v339-olcum-filtre-onay-sesi-fix';
 const ASSETS = [
   './','./index.html','./admin.html','./manifest.json','./version.json','./service-worker.js',
-  './js/version.js?v=338',
+  './js/version.js?v=339',
   './assets/icon-192.png','./assets/icon-512.png','./assets/mesaha_logo.png',
   './assets/06_net_islem_onayi.wav','./assets/08_hata_uyari_onaydan_farkli.wav'
 ];

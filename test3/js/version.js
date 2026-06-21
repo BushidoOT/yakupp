@@ -1,12 +1,12 @@
 self.MESAHA_VERSION = {
   "app": "V3.35",
-  "version": "v338-yayin-kilavuz-optimizasyon",
-  "build": 338,
+  "version": "v339-olcum-filtre-onay-sesi-fix",
+  "build": 339,
   "visibleVersion": "V3.35 •ExelanceX•",
   "shortVersion": "V3.35 •ExelanceX•",
   "name": "Mesaha İO V3.35 •ExelanceX•",
-  "cacheName": "mesaha-app-v338-yayin-kilavuz-optimizasyon",
-  "builtAt": "2026-06-21T22:30:00+03:00",
-  "notes": "Yayın öncesi kılavuz güncellendi, Beyan İndir PDF akışı korundu, eski yazdırma kodları temizlendi, sürüm baloncuğu ExelanceX olarak düzenlendi ve gereksiz kök medya kopyaları kaldırıldı.",
-  "assetVersion": "338"
+  "cacheName": "mesaha-app-v339-olcum-filtre-onay-sesi-fix",
+  "builtAt": "2026-06-21T23:10:00+03:00",
+  "notes": "Ölçümler ekranındaki ürün filtreleri tamamen kaldırıldı ve kayıt girişinde 06 onay sesi kayıt sonrası doğrudan tetiklenecek şekilde düzeltildi.",
+  "assetVersion": "339"
 };
