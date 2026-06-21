@@ -1,7 +1,7 @@
 {
-  "name": "v3.15",
-  "short_name": "v3.15",
-  "start_url": "./index.html?v=315",
+  "name": "v3.16",
+  "short_name": "v3.16",
+  "start_url": "./index.html?v=316",
   "display": "standalone",
   "background_color": "#f6f9fc",
   "theme_color": "#166534",

@@ -1,12 +1,12 @@
 {
-  "app": "v3.15",
-  "version": "v315-warning-toast-bind-fix",
-  "build": "v315",
-  "visibleVersion": "v3.15",
-  "shortVersion": "v3.15",
-  "name": "v3.15",
-  "cacheName": "mesaha-app-v315-warning-toast-bind-fix",
+  "app": "v3.16",
+  "version": "v316-user-admin-panel-fix",
+  "build": "v316",
+  "visibleVersion": "v3.16",
+  "shortVersion": "v3.16",
+  "name": "v3.16",
+  "cacheName": "mesaha-app-v316-user-admin-panel-fix",
   "builtAt": "2026-06-21",
-  "notes": "Hatalı ürün/çap uyarıları artık eski gizli toast alanında kaybolmaz; kayıt alındı barı ile aynı kayan bildirim alanında görünür.",
-  "assetVersion": "315"
+  "notes": "Kullanıcı paneli, admin paneli, bulut kullanıcı istatistikleri ve uzun uyarı toast yazı sığdırma düzeltmesi eklendi.",
+  "assetVersion": "316"
 }
