@@ -1,6 +1,6 @@
 self.MESAHA_VERSION = {
   app: 'v3.23',
-  version: 'v323-export-only-stats',
+  version: 'v323-designed by ExelanceX',
   build: 'v323',
   visibleVersion: 'v3.23',
   shortVersion: 'v3.23',
