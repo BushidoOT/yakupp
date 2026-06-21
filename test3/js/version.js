@@ -1,12 +1,12 @@
 self.MESAHA_VERSION = {
   "app": "V3.35",
-  "version": "v339-olcum-filtre-onay-sesi-fix",
-  "build": 339,
+  "version": "v341-dark-mode-fix",
+  "build": 341,
   "visibleVersion": "V3.35 •ExelanceX•",
   "shortVersion": "V3.35 •ExelanceX•",
   "name": "Mesaha İO V3.35 •ExelanceX•",
-  "cacheName": "mesaha-app-v339-olcum-filtre-onay-sesi-fix",
-  "builtAt": "2026-06-21T23:10:00+03:00",
-  "notes": "Ölçümler ekranındaki ürün filtreleri tamamen kaldırıldı ve kayıt girişinde 06 onay sesi kayıt sonrası doğrudan tetiklenecek şekilde düzeltildi.",
-  "assetVersion": "339"
+  "cacheName": "mesaha-app-v341-dark-mode-fix",
+  "builtAt": "2026-06-21T22:20:00+03:00",
+  "notes": "Karanlık mod butonu görünür ve aktif hale getirildi.",
+  "assetVersion": "341"
 };

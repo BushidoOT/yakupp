@@ -3839,7 +3839,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 </style>
 <div id="firstLoginOverlayV321" class="first-login-v321 hidden" role="dialog" aria-modal="true" aria-labelledby="firstLoginTitleV321">
   <div class="first-login-card-v321">
-    <div class="first-login-logo-v321"><img src="./mesaha_logo.png" alt=""><div><b id="firstLoginTitleV321">İlk Giriş</b><small>Sadece kullanıcı adı ve şeflik gir</small></div></div>
+    <div class="first-login-logo-v321"><img src="./assets/mesaha_logo.png" alt="Mesaha İO"><div><b id="firstLoginTitleV321">İlk Giriş</b><small>Sadece kullanıcı adı ve şeflik gir</small></div></div>
     <label>Kullanıcı Adı<input id="firstLoginNameV321" type="text" autocomplete="name" placeholder="Örn: Yakup"></label>
     <label>Şeflik<input id="firstLoginSeflikV321" type="text" autocomplete="organization" placeholder="Örn: Yaylacık"></label>
     <div class="first-login-actions-v321"><button id="firstLoginSaveV321" class="first-login-primary-v321" type="button">Giriş Yap</button></div>
@@ -4712,7 +4712,7 @@ body.dark .guide-section-v338 h3,body.dark .guide-section-v338 li,body.dark .gui
 (function(){
   'use strict';
   var DISPLAY="V3.35 •ExelanceX•";
-  var BUILD=339;
+  var BUILD=340;
   var info={"app": "V3.35", "version": "v339-olcum-filtre-onay-sesi-fix", "build": 339, "visibleVersion": "V3.35 •ExelanceX•", "shortVersion": "V3.35 •ExelanceX•", "name": "Mesaha İO V3.35 •ExelanceX•", "cacheName": "mesaha-app-v339-olcum-filtre-onay-sesi-fix", "builtAt": "2026-06-21T22:30:00+03:00", "notes": "Yayın öncesi kılavuz güncellendi, Beyan İndir PDF akışı korundu, eski yazdırma kodları temizlendi, sürüm baloncuğu ExelanceX olarak düzenlendi ve gereksiz kök medya kopyaları kaldırıldı.", "assetVersion": "339"};
   window.MESAHA_VERSION=info;
   window.MESAHA_VERSION_TEXT=DISPLAY;
@@ -4798,8 +4798,8 @@ body.dark .guide-section-v338 h3,body.dark .guide-section-v338 li,body.dark .gui
 (function(){
   'use strict';
   var DISPLAY='V3.35 •ExelanceX•';
-  var BUILD=339;
-  var SOUND_VERSION='339';
+  var BUILD=340;
+  var SOUND_VERSION='340';
   var successSrc='./assets/06_net_islem_onayi.wav?v='+SOUND_VERSION;
   var warningSrc='./assets/08_hata_uyari_onaydan_farkli.wav?v='+SOUND_VERSION;
   var lastSuccess=0,lastWarn=0,lastRecordCount=-1;
@@ -4830,7 +4830,7 @@ body.dark .guide-section-v338 h3,body.dark .guide-section-v338 li,body.dark .gui
     var st=document.querySelector('#startup strong'); if(st) st.textContent=DISPLAY;
     qsa('.version-card b').forEach(function(b){ if(/^v|^V|^\d/.test((b.textContent||'').trim())) b.textContent=DISPLAY; });
     qsa('.version-card small').forEach(function(s){s.textContent='';});
-    window.MESAHA_VERSION={app:'V3.35',version:'v339-olcum-filtre-onay-sesi-fix',build:BUILD,visibleVersion:DISPLAY,shortVersion:DISPLAY,name:'Mesaha İO '+DISPLAY,cacheName:'mesaha-app-v339-olcum-filtre-onay-sesi-fix',assetVersion:String(BUILD)};
+    window.MESAHA_VERSION={app:'V3.35',version:'v340-kullanici-logo-fix',build:BUILD,visibleVersion:DISPLAY,shortVersion:DISPLAY,name:'Mesaha İO '+DISPLAY,cacheName:'mesaha-app-v340-kullanici-logo-fix',assetVersion:String(BUILD)};
     window.MESAHA_VERSION_TEXT=DISPLAY; window.MESAHA_VERSION_SHORT=DISPLAY;
   }
   // Eski AudioContext bip sesini kayıt sonrası kapalı tut; 06 sesi doğrudan aşağıdaki tetiklerden gelir.
@@ -4889,6 +4889,138 @@ body.dark .guide-section-v338 h3,body.dark .guide-section-v338 li,body.dark .gui
   var bodyObs=new MutationObserver(function(){removeProductFilters();observeSaveToast();});
   try{bodyObs.observe(document.body,{childList:true,subtree:true});}catch(e){}
   window.mesahaSoundFeedbackV339={playSuccess:playSuccess,playWarning:playWarning,successSrc:successSrc,warningSrc:warningSrc};
+})();
+</script>
+
+
+<style id="mesaha-v340-user-logo-fix-style">
+/* v340: ilk giriş logosu ve kullanıcı adına göre karşılama */
+.first-login-logo-v321 img{display:block!important;width:56px!important;height:56px!important;object-fit:contain!important;border-radius:16px!important;background:#fff!important;box-shadow:0 8px 18px rgba(13,95,59,.12)!important;}
+</style>
+<script id="mesaha-v340-user-logo-fix-script">
+(function(){
+  'use strict';
+  var PANEL_KEY='mesaha_panel_user_v316';
+  function $(id){return document.getElementById(id)}
+  function qsa(sel,root){return Array.prototype.slice.call((root||document).querySelectorAll(sel))}
+  function clean(v){return String(v||'').trim()}
+  function titleName(name){
+    name=clean(name);
+    if(!name) return '';
+    return name.split(/\s+/).map(function(part){return part ? part.charAt(0).toLocaleUpperCase('tr-TR') + part.slice(1) : '';}).join(' ');
+  }
+  function readUser(){
+    try{var u=JSON.parse(localStorage.getItem(PANEL_KEY)||'{}')||{};return {name:clean(u.name),seflik:clean(u.seflik),bolmeNo:clean(u.bolmeNo)}}catch(e){return {name:'',seflik:'',bolmeNo:''}}
+  }
+  function applyUserTexts(){
+    var u=readUser();
+    var display=titleName(u.name);
+    var hero=document.querySelector('.hero-card h1');
+    if(hero) hero.textContent=display ? ('Merhaba, '+display) : 'Merhaba!';
+    var badge=$('userBadge');
+    if(badge){
+      if(u.name && u.seflik){
+        badge.textContent=titleName(u.name)+' • '+titleName(u.seflik);
+        badge.classList.remove('login-needed');
+      }else if(/Yakup\s*•\s*Yaylacık/i.test(badge.textContent||'')){
+        badge.textContent='Giriş Yap';
+        badge.classList.add('login-needed');
+      }
+    }
+    qsa('.first-login-logo-v321 img').forEach(function(img){
+      if(!/assets\/mesaha_logo\.png/.test(img.getAttribute('src')||'')) img.setAttribute('src','./assets/mesaha_logo.png');
+      img.setAttribute('alt','Mesaha İO');
+    });
+  }
+  function wrapStorage(){
+    if(window.__mesahaV340StorageWrapped) return;
+    window.__mesahaV340StorageWrapped=true;
+    var oldSet=localStorage.setItem;
+    localStorage.setItem=function(k,v){
+      var r=oldSet.apply(this,arguments);
+      if(k===PANEL_KEY) setTimeout(applyUserTexts,30);
+      return r;
+    };
+  }
+  function boot(){wrapStorage();applyUserTexts();}
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true}); else boot();
+  [80,250,700,1300,2600,5000].forEach(function(ms){setTimeout(applyUserTexts,ms)});
+  setInterval(applyUserTexts,1500);
+})();
+</script>
+
+
+<style id="mesaha-v341-dark-mode-style">
+/* v341: Karanlık mod butonu tekrar aktif */
+.topbar{grid-template-columns:auto 1fr auto!important;align-items:center!important;gap:7px!important;}
+.topbar .brand{grid-column:1!important;min-width:0!important;}
+#userBadge{grid-column:2!important;justify-self:end!important;max-width:42vw!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;}
+#themeBtn{
+  display:grid!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;
+  grid-column:3!important;position:relative!important;inset:auto!important;width:42px!important;height:42px!important;min-width:42px!important;
+  border-radius:16px!important;border:1px solid #cfe8d9!important;background:linear-gradient(180deg,#ffffff,#eefaf3)!important;
+  color:#0d5f3b!important;font-size:19px!important;font-weight:950!important;place-items:center!important;box-shadow:0 10px 24px rgba(13,95,59,.12)!important;z-index:99!important;
+}
+body.dark #themeBtn{background:linear-gradient(180deg,#18352a,#0b1f19)!important;border-color:#315c49!important;color:#f7fffb!important;box-shadow:0 10px 24px rgba(0,0,0,.28)!important;}
+body.dark .version-card{background:linear-gradient(180deg,#18352a,#0b1f19)!important;border-color:#315c49!important;color:#e8fff2!important;}
+body.dark .version-card b{color:#e8fff2!important;}
+body.dark .card,body.dark .status-card,body.dark .file-card,body.dark .settings-card,body.dark .sound-card,body.dark .maintenance-card,body.dark .detail-summary-card,body.dark .summary-card{background:#0e231d!important;border-color:#264b3d!important;color:#f1fff8!important;}
+body.dark .prod-total,body.dark .record-card,body.dark .recent-box,body.dark .record-toolbar{background:#0e231d!important;border-color:#264b3d!important;color:#f1fff8!important;}
+body.dark .btn:not(.primary):not(.green):not(.orange):not(.warning){background:#132b23!important;border-color:#315c49!important;color:#e8fff2!important;}
+body.dark .bottom-nav{background:rgba(13,33,27,.96)!important;border-color:#315c49!important;box-shadow:0 18px 42px rgba(0,0,0,.38)!important;}
+body.dark .bottom-nav button{color:#b9cfc5!important;}
+body.dark .bottom-nav button.active{background:#e8fff2!important;color:#0d5f3b!important;}
+body.dark .hero-card{background:linear-gradient(135deg,#0f231d,#143b2a)!important;}
+body.dark .setting-block,body.dark .filter-box{background:#0b1f19!important;border-color:#264b3d!important;color:#e8fff2!important;}
+body.dark input{background:#081713!important;color:#f1fff8!important;border-color:#315c49!important;}
+@media(max-width:430px){#themeBtn{width:40px!important;height:40px!important;min-width:40px!important;border-radius:15px!important;font-size:18px!important;}#userBadge{max-width:38vw!important;font-size:11px!important;padding:8px 10px!important;}}
+</style>
+<script id="mesaha-v341-dark-mode-script">
+(function(){
+  'use strict';
+  var DISPLAY='V3.35 •ExelanceX•';
+  var BUILD=341;
+  var STORE='mesaha_theme_v341';
+  function $(id){return document.getElementById(id)}
+  function qsa(sel,root){return Array.prototype.slice.call((root||document).querySelectorAll(sel))}
+  function readSavedTheme(){
+    try{ if(localStorage.getItem(STORE)) return localStorage.getItem(STORE); }catch(e){}
+    try{ var s=window.state&&window.state.settings&&window.state.settings.theme; if(s==='dark'||s==='light') return s; }catch(e){}
+    try{ return localStorage.getItem('mesaha_settings_v2') && JSON.parse(localStorage.getItem('mesaha_settings_v2')).theme || ''; }catch(e){return ''}
+  }
+  function setBtnIcon(){var b=$('themeBtn');if(b){b.textContent=document.body.classList.contains('dark')?'☀':'🌙';b.setAttribute('title',document.body.classList.contains('dark')?'Aydınlık moda geç':'Karanlık moda geç');b.setAttribute('aria-label',b.getAttribute('title'));}}
+  function applyTheme(mode){
+    var dark=mode==='dark';
+    document.body.classList.toggle('dark',dark);
+    try{localStorage.setItem(STORE,dark?'dark':'light')}catch(e){}
+    try{ if(window.state&&window.state.settings){window.state.settings.theme=dark?'dark':'light'; if(typeof window.saveSettings==='function') window.saveSettings();} }catch(e){}
+    setBtnIcon();
+  }
+  function ensureButton(){
+    var top=document.querySelector('.topbar'); if(!top) return;
+    var btn=$('themeBtn');
+    if(!btn){btn=document.createElement('button');btn.id='themeBtn';btn.className='icon-btn';btn.type='button';top.appendChild(btn);} 
+    btn.style.display='grid'; btn.style.visibility='visible'; btn.style.pointerEvents='auto';
+    if(!btn.__v341DarkBound){btn.__v341DarkBound=true;btn.addEventListener('click',function(ev){ev.preventDefault();ev.stopPropagation();applyTheme(document.body.classList.contains('dark')?'light':'dark');},true);} 
+    setBtnIcon();
+  }
+  function applyVersion(){
+    document.title='Mesaha İO '+DISPLAY;
+    var vt=$('versionText'); if(vt) vt.textContent=DISPLAY;
+    var st=document.querySelector('#startup strong'); if(st) st.textContent=DISPLAY;
+    qsa('.version-card b').forEach(function(b){ if(/^v|^V|^\d/.test((b.textContent||'').trim())) b.textContent=DISPLAY; });
+    qsa('.version-card small').forEach(function(s){s.textContent='';});
+    window.MESAHA_VERSION={app:'V3.35',version:'v341-dark-mode-fix',build:BUILD,visibleVersion:DISPLAY,shortVersion:DISPLAY,name:'Mesaha İO '+DISPLAY,cacheName:'mesaha-app-v341-dark-mode-fix',assetVersion:String(BUILD)};
+    window.MESAHA_VERSION_TEXT=DISPLAY; window.MESAHA_VERSION_SHORT=DISPLAY;
+  }
+  function boot(){
+    var saved=readSavedTheme();
+    if(saved==='dark'||saved==='light') document.body.classList.toggle('dark',saved==='dark');
+    ensureButton(); applyVersion(); setBtnIcon();
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true}); else boot();
+  [80,300,800,1600,3000].forEach(function(ms){setTimeout(boot,ms)});
+  setInterval(function(){ensureButton();applyVersion();setBtnIcon();},1500);
 })();
 </script>
 
