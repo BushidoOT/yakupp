@@ -1,16 +1,16 @@
 (function(root){
   'use strict';
   const info = {
-    appName: 'v3.14',
-    version: 'v314-toast-warning-print-fix',
-    build: 'v314',
-    assetVersion: '314',
-    visibleVersion: 'v3.14',
-    shortVersion: 'v3.14',
-    name: 'v3.14',
-    cacheName: 'mesaha-app-v314-toast-warning-print-fix',
+    appName: 'v3.15',
+    version: 'v315-warning-toast-bind-fix',
+    build: 'v315',
+    assetVersion: '315',
+    visibleVersion: 'v3.15',
+    shortVersion: 'v3.15',
+    name: 'v3.15',
+    cacheName: 'mesaha-app-v315-warning-toast-bind-fix',
     builtAt: '2026-06-21',
-    notes: 'Ürün/çap hata uyarıları kayıt alındı kayan barına taşındı, eski ayrı toast görünümü kapatıldı, Yazdır çıktısı sadece BEYAN üst özetini basacak şekilde düzenlendi ve çıktıya sol üst küçük logo eklendi.'
+    notes: 'Ürün/çap hata uyarılarının eski gizli toast alanında kaybolması düzeltildi; tüm hatalı bildirimler kayıt alındı kayan barında görünür.'
   };
   root.MESAHA_VERSION = info;
   root.MESAHA_VERSION_TEXT = info.visibleVersion;

@@ -2,7 +2,7 @@
 'use strict';
 const STORAGE_KEY = 'cam_mesaha_kayitlari_v1';
 const SETTINGS_KEY = 'cam_mesaha_ayarlar_v1';
-const VERSION = window.MESAHA_VERSION || {shortVersion:'v3.14', version:'v314-toast-warning-print-fix'};
+const VERSION = window.MESAHA_VERSION || {shortVersion:'v3.15', version:'v315-warning-toast-bind-fix'};
 const PRODUCTS = [
   {key:'Tomruk', label:'Tomruk', cls:'tomruk', rule:'Tomruk: çap 21 ve üzeri olmalı.'},
   {key:'Maden Direk', label:'Maden', cls:'maden', rule:'Maden: çap 20 ve altı olmalı.'},
@@ -126,7 +126,52 @@ function ensureProductRuleHint(){
   hint.textContent = productRuleText();
 }
 function isThisWeek(r){ const dt = new Date(r.createdAt || r.productionDate || todayISO()); if(Number.isNaN(dt.getTime())) return false; const now=new Date(); const day=(now.getDay()+6)%7; const start=new Date(now); start.setHours(0,0,0,0); start.setDate(start.getDate()-day); return dt >= start; }
-function toast(msg){ const el=$('toast'); if(!el) return; el.textContent=msg; el.classList.add('show'); clearTimeout(state.toastTimer); state.toastTimer=setTimeout(()=>el.classList.remove('show'),2200); }
+function toast(msg){
+  const message = String(msg || '').trim();
+  if(!message) return;
+  try{
+    const fn = window.mesahaFloatToastV315 || window.mesahaFloatToastV314;
+    if(typeof fn === 'function'){
+      fn(message, 'Kontrol et', 'warning');
+      return;
+    }
+    let floatEl = document.getElementById('saveFloatToastV310') || document.getElementById('saveFloatToastV313') || document.getElementById('saveFloatToastV314');
+    if(!floatEl){
+      floatEl = document.createElement('div');
+      floatEl.id = 'saveFloatToastV310';
+      document.body.appendChild(floatEl);
+    }
+    floatEl.className = 'save-float-toast-v310 save-float-toast-v313 save-float-toast-v314 warning';
+    if(!floatEl.querySelector('.txt')) floatEl.innerHTML = '<span class="ico">⚠</span><span class="txt"><b></b><small></small></span>';
+    const icon = floatEl.querySelector('.ico');
+    const b = floatEl.querySelector('b');
+    const small = floatEl.querySelector('small');
+    if(icon) icon.textContent = '⚠';
+    if(b) b.textContent = message;
+    if(small) small.textContent = 'Kontrol et';
+    const vv = window.visualViewport;
+    const inset = vv ? Math.max(0, Math.round(window.innerHeight - vv.height - vv.offsetTop)) : 0;
+    const activeId = document.activeElement && document.activeElement.id;
+    const entryActive = document.body.classList.contains('entry-open') || ['diameterInput','lengthInput','barcodeInput'].includes(activeId);
+    const bottom = entryActive ? Math.max(inset + 14, 118) : 104;
+    floatEl.style.setProperty('bottom', `calc(${bottom}px + env(safe-area-inset-bottom,0px))`, 'important');
+    floatEl.style.setProperty('top', 'auto', 'important');
+    floatEl.style.setProperty('left', window.innerWidth <= 430 ? '8px' : '10px', 'important');
+    floatEl.style.setProperty('right', 'auto', 'important');
+    floatEl.classList.remove('show');
+    void floatEl.offsetWidth;
+    floatEl.classList.add('show');
+    clearTimeout(state.toastTimer);
+    state.toastTimer = setTimeout(()=>floatEl.classList.remove('show'),3200);
+    return;
+  }catch{}
+  const el=$('toast');
+  if(!el) return;
+  el.textContent=message;
+  el.classList.add('show');
+  clearTimeout(state.toastTimer);
+  state.toastTimer=setTimeout(()=>el.classList.remove('show'),2200);
+}
 function load(){
   try{ const r=JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]'); state.records = Array.isArray(r) ? r.map(migrateRecord).filter(Boolean) : []; }catch{ state.records=[]; }
   try{ const s=JSON.parse(localStorage.getItem(SETTINGS_KEY)||'{}'); state.settings = {...defaults, ...s}; }catch{ state.settings={...defaults}; }
@@ -304,7 +349,7 @@ function exportXls(){
   const file=`Mesaha_${bolme?bolme+'_':''}${formatDateFile()}.xls`;
   if(window.OrbisXls) window.OrbisXls.downloadXls(ordered, file); else toast('XLS modülü yüklenmedi.');
 }
-function backupJson(){ const data={version:'v3.14-extras', exportedAt:new Date().toISOString(), records:state.records, settings:state.settings}; downloadText(JSON.stringify(data,null,2), `mesaha_yedek_${formatDateFile()}.json`, 'application/json'); toast('Yedek indirildi.'); }
+function backupJson(){ const data={version:'v3.15-extras', exportedAt:new Date().toISOString(), records:state.records, settings:state.settings}; downloadText(JSON.stringify(data,null,2), `mesaha_yedek_${formatDateFile()}.json`, 'application/json'); toast('Yedek indirildi.'); }
 function restoreJson(e){ const file=e.target.files && e.target.files[0]; if(!file) return; const reader=new FileReader(); reader.onload=()=>{ try{ const data=JSON.parse(reader.result); const records=Array.isArray(data) ? data : data.records; if(!Array.isArray(records)) throw new Error('records yok'); state.records=records.map(migrateRecord).filter(Boolean); if(data.settings) state.settings={...state.settings,...data.settings}; saveRecords(); saveSettings(); renderAll(); toast('Yedek yüklendi.'); }catch(err){ toast('Yedek okunamadı.'); } e.target.value=''; }; reader.readAsText(file); }
 function downloadText(content, filename, type){ const blob=new Blob([content],{type}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=filename; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),1000); }
 window.state = state;
@@ -1050,7 +1095,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   }
   function backupZip(){
     const data = {
-      version:'v3.14-modern',
+      version:'v3.15-modern',
       exportedAt:new Date().toISOString(),
       records:records(),
       settings:settings()
@@ -1943,7 +1988,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   }
 })();
 
-/* v314: ürün/çap uyarıları aynı kayan barda + BEYAN üst özeti yazdır */
+/* v315: ürün/çap uyarıları aynı kayan barda + BEYAN üst özeti yazdır */
 (function(){
   'use strict';
   const $ = id => document.getElementById(id);
@@ -1964,7 +2009,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
       el.id = 'saveFloatToastV310';
       document.body.appendChild(el);
     }
-    el.className = 'save-float-toast-v310 save-float-toast-v313 save-float-toast-v314';
+    el.className = 'save-float-toast-v310 save-float-toast-v313 save-float-toast-v315';
     if(!el.querySelector('.txt')) el.innerHTML = '<span class="ico">✓</span><span class="txt"><b></b><small></small></span>';
     return el;
   }
@@ -1984,7 +2029,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     const cleanTitle = String(title || '').trim();
     const cleanDetail = String(detail || '').trim();
     const kind = type || 'warning';
-    el.className = 'save-float-toast-v310 save-float-toast-v313 save-float-toast-v314 ' + kind;
+    el.className = 'save-float-toast-v310 save-float-toast-v313 save-float-toast-v315 ' + kind;
     const icon = el.querySelector('.ico');
     const b = el.querySelector('b');
     const s = el.querySelector('small');
@@ -2031,13 +2076,13 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   }
   function productPrintBoxes(){
     const cards = Array.from(document.querySelectorAll('#productTotals .prod-total'));
-    if(!cards.length) return '<div class="print-beyan-box-v314"><small>Ürün toplamı</small><b>Kayıt yok</b></div>';
+    if(!cards.length) return '<div class="print-beyan-box-v315"><small>Ürün toplamı</small><b>Kayıt yok</b></div>';
     return cards.map(card => {
       const lines = Array.from(card.querySelectorAll('small,b')).map(x => (x.textContent || '').trim()).filter(Boolean);
       const label = lines[0] || 'Ürün';
       const m3 = lines[1] || '0 m³';
       const adet = lines[2] || '0 adet';
-      return `<div class="print-beyan-box-v314"><small>${esc(label)}</small><b>${esc(m3)}</b><small>${esc(adet)}</small></div>`;
+      return `<div class="print-beyan-box-v315"><small>${esc(label)}</small><b>${esc(m3)}</b><small>${esc(adet)}</small></div>`;
     }).join('');
   }
   function buildPrintPage(){
@@ -2046,37 +2091,37 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     if(!holder){
       holder = document.createElement('section');
       holder.id = 'printBeyanPageV314';
-      holder.className = 'print-beyan-page-v314';
+      holder.className = 'print-beyan-page-v315';
       document.body.appendChild(holder);
     }
     const tree = text('treeFilterText','Seçili: Tümü').replace(/^Seçili:\s*/,'');
     const cutter = text('cutterFilterText','Seçili: Tümü').replace(/^Seçili:\s*/,'');
     holder.innerHTML = `
-      <div class="print-beyan-head-v314">
+      <div class="print-beyan-head-v315">
         <img src="./assets/mesaha_logo.png" alt="Mesaha İO">
         <div><h1>BEYAN ÖZETİ</h1><small>Mesaha İO • ${esc(todayTR())}</small></div>
       </div>
-      <div class="print-beyan-meta-v314">
-        <div class="print-beyan-box-v314"><small>Toplam m³</small><b>${esc(text('recTotalM3','0 m³'))}</b></div>
-        <div class="print-beyan-box-v314"><small>Toplam Adet</small><b>${esc(text('recTotalCount','0'))}</b></div>
-        <div class="print-beyan-box-v314"><small>Kayıt</small><b>${esc(text('recordCountPill','0 kayıt'))}</b></div>
-        <div class="print-beyan-box-v314"><small>Mesaha Tarihi</small><b>${esc(inputValue('mesahaDate','-'))}</b></div>
+      <div class="print-beyan-meta-v315">
+        <div class="print-beyan-box-v315"><small>Toplam m³</small><b>${esc(text('recTotalM3','0 m³'))}</b></div>
+        <div class="print-beyan-box-v315"><small>Toplam Adet</small><b>${esc(text('recTotalCount','0'))}</b></div>
+        <div class="print-beyan-box-v315"><small>Kayıt</small><b>${esc(text('recordCountPill','0 kayıt'))}</b></div>
+        <div class="print-beyan-box-v315"><small>Mesaha Tarihi</small><b>${esc(inputValue('mesahaDate','-'))}</b></div>
       </div>
-      <div class="print-beyan-meta-v314">
-        <div class="print-beyan-box-v314"><small>Ağaç filtresi</small><b>${esc(tree || 'Tümü')}</b></div>
-        <div class="print-beyan-box-v314"><small>Kesimci filtresi</small><b>${esc(cutter || 'Tümü')}</b></div>
-        <div class="print-beyan-box-v314"><small>Bölme No</small><b>${esc(inputValue('bolmeNo','-') || '-')}</b></div>
-        <div class="print-beyan-box-v314"><small>Şeflik</small><b>${esc(inputValue('seflik','-') || '-')}</b></div>
+      <div class="print-beyan-meta-v315">
+        <div class="print-beyan-box-v315"><small>Ağaç filtresi</small><b>${esc(tree || 'Tümü')}</b></div>
+        <div class="print-beyan-box-v315"><small>Kesimci filtresi</small><b>${esc(cutter || 'Tümü')}</b></div>
+        <div class="print-beyan-box-v315"><small>Bölme No</small><b>${esc(inputValue('bolmeNo','-') || '-')}</b></div>
+        <div class="print-beyan-box-v315"><small>Şeflik</small><b>${esc(inputValue('seflik','-') || '-')}</b></div>
       </div>
-      <div class="print-beyan-products-v314">${productPrintBoxes()}</div>
-      <div class="print-scope-v314">${esc(text('exportScopeInfo','İndirilecek: Tüm kayıtlar'))}</div>`;
+      <div class="print-beyan-products-v315">${productPrintBoxes()}</div>
+      <div class="print-scope-v315">${esc(text('exportScopeInfo','İndirilecek: Tüm kayıtlar'))}</div>`;
     return holder;
   }
   function printBeyanOnly(){
     buildPrintPage();
-    document.body.classList.add('print-beyan-v314');
+    document.body.classList.add('print-beyan-v315');
     const cleanup = () => {
-      document.body.classList.remove('print-beyan-v314');
+      document.body.classList.remove('print-beyan-v315');
       window.removeEventListener('afterprint', cleanup);
     };
     window.addEventListener('afterprint', cleanup);
@@ -2087,8 +2132,8 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   }
   function bindPrint(){
     const btn = $('printBtn');
-    if(!btn || btn.__v314PrintBound) return;
-    btn.__v314PrintBound = true;
+    if(!btn || btn.__v315PrintBound) return;
+    btn.__v315PrintBound = true;
     btn.addEventListener('click', ev => {
       ev.preventDefault();
       ev.stopImmediatePropagation();
