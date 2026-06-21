@@ -1,7 +1,7 @@
 {
-  "name": "Mesaha İO v2.16",
+  "name": "Mesaha İO v2.17 Hafif",
   "short_name": "Mesaha İO",
-  "start_url": "./index.html?v=186",
+  "start_url": "./index.html?v=188",
   "scope": "./",
   "display": "standalone",
   "icons": [
@@ -21,7 +21,7 @@
   "description": "Orman ölçüm kayıt sistemi",
   "theme_color": "#0f172a",
   "background_color": "#0f172a",
-  "version": "v186",
+  "version": "v188",
   "id": "./index.html",
   "display_override": [
     "fullscreen",

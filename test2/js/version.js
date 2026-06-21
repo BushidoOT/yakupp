@@ -2,15 +2,15 @@
   'use strict';
   var info = {
     appName: 'Mesaha İO',
-    version: 'v187',
-    build: 'v187',
-    assetVersion: '187',
-    visibleVersion: 'Mesaha İO v2.16',
-    shortVersion: 'v2.16',
-    name: 'Mesaha İO v2.16',
-    cacheName: 'mesaha-app-v187-final-fixes',
+    version: 'v188',
+    build: 'v188',
+    assetVersion: '188',
+    visibleVersion: 'Mesaha İO v2.17 Hafif',
+    shortVersion: 'v2.17',
+    name: 'Mesaha İO v2.17 Hafif',
+    cacheName: 'mesaha-app-v188-lite-clean',
     builtAt: '2026-06-21',
-    notes: 'Kayıt mesajı klavye üstünde kayan detaylı bildirim oldu; son boy korunması güçlendirildi; ana ekranda son barkod/son ölçüm kartı gizlendi; Giriş Modu Kaydet butonu sol blur yapıldı; kayıtlar ekranında Mesaha İndir/Yedek Al öne alındı; manuel güncelleme akışı sağlamlaştırıldı. ORBİS XLS çekirdeğine dokunulmadı.'
+    notes: 'Kayıt mesajı klavye üstünde kayan detaylı bildirim oldu; son boy korunması güçlendirildi; ana ekranda son barkod/son ölçüm kartı gizlendi; Giriş Modu Kaydet butonu sol blur yapıldı; kayıtlar ekranında Mesaha İndir/Yedek Al öne alındı; manuel güncelleme akışı sağlamlaştırıldı. ORBİS XLS çekirdeğine dokunulmadı. v188 hafif temizlik: eski kullanılmayan dosyalar ve çift görseller kaldırıldı; ön cache sadeleştirildi.'
   };
   root.MESAHA_VERSION = info;
   root.MESAHA_VERSION_TEXT = info.visibleVersion;
@@ -23,7 +23,8 @@
     centralizedVersion: true,
     excelLocked: true,
     iosInputLagFixed: true,
-    finalFixesV187: true
+    finalFixesV187: true,
+    liteCleanupV188: true
   });
   function applyVersionText(){
     try{
