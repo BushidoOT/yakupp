@@ -3380,8 +3380,28 @@ ${verified ? "Yedek listede göründü." : "Yedek gönderildi; listede görünme
 
 
     function render() {
+      const recordsVisibleV189 = !!(document.body.classList.contains("show-records") || (els.navRecords && els.navRecords.classList.contains("active")));
+
+      // v189 performans: Giriş Modu / Yeni Kayıt açıkken ağır kayıt tablosunu yeniden çizme.
+      // Tablo sadece Kayıtlar sekmesine girildiğinde üretilir; özetler ve sayaçlar güncel kalır.
+      if (!recordsVisibleV189 && !window.__mesahaForceFullRenderV189) {
+        cleanSelectedRecordIds();
+        if (els.recordsBody) {
+          els.recordsBody.innerHTML = "";
+          els.recordsBody.dataset.deferredRenderV189 = "1";
+        }
+        if (els.recordsFoot) els.recordsFoot.innerHTML = "";
+        if (els.emptyState) els.emptyState.style.display = "none";
+        if (els.recordCount) els.recordCount.textContent = `${state.records.length} kayıt`;
+        renderRecentBarcodes();
+        renderDailyWorkSummary();
+        forceRefreshSummaryCards();
+        return;
+      }
+
       const filtered = getFilteredRecords();
       cleanSelectedRecordIds();
+      if (els.recordsBody) delete els.recordsBody.dataset.deferredRenderV189;
 
       els.recordsBody.innerHTML = filtered.map((r) => {
         const sys = recordToSystemRow(r);
