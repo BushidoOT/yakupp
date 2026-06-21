@@ -1,12 +1,12 @@
 {
-  "app": "v3.17",
-  "version": "v317-online-firebase-fix",
-  "build": "v317",
-  "visibleVersion": "v3.17",
-  "shortVersion": "v3.17",
-  "name": "v3.17",
-  "cacheName": "mesaha-app-v317-online-firebase-fix",
+  "app": "v3.18",
+  "version": "v318-admin-pro-backup-delete",
+  "build": "v318",
+  "visibleVersion": "v3.18",
+  "shortVersion": "v3.18",
+  "name": "v3.18",
+  "cacheName": "mesaha-app-v318-admin-pro-backup-delete",
   "builtAt": "2026-06-21",
-  "notes": "Firebase online bağlantısı, admin paneli güncellenmesi ve bulut yedekleme akışı düzeltildi.",
-  "assetVersion": "317"
+  "notes": "Güçlü admin paneli, sade kontrol merkezi, gelişmiş kullanıcı/yedek yönetimi ve kullanıcıların kendi bulut yedeklerini silmesi eklendi.",
+  "assetVersion": "318"
 }
