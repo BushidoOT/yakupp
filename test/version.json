@@ -1,12 +1,12 @@
 {
-  "app": "v3.23",
-  "version": "designed by ExelanceX",
-  "build": 323,
-  "visibleVersion": "v3.23",
-  "shortVersion": "v3.23",
-  "name": "v3.23",
-  "cacheName": "mesaha-app-v323-export-only-stats",
+  "app": "v3.24",
+  "version": "v324-home-product-login-ui",
+  "build": 324,
+  "visibleVersion": "v3.24",
+  "shortVersion": "v3.24",
+  "name": "v3.24",
+  "cacheName": "mesaha-app-v324-home-product-login-ui",
   "builtAt": "2026-06-21T00:00:00+03:00",
-  "notes": "Aktif süre cihazda hesaplanır; admin/kullanıcı/ağaç istatistikleri sadece Mesaha Dosyasını İndir basılınca gönderilir. Offline XLS akışı korunur.",
-  "assetVersion": "323"
+  "notes": "Ana ekran ikinci görsele yaklaştırıldı; ürün türü kutuları büyük oval kartlara alındı; ilk giriş örneği Yakup/Kütahya oldu; kullanıcı paneli sadeleştirildi.",
+  "assetVersion": "324"
 }

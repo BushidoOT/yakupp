@@ -3,10 +3,10 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>v3.23</title>
+  <title>v3.24</title>
   <meta name="theme-color" content="#166534" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-title" content="v3.23" />
+  <meta name="apple-mobile-web-app-title" content="v3.24" />
   <link rel="manifest" href="./manifest.json" />
   <link rel="apple-touch-icon" href="./assets/icon-192.png" />
 
@@ -503,14 +503,14 @@ body.dark .prod-total.product-tel{background:#1d1233!important;color:#ddd6fe!imp
 (function(root){
   'use strict';
   const info = {
-    appName: 'v3.23',
-    version: 'v323-export-only-stats',
-    build: 'v323',
-    assetVersion: '318',
-    visibleVersion: 'v3.23',
-    shortVersion: 'v3.23',
-    name: 'v3.23',
-    cacheName: 'mesaha-app-v323-export-only-stats',
+    appName: 'v3.24',
+    version: 'v324-home-product-login-ui',
+    build: 'v324',
+    assetVersion: '324',
+    visibleVersion: 'v3.24',
+    shortVersion: 'v3.24',
+    name: 'v3.24',
+    cacheName: 'mesaha-app-v324-home-product-login-ui',
     builtAt: '2026-06-21',
     notes: 'Güçlü admin paneli, kullanıcı yedek silme, bulut yönetimi ve sade kontrol merkezi eklendi.'
   };
@@ -532,7 +532,7 @@ body.dark .user-badge.login-needed{background:#451a03;color:#fed7aa;border-color
   <div id="startup" class="startup">
     <div class="startup-card startup-card-v311">
       <img src="./assets/mesaha_logo.png" alt="" />
-      <strong>v3.23</strong>
+      <strong>v3.24</strong>
       <span id="startupTitle">Mesaha İO hazırlanıyor…</span>
       <ul id="startupSteps" class="startup-steps">
         <li data-step="files">Dosyalar kontrol ediliyor</li>
@@ -547,7 +547,7 @@ body.dark .user-badge.login-needed{background:#451a03;color:#fed7aa;border-color
     <header class="topbar">
       <div class="brand">
         <img src="./assets/mesaha_logo.png" alt="Mesaha İO" />
-        <div class="version-card"><b id="versionText">v3.23</b><small>v323-export-only-stats</small></div>
+        <div class="version-card"><b id="versionText">v3.24</b><small>v324-home-product-login-ui</small></div>
       </div>
       <div id="userBadge" class="user-badge login-needed">Giriş Yap</div>
       <div class="top-actions-v316"><button id="userPanelBtnV316" class="panel-btn-v316" type="button">👤 Kullanıcı Paneli</button></div>
@@ -616,7 +616,7 @@ body.dark .user-badge.login-needed{background:#451a03;color:#fed7aa;border-color
       </section>
 
       <section id="entryView" class="view entry-view">
-        <header class="entry-top"><div class="version-card"><b>v3.23</b><small>v323-export-only-stats</small></div><button id="entryHomeBtn" class="btn primary" type="button">🏠 Ana Sayfaya Dön</button></header>
+        <header class="entry-top"><div class="version-card"><b>v3.24</b><small>v324-home-product-login-ui</small></div><button id="entryHomeBtn" class="btn primary" type="button">🏠 Ana Sayfaya Dön</button></header>
         <section class="entry-total"><div><small>Toplam Adet</small><b id="entryTotalCount">0</b></div><div><small>Toplam m³</small><b id="entryTotalM3">0 m³</b></div></section>
         <section class="entry-form card">
           <div class="cutter-row"><div id="cutterChips" class="chip-wrap"></div><button id="addCutterBtn" class="btn primary" type="button">＋ Kesimci Ekle</button></div>
@@ -1360,7 +1360,7 @@ root.OrbisXls = { downloadXls, makeXls, headers: HEADERS };
 'use strict';
 const STORAGE_KEY = 'cam_mesaha_kayitlari_v1';
 const SETTINGS_KEY = 'cam_mesaha_ayarlar_v1';
-const VERSION = window.MESAHA_VERSION || {shortVersion:'v3.23', version:'v323-export-only-stats'};
+const VERSION = window.MESAHA_VERSION || {shortVersion:'v3.24', version:'v324-home-product-login-ui'};
 const PRODUCTS = [
   {key:'Tomruk', label:'Tomruk', cls:'tomruk', rule:'Tomruk: çap 21 ve üzeri olmalı.'},
   {key:'Maden Direk', label:'Maden', cls:'maden', rule:'Maden: çap 20 ve altı olmalı.'},
@@ -1708,7 +1708,7 @@ function exportXls(){
   try{ if(window.mesahaExportStatsV323 && typeof window.mesahaExportStatsV323.send === 'function') window.mesahaExportStatsV323.send('xls-download-legacy', {list:ordered, text:'Mesaha dosyası', mode:'legacy'}); }catch{}
   if(window.OrbisXls) window.OrbisXls.downloadXls(ordered, file); else toast('XLS modülü yüklenmedi.');
 }
-function backupJson(){ const data={version:'v3.23-extras', exportedAt:new Date().toISOString(), records:state.records, settings:state.settings}; downloadText(JSON.stringify(data,null,2), `mesaha_yedek_${formatDateFile()}.json`, 'application/json'); toast('Yedek indirildi.'); }
+function backupJson(){ const data={version:'v3.24-extras', exportedAt:new Date().toISOString(), records:state.records, settings:state.settings}; downloadText(JSON.stringify(data,null,2), `mesaha_yedek_${formatDateFile()}.json`, 'application/json'); toast('Yedek indirildi.'); }
 function restoreJson(e){ const file=e.target.files && e.target.files[0]; if(!file) return; const reader=new FileReader(); reader.onload=()=>{ try{ const data=JSON.parse(reader.result); const records=Array.isArray(data) ? data : data.records; if(!Array.isArray(records)) throw new Error('records yok'); state.records=records.map(migrateRecord).filter(Boolean); if(data.settings) state.settings={...state.settings,...data.settings}; saveRecords(); saveSettings(); renderAll(); toast('Yedek yüklendi.'); }catch(err){ toast('Yedek okunamadı.'); } e.target.value=''; }; reader.readAsText(file); }
 function downloadText(content, filename, type){ const blob=new Blob([content],{type}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=filename; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),1000); }
 window.state = state;
@@ -2462,7 +2462,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   }
   function backupZip(){
     const data = {
-      version:'v3.23-modern',
+      version:'v3.24-modern',
       exportedAt:new Date().toISOString(),
       records:records(),
       settings:settings()
@@ -3592,7 +3592,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   function fold(s){ return clean(s).toLocaleLowerCase('tr-TR').replace(/[ç]/g,'c').replace(/[ğ]/g,'g').replace(/[ı]/g,'i').replace(/[ö]/g,'o').replace(/[ş]/g,'s').replace(/[ü]/g,'u'); }
   function userKey(name,seflik){ return (fold(name)+'__'+fold(seflik)).replace(/[^a-z0-9_-]+/g,'_').slice(0,120) || 'bos'; }
   function getDeviceId(){ let id=''; try{id=localStorage.getItem(DEVICE_ID_KEY)||'';}catch{} if(!id){ id='cihaz_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,8); try{localStorage.setItem(DEVICE_ID_KEY,id);}catch{} } return id; }
-  function deviceInfo(){ const ua=navigator.userAgent||''; const plat=navigator.platform||''; const sw=screen&&screen.width?screen.width:'?'; const sh=screen&&screen.height?screen.height:'?'; return {deviceId:getDeviceId(), userAgent:ua, platform:plat, screen:sw+'x'+sh, appVersion:'v3.23', fileVersion:'v323-export-only-stats'}; }
+  function deviceInfo(){ const ua=navigator.userAgent||''; const plat=navigator.platform||''; const sw=screen&&screen.width?screen.width:'?'; const sh=screen&&screen.height?screen.height:'?'; return {deviceId:getDeviceId(), userAgent:ua, platform:plat, screen:sw+'x'+sh, appVersion:'v3.24', fileVersion:'v324-home-product-login-ui'}; }
   function readPanelUser(){ const u=jsonGet(PANEL_USER_KEY, {}); return {name:clean(u.name), seflik:clean(u.seflik), bolmeNo:clean(u.bolmeNo)}; }
   function writePanelUser(u){ const current=settings(); const name=clean(u.name), seflik=clean(u.seflik); const next=Object.assign({}, current, {ekipNot:name, seflik:seflik, bolmeNo:clean(u.bolmeNo)||''}); saveSettings(next); jsonSet(PANEL_USER_KEY, {name:next.ekipNot,seflik:next.seflik,bolmeNo:next.bolmeNo,updatedAt:new Date().toISOString()}); try{localStorage.setItem('mesaha_user_confirmed_v319','1')}catch{} ['ekipNot','seflik','bolmeNo'].forEach(id=>{ const el=$(id); if(el){ el.value=next[id]||''; try{el.dispatchEvent(new Event('input',{bubbles:true}));}catch{} } }); try{ if(typeof window.renderUser==='function') window.renderUser(); }catch{} const badge=$('userBadge'); if(badge){ badge.textContent=(next.ekipNot&&next.seflik)?(next.ekipNot+' • '+next.seflik):'Giriş Yap'; badge.classList.toggle('login-needed', !(next.ekipNot&&next.seflik)); } return true; }
   function volume(r){ const d=Number(String(r.diameter||r.cap||0).replace(',','.')); const l=Number(String(r.length||r.boy||0).replace(',','.')); const q=Number(r.quantity||r.adet||1); if(!d||!l) return 0; return Math.PI*Math.pow(d/100,2)/4*l*q; }
@@ -3607,17 +3607,17 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   function loadScript(src){ return new Promise((resolve,reject)=>{ if(document.querySelector('script[src="'+src+'"]')) return resolve(); const s=document.createElement('script'); s.src=src; s.async=true; s.onload=resolve; s.onerror=()=>reject(new Error('Firebase kütüphanesi yüklenemedi')); document.head.appendChild(s); }); }
   async function firebaseReady(){ if(!navigator.onLine) throw new Error('İnternet bağlantısı yok'); if(!firebaseReadyPromise){ firebaseReadyPromise=(async()=>{ if(!window.firebase || !window.firebase.apps){ const b='https://www.gstatic.com/firebasejs/'+FIREBASE_SDK_VERSION; await loadScript(b+'/firebase-app-compat.js'); await loadScript(b+'/firebase-auth-compat.js'); await loadScript(b+'/firebase-firestore-compat.js'); } if(!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG); const auth=firebase.auth(); if(!auth.currentUser) await auth.signInAnonymously(); const db=firebase.firestore(); try{db.settings({experimentalForceLongPolling:true, merge:true});}catch{} return {db,auth}; })(); } return firebaseReadyPromise; }
   async function resetAtMs(){ try{ const {db}=await firebaseReady(); const doc=await db.collection('adminSettings').doc('statsReset').get(); const d=doc.exists?(doc.data()||{}):{}; return Number(d.resetAtMs||0); }catch{ return Number(localStorage.getItem('mesaha_stats_reset_at_v316')||0); } }
-  async function syncUser(reason){ const usage=flushUsage(); const user=readPanelUser(); if(!user.name||!user.seflik){setSyncText('Önce kullanıcı girişi yap');return false} const reset=await resetAtMs(); const stats=summarize(reset); const info=deviceInfo(); const nowMs=Date.now(); const key=userKey(user.name,user.seflik); const {db}=await firebaseReady(); await db.collection('users').doc(key).set({id:key,userKey:key,name:user.name,seflik:user.seflik,bolmeNo:user.bolmeNo,firstLogin:firebase.firestore.FieldValue.serverTimestamp(),lastSeen:trText(),lastSeenMs:nowMs,lastLogin:trText(),lastLoginMs:nowMs,todayLoginCount:Number(usage.todayLoginCount||0),totalLoginCount:Number(usage.totalLoginCount||0),usageMs:Number(usage.totalMs||0),todayUsageMs:Number(usage.todayMs||0),recordCount:stats.recordCount,totalRecords:stats.recordCount,adet:stats.adet,totalM3:stats.m3,m3:stats.m3,todayRecords:stats.todayRecords,weekKey:weekKey(new Date()),weekRecordCount:stats.weekRecordCount,weekM3:stats.weekM3,treeTotals:stats.treeTotals,productTotals:stats.productTotals,deviceId:info.deviceId,lastDevice:info.platform+' • '+info.screen,lastDeviceInfo:info,appVersion:'v3.23',fileVersion:'v323-export-only-stats',updatedBy:reason||'sync',updatedAt:trText(),updatedAtMs:nowMs,source:'firebase'}, {merge:true}); setSyncText('Bulut eşitlendi • '+new Date().toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'})); return true; }
+  async function syncUser(reason){ const usage=flushUsage(); const user=readPanelUser(); if(!user.name||!user.seflik){setSyncText('Önce kullanıcı girişi yap');return false} const reset=await resetAtMs(); const stats=summarize(reset); const info=deviceInfo(); const nowMs=Date.now(); const key=userKey(user.name,user.seflik); const {db}=await firebaseReady(); await db.collection('users').doc(key).set({id:key,userKey:key,name:user.name,seflik:user.seflik,bolmeNo:user.bolmeNo,firstLogin:firebase.firestore.FieldValue.serverTimestamp(),lastSeen:trText(),lastSeenMs:nowMs,lastLogin:trText(),lastLoginMs:nowMs,todayLoginCount:Number(usage.todayLoginCount||0),totalLoginCount:Number(usage.totalLoginCount||0),usageMs:Number(usage.totalMs||0),todayUsageMs:Number(usage.todayMs||0),recordCount:stats.recordCount,totalRecords:stats.recordCount,adet:stats.adet,totalM3:stats.m3,m3:stats.m3,todayRecords:stats.todayRecords,weekKey:weekKey(new Date()),weekRecordCount:stats.weekRecordCount,weekM3:stats.weekM3,treeTotals:stats.treeTotals,productTotals:stats.productTotals,deviceId:info.deviceId,lastDevice:info.platform+' • '+info.screen,lastDeviceInfo:info,appVersion:'v3.24',fileVersion:'v324-home-product-login-ui',updatedBy:reason||'sync',updatedAt:trText(),updatedAtMs:nowMs,source:'firebase'}, {merge:true}); setSyncText('Bulut eşitlendi • '+new Date().toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'})); return true; }
   function setSyncText(t){ const el=$('panelSyncTextV316'); if(el) el.textContent=t; }
   function renderPanelStats(){ const usage=flushUsage(); const stats=summarize(Number(localStorage.getItem('mesaha_stats_reset_at_v316')||0)); const u=readPanelUser(); const box=$('panelStatsV316'); if(box) box.innerHTML=[['Toplam Kayıt', stats.recordCount.toLocaleString('tr-TR')],['Toplam m³', fmtM3(stats.m3)],['Bugün Giriş', Number(usage.todayLoginCount||0).toLocaleString('tr-TR')],['Bugün Süre', fmtMs(usage.todayMs)],['Toplam Süre', fmtMs(usage.totalMs)],['Son Görülme', usage.lastSeen||'-']].map(a=>'<div class="panel-stat-v316"><small>'+a[0]+'</small><b>'+a[1]+'</b></div>').join(''); const dev=$('panelDeviceV316'); if(dev) dev.value=(deviceInfo().platform||'Cihaz')+' • '+(deviceInfo().screen||''); const n=$('panelNameV316'), s=$('panelSeflikV316'), b=$('panelBolmeV316'); if(n) n.value=u.name; if(s) s.value=u.seflik; if(b) b.value=u.bolmeNo; }
   function openPanel(){ renderPanelStats(); const ov=$('userPanelOverlayV316'); if(ov) ov.classList.remove('hidden'); setSyncText('İstatistikler Mesaha dosyası indirince gönderilir'); }
   function closePanel(){ const ov=$('userPanelOverlayV316'); if(ov) ov.classList.add('hidden'); }
   function savePanel(){ const name=clean(($('panelNameV316')||{}).value), seflik=clean(($('panelSeflikV316')||{}).value); if(!name||!seflik){toast('Kullanıcı adı ve şeflik gerekli.','İlk giriş için doldur','warning');return} writePanelUser({name:name, seflik:seflik, bolmeNo:($('panelBolmeV316')||{}).value}); renderPanelStats(); setSyncText('Kullanıcı kaydedildi • admin verisi Mesaha indirince gider'); toast('Kullanıcı bilgileri kaydedildi.','İstatistik Mesaha indirince gönderilir','success'); }
-  async function cloudBackup(){ try{ const user=readPanelUser(); if(!user.name||!user.seflik){toast('Önce kullanıcı girişi yap.','Kullanıcı Paneli’ni doldur','warning');openPanel();return} const key=userKey(user.name,user.seflik); const recs=records(); const data={version:'v3.23',type:'mesaha-cloud-backup',exportedAt:new Date().toISOString(),user,settings:settings()}; const {db}=await firebaseReady(); const id='fb_'+key+'_'+Date.now().toString(36); const chunkSize=200; const chunkCount=Math.max(1, Math.ceil(recs.length/chunkSize)); const ref=db.collection('backups').doc(id); await ref.set({id,userKey:key,name:user.name,seflik:user.seflik,bolmeNo:user.bolmeNo,fileName:'Mesaha_Bulut_Yedek_'+key+'_'+trDate()+'.json',payload:data,recordsChunked:true,chunkCount,recordCount:recs.length,m3:summarize(0).m3,createdAt:trText(),createdAtMs:Date.now(),source:'firebase'}); for(let i=0;i<chunkCount;i++){ await ref.collection('chunks').doc(String(i).padStart(4,'0')).set({index:i,records:recs.slice(i*chunkSize,(i+1)*chunkSize)}); } toast('Bulut yedeği alındı.','Kayıtlar güvenli','success'); }catch(e){ toast('Bulut yedek alınamadı.', e&&e.message?e.message:'İnterneti kontrol et','error'); } }
+  async function cloudBackup(){ try{ const user=readPanelUser(); if(!user.name||!user.seflik){toast('Önce kullanıcı girişi yap.','Kullanıcı Paneli’ni doldur','warning');openPanel();return} const key=userKey(user.name,user.seflik); const recs=records(); const data={version:'v3.24',type:'mesaha-cloud-backup',exportedAt:new Date().toISOString(),user,settings:settings()}; const {db}=await firebaseReady(); const id='fb_'+key+'_'+Date.now().toString(36); const chunkSize=200; const chunkCount=Math.max(1, Math.ceil(recs.length/chunkSize)); const ref=db.collection('backups').doc(id); await ref.set({id,userKey:key,name:user.name,seflik:user.seflik,bolmeNo:user.bolmeNo,fileName:'Mesaha_Bulut_Yedek_'+key+'_'+trDate()+'.json',payload:data,recordsChunked:true,chunkCount,recordCount:recs.length,m3:summarize(0).m3,createdAt:trText(),createdAtMs:Date.now(),source:'firebase'}); for(let i=0;i<chunkCount;i++){ await ref.collection('chunks').doc(String(i).padStart(4,'0')).set({index:i,records:recs.slice(i*chunkSize,(i+1)*chunkSize)}); } toast('Bulut yedeği alındı.','Kayıtlar güvenli','success'); }catch(e){ toast('Bulut yedek alınamadı.', e&&e.message?e.message:'İnterneti kontrol et','error'); } }
   async function openCloudRestore(){ const ov=$('cloudRestoreOverlayV316'); const list=$('cloudRestoreListV316'); const info=$('cloudRestoreInfoV316'); if(ov) ov.classList.remove('hidden'); if(list) list.innerHTML='<div class="cloud-item-v316">Yedekler yükleniyor…</div>'; try{ const user=readPanelUser(); const key=userKey(user.name,user.seflik); const {db}=await firebaseReady(); const snap=await db.collection('backups').where('userKey','==',key).get(); const arr=[]; snap.forEach(doc=>{ const d=doc.data()||{}; arr.push(Object.assign({docId:doc.id}, d)); }); arr.sort((a,b)=>Number(b.createdAtMs||0)-Number(a.createdAtMs||0)); if(info) info.textContent=arr.length+' yedek bulundu'; if(!arr.length){ if(list) list.innerHTML='<div class="cloud-item-v316">Bulutta yedek bulunamadı.</div>'; return; } if(list) list.innerHTML=arr.slice(0,30).map((b,i)=>'<div class="cloud-item-v316"><b>'+esc(b.fileName||'Mesaha yedeği')+'</b><small>'+esc(b.createdAt||'-')+' • '+Number(b.recordCount||0)+' kayıt</small><button class="btn primary" data-cloud-restore="'+esc(b.docId)+'" type="button">Bu Yedeği Yükle</button></div>').join(''); }catch(e){ if(info) info.textContent='Yedekler alınamadı'; if(list) list.innerHTML='<div class="cloud-item-v316">'+esc(e&&e.message?e.message:'İnterneti kontrol et')+'</div>'; } }
   async function restoreCloud(id){ if(!id) return; if(!confirm('Bu bulut yedeği mevcut kayıtların yerine yüklenecek. Devam edilsin mi?')) return; try{ const {db}=await firebaseReady(); const ref=db.collection('backups').doc(id); const doc=await ref.get(); if(!doc.exists) throw new Error('Yedek bulunamadı'); const d=doc.data()||{}; let payload=d.payload || (d.payloadText ? JSON.parse(d.payloadText) : null); let recs=[]; if(d.recordsChunked){ const chunks=await ref.collection('chunks').get(); const arr=[]; chunks.forEach(c=>{ const cd=c.data()||{}; arr.push({index:Number(cd.index||0),records:Array.isArray(cd.records)?cd.records:[]}); }); arr.sort((a,b)=>a.index-b.index); recs=arr.flatMap(x=>x.records); payload=payload||{}; } else { if(!payload || !Array.isArray(payload.records)) throw new Error('Yedek formatı geçersiz'); recs=payload.records; } if(!Array.isArray(recs)) throw new Error('Yedek kayıtları okunamadı'); jsonSet(STORAGE_KEY, recs); if(payload && payload.settings) jsonSet(SETTINGS_KEY, Object.assign(settings(), payload.settings)); toast('Bulut yedeği yüklendi.','Sayfa yenileniyor','success'); setTimeout(()=>location.reload(),700); }catch(e){ toast('Bulut yedeği yüklenemedi.', e&&e.message?e.message:'Hata','error'); } }
   function openAdmin(){ const code=prompt('Admin şifresini gir'); if(code===ADMIN_CODE){ try{sessionStorage.setItem('mesaha_admin_code', code);}catch{} location.href='./admin.html?admin='+encodeURIComponent(code); } else if(code!==null){ toast('Admin şifresi hatalı.','Kontrol et','error'); } }
-  async function sendSupport(){ const msg=clean(($('panelSupportTextV316')||{}).value); const user0=readPanelUser(); if(!user0.name||!user0.seflik){toast('Önce kullanıcı girişi yap.','Kullanıcı Paneli’ni doldur','warning');return} if(!msg){ toast('Sorun bildirimi boş.','Kısa bir açıklama yaz','warning'); return; } try{ const user=readPanelUser(); const {db}=await firebaseReady(); await db.collection('supportTickets').add({userKey:userKey(user.name,user.seflik),name:user.name,seflik:user.seflik,bolmeNo:user.bolmeNo,message:msg,status:'new',createdAt:trText(),createdAtMs:Date.now(),appVersion:'v3.23',device:deviceInfo()}); const ta=$('panelSupportTextV316'); if(ta) ta.value=''; toast('Sorun bildirimi gönderildi.','Admin paneline düştü','success'); }catch(e){ toast('Bildirim gönderilemedi.', e&&e.message?e.message:'İnternet yok','error'); } }
+  async function sendSupport(){ const msg=clean(($('panelSupportTextV316')||{}).value); const user0=readPanelUser(); if(!user0.name||!user0.seflik){toast('Önce kullanıcı girişi yap.','Kullanıcı Paneli’ni doldur','warning');return} if(!msg){ toast('Sorun bildirimi boş.','Kısa bir açıklama yaz','warning'); return; } try{ const user=readPanelUser(); const {db}=await firebaseReady(); await db.collection('supportTickets').add({userKey:userKey(user.name,user.seflik),name:user.name,seflik:user.seflik,bolmeNo:user.bolmeNo,message:msg,status:'new',createdAt:trText(),createdAtMs:Date.now(),appVersion:'v3.24',device:deviceInfo()}); const ta=$('panelSupportTextV316'); if(ta) ta.value=''; toast('Sorun bildirimi gönderildi.','Admin paneline düştü','success'); }catch(e){ toast('Bildirim gönderilemedi.', e&&e.message?e.message:'İnternet yok','error'); } }
   function bind(){ loadUsage(); const badge=$('userBadge'); if(badge){ badge.setAttribute('title','Kullanıcı Paneli'); badge.addEventListener('click', openPanel); } const btn=$('userPanelBtnV316'); if(btn) btn.addEventListener('click', openPanel); const x=$('userPanelCloseV316'); if(x) x.addEventListener('click', closePanel); const x2=$('panelClose2V316'); if(x2) x2.addEventListener('click', closePanel); const save=$('panelSaveV316'); if(save) save.addEventListener('click', savePanel); const sync=$('panelSyncV316'); if(sync) sync.addEventListener('click', ()=>{ setSyncText('İstatistikler sadece Mesaha dosyası indirince gönderilir'); toast('Hazır.','Mesaha Dosyasını İndir basınca admin güncellenir','success'); }); const admin=$('panelAdminOpenV316'); if(admin) admin.addEventListener('click', openAdmin); const support=$('panelSupportSendV316'); if(support) support.addEventListener('click', sendSupport); const cb=$('cloudBackupBtnV316'); if(cb) cb.addEventListener('click', cloudBackup); const cr=$('cloudRestoreBtnV316'); if(cr) cr.addEventListener('click', openCloudRestore); const crc=$('cloudRestoreCloseV316'); if(crc) crc.addEventListener('click', ()=>{ const ov=$('cloudRestoreOverlayV316'); if(ov) ov.classList.add('hidden'); }); const list=$('cloudRestoreListV316'); if(list) list.addEventListener('click', e=>{ const b=e.target.closest('[data-cloud-restore]'); if(b) restoreCloud(b.getAttribute('data-cloud-restore')); }); window.addEventListener('pagehide', flushUsage); /* v323: otomatik bulut istatistik kapalı */ }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', bind, {once:true}); else bind();
   window.mesahaPanelV316 = {open:openPanel, sync:syncUser, cloudBackup, openCloudRestore};
@@ -3635,8 +3635,8 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   const DEVICE_ID_KEY='mesaha_cihaz_kodu_v1';
   const FIREBASE_CONFIG={apiKey:'AIzaSyCKveylTPgKmWEMmYf-aFj6yLXB5CKAiJ0',authDomain:'mesaha-io.firebaseapp.com',projectId:'mesaha-io',storageBucket:'mesaha-io.firebasestorage.app',messagingSenderId:'840655878243',appId:'1:840655878243:web:add76f52bbf55ad9dd6056',measurementId:'G-81JPD5ZY44'};
   const SDK='9.23.0';
-  const APP_VERSION='v3.23';
-  const FILE_VERSION='v323-export-only-stats';
+  const APP_VERSION='v3.24';
+  const FILE_VERSION='v324-home-product-login-ui';
   let readyPromise=null;
   let lastTick=Date.now();
   function $(id){return document.getElementById(id)}
@@ -3813,7 +3813,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   <div class="first-login-card-v321">
     <div class="first-login-logo-v321"><img src="./mesaha_logo.png" alt=""><div><b id="firstLoginTitleV321">İlk Giriş</b><small>Sadece kullanıcı adı ve şeflik gir</small></div></div>
     <label>Kullanıcı Adı<input id="firstLoginNameV321" type="text" autocomplete="name" placeholder="Örn: Yakup"></label>
-    <label>Şeflik<input id="firstLoginSeflikV321" type="text" autocomplete="organization" placeholder="Örn: Yaylacık"></label>
+    <label>Şeflik<input id="firstLoginSeflikV321" type="text" autocomplete="organization" placeholder="Örn: Kütahya"></label>
     <div class="first-login-actions-v321"><button id="firstLoginSaveV321" class="first-login-primary-v321" type="button">Giriş Yap</button></div>
     <p class="first-login-note-v321">Bu bilgiler admin panelinde kullanıcıyı ayırmak ve bulut yedeklerini sana bağlamak için kullanılır.</p>
   </div>
@@ -3864,7 +3864,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 </script>
 
 
-<style id="mesaha-style-v323-top-user-label">
+<style id="mesaha-style-v322-top-user-label">
 /* v323: Üstteki kullanıcı paneli butonu girişten sonra ad + şeflik gösterir */
 .panel-btn-v316.identity-v323{
   max-width:min(58vw,360px)!important;
@@ -3888,7 +3888,7 @@ body.dark .panel-btn-v316.identity-v323.login-needed{
   .panel-btn-v316.identity-v323{max-width:64vw!important;font-size:13px!important;padding-left:10px!important;padding-right:10px!important}
 }
 </style>
-<script id="mesaha-inline-v323-top-user-label">
+<script id="mesaha-inline-v322-top-user-label">
 (function(){
   'use strict';
   const PANEL_KEY='mesaha_panel_user_v316';
@@ -3952,18 +3952,18 @@ body.dark .panel-btn-v316.identity-v323.login-needed{
     [150,600,1500,3200,5600].forEach(ms=>setTimeout(apply,ms));
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',start); else start();
-  window.mesahaTopUserLabelV323={refresh:apply};
+  window.mesahaTopUserLabelV322={refresh:apply};
 })();
 </script>
 
 
 
-<style id="mesaha-style-v323-export-send-final">
+<style id="mesaha-style-v323-export-stats">
 /* v323: panelde otomatik bulut istatistiği kapalı; kullanıcı verisi Mesaha dosyası indirilince gönderilir */
 #panelSyncTextV316.export-only-v323{color:#64748b!important;font-weight:900!important}
 body.dark #panelSyncTextV316.export-only-v323{color:#cbd5e1!important}
 </style>
-<script id="mesaha-inline-v323-export-send-final">
+<script id="mesaha-inline-v323-export-only-stats">
 /* v323: Aktif süre cihazda hesaplanır. Admin istatistiği sadece Mesaha Dosyasını İndir basılınca gönderilir. Offline XLS akışı asla engellenmez. */
 (function(){
   'use strict';
@@ -3974,8 +3974,8 @@ body.dark #panelSyncTextV316.export-only-v323{color:#cbd5e1!important}
   const DEVICE_ID_KEY='mesaha_cihaz_kodu_v1';
   const FIREBASE_CONFIG={apiKey:'AIzaSyCKveylTPgKmWEMmYf-aFj6yLXB5CKAiJ0',authDomain:'mesaha-io.firebaseapp.com',projectId:'mesaha-io',storageBucket:'mesaha-io.firebasestorage.app',messagingSenderId:'840655878243',appId:'1:840655878243:web:add76f52bbf55ad9dd6056',measurementId:'G-81JPD5ZY44'};
   const SDK='10.12.2';
-  const APP_VERSION='v3.23';
-  const FILE_VERSION='v323-export-only-stats';
+  const APP_VERSION='v3.24';
+  const FILE_VERSION='v324-home-product-login-ui';
   let readyPromise=null;
   let lastTick=Date.now();
   function $(id){return document.getElementById(id)}
@@ -4008,6 +4008,77 @@ body.dark #panelSyncTextV316.export-only-v323{color:#cbd5e1!important}
   async function send(reason,scope){const user=readUser();const usage=flushUsage();const fullStats=summarize(records());const scopeList=scope&&Array.isArray(scope.list)?scope.list:records();const scopeStats=summarize(scopeList);if(!user.name||!user.seflik){setSyncText('Kullanıcı girişi yok • istatistik gönderilmedi');return false}if(!navigator.onLine){setSyncText('Offline: dosya indi, admin istatistiği gönderilmedi');return false}try{setSyncText('Mesaha istatistiği gönderiliyor…');const {db}=await ready();const now=Date.now(),key=userKey(user.name,user.seflik),info=deviceInfo();const inc=window.firebase&&window.firebase.firestore&&window.firebase.firestore.FieldValue?window.firebase.firestore.FieldValue.increment(1):1;const payload={id:key,userKey:key,name:user.name,seflik:user.seflik,bolmeNo:user.bolmeNo,lastSeen:trText(),lastSeenMs:now,lastLogin:trText(),lastLoginMs:now,todayLoginCount:Number(usage.todayLoginCount||0),totalLoginCount:Number(usage.totalLoginCount||0),loginCount:Number(usage.totalLoginCount||0),usageMs:Number(usage.totalMs||0),todayUsageMs:Number(usage.todayMs||0),recordCount:fullStats.recordCount,totalRecords:fullStats.recordCount,adet:fullStats.adet,totalM3:fullStats.m3,m3:fullStats.m3,todayRecords:fullStats.todayRecords,weekKey:fullStats.weekKey,weekRecordCount:fullStats.weekRecordCount,weekM3:fullStats.weekM3,treeTotals:fullStats.treeTotals,productTotals:fullStats.productTotals,lastExportAt:trText(),lastExportAtMs:now,lastExportRecordCount:scopeStats.recordCount,lastExportM3:scopeStats.m3,lastExportTreeTotals:scopeStats.treeTotals,lastExportProductTotals:scopeStats.productTotals,lastExportScopeText:scope&&scope.text||'Mesaha dosyası',lastExportScopeMode:scope&&scope.mode||'xls',xlsDownloadCount:inc,deviceId:info.deviceId,lastDevice:info.platform+' • '+info.screen,lastDeviceInfo:info,appVersion:APP_VERSION,fileVersion:FILE_VERSION,updatedBy:reason||'xls-download',updatedAt:trText(),updatedAtMs:now,source:'xls-download-only'};await withTimeout(db.collection('users').doc(key).set(payload,{merge:true}),15000,'Kullanıcı istatistiği');const dailyId=key+'_'+trDate()+'_'+info.deviceId;await withTimeout(db.collection('usageStats').doc(dailyId).set(Object.assign({},payload,{id:dailyId,type:'dailyUsage',date:trDate(),exportCountToday:inc,createdAt:payload.updatedAt,createdAtMs:payload.updatedAtMs}),{merge:true}),12000,'Günlük istatistik');await db.collection('exportLogs').doc('xls_'+key+'_'+now.toString(36)).set({userKey:key,name:user.name,seflik:user.seflik,bolmeNo:user.bolmeNo,scopeText:payload.lastExportScopeText,scopeMode:payload.lastExportScopeMode,recordCount:scopeStats.recordCount,m3:scopeStats.m3,treeTotals:scopeStats.treeTotals,productTotals:scopeStats.productTotals,createdAt:payload.updatedAt,createdAtMs:now,appVersion:APP_VERSION,fileVersion:FILE_VERSION}).catch(()=>{});setSyncText('Admin güncellendi • '+new Date().toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'}));return true}catch(e){setSyncText('Dosya indi • admin gönderimi olmadı: '+errText(e));return false}}
   function boot(){loadUsage();setSyncText('İstatistikler Mesaha dosyası indirince gönderilir');setInterval(flushUsage,15000);window.addEventListener('visibilitychange',flushUsage);window.addEventListener('pagehide',flushUsage);window.mesahaExportStatsV323={send,flush:flushUsage,readUsage:()=>jsonGet(USAGE_KEY,{})}}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+})();
+</script>
+
+
+
+<style id="mesaha-style-v324-home-product-login-ui">
+/* v324: ana ekran ikinci görsele yakın; ürün kutuları büyük/oval; kullanıcı paneli sade */
+:root{--v324-bg1:#f7fbf8;--v324-bg2:#eef8f1;--v324-soft:#f1fbf4;--v324-green:#15803d;--v324-line:#dbe8e1;--v324-text:#102018;--v324-muted:#68766f}
+body{background:linear-gradient(180deg,#fbfefc 0%,var(--v324-bg1) 38%,var(--v324-bg2) 100%)!important;color:var(--v324-text)!important}
+body.dark{--v324-bg1:#07120d;--v324-bg2:#0b1f14;--v324-soft:#0d2417;--v324-line:#24412f;--v324-text:#f4fff7;--v324-muted:#b7c7bd;background:linear-gradient(180deg,#06110b 0%,#07120d 48%,#0b1f14 100%)!important;color:var(--v324-text)!important}
+.topbar{position:relative!important;top:auto!important;margin:0 0 18px!important;padding:18px 8px 10px!important;background:transparent!important;border:0!important;box-shadow:none!important;backdrop-filter:none!important;display:grid!important;grid-template-columns:1fr auto!important;grid-template-areas:'brand user' 'brand status'!important;align-items:center!important;gap:8px 12px!important}
+.brand{grid-area:brand!important;min-width:0!important}.brand img{width:56px!important;height:56px!important;filter:drop-shadow(0 10px 18px rgba(21,128,61,.12))}.version-card{background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important;gap:9px!important}.version-card b{font-size:20px!important;color:#12251a!important}.version-card small{display:none!important}body.dark .version-card{background:transparent!important}body.dark .version-card b{color:#eefdf2!important}
+.top-actions-v316{grid-area:user!important;justify-self:end!important;display:flex!important;align-items:center!important}.panel-btn-v316.identity-v323,.panel-btn-v316{min-height:45px!important;max-width:min(62vw,340px)!important;border:1px solid #bfe9cf!important;border-radius:999px!important;background:rgba(236,253,245,.92)!important;color:#14532d!important;padding:10px 16px!important;box-shadow:0 12px 26px rgba(21,128,61,.10)!important;font-size:16px!important;font-weight:1000!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}.panel-btn-v316.identity-v323.login-needed,.panel-btn-v316.login-needed{background:#fff7ed!important;color:#9a3412!important;border-color:#fed7aa!important}body.dark .panel-btn-v316.identity-v323,body.dark .panel-btn-v316{background:#0d2a19!important;color:#c8f7d7!important;border-color:#1f6f3d!important}.user-badge.status-v324{grid-area:status!important;justify-self:end!important;display:inline-flex!important;align-items:center!important;width:max-content!important;max-width:none!important;border-radius:999px!important;padding:7px 14px!important;background:rgba(236,253,245,.95)!important;color:#166534!important;border:1px solid #bfe9cf!important;font-size:14px!important;font-weight:1000!important;box-shadow:0 10px 22px rgba(21,128,61,.08)!important}.user-badge.status-v324.offline{background:#fff7ed!important;color:#9a3412!important;border-color:#fed7aa!important}body.dark .user-badge.status-v324{background:#0d2a19!important;color:#bbf7d0!important;border-color:#1f6f3d!important}.icon-btn#themeBtn{position:absolute!important;right:8px!important;top:72px!important;width:38px!important;height:38px!important;border-radius:14px!important;opacity:.62!important;background:rgba(255,255,255,.55)!important}body.dark .icon-btn#themeBtn{background:#0b1220!important}
+.hero-card{border-radius:30px!important;border:1px solid rgba(190,228,207,.85)!important;background:linear-gradient(135deg,rgba(255,255,255,.95) 0%,#eefbf2 58%,#dcf4e7 100%)!important;min-height:150px!important;padding:26px 26px!important;box-shadow:0 22px 48px rgba(21,128,61,.10)!important;overflow:hidden!important}.hero-card::after{content:'';position:absolute;right:22px;bottom:14px;width:230px;height:105px;background:repeating-linear-gradient(135deg,rgba(21,128,61,.18) 0 8px,transparent 8px 38px);border-radius:70px;opacity:.72}.hero-card h1{font-size:34px!important;line-height:1.05!important;margin:8px 0 12px!important;position:relative;z-index:1}.hero-card p{font-size:20px!important;line-height:1.25!important;font-weight:900!important;color:var(--v324-muted)!important;position:relative;z-index:1}.hero-forest{display:none!important}body.dark .hero-card{background:linear-gradient(135deg,#0f1e16 0%,#102c1a 65%,#123a21 100%)!important;border-color:#24412f!important;box-shadow:0 22px 48px rgba(0,0,0,.28)!important}.status-card{border-radius:30px!important;margin-top:-20px!important;background:rgba(255,255,255,.96)!important;border-color:#dbe8e1!important;padding:14px!important;box-shadow:0 18px 40px rgba(15,23,42,.08)!important}.status-item{background:#fbfefc!important;border:1px solid #dfe9e4!important;border-radius:24px!important;padding:18px!important}.status-icon{background:#e7f8ee!important;color:#15803d!important}.entry-launch{background:#fbfefc!important;border-color:#dfe9e4!important}.entry-launch b{color:#143d27!important}body.dark .status-card{background:#0f172a!important;border-color:#24412f!important}.dark .status-item,body.dark .status-item{background:#0b1220!important;border-color:#24412f!important}.card,.entry-form.card{border-radius:30px!important;border-color:#dfe9e4!important;box-shadow:0 18px 42px rgba(15,23,42,.07)!important;background:rgba(255,255,255,.96)!important}.section-head span{border-radius:999px!important;background:#e7f8ee!important;color:#15803d!important}.file-card input,.setting-block,.measure-grid label,.barcode-save label{background:rgba(255,255,255,.95)!important;border-color:#dfe9e4!important}body.dark .card,body.dark .entry-form.card{background:#0f172a!important;border-color:#24412f!important}
+.entry-form{display:flex!important;flex-direction:column!important;gap:16px!important}.tree-entry-block{order:2!important}.product-section-v324{order:3!important;border:1px solid #e2ebe6!important;border-radius:30px!important;background:rgba(255,255,255,.95)!important;padding:22px!important;box-shadow:0 12px 30px rgba(15,23,42,.05)!important}.measure-grid{order:4!important}.barcode-save{order:5!important}.recent-box{order:6!important}.product-section-v324>label{display:block!important;font-size:24px!important;margin:0 0 16px!important;color:#0f172a!important}.product-grid{grid-template-columns:1fr 1fr!important;gap:14px 16px!important}.product-btn{min-height:78px!important;border-radius:28px!important;border-width:2px!important;font-size:23px!important;font-weight:1000!important;letter-spacing:.1px!important;box-shadow:inset 0 0 0 1px rgba(255,255,255,.66),0 10px 22px rgba(15,23,42,.04)!important;overflow:visible!important}.product-btn::before{display:none!important}.product-btn.active{transform:translateY(-1px)!important;box-shadow:0 14px 28px rgba(21,128,61,.18),0 6px 0 rgba(21,128,61,.16)!important}.product-btn.active::after{content:'✓'!important;position:absolute!important;right:18px!important;top:-12px!important;width:36px!important;height:36px!important;display:grid!important;place-items:center!important;border-radius:999px!important;background:#15803d!important;color:white!important;border:4px solid rgba(255,255,255,.9)!important;font-size:22px!important;padding:0!important}.product-btn.product-tomruk{background:#fff8dc!important;border-color:#f4c430!important;color:#8a5b00!important}.product-btn.product-maden{background:#eaf3ff!important;border-color:#9dc8ff!important;color:#07599d!important}.product-btn.product-kagit{background:#ffe8ec!important;border-color:#ff9ca9!important;color:#9f1239!important}.product-btn.product-sanayi{background:#eaf8ef!important;border-color:#16a34a!important;color:#166534!important}.product-btn.product-tel{background:#f0e9ff!important;border-color:#c4a9ff!important;color:#6d28d9!important}.product-btn.product-sanayi.active{background:#e8f8ee!important;border-color:#15803d!important}.product-btn.product-tel{grid-column:auto!important}body.dark .product-section-v324{background:#0b1220!important;border-color:#24412f!important}.dark .product-section-v324>label,body.dark .product-section-v324>label{color:#f8fafc!important}body.dark .product-btn.product-tomruk{background:#2a2108!important;color:#fde68a!important}body.dark .product-btn.product-maden{background:#09203b!important;color:#bfdbfe!important}body.dark .product-btn.product-kagit{background:#351016!important;color:#fecdd3!important}body.dark .product-btn.product-sanayi{background:#0b2b18!important;color:#bbf7d0!important}body.dark .product-btn.product-tel{background:#20133d!important;color:#ddd6fe!important}
+.measure-grid label{border-radius:28px!important;padding:18px!important}.measure-grid input{height:68px!important;border-radius:24px!important;font-size:31px!important}.quick-grid{gap:12px!important}.quick-grid button{min-height:54px!important;border-radius:999px!important;font-size:22px!important;background:#eff8f1!important;color:#315844!important;border-color:#dfe9e4!important}.barcode-save label{border-radius:28px!important;padding:14px 18px!important}.save-btn{border-radius:26px!important;min-height:86px!important;font-size:26px!important;background:#16a34a!important}.entry-total{border-radius:28px!important;background:rgba(255,255,255,.96)!important}.entry-total b{font-size:34px!important}.tree-head .btn,.pill,.chip{border-radius:999px!important}.pill{background:#e7f8ee!important;color:#15803d!important}
+#panelBolmeV316,#panelDeviceV316,#panelStatsV316,#panelSyncV316{display:none!important}.mesaha-hide-v324{display:none!important}.panel-grid-v316{grid-template-columns:1fr!important}.panel-card-v316{border-radius:30px!important}.panel-title-v316 h2{font-size:24px!important}.panel-section-v316{border-radius:24px!important}.panel-actions-v316{grid-template-columns:1fr 1fr!important}.panel-actions-v316 #panelSaveV316{grid-column:1 / -1!important}.first-login-card-v321{border-radius:32px!important;padding:24px!important}.first-login-logo-v321 small{font-size:14px!important}.first-login-primary-v321{border-radius:22px!important;min-height:60px!important}.first-login-card-v321 input::placeholder{color:#94a3b8!important}
+@media(max-width:560px){.app{padding:12px 14px 132px!important}.topbar{padding-top:16px!important;grid-template-columns:1fr auto!important;gap:6px 8px!important}.brand img{width:48px!important;height:48px!important}.version-card b{font-size:18px!important}.panel-btn-v316.identity-v323,.panel-btn-v316{max-width:58vw!important;font-size:15px!important;padding:10px 14px!important}.user-badge.status-v324{font-size:14px!important;padding:7px 13px!important}.hero-card{min-height:146px!important;padding:24px 20px!important}.hero-card h1{font-size:30px!important}.hero-card p{font-size:19px!important}.status-card{grid-template-columns:1fr!important}.product-section-v324{padding:18px!important;border-radius:28px!important}.product-grid{gap:12px!important}.product-btn{min-height:72px!important;border-radius:26px!important;font-size:22px!important}.measure-grid{gap:12px!important}.measure-grid input{height:64px!important;font-size:30px!important}.barcode-save{grid-template-columns:1fr 128px!important}.save-btn{font-size:23px!important}.panel-actions-v316{grid-template-columns:1fr!important}}
+@media(max-width:380px){.product-btn{font-size:20px!important;min-height:68px!important}.barcode-save{grid-template-columns:1fr 118px!important}.hero-card h1{font-size:27px!important}.quick-grid button{font-size:20px!important;min-height:48px!important}}
+</style>
+<script id="mesaha-inline-v324-home-product-login-ui">
+(function(){
+  'use strict';
+  const PANEL_KEY='mesaha_panel_user_v316', SETTINGS_KEY='cam_mesaha_ayarlar_v1';
+  function $(id){return document.getElementById(id)}
+  function clean(v){return String(v==null?'':v).trim()}
+  function readJson(k){try{return JSON.parse(localStorage.getItem(k)||'{}')||{}}catch{return {}}}
+  function user(){const p=readJson(PANEL_KEY), s=readJson(SETTINGS_KEY);return {name:clean(p.name)||clean(s.ekipNot),seflik:clean(p.seflik)||clean(s.seflik)}}
+  function firstName(n){return clean(n).split(/\s+/)[0]||''}
+  function moveProduct(){
+    const pb=$('productButtons'); if(!pb||!pb.parentElement) return;
+    const sec=pb.parentElement; sec.classList.add('product-section-v324');
+    const mg=document.querySelector('.entry-form .measure-grid');
+    if(mg&&sec.parentElement===mg.parentElement&&sec.compareDocumentPosition(mg)&Node.DOCUMENT_POSITION_PRECEDING){mg.parentElement.insertBefore(sec,mg)}
+  }
+  function simplifyPanel(){
+    ['panelBolmeV316','panelDeviceV316'].forEach(id=>{const el=$(id); if(el&&el.parentElement) el.parentElement.classList.add('mesaha-hide-v324')});
+    const st=$('panelStatsV316'); if(st) st.classList.add('mesaha-hide-v324');
+    const sync=$('panelSyncV316'); if(sync) sync.classList.add('mesaha-hide-v324');
+    const title=$('userPanelTitleV316'); if(title) title.textContent='Kullanıcı Bilgileri';
+    const sub=$('panelSyncTextV316'); if(sub) sub.textContent='Sadece kullanıcı adı ve şeflik';
+  }
+  function updateFirstLogin(){
+    const n=$('firstLoginNameV321'), s=$('firstLoginSeflikV321'), t=$('firstLoginTitleV321');
+    if(n) n.placeholder='Örn: Yakup';
+    if(s) s.placeholder='Örn: Kütahya';
+    if(t) t.textContent='İlk Giriş';
+    const note=document.querySelector('.first-login-note-v321'); if(note) note.textContent='Sadece kullanıcı adı ve şeflik gir. Bu bilgiler admin panelinde kullanıcıyı ayırmak için kullanılır.';
+  }
+  function updateGreeting(){
+    const u=user();
+    const h=document.querySelector('#homeView .hero-card h1');
+    if(h) h.textContent=u.name?('Merhaba, '+firstName(u.name)):'Merhaba';
+  }
+  function updateTop(){
+    const u=user(); const ok=!!(u.name&&u.seflik);
+    const btn=$('userPanelBtnV316');
+    if(btn){btn.classList.add('identity-v323');btn.classList.toggle('login-needed',!ok);btn.textContent=ok?('👤 '+u.name+' • '+u.seflik):'👤 Giriş Yap';btn.title=ok?('Kullanıcı Bilgileri: '+u.name+' • '+u.seflik):'İlk giriş için kullanıcı adı ve şeflik gir'}
+    const badge=$('userBadge');
+    if(badge){badge.classList.add('status-v324');badge.classList.toggle('offline',!navigator.onLine);badge.classList.remove('login-needed');badge.textContent=navigator.onLine?'Çevrim içi':'Çevrim dışı';badge.title='Bağlantı durumu'}
+  }
+  function apply(){moveProduct();simplifyPanel();updateFirstLogin();updateGreeting();updateTop()}
+  function boot(){
+    apply();
+    window.addEventListener('online',apply);window.addEventListener('offline',apply);window.addEventListener('storage',apply);document.addEventListener('visibilitychange',apply);
+    const root=document.getElementById('app')||document.body;
+    if(window.MutationObserver&&root){let busy=false;new MutationObserver(()=>{if(busy)return;busy=true;setTimeout(()=>{apply();busy=false},0)}).observe(root,{childList:true,subtree:true,characterData:true});}
+    [100,400,900,1800,3500,6500].forEach(ms=>setTimeout(apply,ms));
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+  window.mesahaV324UI={refresh:apply};
 })();
 </script>
 
