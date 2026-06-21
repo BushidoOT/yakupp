@@ -479,3 +479,6 @@ body.dark .prod-total.product-tel{background:#1d1233!important;color:#ddd6fe!imp
   .print-scope-v314{font-size:12px!important;color:#334155!important;margin-top:8px!important}
 }
 
+
+/* v331 */
+#productFilterV325,.product-filter-v325{display:none!important;visibility:hidden!important;height:0!important;overflow:hidden!important;padding:0!important;margin:0!important;border:0!important;}
