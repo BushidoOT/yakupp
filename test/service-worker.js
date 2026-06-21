@@ -1,8 +1,8 @@
-importScripts('./js/version.js?v=321');
-const CACHE_NAME = (self.MESAHA_VERSION && self.MESAHA_VERSION.cacheName) || 'mesaha-app-v321-login-admin-mobile';
+importScripts('./js/version.js?v=323');
+const CACHE_NAME = (self.MESAHA_VERSION && self.MESAHA_VERSION.cacheName) || 'mesaha-app-v323-export-only-stats';
 const ASSETS = [
   './','./index.html','./admin.html','./manifest.json','./version.json','./service-worker.js',
-  './css/style.css?v=321','./js/version.js?v=321','./js/orbis-xls.js?v=321','./js/app.js?v=321',
+  './css/style.css?v=323','./js/version.js?v=323','./js/orbis-xls.js?v=323','./js/app.js?v=323',
   './assets/icon-192.png','./assets/icon-512.png','./assets/mesaha_logo.png',
   './icon-192.png','./icon-512.png','./mesaha_logo.png'
 ];
