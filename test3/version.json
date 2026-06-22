@@ -1,12 +1,12 @@
 {
-  "app": "V3.38",
-  "version": "v346-runtime-theme-update-fix",
-  "build": 346,
-  "visibleVersion": "V3.38 •ExelanceX•",
-  "shortVersion": "V3.38 •ExelanceX•",
-  "name": "Mesaha İO V3.38 •ExelanceX•",
-  "cacheName": "mesaha-app-v346-runtime-theme-update-fix",
-  "builtAt": "2026-06-22T03:10:00+03:00",
-  "notes": "Service worker sayfa yüklenirken eski sürüm izlerini ve karanlık tema butonunu düzeltir.",
-  "assetVersion": "346"
+  "app": "V3.39",
+  "version": "v347-final-dark-version-fix",
+  "build": 347,
+  "visibleVersion": "V3.39 ExelanceX",
+  "shortVersion": "V3.39 ExelanceX",
+  "name": "Mesaha IO V3.39 ExelanceX",
+  "cacheName": "mesaha-app-v347-final-dark-version-fix",
+  "builtAt": "2026-06-22T03:25:00+03:00",
+  "notes": "Dark mode and version fix.",
+  "assetVersion": "347"
 }
