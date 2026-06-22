@@ -1,12 +1,12 @@
 self.MESAHA_VERSION = {
-  "app": "V3.53",
-  "version": "v362-release-network-fix",
-  "build": 362,
-  "visibleVersion": "V3.53 •ExelanceX•",
-  "shortVersion": "V3.53 •ExelanceX•",
-  "name": "Mesaha İO V3.53 •ExelanceX•",
-  "cacheName": "mesaha-app-v362-release-network-fix",
+  "app": "V3.54",
+  "version": "v363-vibration-strong",
+  "build": 363,
+  "visibleVersion": "V3.54 •ExelanceX•",
+  "shortVersion": "V3.54 •ExelanceX•",
+  "name": "Mesaha İO V3.54 •ExelanceX•",
+  "cacheName": "mesaha-app-v363-vibration-strong",
   "builtAt": "2026-06-22T14:45:00+03:00",
-  "notes": "Yayın öncesi kontrol yapıldı. Bağlantı durumu gerçek çevrimiçi/çevrimdışı kontrolüyle düzeltildi.",
-  "assetVersion": "362"
+  "notes": "Titreşim süreleri güçlendirildi. Kısayol, başarılı kayıt ve limit uyarıları için ayrı titreşim kalıpları eklendi.",
+  "assetVersion": "363"
 };
