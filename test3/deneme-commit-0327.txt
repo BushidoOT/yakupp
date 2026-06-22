@@ -1,6 +1,0 @@
-Deneme commit dosyası.
-
-Bu dosya ChatGPT GitHub bağlantı testi için oluşturuldu.
-Saat: 03:27
-Repo: BushidoOT/yakupp
-Klasör: test3

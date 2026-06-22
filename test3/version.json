@@ -1,12 +1,12 @@
 {
-  "app": "V3.40",
-  "version": "v349-premium-dark-theme",
-  "build": 349,
-  "visibleVersion": "V3.40 •ExelanceX•",
-  "shortVersion": "V3.40 •ExelanceX•",
-  "name": "Mesaha İO V3.40 •ExelanceX•",
-  "cacheName": "mesaha-app-v349-premium-dark-theme",
-  "builtAt": "2026-06-22T05:58:00+03:00",
-  "notes": "Karanlık tema görsel olarak yeniden tasarlandı; beyaz kalan kart, alan ve özet panelleri koyu premium palete bağlandı.",
-  "assetVersion": "349"
+  "app": "V3.41",
+  "version": "v350-light-only-optimized",
+  "build": 350,
+  "visibleVersion": "V3.41 •ExelanceX•",
+  "shortVersion": "V3.41 •ExelanceX•",
+  "name": "Mesaha İO V3.41 •ExelanceX•",
+  "cacheName": "mesaha-app-v350-light-only-optimized",
+  "builtAt": "2026-06-22T06:05:00+03:00",
+  "notes": "Koyu mod ve butonu tamamen kaldırıldı; kullanıcı paneli sağ üste alındı; üst çevrim içi rozeti kaldırıldı; gereksiz tema yamaları temizlendi.",
+  "assetVersion": "350"
 }
