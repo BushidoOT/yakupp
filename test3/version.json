@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "app": "V3.45",
   "version": "v354-hero-forest-cover-direct",
   "build": 354,
@@ -9,4 +10,16 @@
   "builtAt": "2026-06-22T12:40:00+03:00",
   "notes": "Çift güncelleme dinleyicisi kaldırıldı, sürüm bilgisi tek kaynağa sabitlendi ve orman kapak görseli doğrudan yüklenecek şekilde düzeltildi.",
   "assetVersion": "354"
+=======
+  "app": "V3.46",
+  "version": "v355-orbis-template-excel-fix",
+  "build": 355,
+  "visibleVersion": "V3.46 •ExelanceX•",
+  "shortVersion": "V3.46 •ExelanceX•",
+  "name": "Mesaha İO V3.46 •ExelanceX•",
+  "cacheName": "mesaha-app-v355-orbis-template-excel-fix",
+  "builtAt": "2026-06-22T17:05:00+03:00",
+  "notes": "ORBİS orijinal Mesaha_Ornek_Temp şablonuna göre Excel dışa aktarma düzeltildi; Kayın ID ve örnek sayfa birebir ayarlandı.",
+  "assetVersion": "355"
+>>>>>>> 7ab176a (Fix test3)
 }

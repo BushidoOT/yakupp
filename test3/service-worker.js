@@ -1,7 +1,7 @@
-importScripts('./js/version.js?v=354');
+importScripts('./js/version.js?v=355');
 
-const META = self.MESAHA_VERSION || {"app": "V3.45", "version": "v354-hero-forest-cover-direct", "build": 354, "visibleVersion": "V3.45 •ExelanceX•", "shortVersion": "V3.45 •ExelanceX•", "name": "Mesaha İO V3.45 •ExelanceX•", "cacheName": "mesaha-app-v354-hero-forest-cover-direct", "builtAt": "2026-06-22T12:40:00+03:00", "notes": "Orman kapak görseli assets içine doğrudan eklendi; zip kök dizini test3'e direkt çıkacak şekilde hazırlandı.", "assetVersion": "354"};
-const CACHE_NAME = META.cacheName || 'mesaha-app-v354-hero-forest-cover-direct';
+const META = self.MESAHA_VERSION || {"app": "V3.46", "version": "v355-orbis-template-excel-fix", "build": 355, "visibleVersion": "V3.46 •ExelanceX•", "shortVersion": "V3.46 •ExelanceX•", "name": "Mesaha İO V3.46 •ExelanceX•", "cacheName": "mesaha-app-v355-orbis-template-excel-fix", "builtAt": "2026-06-22T17:05:00+03:00", "notes": "ORBİS orijinal Mesaha_Ornek_Temp şablonuna göre Excel dışa aktarma düzeltildi; Kayın ID ve örnek sayfa birebir ayarlandı.", "assetVersion": "355"};
+const CACHE_NAME = META.cacheName || 'mesaha-app-v355-orbis-template-excel-fix';
 const ASSETS = [
   "./",
   "./index.html",
@@ -9,12 +9,16 @@ const ASSETS = [
   "./manifest.json",
   "./version.json",
   "./service-worker.js",
-  "./js/version.js?v=354",
+  "./js/version.js?v=355",
   "./temizle.html",
   "./assets/icon-192.png",
   "./assets/icon-512.png",
   "./assets/mesaha_logo.png",
+<<<<<<< HEAD
   "./assets/hero_forest_cover.png?v=354",
+=======
+  "./assets/hero_forest_cover.png?v=355",
+>>>>>>> 7ab176a (Fix test3)
   "./assets/06_net_islem_onayi.wav",
   "./assets/08_hata_uyari_onaydan_farkli.wav"
 ];
