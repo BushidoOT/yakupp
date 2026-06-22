@@ -1,18 +1,18 @@
-importScripts('./js/version.js?v=348');
+importScripts('./js/version.js?v=349');
 
 const META = self.MESAHA_VERSION || {
   "app": "V3.39",
-  "version": "v348-temiz-paket-final",
+  "version": "v349-premium-dark-theme",
   "build": 348,
   "visibleVersion": "V3.39 •ExelanceX•",
   "shortVersion": "V3.39 •ExelanceX•",
   "name": "Mesaha İO V3.39 •ExelanceX•",
-  "cacheName": "mesaha-app-v348-temiz-paket-final",
+  "cacheName": "mesaha-app-v349-premium-dark-theme",
   "builtAt": "2026-06-22T04:35:00+03:00",
   "notes": "Temiz paket: index/admin syntax kontrol edildi, karanlık tema ve sürüm-cache bilgileri sabitlendi.",
   "assetVersion": "348"
 };
-const CACHE_NAME = META.cacheName || 'mesaha-app-v348-temiz-paket-final';
+const CACHE_NAME = META.cacheName || 'mesaha-app-v349-premium-dark-theme';
 const ASSET_VERSION = META.assetVersion || '348';
 const ASSETS = [
   './', './index.html', './admin.html', './manifest.json', './version.json', './service-worker.js', './temizle.html',
