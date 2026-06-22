@@ -1,7 +1,7 @@
-importScripts('./js/version.js?v=352');
+importScripts('./js/version.js?v=353');
 
-const META = self.MESAHA_VERSION || {"app": "V3.43", "version": "v352-lovable-clean-light-final", "build": 352, "visibleVersion": "V3.43 •ExelanceX•", "shortVersion": "V3.43 •ExelanceX•", "name": "Mesaha İO V3.43 •ExelanceX•", "cacheName": "mesaha-app-v352-lovable-clean-light-final", "builtAt": "2026-06-22T11:50:00+03:00", "notes": "Lovable raporundaki PWA meta, asset yolu, tekrarlayan id, eski sürüm ve tema kalıntısı uyarıları temizlendi.", "assetVersion": "352"};
-const CACHE_NAME = META.cacheName || 'mesaha-app-v352-lovable-clean-light-final';
+const META = self.MESAHA_VERSION || {"app": "V3.44", "version": "v353-hero-forest-cover", "build": 353, "visibleVersion": "V3.44 •ExelanceX•", "shortVersion": "V3.44 •ExelanceX•", "name": "Mesaha İO V3.44 •ExelanceX•", "cacheName": "mesaha-app-v353-hero-forest-cover", "builtAt": "2026-06-22T12:20:00+03:00", "notes": "Ana sayfadaki Merhaba kartına gerçek orman kapak görseli eklendi.", "assetVersion": "353"};
+const CACHE_NAME = META.cacheName || 'mesaha-app-v353-hero-forest-cover';
 const ASSETS = [
   "./",
   "./index.html",
@@ -9,11 +9,12 @@ const ASSETS = [
   "./manifest.json",
   "./version.json",
   "./service-worker.js",
-  "./js/version.js?v=352",
+  "./js/version.js?v=353",
   "./temizle.html",
   "./assets/icon-192.png",
   "./assets/icon-512.png",
   "./assets/mesaha_logo.png",
+  "./assets/hero_forest_cover.png",
   "./assets/06_net_islem_onayi.wav",
   "./assets/08_hata_uyari_onaydan_farkli.wav"
 ];
