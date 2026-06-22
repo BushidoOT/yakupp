@@ -1,7 +1,7 @@
-importScripts('./js/version.js?v=359');
+importScripts('./js/version.js?v=360');
 
-const META = self.MESAHA_VERSION || {"app": "V3.50", "version": "v359-forest-facts-responsive-final", "build": 359, "visibleVersion": "V3.50 •ExelanceX•", "shortVersion": "V3.50 •ExelanceX•", "name": "Mesaha İO V3.50 •ExelanceX•", "cacheName": "mesaha-app-v359-forest-facts-responsive-final", "builtAt": "2026-06-22T14:05:00+03:00", "notes": "Ana kapak alanına 60 orman bilgisi eklendi; bilgiler 5 saniyede bir değişir. Tablet ve büyük ekran genişlik kilidi final CSS ile düzeltildi.", "assetVersion": "359"};
-const CACHE_NAME = META.cacheName || 'mesaha-app-v359-forest-facts-responsive-final';
+const META = self.MESAHA_VERSION || {"app": "V3.51", "version": "v360-hero-bg-force", "build": 360, "visibleVersion": "V3.51 •ExelanceX•", "shortVersion": "V3.51 •ExelanceX•", "name": "Mesaha İO V3.51 •ExelanceX•", "cacheName": "mesaha-app-v360-hero-bg-force", "builtAt": "2026-06-22T14:05:00+03:00", "notes": "Tablet responsive düzende kaybolan orman kapak görseli son CSS katmanında tekrar zorlandı. Orman bilgileri 5 saniyede bir dönmeye devam eder.", "assetVersion": "360"};
+const CACHE_NAME = META.cacheName || 'mesaha-app-v360-hero-bg-force';
 const ASSETS = [
   "./",
   "./index.html",
@@ -9,7 +9,7 @@ const ASSETS = [
   "./manifest.json",
   "./version.json",
   "./service-worker.js",
-  "./js/version.js?v=359",
+  "./js/version.js?v=360",
   "./temizle.html",
   "./assets/icon-192.png",
   "./assets/icon-512.png",
