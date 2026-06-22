@@ -1,7 +1,7 @@
-importScripts('./js/version.js?v=353');
+importScripts('./js/version.js?v=354');
 
-const META = self.MESAHA_VERSION || {"app": "V3.44", "version": "v353-hero-forest-cover", "build": 353, "visibleVersion": "V3.44 •ExelanceX•", "shortVersion": "V3.44 •ExelanceX•", "name": "Mesaha İO V3.44 •ExelanceX•", "cacheName": "mesaha-app-v353-hero-forest-cover", "builtAt": "2026-06-22T12:20:00+03:00", "notes": "Ana sayfadaki Merhaba kartına gerçek orman kapak görseli eklendi.", "assetVersion": "353"};
-const CACHE_NAME = META.cacheName || 'mesaha-app-v353-hero-forest-cover';
+const META = self.MESAHA_VERSION || {"app": "V3.45", "version": "v354-hero-forest-cover-direct", "build": 354, "visibleVersion": "V3.45 •ExelanceX•", "shortVersion": "V3.45 •ExelanceX•", "name": "Mesaha İO V3.45 •ExelanceX•", "cacheName": "mesaha-app-v354-hero-forest-cover-direct", "builtAt": "2026-06-22T12:40:00+03:00", "notes": "Orman kapak görseli assets içine doğrudan eklendi; zip kök dizini test3'e direkt çıkacak şekilde hazırlandı.", "assetVersion": "354"};
+const CACHE_NAME = META.cacheName || 'mesaha-app-v354-hero-forest-cover-direct';
 const ASSETS = [
   "./",
   "./index.html",
@@ -9,7 +9,7 @@ const ASSETS = [
   "./manifest.json",
   "./version.json",
   "./service-worker.js",
-  "./js/version.js?v=353",
+  "./js/version.js?v=354",
   "./temizle.html",
   "./assets/icon-192.png",
   "./assets/icon-512.png",
