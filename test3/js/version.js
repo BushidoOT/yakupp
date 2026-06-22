@@ -7,6 +7,6 @@ self.MESAHA_VERSION = {
   "name": "Mesaha İO V3.45 •ExelanceX•",
   "cacheName": "mesaha-app-v354-hero-forest-cover-direct",
   "builtAt": "2026-06-22T12:40:00+03:00",
-  "notes": "Orman kapak görseli assets içine doğrudan eklendi; zip kök dizini test3'e direkt çıkacak şekilde hazırlandı.",
+  "notes": "Çift güncelleme dinleyicisi kaldırıldı, sürüm bilgisi tek kaynağa sabitlendi ve orman kapak görseli doğrudan yüklenecek şekilde düzeltildi.",
   "assetVersion": "354"
 };
