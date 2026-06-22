@@ -57,6 +57,7 @@ jobs:
           html = p.read_text(encoding='utf-8')
           meta_js = json.dumps(meta, ensure_ascii=False)
           html = re.sub(r'<title>.*?</title>', f'<title>Mesaha İO {DISPLAY}</title>', html, count=1)
+          html = re.sub(r"const info = \{\"app\": \"V3\.35\".*?\};", f"const info = {meta_js};", html, count=1)
           html = re.sub(r"const info = \{\"app\": \"V3\.38\".*?\};", f"const info = {meta_js};", html, count=1)
           html = re.sub(r"var info=\{\"app\": \"V3\.38\".*?\};", f"var info={meta_js};", html, count=1)
           html = re.sub(
