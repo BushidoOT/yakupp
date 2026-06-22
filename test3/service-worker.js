@@ -1,19 +1,22 @@
-importScripts('./js/version.js?v=347');
+importScripts('./js/version.js?v=348');
 
 const META = self.MESAHA_VERSION || {
-  app: 'V3.39',
-  version: 'v347-final-dark-version-fix',
-  build: 347,
-  visibleVersion: 'V3.39 ExelanceX',
-  shortVersion: 'V3.39 ExelanceX',
-  name: 'Mesaha IO V3.39 ExelanceX',
-  cacheName: 'mesaha-app-v347-final-dark-version-fix',
-  assetVersion: '347'
+  "app": "V3.39",
+  "version": "v348-temiz-paket-final",
+  "build": 348,
+  "visibleVersion": "V3.39 •ExelanceX•",
+  "shortVersion": "V3.39 •ExelanceX•",
+  "name": "Mesaha İO V3.39 •ExelanceX•",
+  "cacheName": "mesaha-app-v348-temiz-paket-final",
+  "builtAt": "2026-06-22T04:35:00+03:00",
+  "notes": "Temiz paket: index/admin syntax kontrol edildi, karanlık tema ve sürüm-cache bilgileri sabitlendi.",
+  "assetVersion": "348"
 };
-const CACHE_NAME = META.cacheName || 'mesaha-app-v347-final-dark-version-fix';
+const CACHE_NAME = META.cacheName || 'mesaha-app-v348-temiz-paket-final';
+const ASSET_VERSION = META.assetVersion || '348';
 const ASSETS = [
-  './', './index.html', './manifest.json', './version.json', './service-worker.js',
-  './js/version.js?v=347', './js/boot-v347.js?v=347', './js/final-fix-v347.js?v=347', './temizle.html',
+  './', './index.html', './admin.html', './manifest.json', './version.json', './service-worker.js', './temizle.html',
+  './js/version.js?v=' + ASSET_VERSION,
   './assets/icon-192.png', './assets/icon-512.png', './assets/mesaha_logo.png',
   './assets/06_net_islem_onayi.wav', './assets/08_hata_uyari_onaydan_farkli.wav'
 ];
@@ -34,8 +37,8 @@ self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
   const url = new URL(event.request.url);
   if (url.origin !== self.location.origin) return;
-  const noStore = url.pathname.endsWith('/index.html') || url.pathname.endsWith('/version.json') || url.pathname.endsWith('/service-worker.js') || url.pathname.endsWith('/js/version.js') || url.pathname.endsWith('/js/boot-v347.js') || url.pathname.endsWith('/js/final-fix-v347.js');
-  if (event.request.mode === 'navigate' || noStore) {
+  const fresh = event.request.mode === 'navigate' || url.pathname.endsWith('/index.html') || url.pathname.endsWith('/version.json') || url.pathname.endsWith('/service-worker.js') || url.pathname.endsWith('/js/version.js');
+  if (fresh) {
     event.respondWith(fetch(event.request, { cache: 'no-store' }).then(response => {
       const clone = response.clone();
       caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone)).catch(() => {});

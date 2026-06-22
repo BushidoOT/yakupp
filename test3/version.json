@@ -1,12 +1,12 @@
 {
   "app": "V3.39",
-  "version": "v347-final-dark-version-fix",
-  "build": 347,
-  "visibleVersion": "V3.39 ExelanceX",
-  "shortVersion": "V3.39 ExelanceX",
-  "name": "Mesaha IO V3.39 ExelanceX",
-  "cacheName": "mesaha-app-v347-final-dark-version-fix",
-  "builtAt": "2026-06-22T03:25:00+03:00",
-  "notes": "Dark mode and version fix.",
-  "assetVersion": "347"
+  "version": "v348-temiz-paket-final",
+  "build": 348,
+  "visibleVersion": "V3.39 •ExelanceX•",
+  "shortVersion": "V3.39 •ExelanceX•",
+  "name": "Mesaha İO V3.39 •ExelanceX•",
+  "cacheName": "mesaha-app-v348-temiz-paket-final",
+  "builtAt": "2026-06-22T04:35:00+03:00",
+  "notes": "Temiz paket: index/admin syntax kontrol edildi, karanlık tema ve sürüm-cache bilgileri sabitlendi.",
+  "assetVersion": "348"
 }
