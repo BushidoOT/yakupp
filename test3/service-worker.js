@@ -1,7 +1,7 @@
-importScripts('./js/version.js?v=356');
+importScripts('./js/version.js?v=358');
 
-const META = self.MESAHA_VERSION || {"app": "V3.47", "version": "v356-cap-boy-limit", "build": 356, "visibleVersion": "V3.47 •ExelanceX•", "shortVersion": "V3.47 •ExelanceX•", "name": "Mesaha İO V3.47 •ExelanceX•", "cacheName": "mesaha-app-v356-cap-boy-limit", "builtAt": "2026-06-22T13:10:00+03:00", "notes": "Çap 200 üstü ve boy 50 üstü giriş/kayıt engeli eklendi; ORBİS Excel düzeltmesi korundu.", "assetVersion": "356"};
-const CACHE_NAME = META.cacheName || 'mesaha-app-v356-cap-boy-limit';
+const META = self.MESAHA_VERSION || {"app": "V3.49", "version": "v358-responsive-layout", "build": 358, "visibleVersion": "V3.49 •ExelanceX•", "shortVersion": "V3.49 •ExelanceX•", "name": "Mesaha İO V3.49 •ExelanceX•", "cacheName": "mesaha-app-v358-responsive-layout", "builtAt": "2026-06-22T13:40:00+03:00", "notes": "Tablet ve büyük ekranlı telefonlarda uygulamanın geniş alana uyum sağlaması için responsive düzen eklendi. Titreşim ve üst limit uyarıları korundu.", "assetVersion": "358"};
+const CACHE_NAME = META.cacheName || 'mesaha-app-v358-responsive-layout';
 const ASSETS = [
   "./",
   "./index.html",
@@ -9,7 +9,7 @@ const ASSETS = [
   "./manifest.json",
   "./version.json",
   "./service-worker.js",
-  "./js/version.js?v=356",
+  "./js/version.js?v=358",
   "./temizle.html",
   "./assets/icon-192.png",
   "./assets/icon-512.png",
