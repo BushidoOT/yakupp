@@ -1,10 +1,10 @@
 {
-  "name": "Mesaha İO V3.35 •ExelanceX•",
+  "name": "Mesaha İO V3.39 •ExelanceX•",
   "short_name": "Mesaha İO",
-  "start_url": "./index.html?v=341",
+  "start_url": "./index.html?v=345",
   "display": "standalone",
-  "background_color": "#eef8f2",
-  "theme_color": "#0d5f3b",
+  "background_color": "#08090b",
+  "theme_color": "#111318",
   "icons": [
     {
       "src": "./assets/icon-192.png",
