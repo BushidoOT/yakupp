@@ -1,7 +1,7 @@
-importScripts('./js/version.js?v=361');
+importScripts('./js/version.js?v=362');
 
-const META = self.MESAHA_VERSION || {"app": "V3.52", "version": "v361-user-device-sync", "build": 361, "visibleVersion": "V3.52 •ExelanceX•", "shortVersion": "V3.52 •ExelanceX•", "name": "Mesaha İO V3.52 •ExelanceX•", "cacheName": "mesaha-app-v361-user-device-sync", "builtAt": "2026-06-22T14:25:00+03:00", "notes": "Merhaba alanı sadece kayıtlı kullanıcı adını gösterir. Kullanıcı kaydı ve cihaz bilgisi admin paneline otomatik gönderilir.", "assetVersion": "361"};
-const CACHE_NAME = META.cacheName || 'mesaha-app-v361-user-device-sync';
+const META = self.MESAHA_VERSION || {"app": "V3.53", "version": "v362-release-network-fix", "build": 362, "visibleVersion": "V3.53 •ExelanceX•", "shortVersion": "V3.53 •ExelanceX•", "name": "Mesaha İO V3.53 •ExelanceX•", "cacheName": "mesaha-app-v362-release-network-fix", "builtAt": "2026-06-22T14:45:00+03:00", "notes": "Yayın öncesi kontrol yapıldı. Bağlantı durumu gerçek çevrimiçi/çevrimdışı kontrolüyle düzeltildi.", "assetVersion": "362"};
+const CACHE_NAME = META.cacheName || 'mesaha-app-v362-release-network-fix';
 const ASSETS = [
   "./",
   "./index.html",
@@ -9,7 +9,7 @@ const ASSETS = [
   "./manifest.json",
   "./version.json",
   "./service-worker.js",
-  "./js/version.js?v=361",
+  "./js/version.js?v=362",
   "./temizle.html",
   "./assets/icon-192.png",
   "./assets/icon-512.png",
