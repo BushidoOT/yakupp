@@ -1,25 +1,12 @@
 {
-<<<<<<< HEAD
-  "app": "V3.45",
-  "version": "v354-hero-forest-cover-direct",
-  "build": 354,
-  "visibleVersion": "V3.45 •ExelanceX•",
-  "shortVersion": "V3.45 •ExelanceX•",
-  "name": "Mesaha İO V3.45 •ExelanceX•",
-  "cacheName": "mesaha-app-v354-hero-forest-cover-direct",
-  "builtAt": "2026-06-22T12:40:00+03:00",
-  "notes": "Çift güncelleme dinleyicisi kaldırıldı, sürüm bilgisi tek kaynağa sabitlendi ve orman kapak görseli doğrudan yüklenecek şekilde düzeltildi.",
-  "assetVersion": "354"
-=======
-  "app": "V3.46",
-  "version": "v355-orbis-template-excel-fix",
-  "build": 355,
-  "visibleVersion": "V3.46 •ExelanceX•",
-  "shortVersion": "V3.46 •ExelanceX•",
-  "name": "Mesaha İO V3.46 •ExelanceX•",
-  "cacheName": "mesaha-app-v355-orbis-template-excel-fix",
-  "builtAt": "2026-06-22T17:05:00+03:00",
-  "notes": "ORBİS orijinal Mesaha_Ornek_Temp şablonuna göre Excel dışa aktarma düzeltildi; Kayın ID ve örnek sayfa birebir ayarlandı.",
-  "assetVersion": "355"
->>>>>>> 7ab176a (Fix test3)
+  "app": "V3.47",
+  "version": "v356-cap-boy-limit",
+  "build": 356,
+  "visibleVersion": "V3.47 •ExelanceX•",
+  "shortVersion": "V3.47 •ExelanceX•",
+  "name": "Mesaha İO V3.47 •ExelanceX•",
+  "cacheName": "mesaha-app-v356-cap-boy-limit",
+  "builtAt": "2026-06-22T13:10:00+03:00",
+  "notes": "Çap 200 üstü ve boy 50 üstü giriş/kayıt engeli eklendi; ORBİS Excel düzeltmesi korundu.",
+  "assetVersion": "356"
 }

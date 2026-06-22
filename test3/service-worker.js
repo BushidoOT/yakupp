@@ -1,7 +1,7 @@
-importScripts('./js/version.js?v=355');
+importScripts('./js/version.js?v=356');
 
-const META = self.MESAHA_VERSION || {"app": "V3.46", "version": "v355-orbis-template-excel-fix", "build": 355, "visibleVersion": "V3.46 •ExelanceX•", "shortVersion": "V3.46 •ExelanceX•", "name": "Mesaha İO V3.46 •ExelanceX•", "cacheName": "mesaha-app-v355-orbis-template-excel-fix", "builtAt": "2026-06-22T17:05:00+03:00", "notes": "ORBİS orijinal Mesaha_Ornek_Temp şablonuna göre Excel dışa aktarma düzeltildi; Kayın ID ve örnek sayfa birebir ayarlandı.", "assetVersion": "355"};
-const CACHE_NAME = META.cacheName || 'mesaha-app-v355-orbis-template-excel-fix';
+const META = self.MESAHA_VERSION || {"app": "V3.47", "version": "v356-cap-boy-limit", "build": 356, "visibleVersion": "V3.47 •ExelanceX•", "shortVersion": "V3.47 •ExelanceX•", "name": "Mesaha İO V3.47 •ExelanceX•", "cacheName": "mesaha-app-v356-cap-boy-limit", "builtAt": "2026-06-22T13:10:00+03:00", "notes": "Çap 200 üstü ve boy 50 üstü giriş/kayıt engeli eklendi; ORBİS Excel düzeltmesi korundu.", "assetVersion": "356"};
+const CACHE_NAME = META.cacheName || 'mesaha-app-v356-cap-boy-limit';
 const ASSETS = [
   "./",
   "./index.html",
@@ -9,16 +9,12 @@ const ASSETS = [
   "./manifest.json",
   "./version.json",
   "./service-worker.js",
-  "./js/version.js?v=355",
+  "./js/version.js?v=356",
   "./temizle.html",
   "./assets/icon-192.png",
   "./assets/icon-512.png",
   "./assets/mesaha_logo.png",
-<<<<<<< HEAD
-  "./assets/hero_forest_cover.png?v=354",
-=======
   "./assets/hero_forest_cover.png?v=355",
->>>>>>> 7ab176a (Fix test3)
   "./assets/06_net_islem_onayi.wav",
   "./assets/08_hata_uyari_onaydan_farkli.wav"
 ];
