@@ -1,4 +1,4 @@
-{
+self.MESAHA_VERSION = {
   "app": "V3.54",
   "version": "v363-vibration-strong",
   "build": 363,
@@ -9,4 +9,4 @@
   "builtAt": "2026-06-22T14:45:00+03:00",
   "notes": "Titreşim süreleri güçlendirildi. Kısayol, başarılı kayıt ve limit uyarıları için ayrı titreşim kalıpları eklendi.",
   "assetVersion": "363"
-}
+};

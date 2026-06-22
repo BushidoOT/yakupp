@@ -1,62 +1,52 @@
-const CACHE_NAME = "mesaha-app-v157-tarih-yedek-yukle-fix";
+importScripts('./js/version.js?v=363');
+
+const META = self.MESAHA_VERSION || {"app": "V3.54", "version": "v363-vibration-strong", "build": 363, "visibleVersion": "V3.54 •ExelanceX•", "shortVersion": "V3.54 •ExelanceX•", "name": "Mesaha İO V3.54 •ExelanceX•", "cacheName": "mesaha-app-v363-vibration-strong", "builtAt": "2026-06-22T14:45:00+03:00", "notes": "Titreşim süreleri güçlendirildi. Kısayol, başarılı kayıt ve limit uyarıları için ayrı titreşim kalıpları eklendi.", "assetVersion": "363"};
+const CACHE_NAME = META.cacheName || 'mesaha-app-v363-vibration-strong';
 const ASSETS = [
   "./",
   "./index.html",
+  "./admin.html",
   "./manifest.json",
-  "./service-worker.js",
   "./version.json",
-  "./.nojekyll",
-  "./mesaha_logo.png",
-  "./icon-192.png",
-  "./icon-512.png"
+  "./service-worker.js",
+  "./js/version.js?v=363",
+  "./temizle.html",
+  "./assets/icon-192.png",
+  "./assets/icon-512.png",
+  "./assets/mesaha_logo.png",
+  "./assets/hero_forest_cover.png?v=355",
+  "./assets/06_net_islem_onayi.wav",
+  "./assets/08_hata_uyari_onaydan_farkli.wav"
 ];
 
-self.addEventListener("install", (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then((cache) => cache.addAll(ASSETS).catch(() => cache.addAll(["./", "./index.html", "./manifest.json", "./service-worker.js"])))
-      .then(() => self.skipWaiting())
-  );
+self.addEventListener('install', event => {
+  event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS)).then(() => self.skipWaiting()));
 });
 
-self.addEventListener("activate", (event) => {
+self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys()
-      .then((keys) => Promise.all(keys.map((key) => key !== CACHE_NAME ? caches.delete(key) : null)))
+      .then(keys => Promise.all(keys.filter(k => k !== CACHE_NAME && k.startsWith('mesaha-app-')).map(k => caches.delete(k))))
       .then(() => self.clients.claim())
   );
 });
 
-self.addEventListener("message", (event) => {
-  if (event.data && event.data.type === "SKIP_WAITING") self.skipWaiting();
-});
-
-self.addEventListener("fetch", (event) => {
-  const request = event.request;
-  if (request.method !== "GET") return;
-
-  const url = new URL(request.url);
-  const isNavigation = request.mode === "navigate" || url.pathname.endsWith("/") || url.pathname.endsWith("/index.html");
-
-  if (isNavigation) {
-    event.respondWith(
-      fetch(request, { cache: "reload" }).then((response) => {
-        const copy = response.clone();
-        caches.open(CACHE_NAME).then((cache) => cache.put("./index.html", copy).catch(() => {}));
-        return response;
-      }).catch(() => caches.match("./index.html").then((cached) => cached || caches.match("./")))
-    );
+self.addEventListener('fetch', event => {
+  if (event.request.method !== 'GET') return;
+  const url = new URL(event.request.url);
+  if (url.origin !== self.location.origin) return;
+  const noStore = url.pathname.endsWith('/index.html') || url.pathname.endsWith('/version.json') || url.pathname.endsWith('/service-worker.js') || url.pathname.endsWith('/js/version.js');
+  if (event.request.mode === 'navigate' || noStore) {
+    event.respondWith(fetch(event.request, { cache: 'no-store' }).then(response => {
+      const clone = response.clone();
+      caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone)).catch(() => {});
+      return response;
+    }).catch(() => caches.match(event.request).then(r => r || caches.match('./index.html'))));
     return;
   }
-
-  event.respondWith(
-    caches.match(request).then((cached) => {
-      const network = fetch(request).then((response) => {
-        const copy = response.clone();
-        caches.open(CACHE_NAME).then((cache) => cache.put(request, copy).catch(() => {}));
-        return response;
-      }).catch(() => cached);
-      return cached || network;
-    })
-  );
+  event.respondWith(caches.match(event.request).then(cached => cached || fetch(event.request).then(response => {
+    const clone = response.clone();
+    caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone)).catch(() => {});
+    return response;
+  })));
 });
