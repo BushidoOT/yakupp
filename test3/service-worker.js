@@ -1,7 +1,7 @@
-importScripts('./js/version.js?v=363');
+importScripts('./js/version.js?v=364');
 
-const META = self.MESAHA_VERSION || {"app": "V3.54", "version": "v363-vibration-strong", "build": 363, "visibleVersion": "V3.54 •ExelanceX•", "shortVersion": "V3.54 •ExelanceX•", "name": "Mesaha İO V3.54 •ExelanceX•", "cacheName": "mesaha-app-v363-vibration-strong", "builtAt": "2026-06-22T14:45:00+03:00", "notes": "Titreşim süreleri güçlendirildi. Kısayol, başarılı kayıt ve limit uyarıları için ayrı titreşim kalıpları eklendi.", "assetVersion": "363"};
-const CACHE_NAME = META.cacheName || 'mesaha-app-v363-vibration-strong';
+const META = self.MESAHA_VERSION || {"app": "V3.55", "version": "v364-record-sort-cutter-confirm", "build": 364, "visibleVersion": "V3.55 •ExelanceX•", "shortVersion": "V3.55 •ExelanceX•", "name": "Mesaha İO V3.55 •ExelanceX•", "cacheName": "mesaha-app-v364-record-sort-cutter-confirm", "builtAt": "2026-06-22T15:05:00+03:00", "notes": "Ölçümlerde en son alınan kayıtlar ilk sayfada gösterilir. Kesimci silme işlemi onay sorar.", "assetVersion": "364"};
+const CACHE_NAME = META.cacheName || 'mesaha-app-v364-record-sort-cutter-confirm';
 const ASSETS = [
   "./",
   "./index.html",
@@ -9,7 +9,7 @@ const ASSETS = [
   "./manifest.json",
   "./version.json",
   "./service-worker.js",
-  "./js/version.js?v=363",
+  "./js/version.js?v=364",
   "./temizle.html",
   "./assets/icon-192.png",
   "./assets/icon-512.png",
