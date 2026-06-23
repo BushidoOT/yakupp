@@ -1,12 +1,12 @@
 self.MESAHA_VERSION = {
-  "app": "V3.55",
-  "version": "v364-record-sort-cutter-confirm",
-  "build": 364,
-  "visibleVersion": "V3.55 •ExelanceX•",
-  "shortVersion": "V3.55 •ExelanceX•",
-  "name": "Mesaha İO V3.55 •ExelanceX•",
-  "cacheName": "mesaha-app-v364-record-sort-cutter-confirm",
-  "builtAt": "2026-06-22T15:05:00+03:00",
-  "notes": "Ölçümlerde en son alınan kayıtlar ilk sayfada gösterilir. Kesimci silme işlemi onay sorar.",
-  "assetVersion": "364"
+  "app": "V3.57",
+  "version": "v366-terminal-save-touch-fix",
+  "build": 366,
+  "visibleVersion": "V3.57 •ExelanceX•",
+  "shortVersion": "V3.57 •ExelanceX•",
+  "name": "Mesaha İO V3.57 •ExelanceX•",
+  "cacheName": "mesaha-app-v366-terminal-save-touch-fix",
+  "builtAt": "2026-06-22T15:45:00+03:00",
+  "notes": "El terminali Chrome/WebView cihazlarında yüzen Kaydet butonu için pointer/touch/click yakalama güçlendirildi.",
+  "assetVersion": "366"
 };
