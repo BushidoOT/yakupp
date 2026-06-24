@@ -1,7 +1,7 @@
-importScripts('./js/version.js?v=370');
+importScripts('./js/version.js?v=371');
 
-const META = self.MESAHA_VERSION || {"app": "V3.60", "version": "v370-bottom-nav-restore", "build": 370, "visibleVersion": "V3.60 •ExelanceX•", "shortVersion": "V3.60 •ExelanceX•", "name": "Mesaha İO V3.60 •ExelanceX•", "cacheName": "mesaha-app-v370-bottom-nav-restore", "builtAt": "2026-06-22T16:45:00+03:00", "notes": "Terminal hafif modda kaybolan alt menü tekrar sabit ve görünür hale getirildi.", "assetVersion": "370"};
-const CACHE_NAME = META.cacheName || 'mesaha-app-v370-bottom-nav-restore';
+const META = self.MESAHA_VERSION || {"app": "V3.61", "version": "v371-scroll-lock-fix", "build": 371, "visibleVersion": "V3.61 •ExelanceX•", "shortVersion": "V3.61 •ExelanceX•", "name": "Mesaha İO V3.61 •ExelanceX•", "cacheName": "mesaha-app-v371-scroll-lock-fix", "builtAt": "2026-06-22T17:05:00+03:00", "notes": "Terminal Chrome/WebView cihazlarda sayfa kaydırma takılması düzeltildi. Genel touch yakalama hafifletildi, doğal pan-y kaydırma zorlandı.", "assetVersion": "371"};
+const CACHE_NAME = META.cacheName || 'mesaha-app-v371-scroll-lock-fix';
 const ASSETS = [
   "./",
   "./index.html",
@@ -9,12 +9,12 @@ const ASSETS = [
   "./manifest.json",
   "./version.json",
   "./service-worker.js",
-  "./js/version.js?v=370",
+  "./js/version.js?v=371",
   "./temizle.html",
   "./assets/icon-192.png",
   "./assets/icon-512.png",
   "./assets/mesaha_logo.png",
-  "./assets/hero_forest_cover.png?v=370",
+  "./assets/hero_forest_cover.png?v=371",
   "./assets/06_net_islem_onayi.wav",
   "./assets/08_hata_uyari_onaydan_farkli.wav"
 ];

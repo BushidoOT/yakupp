@@ -1,12 +1,12 @@
 self.MESAHA_VERSION = {
-  "app": "V3.60",
-  "version": "v370-bottom-nav-restore",
-  "build": 370,
-  "visibleVersion": "V3.60 •ExelanceX•",
-  "shortVersion": "V3.60 •ExelanceX•",
-  "name": "Mesaha İO V3.60 •ExelanceX•",
-  "cacheName": "mesaha-app-v370-bottom-nav-restore",
-  "builtAt": "2026-06-22T16:45:00+03:00",
-  "notes": "Terminal hafif modda kaybolan alt menü tekrar sabit ve görünür hale getirildi.",
-  "assetVersion": "370"
+  "app": "V3.61",
+  "version": "v371-scroll-lock-fix",
+  "build": 371,
+  "visibleVersion": "V3.61 •ExelanceX•",
+  "shortVersion": "V3.61 •ExelanceX•",
+  "name": "Mesaha İO V3.61 •ExelanceX•",
+  "cacheName": "mesaha-app-v371-scroll-lock-fix",
+  "builtAt": "2026-06-22T17:05:00+03:00",
+  "notes": "Terminal Chrome/WebView cihazlarda sayfa kaydırma takılması düzeltildi. Genel touch yakalama hafifletildi, doğal pan-y kaydırma zorlandı.",
+  "assetVersion": "371"
 };
