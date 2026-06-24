@@ -1,7 +1,7 @@
-importScripts('./js/version.js?v=366');
+importScripts('./js/version.js?v=369');
 
-const META = self.MESAHA_VERSION || {"app": "V3.57", "version": "v366-terminal-save-touch-fix", "build": 366, "visibleVersion": "V3.57 •ExelanceX•", "shortVersion": "V3.57 •ExelanceX•", "name": "Mesaha İO V3.57 •ExelanceX•", "cacheName": "mesaha-app-v366-terminal-save-touch-fix", "builtAt": "2026-06-22T15:45:00+03:00", "notes": "El terminali Chrome/WebView cihazlarında yüzen Kaydet butonu için pointer/touch/click yakalama güçlendirildi.", "assetVersion": "366"};
-const CACHE_NAME = META.cacheName || 'mesaha-app-v366-terminal-save-touch-fix';
+const META = self.MESAHA_VERSION || {"app": "V3.59", "version": "v369-small-ui-fixes", "build": 369, "visibleVersion": "V3.59 •ExelanceX•", "shortVersion": "V3.59 •ExelanceX•", "name": "Mesaha İO V3.59 •ExelanceX•", "cacheName": "mesaha-app-v369-small-ui-fixes", "builtAt": "2026-06-22T16:25:00+03:00", "notes": "Alanları temizle çap/boy kısayollarını da temizler. Son 3 barkoda düzenleme açıklaması eklendi. Ana sayfaya dön ve tümünü sil butonları belirginleştirildi.", "assetVersion": "369"};
+const CACHE_NAME = META.cacheName || 'mesaha-app-v369-small-ui-fixes';
 const ASSETS = [
   "./",
   "./index.html",
@@ -9,12 +9,12 @@ const ASSETS = [
   "./manifest.json",
   "./version.json",
   "./service-worker.js",
-  "./js/version.js?v=366",
+  "./js/version.js?v=369",
   "./temizle.html",
   "./assets/icon-192.png",
   "./assets/icon-512.png",
   "./assets/mesaha_logo.png",
-  "./assets/hero_forest_cover.png?v=366",
+  "./assets/hero_forest_cover.png?v=369",
   "./assets/06_net_islem_onayi.wav",
   "./assets/08_hata_uyari_onaydan_farkli.wav"
 ];

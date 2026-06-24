@@ -1,12 +1,12 @@
 {
-  "app": "V3.57",
-  "version": "v366-terminal-save-touch-fix",
-  "build": 366,
-  "visibleVersion": "V3.57 •ExelanceX•",
-  "shortVersion": "V3.57 •ExelanceX•",
-  "name": "Mesaha İO V3.57 •ExelanceX•",
-  "cacheName": "mesaha-app-v366-terminal-save-touch-fix",
-  "builtAt": "2026-06-22T15:45:00+03:00",
-  "notes": "El terminali Chrome/WebView cihazlarında yüzen Kaydet butonu için pointer/touch/click yakalama güçlendirildi.",
-  "assetVersion": "366"
+  "app": "V3.59",
+  "version": "v369-small-ui-fixes",
+  "build": 369,
+  "visibleVersion": "V3.59 •ExelanceX•",
+  "shortVersion": "V3.59 •ExelanceX•",
+  "name": "Mesaha İO V3.59 •ExelanceX•",
+  "cacheName": "mesaha-app-v369-small-ui-fixes",
+  "builtAt": "2026-06-22T16:25:00+03:00",
+  "notes": "Alanları temizle çap/boy kısayollarını da temizler. Son 3 barkoda düzenleme açıklaması eklendi. Ana sayfaya dön ve tümünü sil butonları belirginleştirildi.",
+  "assetVersion": "369"
 }
