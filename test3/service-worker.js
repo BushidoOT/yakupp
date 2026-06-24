@@ -1,7 +1,7 @@
-importScripts('./js/version.js?v=366');
+importScripts('./js/version.js?v=368');
 
-const META = self.MESAHA_VERSION || {"app": "V3.57", "version": "v366-terminal-save-touch-fix", "build": 366, "visibleVersion": "V3.57 •ExelanceX•", "shortVersion": "V3.57 •ExelanceX•", "name": "Mesaha İO V3.57 •ExelanceX•", "cacheName": "mesaha-app-v366-terminal-save-touch-fix", "builtAt": "2026-06-22T15:45:00+03:00", "notes": "El terminali Chrome/WebView cihazlarında yüzen Kaydet butonu için pointer/touch/click yakalama güçlendirildi.", "assetVersion": "366"};
-const CACHE_NAME = META.cacheName || 'mesaha-app-v366-terminal-save-touch-fix';
+const META = self.MESAHA_VERSION || {"app": "V3.58", "version": "v368-home-scroll-perf", "build": 368, "visibleVersion": "V3.58 •ExelanceX•", "shortVersion": "V3.58 •ExelanceX•", "name": "Mesaha İO V3.58 •ExelanceX•", "cacheName": "mesaha-app-v368-home-scroll-perf", "builtAt": "2026-06-22T16:05:00+03:00", "notes": "Android el terminallerinde ana sayfa kaydırma takılmasını azaltmak için hafif mod eklendi. Ağır gölge/blur/animasyonlar terminalde devre dışı bırakılır.", "assetVersion": "368"};
+const CACHE_NAME = META.cacheName || 'mesaha-app-v368-home-scroll-perf';
 const ASSETS = [
   "./",
   "./index.html",
@@ -9,12 +9,12 @@ const ASSETS = [
   "./manifest.json",
   "./version.json",
   "./service-worker.js",
-  "./js/version.js?v=366",
+  "./js/version.js?v=368",
   "./temizle.html",
   "./assets/icon-192.png",
   "./assets/icon-512.png",
   "./assets/mesaha_logo.png",
-  "./assets/hero_forest_cover.png?v=366",
+  "./assets/hero_forest_cover.png?v=368",
   "./assets/06_net_islem_onayi.wav",
   "./assets/08_hata_uyari_onaydan_farkli.wav"
 ];
