@@ -1,12 +1,12 @@
 {
-  "app": "V3.55",
-  "version": "v364-record-sort-cutter-confirm",
-  "build": 364,
-  "visibleVersion": "V3.55 •ExelanceX•",
-  "shortVersion": "V3.55 •ExelanceX•",
-  "name": "Mesaha İO V3.55 •ExelanceX•",
-  "cacheName": "mesaha-app-v364-record-sort-cutter-confirm",
-  "builtAt": "2026-06-22T15:05:00+03:00",
-  "notes": "Ölçümlerde en son alınan kayıtlar ilk sayfada gösterilir. Kesimci silme işlemi onay sorar.",
-  "assetVersion": "364"
+  "app": "V3.58",
+  "version": "v368-home-scroll-perf",
+  "build": 368,
+  "visibleVersion": "V3.58 •ExelanceX•",
+  "shortVersion": "V3.58 •ExelanceX•",
+  "name": "Mesaha İO V3.58 •ExelanceX•",
+  "cacheName": "mesaha-app-v368-home-scroll-perf",
+  "builtAt": "2026-06-22T16:05:00+03:00",
+  "notes": "Android el terminallerinde ana sayfa kaydırma takılmasını azaltmak için hafif mod eklendi. Ağır gölge/blur/animasyonlar terminalde devre dışı bırakılır.",
+  "assetVersion": "368"
 }
