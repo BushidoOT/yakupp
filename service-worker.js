@@ -1,7 +1,7 @@
-importScripts('./js/version.js?v=368');
+importScripts('./js/version.js?v=371');
 
-const META = self.MESAHA_VERSION || {"app": "V3.58", "version": "v368-home-scroll-perf", "build": 368, "visibleVersion": "V3.58 •ExelanceX•", "shortVersion": "V3.58 •ExelanceX•", "name": "Mesaha İO V3.58 •ExelanceX•", "cacheName": "mesaha-app-v368-home-scroll-perf", "builtAt": "2026-06-22T16:05:00+03:00", "notes": "Android el terminallerinde ana sayfa kaydırma takılmasını azaltmak için hafif mod eklendi. Ağır gölge/blur/animasyonlar terminalde devre dışı bırakılır.", "assetVersion": "368"};
-const CACHE_NAME = META.cacheName || 'mesaha-app-v368-home-scroll-perf';
+const META = self.MESAHA_VERSION || {"app": "V3.61", "version": "v371-scroll-lock-fix", "build": 371, "visibleVersion": "V3.61 •ExelanceX•", "shortVersion": "V3.61 •ExelanceX•", "name": "Mesaha İO V3.61 •ExelanceX•", "cacheName": "mesaha-app-v371-scroll-lock-fix", "builtAt": "2026-06-22T17:05:00+03:00", "notes": "Terminal Chrome/WebView cihazlarda sayfa kaydırma takılması düzeltildi. Genel touch yakalama hafifletildi, doğal pan-y kaydırma zorlandı.", "assetVersion": "371"};
+const CACHE_NAME = META.cacheName || 'mesaha-app-v371-scroll-lock-fix';
 const ASSETS = [
   "./",
   "./index.html",
@@ -9,12 +9,12 @@ const ASSETS = [
   "./manifest.json",
   "./version.json",
   "./service-worker.js",
-  "./js/version.js?v=368",
+  "./js/version.js?v=371",
   "./temizle.html",
   "./assets/icon-192.png",
   "./assets/icon-512.png",
   "./assets/mesaha_logo.png",
-  "./assets/hero_forest_cover.png?v=368",
+  "./assets/hero_forest_cover.png?v=371",
   "./assets/06_net_islem_onayi.wav",
   "./assets/08_hata_uyari_onaydan_farkli.wav"
 ];
