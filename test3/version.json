@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "app": "V3.58",
   "version": "v368-home-scroll-perf",
   "build": 368,
@@ -9,4 +10,16 @@
   "builtAt": "2026-06-22T16:05:00+03:00",
   "notes": "Android el terminallerinde ana sayfa kaydırma takılmasını azaltmak için hafif mod eklendi. Ağır gölge/blur/animasyonlar terminalde devre dışı bırakılır.",
   "assetVersion": "368"
+=======
+  "app": "V3.59",
+  "version": "v369-small-ui-fixes",
+  "build": 369,
+  "visibleVersion": "V3.59 •ExelanceX•",
+  "shortVersion": "V3.59 •ExelanceX•",
+  "name": "Mesaha İO V3.59 •ExelanceX•",
+  "cacheName": "mesaha-app-v369-small-ui-fixes",
+  "builtAt": "2026-06-22T16:25:00+03:00",
+  "notes": "Alanları temizle çap/boy kısayollarını da temizler. Son 3 barkoda düzenleme açıklaması eklendi. Ana sayfaya dön ve tümünü sil butonları belirginleştirildi.",
+  "assetVersion": "369"
+>>>>>>> 463d2a4 (yaywiwi)
 }

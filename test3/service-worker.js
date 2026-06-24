@@ -1,7 +1,14 @@
+<<<<<<< HEAD
 importScripts('./js/version.js?v=368');
 
 const META = self.MESAHA_VERSION || {"app": "V3.58", "version": "v368-home-scroll-perf", "build": 368, "visibleVersion": "V3.58 •ExelanceX•", "shortVersion": "V3.58 •ExelanceX•", "name": "Mesaha İO V3.58 •ExelanceX•", "cacheName": "mesaha-app-v368-home-scroll-perf", "builtAt": "2026-06-22T16:05:00+03:00", "notes": "Android el terminallerinde ana sayfa kaydırma takılmasını azaltmak için hafif mod eklendi. Ağır gölge/blur/animasyonlar terminalde devre dışı bırakılır.", "assetVersion": "368"};
 const CACHE_NAME = META.cacheName || 'mesaha-app-v368-home-scroll-perf';
+=======
+importScripts('./js/version.js?v=369');
+
+const META = self.MESAHA_VERSION || {"app": "V3.59", "version": "v369-small-ui-fixes", "build": 369, "visibleVersion": "V3.59 •ExelanceX•", "shortVersion": "V3.59 •ExelanceX•", "name": "Mesaha İO V3.59 •ExelanceX•", "cacheName": "mesaha-app-v369-small-ui-fixes", "builtAt": "2026-06-22T16:25:00+03:00", "notes": "Alanları temizle çap/boy kısayollarını da temizler. Son 3 barkoda düzenleme açıklaması eklendi. Ana sayfaya dön ve tümünü sil butonları belirginleştirildi.", "assetVersion": "369"};
+const CACHE_NAME = META.cacheName || 'mesaha-app-v369-small-ui-fixes';
+>>>>>>> 463d2a4 (yaywiwi)
 const ASSETS = [
   "./",
   "./index.html",
@@ -9,12 +16,20 @@ const ASSETS = [
   "./manifest.json",
   "./version.json",
   "./service-worker.js",
+<<<<<<< HEAD
   "./js/version.js?v=368",
+=======
+  "./js/version.js?v=369",
+>>>>>>> 463d2a4 (yaywiwi)
   "./temizle.html",
   "./assets/icon-192.png",
   "./assets/icon-512.png",
   "./assets/mesaha_logo.png",
+<<<<<<< HEAD
   "./assets/hero_forest_cover.png?v=368",
+=======
+  "./assets/hero_forest_cover.png?v=369",
+>>>>>>> 463d2a4 (yaywiwi)
   "./assets/06_net_islem_onayi.wav",
   "./assets/08_hata_uyari_onaydan_farkli.wav"
 ];
