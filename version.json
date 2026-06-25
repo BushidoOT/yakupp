@@ -1,12 +1,12 @@
 {
-  "app": "V3.61",
-  "version": "v371-scroll-lock-fix",
-  "build": 371,
-  "visibleVersion": "V3.61 •ExelanceX•",
-  "shortVersion": "V3.61 •ExelanceX•",
-  "name": "Mesaha İO V3.61 •ExelanceX•",
-  "cacheName": "mesaha-app-v371-scroll-lockkk-fix",
-  "builtAt": "2026-06-22T17:05:00+03:00",
-  "notes": "Terminal Chrome/WebView cihazlarda sayfa kaydırma takılması düzeltildi. Genel touch yakalama hafifletildi, doğal pan-y kaydırma zorlandı.",
-  "assetVersion": "371"
+  "app": "V3.62",
+  "version": "v372-keyboard-save-visible-fix",
+  "build": 372,
+  "visibleVersion": "V3.62 •ExelanceX•",
+  "shortVersion": "V3.62 •ExelanceX•",
+  "name": "Mesaha İO V3.62 •ExelanceX•",
+  "cacheName": "mesaha-app-v372-keyboard-save-visible-fix",
+  "builtAt": "2026-06-22T17:30:00+03:00",
+  "notes": "Mesaha girme ekranında klavye açıkken alt menü gizlenir ve Kaydet butonu görünen alana sabitlenir. Ürün butonlarında sayfa zıplaması azaltıldı.",
+  "assetVersion": "372"
 }

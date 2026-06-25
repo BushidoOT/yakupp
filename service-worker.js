@@ -1,7 +1,7 @@
-importScripts('./js/version.js?v=371');
+importScripts('./js/version.js?v=372');
 
-const META = self.MESAHA_VERSION || {"app": "V3.61", "version": "v371-scroll-lock-fix", "build": 371, "visibleVersion": "V3.61 •ExelanceX•", "shortVersion": "V3.61 •ExelanceX•", "name": "Mesaha İO V3.61 •ExelanceX•", "cacheName": "mesaha-app-v371-scroll-lock-fix", "builtAt": "2026-06-22T17:05:00+03:00", "notes": "Terminal Chrome/WebView cihazlarda sayfa kaydırma takılması düzeltildi. Genel touch yakalama hafifletildi, doğal pan-y kaydırma zorlandı.", "assetVersion": "371"};
-const CACHE_NAME = META.cacheName || 'mesaha-app-v371-scroll-lock-fix';
+const META = self.MESAHA_VERSION || {"app": "V3.62", "version": "v372-keyboard-save-visible-fix", "build": 372, "visibleVersion": "V3.62 •ExelanceX•", "shortVersion": "V3.62 •ExelanceX•", "name": "Mesaha İO V3.62 •ExelanceX•", "cacheName": "mesaha-app-v372-keyboard-save-visible-fix", "builtAt": "2026-06-22T17:30:00+03:00", "notes": "Mesaha girme ekranında klavye açıkken alt menü gizlenir ve Kaydet butonu görünen alana sabitlenir. Ürün butonlarında sayfa zıplaması azaltıldı.", "assetVersion": "372"};
+const CACHE_NAME = META.cacheName || 'mesaha-app-v372-keyboard-save-visible-fix';
 const ASSETS = [
   "./",
   "./index.html",
@@ -9,12 +9,12 @@ const ASSETS = [
   "./manifest.json",
   "./version.json",
   "./service-worker.js",
-  "./js/version.js?v=371",
+  "./js/version.js?v=372",
   "./temizle.html",
   "./assets/icon-192.png",
   "./assets/icon-512.png",
   "./assets/mesaha_logo.png",
-  "./assets/hero_forest_cover.png?v=371",
+  "./assets/hero_forest_cover.png?v=372",
   "./assets/06_net_islem_onayi.wav",
   "./assets/08_hata_uyari_onaydan_farkli.wav"
 ];
