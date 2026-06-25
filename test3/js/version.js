@@ -1,1 +1,12 @@
-
+self.MESAHA_VERSION = {
+  "app": "V3.62",
+  "version": "v372-keyboard-save-visible-fix",
+  "build": 372,
+  "visibleVersion": "V3.62 •ExelanceX•",
+  "shortVersion": "V3.62 •ExelanceX•",
+  "name": "Mesaha İO V3.62 •ExelanceX•",
+  "cacheName": "mesaha-app-v372-keyboard-save-visible-fix",
+  "builtAt": "2026-06-22T17:30:00+03:00",
+  "notes": "Mesaha girme ekranında klavye açıkken alt menü gizlenir ve Kaydet butonu görünen alana sabitlenir. Ürün butonlarında sayfa zıplaması azaltıldı.",
+  "assetVersion": "372"
+};
