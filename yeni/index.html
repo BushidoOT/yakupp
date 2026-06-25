@@ -3944,6 +3944,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   [100,400,1000,2000].forEach(ms => setTimeout(boot, ms));
 })();
   </script>
+<script id="mesaha-firebase-engine-v378" src="./js/mesaha-firebase.js?v=378"></script>
 <script id="mesaha-inline-v316-user-admin-panel">
 /* v316: Kullanıcı Paneli + Admin Paneli + Firebase eşitleme */
 (function(){
@@ -3954,8 +3955,8 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   const USAGE_KEY = 'mesaha_usage_stats_v316';
   const DEVICE_ID_KEY = 'mesaha_cihaz_kodu_v1';
   const ADMIN_CODE = '4767';
-  const FIREBASE_CONFIG = {apiKey:'AIzaSyCKveylTPgKmWEMmYf-aFj6yLXB5CKAiJ0',authDomain:'mesaha-io.firebaseapp.com',projectId:'mesaha-io',storageBucket:'mesaha-io.firebasestorage.app',messagingSenderId:'840655878243',appId:'1:840655878243:web:add76f52bbf55ad9dd6056',measurementId:'G-81JPD5ZY44'};
-  const FIREBASE_SDK_VERSION = '9.23.0';
+  const FIREBASE_CONFIG=(window.mesahaFirebaseV380&&window.mesahaFirebaseV380.config)||{};
+  const FIREBASE_SDK_VERSION=(window.mesahaFirebaseV380&&window.mesahaFirebaseV380.sdkVersion)||'9.23.0';
   let firebaseReadyPromise = null;
   let lastTick = Date.now();
   function $(id){ return document.getElementById(id); }
@@ -4012,7 +4013,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   function fmtMs(ms){ ms=Number(ms||0); const h=Math.floor(ms/3600000); const m=Math.floor((ms%3600000)/60000); if(h) return h+' sa '+m+' dk'; return Math.max(0,m)+' dk'; }
   function toast(title, sub, kind){ if(typeof window.mesahaFloatToastV315==='function') window.mesahaFloatToastV315(title, sub||'', kind||'warning'); else if(typeof window.toast==='function') window.toast(title); }
   function loadScript(src){ return new Promise((resolve,reject)=>{ if(document.querySelector('script[src="'+src+'"]')) return resolve(); const s=document.createElement('script'); s.src=src; s.async=true; s.onload=resolve; s.onerror=()=>reject(new Error('Firebase kütüphanesi yüklenemedi')); document.head.appendChild(s); }); }
-  async function firebaseReady(){ if(!navigator.onLine) throw new Error('İnternet bağlantısı yok'); if(!firebaseReadyPromise){ firebaseReadyPromise=(async()=>{ if(!window.firebase || !window.firebase.apps){ const b='https://www.gstatic.com/firebasejs/'+FIREBASE_SDK_VERSION; await loadScript(b+'/firebase-app-compat.js'); await loadScript(b+'/firebase-auth-compat.js'); await loadScript(b+'/firebase-firestore-compat.js'); } if(!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG); const auth=firebase.auth(); if(!auth.currentUser) await auth.signInAnonymously(); const db=firebase.firestore(); try{db.settings({experimentalForceLongPolling:true, merge:true});}catch{} return {db,auth}; })(); } return firebaseReadyPromise; }
+  async function firebaseReady(){return await window.mesahaFirebaseV380.ready();}
   async function resetAtMs(){ try{ const {db}=await firebaseReady(); const doc=await db.collection('adminSettings').doc('statsReset').get(); const d=doc.exists?(doc.data()||{}):{}; return Number(d.resetAtMs||0); }catch{ return Number(localStorage.getItem('mesaha_stats_reset_at_v316')||0); } }
   async function syncUser(reason){
     const usage=flushUsage();
@@ -4055,8 +4056,8 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   const PANEL_USER_KEY='mesaha_panel_user_v316';
   const USAGE_KEY='mesaha_usage_stats_v316';
   const DEVICE_ID_KEY='mesaha_cihaz_kodu_v1';
-  const FIREBASE_CONFIG={apiKey:'AIzaSyCKveylTPgKmWEMmYf-aFj6yLXB5CKAiJ0',authDomain:'mesaha-io.firebaseapp.com',projectId:'mesaha-io',storageBucket:'mesaha-io.firebasestorage.app',messagingSenderId:'840655878243',appId:'1:840655878243:web:add76f52bbf55ad9dd6056',measurementId:'G-81JPD5ZY44'};
-  const SDK='9.23.0';
+  const FIREBASE_CONFIG=(window.mesahaFirebaseV380&&window.mesahaFirebaseV380.config)||{};
+  const SDK=(window.mesahaFirebaseV380&&window.mesahaFirebaseV380.sdkVersion)||'9.23.0';
   const APP_VERSION='V3.66';
   const FILE_VERSION='v376-user-sounds-warning-fix';
   let readyPromise=null;
@@ -4090,7 +4091,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   function errText(e){const msg=String(e&&e.message?e.message:e||'Hata');if(/permission/i.test(msg))return 'Firebase izin/rules kontrol et';if(/network|offline|internet/i.test(msg))return 'İnternet bağlantısını kontrol et';if(/timeout|zaman/i.test(msg))return 'Bağlantı zaman aşımına uğradı';return msg.slice(0,120)}
   function withTimeout(p,ms,label){let t;return Promise.race([p,new Promise((_,rej)=>{t=setTimeout(()=>rej(new Error((label||'İşlem')+' zaman aşımı')),ms||12000)})]).finally(()=>clearTimeout(t))}
   function loadScript(src){return withTimeout(new Promise((res,rej)=>{const found=document.querySelector('script[src="'+src+'"]');if(found)return res();const s=document.createElement('script');s.src=src;s.async=true;s.crossOrigin='anonymous';s.onload=res;s.onerror=()=>rej(new Error('Firebase kütüphanesi yüklenemedi'));document.head.appendChild(s)}),12000,'Firebase')}
-  async function firebaseReady(){if(!navigator.onLine)throw new Error('İnternet bağlantısı yok');if(!readyPromise){readyPromise=(async()=>{const b='https://www.gstatic.com/firebasejs/'+SDK;if(!window.firebase||!window.firebase.apps){await loadScript(b+'/firebase-app-compat.js');await loadScript(b+'/firebase-auth-compat.js');await loadScript(b+'/firebase-firestore-compat.js')}if(!window.firebase||!window.firebase.apps)throw new Error('Firebase başlatılamadı');if(!window.firebase.apps.length)window.firebase.initializeApp(FIREBASE_CONFIG);const auth=window.firebase.auth();if(!auth.currentUser)await withTimeout(auth.signInAnonymously(),12000,'Firebase giriş');const db=window.firebase.firestore();try{db.settings({experimentalAutoDetectLongPolling:true})}catch{}try{await withTimeout(db.enableNetwork(),5000,'Firebase ağ')}catch{}return{db,auth}})()}try{return await readyPromise}catch(e){readyPromise=null;throw e}}
+  async function firebaseReady(){return await window.mesahaFirebaseV380.ready();}
   async function resetAtMs(){try{const {db}=await firebaseReady();const doc=await withTimeout(db.collection('adminSettings').doc('statsReset').get(),10000,'Reset bilgisi');const d=doc.exists?(doc.data()||{}):{};return Number(d.resetAtMs||0)}catch{return Number(localStorage.getItem('mesaha_stats_reset_at_v316')||0)}}
   function renderPanelStats(){const usage=flushUsage();const stats=summarize(Number(localStorage.getItem('mesaha_stats_reset_at_v316')||0));const box=$('panelStatsV316');if(box)box.innerHTML=[['Toplam Kayıt',stats.recordCount.toLocaleString('tr-TR')],['Toplam m³',fmtM3(stats.m3)],['Bugün Giriş',Number(usage.todayLoginCount||0).toLocaleString('tr-TR')],['Bugün Süre',fmtMs(usage.todayMs)],['Toplam Süre',fmtMs(usage.totalMs)],['Son Görülme',usage.lastSeen||'-']].map(a=>'<div class="panel-stat-v316"><small>'+a[0]+'</small><b>'+a[1]+'</b></div>').join('');const dev=$('panelDeviceV316');if(dev){const info=deviceInfo();dev.value=info.platform+' • '+info.screen}const u=readPanelUser();['panelNameV316','panelSeflikV316','panelBolmeV316'].forEach((id,i)=>{const el=$(id);if(el&&!el.value)el.value=[u.name,u.seflik,u.bolmeNo][i]||''})}
   async function syncUser(reason){const usage=flushUsage();const user=readPanelUser();if(!user.name||!user.seflik){setSyncText('Önce kullanıcı girişi yap');return false}const reset=await resetAtMs();const stats=summarize(reset);const info=deviceInfo();const nowMs=Date.now();const key=userKey(user.name,user.seflik);const {db}=await firebaseReady();const payload={id:key,userKey:key,name:user.name,seflik:user.seflik,bolmeNo:user.bolmeNo,firstLogin:trText(),firstLoginMs:nowMs,lastSeen:trText(),lastSeenMs:nowMs,lastLogin:trText(),lastLoginMs:nowMs,todayLoginCount:Number(usage.todayLoginCount||0),totalLoginCount:Number(usage.totalLoginCount||0),loginCount:Number(usage.totalLoginCount||0),usageMs:Number(usage.totalMs||0),todayUsageMs:Number(usage.todayMs||0),recordCount:stats.recordCount,totalRecords:stats.recordCount,adet:stats.adet,totalM3:stats.m3,m3:stats.m3,todayRecords:stats.todayRecords,weekKey:weekKey(new Date()),weekRecordCount:stats.weekRecordCount,weekM3:stats.weekM3,treeTotals:stats.treeTotals,productTotals:stats.productTotals,deviceId:info.deviceId,lastDevice:info.platform+' • '+info.screen,lastDeviceInfo:info,appVersion:APP_VERSION,fileVersion:FILE_VERSION,updatedBy:reason||'sync',updatedAt:trText(),updatedAtMs:nowMs,source:'firebase'};await withTimeout(db.collection('users').doc(key).set(payload,{merge:true}),15000,'Kullanıcı eşitleme');try{const usageId=key+'_'+trDate()+'_'+info.deviceId;await withTimeout(db.collection('usageStats').doc(usageId).set(Object.assign({},payload,{id:usageId,type:'dailyUsage',date:trDate(),createdAt:payload.updatedAt,createdAtMs:payload.updatedAtMs}),{merge:true}),10000,'İstatistik eşitleme')}catch(e){console.warn('usageStats yazılamadı',e)}setSyncText('Bulut eşitlendi • '+new Date().toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'}));return true}
@@ -4112,8 +4113,8 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   const STORAGE_KEY='cam_mesaha_kayitlari_v1';
   const SETTINGS_KEY='cam_mesaha_ayarlar_v1';
   const PANEL_USER_KEY='mesaha_panel_user_v316';
-  const FIREBASE_CONFIG={apiKey:'AIzaSyCKveylTPgKmWEMmYf-aFj6yLXB5CKAiJ0',authDomain:'mesaha-io.firebaseapp.com',projectId:'mesaha-io',storageBucket:'mesaha-io.firebasestorage.app',messagingSenderId:'840655878243',appId:'1:840655878243:web:add76f52bbf55ad9dd6056',measurementId:'G-81JPD5ZY44'};
-  const SDK='9.23.0';
+  const FIREBASE_CONFIG=(window.mesahaFirebaseV380&&window.mesahaFirebaseV380.config)||{};
+  const SDK=(window.mesahaFirebaseV380&&window.mesahaFirebaseV380.sdkVersion)||'9.23.0';
   let readyPromise=null;
   function $(id){return document.getElementById(id)}
   function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
@@ -4128,14 +4129,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   function errText(e){const msg=String(e&&e.message?e.message:e||'Hata');if(/permission|insufficient/i.test(msg))return 'Firebase izin/rules kontrol et';if(/network|offline|internet/i.test(msg))return 'İnternet bağlantısını kontrol et';if(/timeout|zaman/i.test(msg))return 'Bağlantı zaman aşımı';return msg.slice(0,150)}
   function withTimeout(p,ms,label){let t;return Promise.race([p,new Promise((_,rej)=>{t=setTimeout(()=>rej(new Error((label||'İşlem')+' zaman aşımı')),ms||12000)})]).finally(()=>clearTimeout(t))}
   function loadScript(src){return withTimeout(new Promise((res,rej)=>{if(document.querySelector('script[src="'+src+'"]'))return res();const s=document.createElement('script');s.src=src;s.async=true;s.crossOrigin='anonymous';s.onload=res;s.onerror=()=>rej(new Error('Firebase SDK yüklenemedi'));document.head.appendChild(s)}),12000,'Firebase SDK')}
-  async function ready(){
-    if(window.mesahaOnlineV317 && typeof window.mesahaOnlineV317.ready==='function'){
-      try{return await window.mesahaOnlineV317.ready()}catch{}
-    }
-    if(!navigator.onLine)throw new Error('İnternet bağlantısı yok');
-    if(!readyPromise){readyPromise=(async()=>{const b='https://www.gstatic.com/firebasejs/'+SDK;if(!window.firebase||!window.firebase.apps){await loadScript(b+'/firebase-app-compat.js');await loadScript(b+'/firebase-auth-compat.js');await loadScript(b+'/firebase-firestore-compat.js')}if(!window.firebase.apps.length)window.firebase.initializeApp(FIREBASE_CONFIG);const auth=window.firebase.auth();if(!auth.currentUser)await withTimeout(auth.signInAnonymously(),12000,'Firebase giriş');const db=window.firebase.firestore();try{db.settings({experimentalForceLongPolling:true})}catch{}return{db,auth}})()}
-    try{return await readyPromise}catch(e){readyPromise=null;throw e}
-  }
+  async function ready(){return await window.mesahaFirebaseV380.ready();}
   function ensurePanelButton(){
     const actions=document.querySelector('.panel-actions-v316');
     if(actions && !$('panelBackupsV318')){
@@ -4379,7 +4373,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   const PANEL_KEY='mesaha_panel_user_v316';
   const USAGE_KEY='mesaha_usage_stats_v316';
   const DEVICE_ID_KEY='mesaha_cihaz_kodu_v1';
-  const FIREBASE_CONFIG={apiKey:'AIzaSyCKveylTPgKmWEMmYf-aFj6yLXB5CKAiJ0',authDomain:'mesaha-io.firebaseapp.com',projectId:'mesaha-io',storageBucket:'mesaha-io.firebasestorage.app',messagingSenderId:'840655878243',appId:'1:840655878243:web:add76f52bbf55ad9dd6056',measurementId:'G-81JPD5ZY44'};
+  const FIREBASE_CONFIG=(window.mesahaFirebaseV380&&window.mesahaFirebaseV380.config)||{};
   const SDK='10.12.2';
   const APP_VERSION='V3.66';
   const FILE_VERSION='v376-user-sounds-warning-fix';
@@ -4411,7 +4405,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   function errText(e){const m=String(e&&e.message?e.message:e||'Hata');if(/permission|insufficient/i.test(m))return'Firebase izin/rules kontrol et';if(/network|offline|internet/i.test(m))return'İnternet bağlantısı yok';if(/timeout/i.test(m))return'Bağlantı zaman aşımı';return m.slice(0,140)}
   function loadScript(src){return new Promise((res,rej)=>{if(document.querySelector('script[src="'+src+'"]'))return res();const s=document.createElement('script');s.src=src;s.async=true;s.crossOrigin='anonymous';s.onload=res;s.onerror=()=>rej(new Error('Firebase SDK yüklenemedi'));document.head.appendChild(s)})}
   function withTimeout(p,ms,label){return Promise.race([p,new Promise((_,rej)=>setTimeout(()=>rej(new Error((label||'İşlem')+' zaman aşımı')),ms))])}
-  async function ready(){if(!navigator.onLine)throw new Error('İnternet bağlantısı yok');if(!readyPromise){readyPromise=(async()=>{const b='https://www.gstatic.com/firebasejs/'+SDK;if(!window.firebase||!window.firebase.apps){await loadScript(b+'/firebase-app-compat.js');await loadScript(b+'/firebase-auth-compat.js');await loadScript(b+'/firebase-firestore-compat.js')}if(!window.firebase.apps.length)window.firebase.initializeApp(FIREBASE_CONFIG);const auth=window.firebase.auth();if(!auth.currentUser)await withTimeout(auth.signInAnonymously(),12000,'Firebase giriş');const db=window.firebase.firestore();try{db.settings({experimentalForceLongPolling:true})}catch{}return{db,auth}})()}try{return await readyPromise}catch(e){readyPromise=null;throw e}}
+  async function ready(){return await window.mesahaFirebaseV380.ready();}
   async function send(reason,scope){const user=readUser();const usage=flushUsage();const fullStats=summarize(records());const scopeList=scope&&Array.isArray(scope.list)?scope.list:records();const scopeStats=summarize(scopeList);if(!user.name||!user.seflik){setSyncText('Kullanıcı girişi yok • istatistik gönderilmedi');return false}if(!navigator.onLine){setSyncText('Offline: dosya indi, admin istatistiği gönderilmedi');return false}try{setSyncText('Mesaha istatistiği gönderiliyor…');const {db}=await ready();const now=Date.now(),key=userKey(user.name,user.seflik),info=deviceInfo();const inc=window.firebase&&window.firebase.firestore&&window.firebase.firestore.FieldValue?window.firebase.firestore.FieldValue.increment(1):1;const payload={id:key,userKey:key,name:user.name,seflik:user.seflik,bolmeNo:user.bolmeNo,lastSeen:trText(),lastSeenMs:now,lastLogin:trText(),lastLoginMs:now,todayLoginCount:Number(usage.todayLoginCount||0),totalLoginCount:Number(usage.totalLoginCount||0),loginCount:Number(usage.totalLoginCount||0),usageMs:Number(usage.totalMs||0),todayUsageMs:Number(usage.todayMs||0),recordCount:fullStats.recordCount,totalRecords:fullStats.recordCount,adet:fullStats.adet,totalM3:fullStats.m3,m3:fullStats.m3,todayRecords:fullStats.todayRecords,weekKey:fullStats.weekKey,weekRecordCount:fullStats.weekRecordCount,weekM3:fullStats.weekM3,treeTotals:fullStats.treeTotals,productTotals:fullStats.productTotals,lastExportAt:trText(),lastExportAtMs:now,lastExportRecordCount:scopeStats.recordCount,lastExportM3:scopeStats.m3,lastExportTreeTotals:scopeStats.treeTotals,lastExportProductTotals:scopeStats.productTotals,lastExportScopeText:scope&&scope.text||'Mesaha dosyası',lastExportScopeMode:scope&&scope.mode||'xls',xlsDownloadCount:inc,deviceId:info.deviceId,lastDevice:info.platform+' • '+info.screen,lastDeviceInfo:info,appVersion:APP_VERSION,fileVersion:FILE_VERSION,updatedBy:reason||'xls-download',updatedAt:trText(),updatedAtMs:now,source:'xls-download-only'};await withTimeout(db.collection('users').doc(key).set(payload,{merge:true}),15000,'Kullanıcı istatistiği');const dailyId=key+'_'+trDate()+'_'+info.deviceId;await withTimeout(db.collection('usageStats').doc(dailyId).set(Object.assign({},payload,{id:dailyId,type:'dailyUsage',date:trDate(),exportCountToday:inc,createdAt:payload.updatedAt,createdAtMs:payload.updatedAtMs}),{merge:true}),12000,'Günlük istatistik');await db.collection('exportLogs').doc('xls_'+key+'_'+now.toString(36)).set({userKey:key,name:user.name,seflik:user.seflik,bolmeNo:user.bolmeNo,scopeText:payload.lastExportScopeText,scopeMode:payload.lastExportScopeMode,recordCount:scopeStats.recordCount,m3:scopeStats.m3,treeTotals:scopeStats.treeTotals,productTotals:scopeStats.productTotals,createdAt:payload.updatedAt,createdAtMs:now,appVersion:APP_VERSION,fileVersion:FILE_VERSION}).catch(()=>{});setSyncText('Admin güncellendi • '+new Date().toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'}));return true}catch(e){setSyncText('Dosya indi • admin gönderimi olmadı: '+errText(e));return false}}
   function boot(){loadUsage();setSyncText('İstatistikler Mesaha dosyası indirince gönderilir');setInterval(flushUsage,60000);window.addEventListener('visibilitychange',flushUsage);window.addEventListener('pagehide',flushUsage);window.mesahaExportStatsV323={send,flush:flushUsage,readUsage:()=>jsonGet(USAGE_KEY,{})}}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
@@ -5182,7 +5176,7 @@ input,select,textarea{background:#fff!important;color:#101828!important;border-c
 .hero-card::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(90deg,rgba(255,255,255,.97) 0%,rgba(255,255,255,.91) 28%,rgba(255,255,255,.66) 51%,rgba(255,255,255,.10) 100%)}
 .hero-card>div:first-of-type{position:relative!important;z-index:2!important}
 </style>
-<script src="./js/version.js?v=376"></script>
+<script src="./js/version.js?v=378"></script>
 <script id="mesaha-v354-version-guard">
 (function(){
   'use strict';
@@ -6312,6 +6306,6 @@ body.product-tap-lock-v372 .entry-view.active{
 </script>
 
 
-<script id="mesaha-sound-engine-v377" src="./js/mesaha-sound.js?v=377"></script>
+<script id="mesaha-sound-engine-v377" src="./js/mesaha-sound.js?v=378"></script>
 </body>
 </html>

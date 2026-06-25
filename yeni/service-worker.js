@@ -1,7 +1,7 @@
-importScripts('./js/version.js?v=377');
+importScripts('./js/version.js?v=378');
 
-const META = self.MESAHA_VERSION || {"app": "V3.66", "version": "v377-single-sound-engine-fix", "build": 377, "visibleVersion": "V3.66 •ExelanceX•", "shortVersion": "V3.66 •ExelanceX•", "name": "Mesaha İO V3.66 •ExelanceX•", "cacheName": "mesaha-app-v377-single-sound-engine-fix", "builtAt": "2026-06-25T21:45:00+03:00", "notes": "Tek ses motoru kullanıldı; onay ve uyarı iki ayrı WAV olarak sabitlendi.", "assetVersion": "377"};
-const CACHE_NAME = META.cacheName || 'mesaha-app-v377-single-sound-engine-fix';
+const META = self.MESAHA_VERSION || {"app": "V3.66", "version": "v378-single-firebase-engine-fix", "build": 378, "visibleVersion": "V3.66 •ExelanceX•", "shortVersion": "V3.66 •ExelanceX•", "name": "Mesaha İO V3.66 •ExelanceX•", "cacheName": "mesaha-app-v378-single-firebase-engine-fix", "builtAt": "2026-06-25T22:10:00+03:00", "notes": "Tek ses motoru korunarak Firebase bağlantısı tek promise/tek settings motoruna alındı; duplicate id kontrolü temiz.", "assetVersion": "378"};
+const CACHE_NAME = META.cacheName || 'mesaha-app-v378-single-firebase-engine-fix';
 const ASSETS = [
   "./",
   "./index.html",
@@ -9,15 +9,16 @@ const ASSETS = [
   "./manifest.json",
   "./version.json",
   "./service-worker.js",
-  "./js/version.js?v=377",
+  "./js/version.js?v=378",
   "./temizle.html",
   "./assets/icon-192.png",
   "./assets/icon-512.png",
   "./assets/mesaha_logo.png",
-  "./assets/hero_forest_cover.png?v=377",
-  "./js/mesaha-sound.js?v=377",
-  "./assets/mesaha_onay.wav?v=377",
-  "./assets/mesaha_uyari.wav?v=377"
+  "./assets/hero_forest_cover.png?v=378",
+  "./js/mesaha-sound.js?v=378",
+  "./js/mesaha-firebase.js?v=378",
+  "./assets/mesaha_onay.wav?v=378",
+  "./assets/mesaha_uyari.wav?v=378"
 ];
 
 self.addEventListener('install', event => {
@@ -167,4 +168,4 @@ self.addEventListener('fetch', event => {
   })());
 });
 
-// v377 sound assets: ./assets/mesaha_onay.wav?v=377 ./assets/mesaha_uyari.wav?v=377
+// v377 sound assets: ./assets/mesaha_onay.wav?v=378 ./assets/mesaha_uyari.wav?v=378
