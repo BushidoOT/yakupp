@@ -1,7 +1,7 @@
-importScripts('./js/version.js?v=374');
+importScripts('./js/version.js?v=376');
 
-const META = self.MESAHA_VERSION || {"app": "V3.64", "version": "v374-sound-fix", "build": 374, "visibleVersion": "V3.64 •ExelanceX•", "shortVersion": "V3.64 •ExelanceX•", "name": "Mesaha İO V3.64 •ExelanceX•", "cacheName": "mesaha-app-v374-sound-fix", "builtAt": "2026-06-22T18:25:00+03:00", "notes": "Ses dosyaları yeni kısa WAV dosyalarına alındı. İlk dokunuşta ses kilidi açılır. WAV çalmazsa eski bip olmayan kısa çift ton yedek ses çalışır.", "assetVersion": "374"};
-const CACHE_NAME = META.cacheName || 'mesaha-app-v374-sound-fix';
+const META = self.MESAHA_VERSION || {"app": "V3.66", "version": "v376-user-sounds-warning-fix", "build": 376, "visibleVersion": "V3.66 •ExelanceX•", "shortVersion": "V3.66 •ExelanceX•", "name": "Mesaha İO V3.66 •ExelanceX•", "cacheName": "mesaha-app-v376-user-sounds-warning-fix", "builtAt": "2026-06-25T20:05:00+03:00", "notes": "Kullanıcının gönderdiği onay ve uyarı WAV sesleri eklendi. Uyarı sesi toast/alert/modal hatalarına da bağlandı.", "assetVersion": "376"};
+const CACHE_NAME = META.cacheName || 'mesaha-app-v376-user-sounds-warning-fix';
 const ASSETS = [
   "./",
   "./index.html",
@@ -9,14 +9,17 @@ const ASSETS = [
   "./manifest.json",
   "./version.json",
   "./service-worker.js",
-  "./js/version.js?v=374",
+  "./js/version.js?v=376",
   "./temizle.html",
   "./assets/icon-192.png",
   "./assets/icon-512.png",
   "./assets/mesaha_logo.png",
-  "./assets/hero_forest_cover.png?v=374",
+  "./assets/hero_forest_cover.png?v=376",
   "./assets/06_net_islem_onayi.wav",
-  "./assets/08_hata_uyari_onaydan_farkli.wav"
+  "./assets/08_hata_uyari_onaydan_farkli.wav",
+  "./js/sound.js?v=380",
+  "./assets/mesaha_onay_v376.wav?v=380",
+  "./assets/mesaha_uyari_v376.wav?v=380"
 ];
 
 self.addEventListener('install', event => {
@@ -166,4 +169,4 @@ self.addEventListener('fetch', event => {
   })());
 });
 
-// v374 sound assets: ./assets/mesaha_onay_v374.wav?v=374 ./assets/mesaha_uyari_v374.wav?v=374
+// v374 sound assets: ./assets/mesaha_onay_v376.wav?v=376 ./assets/mesaha_uyari_v376.wav?v=376

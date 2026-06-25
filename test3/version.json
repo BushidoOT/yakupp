@@ -1,12 +1,12 @@
 {
-  "app": "V3.64",
-  "version": "v374-sound-fix",
-  "build": 374,
-  "visibleVersion": "V3.64 •ExelanceX•",
-  "shortVersion": "V3.64 •ExelanceX•",
-  "name": "Mesaha İO V3.64 •ExelanceX•",
-  "cacheName": "mesaha-app-v374-sound-fix",
-  "builtAt": "2026-06-22T18:25:00+03:00",
-  "notes": "Ses dosyaları yeni kısa WAV dosyalarına alındı. İlk dokunuşta ses kilidi açılır. WAV çalmazsa eski bip olmayan kısa çift ton yedek ses çalışır.",
-  "assetVersion": "374"
+  "app": "V3.66",
+  "version": "v376-user-sounds-warning-fix",
+  "build": 376,
+  "visibleVersion": "V3.66 •ExelanceX•",
+  "shortVersion": "V3.66 •ExelanceX•",
+  "name": "Mesaha İO V3.66 •ExelanceX•",
+  "cacheName": "mesaha-app-v376-user-sounds-warning-fix",
+  "builtAt": "2026-06-25T20:05:00+03:00",
+  "notes": "Kullanıcının gönderdiği onay ve uyarı WAV sesleri eklendi. Uyarı sesi toast/alert/modal hatalarına da bağlandı.",
+  "assetVersion": "376"
 }
