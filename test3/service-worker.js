@@ -1,7 +1,7 @@
-importScripts('./js/version.js?v=372');
+importScripts('./js/version.js?v=373');
 
-const META = self.MESAHA_VERSION || {"app": "V3.62", "version": "v372-keyboard-save-visible-fix", "build": 372, "visibleVersion": "V3.62 •ExelanceX•", "shortVersion": "V3.62 •ExelanceX•", "name": "Mesaha İO V3.62 •ExelanceX•", "cacheName": "mesaha-app-v372-keyboard-save-visible-fix", "builtAt": "2026-06-22T17:30:00+03:00", "notes": "Mesaha girme ekranında klavye açıkken alt menü gizlenir ve Kaydet butonu görünen alana sabitlenir. Ürün butonlarında sayfa zıplaması azaltıldı.", "assetVersion": "372"};
-const CACHE_NAME = META.cacheName || 'mesaha-app-v372-keyboard-save-visible-fix';
+const META = self.MESAHA_VERSION || {"app": "V3.63", "version": "v373-stability-fast-open-sound", "build": 373, "visibleVersion": "V3.63 •ExelanceX•", "shortVersion": "V3.63 •ExelanceX•", "name": "Mesaha İO V3.63 •ExelanceX•", "cacheName": "mesaha-app-v373-stability-fast-open-sound", "builtAt": "2026-06-22T18:10:00+03:00", "notes": "Kesimci ve barkod kalıcılığı düzeltildi. Zayıf internette cache-first hızlı açılış eklendi. Şarj tüketimi azaltıldı. Eski bip kaldırıldı, tek hızlı wav ses sistemi kullanılır. Yedek kesimcileri de içerir.", "assetVersion": "373"};
+const CACHE_NAME = META.cacheName || 'mesaha-app-v373-stability-fast-open-sound';
 const ASSETS = [
   "./",
   "./index.html",
@@ -9,12 +9,12 @@ const ASSETS = [
   "./manifest.json",
   "./version.json",
   "./service-worker.js",
-  "./js/version.js?v=372",
+  "./js/version.js?v=373",
   "./temizle.html",
   "./assets/icon-192.png",
   "./assets/icon-512.png",
   "./assets/mesaha_logo.png",
-  "./assets/hero_forest_cover.png?v=372",
+  "./assets/hero_forest_cover.png?v=373",
   "./assets/06_net_islem_onayi.wav",
   "./assets/08_hata_uyari_onaydan_farkli.wav"
 ];
@@ -31,7 +31,7 @@ self.addEventListener('activate', event => {
   );
 });
 
-const OFFLINE_TIMEOUT_MS = 5000;
+const OFFLINE_TIMEOUT_MS = 1500;
 
 function timeoutReject(ms, label){
   return new Promise((_, reject) => setTimeout(() => reject(new Error(label || 'network-timeout')), ms || OFFLINE_TIMEOUT_MS));
@@ -56,7 +56,7 @@ function offlineJson(){
   return new Response(JSON.stringify({
     offline:true,
     timeout:true,
-    message:'5 saniye içinde bağlantı kurulamadı, offline mod kullanılıyor.'
+    message:'1.5 saniye içinde bağlantı kurulamadı, offline mod kullanılıyor.'
   }), {
     status:504,
     statusText:'Offline Timeout',
@@ -88,14 +88,29 @@ self.addEventListener('fetch', event => {
     event.respondWith((async () => {
       const fallback = url.pathname.endsWith('/admin.html') ? './admin.html' :
                        url.pathname.endsWith('/temizle.html') ? './temizle.html' : './index.html';
+
+      // v373: zayıf internette uygulama beklemesin; cache varsa hemen aç, ağı arka planda güncelle.
+      const cached = await caches.match(event.request, {ignoreSearch:true}) ||
+                     await caches.match(fallback, {ignoreSearch:true}) ||
+                     await caches.match('./index.html', {ignoreSearch:true});
+      if(cached){
+        event.waitUntil(
+          networkWithTimeout(event.request, {cache:'no-store'}, OFFLINE_TIMEOUT_MS)
+            .then(response => {
+              cachePutSafe(event.request, response);
+              try{ cachePutSafe(fallback, response.clone()); }catch(e){}
+            })
+            .catch(() => {})
+        );
+        return cached;
+      }
+
       try{
         const response = await networkWithTimeout(event.request, {cache:'no-store'}, OFFLINE_TIMEOUT_MS);
         cachePutSafe(event.request, response);
         try{ cachePutSafe(fallback, response.clone()); }catch(e){}
         return response;
       }catch(e){
-        const cached = await caches.match(event.request, {ignoreSearch:true});
-        if(cached) return cached;
         const fallbackCached = await caches.match(fallback, {ignoreSearch:true});
         if(fallbackCached) return fallbackCached;
         const indexCached = await caches.match('./index.html', {ignoreSearch:true});

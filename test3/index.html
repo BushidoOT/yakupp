@@ -5,11 +5,11 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
 <meta name="theme-color" content="#f4f7f6"/>
-<link rel="manifest" href="./manifest.json?v=372"/>
+<link rel="manifest" href="./manifest.json?v=373"/>
 <link rel="apple-touch-icon" href="./assets/icon-192.png"/>
-<title>Mesaha İO V3.62 •ExelanceX•</title>
+<title>Mesaha İO V3.63 •ExelanceX•</title>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
-<meta content="V3.62" name="apple-mobile-web-app-title"/>
+<meta content="V3.63" name="apple-mobile-web-app-title"/>
 <script>
   (function(){
     var q = new URLSearchParams(location.search);
@@ -19,7 +19,7 @@
         try{ if('caches' in window){ var keys = await caches.keys(); await Promise.all(keys.map(function(k){ return caches.delete(k); })); } }catch(e){}
         if(!sessionStorage.getItem('mesaha_reset_done_v355')){
           sessionStorage.setItem('mesaha_reset_done_v355','1');
-          location.replace('./index.html?v=372&fresh=' + Date.now());
+          location.replace('./index.html?v=373&fresh=' + Date.now());
         }
       });
     }
@@ -476,7 +476,7 @@ body.keyboard-open-v311 .entry-form{
 <script id="mesaha-inline-version-v315">
 (function(root){
   'use strict';
-  const info = {"app": "V3.62", "version": "v372-keyboard-save-visible-fix", "build": 355, "visibleVersion": "V3.62 •ExelanceX•", "shortVersion": "V3.62 •ExelanceX•", "name": "Mesaha İO V3.62 •ExelanceX•", "cacheName": "mesaha-app-v372-keyboard-save-visible-fix", "builtAt": "2026-06-22T12:40:00+03:00", "notes": "ORBİS orijinal Mesaha_Ornek_Temp şablonuna göre Excel dışa aktarma düzeltildi.", "assetVersion": "355"};
+  const info = {"app": "V3.63", "version": "v373-stability-fast-open-sound", "build": 355, "visibleVersion": "V3.63 •ExelanceX•", "shortVersion": "V3.63 •ExelanceX•", "name": "Mesaha İO V3.63 •ExelanceX•", "cacheName": "mesaha-app-v373-stability-fast-open-sound", "builtAt": "2026-06-22T12:40:00+03:00", "notes": "ORBİS orijinal Mesaha_Ornek_Temp şablonuna göre Excel dışa aktarma düzeltildi.", "assetVersion": "355"};
   root.MESAHA_VERSION = info;
   root.MESAHA_VERSION_TEXT = info.visibleVersion;
   root.MESAHA_VERSION_SHORT = info.shortVersion;
@@ -490,7 +490,7 @@ body.keyboard-open-v311 .entry-form{
 </style>
 
 
-<style id="mesaha-v372-keyboard-save-visible-fix">
+<style id="mesaha-v373-stability-fast-open-sound">
 /* v358: tablet ve büyük ekran uyumluluğu */
 html, body{
   width:100%;
@@ -660,7 +660,7 @@ section.hero-card{
       rgba(255,255,255,.90) 28%,
       rgba(255,255,255,.68) 52%,
       rgba(255,255,255,.20) 100%),
-    url("./assets/hero_forest_cover.png?v=372")!important;
+    url("./assets/hero_forest_cover.png?v=373")!important;
   background-size:cover!important;
   background-position:center right!important;
   background-repeat:no-repeat!important;
@@ -702,7 +702,7 @@ section.hero-card{
 </style>
 
 
-<style id="mesaha-v372-keyboard-save-visible-fix">
+<style id="mesaha-v373-stability-fast-open-sound">
 /* v369: kullanım netliği */
 #entryHomeBtn{
   background:linear-gradient(135deg,#2563eb,#1d4ed8)!important;
@@ -752,12 +752,106 @@ section.hero-card{
 }
 </style>
 
+
+<script id="mesaha-v373-battery-fast-open-sound-preload">
+(function(){
+  'use strict';
+
+  // Çok sık çalışan eski bakım/tasarım döngülerini seyrelterek şarj tüketimini düşür.
+  if(!window.__mesahaV373IntervalWrapped){
+    window.__mesahaV373IntervalWrapped = true;
+    var nativeSetInterval = window.setInterval ? window.setInterval.bind(window) : null;
+    if(nativeSetInterval){
+      window.setInterval = function(fn, delay){
+        var args = Array.prototype.slice.call(arguments, 2);
+        var d = Number(delay || 0);
+        if(d > 0 && d < 2000) d = 5000;
+        else if(d >= 2000 && d < 5000) d = 9000;
+        else if(d >= 5000 && d < 15000) d = 15000;
+        var wrapped = fn;
+        if(typeof fn === 'function'){
+          wrapped = function(){
+            if(document.hidden && d < 30000) return;
+            return fn.apply(this, args);
+          };
+        }
+        return nativeSetInterval(wrapped, d);
+      };
+    }
+  }
+
+  // Tek ve hızlı ses sistemi. Eski AudioContext bip yerine wav pool.
+  if(!window.__mesahaFastSoundV373){
+    window.__mesahaFastSoundV373 = true;
+    var SOUND_VERSION = '373';
+    var src = {
+      success:'./assets/06_net_islem_onayi.wav?v=' + SOUND_VERSION,
+      warning:'./assets/08_hata_uyari_onaydan_farkli.wav?v=' + SOUND_VERSION
+    };
+    var last = {success:0, warning:0};
+    function enabled(){
+      try{ return !(window.state && window.state.settings && window.state.settings.soundEnabled === false); }catch(e){ return true; }
+    }
+    function make(kind){
+      try{
+        var a = new Audio(src[kind] || src.warning);
+        a.preload = 'auto';
+        a.volume = 1;
+        return a;
+      }catch(e){ return null; }
+    }
+    var pool = {success:make('success'), warning:make('warning')};
+    function warm(){
+      try{ if(pool.success) pool.success.load(); }catch(e){}
+      try{ if(pool.warning) pool.warning.load(); }catch(e){}
+    }
+    function play(kind){
+      if(!enabled()) return;
+      kind = kind === 'warning' ? 'warning' : 'success';
+      var now = Date.now();
+      if(now - (last[kind] || 0) < 450) return;
+      last[kind] = now;
+      try{
+        var a = pool[kind] || make(kind);
+        if(!a) return;
+        try{ a.pause(); a.currentTime = 0; }catch(e){}
+        var p = a.play();
+        if(p && p.catch) p.catch(function(){});
+      }catch(e){}
+    }
+    ['pointerdown','touchstart','click','keydown'].forEach(function(t){
+      document.addEventListener(t, warm, {capture:true, passive:true});
+    });
+    window.mesahaFastSoundV373 = {
+      success:function(){ play('success'); },
+      warning:function(){ play('warning'); },
+      play:play,
+      warm:warm
+    };
+    window.beep = function(){ play('success'); };
+  }
+})();
+</script>
+<style id="mesaha-v373-battery-css">
+@media (pointer:coarse){
+  *{
+    animation-duration:0.001ms!important;
+    animation-iteration-count:1!important;
+    scroll-behavior:auto!important;
+  }
+  .hero-card,.status-card,.card,.record-card,.bottom-nav,.topbar,.product-btn,.save-btn{
+    -webkit-backdrop-filter:none!important;
+    backdrop-filter:none!important;
+  }
+}
+</style>
+
 </head>
 <body>
 <div class="startup" id="startup">
 <div class="startup-card startup-card-v311">
 <img alt="" src="./assets/mesaha_logo.png"/>
-<strong>V3.62 •ExelanceX•</strong>
+<strong>V3.63 •ExelanceX•</strong>
 <span id="startupTitle">Mesaha İO hazırlanıyor…</span>
 <ul class="startup-steps" id="startupSteps">
 <li data-step="files">Dosyalar kontrol ediliyor</li>
@@ -771,7 +865,7 @@ section.hero-card{
 <header class="topbar">
 <div class="brand">
 <img alt="Mesaha İO" src="./assets/mesaha_logo.png"/>
-<div class="version-card"><b id="versionText">V3.62 •ExelanceX•</b><small>Yayın</small></div>
+<div class="version-card"><b id="versionText">V3.63 •ExelanceX•</b><small>Yayın</small></div>
 </div>
 <div class="user-badge login-needed" id="userBadge">Giriş Yap</div>
 <div class="top-actions-v316"><button class="panel-btn-v316" id="userPanelBtnV316" type="button">👤 Kullanıcı Paneli</button></div>
@@ -780,7 +874,7 @@ section.hero-card{
 <main>
 <section class="view active" id="homeView">
 <section class="hero-card">
-<img alt="Orman manzarası" class="hero-cover-image" decoding="async" fetchpriority="high" src="./assets/hero_forest_cover.png?v=372"/>
+<img alt="Orman manzarası" class="hero-cover-image" decoding="async" fetchpriority="high" src="./assets/hero_forest_cover.png?v=373"/>
 <div>
 <h1>Merhaba!</h1>
 <p>Orman ölçümlerini kolayca kaydedin ve yönetin.</p>
@@ -832,7 +926,7 @@ section.hero-card{
 </section>
 </section>
 <section class="view entry-view" id="entryView">
-<header class="entry-top"><div class="version-card"><b>V3.62 •ExelanceX•</b><small>Yayın</small></div><button class="btn primary" id="entryHomeBtn" type="button">🏠 Ana Sayfaya Dön</button></header>
+<header class="entry-top"><div class="version-card"><b>V3.63 •ExelanceX•</b><small>Yayın</small></div><button class="btn primary" id="entryHomeBtn" type="button">🏠 Ana Sayfaya Dön</button></header>
 <section class="entry-total"><div><small>Toplam Adet</small><b id="entryTotalCount">0</b></div><div><small>Toplam m³</small><b id="entryTotalM3">0 m³</b></div></section>
 <section class="entry-form card">
 <div class="cutter-row"><div class="chip-wrap" id="cutterChips"></div><button class="btn primary" id="addCutterBtn" type="button">＋ Kesimci Ekle</button></div>
@@ -1640,7 +1734,7 @@ root.OrbisXls = { downloadXls, makeXls, headers: HEADERS };
 'use strict';
 const STORAGE_KEY = 'cam_mesaha_kayitlari_v1';
 const SETTINGS_KEY = 'cam_mesaha_ayarlar_v1';
-const VERSION = window.MESAHA_VERSION || {shortVersion:'V3.62', version:'v372-keyboard-save-visible-fix'};
+const VERSION = window.MESAHA_VERSION || {shortVersion:'V3.63', version:'v373-stability-fast-open-sound'};
 const PRODUCTS = [
   {key:'Tomruk', label:'Tomruk', cls:'tomruk', rule:'Tomruk: çap 21 ve üzeri olmalı.'},
   {key:'Maden Direk', label:'Maden', cls:'maden', rule:'Maden: çap 20 ve altı olmalı.'},
@@ -2028,7 +2122,7 @@ function clearEntry(show=true){
   try{ renderQuickChips(); }catch(e){}
   if(show) toast('Alanlar ve çap/boy kısayolları temizlendi.');
 }
-function beep(){ try{ const ctx=new (window.AudioContext||window.webkitAudioContext)(); const osc=ctx.createOscillator(); const gain=ctx.createGain(); osc.frequency.value=880; gain.gain.value=.08; osc.connect(gain); gain.connect(ctx.destination); osc.start(); setTimeout(()=>{osc.stop(); ctx.close();},70); }catch{} }
+function beep(){ try{ if(window.mesahaFastSoundV373) window.mesahaFastSoundV373.success(); }catch(e){} }
 function filteredRecords(){ return state.records.filter(r => (state.settings.treeFilter==='Tümü'||r.treeType===state.settings.treeFilter) && (state.settings.cutterFilter==='Tümü'||(state.settings.cutterFilter==='Kesimci kaydı yok' ? !r.cutter : r.cutter===state.settings.cutterFilter))); }
 function renderRecords(){
   const list=filteredRecords(); const all=totals(list), totalAll=totals(state.records); $('recordCountPill').textContent=`${state.records.length} kayıt`; $('recTotalM3').textContent=`${fmt(totalAll.m3,3)} m³`; $('recTotalCount').textContent=totalAll.count.toLocaleString('tr-TR');
@@ -2060,7 +2154,7 @@ function exportXls(){
   try{ if(window.mesahaExportStatsV323 && typeof window.mesahaExportStatsV323.send === 'function') window.mesahaExportStatsV323.send('xls-download-legacy', {list:ordered, text:'Mesaha dosyası', mode:'legacy'}); }catch{}
   if(window.OrbisXls) window.OrbisXls.downloadXls(ordered, file); else toast('XLS modülü yüklenmedi.');
 }
-function backupJson(){ const data={version:'V3.62-extras', exportedAt:new Date().toISOString(), records:state.records, settings:state.settings}; downloadText(JSON.stringify(data,null,2), `mesaha_yedek_${formatDateFile()}.json`, 'application/json'); toast('Yedek indirildi.'); }
+function backupJson(){ const data={version:'V3.63-extras', exportedAt:new Date().toISOString(), records:state.records, settings:state.settings}; downloadText(JSON.stringify(data,null,2), `mesaha_yedek_${formatDateFile()}.json`, 'application/json'); toast('Yedek indirildi.'); }
 function restoreJson(e){ const file=e.target.files && e.target.files[0]; if(!file) return; const reader=new FileReader(); reader.onload=()=>{ try{ const data=JSON.parse(reader.result); const records=Array.isArray(data) ? data : data.records; if(!Array.isArray(records)) throw new Error('records yok'); state.records=records.map(migrateRecord).filter(Boolean); if(data.settings) state.settings={...state.settings,...data.settings}; saveRecords(); saveSettings(); renderAll(); toast('Yedek yüklendi.'); }catch(err){ toast('Yedek okunamadı.'); } e.target.value=''; }; reader.readAsText(file); }
 function downloadText(content, filename, type){ const blob=new Blob([content],{type}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=filename; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),1000); }
 window.state = state;
@@ -2636,7 +2730,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
         setStep('offline','ok','Online / offline çalışma hazır');
         try{
           const ctrl = new AbortController();
-          const timer = setTimeout(()=>ctrl.abort(), 2500);
+          const timer = setTimeout(()=>ctrl.abort(), 1200);
           const res = await fetch('./version.json?v=' + Date.now(), {cache:'no-store', signal:ctrl.signal});
           clearTimeout(timer);
           if(res.ok){
@@ -2807,7 +2901,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   }
   function backupZip(){
     const data = {
-      version:'V3.62-modern',
+      version:'V3.63-modern',
       exportedAt:new Date().toISOString(),
       records:records(),
       settings:settings()
@@ -2902,7 +2996,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
         await Promise.all(keys.map(k => caches.delete(k)));
       }
       await modal({title:'Ön bellek temizlendi', type:'success', icon:'✓', html:'<p>Eski dosyalar temizlendi. Uygulama şimdi kendini yeniden başlatacak.</p>', buttons:[{text:'Yeniden Başlat', value:true, cls:'primary'}]});
-      location.replace('./temizle.html?v=372&fresh=' + Date.now());
+      location.replace('./temizle.html?v=373&fresh=' + Date.now());
     }catch{
       modal({title:'Temizleme başarısız', type:'danger', icon:'!', message:'Ön bellek temizlenemedi.'});
     }
@@ -2944,10 +3038,10 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
       await fetch('./index.html?preload=' + Date.now(), {cache:'reload'}).catch(()=>{});
       await modal({title:'Güncelleme hazır', type:'success', icon:'✓', html:'<p>Dosyalar yenilendi. Uygulama şimdi yeniden başlatılacak.</p>', buttons:[{text:'Yeniden Başlat', value:true, cls:'primary'}]});
       try{
-        localStorage.setItem('mesaha_last_seen_version','v372-keyboard-save-visible-fix');
-        localStorage.setItem('mesaha_current_version','v372-keyboard-save-visible-fix');
+        localStorage.setItem('mesaha_last_seen_version','v373-stability-fast-open-sound');
+        localStorage.setItem('mesaha_current_version','v373-stability-fast-open-sound');
       }catch{}
-      location.replace('./temizle.html?v=372&fresh=' + Date.now());
+      location.replace('./temizle.html?v=373&fresh=' + Date.now());
     }catch{
       modal({title:'Güncelleme yapılamadı', type:'danger', icon:'!', message:'Bağlantı veya tarayıcı önbelleği nedeniyle güncelleme tamamlanamadı.'});
     }
@@ -3106,7 +3200,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   else boot();
 
   [600,1600,3200].forEach(ms => setTimeout(updateExportScopeInfo, ms));
-  setInterval(updateExportScopeInfo, 1200);
+  setInterval(updateExportScopeInfo, 10000);
 
   window.mesahaV304 = {modal, backupZip, clearCacheFlow, forceUpdateFlow, updateExportScopeInfo};
 })();
@@ -3944,7 +4038,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     const screenText=sw+'x'+sh;
     const viewport=vw+'x'+vh;
     const label=type+' • '+os+' • '+browser+' • '+screenText;
-    return {deviceId:getDeviceId(), userAgent:ua, platform:plat, screen:screenText, viewport, pixelRatio:window.devicePixelRatio||1, language:navigator.language||'', timezone:(Intl.DateTimeFormat().resolvedOptions().timeZone||''), deviceType:type, os, browser, lastDevice:label, appVersion:'V3.62', fileVersion:'v372-keyboard-save-visible-fix'};
+    return {deviceId:getDeviceId(), userAgent:ua, platform:plat, screen:screenText, viewport, pixelRatio:window.devicePixelRatio||1, language:navigator.language||'', timezone:(Intl.DateTimeFormat().resolvedOptions().timeZone||''), deviceType:type, os, browser, lastDevice:label, appVersion:'V3.63', fileVersion:'v373-stability-fast-open-sound'};
   }
   function readPanelUser(){ const u=jsonGet(PANEL_USER_KEY, {}); return {name:clean(u.name), seflik:clean(u.seflik), bolmeNo:clean(u.bolmeNo)}; }
   function writePanelUser(u){ const current=settings(); const name=clean(u.name), seflik=clean(u.seflik); const next=Object.assign({}, current, {ekipNot:name, seflik:seflik, bolmeNo:clean(u.bolmeNo)||''}); saveSettings(next); jsonSet(PANEL_USER_KEY, {name:next.ekipNot,seflik:next.seflik,bolmeNo:next.bolmeNo,updatedAt:new Date().toISOString()}); try{localStorage.setItem('mesaha_user_confirmed_v319','1')}catch{} ['ekipNot','seflik','bolmeNo'].forEach(id=>{ const el=$(id); if(el){ el.value=next[id]||''; try{el.dispatchEvent(new Event('input',{bubbles:true}));}catch{} } }); try{ if(typeof window.renderUser==='function') window.renderUser(); }catch{} const badge=$('userBadge'); if(badge){ badge.textContent=(next.ekipNot&&next.seflik)?(next.ekipNot+' • '+next.seflik):'Giriş Yap'; badge.classList.toggle('login-needed', !(next.ekipNot&&next.seflik)); } return true; }
@@ -3970,7 +4064,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     const nowMs=Date.now();
     const key=userKey(user.name,user.seflik);
     const {db}=await firebaseReady();
-    const payload={id:key,userKey:key,name:user.name,seflik:user.seflik,bolmeNo:user.bolmeNo,firstSeen:usage.firstSeen||trText(),firstSeenMs:Number(usage.firstSeenMs||nowMs),lastSeen:trText(),lastSeenMs:nowMs,lastLogin:trText(),lastLoginMs:nowMs,todayLoginCount:Number(usage.todayLoginCount||0),totalLoginCount:Number(usage.totalLoginCount||0),usageMs:Number(usage.totalMs||0),todayUsageMs:Number(usage.todayMs||0),recordCount:stats.recordCount,totalRecords:stats.recordCount,adet:stats.adet,totalM3:stats.m3,m3:stats.m3,todayRecords:stats.todayRecords,weekKey:weekKey(new Date()),weekRecordCount:stats.weekRecordCount,weekM3:stats.weekM3,treeTotals:stats.treeTotals,productTotals:stats.productTotals,deviceId:info.deviceId,lastDevice:info.lastDevice,lastDeviceInfo:info,deviceType:info.deviceType,os:info.os,browser:info.browser,screen:info.screen,viewport:info.viewport,pixelRatio:info.pixelRatio,language:info.language,timezone:info.timezone,userAgent:info.userAgent,appVersion:'V3.62',fileVersion:'v372-keyboard-save-visible-fix',updatedBy:reason||'sync',updatedAt:trText(),updatedAtMs:nowMs,source:'firebase'};
+    const payload={id:key,userKey:key,name:user.name,seflik:user.seflik,bolmeNo:user.bolmeNo,firstSeen:usage.firstSeen||trText(),firstSeenMs:Number(usage.firstSeenMs||nowMs),lastSeen:trText(),lastSeenMs:nowMs,lastLogin:trText(),lastLoginMs:nowMs,todayLoginCount:Number(usage.todayLoginCount||0),totalLoginCount:Number(usage.totalLoginCount||0),usageMs:Number(usage.totalMs||0),todayUsageMs:Number(usage.todayMs||0),recordCount:stats.recordCount,totalRecords:stats.recordCount,adet:stats.adet,totalM3:stats.m3,m3:stats.m3,todayRecords:stats.todayRecords,weekKey:weekKey(new Date()),weekRecordCount:stats.weekRecordCount,weekM3:stats.weekM3,treeTotals:stats.treeTotals,productTotals:stats.productTotals,deviceId:info.deviceId,lastDevice:info.lastDevice,lastDeviceInfo:info,deviceType:info.deviceType,os:info.os,browser:info.browser,screen:info.screen,viewport:info.viewport,pixelRatio:info.pixelRatio,language:info.language,timezone:info.timezone,userAgent:info.userAgent,appVersion:'V3.63',fileVersion:'v373-stability-fast-open-sound',updatedBy:reason||'sync',updatedAt:trText(),updatedAtMs:nowMs,source:'firebase'};
     try{usage.firstSeen=payload.firstSeen; usage.firstSeenMs=payload.firstSeenMs; jsonSet(USAGE_KEY,usage);}catch(e){}
     await db.collection('users').doc(key).set(payload, {merge:true});
     await db.collection('usageStats').doc(key).set(payload, {merge:true});
@@ -3982,12 +4076,12 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   function openPanel(){ renderPanelStats(); const ov=$('userPanelOverlayV316'); if(ov) ov.classList.remove('hidden'); setSyncText('Kullanıcı ve cihaz bilgisi otomatik admin paneline gider'); }
   function closePanel(){ const ov=$('userPanelOverlayV316'); if(ov) ov.classList.add('hidden'); }
   function savePanel(){ const name=clean(($('panelNameV316')||{}).value), seflik=clean(($('panelSeflikV316')||{}).value); if(!name||!seflik){toast('Kullanıcı adı ve şeflik gerekli.','İlk giriş için doldur','warning');return} writePanelUser({name:name, seflik:seflik, bolmeNo:($('panelBolmeV316')||{}).value}); renderPanelStats(); setSyncText('Kullanıcı kaydedildi • admin paneline gönderiliyor…'); toast('Kullanıcı bilgileri kaydedildi.','Admin paneline gönderiliyor','success'); syncUser('panel-save').catch(e=>{setSyncText('Admin gönderimi başarısız: '+(e&&e.message?e.message:'İnternet yok'));}); }
-  async function cloudBackup(){ try{ const user=readPanelUser(); if(!user.name||!user.seflik){toast('Önce kullanıcı girişi yap.','Kullanıcı Paneli’ni doldur','warning');openPanel();return} const key=userKey(user.name,user.seflik); const recs=records(); const data={version:'V3.62',type:'mesaha-cloud-backup',exportedAt:new Date().toISOString(),user,settings:settings()}; const {db}=await firebaseReady(); const id=['fb',key,Date.now().toString(36)].join('_'); const chunkSize=200; const chunkCount=Math.max(1, Math.ceil(recs.length/chunkSize)); const ref=db.collection('backups').doc(id); await ref.set({id,userKey:key,name:user.name,seflik:user.seflik,bolmeNo:user.bolmeNo,fileName:'Mesaha_Bulut_Yedek_'+key+'_'+trDate()+'.json',payload:data,recordsChunked:true,chunkCount,recordCount:recs.length,m3:summarize(0).m3,createdAt:trText(),createdAtMs:Date.now(),source:'firebase'}); for(let i=0;i<chunkCount;i++){ await ref.collection('chunks').doc(String(i).padStart(4,'0')).set({index:i,records:recs.slice(i*chunkSize,(i+1)*chunkSize)}); } toast('Bulut yedeği alındı.','Kayıtlar güvenli','success'); }catch(e){ toast('Bulut yedek alınamadı.', e&&e.message?e.message:'İnterneti kontrol et','error'); } }
+  async function cloudBackup(){ try{ const user=readPanelUser(); if(!user.name||!user.seflik){toast('Önce kullanıcı girişi yap.','Kullanıcı Paneli’ni doldur','warning');openPanel();return} const key=userKey(user.name,user.seflik); const recs=records(); const data={version:'V3.63',type:'mesaha-cloud-backup',exportedAt:new Date().toISOString(),user,settings:settings()}; const {db}=await firebaseReady(); const id=['fb',key,Date.now().toString(36)].join('_'); const chunkSize=200; const chunkCount=Math.max(1, Math.ceil(recs.length/chunkSize)); const ref=db.collection('backups').doc(id); await ref.set({id,userKey:key,name:user.name,seflik:user.seflik,bolmeNo:user.bolmeNo,fileName:'Mesaha_Bulut_Yedek_'+key+'_'+trDate()+'.json',payload:data,recordsChunked:true,chunkCount,recordCount:recs.length,m3:summarize(0).m3,createdAt:trText(),createdAtMs:Date.now(),source:'firebase'}); for(let i=0;i<chunkCount;i++){ await ref.collection('chunks').doc(String(i).padStart(4,'0')).set({index:i,records:recs.slice(i*chunkSize,(i+1)*chunkSize)}); } toast('Bulut yedeği alındı.','Kayıtlar güvenli','success'); }catch(e){ toast('Bulut yedek alınamadı.', e&&e.message?e.message:'İnterneti kontrol et','error'); } }
   async function openCloudRestore(){ const ov=$('cloudRestoreOverlayV316'); const list=$('cloudRestoreListV316'); const info=$('cloudRestoreInfoV316'); if(ov) ov.classList.remove('hidden'); if(list) list.innerHTML='<div class="cloud-item-v316">Yedekler yükleniyor…</div>'; try{ const user=readPanelUser(); const key=userKey(user.name,user.seflik); const {db}=await firebaseReady(); const snap=await db.collection('backups').where('userKey','==',key).get(); const arr=[]; snap.forEach(doc=>{ const d=doc.data()||{}; arr.push(Object.assign({docId:doc.id}, d)); }); arr.sort((a,b)=>Number(b.createdAtMs||0)-Number(a.createdAtMs||0)); if(info) info.textContent=arr.length+' yedek bulundu'; if(!arr.length){ if(list) list.innerHTML='<div class="cloud-item-v316">Bulutta yedek bulunamadı.</div>'; return; } if(list) list.innerHTML=arr.slice(0,30).map((b,i)=>'<div class="cloud-item-v316"><b>'+esc(b.fileName||'Mesaha yedeği')+'</b><small>'+esc(b.createdAt||'-')+' • '+Number(b.recordCount||0)+' kayıt</small><button class="btn primary" data-cloud-restore="'+esc(b.docId)+'" type="button">Bu Yedeği Yükle</button></div>').join(''); }catch(e){ if(info) info.textContent='Yedekler alınamadı'; if(list) list.innerHTML='<div class="cloud-item-v316">'+esc(e&&e.message?e.message:'İnterneti kontrol et')+'</div>'; } }
   async function restoreCloud(id){ if(!id) return; if(!confirm('Bu bulut yedeği mevcut kayıtların yerine yüklenecek. Devam edilsin mi?')) return; try{ const {db}=await firebaseReady(); const ref=db.collection('backups').doc(id); const doc=await ref.get(); if(!doc.exists) throw new Error('Yedek bulunamadı'); const d=doc.data()||{}; let payload=d.payload || (d.payloadText ? JSON.parse(d.payloadText) : null); let recs=[]; if(d.recordsChunked){ const chunks=await ref.collection('chunks').get(); const arr=[]; chunks.forEach(c=>{ const cd=c.data()||{}; arr.push({index:Number(cd.index||0),records:Array.isArray(cd.records)?cd.records:[]}); }); arr.sort((a,b)=>a.index-b.index); recs=arr.flatMap(x=>x.records); payload=payload||{}; } else { if(!payload || !Array.isArray(payload.records)) throw new Error('Yedek formatı geçersiz'); recs=payload.records; } if(!Array.isArray(recs)) throw new Error('Yedek kayıtları okunamadı'); jsonSet(STORAGE_KEY, recs); if(payload && payload.settings) jsonSet(SETTINGS_KEY, Object.assign(settings(), payload.settings)); toast('Bulut yedeği yüklendi.','Sayfa yenileniyor','success'); setTimeout(()=>location.reload(),700); }catch(e){ toast('Bulut yedeği yüklenemedi.', e&&e.message?e.message:'Hata','error'); } }
   function openAdmin(){ const code=prompt('Admin şifresini gir'); if(code===ADMIN_CODE){ try{sessionStorage.setItem('mesaha_admin_code', code);}catch{} location.href='./admin.html?admin='+encodeURIComponent(code); } else if(code!==null){ toast('Admin şifresi hatalı.','Kontrol et','error'); } }
-  async function sendSupport(){ const msg=clean(($('panelSupportTextV316')||{}).value); const user0=readPanelUser(); if(!user0.name||!user0.seflik){toast('Önce kullanıcı girişi yap.','Kullanıcı Paneli’ni doldur','warning');return} if(!msg){ toast('Sorun bildirimi boş.','Kısa bir açıklama yaz','warning'); return; } try{ const user=readPanelUser(); const {db}=await firebaseReady(); await db.collection('supportTickets').add({userKey:userKey(user.name,user.seflik),name:user.name,seflik:user.seflik,bolmeNo:user.bolmeNo,message:msg,status:'new',createdAt:trText(),createdAtMs:Date.now(),appVersion:'V3.62',device:deviceInfo()}); const ta=$('panelSupportTextV316'); if(ta) ta.value=''; toast('Sorun bildirimi gönderildi.','Admin paneline düştü','success'); }catch(e){ toast('Bildirim gönderilemedi.', e&&e.message?e.message:'İnternet yok','error'); } }
-  function bind(){ loadUsage(); const badge=$('userBadge'); if(badge){ badge.setAttribute('title','Kullanıcı Paneli'); badge.addEventListener('click', openPanel); } const btn=$('userPanelBtnV316'); if(btn) btn.addEventListener('click', openPanel); const x=$('userPanelCloseV316'); if(x) x.addEventListener('click', closePanel); const x2=$('panelClose2V316'); if(x2) x2.addEventListener('click', closePanel); const save=$('panelSaveV316'); if(save) save.addEventListener('click', savePanel); const sync=$('panelSyncV316'); if(sync) sync.addEventListener('click', ()=>{ setSyncText('Admin paneline gönderiliyor…'); syncUser('manual-sync').then(()=>toast('Admin paneli güncellendi.','Kullanıcı ve cihaz bilgisi gönderildi','success')).catch(e=>{setSyncText('Gönderilemedi: '+(e&&e.message?e.message:'İnternet yok')); toast('Admin güncellenemedi.', e&&e.message?e.message:'İnterneti kontrol et','error');}); }); const admin=$('panelAdminOpenV316'); if(admin) admin.addEventListener('click', openAdmin); const support=$('panelSupportSendV316'); if(support) support.addEventListener('click', sendSupport); const cb=$('cloudBackupBtnV316'); if(cb) cb.addEventListener('click', cloudBackup); const cr=$('cloudRestoreBtnV316'); if(cr) cr.addEventListener('click', openCloudRestore); const crc=$('cloudRestoreCloseV316'); if(crc) crc.addEventListener('click', ()=>{ const ov=$('cloudRestoreOverlayV316'); if(ov) ov.classList.add('hidden'); }); const list=$('cloudRestoreListV316'); if(list) list.addEventListener('click', e=>{ const b=e.target.closest('[data-cloud-restore]'); if(b) restoreCloud(b.getAttribute('data-cloud-restore')); }); window.addEventListener('pagehide', flushUsage); window.addEventListener('online', ()=>{syncUser('online').catch(()=>{});}); document.addEventListener('visibilitychange',()=>{if(!document.hidden) syncUser('visible').catch(()=>{});}); setTimeout(()=>syncUser('startup').catch(()=>{}),2500); setInterval(()=>syncUser('periodic').catch(()=>{}),60000); /* v361: kullanıcı/cihaz admin otomatik sync açık */ }
+  async function sendSupport(){ const msg=clean(($('panelSupportTextV316')||{}).value); const user0=readPanelUser(); if(!user0.name||!user0.seflik){toast('Önce kullanıcı girişi yap.','Kullanıcı Paneli’ni doldur','warning');return} if(!msg){ toast('Sorun bildirimi boş.','Kısa bir açıklama yaz','warning'); return; } try{ const user=readPanelUser(); const {db}=await firebaseReady(); await db.collection('supportTickets').add({userKey:userKey(user.name,user.seflik),name:user.name,seflik:user.seflik,bolmeNo:user.bolmeNo,message:msg,status:'new',createdAt:trText(),createdAtMs:Date.now(),appVersion:'V3.63',device:deviceInfo()}); const ta=$('panelSupportTextV316'); if(ta) ta.value=''; toast('Sorun bildirimi gönderildi.','Admin paneline düştü','success'); }catch(e){ toast('Bildirim gönderilemedi.', e&&e.message?e.message:'İnternet yok','error'); } }
+  function bind(){ loadUsage(); const badge=$('userBadge'); if(badge){ badge.setAttribute('title','Kullanıcı Paneli'); badge.addEventListener('click', openPanel); } const btn=$('userPanelBtnV316'); if(btn) btn.addEventListener('click', openPanel); const x=$('userPanelCloseV316'); if(x) x.addEventListener('click', closePanel); const x2=$('panelClose2V316'); if(x2) x2.addEventListener('click', closePanel); const save=$('panelSaveV316'); if(save) save.addEventListener('click', savePanel); const sync=$('panelSyncV316'); if(sync) sync.addEventListener('click', ()=>{ setSyncText('Admin paneline gönderiliyor…'); syncUser('manual-sync').then(()=>toast('Admin paneli güncellendi.','Kullanıcı ve cihaz bilgisi gönderildi','success')).catch(e=>{setSyncText('Gönderilemedi: '+(e&&e.message?e.message:'İnternet yok')); toast('Admin güncellenemedi.', e&&e.message?e.message:'İnterneti kontrol et','error');}); }); const admin=$('panelAdminOpenV316'); if(admin) admin.addEventListener('click', openAdmin); const support=$('panelSupportSendV316'); if(support) support.addEventListener('click', sendSupport); const cb=$('cloudBackupBtnV316'); if(cb) cb.addEventListener('click', cloudBackup); const cr=$('cloudRestoreBtnV316'); if(cr) cr.addEventListener('click', openCloudRestore); const crc=$('cloudRestoreCloseV316'); if(crc) crc.addEventListener('click', ()=>{ const ov=$('cloudRestoreOverlayV316'); if(ov) ov.classList.add('hidden'); }); const list=$('cloudRestoreListV316'); if(list) list.addEventListener('click', e=>{ const b=e.target.closest('[data-cloud-restore]'); if(b) restoreCloud(b.getAttribute('data-cloud-restore')); }); window.addEventListener('pagehide', flushUsage); window.addEventListener('online', ()=>{syncUser('online').catch(()=>{});}); document.addEventListener('visibilitychange',()=>{if(!document.hidden) syncUser('visible').catch(()=>{});}); setTimeout(()=>syncUser('startup').catch(()=>{}),2500); setInterval(()=>syncUser('periodic').catch(()=>{}),300000); /* v361: kullanıcı/cihaz admin otomatik sync açık */ }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', bind, {once:true}); else bind();
   window.mesahaPanelV316 = {open:openPanel, sync:syncUser, cloudBackup, openCloudRestore};
 })();
@@ -4003,8 +4097,8 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   const DEVICE_ID_KEY='mesaha_cihaz_kodu_v1';
   const FIREBASE_CONFIG={apiKey:'AIzaSyCKveylTPgKmWEMmYf-aFj6yLXB5CKAiJ0',authDomain:'mesaha-io.firebaseapp.com',projectId:'mesaha-io',storageBucket:'mesaha-io.firebasestorage.app',messagingSenderId:'840655878243',appId:'1:840655878243:web:add76f52bbf55ad9dd6056',measurementId:'G-81JPD5ZY44'};
   const SDK='9.23.0';
-  const APP_VERSION='V3.62';
-  const FILE_VERSION='v372-keyboard-save-visible-fix';
+  const APP_VERSION='V3.63';
+  const FILE_VERSION='v373-stability-fast-open-sound';
   let readyPromise=null;
   let lastTick=Date.now();
   function $(id){return document.getElementById(id)}
@@ -4327,8 +4421,8 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   const DEVICE_ID_KEY='mesaha_cihaz_kodu_v1';
   const FIREBASE_CONFIG={apiKey:'AIzaSyCKveylTPgKmWEMmYf-aFj6yLXB5CKAiJ0',authDomain:'mesaha-io.firebaseapp.com',projectId:'mesaha-io',storageBucket:'mesaha-io.firebasestorage.app',messagingSenderId:'840655878243',appId:'1:840655878243:web:add76f52bbf55ad9dd6056',measurementId:'G-81JPD5ZY44'};
   const SDK='10.12.2';
-  const APP_VERSION='V3.62';
-  const FILE_VERSION='v372-keyboard-save-visible-fix';
+  const APP_VERSION='V3.63';
+  const FILE_VERSION='v373-stability-fast-open-sound';
   let readyPromise=null;
   let lastTick=Date.now();
   function $(id){return document.getElementById(id)}
@@ -4359,7 +4453,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   function withTimeout(p,ms,label){return Promise.race([p,new Promise((_,rej)=>setTimeout(()=>rej(new Error((label||'İşlem')+' zaman aşımı')),ms))])}
   async function ready(){if(!navigator.onLine)throw new Error('İnternet bağlantısı yok');if(!readyPromise){readyPromise=(async()=>{const b='https://www.gstatic.com/firebasejs/'+SDK;if(!window.firebase||!window.firebase.apps){await loadScript(b+'/firebase-app-compat.js');await loadScript(b+'/firebase-auth-compat.js');await loadScript(b+'/firebase-firestore-compat.js')}if(!window.firebase.apps.length)window.firebase.initializeApp(FIREBASE_CONFIG);const auth=window.firebase.auth();if(!auth.currentUser)await withTimeout(auth.signInAnonymously(),12000,'Firebase giriş');const db=window.firebase.firestore();try{db.settings({experimentalForceLongPolling:true})}catch{}return{db,auth}})()}try{return await readyPromise}catch(e){readyPromise=null;throw e}}
   async function send(reason,scope){const user=readUser();const usage=flushUsage();const fullStats=summarize(records());const scopeList=scope&&Array.isArray(scope.list)?scope.list:records();const scopeStats=summarize(scopeList);if(!user.name||!user.seflik){setSyncText('Kullanıcı girişi yok • istatistik gönderilmedi');return false}if(!navigator.onLine){setSyncText('Offline: dosya indi, admin istatistiği gönderilmedi');return false}try{setSyncText('Mesaha istatistiği gönderiliyor…');const {db}=await ready();const now=Date.now(),key=userKey(user.name,user.seflik),info=deviceInfo();const inc=window.firebase&&window.firebase.firestore&&window.firebase.firestore.FieldValue?window.firebase.firestore.FieldValue.increment(1):1;const payload={id:key,userKey:key,name:user.name,seflik:user.seflik,bolmeNo:user.bolmeNo,lastSeen:trText(),lastSeenMs:now,lastLogin:trText(),lastLoginMs:now,todayLoginCount:Number(usage.todayLoginCount||0),totalLoginCount:Number(usage.totalLoginCount||0),loginCount:Number(usage.totalLoginCount||0),usageMs:Number(usage.totalMs||0),todayUsageMs:Number(usage.todayMs||0),recordCount:fullStats.recordCount,totalRecords:fullStats.recordCount,adet:fullStats.adet,totalM3:fullStats.m3,m3:fullStats.m3,todayRecords:fullStats.todayRecords,weekKey:fullStats.weekKey,weekRecordCount:fullStats.weekRecordCount,weekM3:fullStats.weekM3,treeTotals:fullStats.treeTotals,productTotals:fullStats.productTotals,lastExportAt:trText(),lastExportAtMs:now,lastExportRecordCount:scopeStats.recordCount,lastExportM3:scopeStats.m3,lastExportTreeTotals:scopeStats.treeTotals,lastExportProductTotals:scopeStats.productTotals,lastExportScopeText:scope&&scope.text||'Mesaha dosyası',lastExportScopeMode:scope&&scope.mode||'xls',xlsDownloadCount:inc,deviceId:info.deviceId,lastDevice:info.platform+' • '+info.screen,lastDeviceInfo:info,appVersion:APP_VERSION,fileVersion:FILE_VERSION,updatedBy:reason||'xls-download',updatedAt:trText(),updatedAtMs:now,source:'xls-download-only'};await withTimeout(db.collection('users').doc(key).set(payload,{merge:true}),15000,'Kullanıcı istatistiği');const dailyId=key+'_'+trDate()+'_'+info.deviceId;await withTimeout(db.collection('usageStats').doc(dailyId).set(Object.assign({},payload,{id:dailyId,type:'dailyUsage',date:trDate(),exportCountToday:inc,createdAt:payload.updatedAt,createdAtMs:payload.updatedAtMs}),{merge:true}),12000,'Günlük istatistik');await db.collection('exportLogs').doc('xls_'+key+'_'+now.toString(36)).set({userKey:key,name:user.name,seflik:user.seflik,bolmeNo:user.bolmeNo,scopeText:payload.lastExportScopeText,scopeMode:payload.lastExportScopeMode,recordCount:scopeStats.recordCount,m3:scopeStats.m3,treeTotals:scopeStats.treeTotals,productTotals:scopeStats.productTotals,createdAt:payload.updatedAt,createdAtMs:now,appVersion:APP_VERSION,fileVersion:FILE_VERSION}).catch(()=>{});setSyncText('Admin güncellendi • '+new Date().toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'}));return true}catch(e){setSyncText('Dosya indi • admin gönderimi olmadı: '+errText(e));return false}}
-  function boot(){loadUsage();setSyncText('İstatistikler Mesaha dosyası indirince gönderilir');setInterval(flushUsage,15000);window.addEventListener('visibilitychange',flushUsage);window.addEventListener('pagehide',flushUsage);window.mesahaExportStatsV323={send,flush:flushUsage,readUsage:()=>jsonGet(USAGE_KEY,{})}}
+  function boot(){loadUsage();setSyncText('İstatistikler Mesaha dosyası indirince gönderilir');setInterval(flushUsage,60000);window.addEventListener('visibilitychange',flushUsage);window.addEventListener('pagehide',flushUsage);window.mesahaExportStatsV323={send,flush:flushUsage,readUsage:()=>jsonGet(USAGE_KEY,{})}}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
 </script>
@@ -4406,7 +4500,7 @@ button,input,textarea{font:inherit!important;}button{touch-action:manipulation!i
 .top-actions-v316{display:none!important;}
 .view{display:none!important;}.view.active{display:block!important;}
 .card,.hero-card,.status-card,.entry-form,.records-card,.guide-card,.settings-card,.sound-card,.maintenance-card,.panel-card-v316{background:var(--card)!important;border:1px solid rgba(220,235,228,.96)!important;border-radius:22px!important;box-shadow:0 12px 30px rgba(23,74,50,.085)!important;margin:10px 0!important;padding:14px!important;}
-.hero-card{position:relative!important;min-height:132px!important;overflow:hidden!important;display:flex!important;align-items:flex-start!important;justify-content:space-between!important;background:linear-gradient(90deg,rgba(255,255,255,.97) 0%,rgba(255,255,255,.92) 26%,rgba(255,255,255,.70) 48%,rgba(255,255,255,.18) 100%),url('./assets/hero_forest_cover.png?v=372') center right/cover no-repeat!important;border-color:#dfeae5!important;}
+.hero-card{position:relative!important;min-height:132px!important;overflow:hidden!important;display:flex!important;align-items:flex-start!important;justify-content:space-between!important;background:linear-gradient(90deg,rgba(255,255,255,.97) 0%,rgba(255,255,255,.92) 26%,rgba(255,255,255,.70) 48%,rgba(255,255,255,.18) 100%),url('./assets/hero_forest_cover.png?v=373') center right/cover no-repeat!important;border-color:#dfeae5!important;}
 .hero-card::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(255,255,255,.06),rgba(255,255,255,0));pointer-events:none;}
 .hero-card h1{position:relative!important;z-index:1!important;font-size:18px!important;line-height:1.08!important;margin:4px 0 8px!important;color:#173328!important;font-weight:950!important;letter-spacing:-.02em!important;text-shadow:0 1px 0 rgba(255,255,255,.40)!important;}.hero-card p{position:relative!important;z-index:1!important;max-width:220px!important;margin:0!important;font-size:12px!important;line-height:1.36!important;color:#4f655b!important;font-weight:780!important;text-shadow:0 1px 0 rgba(255,255,255,.35)!important;}.hero-forest{display:none!important;}
 .status-card{display:grid!important;grid-template-columns:1fr!important;gap:8px!important;margin-top:-16px!important;position:relative!important;z-index:2!important;background:rgba(255,255,255,.82)!important;}
@@ -4448,7 +4542,7 @@ button,input,textarea{font:inherit!important;}button{touch-action:manipulation!i
   function records(){try{return window.state&&Array.isArray(window.state.records)?window.state.records:[]}catch(e){return[]}}
   function rebuildTop(){
     var user=$('userBadge'); if(user && (!user.textContent || /Giriş Yap|Giris Yap/i.test(user.textContent))) user.textContent='Yakup • Yaylacık';
-    var top=qs('.topbar'); setText($('versionText'),'V3.62'); var title=qs('title'); if(title) title.textContent='Mesaha İO V3.62';
+    var top=qs('.topbar'); setText($('versionText'),'V3.63'); var title=qs('title'); if(title) title.textContent='Mesaha İO V3.63';
   }
   function rebuildBottomNav(){
     var nav=$('bottomNav'); if(!nav) return;
@@ -4799,10 +4893,10 @@ body:not(.entry-open) #entryView:not(.active){display:none!important;}
   function qs(sel,root){return (root||document).querySelector(sel)}
   function ready(fn){document.readyState==='loading'?document.addEventListener('DOMContentLoaded',fn,{once:true}):fn()}
   function setVersions(){
-    var vt=$('versionText'); if(vt) vt.textContent='V3.62';
-    qsa('.version-card b').forEach(function(b){ if(/^v3\.\d+/.test((b.textContent||'').trim())) b.textContent='V3.62'; });
+    var vt=$('versionText'); if(vt) vt.textContent='V3.63';
+    qsa('.version-card b').forEach(function(b){ if(/^v3\.\d+/.test((b.textContent||'').trim())) b.textContent='V3.63'; });
     qsa('.version-card small').forEach(function(s){ if(/v\d+/.test(s.textContent||'')) s.textContent='v330-fix'; });
-    if(document.title) document.title='Mesaha İO V3.62';
+    if(document.title) document.title='Mesaha İO V3.63';
   }
   function robustShow(view){
     ['home','entry','records','guide','settings'].forEach(function(v){var el=$(v+'View'); if(el){el.classList.toggle('active',v===view); el.style.display=(v===view?'block':'none');}});
@@ -4861,148 +4955,6 @@ body:not(.entry-open) #entryView:not(.active){display:none!important;}
   ready(function(){init();setTimeout(init,800);setTimeout(init,1800);setInterval(patchProductButtons,1500);});
 })();
 </script>
-<script id="mesaha-v333-sound-feedback">
-(function(){
-  'use strict';
-  var SOUND_VERSION='350';
-  var sources={
-    success:'./assets/06_net_islem_onayi.wav?v='+SOUND_VERSION,
-    warning:'./assets/08_hata_uyari_onaydan_farkli.wav?v='+SOUND_VERSION,
-    error:'./assets/08_hata_uyari_onaydan_farkli.wav?v='+SOUND_VERSION
-  };
-  var last={success:0,warning:0,error:0};
-  var warmed=false;
-  function now(){return Date.now?Date.now():(new Date()).getTime();}
-  function makeAudio(kind){
-    var a=new Audio(sources[kind]||sources.warning);
-    a.preload='auto';
-    a.volume=1;
-    return a;
-  }
-  var pool={success:makeAudio('success'),warning:makeAudio('warning'),error:makeAudio('error')};
-  function play(kind){
-    kind=(kind==='success'||kind==='warning'||kind==='error')?kind:'warning';
-    var t=now();
-    if(t-(last[kind]||0)<450) return;
-    last[kind]=t;
-    try{
-      var a=pool[kind]||makeAudio(kind);
-      try{a.pause(); a.currentTime=0;}catch(e){}
-      var p=a.play();
-      if(p&&p.catch) p.catch(function(){
-        try{ var b=makeAudio(kind); b.play().catch(function(){}); }catch(e){}
-      });
-    }catch(e){}
-  }
-  function kindFrom(title, detail, kind){
-    var k=String(kind||'').toLowerCase();
-    if(k.indexOf('success')>-1 || k.indexOf('ok')>-1) return 'success';
-    if(k.indexOf('error')>-1 || k.indexOf('danger')>-1) return 'error';
-    if(k.indexOf('warn')>-1) return 'warning';
-    var msg=(String(title||'')+' '+String(detail||'')).toLocaleLowerCase('tr-TR');
-    if(/hata|olmadı|olamaz|okunamadı|yüklenmedi|alınamadı|giriniz|küçük|büyük|arasında|kayıtlı|gerekli|boş|offline|kontrol|uyarı|başarısız|silinsin mi|emin misin/.test(msg)) return 'warning';
-    if(/eklendi|güncellendi|kaydedildi|alındı|indirildi|yüklendi|gönderildi|tamamlandı|güncel|başarılı|bulut yedeği/.test(msg)) return 'success';
-    return 'warning';
-  }
-  function warm(){
-    if(warmed) return; warmed=true;
-    Object.keys(pool).forEach(function(k){ try{ pool[k].load(); }catch(e){} });
-  }
-  ['touchstart','pointerdown','click','keydown'].forEach(function(type){
-    document.addEventListener(type, warm, {capture:true, passive:true, once:false});
-  });
-  var oldSaved=window.mesahaV310SavedToast;
-  window.mesahaV310SavedToast=function(rec, wasEditing){
-    play('success');
-    if(typeof oldSaved==='function') return oldSaved.apply(this, arguments);
-  };
-  var oldToast=window.toast;
-  window.toast=function(title, detail, kind){
-    play(kindFrom(title, detail, kind));
-    if(typeof oldToast==='function') return oldToast.apply(this, arguments);
-  };
-  var wrapFloat=function(name){
-    var old=window[name];
-    if(typeof old!=='function' || old.__mesahaV333SoundWrapped) return;
-    var wrapped=function(title, detail, kind){
-      play(kindFrom(title, detail, kind));
-      return old.apply(this, arguments);
-    };
-    wrapped.__mesahaV333SoundWrapped=true;
-    window[name]=wrapped;
-  };
-  function bind(){wrapFloat('mesahaFloatToastV314');wrapFloat('mesahaFloatToastV315');}
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',bind,{once:true}); else bind();
-  [200,700,1500,3000].forEach(function(ms){setTimeout(bind,ms)});
-  window.mesahaSoundFeedbackV333={play:play,bind:bind,sources:sources};
-})();
-</script>
-<script id="mesaha-v335-onay-sesi-net-fix">
-(function(){
-  'use strict';
-  var STABLE_VISIBLE='V3.62 •ExelanceX•';
-  var SOUND_VERSION='350';
-  var sources={
-    success:'./assets/06_net_islem_onayi.wav?v='+SOUND_VERSION,
-    warning:'./assets/08_hata_uyari_onaydan_farkli.wav?v='+SOUND_VERSION,
-    error:'./assets/08_hata_uyari_onaydan_farkli.wav?v='+SOUND_VERSION
-  };
-  var versionInfo={app:'V3.62',version:'v372-keyboard-save-visible-fix',build:354,visibleVersion:STABLE_VISIBLE,shortVersion:STABLE_VISIBLE,name:'Mesaha İO '+STABLE_VISIBLE,cacheName:'mesaha-app-v372-keyboard-save-visible-fix',assetVersion:"354"};
-  window.MESAHA_VERSION=versionInfo;
-  window.MESAHA_VERSION_TEXT=STABLE_VISIBLE;
-  window.MESAHA_VERSION_SHORT=STABLE_VISIBLE;
-  var last={success:0,warning:0,error:0};
-  function qsa(sel){return Array.prototype.slice.call(document.querySelectorAll(sel));}
-  function applyStableVersion(){
-    var title=document.querySelector('title'); if(title) title.textContent='Mesaha İO '+STABLE_VISIBLE;
-    var apple=document.querySelector('meta[name="apple-mobile-web-app-title"]'); if(apple) apple.setAttribute('content',STABLE_VISIBLE);
-    var startup=document.querySelector('#startup strong'); if(startup) startup.textContent=STABLE_VISIBLE;
-    var vt=document.getElementById('versionText'); if(vt) vt.textContent=STABLE_VISIBLE;
-    qsa('.version-card b').forEach(function(b){ if(/^v3\./.test((b.textContent||'').trim())) b.textContent=STABLE_VISIBLE; });
-    qsa('.version-card small').forEach(function(s){ if(/v\d+|fix|ui|filter|ses|android|onay/i.test(s.textContent||'')) s.textContent='sabit'; });
-  }
-  function play(kind){
-    kind=(kind==='success'||kind==='warning'||kind==='error')?kind:'warning';
-    var t=Date.now();
-    if(t-(last[kind]||0)<420) return;
-    last[kind]=t;
-    try{
-      var a=new Audio(sources[kind]||sources.warning);
-      a.preload='auto';
-      a.volume=1;
-      var p=a.play();
-      if(p&&p.catch) p.catch(function(){});
-    }catch(e){}
-  }
-  // Eski AudioContext bip sesini tamamen sustur. Onayda sadece 06 wav çalsın.
-  try{ window.beep=function(){}; }catch(e){}
-  try{ beep=function(){}; }catch(e){}
-  var oldSaved=window.mesahaV310SavedToast;
-  window.mesahaV310SavedToast=function(rec,wasEditing){
-    play('success');
-    if(typeof oldSaved==='function') return oldSaved.apply(this,arguments);
-  };
-  function kindFrom(title,detail,kind){
-    var k=String(kind||'').toLowerCase();
-    if(k==='success'||k==='ok') return 'success';
-    if(k==='error'||k==='danger') return 'error';
-    var msg=(String(title||'')+' '+String(detail||'')).toLocaleLowerCase('tr-TR');
-    if(/hata|uyarı|uyari|giriniz|küçük|kucuk|büyük|buyuk|arasında|okunamadı|yüklenmedi|başarısız|kayıtlı|boş/.test(msg)) return 'warning';
-    if(/eklendi|güncellendi|kaydedildi|alındı|yüklendi|tamam|başarılı|güncel/.test(msg)) return 'success';
-    return 'warning';
-  }
-  var oldToast=window.toast;
-  window.toast=function(title,detail,kind){
-    play(kindFrom(title,detail,kind));
-    if(typeof oldToast==='function') return oldToast.apply(this,arguments);
-  };
-  window.mesahaSoundFeedbackV333={play:play,sources:sources,beepDisabled:true};
-  window.mesahaSoundFeedbackV335={play:play,sources:sources,beepDisabled:true};
-  function boot(){ applyStableVersion(); try{ beep=function(){}; window.beep=function(){}; }catch(e){} }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true}); else boot();
-  [200,700,1500,3000].forEach(function(ms){setTimeout(boot,ms)});
-})();
-</script>
 <style id="mesaha-guide-clean-yayin-clean-style">
 .version-card{border-radius:999px!important;padding:8px 13px!important;background:linear-gradient(180deg,#ffffff,#eefaf3)!important;border:1px solid #cfe8d9!important;box-shadow:0 10px 24px rgba(13,95,59,.10)!important;max-width:100%!important}
 .version-card b{font-size:13px!important;font-weight:950!important;color:#0d5f3b!important;white-space:nowrap!important;letter-spacing:.1px!important}
@@ -5023,9 +4975,9 @@ body:not(.entry-open) #entryView:not(.active){display:none!important;}
 <script id="mesaha-guide-clean-yayin-clean-script">
 (function(){
   'use strict';
-  var DISPLAY="V3.62 •ExelanceX•";
+  var DISPLAY="V3.63 •ExelanceX•";
   var BUILD=354;
-  var info={"app": "V3.62", "version": "v372-keyboard-save-visible-fix", "build": 355, "visibleVersion": "V3.62 •ExelanceX•", "shortVersion": "V3.62 •ExelanceX•", "name": "Mesaha İO V3.62 •ExelanceX•", "cacheName": "mesaha-app-v372-keyboard-save-visible-fix", "builtAt": "2026-06-22T12:40:00+03:00", "notes": "ORBİS orijinal Mesaha_Ornek_Temp şablonuna göre Excel dışa aktarma düzeltildi.", "assetVersion": "355"};
+  var info={"app": "V3.63", "version": "v373-stability-fast-open-sound", "build": 355, "visibleVersion": "V3.63 •ExelanceX•", "shortVersion": "V3.63 •ExelanceX•", "name": "Mesaha İO V3.63 •ExelanceX•", "cacheName": "mesaha-app-v373-stability-fast-open-sound", "builtAt": "2026-06-22T12:40:00+03:00", "notes": "ORBİS orijinal Mesaha_Ornek_Temp şablonuna göre Excel dışa aktarma düzeltildi.", "assetVersion": "355"};
   window.MESAHA_VERSION=info;
   window.MESAHA_VERSION_TEXT=DISPLAY;
   window.MESAHA_VERSION_SHORT=DISPLAY;
@@ -5038,7 +4990,7 @@ body:not(.entry-open) #entryView:not(.active){display:none!important;}
   function escFile(v){return String(v||'').replace(/[^a-zA-Z0-9ığüşöçİĞÜŞÖÇ_-]+/g,'_').replace(/^_+|_+$/g,'')||'Beyan'}
   function applyVersion(){
     document.title='Mesaha İO '+DISPLAY;
-    var apple=document.querySelector('meta[name="apple-mobile-web-app-title"]'); if(apple) apple.setAttribute('content','V3.62');
+    var apple=document.querySelector('meta[name="apple-mobile-web-app-title"]'); if(apple) apple.setAttribute('content','V3.63');
     var st=document.querySelector('#startup strong'); if(st) st.textContent=DISPLAY;
     var vt=$('versionText'); if(vt) vt.textContent=DISPLAY;
     qsa('.version-card b').forEach(function(b){ if(/^v?\d|^V\d|^v3\.|^V3\./.test((b.textContent||'').trim())) b.textContent=DISPLAY; });
@@ -5104,103 +5056,6 @@ body:not(.entry-open) #entryView:not(.active){display:none!important;}
 #recordsView .record-toolbar #productFilterV325,
 #recordsView .record-toolbar .product-filter-v325{display:none!important;}
 </style>
-<script id="mesaha-sound-clean-final-fix-script">
-(function(){
-  'use strict';
-  var DISPLAY='V3.62 •ExelanceX•';
-  var BUILD=354;
-  var SOUND_VERSION='350';
-  var successSrc='./assets/06_net_islem_onayi.wav?v='+SOUND_VERSION;
-  var warningSrc='./assets/08_hata_uyari_onaydan_farkli.wav?v='+SOUND_VERSION;
-  var lastSuccess=0,lastWarn=0,lastRecordCount=-1;
-  function $(id){return document.getElementById(id)}
-  function qsa(sel,root){return Array.prototype.slice.call((root||document).querySelectorAll(sel))}
-  function now(){return Date.now?Date.now():(new Date()).getTime()}
-  function recordsCount(){try{return window.state&&Array.isArray(window.state.records)?window.state.records.length:0}catch(e){return 0}}
-  function playFile(src,kind){
-    var t=now();
-    if(kind==='success'){ if(t-lastSuccess<520) return; lastSuccess=t; }
-    else { if(t-lastWarn<520) return; lastWarn=t; }
-    try{
-      var a=new Audio(src);
-      a.preload='auto'; a.volume=1;
-      var p=a.play(); if(p&&p.catch) p.catch(function(){});
-    }catch(e){}
-  }
-  function playSuccess(){ playFile(successSrc,'success'); }
-  function playWarning(){ playFile(warningSrc,'warning'); }
-  function removeProductFilters(){
-    qsa('#productFilterV325,.product-filter-v325').forEach(function(el){ try{el.remove();}catch(e){el.style.display='none';} });
-    // Eski render fonksiyonu yeniden eklerse aktif filtreyi görsel olarak sıfırla; kartları asla ürün filtresiyle gizleme.
-    qsa('#recordList .record-card').forEach(function(card){ card.style.display=''; });
-  }
-  function applyVersion(){
-    document.title='Mesaha İO '+DISPLAY;
-    var vt=$('versionText'); if(vt) vt.textContent=DISPLAY;
-    var st=document.querySelector('#startup strong'); if(st) st.textContent=DISPLAY;
-    qsa('.version-card b').forEach(function(b){ if(/^v|^V|^\d/.test((b.textContent||'').trim())) b.textContent=DISPLAY; });
-    qsa('.version-card small').forEach(function(s){s.textContent='';});
-    window.MESAHA_VERSION={app:'V3.62',version:'v372-keyboard-save-visible-fix',build:BUILD,visibleVersion:DISPLAY,shortVersion:DISPLAY,name:'Mesaha İO '+DISPLAY,cacheName:'mesaha-app-v372-keyboard-save-visible-fix',assetVersion:String(BUILD)};
-    window.MESAHA_VERSION_TEXT=DISPLAY; window.MESAHA_VERSION_SHORT=DISPLAY;
-  }
-  // Eski AudioContext bip sesini kayıt sonrası kapalı tut; 06 sesi doğrudan aşağıdaki tetiklerden gelir.
-  function disableLegacyBeep(){ try{window.beep=function(){};}catch(e){} try{beep=function(){};}catch(e){} }
-  function wrapSavedToast(){
-    if(window.mesahaV310SavedToast && !window.mesahaV310SavedToast.__soundCleanWrapped){
-      var old=window.mesahaV310SavedToast;
-      var wrapped=function(rec,wasEditing){
-        playSuccess();
-        return old.apply(this,arguments);
-      };
-      wrapped.__soundCleanWrapped=true;
-      window.mesahaV310SavedToast=wrapped;
-    }
-  }
-  function wrapGenericToasts(){
-    if(window.toast && !window.toast.__soundCleanSoundWrapped){
-      var oldToast=window.toast;
-      var wrappedToast=function(title,detail,kind){
-        var msg=(String(title||'')+' '+String(detail||'')+' '+String(kind||'')).toLocaleLowerCase('tr-TR');
-        if(/eklendi|güncellendi|kaydedildi|alındı|indirildi|yüklendi|başarılı|tamamlandı/.test(msg)) playSuccess();
-        else if(/hata|uyarı|uyari|giriniz|küçük|kucuk|büyük|buyuk|arasında|okunamadı|yüklenmedi|başarısız|kayıtlı|boş/.test(msg)) playWarning();
-        return oldToast.apply(this,arguments);
-      };
-      wrappedToast.__soundCleanSoundWrapped=true;
-      window.toast=wrappedToast;
-    }
-  }
-  function bindSaveSound(){
-    var btn=$('saveBtn');
-    if(!btn || btn.__soundCleanSaveSound) return;
-    btn.__soundCleanSaveSound=true;
-    btn.addEventListener('pointerdown',function(){lastRecordCount=recordsCount();},true);
-    btn.addEventListener('touchstart',function(){lastRecordCount=recordsCount();},true);
-    btn.addEventListener('click',function(){
-      var before=lastRecordCount>=0?lastRecordCount:recordsCount();
-      setTimeout(function(){
-        var after=recordsCount();
-        if(after>before) playSuccess();
-      },120);
-    },true);
-  }
-  function observeSaveToast(){
-    var el=$('saveFloatToastV310'); if(!el || el.__soundCleanObs) return;
-    el.__soundCleanObs=true;
-    var mo=new MutationObserver(function(){
-      var txt=(el.textContent||'').toLocaleLowerCase('tr-TR');
-      if(el.classList.contains('show') && /eklendi|güncellendi/.test(txt)) playSuccess();
-    });
-    mo.observe(el,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});
-  }
-  function boot(){applyVersion();disableLegacyBeep();removeProductFilters();wrapSavedToast();wrapGenericToasts();bindSaveSound();observeSaveToast();}
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true}); else boot();
-  [100,400,900,1600,3000].forEach(function(ms){setTimeout(boot,ms)});
-  setInterval(function(){removeProductFilters();wrapSavedToast();wrapGenericToasts();disableLegacyBeep();bindSaveSound();observeSaveToast();},1200);
-  var bodyObs=new MutationObserver(function(){removeProductFilters();observeSaveToast();});
-  try{bodyObs.observe(document.body,{childList:true,subtree:true});}catch(e){}
-  window.mesahaSoundFeedbackV339={playSuccess:playSuccess,playWarning:playWarning,successSrc:successSrc,warningSrc:warningSrc};
-})();
-</script>
 <style id="mesaha-v354-lovable-clean-light-final-1">
 /* v354: ilk giriş logosu ve kullanıcı adına göre karşılama */
 .first-login-logo-v321 img{display:block!important;width:56px!important;height:56px!important;object-fit:contain!important;border-radius:16px!important;background:#fff!important;box-shadow:0 8px 18px rgba(13,95,59,.12)!important;}
@@ -5261,8 +5116,8 @@ body:not(.entry-open) #entryView:not(.active){display:none!important;}
 <script id="mesaha-v354-lovable-clean-light-final-3">
 (function(){
   'use strict';
-  var DISPLAY='V3.62 •ExelanceX•';
-  var APP='V3.62';
+  var DISPLAY='V3.63 •ExelanceX•';
+  var APP='V3.63';
   var BUILD=354;
   function $(id){return document.getElementById(id)}
   function qsa(sel){return Array.prototype.slice.call(document.querySelectorAll(sel))}
@@ -5273,7 +5128,7 @@ body:not(.entry-open) #entryView:not(.active){display:none!important;}
     var st=document.querySelector('#startup strong'); if(st) st.textContent=DISPLAY;
     qsa('.version-card b').forEach(function(b){ b.textContent=DISPLAY; });
     qsa('.version-card small').forEach(function(s){ s.textContent=''; });
-    window.MESAHA_VERSION={app:APP,version:'v372-keyboard-save-visible-fix',build:BUILD,visibleVersion:DISPLAY,shortVersion:DISPLAY,name:'Mesaha İO '+DISPLAY,cacheName:'mesaha-app-v372-keyboard-save-visible-fix',assetVersion:String(BUILD)};
+    window.MESAHA_VERSION={app:APP,version:'v373-stability-fast-open-sound',build:BUILD,visibleVersion:DISPLAY,shortVersion:DISPLAY,name:'Mesaha İO '+DISPLAY,cacheName:'mesaha-app-v373-stability-fast-open-sound',assetVersion:String(BUILD)};
     window.MESAHA_VERSION_TEXT=DISPLAY;
     window.MESAHA_VERSION_SHORT=DISPLAY;
   }
@@ -5286,7 +5141,7 @@ body:not(.entry-open) #entryView:not(.active){display:none!important;}
 <script id="mesaha-v354-lovable-clean-light-final-4">
 (function(){
   'use strict';
-  var DISPLAY='V3.62 •ExelanceX•', APP='V3.62', BUILD=354, VERSION='v372-keyboard-save-visible-fix', CACHE='mesaha-app-v372-keyboard-save-visible-fix';
+  var DISPLAY='V3.63 •ExelanceX•', APP='V3.63', BUILD=354, VERSION='v373-stability-fast-open-sound', CACHE='mesaha-app-v373-stability-fast-open-sound';
   function $(id){return document.getElementById(id)}
   function qsa(sel){return Array.prototype.slice.call(document.querySelectorAll(sel))}
   function applyVersion(){
@@ -5332,7 +5187,7 @@ input,select,textarea{background:#fff!important;color:#101828!important;border-c
 <script id="mesaha-v351-light-only-clean-script">
 (function(){
   'use strict';
-  var META={app:'V3.62',version:'v372-keyboard-save-visible-fix',build:354,visibleVersion:'V3.62 •ExelanceX•',shortVersion:'V3.62 •ExelanceX•',name:'Mesaha İO V3.62 •ExelanceX•',cacheName:'mesaha-app-v372-keyboard-save-visible-fix',assetVersion:"354"};
+  var META={app:'V3.63',version:'v373-stability-fast-open-sound',build:354,visibleVersion:'V3.63 •ExelanceX•',shortVersion:'V3.63 •ExelanceX•',name:'Mesaha İO V3.63 •ExelanceX•',cacheName:'mesaha-app-v373-stability-fast-open-sound',assetVersion:"354"};
   function $(id){return document.getElementById(id)}
   function all(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))}
   function clean(){
@@ -5367,12 +5222,12 @@ input,select,textarea{background:#fff!important;color:#101828!important;border-c
 .hero-card::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(90deg,rgba(255,255,255,.97) 0%,rgba(255,255,255,.91) 28%,rgba(255,255,255,.66) 51%,rgba(255,255,255,.10) 100%)}
 .hero-card>div:first-of-type{position:relative!important;z-index:2!important}
 </style>
-<script src="./js/version.js?v=372"></script>
+<script src="./js/version.js?v=373"></script>
 <script id="mesaha-v354-version-guard">
 (function(){
   'use strict';
   var META=window.MESAHA_VERSION;
-  if(!META||META.version!=='v372-keyboard-save-visible-fix') return;
+  if(!META||META.version!=='v373-stability-fast-open-sound') return;
   function lock(name,value){
     try{Object.defineProperty(window,name,{configurable:false,enumerable:true,get:function(){return value},set:function(){}})}
     catch(e){try{window[name]=value}catch(_){}}
@@ -5420,7 +5275,7 @@ input,select,textarea{background:#fff!important;color:#101828!important;border-c
 #app.app .hero-card{
   background:
     linear-gradient(90deg,rgba(255,255,255,.97) 0%,rgba(255,255,255,.91) 30%,rgba(255,255,255,.62) 58%,rgba(255,255,255,.13) 100%),
-    url('./assets/hero_forest_cover.png?v=372') center right/cover no-repeat!important;
+    url('./assets/hero_forest_cover.png?v=373') center right/cover no-repeat!important;
 }
 #forestFactText{
   display:block!important;
@@ -5608,7 +5463,7 @@ body.mesaha-offline .online-only{opacity:.55!important;filter:grayscale(.25)!imp
   }
   function boot(){
     ping();
-    setInterval(ping,30000);
+    setInterval(ping,120000);
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true}); else boot();
   window.addEventListener('online',function(){setTimeout(ping,250);});
@@ -5920,7 +5775,7 @@ html.mesaha-terminal-lite.scrolling-now .topbar{
 </script>
 
 
-<style id="mesaha-v372-keyboard-save-visible-fix">
+<style id="mesaha-v373-stability-fast-open-sound">
 /* v371: terminal Chrome/WebView doğal kaydırma düzeltmesi */
 html,
 body{
@@ -5972,7 +5827,7 @@ body.scroll-fixing-v371 *{
   scroll-behavior:auto!important;
 }
 </style>
-<script id="mesaha-v372-keyboard-save-visible-fix">
+<script id="mesaha-v373-stability-fast-open-sound">
 (function(){
   'use strict';
 
@@ -6055,7 +5910,7 @@ body.scroll-fixing-v371 *{
 </script>
 
 
-<style id="mesaha-v372-keyboard-save-visible-fix">
+<style id="mesaha-v373-stability-fast-open-sound">
 /* v372: Mesaha girme ekranında klavye açılınca alt menü klavyenin üstüne çıkmasın */
 body.entry-open.keyboard-open-v311 .bottom-nav,
 body.mesaha-entry-keyboard-open .bottom-nav,
@@ -6123,7 +5978,7 @@ body.product-tap-lock-v372 .entry-view.active{
   }
 }
 </style>
-<script id="mesaha-v372-keyboard-save-visible-fix">
+<script id="mesaha-v373-stability-fast-open-sound">
 (function(){
   'use strict';
 
@@ -6255,6 +6110,282 @@ body.product-tap-lock-v372 .entry-view.active{
   window.mesahaKeyboardSaveFixV372 = {
     sync:syncKeyboardClass,
     restoreProductScroll:protectProductTap
+  };
+})();
+</script>
+
+
+<script id="mesaha-v373-sound-single-final">
+(function(){
+  'use strict';
+  function fast(kind){
+    try{
+      if(window.mesahaFastSoundV373){
+        if(kind === 'warning') window.mesahaFastSoundV373.warning();
+        else window.mesahaFastSoundV373.success();
+      }
+    }catch(e){}
+  }
+  window.beep = function(){ fast('success'); };
+
+  function wrapToast(){
+    if(!window.toast || window.toast.__v373SoundWrapped) return;
+    var old = window.toast;
+    var wrapped = function(title, detail, kind){
+      var msg = (String(title||'') + ' ' + String(detail||'') + ' ' + String(kind||'')).toLocaleLowerCase('tr-TR');
+      if(/hata|uyarı|uyari|giriniz|küçük|kucuk|büyük|buyuk|arasında|okunamadı|yüklenmedi|başarısız|kayıtlı|boş/.test(msg)){
+        fast('warning');
+      }
+      return old.apply(this, arguments);
+    };
+    wrapped.__v373SoundWrapped = true;
+    window.toast = wrapped;
+  }
+  function expose(){
+    wrapToast();
+    window.mesahaSoundFeedbackV333 = {play:function(k){fast(k==='warning'||k==='error'?'warning':'success')}, beepDisabled:true};
+    window.mesahaSoundFeedbackV335 = window.mesahaSoundFeedbackV333;
+    window.mesahaSoundFeedbackV339 = {playSuccess:function(){fast('success')}, playWarning:function(){fast('warning')}, beepDisabled:true};
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', expose, {once:true});
+  else expose();
+  [200,800,1800].forEach(function(ms){setTimeout(expose, ms)});
+})();
+</script>
+
+
+<script id="mesaha-v373-entry-memory-backup-cutters">
+(function(){
+  'use strict';
+  var KEY = 'mesaha_entry_memory_v373';
+  var SETTINGS_KEY = 'cam_mesaha_ayarlar_v1';
+
+  function $(id){ return document.getElementById(id); }
+  function readJson(k, fallback){ try{ return JSON.parse(localStorage.getItem(k)||'') || fallback; }catch(e){ return fallback; } }
+  function writeJson(k, value){ try{ localStorage.setItem(k, JSON.stringify(value)); }catch(e){} }
+  function upper(v){ return String(v||'').trim().toUpperCase(); }
+  function stateSettings(){ try{ return window.state && window.state.settings ? window.state.settings : null; }catch(e){ return null; } }
+  function records(){ try{ return window.state && Array.isArray(window.state.records) ? window.state.records : []; }catch(e){ return []; } }
+
+  function readMem(){ return readJson(KEY, {}); }
+  function writeMem(partial){
+    var old = readMem();
+    var next = Object.assign({}, old, partial || {}, {updatedAt: Date.now()});
+    writeJson(KEY, next);
+    return next;
+  }
+  function saveSettingsMirror(){
+    var s = stateSettings();
+    if(!s) return;
+    try{ localStorage.setItem(SETTINGS_KEY, JSON.stringify(s)); }catch(e){}
+  }
+
+  function persistNow(){
+    var s = stateSettings() || {};
+    var b = $('barcodeInput');
+    var mem = {};
+    var barcode = upper((b && b.value) || s.barcode || '');
+    if(barcode) mem.barcode = barcode;
+    if(s.activeCutter) mem.activeCutter = String(s.activeCutter);
+    if(Array.isArray(s.cutters)) mem.cutters = s.cutters.filter(Boolean);
+    if(Object.keys(mem).length) writeMem(mem);
+    saveSettingsMirror();
+  }
+
+  function restore(){
+    var mem = readMem();
+    var s = stateSettings();
+    if(!s) return;
+    var changed = false;
+
+    if((!s.barcode || !String(s.barcode).trim()) && mem.barcode){
+      s.barcode = upper(mem.barcode);
+      changed = true;
+    }
+    if((!s.activeCutter || !String(s.activeCutter).trim()) && mem.activeCutter){
+      s.activeCutter = String(mem.activeCutter);
+      changed = true;
+    }
+    if(Array.isArray(mem.cutters) && mem.cutters.length){
+      var merged = Array.from(new Set([].concat(Array.isArray(s.cutters)?s.cutters:[], mem.cutters, s.activeCutter || []).filter(Boolean)));
+      if(JSON.stringify(merged) !== JSON.stringify(s.cutters || [])){
+        s.cutters = merged;
+        changed = true;
+      }
+    }
+    var b = $('barcodeInput');
+    if(b && (!b.value || !String(b.value).trim()) && s.barcode){
+      b.value = upper(s.barcode);
+    }
+    if(changed){
+      saveSettingsMirror();
+      try{ if(typeof window.renderAll === 'function') window.renderAll(); }catch(e){}
+      try{ if(typeof window.renderCutters === 'function') window.renderCutters(); }catch(e){}
+    }
+  }
+
+  function buildBackupPayload(){
+    var s = stateSettings() || {};
+    persistNow();
+    var mem = readMem();
+    var cutters = Array.from(new Set([].concat(
+      Array.isArray(s.cutters) ? s.cutters : [],
+      Array.isArray(mem.cutters) ? mem.cutters : [],
+      s.activeCutter || mem.activeCutter || [],
+      records().map(function(r){ return r && r.cutter; })
+    ).filter(Boolean)));
+    return {
+      app:'Mesaha İO',
+      backupVersion:'v373-cutters',
+      exportedAt:new Date().toISOString(),
+      records:records(),
+      settings:Object.assign({}, s, {
+        barcode: upper((s.barcode || mem.barcode || '')),
+        activeCutter: s.activeCutter || mem.activeCutter || '',
+        cutters: cutters
+      }),
+      cutters: cutters,
+      activeCutter: s.activeCutter || mem.activeCutter || ''
+    };
+  }
+
+  function downloadJsonBackup(){
+    var data = buildBackupPayload();
+    var name = 'mesaha_yedek_' + (data.settings && data.settings.seflik ? String(data.settings.seflik).replace(/\s+/g,'_') + '_' : '') + new Date().toISOString().slice(0,16).replace(/[-:T]/g,'') + '.json';
+    var blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json;charset=utf-8'});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 1500);
+    try{ if(window.toast) window.toast('Yedek alındı. Kesimciler dahil edildi.'); }catch(e){}
+  }
+
+  function mergeRestoredPayload(obj){
+    if(!obj || typeof obj !== 'object') return obj;
+    var s = stateSettings() || {};
+    var incomingSettings = obj.settings || {};
+    var cutters = Array.from(new Set([].concat(
+      Array.isArray(s.cutters) ? s.cutters : [],
+      Array.isArray(incomingSettings.cutters) ? incomingSettings.cutters : [],
+      Array.isArray(obj.cutters) ? obj.cutters : [],
+      incomingSettings.activeCutter || obj.activeCutter || [],
+      Array.isArray(obj.records) ? obj.records.map(function(r){ return r && r.cutter; }) : []
+    ).filter(Boolean)));
+    incomingSettings.cutters = cutters;
+    incomingSettings.activeCutter = incomingSettings.activeCutter || obj.activeCutter || s.activeCutter || cutters[0] || '';
+    obj.settings = Object.assign({}, incomingSettings);
+    writeMem({cutters:cutters, activeCutter:incomingSettings.activeCutter, barcode:incomingSettings.barcode || s.barcode || ''});
+    return obj;
+  }
+
+  function wrapBackupFunctions(){
+    if(window.backupZip && !window.backupZip.__v373CuttersWrapped){
+      var oldZip = window.backupZip;
+      var wrappedZip = function(){
+        // Eski ZIP yedek fonksiyonu kesimcileri dahil etmiyorsa JSON yedek kullan.
+        try{ return downloadJsonBackup(); }
+        catch(e){ console.error(e); return oldZip.apply(this, arguments); }
+      };
+      wrappedZip.__v373CuttersWrapped = true;
+      window.backupZip = wrappedZip;
+    }
+    if(window.backupData && !window.backupData.__v373CuttersWrapped){
+      var old = window.backupData;
+      var wrapped = function(){
+        persistNow();
+        return old.apply(this, arguments);
+      };
+      wrapped.__v373CuttersWrapped = true;
+      window.backupData = wrapped;
+    }
+  }
+
+  function bind(){
+    restore();
+    wrapBackupFunctions();
+
+    var b = $('barcodeInput');
+    if(b && !b.__v373Memory){
+      b.__v373Memory = true;
+      ['input','change','blur'].forEach(function(evt){
+        b.addEventListener(evt, function(){
+          var val = upper(b.value);
+          if(val) writeMem({barcode:val});
+          persistNow();
+        }, {passive:true});
+      });
+    }
+
+    var chips = $('cutterChips');
+    if(chips && !chips.__v373Memory){
+      chips.__v373Memory = true;
+      chips.addEventListener('click', function(){
+        setTimeout(function(){
+          var s = stateSettings() || {};
+          if(s.activeCutter) writeMem({activeCutter:s.activeCutter, cutters:Array.isArray(s.cutters)?s.cutters:[]});
+          persistNow();
+        }, 80);
+      }, true);
+    }
+
+    document.addEventListener('click', function(ev){
+      var t = ev.target;
+      if(!t || !t.closest) return;
+      if(t.closest('#backupBtn,#zipBackupBtn,#backupZipBtn,[data-backup],[data-action="backup"],[data-action="backupZip"]')){
+        setTimeout(function(){
+          persistNow();
+          wrapBackupFunctions();
+        }, 0);
+      }
+    }, true);
+  }
+
+  // JSON.parse sarmalayıcı: yedekten okunan payload'a kesimcileri geri ekler.
+  if(!JSON.__mesahaV373ParseWrapped){
+    JSON.__mesahaV373ParseWrapped = true;
+    var nativeParse = JSON.parse;
+    JSON.parse = function(){
+      var out = nativeParse.apply(JSON, arguments);
+      try{
+        if(out && typeof out === 'object' && (Array.isArray(out.records) || out.app === 'Mesaha İO')){
+          out = mergeRestoredPayload(out);
+        }
+      }catch(e){}
+      return out;
+    };
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bind, {once:true});
+  else bind();
+
+  [120,500,1200,2400,5000].forEach(function(ms){ setTimeout(function(){ restore(); bind(); wrapBackupFunctions(); }, ms); });
+  window.addEventListener('pagehide', persistNow, {passive:true});
+  window.addEventListener('beforeunload', persistNow, {passive:true});
+  document.addEventListener('visibilitychange', function(){ if(document.hidden) persistNow(); else setTimeout(restore,120); }, {passive:true});
+
+  function wrapSave(){
+    if(!window.saveEntry || window.saveEntry.__v373MemoryWrapped) return;
+    var old = window.saveEntry;
+    var wrapped = function(){
+      var r = old.apply(this, arguments);
+      setTimeout(persistNow, 80);
+      setTimeout(persistNow, 250);
+      return r;
+    };
+    wrapped.__v373MemoryWrapped = true;
+    window.saveEntry = wrapped;
+  }
+  [200,800,1800,3500].forEach(function(ms){ setTimeout(wrapSave, ms); });
+
+  window.mesahaEntryMemoryBackupV373 = {
+    persist:persistNow,
+    restore:restore,
+    backupPayload:buildBackupPayload,
+    backupNow:downloadJsonBackup
   };
 })();
 </script>
