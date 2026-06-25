@@ -1,12 +1,12 @@
 {
-  "app": "V3.66",
-  "version": "v376-user-sounds-warning-fix",
-  "build": 376,
-  "visibleVersion": "V3.66 •ExelanceX•",
-  "shortVersion": "V3.66 •ExelanceX•",
-  "name": "Mesaha İO V3.66 •ExelanceX•",
-  "cacheName": "mesaha-app-v376-user-sounds-warning-fix",
-  "builtAt": "2026-06-25T20:05:00+03:00",
-  "notes": "Kullanıcının gönderdiği onay ve uyarı WAV sesleri eklendi. Uyarı sesi toast/alert/modal hatalarına da bağlandı.",
-  "assetVersion": "376"
+  "app": "V3.67",
+  "version": "v377-single-sound-engine",
+  "build": 377,
+  "visibleVersion": "V3.67 •ExelanceX•",
+  "shortVersion": "V3.67 •ExelanceX•",
+  "name": "Mesaha İO V3.67 •ExelanceX•",
+  "cacheName": "mesaha-app-v377-single-sound-engine",
+  "builtAt": "2026-06-25T20:35:00+03:00",
+  "notes": "Ses motoru tek bloğa indirildi. Eski v374/v376 çift ses motorları kaldırıldı. Ses dosyaları iki sabit dosyada toplandı: ses_onay.wav ve ses_uyari.wav.",
+  "assetVersion": "377"
 }

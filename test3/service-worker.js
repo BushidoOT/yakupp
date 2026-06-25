@@ -1,7 +1,7 @@
-importScripts('./js/version.js?v=376');
+importScripts('./js/version.js?v=377');
 
-const META = self.MESAHA_VERSION || {"app": "V3.66", "version": "v376-user-sounds-warning-fix", "build": 376, "visibleVersion": "V3.66 •ExelanceX•", "shortVersion": "V3.66 •ExelanceX•", "name": "Mesaha İO V3.66 •ExelanceX•", "cacheName": "mesaha-app-v376-user-sounds-warning-fix", "builtAt": "2026-06-25T20:05:00+03:00", "notes": "Kullanıcının gönderdiği onay ve uyarı WAV sesleri eklendi. Uyarı sesi toast/alert/modal hatalarına da bağlandı.", "assetVersion": "376"};
-const CACHE_NAME = META.cacheName || 'mesaha-app-v376-user-sounds-warning-fix';
+const META = self.MESAHA_VERSION || {"app": "V3.67", "version": "v377-single-sound-engine", "build": 377, "visibleVersion": "V3.67 •ExelanceX•", "shortVersion": "V3.67 •ExelanceX•", "name": "Mesaha İO V3.67 •ExelanceX•", "cacheName": "mesaha-app-v377-single-sound-engine", "builtAt": "2026-06-25T20:35:00+03:00", "notes": "Ses motoru tek bloğa indirildi. Eski v374/v376 çift ses motorları kaldırıldı. Ses dosyaları iki sabit dosyada toplandı: ses_onay.wav ve ses_uyari.wav.", "assetVersion": "377"};
+const CACHE_NAME = META.cacheName || 'mesaha-app-v377-single-sound-engine';
 const ASSETS = [
   "./",
   "./index.html",
@@ -9,12 +9,12 @@ const ASSETS = [
   "./manifest.json",
   "./version.json",
   "./service-worker.js",
-  "./js/version.js?v=376",
+  "./js/version.js?v=377",
   "./temizle.html",
   "./assets/icon-192.png",
   "./assets/icon-512.png",
   "./assets/mesaha_logo.png",
-  "./assets/hero_forest_cover.png?v=376",
+  "./assets/hero_forest_cover.png?v=377",
   "./assets/06_net_islem_onayi.wav",
   "./assets/08_hata_uyari_onaydan_farkli.wav"
 ];
