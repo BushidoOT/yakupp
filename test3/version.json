@@ -1,12 +1,12 @@
 {
-  "app": "V3.63",
-  "version": "v373-stability-fast-open-sound",
-  "build": 373,
-  "visibleVersion": "V3.63 •ExelanceX•",
-  "shortVersion": "V3.63 •ExelanceX•",
-  "name": "Mesaha İO V3.63 •ExelanceX•",
-  "cacheName": "mesaha-app-v373-stability-fast-open-sound",
-  "builtAt": "2026-06-22T18:10:00+03:00",
-  "notes": "Kesimci ve barkod kalıcılığı düzeltildi. Zayıf internette cache-first hızlı açılış eklendi. Şarj tüketimi azaltıldı. Eski bip kaldırıldı, tek hızlı wav ses sistemi kullanılır. Yedek kesimcileri de içerir.",
-  "assetVersion": "373"
+  "app": "V3.64",
+  "version": "v374-sound-fix",
+  "build": 374,
+  "visibleVersion": "V3.64 •ExelanceX•",
+  "shortVersion": "V3.64 •ExelanceX•",
+  "name": "Mesaha İO V3.64 •ExelanceX•",
+  "cacheName": "mesaha-app-v374-sound-fix",
+  "builtAt": "2026-06-22T18:25:00+03:00",
+  "notes": "Ses dosyaları yeni kısa WAV dosyalarına alındı. İlk dokunuşta ses kilidi açılır. WAV çalmazsa eski bip olmayan kısa çift ton yedek ses çalışır.",
+  "assetVersion": "374"
 }

@@ -1,7 +1,7 @@
-importScripts('./js/version.js?v=373');
+importScripts('./js/version.js?v=374');
 
-const META = self.MESAHA_VERSION || {"app": "V3.63", "version": "v373-stability-fast-open-sound", "build": 373, "visibleVersion": "V3.63 •ExelanceX•", "shortVersion": "V3.63 •ExelanceX•", "name": "Mesaha İO V3.63 •ExelanceX•", "cacheName": "mesaha-app-v373-stability-fast-open-sound", "builtAt": "2026-06-22T18:10:00+03:00", "notes": "Kesimci ve barkod kalıcılığı düzeltildi. Zayıf internette cache-first hızlı açılış eklendi. Şarj tüketimi azaltıldı. Eski bip kaldırıldı, tek hızlı wav ses sistemi kullanılır. Yedek kesimcileri de içerir.", "assetVersion": "373"};
-const CACHE_NAME = META.cacheName || 'mesaha-app-v373-stability-fast-open-sound';
+const META = self.MESAHA_VERSION || {"app": "V3.64", "version": "v374-sound-fix", "build": 374, "visibleVersion": "V3.64 •ExelanceX•", "shortVersion": "V3.64 •ExelanceX•", "name": "Mesaha İO V3.64 •ExelanceX•", "cacheName": "mesaha-app-v374-sound-fix", "builtAt": "2026-06-22T18:25:00+03:00", "notes": "Ses dosyaları yeni kısa WAV dosyalarına alındı. İlk dokunuşta ses kilidi açılır. WAV çalmazsa eski bip olmayan kısa çift ton yedek ses çalışır.", "assetVersion": "374"};
+const CACHE_NAME = META.cacheName || 'mesaha-app-v374-sound-fix';
 const ASSETS = [
   "./",
   "./index.html",
@@ -9,12 +9,12 @@ const ASSETS = [
   "./manifest.json",
   "./version.json",
   "./service-worker.js",
-  "./js/version.js?v=373",
+  "./js/version.js?v=374",
   "./temizle.html",
   "./assets/icon-192.png",
   "./assets/icon-512.png",
   "./assets/mesaha_logo.png",
-  "./assets/hero_forest_cover.png?v=373",
+  "./assets/hero_forest_cover.png?v=374",
   "./assets/06_net_islem_onayi.wav",
   "./assets/08_hata_uyari_onaydan_farkli.wav"
 ];
@@ -165,3 +165,5 @@ self.addEventListener('fetch', event => {
     }
   })());
 });
+
+// v374 sound assets: ./assets/mesaha_onay_v374.wav?v=374 ./assets/mesaha_uyari_v374.wav?v=374
