@@ -43,3 +43,5 @@
     refreshBinders: function(){ later('binders', callBinders, 40); }
   };
 })();
+
+try{ if(window.MesahaUtils){ window.MesahaUtils.stabilityCore = window.MesahaStabilityCoreV381; } }catch(e){}

@@ -7,6 +7,7 @@
   var recordsTimer = 0;
   var lightTimer = 0;
   function safe(fn){ try { if (typeof fn === 'function') return fn(); } catch(e){} }
+  function recordsViewVisible(){ var v=document.getElementById('recordsView')||document.getElementById('recordsPage')||document.querySelector('[data-view=records]'); return !v || !v.classList || !v.classList.contains('hidden'); }
   function renderAllSoon(delay){
     clearTimeout(renderTimer);
     renderTimer = setTimeout(function(){
@@ -19,6 +20,7 @@
     clearTimeout(recordsTimer);
     recordsTimer = setTimeout(function(){
       if (document.hidden) return;
+      if (!recordsViewVisible()) { lightRefreshSoon(60); return; }
       if (window.mesahaV303 && typeof window.mesahaV303.records === 'function') safe(window.mesahaV303.records);
       else safe(window.renderRecords);
       safe(function(){ if(window.mesahaV305) window.mesahaV305.updateBeyanTotals(); });

@@ -1,12 +1,12 @@
 {
-  "app": "V3.70",
-  "version": "v383-offline-cache-guvenli",
-  "build": 383,
-  "visibleVersion": "V3.70 •ExelanceX•",
-  "shortVersion": "V3.70 •ExelanceX•",
-  "name": "Mesaha İO V3.70 •ExelanceX•",
-  "cacheName": "mesaha-app-v383-offline-cache-guvenli",
-  "builtAt": "2026-06-25T23:30:00+03:00",
-  "notes": "Offline cache mimarisi shell/asset olarak ajsjajajyrıldı; güncelleme ve beyaz sayfa riski azaltıldı.",
-  "assetVersion": "383"
+  "app": "V3.73",
+  "version": "v386-offline-css-son-stabilite",
+  "build": 386,
+  "visibleVersion": "V3.73 •ExelanceX•",
+  "shortVersion": "V3.73 •ExelanceX•",
+  "name": "Mesaha İO V3.73 •ExelanceX•",
+  "cacheName": "mesaha-app-v386-offline-css-son-stabilite",
+  "builtAt": "2026-06-26T00:10:00+03:00",
+  "notes": "Offline cache yazma güvenliği ve kritik CSS kararlılığı güçlendirildi; görsel varlıklar boyut kontrolünden geçirildi.",
+  "assetVersion": "386"
 }
