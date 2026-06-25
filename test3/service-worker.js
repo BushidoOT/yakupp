@@ -1,7 +1,7 @@
-importScripts('./js/version.js?v=381');
+importScripts('./js/version.js?v=382');
 
-const META = self.MESAHA_VERSION || {"app": "V3.71", "version": "v381-startup-screen-fix", "build": 381, "visibleVersion": "V3.71 •ExelanceX•", "shortVersion": "V3.71 •ExelanceX•", "name": "Mesaha İO V3.71 •ExelanceX•", "cacheName": "mesaha-app-v381-startup-screen-fix", "builtAt": "2026-06-25T21:40:00+03:00", "notes": "Açılışta takılan gerçek .startup perdesi hedeflendi. 2.5-3 saniye içinde kapanmazsa zorla kapatılır ve ana ekran gösterilir.", "assetVersion": "381"};
-const CACHE_NAME = META.cacheName || 'mesaha-app-v381-startup-screen-fix';
+const META = self.MESAHA_VERSION || {"app": "V3.72", "version": "v382-startup-rewrite", "build": 382, "visibleVersion": "V3.72 •ExelanceX•", "shortVersion": "V3.72 •ExelanceX•", "name": "Mesaha İO V3.72 •ExelanceX•", "cacheName": "mesaha-app-v382-startup-rewrite", "builtAt": "2026-06-25T21:55:00+03:00", "notes": "Açılış ekranı devre dışı bırakılmadan yeniden kodlandı. Dosya, kayıt, sürüm ve offline kontrolleri zaman aşımıyla çalışır; hata olsa bile uygulama ana ekrana devam eder.", "assetVersion": "382"};
+const CACHE_NAME = META.cacheName || 'mesaha-app-v382-startup-rewrite';
 const ASSETS = [
   "./",
   "./index.html",
@@ -9,12 +9,12 @@ const ASSETS = [
   "./manifest.json",
   "./version.json",
   "./service-worker.js",
-  "./js/version.js?v=381",
+  "./js/version.js?v=382",
   "./temizle.html",
   "./assets/icon-192.png",
   "./assets/icon-512.png",
   "./assets/mesaha_logo.png",
-  "./assets/hero_forest_cover.png?v=381",
+  "./assets/hero_forest_cover.png?v=382",
   "./assets/06_net_islem_onayi.wav",
   "./assets/08_hata_uyari_onaydan_farkli.wav"
 ];
