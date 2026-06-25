@@ -5,11 +5,11 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
 <meta name="theme-color" content="#f4f7f6"/>
-<link rel="manifest" href="./manifest.json?v=380"/>
+<link rel="manifest" href="./manifest.json?v=381"/>
 <link rel="apple-touch-icon" href="./assets/icon-192.png"/>
-<title>Mesaha İO V3.70 •ExelanceX•</title>
+<title>Mesaha İO V3.71 •ExelanceX•</title>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
-<meta content="V3.70" name="apple-mobile-web-app-title"/>
+<meta content="V3.71" name="apple-mobile-web-app-title"/>
 <script>
   (function(){
     var q = new URLSearchParams(location.search);
@@ -19,7 +19,7 @@
         try{ if('caches' in window){ var keys = await caches.keys(); await Promise.all(keys.map(function(k){ return caches.delete(k); })); } }catch(e){}
         if(!sessionStorage.getItem('mesaha_reset_done_v355')){
           sessionStorage.setItem('mesaha_reset_done_v355','1');
-          location.replace('./index.html?v=380&fresh=' + Date.now());
+          location.replace('./index.html?v=381&fresh=' + Date.now());
         }
       });
     }
@@ -481,7 +481,7 @@ body.keyboard-open-v311 .entry-form{
 </style>
 
 
-<style id="mesaha-v380-boot-recovery-stable">
+<style id="mesaha-v381-startup-screen-fix">
 /* v358: tablet ve büyük ekran uyumluluğu */
 html, body{
   width:100%;
@@ -651,7 +651,7 @@ section.hero-card{
       rgba(255,255,255,.90) 28%,
       rgba(255,255,255,.68) 52%,
       rgba(255,255,255,.20) 100%),
-    url("./assets/hero_forest_cover.png?v=380")!important;
+    url("./assets/hero_forest_cover.png?v=381")!important;
   background-size:cover!important;
   background-position:center right!important;
   background-repeat:no-repeat!important;
@@ -693,7 +693,7 @@ section.hero-card{
 </style>
 
 
-<style id="mesaha-v380-boot-recovery-stable">
+<style id="mesaha-v381-startup-screen-fix">
 /* v369: kullanım netliği */
 #entryHomeBtn{
   background:linear-gradient(135deg,#2563eb,#1d4ed8)!important;
@@ -753,7 +753,7 @@ section.hero-card{
 }
 </style>
 
-<style id="mesaha-v380-boot-recovery-stable">
+<style id="mesaha-v381-startup-screen-fix">
 /* v375: Ölçüm Özeti / Bakım içindeki sahte 0 Kayıt kartı kaldırıldı */
 .summary-card .summary-grid::after,
 .summary-card .summary-grid::before{
@@ -785,12 +785,31 @@ section.hero-card{
 }
 </style>
 
+
+<script id="mesaha-v381-startup-watchdog-early">
+(function(){
+  'use strict';
+  if(window.__mesahaStartupWatchdogEarlyV381) return;
+  window.__mesahaStartupWatchdogEarlyV381 = true;
+  setTimeout(function(){
+    try{
+      var st = document.querySelector('.startup');
+      if(st && !st.classList.contains('hide')){
+        document.body.classList.add('mesaha-boot-force-open');
+        st.classList.add('hide');
+        st.style.display='none';
+      }
+    }catch(e){}
+  }, 3000);
+})();
+</script>
+
 </head>
 <body>
 <div class="startup" id="startup">
 <div class="startup-card startup-card-v311">
 <img alt="" src="./assets/mesaha_logo.png"/>
-<strong>V3.70 •ExelanceX•</strong>
+<strong>V3.71 •ExelanceX•</strong>
 <span id="startupTitle">Mesaha İO hazırlanıyor…</span>
 <ul class="startup-steps" id="startupSteps">
 <li data-step="files">Dosyalar kontrol ediliyor</li>
@@ -804,7 +823,7 @@ section.hero-card{
 <header class="topbar">
 <div class="brand">
 <img alt="Mesaha İO" src="./assets/mesaha_logo.png"/>
-<div class="version-card"><b id="versionText">V3.70 •ExelanceX•</b><small>Yayın</small></div>
+<div class="version-card"><b id="versionText">V3.71 •ExelanceX•</b><small>Yayın</small></div>
 </div>
 <div class="user-badge login-needed" id="userBadge">Giriş Yap</div>
 <div class="top-actions-v316"><button class="panel-btn-v316" id="userPanelBtnV316" type="button">👤 Kullanıcı Paneli</button></div>
@@ -813,7 +832,7 @@ section.hero-card{
 <main>
 <section class="view active" id="homeView">
 <section class="hero-card">
-<img alt="Orman manzarası" class="hero-cover-image" decoding="async" fetchpriority="high" src="./assets/hero_forest_cover.png?v=380"/>
+<img alt="Orman manzarası" class="hero-cover-image" decoding="async" fetchpriority="high" src="./assets/hero_forest_cover.png?v=381"/>
 <div>
 <h1>Merhaba!</h1>
 <p>Orman ölçümlerini kolayca kaydedin ve yönetin.</p>
@@ -866,7 +885,7 @@ section.hero-card{
 </section>
 </section>
 <section class="view entry-view" id="entryView">
-<header class="entry-top"><div class="version-card"><b>V3.70 •ExelanceX•</b><small>Yayın</small></div><button class="btn primary" id="entryHomeBtn" type="button">🏠 Ana Sayfaya Dön</button></header>
+<header class="entry-top"><div class="version-card"><b>V3.71 •ExelanceX•</b><small>Yayın</small></div><button class="btn primary" id="entryHomeBtn" type="button">🏠 Ana Sayfaya Dön</button></header>
 <section class="entry-total"><div><small>Toplam Adet</small><b id="entryTotalCount">0</b></div><div><small>Toplam m³</small><b id="entryTotalM3">0 m³</b></div></section>
 <section class="entry-form card">
 <div class="cutter-row"><div class="chip-wrap" id="cutterChips"></div><button class="btn primary" id="addCutterBtn" type="button">＋ Kesimci Ekle</button></div>
@@ -3196,7 +3215,7 @@ button,input,textarea{font:inherit!important;}button{touch-action:manipulation!i
 .top-actions-v316{display:none!important;}
 .view{display:none!important;}.view.active{display:block!important;}
 .card,.hero-card,.status-card,.entry-form,.records-card,.guide-card,.settings-card,.sound-card,.maintenance-card,.panel-card-v316{background:var(--card)!important;border:1px solid rgba(220,235,228,.96)!important;border-radius:22px!important;box-shadow:0 12px 30px rgba(23,74,50,.085)!important;margin:10px 0!important;padding:14px!important;}
-.hero-card{position:relative!important;min-height:132px!important;overflow:hidden!important;display:flex!important;align-items:flex-start!important;justify-content:space-between!important;background:linear-gradient(90deg,rgba(255,255,255,.97) 0%,rgba(255,255,255,.92) 26%,rgba(255,255,255,.70) 48%,rgba(255,255,255,.18) 100%),url('./assets/hero_forest_cover.png?v=380') center right/cover no-repeat!important;border-color:#dfeae5!important;}
+.hero-card{position:relative!important;min-height:132px!important;overflow:hidden!important;display:flex!important;align-items:flex-start!important;justify-content:space-between!important;background:linear-gradient(90deg,rgba(255,255,255,.97) 0%,rgba(255,255,255,.92) 26%,rgba(255,255,255,.70) 48%,rgba(255,255,255,.18) 100%),url('./assets/hero_forest_cover.png?v=381') center right/cover no-repeat!important;border-color:#dfeae5!important;}
 .hero-card::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(255,255,255,.06),rgba(255,255,255,0));pointer-events:none;}
 .hero-card h1{position:relative!important;z-index:1!important;font-size:18px!important;line-height:1.08!important;margin:4px 0 8px!important;color:#173328!important;font-weight:950!important;letter-spacing:-.02em!important;text-shadow:0 1px 0 rgba(255,255,255,.40)!important;}.hero-card p{position:relative!important;z-index:1!important;max-width:220px!important;margin:0!important;font-size:12px!important;line-height:1.36!important;color:#4f655b!important;font-weight:780!important;text-shadow:0 1px 0 rgba(255,255,255,.35)!important;}.hero-forest{display:none!important;}
 .status-card{display:grid!important;grid-template-columns:1fr!important;gap:8px!important;margin-top:-16px!important;position:relative!important;z-index:2!important;background:rgba(255,255,255,.82)!important;}
@@ -3238,7 +3257,7 @@ button,input,textarea{font:inherit!important;}button{touch-action:manipulation!i
   function records(){try{return window.state&&Array.isArray(window.state.records)?window.state.records:[]}catch(e){return[]}}
   function rebuildTop(){
     var user=$('userBadge'); if(user && (!user.textContent || /Giriş Yap|Giris Yap/i.test(user.textContent))) user.textContent='Yakup • Yaylacık';
-    var top=qs('.topbar'); setText($('versionText'),'V3.70'); var title=qs('title'); if(title) title.textContent='Mesaha İO V3.70';
+    var top=qs('.topbar'); setText($('versionText'),'V3.71'); var title=qs('title'); if(title) title.textContent='Mesaha İO V3.71';
   }
   function rebuildBottomNav(){
     var nav=$('bottomNav'); if(!nav) return;
@@ -3589,10 +3608,10 @@ body:not(.entry-open) #entryView:not(.active){display:none!important;}
   function qs(sel,root){return (root||document).querySelector(sel)}
   function ready(fn){document.readyState==='loading'?document.addEventListener('DOMContentLoaded',fn,{once:true}):fn()}
   function setVersions(){
-    var vt=$('versionText'); if(vt) vt.textContent='V3.70';
-    qsa('.version-card b').forEach(function(b){ if(/^v3\.\d+/.test((b.textContent||'').trim())) b.textContent='V3.70'; });
+    var vt=$('versionText'); if(vt) vt.textContent='V3.71';
+    qsa('.version-card b').forEach(function(b){ if(/^v3\.\d+/.test((b.textContent||'').trim())) b.textContent='V3.71'; });
     qsa('.version-card small').forEach(function(s){ if(/v\d+/.test(s.textContent||'')) s.textContent='v330-fix'; });
-    if(document.title) document.title='Mesaha İO V3.70';
+    if(document.title) document.title='Mesaha İO V3.71';
   }
   function robustShow(view){
     ['home','entry','records','guide','settings'].forEach(function(v){var el=$(v+'View'); if(el){el.classList.toggle('active',v===view); el.style.display=(v===view?'block':'none');}});
@@ -3763,7 +3782,7 @@ input,select,textarea{background:#fff!important;color:#101828!important;border-c
 .hero-card::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(90deg,rgba(255,255,255,.97) 0%,rgba(255,255,255,.91) 28%,rgba(255,255,255,.66) 51%,rgba(255,255,255,.10) 100%)}
 .hero-card>div:first-of-type{position:relative!important;z-index:2!important}
 </style>
-<script src="./js/version.js?v=380"></script>
+<script src="./js/version.js?v=381"></script>
 
 
 <style id="mesaha-v359-final-tablet-and-facts">
@@ -3784,7 +3803,7 @@ input,select,textarea{background:#fff!important;color:#101828!important;border-c
 #app.app .hero-card{
   background:
     linear-gradient(90deg,rgba(255,255,255,.97) 0%,rgba(255,255,255,.91) 30%,rgba(255,255,255,.62) 58%,rgba(255,255,255,.13) 100%),
-    url('./assets/hero_forest_cover.png?v=380') center right/cover no-repeat!important;
+    url('./assets/hero_forest_cover.png?v=381') center right/cover no-repeat!important;
 }
 #forestFactText{
   display:block!important;
@@ -4284,7 +4303,7 @@ html.mesaha-terminal-lite.scrolling-now .topbar{
 </script>
 
 
-<style id="mesaha-v380-boot-recovery-stable">
+<style id="mesaha-v381-startup-screen-fix">
 /* v371: terminal Chrome/WebView doğal kaydırma düzeltmesi */
 html,
 body{
@@ -4339,7 +4358,7 @@ body.scroll-fixing-v371 *{
 
 
 
-<style id="mesaha-v380-boot-recovery-stable">
+<style id="mesaha-v381-startup-screen-fix">
 /* v372: Mesaha girme ekranında klavye açılınca alt menü klavyenin üstüne çıkmasın */
 body.entry-open.keyboard-open-v311 .bottom-nav,
 body.mesaha-entry-keyboard-open .bottom-nav,
@@ -4660,8 +4679,8 @@ body.product-tap-lock-v372 .entry-view.active{
   window.__mesahaSoundEngineV377Installed = true;
 
   var SRC = {
-    success:'./assets/ses_onay.wav?v=380',
-    warning:'./assets/ses_uyari.wav?v=380'
+    success:'./assets/ses_onay.wav?v=381',
+    warning:'./assets/ses_uyari.wav?v=381'
   };
   var pool = {};
   var last = {success:0, warning:0};
@@ -4829,8 +4848,13 @@ body.product-tap-lock-v372 .entry-view.active{
 </script>
 
 
-<style id="mesaha-v380-boot-recovery-css">
-/* v380: Açılış ekranında sonsuz takılmayı engelle */
+
+<style id="mesaha-v381-startup-force-open-css">
+/* v381: Gerçek açılış perdesi .startup hedeflendi */
+body.mesaha-boot-force-open .startup,
+body.mesaha-boot-force-open #startup,
+body.mesaha-boot-force-open .startup-screen,
+body.mesaha-boot-force-open #startupScreen,
 body.mesaha-boot-force-open .splash,
 body.mesaha-boot-force-open #splash,
 body.mesaha-boot-force-open .boot-screen,
@@ -4849,39 +4873,51 @@ body.mesaha-boot-force-open #app{
   opacity:1!important;
 }
 </style>
-<script id="mesaha-v380-boot-recovery">
+<script id="mesaha-v381-startup-force-open">
 (function(){
   'use strict';
-  if(window.__mesahaBootRecoveryV380) return;
-  window.__mesahaBootRecoveryV380 = true;
+  if(window.__mesahaBootRecoveryV381) return;
+  window.__mesahaBootRecoveryV381 = true;
 
   var forced = false;
 
   function q(sel){ try{return document.querySelector(sel)}catch(e){return null} }
   function qa(sel){ try{return Array.prototype.slice.call(document.querySelectorAll(sel))}catch(e){return []} }
 
-  function splashVisible(){
-    var els = qa('.splash,#splash,.boot-screen,#bootScreen,.loading-screen,#loadingScreen,.startup-screen,#startupScreen');
-    return els.some(function(el){
-      if(!el) return false;
-      var cs = getComputedStyle(el);
-      var r = el.getBoundingClientRect();
-      return cs.display !== 'none' && cs.visibility !== 'hidden' && Number(cs.opacity || 1) > 0.05 && r.width > 20 && r.height > 20;
+  var startupSelectors = [
+    '.startup',
+    '#startup',
+    '.startup-screen',
+    '#startupScreen',
+    '.splash',
+    '#splash',
+    '.boot-screen',
+    '#bootScreen',
+    '.loading-screen',
+    '#loadingScreen'
+  ];
+
+  function startupVisible(){
+    return startupSelectors.some(function(sel){
+      return qa(sel).some(function(el){
+        try{
+          var cs = getComputedStyle(el);
+          var r = el.getBoundingClientRect();
+          return cs.display !== 'none' &&
+                 cs.visibility !== 'hidden' &&
+                 Number(cs.opacity || 1) > 0.05 &&
+                 r.width > 20 &&
+                 r.height > 20;
+        }catch(e){ return false; }
+      });
     });
   }
 
-  function appVisible(){
-    var app = q('.app') || q('#app') || q('main');
-    if(!app) return false;
-    var cs = getComputedStyle(app);
-    var r = app.getBoundingClientRect();
-    return cs.display !== 'none' && cs.visibility !== 'hidden' && Number(cs.opacity || 1) > 0.05 && r.height > 50;
-  }
-
-  function hideSplash(){
-    ['.splash','#splash','.boot-screen','#bootScreen','.loading-screen','#loadingScreen','.startup-screen','#startupScreen'].forEach(function(sel){
+  function hideStartup(){
+    startupSelectors.forEach(function(sel){
       qa(sel).forEach(function(el){
         try{
+          el.classList.add('hide');
           el.classList.add('hidden');
           el.style.display = 'none';
           el.style.visibility = 'hidden';
@@ -4892,51 +4928,66 @@ body.mesaha-boot-force-open #app{
     });
   }
 
-  function showApp(){
-    ['.app','#app','main'].forEach(function(sel){
-      qa(sel).forEach(function(el){
-        try{
-          el.style.display = '';
-          el.style.visibility = 'visible';
-          el.style.opacity = '1';
-        }catch(e){}
-      });
-    });
+  function ensureView(){
+    try{
+      var app = q('.app') || q('#app');
+      if(app){
+        app.style.display = '';
+        app.style.visibility = 'visible';
+        app.style.opacity = '1';
+      }
+    }catch(e){}
+
+    // Hiç aktif view yoksa ana sayfayı aç.
+    try{
+      var active = q('.view.active');
+      if(!active){
+        var home = q('#homeView') || q('.home-view') || q('.view');
+        if(home){
+          qa('.view').forEach(function(v){ v.classList.remove('active'); });
+          home.classList.add('active');
+          home.style.display = 'block';
+        }
+      }
+    }catch(e){}
+  }
+
+  function renderSafe(){
+    try{ if(typeof window.renderAll === 'function') window.renderAll(); }catch(e){}
+    try{ if(typeof window.renderHome === 'function') window.renderHome(); }catch(e){}
+    try{ if(typeof window.renderNetwork === 'function') window.renderNetwork(); }catch(e){}
+    try{ if(typeof window.renderVersion === 'function') window.renderVersion(); }catch(e){}
+    try{ if(typeof window.showView === 'function') window.showView('home'); }catch(e){}
   }
 
   function forceOpen(reason){
     if(forced) return;
     forced = true;
-    try{ console.warn('[Mesaha v380] Açılış koruması devreye girdi:', reason || 'timeout'); }catch(e){}
-    document.body.classList.add('mesaha-boot-force-open');
-    hideSplash();
-    showApp();
-
-    // Uygulama render fonksiyonları varsa tekrar çalıştır.
-    try{ if(typeof window.renderAll === 'function') window.renderAll(); }catch(e){}
-    try{ if(typeof window.renderHome === 'function') window.renderHome(); }catch(e){}
-    try{ if(typeof window.renderEntry === 'function') window.renderEntry(); }catch(e){}
-    try{ if(typeof window.renderRecords === 'function') window.renderRecords(); }catch(e){}
-
-    // View yoksa ana sayfaya geçmeyi dene.
-    try{ if(typeof window.showView === 'function') window.showView('home'); }catch(e){}
+    try{ console.warn('[Mesaha v381] Açılış perdesi kapatıldı:', reason || 'timeout'); }catch(e){}
+    try{ document.body.classList.add('mesaha-boot-force-open'); }catch(e){}
+    hideStartup();
+    ensureView();
+    renderSafe();
+    setTimeout(function(){
+      hideStartup();
+      ensureView();
+    }, 250);
   }
 
   function check(ms){
     setTimeout(function(){
-      if(appVisible() && !splashVisible()) return;
-      if(splashVisible()) forceOpen('splash-timeout-' + ms);
+      if(startupVisible()) forceOpen('startup-timeout-' + ms);
     }, ms);
   }
 
-  // 3.2 saniyeden sonra hâlâ açılmadıysa devam et.
-  [3200, 5200, 8000].forEach(check);
+  // Önce hızlı dene, sonra güvenlik tekrarları.
+  [2500, 3800, 5500, 8000].forEach(check);
 
   window.addEventListener('error', function(ev){
     try{
       var msg = String(ev && (ev.message || ev.error && ev.error.message) || '');
-      if(/firebase|firestore|network|timeout|abort|version|serviceworker|cache/i.test(msg)){
-        setTimeout(function(){ forceOpen('error:' + msg.slice(0,80)); }, 300);
+      if(/firebase|firestore|network|timeout|abort|version|serviceworker|cache|startup/i.test(msg)){
+        setTimeout(function(){ forceOpen('error:' + msg.slice(0,80)); }, 250);
       }
     }catch(e){}
   });
@@ -4944,13 +4995,13 @@ body.mesaha-boot-force-open #app{
   window.addEventListener('unhandledrejection', function(ev){
     try{
       var msg = String(ev && ev.reason && (ev.reason.message || ev.reason) || '');
-      if(/firebase|firestore|network|timeout|abort|version|serviceworker|cache/i.test(msg)){
-        setTimeout(function(){ forceOpen('promise:' + msg.slice(0,80)); }, 300);
+      if(/firebase|firestore|network|timeout|abort|version|serviceworker|cache|startup/i.test(msg)){
+        setTimeout(function(){ forceOpen('promise:' + msg.slice(0,80)); }, 250);
       }
     }catch(e){}
   });
 
-  window.mesahaBootRecoveryV380 = {forceOpen:forceOpen};
+  window.mesahaBootRecoveryV381 = {forceOpen:forceOpen, hideStartup:hideStartup};
 })();
 </script>
 

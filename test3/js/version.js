@@ -1,12 +1,12 @@
 self.MESAHA_VERSION = {
-  "app": "V3.70",
-  "version": "v380-boot-recovery-stable",
-  "build": 380,
-  "visibleVersion": "V3.70 •ExelanceX•",
-  "shortVersion": "V3.70 •ExelanceX•",
-  "name": "Mesaha İO V3.70 •ExelanceX•",
-  "cacheName": "mesaha-app-v380-boot-recovery-stable",
-  "builtAt": "2026-06-25T21:25:00+03:00",
-  "notes": "v378/v379 temizlik guard'ı geri alındı. v377 sağlam tabanına dönüldü. Açılış ekranında takılmaya karşı boot recovery eklendi. Zayıf internet sürüm kontrol beklemesi kısaltıldı.",
-  "assetVersion": "380"
+  "app": "V3.71",
+  "version": "v381-startup-screen-fix",
+  "build": 381,
+  "visibleVersion": "V3.71 •ExelanceX•",
+  "shortVersion": "V3.71 •ExelanceX•",
+  "name": "Mesaha İO V3.71 •ExelanceX•",
+  "cacheName": "mesaha-app-v381-startup-screen-fix",
+  "builtAt": "2026-06-25T21:40:00+03:00",
+  "notes": "Açılışta takılan gerçek .startup perdesi hedeflendi. 2.5-3 saniye içinde kapanmazsa zorla kapatılır ve ana ekran gösterilir.",
+  "assetVersion": "381"
 };

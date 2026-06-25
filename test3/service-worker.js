@@ -1,7 +1,7 @@
-importScripts('./js/version.js?v=380');
+importScripts('./js/version.js?v=381');
 
-const META = self.MESAHA_VERSION || {"app": "V3.70", "version": "v380-boot-recovery-stable", "build": 380, "visibleVersion": "V3.70 •ExelanceX•", "shortVersion": "V3.70 •ExelanceX•", "name": "Mesaha İO V3.70 •ExelanceX•", "cacheName": "mesaha-app-v380-boot-recovery-stable", "builtAt": "2026-06-25T21:25:00+03:00", "notes": "v378/v379 temizlik guard'ı geri alındı. v377 sağlam tabanına dönüldü. Açılış ekranında takılmaya karşı boot recovery eklendi. Zayıf internet sürüm kontrol beklemesi kısaltıldı.", "assetVersion": "380"};
-const CACHE_NAME = META.cacheName || 'mesaha-app-v380-boot-recovery-stable';
+const META = self.MESAHA_VERSION || {"app": "V3.71", "version": "v381-startup-screen-fix", "build": 381, "visibleVersion": "V3.71 •ExelanceX•", "shortVersion": "V3.71 •ExelanceX•", "name": "Mesaha İO V3.71 •ExelanceX•", "cacheName": "mesaha-app-v381-startup-screen-fix", "builtAt": "2026-06-25T21:40:00+03:00", "notes": "Açılışta takılan gerçek .startup perdesi hedeflendi. 2.5-3 saniye içinde kapanmazsa zorla kapatılır ve ana ekran gösterilir.", "assetVersion": "381"};
+const CACHE_NAME = META.cacheName || 'mesaha-app-v381-startup-screen-fix';
 const ASSETS = [
   "./",
   "./index.html",
@@ -9,12 +9,12 @@ const ASSETS = [
   "./manifest.json",
   "./version.json",
   "./service-worker.js",
-  "./js/version.js?v=380",
+  "./js/version.js?v=381",
   "./temizle.html",
   "./assets/icon-192.png",
   "./assets/icon-512.png",
   "./assets/mesaha_logo.png",
-  "./assets/hero_forest_cover.png?v=380",
+  "./assets/hero_forest_cover.png?v=381",
   "./assets/06_net_islem_onayi.wav",
   "./assets/08_hata_uyari_onaydan_farkli.wav"
 ];
