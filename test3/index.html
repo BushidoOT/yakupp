@@ -490,7 +490,7 @@ body.keyboard-open-v311 .entry-form{
 </style>
 
 
-<style id="mesaha-v376-sounds-warning-css-1">
+<style id="mesaha-v376-user-sounds-warning-fix">
 /* v358: tablet ve büyük ekran uyumluluğu */
 html, body{
   width:100%;
@@ -702,7 +702,7 @@ section.hero-card{
 </style>
 
 
-<style id="mesaha-v376-sounds-warning-css-2">
+<style id="mesaha-v376-user-sounds-warning-fix">
 /* v369: kullanım netliği */
 #entryHomeBtn{
   background:linear-gradient(135deg,#2563eb,#1d4ed8)!important;
@@ -762,7 +762,7 @@ section.hero-card{
 }
 </style>
 
-<style id="mesaha-v376-sounds-warning-css-3">
+<style id="mesaha-v376-user-sounds-warning-fix">
 /* v375: Ölçüm Özeti / Bakım içindeki sahte 0 Kayıt kartı kaldırıldı */
 .summary-card .summary-grid::after,
 .summary-card .summary-grid::before{
@@ -5378,14 +5378,14 @@ input,select,textarea{background:#fff!important;color:#101828!important;border-c
 </script>
 
 
-<style id="mesaha-v365-network-status-style">
+<style id="mesaha-v365-network-status-final">
 #netStatusCard.net-online .status-icon,#netStatusCard.net-online #netIcon{background:#dcfce7!important;color:#166534!important;}
 #netStatusCard.net-offline .status-icon,#netStatusCard.net-offline #netIcon{background:#fee2e2!important;color:#991b1b!important;}
 #netStatusCard.net-checking .status-icon,#netStatusCard.net-checking #netIcon{background:#fef3c7!important;color:#92400e!important;}
 #netStatusCard #netSubText{font-weight:760!important;}
 body.mesaha-offline .online-only{opacity:.55!important;filter:grayscale(.25)!important;}
 </style>
-<script id="mesaha-v365-network-status-script">
+<script id="mesaha-v365-network-status-final">
 (function(){
   'use strict';
   var seq=0, lastMode='';
@@ -5434,7 +5434,7 @@ body.mesaha-offline .online-only{opacity:.55!important;filter:grayscale(.25)!imp
 </script>
 
 
-<style id="mesaha-v366-terminal-save-style">
+<style id="mesaha-v366-terminal-save-fix">
 /* v366: el terminali Chrome/WebView dokunma uyumu */
 #saveBtn,
 .save-btn{
@@ -5459,7 +5459,7 @@ body.keyboard-open-v311 .entry-view.active .barcode-save{
   z-index:2147482000!important;
 }
 </style>
-<script id="mesaha-v366-terminal-save-script">
+<script id="mesaha-v366-terminal-save-fix">
 (function(){
   'use strict';
 
@@ -5589,7 +5589,7 @@ body.keyboard-open-v311 .entry-view.active .barcode-save{
 </script>
 
 
-<style id="mesaha-v368-terminal-home-scroll-style">
+<style id="mesaha-v368-terminal-home-scroll-perf">
 html.mesaha-terminal-lite,
 html.mesaha-terminal-lite body{scroll-behavior:auto!important}
 html.mesaha-terminal-lite body,
@@ -5632,7 +5632,7 @@ html.mesaha-terminal-lite.scrolling-now .topbar{pointer-events:none!important}
   html.mesaha-terminal-lite .app{padding-bottom:96px!important}
 }
 </style>
-<script id="mesaha-v368-terminal-home-scroll-script">
+<script id="mesaha-v368-terminal-home-scroll-perf">
 (function(){
   'use strict';
   var ua=navigator.userAgent||'';
@@ -5735,7 +5735,7 @@ html.mesaha-terminal-lite.scrolling-now .topbar{
 </script>
 
 
-<style id="mesaha-v376-sounds-warning-css-4">
+<style id="mesaha-v376-user-sounds-warning-fix">
 /* v371: terminal Chrome/WebView doğal kaydırma düzeltmesi */
 html,
 body{
@@ -5787,7 +5787,7 @@ body.scroll-fixing-v371 *{
   scroll-behavior:auto!important;
 }
 </style>
-<script id="mesaha-v376-terminal-save-scroll-fix">
+<script id="mesaha-v376-user-sounds-warning-fix">
 (function(){
   'use strict';
 
@@ -5870,7 +5870,7 @@ body.scroll-fixing-v371 *{
 </script>
 
 
-<style id="mesaha-v376-sounds-warning-css-5">
+<style id="mesaha-v376-user-sounds-warning-fix">
 /* v372: Mesaha girme ekranında klavye açılınca alt menü klavyenin üstüne çıkmasın */
 body.entry-open.keyboard-open-v311 .bottom-nav,
 body.mesaha-entry-keyboard-open .bottom-nav,
@@ -5938,7 +5938,7 @@ body.product-tap-lock-v372 .entry-view.active{
   }
 }
 </style>
-<script id="mesaha-v376-keyboard-inset-fix">
+<script id="mesaha-v376-user-sounds-warning-fix">
 (function(){
   'use strict';
 
@@ -6312,7 +6312,344 @@ body.product-tap-lock-v372 .entry-view.active{
 </script>
 
 
-<script src="./js/sound.js?v=380"></script>
+<script id="mesaha-v376-user-sounds-warning-fix-final">
+(function(){
+  'use strict';
+
+  var SRC = {
+    success:'./assets/mesaha_onay_v374.wav?v=376',
+    warning:'./assets/mesaha_uyari_v374.wav?v=376'
+  };
+  var pool = {};
+  var last = {success:0, warning:0};
+  var unlocked = false;
+
+  function enabled(){
+    try{ return !(window.state && window.state.settings && window.state.settings.soundEnabled === false); }
+    catch(e){ return true; }
+  }
+
+  function audio(kind){
+    try{
+      var a = new Audio(SRC[kind] || SRC.success);
+      a.preload = 'auto';
+      a.volume = 1;
+      a.load();
+      return a;
+    }catch(e){ return null; }
+  }
+
+  function ensure(){
+    if(!pool.success) pool.success = audio('success');
+    if(!pool.warning) pool.warning = audio('warning');
+  }
+
+  function unlock(){
+    if(unlocked) return;
+    unlocked = true;
+    ensure();
+    ['success','warning'].forEach(function(k){
+      try{
+        var a = pool[k];
+        if(!a) return;
+        a.muted = true;
+        var p = a.play();
+        if(p && p.then){
+          p.then(function(){ try{ a.pause(); a.currentTime = 0; a.muted = false; }catch(e){} })
+           .catch(function(){ try{ a.muted = false; }catch(e){} });
+        }else{
+          try{ a.pause(); a.currentTime = 0; a.muted = false; }catch(e){}
+        }
+      }catch(e){}
+    });
+  }
+
+  function fallback(kind){
+    // Eski tek bip değil; yeni kısa çift ton yedek ses.
+    try{
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if(!AC) return;
+      var ctx = window.__mesahaV374Ctx;
+      if(!ctx || ctx.state === 'closed') ctx = window.__mesahaV374Ctx = new AC();
+      if(ctx.state === 'suspended') ctx.resume().catch(function(){});
+      var now = ctx.currentTime + 0.004;
+      var freqs = kind === 'warning' ? [520,390] : [1046,1318];
+      freqs.forEach(function(freq, i){
+        var osc = ctx.createOscillator();
+        var gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = freq;
+        var t = now + i * 0.052;
+        gain.gain.setValueAtTime(0.0001, t);
+        gain.gain.exponentialRampToValueAtTime(kind === 'warning' ? 0.20 : 0.24, t + 0.012);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.080);
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.start(t); osc.stop(t + 0.090);
+      });
+    }catch(e){}
+  }
+
+  function play(kind){
+    if(!enabled()) return;
+    kind = (kind === 'warning' || kind === 'error') ? 'warning' : 'success';
+    var now = Date.now();
+    if(now - (last[kind] || 0) < 260) return;
+    last[kind] = now;
+    unlock();
+    ensure();
+    try{
+      var a = pool[kind];
+      if(!a){ fallback(kind); return; }
+      try{ a.pause(); a.currentTime = 0; a.muted = false; a.volume = 1; }catch(e){}
+      var done = false;
+      var p = a.play();
+      if(p && p.catch){
+        p.catch(function(){ if(!done){ done = true; fallback(kind); } });
+      }
+      setTimeout(function(){
+        try{ if(a.paused && !done){ done = true; fallback(kind); } }catch(e){}
+      }, 100);
+    }catch(e){ fallback(kind); }
+  }
+
+  ['touchstart','pointerdown','mousedown','keydown','click'].forEach(function(evt){
+    document.addEventListener(evt, unlock, {capture:true, passive:true});
+  });
+
+  function warningText(args){
+    var msg = Array.prototype.slice.call(args || []).join(' ').toLocaleLowerCase('tr-TR');
+    return /hata|uyarı|uyari|giriniz|küçük|kucuk|büyük|buyuk|arasında|okunamadı|yüklenmedi|başarısız|boş/.test(msg);
+  }
+
+  function wrapToast(){
+    if(!window.toast || window.toast.__v374SoundWrapped) return;
+    var old = window.toast;
+    var wrapped = function(){
+      try{ play(warningText(arguments) ? 'warning' : 'success'); }catch(e){}
+      return old.apply(this, arguments);
+    };
+    wrapped.__v374SoundWrapped = true;
+    window.toast = wrapped;
+  }
+
+  function expose(){
+    ensure();
+    wrapToast();
+    window.beep = function(){ play('success'); };
+    window.mesahaFastSoundV373 = {success:function(){play('success')}, warning:function(){play('warning')}, play:play, warm:unlock};
+    window.mesahaSoundFeedbackV333 = {play:function(k){play(k==='warning'||k==='error'?'warning':'success')}, beepDisabled:true};
+    window.mesahaSoundFeedbackV335 = window.mesahaSoundFeedbackV333;
+    window.mesahaSoundFeedbackV339 = {playSuccess:function(){play('success')}, playWarning:function(){play('warning')}, beepDisabled:true};
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', expose, {once:true});
+  else expose();
+  [80,220,600,1400,3000].forEach(function(ms){ setTimeout(expose, ms); });
+
+  window.mesahaSoundFixV374 = {
+    play:play,
+    success:function(){play('success')},
+    warning:function(){play('warning')},
+    unlock:unlock,
+    test:function(){play('success'); setTimeout(function(){play('warning')},260)}
+  };
+})();
+</script>
+
+
+<script id="mesaha-v376-user-sound-final">
+(function(){
+  'use strict';
+
+  var SRC = {
+    success:'./assets/mesaha_onay_v376.wav?v=376',
+    warning:'./assets/mesaha_uyari_v376.wav?v=376'
+  };
+  var pool = {};
+  var last = {success:0, warning:0};
+  var unlocked = false;
+
+  function enabled(){
+    try{ return !(window.state && window.state.settings && window.state.settings.soundEnabled === false); }
+    catch(e){ return true; }
+  }
+
+  function make(kind){
+    try{
+      var a = new Audio(SRC[kind] || SRC.success);
+      a.preload = 'auto';
+      a.volume = 1;
+      a.load();
+      return a;
+    }catch(e){ return null; }
+  }
+
+  function ensure(){
+    if(!pool.success) pool.success = make('success');
+    if(!pool.warning) pool.warning = make('warning');
+  }
+
+  function unlock(){
+    if(unlocked) return;
+    unlocked = true;
+    ensure();
+    ['success','warning'].forEach(function(k){
+      try{
+        var a = pool[k];
+        if(!a) return;
+        a.muted = true;
+        var p = a.play();
+        if(p && p.then){
+          p.then(function(){ try{ a.pause(); a.currentTime = 0; a.muted = false; }catch(e){} })
+           .catch(function(){ try{ a.muted = false; }catch(e){} });
+        }else{
+          try{ a.pause(); a.currentTime = 0; a.muted = false; }catch(e){}
+        }
+      }catch(e){}
+    });
+  }
+
+  function fallback(kind){
+    // Dosya çalmazsa son çare, eski tek bip değil kısa çift ton.
+    try{
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if(!AC) return;
+      var ctx = window.__mesahaV376Ctx;
+      if(!ctx || ctx.state === 'closed') ctx = window.__mesahaV376Ctx = new AC();
+      if(ctx.state === 'suspended') ctx.resume().catch(function(){});
+      var now = ctx.currentTime + 0.004;
+      var freqs = kind === 'warning' ? [520, 390] : [1046, 1318];
+      freqs.forEach(function(freq, i){
+        var osc = ctx.createOscillator();
+        var gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = freq;
+        var t = now + i * 0.052;
+        gain.gain.setValueAtTime(0.0001, t);
+        gain.gain.exponentialRampToValueAtTime(kind === 'warning' ? 0.23 : 0.25, t + 0.012);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.085);
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.start(t); osc.stop(t + 0.095);
+      });
+    }catch(e){}
+  }
+
+  function play(kind, force){
+    if(!force && !enabled()) return;
+    kind = (kind === 'warning' || kind === 'error' || kind === 'warn') ? 'warning' : 'success';
+    var now = Date.now();
+    if(now - (last[kind] || 0) < 220) return;
+    last[kind] = now;
+    unlock();
+    ensure();
+    try{
+      var a = pool[kind] || make(kind);
+      pool[kind] = a;
+      if(!a){ fallback(kind); return; }
+      var failed = false;
+      try{ a.pause(); a.currentTime = 0; a.muted = false; a.volume = 1; }catch(e){}
+      var p = a.play();
+      if(p && p.catch){
+        p.catch(function(){ if(!failed){ failed = true; fallback(kind); } });
+      }
+      setTimeout(function(){
+        try{ if(a.paused && !failed){ failed = true; fallback(kind); } }catch(e){}
+      }, 110);
+    }catch(e){ fallback(kind); }
+  }
+
+  function isWarning(args){
+    var msg = Array.prototype.slice.call(args || []).join(' ').toLocaleLowerCase('tr-TR');
+    return /hata|uyarı|uyari|dikkat|giriniz|seçiniz|seciniz|küçük|kucuk|büyük|buyuk|arasında|aralig|okunamadı|okunamadi|yüklenmedi|yuklenmedi|başarısız|basarisiz|boş|bos|silinsin|silindi|silinemedi|geçersiz|gecersiz|eksik|kayıtlı|kayitli|aynı barkod|ayni barkod/.test(msg);
+  }
+
+  function wrapToast(){
+    if(!window.toast || window.toast.__v376SoundWrapped) return;
+    var old = window.toast;
+    var wrapped = function(){
+      try{ play(isWarning(arguments) ? 'warning' : 'success', false); }catch(e){}
+      return old.apply(this, arguments);
+    };
+    wrapped.__v376SoundWrapped = true;
+    window.toast = wrapped;
+  }
+
+  function wrapAlert(){
+    if(window.alert && !window.alert.__v376SoundWrapped){
+      var oldAlert = window.alert;
+      var wrappedAlert = function(msg){
+        try{ play(isWarning([msg]) ? 'warning' : 'success', false); }catch(e){}
+        return oldAlert.apply(window, arguments);
+      };
+      wrappedAlert.__v376SoundWrapped = true;
+      window.alert = wrappedAlert;
+    }
+  }
+
+  function wrapModal(){
+    if(window.modal && !window.modal.__v376SoundWrapped){
+      var oldModal = window.modal;
+      var wrappedModal = function(opts){
+        try{
+          var kind = opts && (opts.type || opts.kind || opts.icon || opts.title || opts.html);
+          play(isWarning([kind]) ? 'warning' : 'success', false);
+        }catch(e){}
+        return oldModal.apply(this, arguments);
+      };
+      wrappedModal.__v376SoundWrapped = true;
+      window.modal = wrappedModal;
+    }
+  }
+
+  function expose(){
+    ensure();
+    wrapToast();
+    wrapAlert();
+    wrapModal();
+
+    window.beep = function(){ play('success', false); };
+
+    window.mesahaFastSoundV373 = {
+      success:function(){ play('success', false); },
+      warning:function(){ play('warning', false); },
+      play:function(k){ play(k, false); },
+      warm:unlock
+    };
+
+    window.mesahaSoundFixV374 = {
+      play:function(k){ play(k, false); },
+      success:function(){ play('success', false); },
+      warning:function(){ play('warning', false); },
+      unlock:unlock,
+      test:function(){ play('success', true); setTimeout(function(){ play('warning', true); }, 350); }
+    };
+
+    window.mesahaSoundFixV376 = {
+      play:function(k){ play(k, false); },
+      success:function(){ play('success', false); },
+      warning:function(){ play('warning', false); },
+      forceWarning:function(){ play('warning', true); },
+      forceSuccess:function(){ play('success', true); },
+      unlock:unlock,
+      test:function(){ play('success', true); setTimeout(function(){ play('warning', true); }, 350); }
+    };
+
+    window.mesahaSoundFeedbackV333 = {play:function(k){ play(k==='warning'||k==='error'?'warning':'success', false); }, beepDisabled:true};
+    window.mesahaSoundFeedbackV335 = window.mesahaSoundFeedbackV333;
+    window.mesahaSoundFeedbackV339 = {playSuccess:function(){play('success',false)}, playWarning:function(){play('warning',false)}, beepDisabled:true};
+  }
+
+  ['touchstart','pointerdown','mousedown','keydown','click'].forEach(function(evt){
+    document.addEventListener(evt, unlock, {capture:true, passive:true});
+  });
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', expose, {once:true});
+  else expose();
+
+  [60,160,400,900,1800,3500].forEach(function(ms){ setTimeout(expose, ms); });
+
+})();
+</script>
 
 </body>
 </html>

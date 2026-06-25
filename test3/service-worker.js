@@ -16,10 +16,7 @@ const ASSETS = [
   "./assets/mesaha_logo.png",
   "./assets/hero_forest_cover.png?v=376",
   "./assets/06_net_islem_onayi.wav",
-  "./assets/08_hata_uyari_onaydan_farkli.wav",
-  "./js/sound.js?v=380",
-  "./assets/mesaha_onay_v376.wav?v=380",
-  "./assets/mesaha_uyari_v376.wav?v=380"
+  "./assets/08_hata_uyari_onaydan_farkli.wav"
 ];
 
 self.addEventListener('install', event => {
