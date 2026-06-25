@@ -1,18 +1,18 @@
-importScripts('./js/version.js?v=379');
+importScripts('./js/version.js?v=380');
 
 const META = self.MESAHA_VERSION || {
-  app: 'V3.66',
-  version: 'v379-stability-battery-offline-fix',
-  build: 379,
-  visibleVersion: 'V3.66 •ExelanceX•',
-  shortVersion: 'V3.66 •ExelanceX•',
-  name: 'Mesaha İO V3.66 •ExelanceX•',
-  cacheName: 'mesaha-app-v379-stability-battery-offline-fix',
-  builtAt: '2026-06-25T22:45:00+03:00',
-  notes: 'Stabilite, pil tüketimi ve offline açılış iyileştirildi; tek ses motoru ve tek Firebase motoru korundu.',
-  assetVersion: '379'
+  app: 'V3.67',
+  version: 'v380-version-warning-fix',
+  build: 380,
+  visibleVersion: 'V3.67 •ExelanceX•',
+  shortVersion: 'V3.67 •ExelanceX•',
+  name: 'Mesaha İO V3.67 •ExelanceX•',
+  cacheName: 'mesaha-app-v380-version-warning-fix',
+  builtAt: '2026-06-25T23:05:00+03:00',
+  notes: 'Görünür sürüm V3.67 yapıldı; güncelleme uyarısının aynı sürümde tekrar tekrar görünmesi engellendi.',
+  assetVersion: '380'
 };
-const CACHE_NAME = META.cacheName || 'mesaha-app-v379-stability-battery-offline-fix';
+const CACHE_NAME = META.cacheName || 'mesaha-app-v380-version-warning-fix';
 const OFFLINE_TIMEOUT_MS = 3000;
 const ASSETS = [
   './',
@@ -22,17 +22,17 @@ const ASSETS = [
   './version.json',
   './service-worker.js',
   './temizle.html',
-  './js/version.js?v=379',
-  './js/mesaha-sound.js?v=379',
-  './js/mesaha-firebase.js?v=379',
-  './js/mesaha-early-optimizer.js?v=379',
-  './js/mesaha-offline-core.js?v=379',
+  './js/version.js?v=380',
+  './js/mesaha-sound.js?v=380',
+  './js/mesaha-firebase.js?v=380',
+  './js/mesaha-early-optimizer.js?v=380',
+  './js/mesaha-offline-core.js?v=380',
   './assets/icon-192.png',
   './assets/icon-512.png',
   './assets/mesaha_logo.png',
-  './assets/hero_forest_cover.png?v=379',
-  './assets/mesaha_onay.wav?v=379',
-  './assets/mesaha_uyari.wav?v=379'
+  './assets/hero_forest_cover.png?v=380',
+  './assets/mesaha_onay.wav?v=380',
+  './assets/mesaha_uyari.wav?v=380'
 ];
 
 function timeoutReject(ms, label){

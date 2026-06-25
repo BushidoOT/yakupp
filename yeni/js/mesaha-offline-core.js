@@ -1,19 +1,19 @@
 (function(){
   'use strict';
-  if (window.__mesahaOfflineCoreV379) return;
-  window.__mesahaOfflineCoreV379 = true;
+  if (window.__mesahaOfflineCoreV380) return;
+  window.__mesahaOfflineCoreV380 = true;
 
   var META = {
-    app: 'V3.66',
-    version: 'v379-stability-battery-offline-fix',
-    build: 379,
-    visibleVersion: 'V3.66 •ExelanceX•',
-    shortVersion: 'V3.66 •ExelanceX•',
-    name: 'Mesaha İO V3.66 •ExelanceX•',
-    cacheName: 'mesaha-app-v379-stability-battery-offline-fix',
-    builtAt: '2026-06-25T22:45:00+03:00',
-    notes: 'Stabilite, pil tüketimi ve offline açılış iyileştirildi; tek ses motoru ve tek Firebase motoru korundu.',
-    assetVersion: '379'
+    app: 'V3.67',
+    version: 'v380-version-warning-fix',
+    build: 380,
+    visibleVersion: 'V3.67 •ExelanceX•',
+    shortVersion: 'V3.67 •ExelanceX•',
+    name: 'Mesaha İO V3.67 •ExelanceX•',
+    cacheName: 'mesaha-app-v380-version-warning-fix',
+    builtAt: '2026-06-25T23:05:00+03:00',
+    notes: 'Görünür sürüm V3.67 yapıldı; güncelleme uyarısının aynı sürümde tekrar tekrar görünmesi engellendi.',
+    assetVersion: '380'
   };
 
   function lock(name, value){
@@ -61,18 +61,18 @@
 
   var CORE_ASSETS = [
     './index.html', './admin.html', './manifest.json', './version.json', './service-worker.js', './temizle.html',
-    './js/version.js?v=379', './js/mesaha-sound.js?v=379', './js/mesaha-firebase.js?v=379',
-    './js/mesaha-early-optimizer.js?v=379', './js/mesaha-offline-core.js?v=379',
-    './assets/icon-192.png', './assets/icon-512.png', './assets/mesaha_logo.png', './assets/hero_forest_cover.png?v=379',
-    './assets/mesaha_onay.wav?v=379', './assets/mesaha_uyari.wav?v=379'
+    './js/version.js?v=380', './js/mesaha-sound.js?v=380', './js/mesaha-firebase.js?v=380',
+    './js/mesaha-early-optimizer.js?v=380', './js/mesaha-offline-core.js?v=380',
+    './assets/icon-192.png', './assets/icon-512.png', './assets/mesaha_logo.png', './assets/hero_forest_cover.png?v=380',
+    './assets/mesaha_onay.wav?v=380', './assets/mesaha_uyari.wav?v=380'
   ];
 
   function warmCache(){
     if (!('caches' in window) || !navigator.onLine || connectionSaveData()) return;
     var last = 0;
-    try { last = Number(localStorage.getItem('mesaha_cache_warm_v379') || 0); } catch(e) {}
+    try { last = Number(localStorage.getItem('mesaha_cache_warm_v380') || 0); } catch(e) {}
     if (Date.now() - last < 6 * 60 * 60 * 1000) return;
-    try { localStorage.setItem('mesaha_cache_warm_v379', String(Date.now())); } catch(e) {}
+    try { localStorage.setItem('mesaha_cache_warm_v380', String(Date.now())); } catch(e) {}
     var runner = function(){
       caches.open(META.cacheName).then(function(cache){
         return Promise.allSettled(CORE_ASSETS.map(function(url){
@@ -87,11 +87,11 @@
 
   function registerServiceWorker(){
     if (!('serviceWorker' in navigator)) return;
-    navigator.serviceWorker.register('./service-worker.js?v=379').then(function(reg){
+    navigator.serviceWorker.register('./service-worker.js?v=380').then(function(reg){
       try {
-        var last = Number(localStorage.getItem('mesaha_sw_update_check_v379') || 0);
+        var last = Number(localStorage.getItem('mesaha_sw_update_check_v380') || 0);
         if (navigator.onLine && Date.now() - last > 15 * 60 * 1000) {
-          localStorage.setItem('mesaha_sw_update_check_v379', String(Date.now()));
+          localStorage.setItem('mesaha_sw_update_check_v380', String(Date.now()));
           reg.update().catch(function(){});
         }
       } catch(e) {}
@@ -113,7 +113,7 @@
   // Eski yamalar DOM'u tekrar yazsa bile görünür sürüm bilgisi arada bozulmasın; düşük frekanslı ve hafif.
   setInterval(setVersionText, 10000);
 
-  window.MesahaOfflineCoreV379 = {
+  window.MesahaOfflineCoreV380 = {
     meta: META,
     cacheName: META.cacheName,
     warmCache: warmCache,

@@ -1,12 +1,12 @@
 {
-  "app": "V3.66",
-  "version": "v379-stability-battery-offline-fix",
-  "build": 379,
-  "visibleVersion": "V3.66 •ExelanceX•",
-  "shortVersion": "V3.66 •ExelanceX•",
-  "name": "Mesaha İO V3.66 •ExelanceX•",
-  "cacheName": "mesaha-app-v379-stability-battery-offline-fix",
-  "builtAt": "2026-06-25T22:45:00+03:00",
-  "notes": "Stabilite, pil tüketimi ve offline açılış iyileştirildi; tek ses motoru ve tek Firebase motoru korundu.",
-  "assetVersion": "379"
+  "app": "V3.67",
+  "version": "v380-version-warning-fix",
+  "build": 380,
+  "visibleVersion": "V3.67 •ExelanceX•",
+  "shortVersion": "V3.67 •ExelanceX•",
+  "name": "Mesaha İO V3.67 •ExelanceX•",
+  "cacheName": "mesaha-app-v380-version-warning-fix",
+  "builtAt": "2026-06-25T23:05:00+03:00",
+  "notes": "Görünür sürüm V3.67 yapıldı; güncelleme uyarısının aynı sürümde tekrar tekrar görünmesi engellendi.",
+  "assetVersion": "380"
 }
