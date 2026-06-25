@@ -5,11 +5,11 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
 <meta name="theme-color" content="#f4f7f6"/>
-<link rel="manifest" href="./manifest.json?v=379"/>
+<link rel="manifest" href="./manifest.json?v=380"/>
 <link rel="apple-touch-icon" href="./assets/icon-192.png"/>
-<title>Mesaha İO V3.69 •ExelanceX•</title>
+<title>Mesaha İO V3.70 •ExelanceX•</title>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
-<meta content="V3.69" name="apple-mobile-web-app-title"/>
+<meta content="V3.70" name="apple-mobile-web-app-title"/>
 <script>
   (function(){
     var q = new URLSearchParams(location.search);
@@ -19,7 +19,7 @@
         try{ if('caches' in window){ var keys = await caches.keys(); await Promise.all(keys.map(function(k){ return caches.delete(k); })); } }catch(e){}
         if(!sessionStorage.getItem('mesaha_reset_done_v355')){
           sessionStorage.setItem('mesaha_reset_done_v355','1');
-          location.replace('./index.html?v=379&fresh=' + Date.now());
+          location.replace('./index.html?v=380&fresh=' + Date.now());
         }
       });
     }
@@ -481,9 +481,161 @@ body.keyboard-open-v311 .entry-form{
 </style>
 
 
+<style id="mesaha-v380-boot-recovery-stable">
+/* v358: tablet ve büyük ekran uyumluluğu */
+html, body{
+  width:100%;
+  min-width:0;
+  overflow-x:hidden;
+}
+.app{
+  width:100%!important;
+  max-width:min(1280px, calc(100vw - 20px))!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+  padding-left:clamp(10px, 2vw, 24px)!important;
+  padding-right:clamp(10px, 2vw, 24px)!important;
+}
+.topbar{
+  width:auto!important;
+  margin-left:calc(clamp(10px, 2vw, 24px) * -1)!important;
+  margin-right:calc(clamp(10px, 2vw, 24px) * -1)!important;
+}
+.card,.hero-card,.status-card{
+  width:100%;
+}
+.hero-card{
+  background-position:center right!important;
+}
+.bottom-nav{
+  max-width:min(760px, calc(100vw - 24px))!important;
+  left:50%!important;
+  right:auto!important;
+  width:min(760px, calc(100vw - 24px))!important;
+  transform:translateX(-50%)!important;
+}
 
-<!-- v378 removed duplicate style id=mesaha-v379-layout-cleanup -->
+/* Büyük telefon / küçük tablet */
+@media (min-width: 640px){
+  .app{
+    max-width:min(980px, calc(100vw - 28px))!important;
+    padding-bottom:calc(112px + env(safe-area-inset-bottom,0px))!important;
+  }
+  .hero-card{
+    min-height:170px!important;
+    padding:22px!important;
+  }
+  .hero-card h1{
+    font-size:36px!important;
+  }
+  .hero-card p{
+    font-size:18px!important;
+    max-width:430px!important;
+  }
+  .status-card{
+    grid-template-columns:1fr 1fr!important;
+    gap:16px!important;
+  }
+  .summary-grid{
+    grid-template-columns:repeat(3, minmax(0,1fr))!important;
+  }
+  .summary-grid.small,
+  .product-totals,
+  .grid.two,
+  .measure-grid,
+  .product-grid,
+  .action-grid{
+    grid-template-columns:repeat(2, minmax(0,1fr))!important;
+  }
+  .recent-list{
+    grid-template-columns:repeat(3, minmax(0,1fr))!important;
+  }
+}
 
+/* Tablet */
+@media (min-width: 820px){
+  .app{
+    max-width:min(1120px, calc(100vw - 36px))!important;
+  }
+  .topbar{
+    border-radius:0 0 26px 26px!important;
+  }
+  .card,.hero-card,.status-card{
+    padding:22px!important;
+    margin:14px 0!important;
+  }
+  .hero-card{
+    min-height:195px!important;
+  }
+  .hero-card h1{
+    font-size:44px!important;
+  }
+  .hero-card p{
+    font-size:21px!important;
+    max-width:520px!important;
+  }
+  .entry-form.card{
+    max-width:980px!important;
+    margin-left:auto!important;
+    margin-right:auto!important;
+  }
+  .barcode-save{
+    grid-template-columns:minmax(0,1fr) 190px!important;
+  }
+  .quick-grid{
+    grid-template-columns:repeat(5, minmax(0,1fr))!important;
+  }
+  .record-toolbar,
+  .record-select-actions{
+    display:flex!important;
+    flex-wrap:wrap!important;
+    gap:10px!important;
+    align-items:center!important;
+  }
+  .record-toolbar input{
+    flex:1 1 320px!important;
+  }
+}
+
+/* Büyük tablet / masaüstü */
+@media (min-width: 1100px){
+  .app{
+    max-width:min(1240px, calc(100vw - 48px))!important;
+  }
+  .hero-card{
+    min-height:220px!important;
+  }
+  .hero-card h1{
+    font-size:52px!important;
+  }
+  .hero-card p{
+    font-size:24px!important;
+    max-width:600px!important;
+  }
+  .status-card{
+    grid-template-columns:repeat(2, minmax(0,1fr))!important;
+  }
+  .product-totals{
+    grid-template-columns:repeat(3, minmax(0,1fr))!important;
+  }
+  .record-card{
+    grid-template-columns:auto minmax(0,1fr) auto!important;
+  }
+}
+
+/* Çok küçük ekran koruması */
+@media (max-width: 380px){
+  .app{
+    max-width:100%!important;
+    padding-left:8px!important;
+    padding-right:8px!important;
+  }
+  .bottom-nav{
+    width:calc(100vw - 16px)!important;
+    max-width:calc(100vw - 16px)!important;
+  }
+}
+</style>
 
 
 <style id="mesaha-v360-hero-background-force">
@@ -499,7 +651,7 @@ section.hero-card{
       rgba(255,255,255,.90) 28%,
       rgba(255,255,255,.68) 52%,
       rgba(255,255,255,.20) 100%),
-    url("./assets/hero_forest_cover.png?v=379")!important;
+    url("./assets/hero_forest_cover.png?v=380")!important;
   background-size:cover!important;
   background-position:center right!important;
   background-repeat:no-repeat!important;
@@ -541,9 +693,55 @@ section.hero-card{
 </style>
 
 
-
-<!-- v378 removed duplicate style id=mesaha-v379-layout-cleanup -->
-
+<style id="mesaha-v380-boot-recovery-stable">
+/* v369: kullanım netliği */
+#entryHomeBtn{
+  background:linear-gradient(135deg,#2563eb,#1d4ed8)!important;
+  border-color:#1d4ed8!important;
+  color:#ffffff!important;
+  box-shadow:0 12px 28px rgba(37,99,235,.28)!important;
+}
+#entryHomeBtn::before{
+  content:"← ";
+  font-weight:1000;
+}
+#deleteAllBtn{
+  background:linear-gradient(135deg,#ef4444,#b91c1c)!important;
+  border-color:#991b1b!important;
+  color:#ffffff!important;
+  box-shadow:0 12px 28px rgba(239,68,68,.28)!important;
+}
+#deleteAllBtn:hover,#deleteAllBtn:active{
+  filter:brightness(.96)!important;
+}
+.recent-edit-hint{
+  margin:0 0 10px!important;
+  color:#2563eb!important;
+  font-size:13px!important;
+  font-weight:900!important;
+  background:#eff6ff!important;
+  border:1px solid #bfdbfe!important;
+  border-radius:14px!important;
+  padding:8px 10px!important;
+}
+.recent-item{
+  cursor:pointer!important;
+}
+@media(max-width:640px){
+  #entryHomeBtn{
+    min-height:46px!important;
+    border-radius:16px!important;
+    padding:10px 13px!important;
+  }
+  #deleteAllBtn{
+    min-height:46px!important;
+  }
+  .recent-edit-hint{
+    font-size:12px!important;
+    padding:7px 9px!important;
+  }
+}
+</style>
 
 
 <style id="mesaha-v374-battery-css">
@@ -555,70 +753,44 @@ section.hero-card{
 }
 </style>
 
-
-<!-- v378 removed duplicate style id=mesaha-v379-layout-cleanup -->
-
-
-
-<script id="mesaha-v378-runtime-cleanup-guard">
-(function(){
-  'use strict';
-  if(window.__mesahaV378RuntimeGuard) return;
-  window.__mesahaV378RuntimeGuard = true;
-
-  // Aynı elemente aynı event + aynı fonksiyon defalarca bağlanmasın.
-  try{
-    var nativeAdd = EventTarget.prototype.addEventListener;
-    var seen = new WeakMap();
-    EventTarget.prototype.addEventListener = function(type, listener, options){
-      try{
-        if(listener && typeof listener === 'function'){
-          var perTarget = seen.get(this);
-          if(!perTarget){ perTarget = Object.create(null); seen.set(this, perTarget); }
-          var capture = !!(options && typeof options === 'object' ? options.capture : options === true);
-          var key = String(type) + '|' + capture;
-          var list = perTarget[key] || (perTarget[key] = new WeakSet());
-          if(list.has(listener)) return;
-          list.add(listener);
-        }
-      }catch(e){}
-      return nativeAdd.call(this, type, listener, options);
-    };
-  }catch(e){}
-
-  // Zayıf terminalde 1-2 saniyelik sürekli interval'leri şarj yememesi için seyrekleştir.
-  try{
-    var nativeInterval = window.setInterval.bind(window);
-    window.setInterval = function(fn, delay){
-      var d = Number(delay || 0);
-      if(d > 0 && d < 2000) d = 5000;
-      else if(d >= 2000 && d < 5000) d = 9000;
-      var args = Array.prototype.slice.call(arguments, 2);
-      return nativeInterval(function(){
-        if(document.hidden && d < 30000) return;
-        return typeof fn === 'function' ? fn.apply(this, args) : eval(fn);
-      }, d);
-    };
-  }catch(e){}
-
-  // Ses motoru tek olsun.
-  try{
-    if(window.mesahaSoundEngineV377){
-      window.mesahaSound = window.mesahaSoundEngineV377;
-      window.mesahaFastSoundV373 = window.mesahaSoundEngineV377;
-      window.mesahaSoundFixV374 = window.mesahaSoundEngineV377;
-      window.mesahaSoundFixV376 = window.mesahaSoundEngineV377;
-    }
-  }catch(e){}
-})();
-</script>
+<style id="mesaha-v380-boot-recovery-stable">
+/* v375: Ölçüm Özeti / Bakım içindeki sahte 0 Kayıt kartı kaldırıldı */
+.summary-card .summary-grid::after,
+.summary-card .summary-grid::before{
+  content:none!important;
+  display:none!important;
+}
+.summary-card .summary-grid{
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+}
+.summary-card .diameter-range-card{
+  background:linear-gradient(135deg,#f0fdf4,#fff)!important;
+}
+.summary-card .diameter-range-card b{
+  font-size:19px!important;
+  white-space:nowrap!important;
+}
+.summary-card .diameter-range-card small{
+  line-height:1.15!important;
+}
+@media(max-width:620px){
+  .summary-card .summary-grid{
+    grid-template-columns:1fr 1fr!important;
+  }
+}
+@media(max-width:380px){
+  .summary-card .summary-grid{
+    grid-template-columns:1fr!important;
+  }
+}
+</style>
 
 </head>
 <body>
 <div class="startup" id="startup">
 <div class="startup-card startup-card-v311">
 <img alt="" src="./assets/mesaha_logo.png"/>
-<strong>V3.69 •ExelanceX•</strong>
+<strong>V3.70 •ExelanceX•</strong>
 <span id="startupTitle">Mesaha İO hazırlanıyor…</span>
 <ul class="startup-steps" id="startupSteps">
 <li data-step="files">Dosyalar kontrol ediliyor</li>
@@ -632,7 +804,7 @@ section.hero-card{
 <header class="topbar">
 <div class="brand">
 <img alt="Mesaha İO" src="./assets/mesaha_logo.png"/>
-<div class="version-card"><b id="versionText">V3.69 •ExelanceX•</b><small>Yayın</small></div>
+<div class="version-card"><b id="versionText">V3.70 •ExelanceX•</b><small>Yayın</small></div>
 </div>
 <div class="user-badge login-needed" id="userBadge">Giriş Yap</div>
 <div class="top-actions-v316"><button class="panel-btn-v316" id="userPanelBtnV316" type="button">👤 Kullanıcı Paneli</button></div>
@@ -641,7 +813,7 @@ section.hero-card{
 <main>
 <section class="view active" id="homeView">
 <section class="hero-card">
-<img alt="Orman manzarası" class="hero-cover-image" decoding="async" fetchpriority="high" src="./assets/hero_forest_cover.png?v=379"/>
+<img alt="Orman manzarası" class="hero-cover-image" decoding="async" fetchpriority="high" src="./assets/hero_forest_cover.png?v=380"/>
 <div>
 <h1>Merhaba!</h1>
 <p>Orman ölçümlerini kolayca kaydedin ve yönetin.</p>
@@ -694,7 +866,7 @@ section.hero-card{
 </section>
 </section>
 <section class="view entry-view" id="entryView">
-<header class="entry-top"><div class="version-card"><b>V3.69 •ExelanceX•</b><small>Yayın</small></div><button class="btn primary" id="entryHomeBtn" type="button">🏠 Ana Sayfaya Dön</button></header>
+<header class="entry-top"><div class="version-card"><b>V3.70 •ExelanceX•</b><small>Yayın</small></div><button class="btn primary" id="entryHomeBtn" type="button">🏠 Ana Sayfaya Dön</button></header>
 <section class="entry-total"><div><small>Toplam Adet</small><b id="entryTotalCount">0</b></div><div><small>Toplam m³</small><b id="entryTotalM3">0 m³</b></div></section>
 <section class="entry-form card">
 <div class="cutter-row"><div class="chip-wrap" id="cutterChips"></div><button class="btn primary" id="addCutterBtn" type="button">＋ Kesimci Ekle</button></div>
@@ -3024,7 +3196,7 @@ button,input,textarea{font:inherit!important;}button{touch-action:manipulation!i
 .top-actions-v316{display:none!important;}
 .view{display:none!important;}.view.active{display:block!important;}
 .card,.hero-card,.status-card,.entry-form,.records-card,.guide-card,.settings-card,.sound-card,.maintenance-card,.panel-card-v316{background:var(--card)!important;border:1px solid rgba(220,235,228,.96)!important;border-radius:22px!important;box-shadow:0 12px 30px rgba(23,74,50,.085)!important;margin:10px 0!important;padding:14px!important;}
-.hero-card{position:relative!important;min-height:132px!important;overflow:hidden!important;display:flex!important;align-items:flex-start!important;justify-content:space-between!important;background:linear-gradient(90deg,rgba(255,255,255,.97) 0%,rgba(255,255,255,.92) 26%,rgba(255,255,255,.70) 48%,rgba(255,255,255,.18) 100%),url('./assets/hero_forest_cover.png?v=379') center right/cover no-repeat!important;border-color:#dfeae5!important;}
+.hero-card{position:relative!important;min-height:132px!important;overflow:hidden!important;display:flex!important;align-items:flex-start!important;justify-content:space-between!important;background:linear-gradient(90deg,rgba(255,255,255,.97) 0%,rgba(255,255,255,.92) 26%,rgba(255,255,255,.70) 48%,rgba(255,255,255,.18) 100%),url('./assets/hero_forest_cover.png?v=380') center right/cover no-repeat!important;border-color:#dfeae5!important;}
 .hero-card::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(255,255,255,.06),rgba(255,255,255,0));pointer-events:none;}
 .hero-card h1{position:relative!important;z-index:1!important;font-size:18px!important;line-height:1.08!important;margin:4px 0 8px!important;color:#173328!important;font-weight:950!important;letter-spacing:-.02em!important;text-shadow:0 1px 0 rgba(255,255,255,.40)!important;}.hero-card p{position:relative!important;z-index:1!important;max-width:220px!important;margin:0!important;font-size:12px!important;line-height:1.36!important;color:#4f655b!important;font-weight:780!important;text-shadow:0 1px 0 rgba(255,255,255,.35)!important;}.hero-forest{display:none!important;}
 .status-card{display:grid!important;grid-template-columns:1fr!important;gap:8px!important;margin-top:-16px!important;position:relative!important;z-index:2!important;background:rgba(255,255,255,.82)!important;}
@@ -3066,7 +3238,7 @@ button,input,textarea{font:inherit!important;}button{touch-action:manipulation!i
   function records(){try{return window.state&&Array.isArray(window.state.records)?window.state.records:[]}catch(e){return[]}}
   function rebuildTop(){
     var user=$('userBadge'); if(user && (!user.textContent || /Giriş Yap|Giris Yap/i.test(user.textContent))) user.textContent='Yakup • Yaylacık';
-    var top=qs('.topbar'); setText($('versionText'),'V3.69'); var title=qs('title'); if(title) title.textContent='Mesaha İO V3.69';
+    var top=qs('.topbar'); setText($('versionText'),'V3.70'); var title=qs('title'); if(title) title.textContent='Mesaha İO V3.70';
   }
   function rebuildBottomNav(){
     var nav=$('bottomNav'); if(!nav) return;
@@ -3417,10 +3589,10 @@ body:not(.entry-open) #entryView:not(.active){display:none!important;}
   function qs(sel,root){return (root||document).querySelector(sel)}
   function ready(fn){document.readyState==='loading'?document.addEventListener('DOMContentLoaded',fn,{once:true}):fn()}
   function setVersions(){
-    var vt=$('versionText'); if(vt) vt.textContent='V3.69';
-    qsa('.version-card b').forEach(function(b){ if(/^v3\.\d+/.test((b.textContent||'').trim())) b.textContent='V3.69'; });
+    var vt=$('versionText'); if(vt) vt.textContent='V3.70';
+    qsa('.version-card b').forEach(function(b){ if(/^v3\.\d+/.test((b.textContent||'').trim())) b.textContent='V3.70'; });
     qsa('.version-card small').forEach(function(s){ if(/v\d+/.test(s.textContent||'')) s.textContent='v330-fix'; });
-    if(document.title) document.title='Mesaha İO V3.69';
+    if(document.title) document.title='Mesaha İO V3.70';
   }
   function robustShow(view){
     ['home','entry','records','guide','settings'].forEach(function(v){var el=$(v+'View'); if(el){el.classList.toggle('active',v===view); el.style.display=(v===view?'block':'none');}});
@@ -3591,7 +3763,7 @@ input,select,textarea{background:#fff!important;color:#101828!important;border-c
 .hero-card::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(90deg,rgba(255,255,255,.97) 0%,rgba(255,255,255,.91) 28%,rgba(255,255,255,.66) 51%,rgba(255,255,255,.10) 100%)}
 .hero-card>div:first-of-type{position:relative!important;z-index:2!important}
 </style>
-<script src="./js/version.js?v=379"></script>
+<script src="./js/version.js?v=380"></script>
 
 
 <style id="mesaha-v359-final-tablet-and-facts">
@@ -3612,7 +3784,7 @@ input,select,textarea{background:#fff!important;color:#101828!important;border-c
 #app.app .hero-card{
   background:
     linear-gradient(90deg,rgba(255,255,255,.97) 0%,rgba(255,255,255,.91) 30%,rgba(255,255,255,.62) 58%,rgba(255,255,255,.13) 100%),
-    url('./assets/hero_forest_cover.png?v=379') center right/cover no-repeat!important;
+    url('./assets/hero_forest_cover.png?v=380') center right/cover no-repeat!important;
 }
 #forestFactText{
   display:block!important;
@@ -3966,16 +4138,208 @@ body.keyboard-open-v311 .entry-view.active .barcode-save{
 </script>
 
 
+<style id="mesaha-v368-terminal-home-scroll-perf">
+html.mesaha-terminal-lite,
+html.mesaha-terminal-lite body{scroll-behavior:auto!important}
+html.mesaha-terminal-lite body,
+html.mesaha-terminal-lite .app{overscroll-behavior-y:contain!important}
+html.mesaha-terminal-lite .hero-card,
+html.mesaha-terminal-lite .status-card,
+html.mesaha-terminal-lite .status-item,
+html.mesaha-terminal-lite .card,
+html.mesaha-terminal-lite .summary-card,
+html.mesaha-terminal-lite .recent-box,
+html.mesaha-terminal-lite .prod-total,
+html.mesaha-terminal-lite .record-card,
+html.mesaha-terminal-lite .bottom-nav,
+html.mesaha-terminal-lite .topbar{
+  box-shadow:none!important;
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
+  transform:none!important;
+  will-change:auto!important;
+}
+html.mesaha-terminal-lite .hero-card{background-attachment:scroll!important}
+html.mesaha-terminal-lite .hero-card::before,
+html.mesaha-terminal-lite .hero-card::after,
+html.mesaha-terminal-lite .status-icon::before,
+html.mesaha-terminal-lite .flash::before{
+  animation:none!important;
+  transition:none!important;
+}
+html.mesaha-terminal-lite .hero-fact,
+html.mesaha-terminal-lite #heroFact,
+html.mesaha-terminal-lite .hero-quote{transition:none!important}
+html.mesaha-terminal-lite .view.active{contain:layout paint!important}
+html.mesaha-terminal-lite .bottom-nav{
+  position:sticky!important;
+  bottom:8px!important;
+}
+html.mesaha-terminal-lite.scrolling-now .bottom-nav,
+html.mesaha-terminal-lite.scrolling-now .topbar{pointer-events:none!important}
+@media (pointer:coarse) and (max-width:900px){
+  html.mesaha-terminal-lite .app{padding-bottom:96px!important}
+}
+</style>
+<script id="mesaha-v368-terminal-home-scroll-perf">
+(function(){
+  'use strict';
+  var ua=navigator.userAgent||'';
+  var isTerminalLike=/Android/i.test(ua)&&!/iPhone|iPad|iPod/i.test(ua);
+  var lowMemory=false;
+  try{lowMemory=!!(navigator.deviceMemory&&navigator.deviceMemory<=4)}catch(e){}
+  var coarse=false;
+  try{coarse=!!(window.matchMedia&&matchMedia('(pointer: coarse)').matches)}catch(e){}
+  if(isTerminalLike&&(coarse||lowMemory||window.innerWidth<=900)){
+    document.documentElement.classList.add('mesaha-terminal-lite');
+  }
+  var scrollTimer=null,lastY=0;
+  function onScroll(){
+    if(!document.documentElement.classList.contains('mesaha-terminal-lite'))return;
+    var y=window.scrollY||document.documentElement.scrollTop||0;
+    if(Math.abs(y-lastY)<2)return;
+    lastY=y;
+    document.documentElement.classList.add('scrolling-now');
+    clearTimeout(scrollTimer);
+    scrollTimer=setTimeout(function(){document.documentElement.classList.remove('scrolling-now')},180);
+  }
+  window.addEventListener('scroll',onScroll,{passive:true});
+  window.addEventListener('touchmove',onScroll,{passive:true});
+  var resizeTimer=null;
+  window.addEventListener('resize',function(){
+    if(!document.documentElement.classList.contains('mesaha-terminal-lite'))return;
+    clearTimeout(resizeTimer);
+    resizeTimer=setTimeout(function(){
+      try{document.documentElement.style.setProperty('--vh368',window.innerHeight+'px')}catch(e){}
+    },160);
+  },{passive:true});
+  window.mesahaTerminalLiteV368={
+    enable:function(){document.documentElement.classList.add('mesaha-terminal-lite')},
+    disable:function(){document.documentElement.classList.remove('mesaha-terminal-lite')},
+    active:function(){return document.documentElement.classList.contains('mesaha-terminal-lite')}
+  };
+})();
+</script>
+
+
+<style id="mesaha-v370-bottom-nav-force">
+/* v370: terminal hafif modda kaybolan alt menüyü tekrar sabit ve görünür yap */
+.bottom-nav,
+html.mesaha-terminal-lite .bottom-nav,
+body.keyboard-open-v311.entry-open .bottom-nav,
+body.keyboard-open-v311 .entry-view.active ~ .bottom-nav{
+  display:grid!important;
+  visibility:visible!important;
+  opacity:1!important;
+  position:fixed!important;
+  left:50%!important;
+  right:auto!important;
+  bottom:calc(env(safe-area-inset-bottom,0px) + 8px)!important;
+  width:min(460px, calc(100vw - 18px))!important;
+  max-width:calc(100vw - 18px)!important;
+  transform:translateX(-50%)!important;
+  z-index:2147482500!important;
+  pointer-events:auto!important;
+  touch-action:manipulation!important;
+}
+html.mesaha-terminal-lite.scrolling-now .bottom-nav,
+html.mesaha-terminal-lite.scrolling-now .topbar{
+  pointer-events:auto!important;
+}
+.app{
+  padding-bottom:132px!important;
+}
+@media(min-width:620px){
+  .bottom-nav,
+  html.mesaha-terminal-lite .bottom-nav{
+    width:min(520px, calc(100vw - 22px))!important;
+  }
+}
+@media(max-width:430px){
+  .bottom-nav,
+  html.mesaha-terminal-lite .bottom-nav{
+    width:calc(100vw - 16px)!important;
+    bottom:calc(env(safe-area-inset-bottom,0px) + 6px)!important;
+  }
+}
+</style>
+<script id="mesaha-v370-bottom-nav-watch">
+(function(){
+  'use strict';
+  function fix(){
+    var nav=document.querySelector('.bottom-nav');
+    if(!nav) return;
+    nav.style.display='grid';
+    nav.style.visibility='visible';
+    nav.style.opacity='1';
+    nav.style.pointerEvents='auto';
+    nav.style.position='fixed';
+    nav.style.zIndex='2147482500';
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',fix,{once:true}); else fix();
+  [80,250,700,1500,3000].forEach(function(ms){setTimeout(fix,ms)});
+  window.addEventListener('resize',fix,{passive:true});
+  window.addEventListener('orientationchange',function(){setTimeout(fix,250)},{passive:true});
+})();
+</script>
+
+
+<style id="mesaha-v380-boot-recovery-stable">
+/* v371: terminal Chrome/WebView doğal kaydırma düzeltmesi */
+html,
+body{
+  height:auto!important;
+  min-height:100%!important;
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  touch-action:pan-y!important;
+  -webkit-overflow-scrolling:touch!important;
+  overscroll-behavior-y:auto!important;
+}
+.app,
+.view,
+.view.active,
+#homeView,
+#entryView,
+#recordsView,
+#guideView,
+#settingsView{
+  overflow:visible!important;
+  touch-action:pan-y!important;
+  -webkit-overflow-scrolling:touch!important;
+  overscroll-behavior-y:auto!important;
+  contain:none!important;
+}
+html.mesaha-terminal-lite body,
+html.mesaha-terminal-lite .app,
+html.mesaha-terminal-lite .view.active{
+  overscroll-behavior-y:auto!important;
+  contain:none!important;
+}
+html.mesaha-terminal-lite .bottom-nav,
+.bottom-nav{
+  position:fixed!important;
+  touch-action:manipulation!important;
+}
+html.mesaha-terminal-lite.scrolling-now .bottom-nav,
+html.mesaha-terminal-lite.scrolling-now .topbar{
+  pointer-events:auto!important;
+}
+.panel-overlay.hidden,
+.modal:not(.show),
+#userPanelOverlayV316.hidden,
+#cloudRestoreOverlayV316.hidden{
+  display:none!important;
+  pointer-events:none!important;
+}
+body.scroll-fixing-v371 *{
+  scroll-behavior:auto!important;
+}
+</style>
 
 
 
-
-<!-- v378 removed duplicate style id=mesaha-v379-layout-cleanup -->
-
-
-
-
-<style id="mesaha-v379-layout-cleanup">
+<style id="mesaha-v380-boot-recovery-stable">
 /* v372: Mesaha girme ekranında klavye açılınca alt menü klavyenin üstüne çıkmasın */
 body.entry-open.keyboard-open-v311 .bottom-nav,
 body.mesaha-entry-keyboard-open .bottom-nav,
@@ -4296,8 +4660,8 @@ body.product-tap-lock-v372 .entry-view.active{
   window.__mesahaSoundEngineV377Installed = true;
 
   var SRC = {
-    success:'./assets/ses_onay.wav?v=379',
-    warning:'./assets/ses_uyari.wav?v=379'
+    success:'./assets/ses_onay.wav?v=380',
+    warning:'./assets/ses_uyari.wav?v=380'
   };
   var pool = {};
   var last = {success:0, warning:0};
@@ -4465,246 +4829,128 @@ body.product-tap-lock-v372 .entry-view.active{
 </script>
 
 
-<style id="mesaha-v378-cleanup-css">
-/* v378: tekrar eden yama blokları azaltıldı; görsel davranış korunur */
-html[data-v378-cleanup="1"] body{
-  scroll-behavior:auto;
-}
-</style>
-<script id="mesaha-v378-cleanup-marker">
-document.documentElement.setAttribute('data-v378-cleanup','1');
-</script>
-
-
-<style id="mesaha-v379-layout-controller">
-/* v379: alt menü + klavye + scroll tek kontrol katmanı */
-html,body{
-  height:auto!important;
-  min-height:100%!important;
-  overflow-x:hidden!important;
-  overflow-y:auto!important;
-  touch-action:pan-y!important;
-  -webkit-overflow-scrolling:touch!important;
-  overscroll-behavior-y:auto!important;
-  scroll-behavior:auto!important;
-}
-.app{
-  width:100%!important;
-  max-width:720px!important;
-  margin:0 auto!important;
-  padding-bottom:calc(118px + env(safe-area-inset-bottom,0px))!important;
-}
-.view,.view.active{
-  overflow:visible!important;
-  touch-action:pan-y!important;
-  -webkit-overflow-scrolling:touch!important;
-  overscroll-behavior-y:auto!important;
-  contain:none!important;
-}
-.bottom-nav{
-  display:grid!important;
-  visibility:visible!important;
-  opacity:1!important;
-  position:fixed!important;
-  left:50%!important;
-  right:auto!important;
-  bottom:calc(env(safe-area-inset-bottom,0px) + 8px)!important;
-  transform:translateX(-50%)!important;
-  width:min(520px, calc(100vw - 18px))!important;
-  max-width:calc(100vw - 18px)!important;
-  z-index:2147482000!important;
-  pointer-events:auto!important;
-  touch-action:manipulation!important;
-}
-.bottom-nav button{
-  touch-action:manipulation!important;
-}
-body.mesaha-entry-keyboard-open .bottom-nav,
-html.mesaha-entry-keyboard-open .bottom-nav{
+<style id="mesaha-v380-boot-recovery-css">
+/* v380: Açılış ekranında sonsuz takılmayı engelle */
+body.mesaha-boot-force-open .splash,
+body.mesaha-boot-force-open #splash,
+body.mesaha-boot-force-open .boot-screen,
+body.mesaha-boot-force-open #bootScreen,
+body.mesaha-boot-force-open .loading-screen,
+body.mesaha-boot-force-open #loadingScreen{
   display:none!important;
   visibility:hidden!important;
   opacity:0!important;
   pointer-events:none!important;
 }
-body.mesaha-entry-keyboard-open #saveBtn,
-body.mesaha-entry-keyboard-open .entry-view.active .save-btn{
-  display:inline-flex!important;
-  align-items:center!important;
-  justify-content:center!important;
-  position:fixed!important;
-  right:12px!important;
-  bottom:calc(var(--mesaha-kb-bottom-v379, 0px) + env(safe-area-inset-bottom,0px) + 10px)!important;
-  width:148px!important;
-  min-height:58px!important;
-  border-radius:22px!important;
-  z-index:2147483000!important;
+body.mesaha-boot-force-open .app,
+body.mesaha-boot-force-open #app{
+  display:block!important;
   visibility:visible!important;
   opacity:1!important;
-  pointer-events:auto!important;
-  touch-action:manipulation!important;
-  transform:translateZ(0)!important;
-  box-shadow:0 18px 42px rgba(22,163,74,.36)!important;
-}
-body.mesaha-entry-keyboard-open .barcode-save{
-  padding-bottom:78px!important;
-}
-.entry-view.active #productButtons,
-.entry-view.active #productButtons button,
-.entry-view.active .product-grid,
-.entry-view.active .product-btn{
-  touch-action:manipulation!important;
-  scroll-margin:0!important;
-  -webkit-tap-highlight-color:rgba(22,163,74,.14)!important;
-}
-body.product-tap-lock-v379,
-body.product-tap-lock-v379 .entry-view.active{
-  scroll-behavior:auto!important;
-  overflow-anchor:none!important;
-}
-.panel-overlay.hidden,
-.modal:not(.show),
-#userPanelOverlayV316.hidden,
-#cloudRestoreOverlayV316.hidden{
-  display:none!important;
-  pointer-events:none!important;
-}
-@media(max-width:430px){
-  .bottom-nav{
-    width:calc(100vw - 16px)!important;
-    bottom:calc(env(safe-area-inset-bottom,0px) + 6px)!important;
-  }
-  body.mesaha-entry-keyboard-open #saveBtn{
-    right:10px!important;
-    width:126px!important;
-    min-height:56px!important;
-    font-size:18px!important;
-  }
 }
 </style>
-<script id="mesaha-v379-layout-controller">
+<script id="mesaha-v380-boot-recovery">
 (function(){
   'use strict';
-  if(window.__mesahaLayoutControllerV379) return;
-  window.__mesahaLayoutControllerV379 = true;
+  if(window.__mesahaBootRecoveryV380) return;
+  window.__mesahaBootRecoveryV380 = true;
 
-  var keyboardTimer = null;
-  var restoreTimer = null;
-  var baseHeight = window.innerHeight || 0;
-  var lastProductY = null;
+  var forced = false;
 
-  function byId(id){ return document.getElementById(id); }
-  function entryActive(){
-    var e = byId('entryView');
-    return !!(e && e.classList.contains('active'));
+  function q(sel){ try{return document.querySelector(sel)}catch(e){return null} }
+  function qa(sel){ try{return Array.prototype.slice.call(document.querySelectorAll(sel))}catch(e){return []} }
+
+  function splashVisible(){
+    var els = qa('.splash,#splash,.boot-screen,#bootScreen,.loading-screen,#loadingScreen,.startup-screen,#startupScreen');
+    return els.some(function(el){
+      if(!el) return false;
+      var cs = getComputedStyle(el);
+      var r = el.getBoundingClientRect();
+      return cs.display !== 'none' && cs.visibility !== 'hidden' && Number(cs.opacity || 1) > 0.05 && r.width > 20 && r.height > 20;
+    });
   }
-  function focusedEntryInput(){
-    var a = document.activeElement;
-    return !!(a && ['diameterInput','lengthInput','barcodeInput','quantityInput'].indexOf(a.id) >= 0);
+
+  function appVisible(){
+    var app = q('.app') || q('#app') || q('main');
+    if(!app) return false;
+    var cs = getComputedStyle(app);
+    var r = app.getBoundingClientRect();
+    return cs.display !== 'none' && cs.visibility !== 'hidden' && Number(cs.opacity || 1) > 0.05 && r.height > 50;
   }
-  function keyboardInset(){
+
+  function hideSplash(){
+    ['.splash','#splash','.boot-screen','#bootScreen','.loading-screen','#loadingScreen','.startup-screen','#startupScreen'].forEach(function(sel){
+      qa(sel).forEach(function(el){
+        try{
+          el.classList.add('hidden');
+          el.style.display = 'none';
+          el.style.visibility = 'hidden';
+          el.style.opacity = '0';
+          el.style.pointerEvents = 'none';
+        }catch(e){}
+      });
+    });
+  }
+
+  function showApp(){
+    ['.app','#app','main'].forEach(function(sel){
+      qa(sel).forEach(function(el){
+        try{
+          el.style.display = '';
+          el.style.visibility = 'visible';
+          el.style.opacity = '1';
+        }catch(e){}
+      });
+    });
+  }
+
+  function forceOpen(reason){
+    if(forced) return;
+    forced = true;
+    try{ console.warn('[Mesaha v380] Açılış koruması devreye girdi:', reason || 'timeout'); }catch(e){}
+    document.body.classList.add('mesaha-boot-force-open');
+    hideSplash();
+    showApp();
+
+    // Uygulama render fonksiyonları varsa tekrar çalıştır.
+    try{ if(typeof window.renderAll === 'function') window.renderAll(); }catch(e){}
+    try{ if(typeof window.renderHome === 'function') window.renderHome(); }catch(e){}
+    try{ if(typeof window.renderEntry === 'function') window.renderEntry(); }catch(e){}
+    try{ if(typeof window.renderRecords === 'function') window.renderRecords(); }catch(e){}
+
+    // View yoksa ana sayfaya geçmeyi dene.
+    try{ if(typeof window.showView === 'function') window.showView('home'); }catch(e){}
+  }
+
+  function check(ms){
+    setTimeout(function(){
+      if(appVisible() && !splashVisible()) return;
+      if(splashVisible()) forceOpen('splash-timeout-' + ms);
+    }, ms);
+  }
+
+  // 3.2 saniyeden sonra hâlâ açılmadıysa devam et.
+  [3200, 5200, 8000].forEach(check);
+
+  window.addEventListener('error', function(ev){
     try{
-      if(window.visualViewport){
-        var vv = window.visualViewport;
-        return Math.max(0, Math.round(window.innerHeight - vv.height - vv.offsetTop));
+      var msg = String(ev && (ev.message || ev.error && ev.error.message) || '');
+      if(/firebase|firestore|network|timeout|abort|version|serviceworker|cache/i.test(msg)){
+        setTimeout(function(){ forceOpen('error:' + msg.slice(0,80)); }, 300);
       }
     }catch(e){}
-    return 0;
-  }
-  function keyboardLikelyOpen(){
-    var inset = keyboardInset();
-    var h = window.innerHeight || 0;
-    var shrunk = baseHeight && h && (baseHeight - h > 110);
-    return entryActive() && focusedEntryInput() && (inset > 45 || shrunk || document.body.classList.contains('keyboard-open-v311'));
-  }
-  function sync(){
-    var inset = keyboardInset();
-    var open = keyboardLikelyOpen();
-    document.body.classList.toggle('mesaha-entry-keyboard-open', open);
-    document.documentElement.classList.toggle('mesaha-entry-keyboard-open', open);
-    document.documentElement.style.setProperty('--mesaha-kb-bottom-v379', open ? Math.max(0, inset) + 'px' : '0px');
+  });
 
-    var nav = document.querySelector('.bottom-nav');
-    if(nav && !open){
-      nav.style.display = 'grid';
-      nav.style.visibility = 'visible';
-      nav.style.opacity = '1';
-      nav.style.pointerEvents = 'auto';
-    }
+  window.addEventListener('unhandledrejection', function(ev){
+    try{
+      var msg = String(ev && ev.reason && (ev.reason.message || ev.reason) || '');
+      if(/firebase|firestore|network|timeout|abort|version|serviceworker|cache/i.test(msg)){
+        setTimeout(function(){ forceOpen('promise:' + msg.slice(0,80)); }, 300);
+      }
+    }catch(e){}
+  });
 
-    var save = byId('saveBtn');
-    if(save && open){
-      save.style.position = 'fixed';
-      save.style.zIndex = '2147483000';
-      save.style.visibility = 'visible';
-      save.style.opacity = '1';
-      save.style.pointerEvents = 'auto';
-    }
-  }
-  function delayedSync(){
-    clearTimeout(keyboardTimer);
-    sync();
-    keyboardTimer = setTimeout(sync, 160);
-  }
-  function currentY(){
-    return window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;
-  }
-  function restoreY(y){
-    try{ window.scrollTo({top:y, left:0, behavior:'auto'}); }
-    catch(e){ try{ window.scrollTo(0,y); }catch(_){} }
-  }
-  function isProductTarget(ev){
-    var t = ev && ev.target;
-    if(!t || !t.closest) return false;
-    return !!t.closest('#productButtons button,.product-btn,[data-product]');
-  }
-  function productTap(ev){
-    if(!entryActive() || !isProductTarget(ev)) return;
-    var y = currentY();
-    lastProductY = y;
-    document.body.classList.add('product-tap-lock-v379');
-    clearTimeout(restoreTimer);
-    [0,40,90,180,320].forEach(function(ms){
-      setTimeout(function(){
-        if(lastProductY === null) return;
-        if(Math.abs(currentY() - lastProductY) > 44) restoreY(lastProductY);
-      }, ms);
-    });
-    restoreTimer = setTimeout(function(){
-      document.body.classList.remove('product-tap-lock-v379');
-      lastProductY = null;
-    }, 450);
-  }
-  function bind(){
-    if((window.innerHeight || 0) > baseHeight) baseHeight = window.innerHeight || baseHeight;
-    delayedSync();
-
-    ['focusin','focusout','input','click','pointerup','touchend'].forEach(function(evt){
-      document.addEventListener(evt, delayedSync, {capture:true, passive:true});
-    });
-
-    ['pointerdown','touchstart','mousedown','click','pointerup','touchend'].forEach(function(evt){
-      document.addEventListener(evt, productTap, {capture:true, passive:true});
-    });
-
-    if(window.visualViewport){
-      window.visualViewport.addEventListener('resize', delayedSync, {passive:true});
-      window.visualViewport.addEventListener('scroll', delayedSync, {passive:true});
-    }
-    window.addEventListener('resize', function(){
-      if(!focusedEntryInput() && (window.innerHeight || 0) > baseHeight) baseHeight = window.innerHeight || baseHeight;
-      delayedSync();
-    }, {passive:true});
-    window.addEventListener('orientationchange', function(){
-      setTimeout(function(){ baseHeight = window.innerHeight || baseHeight; delayedSync(); }, 280);
-    }, {passive:true});
-  }
-
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bind, {once:true});
-  else bind();
-
-  [120,500,1400,3000].forEach(function(ms){ setTimeout(delayedSync, ms); });
-
-  window.mesahaLayoutControllerV379 = {sync:sync, fix:delayedSync};
+  window.mesahaBootRecoveryV380 = {forceOpen:forceOpen};
 })();
 </script>
 

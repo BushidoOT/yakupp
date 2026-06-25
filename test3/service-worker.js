@@ -1,7 +1,7 @@
-importScripts('./js/version.js?v=379');
+importScripts('./js/version.js?v=380');
 
-const META = self.MESAHA_VERSION || {"app": "V3.69", "version": "v379-layout-cleanup", "build": 379, "visibleVersion": "V3.69 •ExelanceX•", "shortVersion": "V3.69 •ExelanceX•", "name": "Mesaha İO V3.69 •ExelanceX•", "cacheName": "mesaha-app-v379-layout-cleanup", "builtAt": "2026-06-25T21:10:00+03:00", "notes": "CSS/klavye/alt menü temizlik aşaması: eski scroll-klavye-alt menü yamaları kaldırıldı, tek v379 layout controller eklendi. Kayıt/Excel/offline/ses çekirdeğine dokunulmadı.", "assetVersion": "379"};
-const CACHE_NAME = META.cacheName || 'mesaha-app-v379-layout-cleanup';
+const META = self.MESAHA_VERSION || {"app": "V3.70", "version": "v380-boot-recovery-stable", "build": 380, "visibleVersion": "V3.70 •ExelanceX•", "shortVersion": "V3.70 •ExelanceX•", "name": "Mesaha İO V3.70 •ExelanceX•", "cacheName": "mesaha-app-v380-boot-recovery-stable", "builtAt": "2026-06-25T21:25:00+03:00", "notes": "v378/v379 temizlik guard'ı geri alındı. v377 sağlam tabanına dönüldü. Açılış ekranında takılmaya karşı boot recovery eklendi. Zayıf internet sürüm kontrol beklemesi kısaltıldı.", "assetVersion": "380"};
+const CACHE_NAME = META.cacheName || 'mesaha-app-v380-boot-recovery-stable';
 const ASSETS = [
   "./",
   "./index.html",
@@ -9,12 +9,12 @@ const ASSETS = [
   "./manifest.json",
   "./version.json",
   "./service-worker.js",
-  "./js/version.js?v=379",
+  "./js/version.js?v=380",
   "./temizle.html",
   "./assets/icon-192.png",
   "./assets/icon-512.png",
   "./assets/mesaha_logo.png",
-  "./assets/hero_forest_cover.png?v=379",
+  "./assets/hero_forest_cover.png?v=380",
   "./assets/06_net_islem_onayi.wav",
   "./assets/08_hata_uyari_onaydan_farkli.wav"
 ];
@@ -31,7 +31,7 @@ self.addEventListener('activate', event => {
   );
 });
 
-const OFFLINE_TIMEOUT_MS = 1500;
+const OFFLINE_TIMEOUT_MS = 1200;
 
 function timeoutReject(ms, label){
   return new Promise((_, reject) => setTimeout(() => reject(new Error(label || 'network-timeout')), ms || OFFLINE_TIMEOUT_MS));
