@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
 <meta name="theme-color" content="#f4f7f6"/>
-<link rel="manifest" href="./manifest.json?v=376"/>
+<link rel="manifest" href="./manifest.json?v=379"/>
 <link rel="apple-touch-icon" href="./assets/icon-192.png"/>
 <title>Mesaha İO V3.66 •ExelanceX•</title>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
@@ -19,12 +19,13 @@
         try{ if('caches' in window){ var keys = await caches.keys(); await Promise.all(keys.map(function(k){ return caches.delete(k); })); } }catch(e){}
         if(!sessionStorage.getItem('mesaha_reset_done_v355')){
           sessionStorage.setItem('mesaha_reset_done_v355','1');
-          location.replace('./index.html?v=376&fresh=' + Date.now());
+          location.replace('./index.html?v=379&fresh=' + Date.now());
         }
       });
     }
   })();
   </script>
+<script src="./js/mesaha-early-optimizer.js?v=379"></script>
 <style id="mesaha-inline-style-v311">
 :root{--bg:#f6f9fc;--card:#fff;--text:#0f172a;--muted:#64748b;--line:#dbe5ef;--green:#16a34a;--green-light:#166534;--blue:#2563eb;--red:#dc2626;--yellow:#f4c20d;--orange:#f59e0b;--shadow:0 14px 34px rgba(15,23,42,.08);--radius:24px;}
 *{box-sizing:border-box}html{scroll-behavior:auto;-webkit-text-size-adjust:100%}body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-weight:750}button,input{font:inherit}button{cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation}input{width:100%;border:1px solid var(--line);border-radius:18px;padding:13px 16px;background:#fff;color:var(--text);font-weight:850;outline:none}input:focus{border-color:#93c5fd;box-shadow:0 0 0 4px rgba(37,99,235,.09)}.hidden{display:none!important}.app{max-width:980px;margin:0 auto;padding:14px 14px 128px}.startup{position:fixed;inset:0;background:var(--bg);display:grid;place-items:center;z-index:9999}.startup.hide{display:none}.startup-card{display:grid;gap:10px;place-items:center;background:var(--card);border:1px solid var(--line);border-radius:28px;padding:30px;box-shadow:var(--shadow)}.startup-card img{width:78px}.startup-card strong{font-size:24px}.startup-card span{color:var(--muted)}.topbar{position:sticky;top:0;z-index:50;margin:0 -14px 18px;padding:14px 16px;background:rgba(255,255,255,.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:12px}.brand{display:flex;align-items:center;gap:10px}.brand img{width:62px;height:62px;object-fit:contain}.version-card{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:18px;padding:9px 12px;background:#f8fafc;box-shadow:0 8px 20px rgba(15,23,42,.06)}.version-card b{font-size:15px}.version-card small{font-size:12px;color:#94a3b8;background:#edf2f7;padding:3px 7px;border-radius:999px}.user-badge{border:1px solid #dcefe4;background:#f0fdf4;color:#166534;border-radius:999px;padding:10px 18px;font-weight:950;white-space:nowrap}.icon-btn{width:54px;height:54px;border-radius:18px;border:1px solid var(--line);background:var(--card);color:#174f83;font-size:22px}.view{display:none}.view.active{display:block}.card,.hero-card,.status-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px;margin:16px 0}.hero-card{min-height:170px;display:flex;justify-content:space-between;overflow:hidden;position:relative;background:linear-gradient(90deg,rgba(255,255,255,.96) 0%,rgba(255,255,255,.90) 28%,rgba(255,255,255,.65) 52%,rgba(255,255,255,.18) 100%),url('./assets/hero_forest_cover.png');background-size:cover;background-position:center right;background-repeat:no-repeat}.hero-card h1{font-size:42px;line-height:1;margin:12px 0 12px;color:#133227;text-shadow:0 1px 0 rgba(255,255,255,.35)}.hero-card p{max-width:420px;margin:0;color:#4c6258;font-size:22px;text-shadow:0 1px 0 rgba(255,255,255,.30)}
@@ -476,7 +477,7 @@ body.keyboard-open-v311 .entry-form{
 <script id="mesaha-inline-version-v315">
 (function(root){
   'use strict';
-  const info = {"app": "V3.66", "version": "v376-user-sounds-warning-fix", "build": 355, "visibleVersion": "V3.66 •ExelanceX•", "shortVersion": "V3.66 •ExelanceX•", "name": "Mesaha İO V3.66 •ExelanceX•", "cacheName": "mesaha-app-v376-user-sounds-warning-fix", "builtAt": "2026-06-22T12:40:00+03:00", "notes": "ORBİS orijinal Mesaha_Ornek_Temp şablonuna göre Excel dışa aktarma düzeltildi.", "assetVersion": "355"};
+  const info = {"app": "V3.66", "version": "v379-stability-battery-offline-fix", "build": 355, "visibleVersion": "V3.66 •ExelanceX•", "shortVersion": "V3.66 •ExelanceX•", "name": "Mesaha İO V3.66 •ExelanceX•", "cacheName": "mesaha-app-v379-stability-battery-offline-fix", "builtAt": "2026-06-22T12:40:00+03:00", "notes": "ORBİS orijinal Mesaha_Ornek_Temp şablonuna göre Excel dışa aktarma düzeltildi.", "assetVersion": "355"};
   root.MESAHA_VERSION = info;
   root.MESAHA_VERSION_TEXT = info.visibleVersion;
   root.MESAHA_VERSION_SHORT = info.shortVersion;
@@ -490,7 +491,7 @@ body.keyboard-open-v311 .entry-form{
 </style>
 
 
-<style id="mesaha-v376-user-sounds-warning-fix">
+<style id="mesaha-v379-stability-battery-offline-fix">
 /* v358: tablet ve büyük ekran uyumluluğu */
 html, body{
   width:100%;
@@ -660,7 +661,7 @@ section.hero-card{
       rgba(255,255,255,.90) 28%,
       rgba(255,255,255,.68) 52%,
       rgba(255,255,255,.20) 100%),
-    url("./assets/hero_forest_cover.png?v=376")!important;
+    url("./assets/hero_forest_cover.png?v=379")!important;
   background-size:cover!important;
   background-position:center right!important;
   background-repeat:no-repeat!important;
@@ -702,7 +703,7 @@ section.hero-card{
 </style>
 
 
-<style id="mesaha-v376-user-sounds-warning-fix-2">
+<style id="mesaha-v379-stability-battery-offline-fix-2">
 /* v369: kullanım netliği */
 #entryHomeBtn{
   background:linear-gradient(135deg,#2563eb,#1d4ed8)!important;
@@ -762,7 +763,7 @@ section.hero-card{
 }
 </style>
 
-<style id="mesaha-v376-user-sounds-warning-fix-3">
+<style id="mesaha-v379-stability-battery-offline-fix-3">
 /* v375: Ölçüm Özeti / Bakım içindeki sahte 0 Kayıt kartı kaldırıldı */
 .summary-card .summary-grid::after,
 .summary-card .summary-grid::before{
@@ -822,7 +823,7 @@ section.hero-card{
 <main>
 <section class="view active" id="homeView">
 <section class="hero-card">
-<img alt="Orman manzarası" class="hero-cover-image" decoding="async" fetchpriority="high" src="./assets/hero_forest_cover.png?v=376"/>
+<img alt="Orman manzarası" class="hero-cover-image" decoding="async" fetchpriority="high" src="./assets/hero_forest_cover.png?v=379"/>
 <div>
 <h1>Merhaba!</h1>
 <p>Orman ölçümlerini kolayca kaydedin ve yönetin.</p>
@@ -1683,7 +1684,7 @@ root.OrbisXls = { downloadXls, makeXls, headers: HEADERS };
 'use strict';
 const STORAGE_KEY = 'cam_mesaha_kayitlari_v1';
 const SETTINGS_KEY = 'cam_mesaha_ayarlar_v1';
-const VERSION = window.MESAHA_VERSION || {shortVersion:'V3.66', version:'v376-user-sounds-warning-fix'};
+const VERSION = window.MESAHA_VERSION || {shortVersion:'V3.66', version:'v379-stability-battery-offline-fix'};
 const PRODUCTS = [
   {key:'Tomruk', label:'Tomruk', cls:'tomruk', rule:'Tomruk: çap 21 ve üzeri olmalı.'},
   {key:'Maden Direk', label:'Maden', cls:'maden', rule:'Maden: çap 20 ve altı olmalı.'},
@@ -2956,7 +2957,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
         await Promise.all(keys.map(k => caches.delete(k)));
       }
       await modal({title:'Ön bellek temizlendi', type:'success', icon:'✓', html:'<p>Eski dosyalar temizlendi. Uygulama şimdi kendini yeniden başlatacak.</p>', buttons:[{text:'Yeniden Başlat', value:true, cls:'primary'}]});
-      location.replace('./temizle.html?v=376&fresh=' + Date.now());
+      location.replace('./temizle.html?v=379&fresh=' + Date.now());
     }catch{
       modal({title:'Temizleme başarısız', type:'danger', icon:'!', message:'Ön bellek temizlenemedi.'});
     }
@@ -2998,10 +2999,10 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
       await fetch('./index.html?preload=' + Date.now(), {cache:'reload'}).catch(()=>{});
       await modal({title:'Güncelleme hazır', type:'success', icon:'✓', html:'<p>Dosyalar yenilendi. Uygulama şimdi yeniden başlatılacak.</p>', buttons:[{text:'Yeniden Başlat', value:true, cls:'primary'}]});
       try{
-        localStorage.setItem('mesaha_last_seen_version','v376-user-sounds-warning-fix');
-        localStorage.setItem('mesaha_current_version','v376-user-sounds-warning-fix');
+        localStorage.setItem('mesaha_last_seen_version','v379-stability-battery-offline-fix');
+        localStorage.setItem('mesaha_current_version','v379-stability-battery-offline-fix');
       }catch{}
-      location.replace('./temizle.html?v=376&fresh=' + Date.now());
+      location.replace('./temizle.html?v=379&fresh=' + Date.now());
     }catch{
       modal({title:'Güncelleme yapılamadı', type:'danger', icon:'!', message:'Bağlantı veya tarayıcı önbelleği nedeniyle güncelleme tamamlanamadı.'});
     }
@@ -3944,7 +3945,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   [100,400,1000,2000].forEach(ms => setTimeout(boot, ms));
 })();
   </script>
-<script id="mesaha-firebase-engine-v378" src="./js/mesaha-firebase.js?v=378"></script>
+<script id="mesaha-firebase-engine-v378" src="./js/mesaha-firebase.js?v=379"></script>
 <script id="mesaha-inline-v316-user-admin-panel">
 /* v316: Kullanıcı Paneli + Admin Paneli + Firebase eşitleme */
 (function(){
@@ -3999,7 +4000,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     const screenText=sw+'x'+sh;
     const viewport=vw+'x'+vh;
     const label=type+' • '+os+' • '+browser+' • '+screenText;
-    return {deviceId:getDeviceId(), userAgent:ua, platform:plat, screen:screenText, viewport, pixelRatio:window.devicePixelRatio||1, language:navigator.language||'', timezone:(Intl.DateTimeFormat().resolvedOptions().timeZone||''), deviceType:type, os, browser, lastDevice:label, appVersion:'V3.66', fileVersion:'v376-user-sounds-warning-fix'};
+    return {deviceId:getDeviceId(), userAgent:ua, platform:plat, screen:screenText, viewport, pixelRatio:window.devicePixelRatio||1, language:navigator.language||'', timezone:(Intl.DateTimeFormat().resolvedOptions().timeZone||''), deviceType:type, os, browser, lastDevice:label, appVersion:'V3.66', fileVersion:'v379-stability-battery-offline-fix'};
   }
   function readPanelUser(){ const u=jsonGet(PANEL_USER_KEY, {}); return {name:clean(u.name), seflik:clean(u.seflik), bolmeNo:clean(u.bolmeNo)}; }
   function writePanelUser(u){ const current=settings(); const name=clean(u.name), seflik=clean(u.seflik); const next=Object.assign({}, current, {ekipNot:name, seflik:seflik, bolmeNo:clean(u.bolmeNo)||''}); saveSettings(next); jsonSet(PANEL_USER_KEY, {name:next.ekipNot,seflik:next.seflik,bolmeNo:next.bolmeNo,updatedAt:new Date().toISOString()}); try{localStorage.setItem('mesaha_user_confirmed_v319','1')}catch{} ['ekipNot','seflik','bolmeNo'].forEach(id=>{ const el=$(id); if(el){ el.value=next[id]||''; try{el.dispatchEvent(new Event('input',{bubbles:true}));}catch{} } }); try{ if(typeof window.renderUser==='function') window.renderUser(); }catch{} const badge=$('userBadge'); if(badge){ badge.textContent=(next.ekipNot&&next.seflik)?(next.ekipNot+' • '+next.seflik):'Giriş Yap'; badge.classList.toggle('login-needed', !(next.ekipNot&&next.seflik)); } return true; }
@@ -4025,7 +4026,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     const nowMs=Date.now();
     const key=userKey(user.name,user.seflik);
     const {db}=await firebaseReady();
-    const payload={id:key,userKey:key,name:user.name,seflik:user.seflik,bolmeNo:user.bolmeNo,firstSeen:usage.firstSeen||trText(),firstSeenMs:Number(usage.firstSeenMs||nowMs),lastSeen:trText(),lastSeenMs:nowMs,lastLogin:trText(),lastLoginMs:nowMs,todayLoginCount:Number(usage.todayLoginCount||0),totalLoginCount:Number(usage.totalLoginCount||0),usageMs:Number(usage.totalMs||0),todayUsageMs:Number(usage.todayMs||0),recordCount:stats.recordCount,totalRecords:stats.recordCount,adet:stats.adet,totalM3:stats.m3,m3:stats.m3,todayRecords:stats.todayRecords,weekKey:weekKey(new Date()),weekRecordCount:stats.weekRecordCount,weekM3:stats.weekM3,treeTotals:stats.treeTotals,productTotals:stats.productTotals,deviceId:info.deviceId,lastDevice:info.lastDevice,lastDeviceInfo:info,deviceType:info.deviceType,os:info.os,browser:info.browser,screen:info.screen,viewport:info.viewport,pixelRatio:info.pixelRatio,language:info.language,timezone:info.timezone,userAgent:info.userAgent,appVersion:'V3.66',fileVersion:'v376-user-sounds-warning-fix',updatedBy:reason||'sync',updatedAt:trText(),updatedAtMs:nowMs,source:'firebase'};
+    const payload={id:key,userKey:key,name:user.name,seflik:user.seflik,bolmeNo:user.bolmeNo,firstSeen:usage.firstSeen||trText(),firstSeenMs:Number(usage.firstSeenMs||nowMs),lastSeen:trText(),lastSeenMs:nowMs,lastLogin:trText(),lastLoginMs:nowMs,todayLoginCount:Number(usage.todayLoginCount||0),totalLoginCount:Number(usage.totalLoginCount||0),usageMs:Number(usage.totalMs||0),todayUsageMs:Number(usage.todayMs||0),recordCount:stats.recordCount,totalRecords:stats.recordCount,adet:stats.adet,totalM3:stats.m3,m3:stats.m3,todayRecords:stats.todayRecords,weekKey:weekKey(new Date()),weekRecordCount:stats.weekRecordCount,weekM3:stats.weekM3,treeTotals:stats.treeTotals,productTotals:stats.productTotals,deviceId:info.deviceId,lastDevice:info.lastDevice,lastDeviceInfo:info,deviceType:info.deviceType,os:info.os,browser:info.browser,screen:info.screen,viewport:info.viewport,pixelRatio:info.pixelRatio,language:info.language,timezone:info.timezone,userAgent:info.userAgent,appVersion:'V3.66',fileVersion:'v379-stability-battery-offline-fix',updatedBy:reason||'sync',updatedAt:trText(),updatedAtMs:nowMs,source:'firebase'};
     try{usage.firstSeen=payload.firstSeen; usage.firstSeenMs=payload.firstSeenMs; jsonSet(USAGE_KEY,usage);}catch(e){}
     await db.collection('users').doc(key).set(payload, {merge:true});
     await db.collection('usageStats').doc(key).set(payload, {merge:true});
@@ -4059,7 +4060,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   const FIREBASE_CONFIG=(window.mesahaFirebaseV380&&window.mesahaFirebaseV380.config)||{};
   const SDK=(window.mesahaFirebaseV380&&window.mesahaFirebaseV380.sdkVersion)||'9.23.0';
   const APP_VERSION='V3.66';
-  const FILE_VERSION='v376-user-sounds-warning-fix';
+  const FILE_VERSION='v379-stability-battery-offline-fix';
   let readyPromise=null;
   let lastTick=Date.now();
   function $(id){return document.getElementById(id)}
@@ -4376,7 +4377,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   const FIREBASE_CONFIG=(window.mesahaFirebaseV380&&window.mesahaFirebaseV380.config)||{};
   const SDK='10.12.2';
   const APP_VERSION='V3.66';
-  const FILE_VERSION='v376-user-sounds-warning-fix';
+  const FILE_VERSION='v379-stability-battery-offline-fix';
   let readyPromise=null;
   let lastTick=Date.now();
   function $(id){return document.getElementById(id)}
@@ -4454,7 +4455,7 @@ button,input,textarea{font:inherit!important;}button{touch-action:manipulation!i
 .top-actions-v316{display:none!important;}
 .view{display:none!important;}.view.active{display:block!important;}
 .card,.hero-card,.status-card,.entry-form,.records-card,.guide-card,.settings-card,.sound-card,.maintenance-card,.panel-card-v316{background:var(--card)!important;border:1px solid rgba(220,235,228,.96)!important;border-radius:22px!important;box-shadow:0 12px 30px rgba(23,74,50,.085)!important;margin:10px 0!important;padding:14px!important;}
-.hero-card{position:relative!important;min-height:132px!important;overflow:hidden!important;display:flex!important;align-items:flex-start!important;justify-content:space-between!important;background:linear-gradient(90deg,rgba(255,255,255,.97) 0%,rgba(255,255,255,.92) 26%,rgba(255,255,255,.70) 48%,rgba(255,255,255,.18) 100%),url('./assets/hero_forest_cover.png?v=376') center right/cover no-repeat!important;border-color:#dfeae5!important;}
+.hero-card{position:relative!important;min-height:132px!important;overflow:hidden!important;display:flex!important;align-items:flex-start!important;justify-content:space-between!important;background:linear-gradient(90deg,rgba(255,255,255,.97) 0%,rgba(255,255,255,.92) 26%,rgba(255,255,255,.70) 48%,rgba(255,255,255,.18) 100%),url('./assets/hero_forest_cover.png?v=379') center right/cover no-repeat!important;border-color:#dfeae5!important;}
 .hero-card::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(255,255,255,.06),rgba(255,255,255,0));pointer-events:none;}
 .hero-card h1{position:relative!important;z-index:1!important;font-size:18px!important;line-height:1.08!important;margin:4px 0 8px!important;color:#173328!important;font-weight:950!important;letter-spacing:-.02em!important;text-shadow:0 1px 0 rgba(255,255,255,.40)!important;}.hero-card p{position:relative!important;z-index:1!important;max-width:220px!important;margin:0!important;font-size:12px!important;line-height:1.36!important;color:#4f655b!important;font-weight:780!important;text-shadow:0 1px 0 rgba(255,255,255,.35)!important;}.hero-forest{display:none!important;}
 .status-card{display:grid!important;grid-template-columns:1fr!important;gap:8px!important;margin-top:-16px!important;position:relative!important;z-index:2!important;background:rgba(255,255,255,.82)!important;}
@@ -4931,7 +4932,7 @@ body:not(.entry-open) #entryView:not(.active){display:none!important;}
   'use strict';
   var DISPLAY="V3.66 •ExelanceX•";
   var BUILD=354;
-  var info={"app": "V3.66", "version": "v376-user-sounds-warning-fix", "build": 355, "visibleVersion": "V3.66 •ExelanceX•", "shortVersion": "V3.66 •ExelanceX•", "name": "Mesaha İO V3.66 •ExelanceX•", "cacheName": "mesaha-app-v376-user-sounds-warning-fix", "builtAt": "2026-06-22T12:40:00+03:00", "notes": "ORBİS orijinal Mesaha_Ornek_Temp şablonuna göre Excel dışa aktarma düzeltildi.", "assetVersion": "355"};
+  var info={"app": "V3.66", "version": "v379-stability-battery-offline-fix", "build": 355, "visibleVersion": "V3.66 •ExelanceX•", "shortVersion": "V3.66 •ExelanceX•", "name": "Mesaha İO V3.66 •ExelanceX•", "cacheName": "mesaha-app-v379-stability-battery-offline-fix", "builtAt": "2026-06-22T12:40:00+03:00", "notes": "ORBİS orijinal Mesaha_Ornek_Temp şablonuna göre Excel dışa aktarma düzeltildi.", "assetVersion": "355"};
   window.MESAHA_VERSION=info;
   window.MESAHA_VERSION_TEXT=DISPLAY;
   window.MESAHA_VERSION_SHORT=DISPLAY;
@@ -5082,7 +5083,7 @@ body:not(.entry-open) #entryView:not(.active){display:none!important;}
     var st=document.querySelector('#startup strong'); if(st) st.textContent=DISPLAY;
     qsa('.version-card b').forEach(function(b){ b.textContent=DISPLAY; });
     qsa('.version-card small').forEach(function(s){ s.textContent=''; });
-    window.MESAHA_VERSION={app:APP,version:'v376-user-sounds-warning-fix',build:BUILD,visibleVersion:DISPLAY,shortVersion:DISPLAY,name:'Mesaha İO '+DISPLAY,cacheName:'mesaha-app-v376-user-sounds-warning-fix',assetVersion:String(BUILD)};
+    window.MESAHA_VERSION={app:APP,version:'v379-stability-battery-offline-fix',build:BUILD,visibleVersion:DISPLAY,shortVersion:DISPLAY,name:'Mesaha İO '+DISPLAY,cacheName:'mesaha-app-v379-stability-battery-offline-fix',assetVersion:String(BUILD)};
     window.MESAHA_VERSION_TEXT=DISPLAY;
     window.MESAHA_VERSION_SHORT=DISPLAY;
   }
@@ -5095,7 +5096,7 @@ body:not(.entry-open) #entryView:not(.active){display:none!important;}
 <script id="mesaha-v354-lovable-clean-light-final-4">
 (function(){
   'use strict';
-  var DISPLAY='V3.66 •ExelanceX•', APP='V3.66', BUILD=354, VERSION='v376-user-sounds-warning-fix', CACHE='mesaha-app-v376-user-sounds-warning-fix';
+  var DISPLAY='V3.66 •ExelanceX•', APP='V3.66', BUILD=354, VERSION='v379-stability-battery-offline-fix', CACHE='mesaha-app-v379-stability-battery-offline-fix';
   function $(id){return document.getElementById(id)}
   function qsa(sel){return Array.prototype.slice.call(document.querySelectorAll(sel))}
   function applyVersion(){
@@ -5141,7 +5142,7 @@ input,select,textarea{background:#fff!important;color:#101828!important;border-c
 <script id="mesaha-v351-light-only-clean-script">
 (function(){
   'use strict';
-  var META={app:'V3.66',version:'v376-user-sounds-warning-fix',build:354,visibleVersion:'V3.66 •ExelanceX•',shortVersion:'V3.66 •ExelanceX•',name:'Mesaha İO V3.66 •ExelanceX•',cacheName:'mesaha-app-v376-user-sounds-warning-fix',assetVersion:"354"};
+  var META={app:'V3.66',version:'v379-stability-battery-offline-fix',build:354,visibleVersion:'V3.66 •ExelanceX•',shortVersion:'V3.66 •ExelanceX•',name:'Mesaha İO V3.66 •ExelanceX•',cacheName:'mesaha-app-v379-stability-battery-offline-fix',assetVersion:"354"};
   function $(id){return document.getElementById(id)}
   function all(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))}
   function clean(){
@@ -5176,12 +5177,13 @@ input,select,textarea{background:#fff!important;color:#101828!important;border-c
 .hero-card::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(90deg,rgba(255,255,255,.97) 0%,rgba(255,255,255,.91) 28%,rgba(255,255,255,.66) 51%,rgba(255,255,255,.10) 100%)}
 .hero-card>div:first-of-type{position:relative!important;z-index:2!important}
 </style>
-<script src="./js/version.js?v=378"></script>
+<script src="./js/version.js?v=379"></script>
+<script id="mesaha-offline-core-v379" src="./js/mesaha-offline-core.js?v=379"></script>
 <script id="mesaha-v354-version-guard">
 (function(){
   'use strict';
   var META=window.MESAHA_VERSION;
-  if(!META||META.version!=='v376-user-sounds-warning-fix') return;
+  if(!META||META.version!=='v379-stability-battery-offline-fix') return;
   function lock(name,value){
     try{Object.defineProperty(window,name,{configurable:false,enumerable:true,get:function(){return value},set:function(){}})}
     catch(e){try{window[name]=value}catch(_){}}
@@ -5229,7 +5231,7 @@ input,select,textarea{background:#fff!important;color:#101828!important;border-c
 #app.app .hero-card{
   background:
     linear-gradient(90deg,rgba(255,255,255,.97) 0%,rgba(255,255,255,.91) 30%,rgba(255,255,255,.62) 58%,rgba(255,255,255,.13) 100%),
-    url('./assets/hero_forest_cover.png?v=376') center right/cover no-repeat!important;
+    url('./assets/hero_forest_cover.png?v=379') center right/cover no-repeat!important;
 }
 #forestFactText{
   display:block!important;
@@ -5729,7 +5731,7 @@ html.mesaha-terminal-lite.scrolling-now .topbar{
 </script>
 
 
-<style id="mesaha-v376-user-sounds-warning-fix-4">
+<style id="mesaha-v379-stability-battery-offline-fix-4">
 /* v371: terminal Chrome/WebView doğal kaydırma düzeltmesi */
 html,
 body{
@@ -5781,7 +5783,7 @@ body.scroll-fixing-v371 *{
   scroll-behavior:auto!important;
 }
 </style>
-<script id="mesaha-v376-user-sounds-warning-fix-5">
+<script id="mesaha-v379-stability-battery-offline-fix-5">
 (function(){
   'use strict';
 
@@ -5864,7 +5866,7 @@ body.scroll-fixing-v371 *{
 </script>
 
 
-<style id="mesaha-v376-user-sounds-warning-fix-6">
+<style id="mesaha-v379-stability-battery-offline-fix-6">
 /* v372: Mesaha girme ekranında klavye açılınca alt menü klavyenin üstüne çıkmasın */
 body.entry-open.keyboard-open-v311 .bottom-nav,
 body.mesaha-entry-keyboard-open .bottom-nav,
@@ -5932,7 +5934,7 @@ body.product-tap-lock-v372 .entry-view.active{
   }
 }
 </style>
-<script id="mesaha-v376-user-sounds-warning-fix-7">
+<script id="mesaha-v379-stability-battery-offline-fix-7">
 (function(){
   'use strict';
 
@@ -6306,6 +6308,7 @@ body.product-tap-lock-v372 .entry-view.active{
 </script>
 
 
-<script id="mesaha-sound-engine-v377" src="./js/mesaha-sound.js?v=378"></script>
+<script id="mesaha-sound-engine-v377" src="./js/mesaha-sound.js?v=379"></script>
+
 </body>
 </html>
