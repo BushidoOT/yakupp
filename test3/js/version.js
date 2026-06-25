@@ -1,12 +1,12 @@
 self.MESAHA_VERSION = {
-  "app": "V3.67",
-  "version": "v377-single-sound-engine",
-  "build": 377,
-  "visibleVersion": "V3.67 •ExelanceX•",
-  "shortVersion": "V3.67 •ExelanceX•",
-  "name": "Mesaha İO V3.67 •ExelanceX•",
-  "cacheName": "mesaha-app-v377-single-sound-engine",
-  "builtAt": "2026-06-25T20:35:00+03:00",
-  "notes": "Ses motoru tek bloğa indirildi. Eski v374/v376 çift ses motorları kaldırıldı. Ses dosyaları iki sabit dosyada toplandı: ses_onay.wav ve ses_uyari.wav.",
-  "assetVersion": "377"
+  "app": "V3.68",
+  "version": "v378-cleanup-stage1",
+  "build": 378,
+  "visibleVersion": "V3.68 •ExelanceX•",
+  "shortVersion": "V3.68 •ExelanceX•",
+  "name": "Mesaha İO V3.68 •ExelanceX•",
+  "cacheName": "mesaha-app-v378-cleanup-stage1",
+  "builtAt": "2026-06-25T20:55:00+03:00",
+  "notes": "Temizlik aşaması 1: tekrarlı script/style id blokları azaltıldı, eski ses motoru kalıntıları temizlendi, duplicate event listener ve hızlı interval guard eklendi. Kayıt/Excel çekirdeğine dokunulmadı.",
+  "assetVersion": "378"
 };

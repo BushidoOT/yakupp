@@ -1,7 +1,7 @@
-importScripts('./js/version.js?v=377');
+importScripts('./js/version.js?v=378');
 
-const META = self.MESAHA_VERSION || {"app": "V3.67", "version": "v377-single-sound-engine", "build": 377, "visibleVersion": "V3.67 •ExelanceX•", "shortVersion": "V3.67 •ExelanceX•", "name": "Mesaha İO V3.67 •ExelanceX•", "cacheName": "mesaha-app-v377-single-sound-engine", "builtAt": "2026-06-25T20:35:00+03:00", "notes": "Ses motoru tek bloğa indirildi. Eski v374/v376 çift ses motorları kaldırıldı. Ses dosyaları iki sabit dosyada toplandı: ses_onay.wav ve ses_uyari.wav.", "assetVersion": "377"};
-const CACHE_NAME = META.cacheName || 'mesaha-app-v377-single-sound-engine';
+const META = self.MESAHA_VERSION || {"app": "V3.68", "version": "v378-cleanup-stage1", "build": 378, "visibleVersion": "V3.68 •ExelanceX•", "shortVersion": "V3.68 •ExelanceX•", "name": "Mesaha İO V3.68 •ExelanceX•", "cacheName": "mesaha-app-v378-cleanup-stage1", "builtAt": "2026-06-25T20:55:00+03:00", "notes": "Temizlik aşaması 1: tekrarlı script/style id blokları azaltıldı, eski ses motoru kalıntıları temizlendi, duplicate event listener ve hızlı interval guard eklendi. Kayıt/Excel çekirdeğine dokunulmadı.", "assetVersion": "378"};
+const CACHE_NAME = META.cacheName || 'mesaha-app-v378-cleanup-stage1';
 const ASSETS = [
   "./",
   "./index.html",
@@ -9,12 +9,12 @@ const ASSETS = [
   "./manifest.json",
   "./version.json",
   "./service-worker.js",
-  "./js/version.js?v=377",
+  "./js/version.js?v=378",
   "./temizle.html",
   "./assets/icon-192.png",
   "./assets/icon-512.png",
   "./assets/mesaha_logo.png",
-  "./assets/hero_forest_cover.png?v=377",
+  "./assets/hero_forest_cover.png?v=378",
   "./assets/06_net_islem_onayi.wav",
   "./assets/08_hata_uyari_onaydan_farkli.wav"
 ];
