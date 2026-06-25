@@ -1,7 +1,7 @@
-importScripts('./js/version.js?v=382');
+importScripts('./js/version.js?v=377');
 
-const META = self.MESAHA_VERSION || {"app": "V3.72", "version": "v382-startup-rewrite", "build": 382, "visibleVersion": "V3.72 •ExelanceX•", "shortVersion": "V3.72 •ExelanceX•", "name": "Mesaha İO V3.72 •ExelanceX•", "cacheName": "mesaha-app-v382-startup-rewrite", "builtAt": "2026-06-25T21:55:00+03:00", "notes": "Açılış ekranı devre dışı bırakılmadan yeniden kodlandı. Dosya, kayıt, sürüm ve offline kontrolleri zaman aşımıyla çalışır; hata olsa bile uygulama ana ekrana devam eder.", "assetVersion": "382"};
-const CACHE_NAME = META.cacheName || 'mesaha-app-v382-startup-rewrite';
+const META = self.MESAHA_VERSION || {"app": "V3.66", "version": "v377-single-sound-engine-fix", "build": 377, "visibleVersion": "V3.66 •ExelanceX•", "shortVersion": "V3.66 •ExelanceX•", "name": "Mesaha İO V3.66 •ExelanceX•", "cacheName": "mesaha-app-v377-single-sound-engine-fix", "builtAt": "2026-06-25T21:45:00+03:00", "notes": "Tek ses motoru kullanıldı; onay ve uyarı iki ayrı WAV olarak sabitlendi.", "assetVersion": "377"};
+const CACHE_NAME = META.cacheName || 'mesaha-app-v377-single-sound-engine-fix';
 const ASSETS = [
   "./",
   "./index.html",
@@ -9,14 +9,15 @@ const ASSETS = [
   "./manifest.json",
   "./version.json",
   "./service-worker.js",
-  "./js/version.js?v=382",
+  "./js/version.js?v=377",
   "./temizle.html",
   "./assets/icon-192.png",
   "./assets/icon-512.png",
   "./assets/mesaha_logo.png",
-  "./assets/hero_forest_cover.png?v=382",
-  "./assets/06_net_islem_onayi.wav",
-  "./assets/08_hata_uyari_onaydan_farkli.wav"
+  "./assets/hero_forest_cover.png?v=377",
+  "./js/mesaha-sound.js?v=377",
+  "./assets/mesaha_onay.wav?v=377",
+  "./assets/mesaha_uyari.wav?v=377"
 ];
 
 self.addEventListener('install', event => {
@@ -31,7 +32,7 @@ self.addEventListener('activate', event => {
   );
 });
 
-const OFFLINE_TIMEOUT_MS = 1200;
+const OFFLINE_TIMEOUT_MS = 1500;
 
 function timeoutReject(ms, label){
   return new Promise((_, reject) => setTimeout(() => reject(new Error(label || 'network-timeout')), ms || OFFLINE_TIMEOUT_MS));
@@ -166,4 +167,4 @@ self.addEventListener('fetch', event => {
   })());
 });
 
-// v374 sound assets: ./assets/mesaha_onay_v376.wav?v=376 ./assets/mesaha_uyari_v376.wav?v=376
+// v377 sound assets: ./assets/mesaha_onay.wav?v=377 ./assets/mesaha_uyari.wav?v=377
