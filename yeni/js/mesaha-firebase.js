@@ -73,11 +73,12 @@
     catch(e){ readyPromise = null; throw e; }
   }
 
-  window.mesahaFirebaseV380 = {
+  window.mesahaFirebaseV383 = {
     config: CONFIG,
     sdkVersion: SDK_VERSION,
     ready: ready,
     loadScript: loadScript,
     withTimeout: withTimeout
   };
+  window.mesahaFirebaseV380 = window.mesahaFirebaseV383;
 })();

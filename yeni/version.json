@@ -1,12 +1,12 @@
 {
-  "app": "V3.67",
-  "version": "v380-version-warning-fix",
-  "build": 380,
-  "visibleVersion": "V3.67 •ExelanceX•",
-  "shortVersion": "V3.67 •ExelanceX•",
-  "name": "Mesaha İO V3.67 •ExelanceX•",
-  "cacheName": "mesaha-app-v380-version-warning-fix",
-  "builtAt": "2026-06-25T23:05:00+03:00",
-  "notes": "Görünür sürüm V3.67 yapıldı; güncelleme uyarısının aynı sürümde tekrar tekrar görünmesi engellendi.",
-  "assetVersion": "380"
+  "app": "V3.70",
+  "version": "v383-offline-cache-guvenli",
+  "build": 383,
+  "visibleVersion": "V3.70 •ExelanceX•",
+  "shortVersion": "V3.70 •ExelanceX•",
+  "name": "Mesaha İO V3.70 •ExelanceX•",
+  "cacheName": "mesaha-app-v383-offline-cache-guvenli",
+  "builtAt": "2026-06-25T23:30:00+03:00",
+  "notes": "Offline cache mimarisi shell/asset olarak ayrıldı; güncelleme ve beyaz sayfa riski azaltıldı.",
+  "assetVersion": "383"
 }
