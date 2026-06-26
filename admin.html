@@ -6,8 +6,8 @@
 <meta name="theme-color" content="#ffffff"/>
 <link rel="manifest" href="./manifest.json?v=390"/>
 <link rel="apple-touch-icon" href="./assets/icon-192.png"/>
-<title>Mesaha Admin V3.75</title>
-<style id="mesaha-v390-support-reply-hotfix">
+<title>Mesaha Admin V3.79</title>
+<style id="mesaha-v394-video-linkleri-hotfix">
 
 :root{
   --bg:#f6f8fb;
@@ -62,7 +62,7 @@ a{color:inherit}.hidden{display:none!important}.app{width:min(1180px,100%);margi
 
 <div class="app">
   <header class="top">
-    <div class="brand"><img alt="" src="./assets/mesaha_logo.png"/><div><b>Mesaha İO Admin</b><small>Beyaz Yönetim Paneli • V3.75</small></div></div>
+    <div class="brand"><img alt="" src="./assets/mesaha_logo.png"/><div><b>Mesaha İO Admin</b><small>Beyaz Yönetim Paneli • V3.79</small></div></div>
     <div class="top-actions"><a class="btn soft app-return-btn" data-app-home href="./index.html" title="Normal uygulamaya dön">← Uygulama</a><button class="btn green" id="refreshBtn" type="button">Yenile</button></div>
   </header>
 
@@ -236,7 +236,7 @@ async function deleteAllTickets(){if(!confirm('Tüm bildirimler silinsin mi?'))r
 async function deleteOldBackups(){if(!confirm('30 günden eski yedekler silinsin mi?'))return;const limit=Date.now()-30*86400000;const{db}=await ready();for(const b of state.backups.filter(x=>n(x.createdAtMs)<limit))await deleteBackupFull(db,b.id);toast('Eski yedekler temizlendi');await loadAll()}
 async function resetStats(){if(!confirm('İstatistik başlangıcı bugüne alınsın mı?'))return;const{db}=await ready();await db.collection('adminSettings').doc('statsReset').set({resetAt:new Date().toLocaleString('tr-TR'),resetAtMs:Date.now()},{merge:true});toast('İstatistik başlangıcı yenilendi')}
 async function health(){try{const{db,auth}=await ready();await db.collection('healthChecks').doc('adminPanel').set({ok:true,at:new Date().toLocaleString('tr-TR'),atMs:Date.now(),uid:auth.currentUser&&auth.currentUser.uid},{merge:true});toast('Firebase bağlantısı sağlam')}catch(e){toast(errText(e))}}
-function exportAll(){const blob=new Blob([JSON.stringify({exportedAt:new Date().toISOString(),version:'v389-download-button-hotfix',users:state.users,backups:state.backups,tickets:state.tickets,usage:state.usage},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='mesaha_admin_tum_veriler_v389.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+function exportAll(){const blob=new Blob([JSON.stringify({exportedAt:new Date().toISOString(),version:'v394-video-linkleri-hotfix',users:state.users,backups:state.backups,tickets:state.tickets,usage:state.usage},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='mesaha_admin_tum_veriler_v394.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
 function showUserModal(key){const u=state.users.find(x=>userKeyOf(x)===key);if(!u)return;const bks=userBackups(key);const last=n(u.lastSeenMs||u.lastLoginMs||u.updatedAtMs);const active=last>=Date.now()-15*60000;$('modalTitle').textContent=(u.name||'-')+' • kullanıcı detayı';$('modalBody').innerHTML=`<div class="phone-card"><div class="phone-head"><div class="row"><div class="avatar">${esc(initials(u.name))}</div><div><b>${esc(u.name||'-')}</b><small>${esc(u.seflik||'-')} • Bölme ${esc(u.bolmeNo||'-')}</small></div></div><span class="pill ${active?'green':''}">${active?'Çevrimiçi':shortDate(last,u.lastSeen)}</span></div><div class="inside"><div class="mini-grid"><div class="mini"><small>Toplam kayıt</small><b>${int(u.recordCount||u.totalRecords)}</b></div><div class="mini"><small>Toplam m³</small><b>${m3(u.m3||u.totalM3)}</b></div><div class="mini"><small>Bugün giriş</small><b>${int(u.todayLoginCount)}</b></div><div class="mini"><small>Toplam süre</small><b>${msText(u.usageMs)}</b></div><div class="mini"><small>Son görülme</small><b>${shortDate(last,u.lastSeen||u.lastLogin)}</b></div><div class="mini"><small>Yedek sayısı</small><b>${int(bks.length)}</b></div></div><h3>Cihaz Bilgileri</h3><div class="mini-grid"><div class="mini"><small>Cihaz Türü</small><b>${deviceTypeOf(u)}</b></div><div class="mini"><small>İşletim Sistemi</small><b>${osOf(u)}</b></div><div class="mini"><small>Tarayıcı</small><b>${esc(u.browser||(u.lastDeviceInfo&&u.lastDeviceInfo.browser)||'-')}</b></div><div class="mini"><small>Ekran</small><b>${esc(u.screen||(u.lastDeviceInfo&&u.lastDeviceInfo.screen)||'-')}</b></div><div class="mini"><small>Görünen Alan</small><b>${esc(u.viewport||(u.lastDeviceInfo&&u.lastDeviceInfo.viewport)||'-')}</b></div><div class="mini"><small>Cihaz ID</small><b>${esc(u.deviceId||'-')}</b></div></div><div class="screen-grid" style="margin-top:14px"><div><h3>Ağaç Toplamları</h3>${totalsBars(u.treeTotals)}</div><div><h3>Ürün Toplamları</h3>${totalsBars(u.productTotals)}</div></div><h3>Bulut Yedekleri</h3>${bks.length?bks.map(b=>`<div class="backup"><div class="space"><div><b>${esc(b.fileName||'Yedek')}</b><p style="margin:4px 0 0;color:var(--muted)">${esc(b.createdAt||'-')} • ${int(b.recordCount)} kayıt • ${m3(b.m3)}</p></div><button class="btn danger" data-backup-delete="${esc(b.id)}" type="button">Sil</button></div></div>`).join(''):'<div class="empty">Yedek yok.</div>'}</div></div>`;$('modal').classList.add('show')}
 
 function goAppHome(e){
