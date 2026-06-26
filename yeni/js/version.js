@@ -1,12 +1,12 @@
 window.MESAHA_VERSION = {
-  "app": "V3.79",
-  "version": "v394-video-linkleri-hotfix",
-  "build": 394,
-  "visibleVersion": "V3.79 •ExelanceX•",
-  "shortVersion": "V3.79 •ExelanceX•",
-  "name": "Mesaha İO V3.79 •ExelanceX•",
-  "cacheName": "mesaha-app-v394-video-linkleri-hotfix",
-  "builtAt": "2026-06-26T19:35:00+03:00",
-  "notes": "Kılavuza uygulama kullanım videosu eklendi; ORBİS aktarım video linki güncellendi.",
-  "assetVersion": "394"
+  "app": "V3.80",
+  "version": "v395-mobil-panel-scroll-zoom-hotfix",
+  "build": 395,
+  "visibleVersion": "V3.80 •ExelanceX•",
+  "shortVersion": "V3.80 •ExelanceX•",
+  "name": "Mesaha İO V3.80 •ExelanceX•",
+  "cacheName": "mesaha-app-v395-mobil-panel-scroll-zoom-hotfix",
+  "builtAt": "2026-06-26T20:10:00+03:00",
+  "notes": "Mobil kullanıcı panelinde arka sayfa kayması ve input yakınlaşma sorunu düzeltildi.",
+  "assetVersion": "395"
 };
