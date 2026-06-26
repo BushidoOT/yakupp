@@ -1,12 +1,12 @@
-self.MESAHA_VERSION = {
-  "app": "V3.62",
-  "version": "v372-keyboard-save-visible-fix",
-  "build": 372,
-  "visibleVersion": "V3.62 •ExelanceX•",
-  "shortVersion": "V3.62 •ExelanceX•",
-  "name": "Mesaha İO V3.62 •ExelanceX•",
-  "cacheName": "mesaha-app-v372-keyboard-save-visible-fix",
-  "builtAt": "2026-06-22T17:30:00+03:00",
-  "notes": "Mesaha girme ekranında klavye açıkken alt menü gizlenir ve Kaydet butonu görünen alana sabitlenir. Ürün butonlarında sayfa zıplaması azaltıldı.",
-  "assetVersion": "372"
+window.MESAHA_VERSION = {
+  "app": "V3.75",
+  "version": "v389-download-button-hotfix",
+  "build": 389,
+  "visibleVersion": "V3.75 •ExelanceX•",
+  "shortVersion": "V3.75 •ExelanceX•",
+  "name": "Mesaha İO V3.75 •ExelanceX•",
+  "cacheName": "mesaha-app-v389-download-button-hotfix",
+  "builtAt": "2026-06-26T05:05:00+03:00",
+  "notes": "Mesaha Dosyasını İndir butonu daha belirgin ve farklı renkli yapıldı.",
+  "assetVersion": "389"
 };
