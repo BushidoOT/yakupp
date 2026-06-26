@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<meta name="theme-color" content="#ffffff"/>
+<link rel="manifest" href="./manifest.json?v=390"/>
+<link rel="apple-touch-icon" href="./assets/icon-192.png"/>
+<title>Mesaha Admin V3.75</title>
+<style id="mesaha-v390-support-reply-hotfix">
+
+:root{
+  --bg:#f6f8fb;
+  --surface:#ffffff;
+  --surface-2:#f9fafb;
+  --text:#111827;
+  --muted:#6b7280;
+  --soft:#eef2f7;
+  --line:#e5e7eb;
+  --line-2:#dbe2ea;
+  --green:#16a34a;
+  --green-bg:#ecfdf3;
+  --green-line:#bbf7d0;
+  --blue:#2563eb;
+  --blue-bg:#eff6ff;
+  --orange:#d97706;
+  --orange-bg:#fff7ed;
+  --red:#dc2626;
+  --red-bg:#fef2f2;
+  --shadow:0 14px 38px rgba(15,23,42,.08);
+  --shadow-soft:0 8px 22px rgba(15,23,42,.05);
+  --radius:22px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;background:var(--bg)}
+body{margin:0;min-height:100vh;color:var(--text);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:linear-gradient(180deg,#f9fafb 0%,#f4f7fb 44%,#eef3f8 100%);font-weight:650;overflow-x:hidden}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer;-webkit-tap-highlight-color:transparent}
+a{color:inherit}.hidden{display:none!important}.app{width:min(1180px,100%);margin:0 auto;padding:18px 18px 108px}.top{position:sticky;top:0;z-index:50;margin:-18px -18px 18px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;background:rgba(255,255,255,.92);border-bottom:1px solid var(--line);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}.brand{display:flex;align-items:center;gap:12px;min-width:0}.brand img{width:48px;height:48px;object-fit:contain;border-radius:16px;background:#fff;border:1px solid var(--line);box-shadow:var(--shadow-soft)}.brand b{display:block;font-size:20px;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.brand small{display:block;margin-top:2px;color:var(--muted);font-size:12px;font-weight:800}.top-actions{display:flex;align-items:center;gap:8px;flex:0 0 auto}.btn{appearance:none;border:1px solid transparent;border-radius:16px;min-height:42px;padding:10px 14px;background:var(--surface);color:var(--text);font-weight:900;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px;box-shadow:var(--shadow-soft);transition:transform .12s ease,box-shadow .12s ease,border-color .12s ease,background .12s ease}.btn:active{transform:translateY(1px);box-shadow:none}.btn.green,.btn.primary{background:var(--green);border-color:var(--green);color:#fff}.btn.soft{background:#fff;border-color:var(--line);color:#334155;box-shadow:none}.btn.warn{background:var(--orange-bg);border-color:#fed7aa;color:#9a3412;box-shadow:none}.btn.danger{background:var(--red-bg);border-color:#fecaca;color:#991b1b;box-shadow:none}.btn.icon{width:44px;padding:0}.card,.phone-card,.user-card,.backup,.ticket{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow-soft)}.card{padding:18px;margin:14px 0}.login-card{max-width:440px;margin:72px auto;text-align:center;padding:26px;border-radius:28px;box-shadow:var(--shadow)}.login-card img{width:74px;height:74px;object-fit:contain;border:1px solid var(--line);border-radius:24px;background:#fff;padding:8px;box-shadow:var(--shadow-soft)}.login-card h1{margin:16px 0 8px;font-size:28px;letter-spacing:-.03em}.login-card p{margin:0 0 14px}.field{display:block;text-align:left;margin:14px 0;font-weight:900}.field span{display:block;margin:0 0 7px;color:#374151}.input,input,select,textarea{width:100%;border:1px solid var(--line-2);border-radius:16px;padding:12px 13px;background:#fff;color:var(--text);font-weight:750;outline:none;box-shadow:0 1px 0 rgba(15,23,42,.02)}input:focus,select:focus,textarea:focus{border-color:#86efac;box-shadow:0 0 0 4px rgba(34,197,94,.12)}input::placeholder,textarea::placeholder{color:#9ca3af}.panel{display:none}.panel.active{display:block}.hero{display:grid;grid-template-columns:1.15fr .85fr;gap:14px;align-items:stretch}.welcome{position:relative;overflow:hidden;margin:0;background:linear-gradient(135deg,#fff 0%,#f7fbff 55%,#eefdf3 100%);box-shadow:var(--shadow)}.welcome:after{content:"";position:absolute;right:-58px;top:-58px;width:190px;height:190px;border-radius:999px;background:rgba(34,197,94,.11);border:1px solid rgba(34,197,94,.14)}.welcome h1{position:relative;margin:0 0 8px;font-size:34px;line-height:1.05;letter-spacing:-.04em}.welcome p{position:relative;margin:0;color:var(--muted);line-height:1.45}.date-pill,.pill,.chip{display:inline-flex;align-items:center;justify-content:center;gap:7px;width:max-content;max-width:100%;border-radius:999px;padding:7px 10px;background:#f8fafc;border:1px solid var(--line);color:#64748b;font-size:12px;font-weight:900}.date-pill{position:relative;margin-bottom:18px;background:#fff;color:#0f172a}.pill.green,.chip.green{background:var(--green-bg);border-color:var(--green-line);color:#166534}.pill.red{background:var(--red-bg);border-color:#fecaca;color:#991b1b}.status-pills{position:relative;display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}.kpi-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.kpi{position:relative;overflow:hidden;border:1px solid var(--line);border-radius:22px;background:#fff;padding:16px;min-height:116px;box-shadow:var(--shadow-soft)}.kpi:after{content:"";position:absolute;inset:auto -30px -54px auto;width:112px;height:112px;border-radius:50%;background:rgba(37,99,235,.07)}.kpi .ico{width:42px;height:42px;border-radius:15px;display:grid;place-items:center;margin-bottom:10px;background:var(--blue-bg);color:var(--blue);font-size:21px}.kpi:nth-child(2) .ico{background:var(--green-bg);color:var(--green)}.kpi:nth-child(3) .ico{background:#f5f3ff;color:#7c3aed}.kpi:nth-child(4) .ico{background:var(--orange-bg);color:var(--orange)}.kpi small{display:block;color:var(--muted);font-size:12px}.kpi b{display:block;margin-top:4px;font-size:28px;line-height:1;letter-spacing:-.04em}.quick-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:14px 0}.quick{min-height:96px;border:1px solid var(--line);border-radius:22px;background:#fff;padding:14px;text-align:left;display:grid;align-content:center;gap:6px;box-shadow:var(--shadow-soft);color:var(--text)}.quick span{font-size:24px}.quick b{font-size:15px}.quick small{color:var(--muted);font-size:12px}.section-title{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin:18px 2px 12px}.section-title h2{margin:0;font-size:26px;letter-spacing:-.035em}.section-title p{margin:4px 0 0;color:var(--muted);font-size:14px}.screen-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.phone-card{overflow:hidden;border-radius:24px}.phone-head{padding:16px 16px 8px;display:flex;align-items:center;justify-content:space-between;gap:10px;border-bottom:1px solid transparent}.phone-head b{font-size:18px}.inside{padding:12px 16px 16px}.list{display:grid;gap:10px}.person{display:grid;grid-template-columns:46px 1fr auto;gap:11px;align-items:center;padding:11px;border:1px solid var(--line);border-radius:18px;background:var(--surface-2)}.avatar{width:46px;height:46px;border-radius:16px;display:grid;place-items:center;background:linear-gradient(135deg,#16a34a,#2563eb);color:#fff;font-weight:1000;box-shadow:0 8px 18px rgba(37,99,235,.14)}.person b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.person small{display:block;color:var(--muted);font-size:12px}.metric{text-align:right}.metric b{font-size:15px}.metric small{font-size:11px}.toolbar{display:grid;grid-template-columns:1.35fr .8fr .8fr auto;gap:9px;margin-bottom:12px}.user-card{padding:14px;border-radius:22px}.user-card .topline{display:grid;grid-template-columns:50px 1fr auto;gap:12px;align-items:center}.user-card .topline:hover{cursor:pointer}.chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:11px}.detail{display:none;margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}.user-card.open .detail{display:block}.mini-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.mini{border:1px solid var(--line);border-radius:16px;background:var(--surface-2);padding:10px;min-width:0}.mini small{display:block;color:var(--muted);font-size:12px}.mini b{display:block;margin-top:3px;word-break:break-word}.bars{display:grid;gap:8px}.bar{display:grid;grid-template-columns:105px 1fr 68px;gap:8px;align-items:center;font-size:12px;color:#475569}.bar .track{height:10px;background:#eef2f7;border:1px solid var(--line);border-radius:999px;overflow:hidden}.bar i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,#16a34a,#2563eb)}.backup,.ticket{padding:14px;display:grid;gap:9px;border-radius:22px}.backup h3,.ticket h3{color:var(--text);font-size:18px}.row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.space{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}.empty{border:1px dashed #cbd5e1;border-radius:20px;text-align:center;padding:26px;color:var(--muted);background:#fff}.danger-zone{background:#fff;border-color:#fecaca}.danger-zone summary{cursor:pointer;color:#991b1b;font-weight:950}.tabs{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:70;width:min(560px,calc(100vw - 24px));display:grid;grid-template-columns:repeat(5,1fr);gap:6px;padding:8px;border-radius:24px;background:rgba(255,255,255,.94);border:1px solid var(--line);box-shadow:0 18px 48px rgba(15,23,42,.16);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}.tab{border:0;border-radius:17px;background:transparent;color:#64748b;padding:8px 4px;font-size:12px;font-weight:950;display:grid;place-items:center;gap:2px}.tab span{font-size:19px}.tab.active{background:var(--green-bg);color:#166534}.modal{position:fixed;inset:0;background:rgba(15,23,42,.42);z-index:90;display:none;align-items:flex-end;justify-content:center;padding:14px;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}.modal.show{display:flex}.modal-card{width:min(900px,100%);max-height:88vh;overflow:auto;background:#fff;border:1px solid var(--line);border-radius:28px;padding:18px;box-shadow:0 30px 80px rgba(15,23,42,.25)}.toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);z-index:120;max-width:min(92vw,520px);background:#111827;color:#fff;border-radius:16px;padding:12px 14px;box-shadow:0 18px 40px rgba(0,0,0,.25);display:none;font-weight:900}.toast.show{display:block}.chart-wrap{display:grid;gap:12px}.chart-top{display:flex;align-items:end;justify-content:space-between;gap:10px}.chart-top b{font-size:28px;color:var(--text)}.chart-top small{color:var(--muted);font-weight:900}.mini-svg{width:100%;height:116px;display:block;overflow:visible}.mini-svg path.area{fill:rgba(37,99,235,.10)}.mini-svg path.line{fill:none;stroke:#2563eb;stroke-width:4;stroke-linecap:round;stroke-linejoin:round}.mini-svg circle{fill:#fff;stroke:#2563eb;stroke-width:3}.device-row{display:grid;grid-template-columns:42px 1fr auto;gap:10px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}.device-row:last-child{border-bottom:0}.device-ico{width:42px;height:42px;border-radius:15px;display:grid;place-items:center;background:var(--blue-bg);color:var(--blue)}.device-row b{display:block}.device-row small{display:block;color:var(--muted)}.device-pct{font-weight:1000;color:var(--green)}.hide-desktop{display:none}
+
+.app-return-btn{white-space:nowrap;background:#f8fafc!important;border-color:#dbe2ea!important;color:#0f172a!important}
+.app-return-inline{width:100%;margin-top:10px;box-shadow:none}
+@media (max-width:900px){.top-actions .btn.soft.app-return-btn{display:inline-flex!important}.app-return-btn{padding:9px 10px;font-size:13px}.top-actions{flex-wrap:nowrap}.brand img{width:42px;height:42px}.brand small{max-width:132px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}}
+@media (max-width:430px){.app-return-btn{min-width:0}.top-actions #refreshBtn{padding:9px 10px}.brand{gap:9px}}
+@media (max-width:900px){.app{padding:12px 12px 104px}.top{margin:-12px -12px 12px;padding:12px}.hero,.screen-grid{grid-template-columns:1fr}.quick-grid{grid-template-columns:1fr 1fr}.toolbar{grid-template-columns:1fr}.top-actions .btn.soft:not(.app-return-btn){display:none}.kpi-grid,.mini-grid{grid-template-columns:1fr 1fr}.welcome h1{font-size:29px}.section-title{align-items:flex-start}.tabs{bottom:8px;width:calc(100vw - 16px)}.hide-mobile{display:none}.hide-desktop{display:initial}.person{grid-template-columns:42px 1fr auto}.avatar{width:42px;height:42px;border-radius:15px}.modal{padding:8px}.modal-card{border-radius:26px 26px 0 0;max-height:92vh}}
+@media (max-width:430px){.brand b{font-size:17px}.brand small{font-size:11px}.top-actions{gap:6px}.btn{min-height:40px;padding:9px 11px}.kpi-grid,.quick-grid,.mini-grid{grid-template-columns:1fr}.kpi{min-height:102px}.user-card .topline{grid-template-columns:46px 1fr}.user-card .topline>.row{grid-column:1/-1;display:grid;width:100%;grid-template-columns:1fr 1fr}.person{grid-template-columns:42px 1fr}.metric{text-align:left;grid-column:2}.space{display:grid}.bar{grid-template-columns:78px 1fr 58px}.tabs .tab{font-size:11px}.tabs .tab span{font-size:18px}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+
+
+/* v390: admin cevap sistemi */
+.ticket-message-v390{margin:0;line-height:1.5;color:#1f2937}
+.ticket-reply-box-v390{border:1px solid #bbf7d0;background:#f0fdf4;border-radius:18px;padding:12px;display:grid;gap:4px}
+.ticket-reply-box-v390 b{color:#166534}
+.ticket-reply-box-v390 small{color:#64748b;font-weight:850}
+.ticket-answer-v390{display:grid;gap:8px;border-top:1px solid var(--line);padding-top:10px;margin-top:4px}
+.ticket-answer-v390 textarea{min-height:82px;resize:vertical}
+.ticket-answer-v390 .btn{justify-self:start}
+@media(max-width:520px){.ticket-answer-v390 .btn{width:100%}}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <header class="top">
+    <div class="brand"><img alt="" src="./assets/mesaha_logo.png"/><div><b>Mesaha İO Admin</b><small>Beyaz Yönetim Paneli • V3.75</small></div></div>
+    <div class="top-actions"><a class="btn soft app-return-btn" data-app-home href="./index.html" title="Normal uygulamaya dön">← Uygulama</a><button class="btn green" id="refreshBtn" type="button">Yenile</button></div>
+  </header>
+
+  <section class="card login-card" id="lockCard">
+    <img alt="" src="./assets/mesaha_logo.png"/>
+    <h1>Admin Girişi</h1>
+    <p class="pill">Kontrol merkezi kilitli</p>
+    <label class="field"><span>Admin Şifresi</span><input id="adminCode" inputmode="numeric" placeholder="••••" type="password"/></label>
+    <button class="btn green" id="unlockBtn" style="width:100%" type="button">Panele Gir</button>
+    <p id="lockMsg" style="color:#dc2626;font-weight:900"></p>
+    <a class="btn soft app-return-inline" data-app-home href="./index.html">← Normal Uygulamaya Dön</a>
+  </section>
+
+  <main class="hidden" id="adminMain">
+    <section class="panel active" id="tab-home">
+      <div class="hero">
+        <div class="card welcome">
+          <span class="date-pill" id="todayPill">📅 Bugün</span>
+          <h1>Yönetim Özeti</h1>
+          <p>Kullanıcı, cihaz, bulut yedeği ve bildirimleri sade bir panelden takip et.</p>
+          <div class="status-pills"><span class="pill" id="syncInfo">Firebase bekliyor</span><span class="pill green" id="onlinePill">Online</span><span class="pill" id="newTicketPill">0 bildirim</span></div>
+        </div>
+        <div class="kpi-grid">
+          <div class="kpi"><div class="ico">👥</div><small>Toplam Kullanıcı</small><b id="kUsers">0</b></div>
+          <div class="kpi"><div class="ico">⚡</div><small>Bugün Aktif</small><b id="kActive">0</b></div>
+          <div class="kpi"><div class="ico">📈</div><small>Toplam Ölçüm</small><b id="kRecords">0</b></div>
+          <div class="kpi"><div class="ico">🌲</div><small>Toplam m³</small><b id="kM3">0</b></div>
+        </div>
+      </div>
+      <div class="quick-grid">
+          <a class="quick" data-app-home data-app-home-quick href="./index.html"><span>🏠</span><b>Uygulamaya Dön</b><small>Normal mesaha ekranı</small></a>
+        <button class="quick" data-go="users"><span>👤</span><b>Kullanıcılar</b><small>Aktiflik ve cihaz</small></button>
+        <button class="quick" data-go="backups"><span>☁️</span><b>Yedekler</b><small>Bulut kayıtları</small></button>
+        <button class="quick" data-go="tickets"><span>🔔</span><b>Bildirimler</b><small>Kullanıcı mesajları</small></button>
+        <button class="quick" data-go="tools"><span>⚙️</span><b>Araçlar</b><small>Sistem işlemleri</small></button>
+      </div>
+      <div class="screen-grid">
+        <div class="phone-card chart-card"><div class="phone-head"><b>Aktivite Özeti</b><span class="pill green">Son 7 gün</span></div><div class="inside" id="activityMiniChart"></div></div>
+        <div class="phone-card"><div class="phone-head"><b>Cihaz Dağılımı</b><span class="pill" id="deviceTotalPill">0 cihaz</span></div><div class="inside" id="deviceSummary"></div></div>
+        <div class="phone-card"><div class="phone-head"><b>Aktif Kullanıcılar</b><button class="btn soft" data-go="users" type="button">Tümü</button></div><div class="inside list" id="homeUsers"></div></div>
+        <div class="phone-card"><div class="phone-head"><b>Son Hareketler</b><button class="btn soft" data-go="backups" type="button">Yedekler</button></div><div class="inside list" id="homeFeed"></div></div>
+      </div>
+    </section>
+
+    <section class="panel" id="tab-users">
+      <div class="section-title"><div><h2>Kullanıcılar</h2><p>Kullanıcı, cihaz, aktiflik ve yedek detayları.</p></div><button class="btn green" id="refreshBtn2" type="button">Yenile</button></div>
+      <div class="toolbar"><input id="userSearch" placeholder="Kullanıcı, şeflik, cihaz ara..."/><select id="seflikFilter"><option value="">Tüm Şeflikler</option></select><select id="userSort"><option value="last">Son görülen</option><option value="records">Kayıt sayısı</option><option value="m3">Toplam m³</option><option value="duration">Süre</option></select><button class="btn soft" id="clearFiltersBtn" type="button">Temizle</button></div>
+      <div class="list" id="usersList"></div>
+    </section>
+
+    <section class="panel" id="tab-backups">
+      <div class="section-title"><div><h2>Bulut Yedekleri</h2><p>Kullanıcıların yedeklerini kontrol et ve gerekirse sil.</p></div><span class="pill green" id="backupCount">0 yedek</span></div>
+      <div class="toolbar" style="grid-template-columns:1fr auto"><input id="backupUserFilter" placeholder="Kullanıcı veya şeflik ara..."/><button class="btn warn" id="oldBackupsTopBtn" type="button">30+ Gün Sil</button></div>
+      <div class="list" id="backupsList"></div>
+    </section>
+
+    <section class="panel" id="tab-tickets">
+      <div class="section-title"><div><h2>Bildirimler</h2><p>Kullanıcıların sorun mesajları.</p></div><div class="row"><button class="btn soft" id="showAllTicketsBtn" type="button">Tümünü Göster</button><button class="btn warn" id="clearReadTicketsBtn" type="button">Okunanları Sil</button></div></div>
+      <div class="list" id="ticketsList"></div>
+    </section>
+
+    <section class="panel" id="tab-tools">
+      <div class="section-title"><div><h2>Araçlar</h2><p>Güçlü işlemler burada; ana ekranı karıştırmaz.</p></div></div>
+      <div class="screen-grid">
+        <div class="card"><h2>Güvenli Araçlar</h2><div class="list"><button class="btn green" id="healthBtn" type="button">Firebase Bağlantı Testi</button><button class="btn soft" id="exportBtn" type="button">Tüm Verileri JSON İndir</button><button class="btn warn" id="resetStatsBtn" type="button">İstatistik Başlangıcını Bugüne Al</button></div></div>
+        <div class="card danger-zone"><details><summary>Tehlikeli İşlemler</summary><div class="list" style="margin-top:12px"><button class="btn danger" id="deleteOldBackupsBtn" type="button">30 Günden Eski Yedekleri Sil</button><button class="btn danger" id="deleteAllTicketsBtn" type="button">Tüm Bildirimleri Sil</button></div></details></div>
+      </div>
+    </section>
+  </main>
+</div>
+<nav aria-label="Admin sekmeleri" class="tabs hidden" id="tabs">
+  <button class="tab active" data-tab="home"><span>⌂</span>Özet</button>
+  <button class="tab" data-tab="users"><span>👤</span>Kullanıcı</button>
+  <button class="tab" data-tab="backups"><span>☁️</span>Yedek</button>
+  <button class="tab" data-tab="tickets"><span>🔔</span>Bildirim</button>
+  <button class="tab" data-tab="tools"><span>⚙️</span>Araç</button>
+</nav>
+<div class="modal" id="modal"><div class="modal-card"><div class="space"><h2 id="modalTitle">Detay</h2><button class="btn soft" id="modalClose" type="button">Kapat</button></div><div id="modalBody"></div></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+'use strict';
+const ADMIN_CODE='4767';
+const FIREBASE_CONFIG={apiKey:'AIzaSyCKveylTPgKmWEMmYf-aFj6yLXB5CKAiJ0',authDomain:'mesaha-io.firebaseapp.com',projectId:'mesaha-io',storageBucket:'mesaha-io.firebasestorage.app',messagingSenderId:'840655878243',appId:'1:840655878243:web:add76f52bbf55ad9dd6056',measurementId:'G-81JPD5ZY44'};
+const SDK='10.12.2';
+const $=id=>document.getElementById(id);
+const state={users:[],backups:[],tickets:[],usage:[],showAllTickets:false,ready:false};
+let readyPromise=null;
+function esc(v){return String(v==null?'':v).replace(/[&<>'"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[m]))}
+function n(v){const x=Number(v||0);return Number.isFinite(x)?x:0}
+function int(v){return Math.round(n(v)).toLocaleString('tr-TR')}
+function m3(v){return n(v).toLocaleString('tr-TR',{minimumFractionDigits:3,maximumFractionDigits:3})}
+function msText(ms){ms=n(ms);if(!ms)return '-';const m=Math.floor(ms/60000),h=Math.floor(m/60);if(h)return h+' sa '+(m%60)+' dk';return Math.max(1,m)+' dk'}
+function todayStart(){const d=new Date();d.setHours(0,0,0,0);return d.getTime()}
+function shortDate(ms,txt){ms=n(ms);if(!ms)return txt||'-';const d=new Date(ms);return d.toLocaleString('tr-TR',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})}
+function initials(name){return String(name||'?').trim().split(/\s+/).slice(0,2).map(x=>x[0]||'').join('').toUpperCase()||'?'}
+function errText(e){const m=(e&&e.message)||String(e||'Hata');if(/permission|Missing or insufficient permissions/i.test(m))return 'Firebase izin/rules kontrol et';if(/network|offline|internet/i.test(m))return 'İnternet bağlantısı yok';return m.slice(0,140)}
+function toast(msg){const el=$('toast');el.textContent=msg;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),2600)}
+function loadScript(src){return new Promise((res,rej)=>{const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=()=>rej(new Error('SDK yüklenemedi'));document.head.appendChild(s)})}
+function withTimeout(p,ms,label){return Promise.race([p,new Promise((_,rej)=>setTimeout(()=>rej(new Error((label||'İşlem')+' zaman aşımı')),ms))])}
+async function ready(){if(!navigator.onLine)throw new Error('İnternet bağlantısı yok');if(!readyPromise){readyPromise=(async()=>{const b='https://www.gstatic.com/firebasejs/'+SDK;if(!window.firebase||!window.firebase.apps){await loadScript(b+'/firebase-app-compat.js');await loadScript(b+'/firebase-auth-compat.js');await loadScript(b+'/firebase-firestore-compat.js')}if(!window.firebase.apps.length)window.firebase.initializeApp(FIREBASE_CONFIG);const auth=window.firebase.auth();if(!auth.currentUser)await withTimeout(auth.signInAnonymously(),12000,'Firebase giriş');const db=window.firebase.firestore();try{db.settings({experimentalForceLongPolling:true})}catch{}try{await db.enableNetwork()}catch{}return{db,auth}})()}try{return await readyPromise}catch(e){readyPromise=null;throw e}}
+async function getCol(db,name){const snap=await withTimeout(db.collection(name).get(),18000,name);const arr=[];snap.forEach(d=>arr.push(Object.assign({id:d.id},d.data()||{})));return arr}
+function userKeyOf(u){return String(u.userKey||u.id||((u.name||'')+'__'+(u.seflik||''))).toLowerCase()}
+function mergeUsers(){const map=new Map();for(const u of state.users){const k=userKeyOf(u);if(k)map.set(k,Object.assign({},u,{userKey:k}))}for(const s of state.usage){const k=userKeyOf(s);if(!k)continue;const old=map.get(k)||{};const newer=n(s.lastSeenMs||s.updatedAtMs)>n(old.lastSeenMs||old.updatedAtMs);map.set(k,Object.assign({},old,newer?s:{}, {userKey:k,name:old.name||s.name,seflik:old.seflik||s.seflik,bolmeNo:old.bolmeNo||s.bolmeNo}))}state.users=[...map.values()].filter(u=>u.name||u.seflik).sort((a,b)=>n(b.lastSeenMs||b.lastLoginMs||b.updatedAtMs)-n(a.lastSeenMs||a.lastLoginMs||a.updatedAtMs))}
+async function loadAll(){try{$('syncInfo').textContent='Firebase okunuyor…';const {db}=await ready();const [users,backups,tickets,usage]=await Promise.all([getCol(db,'users'),getCol(db,'backups'),getCol(db,'supportTickets'),getCol(db,'usageStats').catch(()=>[])]);state.users=users;state.backups=backups.sort((a,b)=>n(b.createdAtMs)-n(a.createdAtMs));state.tickets=tickets.sort((a,b)=>n(b.createdAtMs)-n(a.createdAtMs));state.usage=usage;mergeUsers();state.ready=true;$('syncInfo').textContent='Güncellendi • '+new Date().toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'});fillFilters();render()}catch(e){$('syncInfo').textContent='Firebase okunamadı: '+errText(e);toast(errText(e))}}
+function fillFilters(){const sel=$('seflikFilter'),cur=sel.value;const vals=[...new Set(state.users.map(u=>u.seflik).filter(Boolean))].sort((a,b)=>String(a).localeCompare(String(b),'tr'));sel.innerHTML='<option value="">Tüm Şeflikler</option>'+vals.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join('');sel.value=cur}
+function userBackups(key){return state.backups.filter(b=>userKeyOf(b)===key)}
+function totalsBars(obj){obj=obj||{};const entries=Object.entries(obj).filter(([,v])=>n(v&&v.m3||v)>0).sort((a,b)=>n((b[1]&&b[1].m3)||b[1])-n((a[1]&&a[1].m3)||a[1])).slice(0,8);const max=Math.max(1,...entries.map(([,v])=>n((v&&v.m3)||v)));return entries.length?'<div class="bars">'+entries.map(([k,v])=>{const val=n((v&&v.m3)||v);return `<div class="bar"><span>${esc(k)}</span><span class="track"><i style="width:${Math.max(6,Math.round(val/max*100))}%"></i></span><b>${m3(val)}</b></div>`}).join('')+'</div>':'<div class="empty">Toplam yok.</div>'}
+function renderMobileExtras(){try{const chart=$('activityMiniChart');if(chart){const days=[];const now=new Date();for(let i=6;i>=0;i--){const d=new Date(now);d.setDate(now.getDate()-i);d.setHours(0,0,0,0);days.push({t:d.getTime(),label:d.toLocaleDateString('tr-TR',{day:'2-digit',month:'short'}),count:0})}state.backups.forEach(b=>{const ms=n(b.createdAtMs);if(!ms)return;const d=new Date(ms);d.setHours(0,0,0,0);const hit=days.find(x=>x.t===d.getTime());if(hit)hit.count+=Math.max(1,n(b.recordCount)||1)});const max=Math.max(1,...days.map(d=>d.count));const pts=days.map((d,i)=>[18+i*(264/6),100-(d.count/max)*78]);const line=pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' ');const area='M18 104 '+pts.map(p=>'L'+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' ')+' L282 104 Z';chart.innerHTML=`<div class="chart-wrap"><div class="chart-top"><div><small>Yedek/kayıt hareketi</small><b>${int(days.reduce((a,d)=>a+d.count,0))}</b></div><small>Son 7 gün</small></div><svg class="mini-svg" viewBox="0 0 300 116" role="img" aria-label="Son 7 gün aktivite grafiği"><path class="area" d="${area}"></path><path class="line" d="${line}"></path>${pts.map(p=>`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="4"></circle>`).join('')}</svg><div class="row" style="justify-content:space-between">${days.map(d=>`<small style="color:#94a3b8;font-size:11px">${esc(d.label)}</small>`).join('')}</div></div>`}const dev=$('deviceSummary');if(dev){const map={};state.users.forEach(u=>{const key=(u.deviceType||(u.lastDeviceInfo&&u.lastDeviceInfo.deviceType)||u.os||(u.lastDeviceInfo&&u.lastDeviceInfo.os)||'Bilinmeyen');map[key]=(map[key]||0)+1});const entries=Object.entries(map).sort((a,b)=>b[1]-a[1]);const total=Math.max(1,state.users.length);if($('deviceTotalPill'))$('deviceTotalPill').textContent=state.users.length+' cihaz';dev.innerHTML=entries.length?entries.map(([k,v])=>{const low=String(k).toLowerCase();const icon=low.includes('telefon')?'📱':low.includes('tablet')?'▣':low.includes('bilgisayar')?'💻':'🖥️';return `<div class="device-row"><div class="device-ico">${icon}</div><div><b>${esc(k)}</b><small>${int(v)} kullanıcı</small></div><div class="device-pct">%${Math.round(v/total*100)}</div></div>`}).join(''):'<div class="empty">Cihaz bilgisi yok.</div>'}}catch(e){console.warn(e)}}
+function renderKpis(){const ts=todayStart();const active=state.users.filter(u=>n(u.lastSeenMs||u.lastLoginMs)>=ts).length;const rec=state.users.reduce((a,u)=>a+n(u.recordCount||u.totalRecords||u.adet),0);const vol=state.users.reduce((a,u)=>a+n(u.m3||u.totalM3),0);$('kUsers').textContent=int(state.users.length);$('kActive').textContent=int(active);$('kRecords').textContent=int(rec);$('kM3').textContent=m3(vol);const newTickets=state.tickets.filter(t=>(t.status||'new')!=='read').length;$('newTicketPill').textContent=newTickets+' yeni bildirim';$('newTicketPill').className='pill '+(newTickets?'red':'green');$('backupCount').textContent=state.backups.length+' yedek';$('onlinePill').textContent=navigator.onLine?'Çevrimiçi':'Çevrimdışı';$('onlinePill').className='pill '+(navigator.onLine?'green':'red');renderMobileExtras()}
+function deviceTypeOf(u){return esc(u.deviceType||(u.lastDeviceInfo&&u.lastDeviceInfo.deviceType)||'Cihaz')}
+function osOf(u){return esc(u.os||(u.lastDeviceInfo&&u.lastDeviceInfo.os)||'-')}
+function personRow(u){const key=userKeyOf(u);const last=n(u.lastSeenMs||u.lastLoginMs||u.updatedAtMs);const on=last>=Date.now()-15*60000;return `<div class="person" data-user-detail="${esc(key)}"><div class="avatar">${esc(initials(u.name))}</div><div><b>${esc(u.name||'Kullanıcı')}</b><small>${esc(u.seflik||'-')} • ${deviceTypeOf(u)} • ${shortDate(last,u.lastSeen||u.lastLogin)}</small></div><div class="metric"><b>${int(u.recordCount||u.totalRecords)}</b><small>${on?'aktif':'kayıt'}</small></div></div>`}
+function renderHome(){const active=state.users.slice().sort((a,b)=>n(b.lastSeenMs||b.lastLoginMs)-n(a.lastSeenMs||a.lastLoginMs)).slice(0,6);$('homeUsers').innerHTML=active.length?active.map(personRow).join(''):'<div class="empty">Kullanıcı yok.</div>';const feed=[...state.backups.slice(0,3).map(b=>({type:'Yedek',txt:(b.name||'-')+' • '+int(b.recordCount)+' kayıt • '+m3(b.m3)+' m³',time:b.createdAt||'',icon:'☁️'})),...state.tickets.slice(0,3).map(t=>({type:'Bildirim',txt:(t.name||'-')+' • '+(t.message||'').slice(0,42),time:t.createdAt||'',icon:'🔔'}))].slice(0,6);$('homeFeed').innerHTML=feed.length?feed.map(f=>`<div class="person"><div class="avatar">${f.icon}</div><div><b>${esc(f.type)}</b><small>${esc(f.txt)}</small></div><div class="metric"><small>${esc(f.time)}</small></div></div>`).join(''):'<div class="empty">Hareket yok.</div>'}
+function filteredUsers(){const q=($('userSearch').value||'').toLowerCase(),sf=$('seflikFilter').value,sort=$('userSort').value;let arr=state.users.filter(u=>{const text=[u.name,u.seflik,u.bolmeNo,u.lastDevice,u.deviceType,u.os,u.browser,u.deviceId,u.userAgent,u.screen,u.viewport].join(' ').toLowerCase();return (!q||text.includes(q))&&(!sf||u.seflik===sf)});arr.sort((a,b)=>sort==='records'?n(b.recordCount||b.totalRecords)-n(a.recordCount||a.totalRecords):sort==='m3'?n(b.m3||b.totalM3)-n(a.m3||a.totalM3):sort==='duration'?n(b.usageMs)-n(a.usageMs):n(b.lastSeenMs||b.lastLoginMs)-n(a.lastSeenMs||a.lastLoginMs));return arr}
+function renderUsers(){const arr=filteredUsers();$('usersList').innerHTML=arr.length?arr.map(u=>{const key=userKeyOf(u),bk=userBackups(key).length,last=n(u.lastSeenMs||u.lastLoginMs||u.updatedAtMs),active=last>=Date.now()-15*60000;return `<div class="user-card" data-user-card="${esc(key)}"><div class="topline"><div class="avatar">${esc(initials(u.name))}</div><div><b>${esc(u.name||'Kullanıcı')}</b><small>${esc(u.seflik||'-')} • Bölme ${esc(u.bolmeNo||'-')}</small></div><div class="row"><button class="btn soft" data-user-detail="${esc(key)}" type="button">Detay</button><button class="btn danger" data-user-delete="${esc(key)}" type="button">Sil</button></div></div><div class="chips"><span class="chip ${active?'green':''}">${active?'Çevrimiçi':'Son: '+shortDate(last,u.lastSeen)}</span><span class="chip">${int(u.recordCount||u.totalRecords)} kayıt</span><span class="chip">${m3(u.m3||u.totalM3)} m³</span><span class="chip">${bk} yedek</span><span class="chip">${msText(u.usageMs)}</span><span class="chip">${deviceTypeOf(u)}</span></div><div class="detail"><div class="mini-grid"><div class="mini"><small>Bugün giriş</small><b>${int(u.todayLoginCount)}</b></div><div class="mini"><small>Bugün kayıt</small><b>${int(u.todayRecords)}</b></div><div class="mini"><small>Bugün süre</small><b>${msText(u.todayUsageMs)}</b></div><div class="mini"><small>Son görülme</small><b>${shortDate(last,u.lastSeen||u.lastLogin)}</b></div><div class="mini"><small>Cihaz</small><b>${esc(u.lastDevice||deviceTypeOf(u)||'-')}</b></div><div class="mini"><small>Sistem</small><b>${osOf(u)}</b></div><div class="mini"><small>Tarayıcı</small><b>${esc(u.browser||(u.lastDeviceInfo&&u.lastDeviceInfo.browser)||'-')}</b></div><div class="mini"><small>Ekran</small><b>${esc(u.screen||(u.lastDeviceInfo&&u.lastDeviceInfo.screen)||'-')}</b></div></div><div class="screen-grid" style="margin-top:12px"><div><b>Ağaç Toplamları</b>${totalsBars(u.treeTotals)}</div><div><b>Ürün Toplamları</b>${totalsBars(u.productTotals)}</div></div></div></div>`}).join(''):'<div class="empty">Kullanıcı bulunamadı.</div>'}
+function renderBackups(){const q=($('backupUserFilter').value||'').toLowerCase();const arr=state.backups.filter(b=>!q||[b.name,b.seflik,b.fileName,b.bolmeNo].join(' ').toLowerCase().includes(q));$('backupsList').innerHTML=arr.length?arr.slice(0,220).map(b=>`<div class="backup"><div class="space"><div><span class="pill green">Bulut yedek</span><h3 style="margin:8px 0 3px">${esc(b.fileName||'Mesaha yedeği')}</h3><p style="margin:0;color:var(--muted)">${esc(b.name||'-')} • ${esc(b.seflik||'-')} • ${esc(b.createdAt||'-')}</p></div><button class="btn danger" data-backup-delete="${esc(b.id)}" type="button">Sil</button></div><div class="mini-grid"><div class="mini"><small>Kayıt</small><b>${int(b.recordCount)}</b></div><div class="mini"><small>Hacim</small><b>${m3(b.m3)}</b></div><div class="mini"><small>Bölme</small><b>${esc(b.bolmeNo||'-')}</b></div><div class="mini"><small>Sürüm</small><b>${esc(b.fileVersion||b.appVersion||'-')}</b></div></div></div>`).join(''):'<div class="empty">Bulut yedeği yok.</div>'}
+function renderTickets(){
+  let arr=state.tickets.slice();
+  if(!state.showAllTickets) arr=arr.filter(t=>(t.status||'new')!=='read');
+  $('ticketsList').innerHTML=arr.length?arr.map(t=>{
+    const st=t.status||'new';
+    const hasReply=!!(t.adminReply||t.reply);
+    const pillText=hasReply?'Cevaplandı':(st==='read'?'Okundu':'Yeni');
+    const pillClass=hasReply||st==='read'?'green':'red';
+    const replyText=t.adminReply||t.reply||'';
+    const replyTime=t.adminReplyAt||t.replyAt||'';
+    return `<div class="ticket">
+      <div class="space">
+        <div><span class="pill ${pillClass}">${pillText}</span><h3 style="margin:8px 0 3px">${esc(t.name||'-')}</h3><p style="margin:0;color:var(--muted)">${esc(t.seflik||'-')} • ${esc(t.createdAt||'-')}</p></div>
+        <div class="row"><button class="btn soft" data-ticket-read="${esc(t.id)}" type="button">Okundu</button><button class="btn danger" data-ticket-delete="${esc(t.id)}" type="button">Sil</button></div>
+      </div>
+      <p class="ticket-message-v390"><b>Kullanıcı mesajı:</b><br>${esc(t.message||'-')}</p>
+      ${replyText?`<div class="ticket-reply-box-v390"><b>Admin cevabı</b><div>${esc(replyText)}</div><small>${esc(replyTime||'-')}</small></div>`:''}
+      <div class="ticket-answer-v390">
+        <label class="field" style="margin:0"><span>${replyText?'Cevabı düzenle':'Cevap yaz'}</span><textarea data-ticket-reply-text="${esc(t.id)}" placeholder="Kullanıcıya cevap yaz…">${esc(replyText)}</textarea></label>
+        <button class="btn green" data-ticket-reply="${esc(t.id)}" type="button">${replyText?'Cevabı Güncelle':'Cevabı Gönder'}</button>
+      </div>
+    </div>`;
+  }).join(''):'<div class="empty">Bildirim yok.</div>'
+}
+function render(){renderKpis();renderHome();renderUsers();renderBackups();renderTickets()}
+async function deleteBackupFull(db,id){const ref=db.collection('backups').doc(id);try{const chunks=await ref.collection('chunks').get();let batch=db.batch(),ops=0;for(const c of chunks.docs){batch.delete(c.ref);if(++ops>=420){await batch.commit();batch=db.batch();ops=0}}batch.delete(ref);await batch.commit()}catch(e){await ref.delete()}}
+async function delBackup(id){if(!confirm('Bu bulut yedeği silinsin mi?'))return;const{db}=await ready();await deleteBackupFull(db,id);toast('Yedek silindi');await loadAll()}
+async function delUser(key){if(!confirm('Kullanıcı silinsin mi?'))return;const also=confirm('Bu kullanıcının yedekleri de silinsin mi?');const{db}=await ready();if(also){for(const b of state.backups.filter(x=>userKeyOf(x)===key))await deleteBackupFull(db,b.id)}await db.collection('users').doc(key).delete().catch(()=>{});toast('Kullanıcı silindi');await loadAll()}
+async function readTicket(id){const{db}=await ready();await db.collection('supportTickets').doc(id).set({status:'read',readAt:new Date().toLocaleString('tr-TR'),readAtMs:Date.now()},{merge:true});await loadAll()}
+async function replyTicket(id){
+  const ta=Array.prototype.slice.call(document.querySelectorAll('[data-ticket-reply-text]')).find(x=>x.getAttribute('data-ticket-reply-text')===id);
+  const msg=(ta&&ta.value||'').trim();
+  if(!msg){toast('Cevap boş olamaz');return}
+  const now=new Date();
+  const{db}=await ready();
+  await db.collection('supportTickets').doc(id).set({
+    adminReply:msg,
+    adminReplyAt:now.toLocaleString('tr-TR'),
+    adminReplyAtMs:Date.now(),
+    reply:msg,
+    replyAt:now.toLocaleString('tr-TR'),
+    replyAtMs:Date.now(),
+    status:'answered',
+    updatedAt:now.toLocaleString('tr-TR'),
+    updatedAtMs:Date.now()
+  },{merge:true});
+  toast('Cevap kullanıcıya gönderildi');
+  await loadAll();
+}
+async function delTicket(id){if(!confirm('Bildirim silinsin mi?'))return;const{db}=await ready();await db.collection('supportTickets').doc(id).delete();await loadAll()}
+async function clearReadTickets(){if(!confirm('Okunmuş bildirimler silinsin mi?'))return;const{db}=await ready();for(const t of state.tickets.filter(x=>(x.status||'new')==='read'))await db.collection('supportTickets').doc(t.id).delete();toast('Okunan bildirimler silindi');await loadAll()}
+async function deleteAllTickets(){if(!confirm('Tüm bildirimler silinsin mi?'))return;const{db}=await ready();for(const t of state.tickets)await db.collection('supportTickets').doc(t.id).delete();toast('Bildirimler silindi');await loadAll()}
+async function deleteOldBackups(){if(!confirm('30 günden eski yedekler silinsin mi?'))return;const limit=Date.now()-30*86400000;const{db}=await ready();for(const b of state.backups.filter(x=>n(x.createdAtMs)<limit))await deleteBackupFull(db,b.id);toast('Eski yedekler temizlendi');await loadAll()}
+async function resetStats(){if(!confirm('İstatistik başlangıcı bugüne alınsın mı?'))return;const{db}=await ready();await db.collection('adminSettings').doc('statsReset').set({resetAt:new Date().toLocaleString('tr-TR'),resetAtMs:Date.now()},{merge:true});toast('İstatistik başlangıcı yenilendi')}
+async function health(){try{const{db,auth}=await ready();await db.collection('healthChecks').doc('adminPanel').set({ok:true,at:new Date().toLocaleString('tr-TR'),atMs:Date.now(),uid:auth.currentUser&&auth.currentUser.uid},{merge:true});toast('Firebase bağlantısı sağlam')}catch(e){toast(errText(e))}}
+function exportAll(){const blob=new Blob([JSON.stringify({exportedAt:new Date().toISOString(),version:'v389-download-button-hotfix',users:state.users,backups:state.backups,tickets:state.tickets,usage:state.usage},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='mesaha_admin_tum_veriler_v389.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+function showUserModal(key){const u=state.users.find(x=>userKeyOf(x)===key);if(!u)return;const bks=userBackups(key);const last=n(u.lastSeenMs||u.lastLoginMs||u.updatedAtMs);const active=last>=Date.now()-15*60000;$('modalTitle').textContent=(u.name||'-')+' • kullanıcı detayı';$('modalBody').innerHTML=`<div class="phone-card"><div class="phone-head"><div class="row"><div class="avatar">${esc(initials(u.name))}</div><div><b>${esc(u.name||'-')}</b><small>${esc(u.seflik||'-')} • Bölme ${esc(u.bolmeNo||'-')}</small></div></div><span class="pill ${active?'green':''}">${active?'Çevrimiçi':shortDate(last,u.lastSeen)}</span></div><div class="inside"><div class="mini-grid"><div class="mini"><small>Toplam kayıt</small><b>${int(u.recordCount||u.totalRecords)}</b></div><div class="mini"><small>Toplam m³</small><b>${m3(u.m3||u.totalM3)}</b></div><div class="mini"><small>Bugün giriş</small><b>${int(u.todayLoginCount)}</b></div><div class="mini"><small>Toplam süre</small><b>${msText(u.usageMs)}</b></div><div class="mini"><small>Son görülme</small><b>${shortDate(last,u.lastSeen||u.lastLogin)}</b></div><div class="mini"><small>Yedek sayısı</small><b>${int(bks.length)}</b></div></div><h3>Cihaz Bilgileri</h3><div class="mini-grid"><div class="mini"><small>Cihaz Türü</small><b>${deviceTypeOf(u)}</b></div><div class="mini"><small>İşletim Sistemi</small><b>${osOf(u)}</b></div><div class="mini"><small>Tarayıcı</small><b>${esc(u.browser||(u.lastDeviceInfo&&u.lastDeviceInfo.browser)||'-')}</b></div><div class="mini"><small>Ekran</small><b>${esc(u.screen||(u.lastDeviceInfo&&u.lastDeviceInfo.screen)||'-')}</b></div><div class="mini"><small>Görünen Alan</small><b>${esc(u.viewport||(u.lastDeviceInfo&&u.lastDeviceInfo.viewport)||'-')}</b></div><div class="mini"><small>Cihaz ID</small><b>${esc(u.deviceId||'-')}</b></div></div><div class="screen-grid" style="margin-top:14px"><div><h3>Ağaç Toplamları</h3>${totalsBars(u.treeTotals)}</div><div><h3>Ürün Toplamları</h3>${totalsBars(u.productTotals)}</div></div><h3>Bulut Yedekleri</h3>${bks.length?bks.map(b=>`<div class="backup"><div class="space"><div><b>${esc(b.fileName||'Yedek')}</b><p style="margin:4px 0 0;color:var(--muted)">${esc(b.createdAt||'-')} • ${int(b.recordCount)} kayıt • ${m3(b.m3)}</p></div><button class="btn danger" data-backup-delete="${esc(b.id)}" type="button">Sil</button></div></div>`).join(''):'<div class="empty">Yedek yok.</div>'}</div></div>`;$('modal').classList.add('show')}
+
+function goAppHome(e){
+  if(e) e.preventDefault();
+  var target = new URL('./index.html', location.href).href;
+  try{ location.assign(target); }catch(_){ location.href = './index.html'; }
+}
+function go(tab){document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.tab===tab));document.querySelectorAll('.panel').forEach(x=>x.classList.toggle('active',x.id==='tab-'+tab));window.scrollTo({top:0,behavior:'smooth'})}
+function unlock(){const code=($('adminCode').value||new URLSearchParams(location.search).get('admin')||sessionStorage.getItem('mesaha_admin_code')||'').trim();if(code===ADMIN_CODE){sessionStorage.setItem('mesaha_admin_code',code);$('lockCard').classList.add('hidden');$('adminMain').classList.remove('hidden');$('tabs').classList.remove('hidden');loadAll()}else $('lockMsg').textContent='Şifre hatalı.'}
+function bind(){const d=new Date();$('todayPill').textContent='📅 '+d.toLocaleDateString('tr-TR',{weekday:'short',day:'2-digit',month:'short'});document.querySelectorAll('[data-app-home]').forEach(b=>b.addEventListener('click',goAppHome));document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.tab)));document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.go)));$('unlockBtn').addEventListener('click',unlock);$('adminCode').addEventListener('keydown',e=>{if(e.key==='Enter')unlock()});$('refreshBtn').addEventListener('click',loadAll);$('refreshBtn2').addEventListener('click',loadAll);/* theme removed */['userSearch','seflikFilter','userSort'].forEach(id=>$(id).addEventListener('input',renderUsers));$('clearFiltersBtn').addEventListener('click',()=>{$('userSearch').value='';$('seflikFilter').value='';$('userSort').value='last';renderUsers()});$('backupUserFilter').addEventListener('input',renderBackups);$('showAllTicketsBtn').addEventListener('click',()=>{state.showAllTickets=!state.showAllTickets;$('showAllTicketsBtn').textContent=state.showAllTickets?'Sadece Yeni':'Tümünü Göster';renderTickets()});$('clearReadTicketsBtn').addEventListener('click',clearReadTickets);$('oldBackupsTopBtn').addEventListener('click',deleteOldBackups);$('healthBtn').addEventListener('click',health);$('exportBtn').addEventListener('click',exportAll);$('resetStatsBtn').addEventListener('click',resetStats);$('deleteOldBackupsBtn').addEventListener('click',deleteOldBackups);$('deleteAllTicketsBtn').addEventListener('click',deleteAllTickets);$('modalClose').addEventListener('click',()=>$('modal').classList.remove('show'));$('modal').addEventListener('click',e=>{if(e.target===$('modal'))$('modal').classList.remove('show')});document.body.addEventListener('click',e=>{const ud=e.target.closest('[data-user-detail]');if(ud){showUserModal(ud.getAttribute('data-user-detail'));return}const card=e.target.closest('[data-user-card]');if(card&&e.target.closest('.topline')&&!e.target.closest('button'))card.classList.toggle('open');const delU=e.target.closest('[data-user-delete]');if(delU)delUser(delU.getAttribute('data-user-delete')).catch(x=>toast(errText(x)));const delB=e.target.closest('[data-backup-delete]');if(delB)delBackup(delB.getAttribute('data-backup-delete')).catch(x=>toast(errText(x)));const rp=e.target.closest('[data-ticket-reply]');if(rp){replyTicket(rp.getAttribute('data-ticket-reply')).catch(x=>toast(errText(x)));return}const tr=e.target.closest('[data-ticket-read]');if(tr)readTicket(tr.getAttribute('data-ticket-read')).catch(x=>toast(errText(x)));const td=e.target.closest('[data-ticket-delete]');if(td)delTicket(td.getAttribute('data-ticket-delete')).catch(x=>toast(errText(x)))});window.addEventListener('online',renderKpis);window.addEventListener('offline',renderKpis);if(new URLSearchParams(location.search).get('admin')===ADMIN_CODE||sessionStorage.getItem('mesaha_admin_code')===ADMIN_CODE){$('adminCode').value=ADMIN_CODE;unlock()}}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
+})();
+</script>
+</body>
+</html>
