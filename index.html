@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
 <meta name="theme-color" content="#f4f7f6"/>
-<link rel="manifest" href="./manifest.json?v=389"/>
+<link rel="manifest" href="./manifest.json?v=390"/>
 <link rel="apple-touch-icon" href="./assets/icon-192.png"/>
 <title>Mesaha İO V3.75 •ExelanceX•</title>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
@@ -480,7 +480,7 @@ body.keyboard-open-v311 .entry-form{
 <script id="mesaha-inline-version-v315">
 (function(root){
   'use strict';
-  const info = {"app": "V3.75", "version": "v389-download-button-hotfix", "build": 389, "visibleVersion": "V3.75 •ExelanceX•", "shortVersion": "V3.75 •ExelanceX•", "name": "Mesaha İO V3.75 •ExelanceX•", "cacheName": "mesaha-app-v389-download-button-hotfix", "builtAt": "2026-06-25T23:05:00+03:00", "notes": "ORBİS orijinal Mesaha_Ornek_Temp şablonuna göre Excel dışa aktarma düzeltildi.", "assetVersion":"389"};
+  const info = {"app": "V3.75", "version": "v390-support-reply-hotfix", "build": 390, "visibleVersion": "V3.75 •ExelanceX•", "shortVersion": "V3.75 •ExelanceX•", "name": "Mesaha İO V3.75 •ExelanceX•", "cacheName": "mesaha-app-v390-support-reply-hotfix", "builtAt": "2026-06-25T23:05:00+03:00", "notes": "Admin cevap sistemi eklendi.", "assetVersion":"390"};
   root.MESAHA_VERSION = info;
   root.MESAHA_VERSION_TEXT = info.visibleVersion;
   root.MESAHA_VERSION_SHORT = info.shortVersion;
@@ -494,7 +494,7 @@ body.keyboard-open-v311 .entry-form{
 </style>
 
 
-<style id="mesaha-v389-download-button-hotfix">
+<style id="mesaha-v390-support-reply-hotfix">
 /* v358: tablet ve büyük ekran uyumluluğu */
 html, body{
   width:100%;
@@ -706,7 +706,7 @@ section.hero-card{
 </style>
 
 
-<style id="mesaha-v389-download-button-hotfix-2">
+<style id="mesaha-v390-support-reply-hotfix-2">
 /* v369: kullanım netliği */
 #entryHomeBtn{
   background:linear-gradient(135deg,#2563eb,#1d4ed8)!important;
@@ -766,7 +766,7 @@ section.hero-card{
 }
 </style>
 
-<style id="mesaha-v389-download-button-hotfix-3">
+<style id="mesaha-v390-support-reply-hotfix-3">
 /* v375: Ölçüm Özeti / Bakım içindeki sahte 0 Kayıt kartı kaldırıldı */
 .summary-card .summary-grid::after,
 .summary-card .summary-grid::before{
@@ -808,6 +808,17 @@ body.mesaha-keyboard-open #saveBtn, body.mesaha-keyboard-open .save-btn{position
 #recordsView.hidden, [data-view="records"].hidden{content-visibility:hidden;}
 .mesaha-offline .online-only{opacity:.55;filter:grayscale(.25);}
 @media (prefers-reduced-motion: reduce){*,*::before,*::after{animation-duration:.001ms;animation-iteration-count:1;scroll-behavior:auto;}}
+</style>
+
+<style id="mesaha-v390-support-reply-style">
+.support-replies-v390{display:grid;gap:10px;margin-top:12px}
+.support-reply-card-v390{border:1px solid rgba(220,235,228,.96);border-radius:18px;background:#fff;padding:12px;box-shadow:0 8px 18px rgba(15,23,42,.045)}
+.support-reply-card-v390 b{display:block;color:#163d2e;margin-bottom:4px}
+.support-reply-card-v390 small{display:block;color:#6b7c74;font-weight:800;margin-top:7px}
+.support-reply-answer-v390{margin-top:10px;border-radius:15px;border:1px solid #bbf7d0;background:#f0fdf4;padding:10px;color:#14532d}
+.support-reply-wait-v390{margin-top:10px;border-radius:15px;border:1px solid #dbeafe;background:#eff6ff;padding:10px;color:#1e3a8a;font-weight:850}
+.support-reply-actions-v390{display:flex;gap:8px;align-items:center;justify-content:space-between;margin-top:10px;flex-wrap:wrap}
+.support-reply-actions-v390 .btn{min-height:38px;padding:8px 12px}
 </style>
 </head>
 <body>
@@ -1062,6 +1073,13 @@ body.mesaha-keyboard-open #saveBtn, body.mesaha-keyboard-open .save-btn{position
 <p class="hint">Buradan gönderilen mesajlar admin panelindeki bildirimlere düşer.</p>
 <label class="panel-field-v316"><textarea id="panelSupportTextV316" placeholder="Sorunu kısa yaz…"></textarea></label>
 <button class="btn warning full" id="panelSupportSendV316" type="button">Gönder</button>
+<div class="support-replies-v390" id="panelSupportRepliesV390">
+  <div class="support-reply-card-v390">Cevaplarınız burada görünecek.</div>
+</div>
+<div class="support-reply-actions-v390">
+  <button class="btn soft" id="panelSupportRefreshV390" type="button">Cevapları Yenile</button>
+  <small class="hint" id="panelSupportReplyInfoV390">Admin cevapları internet varken alınır.</small>
+</div>
 </div>
 </div>
 </div>
@@ -1698,7 +1716,7 @@ root.OrbisXls = { downloadXls, makeXls, headers: HEADERS };
 'use strict';
 const STORAGE_KEY = 'cam_mesaha_kayitlari_v1';
 const SETTINGS_KEY = 'cam_mesaha_ayarlar_v1';
-const VERSION = window.MESAHA_VERSION || {shortVersion:'V3.75', version:'v389-download-button-hotfix'};
+const VERSION = window.MESAHA_VERSION || {shortVersion:'V3.75', version:'v390-support-reply-hotfix'};
 const PRODUCTS = [
   {key:'Tomruk', label:'Tomruk', cls:'tomruk', rule:'Tomruk: çap 21 ve üzeri olmalı.'},
   {key:'Maden Direk', label:'Maden', cls:'maden', rule:'Maden: çap 20 ve altı olmalı.'},
@@ -3021,8 +3039,8 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
       await fetch('./index.html?preload=' + Date.now(), {cache:'reload'}).catch(()=>{});
       await modal({title:'Güncelleme hazır', type:'success', icon:'✓', html:'<p>Dosyalar yenilendi. Uygulama şimdi yeniden başlatılacak.</p>', buttons:[{text:'Yeniden Başlat', value:true, cls:'primary'}]});
       try{
-        localStorage.setItem('mesaha_last_seen_version','v389-download-button-hotfix');
-        localStorage.setItem('mesaha_current_version','v389-download-button-hotfix');
+        localStorage.setItem('mesaha_last_seen_version','v390-support-reply-hotfix');
+        localStorage.setItem('mesaha_current_version','v390-support-reply-hotfix');
       }catch{}
       location.replace('./temizle.html?v=389&fresh=' + Date.now());
     }catch{
@@ -4028,7 +4046,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     const screenText=sw+'x'+sh;
     const viewport=vw+'x'+vh;
     const label=type+' • '+os+' • '+browser+' • '+screenText;
-    return {deviceId:getDeviceId(), userAgent:ua, platform:plat, screen:screenText, viewport, pixelRatio:window.devicePixelRatio||1, language:navigator.language||'', timezone:(Intl.DateTimeFormat().resolvedOptions().timeZone||''), deviceType:type, os, browser, lastDevice:label, appVersion:'V3.75', fileVersion:'v389-download-button-hotfix'};
+    return {deviceId:getDeviceId(), userAgent:ua, platform:plat, screen:screenText, viewport, pixelRatio:window.devicePixelRatio||1, language:navigator.language||'', timezone:(Intl.DateTimeFormat().resolvedOptions().timeZone||''), deviceType:type, os, browser, lastDevice:label, appVersion:'V3.75', fileVersion:'v390-support-reply-hotfix'};
   }
   function readPanelUser(){ const u=jsonGet(PANEL_USER_KEY, {}); return {name:clean(u.name), seflik:clean(u.seflik), bolmeNo:clean(u.bolmeNo)}; }
   function writePanelUser(u){ const current=settings(); const name=clean(u.name), seflik=clean(u.seflik); const next=Object.assign({}, current, {ekipNot:name, seflik:seflik, bolmeNo:clean(u.bolmeNo)||''}); saveSettings(next); jsonSet(PANEL_USER_KEY, {name:next.ekipNot,seflik:next.seflik,bolmeNo:next.bolmeNo,updatedAt:new Date().toISOString()}); try{localStorage.setItem('mesaha_user_confirmed_v319','1')}catch{} ['ekipNot','seflik','bolmeNo'].forEach(id=>{ const el=$(id); if(el){ el.value=next[id]||''; try{el.dispatchEvent(new Event('input',{bubbles:true}));}catch{} } }); try{ if(typeof window.renderUser==='function') window.renderUser(); }catch{} const badge=$('userBadge'); if(badge){ badge.textContent=(next.ekipNot&&next.seflik)?(next.ekipNot+' • '+next.seflik):'Giriş Yap'; badge.classList.toggle('login-needed', !(next.ekipNot&&next.seflik)); } return true; }
@@ -4054,7 +4072,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     const nowMs=Date.now();
     const key=userKey(user.name,user.seflik);
     const {db}=await firebaseReady();
-    const payload={id:key,userKey:key,name:user.name,seflik:user.seflik,bolmeNo:user.bolmeNo,firstSeen:usage.firstSeen||trText(),firstSeenMs:Number(usage.firstSeenMs||nowMs),lastSeen:trText(),lastSeenMs:nowMs,lastLogin:trText(),lastLoginMs:nowMs,todayLoginCount:Number(usage.todayLoginCount||0),totalLoginCount:Number(usage.totalLoginCount||0),usageMs:Number(usage.totalMs||0),todayUsageMs:Number(usage.todayMs||0),recordCount:stats.recordCount,totalRecords:stats.recordCount,adet:stats.adet,totalM3:stats.m3,m3:stats.m3,todayRecords:stats.todayRecords,weekKey:weekKey(new Date()),weekRecordCount:stats.weekRecordCount,weekM3:stats.weekM3,treeTotals:stats.treeTotals,productTotals:stats.productTotals,deviceId:info.deviceId,lastDevice:info.lastDevice,lastDeviceInfo:info,deviceType:info.deviceType,os:info.os,browser:info.browser,screen:info.screen,viewport:info.viewport,pixelRatio:info.pixelRatio,language:info.language,timezone:info.timezone,userAgent:info.userAgent,appVersion:'V3.75',fileVersion:'v389-download-button-hotfix',updatedBy:reason||'sync',updatedAt:trText(),updatedAtMs:nowMs,source:'firebase'};
+    const payload={id:key,userKey:key,name:user.name,seflik:user.seflik,bolmeNo:user.bolmeNo,firstSeen:usage.firstSeen||trText(),firstSeenMs:Number(usage.firstSeenMs||nowMs),lastSeen:trText(),lastSeenMs:nowMs,lastLogin:trText(),lastLoginMs:nowMs,todayLoginCount:Number(usage.todayLoginCount||0),totalLoginCount:Number(usage.totalLoginCount||0),usageMs:Number(usage.totalMs||0),todayUsageMs:Number(usage.todayMs||0),recordCount:stats.recordCount,totalRecords:stats.recordCount,adet:stats.adet,totalM3:stats.m3,m3:stats.m3,todayRecords:stats.todayRecords,weekKey:weekKey(new Date()),weekRecordCount:stats.weekRecordCount,weekM3:stats.weekM3,treeTotals:stats.treeTotals,productTotals:stats.productTotals,deviceId:info.deviceId,lastDevice:info.lastDevice,lastDeviceInfo:info,deviceType:info.deviceType,os:info.os,browser:info.browser,screen:info.screen,viewport:info.viewport,pixelRatio:info.pixelRatio,language:info.language,timezone:info.timezone,userAgent:info.userAgent,appVersion:'V3.75',fileVersion:'v390-support-reply-hotfix',updatedBy:reason||'sync',updatedAt:trText(),updatedAtMs:nowMs,source:'firebase'};
     try{usage.firstSeen=payload.firstSeen; usage.firstSeenMs=payload.firstSeenMs; jsonSet(USAGE_KEY,usage);}catch(e){}
     await db.collection('users').doc(key).set(payload, {merge:true});
     await db.collection('usageStats').doc(key).set(payload, {merge:true});
@@ -4088,7 +4106,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   const FIREBASE_CONFIG=(window.mesahaFirebaseV380&&window.mesahaFirebaseV380.config)||{};
   const SDK=(window.mesahaFirebaseV380&&window.mesahaFirebaseV380.sdkVersion)||'9.23.0';
   const APP_VERSION='V3.75';
-  const FILE_VERSION='v389-download-button-hotfix';
+  const FILE_VERSION='v390-support-reply-hotfix';
   let readyPromise=null;
   let lastTick=Date.now();
   function $(id){return document.getElementById(id)}
@@ -4405,7 +4423,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   const FIREBASE_CONFIG=(window.mesahaFirebaseV380&&window.mesahaFirebaseV380.config)||{};
   const SDK='10.12.2';
   const APP_VERSION='V3.75';
-  const FILE_VERSION='v389-download-button-hotfix';
+  const FILE_VERSION='v390-support-reply-hotfix';
   let readyPromise=null;
   let lastTick=Date.now();
   function $(id){return document.getElementById(id)}
@@ -4959,8 +4977,8 @@ body:not(.entry-open) #entryView:not(.active){display:none!important;}
 (function(){
   'use strict';
   var DISPLAY="V3.75 •ExelanceX•";
-  var BUILD=389;
-  var info={"app": "V3.75", "version": "v389-download-button-hotfix", "build": 389, "visibleVersion": "V3.75 •ExelanceX•", "shortVersion": "V3.75 •ExelanceX•", "name": "Mesaha İO V3.75 •ExelanceX•", "cacheName": "mesaha-app-v389-download-button-hotfix", "builtAt": "2026-06-25T23:05:00+03:00", "notes": "ORBİS orijinal Mesaha_Ornek_Temp şablonuna göre Excel dışa aktarma düzeltildi.", "assetVersion":"389"};
+  var BUILD=390;
+  var info={"app": "V3.75", "version": "v390-support-reply-hotfix", "build": 390, "visibleVersion": "V3.75 •ExelanceX•", "shortVersion": "V3.75 •ExelanceX•", "name": "Mesaha İO V3.75 •ExelanceX•", "cacheName": "mesaha-app-v390-support-reply-hotfix", "builtAt": "2026-06-25T23:05:00+03:00", "notes": "Admin cevap sistemi eklendi.", "assetVersion":"390"};
   window.MESAHA_VERSION=info;
   window.MESAHA_VERSION_TEXT=DISPLAY;
   window.MESAHA_VERSION_SHORT=DISPLAY;
@@ -5101,7 +5119,7 @@ body:not(.entry-open) #entryView:not(.active){display:none!important;}
   'use strict';
   var DISPLAY='V3.75 •ExelanceX•';
   var APP='V3.75';
-  var BUILD=389;
+  var BUILD=390;
   function $(id){return document.getElementById(id)}
   function qsa(sel){return Array.prototype.slice.call(document.querySelectorAll(sel))}
   function apply(){
@@ -5111,7 +5129,7 @@ body:not(.entry-open) #entryView:not(.active){display:none!important;}
     var st=document.querySelector('#startup strong'); if(st) st.textContent=DISPLAY;
     qsa('.version-card b').forEach(function(b){ b.textContent=DISPLAY; });
     qsa('.version-card small').forEach(function(s){ s.textContent=''; });
-    window.MESAHA_VERSION={app:APP,version:'v389-download-button-hotfix',build:BUILD,visibleVersion:DISPLAY,shortVersion:DISPLAY,name:'Mesaha İO '+DISPLAY,cacheName:'mesaha-app-v389-download-button-hotfix',assetVersion:String(BUILD)};
+    window.MESAHA_VERSION={app:APP,version:'v390-support-reply-hotfix',build:BUILD,visibleVersion:DISPLAY,shortVersion:DISPLAY,name:'Mesaha İO '+DISPLAY,cacheName:'mesaha-app-v390-support-reply-hotfix',assetVersion:String(BUILD)};
     window.MESAHA_VERSION_TEXT=DISPLAY;
     window.MESAHA_VERSION_SHORT=DISPLAY;
   }
@@ -5124,7 +5142,7 @@ body:not(.entry-open) #entryView:not(.active){display:none!important;}
 <script id="mesaha-v354-lovable-clean-light-final-4">
 (function(){
   'use strict';
-  var DISPLAY='V3.75 •ExelanceX•', APP='V3.75', BUILD=389, VERSION='v389-download-button-hotfix', CACHE='mesaha-app-v389-download-button-hotfix';
+  var DISPLAY='V3.75 •ExelanceX•', APP='V3.75', BUILD=390, VERSION='v390-support-reply-hotfix', CACHE='mesaha-app-v390-support-reply-hotfix';
   function $(id){return document.getElementById(id)}
   function qsa(sel){return Array.prototype.slice.call(document.querySelectorAll(sel))}
   function applyVersion(){
@@ -5170,7 +5188,7 @@ input,select,textarea{background:#fff!important;color:#101828!important;border-c
 <script id="mesaha-v351-light-only-clean-script">
 (function(){
   'use strict';
-  var META={app:'V3.75',version:'v389-download-button-hotfix',build: 389,visibleVersion:'V3.75 •ExelanceX•',shortVersion:'V3.75 •ExelanceX•',name:'Mesaha İO V3.75 •ExelanceX•',cacheName:'mesaha-app-v389-download-button-hotfix',assetVersion:"389"};
+  var META={app:'V3.75',version:'v390-support-reply-hotfix',build: 390,visibleVersion:'V3.75 •ExelanceX•',shortVersion:'V3.75 •ExelanceX•',name:'Mesaha İO V3.75 •ExelanceX•',cacheName:'mesaha-app-v390-support-reply-hotfix',assetVersion:"390"};
   function $(id){return document.getElementById(id)}
   function all(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))}
   function clean(){
@@ -5211,7 +5229,7 @@ input,select,textarea{background:#fff!important;color:#101828!important;border-c
 (function(){
   'use strict';
   var META=window.MESAHA_VERSION;
-  if(!META||META.version!=='v389-download-button-hotfix') return;
+  if(!META||META.version!=='v390-support-reply-hotfix') return;
   function lock(name,value){
     try{Object.defineProperty(window,name,{configurable:false,enumerable:true,get:function(){return value},set:function(){}})}
     catch(e){try{window[name]=value}catch(_){}}
@@ -5760,7 +5778,7 @@ html.mesaha-terminal-lite.scrolling-now .topbar{
 </script>
 
 
-<style id="mesaha-v389-download-button-hotfix-4">
+<style id="mesaha-v390-support-reply-hotfix-4">
 /* v371: terminal Chrome/WebView doğal kaydırma düzeltmesi */
 html,
 body{
@@ -5812,7 +5830,7 @@ body.scroll-fixing-v371 *{
   scroll-behavior:auto!important;
 }
 </style>
-<script id="mesaha-v389-download-button-hotfix-5">
+<script id="mesaha-v390-support-reply-hotfix-5">
 (function(){
   'use strict';
 
@@ -5895,7 +5913,7 @@ body.scroll-fixing-v371 *{
 </script>
 
 
-<style id="mesaha-v389-download-button-hotfix-6">
+<style id="mesaha-v390-support-reply-hotfix-6">
 /* v372: Mesaha girme ekranında klavye açılınca alt menü klavyenin üstüne çıkmasın */
 body.entry-open.keyboard-open-v311 .bottom-nav,
 body.mesaha-entry-keyboard-open .bottom-nav,
@@ -5963,7 +5981,7 @@ body.product-tap-lock-v372 .entry-view.active{
   }
 }
 </style>
-<script id="mesaha-v389-download-button-hotfix-7">
+<script id="mesaha-v390-support-reply-hotfix-7">
 (function(){
   'use strict';
 
@@ -6379,5 +6397,65 @@ body.product-tap-lock-v372 .entry-view.active{
 }
 </style>
 
+
+<script id="mesaha-inline-v390-support-replies">
+/* v390: Kullanıcı sorun bildirimlerine admin cevabı gösterimi */
+(function(){
+  'use strict';
+  const PANEL_USER_KEY='mesaha_panel_user_v316';
+  const SDK='9.23.0';
+  const CONFIG={apiKey:'AIzaSyCKveylTPgKmWEMmYf-aFj6yLXB5CKAiJ0',authDomain:'mesaha-io.firebaseapp.com',projectId:'mesaha-io',storageBucket:'mesaha-io.firebasestorage.app',messagingSenderId:'840655878243',appId:'1:840655878243:web:add76f52bbf55ad9dd6056',measurementId:'G-81JPD5ZY44'};
+  let readyPromise=null;
+  function $(id){return document.getElementById(id)}
+  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+  function clean(v){return String(v==null?'':v).trim()}
+  function fold(s){return clean(s).toLocaleLowerCase('tr-TR').replace(/[ç]/g,'c').replace(/[ğ]/g,'g').replace(/[ı]/g,'i').replace(/[ö]/g,'o').replace(/[ş]/g,'s').replace(/[ü]/g,'u')}
+  function userKey(name,seflik){return (fold(name)+'__'+fold(seflik)).replace(/[^a-z0-9_-]+/g,'_').slice(0,120)||'bos'}
+  function jsonGet(k,f){try{const v=localStorage.getItem(k);return v?JSON.parse(v):f}catch(e){return f}}
+  function readPanelUser(){return Object.assign({name:'',seflik:'',bolmeNo:''},jsonGet(PANEL_USER_KEY,{}))}
+  function toast(a,b,t){try{if(window.toast)window.toast(a,b,t)}catch(e){}}
+  function loadScript(src){return new Promise((res,rej)=>{const old=[].slice.call(document.scripts).some(s=>s.src&&s.src.indexOf(src)>-1);if(old)return res();const s=document.createElement('script');s.src=src;s.async=true;s.onload=res;s.onerror=()=>rej(new Error('Firebase SDK yüklenemedi'));document.head.appendChild(s)})}
+  async function ready(){
+    if(window.mesahaFirebaseV380&&window.mesahaFirebaseV380.ready)return window.mesahaFirebaseV380.ready();
+    if(!navigator.onLine)throw new Error('İnternet bağlantısı yok');
+    if(!readyPromise){readyPromise=(async()=>{const base='https://www.gstatic.com/firebasejs/'+SDK;if(!window.firebase||!window.firebase.apps){await loadScript(base+'/firebase-app-compat.js');await loadScript(base+'/firebase-auth-compat.js');await loadScript(base+'/firebase-firestore-compat.js')}if(!window.firebase.apps.length)window.firebase.initializeApp(CONFIG);const auth=window.firebase.auth();if(!auth.currentUser)await auth.signInAnonymously();return{db:window.firebase.firestore(),auth}})()}
+    return readyPromise;
+  }
+  function setInfo(txt){const el=$('panelSupportReplyInfoV390');if(el)el.textContent=txt}
+  function render(arr){
+    const box=$('panelSupportRepliesV390'); if(!box)return;
+    if(!arr.length){box.innerHTML='<div class="support-reply-card-v390">Henüz gönderilmiş sorun bildirimi yok.</div>';return}
+    box.innerHTML=arr.slice(0,8).map(t=>{
+      const reply=t.adminReply||t.reply||''; const rt=t.adminReplyAt||t.replyAt||'';
+      return '<div class="support-reply-card-v390"><b>Gönderdiğiniz mesaj</b><div>'+esc(t.message||'-')+'</div><small>'+esc(t.createdAt||'-')+'</small>'+(reply?'<div class="support-reply-answer-v390"><b>Admin cevabı</b><div>'+esc(reply)+'</div><small>'+esc(rt||'-')+'</small></div>':'<div class="support-reply-wait-v390">Cevap bekleniyor.</div>')+'</div>';
+    }).join('');
+  }
+  async function loadReplies(){
+    const box=$('panelSupportRepliesV390'); if(!box)return;
+    const user=readPanelUser();
+    if(!user.name||!user.seflik){box.innerHTML='<div class="support-reply-card-v390">Cevapları görmek için önce kullanıcı adı ve şeflik bilgisini kaydedin.</div>';setInfo('Kullanıcı bilgisi gerekli.');return}
+    if(!navigator.onLine){box.innerHTML='<div class="support-reply-card-v390">Cevaplar internet varken alınır. Cihaz şu an çevrimdışı.</div>';setInfo('Çevrimdışı.');return}
+    try{
+      setInfo('Cevaplar alınıyor…');
+      const key=userKey(user.name,user.seflik); const {db}=await ready();
+      const snap=await db.collection('supportTickets').where('userKey','==',key).get();
+      const arr=[]; snap.forEach(doc=>arr.push(Object.assign({id:doc.id},doc.data()||{})));
+      arr.sort((a,b)=>Number(b.updatedAtMs||b.adminReplyAtMs||b.createdAtMs||0)-Number(a.updatedAtMs||a.adminReplyAtMs||a.createdAtMs||0));
+      render(arr); setInfo(arr.length+' bildirim listelendi.');
+      const batch=db.batch(); let ops=0; arr.forEach(t=>{if((t.adminReply||t.reply)&&!t.userSeenReplyAtMs){batch.set(db.collection('supportTickets').doc(t.id),{userSeenReplyAt:new Date().toLocaleString('tr-TR'),userSeenReplyAtMs:Date.now()},{merge:true});ops++}}); if(ops)batch.commit().catch(()=>{});
+    }catch(e){box.innerHTML='<div class="support-reply-card-v390">Cevaplar alınamadı: '+esc((e&&e.message)||e)+'</div>';setInfo('Cevaplar alınamadı.')}
+  }
+  function bind(){
+    const refresh=$('panelSupportRefreshV390'); if(refresh&&!refresh.__v390){refresh.__v390=true;refresh.addEventListener('click',loadReplies)}
+    const send=$('panelSupportSendV316'); if(send&&!send.__v390Replies){send.__v390Replies=true;send.addEventListener('click',()=>setTimeout(loadReplies,1800),true)}
+    ['userBadge','userPanelBtnV316'].forEach(id=>{const el=$(id);if(el&&!el.__v390Replies){el.__v390Replies=true;el.addEventListener('click',()=>setTimeout(loadReplies,500))}});
+    document.addEventListener('visibilitychange',()=>{if(!document.hidden)setTimeout(loadReplies,600)});
+    window.addEventListener('online',()=>setTimeout(loadReplies,600));
+    const panel=$('userPanelOverlayV316'); if(panel&&window.MutationObserver){new MutationObserver(()=>{if(!panel.classList.contains('hidden'))setTimeout(loadReplies,500)}).observe(panel,{attributes:true,attributeFilter:['class']})}
+    setTimeout(loadReplies,2600);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
+})();
+</script>
 </body>
 </html>
