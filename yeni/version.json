@@ -1,12 +1,12 @@
 {
-  "app": "V3.77",
-  "version": "v392-panel-kilavuz-video-hhhotfix",
-  "build": 392,
-  "visibleVersion": "V3.77 •ExelanceX•",
-  "shortVersion": "V3.77 •ExelanceX•",
-  "name": "Mesaha İO V3.77 •ExelanceX•",
-  "cacheName": "mesaha-app-v392-panel-kilavuz-video-hotfix",
-  "builtAt": "2026-06-26T18:30:00+03:00",
-  "notes": "Kullanıcı panelinde alttttt menü çakışması düzeltildi; güncelleme notları eklendi; kılavuz ve Mesaha dosyası indirme bilgisine kısa link ve ORBİS aktarım video bağlantısı eklendi.",
-  "assetVersion": "392"
+  "app": "V3.79",
+  "version": "v394-video-linkleri-hotfix",
+  "build": 394,
+  "visibleVersion": "V3.79 •ExelanceX•",
+  "shortVersion": "V3.79 •ExelanceX•",
+  "name": "Mesaha İO V3.79 •ExelanceX•",
+  "cacheName": "mesaha-app-v394-video-linkleri-hotfix",
+  "builtAt": "2026-06-26T19:35:00+03:00",
+  "notes": "Kılavuza uygulama kullanım videosu eklendi; ORBİS aktarım video linki güncellendi.",
+  "assetVersion": "394"
 }
