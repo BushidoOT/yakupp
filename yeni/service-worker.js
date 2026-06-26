@@ -1,19 +1,19 @@
-importScripts('./js/version.js?v=395');
+importScripts('./js/version.js?v=399');
 
-const META = self.MESAHA_VERSION || {"app": "V3.80", "version": "v395-mobil-panel-scroll-zoom-hotfix", "build": 395, "visibleVersion": "V3.80 •ExelanceX•", "shortVersion": "V3.80 •ExelanceX•", "name": "Mesaha İO V3.80 •ExelanceX•", "cacheName": "mesaha-app-v395-mobil-panel-scroll-zoom-hotfix", "builtAt": "2026-06-26T20:10:00+03:00", "notes": "Mobil kullanıcı panelinde arka sayfa kayması ve input yakınlaşma sorunu düzeltildi.", "assetVersion": "395"};
+const META = self.MESAHA_VERSION || {"app": "V3.84", "version": "v399-admin-modern", "build": 399, "visibleVersion": "V3.84 •ExelanceX•", "shortVersion": "V3.84 •ExelanceX•", "name": "Mesaha İO V3.84 •ExelanceX•", "cacheName": "mesaha-app-v399-admin-modern", "builtAt": "2026-06-26T21:10:00+03:00", "notes": "Genel kod temizliği ve sürüm/cache eşitlemesi yapıldı.", "assetVersion": "399"};
 const SHELL_CACHE = META.cacheName + '-shell';
 const ASSET_CACHE = META.cacheName + '-assets';
 const RUNTIME_CACHE = META.cacheName + '-runtime';
 const OFFLINE_TIMEOUT_MS = 3000;
 const SHELL_ASSETS = [
   './', './index.html', './admin.html', './temizle.html', './manifest.json', './version.json', './service-worker.js',
-  './js/version.js?v=395', './js/mesaha-early-optimizer.js?v=395', './js/mesaha-utils.js?v=395', './js/mesaha-data-guard.js?v=395',
-  './js/mesaha-stability-core.js?v=395', './js/mesaha-firebase.js?v=395', './js/mesaha-offline-core.js?v=395',
-  './js/mesaha-render-storage.js?v=395', './js/mesaha-sound.js?v=395'
+  './js/version.js?v=399', './js/mesaha-early-optimizer.js?v=399', './js/mesaha-utils.js?v=399', './js/mesaha-data-guard.js?v=399',
+  './js/mesaha-stability-core.js?v=399', './js/mesaha-firebase.js?v=399', './js/mesaha-offline-core.js?v=399',
+  './js/mesaha-render-storage.js?v=399', './js/mesaha-sound.js?v=399'
 ];
 const STATIC_ASSETS = [
-  './assets/icon-192.png', './assets/icon-512.png', './assets/mesaha_logo.png', './assets/hero_forest_cover.png?v=395',
-  './assets/mesaha_onay.wav?v=395', './assets/mesaha_uyari.wav?v=395'
+  './assets/icon-192.png', './assets/icon-512.png', './assets/mesaha_logo.png', './assets/hero_forest_cover.png?v=399',
+  './assets/mesaha_onay.wav?v=399', './assets/mesaha_uyari.wav?v=399'
 ];
 function timeoutReject(ms, label){ return new Promise((_, reject) => setTimeout(() => reject(new Error(label || 'network-timeout')), ms || OFFLINE_TIMEOUT_MS)); }
 function networkWithTimeout(request, options, ms){ return Promise.race([fetch(request, options || {}), timeoutReject(ms || OFFLINE_TIMEOUT_MS, 'network-timeout')]); }
@@ -32,8 +32,20 @@ async function safePut(cacheName, request, response){
     const c=await caches.open(cacheName); await c.put(request, response.clone()); return true;
   }catch(e){ return false; }
 }
-async function matchAny(request, fallback){
-  return (await caches.match(request, {ignoreSearch:true})) || (fallback ? await caches.match(fallback, {ignoreSearch:true}) : null) || await caches.match('./index.html', {ignoreSearch:true});
+async function matchAny(request, fallback, allowIndex){
+  const hit = await caches.match(request, {ignoreSearch:true});
+  if(hit) return hit;
+  if(fallback){ const fb = await caches.match(fallback, {ignoreSearch:true}); if(fb) return fb; }
+  return allowIndex ? await caches.match('./index.html', {ignoreSearch:true}) : null;
+}
+function fallbackForPath(path){
+  if(path.endsWith('/index.html') || path.endsWith('/')) return './index.html';
+  if(path.endsWith('/admin.html')) return './admin.html';
+  if(path.endsWith('/temizle.html')) return './temizle.html';
+  if(path.endsWith('/manifest.json')) return './manifest.json';
+  if(path.endsWith('/version.json')) return './version.json';
+  if(path.endsWith('/service-worker.js')) return './service-worker.js';
+  return null;
 }
 async function precache(){
   const shell=await caches.open(SHELL_CACHE); const assets=await caches.open(ASSET_CACHE);
@@ -57,13 +69,21 @@ self.addEventListener('fetch', event => {
   if(event.request.mode==='navigate'){
     event.respondWith((async()=>{
       const fallback=path.endsWith('/admin.html')?'./admin.html':path.endsWith('/temizle.html')?'./temizle.html':'./index.html';
-      const cached=await matchAny(event.request,fallback);
+      const cached=await matchAny(event.request,fallback,true);
       if(cached){ event.waitUntil(networkWithTimeout(event.request,{cache:'no-store'},OFFLINE_TIMEOUT_MS).then(r=>safePut(SHELL_CACHE,fallback,r)).catch(()=>{})); return cached; }
-      try{ const r=await networkWithTimeout(event.request,{cache:'no-store'},OFFLINE_TIMEOUT_MS); event.waitUntil(safePut(SHELL_CACHE,fallback,r.clone())); return r; }catch(e){ return await matchAny(event.request,fallback) || offlineHtml(); }
+      try{ const r=await networkWithTimeout(event.request,{cache:'no-store'},OFFLINE_TIMEOUT_MS); event.waitUntil(safePut(SHELL_CACHE,fallback,r.clone())); return r; }catch(e){ return await matchAny(event.request,fallback,true) || offlineHtml(); }
     })()); return;
   }
   if(isPing){ event.respondWith(networkWithTimeout(event.request,{cache:'no-store'},OFFLINE_TIMEOUT_MS).then(r=>{if(!r||!r.ok) throw new Error('bad-status'); return r;}).catch(()=>offlineJson())); return; }
-  if(isShell){ event.respondWith((async()=>{ try{ const r=await networkWithTimeout(event.request,{cache:'no-store'},OFFLINE_TIMEOUT_MS); event.waitUntil(safePut(SHELL_CACHE,event.request,r.clone())); return r; }catch(e){ return await matchAny(event.request, path.endsWith('/version.json')?'./version.json':null) || (isVersion?offlineJson():Response.error()); } })()); return; }
+  if(isShell){ event.respondWith((async()=>{
+    try{ const r=await networkWithTimeout(event.request,{cache:'no-store'},OFFLINE_TIMEOUT_MS); event.waitUntil(safePut(SHELL_CACHE,event.request,r.clone())); return r; }
+    catch(e){
+      const fallback=fallbackForPath(path);
+      const cached=await matchAny(event.request, fallback, false);
+      if(cached) return cached;
+      return isVersion?offlineJson():Response.error();
+    }
+  })()); return; }
   event.respondWith((async()=>{
     const cached=await caches.match(event.request,{ignoreSearch:true}); if(cached){ event.waitUntil(networkWithTimeout(event.request,{},OFFLINE_TIMEOUT_MS).then(r=>safePut(ASSET_CACHE,event.request,r)).catch(()=>{})); return cached; }
     try{ const r=await networkWithTimeout(event.request,{},OFFLINE_TIMEOUT_MS); event.waitUntil(safePut(ASSET_CACHE,event.request,r.clone())); return r; }catch(e){ return Response.error(); }

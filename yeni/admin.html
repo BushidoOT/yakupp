@@ -4,10 +4,10 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
 <meta name="theme-color" content="#ffffff"/>
-<link rel="manifest" href="./manifest.json?v=390"/>
+<link rel="manifest" href="./manifest.json?v=399"/>
 <link rel="apple-touch-icon" href="./assets/icon-192.png"/>
-<title>Mesaha Admin V3.80</title>
-<style id="mesaha-v395-mobil-panel-scroll-zoom-hotfix">
+<title>Mesaha İO Admin V3.84</title>
+<style id="mesaha-v399-admin-modern">
 
 :root{
   --bg:#f6f8fb;
@@ -56,13 +56,26 @@ a{color:inherit}.hidden{display:none!important}.app{width:min(1180px,100%);margi
 .ticket-answer-v390 textarea{min-height:82px;resize:vertical}
 .ticket-answer-v390 .btn{justify-self:start}
 @media(max-width:520px){.ticket-answer-v390 .btn{width:100%}}
+
+
+
+/* V3.84 / build 399 modern admin tasarım */
+:root{--emerald:#16a34a;--emerald-soft:#ecfdf3;--sky:#2563eb;--sky-soft:#eff6ff;--amber:#f59e0b;--amber-soft:#fff7ed;--rose:#ef4444;--rose-soft:#fef2f2;}
+body{background:radial-gradient(circle at top left,rgba(34,197,94,.11),transparent 34%),linear-gradient(180deg,#fbfdff 0%,#f5f8fc 48%,#eef5f2 100%)}
+.top{border-radius:0 0 28px 28px;box-shadow:0 10px 34px rgba(15,23,42,.06)}
+.brand b{font-size:24px;letter-spacing:-.035em}.brand small{font-size:14px}.brand img{border-radius:20px}.hero{grid-template-columns:1fr}.welcome{min-height:150px;padding:24px;border-radius:28px;background:linear-gradient(135deg,#ffffff 0%,#f8fbff 48%,#edfff5 100%)}
+.welcome h1{font-size:36px}.admin-overview-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.admin-overview-grid .kpi{min-height:140px;border-radius:24px;padding:18px;box-shadow:0 13px 34px rgba(15,23,42,.07)}.admin-overview-grid .kpi b{font-size:30px}.kpi .trend{display:block;margin-top:10px;font-size:13px;font-weight:950;color:var(--green)}.kpi .trend.warn{color:#d97706}.kpi .trend.red{color:#dc2626}.kpi:nth-child(5) .ico{background:var(--blue-bg);color:#1d4ed8}.kpi:nth-child(6) .ico{background:var(--orange-bg);color:#ea580c}.kpi:nth-child(7) .ico{background:#fefce8;color:#ca8a04}.kpi:nth-child(8) .ico{background:#ecfdf5;color:#059669}
+.user-table-head{display:grid;grid-template-columns:54px minmax(170px,1.25fr) minmax(130px,.9fr) minmax(135px,.9fr) minmax(90px,.7fr) minmax(90px,.7fr) 150px;gap:12px;align-items:center;padding:0 14px 9px;color:#64748b;font-size:13px;font-weight:950}.admin-user-row{display:grid;grid-template-columns:54px minmax(170px,1.25fr) minmax(130px,.9fr) minmax(135px,.9fr) minmax(90px,.7fr) minmax(90px,.7fr) 150px;gap:12px;align-items:center;padding:13px 14px;border-radius:20px}.admin-user-row .avatar{grid-column:1}.admin-user-row .detail{grid-column:1/-1}.admin-user-row .user-main b,.admin-user-row .user-cell b{display:block;font-size:15px;color:#0f172a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.admin-user-row .user-main small,.admin-user-row .user-cell small{display:block;color:#64748b;font-size:12px;font-weight:850}.admin-user-row .version-ok{color:#16a34a!important}.admin-user-row .version-old{color:#d97706!important}.admin-user-row .user-actions{justify-content:flex-end;flex-wrap:nowrap}.admin-user-row:hover{border-color:#bbf7d0;box-shadow:0 13px 30px rgba(22,163,74,.08)}.section-title h2{font-size:28px}.phone-card,.card,.user-card,.backup,.ticket{box-shadow:0 12px 32px rgba(15,23,42,.06)}.modern-detail-title{margin:14px 0 8px;font-size:16px}.support-mini-list{display:grid;gap:8px}.support-mini{border:1px solid var(--line);border-radius:16px;padding:11px;background:#fff}.support-mini b{display:block}.support-mini small{color:var(--muted)}
+@media(max-width:1020px){.admin-overview-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.user-table-head{display:none}.admin-user-row{grid-template-columns:48px 1fr auto}.admin-user-row .user-cell{grid-column:2/-1}.admin-user-row .user-actions{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr}.admin-user-row .detail{grid-column:1/-1}}
+@media(max-width:520px){.admin-overview-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.admin-overview-grid .kpi{min-height:118px;padding:14px}.admin-overview-grid .kpi b{font-size:24px}.welcome h1{font-size:30px}.brand b{font-size:19px}.brand small{font-size:12px}.admin-user-row{grid-template-columns:44px 1fr}.admin-user-row .user-actions{grid-column:1/-1}}
+
 </style>
 </head>
 <body>
 
 <div class="app">
   <header class="top">
-    <div class="brand"><img alt="" src="./assets/mesaha_logo.png"/><div><b>Mesaha İO Admin</b><small>Beyaz Yönetim Paneli • V3.80</small></div></div>
+    <div class="brand"><img alt="" src="./assets/mesaha_logo.png"/><div><b>Mesaha İO Admin</b><small>Modern Yönetim Paneli • V3.84</small></div></div>
     <div class="top-actions"><a class="btn soft app-return-btn" data-app-home href="./index.html" title="Normal uygulamaya dön">← Uygulama</a><button class="btn green" id="refreshBtn" type="button">Yenile</button></div>
   </header>
 
@@ -85,11 +98,15 @@ a{color:inherit}.hidden{display:none!important}.app{width:min(1180px,100%);margi
           <p>Kullanıcı, cihaz, bulut yedeği ve bildirimleri sade bir panelden takip et.</p>
           <div class="status-pills"><span class="pill" id="syncInfo">Firebase bekliyor</span><span class="pill green" id="onlinePill">Online</span><span class="pill" id="newTicketPill">0 bildirim</span></div>
         </div>
-        <div class="kpi-grid">
-          <div class="kpi"><div class="ico">👥</div><small>Toplam Kullanıcı</small><b id="kUsers">0</b></div>
-          <div class="kpi"><div class="ico">⚡</div><small>Bugün Aktif</small><b id="kActive">0</b></div>
-          <div class="kpi"><div class="ico">📈</div><small>Toplam Ölçüm</small><b id="kRecords">0</b></div>
-          <div class="kpi"><div class="ico">🌲</div><small>Toplam m³</small><b id="kM3">0</b></div>
+        <div class="kpi-grid admin-overview-grid">
+          <div class="kpi"><div class="ico">👥</div><small>Toplam Kullanıcı</small><b id="kUsers">0</b><span class="trend" id="kUsersTrend">Genel kullanıcı</span></div>
+          <div class="kpi"><div class="ico">🟢</div><small>Bugün Aktif</small><b id="kActive">0</b><span class="trend" id="kActiveTrend">Bugünkü giriş</span></div>
+          <div class="kpi"><div class="ico">📄</div><small>Toplam Kayıt</small><b id="kRecords">0</b><span class="trend" id="kRecordsTrend">Ölçüm adedi</span></div>
+          <div class="kpi"><div class="ico">💧</div><small>Toplam m³</small><b id="kM3">0</b><span class="trend" id="kM3Trend">Genel hacim</span></div>
+          <div class="kpi"><div class="ico">☁️</div><small>Bulut Yedek</small><b id="kBackups">0</b><span class="trend" id="kBackupsTrend">Yedek durumu</span></div>
+          <div class="kpi"><div class="ico">🛟</div><small>Bekleyen Destek</small><b id="kTickets">0</b><span class="trend warn" id="kTicketsTrend">Kullanıcı mesajı</span></div>
+          <div class="kpi"><div class="ico">🕒</div><small>Eski Sürüm</small><b id="kOldVersion">0</b><span class="trend warn" id="kOldVersionTrend">Güncelleme gerekli</span></div>
+          <div class="kpi"><div class="ico">📈</div><small>Son 7 Gün Aktif</small><b id="k7Active">0</b><span class="trend" id="k7ActiveTrend">Haftalık aktiflik</span></div>
         </div>
       </div>
       <div class="quick-grid">
@@ -110,7 +127,7 @@ a{color:inherit}.hidden{display:none!important}.app{width:min(1180px,100%);margi
     <section class="panel" id="tab-users">
       <div class="section-title"><div><h2>Kullanıcılar</h2><p>Kullanıcı, cihaz, aktiflik ve yedek detayları.</p></div><button class="btn green" id="refreshBtn2" type="button">Yenile</button></div>
       <div class="toolbar"><input id="userSearch" placeholder="Kullanıcı, şeflik, cihaz ara..."/><select id="seflikFilter"><option value="">Tüm Şeflikler</option></select><select id="userSort"><option value="last">Son görülen</option><option value="records">Kayıt sayısı</option><option value="m3">Toplam m³</option><option value="duration">Süre</option></select><button class="btn soft" id="clearFiltersBtn" type="button">Temizle</button></div>
-      <div class="list" id="usersList"></div>
+      <div class="user-table-head"><span></span><span>Kullanıcı Adı</span><span>Şeflik / Bölme</span><span>Son Giriş</span><span>Sürüm</span><span>Durum</span><span>İşlem</span></div><div class="list" id="usersList"></div>
     </section>
 
     <section class="panel" id="tab-backups">
@@ -180,6 +197,63 @@ function personRow(u){const key=userKeyOf(u);const last=n(u.lastSeenMs||u.lastLo
 function renderHome(){const active=state.users.slice().sort((a,b)=>n(b.lastSeenMs||b.lastLoginMs)-n(a.lastSeenMs||a.lastLoginMs)).slice(0,6);$('homeUsers').innerHTML=active.length?active.map(personRow).join(''):'<div class="empty">Kullanıcı yok.</div>';const feed=[...state.backups.slice(0,3).map(b=>({type:'Yedek',txt:(b.name||'-')+' • '+int(b.recordCount)+' kayıt • '+m3(b.m3)+' m³',time:b.createdAt||'',icon:'☁️'})),...state.tickets.slice(0,3).map(t=>({type:'Bildirim',txt:(t.name||'-')+' • '+(t.message||'').slice(0,42),time:t.createdAt||'',icon:'🔔'}))].slice(0,6);$('homeFeed').innerHTML=feed.length?feed.map(f=>`<div class="person"><div class="avatar">${f.icon}</div><div><b>${esc(f.type)}</b><small>${esc(f.txt)}</small></div><div class="metric"><small>${esc(f.time)}</small></div></div>`).join(''):'<div class="empty">Hareket yok.</div>'}
 function filteredUsers(){const q=($('userSearch').value||'').toLowerCase(),sf=$('seflikFilter').value,sort=$('userSort').value;let arr=state.users.filter(u=>{const text=[u.name,u.seflik,u.bolmeNo,u.lastDevice,u.deviceType,u.os,u.browser,u.deviceId,u.userAgent,u.screen,u.viewport].join(' ').toLowerCase();return (!q||text.includes(q))&&(!sf||u.seflik===sf)});arr.sort((a,b)=>sort==='records'?n(b.recordCount||b.totalRecords)-n(a.recordCount||a.totalRecords):sort==='m3'?n(b.m3||b.totalM3)-n(a.m3||a.totalM3):sort==='duration'?n(b.usageMs)-n(a.usageMs):n(b.lastSeenMs||b.lastLoginMs)-n(a.lastSeenMs||a.lastLoginMs));return arr}
 function renderUsers(){const arr=filteredUsers();$('usersList').innerHTML=arr.length?arr.map(u=>{const key=userKeyOf(u),bk=userBackups(key).length,last=n(u.lastSeenMs||u.lastLoginMs||u.updatedAtMs),active=last>=Date.now()-15*60000;return `<div class="user-card" data-user-card="${esc(key)}"><div class="topline"><div class="avatar">${esc(initials(u.name))}</div><div><b>${esc(u.name||'Kullanıcı')}</b><small>${esc(u.seflik||'-')} • Bölme ${esc(u.bolmeNo||'-')}</small></div><div class="row"><button class="btn soft" data-user-detail="${esc(key)}" type="button">Detay</button><button class="btn danger" data-user-delete="${esc(key)}" type="button">Sil</button></div></div><div class="chips"><span class="chip ${active?'green':''}">${active?'Çevrimiçi':'Son: '+shortDate(last,u.lastSeen)}</span><span class="chip">${int(u.recordCount||u.totalRecords)} kayıt</span><span class="chip">${m3(u.m3||u.totalM3)} m³</span><span class="chip">${bk} yedek</span><span class="chip">${msText(u.usageMs)}</span><span class="chip">${deviceTypeOf(u)}</span></div><div class="detail"><div class="mini-grid"><div class="mini"><small>Bugün giriş</small><b>${int(u.todayLoginCount)}</b></div><div class="mini"><small>Bugün kayıt</small><b>${int(u.todayRecords)}</b></div><div class="mini"><small>Bugün süre</small><b>${msText(u.todayUsageMs)}</b></div><div class="mini"><small>Son görülme</small><b>${shortDate(last,u.lastSeen||u.lastLogin)}</b></div><div class="mini"><small>Cihaz</small><b>${esc(u.lastDevice||deviceTypeOf(u)||'-')}</b></div><div class="mini"><small>Sistem</small><b>${osOf(u)}</b></div><div class="mini"><small>Tarayıcı</small><b>${esc(u.browser||(u.lastDeviceInfo&&u.lastDeviceInfo.browser)||'-')}</b></div><div class="mini"><small>Ekran</small><b>${esc(u.screen||(u.lastDeviceInfo&&u.lastDeviceInfo.screen)||'-')}</b></div></div><div class="screen-grid" style="margin-top:12px"><div><b>Ağaç Toplamları</b>${totalsBars(u.treeTotals)}</div><div><b>Ürün Toplamları</b>${totalsBars(u.productTotals)}</div></div></div></div>`}).join(''):'<div class="empty">Kullanıcı bulunamadı.</div>'}
+
+function appVersionOf(u){
+  const raw = u.appVersion || u.fileVersion || (u.lastDeviceInfo && (u.lastDeviceInfo.appVersion || u.lastDeviceInfo.fileVersion)) || u.version || '-';
+  return String(raw || '-').replace('•ExelanceX•','').trim();
+}
+function latestAppVersion(){return (window.MESAHA_VERSION && window.MESAHA_VERSION.app) || 'V3.84'}
+function isOldAppVersion(u){
+  const v=appVersionOf(u); if(!v || v==='-') return false;
+  const latest=latestAppVersion();
+  return !String(v).includes(latest) && !String(v).includes((window.MESAHA_VERSION && window.MESAHA_VERSION.version) || 'v399-admin-modern');
+}
+function isActiveUser(u,spanMs){const last=n(u.lastSeenMs||u.lastLoginMs||u.updatedAtMs);return last>=Date.now()-(spanMs||15*60000)}
+function userTickets(key){return state.tickets.filter(t=>userKeyOf(t)===key)}
+function renderKpis(){
+  const ts=todayStart(), week=Date.now()-7*86400000;
+  const activeToday=state.users.filter(u=>n(u.lastSeenMs||u.lastLoginMs||u.updatedAtMs)>=ts).length;
+  const activeWeek=state.users.filter(u=>n(u.lastSeenMs||u.lastLoginMs||u.updatedAtMs)>=week).length;
+  const rec=state.users.reduce((a,u)=>a+n(u.recordCount||u.totalRecords||u.adet),0);
+  const vol=state.users.reduce((a,u)=>a+n(u.m3||u.totalM3),0);
+  const pending=state.tickets.filter(t=>!((t.status||'new')==='read'||t.adminReply||t.reply)).length;
+  const old=state.users.filter(isOldAppVersion).length;
+  if($('kUsers'))$('kUsers').textContent=int(state.users.length);
+  if($('kActive'))$('kActive').textContent=int(activeToday);
+  if($('kRecords'))$('kRecords').textContent=int(rec);
+  if($('kM3'))$('kM3').textContent=m3(vol);
+  if($('kBackups'))$('kBackups').textContent=int(state.backups.length);
+  if($('kTickets'))$('kTickets').textContent=int(pending);
+  if($('kOldVersion'))$('kOldVersion').textContent=int(old);
+  if($('k7Active'))$('k7Active').textContent=int(activeWeek);
+  if($('kTicketsTrend')){$('kTicketsTrend').textContent=pending?pending+' cevap bekliyor':'Destek temiz';$('kTicketsTrend').className='trend '+(pending?'warn':'');}
+  if($('kOldVersionTrend')){$('kOldVersionTrend').textContent=old?old+' kullanıcı eski':'Tümü güncel';$('kOldVersionTrend').className='trend '+(old?'warn':'');}
+  const newTickets=state.tickets.filter(t=>(t.status||'new')!=='read').length;
+  if($('newTicketPill')){$('newTicketPill').textContent=newTickets+' yeni bildirim';$('newTicketPill').className='pill '+(newTickets?'red':'green');}
+  if($('backupCount'))$('backupCount').textContent=state.backups.length+' yedek';
+  if($('onlinePill')){$('onlinePill').textContent=navigator.onLine?'Çevrimiçi':'Çevrimdışı';$('onlinePill').className='pill '+(navigator.onLine?'green':'red');}
+  renderMobileExtras();
+}
+function renderUsers(){
+  const arr=filteredUsers();
+  $('usersList').innerHTML=arr.length?arr.map(u=>{
+    const key=userKeyOf(u),bk=userBackups(key).length,last=n(u.lastSeenMs||u.lastLoginMs||u.updatedAtMs),active=isActiveUser(u),ver=appVersionOf(u),old=isOldAppVersion(u),tickets=userTickets(key),openTickets=tickets.filter(t=>!((t.status||'new')==='read'||t.adminReply||t.reply)).length;
+    return `<div class="user-card admin-user-row" data-user-card="${esc(key)}">
+      <div class="avatar">${esc(initials(u.name))}</div>
+      <div class="user-main"><b>${esc(u.name||'Kullanıcı')}</b><small>Sürüm ${esc(ver)}</small></div>
+      <div class="user-cell"><b>${esc(u.seflik||'-')}</b><small>Bölme ${esc(u.bolmeNo||'-')}</small></div>
+      <div class="user-cell"><b>${shortDate(last,u.lastSeen||u.lastLogin)}</b><small>${active?'Çevrimiçi':'Çevrimdışı'}</small></div>
+      <div class="user-cell"><b>${esc(ver)}</b><small class="${old?'version-old':'version-ok'}">${old?'Eski':'Güncel'}</small></div>
+      <div class="user-cell"><span class="pill ${active?'green':''}">${active?'Aktif':'Pasif'}</span></div>
+      <div class="row user-actions"><button class="btn soft" data-user-detail="${esc(key)}" type="button">Detay</button><button class="btn danger" data-user-delete="${esc(key)}" type="button">Sil</button></div>
+      <div class="detail"><div class="mini-grid">
+        <div class="mini"><small>Toplam kayıt</small><b>${int(u.recordCount||u.totalRecords)}</b></div><div class="mini"><small>Toplam m³</small><b>${m3(u.m3||u.totalM3)}</b></div><div class="mini"><small>Bugün giriş</small><b>${int(u.todayLoginCount)}</b></div><div class="mini"><small>Bugün kayıt</small><b>${int(u.todayRecords)}</b></div>
+        <div class="mini"><small>Son yedek</small><b>${bk?int(bk)+' yedek':'Yedek yok'}</b></div><div class="mini"><small>Destek</small><b>${openTickets} açık / ${tickets.length} toplam</b></div><div class="mini"><small>Cihaz</small><b>${esc(u.lastDevice||deviceTypeOf(u)||'-')}</b></div><div class="mini"><small>Uygulama Sürümü</small><b>${esc(ver)}</b></div>
+      </div><div class="screen-grid" style="margin-top:12px"><div><b>Ağaç Toplamları</b>${totalsBars(u.treeTotals)}</div><div><b>Ürün Toplamları</b>${totalsBars(u.productTotals)}</div></div></div>
+    </div>`;
+  }).join(''):'<div class="empty">Kullanıcı bulunamadı.</div>';
+}
+
 function renderBackups(){const q=($('backupUserFilter').value||'').toLowerCase();const arr=state.backups.filter(b=>!q||[b.name,b.seflik,b.fileName,b.bolmeNo].join(' ').toLowerCase().includes(q));$('backupsList').innerHTML=arr.length?arr.slice(0,220).map(b=>`<div class="backup"><div class="space"><div><span class="pill green">Bulut yedek</span><h3 style="margin:8px 0 3px">${esc(b.fileName||'Mesaha yedeği')}</h3><p style="margin:0;color:var(--muted)">${esc(b.name||'-')} • ${esc(b.seflik||'-')} • ${esc(b.createdAt||'-')}</p></div><button class="btn danger" data-backup-delete="${esc(b.id)}" type="button">Sil</button></div><div class="mini-grid"><div class="mini"><small>Kayıt</small><b>${int(b.recordCount)}</b></div><div class="mini"><small>Hacim</small><b>${m3(b.m3)}</b></div><div class="mini"><small>Bölme</small><b>${esc(b.bolmeNo||'-')}</b></div><div class="mini"><small>Sürüm</small><b>${esc(b.fileVersion||b.appVersion||'-')}</b></div></div></div>`).join(''):'<div class="empty">Bulut yedeği yok.</div>'}
 function renderTickets(){
   let arr=state.tickets.slice();
@@ -236,7 +310,7 @@ async function deleteAllTickets(){if(!confirm('Tüm bildirimler silinsin mi?'))r
 async function deleteOldBackups(){if(!confirm('30 günden eski yedekler silinsin mi?'))return;const limit=Date.now()-30*86400000;const{db}=await ready();for(const b of state.backups.filter(x=>n(x.createdAtMs)<limit))await deleteBackupFull(db,b.id);toast('Eski yedekler temizlendi');await loadAll()}
 async function resetStats(){if(!confirm('İstatistik başlangıcı bugüne alınsın mı?'))return;const{db}=await ready();await db.collection('adminSettings').doc('statsReset').set({resetAt:new Date().toLocaleString('tr-TR'),resetAtMs:Date.now()},{merge:true});toast('İstatistik başlangıcı yenilendi')}
 async function health(){try{const{db,auth}=await ready();await db.collection('healthChecks').doc('adminPanel').set({ok:true,at:new Date().toLocaleString('tr-TR'),atMs:Date.now(),uid:auth.currentUser&&auth.currentUser.uid},{merge:true});toast('Firebase bağlantısı sağlam')}catch(e){toast(errText(e))}}
-function exportAll(){const blob=new Blob([JSON.stringify({exportedAt:new Date().toISOString(),version:'v395-mobil-panel-scroll-zoom-hotfix',users:state.users,backups:state.backups,tickets:state.tickets,usage:state.usage},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='mesaha_admin_tum_veriler_v395.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+function exportAll(){const blob=new Blob([JSON.stringify({exportedAt:new Date().toISOString(),version:'v399-admin-modern',users:state.users,backups:state.backups,tickets:state.tickets,usage:state.usage},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='mesaha_admin_tum_veriler_v399.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
 function showUserModal(key){const u=state.users.find(x=>userKeyOf(x)===key);if(!u)return;const bks=userBackups(key);const last=n(u.lastSeenMs||u.lastLoginMs||u.updatedAtMs);const active=last>=Date.now()-15*60000;$('modalTitle').textContent=(u.name||'-')+' • kullanıcı detayı';$('modalBody').innerHTML=`<div class="phone-card"><div class="phone-head"><div class="row"><div class="avatar">${esc(initials(u.name))}</div><div><b>${esc(u.name||'-')}</b><small>${esc(u.seflik||'-')} • Bölme ${esc(u.bolmeNo||'-')}</small></div></div><span class="pill ${active?'green':''}">${active?'Çevrimiçi':shortDate(last,u.lastSeen)}</span></div><div class="inside"><div class="mini-grid"><div class="mini"><small>Toplam kayıt</small><b>${int(u.recordCount||u.totalRecords)}</b></div><div class="mini"><small>Toplam m³</small><b>${m3(u.m3||u.totalM3)}</b></div><div class="mini"><small>Bugün giriş</small><b>${int(u.todayLoginCount)}</b></div><div class="mini"><small>Toplam süre</small><b>${msText(u.usageMs)}</b></div><div class="mini"><small>Son görülme</small><b>${shortDate(last,u.lastSeen||u.lastLogin)}</b></div><div class="mini"><small>Yedek sayısı</small><b>${int(bks.length)}</b></div></div><h3>Cihaz Bilgileri</h3><div class="mini-grid"><div class="mini"><small>Cihaz Türü</small><b>${deviceTypeOf(u)}</b></div><div class="mini"><small>İşletim Sistemi</small><b>${osOf(u)}</b></div><div class="mini"><small>Tarayıcı</small><b>${esc(u.browser||(u.lastDeviceInfo&&u.lastDeviceInfo.browser)||'-')}</b></div><div class="mini"><small>Ekran</small><b>${esc(u.screen||(u.lastDeviceInfo&&u.lastDeviceInfo.screen)||'-')}</b></div><div class="mini"><small>Görünen Alan</small><b>${esc(u.viewport||(u.lastDeviceInfo&&u.lastDeviceInfo.viewport)||'-')}</b></div><div class="mini"><small>Cihaz ID</small><b>${esc(u.deviceId||'-')}</b></div></div><div class="screen-grid" style="margin-top:14px"><div><h3>Ağaç Toplamları</h3>${totalsBars(u.treeTotals)}</div><div><h3>Ürün Toplamları</h3>${totalsBars(u.productTotals)}</div></div><h3>Bulut Yedekleri</h3>${bks.length?bks.map(b=>`<div class="backup"><div class="space"><div><b>${esc(b.fileName||'Yedek')}</b><p style="margin:4px 0 0;color:var(--muted)">${esc(b.createdAt||'-')} • ${int(b.recordCount)} kayıt • ${m3(b.m3)}</p></div><button class="btn danger" data-backup-delete="${esc(b.id)}" type="button">Sil</button></div></div>`).join(''):'<div class="empty">Yedek yok.</div>'}</div></div>`;$('modal').classList.add('show')}
 
 function goAppHome(e){
@@ -244,6 +318,20 @@ function goAppHome(e){
   var target = new URL('./index.html', location.href).href;
   try{ location.assign(target); }catch(_){ location.href = './index.html'; }
 }
+
+function showUserModal(key){
+  const u=state.users.find(x=>userKeyOf(x)===key);if(!u)return;
+  const bks=userBackups(key),tickets=userTickets(key),last=n(u.lastSeenMs||u.lastLoginMs||u.updatedAtMs),active=isActiveUser(u),ver=appVersionOf(u);
+  $('modalTitle').textContent=(u.name||'-')+' • kullanıcı detayı';
+  $('modalBody').innerHTML=`<div class="phone-card"><div class="phone-head"><div class="row"><div class="avatar">${esc(initials(u.name))}</div><div><b>${esc(u.name||'-')}</b><small>Sürüm ${esc(ver)} • ${esc(u.seflik||'-')} • Bölme ${esc(u.bolmeNo||'-')}</small></div></div><span class="pill ${active?'green':''}">${active?'Aktif':shortDate(last,u.lastSeen)}</span></div><div class="inside">
+  <div class="mini-grid"><div class="mini"><small>Kullanıcı Adı</small><b>${esc(u.name||'-')}</b></div><div class="mini"><small>Şeflik</small><b>${esc(u.seflik||'-')}</b></div><div class="mini"><small>Bölme</small><b>${esc(u.bolmeNo||'-')}</b></div><div class="mini"><small>Uygulama Sürümü</small><b>${esc(ver)} ${isOldAppVersion(u)?'(Eski)':'(Güncel)'}</b></div><div class="mini"><small>Toplam kayıt</small><b>${int(u.recordCount||u.totalRecords)}</b></div><div class="mini"><small>Toplam m³</small><b>${m3(u.m3||u.totalM3)}</b></div><div class="mini"><small>Son giriş</small><b>${shortDate(last,u.lastSeen||u.lastLogin)}</b></div><div class="mini"><small>Toplam süre</small><b>${msText(u.usageMs)}</b></div></div>
+  <h3 class="modern-detail-title">Cihaz Bilgileri</h3><div class="mini-grid"><div class="mini"><small>Cihaz Türü</small><b>${deviceTypeOf(u)}</b></div><div class="mini"><small>İşletim Sistemi</small><b>${osOf(u)}</b></div><div class="mini"><small>Tarayıcı</small><b>${esc(u.browser||(u.lastDeviceInfo&&u.lastDeviceInfo.browser)||'-')}</b></div><div class="mini"><small>Ekran</small><b>${esc(u.screen||(u.lastDeviceInfo&&u.lastDeviceInfo.screen)||'-')}</b></div><div class="mini"><small>Görünen Alan</small><b>${esc(u.viewport||(u.lastDeviceInfo&&u.lastDeviceInfo.viewport)||'-')}</b></div><div class="mini"><small>Cihaz ID</small><b>${esc(u.deviceId||'-')}</b></div></div>
+  <div class="screen-grid" style="margin-top:14px"><div><h3>Ağaç Toplamları</h3>${totalsBars(u.treeTotals)}</div><div><h3>Ürün Toplamları</h3>${totalsBars(u.productTotals)}</div></div>
+  <h3 class="modern-detail-title">Destek Talepleri</h3>${tickets.length?'<div class="support-mini-list">'+tickets.map(t=>`<div class="support-mini"><b>${esc(t.message||'-')}</b><small>${esc(t.createdAt||'-')} • ${esc(t.adminReply||t.reply?'Cevaplandı':'Cevap bekliyor')}</small>${t.adminReply||t.reply?`<p style="margin:7px 0 0;color:#166534">${esc(t.adminReply||t.reply)}</p>`:''}</div>`).join('')+'</div>':'<div class="empty">Destek talebi yok.</div>'}
+  <h3 class="modern-detail-title">Bulut Yedekleri</h3>${bks.length?bks.map(b=>`<div class="backup"><div class="space"><div><b>${esc(b.fileName||'Yedek')}</b><p style="margin:4px 0 0;color:var(--muted)">${esc(b.createdAt||'-')} • ${int(b.recordCount)} kayıt • ${m3(b.m3)}</p></div><button class="btn danger" data-backup-delete="${esc(b.id)}" type="button">Sil</button></div></div>`).join(''):'<div class="empty">Yedek yok.</div>'}</div></div>`;
+  $('modal').classList.add('show');
+}
+
 function go(tab){document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.tab===tab));document.querySelectorAll('.panel').forEach(x=>x.classList.toggle('active',x.id==='tab-'+tab));window.scrollTo({top:0,behavior:'smooth'})}
 function unlock(){const code=($('adminCode').value||new URLSearchParams(location.search).get('admin')||sessionStorage.getItem('mesaha_admin_code')||'').trim();if(code===ADMIN_CODE){sessionStorage.setItem('mesaha_admin_code',code);$('lockCard').classList.add('hidden');$('adminMain').classList.remove('hidden');$('tabs').classList.remove('hidden');loadAll()}else $('lockMsg').textContent='Şifre hatalı.'}
 function bind(){const d=new Date();$('todayPill').textContent='📅 '+d.toLocaleDateString('tr-TR',{weekday:'short',day:'2-digit',month:'short'});document.querySelectorAll('[data-app-home]').forEach(b=>b.addEventListener('click',goAppHome));document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.tab)));document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.go)));$('unlockBtn').addEventListener('click',unlock);$('adminCode').addEventListener('keydown',e=>{if(e.key==='Enter')unlock()});$('refreshBtn').addEventListener('click',loadAll);$('refreshBtn2').addEventListener('click',loadAll);/* theme removed */['userSearch','seflikFilter','userSort'].forEach(id=>$(id).addEventListener('input',renderUsers));$('clearFiltersBtn').addEventListener('click',()=>{$('userSearch').value='';$('seflikFilter').value='';$('userSort').value='last';renderUsers()});$('backupUserFilter').addEventListener('input',renderBackups);$('showAllTicketsBtn').addEventListener('click',()=>{state.showAllTickets=!state.showAllTickets;$('showAllTicketsBtn').textContent=state.showAllTickets?'Sadece Yeni':'Tümünü Göster';renderTickets()});$('clearReadTicketsBtn').addEventListener('click',clearReadTickets);$('oldBackupsTopBtn').addEventListener('click',deleteOldBackups);$('healthBtn').addEventListener('click',health);$('exportBtn').addEventListener('click',exportAll);$('resetStatsBtn').addEventListener('click',resetStats);$('deleteOldBackupsBtn').addEventListener('click',deleteOldBackups);$('deleteAllTicketsBtn').addEventListener('click',deleteAllTickets);$('modalClose').addEventListener('click',()=>$('modal').classList.remove('show'));$('modal').addEventListener('click',e=>{if(e.target===$('modal'))$('modal').classList.remove('show')});document.body.addEventListener('click',e=>{const ud=e.target.closest('[data-user-detail]');if(ud){showUserModal(ud.getAttribute('data-user-detail'));return}const card=e.target.closest('[data-user-card]');if(card&&e.target.closest('.topline')&&!e.target.closest('button'))card.classList.toggle('open');const delU=e.target.closest('[data-user-delete]');if(delU)delUser(delU.getAttribute('data-user-delete')).catch(x=>toast(errText(x)));const delB=e.target.closest('[data-backup-delete]');if(delB)delBackup(delB.getAttribute('data-backup-delete')).catch(x=>toast(errText(x)));const rp=e.target.closest('[data-ticket-reply]');if(rp){replyTicket(rp.getAttribute('data-ticket-reply')).catch(x=>toast(errText(x)));return}const tr=e.target.closest('[data-ticket-read]');if(tr)readTicket(tr.getAttribute('data-ticket-read')).catch(x=>toast(errText(x)));const td=e.target.closest('[data-ticket-delete]');if(td)delTicket(td.getAttribute('data-ticket-delete')).catch(x=>toast(errText(x)))});window.addEventListener('online',renderKpis);window.addEventListener('offline',renderKpis);if(new URLSearchParams(location.search).get('admin')===ADMIN_CODE||sessionStorage.getItem('mesaha_admin_code')===ADMIN_CODE){$('adminCode').value=ADMIN_CODE;unlock()}}
