@@ -1,12 +1,12 @@
 window.MESAHA_VERSION = {
   "app": "V3.75",
-  "version": "v388-admin-donus-hotfix",
-  "build": 388,
+  "version": "v389-download-button-hotfix",
+  "build": 389,
   "visibleVersion": "V3.75 •ExelanceX•",
   "shortVersion": "V3.75 •ExelanceX•",
   "name": "Mesaha İO V3.75 •ExelanceX•",
-  "cacheName": "mesaha-app-v388-admin-donus-hotfix",
+  "cacheName": "mesaha-app-v389-download-button-hotfix",
   "builtAt": "2026-06-26T05:05:00+03:00",
-  "notes": "Admin paneline mobilde gizlenmeyen Uygulamaya Dön butonu ve güvenli normal uygulama yönlendirmesi eklendi.",
-  "assetVersion": "388"
+  "notes": "Mesaha Dosyasını İndir butonu daha belirgin ve farklı renkli yapıldı.",
+  "assetVersion": "389"
 };

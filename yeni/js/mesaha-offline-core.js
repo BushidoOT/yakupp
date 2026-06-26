@@ -5,15 +5,15 @@
 
   var META = {
     app: 'V3.75',
-    version: 'v388-admin-donus-hotfix',
-    build: 388,
+    version: 'v389-download-button-hotfix',
+    build: 389,
     visibleVersion: 'V3.75 •ExelanceX•',
     shortVersion: 'V3.75 •ExelanceX•',
     name: 'Mesaha İO V3.75 •ExelanceX•',
-    cacheName: 'mesaha-app-v388-admin-donus-hotfix',
+    cacheName: 'mesaha-app-v389-download-button-hotfix',
     builtAt: '2026-06-25T23:05:00+03:00',
     notes: 'Görünür sürüm V3.75 yapıldı; güncelleme uyarısının aynı sürümde tekrar tekrar görünmesi engellendi.',
-    assetVersion:"388"
+    assetVersion:"389"
   };
 
   function lock(name, value){
@@ -61,10 +61,10 @@
 
   var CORE_ASSETS = [
     './index.html', './admin.html', './manifest.json', './version.json', './service-worker.js', './temizle.html',
-    './js/version.js?v=388', './js/mesaha-sound.js?v=388', './js/mesaha-firebase.js?v=388',
-    './js/mesaha-early-optimizer.js?v=388', './js/mesaha-offline-core.js?v=388',
-    './assets/icon-192.png', './assets/icon-512.png', './assets/mesaha_logo.png', './assets/hero_forest_cover.png?v=388',
-    './assets/mesaha_onay.wav?v=388', './assets/mesaha_uyari.wav?v=388'
+    './js/version.js?v=389', './js/mesaha-sound.js?v=389', './js/mesaha-firebase.js?v=389',
+    './js/mesaha-early-optimizer.js?v=389', './js/mesaha-offline-core.js?v=389',
+    './assets/icon-192.png', './assets/icon-512.png', './assets/mesaha_logo.png', './assets/hero_forest_cover.png?v=389',
+    './assets/mesaha_onay.wav?v=389', './assets/mesaha_uyari.wav?v=389'
   ];
 
   function warmCache(){
@@ -87,7 +87,7 @@
 
   function registerServiceWorker(){
     if (!('serviceWorker' in navigator)) return;
-    navigator.serviceWorker.register('./service-worker.js?v=388').then(function(reg){
+    navigator.serviceWorker.register('./service-worker.js?v=389').then(function(reg){
       try {
         var last = Number(localStorage.getItem('mesaha_sw_update_check_v383') || 0);
         if (navigator.onLine && Date.now() - last > 15 * 60 * 1000) {
@@ -137,10 +137,10 @@
 })();
 
 
-// v388: service worker ısındırma ve güncelleme kontrolü bindirmeme.
+// v389: service worker ısındırma ve güncelleme kontrolü bindirmeme.
 (function(){
   try {
-    var KEY='mesaha_v388_last_update_probe';
+    var KEY='mesaha_v389_last_update_probe';
     window.MesahaOfflineCoreV387 = window.MesahaOfflineCoreV387 || {};
     window.MesahaOfflineCoreV387.canProbe = function(){
       var last=Number(localStorage.getItem(KEY)||0);

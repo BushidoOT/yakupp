@@ -1,19 +1,19 @@
-importScripts('./js/version.js?v=388');
+importScripts('./js/version.js?v=389');
 
-const META = self.MESAHA_VERSION || {"app": "V3.75", "version": "v388-admin-donus-hotfix", "build": 388, "visibleVersion": "V3.75 •ExelanceX•", "shortVersion": "V3.75 •ExelanceX•", "name": "Mesaha İO V3.75 •ExelanceX•", "cacheName": "mesaha-app-v388-admin-donus-hotfix", "builtAt": "2026-06-26T00:10:00+03:00", "notes": "Offline cache yazma güvenliği ve kritik CSS kararlılığı güçlendirildi; görsel varlıklar boyut kontrolünden geçirildi.", "assetVersion": "388"};
+const META = self.MESAHA_VERSION || {"app": "V3.75", "version": "v389-download-button-hotfix", "build": 389, "visibleVersion": "V3.75 •ExelanceX•", "shortVersion": "V3.75 •ExelanceX•", "name": "Mesaha İO V3.75 •ExelanceX•", "cacheName": "mesaha-app-v389-download-button-hotfix", "builtAt": "2026-06-26T00:10:00+03:00", "notes": "Mesaha Dosyasını İndir butonu daha belirgin ve farklı renkli yapıldı.", "assetVersion": "389"};
 const SHELL_CACHE = META.cacheName + '-shell';
 const ASSET_CACHE = META.cacheName + '-assets';
 const RUNTIME_CACHE = META.cacheName + '-runtime';
 const OFFLINE_TIMEOUT_MS = 3000;
 const SHELL_ASSETS = [
   './', './index.html', './admin.html', './temizle.html', './manifest.json', './version.json', './service-worker.js',
-  './js/version.js?v=388', './js/mesaha-early-optimizer.js?v=388', './js/mesaha-utils.js?v=388', './js/mesaha-data-guard.js?v=388',
-  './js/mesaha-stability-core.js?v=388', './js/mesaha-firebase.js?v=388', './js/mesaha-offline-core.js?v=388',
-  './js/mesaha-render-storage.js?v=388', './js/mesaha-sound.js?v=388'
+  './js/version.js?v=389', './js/mesaha-early-optimizer.js?v=389', './js/mesaha-utils.js?v=389', './js/mesaha-data-guard.js?v=389',
+  './js/mesaha-stability-core.js?v=389', './js/mesaha-firebase.js?v=389', './js/mesaha-offline-core.js?v=389',
+  './js/mesaha-render-storage.js?v=389', './js/mesaha-sound.js?v=389'
 ];
 const STATIC_ASSETS = [
-  './assets/icon-192.png', './assets/icon-512.png', './assets/mesaha_logo.png', './assets/hero_forest_cover.png?v=388',
-  './assets/mesaha_onay.wav?v=388', './assets/mesaha_uyari.wav?v=388'
+  './assets/icon-192.png', './assets/icon-512.png', './assets/mesaha_logo.png', './assets/hero_forest_cover.png?v=389',
+  './assets/mesaha_onay.wav?v=389', './assets/mesaha_uyari.wav?v=389'
 ];
 function timeoutReject(ms, label){ return new Promise((_, reject) => setTimeout(() => reject(new Error(label || 'network-timeout')), ms || OFFLINE_TIMEOUT_MS)); }
 function networkWithTimeout(request, options, ms){ return Promise.race([fetch(request, options || {}), timeoutReject(ms || OFFLINE_TIMEOUT_MS, 'network-timeout')]); }
