@@ -4,15 +4,15 @@
   window.__mesahaOfflineCoreV383 = true;
 
   var META = {
-    app: 'V3.75',
-    version: 'v389-download-button-hotfix',
+    app: 'V3.76',
+    version: 'v391-orbis-beyan-export-hotfix',
     build: 389,
-    visibleVersion: 'V3.75 •ExelanceX•',
-    shortVersion: 'V3.75 •ExelanceX•',
-    name: 'Mesaha İO V3.75 •ExelanceX•',
-    cacheName: 'mesaha-app-v389-download-button-hotfix',
+    visibleVersion: 'V3.76 •ExelanceX•',
+    shortVersion: 'V3.76 •ExelanceX•',
+    name: 'Mesaha İO V3.76 •ExelanceX•',
+    cacheName: 'mesaha-app-v391-orbis-beyan-export-hotfix',
     builtAt: '2026-06-25T23:05:00+03:00',
-    notes: 'Görünür sürüm V3.75 yapıldı; güncelleme uyarısının aynı sürümde tekrar tekrar görünmesi engellendi.',
+    notes: 'Görünür sürüm V3.76 yapıldı; güncelleme uyarısının aynı sürümde tekrar tekrar görünmesi engellendi.',
     assetVersion:"389"
   };
 
@@ -61,10 +61,10 @@
 
   var CORE_ASSETS = [
     './index.html', './admin.html', './manifest.json', './version.json', './service-worker.js', './temizle.html',
-    './js/version.js?v=389', './js/mesaha-sound.js?v=389', './js/mesaha-firebase.js?v=389',
-    './js/mesaha-early-optimizer.js?v=389', './js/mesaha-offline-core.js?v=389',
-    './assets/icon-192.png', './assets/icon-512.png', './assets/mesaha_logo.png', './assets/hero_forest_cover.png?v=389',
-    './assets/mesaha_onay.wav?v=389', './assets/mesaha_uyari.wav?v=389'
+    './js/version.js?v=391', './js/mesaha-sound.js?v=391', './js/mesaha-firebase.js?v=391',
+    './js/mesaha-early-optimizer.js?v=391', './js/mesaha-offline-core.js?v=391',
+    './assets/icon-192.png', './assets/icon-512.png', './assets/mesaha_logo.png', './assets/hero_forest_cover.png?v=391',
+    './assets/mesaha_onay.wav?v=391', './assets/mesaha_uyari.wav?v=391'
   ];
 
   function warmCache(){
@@ -87,7 +87,7 @@
 
   function registerServiceWorker(){
     if (!('serviceWorker' in navigator)) return;
-    navigator.serviceWorker.register('./service-worker.js?v=389').then(function(reg){
+    navigator.serviceWorker.register('./service-worker.js?v=391').then(function(reg){
       try {
         var last = Number(localStorage.getItem('mesaha_sw_update_check_v383') || 0);
         if (navigator.onLine && Date.now() - last > 15 * 60 * 1000) {
