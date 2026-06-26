@@ -4,16 +4,16 @@
   window.__mesahaOfflineCoreV383 = true;
 
   var META = {
-    app: 'V3.73',
-    version: 'v386-offline-css-son-stabilite',
-    build: 386,
-    visibleVersion: 'V3.73 •ExelanceX•',
-    shortVersion: 'V3.73 •ExelanceX•',
-    name: 'Mesaha İO V3.73 •ExelanceX•',
-    cacheName: 'mesaha-app-v386-offline-css-son-stabilite',
+    app: 'V3.75',
+    version: 'v388-admin-donus-hotfix',
+    build: 388,
+    visibleVersion: 'V3.75 •ExelanceX•',
+    shortVersion: 'V3.75 •ExelanceX•',
+    name: 'Mesaha İO V3.75 •ExelanceX•',
+    cacheName: 'mesaha-app-v388-admin-donus-hotfix',
     builtAt: '2026-06-25T23:05:00+03:00',
-    notes: 'Görünür sürüm V3.73 yapıldı; güncelleme uyarısının aynı sürümde tekrar tekrar görünmesi engellendi.',
-    assetVersion:"386"
+    notes: 'Görünür sürüm V3.75 yapıldı; güncelleme uyarısının aynı sürümde tekrar tekrar görünmesi engellendi.',
+    assetVersion:"388"
   };
 
   function lock(name, value){
@@ -61,10 +61,10 @@
 
   var CORE_ASSETS = [
     './index.html', './admin.html', './manifest.json', './version.json', './service-worker.js', './temizle.html',
-    './js/version.js?v=386', './js/mesaha-sound.js?v=386', './js/mesaha-firebase.js?v=386',
-    './js/mesaha-early-optimizer.js?v=386', './js/mesaha-offline-core.js?v=386',
-    './assets/icon-192.png', './assets/icon-512.png', './assets/mesaha_logo.png', './assets/hero_forest_cover.png?v=386',
-    './assets/mesaha_onay.wav?v=386', './assets/mesaha_uyari.wav?v=386'
+    './js/version.js?v=388', './js/mesaha-sound.js?v=388', './js/mesaha-firebase.js?v=388',
+    './js/mesaha-early-optimizer.js?v=388', './js/mesaha-offline-core.js?v=388',
+    './assets/icon-192.png', './assets/icon-512.png', './assets/mesaha_logo.png', './assets/hero_forest_cover.png?v=388',
+    './assets/mesaha_onay.wav?v=388', './assets/mesaha_uyari.wav?v=388'
   ];
 
   function warmCache(){
@@ -87,7 +87,7 @@
 
   function registerServiceWorker(){
     if (!('serviceWorker' in navigator)) return;
-    navigator.serviceWorker.register('./service-worker.js?v=386').then(function(reg){
+    navigator.serviceWorker.register('./service-worker.js?v=388').then(function(reg){
       try {
         var last = Number(localStorage.getItem('mesaha_sw_update_check_v383') || 0);
         if (navigator.onLine && Date.now() - last > 15 * 60 * 1000) {
@@ -137,12 +137,12 @@
 })();
 
 
-// v386: service worker ısındırma ve güncelleme kontrolü bindirmeme.
+// v388: service worker ısındırma ve güncelleme kontrolü bindirmeme.
 (function(){
   try {
-    var KEY='mesaha_v386_last_update_probe';
-    window.MesahaOfflineCoreV386 = window.MesahaOfflineCoreV386 || {};
-    window.MesahaOfflineCoreV386.canProbe = function(){
+    var KEY='mesaha_v388_last_update_probe';
+    window.MesahaOfflineCoreV387 = window.MesahaOfflineCoreV387 || {};
+    window.MesahaOfflineCoreV387.canProbe = function(){
       var last=Number(localStorage.getItem(KEY)||0);
       if(Date.now()-last<45000) return false;
       localStorage.setItem(KEY,String(Date.now())); return true;

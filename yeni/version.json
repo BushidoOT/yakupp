@@ -1,12 +1,12 @@
 {
-  "app": "V3.73",
-  "version": "v386-offline-css-son-stabilite",
-  "build": 386,
-  "visibleVersion": "V3.73 •ExelanceX•",
-  "shortVersion": "V3.73 •ExelanceX•",
-  "name": "Mesaha İO V3.73 •ExelanceX•",
-  "cacheName": "mesaha-app-v386-offline-css-son-stabilite",
-  "builtAt": "2026-06-26T00:10:00+03:00",
-  "notes": "Offline cache yazma güvenliği ve kritik CSS kararlılığı güçlendirildi; görsel varlıklar boyut kontrolünden geçirildi.",
-  "assetVersion": "386"
+  "app": "V3.75",
+  "version": "v388-admin-donus-hotfix",
+  "build": 388,
+  "visibleVersion": "V3.75 •ExelanceX•",
+  "shortVersion": "V3.75 •ExelanceX•",
+  "name": "Mesaha İO V3.75 •ExelanceX•",
+  "cacheName": "mesaha-app-v388-admin-donus-hotfix",
+  "builtAt": "2026-06-26T05:05:00+03:00",
+  "notes": "Admin paneline mobilde gizlenmeyen Uygulamaya Dön butonu ve güvenli normal uygulama yönlendirmesi eklendi.",
+  "assetVersion": "388"
 }
