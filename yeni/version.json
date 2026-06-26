@@ -1,12 +1,12 @@
 {
-  "app": "V3.76",
-  "version": "v391-orbis-beyan-export-hooootfix",
-  "build": 391,
-  "visibleVersion": "V3.76 •ExelanceX•",
-  "shortVersion": "V3.76 •ExelanceX•",
-  "name": "Mesaha İO V3.76 •ExelanceX•",
-  "cacheName": "mesaha-app-v391-orbis-beyan-export-hotfix",
-  "builtAt": "2026-06-26T17:50:00+03:00",
-  "notes": "Beyan/Özet hesabı ORBİS mantığiiiiına alındı; silinen kayıtların Mesaha Excel dosyasına gitmesini engelleyen güvenli indirme düzeltmesi eklendi.",
-  "assetVersion": "391"
+  "app": "V3.77",
+  "version": "v392-panel-kilavuz-video-hotfix",
+  "build": 392,
+  "visibleVersion": "V3.77 •ExelanceX•",
+  "shortVersion": "V3.77 •ExelanceX•",
+  "name": "Mesaha İO V3.77 •ExelanceX•",
+  "cacheName": "mesaha-app-v392-panel-kilavuz-video-hotfix",
+  "builtAt": "2026-06-26T18:30:00+03:00",
+  "notes": "Kullanıcı panelinde alt menü çakışması düzeltildi; güncelleme notları eklendi; kılavuz ve Mesaha dosyası indirme bilgisine kısa link ve ORBİS aktarım video bağlantısı eklendi.",
+  "assetVersion": "392"
 }
