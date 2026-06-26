@@ -1,6 +1,6 @@
 (function(){
   'use strict';
-  if (window.MesahaUtils && window.MesahaUtils.__v384) return;
+  if (window.MesahaUtils && window.MesahaUtils.__stable) return;
   var bound = Object.create(null);
   function safe(fn, fallback){ try { return typeof fn === 'function' ? fn() : fallback; } catch(e){ return fallback; } }
   function clean(v){ return String(v == null ? '' : v).trim(); }
@@ -60,7 +60,7 @@
     return true;
   }
   window.MesahaUtils = {
-    __v384:true,
+    __stable:true,__v384:true,
     safe:safe, clean:clean, esc:esc, qs:qs, qsa:qsa, byId:byId, ready:ready,
     jsonGet:jsonGet, jsonSet:jsonSet, debounce:debounce, throttle:throttle,
     withTimeout:withTimeout, loadScript:loadScript, onceEvent:onceEvent

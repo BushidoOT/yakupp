@@ -1,7 +1,7 @@
 (function(){
   'use strict';
-  if (window.__mesahaRenderStorageV383) return;
-  window.__mesahaRenderStorageV383 = true;
+  if (window.__mesahaRenderStorage) return;
+  window.__mesahaRenderStorage = true;
 
   var renderTimer = 0;
   var recordsTimer = 0;
@@ -42,10 +42,13 @@
   window.addEventListener('pagehide', flushLocalSettings, {passive:true});
   document.addEventListener('visibilitychange', function(){ if(document.hidden) flushLocalSettings(); }, {passive:true});
 
-  window.MesahaRenderStorageV383 = {
+  var renderStorageApi = {
     renderAllSoon: renderAllSoon,
     renderRecordsSoon: renderRecordsSoon,
     lightRefreshSoon: lightRefreshSoon,
     flushSettings: flushLocalSettings
   };
+  window.MesahaRenderStorage = renderStorageApi;
+  window.MesahaRenderStorageV383 = renderStorageApi;
+  window.MesahaRenderStorageV382 = renderStorageApi;
 })();

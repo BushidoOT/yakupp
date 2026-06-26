@@ -5,7 +5,7 @@
   if (window.__mesahaSingleSoundEngineV377) return;
   window.__mesahaSingleSoundEngineV377 = true;
 
-  var VERSION = '377';
+  var VERSION = String((window.MESAHA_VERSION && (window.MESAHA_VERSION.assetVersion || window.MESAHA_VERSION.build)) || '399');
   var SRC = {
     success: './assets/mesaha_onay.wav?v=' + VERSION,
     warning: './assets/mesaha_uyari.wav?v=' + VERSION
@@ -197,6 +197,7 @@
       singleEngine:true
     };
 
+    window.mesahaSound = api;
     window.mesahaSound = api;
     window.mesahaSoundFixV377 = api;
     window.mesahaSoundFixV376 = api;

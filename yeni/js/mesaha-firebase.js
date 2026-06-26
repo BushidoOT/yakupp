@@ -73,7 +73,7 @@
     catch(e){ readyPromise = null; throw e; }
   }
 
-  window.mesahaFirebaseV383 = {
+  var firebaseApi = {
     config: CONFIG,
     sdkVersion: SDK_VERSION,
     ready: ready,
