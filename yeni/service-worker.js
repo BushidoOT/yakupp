@@ -1,22 +1,22 @@
-importScripts('./js/version.js?v=402');
+importScripts('./js/version.js?v=403');
 
-const META = self.MESAHA_VERSION || {"app": "V3.87", "version": "v402-orbis-xls-sst-continue-fix", "build": 402, "visibleVersion": "V3.87 •ExelanceX•", "shortVersion": "V3.87 •ExelanceX•", "name": "Mesaha İO V3.87 •ExelanceX•", "cacheName": "mesaha-app-v402-orbis-xls-sst-continue-fix", "builtAt": "2026-06-27T09:10:00+03:00", "notes": "ORBİS Excel dosyasında çok kayıt/silme-düzeltme sonrası oluşan uzun SST kaydı güvenli CONTINUE kayıtlarına bölündü.", "assetVersion": "402"};
-const BASE_CACHE = META.cacheName || 'mesaha-app-v402-orbis-xls-sst-continue-fix';
+const META = self.MESAHA_VERSION || {"app": "V3.88", "version": "v403-firebase-bulut-getir-fix", "build": 403, "visibleVersion": "V3.88 •ExelanceX•", "shortVersion": "V3.88 •ExelanceX•", "name": "Mesaha İO V3.88 •ExelanceX•", "cacheName": "mesaha-app-v403-firebase-bulut-getir-fix", "builtAt": "2026-06-27T12:58:00+03:00", "notes": "Buluttan yedek getir ekranında Firebase motor alias hatası düzeltildi; eski cache durumlarına karşı Firebase fallback güvenliği eklendi.", "assetVersion": "403"};
+const BASE_CACHE = META.cacheName || 'mesaha-app-v403-firebase-bulut-getir-fix';
 const SHELL_CACHE = BASE_CACHE + '-shell';
 const ASSET_CACHE = BASE_CACHE + '-assets';
 const RUNTIME_CACHE = BASE_CACHE + '-runtime';
 const OFFLINE_TIMEOUT_MS = 3000;
-const VERSION_Q = String(META.assetVersion || META.build || 401);
+const VERSION_Q = String(META.assetVersion || META.build || 403);
 
 const SHELL_ASSETS = [
   './', './index.html', './admin.html', './temizle.html', './manifest.json', './version.json', './service-worker.js',
-  './js/version.js?v=402', './js/mesaha-early-optimizer.js?v=402', './js/mesaha-utils.js?v=402', './js/mesaha-data-guard.js?v=402',
-  './js/mesaha-stability-core.js?v=402', './js/mesaha-firebase.js?v=402', './js/mesaha-offline-core.js?v=402',
-  './js/mesaha-render-storage.js?v=402', './js/mesaha-sound.js?v=402'
+  './js/version.js?v=403', './js/mesaha-early-optimizer.js?v=403', './js/mesaha-utils.js?v=403', './js/mesaha-data-guard.js?v=403',
+  './js/mesaha-stability-core.js?v=403', './js/mesaha-firebase.js?v=403', './js/mesaha-offline-core.js?v=403',
+  './js/mesaha-render-storage.js?v=403', './js/mesaha-sound.js?v=403'
 ];
 const STATIC_ASSETS = [
-  './assets/icon-192.png', './assets/icon-512.png', './assets/mesaha_logo.png', './assets/hero_forest_cover.png?v=402',
-  './assets/mesaha_onay.wav?v=402', './assets/mesaha_uyari.wav?v=402'
+  './assets/icon-192.png', './assets/icon-512.png', './assets/mesaha_logo.png', './assets/hero_forest_cover.png?v=403',
+  './assets/mesaha_onay.wav?v=403', './assets/mesaha_uyari.wav?v=403'
 ];
 function timeoutReject(ms,label){return new Promise((_,reject)=>setTimeout(()=>reject(new Error(label||'network-timeout')),ms||OFFLINE_TIMEOUT_MS));}
 function networkWithTimeout(request,options,ms){return Promise.race([fetch(request,options||{}),timeoutReject(ms||OFFLINE_TIMEOUT_MS,'network-timeout')]);}
