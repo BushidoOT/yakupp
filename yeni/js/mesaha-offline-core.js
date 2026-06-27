@@ -4,19 +4,19 @@
   window.__mesahaOfflineCore = true;
 
   var FALLBACK_META = {
-  "app": "V3.88",
-  "version": "v403-firebase-bulut-getir-fix",
-  "build": 403,
-  "visibleVersion": "V3.88 •ExelanceX•",
-  "shortVersion": "V3.88 •ExelanceX•",
-  "name": "Mesaha İO V3.88 •ExelanceX•",
-  "cacheName": "mesaha-app-v403-firebase-bulut-getir-fix",
+  "app": "V3.89",
+  "version": "v404-kayin-agac-ekleme",
+  "build": 404,
+  "visibleVersion": "V3.89 •ExelanceX•",
+  "shortVersion": "V3.89 •ExelanceX•",
+  "name": "Mesaha İO V3.89 •ExelanceX•",
+  "cacheName": "mesaha-app-v404-kayin-agac-ekleme",
   "builtAt": "2026-06-27T12:58:00+03:00",
-  "notes": "Buluttan yedek getir ekranında Firebase motor alias hatası düzeltildi; eski cache durumlarına karşı Firebase fallback güvenliği eklendi.",
-  "assetVersion": "403"
+  "notes": "Kayın ağaç türü eklendi; ORBİS Excel aktarımında Kayın için ağaç ID 11 kullanılacak.",
+  "assetVersion": "404"
 };
   var META = (window.MESAHA_VERSION && typeof window.MESAHA_VERSION === 'object') ? window.MESAHA_VERSION : FALLBACK_META;
-  var ASSET_VERSION = String(META.assetVersion || META.build || '403');
+  var ASSET_VERSION = String(META.assetVersion || META.build || '404');
 
   function lock(name, value){
     try {
