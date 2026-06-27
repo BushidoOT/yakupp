@@ -1,4 +1,4 @@
-/* Mesaha İO v378 — tek Firebase motoru
+/* Mesaha İO v403 — tek Firebase motoru
    Amaç: Firebase SDK yükleme, initializeApp, anonymous auth ve Firestore settings işlemini tek promise üzerinden yürütmek. */
 (function(){
   'use strict';
@@ -73,12 +73,17 @@
     catch(e){ readyPromise = null; throw e; }
   }
 
-  window.mesahaFirebaseV383 = {
+  var firebaseApi = {
     config: CONFIG,
     sdkVersion: SDK_VERSION,
     ready: ready,
     loadScript: loadScript,
     withTimeout: withTimeout
   };
-  window.mesahaFirebaseV380 = window.mesahaFirebaseV383;
+
+  // Eski hotfix blokları hâlâ V380 adını çağırıyor.
+  // V383 adı sadece uyumluluk alias'ı olarak bırakıldı.
+  window.mesahaFirebase = firebaseApi;
+  window.mesahaFirebaseV383 = firebaseApi;
+  window.mesahaFirebaseV380 = firebaseApi;
 })();

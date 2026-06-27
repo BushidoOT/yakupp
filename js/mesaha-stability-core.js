@@ -1,7 +1,7 @@
 (function(){
   'use strict';
-  if (window.__mesahaStabilityCoreV383) return;
-  window.__mesahaStabilityCoreV383 = true;
+  if (window.__mesahaStabilityCore) return;
+  window.__mesahaStabilityCore = true;
 
   var timers = Object.create(null);
   function later(key, fn, delay){
@@ -36,12 +36,13 @@
   }, {passive:true});
   window.addEventListener('pageshow', function(){ later('totals', callTotals, 160); later('binders', callBinders, 220); }, {passive:true});
 
-  window.MesahaStabilityCoreV383 = {
+  var api = {
     later: later,
     fire: fire,
     refreshTotals: function(){ later('totals', callTotals, 40); },
     refreshBinders: function(){ later('binders', callBinders, 40); }
   };
+  window.MesahaStabilityCore = api;
+  window.MesahaStabilityCoreV383 = api;
+  try{ if(window.MesahaUtils){ window.MesahaUtils.stabilityCore = api; } }catch(e){}
 })();
-
-try{ if(window.MesahaUtils){ window.MesahaUtils.stabilityCore = window.MesahaStabilityCoreV381; } }catch(e){}

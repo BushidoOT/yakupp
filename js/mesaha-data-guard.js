@@ -1,6 +1,6 @@
 (function(){
   'use strict';
-  if (window.MesahaDataGuard && window.MesahaDataGuard.__v385) return;
+  if (window.MesahaDataGuard && window.MesahaDataGuard.__stable) return;
   var STORAGE_KEY = 'cam_mesaha_kayitlari_v1';
   var SETTINGS_KEY = 'cam_mesaha_ayarlar_v1';
   var OK_KEY = STORAGE_KEY + '_last_ok';
@@ -45,7 +45,7 @@
     return {recordsBytes:sizeOf(recRaw), settingsBytes:sizeOf(setRaw), recordsCount:records().length};
   }
   function lightRefresh(){
-    var r = window.MesahaRenderStorageV382;
+    var r = window.MesahaRenderStorage || window.MesahaRenderStorageV383 || window.MesahaRenderStorageV382;
     if(r && typeof r.renderRecordsSoon === 'function') return r.renderRecordsSoon(90);
     if(r && typeof r.renderAllSoon === 'function') return r.renderAllSoon(120);
     try{ if(typeof window.renderAll==='function') window.renderAll(); }catch(e){}
@@ -55,5 +55,5 @@
   window.addEventListener('mesaha:storage-error', function(ev){ var msg=(ev.detail&&ev.detail.message)||''; notify('Depolama uyarısı', msg || 'Telefon depolaması dolu olabilir.', 'warning'); }, {passive:true});
   document.addEventListener('visibilitychange', function(){ if(document.hidden) makeSnapshot(records()); }, {passive:true});
   window.addEventListener('pagehide', function(){ makeSnapshot(records()); }, {passive:true});
-  window.MesahaDataGuard = {__v385:true, recoverIfNeeded:recoverIfNeeded, snapshot:function(){return makeSnapshot(records());}, quotaInfo:quotaInfo, refresh:lightRefresh};
+  window.MesahaDataGuard = {__stable:true,__v385:true, recoverIfNeeded:recoverIfNeeded, snapshot:function(){return makeSnapshot(records());}, quotaInfo:quotaInfo, refresh:lightRefresh};
 })();

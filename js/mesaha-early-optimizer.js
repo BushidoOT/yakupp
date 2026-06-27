@@ -1,7 +1,7 @@
 (function(){
   'use strict';
-  if (window.__mesahaEarlyOptimizerV383) return;
-  window.__mesahaEarlyOptimizerV383 = true;
+  if (window.__mesahaEarlyOptimizer) return;
+  window.__mesahaEarlyOptimizer = true;
 
   var root = document.documentElement;
   var nativeSetInterval = window.setInterval.bind(window);
@@ -116,7 +116,7 @@
   }
   try {
     var style = document.createElement('style');
-    style.id = 'mesaha-v383-power-style';
+    style.id = 'mesaha-power-style';
     style.textContent = 'html.mesaha-low-power *{animation-play-state:paused!important}html.mesaha-save-data .hero-cover-image{filter:none!important}@media (prefers-reduced-motion: reduce){*{scroll-behavior:auto!important;animation-duration:.001ms!important;transition-duration:.001ms!important}}';
     document.head.appendChild(style);
   } catch(e) {}
@@ -124,9 +124,11 @@
   document.addEventListener('visibilitychange', applyPowerClass, {passive:true});
   window.addEventListener('pageshow', applyPowerClass, {passive:true});
 
-  window.mesahaEarlyOptimizerV383 = {
+  var earlyOptimizerApi = {
     active: true,
     managedIntervals: function(){ return managedIntervals.size; },
     saveData: isSaveData
   };
+  window.mesahaEarlyOptimizer = earlyOptimizerApi;
+  window.mesahaEarlyOptimizerV383 = earlyOptimizerApi;
 })();
