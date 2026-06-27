@@ -4,19 +4,19 @@
   window.__mesahaOfflineCore = true;
 
   var FALLBACK_META = {
-  "app": "V3.89",
-  "version": "v404-kayin-agac-ekleme",
-  "build": 404,
-  "visibleVersion": "V3.89 •ExelanceX•",
-  "shortVersion": "V3.89 •ExelanceX•",
-  "name": "Mesaha İO V3.89 •ExelanceX•",
-  "cacheName": "mesaha-app-v404-kayin-agac-ekleme",
-  "builtAt": "2026-06-27T12:58:00+03:00",
-  "notes": "Kayın ağaç türü eklendi; ORBİS Excel aktarımında Kayın için ağaç ID 11 kullanılacak.",
-  "assetVersion": "404"
+  "app": "V3.90",
+  "version": "v405-kesimci-duzenle-sil-koruma",
+  "build": 405,
+  "visibleVersion": "V3.90 •ExelanceX•",
+  "shortVersion": "V3.90 •ExelanceX•",
+  "name": "Mesaha İO V3.90 •ExelanceX•",
+  "cacheName": "mesaha-app-v405-kesimci-duzenle-sil-koruma",
+  "builtAt": "2026-06-27T13:25:00+03:00",
+  "notes": "Kesimci isim düzenleme eklendi; kesimci yanında düzenle/sil butonları gösterilir; kayıt bağlı kesimci silinmez.",
+  "assetVersion": "405"
 };
   var META = (window.MESAHA_VERSION && typeof window.MESAHA_VERSION === 'object') ? window.MESAHA_VERSION : FALLBACK_META;
-  var ASSET_VERSION = String(META.assetVersion || META.build || '404');
+  var ASSET_VERSION = String(META.assetVersion || META.build || '405');
 
   function lock(name, value){
     try {
