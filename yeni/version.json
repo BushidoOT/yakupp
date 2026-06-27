@@ -1,12 +1,12 @@
 {
-  "app": "V3.88",
-  "version": "v403-firebase-bulut-getir-fix",
-  "build": 403,
-  "visibleVersion": "V3.88 •ExelanceX•",
-  "shortVersion": "V3.88 •ExelanceX•",
-  "name": "Mesaha İO V3.88 •ExelanceX•",
-  "cacheName": "mesaha-app-v403-firebase-bulut-getir-fix",
-  "builtAt": "2026-06-27T12:58:00+03:00",
-  "notes": "Buluttan yedek getir ekranında Firebase motor alias hatası düzeltildi; eski cache durumlarına karşı Firebase fallback güvenliği eklendi.",
-  "assetVersion": "403"
+  "app": "V3.89",
+  "version": "v404-kayin-agac-ekleme",
+  "build": 404,
+  "visibleVersion": "V3.89 •ExelanceX•",
+  "shortVersion": "V3.89 •ExelanceX•",
+  "name": "Mesaha İO V3.89 •ExelanceX•",
+  "cacheName": "mesaha-app-v404-kayin-agac-ekleme",
+  "builtAt": "2026-06-27T13:05:00+03:00",
+  "notes": "Kayın ağaç türü eklendi; ORBİS Excel aktarımında Kayın için ağaç ID 11 kullanılacak.",
+  "assetVersion": "404"
 }
