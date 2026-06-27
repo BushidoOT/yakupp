@@ -4,10 +4,10 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
 <meta name="theme-color" content="#ffffff"/>
-<link rel="manifest" href="./manifest.json?v=404"/>
+<link rel="manifest" href="./manifest.json?v=406"/>
 <link rel="apple-touch-icon" href="./assets/icon-192.png"/>
-<title>Mesaha İO Admin V3.89</title>
-<style id="mesaha-v404-kayin-agac-ekleme">
+<title>Mesaha İO Admin V3.91</title>
+<style id="mesaha-v406_olcum_secim_kesimci_aktarma">
 
 :root{
   --bg:#f6f8fb;
@@ -59,7 +59,7 @@ a{color:inherit}.hidden{display:none!important}.app{width:min(1180px,100%);margi
 
 
 
-/* V3.89 / build 404 modern admin tasarım */
+/* V3.91 / build 406 modern admin tasarım */
 :root{--emerald:#16a34a;--emerald-soft:#ecfdf3;--sky:#2563eb;--sky-soft:#eff6ff;--amber:#f59e0b;--amber-soft:#fff7ed;--rose:#ef4444;--rose-soft:#fef2f2;}
 body{background:radial-gradient(circle at top left,rgba(34,197,94,.11),transparent 34%),linear-gradient(180deg,#fbfdff 0%,#f5f8fc 48%,#eef5f2 100%)}
 .top{border-radius:0 0 28px 28px;box-shadow:0 10px 34px rgba(15,23,42,.06)}
@@ -71,7 +71,7 @@ body{background:radial-gradient(circle at top left,rgba(34,197,94,.11),transpare
 
 
 
-/* V3.89 / build 404 admin analiz, işlem geçmişi ve toplu bildirim */
+/* V3.91 / build 406 admin analiz, işlem geçmişi ve toplu bildirim */
 .admin-v400-tool-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
 .broadcast-card-v400 textarea{min-height:96px;resize:vertical}
 .broadcast-target-grid-v400{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
@@ -90,7 +90,7 @@ body{background:radial-gradient(circle at top left,rgba(34,197,94,.11),transpare
 
 <div class="app">
   <header class="top">
-    <div class="brand"><img alt="" src="./assets/mesaha_logo.png"/><div><b>Mesaha İO Admin</b><small>Modern Yönetim Paneli • V3.89</small></div></div>
+    <div class="brand"><img alt="" src="./assets/mesaha_logo.png"/><div><b>Mesaha İO Admin</b><small>Modern Yönetim Paneli • V3.91</small></div></div>
     <div class="top-actions"><a class="btn soft app-return-btn" data-app-home href="./index.html" title="Normal uygulamaya dön">← Uygulama</a><button class="btn green" id="refreshBtn" type="button">Yenile</button></div>
   </header>
 
@@ -164,7 +164,7 @@ body{background:radial-gradient(circle at top left,rgba(34,197,94,.11),transpare
       </div>
       <div class="admin-v400-tool-grid">
         <div class="card broadcast-card-v400">
-          <div class="space"><div><h2>Toplu Bildirim Gönder</h2><p style="margin:4px 0 0;color:var(--muted)">Tüm kullanıcılara veya seçili gruba duyuru gönder.</p></div><span class="pill broadcast-pill-v400">V3.89</span></div>
+          <div class="space"><div><h2>Toplu Bildirim Gönder</h2><p style="margin:4px 0 0;color:var(--muted)">Tüm kullanıcılara veya seçili gruba duyuru gönder.</p></div><span class="pill broadcast-pill-v400">V3.91</span></div>
           <label class="field"><span>Hedef grup</span><select id="broadcastTargetV400"><option value="all">Tüm kullanıcılar</option><option value="oldVersion">Eski sürüm kullananlar</option><option value="activeToday">Bugün aktif olanlar</option><option value="noBackup">Yedeği olmayanlar</option></select></label>
           <label class="field"><span>Başlık</span><input id="broadcastTitleV400" maxlength="80" placeholder="Örn: Yeni güncelleme yayınlandı"/></label>
           <label class="field"><span>Mesaj</span><textarea id="broadcastMessageV400" maxlength="500" placeholder="Kullanıcılara gösterilecek kısa mesajı yaz…"></textarea></label>
@@ -229,11 +229,11 @@ function appVersionOf(u){
   const raw = u.appVersion || u.fileVersion || (u.lastDeviceInfo && (u.lastDeviceInfo.appVersion || u.lastDeviceInfo.fileVersion)) || u.version || '-';
   return String(raw || '-').replace('•ExelanceX•','').trim();
 }
-function latestAppVersion(){return (window.MESAHA_VERSION && window.MESAHA_VERSION.app) || 'V3.89'}
+function latestAppVersion(){return (window.MESAHA_VERSION && window.MESAHA_VERSION.app) || 'V3.91'}
 function isOldAppVersion(u){
   const v=appVersionOf(u); if(!v || v==='-') return false;
   const latest=latestAppVersion();
-  return !String(v).includes(latest) && !String(v).includes((window.MESAHA_VERSION && window.MESAHA_VERSION.version) || 'v404-kayin-agac-ekleme');
+  return !String(v).includes(latest) && !String(v).includes((window.MESAHA_VERSION && window.MESAHA_VERSION.version) || 'v406_olcum_secim_kesimci_aktarma');
 }
 function isActiveUser(u,spanMs){const last=n(u.lastSeenMs||u.lastLoginMs||u.updatedAtMs);return last>=Date.now()-(spanMs||15*60000)}
 function userTickets(key){return state.tickets.filter(t=>userKeyOf(t)===key)}
@@ -243,9 +243,9 @@ function firstVal(obj,keys){for(const k of keys){if(obj&&obj[k]!=null&&obj[k]!==
 function topTotalName(obj){obj=obj||{};let best=['-',0];Object.entries(obj).forEach(([k,v])=>{const val=n((v&&v.m3)||v);if(val>best[1])best=[k,val]});return best[0]}
 function recordAnalysisHtml(u){const key=userKeyOf(u),bks=userBackups(key),latest=latestBackupForUser(key),tickets=userTickets(key);const rec=n(u.recordCount||u.totalRecords||u.adet||(latest&&latest.recordCount));const vol=n(u.m3||u.totalM3||(latest&&latest.m3));const avg=rec?vol/rec:0;const lastRecord=firstVal(u,['lastRecordAt','lastEntryAt','lastSaveAt','lastMeasurementAt'])||(latest&&latest.createdAt)||'-';const lastBolme=firstVal(u,['lastBolmeNo','activeBolmeNo','bolmeNo'])||(latest&&latest.bolmeNo)||'-';const lastSeflik=firstVal(u,['lastSeflik','seflik'])||(latest&&latest.seflik)||'-';const topProduct=topTotalName(u.productTotals);const topTree=topTotalName(u.treeTotals);return `<h3 class="modern-detail-title">Kayıt Analizi</h3><div class="analysis-grid-v400"><div class="analysis-card-v400"><small>Toplam Kayıt</small><b>${int(rec)}</b></div><div class="analysis-card-v400"><small>Toplam m³</small><b>${m3(vol)}</b></div><div class="analysis-card-v400"><small>Ortalama m³/kayıt</small><b>${m3(avg)}</b></div><div class="analysis-card-v400"><small>Bugün Kayıt</small><b>${int(u.todayRecords)}</b></div><div class="analysis-card-v400"><small>Son Kayıt/Yedek</small><b>${esc(lastRecord)}</b></div><div class="analysis-card-v400"><small>Son Şeflik</small><b>${esc(lastSeflik)}</b></div><div class="analysis-card-v400"><small>Son Bölme</small><b>${esc(lastBolme)}</b></div><div class="analysis-card-v400"><small>Destek Durumu</small><b>${tickets.filter(t=>(t.status||'new')!=='read').length} açık</b></div><div class="analysis-card-v400"><small>En Yoğun Ürün</small><b>${esc(topProduct)}</b></div><div class="analysis-card-v400"><small>En Yoğun Ağaç</small><b>${esc(topTree)}</b></div><div class="analysis-card-v400"><small>Yedek Sayısı</small><b>${int(bks.length)}</b></div><div class="analysis-card-v400"><small>Son Yedek</small><b>${latest?esc(latest.createdAt||shortDate(latest.createdAtMs)):'Yedek yok'}</b></div></div><div class="analysis-columns-v400"><div><h3 class="modern-detail-title">Ürün Dağılımı</h3>${totalsBars(u.productTotals)}</div><div><h3 class="modern-detail-title">Ağaç Türü Dağılımı</h3>${totalsBars(u.treeTotals)}</div></div>`}
 function renderAdminLogs(){const box=$('adminLogsV400');if(!box)return;const arr=(state.logs||[]).slice(0,60);box.innerHTML=arr.length?arr.map(l=>`<div class="log-item-v400"><div class="space"><b>${esc(l.action||'İşlem')}</b><span class="pill">${esc(l.actor||'Admin')}</span></div><small>${esc(l.detail||'-')}</small><small>${esc(l.createdAt||l.at||'-')}</small></div>`).join(''):'<div class="empty">Henüz admin işlem kaydı yok.</div>'}
-async function logAdminAction(action,detail,extra){try{const {db}=await ready();const now=new Date();const doc={action,detail,actor:'Admin',createdAt:now.toLocaleString('tr-TR'),createdAtMs:Date.now(),appVersion:'V3.89',build:404};Object.assign(doc,extra||{});await db.collection('adminLogs').add(doc)}catch(e){console.warn('admin log yazılamadı',e)}}
+async function logAdminAction(action,detail,extra){try{const {db}=await ready();const now=new Date();const doc={action,detail,actor:'Admin',createdAt:now.toLocaleString('tr-TR'),createdAtMs:Date.now(),appVersion:'V3.91',build:406};Object.assign(doc,extra||{});await db.collection('adminLogs').add(doc)}catch(e){console.warn('admin log yazılamadı',e)}}
 function broadcastTargetUsers(target){let arr=state.users.slice();if(target==='oldVersion')arr=arr.filter(isOldAppVersion);else if(target==='activeToday'){const ts=todayStart();arr=arr.filter(u=>n(u.lastSeenMs||u.lastLoginMs)>=ts)}else if(target==='noBackup')arr=arr.filter(u=>!userBackups(userKeyOf(u)).length);return arr}
-async function sendBroadcastV400(){const target=($('broadcastTargetV400')||{}).value||'all';const title=($('broadcastTitleV400')||{}).value.trim();const message=($('broadcastMessageV400')||{}).value.trim();if(!title||!message){toast('Başlık ve mesaj gerekli');return}const targets=broadcastTargetUsers(target);if(!targets.length){toast('Bu hedefte kullanıcı yok');return}if(!confirm(targets.length+' kullanıcıya bildirim gönderilsin mi?'))return;const now=new Date();const targetKeys=targets.map(userKeyOf).filter(Boolean);const {db}=await ready();const ref=db.collection('adminBroadcasts').doc('bc_'+Date.now().toString(36));await ref.set({id:ref.id,title,message,target,targetUserKeys:targetKeys,targetCount:targetKeys.length,createdAt:now.toLocaleString('tr-TR'),createdAtMs:Date.now(),status:'active',appVersion:'V3.89',build:404});await logAdminAction('Toplu bildirim gönderildi',title+' • '+targetKeys.length+' kullanıcı',{target,targetCount:targetKeys.length,broadcastId:ref.id});if($('broadcastInfoV400'))$('broadcastInfoV400').textContent=targetKeys.length+' kullanıcıya gönderildi.';if($('broadcastMessageV400'))$('broadcastMessageV400').value='';toast('Toplu bildirim gönderildi');await loadAll()}
+async function sendBroadcastV400(){const target=($('broadcastTargetV400')||{}).value||'all';const title=($('broadcastTitleV400')||{}).value.trim();const message=($('broadcastMessageV400')||{}).value.trim();if(!title||!message){toast('Başlık ve mesaj gerekli');return}const targets=broadcastTargetUsers(target);if(!targets.length){toast('Bu hedefte kullanıcı yok');return}if(!confirm(targets.length+' kullanıcıya bildirim gönderilsin mi?'))return;const now=new Date();const targetKeys=targets.map(userKeyOf).filter(Boolean);const {db}=await ready();const ref=db.collection('adminBroadcasts').doc('bc_'+Date.now().toString(36));await ref.set({id:ref.id,title,message,target,targetUserKeys:targetKeys,targetCount:targetKeys.length,createdAt:now.toLocaleString('tr-TR'),createdAtMs:Date.now(),status:'active',appVersion:'V3.91',build:406});await logAdminAction('Toplu bildirim gönderildi',title+' • '+targetKeys.length+' kullanıcı',{target,targetCount:targetKeys.length,broadcastId:ref.id});if($('broadcastInfoV400'))$('broadcastInfoV400').textContent=targetKeys.length+' kullanıcıya gönderildi.';if($('broadcastMessageV400'))$('broadcastMessageV400').value='';toast('Toplu bildirim gönderildi');await loadAll()}
 function renderKpis(){
   const ts=todayStart(), week=Date.now()-7*86400000;
   const activeToday=state.users.filter(u=>n(u.lastSeenMs||u.lastLoginMs||u.updatedAtMs)>=ts).length;
@@ -347,7 +347,7 @@ async function deleteAllTickets(){if(!confirm('Tüm bildirimler silinsin mi?'))r
 async function deleteOldBackups(){if(!confirm('30 günden eski yedekler silinsin mi?'))return;const limit=Date.now()-30*86400000;const items=state.backups.filter(x=>n(x.createdAtMs)<limit);const{db}=await ready();for(const b of items)await deleteBackupFull(db,b.id);await logAdminAction('Eski yedekler temizlendi',items.length+' eski yedek silindi',{count:items.length});toast('Eski yedekler temizlendi');await loadAll()}
 async function resetStats(){if(!confirm('İstatistik başlangıcı bugüne alınsın mı?'))return;const{db}=await ready();await db.collection('adminSettings').doc('statsReset').set({resetAt:new Date().toLocaleString('tr-TR'),resetAtMs:Date.now()},{merge:true});await logAdminAction('İstatistik başlangıcı yenilendi','Başlangıç bugüne alındı');toast('İstatistik başlangıcı yenilendi')}
 async function health(){try{const{db,auth}=await ready();await db.collection('healthChecks').doc('adminPanel').set({ok:true,at:new Date().toLocaleString('tr-TR'),atMs:Date.now(),uid:auth.currentUser&&auth.currentUser.uid},{merge:true});await logAdminAction('Firebase bağlantı testi','Bağlantı sağlam');toast('Firebase bağlantısı sağlam')}catch(e){toast(errText(e))}}
-function exportAll(){const blob=new Blob([JSON.stringify({exportedAt:new Date().toISOString(),version:'v404-kayin-agac-ekleme',users:state.users,backups:state.backups,tickets:state.tickets,usage:state.usage},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='mesaha_admin_tum_veriler_v404.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+function exportAll(){const blob=new Blob([JSON.stringify({exportedAt:new Date().toISOString(),version:'v406_olcum_secim_kesimci_aktarma',users:state.users,backups:state.backups,tickets:state.tickets,usage:state.usage},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='mesaha_admin_tum_veriler_v406.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
 function goAppHome(e){
   if(e) e.preventDefault();
   var target = new URL('./index.html', location.href).href;

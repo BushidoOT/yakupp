@@ -1,12 +1,12 @@
 {
-  "app": "V3.89",
-  "version": "v404-kayin-agac-ekleme",
-  "build": 404,
-  "visibleVersion": "V3.89 •ExelanceX•",
-  "shortVersion": "V3.89 •ExelanceX•",
-  "name": "Mesaha İO V3.89 •ExelanceX•",
-  "cacheName": "mesaha-app-v404-kayin-agac-ekleme",
-  "builtAt": "2026-06-27T13:05:00+03:00",
-  "notes": "Kayın ağaç türü eklendi; ORBİS Excel aktarımında Kayın için ağaç ID 11 kullanılacak.",
-  "assetVersion": "404"
+  "app": "V3.91",
+  "version": "v406_olcum_secim_kesimci_aktarma",
+  "build": 406,
+  "visibleVersion": "V3.91 •ExelanceX•",
+  "shortVersion": "V3.91 •ExelanceX•",
+  "name": "Mesaha İO V3.91 •ExelanceX•",
+  "cacheName": "mesaha-app-v406-olcum-secim-kesimci-aktarma",
+  "builtAt": "2026-06-27T13:55:00+03:00",
+  "notes": "Ölçümlerde Tümünü Seç sadece aktif filtredeki kayıtları seçer; seçili kayıtları istenen kesimciye aktarma eklendi.",
+  "assetVersion": "406"
 }
