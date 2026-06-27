@@ -4,19 +4,19 @@
   window.__mesahaOfflineCore = true;
 
   var FALLBACK_META = {
-      "app": "V3.84",
-      "version": "v399-admin-modern",
-      "build": 399,
-      "visibleVersion": "V3.84 •ExelanceX•",
-      "shortVersion": "V3.84 •ExelanceX•",
-      "name": "Mesaha İO V3.84 •ExelanceX•",
-      "cacheName": "mesaha-app-v399-admin-modern",
+      "app": "V3.87",
+      "version": "v402-orbis-xls-sst-continue-fix",
+      "build": 402,
+      "visibleVersion": "V3.87 •ExelanceX•",
+      "shortVersion": "V3.87 •ExelanceX•",
+      "name": "Mesaha İO V3.87 •ExelanceX•",
+      "cacheName": "mesaha-app-v402-orbis-xls-sst-continue-fix",
       "builtAt": "2026-06-26T20:40:00+03:00",
       "notes": "Mobil panel kaydırma ve service worker güvenli fallback düzeltmesi yapıldı.",
-      "assetVersion": "399"
+      "assetVersion": "402"
 };
   var META = (window.MESAHA_VERSION && typeof window.MESAHA_VERSION === 'object') ? window.MESAHA_VERSION : FALLBACK_META;
-  var ASSET_VERSION = String(META.assetVersion || META.build || '399');
+  var ASSET_VERSION = String(META.assetVersion || META.build || '402');
 
   function lock(name, value){
     try {
