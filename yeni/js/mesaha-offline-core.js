@@ -4,19 +4,19 @@
   window.__mesahaOfflineCore = true;
 
   var FALLBACK_META = {
-      "app": "V3.87",
-      "version": "v402-orbis-xls-sst-continue-fix",
-      "build": 402,
-      "visibleVersion": "V3.87 •ExelanceX•",
-      "shortVersion": "V3.87 •ExelanceX•",
-      "name": "Mesaha İO V3.87 •ExelanceX•",
-      "cacheName": "mesaha-app-v402-orbis-xls-sst-continue-fix",
-      "builtAt": "2026-06-26T20:40:00+03:00",
-      "notes": "Mobil panel kaydırma ve service worker güvenli fallback düzeltmesi yapıldı.",
-      "assetVersion": "402"
+  "app": "V3.88",
+  "version": "v403-firebase-bulut-getir-fix",
+  "build": 403,
+  "visibleVersion": "V3.88 •ExelanceX•",
+  "shortVersion": "V3.88 •ExelanceX•",
+  "name": "Mesaha İO V3.88 •ExelanceX•",
+  "cacheName": "mesaha-app-v403-firebase-bulut-getir-fix",
+  "builtAt": "2026-06-27T12:58:00+03:00",
+  "notes": "Buluttan yedek getir ekranında Firebase motor alias hatası düzeltildi; eski cache durumlarına karşı Firebase fallback güvenliği eklendi.",
+  "assetVersion": "403"
 };
   var META = (window.MESAHA_VERSION && typeof window.MESAHA_VERSION === 'object') ? window.MESAHA_VERSION : FALLBACK_META;
-  var ASSET_VERSION = String(META.assetVersion || META.build || '402');
+  var ASSET_VERSION = String(META.assetVersion || META.build || '403');
 
   function lock(name, value){
     try {
