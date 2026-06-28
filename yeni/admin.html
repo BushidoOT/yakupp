@@ -4,10 +4,10 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
 <meta name="theme-color" content="#ffffff"/>
-<link rel="manifest" href="./manifest.json?v=411"/>
+<link rel="manifest" href="./manifest.json?v=413"/>
 <link rel="apple-touch-icon" href="./assets/icon-192.png"/>
-<title>Mesaha İO Admin V3.96</title>
-<style id="mesaha-v411_admin_duyuru_sil_otomatik_temizlik">
+<title>Mesaha İO Admin V3.98</title>
+<style id="mesaha-v413_guncelleme_notlari_kullanici_odakli">
 
 :root{
   --bg:#f6f8fb;
@@ -59,7 +59,7 @@ a{color:inherit}.hidden{display:none!important}.app{width:min(1180px,100%);margi
 
 
 
-/* V3.96 / build 411 modern admin tasarım */
+/* V3.98 / build 412 modern admin tasarım */
 :root{--emerald:#16a34a;--emerald-soft:#ecfdf3;--sky:#2563eb;--sky-soft:#eff6ff;--amber:#f59e0b;--amber-soft:#fff7ed;--rose:#ef4444;--rose-soft:#fef2f2;}
 body{background:radial-gradient(circle at top left,rgba(34,197,94,.11),transparent 34%),linear-gradient(180deg,#fbfdff 0%,#f5f8fc 48%,#eef5f2 100%)}
 .top{border-radius:0 0 28px 28px;box-shadow:0 10px 34px rgba(15,23,42,.06)}
@@ -71,7 +71,7 @@ body{background:radial-gradient(circle at top left,rgba(34,197,94,.11),transpare
 
 
 
-/* V3.96 / build 411 admin analiz, işlem geçmişi ve toplu bildirim */
+/* V3.98 / build 412 admin analiz, işlem geçmişi ve toplu bildirim */
 .admin-v400-tool-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
 .broadcast-card-v400 textarea{min-height:96px;resize:vertical}
 .broadcast-target-grid-v400{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
@@ -84,7 +84,7 @@ body{background:radial-gradient(circle at top left,rgba(34,197,94,.11),transpare
 .analysis-columns-v400{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
 .broadcast-pill-v400{background:#eff6ff;border-color:#bfdbfe;color:#1d4ed8}
 
-/* V3.96 / build 411 admin duyuru silme ve 7 günlük otomatik temizlik */
+/* V3.98 / build 412 admin duyuru silme ve 7 günlük otomatik temizlik */
 .broadcast-admin-list-v411{display:grid;gap:10px;margin-top:14px}
 .broadcast-admin-item-v411{border:1px solid #dbeafe;border-radius:18px;background:#ffffff;padding:12px;display:grid;gap:8px}
 .broadcast-admin-item-v411 b{color:#1d4ed8}.broadcast-admin-item-v411 small{color:#64748b;font-weight:800}.broadcast-admin-item-v411 p{margin:0;color:#334155;line-height:1.35;font-weight:750}
@@ -96,7 +96,7 @@ body{background:radial-gradient(circle at top left,rgba(34,197,94,.11),transpare
 
 <div class="app">
   <header class="top">
-    <div class="brand"><img alt="" src="./assets/mesaha_logo.png"/><div><b>Mesaha İO Admin</b><small>Modern Yönetim Paneli • V3.96</small></div></div>
+    <div class="brand"><img alt="" src="./assets/mesaha_logo.png"/><div><b>Mesaha İO Admin</b><small>Modern Yönetim Paneli • V3.98</small></div></div>
     <div class="top-actions"><a class="btn soft app-return-btn" data-app-home href="./index.html" title="Normal uygulamaya dön">← Uygulama</a><button class="btn green" id="refreshBtn" type="button">Yenile</button></div>
   </header>
 
@@ -170,7 +170,7 @@ body{background:radial-gradient(circle at top left,rgba(34,197,94,.11),transpare
       </div>
       <div class="admin-v400-tool-grid">
         <div class="card broadcast-card-v400">
-          <div class="space"><div><h2>Toplu Bildirim Gönder</h2><p style="margin:4px 0 0;color:var(--muted)">Tüm kullanıcılara veya seçili gruba duyuru gönder.</p></div><span class="pill broadcast-pill-v400">V3.96</span></div>
+          <div class="space"><div><h2>Toplu Bildirim Gönder</h2><p style="margin:4px 0 0;color:var(--muted)">Tüm kullanıcılara veya seçili gruba duyuru gönder.</p></div><span class="pill broadcast-pill-v400">V3.98</span></div>
           <label class="field"><span>Hedef grup</span><select id="broadcastTargetV400"><option value="all">Tüm kullanıcılar</option><option value="oldVersion">Eski sürüm kullananlar</option><option value="activeToday">Bugün aktif olanlar</option><option value="noBackup">Yedeği olmayanlar</option></select></label>
           <label class="field"><span>Başlık</span><input id="broadcastTitleV400" maxlength="80" placeholder="Örn: Yeni güncelleme yayınlandı"/></label>
           <label class="field"><span>Mesaj</span><textarea id="broadcastMessageV400" maxlength="500" placeholder="Kullanıcılara gösterilecek kısa mesajı yaz…"></textarea></label>
@@ -196,6 +196,7 @@ body{background:radial-gradient(circle at top left,rgba(34,197,94,.11),transpare
 <div class="modal" id="modal"><div class="modal-card"><div class="space"><h2 id="modalTitle">Detay</h2><button class="btn soft" id="modalClose" type="button">Kapat</button></div><div id="modalBody"></div></div></div>
 <div class="toast" id="toast"></div>
 
+<script src="./js/mesaha-firebase.js?v=413"></script>
 <script>
 (function(){
 'use strict';
@@ -203,7 +204,7 @@ const ADMIN_CODE='4767';
 const FIREBASE_CONFIG={apiKey:'AIzaSyCKveylTPgKmWEMmYf-aFj6yLXB5CKAiJ0',authDomain:'mesaha-io.firebaseapp.com',projectId:'mesaha-io',storageBucket:'mesaha-io.firebasestorage.app',messagingSenderId:'840655878243',appId:'1:840655878243:web:add76f52bbf55ad9dd6056',measurementId:'G-81JPD5ZY44'};
 const SDK='10.12.2';
 const $=id=>document.getElementById(id);
-const state={users:[],backups:[],tickets:[],usage:[],logs:[],broadcasts:[],showAllTickets:false,ready:false};
+const state={users:[],backups:[],tickets:[],usage:[],logs:[],broadcasts:[],collectionErrors:{},showAllTickets:false,ready:false};
 let readyPromise=null;
 function esc(v){return String(v==null?'':v).replace(/[&<>'"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[m]))}
 function n(v){const x=Number(v||0);return Number.isFinite(x)?x:0}
@@ -217,11 +218,102 @@ function errText(e){const m=(e&&e.message)||String(e||'Hata');if(/permission|Mis
 function toast(msg){const el=$('toast');el.textContent=msg;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),2600)}
 function loadScript(src){return new Promise((res,rej)=>{const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=()=>rej(new Error('SDK yüklenemedi'));document.head.appendChild(s)})}
 function withTimeout(p,ms,label){return Promise.race([p,new Promise((_,rej)=>setTimeout(()=>rej(new Error((label||'İşlem')+' zaman aşımı')),ms))])}
-async function ready(){if(!readyPromise){readyPromise=(async()=>{const b='https://www.gstatic.com/firebasejs/'+SDK;if(!window.firebase||!window.firebase.apps){await loadScript(b+'/firebase-app-compat.js');await loadScript(b+'/firebase-auth-compat.js');await loadScript(b+'/firebase-firestore-compat.js')}if(!window.firebase.apps.length)window.firebase.initializeApp(FIREBASE_CONFIG);const auth=window.firebase.auth();if(!auth.currentUser)await withTimeout(auth.signInAnonymously(),12000,'Firebase giriş');const db=window.firebase.firestore();try{db.settings({experimentalForceLongPolling:true})}catch{}try{await db.enableNetwork()}catch{}return{db,auth}})()}try{return await readyPromise}catch(e){readyPromise=null;throw e}}
-async function getCol(db,name){const snap=await withTimeout(db.collection(name).get(),18000,name);const arr=[];snap.forEach(d=>arr.push(Object.assign({id:d.id},d.data()||{})));return arr}
-function userKeyOf(u){return String(u.userKey||u.id||((u.name||'')+'__'+(u.seflik||''))).toLowerCase()}
-function mergeUsers(){const map=new Map();for(const u of state.users){const k=userKeyOf(u);if(k)map.set(k,Object.assign({},u,{userKey:k}))}for(const s of state.usage){const k=userKeyOf(s);if(!k)continue;const old=map.get(k)||{};const newer=n(s.lastSeenMs||s.updatedAtMs)>n(old.lastSeenMs||old.updatedAtMs);map.set(k,Object.assign({},old,newer?s:{}, {userKey:k,name:old.name||s.name,seflik:old.seflik||s.seflik,bolmeNo:old.bolmeNo||s.bolmeNo}))}state.users=[...map.values()].filter(u=>u.name||u.seflik).sort((a,b)=>n(b.lastSeenMs||b.lastLoginMs||b.updatedAtMs)-n(a.lastSeenMs||a.lastLoginMs||a.updatedAtMs))}
-async function loadAll(){try{$('syncInfo').textContent='Firebase okunuyor…';const {db}=await ready();const [users,backups,tickets,usage,logs,broadcastsRaw]=await Promise.all([getCol(db,'users'),getCol(db,'backups'),getCol(db,'supportTickets'),getCol(db,'usageStats').catch(()=>[]),getCol(db,'adminLogs').catch(()=>[]),getCol(db,'adminBroadcasts').catch(()=>[])]);state.users=users;state.backups=backups.sort((a,b)=>n(b.createdAtMs)-n(a.createdAtMs));state.tickets=tickets.sort((a,b)=>n(b.createdAtMs)-n(a.createdAtMs));state.usage=usage;state.logs=(logs||[]).sort((a,b)=>n(b.createdAtMs||b.atMs)-n(a.createdAtMs||a.atMs)).slice(0,80);await cleanupOldBroadcasts(db,broadcastsRaw||[]);state.broadcasts=(broadcastsRaw||[]).filter(isActiveBroadcast).sort((a,b)=>n(b.createdAtMs)-n(a.createdAtMs));mergeUsers();state.ready=true;$('syncInfo').textContent='Güncellendi • '+new Date().toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'});fillFilters();render()}catch(e){$('syncInfo').textContent='Firebase okunamadı: '+errText(e);toast(errText(e))}}
+async function ready(){
+  if(window.mesahaFirebase && typeof window.mesahaFirebase.ready==='function'){
+    try{return await window.mesahaFirebase.ready()}catch(e){try{window.mesahaFirebase.reset&&window.mesahaFirebase.reset()}catch(_){}}
+  }
+  if(window.mesahaFirebaseV380 && typeof window.mesahaFirebaseV380.ready==='function'){
+    try{return await window.mesahaFirebaseV380.ready()}catch(e){try{window.mesahaFirebaseV380.reset&&window.mesahaFirebaseV380.reset()}catch(_){}}
+  }
+  if(!readyPromise){readyPromise=(async()=>{const b='https://www.gstatic.com/firebasejs/'+SDK;if(!window.firebase||!window.firebase.apps){await loadScript(b+'/firebase-app-compat.js');await loadScript(b+'/firebase-auth-compat.js');await loadScript(b+'/firebase-firestore-compat.js')}if(!window.firebase.apps.length)window.firebase.initializeApp(FIREBASE_CONFIG);const auth=window.firebase.auth();if(!auth.currentUser)await withTimeout(auth.signInAnonymously(),15000,'Firebase giriş');const db=window.firebase.firestore();try{db.settings({experimentalForceLongPolling:true})}catch{try{db.settings({experimentalAutoDetectLongPolling:true})}catch{}}try{await withTimeout(db.enableNetwork(),8000,'Firebase ağ')}catch{}return{db,auth}})()}try{return await readyPromise}catch(e){readyPromise=null;throw e}}
+async function getCol(db,name){const snap=await withTimeout(db.collection(name).get({source:'server'}),22000,name+' server');const arr=[];snap.forEach(d=>arr.push(Object.assign({id:d.id},d.data()||{})));return arr}
+function userKeyOf(u){
+  if(!u)return '';
+  if(u.userKey)return String(u.userKey).toLowerCase();
+  if(u.user&&typeof u.user==='object'){
+    const nested=userKeyOf(u.user); if(nested)return nested;
+  }
+  const name=u.name||(u.user&&u.user.name)||u.kullaniciAdi||u.userName||'';
+  const seflik=u.seflik||(u.user&&u.user.seflik)||u.sheflik||'';
+  if(name||seflik)return String(name+'__'+seflik).trim().toLowerCase();
+  return String(u.id||'').toLowerCase();
+}
+function sourceLastMs(u){return n(u.lastSeenMs||u.lastLoginMs||u.updatedAtMs||u.createdAtMs||u.atMs||u.createdMs)}
+function mergeUserDoc(map,u,source){
+  const k=userKeyOf(u); if(!k)return;
+  const old=map.get(k)||{};
+  const newer=sourceLastMs(u)>=sourceLastMs(old);
+  const out=Object.assign({},old);
+  out.userKey=k;
+  out.name=old.name||u.name||(u.user&&u.user.name)||'-';
+  out.seflik=old.seflik||u.seflik||(u.user&&u.user.seflik)||'';
+  out.bolmeNo=old.bolmeNo||u.bolmeNo||(u.user&&u.user.bolmeNo)||'';
+  if(newer){
+    ['lastSeen','lastSeenMs','lastLogin','lastLoginMs','updatedAt','updatedAtMs','appVersion','fileVersion','deviceId','lastDevice','lastDeviceInfo','deviceType','os','browser','screen','viewport','usageMs','todayUsageMs','todayLoginCount','totalLoginCount','loginCount','todayRecords','weekRecordCount','weekM3','treeTotals','productTotals'].forEach(key=>{if(u[key]!=null&&u[key]!=='')out[key]=u[key]});
+  }
+  const rec=n(u.recordCount||u.totalRecords||u.adet); if(rec && (!n(out.recordCount||out.totalRecords) || newer)){out.recordCount=rec;out.totalRecords=rec;}
+  const vol=n(u.m3||u.totalM3); if(vol && (!n(out.m3||out.totalM3) || newer)){out.m3=vol;out.totalM3=vol;}
+  if(source==='backup'){
+    out.backupCount=n(out.backupCount)+1;
+    if(newer){out.lastBackupAt=u.createdAt||out.lastBackupAt;out.lastBackupAtMs=n(u.createdAtMs)||out.lastBackupAtMs;out.lastSeen=u.createdAt||out.lastSeen;out.lastSeenMs=n(u.createdAtMs)||out.lastSeenMs;}
+  }
+  if(source==='ticket'){
+    out.ticketCount=n(out.ticketCount)+1;
+    if(newer){out.lastTicketAt=u.createdAt||out.lastTicketAt;out.lastTicketAtMs=n(u.createdAtMs)||out.lastTicketAtMs;out.lastSeen=u.createdAt||out.lastSeen;out.lastSeenMs=n(u.createdAtMs)||out.lastSeenMs;}
+  }
+  out.sources=Array.from(new Set([...(old.sources||[]),source].filter(Boolean)));
+  map.set(k,out);
+}
+function mergeUsers(){
+  const map=new Map();
+  (state.users||[]).forEach(u=>mergeUserDoc(map,u,'users'));
+  (state.usage||[]).forEach(u=>mergeUserDoc(map,u,'usageStats'));
+  (state.backups||[]).forEach(u=>mergeUserDoc(map,u,'backups'));
+  (state.tickets||[]).forEach(u=>mergeUserDoc(map,u,'supportTickets'));
+  state.users=[...map.values()].filter(u=>u.name||u.seflik).sort((a,b)=>n(b.lastSeenMs||b.lastLoginMs||b.updatedAtMs||b.lastBackupAtMs||b.lastTicketAtMs)-n(a.lastSeenMs||a.lastLoginMs||a.updatedAtMs||a.lastBackupAtMs||a.lastTicketAtMs));
+}
+async function getColSafe(db,name,required){
+  try{return await getCol(db,name)}catch(e){state.collectionErrors[name]=errText(e);if(required)console.warn('Firebase koleksiyon okunamadı:',name,e);return []}
+}
+async function loadAll(){
+  try{
+    $('syncInfo').textContent='Firebase verileri okunuyor…';
+    state.collectionErrors={};
+    const {db}=await ready();
+    const [users,backups,tickets,usage,logs,broadcastsRaw]=await Promise.all([
+      getColSafe(db,'users',true),
+      getColSafe(db,'backups',true),
+      getColSafe(db,'supportTickets',true),
+      getColSafe(db,'usageStats',false),
+      getColSafe(db,'adminLogs',false),
+      getColSafe(db,'adminBroadcasts',false)
+    ]);
+    state.users=users;
+    state.backups=(backups||[]).sort((a,b)=>n(b.createdAtMs)-n(a.createdAtMs));
+    state.tickets=(tickets||[]).sort((a,b)=>n(b.createdAtMs)-n(a.createdAtMs));
+    state.usage=usage||[];
+    state.logs=(logs||[]).sort((a,b)=>n(b.createdAtMs||b.atMs)-n(a.createdAtMs||a.atMs)).slice(0,80);
+    await cleanupOldBroadcasts(db,broadcastsRaw||[]);
+    state.broadcasts=(broadcastsRaw||[]).filter(isActiveBroadcast).sort((a,b)=>n(b.createdAtMs)-n(a.createdAtMs));
+    mergeUsers();
+    state.ready=true;
+    const errs=Object.keys(state.collectionErrors||{});
+    const dataCount=state.users.length+state.backups.length+state.tickets.length+state.usage.length;
+    if(dataCount>0){
+      $('syncInfo').textContent=(errs.length?'Kısmi okundu':'Firebase veri okundu')+' • K:'+state.users.length+' Y:'+state.backups.length+' B:'+state.tickets.length;
+    }else if(errs.length){
+      $('syncInfo').textContent='Firebase bağlandı ama veri okunamadı: '+errs.join(', ');
+    }else{
+      $('syncInfo').textContent='Firebase bağlandı ama koleksiyonlar boş görünüyor';
+    }
+    fillFilters();
+    render();
+  }catch(e){
+    state.ready=false;
+    $('syncInfo').textContent='Firebase okunamadı: '+errText(e);
+    toast(errText(e));
+  }
+}
 function fillFilters(){const sel=$('seflikFilter'),cur=sel.value;const vals=[...new Set(state.users.map(u=>u.seflik).filter(Boolean))].sort((a,b)=>String(a).localeCompare(String(b),'tr'));sel.innerHTML='<option value="">Tüm Şeflikler</option>'+vals.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join('');sel.value=cur}
 function userBackups(key){return state.backups.filter(b=>userKeyOf(b)===key)}
 function totalsBars(obj){obj=obj||{};const entries=Object.entries(obj).filter(([,v])=>n(v&&v.m3||v)>0).sort((a,b)=>n((b[1]&&b[1].m3)||b[1])-n((a[1]&&a[1].m3)||a[1])).slice(0,8);const max=Math.max(1,...entries.map(([,v])=>n((v&&v.m3)||v)));return entries.length?'<div class="bars">'+entries.map(([k,v])=>{const val=n((v&&v.m3)||v);return `<div class="bar"><span>${esc(k)}</span><span class="track"><i style="width:${Math.max(6,Math.round(val/max*100))}%"></i></span><b>${m3(val)}</b></div>`}).join('')+'</div>':'<div class="empty">Toplam yok.</div>'}
@@ -237,11 +329,11 @@ function appVersionOf(u){
   const raw = u.appVersion || u.fileVersion || (u.lastDeviceInfo && (u.lastDeviceInfo.appVersion || u.lastDeviceInfo.fileVersion)) || u.version || '-';
   return String(raw || '-').replace('•ExelanceX•','').trim();
 }
-function latestAppVersion(){return (window.MESAHA_VERSION && window.MESAHA_VERSION.app) || 'V3.96'}
+function latestAppVersion(){return (window.MESAHA_VERSION && window.MESAHA_VERSION.app) || 'V3.98'}
 function isOldAppVersion(u){
   const v=appVersionOf(u); if(!v || v==='-') return false;
   const latest=latestAppVersion();
-  return !String(v).includes(latest) && !String(v).includes((window.MESAHA_VERSION && window.MESAHA_VERSION.version) || 'v411_admin_duyuru_sil_otomatik_temizlik');
+  return !String(v).includes(latest) && !String(v).includes((window.MESAHA_VERSION && window.MESAHA_VERSION.version) || 'v413_guncelleme_notlari_kullanici_odakli');
 }
 function isActiveUser(u,spanMs){const last=n(u.lastSeenMs||u.lastLoginMs||u.updatedAtMs);return last>=Date.now()-(spanMs||15*60000)}
 function userTickets(key){return state.tickets.filter(t=>userKeyOf(t)===key)}
@@ -259,9 +351,9 @@ async function cleanupOldBroadcasts(db,arr){try{const old=(arr||[]).filter(x=>x&
 function renderBroadcastsV411(){const box=$('broadcastListV411');if(!box)return;const arr=(state.broadcasts||[]).slice(0,25);box.innerHTML=arr.length?arr.map(b=>`<div class="broadcast-admin-item-v411"><div class="space"><div><b>${esc(b.title||'Duyuru')}</b><small>${esc(b.createdAt||'-')} • ${int(b.targetCount||((b.targetUserKeys||[]).length))} kullanıcı</small></div><span class="broadcast-expire-v411">${esc(broadcastExpireText(b))}</span></div><p>${esc(b.message||'-')}</p><div class="row"><span class="chip">${esc(b.target||'all')}</span><button class="btn danger" data-broadcast-delete-v411="${esc(b.id)}" type="button">Duyuruyu Sil</button></div></div>`).join(''):'<div class="empty">Aktif admin duyurusu yok.</div>'}
 async function deleteBroadcastV411(id){const b=(state.broadcasts||[]).find(x=>x.id===id)||{};if(!id)return;if(!confirm('Bu admin duyurusu silinsin mi?'))return;const{db}=await ready();await db.collection('adminBroadcasts').doc(id).delete().catch(()=>db.collection('adminBroadcasts').doc(id).set({status:'deleted',deletedAt:new Date().toLocaleString('tr-TR'),deletedAtMs:Date.now()},{merge:true}));await logAdminAction('Admin duyurusu silindi',(b.title||id)+' • '+String(b.message||'').slice(0,90),{broadcastId:id});toast('Duyuru silindi');await loadAll()}
 function renderAdminLogs(){const box=$('adminLogsV400');if(!box)return;const arr=(state.logs||[]).slice(0,60);box.innerHTML=arr.length?arr.map(l=>`<div class="log-item-v400"><div class="space"><b>${esc(l.action||'İşlem')}</b><span class="pill">${esc(l.actor||'Admin')}</span></div><small>${esc(l.detail||'-')}</small><small>${esc(l.createdAt||l.at||'-')}</small></div>`).join(''):'<div class="empty">Henüz admin işlem kaydı yok.</div>'}
-async function logAdminAction(action,detail,extra){try{const {db}=await ready();const now=new Date();const doc={action,detail,actor:'Admin',createdAt:now.toLocaleString('tr-TR'),createdAtMs:Date.now(),appVersion:'V3.96',build:411};Object.assign(doc,extra||{});await db.collection('adminLogs').add(doc)}catch(e){console.warn('admin log yazılamadı',e)}}
+async function logAdminAction(action,detail,extra){try{const {db}=await ready();const now=new Date();const doc={action,detail,actor:'Admin',createdAt:now.toLocaleString('tr-TR'),createdAtMs:Date.now(),appVersion:'V3.98',build:413};Object.assign(doc,extra||{});await db.collection('adminLogs').add(doc)}catch(e){console.warn('admin log yazılamadı',e)}}
 function broadcastTargetUsers(target){let arr=state.users.slice();if(target==='oldVersion')arr=arr.filter(isOldAppVersion);else if(target==='activeToday'){const ts=todayStart();arr=arr.filter(u=>n(u.lastSeenMs||u.lastLoginMs)>=ts)}else if(target==='noBackup')arr=arr.filter(u=>!userBackups(userKeyOf(u)).length);return arr}
-async function sendBroadcastV400(){const target=($('broadcastTargetV400')||{}).value||'all';const title=($('broadcastTitleV400')||{}).value.trim();const message=($('broadcastMessageV400')||{}).value.trim();if(!title||!message){toast('Başlık ve mesaj gerekli');return}const targets=broadcastTargetUsers(target);if(!targets.length){toast('Bu hedefte kullanıcı yok');return}if(!confirm(targets.length+' kullanıcıya bildirim gönderilsin mi?'))return;const now=new Date();const targetKeys=targets.map(userKeyOf).filter(Boolean);const {db}=await ready();const ref=db.collection('adminBroadcasts').doc('bc_'+Date.now().toString(36));const createdAtMs=Date.now();await ref.set({id:ref.id,title,message,target,targetUserKeys:targetKeys,targetCount:targetKeys.length,createdAt:now.toLocaleString('tr-TR'),createdAtMs,expiresAtMs:createdAtMs+7*24*60*60*1000,status:'active',appVersion:'V3.96',build:411});await logAdminAction('Toplu bildirim gönderildi',title+' • '+targetKeys.length+' kullanıcı',{target,targetCount:targetKeys.length,broadcastId:ref.id});if($('broadcastInfoV400'))$('broadcastInfoV400').textContent=targetKeys.length+' kullanıcıya gönderildi.';if($('broadcastMessageV400'))$('broadcastMessageV400').value='';toast('Toplu bildirim gönderildi');await loadAll()}
+async function sendBroadcastV400(){const target=($('broadcastTargetV400')||{}).value||'all';const title=($('broadcastTitleV400')||{}).value.trim();const message=($('broadcastMessageV400')||{}).value.trim();if(!title||!message){toast('Başlık ve mesaj gerekli');return}const targets=broadcastTargetUsers(target);if(!targets.length){toast('Bu hedefte kullanıcı yok');return}if(!confirm(targets.length+' kullanıcıya bildirim gönderilsin mi?'))return;const now=new Date();const targetKeys=targets.map(userKeyOf).filter(Boolean);const {db}=await ready();const ref=db.collection('adminBroadcasts').doc('bc_'+Date.now().toString(36));const createdAtMs=Date.now();await ref.set({id:ref.id,title,message,target,targetUserKeys:targetKeys,targetCount:targetKeys.length,createdAt:now.toLocaleString('tr-TR'),createdAtMs,expiresAtMs:createdAtMs+7*24*60*60*1000,status:'active',appVersion:'V3.98',build:413});await logAdminAction('Toplu bildirim gönderildi',title+' • '+targetKeys.length+' kullanıcı',{target,targetCount:targetKeys.length,broadcastId:ref.id});if($('broadcastInfoV400'))$('broadcastInfoV400').textContent=targetKeys.length+' kullanıcıya gönderildi.';if($('broadcastMessageV400'))$('broadcastMessageV400').value='';toast('Toplu bildirim gönderildi');await loadAll()}
 function renderKpis(){
   const ts=todayStart(), week=Date.now()-7*86400000;
   const activeToday=state.users.filter(u=>n(u.lastSeenMs||u.lastLoginMs||u.updatedAtMs)>=ts).length;
@@ -283,7 +375,7 @@ function renderKpis(){
   const newTickets=state.tickets.filter(t=>(t.status||'new')!=='read').length;
   if($('newTicketPill')){$('newTicketPill').textContent=newTickets+' yeni bildirim';$('newTicketPill').className='pill '+(newTickets?'red':'green');}
   if($('backupCount'))$('backupCount').textContent=state.backups.length+' yedek';
-  if($('onlinePill')){$('onlinePill').textContent=navigator.onLine?'Çevrimiçi':'Çevrimdışı';$('onlinePill').className='pill '+(navigator.onLine?'green':'red');}
+  if($('onlinePill')){const errs=Object.keys(state.collectionErrors||{}).length;const hasData=state.ready&&(state.users.length||state.backups.length||state.tickets.length||state.usage.length);$('onlinePill').textContent=errs?'Firebase kısmi':(hasData?'Veri okundu':(navigator.onLine?'Veri bekliyor':'Çevrimdışı'));$('onlinePill').className='pill '+(errs?'warn':(hasData?'green':(navigator.onLine?'':'red')));}
   renderMobileExtras();
 }
 function renderUsers(){
@@ -362,8 +454,8 @@ async function clearReadTickets(){if(!confirm('Okunmuş bildirimler silinsin mi?
 async function deleteAllTickets(){if(!confirm('Tüm bildirimler silinsin mi?'))return;const count=state.tickets.length;const{db}=await ready();for(const t of state.tickets)await db.collection('supportTickets').doc(t.id).delete();await logAdminAction('Tüm bildirimler silindi',count+' bildirim temizlendi',{count});toast('Bildirimler silindi');await loadAll()}
 async function deleteOldBackups(){if(!confirm('30 günden eski yedekler silinsin mi?'))return;const limit=Date.now()-30*86400000;const items=state.backups.filter(x=>n(x.createdAtMs)<limit);const{db}=await ready();for(const b of items)await deleteBackupFull(db,b.id);await logAdminAction('Eski yedekler temizlendi',items.length+' eski yedek silindi',{count:items.length});toast('Eski yedekler temizlendi');await loadAll()}
 async function resetStats(){if(!confirm('İstatistik başlangıcı bugüne alınsın mı?'))return;const{db}=await ready();await db.collection('adminSettings').doc('statsReset').set({resetAt:new Date().toLocaleString('tr-TR'),resetAtMs:Date.now()},{merge:true});await logAdminAction('İstatistik başlangıcı yenilendi','Başlangıç bugüne alındı');toast('İstatistik başlangıcı yenilendi')}
-async function health(){try{const{db,auth}=await ready();await db.collection('healthChecks').doc('adminPanel').set({ok:true,at:new Date().toLocaleString('tr-TR'),atMs:Date.now(),uid:auth.currentUser&&auth.currentUser.uid},{merge:true});await logAdminAction('Firebase bağlantı testi','Bağlantı sağlam');toast('Firebase bağlantısı sağlam')}catch(e){toast(errText(e))}}
-function exportAll(){const blob=new Blob([JSON.stringify({exportedAt:new Date().toISOString(),version:'v411_admin_duyuru_sil_otomatik_temizlik',users:state.users,backups:state.backups,tickets:state.tickets,broadcasts:state.broadcasts,usage:state.usage},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='mesaha_admin_tum_veriler_v411.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+async function health(){try{const{db,auth}=await ready();const [u,b,t]=await Promise.all([getColSafe(db,'users',true),getColSafe(db,'backups',true),getColSafe(db,'supportTickets',true)]);await db.collection('healthChecks').doc('adminPanel').set({ok:true,at:new Date().toLocaleString('tr-TR'),atMs:Date.now(),uid:auth.currentUser&&auth.currentUser.uid,users:u.length,backups:b.length,tickets:t.length},{merge:true});toast('Firebase veri okundu • K:'+u.length+' Y:'+b.length+' B:'+t.length);await loadAll()}catch(e){toast(errText(e))}}
+function exportAll(){const blob=new Blob([JSON.stringify({exportedAt:new Date().toISOString(),version:'v413_guncelleme_notlari_kullanici_odakli',users:state.users,backups:state.backups,tickets:state.tickets,broadcasts:state.broadcasts,usage:state.usage},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='mesaha_admin_tum_veriler_v412.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
 function goAppHome(e){
   if(e) e.preventDefault();
   var target = new URL('./index.html', location.href).href;
