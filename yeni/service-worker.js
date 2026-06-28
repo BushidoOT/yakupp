@@ -1,22 +1,22 @@
-importScripts('./js/version.js?v=409');
+importScripts('./js/version.js?v=411');
 
-const META = self.MESAHA_VERSION || {"app": "V3.94", "version": "v409_kesimci_secimi_ziplama_fix", "build": 409, "visibleVersion": "V3.94 •ExelanceX•", "shortVersion": "V3.94 •ExelanceX•", "name": "Mesaha İO V3.94 •ExelanceX•", "cacheName": "mesaha-app-v409-kesimci-secimi-ziplama-fix", "builtAt": "2026-06-28T00:15:00+03:00", "notes": "Mesaha Gir ekranında Kaydet sonrası ekran zıplaması ve kaydırma sırasında yanlışlıkla tıklama sorunu düzeltildi.", "assetVersion": "409"};
-const BASE_CACHE = META.cacheName || 'mesaha-app-v409-kesimci-secimi-ziplama-fix';
+const META = self.MESAHA_VERSION || {"app": "V3.96", "version": "v411_admin_duyuru_sil_otomatik_temizlik", "build": 411, "visibleVersion": "V3.96 •ExelanceX•", "shortVersion": "V3.96 •ExelanceX•", "name": "Mesaha İO V3.96 •ExelanceX•", "cacheName": "mesaha-app-v411-admin-duyuru-sil-otomatik-temizlik", "builtAt": "2026-06-28T01:30:00+03:00", "notes": "Admin duyurularına silme eklendi; duyurular 7 gün sonra otomatik temizlenir ve kullanıcı panelinde süresi dolan duyurular gösterilmez.", "assetVersion": "411"};
+const BASE_CACHE = META.cacheName || 'mesaha-app-v411-admin-duyuru-sil-otomatik-temizlik';
 const SHELL_CACHE = BASE_CACHE + '-shell';
 const ASSET_CACHE = BASE_CACHE + '-assets';
 const RUNTIME_CACHE = BASE_CACHE + '-runtime';
 const OFFLINE_TIMEOUT_MS = 3000;
-const VERSION_Q = String(META.assetVersion || META.build || 409);
+const VERSION_Q = String(META.assetVersion || META.build || 411);
 
 const SHELL_ASSETS = [
   './', './index.html', './admin.html', './temizle.html', './manifest.json', './version.json', './service-worker.js',
-  './js/version.js?v=409', './js/mesaha-early-optimizer.js?v=409', './js/mesaha-utils.js?v=409', './js/mesaha-data-guard.js?v=409',
-  './js/mesaha-stability-core.js?v=409', './js/mesaha-firebase.js?v=409', './js/mesaha-offline-core.js?v=409',
-  './js/mesaha-render-storage.js?v=409', './js/mesaha-sound.js?v=409'
+  './js/version.js?v=411', './js/mesaha-early-optimizer.js?v=411', './js/mesaha-utils.js?v=411', './js/mesaha-data-guard.js?v=411',
+  './js/mesaha-stability-core.js?v=411', './js/mesaha-firebase.js?v=411', './js/mesaha-offline-core.js?v=411',
+  './js/mesaha-render-storage.js?v=411', './js/mesaha-sound.js?v=411'
 ];
 const STATIC_ASSETS = [
-  './assets/icon-192.png', './assets/icon-512.png', './assets/mesaha_logo.png', './assets/hero_forest_cover.png?v=409',
-  './assets/mesaha_onay.wav?v=409', './assets/mesaha_uyari.wav?v=409'
+  './assets/icon-192.png', './assets/icon-512.png', './assets/mesaha_logo.png', './assets/hero_forest_cover.png?v=411',
+  './assets/mesaha_onay.wav?v=411', './assets/mesaha_uyari.wav?v=411'
 ];
 function timeoutReject(ms,label){return new Promise((_,reject)=>setTimeout(()=>reject(new Error(label||'network-timeout')),ms||OFFLINE_TIMEOUT_MS));}
 function networkWithTimeout(request,options,ms){return Promise.race([fetch(request,options||{}),timeoutReject(ms||OFFLINE_TIMEOUT_MS,'network-timeout')]);}
