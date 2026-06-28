@@ -1,12 +1,12 @@
 {
-  "app": "V3.92",
-  "version": "v407_guncelleme_notlari_kesimci_kalma_fix",
-  "build": 407,
-  "visibleVersion": "V3.92 •ExelanceX•",
-  "shortVersion": "V3.92 •ExelanceX•",
-  "name": "Mesaha İO V3.92 •ExelanceX•",
-  "cacheName": "mesaha-app-v407-guncelleme-notlari-kesimci-kalma-fix",
-  "builtAt": "2026-06-27T23:55:00+03:00",
-  "notes": "Güncelleme notları son 15 sürüm olacak şekilde açılır/kapanır hale getirildi; silinen kesimcinin geri gelmesi ve otomatik seçilmesi engellendi.",
-  "assetVersion": "407"
+  "app": "V3.93",
+  "version": "v408_mesaha_gir_scroll_tap_guard",
+  "build": 408,
+  "visibleVersion": "V3.93 •ExelanceX•",
+  "shortVersion": "V3.93 •ExelanceX•",
+  "name": "Mesaha İO V3.93 •ExelanceX•",
+  "cacheName": "mesaha-app-v408-mesaha-gir-scroll-tap-guard",
+  "builtAt": "2026-06-28T00:15:00+03:00",
+  "notes": "Mesaha Gir ekranında Kaydet sonrası ekran zıplaması ve kaydırma sırasında yanlışlıkla tıklama sorunu düzeltildi.",
+  "assetVersion": "408"
 }
