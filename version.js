@@ -1,0 +1,13 @@
+self.MESAHA_VERSION = {
+  "app": "V3.94",
+  "version": "v409_kesimci_secimi_ziplama_fix",
+  "build": 409,
+  "visibleVersion": "V3.94 •ExelanceX•",
+  "shortVersion": "V3.94 •ExelanceX•",
+  "name": "Mesaha İO V3.94 •ExelanceX•",
+  "cacheName": "mesaha-app-v409-kesimci-secimi-ziplama-fix",
+  "builtAt": "2026-06-28T00:45:00+03:00",
+  "notes": "Mesaha Gir ekranında Kaydet sırasında Kesimci seçilmedi alanının küçülüp büyümesinden kaynaklanan ekran zıplaması düzeltildi.",
+  "assetVersion": "409"
+};
+if (typeof window !== "undefined") window.MESAHA_VERSION = self.MESAHA_VERSION;
