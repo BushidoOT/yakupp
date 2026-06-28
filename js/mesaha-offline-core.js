@@ -4,19 +4,19 @@
   window.__mesahaOfflineCore = true;
 
   var FALLBACK_META = {
-  "app": "V3.88",
-  "version": "v403-firebase-bulut-getir-fix",
-  "build": 403,
-  "visibleVersion": "V3.88 •ExelanceX•",
-  "shortVersion": "V3.88 •ExelanceX•",
-  "name": "Mesaha İO V3.88 •ExelanceX•",
-  "cacheName": "mesaha-app-v403-firebase-bulut-getir-fix",
-  "builtAt": "2026-06-27T12:58:00+03:00",
-  "notes": "Buluttan yedek getir ekranında Firebase motor alias hatası düzeltildi; eski cache durumlarına karşı Firebase fallback güvenliği eklendi.",
-  "assetVersion": "403"
+  "app": "V3.90",
+  "version": "v405-kesimci-duzenle-sil-koruma",
+  "build": 405,
+  "visibleVersion": "V3.90 •ExelanceX•",
+  "shortVersion": "V3.90 •ExelanceX•",
+  "name": "Mesaha İO V3.90 •ExelanceX•",
+  "cacheName": "mesaha-app-v405-kesimci-duzenle-sil-koruma",
+  "builtAt": "2026-06-27T13:25:00+03:00",
+  "notes": "Kesimci isim düzenleme eklendi; kesimci yanında düzenle/sil butonları gösterilir; kayıt bağlı kesimci silinmez.",
+  "assetVersion": "405"
 };
   var META = (window.MESAHA_VERSION && typeof window.MESAHA_VERSION === 'object') ? window.MESAHA_VERSION : FALLBACK_META;
-  var ASSET_VERSION = String(META.assetVersion || META.build || '403');
+  var ASSET_VERSION = String(META.assetVersion || META.build || '405');
 
   function lock(name, value){
     try {

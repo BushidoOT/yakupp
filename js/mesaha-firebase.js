@@ -1,4 +1,4 @@
-/* Mesaha İO v403 — tek Firebase motoru
+/* Mesaha İO v404 — tek Firebase motoru
    Amaç: Firebase SDK yükleme, initializeApp, anonymous auth ve Firestore settings işlemini tek promise üzerinden yürütmek. */
 (function(){
   'use strict';
