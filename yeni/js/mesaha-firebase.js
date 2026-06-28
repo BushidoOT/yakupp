@@ -1,4 +1,4 @@
-/* Mesaha İO v411 — sağlam Firebase motoru
+/* Mesaha İO v413 — sağlam Firebase motoru
    Amaç: navigator.onLine hatasına takılmadan Firebase SDK yükleme, anonymous auth ve Firestore bağlantısını tek güvenli promise ile yürütmek. */
 (function(){
   'use strict';
@@ -107,7 +107,7 @@
   async function health(){
     const r = await ready();
     try{
-      await withTimeout(r.db.collection('healthChecks').doc('client').set({ok:true, atMs:Date.now(), appVersion:(window.APP_VERSION||'V3.96'), source:'client'}, {merge:true}), 12000, 'Firebase test');
+      await withTimeout(r.db.collection('healthChecks').doc('client').set({ok:true, atMs:Date.now(), appVersion:(window.APP_VERSION||'V3.97'), source:'client'}, {merge:true}), 12000, 'Firebase test');
     }catch(e){
       readyPromise = null;
       lastError = e && e.message ? e.message : String(e || 'Firebase test hatası');

@@ -1,13 +1,13 @@
 self.MESAHA_VERSION = {
-  "app": "V3.96",
-  "version": "v411_admin_duyuru_sil_otomatik_temizlik",
-  "build": 411,
-  "visibleVersion": "V3.96 •ExelanceX•",
-  "shortVersion": "V3.96 •ExelanceX•",
-  "name": "Mesaha İO V3.96 •ExelanceX•",
-  "cacheName": "mesaha-app-v411-admin-duyuru-sil-otomatik-temizlik",
-  "builtAt": "2026-06-28T01:30:00+03:00",
-  "notes": "Admin duyurularına silme eklendi; duyurular 7 gün sonra otomatik temizlenir ve kullanıcı panelinde süresi dolan duyurular gösterilmez.",
-  "assetVersion": "411"
+  "app": "V3.98",
+  "version": "v413_guncelleme_notlari_kullanici_odakli",
+  "build": 413,
+  "visibleVersion": "V3.98 •ExelanceX•",
+  "shortVersion": "V3.98 •ExelanceX•",
+  "name": "Mesaha İO V3.98 •ExelanceX•",
+  "cacheName": "mesaha-app-v413-guncelleme-notlari-kullanici-odakli",
+  "builtAt": "2026-06-28T16:15:00+03:00",
+  "notes": "Güncelleme notları kullanıcıya yönelik hale getirildi; yönetim paneli değişiklikleri kullanıcı panosunda gizlendi.",
+  "assetVersion": "413"
 };
 if (typeof window !== "undefined") window.MESAHA_VERSION = self.MESAHA_VERSION;
