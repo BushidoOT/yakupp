@@ -1,12 +1,12 @@
 {
-  "app": "V3.98",
-  "version": "v413_guncelleme_notlari_kullanici_odakli",
-  "build": 413,
-  "visibleVersion": "V3.98 •ExelanceX•",
-  "shortVersion": "V3.98 •ExelanceX•",
-  "name": "Mesaha İO V3.98 •ExelanceX•",
-  "cacheName": "mesaha-app-v413-guncelleme-notlari-kullanici-odakli",
-  "builtAt": "2026-06-28T16:15:00+03:00",
-  "notes": "Güncelleme notları kullanıcıya yönelik hale getirildi; yönetim paneli değişiklikleri kullanıcı panosunda gizlendi.",
-  "assetVersion": "413"
+  "app": "V3.99",
+  "version": "v414_beyan_pdf_yazi_footer_fix",
+  "build": 414,
+  "visibleVersion": "V3.99 •ExelanceX•",
+  "shortVersion": "V3.99 •ExelanceX•",
+  "name": "Mesaha İO V3.99 •ExelanceX•",
+  "cacheName": "mesaha-app-v414-beyan-pdf-yazi-footer-fix",
+  "builtAt": "2026-06-28T20:45:00+03:00",
+  "notes": "Beyan PDF yazıları sadeleştirildi; alt site/tarih bilgileri kaldırıldı.",
+  "assetVersion": "414"
 }

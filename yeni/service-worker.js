@@ -1,22 +1,22 @@
-importScripts('./js/version.js?v=413');
+importScripts('./js/version.js?v=414');
 
-const META = self.MESAHA_VERSION || {"app": "V3.98", "version": "v413_guncelleme_notlari_kullanici_odakli", "build": 413, "visibleVersion": "V3.98 •ExelanceX•", "shortVersion": "V3.98 •ExelanceX•", "name": "Mesaha İO V3.98 •ExelanceX•", "cacheName": "mesaha-app-v413-guncelleme-notlari-kullanici-odakli", "builtAt": "2026-06-28T15:30:00+03:00", "notes": "Güncelleme notları kullanıcıya yönelik hale getirildi; yönetim paneli değişiklikleri kullanıcı panosunda gizlendi.", "assetVersion": "413"};
-const BASE_CACHE = META.cacheName || 'mesaha-app-v413-guncelleme-notlari-kullanici-odakli';
+const META = self.MESAHA_VERSION || {"app": "V3.99", "version": "v414_beyan_pdf_yazi_footer_fix", "build": 414, "visibleVersion": "V3.99 •ExelanceX•", "shortVersion": "V3.99 •ExelanceX•", "name": "Mesaha İO V3.99 •ExelanceX•", "cacheName": "mesaha-app-v414-beyan-pdf-yazi-footer-fix", "builtAt": "2026-06-28T15:30:00+03:00", "notes": "Beyan PDF yazıları sadeleştirildi; alt site/tarih bilgileri kaldırıldı.", "assetVersion": "414"};
+const BASE_CACHE = META.cacheName || 'mesaha-app-v414-beyan-pdf-yazi-footer-fix';
 const SHELL_CACHE = BASE_CACHE + '-shell';
 const ASSET_CACHE = BASE_CACHE + '-assets';
 const RUNTIME_CACHE = BASE_CACHE + '-runtime';
 const OFFLINE_TIMEOUT_MS = 3000;
-const VERSION_Q = String(META.assetVersion || META.build || 413);
+const VERSION_Q = String(META.assetVersion || META.build || 414);
 
 const SHELL_ASSETS = [
   './', './index.html', './admin.html', './temizle.html', './manifest.json', './version.json', './service-worker.js',
-  './js/version.js?v=413', './js/mesaha-early-optimizer.js?v=413', './js/mesaha-utils.js?v=413', './js/mesaha-data-guard.js?v=413',
-  './js/mesaha-stability-core.js?v=413', './js/mesaha-firebase.js?v=413', './js/mesaha-offline-core.js?v=413',
-  './js/mesaha-render-storage.js?v=413', './js/mesaha-sound.js?v=413'
+  './js/version.js?v=414', './js/mesaha-early-optimizer.js?v=414', './js/mesaha-utils.js?v=414', './js/mesaha-data-guard.js?v=414',
+  './js/mesaha-stability-core.js?v=414', './js/mesaha-firebase.js?v=414', './js/mesaha-offline-core.js?v=414',
+  './js/mesaha-render-storage.js?v=414', './js/mesaha-sound.js?v=414'
 ];
 const STATIC_ASSETS = [
-  './assets/icon-192.png', './assets/icon-512.png', './assets/mesaha_logo.png', './assets/hero_forest_cover.png?v=413',
-  './assets/mesaha_onay.wav?v=413', './assets/mesaha_uyari.wav?v=413'
+  './assets/icon-192.png', './assets/icon-512.png', './assets/mesaha_logo.png', './assets/hero_forest_cover.png?v=414',
+  './assets/mesaha_onay.wav?v=414', './assets/mesaha_uyari.wav?v=414'
 ];
 function timeoutReject(ms,label){return new Promise((_,reject)=>setTimeout(()=>reject(new Error(label||'network-timeout')),ms||OFFLINE_TIMEOUT_MS));}
 function networkWithTimeout(request,options,ms){return Promise.race([fetch(request,options||{}),timeoutReject(ms||OFFLINE_TIMEOUT_MS,'network-timeout')]);}
