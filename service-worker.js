@@ -1,22 +1,22 @@
-importScripts('./js/version.js?v=403');
+importScripts('./js/version.js?v=409');
 
-const META = self.MESAHA_VERSION || {"app": "V3.88", "version": "v403-firebase-bulut-getir-fix", "build": 403, "visibleVersion": "V3.88 •ExelanceX•", "shortVersion": "V3.88 •ExelanceX•", "name": "Mesaha İO V3.88 •ExelanceX•", "cacheName": "mesaha-app-v403-firebase-bulut-getir-fix", "builtAt": "2026-06-27T12:58:00+03:00", "notes": "Buluttan yedek getir ekranında Firebase motor alias hatası düzeltildi; eski cache durumlarına karşı Firebase fallback güvenliği eklendi.", "assetVersion": "403"};
-const BASE_CACHE = META.cacheName || 'mesaha-app-v403-firebase-bulut-getir-fix';
+const META = self.MESAHA_VERSION || {"app": "V3.94", "version": "v409_kesimci_secimi_ziplama_fix", "build": 409, "visibleVersion": "V3.94 •ExelanceX•", "shortVersion": "V3.94 •ExelanceX•", "name": "Mesaha İO V3.94 •ExelanceX•", "cacheName": "mesaha-app-v409-kesimci-secimi-ziplama-fix", "builtAt": "2026-06-28T00:15:00+03:00", "notes": "Mesaha Gir ekranında Kaydet sonrası ekran zıplaması ve kaydırma sırasında yanlışlıkla tıklama sorunu düzeltildi.", "assetVersion": "409"};
+const BASE_CACHE = META.cacheName || 'mesaha-app-v409-kesimci-secimi-ziplama-fix';
 const SHELL_CACHE = BASE_CACHE + '-shell';
 const ASSET_CACHE = BASE_CACHE + '-assets';
 const RUNTIME_CACHE = BASE_CACHE + '-runtime';
 const OFFLINE_TIMEOUT_MS = 3000;
-const VERSION_Q = String(META.assetVersion || META.build || 403);
+const VERSION_Q = String(META.assetVersion || META.build || 409);
 
 const SHELL_ASSETS = [
   './', './index.html', './admin.html', './temizle.html', './manifest.json', './version.json', './service-worker.js',
-  './js/version.js?v=403', './js/mesaha-early-optimizer.js?v=403', './js/mesaha-utils.js?v=403', './js/mesaha-data-guard.js?v=403',
-  './js/mesaha-stability-core.js?v=403', './js/mesaha-firebase.js?v=403', './js/mesaha-offline-core.js?v=403',
-  './js/mesaha-render-storage.js?v=403', './js/mesaha-sound.js?v=403'
+  './js/version.js?v=409', './js/mesaha-early-optimizer.js?v=409', './js/mesaha-utils.js?v=409', './js/mesaha-data-guard.js?v=409',
+  './js/mesaha-stability-core.js?v=409', './js/mesaha-firebase.js?v=409', './js/mesaha-offline-core.js?v=409',
+  './js/mesaha-render-storage.js?v=409', './js/mesaha-sound.js?v=409'
 ];
 const STATIC_ASSETS = [
-  './assets/icon-192.png', './assets/icon-512.png', './assets/mesaha_logo.png', './assets/hero_forest_cover.png?v=403',
-  './assets/mesaha_onay.wav?v=403', './assets/mesaha_uyari.wav?v=403'
+  './assets/icon-192.png', './assets/icon-512.png', './assets/mesaha_logo.png', './assets/hero_forest_cover.png?v=409',
+  './assets/mesaha_onay.wav?v=409', './assets/mesaha_uyari.wav?v=409'
 ];
 function timeoutReject(ms,label){return new Promise((_,reject)=>setTimeout(()=>reject(new Error(label||'network-timeout')),ms||OFFLINE_TIMEOUT_MS));}
 function networkWithTimeout(request,options,ms){return Promise.race([fetch(request,options||{}),timeoutReject(ms||OFFLINE_TIMEOUT_MS,'network-timeout')]);}

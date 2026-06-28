@@ -1,12 +1,12 @@
 {
-  "app": "V3.88",
-  "version": "v403-firebase-bulut-getir-fix",
-  "build": 403,
-  "visibleVersion": "V3.88 •ExelanceX•",
-  "shortVersion": "V3.88 •ExelanceX•",
-  "name": "Mesaha İO V3.88 •ExelanceX•",
-  "cacheName": "mesaha-app-v403-firebase-bulut-getir-fix",
-  "builtAt": "2026-06-27T12:58:00+03:00",
-  "notes": "Buluttan yedek getir ekranında Firebase motor alias hatası düzeltildi; eski cache durumlarına karşı Firebase fallback güvenliği eklendi.",
-  "assetVersion": "403"
+  "app": "V3.94",
+  "version": "v409_kesimci_secimi_ziplama_fix",
+  "build": 409,
+  "visibleVersion": "V3.94 •ExelanceX•",
+  "shortVersion": "V3.94 •ExelanceX•",
+  "name": "Mesaha İO V3.94 •ExelanceX•",
+  "cacheName": "mesaha-app-v409-kesimci-secimi-ziplama-fix",
+  "builtAt": "2026-06-28T00:45:00+03:00",
+  "notes": "Mesaha Gir ekranında Kaydet sırasında Kesimci seçilmedi alanının küçülüp büyümesinden kaynaklanan ekran zıplaması düzeltildi.",
+  "assetVersion": "409"
 }
