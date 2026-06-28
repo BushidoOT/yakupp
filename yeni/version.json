@@ -1,12 +1,12 @@
 {
-  "app": "V3.99",
-  "version": "v414_beyan_pdf_yazi_footer_fix",
-  "build": 414,
-  "visibleVersion": "V3.99 •ExelanceX•",
-  "shortVersion": "V3.99 •ExelanceX•",
-  "name": "Mesaha İO V3.99 •ExelanceX•",
-  "cacheName": "mesaha-app-v414-beyan-pdf-yazi-footer-fix",
-  "builtAt": "2026-06-28T20:45:00+03:00",
-  "notes": "Beyan PDF yazıları sadeleştirildi; alt site/tarih bilgileri kaldırıldı.",
-  "assetVersion": "414"
+  "app": "V4.00",
+  "version": "v415_log_tutucu_denemesi",
+  "build": 415,
+  "visibleVersion": "V4.00 •ExelanceX•",
+  "shortVersion": "V4.00 •ExelanceX•",
+  "name": "Mesaha İO V4.00 •ExelanceX•",
+  "cacheName": "mesaha-app-v415-log-tutucu-denemesi",
+  "builtAt": "2026-06-28T21:15:00+03:00",
+  "notes": "Tek sürümlük genel log tutucu eklendi.",
+  "assetVersion": "415"
 }
