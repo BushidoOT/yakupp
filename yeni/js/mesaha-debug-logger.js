@@ -1,17 +1,17 @@
-/* Mesaha İO V4.01 / build 416 — tek sürümlük genel log tutucu
+/* Mesaha İO V4.03 / build 418 — tek sürümlük genel log tutucu
    Amaç: uygulama, admin, Firebase, cache ve buton akışlarını güvenli şekilde izlemek. */
 (function(){
   'use strict';
   if(window.__mesahaDebugLoggerV415) return;
   window.__mesahaDebugLoggerV415 = true;
 
-  var BUILD = 416;
-  var VERSION = 'V4.01';
-  var VERSION_CODE = 'v416_boy_input_focus_guard';
-  var KEY = 'mesaha_debug_logs_v416';
+  var BUILD = 418;
+  var VERSION = 'V4.03';
+  var VERSION_CODE = 'v418_ios_save_single_gate';
+  var KEY = 'mesaha_debug_logs_v418';
   var OLD_KEY = 'mesaha_debug_logs_v1';
-  var SESSION_KEY = 'mesaha_debug_session_v416';
-  var INSTALL_KEY = 'mesaha_debug_install_id_v416';
+  var SESSION_KEY = 'mesaha_debug_session_v418';
+  var INSTALL_KEY = 'mesaha_debug_install_id_v418';
   var MAX_LOGS = 900;
   var WRAP_FLAG = '__mesahaDebugWrappedV415';
   var originalConsole = {};
@@ -49,7 +49,32 @@
       pixelRatio: window.devicePixelRatio || 1
     };
   }
-  function shortText(v, len){ v = String(v == null ? '' : v); len = len || 900; return v.length > len ? v.slice(0,len) + '…' : v; }
+  function redactText(v){
+    v = String(v == null ? '' : v);
+    try{
+      v = v.replace(/Bearer\s+[A-Za-z0-9._\-]+/g, 'Bearer [REDACTED]');
+      v = v.replace(/(Authorization["']?\s*[:=]\s*["']?)Bearer\s+[^"',}\s]+/gi, '$1Bearer [REDACTED]');
+      v = v.replace(/([?&](?:gsessionid|SID|zx|AID|RID)=)[^&\s"']+/g, '$1[REDACTED]');
+      v = v.replace(/((?:gsessionid|SID|zx|AID|RID)=)[^&\s"']+/g, '$1[REDACTED]');
+      v = v.replace(/(apiKey["']?\s*[:=]\s*["']?)[^"',}\s]+/gi, '$1[REDACTED]');
+    }catch(e){}
+    return v;
+  }
+  function shortText(v, len){ v = redactText(v); len = len || 900; return v.length > len ? v.slice(0,len) + '…' : v; }
+  function isSensitiveKey(k){ return /authorization|bearer|token|password|secret|credential|apikey/i.test(String(k||'')); }
+  function isFirestoreNoise(text){
+    text = String(text || '');
+    return text.indexOf('@firebase/firestore') >= 0 && (
+      text.indexOf('overriding the original host') >= 0 ||
+      text.indexOf('WebChannelConnection') >= 0 ||
+      text.indexOf('transport errored') >= 0
+    );
+  }
+  function isFirestoreChannelUrl(url){
+    url = String(url || '');
+    return url.indexOf('firestore.googleapis.com/google.firestore.v1.Firestore') >= 0 &&
+      (url.indexOf('/Write/channel') >= 0 || url.indexOf('/Listen/channel') >= 0);
+  }
   function serialize(v, depth, seen){
     depth = depth || 0; seen = seen || [];
     try{
@@ -64,7 +89,10 @@
       seen.push(v);
       if(Array.isArray(v)) return v.slice(0,20).map(function(x){ return serialize(x, depth+1, seen); });
       var out = {};
-      Object.keys(v).slice(0,35).forEach(function(k){ out[k] = serialize(v[k], depth+1, seen); });
+      Object.keys(v).slice(0,35).forEach(function(k){
+        if(isSensitiveKey(k)) out[k] = '[REDACTED]';
+        else out[k] = serialize(v[k], depth+1, seen);
+      });
       return out;
     }catch(e){ return shortText(String(v), 1200); }
   }
@@ -144,7 +172,14 @@
         if(!console || !console[m] || console[m][WRAP_FLAG]) return;
         originalConsole[m] = console[m].bind(console);
         var fn = function(){
-          try{ add(m === 'error' ? 'error' : (m === 'warn' ? 'warn' : 'info'), 'console.' + m, argsText(arguments), Array.prototype.slice.call(arguments)); }catch(e){}
+          try{
+            var text = argsText(arguments);
+            if(m === 'warn' && isFirestoreNoise(text)){
+              add('info', 'firebase', 'Firestore iç bağlantı uyarısı filtrelendi', {summary:shortText(text, 260)});
+            }else{
+              add(m === 'error' ? 'error' : (m === 'warn' ? 'warn' : 'info'), 'console.' + m, text, Array.prototype.slice.call(arguments));
+            }
+          }catch(e){}
           try{ return originalConsole[m].apply(console, arguments); }catch(_e){}
         };
         fn[WRAP_FLAG] = true;
@@ -179,7 +214,14 @@
       p.send = function(){
         var xhr=this; if(xhr.__mesahaLogReq) xhr.__mesahaLogReq.start=now();
         xhr.addEventListener('loadend', function(){
-          try{ var r=xhr.__mesahaLogReq||{}; var ms=now()-(r.start||now()); if(xhr.status>=400 || ms>5000) add(xhr.status>=400?'error':'warn','xhr','XHR sonucu',{method:r.method,url:r.url,status:xhr.status,ms:ms}); }catch(e){}
+          try{
+            var r=xhr.__mesahaLogReq||{}; var ms=now()-(r.start||now());
+            if(isFirestoreChannelUrl(r.url) && xhr.status === 0 && ms > 5000){
+              add('info','firebase','Firestore kanal yenileme bilgisi',{method:r.method,url:r.url,status:xhr.status,ms:ms});
+              return;
+            }
+            if(xhr.status>=400 || ms>5000) add(xhr.status>=400?'error':'warn','xhr','XHR sonucu',{method:r.method,url:r.url,status:xhr.status,ms:ms});
+          }catch(e){}
         });
         return oldSend.apply(this, arguments);
       };

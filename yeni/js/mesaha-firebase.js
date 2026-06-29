@@ -1,4 +1,4 @@
-/* Mesaha İO v416 — sağlam Firebase motoru
+/* Mesaha İO v418 — sağlam Firebase motoru
    Amaç: navigator.onLine hatasına takılmadan Firebase SDK yükleme, anonymous auth ve Firestore bağlantısını tek güvenli promise ile yürütmek. */
 (function(){
   'use strict';
@@ -85,8 +85,8 @@
         if(!auth.currentUser) await withTimeout(auth.signInAnonymously(), 15000, 'Firebase giriş');
         const db = window.firebase.firestore();
         if(!settingsApplied){
-          try{ db.settings({experimentalForceLongPolling:true}); }catch(e){
-            try{ db.settings({experimentalAutoDetectLongPolling:true}); }catch(_e){}
+          try{ db.settings({experimentalForceLongPolling:true, merge:true}); }catch(e){
+            try{ db.settings({experimentalAutoDetectLongPolling:true, merge:true}); }catch(_e){}
           }
           settingsApplied = true;
         }
@@ -107,7 +107,7 @@
   async function health(){
     const r = await ready();
     try{
-      await withTimeout(r.db.collection('healthChecks').doc('client').set({ok:true, atMs:Date.now(), appVersion:(window.APP_VERSION||'V4.01'), source:'client'}, {merge:true}), 12000, 'Firebase test');
+      await withTimeout(r.db.collection('healthChecks').doc('client').set({ok:true, atMs:Date.now(), appVersion:(window.APP_VERSION||'V4.03'), source:'client'}, {merge:true}), 12000, 'Firebase test');
     }catch(e){
       readyPromise = null;
       lastError = e && e.message ? e.message : String(e || 'Firebase test hatası');
