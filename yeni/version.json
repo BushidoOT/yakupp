@@ -1,12 +1,12 @@
 {
-  "app": "V4.03",
-  "version": "v418_ios_save_single_gate",
-  "build": 418,
-  "visibleVersion": "V4.03 •ExelanceX•",
-  "shortVersion": "V4.03 •ExelanceX•",
-  "name": "Mesaha İO V4.03 •ExelanceX•",
-  "cacheName": "mesaha-app-v418-ios-save-single-gate",
+  "app": "V4.04",
+  "version": "v419_detayli_log_test",
+  "build": 419,
+  "visibleVersion": "V4.04 •ExelanceX•",
+  "shortVersion": "V4.04 •ExelanceX•",
+  "name": "Mesaha İO V4.04 •ExelanceX•",
+  "cacheName": "mesaha-app-v419-detayli-log-test",
   "builtAt": "2026-06-29T14:40:00+03:00",
-  "notes": "iOS Safari/PWA kaydet tekrarlarını tek kayıt kilidiyle engeller; v417 Firebase log sadeleştirme korunur.",
-  "assetVersion": "418"
+  "notes": "Detaylı test logu açıldı; yayın öncesi kaldırılacak.",
+  "assetVersion": "419"
 }
