@@ -1,12 +1,12 @@
-importScripts('./js/version.js?v=415');
+importScripts('./js/version.js?v=416');
 
-const META = self.MESAHA_VERSION || {"app": "V4.00", "version": "v415_log_tutucu_denemesi", "build": 415, "visibleVersion": "V4.00 •ExelanceX•", "shortVersion": "V4.00 •ExelanceX•", "name": "Mesaha İO V4.00 •ExelanceX•", "cacheName": "mesaha-app-v415-log-tutucu-denemesi", "builtAt": "2026-06-28T15:30:00+03:00", "notes": "Tek sürümlük genel log tutucu eklendi.", "assetVersion": "415"};
-const BASE_CACHE = META.cacheName || 'mesaha-app-v415-log-tutucu-denemesi';
+const META = self.MESAHA_VERSION || {"app": "V4.01", "version": "v416_boy_input_focus_guard", "build": 416, "visibleVersion": "V4.01 •ExelanceX•", "shortVersion": "V4.01 •ExelanceX•", "name": "Mesaha İO V4.01 •ExelanceX•", "cacheName": "mesaha-app-v416-boy-input-focus-guard", "builtAt": "2026-06-28T15:30:00+03:00", "notes": "Tek sürümlük genel log tutucu eklendi.", "assetVersion": "416"};
+const BASE_CACHE = META.cacheName || 'mesaha-app-v416-boy-input-focus-guard';
 const SHELL_CACHE = BASE_CACHE + '-shell';
 const ASSET_CACHE = BASE_CACHE + '-assets';
 const RUNTIME_CACHE = BASE_CACHE + '-runtime';
 const OFFLINE_TIMEOUT_MS = 3000;
-const VERSION_Q = String(META.assetVersion || META.build || 415);
+const VERSION_Q = String(META.assetVersion || META.build || 416);
 
 function swLog(level,message,data){
   try{
@@ -19,13 +19,13 @@ function swLog(level,message,data){
 
 const SHELL_ASSETS = [
   './', './index.html', './admin.html', './temizle.html', './manifest.json', './version.json', './service-worker.js',
-  './js/version.js?v=415', './js/mesaha-early-optimizer.js?v=415', './js/mesaha-utils.js?v=415', './js/mesaha-data-guard.js?v=415',
-  './js/mesaha-stability-core.js?v=415', './js/mesaha-debug-logger.js?v=415', './js/mesaha-firebase.js?v=415', './js/mesaha-offline-core.js?v=415',
-  './js/mesaha-render-storage.js?v=415', './js/mesaha-sound.js?v=415'
+  './js/version.js?v=416', './js/mesaha-early-optimizer.js?v=416', './js/mesaha-utils.js?v=416', './js/mesaha-data-guard.js?v=416',
+  './js/mesaha-stability-core.js?v=416', './js/mesaha-debug-logger.js?v=416', './js/mesaha-firebase.js?v=416', './js/mesaha-offline-core.js?v=416',
+  './js/mesaha-render-storage.js?v=416', './js/mesaha-sound.js?v=416'
 ];
 const STATIC_ASSETS = [
-  './assets/icon-192.png', './assets/icon-512.png', './assets/mesaha_logo.png', './assets/hero_forest_cover.png?v=415',
-  './assets/mesaha_onay.wav?v=415', './assets/mesaha_uyari.wav?v=415'
+  './assets/icon-192.png', './assets/icon-512.png', './assets/mesaha_logo.png', './assets/hero_forest_cover.png?v=416',
+  './assets/mesaha_onay.wav?v=416', './assets/mesaha_uyari.wav?v=416'
 ];
 function timeoutReject(ms,label){return new Promise((_,reject)=>setTimeout(()=>reject(new Error(label||'network-timeout')),ms||OFFLINE_TIMEOUT_MS));}
 function networkWithTimeout(request,options,ms){return Promise.race([fetch(request,options||{}),timeoutReject(ms||OFFLINE_TIMEOUT_MS,'network-timeout')]);}
