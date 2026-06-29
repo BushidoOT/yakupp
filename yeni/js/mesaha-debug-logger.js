@@ -1,17 +1,17 @@
-/* Mesaha İO V4.00 / build 415 — tek sürümlük genel log tutucu
+/* Mesaha İO V4.01 / build 416 — tek sürümlük genel log tutucu
    Amaç: uygulama, admin, Firebase, cache ve buton akışlarını güvenli şekilde izlemek. */
 (function(){
   'use strict';
   if(window.__mesahaDebugLoggerV415) return;
   window.__mesahaDebugLoggerV415 = true;
 
-  var BUILD = 415;
-  var VERSION = 'V4.00';
-  var VERSION_CODE = 'v415_log_tutucu_denemesi';
-  var KEY = 'mesaha_debug_logs_v415';
+  var BUILD = 416;
+  var VERSION = 'V4.01';
+  var VERSION_CODE = 'v416_boy_input_focus_guard';
+  var KEY = 'mesaha_debug_logs_v416';
   var OLD_KEY = 'mesaha_debug_logs_v1';
-  var SESSION_KEY = 'mesaha_debug_session_v415';
-  var INSTALL_KEY = 'mesaha_debug_install_id_v415';
+  var SESSION_KEY = 'mesaha_debug_session_v416';
+  var INSTALL_KEY = 'mesaha_debug_install_id_v416';
   var MAX_LOGS = 900;
   var WRAP_FLAG = '__mesahaDebugWrappedV415';
   var originalConsole = {};
