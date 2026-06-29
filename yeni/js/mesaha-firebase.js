@@ -107,7 +107,7 @@
   async function health(){
     const r = await ready();
     try{
-      await withTimeout(r.db.collection('healthChecks').doc('client').set({ok:true, atMs:Date.now(), appVersion:(window.APP_VERSION||'V4.03'), source:'client'}, {merge:true}), 12000, 'Firebase test');
+      await withTimeout(r.db.collection('healthChecks').doc('client').set({ok:true, atMs:Date.now(), appVersion:(window.APP_VERSION||'V4.04'), source:'client'}, {merge:true}), 12000, 'Firebase test');
     }catch(e){
       readyPromise = null;
       lastError = e && e.message ? e.message : String(e || 'Firebase test hatası');

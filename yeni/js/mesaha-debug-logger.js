@@ -1,18 +1,18 @@
-/* Mesaha İO V4.03 / build 418 — tek sürümlük genel log tutucu
+/* Mesaha İO V4.04 / build 419 — detaylı test log tutucu
    Amaç: uygulama, admin, Firebase, cache ve buton akışlarını güvenli şekilde izlemek. */
 (function(){
   'use strict';
   if(window.__mesahaDebugLoggerV415) return;
   window.__mesahaDebugLoggerV415 = true;
 
-  var BUILD = 418;
-  var VERSION = 'V4.03';
-  var VERSION_CODE = 'v418_ios_save_single_gate';
-  var KEY = 'mesaha_debug_logs_v418';
+  var BUILD = 419;
+  var VERSION = 'V4.04';
+  var VERSION_CODE = 'v419_detayli_log_test';
+  var KEY = 'mesaha_debug_logs_v419';
   var OLD_KEY = 'mesaha_debug_logs_v1';
-  var SESSION_KEY = 'mesaha_debug_session_v418';
-  var INSTALL_KEY = 'mesaha_debug_install_id_v418';
-  var MAX_LOGS = 900;
+  var SESSION_KEY = 'mesaha_debug_session_v419';
+  var INSTALL_KEY = 'mesaha_debug_install_id_v419';
+  var MAX_LOGS = 1800;
   var WRAP_FLAG = '__mesahaDebugWrappedV415';
   var originalConsole = {};
   var selfWriting = false;
