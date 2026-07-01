@@ -4,10 +4,10 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
 <meta name="theme-color" content="#ffffff"/>
-<link rel="manifest" href="./manifest.json?v=421"/>
+<link rel="manifest" href="./manifest.json?v=422"/>
 <link rel="apple-touch-icon" href="./assets/icon-192.png"/>
-<title>Mesaha İO Admin V4.06</title>
-<style id="mesaha-v421_admin_istatistik_sekmesi">
+<title>Mesaha İO Admin V4.07</title>
+<style id="mesaha-v422_admin_istatistik_detay_log_kaldirildi">
 
 :root{
   --bg:#f6f8fb;
@@ -59,7 +59,7 @@ a{color:inherit}.hidden{display:none!important}.app{width:min(1180px,100%);margi
 
 
 
-/* V4.05 / build 412 modern admin tasarım */
+/* V4.07 / build 412 modern admin tasarım */
 :root{--emerald:#16a34a;--emerald-soft:#ecfdf3;--sky:#2563eb;--sky-soft:#eff6ff;--amber:#f59e0b;--amber-soft:#fff7ed;--rose:#ef4444;--rose-soft:#fef2f2;}
 body{background:radial-gradient(circle at top left,rgba(34,197,94,.11),transparent 34%),linear-gradient(180deg,#fbfdff 0%,#f5f8fc 48%,#eef5f2 100%)}
 .top{border-radius:0 0 28px 28px;box-shadow:0 10px 34px rgba(15,23,42,.06)}
@@ -71,7 +71,7 @@ body{background:radial-gradient(circle at top left,rgba(34,197,94,.11),transpare
 
 
 
-/* V4.05 / build 412 admin analiz, işlem geçmişi ve toplu bildirim */
+/* V4.07 / build 412 admin analiz, işlem geçmişi ve toplu bildirim */
 .admin-v400-tool-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
 .broadcast-card-v400 textarea{min-height:96px;resize:vertical}
 .broadcast-target-grid-v400{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
@@ -84,7 +84,7 @@ body{background:radial-gradient(circle at top left,rgba(34,197,94,.11),transpare
 .analysis-columns-v400{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
 .broadcast-pill-v400{background:#eff6ff;border-color:#bfdbfe;color:#1d4ed8}
 
-/* V4.06 / build 421 admin istatistik sekmesi */
+/* V4.07 / build 421 admin istatistik sekmesi */
 .stats-hero-v421{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:14px 0}
 .stat-card-v421{position:relative;overflow:hidden;border:1px solid var(--line);border-radius:24px;background:linear-gradient(135deg,#fff,#f8fbff);padding:16px;box-shadow:var(--shadow-soft)}
 .stat-card-v421:after{content:"";position:absolute;right:-36px;bottom:-54px;width:124px;height:124px;border-radius:999px;background:rgba(22,163,74,.08)}
@@ -100,19 +100,27 @@ body{background:radial-gradient(circle at top left,rgba(34,197,94,.11),transpare
 .stat-note-v421{margin-top:10px;color:var(--muted);font-size:12px;font-weight:800;line-height:1.35}
 @media(max-width:760px){.stats-hero-v421,.stats-grid-v421{grid-template-columns:1fr}.stat-card-v421 .stat-values-v421{grid-template-columns:1fr 1fr}}
 
-/* V4.05 / build 412 admin duyuru silme ve 7 günlük otomatik temizlik */
+/* V4.07 / build 412 admin duyuru silme ve 7 günlük otomatik temizlik */
 .broadcast-admin-list-v411{display:grid;gap:10px;margin-top:14px}
 .broadcast-admin-item-v411{border:1px solid #dbeafe;border-radius:18px;background:#ffffff;padding:12px;display:grid;gap:8px}
 .broadcast-admin-item-v411 b{color:#1d4ed8}.broadcast-admin-item-v411 small{color:#64748b;font-weight:800}.broadcast-admin-item-v411 p{margin:0;color:#334155;line-height:1.35;font-weight:750}
 .broadcast-expire-v411{background:#f8fafc;border:1px solid #e5e7eb;color:#475569;border-radius:999px;padding:6px 9px;font-size:12px;font-weight:950}
 @media(max-width:760px){.admin-v400-tool-grid,.analysis-columns-v400{grid-template-columns:1fr}.analysis-grid-v400{grid-template-columns:1fr 1fr}.broadcast-target-grid-v400{grid-template-columns:1fr}}
+
+/* v422 detaylı istatistik kartları */
+.stats-detail-v422{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:14px 0}
+.stat-detail-card-v422{border:1px solid var(--line);border-radius:22px;background:#fff;padding:14px;box-shadow:var(--shadow-soft);min-height:96px}
+.stat-detail-card-v422 small{display:block;color:var(--muted);font-size:12px;font-weight:900}.stat-detail-card-v422 b{display:block;margin-top:6px;font-size:24px;letter-spacing:-.03em}.stat-detail-card-v422 span{display:block;margin-top:4px;color:#64748b;font-size:12px;font-weight:850}
+.stat-split-v422{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:14px}.stat-row-v422 .sub{display:block;color:#64748b;font-size:11px;margin-top:2px}.stat-row-v422 .num small{color:#64748b;font-size:11px}
+@media(max-width:760px){.stats-detail-v422{grid-template-columns:repeat(2,minmax(0,1fr))}.stat-split-v422{grid-template-columns:1fr}}
+
 </style>
 </head>
 <body>
 
 <div class="app">
   <header class="top">
-    <div class="brand"><img alt="" src="./assets/mesaha_logo.png"/><div><b>Mesaha İO Admin</b><small>Modern Yönetim Paneli • V4.06</small></div></div>
+    <div class="brand"><img alt="" src="./assets/mesaha_logo.png"/><div><b>Mesaha İO Admin</b><small>Modern Yönetim Paneli • V4.07</small></div></div>
     <div class="top-actions"><a class="btn soft app-return-btn" data-app-home href="./index.html" title="Normal uygulamaya dön">← Uygulama</a><button class="btn green" id="refreshBtn" type="button">Yenile</button></div>
   </header>
 
@@ -170,19 +178,34 @@ body{background:radial-gradient(circle at top left,rgba(34,197,94,.11),transpare
 
 
     <section class="panel" id="tab-stats">
-      <div class="section-title"><div><h2>İstatistik</h2><p>Haftalık, aylık ve toplam adet/m³ takibi. Bu sekmede sadece istatistikler bulunur.</p></div><span class="pill green" id="statsSourcePillV421">Veri bekleniyor</span></div>
+      <div class="section-title"><div><h2>İstatistik</h2><p>Haftalık, aylık, toplam adet/m³, kullanıcı, cihaz, şeflik, ağaç ve ürün istatistikleri.</p></div><span class="pill green" id="statsSourcePillV422">Veri bekleniyor</span></div>
       <div class="stats-hero-v421">
+        <div class="stat-card-v421"><div class="stat-title-v421"><b>Bugün</b><span class="pill" id="statTodaySourceV422">Günlük</span></div><div class="stat-values-v421"><div class="stat-mini-v421"><small>Adet</small><b id="statTodayCountV422">0</b></div><div class="stat-mini-v421"><small>m³</small><b id="statTodayM3V422">0.000</b></div></div></div>
         <div class="stat-card-v421"><div class="stat-title-v421"><b>Haftalık</b><span class="pill" id="statWeekSourceV421">7 gün</span></div><div class="stat-values-v421"><div class="stat-mini-v421"><small>Adet</small><b id="statWeekCountV421">0</b></div><div class="stat-mini-v421"><small>m³</small><b id="statWeekM3V421">0.000</b></div></div></div>
         <div class="stat-card-v421"><div class="stat-title-v421"><b>Aylık</b><span class="pill" id="statMonthSourceV421">30 gün</span></div><div class="stat-values-v421"><div class="stat-mini-v421"><small>Adet</small><b id="statMonthCountV421">0</b></div><div class="stat-mini-v421"><small>m³</small><b id="statMonthM3V421">0.000</b></div></div></div>
         <div class="stat-card-v421"><div class="stat-title-v421"><b>Toplam</b><span class="pill green" id="statTotalSourceV421">Genel</span></div><div class="stat-values-v421"><div class="stat-mini-v421"><small>Adet</small><b id="statTotalCountV421">0</b></div><div class="stat-mini-v421"><small>m³</small><b id="statTotalM3V421">0.000</b></div></div></div>
       </div>
+      <div class="stats-detail-v422">
+        <div class="stat-detail-card-v422"><small>Toplam kullanıcı</small><b id="statUserCountV422">0</b><span id="statUserCountNoteV422">Kullanıcı kaynağı</span></div>
+        <div class="stat-detail-card-v422"><small>Cihaz / kurulum</small><b id="statDeviceCountV422">0</b><span>Kurulum kimliği bazlı</span></div>
+        <div class="stat-detail-card-v422"><small>Bugün aktif</small><b id="statActiveTodayV422">0</b><span>Son giriş / hareket</span></div>
+        <div class="stat-detail-card-v422"><small>Bu hafta aktif</small><b id="statActiveWeekV422">0</b><span>Son 7 gün</span></div>
+        <div class="stat-detail-card-v422"><small>İndirme hareketi</small><b id="statExportCountV422">0</b><span>exportLogs</span></div>
+        <div class="stat-detail-card-v422"><small>Yedek hareketi</small><b id="statBackupCountV422">0</b><span>backups</span></div>
+        <div class="stat-detail-card-v422"><small>Destek bildirimi</small><b id="statTicketCountV422">0</b><span>supportTickets</span></div>
+        <div class="stat-detail-card-v422"><small>Veri kaynağı</small><b id="statCollectionCountV422">0</b><span id="statCollectionNoteV422">Koleksiyon</span></div>
+      </div>
       <div class="stats-grid-v421">
         <div class="phone-card"><div class="phone-head"><b>En Çok Kayıt Girenler</b><span class="pill">Toplam</span></div><div class="inside stat-list-v421" id="statTopUsersV421"></div></div>
-        <div class="phone-card"><div class="phone-head"><b>Ağaç Türü Toplamları</b><span class="pill">m³</span></div><div class="inside" id="statTreeTotalsV421"></div></div>
-        <div class="phone-card"><div class="phone-head"><b>Ürün Toplamları</b><span class="pill">m³</span></div><div class="inside" id="statProductTotalsV421"></div></div>
+        <div class="phone-card"><div class="phone-head"><b>Son 7 Gün Liderleri</b><span class="pill">Haftalık</span></div><div class="inside stat-list-v421" id="statWeekLeadersV422"></div></div>
+        <div class="phone-card"><div class="phone-head"><b>Şeflik Toplamları</b><span class="pill">Adet / m³</span></div><div class="inside stat-list-v421" id="statSeflikTotalsV422"></div></div>
+        <div class="phone-card"><div class="phone-head"><b>Kullanıcı Kaynakları</b><span class="pill">Sayım</span></div><div class="inside stat-list-v421" id="statSourceBreakdownV422"></div></div>
+        <div class="phone-card"><div class="phone-head"><b>Ağaç Türü Toplamları</b><span class="pill">Adet / m³</span></div><div class="inside" id="statTreeTotalsV421"></div></div>
+        <div class="phone-card"><div class="phone-head"><b>Ürün Toplamları</b><span class="pill">Adet / m³</span></div><div class="inside" id="statProductTotalsV421"></div></div>
         <div class="phone-card"><div class="phone-head"><b>Son İndirme/Yedek Hareketi</b><span class="pill" id="statEventCountV421">0 kayıt</span></div><div class="inside stat-list-v421" id="statRecentEventsV421"></div></div>
+        <div class="phone-card"><div class="phone-head"><b>Veri Okuma Durumu</b><span class="pill" id="statReadStateV422">Durum</span></div><div class="inside stat-list-v421" id="statReadDetailsV422"></div></div>
       </div>
-      <p class="stat-note-v421">Not: Toplam değerler kullanıcı istatistiklerinden alınır. Haftalık/aylık bölümde varsa indirme kayıtları, yoksa yedekler ve kullanıcı haftalık alanları kullanılır.</p>
+      <p class="stat-note-v421">Not: Kullanıcı sayısı artık sadece users koleksiyonundan değil; users, usageStats, backups, supportTickets ve exportLogs kaynaklarından tekilleştirilerek hesaplanır.</p>
     </section>
 
     <section class="panel" id="tab-backups">
@@ -204,17 +227,13 @@ body{background:radial-gradient(circle at top left,rgba(34,197,94,.11),transpare
       </div>
       <div class="admin-v400-tool-grid">
         <div class="card broadcast-card-v400">
-          <div class="space"><div><h2>Toplu Bildirim Gönder</h2><p style="margin:4px 0 0;color:var(--muted)">Tüm kullanıcılara veya seçili gruba duyuru gönder.</p></div><span class="pill broadcast-pill-v400">V4.05</span></div>
+          <div class="space"><div><h2>Toplu Bildirim Gönder</h2><p style="margin:4px 0 0;color:var(--muted)">Tüm kullanıcılara veya seçili gruba duyuru gönder.</p></div><span class="pill broadcast-pill-v400">V4.07</span></div>
           <label class="field"><span>Hedef grup</span><select id="broadcastTargetV400"><option value="all">Tüm kullanıcılar</option><option value="oldVersion">Eski sürüm kullananlar</option><option value="activeToday">Bugün aktif olanlar</option><option value="noBackup">Yedeği olmayanlar</option></select></label>
           <label class="field"><span>Başlık</span><input id="broadcastTitleV400" maxlength="80" placeholder="Örn: Yeni güncelleme yayınlandı"/></label>
           <label class="field"><span>Mesaj</span><textarea id="broadcastMessageV400" maxlength="500" placeholder="Kullanıcılara gösterilecek kısa mesajı yaz…"></textarea></label>
           <div class="row"><button class="btn green" id="sendBroadcastV400" type="button">Toplu Bildirim Gönder</button><small id="broadcastInfoV400" style="color:var(--muted)">Gönderim bekliyor.</small></div>
           <div class="space" style="margin-top:14px"><div><h3 style="margin:0">Aktif Duyurular</h3><p style="margin:4px 0 0;color:var(--muted);font-size:13px">Duyurular 7 gün sonra otomatik temizlenir.</p></div><button class="btn soft" id="refreshBroadcastsV411" type="button">Yenile</button></div>
           <div class="broadcast-admin-list-v411" id="broadcastListV411"><div class="empty">Duyurular yüklenmedi.</div></div>
-        </div>
-        <div class="card">
-          <div class="space"><div><h2>Admin İşlem Geçmişi</h2><p style="margin:4px 0 0;color:var(--muted)">Cevap, silme, duyuru ve kontrol işlemleri.</p></div><button class="btn soft" id="refreshLogsV400" type="button">Yenile</button></div>
-          <div class="log-list-v400" id="adminLogsV400"><div class="empty">İşlem geçmişi yüklenmedi.</div></div>
         </div>
       </div>
     </section>
@@ -231,10 +250,7 @@ body{background:radial-gradient(circle at top left,rgba(34,197,94,.11),transpare
 <div class="modal" id="modal"><div class="modal-card"><div class="space"><h2 id="modalTitle">Detay</h2><button class="btn soft" id="modalClose" type="button">Kapat</button></div><div id="modalBody"></div></div></div>
 <div class="toast" id="toast"></div>
 
-<script src="./js/mesaha-debug-logger.js?v=421"></script>
-<!-- V420 DETAYLI LOG TEST BLOĞU: yayın öncesi bu script kaldırılacak -->
-<script src="./js/mesaha-deep-debug-v420.js?v=421"></script>
-<script src="./js/mesaha-firebase.js?v=421"></script>
+<script src="./js/mesaha-firebase.js?v=422"></script>
 <script>
 (function(){
 'use strict';
@@ -242,7 +258,7 @@ const ADMIN_CODE='4767';
 const FIREBASE_CONFIG={apiKey:'AIzaSyCKveylTPgKmWEMmYf-aFj6yLXB5CKAiJ0',authDomain:'mesaha-io.firebaseapp.com',projectId:'mesaha-io',storageBucket:'mesaha-io.firebasestorage.app',messagingSenderId:'840655878243',appId:'1:840655878243:web:add76f52bbf55ad9dd6056',measurementId:'G-81JPD5ZY44'};
 const SDK='10.12.2';
 const $=id=>document.getElementById(id);
-const state={users:[],backups:[],tickets:[],usage:[],logs:[],broadcasts:[],exports:[],collectionErrors:{},showAllTickets:false,ready:false};
+const state={users:[],rawUsers:[],backups:[],tickets:[],usage:[],broadcasts:[],exports:[],collectionErrors:{},showAllTickets:false,ready:false};
 let readyPromise=null;
 function esc(v){return String(v==null?'':v).replace(/[&<>'"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[m]))}
 function n(v){const x=Number(v||0);return Number.isFinite(x)?x:0}
@@ -265,15 +281,34 @@ async function ready(){
   }
   if(!readyPromise){readyPromise=(async()=>{const b='https://www.gstatic.com/firebasejs/'+SDK;if(!window.firebase||!window.firebase.apps){await loadScript(b+'/firebase-app-compat.js');await loadScript(b+'/firebase-auth-compat.js');await loadScript(b+'/firebase-firestore-compat.js')}if(!window.firebase.apps.length)window.firebase.initializeApp(FIREBASE_CONFIG);const auth=window.firebase.auth();if(!auth.currentUser)await withTimeout(auth.signInAnonymously(),15000,'Firebase giriş');const db=window.firebase.firestore();try{db.settings({experimentalForceLongPolling:true, merge:true})}catch{try{db.settings({experimentalAutoDetectLongPolling:true, merge:true})}catch{}}try{await withTimeout(db.enableNetwork(),8000,'Firebase ağ')}catch{}return{db,auth}})()}try{return await readyPromise}catch(e){readyPromise=null;throw e}}
 async function getCol(db,name){const snap=await withTimeout(db.collection(name).get({source:'server'}),22000,name+' server');const arr=[];snap.forEach(d=>arr.push(Object.assign({id:d.id},d.data()||{})));return arr}
+function firstVal(obj,keys){
+  for(const k of keys){
+    try{const v=obj&&obj[k]; if(v!=null&&String(v).trim()!=='')return v}catch(e){}
+  }
+  return '';
+}
+function personNameOf(u){
+  return firstVal(u,['name','userName','kullaniciAdi','displayName','adSoyad']) ||
+    firstVal(u&&u.user,['name','userName','kullaniciAdi']) ||
+    firstVal(u&&u.profile,['name','userName','kullaniciAdi']) ||
+    firstVal(u&&u.settings,['name','userName','kullaniciAdi']);
+}
+function seflikOf(u){
+  return firstVal(u,['seflik','sheflik','sefLik','depo','birim']) ||
+    firstVal(u&&u.user,['seflik','sheflik','birim']) ||
+    firstVal(u&&u.profile,['seflik','sheflik','birim']) ||
+    firstVal(u&&u.settings,['seflik','sheflik','birim']);
+}
+function deviceKeyOf(u){return String(firstVal(u,['installId','deviceId','sessionId','uid']) || firstVal(u&&u.lastDeviceInfo,['deviceId','installId']) || '').toLowerCase()}
 function userKeyOf(u){
   if(!u)return '';
   if(u.userKey)return String(u.userKey).toLowerCase();
   if(u.user&&typeof u.user==='object'){
     const nested=userKeyOf(u.user); if(nested)return nested;
   }
-  const name=u.name||(u.user&&u.user.name)||u.kullaniciAdi||u.userName||'';
-  const seflik=u.seflik||(u.user&&u.user.seflik)||u.sheflik||'';
+  const name=personNameOf(u), seflik=seflikOf(u);
   if(name||seflik)return String(name+'__'+seflik).trim().toLowerCase();
+  const dk=deviceKeyOf(u); if(dk)return 'device__'+dk;
   return String(u.id||'').toLowerCase();
 }
 function sourceLastMs(u){return n(u.lastSeenMs||u.lastLoginMs||u.updatedAtMs||u.createdAtMs||u.atMs||u.createdMs)}
@@ -318,20 +353,19 @@ async function loadAll(){
     $('syncInfo').textContent='Firebase verileri okunuyor…';
     state.collectionErrors={};
     const {db}=await ready();
-    const [users,backups,tickets,usage,logs,broadcastsRaw,exportsRaw]=await Promise.all([
+    const [users,backups,tickets,usage,broadcastsRaw,exportsRaw]=await Promise.all([
       getColSafe(db,'users',true),
       getColSafe(db,'backups',true),
       getColSafe(db,'supportTickets',true),
       getColSafe(db,'usageStats',false),
-      getColSafe(db,'adminLogs',false),
       getColSafe(db,'adminBroadcasts',false),
       getColSafe(db,'exportLogs',false)
     ]);
+    state.rawUsers=users||[];
     state.users=users;
     state.backups=(backups||[]).sort((a,b)=>n(b.createdAtMs)-n(a.createdAtMs));
     state.tickets=(tickets||[]).sort((a,b)=>n(b.createdAtMs)-n(a.createdAtMs));
     state.usage=usage||[];
-    state.logs=(logs||[]).sort((a,b)=>n(b.createdAtMs||b.atMs)-n(a.createdAtMs||a.atMs)).slice(0,80);
     await cleanupOldBroadcasts(db,broadcastsRaw||[]);
     state.broadcasts=(broadcastsRaw||[]).filter(isActiveBroadcast).sort((a,b)=>n(b.createdAtMs)-n(a.createdAtMs));
     state.exports=(exportsRaw||[]).sort((a,b)=>n(b.createdAtMs||b.atMs)-n(a.createdAtMs||a.atMs));
@@ -340,7 +374,7 @@ async function loadAll(){
     const errs=Object.keys(state.collectionErrors||{});
     const dataCount=state.users.length+state.backups.length+state.tickets.length+state.usage.length+state.exports.length;
     if(dataCount>0){
-      $('syncInfo').textContent=(errs.length?'Kısmi okundu':'Firebase veri okundu')+' • K:'+state.users.length+' Y:'+state.backups.length+' B:'+state.tickets.length;
+      $('syncInfo').textContent=(errs.length?'Kısmi okundu':'Firebase veri okundu')+' • K:'+identitySummaryV422().users+' Y:'+state.backups.length+' B:'+state.tickets.length;
     }else if(errs.length){
       $('syncInfo').textContent='Firebase bağlandı ama veri okunamadı: '+errs.join(', ');
     }else{
@@ -369,11 +403,11 @@ function appVersionOf(u){
   const raw = u.appVersion || u.fileVersion || (u.lastDeviceInfo && (u.lastDeviceInfo.appVersion || u.lastDeviceInfo.fileVersion)) || u.version || '-';
   return String(raw || '-').replace('•ExelanceX•','').trim();
 }
-function latestAppVersion(){return (window.MESAHA_VERSION && window.MESAHA_VERSION.app) || 'V4.05'}
+function latestAppVersion(){return (window.MESAHA_VERSION && window.MESAHA_VERSION.app) || 'V4.07'}
 function isOldAppVersion(u){
   const v=appVersionOf(u); if(!v || v==='-') return false;
   const latest=latestAppVersion();
-  return !String(v).includes(latest) && !String(v).includes((window.MESAHA_VERSION && window.MESAHA_VERSION.version) || 'v421_admin_istatistik_sekmesi');
+  return !String(v).includes(latest) && !String(v).includes((window.MESAHA_VERSION && window.MESAHA_VERSION.version) || 'v422_admin_istatistik_detay_log_kaldirildi');
 }
 function isActiveUser(u,spanMs){const last=n(u.lastSeenMs||u.lastLoginMs||u.updatedAtMs);return last>=Date.now()-(spanMs||15*60000)}
 function userTickets(key){return state.tickets.filter(t=>userKeyOf(t)===key)}
@@ -387,13 +421,11 @@ const BROADCAST_TTL_MS=7*24*60*60*1000;
 function broadcastAgeMs(x){return Date.now()-n(x.createdAtMs||x.atMs)}
 function isActiveBroadcast(x){return x&&x.status!=='deleted'&&(!n(x.createdAtMs||x.atMs)||broadcastAgeMs(x)<BROADCAST_TTL_MS)}
 function broadcastExpireText(x){const left=BROADCAST_TTL_MS-broadcastAgeMs(x);if(!n(x.createdAtMs||x.atMs))return 'Süre yok';if(left<=0)return 'Süresi doldu';const d=Math.floor(left/86400000),h=Math.floor((left%86400000)/3600000);return (d?d+' gün ':'')+h+' saat kaldı'}
-async function cleanupOldBroadcasts(db,arr){try{const old=(arr||[]).filter(x=>x&&x.id&&x.status!=='deleted'&&n(x.createdAtMs||x.atMs)&&broadcastAgeMs(x)>=BROADCAST_TTL_MS);if(!old.length)return;for(const b of old){await db.collection('adminBroadcasts').doc(b.id).delete().catch(()=>db.collection('adminBroadcasts').doc(b.id).set({status:'deleted',deletedAt:new Date().toLocaleString('tr-TR'),deletedAtMs:Date.now(),autoDeleted:true},{merge:true}))}await logAdminAction('Eski duyurular otomatik silindi',old.length+' duyuru 7 günü geçtiği için temizlendi',{count:old.length});}catch(e){console.warn('duyuru otomatik temizlik yapılamadı',e)}}
+async function cleanupOldBroadcasts(db,arr){try{const old=(arr||[]).filter(x=>x&&x.id&&x.status!=='deleted'&&n(x.createdAtMs||x.atMs)&&broadcastAgeMs(x)>=BROADCAST_TTL_MS);if(!old.length)return;for(const b of old){await db.collection('adminBroadcasts').doc(b.id).delete().catch(()=>db.collection('adminBroadcasts').doc(b.id).set({status:'deleted',deletedAt:new Date().toLocaleString('tr-TR'),deletedAtMs:Date.now(),autoDeleted:true},{merge:true}))}}catch(e){console.warn('duyuru otomatik temizlik yapılamadı',e)}}
 function renderBroadcastsV411(){const box=$('broadcastListV411');if(!box)return;const arr=(state.broadcasts||[]).slice(0,25);box.innerHTML=arr.length?arr.map(b=>`<div class="broadcast-admin-item-v411"><div class="space"><div><b>${esc(b.title||'Duyuru')}</b><small>${esc(b.createdAt||'-')} • ${int(b.targetCount||((b.targetUserKeys||[]).length))} kullanıcı</small></div><span class="broadcast-expire-v411">${esc(broadcastExpireText(b))}</span></div><p>${esc(b.message||'-')}</p><div class="row"><span class="chip">${esc(b.target||'all')}</span><button class="btn danger" data-broadcast-delete-v411="${esc(b.id)}" type="button">Duyuruyu Sil</button></div></div>`).join(''):'<div class="empty">Aktif admin duyurusu yok.</div>'}
-async function deleteBroadcastV411(id){const b=(state.broadcasts||[]).find(x=>x.id===id)||{};if(!id)return;if(!confirm('Bu admin duyurusu silinsin mi?'))return;const{db}=await ready();await db.collection('adminBroadcasts').doc(id).delete().catch(()=>db.collection('adminBroadcasts').doc(id).set({status:'deleted',deletedAt:new Date().toLocaleString('tr-TR'),deletedAtMs:Date.now()},{merge:true}));await logAdminAction('Admin duyurusu silindi',(b.title||id)+' • '+String(b.message||'').slice(0,90),{broadcastId:id});toast('Duyuru silindi');await loadAll()}
-function renderAdminLogs(){const box=$('adminLogsV400');if(!box)return;const arr=(state.logs||[]).slice(0,60);box.innerHTML=arr.length?arr.map(l=>`<div class="log-item-v400"><div class="space"><b>${esc(l.action||'İşlem')}</b><span class="pill">${esc(l.actor||'Admin')}</span></div><small>${esc(l.detail||'-')}</small><small>${esc(l.createdAt||l.at||'-')}</small></div>`).join(''):'<div class="empty">Henüz admin işlem kaydı yok.</div>'}
-async function logAdminAction(action,detail,extra){try{const {db}=await ready();const now=new Date();const doc={action,detail,actor:'Admin',createdAt:now.toLocaleString('tr-TR'),createdAtMs:Date.now(),appVersion:'V4.06',build:421};Object.assign(doc,extra||{});await db.collection('adminLogs').add(doc)}catch(e){console.warn('admin log yazılamadı',e)}}
+async function deleteBroadcastV411(id){const b=(state.broadcasts||[]).find(x=>x.id===id)||{};if(!id)return;if(!confirm('Bu admin duyurusu silinsin mi?'))return;const{db}=await ready();await db.collection('adminBroadcasts').doc(id).delete().catch(()=>db.collection('adminBroadcasts').doc(id).set({status:'deleted',deletedAt:new Date().toLocaleString('tr-TR'),deletedAtMs:Date.now()},{merge:true}));toast('Duyuru silindi');await loadAll()}
 function broadcastTargetUsers(target){let arr=state.users.slice();if(target==='oldVersion')arr=arr.filter(isOldAppVersion);else if(target==='activeToday'){const ts=todayStart();arr=arr.filter(u=>n(u.lastSeenMs||u.lastLoginMs)>=ts)}else if(target==='noBackup')arr=arr.filter(u=>!userBackups(userKeyOf(u)).length);return arr}
-async function sendBroadcastV400(){const target=($('broadcastTargetV400')||{}).value||'all';const title=($('broadcastTitleV400')||{}).value.trim();const message=($('broadcastMessageV400')||{}).value.trim();if(!title||!message){toast('Başlık ve mesaj gerekli');return}const targets=broadcastTargetUsers(target);if(!targets.length){toast('Bu hedefte kullanıcı yok');return}if(!confirm(targets.length+' kullanıcıya bildirim gönderilsin mi?'))return;const now=new Date();const targetKeys=targets.map(userKeyOf).filter(Boolean);const {db}=await ready();const ref=db.collection('adminBroadcasts').doc('bc_'+Date.now().toString(36));const createdAtMs=Date.now();await ref.set({id:ref.id,title,message,target,targetUserKeys:targetKeys,targetCount:targetKeys.length,createdAt:now.toLocaleString('tr-TR'),createdAtMs,expiresAtMs:createdAtMs+7*24*60*60*1000,status:'active',appVersion:'V4.06',build:421});await logAdminAction('Toplu bildirim gönderildi',title+' • '+targetKeys.length+' kullanıcı',{target,targetCount:targetKeys.length,broadcastId:ref.id});if($('broadcastInfoV400'))$('broadcastInfoV400').textContent=targetKeys.length+' kullanıcıya gönderildi.';if($('broadcastMessageV400'))$('broadcastMessageV400').value='';toast('Toplu bildirim gönderildi');await loadAll()}
+async function sendBroadcastV400(){const target=($('broadcastTargetV400')||{}).value||'all';const title=($('broadcastTitleV400')||{}).value.trim();const message=($('broadcastMessageV400')||{}).value.trim();if(!title||!message){toast('Başlık ve mesaj gerekli');return}const targets=broadcastTargetUsers(target);if(!targets.length){toast('Bu hedefte kullanıcı yok');return}if(!confirm(targets.length+' kullanıcıya bildirim gönderilsin mi?'))return;const now=new Date();const targetKeys=targets.map(userKeyOf).filter(Boolean);const {db}=await ready();const ref=db.collection('adminBroadcasts').doc('bc_'+Date.now().toString(36));const createdAtMs=Date.now();await ref.set({id:ref.id,title,message,target,targetUserKeys:targetKeys,targetCount:targetKeys.length,createdAt:now.toLocaleString('tr-TR'),createdAtMs,expiresAtMs:createdAtMs+7*24*60*60*1000,status:'active',appVersion:'V4.07',build:422});if($('broadcastInfoV400'))$('broadcastInfoV400').textContent=targetKeys.length+' kullanıcıya gönderildi.';if($('broadcastMessageV400'))$('broadcastMessageV400').value='';toast('Toplu bildirim gönderildi');await loadAll()}
 function renderKpis(){
   const ts=todayStart(), week=Date.now()-7*86400000;
   const activeToday=state.users.filter(u=>n(u.lastSeenMs||u.lastLoginMs||u.updatedAtMs)>=ts).length;
@@ -402,7 +434,7 @@ function renderKpis(){
   const vol=state.users.reduce((a,u)=>a+n(u.m3||u.totalM3),0);
   const pending=state.tickets.filter(t=>!((t.status||'new')==='read'||t.adminReply||t.reply)).length;
   const old=state.users.filter(isOldAppVersion).length;
-  if($('kUsers'))$('kUsers').textContent=int(state.users.length);
+  if($('kUsers'))$('kUsers').textContent=int(identitySummaryV422().users);
   if($('kActive'))$('kActive').textContent=int(activeToday);
   if($('kRecords'))$('kRecords').textContent=int(rec);
   if($('kM3'))$('kM3').textContent=m3(vol);
@@ -464,39 +496,69 @@ function renderTickets(){
   }).join(''):'<div class="empty">Bildirim yok.</div>'
 }
 
-function sumObjTotals(list,key){const out={};(list||[]).forEach(item=>{const obj=item&&item[key]||{};Object.entries(obj).forEach(([name,val])=>{const m=n((val&&val.m3)||val);if(!m)return;out[name]=(out[name]||0)+m})});return out}
-function eventStats(list){return (list||[]).reduce((a,x)=>{a.count+=n(x.recordCount||x.totalRecords||x.adet);a.m3+=n(x.m3||x.totalM3);return a},{count:0,m3:0})}
+function allStatDocs(){return [].concat(state.rawUsers||[],state.users||[],state.usage||[],state.backups||[],state.tickets||[],state.exports||[]).filter(Boolean)}
+function uniqueBy(arr,fn){const set=new Set();(arr||[]).forEach(x=>{const k=fn(x);if(k)set.add(String(k).toLowerCase())});return set}
+function identitySummaryV422(){
+  const docs=allStatDocs();
+  const users=uniqueBy(docs,x=>userKeyOf(x));
+  const devices=uniqueBy(docs,x=>deviceKeyOf(x));
+  const today=todayStart(), week=Date.now()-7*86400000;
+  const activeToday=uniqueBy(docs.filter(x=>sourceLastMs(x)>=today),x=>userKeyOf(x));
+  const activeWeek=uniqueBy(docs.filter(x=>sourceLastMs(x)>=week),x=>userKeyOf(x));
+  return {users:users.size,devices:devices.size,activeToday:activeToday.size,activeWeek:activeWeek.size,docs:docs.length};
+}
+function sumObjTotals(list,key){const out={};(list||[]).forEach(item=>{const obj=item&&item[key]||{};Object.entries(obj).forEach(([name,val])=>{if(!name)return;const addM=n((val&&val.m3)||val);const addC=n((val&&val.count)||(val&&val.adet)||0);if(!addM&&!addC)return;if(!out[name])out[name]={m3:0,count:0};out[name].m3+=addM;out[name].count+=addC})});return out}
+function eventStats(list){return (list||[]).reduce((a,x)=>{a.count+=n(x.recordCount||x.totalRecords||x.adet||x.count);a.m3+=n(x.m3||x.totalM3||x.volume);return a},{count:0,m3:0})}
 function totalUserStats(){return state.users.reduce((a,u)=>{a.count+=n(u.recordCount||u.totalRecords||u.adet);a.m3+=n(u.m3||u.totalM3);return a},{count:0,m3:0})}
+function eventTime(x){return n(x.createdAtMs||x.atMs||x.updatedAtMs||x.lastSeenMs||x.lastLoginMs||x.lastBackupAtMs||x.lastTicketAtMs)}
 function periodStatsV421(days){
   const cutoff=Date.now()-days*86400000;
-  const exports=(state.exports||[]).filter(x=>n(x.createdAtMs||x.atMs)>=cutoff);
+  const exports=(state.exports||[]).filter(x=>eventTime(x)>=cutoff);
   if(exports.length){const s=eventStats(exports);return Object.assign(s,{source:exports.length+' indirme',events:exports});}
-  const backups=(state.backups||[]).filter(x=>n(x.createdAtMs||x.atMs)>=cutoff);
+  const backups=(state.backups||[]).filter(x=>eventTime(x)>=cutoff);
   if(backups.length){const s=eventStats(backups);return Object.assign(s,{source:backups.length+' yedek',events:backups});}
-  if(days<=7){const s=state.users.reduce((a,u)=>{a.count+=n(u.weekRecordCount||u.weekRecords||u.last7Records);a.m3+=n(u.weekM3||u.weeklyM3||u.last7M3);return a},{count:0,m3:0});return Object.assign(s,{source:'Kullanıcı haftalık',events:[]});}
+  if(days<=7){const s=state.users.reduce((a,u)=>{a.count+=n(u.weekRecordCount||u.weekRecords||u.last7Records);a.m3+=n(u.weekM3||u.weeklyM3||u.last7M3);return a},{count:0,m3:0});return Object.assign(s,{source:s.count||s.m3?'Kullanıcı haftalık':'Veri yok',events:[]});}
   const s=state.users.reduce((a,u)=>{a.count+=n(u.monthRecordCount||u.monthRecords||u.last30Records);a.m3+=n(u.monthM3||u.monthlyM3||u.last30M3);return a},{count:0,m3:0});
   return Object.assign(s,{source:s.count||s.m3?'Kullanıcı aylık':'Veri yok',events:[]});
 }
-function topUsersHtmlV421(){const arr=state.users.slice().sort((a,b)=>n(b.recordCount||b.totalRecords)-n(a.recordCount||a.totalRecords)).slice(0,10);return arr.length?arr.map((u,i)=>`<div class="stat-row-v421"><div class="idx">${i+1}</div><div><b>${esc(u.name||'Kullanıcı')}</b><small>${esc(u.seflik||'-')} • ${m3(u.m3||u.totalM3)} m³</small></div><div class="num">${int(u.recordCount||u.totalRecords)}</div></div>`).join(''):'<div class="empty">Kullanıcı istatistiği yok.</div>'}
-function recentEventsHtmlV421(){const arr=[...(state.exports||[]).map(x=>Object.assign({kind:'İndirme'},x)),...(state.backups||[]).map(x=>Object.assign({kind:'Yedek'},x))].sort((a,b)=>n(b.createdAtMs||b.atMs)-n(a.createdAtMs||a.atMs)).slice(0,10);if($('statEventCountV421'))$('statEventCountV421').textContent=int(arr.length)+' hareket';return arr.length?arr.map((x,i)=>`<div class="stat-row-v421"><div class="idx">${x.kind==='Yedek'?'☁️':'⬇️'}</div><div><b>${esc(x.name||'-')} • ${esc(x.seflik||'-')}</b><small>${esc(x.scopeText||x.fileName||x.createdAt||'-')}</small></div><div class="num">${int(x.recordCount||x.totalRecords)}<br><small>${m3(x.m3||x.totalM3)}</small></div></div>`).join(''):'<div class="empty">Hareket yok.</div>'}
+function todayStatsV422(){const ts=todayStart();const arr=[...(state.exports||[]),...(state.backups||[])].filter(x=>eventTime(x)>=ts);const s=eventStats(arr);return Object.assign(s,{source:arr.length?arr.length+' hareket':'Bugün veri yok',events:arr})}
+function topUsersHtmlV421(){const arr=state.users.slice().sort((a,b)=>n(b.recordCount||b.totalRecords)-n(a.recordCount||a.totalRecords)).slice(0,12);return arr.length?arr.map((u,i)=>`<div class="stat-row-v421"><div class="idx">${i+1}</div><div><b>${esc(u.name||'Kullanıcı')}</b><small>${esc(u.seflik||'-')} • ${m3(u.m3||u.totalM3)} m³</small><span class="sub">Kaynak: ${esc((u.sources||[]).join(', ')||'users')}</span></div><div class="num">${int(u.recordCount||u.totalRecords)}<br><small>adet</small></div></div>`).join(''):'<div class="empty">Kullanıcı istatistiği yok.</div>'}
+function groupEventsByUserV422(events){const map={};(events||[]).forEach(x=>{const k=userKeyOf(x)||'bilinmeyen';if(!map[k])map[k]={name:personNameOf(x)||x.name||'Kullanıcı',seflik:seflikOf(x)||x.seflik||'-',count:0,m3:0,events:0};map[k].count+=n(x.recordCount||x.totalRecords||x.adet||x.count);map[k].m3+=n(x.m3||x.totalM3);map[k].events+=1});return Object.values(map).sort((a,b)=>b.count-a.count||b.m3-a.m3)}
+function weekLeadersHtmlV422(week){const arr=groupEventsByUserV422(week.events||[]).slice(0,10);return arr.length?arr.map((u,i)=>`<div class="stat-row-v421"><div class="idx">${i+1}</div><div><b>${esc(u.name)}</b><small>${esc(u.seflik)} • ${int(u.events)} hareket</small></div><div class="num">${int(u.count)}<br><small>${m3(u.m3)} m³</small></div></div>`).join(''):'<div class="empty">Son 7 gün için indirme/yedek hareketi yok.</div>'}
+function seflikTotalsHtmlV422(){const map={};state.users.forEach(u=>{const k=seflikOf(u)||'Şeflik yok';if(!map[k])map[k]={name:k,users:0,count:0,m3:0};map[k].users+=1;map[k].count+=n(u.recordCount||u.totalRecords||u.adet);map[k].m3+=n(u.m3||u.totalM3)});const arr=Object.values(map).sort((a,b)=>b.count-a.count||b.m3-a.m3);return arr.length?arr.map((x,i)=>`<div class="stat-row-v421"><div class="idx">${i+1}</div><div><b>${esc(x.name)}</b><small>${int(x.users)} kullanıcı</small></div><div class="num">${int(x.count)}<br><small>${m3(x.m3)} m³</small></div></div>`).join(''):'<div class="empty">Şeflik verisi yok.</div>'}
+function sourceBreakdownHtmlV422(){const rows=[['users',state.rawUsers.length],['usageStats',state.usage.length],['backups',state.backups.length],['supportTickets',state.tickets.length],['exportLogs',state.exports.length]];return rows.map(([k,v])=>`<div class="stat-row-v421"><div class="idx">${v?'✓':'-'}</div><div><b>${esc(k)}</b><small>${v?'Okundu':'Boş / izin yok'}</small></div><div class="num">${int(v)}</div></div>`).join('')}
+function totalsBars(obj){obj=obj||{};const entries=Object.entries(obj).filter(([,v])=>n((v&&v.m3)||v)>0||n(v&&v.count)>0).sort((a,b)=>n((b[1]&&b[1].m3)||b[1])-n((a[1]&&a[1].m3)||a[1])).slice(0,10);const max=Math.max(1,...entries.map(([,v])=>n((v&&v.m3)||v)));return entries.length?'<div class="bars">'+entries.map(([k,v])=>{const val=n((v&&v.m3)||v),cnt=n(v&&v.count);return `<div class="bar"><span>${esc(k)}</span><span class="track"><i style="width:${Math.max(6,Math.round(val/max*100))}%"></i></span><b>${cnt?int(cnt)+' / ':''}${m3(val)}</b></div>`}).join('')+'</div>':'<div class="empty">Toplam yok.</div>'}
+function recentEventsHtmlV421(){const arr=[...(state.exports||[]).map(x=>Object.assign({kind:'İndirme'},x)),...(state.backups||[]).map(x=>Object.assign({kind:'Yedek'},x))].sort((a,b)=>eventTime(b)-eventTime(a)).slice(0,12);if($('statEventCountV421'))$('statEventCountV421').textContent=int(arr.length)+' hareket';return arr.length?arr.map((x,i)=>`<div class="stat-row-v421"><div class="idx">${x.kind==='Yedek'?'☁️':'⬇️'}</div><div><b>${esc(personNameOf(x)||x.name||'-')} • ${esc(seflikOf(x)||x.seflik||'-')}</b><small>${esc(x.scopeText||x.fileName||x.createdAt||'-')}</small></div><div class="num">${int(x.recordCount||x.totalRecords)}<br><small>${m3(x.m3||x.totalM3)}</small></div></div>`).join(''):'<div class="empty">Hareket yok.</div>'}
+function readDetailsHtmlV422(){const errs=state.collectionErrors||{};const keys=Object.keys(errs);if(!keys.length)return '<div class="stat-row-v421"><div class="idx">✓</div><div><b>Tüm açık koleksiyonlar okundu</b><small>İzin hatası görünmüyor.</small></div><div class="num">OK</div></div>';return keys.map(k=>`<div class="stat-row-v421"><div class="idx">!</div><div><b>${esc(k)}</b><small>${esc(errs[k])}</small></div><div class="num">Hata</div></div>`).join('')}
 function renderStatsV421(){
   if(!$('statTotalCountV421'))return;
-  const week=periodStatsV421(7),month=periodStatsV421(30),total=totalUserStats();
+  const today=todayStatsV422(),week=periodStatsV421(7),month=periodStatsV421(30),total=totalUserStats(),ids=identitySummaryV422();
+  $('statTodayCountV422').textContent=int(today.count);$('statTodayM3V422').textContent=m3(today.m3);$('statTodaySourceV422').textContent=today.source;
   $('statWeekCountV421').textContent=int(week.count);$('statWeekM3V421').textContent=m3(week.m3);$('statWeekSourceV421').textContent=week.source;
   $('statMonthCountV421').textContent=int(month.count);$('statMonthM3V421').textContent=m3(month.m3);$('statMonthSourceV421').textContent=month.source;
-  $('statTotalCountV421').textContent=int(total.count);$('statTotalM3V421').textContent=m3(total.m3);$('statTotalSourceV421').textContent=state.users.length+' kullanıcı';
-  $('statsSourcePillV421').textContent='K:'+state.users.length+' • Y:'+state.backups.length+' • İ:'+((state.exports||[]).length);
+  $('statTotalCountV421').textContent=int(total.count);$('statTotalM3V421').textContent=m3(total.m3);$('statTotalSourceV421').textContent=ids.users+' kullanıcı';
+  $('statUserCountV422').textContent=int(ids.users);$('statUserCountNoteV422').textContent='users:'+state.rawUsers.length+' • birleşik:'+state.users.length;
+  $('statDeviceCountV422').textContent=int(ids.devices);$('statActiveTodayV422').textContent=int(ids.activeToday);$('statActiveWeekV422').textContent=int(ids.activeWeek);
+  $('statExportCountV422').textContent=int(state.exports.length);$('statBackupCountV422').textContent=int(state.backups.length);$('statTicketCountV422').textContent=int(state.tickets.length);
+  $('statCollectionCountV422').textContent=int(ids.docs);$('statCollectionNoteV422').textContent='Toplam okunan belge';
+  $('statsSourcePillV422').textContent='K:'+ids.users+' • Cihaz:'+ids.devices+' • Y:'+state.backups.length+' • İ:'+state.exports.length;
+  if($('statsSourcePillV421'))$('statsSourcePillV421').textContent=$('statsSourcePillV422').textContent;
   $('statTopUsersV421').innerHTML=topUsersHtmlV421();
+  $('statWeekLeadersV422').innerHTML=weekLeadersHtmlV422(week);
+  $('statSeflikTotalsV422').innerHTML=seflikTotalsHtmlV422();
+  $('statSourceBreakdownV422').innerHTML=sourceBreakdownHtmlV422();
   $('statTreeTotalsV421').innerHTML=totalsBars(sumObjTotals(state.users,'treeTotals'));
   $('statProductTotalsV421').innerHTML=totalsBars(sumObjTotals(state.users,'productTotals'));
   $('statRecentEventsV421').innerHTML=recentEventsHtmlV421();
+  $('statReadDetailsV422').innerHTML=readDetailsHtmlV422();
+  if($('statReadStateV422'))$('statReadStateV422').textContent=Object.keys(state.collectionErrors||{}).length?'Kısmi':'Temiz';
 }
 
-function render(){renderKpis();renderHome();renderUsers();renderStatsV421();renderBackups();renderTickets();renderAdminLogs();renderBroadcastsV411()}
+function render(){renderKpis();renderHome();renderUsers();renderStatsV421();renderBackups();renderTickets();renderBroadcastsV411()}
 async function deleteBackupFull(db,id){const ref=db.collection('backups').doc(id);try{const chunks=await ref.collection('chunks').get();let batch=db.batch(),ops=0;for(const c of chunks.docs){batch.delete(c.ref);if(++ops>=420){await batch.commit();batch=db.batch();ops=0}}batch.delete(ref);await batch.commit()}catch(e){await ref.delete()}}
-async function delBackup(id){if(!confirm('Bu bulut yedeği silinsin mi?'))return;const b=state.backups.find(x=>x.id===id)||{};const{db}=await ready();await deleteBackupFull(db,id);await logAdminAction('Yedek silindi',(b.name||'-')+' • '+(b.fileName||id),{backupId:id,userKey:userKeyOf(b)});toast('Yedek silindi');await loadAll()}
-async function delUser(key){if(!confirm('Kullanıcı silinsin mi?'))return;const u=state.users.find(x=>userKeyOf(x)===key)||{};const also=confirm('Bu kullanıcının yedekleri de silinsin mi?');const{db}=await ready();if(also){for(const b of state.backups.filter(x=>userKeyOf(x)===key))await deleteBackupFull(db,b.id)}await db.collection('users').doc(key).delete().catch(()=>{});await logAdminAction('Kullanıcı silindi',(u.name||key)+' • yedekler: '+(also?'silindi':'korundu'),{userKey:key});toast('Kullanıcı silindi');await loadAll()}
-async function readTicket(id){const t=state.tickets.find(x=>x.id===id)||{};const{db}=await ready();await db.collection('supportTickets').doc(id).set({status:'read',readAt:new Date().toLocaleString('tr-TR'),readAtMs:Date.now()},{merge:true});await logAdminAction('Bildirim okundu',(t.name||'-')+' • '+String(t.message||'').slice(0,80),{ticketId:id,userKey:userKeyOf(t)});await loadAll()}
+async function delBackup(id){if(!confirm('Bu bulut yedeği silinsin mi?'))return;const b=state.backups.find(x=>x.id===id)||{};const{db}=await ready();await deleteBackupFull(db,id);toast('Yedek silindi');await loadAll()}
+async function delUser(key){if(!confirm('Kullanıcı silinsin mi?'))return;const u=state.users.find(x=>userKeyOf(x)===key)||{};const also=confirm('Bu kullanıcının yedekleri de silinsin mi?');const{db}=await ready();if(also){for(const b of state.backups.filter(x=>userKeyOf(x)===key))await deleteBackupFull(db,b.id)}await db.collection('users').doc(key).delete().catch(()=>{});toast('Kullanıcı silindi');await loadAll()}
+async function readTicket(id){const t=state.tickets.find(x=>x.id===id)||{};const{db}=await ready();await db.collection('supportTickets').doc(id).set({status:'read',readAt:new Date().toLocaleString('tr-TR'),readAtMs:Date.now()},{merge:true});await loadAll()}
 async function replyTicket(id){
   const ta=Array.prototype.slice.call(document.querySelectorAll('[data-ticket-reply-text]')).find(x=>x.getAttribute('data-ticket-reply-text')===id);
   const msg=(ta&&ta.value||'').trim();
@@ -514,17 +576,17 @@ async function replyTicket(id){
     updatedAt:now.toLocaleString('tr-TR'),
     updatedAtMs:Date.now()
   },{merge:true});
-  await logAdminAction('Destek cevabı gönderildi',String(msg).slice(0,120),{ticketId:id});
+  
   toast('Cevap kullanıcıya gönderildi');
   await loadAll();
 }
-async function delTicket(id){if(!confirm('Bildirim silinsin mi?'))return;const t=state.tickets.find(x=>x.id===id)||{};const{db}=await ready();await db.collection('supportTickets').doc(id).delete();await logAdminAction('Bildirim silindi',(t.name||'-')+' • '+String(t.message||'').slice(0,80),{ticketId:id,userKey:userKeyOf(t)});await loadAll()}
-async function clearReadTickets(){if(!confirm('Okunmuş bildirimler silinsin mi?'))return;const items=state.tickets.filter(x=>(x.status||'new')==='read');const{db}=await ready();for(const t of items)await db.collection('supportTickets').doc(t.id).delete();await logAdminAction('Okunan bildirimler silindi',items.length+' bildirim temizlendi',{count:items.length});toast('Okunan bildirimler silindi');await loadAll()}
-async function deleteAllTickets(){if(!confirm('Tüm bildirimler silinsin mi?'))return;const count=state.tickets.length;const{db}=await ready();for(const t of state.tickets)await db.collection('supportTickets').doc(t.id).delete();await logAdminAction('Tüm bildirimler silindi',count+' bildirim temizlendi',{count});toast('Bildirimler silindi');await loadAll()}
-async function deleteOldBackups(){if(!confirm('30 günden eski yedekler silinsin mi?'))return;const limit=Date.now()-30*86400000;const items=state.backups.filter(x=>n(x.createdAtMs)<limit);const{db}=await ready();for(const b of items)await deleteBackupFull(db,b.id);await logAdminAction('Eski yedekler temizlendi',items.length+' eski yedek silindi',{count:items.length});toast('Eski yedekler temizlendi');await loadAll()}
-async function resetStats(){if(!confirm('İstatistik başlangıcı bugüne alınsın mı?'))return;const{db}=await ready();await db.collection('adminSettings').doc('statsReset').set({resetAt:new Date().toLocaleString('tr-TR'),resetAtMs:Date.now()},{merge:true});await logAdminAction('İstatistik başlangıcı yenilendi','Başlangıç bugüne alındı');toast('İstatistik başlangıcı yenilendi')}
+async function delTicket(id){if(!confirm('Bildirim silinsin mi?'))return;const t=state.tickets.find(x=>x.id===id)||{};const{db}=await ready();await db.collection('supportTickets').doc(id).delete();await loadAll()}
+async function clearReadTickets(){if(!confirm('Okunmuş bildirimler silinsin mi?'))return;const items=state.tickets.filter(x=>(x.status||'new')==='read');const{db}=await ready();for(const t of items)await db.collection('supportTickets').doc(t.id).delete();toast('Okunan bildirimler silindi');await loadAll()}
+async function deleteAllTickets(){if(!confirm('Tüm bildirimler silinsin mi?'))return;const count=state.tickets.length;const{db}=await ready();for(const t of state.tickets)await db.collection('supportTickets').doc(t.id).delete();toast('Bildirimler silindi');await loadAll()}
+async function deleteOldBackups(){if(!confirm('30 günden eski yedekler silinsin mi?'))return;const limit=Date.now()-30*86400000;const items=state.backups.filter(x=>n(x.createdAtMs)<limit);const{db}=await ready();for(const b of items)await deleteBackupFull(db,b.id);toast('Eski yedekler temizlendi');await loadAll()}
+async function resetStats(){if(!confirm('İstatistik başlangıcı bugüne alınsın mı?'))return;const{db}=await ready();await db.collection('adminSettings').doc('statsReset').set({resetAt:new Date().toLocaleString('tr-TR'),resetAtMs:Date.now()},{merge:true});toast('İstatistik başlangıcı yenilendi')}
 async function health(){try{const{db,auth}=await ready();const [u,b,t]=await Promise.all([getColSafe(db,'users',true),getColSafe(db,'backups',true),getColSafe(db,'supportTickets',true)]);await db.collection('healthChecks').doc('adminPanel').set({ok:true,at:new Date().toLocaleString('tr-TR'),atMs:Date.now(),uid:auth.currentUser&&auth.currentUser.uid,users:u.length,backups:b.length,tickets:t.length},{merge:true});toast('Firebase veri okundu • K:'+u.length+' Y:'+b.length+' B:'+t.length);await loadAll()}catch(e){toast(errText(e))}}
-function exportAll(){const blob=new Blob([JSON.stringify({exportedAt:new Date().toISOString(),version:'v421_admin_istatistik_sekmesi',users:state.users,backups:state.backups,tickets:state.tickets,broadcasts:state.broadcasts,usage:state.usage},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='mesaha_admin_tum_veriler_v421.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+function exportAll(){const blob=new Blob([JSON.stringify({exportedAt:new Date().toISOString(),version:'v422_admin_istatistik_detay_log_kaldirildi',users:state.users,backups:state.backups,tickets:state.tickets,broadcasts:state.broadcasts,usage:state.usage},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='mesaha_admin_tum_veriler_v422.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
 function goAppHome(e){
   if(e) e.preventDefault();
   var target = new URL('./index.html', location.href).href;
@@ -542,12 +604,11 @@ function showUserModal(key){
   <h3 class="modern-detail-title">Destek Talepleri</h3>${tickets.length?'<div class="support-mini-list">'+tickets.map(t=>`<div class="support-mini"><b>${esc(t.message||'-')}</b><small>${esc(t.createdAt||'-')} • ${esc(t.adminReply||t.reply?'Cevaplandı':'Cevap bekliyor')}</small>${t.adminReply||t.reply?`<p style="margin:7px 0 0;color:#166534">${esc(t.adminReply||t.reply)}</p>`:''}</div>`).join('')+'</div>':'<div class="empty">Destek talebi yok.</div>'}
   <h3 class="modern-detail-title">Bulut Yedekleri</h3>${bks.length?bks.map(b=>`<div class="backup"><div class="space"><div><b>${esc(b.fileName||'Yedek')}</b><p style="margin:4px 0 0;color:var(--muted)">${esc(b.createdAt||'-')} • ${int(b.recordCount)} kayıt • ${m3(b.m3)}</p></div><button class="btn danger" data-backup-delete="${esc(b.id)}" type="button">Sil</button></div></div>`).join(''):'<div class="empty">Yedek yok.</div>'}</div></div>`;
   $('modal').classList.add('show');
-  logAdminAction('Kullanıcı detayı görüntülendi',(u.name||'-')+' • '+(u.seflik||'-'),{userKey:key}).catch(()=>{});
 }
 
 function go(tab){document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.tab===tab));document.querySelectorAll('.panel').forEach(x=>x.classList.toggle('active',x.id==='tab-'+tab));window.scrollTo({top:0,behavior:'smooth'})}
 function unlock(){const code=($('adminCode').value||new URLSearchParams(location.search).get('admin')||sessionStorage.getItem('mesaha_admin_code')||'').trim();if(code===ADMIN_CODE){sessionStorage.setItem('mesaha_admin_code',code);$('lockCard').classList.add('hidden');$('adminMain').classList.remove('hidden');$('tabs').classList.remove('hidden');loadAll()}else $('lockMsg').textContent='Şifre hatalı.'}
-function bind(){const d=new Date();$('todayPill').textContent='📅 '+d.toLocaleDateString('tr-TR',{weekday:'short',day:'2-digit',month:'short'});document.querySelectorAll('[data-app-home]').forEach(b=>b.addEventListener('click',goAppHome));document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.tab)));document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.go)));$('unlockBtn').addEventListener('click',unlock);$('adminCode').addEventListener('keydown',e=>{if(e.key==='Enter')unlock()});$('refreshBtn').addEventListener('click',loadAll);$('refreshBtn2').addEventListener('click',loadAll);/* theme removed */['userSearch','seflikFilter','userSort'].forEach(id=>$(id).addEventListener('input',renderUsers));$('clearFiltersBtn').addEventListener('click',()=>{$('userSearch').value='';$('seflikFilter').value='';$('userSort').value='last';renderUsers()});$('backupUserFilter').addEventListener('input',renderBackups);$('showAllTicketsBtn').addEventListener('click',()=>{state.showAllTickets=!state.showAllTickets;$('showAllTicketsBtn').textContent=state.showAllTickets?'Sadece Yeni':'Tümünü Göster';renderTickets()});$('clearReadTicketsBtn').addEventListener('click',clearReadTickets);$('oldBackupsTopBtn').addEventListener('click',deleteOldBackups);$('healthBtn').addEventListener('click',health);$('exportBtn').addEventListener('click',exportAll);$('resetStatsBtn').addEventListener('click',resetStats);$('deleteOldBackupsBtn').addEventListener('click',deleteOldBackups);$('deleteAllTicketsBtn').addEventListener('click',deleteAllTickets);if($('sendBroadcastV400'))$('sendBroadcastV400').addEventListener('click',()=>sendBroadcastV400().catch(x=>toast(errText(x))));if($('refreshBroadcastsV411'))$('refreshBroadcastsV411').addEventListener('click',loadAll);if($('refreshLogsV400'))$('refreshLogsV400').addEventListener('click',loadAll);$('modalClose').addEventListener('click',()=>$('modal').classList.remove('show'));$('modal').addEventListener('click',e=>{if(e.target===$('modal'))$('modal').classList.remove('show')});document.body.addEventListener('click',e=>{const ud=e.target.closest('[data-user-detail]');if(ud){showUserModal(ud.getAttribute('data-user-detail'));return}const card=e.target.closest('[data-user-card]');if(card&&e.target.closest('.topline')&&!e.target.closest('button'))card.classList.toggle('open');const delU=e.target.closest('[data-user-delete]');if(delU)delUser(delU.getAttribute('data-user-delete')).catch(x=>toast(errText(x)));const delB=e.target.closest('[data-backup-delete]');if(delB)delBackup(delB.getAttribute('data-backup-delete')).catch(x=>toast(errText(x)));const rp=e.target.closest('[data-ticket-reply]');if(rp){replyTicket(rp.getAttribute('data-ticket-reply')).catch(x=>toast(errText(x)));return}const tr=e.target.closest('[data-ticket-read]');if(tr)readTicket(tr.getAttribute('data-ticket-read')).catch(x=>toast(errText(x)));const td=e.target.closest('[data-ticket-delete]');if(td)delTicket(td.getAttribute('data-ticket-delete')).catch(x=>toast(errText(x)));const bd=e.target.closest('[data-broadcast-delete-v411]');if(bd)deleteBroadcastV411(bd.getAttribute('data-broadcast-delete-v411')).catch(x=>toast(errText(x)))});window.addEventListener('online',renderKpis);window.addEventListener('offline',renderKpis);if(new URLSearchParams(location.search).get('admin')===ADMIN_CODE||sessionStorage.getItem('mesaha_admin_code')===ADMIN_CODE){$('adminCode').value=ADMIN_CODE;unlock()}}
+function bind(){const d=new Date();$('todayPill').textContent='📅 '+d.toLocaleDateString('tr-TR',{weekday:'short',day:'2-digit',month:'short'});document.querySelectorAll('[data-app-home]').forEach(b=>b.addEventListener('click',goAppHome));document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.tab)));document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.go)));$('unlockBtn').addEventListener('click',unlock);$('adminCode').addEventListener('keydown',e=>{if(e.key==='Enter')unlock()});$('refreshBtn').addEventListener('click',loadAll);$('refreshBtn2').addEventListener('click',loadAll);/* theme removed */['userSearch','seflikFilter','userSort'].forEach(id=>$(id).addEventListener('input',renderUsers));$('clearFiltersBtn').addEventListener('click',()=>{$('userSearch').value='';$('seflikFilter').value='';$('userSort').value='last';renderUsers()});$('backupUserFilter').addEventListener('input',renderBackups);$('showAllTicketsBtn').addEventListener('click',()=>{state.showAllTickets=!state.showAllTickets;$('showAllTicketsBtn').textContent=state.showAllTickets?'Sadece Yeni':'Tümünü Göster';renderTickets()});$('clearReadTicketsBtn').addEventListener('click',clearReadTickets);$('oldBackupsTopBtn').addEventListener('click',deleteOldBackups);$('healthBtn').addEventListener('click',health);$('exportBtn').addEventListener('click',exportAll);$('resetStatsBtn').addEventListener('click',resetStats);$('deleteOldBackupsBtn').addEventListener('click',deleteOldBackups);$('deleteAllTicketsBtn').addEventListener('click',deleteAllTickets);if($('sendBroadcastV400'))$('sendBroadcastV400').addEventListener('click',()=>sendBroadcastV400().catch(x=>toast(errText(x))));if($('refreshBroadcastsV411'))$('refreshBroadcastsV411').addEventListener('click',loadAll);$('modalClose').addEventListener('click',()=>$('modal').classList.remove('show'));$('modal').addEventListener('click',e=>{if(e.target===$('modal'))$('modal').classList.remove('show')});document.body.addEventListener('click',e=>{const ud=e.target.closest('[data-user-detail]');if(ud){showUserModal(ud.getAttribute('data-user-detail'));return}const card=e.target.closest('[data-user-card]');if(card&&e.target.closest('.topline')&&!e.target.closest('button'))card.classList.toggle('open');const delU=e.target.closest('[data-user-delete]');if(delU)delUser(delU.getAttribute('data-user-delete')).catch(x=>toast(errText(x)));const delB=e.target.closest('[data-backup-delete]');if(delB)delBackup(delB.getAttribute('data-backup-delete')).catch(x=>toast(errText(x)));const rp=e.target.closest('[data-ticket-reply]');if(rp){replyTicket(rp.getAttribute('data-ticket-reply')).catch(x=>toast(errText(x)));return}const tr=e.target.closest('[data-ticket-read]');if(tr)readTicket(tr.getAttribute('data-ticket-read')).catch(x=>toast(errText(x)));const td=e.target.closest('[data-ticket-delete]');if(td)delTicket(td.getAttribute('data-ticket-delete')).catch(x=>toast(errText(x)));const bd=e.target.closest('[data-broadcast-delete-v411]');if(bd)deleteBroadcastV411(bd.getAttribute('data-broadcast-delete-v411')).catch(x=>toast(errText(x)))});window.addEventListener('online',renderKpis);window.addEventListener('offline',renderKpis);if(new URLSearchParams(location.search).get('admin')===ADMIN_CODE||sessionStorage.getItem('mesaha_admin_code')===ADMIN_CODE){$('adminCode').value=ADMIN_CODE;unlock()}}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
 })();
 </script>

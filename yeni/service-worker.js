@@ -1,31 +1,23 @@
-importScripts('./js/version.js?v=421');
+importScripts('./js/version.js?v=422');
 
-const META = self.MESAHA_VERSION || {"app": "V4.06", "version": "v421_admin_istatistik_sekmesi", "build": 421, "visibleVersion": "V4.06 •ExelanceX•", "shortVersion": "V4.06 •ExelanceX•", "name": "Mesaha İO V4.06 •ExelanceX•", "cacheName": "mesaha-app-v421-admin-istatistik-sekmesi", "builtAt": "2026-07-02T12:00:00+03:00", "notes": "Admin paneline istatistik sekmesi eklendi; haftalık, aylık ve toplam adet/m³ gösterimi.", "assetVersion": "421"};
-const BASE_CACHE = META.cacheName || 'mesaha-app-v421-admin-istatistik-sekmesi';
+const META = self.MESAHA_VERSION || {"app": "V4.07", "version": "v422_admin_istatistik_detay_log_kaldirildi", "build": 422, "visibleVersion": "V4.07 •ExelanceX•", "shortVersion": "V4.07 •ExelanceX•", "name": "Mesaha İO V4.07 •ExelanceX•", "cacheName": "mesaha-app-v422-admin-istatistik-detay-log-kaldirildi", "builtAt": "2026-07-02T15:30:00+03:00", "notes": "Admin istatistikleri detaylandırıldı; debug/log tutucu ve detaylı log kodları yayından kaldırıldı.", "assetVersion": "422"};
+const BASE_CACHE = META.cacheName || 'mesaha-app-v422-admin-istatistik-detay-log-kaldirildi';
 const SHELL_CACHE = BASE_CACHE + '-shell';
 const ASSET_CACHE = BASE_CACHE + '-assets';
 const RUNTIME_CACHE = BASE_CACHE + '-runtime';
 const OFFLINE_TIMEOUT_MS = 3000;
 const VERSION_Q = String(META.assetVersion || META.build || 421);
 
-function swLog(level,message,data){
-  try{
-    self.clients.matchAll({type:'window',includeUncontrolled:true}).then(clients=>{
-      clients.forEach(c=>c.postMessage({type:'MESAHA_DEBUG_LOG',level:level||'info',area:'service-worker',message:message||'',data:data||{},atMs:Date.now()}));
-    }).catch(()=>{});
-  }catch(e){}
-}
-
 
 const SHELL_ASSETS = [
   './', './index.html', './admin.html', './temizle.html', './manifest.json', './version.json', './service-worker.js',
-  './js/version.js?v=421', './js/mesaha-early-optimizer.js?v=421', './js/mesaha-utils.js?v=421', './js/mesaha-data-guard.js?v=421',
-  './js/mesaha-stability-core.js?v=421', './js/mesaha-debug-logger.js?v=421', './js/mesaha-deep-debug-v420.js?v=421', './js/mesaha-firebase.js?v=421', './js/mesaha-offline-core.js?v=421',
-  './js/mesaha-render-storage.js?v=421', './js/mesaha-sound.js?v=421'
+  './js/version.js?v=422', './js/mesaha-early-optimizer.js?v=422', './js/mesaha-utils.js?v=422', './js/mesaha-data-guard.js?v=422',
+  './js/mesaha-stability-core.js?v=422', './js/mesaha-firebase.js?v=422', './js/mesaha-offline-core.js?v=422',
+  './js/mesaha-render-storage.js?v=422', './js/mesaha-sound.js?v=422'
 ];
 const STATIC_ASSETS = [
-  './assets/icon-192.png', './assets/icon-512.png', './assets/mesaha_logo.png', './assets/hero_forest_cover.png?v=421',
-  './assets/mesaha_onay.wav?v=421', './assets/mesaha_uyari.wav?v=421'
+  './assets/icon-192.png', './assets/icon-512.png', './assets/mesaha_logo.png', './assets/hero_forest_cover.png?v=422',
+  './assets/mesaha_onay.wav?v=422', './assets/mesaha_uyari.wav?v=422'
 ];
 function timeoutReject(ms,label){return new Promise((_,reject)=>setTimeout(()=>reject(new Error(label||'network-timeout')),ms||OFFLINE_TIMEOUT_MS));}
 function networkWithTimeout(request,options,ms){return Promise.race([fetch(request,options||{}),timeoutReject(ms||OFFLINE_TIMEOUT_MS,'network-timeout')]);}
@@ -83,11 +75,11 @@ async function precache(){
 function offlineJson(){return new Response(JSON.stringify({offline:true,timeout:true,message:'3 saniye içinde bağlantı kurulamadı, offline mod kullanılıyor.'}),{status:504,statusText:'Offline Timeout',headers:{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store'}});}
 function offlineHtml(){return new Response('<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mesaha İO Offline</title><body style="font-family:Arial;padding:24px;background:#f4f7f6;color:#101828"><h2>Mesaha İO offline açılıyor</h2><p>Ön bellek hazır değilse uygulamayı internet varken bir kez açın veya /yeni/temizle.html sayfasını çalıştırın.</p></body>',{status:200,headers:{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store'}});}
 
-self.addEventListener('install',event=>{ swLog('info','Service worker install',{version:META.version,build:META.build}); event.waitUntil(precache().then(()=>self.skipWaiting())); });
-self.addEventListener('activate',event=>{ swLog('info','Service worker activate',{cache:BASE_CACHE});
+self.addEventListener('install',event=>{ event.waitUntil(precache().then(()=>self.skipWaiting())); });
+self.addEventListener('activate',event=>{
   event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>/^mesaha-app-/.test(k)&&![SHELL_CACHE,ASSET_CACHE,RUNTIME_CACHE].includes(k)).map(k=>caches.delete(k)))).then(()=>self.clients.claim()).then(()=>precache()));
 });
-self.addEventListener('message',event=>{ const d=event.data||{}; swLog('info','Service worker mesaj aldı',{type:d.type||''}); if(d.type==='SKIP_WAITING') self.skipWaiting(); if(d.type==='WARM_CACHE'||d.type==='REPAIR_CACHE') event.waitUntil(precache()); });
+self.addEventListener('message',event=>{ const d=event.data||{}; if(d.type==='SKIP_WAITING') self.skipWaiting(); if(d.type==='WARM_CACHE'||d.type==='REPAIR_CACHE') event.waitUntil(precache()); });
 self.addEventListener('fetch',event=>{
   if(event.request.method!=='GET') return;
   const url=new URL(event.request.url); if(url.origin!==self.location.origin) return;
@@ -102,7 +94,7 @@ self.addEventListener('fetch',event=>{
     event.respondWith((async()=>{
       const fallback=path.endsWith('/admin.html')?'./admin.html':path.endsWith('/temizle.html')?'./temizle.html':'./index.html';
       try{ const r=await networkWithTimeout(event.request,{cache:'no-store'},OFFLINE_TIMEOUT_MS); event.waitUntil(safePut(SHELL_CACHE,fallback,r.clone())); return r; }
-      catch(e){ swLog('warn','Navigasyon offline/cache fallback',{path:path,error:String(e&&e.message||e)}); return await matchAcrossCaches(event.request,fallback) || offlineHtml(); }
+      catch(e){ return await matchAcrossCaches(event.request,fallback) || offlineHtml(); }
     })()); return;
   }
   if(isPing){ event.respondWith(networkWithTimeout(event.request,{cache:'no-store'},OFFLINE_TIMEOUT_MS).then(r=>{if(!r||!r.ok)throw new Error('bad-status');return r;}).catch(()=>offlineJson())); return; }
@@ -110,7 +102,6 @@ self.addEventListener('fetch',event=>{
     event.respondWith((async()=>{
       try{ const r=await networkWithTimeout(event.request,{cache:'no-store'},OFFLINE_TIMEOUT_MS); event.waitUntil(safePut(SHELL_CACHE,event.request,r.clone())); return r; }
       catch(e){
-        swLog('warn','Shell/JS offline fallback',{path:path,error:String(e&&e.message||e)});
         const fallback=fallbackForPath(path);
         const cached=await matchAcrossCaches(event.request,fallback);
         if(cached) return cached;
