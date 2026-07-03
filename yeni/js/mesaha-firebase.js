@@ -1,9 +1,9 @@
-/* Mesaha İO v426 — Supabase geçiş motoru
-   Eski kodların bozulmaması için Firestore benzeri küçük bir uyumluluk katmanı sağlar.
+/* Mesaha İO v427 — Supabase temiz geçiş motoru
+   Eski kodların bozulmaması için Supabase tablo benzeri küçük bir uyumluluk katmanı sağlar.
    Veriler Supabase REST tablolarına yazılır/okunur. */
 (function(){
   'use strict';
-  var VERSION='v426_supabase_gecis';
+  var VERSION='v427_supabase_temiz_gecis';
   var readyPromise=null;
   var lastOkMs=0;
   var lastError='';
@@ -141,7 +141,7 @@
   Db.prototype.enableNetwork=function(){return Promise.resolve();};
   Db.prototype.disableNetwork=function(){return Promise.resolve();};
 
-  function installFirebaseCompat(db){
+  function installSupabaseCompat(db){
     if(!window.firebase){window.firebase={apps:[{}]};}
     window.firebase.apps=window.firebase.apps&&window.firebase.apps.length?window.firebase.apps:[{}];
     window.firebase.initializeApp=function(){if(!window.firebase.apps.length)window.firebase.apps.push({});return window.firebase.apps[0];};
@@ -156,16 +156,16 @@
       var c=cfg();
       supabaseApi={url:c.url, anonKey:c.anonKey};
       var db=new Db();
-      installFirebaseCompat(db);
+      installSupabaseCompat(db);
       lastOkMs=Date.now(); lastError='';
       return {db:db, auth:{currentUser:{uid:'supabase-anon'}}, supabase:supabaseApi};
     })();}
     try{return await readyPromise;}catch(e){readyPromise=null;lastError=e&&e.message?e.message:String(e||'Supabase hata');throw e;}
   }
-  async function health(){var r=await ready();await r.db.collection('healthChecks').doc('client').set({ok:true,atMs:Date.now(),appVersion:(window.APP_VERSION||'V4.11'),source:'supabase'},{merge:true});lastOkMs=Date.now();lastError='';return r;}
+  async function health(){var r=await ready();await r.db.collection('healthChecks').doc('client').set({ok:true,atMs:Date.now(),appVersion:(window.APP_VERSION||'V4.12'),source:'supabase'},{merge:true});lastOkMs=Date.now();lastError='';return r;}
   function reset(){readyPromise=null;lastError='';}
   function status(){return{ok:!!lastOkMs,lastOkMs:lastOkMs,lastError:lastError,online:navigator.onLine!==false,provider:'supabase',version:VERSION};}
 
   var api={provider:'supabase',version:VERSION,ready:ready,health:health,reset:reset,status:status,withTimeout:function(p,ms,label){return Promise.race([p,new Promise(function(_,rej){setTimeout(function(){rej(new Error((label||'İşlem')+' zaman aşımı'));},ms||15000);})]);}};
-  window.mesahaFirebase=api; window.mesahaFirebaseV383=api; window.mesahaFirebaseV380=api; window.mesahaCloud=api; window.mesahaSupabase=api;
+  window.mesahaSupabase=api; window.mesahaSupabaseV383=api; window.mesahaSupabaseV380=api; window.mesahaCloud=api; window.mesahaSupabase=api;
 })();
