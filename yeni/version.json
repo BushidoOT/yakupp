@@ -1,12 +1,12 @@
 {
-  "app": "V4.11",
-  "version": "v426_supabase_gecis",
-  "build": 426,
-  "visibleVersion": "V4.11 •ExelanceX•",
-  "shortVersion": "V4.11 •ExelanceX•",
-  "name": "Mesaha İO V4.11 •ExelanceX•",
-  "cacheName": "mesaha-app-v426-supabase-gecis",
-  "builtAt": "2026-07-03T09:30:00+03:00",
-  "notes": "Firebase yerine Supabase geçiş motoru eklendi; mevcut kodlar Supabase uyumluluk katmanı ile çalışır.",
-  "assetVersion": "426"
+  "app": "V4.12",
+  "version": "v427_supabase_temiz_gecis",
+  "build": 427,
+  "visibleVersion": "V4.12 •ExelanceX•",
+  "shortVersion": "V4.12 •ExelanceX•",
+  "name": "Mesaha İO V4.12 •ExelanceX•",
+  "cacheName": "mesaha-app-v427-supabase-temiz-gecis",
+  "builtAt": "2026-07-03T15:35:00+03:00",
+  "notes": "Supabase geçişi temizlendi; canlı paketten kurulum SQL/dokümanları ayrıldı; eski Firebase SDK fallback ve debug/log kalıntıları kaldırıldı; v409 kullanıcı/istatistik taşıma paketi ayrı verildi.",
+  "assetVersion": "427"
 }
