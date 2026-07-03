@@ -1,13 +1,1 @@
-self.MESAHA_VERSION = {
-  "app": "V4.21",
-  "version": "v436_stabil_kisayol_tree_fix",
-  "build": 436,
-  "visibleVersion": "V4.21 •ExelanceX•",
-  "shortVersion": "V4.21 •ExelanceX•",
-  "name": "Mesaha İO V4.21 •ExelanceX•",
-  "cacheName": "mesaha-app-v436-stabil-kisayol-tree-fix",
-  "builtAt": "2026-07-03T23:58:00+03:00",
-  "notes": "Mobil düzen: çap ve boy kısayolları 2 satır/3 kolon rahat düzene alındı; eski son-girilen çap renderı sabitlendi; 50 barkod kontrol uyarısı daha aşağı ve minimal hale getirildi.",
-  "assetVersion":"436"
-};
-if (typeof window !== "undefined") window.MESAHA_VERSION = self.MESAHA_VERSION;
+window.MESAHA_VERSION={app:'V4.22',version:'v437_stabil_temizlik_admin_kodsuz',build:437,visibleVersion:'V4.22 •ExelanceX•',shortVersion:'V4.22 •ExelanceX•',name:'Mesaha İO V4.22 •ExelanceX•',cacheName:'mesaha-app-v437-stabil-temizlik-admin-kodsuz',assetVersion:'437',notes:'Stabil temizlik; admin rütbe sistemi kaldırıldı; kısayollar tek merkeze toplandı; Supabase tablo hataları sessizleştirildi.'};
