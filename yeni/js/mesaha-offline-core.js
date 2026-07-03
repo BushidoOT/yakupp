@@ -113,7 +113,7 @@
   window.addEventListener('pageshow', function(){ setVersionText(); setOnlineClass(); }, {passive:true});
 
   // Eski yamalar DOM'u tekrar yazsa bile görünür sürüm bilgisi arada bozulmasın; düşük frekanslı ve hafif.
-  setInterval(setVersionText, 10000);
+  setInterval(setVersionText, 60000);
 
   var offlineApi = {
     meta: META,
