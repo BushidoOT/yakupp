@@ -4,10 +4,10 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
 <meta name="theme-color" content="#ffffff"/>
-<link rel="manifest" href="./manifest.json?v=431"/>
+<link rel="manifest" href="./manifest.json?v=432"/>
 <link rel="apple-touch-icon" href="./assets/icon-192.png"/>
 <title>Mesaha İO Admin V4.15</title>
-<style id="mesaha-v431_kullanici_yedek_sil_toast_6_kisayol">
+<style id="mesaha-v432_ios_kontrol_kisayol_admin_toplu">
 
 :root{
   --bg:#f6f8fb;
@@ -164,9 +164,6 @@ body{background:radial-gradient(circle at top left,rgba(34,197,94,.11),transpare
         <button class="quick" data-go="backups"><span>☁️</span><b>Yedekler</b><small>Bulut kayıtları</small></button>
         <button class="quick" data-go="tickets"><span>🔔</span><b>Bildirimler</b><small>Kullanıcı mesajları</small></button>
         <button class="quick" data-go="tools"><span>⚙️</span><b>Araçlar</b><small>Sistem işlemleri</small></button>
-        <button class="quick" data-go="control"><span>🧪</span><b>Kontrol</b><small>Veri hata yakalama</small></button>
-        <button class="quick" data-go="orbis"><span>📤</span><b>ORBİS</b><small>Uyum ve indirme</small></button>
-        <button class="quick" data-go="recovery"><span>🛡️</span><b>Kurtarma</b><small>Arşiv ve geri alma</small></button>
       </div>
       <div class="screen-grid">
         <div class="phone-card chart-card"><div class="phone-head"><b>Aktivite Özeti</b><span class="pill green">Son 7 gün</span></div><div class="inside" id="activityMiniChart"></div></div>
@@ -232,7 +229,16 @@ body{background:radial-gradient(circle at top left,rgba(34,197,94,.11),transpare
     </section>
 
     <section class="panel" id="tab-tools">
-      <div class="section-title"><div><h2>Araçlar</h2><p>Güçlü işlemler burada; ana ekranı karıştırmaz.</p></div></div>
+      <div class="section-title"><div><h2>Yönetim</h2><p>Alt menü sadeleştirildi. Gelişmiş ekranlar buradan açılır.</p></div></div>
+      <div class="quick-grid management-hub-v432" id="managementHubV432">
+        <button class="quick" data-go="control" type="button"><span>🧪</span><b>Veri Kontrol</b><small>Barkod / çap / boy kontrolü</small></button>
+        <button class="quick" data-go="orbis" type="button"><span>📤</span><b>ORBİS Kontrol</b><small>XLS ve uyum notları</small></button>
+        <button class="quick" data-go="updates" type="button"><span>🔄</span><b>Sürüm</b><small>Güncelleme / bakım</small></button>
+        <button class="quick" data-go="system" type="button"><span>🧰</span><b>Sistem Sağlığı</b><small>Supabase ve tablolar</small></button>
+        <button class="quick" data-go="roles" type="button"><span>🔐</span><b>Yetkiler</b><small>Admin rolleri</small></button>
+        <button class="quick" data-go="recovery" type="button"><span>🛡️</span><b>Kurtarma</b><small>Arşiv / geri yükleme</small></button>
+        <button class="quick" data-go="settings" type="button"><span>⚙️</span><b>Ayarlar</b><small>Panel notu</small></button>
+      </div>
       <div class="screen-grid">
         <div class="card"><h2>Güvenli Araçlar</h2><div class="list"><button class="btn green" id="healthBtn" type="button">Supabase Bağlantı Testi</button><button class="btn soft" id="exportBtn" type="button">Tüm Verileri JSON İndir</button><span class="pill green">Arşivli işlem açık</span></div></div>
         <div class="card"><h2>Bulut Koruma</h2><p style="margin:0;color:var(--muted)">Bu sürümde yetkiler açıldı. Riskli işlemler arşive alınarak yapılır; kalıcı silme yerine geri alınabilir arşiv kullanılır.</p></div>
@@ -308,26 +314,19 @@ body{background:radial-gradient(circle at top left,rgba(34,197,94,.11),transpare
 
   </main>
 </div>
-<nav aria-label="Admin sekmeleri" class="tabs hidden" id="tabs">
+<nav aria-label="Admin sekmeleri" class="tabs hidden compact-tabs-v432" id="tabs">
   <button class="tab active" data-tab="home"><span>⌂</span>Özet</button>
   <button class="tab" data-tab="users"><span>👤</span>Kullanıcı</button>
   <button class="tab" data-tab="stats"><span>📊</span>İstatistik</button>
   <button class="tab" data-tab="backups"><span>☁️</span>Yedek</button>
-  <button class="tab" data-tab="tickets"><span>🔔</span>Bildirim</button>
-  <button class="tab" data-tab="tools"><span>⚙️</span>Araç</button>
-  <button class="tab" data-tab="control"><span>🧪</span>Kontrol</button>
-  <button class="tab" data-tab="orbis"><span>📤</span>ORBİS</button>
-  <button class="tab" data-tab="updates"><span>🔄</span>Sürüm</button>
-  <button class="tab" data-tab="system"><span>🧰</span>Sistem</button>
-  <button class="tab" data-tab="roles"><span>🔐</span>Yetki</button>
-  <button class="tab" data-tab="recovery"><span>🛡️</span>Kurtar</button>
-  <button class="tab" data-tab="settings"><span>⚙️</span>Ayar</button>
+  <button class="tab" data-tab="tickets"><span>🔔</span>Destek</button>
+  <button class="tab" data-tab="tools"><span>⚙️</span>Yönetim</button>
 </nav>
 <div class="modal" id="modal"><div class="modal-card"><div class="space"><h2 id="modalTitle">Detay</h2><button class="btn soft" id="modalClose" type="button">Kapat</button></div><div id="modalBody"></div></div></div>
 <div class="toast" id="toast"></div>
 
-<script src="./js/mesaha-supabase-config.js?v=431"></script>
-<script src="./js/mesaha-firebase.js?v=431"></script>
+<script src="./js/mesaha-supabase-config.js?v=432"></script>
+<script src="./js/mesaha-firebase.js?v=432"></script>
 <script>
 (function(){
 'use strict';
@@ -488,7 +487,7 @@ function latestAppVersion(){return (window.MESAHA_VERSION && window.MESAHA_VERSI
 function isOldAppVersion(u){
   const v=appVersionOf(u); if(!v || v==='-') return false;
   const latest=latestAppVersion();
-  return !String(v).includes(latest) && !String(v).includes((window.MESAHA_VERSION && window.MESAHA_VERSION.version) || 'v431_kullanici_yedek_sil_toast_6_kisayol');
+  return !String(v).includes(latest) && !String(v).includes((window.MESAHA_VERSION && window.MESAHA_VERSION.version) || 'v432_ios_kontrol_kisayol_admin_toplu');
 }
 function isActiveUser(u,spanMs){const last=n(u.lastSeenMs||u.lastLoginMs||u.updatedAtMs);return last>=Date.now()-(spanMs||15*60000)}
 function userTickets(key){return state.tickets.filter(t=>userKeyOf(t)===key)}
@@ -506,7 +505,7 @@ async function cleanupOldBroadcasts(db,arr){return}
 function renderBroadcastsV411(){const box=$('broadcastListV411');if(!box)return;const arr=(state.broadcasts||[]).slice(0,25);box.innerHTML=arr.length?arr.map(b=>`<div class="broadcast-admin-item-v411"><div class="space"><div><b>${esc(b.title||'Duyuru')}</b><small>${esc(b.createdAt||'-')} • ${int(b.targetCount||((b.targetUserKeys||[]).length))} kullanıcı</small></div><span class="broadcast-expire-v411">${esc(broadcastExpireText(b))}</span></div><p>${esc(b.message||'-')}</p><div class="row"><span class="chip">${esc(b.target||'all')}</span></div></div>`).join(''):'<div class="empty">Aktif admin duyurusu yok.</div>'}
 async function deleteBroadcastV411(id){toast('Silme işlemleri bu güvenli sürümde kapalı');}
 function broadcastTargetUsers(target){let arr=state.users.slice();if(target==='oldVersion')arr=arr.filter(isOldAppVersion);else if(target==='activeToday'){const ts=todayStart();arr=arr.filter(u=>n(u.lastSeenMs||u.lastLoginMs)>=ts)}else if(target==='noBackup')arr=arr.filter(u=>!userBackups(userKeyOf(u)).length);return arr}
-async function sendBroadcastV400(){const target=($('broadcastTargetV400')||{}).value||'all';const title=($('broadcastTitleV400')||{}).value.trim();const message=($('broadcastMessageV400')||{}).value.trim();if(!title||!message){toast('Başlık ve mesaj gerekli');return}const targets=broadcastTargetUsers(target);if(!targets.length){toast('Bu hedefte kullanıcı yok');return}if(!confirm(targets.length+' kullanıcıya bildirim gönderilsin mi?'))return;const now=new Date();const targetKeys=targets.map(userKeyOf).filter(Boolean);const {db}=await ready();const ref=db.collection('adminBroadcasts').doc('bc_'+Date.now().toString(36));const createdAtMs=Date.now();await ref.set({id:ref.id,title,message,target,targetUserKeys:targetKeys,targetCount:targetKeys.length,createdAt:now.toLocaleString('tr-TR'),createdAtMs,expiresAtMs:createdAtMs+7*24*60*60*1000,status:'active',appVersion:'V4.16',build:431});if($('broadcastInfoV400'))$('broadcastInfoV400').textContent=targetKeys.length+' kullanıcıya gönderildi.';if($('broadcastMessageV400'))$('broadcastMessageV400').value='';toast('Toplu bildirim gönderildi');await loadAll()}
+async function sendBroadcastV400(){const target=($('broadcastTargetV400')||{}).value||'all';const title=($('broadcastTitleV400')||{}).value.trim();const message=($('broadcastMessageV400')||{}).value.trim();if(!title||!message){toast('Başlık ve mesaj gerekli');return}const targets=broadcastTargetUsers(target);if(!targets.length){toast('Bu hedefte kullanıcı yok');return}if(!confirm(targets.length+' kullanıcıya bildirim gönderilsin mi?'))return;const now=new Date();const targetKeys=targets.map(userKeyOf).filter(Boolean);const {db}=await ready();const ref=db.collection('adminBroadcasts').doc('bc_'+Date.now().toString(36));const createdAtMs=Date.now();await ref.set({id:ref.id,title,message,target,targetUserKeys:targetKeys,targetCount:targetKeys.length,createdAt:now.toLocaleString('tr-TR'),createdAtMs,expiresAtMs:createdAtMs+7*24*60*60*1000,status:'active',appVersion:'V4.17',build:431});if($('broadcastInfoV400'))$('broadcastInfoV400').textContent=targetKeys.length+' kullanıcıya gönderildi.';if($('broadcastMessageV400'))$('broadcastMessageV400').value='';toast('Toplu bildirim gönderildi');await loadAll()}
 function renderKpis(){
   const ts=todayStart(), week=Date.now()-7*86400000;
   const activeToday=state.users.filter(u=>n(u.lastSeenMs||u.lastLoginMs||u.updatedAtMs)>=ts).length;
@@ -691,9 +690,9 @@ async function openAllPerms428(){const{db}=await ready();await db.collection('ad
 async function savePerm428(){const key=($('permUserKey428').value||'').trim().toLowerCase();if(!key){toast('Kullanıcı anahtarı gerekli');return}const{db}=await ready();await db.collection('adminPermissions').doc(key).set(fullPermPayload428(key,($('permName428').value||key).trim(),($('permSeflik428').value||'').trim(),$('permRole428').value||'admin'),{merge:true});await logAction428('permission_save',key,{});toast('Yetki kaydedildi');await loadAll()}
 async function backupDownload428(id){const b=state.backups.find(x=>x.id===id);if(!b)return;downloadJson428('mesaha_bulut_yedek_'+(b.userKey||b.id)+'.json',b);await logAction428('backup_download',id,{})}
 async function deleteBackup428(id){const b=state.backups.find(x=>x.id===id);if(!b)return;if(!confirm('Bu yedek arşivlenip silinsin mi?'))return;await archiveDoc428('backups',id,'backup',b);toast('Yedek arşivlendi ve silindi');await loadAll()}
-async function sendBackupWarning428(key){const u=state.users.find(x=>userKeyOf(x)===key)||{};const title='Yedek uyarısı';const message='Lütfen Mesaha İO içinde Yedek Al işlemini yapınız.';const{db}=await ready();const id='bc_'+Date.now().toString(36);await db.collection('adminBroadcasts').doc(id).set({id,title,message,target:'single',targetUserKeys:[key],targetCount:1,status:'active',createdAt:new Date().toLocaleString('tr-TR'),createdAtMs:Date.now(),expiresAtMs:Date.now()+7*86400000,appVersion:'V4.16',build:431,name:u.name||'',seflik:u.seflik||''});await logAction428('backup_warning',key,{});toast('Yedek uyarısı gönderildi');await loadAll()}
+async function sendBackupWarning428(key){const u=state.users.find(x=>userKeyOf(x)===key)||{};const title='Yedek uyarısı';const message='Lütfen Mesaha İO içinde Yedek Al işlemini yapınız.';const{db}=await ready();const id='bc_'+Date.now().toString(36);await db.collection('adminBroadcasts').doc(id).set({id,title,message,target:'single',targetUserKeys:[key],targetCount:1,status:'active',createdAt:new Date().toLocaleString('tr-TR'),createdAtMs:Date.now(),expiresAtMs:Date.now()+7*86400000,appVersion:'V4.17',build:431,name:u.name||'',seflik:u.seflik||''});await logAction428('backup_warning',key,{});toast('Yedek uyarısı gönderildi');await loadAll()}
 function downloadJson428(name,obj){const blob=new Blob([JSON.stringify(obj,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
-function exportFullRecovery428(){downloadJson428('mesaha_tam_kurtarma_v430.json',{exportedAt:new Date().toISOString(),version:'v431_kullanici_yedek_sil_toast_6_kisayol',users:state.users,backups:state.backups,tickets:state.tickets,broadcasts:state.broadcasts,usage:state.usage,exports:state.exports,permissions:state.permissions,archives:state.archives,settings:state.settings,actionLogs:state.actionLogs})}
+function exportFullRecovery428(){downloadJson428('mesaha_tam_kurtarma_v430.json',{exportedAt:new Date().toISOString(),version:'v432_ios_kontrol_kisayol_admin_toplu',users:state.users,backups:state.backups,tickets:state.tickets,broadcasts:state.broadcasts,usage:state.usage,exports:state.exports,permissions:state.permissions,archives:state.archives,settings:state.settings,actionLogs:state.actionLogs})}
 async function restoreJson428(){let txt=($('restoreJsonText428').value||'').trim();if(!txt){toast('JSON boş');return}let data;try{data=JSON.parse(txt)}catch(e){toast('JSON okunamadı');return}if(!confirm('JSON içeriği Supabase tablolarına eklensin/güncellensin mi?'))return;const{db}=await ready();async function putMany(col,arr){for(const x of safeArray(arr)){const id=x.id||x.userKey||userKeyOf(x)||('imp_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,7));await db.collection(col).doc(id).set(x,{merge:true});}}
 await putMany('users',data.users);await putMany('backups',data.backups);await putMany('supportTickets',data.tickets||data.supportTickets);await putMany('usageStats',data.usage||data.usageStats);await logAction428('json_import','bulk',{});toast('JSON içe aktarıldı');await loadAll()}
 async function restoreArchive428(id){const a=state.archives.find(x=>x.id===id);if(!a)return;if(!confirm('Arşivden geri alınsın mı?'))return;const{db}=await ready();const col=a.collection||a.itemType+'s'||'users';const originalId=a.originalId||a.targetId||id;await db.collection(col).doc(originalId).set(a.payload||{}, {merge:true});await db.collection('archivedItems').doc(id).delete();await logAction428('archive_restore',originalId,{collection:col});toast('Arşiv geri alındı');await loadAll()}
@@ -732,7 +731,7 @@ async function deleteAllTickets(){if(!confirm('Tüm bildirimler arşivlensin mi?
 async function deleteOldBackups(){const cut=Date.now()-30*86400000;const arr=state.backups.filter(b=>n(b.createdAtMs)<cut);if(!arr.length){toast('30 gün üstü yedek yok');return}if(!confirm(arr.length+' eski yedek arşivlensin mi?'))return;for(const b of arr){await archiveDoc428('backups',b.id,'backup',b)}toast('Eski yedekler arşivlendi');await loadAll()}
 async function resetStats(){if(!confirm('İstatistik sıfırlama ayarı yazılsın mı? Veriler silinmez, reset işareti atılır.'))return;const{db}=await ready();await db.collection('adminSettings').doc('statsReset').set({resetAt:new Date().toLocaleString('tr-TR'),resetAtMs:Date.now(),updatedAtMs:Date.now(),build:431},{merge:true});await logAction428('stats_reset_marker','adminSettings/statsReset',{});toast('İstatistik reset işareti atıldı');await loadAll()}
 async function health(){try{const{db,auth}=await ready();const [u,b,t]=await Promise.all([getColSafe(db,'users',true),getColSafe(db,'backups',true),getColSafe(db,'supportTickets',true)]);await db.collection('healthChecks').doc('adminPanel').set({ok:true,at:new Date().toLocaleString('tr-TR'),atMs:Date.now(),uid:auth.currentUser&&auth.currentUser.uid,users:u.length,backups:b.length,tickets:t.length},{merge:true});toast('Supabase veri okundu • K:'+u.length+' Y:'+b.length+' B:'+t.length);await loadAll()}catch(e){toast(errText(e))}}
-function exportAll(){const blob=new Blob([JSON.stringify({exportedAt:new Date().toISOString(),version:'v431_kullanici_yedek_sil_toast_6_kisayol',users:state.users,backups:state.backups,tickets:state.tickets,broadcasts:state.broadcasts,usage:state.usage},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='mesaha_admin_tum_veriler_v430_supabase.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+function exportAll(){const blob=new Blob([JSON.stringify({exportedAt:new Date().toISOString(),version:'v432_ios_kontrol_kisayol_admin_toplu',users:state.users,backups:state.backups,tickets:state.tickets,broadcasts:state.broadcasts,usage:state.usage},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='mesaha_admin_tum_veriler_v430_supabase.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
 function goAppHome(e){
   if(e) e.preventDefault();
   var target = new URL('./index.html', location.href).href;
@@ -758,5 +757,16 @@ function bind(){const d=new Date();$('todayPill').textContent='📅 '+d.toLocale
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
 })();
 </script>
+
+<style id="mesaha-admin-v432-compact-tabs-style">
+.tabs.compact-tabs-v432{grid-template-columns:repeat(6,1fr)!important;width:min(640px,calc(100vw - 20px))!important;}
+.management-hub-v432{grid-template-columns:repeat(4,minmax(0,1fr))!important;margin-bottom:14px!important;}
+.management-hub-v432 .quick{min-height:86px!important;}
+@media(max-width:720px){.management-hub-v432{grid-template-columns:repeat(2,minmax(0,1fr))!important}.tabs.compact-tabs-v432 .tab{font-size:11px!important;padding:7px 2px!important}.tabs.compact-tabs-v432 .tab span{font-size:17px!important}}
+</style>
+<script id="mesaha-admin-v432-version-sync">
+(function(){var APP='V4.17',DISPLAY='V4.17 •ExelanceX•',BUILD=432,VERSION='v432_ios_kontrol_kisayol_admin_toplu',CACHE='mesaha-app-v432-ios-kontrol-kisayol-admin-toplu';function s(){try{window.MESAHA_VERSION=Object.assign({},window.MESAHA_VERSION||{},{app:APP,version:VERSION,build:BUILD,visibleVersion:DISPLAY,shortVersion:DISPLAY,name:'Mesaha İO '+DISPLAY,cacheName:CACHE,assetVersion:'432'});document.title='Mesaha Admin '+DISPLAY;}catch(e){}}s();setTimeout(s,400);setTimeout(s,1200);})();
+</script>
+
 </body>
 </html>

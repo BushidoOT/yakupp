@@ -1,23 +1,23 @@
-importScripts('./js/version.js?v=431');
+importScripts('./js/version.js?v=432');
 
-const META = self.MESAHA_VERSION || {"app": "V4.16", "version": "v431_kullanici_yedek_sil_toast_6_kisayol", "build": 431, "visibleVersion": "V4.16 •ExelanceX•", "shortVersion": "V4.16 •ExelanceX•", "name": "Mesaha İO V4.16 •ExelanceX•", "cacheName": "mesaha-app-v431-yedek-sil-toast-kisayol", "builtAt": "2026-07-03T18:30:00+03:00", "notes": "Kullanıcı bulut yedeği silme açıldı; 50 barkod kontrolü üstte yüzen toast yapıldı; çap/boy kısayolları 6 butona çıkarıldı; çap kısayolları en çok kullanılan çaplara göre sıralanır.", "assetVersion": "431"};
-const BASE_CACHE = META.cacheName || 'mesaha-app-v431-yedek-sil-toast-kisayol';
+const META = self.MESAHA_VERSION || {"app": "V4.17", "version": "v432_ios_kontrol_kisayol_admin_toplu", "build": 432, "visibleVersion": "V4.17 •ExelanceX•", "shortVersion": "V4.17 •ExelanceX•", "name": "Mesaha İO V4.17 •ExelanceX•", "cacheName": "mesaha-app-v432-ios-kontrol-kisayol-admin-toplu", "builtAt": "2026-07-03T20:30:00+03:00", "notes": "iOS 50 barkod kontrol değerleri düzeltildi; barkod kontrolü kompakt üst uyarı yapıldı; çap kısayolları sabit en çok kullanılan 6 çap mantığına alındı; admin alt menüsü toplandı.", "assetVersion": "432"};
+const BASE_CACHE = META.cacheName || 'mesaha-app-v432-ios-kontrol-kisayol-admin-toplu';
 const SHELL_CACHE = BASE_CACHE + '-shell';
 const ASSET_CACHE = BASE_CACHE + '-assets';
 const RUNTIME_CACHE = BASE_CACHE + '-runtime';
 const OFFLINE_TIMEOUT_MS = 3000;
-const VERSION_Q = String(META.assetVersion || META.build || 431);
+const VERSION_Q = String(META.assetVersion || META.build || 432);
 
 
 const SHELL_ASSETS = [
   './', './index.html', './admin.html', './temizle.html', './manifest.json', './version.json', './service-worker.js',
-  './js/version.js?v=431', './js/mesaha-early-optimizer.js?v=431', './js/mesaha-utils.js?v=431', './js/mesaha-data-guard.js?v=431',
-  './js/mesaha-stability-core.js?v=431', './js/mesaha-supabase-config.js?v=431', './js/mesaha-firebase.js?v=431', './js/mesaha-offline-core.js?v=431',
-  './js/mesaha-render-storage.js?v=431', './js/mesaha-sound.js?v=431'
+  './js/version.js?v=432', './js/mesaha-early-optimizer.js?v=432', './js/mesaha-utils.js?v=432', './js/mesaha-data-guard.js?v=432',
+  './js/mesaha-stability-core.js?v=432', './js/mesaha-supabase-config.js?v=432', './js/mesaha-firebase.js?v=432', './js/mesaha-offline-core.js?v=432',
+  './js/mesaha-render-storage.js?v=432', './js/mesaha-sound.js?v=432'
 ];
 const STATIC_ASSETS = [
-  './assets/icon-192.png', './assets/icon-512.png', './assets/mesaha_logo.png', './assets/hero_forest_cover.png?v=431',
-  './assets/mesaha_onay.wav?v=431', './assets/mesaha_uyari.wav?v=431'
+  './assets/icon-192.png', './assets/icon-512.png', './assets/mesaha_logo.png', './assets/hero_forest_cover.png?v=432',
+  './assets/mesaha_onay.wav?v=432', './assets/mesaha_uyari.wav?v=432'
 ];
 function timeoutReject(ms,label){return new Promise((_,reject)=>setTimeout(()=>reject(new Error(label||'network-timeout')),ms||OFFLINE_TIMEOUT_MS));}
 function networkWithTimeout(request,options,ms){return Promise.race([fetch(request,options||{}),timeoutReject(ms||OFFLINE_TIMEOUT_MS,'network-timeout')]);}
