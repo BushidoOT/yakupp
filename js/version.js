@@ -1,13 +1,13 @@
 self.MESAHA_VERSION = {
-  "app": "V3.94",
-  "version": "v409_kesimci_secimi_ziplama_fix",
-  "build": 409,
-  "visibleVersion": "V3.94 •ExelanceX•",
-  "shortVersion": "V3.94 •ExelanceX•",
-  "name": "Mesaha İO V3.94 •ExelanceX•",
-  "cacheName": "mesaha-app-v409-kesimci-secimi-ziplama-fix",
-  "builtAt": "2026-06-28T00:45:00+03:00",
-  "notes": "Mesaha Gir ekranında Kaydet sırasında Kesimci seçilmedi alanının küçülüp büyümesinden kaynaklanan ekran zıplaması düzeltildi.",
-  "assetVersion": "409"
+  "app": "V4.16",
+  "version": "v431_kullanici_yedek_sil_toast_6_kisayol",
+  "build": 431,
+  "visibleVersion": "V4.16 •ExelanceX•",
+  "shortVersion": "V4.16 •ExelanceX•",
+  "name": "Mesaha İO V4.16 •ExelanceX•",
+  "cacheName": "mesaha-app-v431-yedek-sil-toast-kisayol",
+  "builtAt": "2026-07-03T18:30:00+03:00",
+  "notes": "Kullanıcı bulut yedeği silme açıldı; 50 barkod kontrolü üstte yüzen toast yapıldı; çap/boy kısayolları 6 butona çıkarıldı; çap kısayolları en çok kullanılan çaplara göre sıralanır.",
+  "assetVersion": "431"
 };
 if (typeof window !== "undefined") window.MESAHA_VERSION = self.MESAHA_VERSION;
