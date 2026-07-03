@@ -1,12 +1,12 @@
 self.MESAHA_VERSION = {
-  "app": "V4.07",
-  "version": "v422_admin_istatistik_detay_log_kaldirildi",
-  "build": 422,
-  "visibleVersion": "V4.07 •ExelanceX•",
-  "shortVersion": "V4.07 •ExelanceX•",
-  "name": "Mesaha İO V4.07 •ExelanceX•",
-  "cacheName": "mesaha-app-v422-admin-istatistik-detay-log-kaldirildi",
-  "builtAt": "2026-07-02T15:30:00+03:00",
-  "notes": "Admin istatistikleri detaylandırıldı; debug/log tutucu ve detaylı log kodları yayından kaldırıldı.",
-  "assetVersion": "422"
+  "app": "V4.09",
+  "version": "v424_50_barkod_kontrol",
+  "build": 424,
+  "visibleVersion": "V4.09 •ExelanceX•",
+  "shortVersion": "V4.09 •ExelanceX•",
+  "name": "Mesaha İO V4.09 •ExelanceX•",
+  "cacheName": "mesaha-app-v424-50-barkod-kontrol",
+  "builtAt": "2026-07-03T05:00:00+03:00",
+  "notes": "50 barkodda bir tam ekran kontrol penceresi eklendi; son barkod, odun türü, boy ve çap ürün rengine göre gösterilir. Kayıt/ORBİS ve bulut silme mantığına dokunulmadı.",
+  "assetVersion": "424"
 };
