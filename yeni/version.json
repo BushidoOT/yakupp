@@ -1,12 +1,12 @@
 {
-  "app": "V4.19",
-  "version": "v434_kisayol_toast_stabil_fix",
-  "build": 434,
-  "visibleVersion": "V4.19 •ExelanceX•",
-  "shortVersion": "V4.19 •ExelanceX•",
-  "name": "Mesaha İO V4.19 •ExelanceX•",
-  "cacheName": "mesaha-app-v434-kisayol-toast-stabil-fix",
-  "builtAt": "2026-07-03T22:10:00+03:00",
-  "notes": "Kısayol stabilizasyonu: eski 5'li/son girilen çap kısayol renderı devre dışı bırakıldı; çapta en çok kullanılan 6 çap sabitlendi; boy 6 kısayol stabil hale getirildi; 50 barkod kontrolü üst bar altında daha küçük/minimal görünecek şekilde düzeltildi.",
-  "assetVersion": "434"
+  "app": "V4.20",
+  "version": "v435_mobil_kisayol_toast_duzen_fix",
+  "build": 435,
+  "visibleVersion": "V4.20 •ExelanceX•",
+  "shortVersion": "V4.20 •ExelanceX•",
+  "name": "Mesaha İO V4.20 •ExelanceX•",
+  "cacheName": "mesaha-app-v435-mobil-kisayol-toast-duzen-fix",
+  "builtAt": "2026-07-03T23:58:00+03:00",
+  "notes": "Mobil düzen: çap ve boy kısayolları 2 satır/3 kolon rahat düzene alındı; eski son-girilen çap renderı sabitlendi; 50 barkod kontrol uyarısı daha aşağı ve minimal hale getirildi.",
+  "assetVersion": "435"
 }
