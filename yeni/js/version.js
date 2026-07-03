@@ -1,12 +1,13 @@
 self.MESAHA_VERSION = {
-  "app": "V4.09",
-  "version": "v424_50_barkod_kontrol",
-  "build": 424,
-  "visibleVersion": "V4.09 •ExelanceX•",
-  "shortVersion": "V4.09 •ExelanceX•",
-  "name": "Mesaha İO V4.09 •ExelanceX•",
-  "cacheName": "mesaha-app-v424-50-barkod-kontrol",
-  "builtAt": "2026-07-03T05:00:00+03:00",
-  "notes": "50 barkodda bir tam ekran kontrol penceresi eklendi; son barkod, odun türü, boy ve çap ürün rengine göre gösterilir. Kayıt/ORBİS ve bulut silme mantığına dokunulmadı.",
-  "assetVersion": "424"
+  "app": "V4.11",
+  "version": "v426_supabase_gecis",
+  "build": 426,
+  "visibleVersion": "V4.11 •ExelanceX•",
+  "shortVersion": "V4.11 •ExelanceX•",
+  "name": "Mesaha İO V4.11 •ExelanceX•",
+  "cacheName": "mesaha-app-v426-supabase-gecis",
+  "builtAt": "2026-07-03T09:30:00+03:00",
+  "notes": "Firebase yerine Supabase geçiş motoru eklendi; mevcut kodlar Supabase uyumluluk katmanı ile çalışır.",
+  "assetVersion": "426"
 };
+if (typeof window !== "undefined") window.MESAHA_VERSION = self.MESAHA_VERSION;
