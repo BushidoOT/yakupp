@@ -1,9 +1,9 @@
-/* Mesaha İO v428 — Supabase gelişmiş admin motoru
+/* Mesaha İO v430 — Supabase gelişmiş admin motoru
    Eski kodların bozulmaması için Supabase tablo benzeri küçük bir uyumluluk katmanı sağlar.
    Veriler Supabase REST tablolarına yazılır/okunur. */
 (function(){
   'use strict';
-  var VERSION='v428_admin_gelismis_yetkili';
+  var VERSION='v430_admin_yedek_yetki_duzeltme';
   var readyPromise=null;
   var lastOkMs=0;
   var lastError='';
