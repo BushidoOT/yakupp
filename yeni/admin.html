@@ -4,10 +4,10 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
 <meta name="theme-color" content="#ffffff"/>
-<link rel="manifest" href="./manifest.json?v=427"/>
+<link rel="manifest" href="./manifest.json?v=428"/>
 <link rel="apple-touch-icon" href="./assets/icon-192.png"/>
-<title>Mesaha İO Admin V4.12</title>
-<style id="mesaha-v427_supabase_temiz_gecis">
+<title>Mesaha İO Admin V4.13</title>
+<style id="mesaha-v428_admin_gelismis_yetkili">
 
 :root{
   --bg:#f6f8fb;
@@ -59,7 +59,7 @@ a{color:inherit}.hidden{display:none!important}.app{width:min(1180px,100%);margi
 
 
 
-/* V4.12 / build 412 modern admin tasarım */
+/* V4.13 / build 412 modern admin tasarım */
 :root{--emerald:#16a34a;--emerald-soft:#ecfdf3;--sky:#2563eb;--sky-soft:#eff6ff;--amber:#f59e0b;--amber-soft:#fff7ed;--rose:#ef4444;--rose-soft:#fef2f2;}
 body{background:radial-gradient(circle at top left,rgba(34,197,94,.11),transparent 34%),linear-gradient(180deg,#fbfdff 0%,#f5f8fc 48%,#eef5f2 100%)}
 .top{border-radius:0 0 28px 28px;box-shadow:0 10px 34px rgba(15,23,42,.06)}
@@ -71,7 +71,7 @@ body{background:radial-gradient(circle at top left,rgba(34,197,94,.11),transpare
 
 
 
-/* V4.12 / build 412 admin analiz, işlem geçmişi ve toplu bildirim */
+/* V4.13 / build 412 admin analiz, işlem geçmişi ve toplu bildirim */
 .admin-v400-tool-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
 .broadcast-card-v400 textarea{min-height:96px;resize:vertical}
 .broadcast-target-grid-v400{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
@@ -84,7 +84,7 @@ body{background:radial-gradient(circle at top left,rgba(34,197,94,.11),transpare
 .analysis-columns-v400{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
 .broadcast-pill-v400{background:#eff6ff;border-color:#bfdbfe;color:#1d4ed8}
 
-/* V4.12 / build 421 admin istatistik sekmesi */
+/* V4.13 / build 421 admin istatistik sekmesi */
 .stats-hero-v421{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:14px 0}
 .stat-card-v421{position:relative;overflow:hidden;border:1px solid var(--line);border-radius:24px;background:linear-gradient(135deg,#fff,#f8fbff);padding:16px;box-shadow:var(--shadow-soft)}
 .stat-card-v421:after{content:"";position:absolute;right:-36px;bottom:-54px;width:124px;height:124px;border-radius:999px;background:rgba(22,163,74,.08)}
@@ -100,7 +100,7 @@ body{background:radial-gradient(circle at top left,rgba(34,197,94,.11),transpare
 .stat-note-v421{margin-top:10px;color:var(--muted);font-size:12px;font-weight:800;line-height:1.35}
 @media(max-width:760px){.stats-hero-v421,.stats-grid-v421{grid-template-columns:1fr}.stat-card-v421 .stat-values-v421{grid-template-columns:1fr 1fr}}
 
-/* V4.12 / build 412 admin duyuru silme ve 7 günlük otomatik temizlik */
+/* V4.13 / build 412 admin duyuru silme ve 7 günlük otomatik temizlik */
 .broadcast-admin-list-v411{display:grid;gap:10px;margin-top:14px}
 .broadcast-admin-item-v411{border:1px solid #dbeafe;border-radius:18px;background:#ffffff;padding:12px;display:grid;gap:8px}
 .broadcast-admin-item-v411 b{color:#1d4ed8}.broadcast-admin-item-v411 small{color:#64748b;font-weight:800}.broadcast-admin-item-v411 p{margin:0;color:#334155;line-height:1.35;font-weight:750}
@@ -114,13 +114,16 @@ body{background:radial-gradient(circle at top left,rgba(34,197,94,.11),transpare
 .stat-split-v422{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:14px}.stat-row-v422 .sub{display:block;color:#64748b;font-size:11px;margin-top:2px}.stat-row-v422 .num small{color:#64748b;font-size:11px}
 @media(max-width:760px){.stats-detail-v422{grid-template-columns:repeat(2,minmax(0,1fr))}.stat-split-v422{grid-template-columns:1fr}}
 
+
+/* V4.13 / build 428 gelişmiş admin modülleri */
+.admin-extra-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.admin-extra-grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}.admin-extra-card{background:#fff;border:1px solid var(--line);border-radius:24px;padding:16px;box-shadow:0 12px 32px rgba(15,23,42,.06)}.admin-extra-card h3{margin:0 0 8px;font-size:18px}.admin-extra-card p{margin:0;color:var(--muted);line-height:1.45}.admin-action-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}.admin-list-compact{display:grid;gap:10px}.admin-row-428{display:grid;grid-template-columns:42px 1fr auto;gap:10px;align-items:center;border:1px solid var(--line);background:#fff;border-radius:18px;padding:11px}.admin-row-428 .idx{width:42px;height:42px;border-radius:15px;display:grid;place-items:center;background:#f1f5f9;font-weight:1000}.admin-row-428 b{display:block}.admin-row-428 small{display:block;color:var(--muted);font-weight:800;font-size:12px}.admin-row-428.warn{border-color:#fed7aa;background:#fff7ed}.admin-row-428.danger{border-color:#fecaca;background:#fff1f2}.admin-row-428.ok{border-color:#bbf7d0;background:#f0fdf4}.admin-row-428 .num{text-align:right;font-weight:1000}.admin-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.admin-form-grid.full{grid-template-columns:1fr}.admin-note{border:1px dashed #cbd5e1;border-radius:18px;padding:12px;background:#f8fafc;color:#475569;font-weight:800;line-height:1.45}.role-badge{border-radius:999px;padding:6px 9px;font-weight:1000;font-size:12px}.role-owner{background:#f5f3ff;color:#6d28d9;border:1px solid #ddd6fe}.role-admin{background:#dbeafe;color:#1d4ed8;border:1px solid #bfdbfe}.role-viewer{background:#f1f5f9;color:#475569;border:1px solid #cbd5e1}.danger-inline{color:#991b1b;font-weight:1000}.tabs{grid-template-columns:repeat(12,72px);overflow-x:auto;justify-content:flex-start}.tab{min-width:68px}.backup-actions-428{display:flex;flex-wrap:wrap;gap:8px}.hidden-file{display:none!important}@media(max-width:760px){.admin-extra-grid,.admin-extra-grid.three,.admin-form-grid{grid-template-columns:1fr}.admin-row-428{grid-template-columns:38px 1fr}.admin-row-428 .num{grid-column:1/-1;text-align:left}.tabs{width:calc(100vw - 16px);justify-content:flex-start}}
 </style>
 </head>
 <body>
 
 <div class="app">
   <header class="top">
-    <div class="brand"><img alt="" src="./assets/mesaha_logo.png"/><div><b>Mesaha İO Admin</b><small>Modern Yönetim Paneli • V4.12</small></div></div>
+    <div class="brand"><img alt="" src="./assets/mesaha_logo.png"/><div><b>Mesaha İO Admin</b><small>Modern Yönetim Paneli • V4.13</small></div></div>
     <div class="top-actions"><a class="btn soft app-return-btn" data-app-home href="./index.html" title="Normal uygulamaya dön">← Uygulama</a><button class="btn green" id="refreshBtn" type="button">Yenile</button></div>
   </header>
 
@@ -161,6 +164,9 @@ body{background:radial-gradient(circle at top left,rgba(34,197,94,.11),transpare
         <button class="quick" data-go="backups"><span>☁️</span><b>Yedekler</b><small>Bulut kayıtları</small></button>
         <button class="quick" data-go="tickets"><span>🔔</span><b>Bildirimler</b><small>Kullanıcı mesajları</small></button>
         <button class="quick" data-go="tools"><span>⚙️</span><b>Araçlar</b><small>Sistem işlemleri</small></button>
+        <button class="quick" data-go="control"><span>🧪</span><b>Kontrol</b><small>Veri hata yakalama</small></button>
+        <button class="quick" data-go="orbis"><span>📤</span><b>ORBİS</b><small>Uyum ve indirme</small></button>
+        <button class="quick" data-go="recovery"><span>🛡️</span><b>Kurtarma</b><small>Arşiv ve geri alma</small></button>
       </div>
       <div class="screen-grid">
         <div class="phone-card chart-card"><div class="phone-head"><b>Aktivite Özeti</b><span class="pill green">Son 7 gün</span></div><div class="inside" id="activityMiniChart"></div></div>
@@ -210,7 +216,7 @@ body{background:radial-gradient(circle at top left,rgba(34,197,94,.11),transpare
 
     <section class="panel" id="tab-backups">
       <div class="section-title"><div><h2>Bulut Yedekleri</h2><p>Kullanıcıların yedeklerini kontrol et ve gerekirse sil.</p></div><span class="pill green" id="backupCount">0 yedek</span></div>
-      <div class="toolbar" style="grid-template-columns:1fr auto"><input id="backupUserFilter" placeholder="Kullanıcı veya şeflik ara..."/><span class="pill green">Silme kapalı</span></div>
+      <div class="toolbar" style="grid-template-columns:1fr auto"><input id="backupUserFilter" placeholder="Kullanıcı veya şeflik ara..."/><span class="pill green">Yetkili yönetim açık</span></div>
       <div class="list" id="backupsList"></div>
     </section>
 
@@ -222,12 +228,12 @@ body{background:radial-gradient(circle at top left,rgba(34,197,94,.11),transpare
     <section class="panel" id="tab-tools">
       <div class="section-title"><div><h2>Araçlar</h2><p>Güçlü işlemler burada; ana ekranı karıştırmaz.</p></div></div>
       <div class="screen-grid">
-        <div class="card"><h2>Güvenli Araçlar</h2><div class="list"><button class="btn green" id="healthBtn" type="button">Supabase Bağlantı Testi</button><button class="btn soft" id="exportBtn" type="button">Tüm Verileri JSON İndir</button><span class="pill green">Sıfırlama kapalı</span></div></div>
-        <div class="card"><h2>Bulut Koruma</h2><p style="margin:0;color:var(--muted)">Bu sürümde kullanıcı, yedek ve bildirim silme/sıfırlama işlemleri kapalıdır. Admin panel sadece okuma, cevaplama ve dışa aktarma yapar.</p></div>
+        <div class="card"><h2>Güvenli Araçlar</h2><div class="list"><button class="btn green" id="healthBtn" type="button">Supabase Bağlantı Testi</button><button class="btn soft" id="exportBtn" type="button">Tüm Verileri JSON İndir</button><span class="pill green">Arşivli işlem açık</span></div></div>
+        <div class="card"><h2>Bulut Koruma</h2><p style="margin:0;color:var(--muted)">Bu sürümde yetkiler açıldı. Riskli işlemler arşive alınarak yapılır; kalıcı silme yerine geri alınabilir arşiv kullanılır.</p></div>
       </div>
       <div class="admin-v400-tool-grid">
         <div class="card broadcast-card-v400">
-          <div class="space"><div><h2>Toplu Bildirim Gönder</h2><p style="margin:4px 0 0;color:var(--muted)">Tüm kullanıcılara veya seçili gruba duyuru gönder.</p></div><span class="pill broadcast-pill-v400">V4.12</span></div>
+          <div class="space"><div><h2>Toplu Bildirim Gönder</h2><p style="margin:4px 0 0;color:var(--muted)">Tüm kullanıcılara veya seçili gruba duyuru gönder.</p></div><span class="pill broadcast-pill-v400">V4.13</span></div>
           <label class="field"><span>Hedef grup</span><select id="broadcastTargetV400"><option value="all">Tüm kullanıcılar</option><option value="oldVersion">Eski sürüm kullananlar</option><option value="activeToday">Bugün aktif olanlar</option><option value="noBackup">Yedeği olmayanlar</option></select></label>
           <label class="field"><span>Başlık</span><input id="broadcastTitleV400" maxlength="80" placeholder="Örn: Yeni güncelleme yayınlandı"/></label>
           <label class="field"><span>Mesaj</span><textarea id="broadcastMessageV400" maxlength="500" placeholder="Kullanıcılara gösterilecek kısa mesajı yaz…"></textarea></label>
@@ -237,6 +243,63 @@ body{background:radial-gradient(circle at top left,rgba(34,197,94,.11),transpare
         </div>
       </div>
     </section>
+
+    <section class="panel" id="tab-control">
+      <div class="section-title"><div><h2>Veri Kontrol</h2><p>Barkod, çap, boy, ağaç/odun türü ve tekrar kontrolleri. Hacim boş kontrolü bilinçli olarak yok.</p></div><button class="btn green" id="runDataControlBtn" type="button">Kontrolü Yenile</button></div>
+      <div class="admin-extra-grid three" id="dataControlSummary428"></div>
+      <div class="screen-grid" style="margin-top:14px">
+        <div class="phone-card"><div class="phone-head"><b>Kritik Uyarılar</b><span class="pill" id="dataIssueCount428">0 uyarı</span></div><div class="inside admin-list-compact" id="dataIssues428"></div></div>
+        <div class="phone-card"><div class="phone-head"><b>Barkod Kontrol</b><span class="pill">Tekrar / sıra</span></div><div class="inside admin-list-compact" id="barcodeIssues428"></div></div>
+      </div>
+    </section>
+
+    <section class="panel" id="tab-orbis">
+      <div class="section-title"><div><h2>ORBİS Kontrol</h2><p>XLS indirme geçmişi, 1000 kayıt üstü bölme uyarısı, ağaç/ürün ayrımı ve başlık uyum kontrolü.</p></div><span class="pill green">Hacim boş uyarısı kapalı</span></div>
+      <div class="admin-extra-grid three" id="orbisSummary428"></div>
+      <div class="screen-grid" style="margin-top:14px">
+        <div class="phone-card"><div class="phone-head"><b>Son XLS / Yedek Hareketleri</b><span class="pill" id="orbisEventCount428">0 hareket</span></div><div class="inside admin-list-compact" id="orbisEvents428"></div></div>
+        <div class="phone-card"><div class="phone-head"><b>Uyum Notları</b><span class="pill">ORBİS</span></div><div class="inside admin-list-compact" id="orbisChecks428"></div></div>
+      </div>
+    </section>
+
+    <section class="panel" id="tab-updates">
+      <div class="section-title"><div><h2>Güncelleme Yönetimi</h2><p>Eski sürüm kullananlar, bakım modu, zorunlu güncelleme ve uygulama mesajı.</p></div><button class="btn green" id="saveUpdateSettings428" type="button">Ayarları Kaydet</button></div>
+      <div class="screen-grid">
+        <div class="card"><h2>Uygulama Ayarları</h2><div class="admin-form-grid"><label class="field"><span>Minimum sürüm / not</span><input id="minVersion428" placeholder="Örn: V4.13"/></label><label class="field"><span>Bakım modu</span><select id="maintenance428"><option value="false">Kapalı</option><option value="true">Açık</option></select></label></div><label class="field"><span>Uygulama mesajı</span><textarea id="appMessage428" placeholder="Kullanıcılara gösterilecek kısa mesaj"></textarea></label><div class="admin-note">Bu ayarlar adminSettings/appControl içine yazılır. Kullanıcı tarafına ayrıca okuma ekranı eklendiğinde aktif uyarı olarak gösterilir.</div></div>
+        <div class="phone-card"><div class="phone-head"><b>Eski Sürüm Kullananlar</b><span class="pill" id="oldVersionCount428">0</span></div><div class="inside admin-list-compact" id="oldVersionUsers428"></div></div>
+      </div>
+    </section>
+
+    <section class="panel" id="tab-system">
+      <div class="section-title"><div><h2>Sistem Sağlığı</h2><p>Supabase bağlantısı, tablo kayıt sayıları ve son admin işlemleri.</p></div><button class="btn green" id="systemHealthBtn428" type="button">Test Et</button></div>
+      <div class="admin-extra-grid three" id="systemSummary428"></div>
+      <div class="screen-grid" style="margin-top:14px">
+        <div class="phone-card"><div class="phone-head"><b>Tablo Durumu</b><span class="pill">Supabase</span></div><div class="inside admin-list-compact" id="tableStatus428"></div></div>
+        <div class="phone-card"><div class="phone-head"><b>Son Admin İşlemleri</b><span class="pill" id="actionLogCount428">0</span></div><div class="inside admin-list-compact" id="actionLogs428"></div></div>
+      </div>
+    </section>
+
+    <section class="panel" id="tab-roles">
+      <div class="section-title"><div><h2>Yetkiler</h2><p>Admin yetkileri ve roller. Yakup/Yaylacık süper admin olarak tam yetkili gelir.</p></div><button class="btn green" id="openAllPerms428" type="button">Tüm Yetkileri Aç</button></div>
+      <div class="screen-grid">
+        <div class="card"><h2>Yeni / Güncel Yetki</h2><div class="admin-form-grid"><label class="field"><span>Kullanıcı anahtarı</span><input id="permUserKey428" placeholder="yakup__yaylacik"/></label><label class="field"><span>Ad Soyad</span><input id="permName428" placeholder="Yakup"/></label><label class="field"><span>Şeflik</span><input id="permSeflik428" placeholder="Yaylacık"/></label><label class="field"><span>Rol</span><select id="permRole428"><option value="owner">Süper Admin</option><option value="admin">Admin</option><option value="viewer">İzleyici</option></select></label></div><button class="btn green" id="savePerm428" type="button">Yetkiyi Kaydet</button></div>
+        <div class="phone-card"><div class="phone-head"><b>Yetkili Kullanıcılar</b><span class="pill" id="permCount428">0</span></div><div class="inside admin-list-compact" id="permissionsList428"></div></div>
+      </div>
+    </section>
+
+    <section class="panel" id="tab-recovery">
+      <div class="section-title"><div><h2>Kurtarma Merkezi</h2><p>Dışa aktar, JSON geri yükle, arşivlenenleri geri al. Silinenler önce arşive alınır.</p></div><button class="btn green" id="exportFullRecovery428" type="button">Tam Kurtarma JSON İndir</button></div>
+      <div class="screen-grid">
+        <div class="card"><h2>JSON Geri Yükle</h2><p style="color:var(--muted);margin-top:0">admin_tum_veriler veya Mesaha yedek JSON içeriğini buraya yapıştır.</p><textarea id="restoreJsonText428" rows="7" placeholder="JSON içeriği"></textarea><div class="admin-action-row"><button class="btn green" id="restoreJsonBtn428" type="button">İçe Aktar</button><button class="btn soft" id="downloadUsers428" type="button">Kullanıcıları İndir</button><button class="btn soft" id="downloadBackups428" type="button">Yedekleri İndir</button></div></div>
+        <div class="phone-card"><div class="phone-head"><b>Arşiv / Geri Alma</b><span class="pill" id="archiveCount428">0</span></div><div class="inside admin-list-compact" id="archiveList428"></div></div>
+      </div>
+    </section>
+
+    <section class="panel" id="tab-settings">
+      <div class="section-title"><div><h2>Ayarlar</h2><p>Admin panel notları, güvenlik notu ve hızlı bakım ayarları.</p></div><button class="btn green" id="savePanelNote428" type="button">Kaydet</button></div>
+      <div class="screen-grid"><div class="card"><h2>Panel Notu</h2><textarea id="panelNote428" rows="6" placeholder="Admin notu"></textarea></div><div class="card"><h2>Güvenlik</h2><div class="admin-note">Tüm yetkiler açık olsa bile silme işlemleri arşive alınır. Hacim boş kontrolü kapalıdır; ORBİS hacmi otomatik doldurduğu için hata sayılmaz.</div></div></div>
+    </section>
+
   </main>
 </div>
 <nav aria-label="Admin sekmeleri" class="tabs hidden" id="tabs">
@@ -246,19 +309,26 @@ body{background:radial-gradient(circle at top left,rgba(34,197,94,.11),transpare
   <button class="tab" data-tab="backups"><span>☁️</span>Yedek</button>
   <button class="tab" data-tab="tickets"><span>🔔</span>Bildirim</button>
   <button class="tab" data-tab="tools"><span>⚙️</span>Araç</button>
+  <button class="tab" data-tab="control"><span>🧪</span>Kontrol</button>
+  <button class="tab" data-tab="orbis"><span>📤</span>ORBİS</button>
+  <button class="tab" data-tab="updates"><span>🔄</span>Sürüm</button>
+  <button class="tab" data-tab="system"><span>🧰</span>Sistem</button>
+  <button class="tab" data-tab="roles"><span>🔐</span>Yetki</button>
+  <button class="tab" data-tab="recovery"><span>🛡️</span>Kurtar</button>
+  <button class="tab" data-tab="settings"><span>⚙️</span>Ayar</button>
 </nav>
 <div class="modal" id="modal"><div class="modal-card"><div class="space"><h2 id="modalTitle">Detay</h2><button class="btn soft" id="modalClose" type="button">Kapat</button></div><div id="modalBody"></div></div></div>
 <div class="toast" id="toast"></div>
 
-<script src="./js/mesaha-supabase-config.js?v=427"></script>
-<script src="./js/mesaha-firebase.js?v=427"></script>
+<script src="./js/mesaha-supabase-config.js?v=428"></script>
+<script src="./js/mesaha-firebase.js?v=428"></script>
 <script>
 (function(){
 'use strict';
 const ADMIN_CODE='4767';
 const CLOUD_ENGINE='supabase';
 const $=id=>document.getElementById(id);
-const state={users:[],rawUsers:[],backups:[],tickets:[],usage:[],broadcasts:[],exports:[],collectionErrors:{},showAllTickets:false,ready:false};
+const state={users:[],rawUsers:[],backups:[],tickets:[],usage:[],broadcasts:[],exports:[],permissions:[],archives:[],actionLogs:[],settings:[],healthChecks:[],collectionErrors:{},showAllTickets:false,ready:false};
 let readyPromise=null;
 function esc(v){return String(v==null?'':v).replace(/[&<>'"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[m]))}
 function n(v){const x=Number(v||0);return Number.isFinite(x)?x:0}
@@ -353,13 +423,18 @@ async function loadAll(){
     $('syncInfo').textContent='Supabase verileri okunuyor…';
     state.collectionErrors={};
     const {db}=await ready();
-    const [users,backups,tickets,usage,broadcastsRaw,exportsRaw]=await Promise.all([
+    const [users,backups,tickets,usage,broadcastsRaw,exportsRaw,permissionsRaw,archivesRaw,actionLogsRaw,settingsRaw,healthRaw]=await Promise.all([
       getColSafe(db,'users',true),
       getColSafe(db,'backups',true),
       getColSafe(db,'supportTickets',true),
       getColSafe(db,'usageStats',false),
       getColSafe(db,'adminBroadcasts',false),
-      getColSafe(db,'exportLogs',false)
+      getColSafe(db,'exportLogs',false),
+      getColSafe(db,'adminPermissions',false),
+      getColSafe(db,'archivedItems',false),
+      getColSafe(db,'adminActionLogs',false),
+      getColSafe(db,'adminSettings',false),
+      getColSafe(db,'healthChecks',false)
     ]);
     state.rawUsers=users||[];
     state.users=users;
@@ -403,11 +478,11 @@ function appVersionOf(u){
   const raw = u.appVersion || u.fileVersion || (u.lastDeviceInfo && (u.lastDeviceInfo.appVersion || u.lastDeviceInfo.fileVersion)) || u.version || '-';
   return String(raw || '-').replace('•ExelanceX•','').trim();
 }
-function latestAppVersion(){return (window.MESAHA_VERSION && window.MESAHA_VERSION.app) || 'V4.12'}
+function latestAppVersion(){return (window.MESAHA_VERSION && window.MESAHA_VERSION.app) || 'V4.13'}
 function isOldAppVersion(u){
   const v=appVersionOf(u); if(!v || v==='-') return false;
   const latest=latestAppVersion();
-  return !String(v).includes(latest) && !String(v).includes((window.MESAHA_VERSION && window.MESAHA_VERSION.version) || 'v427_supabase_temiz_gecis');
+  return !String(v).includes(latest) && !String(v).includes((window.MESAHA_VERSION && window.MESAHA_VERSION.version) || 'v428_admin_gelismis_yetkili');
 }
 function isActiveUser(u,spanMs){const last=n(u.lastSeenMs||u.lastLoginMs||u.updatedAtMs);return last>=Date.now()-(spanMs||15*60000)}
 function userTickets(key){return state.tickets.filter(t=>userKeyOf(t)===key)}
@@ -425,7 +500,7 @@ async function cleanupOldBroadcasts(db,arr){return}
 function renderBroadcastsV411(){const box=$('broadcastListV411');if(!box)return;const arr=(state.broadcasts||[]).slice(0,25);box.innerHTML=arr.length?arr.map(b=>`<div class="broadcast-admin-item-v411"><div class="space"><div><b>${esc(b.title||'Duyuru')}</b><small>${esc(b.createdAt||'-')} • ${int(b.targetCount||((b.targetUserKeys||[]).length))} kullanıcı</small></div><span class="broadcast-expire-v411">${esc(broadcastExpireText(b))}</span></div><p>${esc(b.message||'-')}</p><div class="row"><span class="chip">${esc(b.target||'all')}</span></div></div>`).join(''):'<div class="empty">Aktif admin duyurusu yok.</div>'}
 async function deleteBroadcastV411(id){toast('Silme işlemleri bu güvenli sürümde kapalı');}
 function broadcastTargetUsers(target){let arr=state.users.slice();if(target==='oldVersion')arr=arr.filter(isOldAppVersion);else if(target==='activeToday'){const ts=todayStart();arr=arr.filter(u=>n(u.lastSeenMs||u.lastLoginMs)>=ts)}else if(target==='noBackup')arr=arr.filter(u=>!userBackups(userKeyOf(u)).length);return arr}
-async function sendBroadcastV400(){const target=($('broadcastTargetV400')||{}).value||'all';const title=($('broadcastTitleV400')||{}).value.trim();const message=($('broadcastMessageV400')||{}).value.trim();if(!title||!message){toast('Başlık ve mesaj gerekli');return}const targets=broadcastTargetUsers(target);if(!targets.length){toast('Bu hedefte kullanıcı yok');return}if(!confirm(targets.length+' kullanıcıya bildirim gönderilsin mi?'))return;const now=new Date();const targetKeys=targets.map(userKeyOf).filter(Boolean);const {db}=await ready();const ref=db.collection('adminBroadcasts').doc('bc_'+Date.now().toString(36));const createdAtMs=Date.now();await ref.set({id:ref.id,title,message,target,targetUserKeys:targetKeys,targetCount:targetKeys.length,createdAt:now.toLocaleString('tr-TR'),createdAtMs,expiresAtMs:createdAtMs+7*24*60*60*1000,status:'active',appVersion:'V4.12',build:427});if($('broadcastInfoV400'))$('broadcastInfoV400').textContent=targetKeys.length+' kullanıcıya gönderildi.';if($('broadcastMessageV400'))$('broadcastMessageV400').value='';toast('Toplu bildirim gönderildi');await loadAll()}
+async function sendBroadcastV400(){const target=($('broadcastTargetV400')||{}).value||'all';const title=($('broadcastTitleV400')||{}).value.trim();const message=($('broadcastMessageV400')||{}).value.trim();if(!title||!message){toast('Başlık ve mesaj gerekli');return}const targets=broadcastTargetUsers(target);if(!targets.length){toast('Bu hedefte kullanıcı yok');return}if(!confirm(targets.length+' kullanıcıya bildirim gönderilsin mi?'))return;const now=new Date();const targetKeys=targets.map(userKeyOf).filter(Boolean);const {db}=await ready();const ref=db.collection('adminBroadcasts').doc('bc_'+Date.now().toString(36));const createdAtMs=Date.now();await ref.set({id:ref.id,title,message,target,targetUserKeys:targetKeys,targetCount:targetKeys.length,createdAt:now.toLocaleString('tr-TR'),createdAtMs,expiresAtMs:createdAtMs+7*24*60*60*1000,status:'active',appVersion:'V4.13',build:428});if($('broadcastInfoV400'))$('broadcastInfoV400').textContent=targetKeys.length+' kullanıcıya gönderildi.';if($('broadcastMessageV400'))$('broadcastMessageV400').value='';toast('Toplu bildirim gönderildi');await loadAll()}
 function renderKpis(){
   const ts=todayStart(), week=Date.now()-7*86400000;
   const activeToday=state.users.filter(u=>n(u.lastSeenMs||u.lastLoginMs||u.updatedAtMs)>=ts).length;
@@ -554,10 +629,49 @@ function renderStatsV421(){
   if($('statReadStateV422'))$('statReadStateV422').textContent=Object.keys(state.collectionErrors||{}).length?'Kısmi':'Temiz';
 }
 
-function render(){renderKpis();renderHome();renderUsers();renderStatsV421();renderBackups();renderTickets();renderBroadcastsV411()}
-async function deleteBackupFull(db,id){throw new Error('Bulut yedek silme bu güvenli sürümde kapalı')}
-async function delBackup(id){toast('Yedek silme bu güvenli sürümde kapalı');}
-async function delUser(key){toast('Kullanıcı silme bu güvenli sürümde kapalı');}
+
+
+function safeArray(x){return Array.isArray(x)?x:[]}
+function backupRecords(b){try{const p=b&&b.payload||{};if(Array.isArray(b.records))return b.records;if(Array.isArray(p.records))return p.records;if(Array.isArray(p.data))return p.data;if(Array.isArray(p.measurements))return p.measurements;}catch(e){}return []}
+function recordBarcode(r){return String(r.barkodNo||r.barcode||r.barkod||r.no||'').trim()}
+function recordCap(r){return n(r.cap||r.capCm||r.capValue||r.çap)}
+function recordBoy(r){return n(r.boy||r.boyM||r.length)}
+function recordProduct(r){return String(r.odunAdi||r.product||r.odunTuru||r.type||'').trim()}
+function recordTree(r){return String(r.agacAdi||r.tree||r.agacTuru||'').trim()}
+function allBackupRecords(){const out=[];(state.backups||[]).forEach(b=>backupRecords(b).forEach((r,i)=>out.push({backup:b,record:r,index:i})));return out}
+function issueRow(icon,title,sub,kind,num){return `<div class="admin-row-428 ${kind||''}"><div class="idx">${esc(icon)}</div><div><b>${esc(title)}</b><small>${esc(sub||'')}</small></div><div class="num">${num==null?'':esc(num)}</div></div>`}
+function renderDataControl428(){const recs=allBackupRecords();const issues=[];const barcodeMap={};recs.forEach(x=>{const r=x.record,b=x.backup,bc=recordBarcode(r);if(!bc)issues.push(['!',(b.name||'Yedek')+' boş barkod','Satır '+(x.index+1),'danger']);else{if(!barcodeMap[bc])barcodeMap[bc]=[];barcodeMap[bc].push(x)}const cap=recordCap(r),boy=recordBoy(r);if(cap && (cap<5||cap>120))issues.push(['Ç',bc||'-','Geçersiz çap: '+cap,'warn']);if(boy && (boy<0.5||boy>12))issues.push(['B',bc||'-','Geçersiz boy: '+boy,'warn']);if(!recordProduct(r))issues.push(['Ü',bc||'-','Odun türü boş','warn']);if(!recordTree(r))issues.push(['A',bc||'-','Ağaç türü boş','warn']);});const dups=Object.entries(barcodeMap).filter(([,arr])=>arr.length>1);dups.forEach(([bc,arr])=>issues.push(['↻',bc,arr.length+' tekrar','danger']));const usersNoBackup=state.users.filter(u=>!userBackups(userKeyOf(u)).length);const overLimit=state.users.filter(u=>n(u.recordCount||u.totalRecords||u.adet)>1000);const missingProfile=state.users.filter(u=>!personNameOf(u)||!seflikOf(u));if($('dataControlSummary428'))$('dataControlSummary428').innerHTML=[['👥','Kullanıcı',state.users.length,'Toplam kullanıcı'],['☁️','Yedek',state.backups.length,'Bulut yedeği'],['🔎','Okunabilir kayıt',recs.length,'Yedek içinde görülen kayıt'],['⚠️','Uyarı',issues.length,'Hacim boş hariç'],['🚫','Yedeksiz',usersNoBackup.length,'Yedek yok'],['1000+','1000 üstü',overLimit.length,'Bölme önerilir']].map(x=>`<div class="admin-extra-card"><h3>${x[0]} ${x[1]}</h3><b style="font-size:28px">${int(x[2])}</b><p>${esc(x[3])}</p></div>`).join('');if($('dataIssueCount428'))$('dataIssueCount428').textContent=int(issues.length)+' uyarı';let list=issues.slice(0,80).map(x=>issueRow(x[0],x[1],x[2],x[3])).join('');if(!list)list='<div class="empty">Hacim boş kontrolü hariç kritik sorun görünmüyor.</div>';if($('dataIssues428'))$('dataIssues428').innerHTML=list;let bl=[];if(dups.length)bl.push(...dups.slice(0,40).map(([bc,arr])=>issueRow('↻',bc,arr.length+' kayıt aynı barkod','danger')));if(!recs.length)bl.push(issueRow('i','Kayıt düzeyi kontrol için yedek kayıtları gerekli','Chunk içinde kayıt okunamıyorsa sadece özet kontrol yapılır','warn'));if($('barcodeIssues428'))$('barcodeIssues428').innerHTML=bl.length?bl.join(''):'<div class="empty">Tekrarlı barkod görünmüyor.</div>'}
+function renderOrbis428(){const events=[...(state.exports||[]).map(x=>Object.assign({kind:'XLS'},x)),...(state.backups||[]).map(x=>Object.assign({kind:'Yedek'},x))].sort((a,b)=>eventTime(b)-eventTime(a));const over=events.filter(x=>n(x.recordCount||x.totalRecords||x.adet)>1000);const treeSep=events.filter(x=>Object.keys(x.treeTotals||x.lastExportTreeTotals||{}).length>1);if($('orbisSummary428'))$('orbisSummary428').innerHTML=[['📤','İndirme/Yedek',events.length,'Son hareket'],['1000+','Bölme gereken',over.length,'1000 kayıt üstü'],['🌲','Karışık ağaç',treeSep.length,'Ağaca göre ayrı indir önerilir'],['✅','Hacim kontrolü','Kapalı','ORBİS otomatik dolduruyor'],['🧾','Başlık uyumu','agacId → barkodNo','Beklenen sıra'],['🧩','Parçalama','Aktif öneri','Admin uyarı verir']].map(x=>`<div class="admin-extra-card"><h3>${x[0]} ${x[1]}</h3><b style="font-size:24px">${esc(x[2])}</b><p>${esc(x[3])}</p></div>`).join('');if($('orbisEventCount428'))$('orbisEventCount428').textContent=int(events.length)+' hareket';if($('orbisEvents428'))$('orbisEvents428').innerHTML=events.slice(0,80).map(x=>issueRow(x.kind==='XLS'?'⬇️':'☁️',personNameOf(x)||x.name||'-',(x.createdAt||x.exportAt||'-')+' • '+int(x.recordCount||x.totalRecords||x.adet)+' kayıt • '+m3(x.m3||x.totalM3),n(x.recordCount||x.totalRecords||x.adet)>1000?'warn':'ok')).join('')||'<div class="empty">Hareket yok.</div>';const checks=[];checks.push(issueRow('✅','Hacim boş kontrolü yapılmıyor','ORBİS sistemi hacmi otomatik giriyor','ok'));over.slice(0,15).forEach(x=>checks.push(issueRow('1000+',personNameOf(x)||x.name||'-',int(x.recordCount||x.totalRecords||x.adet)+' kayıt: parçalara böl','warn')));treeSep.slice(0,15).forEach(x=>checks.push(issueRow('🌲',personNameOf(x)||x.name||'-','Birden fazla ağaç türü: ayrı indir önerilir','warn')));if($('orbisChecks428'))$('orbisChecks428').innerHTML=checks.join('')}
+function latestSetting(id){return (state.settings||[]).find(x=>x.id===id)||{}}
+function renderUpdates428(){const old=state.users.filter(isOldAppVersion).slice(0,50);if($('oldVersionCount428'))$('oldVersionCount428').textContent=int(old.length);if($('oldVersionUsers428'))$('oldVersionUsers428').innerHTML=old.length?old.map(u=>issueRow('⚠️',u.name||'-',(u.seflik||'-')+' • '+appVersionOf(u),'warn')).join(''):'<div class="empty">Eski sürüm görünmüyor.</div>';const s=latestSetting('appControl');if($('minVersion428'))$('minVersion428').value=s.minVersion||s.minimumVersion||'';if($('maintenance428'))$('maintenance428').value=String(!!s.maintenanceMode);if($('appMessage428'))$('appMessage428').value=s.message||s.appMessage||'';const note=latestSetting('panelNote');if($('panelNote428'))$('panelNote428').value=note.note||''}
+function renderSystem428(){const rows=[['users',state.rawUsers.length],['usageStats',state.usage.length],['backups',state.backups.length],['backupChunks','ayrı okunmaz'],['supportTickets',state.tickets.length],['exportLogs',state.exports.length],['adminPermissions',state.permissions.length],['archivedItems',state.archives.length],['adminActionLogs',state.actionLogs.length],['adminSettings',state.settings.length]];if($('systemSummary428'))$('systemSummary428').innerHTML=[['🔌','Bağlantı',state.ready?'OK':'Bekliyor','Supabase'],['📚','Veri kaynağı',rows.filter(x=>Number.isFinite(Number(x[1]))&&Number(x[1])>0).length,'Aktif tablo'],['⚠️','Okuma hatası',Object.keys(state.collectionErrors||{}).length,'Kısmi erişim']].map(x=>`<div class="admin-extra-card"><h3>${x[0]} ${x[1]}</h3><b style="font-size:28px">${esc(x[2])}</b><p>${esc(x[3])}</p></div>`).join('');if($('tableStatus428'))$('tableStatus428').innerHTML=rows.map(x=>issueRow('▣',x[0],String(x[1])+' kayıt','ok')).join('');if($('actionLogCount428'))$('actionLogCount428').textContent=int(state.actionLogs.length);if($('actionLogs428'))$('actionLogs428').innerHTML=state.actionLogs.slice(0,25).map(x=>issueRow('📝',x.action||x.type||'-',(x.createdAt||shortDate(x.createdAtMs||x.atMs))+' • '+(x.target||x.itemType||''),'')).join('')||'<div class="empty">Admin işlem kaydı yok.</div>'}
+function renderRoles428(){if($('permCount428'))$('permCount428').textContent=int(state.permissions.length);if($('permissionsList428'))$('permissionsList428').innerHTML=state.permissions.length?state.permissions.map(p=>{const cls=p.role==='owner'?'role-owner':(p.role==='admin'?'role-admin':'role-viewer');return `<div class="admin-row-428"><div class="idx">🔐</div><div><b>${esc(p.name||p.userKey||p.id)}</b><small>${esc(p.seflik||'-')} • <span class="role-badge ${cls}">${esc(p.role||'admin')}</span></small></div><div class="num"><button class="btn soft" data-perm-full="${esc(p.id||p.userKey)}" type="button">Tam Aç</button></div></div>`}).join(''):'<div class="empty">Yetki kaydı yok.</div>'}
+function renderRecovery428(){if($('archiveCount428'))$('archiveCount428').textContent=int(state.archives.length);if($('archiveList428'))$('archiveList428').innerHTML=state.archives.slice(0,50).map(a=>`<div class="admin-row-428 warn"><div class="idx">🗄️</div><div><b>${esc(a.itemType||a.type||'Arşiv')}</b><small>${esc(a.originalId||a.targetId||a.id)} • ${esc(a.archivedAt||a.createdAt||'')}</small></div><div class="num"><button class="btn soft" data-archive-restore="${esc(a.id)}" type="button">Geri Al</button></div></div>`).join('')||'<div class="empty">Arşiv boş.</div>'}
+function renderAdvanced428(){renderDataControl428();renderOrbis428();renderUpdates428();renderSystem428();renderRoles428();renderRecovery428()}
+async function logAction428(action,target,data){try{const{db}=await ready();const id='log_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,7);await db.collection('adminActionLogs').doc(id).set({id,action,target,payload:data||{},createdAt:new Date().toLocaleString('tr-TR'),createdAtMs:Date.now(),atMs:Date.now(),admin:'Yakup'});}catch(e){}}
+async function archiveDoc428(collection,id,itemType,data){const{db}=await ready();const archId='arc_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,8);await db.collection('archivedItems').doc(archId).set({id:archId,itemType,collection,originalId:id,userKey:userKeyOf(data||{}),name:personNameOf(data||{}),seflik:seflikOf(data||{}),payload:data||{},archivedAt:new Date().toLocaleString('tr-TR'),archivedAtMs:Date.now(),createdAtMs:Date.now()});await db.collection(collection).doc(id).delete();await logAction428('archive_delete',collection+'/'+id,{itemType});}
+async function editUser428(key){const u=state.users.find(x=>userKeyOf(x)===key);if(!u)return;const name=prompt('Kullanıcı adı',u.name||'');if(name==null)return;const seflik=prompt('Şeflik',u.seflik||'');if(seflik==null)return;const bolme=prompt('Bölme No',u.bolmeNo||'');if(bolme==null)return;const{db}=await ready();await db.collection('users').doc(u.id||key).set({name,seflik,bolmeNo:bolme,userKey:key,updatedAt:new Date().toLocaleString('tr-TR'),updatedAtMs:Date.now()},{merge:true});await logAction428('user_edit',key,{name,seflik,bolmeNo:bolme});toast('Kullanıcı güncellendi');await loadAll()}
+async function toggleUserPassive428(key){const u=state.users.find(x=>userKeyOf(x)===key);if(!u)return;const next=!(u.status==='passive'||u.disabled===true);const{db}=await ready();await db.collection('users').doc(u.id||key).set({status:next?'passive':'active',disabled:next,updatedAt:new Date().toLocaleString('tr-TR'),updatedAtMs:Date.now()},{merge:true});await logAction428(next?'user_passive':'user_active',key,{});toast(next?'Kullanıcı pasifleştirildi':'Kullanıcı aktif edildi');await loadAll()}
+async function deleteUser428(key){const u=state.users.find(x=>userKeyOf(x)===key);if(!u)return;if(!confirm((u.name||key)+' arşivlenip users tablosundan silinsin mi?'))return;await archiveDoc428('users',u.id||key,'user',u);toast('Kullanıcı arşivlendi ve silindi');await loadAll()}
+async function makeAdmin428(key){const u=state.users.find(x=>userKeyOf(x)===key)||{};const{db}=await ready();await db.collection('adminPermissions').doc(key).set(fullPermPayload428(key,u.name||personNameOf(u)||key,u.seflik||seflikOf(u)||'', 'admin'),{merge:true});await logAction428('make_admin',key,{});toast('Admin yetkisi verildi');await loadAll()}
+function fullPermPayload428(key,name,seflik,role){return {id:key,userKey:key,name:name||key,seflik:seflik||'',role:role||'owner',can_read_users:true,can_read_stats:true,can_read_backups:true,can_export_json:true,can_send_broadcast:true,can_reply_tickets:true,can_import_backup:true,can_delete_users:true,can_delete_backups:true,can_reset_stats:true,can_edit_users:true,can_manage_roles:true,can_manage_updates:true,can_restore_data:true,can_archive:true,payload:{allPermissions:true,build:428},updatedAt:new Date().toLocaleString('tr-TR'),updatedAtMs:Date.now()}}
+async function openAllPerms428(){const{db}=await ready();await db.collection('adminPermissions').doc('yakup__yaylacik').set(fullPermPayload428('yakup__yaylacik','Yakup','Yaylacık','owner'),{merge:true});await logAction428('permissions_all_open','yakup__yaylacik',{});toast('Yakup için tüm yetkiler açıldı');await loadAll()}
+async function savePerm428(){const key=($('permUserKey428').value||'').trim().toLowerCase();if(!key){toast('Kullanıcı anahtarı gerekli');return}const{db}=await ready();await db.collection('adminPermissions').doc(key).set(fullPermPayload428(key,($('permName428').value||key).trim(),($('permSeflik428').value||'').trim(),$('permRole428').value||'admin'),{merge:true});await logAction428('permission_save',key,{});toast('Yetki kaydedildi');await loadAll()}
+async function backupDownload428(id){const b=state.backups.find(x=>x.id===id);if(!b)return;downloadJson428('mesaha_bulut_yedek_'+(b.userKey||b.id)+'.json',b);await logAction428('backup_download',id,{})}
+async function deleteBackup428(id){const b=state.backups.find(x=>x.id===id);if(!b)return;if(!confirm('Bu yedek arşivlenip silinsin mi?'))return;await archiveDoc428('backups',id,'backup',b);toast('Yedek arşivlendi ve silindi');await loadAll()}
+async function sendBackupWarning428(key){const u=state.users.find(x=>userKeyOf(x)===key)||{};const title='Yedek uyarısı';const message='Lütfen Mesaha İO içinde Yedek Al işlemini yapınız.';const{db}=await ready();const id='bc_'+Date.now().toString(36);await db.collection('adminBroadcasts').doc(id).set({id,title,message,target:'single',targetUserKeys:[key],targetCount:1,status:'active',createdAt:new Date().toLocaleString('tr-TR'),createdAtMs:Date.now(),expiresAtMs:Date.now()+7*86400000,appVersion:'V4.13',build:428,name:u.name||'',seflik:u.seflik||''});await logAction428('backup_warning',key,{});toast('Yedek uyarısı gönderildi');await loadAll()}
+function downloadJson428(name,obj){const blob=new Blob([JSON.stringify(obj,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+function exportFullRecovery428(){downloadJson428('mesaha_tam_kurtarma_v428.json',{exportedAt:new Date().toISOString(),version:'v428_admin_gelismis_yetkili',users:state.users,backups:state.backups,tickets:state.tickets,broadcasts:state.broadcasts,usage:state.usage,exports:state.exports,permissions:state.permissions,archives:state.archives,settings:state.settings,actionLogs:state.actionLogs})}
+async function restoreJson428(){let txt=($('restoreJsonText428').value||'').trim();if(!txt){toast('JSON boş');return}let data;try{data=JSON.parse(txt)}catch(e){toast('JSON okunamadı');return}if(!confirm('JSON içeriği Supabase tablolarına eklensin/güncellensin mi?'))return;const{db}=await ready();async function putMany(col,arr){for(const x of safeArray(arr)){const id=x.id||x.userKey||userKeyOf(x)||('imp_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,7));await db.collection(col).doc(id).set(x,{merge:true});}}
+await putMany('users',data.users);await putMany('backups',data.backups);await putMany('supportTickets',data.tickets||data.supportTickets);await putMany('usageStats',data.usage||data.usageStats);await logAction428('json_import','bulk',{});toast('JSON içe aktarıldı');await loadAll()}
+async function restoreArchive428(id){const a=state.archives.find(x=>x.id===id);if(!a)return;if(!confirm('Arşivden geri alınsın mı?'))return;const{db}=await ready();const col=a.collection||a.itemType+'s'||'users';const originalId=a.originalId||a.targetId||id;await db.collection(col).doc(originalId).set(a.payload||{}, {merge:true});await db.collection('archivedItems').doc(id).delete();await logAction428('archive_restore',originalId,{collection:col});toast('Arşiv geri alındı');await loadAll()}
+async function saveUpdateSettings428(){const{db}=await ready();await db.collection('adminSettings').doc('appControl').set({id:'appControl',minVersion:($('minVersion428').value||'').trim(),maintenanceMode:$('maintenance428').value==='true',message:($('appMessage428').value||'').trim(),updatedAt:new Date().toLocaleString('tr-TR'),updatedAtMs:Date.now(),build:428},{merge:true});await logAction428('update_settings','appControl',{});toast('Güncelleme ayarı kaydedildi');await loadAll()}
+async function savePanelNote428(){const{db}=await ready();await db.collection('adminSettings').doc('panelNote').set({id:'panelNote',note:($('panelNote428').value||'').trim(),updatedAt:new Date().toLocaleString('tr-TR'),updatedAtMs:Date.now()},{merge:true});await logAction428('panel_note','panelNote',{});toast('Panel notu kaydedildi');await loadAll()}
+
+function render(){renderKpis();renderHome();renderUsers();renderStatsV421();renderBackups();renderTickets();renderBroadcastsV411();renderAdvanced428()}
+async function deleteBackupFull(db,id){return await deleteBackup428(id)}
+async function delBackup(id){return await deleteBackup428(id)}
+async function delUser(key){return await deleteUser428(key)}
 async function readTicket(id){const t=state.tickets.find(x=>x.id===id)||{};const{db}=await ready();await db.collection('supportTickets').doc(id).set({status:'read',readAt:new Date().toLocaleString('tr-TR'),readAtMs:Date.now()},{merge:true});await loadAll()}
 async function replyTicket(id){
   const ta=Array.prototype.slice.call(document.querySelectorAll('[data-ticket-reply-text]')).find(x=>x.getAttribute('data-ticket-reply-text')===id);
@@ -580,13 +694,13 @@ async function replyTicket(id){
   toast('Cevap kullanıcıya gönderildi');
   await loadAll();
 }
-async function delTicket(id){toast('Bildirim silme bu güvenli sürümde kapalı');}
-async function clearReadTickets(){toast('Bildirim silme bu güvenli sürümde kapalı');}
-async function deleteAllTickets(){toast('Bildirim silme bu güvenli sürümde kapalı');}
-async function deleteOldBackups(){toast('Eski yedek silme bu güvenli sürümde kapalı');}
-async function resetStats(){toast('İstatistik sıfırlama bu güvenli sürümde kapalı');}
+async function delTicket(id){const t=state.tickets.find(x=>x.id===id);if(!t)return;if(!confirm('Bildirim arşivlenip silinsin mi?'))return;await archiveDoc428('supportTickets',id,'ticket',t);toast('Bildirim arşivlendi ve silindi');await loadAll()}
+async function clearReadTickets(){const arr=state.tickets.filter(t=>(t.status||'new')==='read'||t.adminReply||t.reply);for(const t of arr){await archiveDoc428('supportTickets',t.id,'ticket',t)}toast(arr.length+' okunan bildirim arşivlendi');await loadAll()}
+async function deleteAllTickets(){if(!confirm('Tüm bildirimler arşivlensin mi?'))return;for(const t of state.tickets){await archiveDoc428('supportTickets',t.id,'ticket',t)}toast('Bildirimler arşivlendi');await loadAll()}
+async function deleteOldBackups(){const cut=Date.now()-30*86400000;const arr=state.backups.filter(b=>n(b.createdAtMs)<cut);if(!arr.length){toast('30 gün üstü yedek yok');return}if(!confirm(arr.length+' eski yedek arşivlensin mi?'))return;for(const b of arr){await archiveDoc428('backups',b.id,'backup',b)}toast('Eski yedekler arşivlendi');await loadAll()}
+async function resetStats(){if(!confirm('İstatistik sıfırlama ayarı yazılsın mı? Veriler silinmez, reset işareti atılır.'))return;const{db}=await ready();await db.collection('adminSettings').doc('statsReset').set({resetAt:new Date().toLocaleString('tr-TR'),resetAtMs:Date.now(),updatedAtMs:Date.now(),build:428},{merge:true});await logAction428('stats_reset_marker','adminSettings/statsReset',{});toast('İstatistik reset işareti atıldı');await loadAll()}
 async function health(){try{const{db,auth}=await ready();const [u,b,t]=await Promise.all([getColSafe(db,'users',true),getColSafe(db,'backups',true),getColSafe(db,'supportTickets',true)]);await db.collection('healthChecks').doc('adminPanel').set({ok:true,at:new Date().toLocaleString('tr-TR'),atMs:Date.now(),uid:auth.currentUser&&auth.currentUser.uid,users:u.length,backups:b.length,tickets:t.length},{merge:true});toast('Supabase veri okundu • K:'+u.length+' Y:'+b.length+' B:'+t.length);await loadAll()}catch(e){toast(errText(e))}}
-function exportAll(){const blob=new Blob([JSON.stringify({exportedAt:new Date().toISOString(),version:'v427_supabase_temiz_gecis',users:state.users,backups:state.backups,tickets:state.tickets,broadcasts:state.broadcasts,usage:state.usage},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='mesaha_admin_tum_veriler_v427_supabase.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+function exportAll(){const blob=new Blob([JSON.stringify({exportedAt:new Date().toISOString(),version:'v428_admin_gelismis_yetkili',users:state.users,backups:state.backups,tickets:state.tickets,broadcasts:state.broadcasts,usage:state.usage},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='mesaha_admin_tum_veriler_v428_supabase.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
 function goAppHome(e){
   if(e) e.preventDefault();
   var target = new URL('./index.html', location.href).href;
@@ -608,7 +722,7 @@ function showUserModal(key){
 
 function go(tab){document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.tab===tab));document.querySelectorAll('.panel').forEach(x=>x.classList.toggle('active',x.id==='tab-'+tab));window.scrollTo({top:0,behavior:'smooth'})}
 function unlock(){const code=($('adminCode').value||new URLSearchParams(location.search).get('admin')||sessionStorage.getItem('mesaha_admin_code')||'').trim();if(code===ADMIN_CODE){sessionStorage.setItem('mesaha_admin_code',code);$('lockCard').classList.add('hidden');$('adminMain').classList.remove('hidden');$('tabs').classList.remove('hidden');loadAll()}else $('lockMsg').textContent='Şifre hatalı.'}
-function bind(){const d=new Date();$('todayPill').textContent='📅 '+d.toLocaleDateString('tr-TR',{weekday:'short',day:'2-digit',month:'short'});document.querySelectorAll('[data-app-home]').forEach(b=>b.addEventListener('click',goAppHome));document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.tab)));document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.go)));$('unlockBtn').addEventListener('click',unlock);$('adminCode').addEventListener('keydown',e=>{if(e.key==='Enter')unlock()});$('refreshBtn').addEventListener('click',loadAll);$('refreshBtn2').addEventListener('click',loadAll);/* theme removed */['userSearch','seflikFilter','userSort'].forEach(id=>$(id).addEventListener('input',renderUsers));$('clearFiltersBtn').addEventListener('click',()=>{$('userSearch').value='';$('seflikFilter').value='';$('userSort').value='last';renderUsers()});$('backupUserFilter').addEventListener('input',renderBackups);$('showAllTicketsBtn').addEventListener('click',()=>{state.showAllTickets=!state.showAllTickets;$('showAllTicketsBtn').textContent=state.showAllTickets?'Sadece Yeni':'Tümünü Göster';renderTickets()});if($('clearReadTicketsBtn'))$('clearReadTicketsBtn').disabled=true;$('healthBtn').addEventListener('click',health);$('exportBtn').addEventListener('click',exportAll);if($('sendBroadcastV400'))$('sendBroadcastV400').addEventListener('click',()=>sendBroadcastV400().catch(x=>toast(errText(x))));if($('refreshBroadcastsV411'))$('refreshBroadcastsV411').addEventListener('click',loadAll);$('modalClose').addEventListener('click',()=>$('modal').classList.remove('show'));$('modal').addEventListener('click',e=>{if(e.target===$('modal'))$('modal').classList.remove('show')});document.body.addEventListener('click',e=>{const ud=e.target.closest('[data-user-detail]');if(ud){showUserModal(ud.getAttribute('data-user-detail'));return}const card=e.target.closest('[data-user-card]');if(card&&e.target.closest('.topline')&&!e.target.closest('button'))card.classList.toggle('open');const rp=e.target.closest('[data-ticket-reply]');if(rp){replyTicket(rp.getAttribute('data-ticket-reply')).catch(x=>toast(errText(x)));return}const tr=e.target.closest('[data-ticket-read]');if(tr)readTicket(tr.getAttribute('data-ticket-read')).catch(x=>toast(errText(x)));});window.addEventListener('online',renderKpis);window.addEventListener('offline',renderKpis);if(new URLSearchParams(location.search).get('admin')===ADMIN_CODE||sessionStorage.getItem('mesaha_admin_code')===ADMIN_CODE){$('adminCode').value=ADMIN_CODE;unlock()}}
+function bind(){const d=new Date();$('todayPill').textContent='📅 '+d.toLocaleDateString('tr-TR',{weekday:'short',day:'2-digit',month:'short'});document.querySelectorAll('[data-app-home]').forEach(b=>b.addEventListener('click',goAppHome));document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.tab)));document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.go)));$('unlockBtn').addEventListener('click',unlock);$('adminCode').addEventListener('keydown',e=>{if(e.key==='Enter')unlock()});$('refreshBtn').addEventListener('click',loadAll);$('refreshBtn2').addEventListener('click',loadAll);/* theme removed */['userSearch','seflikFilter','userSort'].forEach(id=>$(id).addEventListener('input',renderUsers));$('clearFiltersBtn').addEventListener('click',()=>{$('userSearch').value='';$('seflikFilter').value='';$('userSort').value='last';renderUsers()});$('backupUserFilter').addEventListener('input',renderBackups);$('showAllTicketsBtn').addEventListener('click',()=>{state.showAllTickets=!state.showAllTickets;$('showAllTicketsBtn').textContent=state.showAllTickets?'Sadece Yeni':'Tümünü Göster';renderTickets()});if($('clearReadTicketsBtn')){$('clearReadTicketsBtn').disabled=false;$('clearReadTicketsBtn').addEventListener('click',()=>clearReadTickets().catch(x=>toast(errText(x))));}$('healthBtn').addEventListener('click',health);$('exportBtn').addEventListener('click',exportAll);if($('sendBroadcastV400'))$('sendBroadcastV400').addEventListener('click',()=>sendBroadcastV400().catch(x=>toast(errText(x))));if($('runDataControlBtn'))$('runDataControlBtn').addEventListener('click',renderDataControl428);if($('systemHealthBtn428'))$('systemHealthBtn428').addEventListener('click',health);if($('saveUpdateSettings428'))$('saveUpdateSettings428').addEventListener('click',()=>saveUpdateSettings428().catch(x=>toast(errText(x))));if($('openAllPerms428'))$('openAllPerms428').addEventListener('click',()=>openAllPerms428().catch(x=>toast(errText(x))));if($('savePerm428'))$('savePerm428').addEventListener('click',()=>savePerm428().catch(x=>toast(errText(x))));if($('exportFullRecovery428'))$('exportFullRecovery428').addEventListener('click',exportFullRecovery428);if($('restoreJsonBtn428'))$('restoreJsonBtn428').addEventListener('click',()=>restoreJson428().catch(x=>toast(errText(x))));if($('downloadUsers428'))$('downloadUsers428').addEventListener('click',()=>downloadJson428('mesaha_users_v428.json',state.users));if($('downloadBackups428'))$('downloadBackups428').addEventListener('click',()=>downloadJson428('mesaha_backups_v428.json',state.backups));if($('savePanelNote428'))$('savePanelNote428').addEventListener('click',()=>savePanelNote428().catch(x=>toast(errText(x))));if($('refreshBroadcastsV411'))$('refreshBroadcastsV411').addEventListener('click',loadAll);$('modalClose').addEventListener('click',()=>$('modal').classList.remove('show'));$('modal').addEventListener('click',e=>{if(e.target===$('modal'))$('modal').classList.remove('show')});document.body.addEventListener('click',e=>{const ue=e.target.closest('[data-user-edit]');if(ue){editUser428(ue.getAttribute('data-user-edit')).catch(x=>toast(errText(x)));return}const up=e.target.closest('[data-user-passive]');if(up){toggleUserPassive428(up.getAttribute('data-user-passive')).catch(x=>toast(errText(x)));return}const ux=e.target.closest('[data-user-delete]');if(ux){deleteUser428(ux.getAttribute('data-user-delete')).catch(x=>toast(errText(x)));return}const ma=e.target.closest('[data-admin-make]');if(ma){makeAdmin428(ma.getAttribute('data-admin-make')).catch(x=>toast(errText(x)));return}const bw=e.target.closest('[data-send-backup-warning]');if(bw){sendBackupWarning428(bw.getAttribute('data-send-backup-warning')).catch(x=>toast(errText(x)));return}const bd=e.target.closest('[data-backup-download]');if(bd){backupDownload428(bd.getAttribute('data-backup-download')).catch(x=>toast(errText(x)));return}const bx=e.target.closest('[data-backup-delete]');if(bx){deleteBackup428(bx.getAttribute('data-backup-delete')).catch(x=>toast(errText(x)));return}const pf=e.target.closest('[data-perm-full]');if(pf){const id=pf.getAttribute('data-perm-full');const p=state.permissions.find(x=>(x.id||x.userKey)===id)||{};ready().then(({db})=>db.collection('adminPermissions').doc(id).set(fullPermPayload428(id,p.name||id,p.seflik||'',p.role||'admin'),{merge:true})).then(loadAll).catch(x=>toast(errText(x)));return}const ar=e.target.closest('[data-archive-restore]');if(ar){restoreArchive428(ar.getAttribute('data-archive-restore')).catch(x=>toast(errText(x)));return}const ud=e.target.closest('[data-user-detail]');if(ud){showUserModal(ud.getAttribute('data-user-detail'));return}const card=e.target.closest('[data-user-card]');if(card&&e.target.closest('.topline')&&!e.target.closest('button'))card.classList.toggle('open');const rp=e.target.closest('[data-ticket-reply]');if(rp){replyTicket(rp.getAttribute('data-ticket-reply')).catch(x=>toast(errText(x)));return}const tr=e.target.closest('[data-ticket-read]');if(tr)readTicket(tr.getAttribute('data-ticket-read')).catch(x=>toast(errText(x)));});window.addEventListener('online',renderKpis);window.addEventListener('offline',renderKpis);if(new URLSearchParams(location.search).get('admin')===ADMIN_CODE||sessionStorage.getItem('mesaha_admin_code')===ADMIN_CODE){$('adminCode').value=ADMIN_CODE;unlock()}}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
 })();
 </script>
