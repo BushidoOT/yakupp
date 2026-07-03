@@ -1,9 +1,9 @@
-/* Mesaha İO v427 — Supabase temiz geçiş motoru
+/* Mesaha İO v428 — Supabase gelişmiş admin motoru
    Eski kodların bozulmaması için Supabase tablo benzeri küçük bir uyumluluk katmanı sağlar.
    Veriler Supabase REST tablolarına yazılır/okunur. */
 (function(){
   'use strict';
-  var VERSION='v427_supabase_temiz_gecis';
+  var VERSION='v428_admin_gelismis_yetkili';
   var readyPromise=null;
   var lastOkMs=0;
   var lastError='';
@@ -24,7 +24,7 @@
     var map={
       users:'users', usageStats:'usage_stats', backups:'backups', supportTickets:'support_tickets',
       exportLogs:'export_logs', adminSettings:'admin_settings', adminBroadcasts:'admin_broadcasts',
-      healthChecks:'health_checks', chunks:'backup_chunks'
+      healthChecks:'health_checks', adminPermissions:'admin_permissions', archivedItems:'archived_items', adminActionLogs:'admin_action_logs', chunks:'backup_chunks'
     };
     return map[name]||String(name||'').replace(/[A-Z]/g,function(m){return '_'+m.toLowerCase();});
   }
