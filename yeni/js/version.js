@@ -1,1 +1,3 @@
-window.MESAHA_VERSION={"app":"V4.29","version":"v444_acilis_kilit_guard_fix","build":444,"visibleVersion":"V4.29 •ExelanceX•","shortVersion":"V4.29 •ExelanceX•","name":"Mesaha İO V4.29 •ExelanceX•","cacheName":"mesaha-app-v444-acilis-kilit-guard-fix","builtAt":"2026-07-05T00:45:00+03:00","notes":"Açılış ekranında takılma için güvenli boot guard eklendi; startup kilidi hata olsa bile kapanır.","assetVersion":"444"};
+self.MESAHA_VERSION = window.MESAHA_VERSION = {"app": "V4.30", "version": "v445_acilis_overlay_kapali_acil_fix", "build": 445, "visibleVersion": "V4.30 •ExelanceX•", "shortVersion": "V4.30 •ExelanceX•", "name": "Mesaha İO V4.30 •ExelanceX•", "cacheName": "mesaha-app-v445-acilis-overlay-kapali-acil-fix", "builtAt": "2026-07-05T01:10:00+03:00", "notes": "Açılış ekranı bloklaması kaldırıldı; uygulama doğrudan açılır. v443/v444 startup kilidi için acil düzeltme.", "assetVersion": "445"};
+window.APP_VERSION='V4.30';
+window.APP_BUILD=445;
