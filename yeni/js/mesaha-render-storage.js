@@ -17,7 +17,7 @@
     clearTimeout(renderTimer);
     renderTimer = setTimeout(function(){
       if (document.hidden) return;
-      // v433: Mesaha Gir açıkken full render inputları geri yazar, çap alanında takılma yapar. Hafif yenile.
+      // Stabil: Mesaha Gir açıkken full render inputları geri yazmasın; hafif yenile.
       if (entryViewActive()) { fastEntryRefresh(); return; }
       safe(window.renderAll);
       safe(function(){ if(window.mesahaV305) window.mesahaV305.updateBeyanTotals(); });

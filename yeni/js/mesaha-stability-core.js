@@ -18,11 +18,11 @@
   }
   function callBinders(){ try { if (window.mesahaV306 && typeof window.mesahaV306.bindMeasureButtons === 'function') window.mesahaV306.bindMeasureButtons(); } catch(e) {} }
 
-  // v433: Eski sürümlerde her input/click için global yakalama vardı. Bu, Mesaha Gir ekranında takılma yapıyordu.
+  // Stabil: Her input/click için global yakalama yok; Mesaha Gir ekranı hafif kalır.
   // Artık sadece kayıt/ayar kaydı, sayfa görünür olma ve manuel refresh olaylarında hafif yenileme yapıyoruz.
   window.addEventListener('mesaha:records-saved', function(){ later('totals', callTotals, 80); later('binders', callBinders, 130); }, {passive:true});
   window.addEventListener('mesaha:settings-saved', function(){ later('totals', callTotals, 180); }, {passive:true});
-  window.addEventListener('mesaha:v433-light-refresh', function(){ later('totals', callTotals, 60); later('binders', callBinders, 120); }, {passive:true});
+  window.addEventListener('mesaha:light-refresh', function(){ later('totals', callTotals, 60); later('binders', callBinders, 120); }, {passive:true});
   document.addEventListener('visibilitychange', function(){ if(!document.hidden){ later('totals', callTotals, 160); later('binders', callBinders, 220); } }, {passive:true});
   window.addEventListener('pageshow', function(){ later('totals', callTotals, 160); later('binders', callBinders, 220); }, {passive:true});
 
