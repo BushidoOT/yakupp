@@ -1,12 +1,12 @@
 {
-  "app": "V4.24",
-  "version": "v439_mobil_kisayol_clear_fit",
-  "build": 439,
-  "visibleVersion": "V4.24 •ExelanceX•",
-  "shortVersion": "V4.24 •ExelanceX•",
-  "name": "Mesaha İO V4.24 •ExelanceX•",
-  "cacheName": "mesaha-app-v439-mobil-kisayol-clear-fit",
-  "builtAt": "2026-07-04T18:40:00+03:00",
-  "notes": "Mobil ölçü kartları tek sütuna alındı; çap/boy kısayolları ekrana sığacak şekilde düzenlendi; Alanları Temizle sonrası eski kısayol geçmişinin geri gelmesi engellendi.",
-  "assetVersion": "439"
+  "app": "V4.26",
+  "version": "v441_stabil_son_kontrol",
+  "build": 441,
+  "visibleVersion": "V4.26 •ExelanceX•",
+  "shortVersion": "V4.26 •ExelanceX•",
+  "name": "Mesaha İO V4.26 •ExelanceX•",
+  "cacheName": "mesaha-app-v441-stabil-son-kontrol",
+  "builtAt": "2026-07-04T23:55:00+03:00",
+  "notes": "Stabil son kontrol; sürüm/cache bilgileri tekleştirildi, gereksiz test kalıntıları azaltıldı, admin ve giriş ekranı hafifletildi.",
+  "assetVersion": "441"
 }
