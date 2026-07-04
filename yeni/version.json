@@ -1,12 +1,12 @@
 {
-  "app": "V4.23",
-  "version": "v438_temizle_son_barkod_stabiiiiil",
-  "build": 438,
-  "visibleVersion": "V4.23 •ExelanceX•",
-  "shortVersion": "V4.23 •ExelanceX•",
-  "name": "Mesaha İO V4.23 •ExelanceX•",
-  "cacheName": "mesaha-app-v438-temizle-son-barkod-stabil",
-  "builtAt": "2026-07-03T23:59:00+03:00",
-  "notes": "Alanları Temizle kısayol state temizliği ve son 3 barkod silme sonrası sıradaki barkod/son liste yenileme düzeltildi.",
-  "assetVersion": "438"
+  "app": "V4.24",
+  "version": "v439_mobil_kisayol_clear_fit",
+  "build": 439,
+  "visibleVersion": "V4.24 •ExelanceX•",
+  "shortVersion": "V4.24 •ExelanceX•",
+  "name": "Mesaha İO V4.24 •ExelanceX•",
+  "cacheName": "mesaha-app-v439-mobil-kisayol-clear-fit",
+  "builtAt": "2026-07-04T18:40:00+03:00",
+  "notes": "Mobil ölçü kartları tek sütuna alındı; çap/boy kısayolları ekrana sığacak şekilde düzenlendi; Alanları Temizle sonrası eski kısayol geçmişinin geri gelmesi engellendi.",
+  "assetVersion": "439"
 }
