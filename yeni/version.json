@@ -1,12 +1,12 @@
 {
-  "app": "V4.27",
-  "version": "v442_mobil_yerlesim_duzeltme",
-  "build": 442,
-  "visibleVersion": "V4.27 •ExelanceX•",
-  "shortVersion": "V4.27 •ExelanceX•",
-  "name": "Mesaha İO V4.27 •ExelanceX•",
-  "cacheName": "mesaha-app-v442-mobil-yerlesim-duzeltme",
-  "builtAt": "2026-07-04T23:59:00+03:00",
-  "notes": "Mobil yerleşim düzeltmesi: Boy/Çap yan yana responsive hale getirildi, kısayol ve ürün butonları ekrana göre sıkışmadan ölçeklenir.",
-  "assetVersion": "442"
+  "app": "V4.28",
+  "version": "v443_son_barkod_secili_urun_kesimci_sayac",
+  "build": 443,
+  "visibleVersion": "V4.28 •ExelanceX•",
+  "shortVersion": "V4.28 •ExelanceX•",
+  "name": "Mesaha İO V4.28 •ExelanceX•",
+  "cacheName": "mesaha-app-v443-son-barkod-secili-urun-kesimci-sayac",
+  "builtAt": "2026-07-05T00:15:00+03:00",
+  "notes": "Son barkod kart görünümü düzeltildi; ürün seçili tik işareti güçlendirildi; ölçümlerde kesimci filtrelerine kayıt sayısı eklendi.",
+  "assetVersion": "443"
 }
