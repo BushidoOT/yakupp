@@ -1,12 +1,12 @@
 {
-  "app": "V4.30",
-  "version": "v445_acilis_overlay_kapali_acil_fffffix",
-  "build": 445,
-  "visibleVersion": "V4.30 •ExelanceX•",
-  "shortVersion": "V4.30 •ExelanceX•",
-  "name": "Mesaha İO V4.30 •ExelanceX•",
-  "cacheName": "mesaha-app-v445-acilis-overlay-kapali-acil-fix",
-  "builtAt": "2026-07-05T01:10:00+03:00",
-  "notes": "Açılış ekranı bloklaması kaldırıldı; uygulama doğrudan açılır. v443/v444 startup kilidi için acil düzeltme.",
-  "assetVersion": "445"
+  "app": "V4.28",
+  "version": "v443_son_barkod_urun_kesimci",
+  "build": 443,
+  "visibleVersion": "V4.28 •ExelanceX•",
+  "shortVersion": "V4.28 •ExelanceX•",
+  "name": "Mesaha İO V4.28 •ExelanceX•",
+  "cacheName": "mesaha-app-v443-son-barkod-urun-kesimci",
+  "builtAt": "2026-07-04T22:40:00+03:00",
+  "notes": "Son barkod kartları temizlendi; ürün seçimlerinde seçili olan butonda tik görünür hale getirildi; Ölçümler > Kesimci filtresinde her kesimcinin kayıt sayısı gösterildi.",
+  "assetVersion": "443"
 }
