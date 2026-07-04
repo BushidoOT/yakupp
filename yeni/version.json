@@ -1,12 +1,12 @@
 {
-  "app": "V4.26",
-  "version": "v441_stabil_son_kontyyyrol",
-  "build": 441,
-  "visibleVersion": "V4.26 •ExelanceX•",
-  "shortVersion": "V4.26 •ExelanceX•",
-  "name": "Mesaha İO V4.26 •ExelanceX•",
-  "cacheName": "mesaha-app-v441-stabil-son-kontrol",
-  "builtAt": "2026-07-04T23:55:00+03:00",
-  "notes": "Stabil son kontrol; sürüm/cache bilgileri tekleştirildi, gereksiz test kalıntıları azaltıldı, admin ve giriş ekranı hafifletildi.",
-  "assetVersion": "441"
+  "app": "V4.27",
+  "version": "v442_mobil_yerlesim_duzeltme",
+  "build": 442,
+  "visibleVersion": "V4.27 •ExelanceX•",
+  "shortVersion": "V4.27 •ExelanceX•",
+  "name": "Mesaha İO V4.27 •ExelanceX•",
+  "cacheName": "mesaha-app-v442-mobil-yerlesim-duzeltme",
+  "builtAt": "2026-07-04T23:59:00+03:00",
+  "notes": "Mobil yerleşim düzeltmesi: Boy/Çap yan yana responsive hale getirildi, kısayol ve ürün butonları ekrana göre sıkışmadan ölçeklenir.",
+  "assetVersion": "442"
 }
