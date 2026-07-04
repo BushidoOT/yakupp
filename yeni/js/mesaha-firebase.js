@@ -1,9 +1,9 @@
-/* Mesaha İO v441 — Supabase uyumluluk motoru
+/* Mesaha İO v442 — Supabase uyumluluk motoru
    Eski kodların bozulmaması için Supabase tablo benzeri küçük bir uyumluluk katmanı sağlar.
    Veriler Supabase REST tablolarına yazılır/okunur. */
 (function(){
   'use strict';
-  var VERSION='v441_stabil_son_kontrol';
+  var VERSION='v442_mobil_yerlesim_duzeltme';
   var readyPromise=null;
   var lastOkMs=0;
   var lastError='';
