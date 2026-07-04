@@ -1,23 +1,23 @@
-importScripts('./js/version.js?v=444');
+importScripts('./js/version.js?v=445');
 
-const META = self.MESAHA_VERSION || {"app": "V4.29", "version": "v444_acilis_kilit_guard_fix", "build": 444, "visibleVersion": "V4.29 •ExelanceX•", "shortVersion": "V4.29 •ExelanceX•", "name": "Mesaha İO V4.29 •ExelanceX•", "cacheName": "mesaha-app-v444-acilis-kilit-guard-fix", "builtAt": "2026-07-05T00:15:00+03:00", "notes": "Son barkod kart görünümü düzeltildi; ürün seçili tik işareti güçlendirildi; ölçümlerde kesimci filtrelerine kayıt sayısı eklendi.", "assetVersion": "444"};
-const BASE_CACHE = META.cacheName || 'mesaha-app-v444-acilis-kilit-guard-fix';
+const META = self.MESAHA_VERSION || {"app": "V4.30", "version": "v445_acilis_overlay_kapali_acil_fix", "build": 444, "visibleVersion": "V4.30 •ExelanceX•", "shortVersion": "V4.30 •ExelanceX•", "name": "Mesaha İO V4.30 •ExelanceX•", "cacheName": "mesaha-app-v445-acilis-overlay-kapali-acil-fix", "builtAt": "2026-07-05T00:15:00+03:00", "notes": "Son barkod kart görünümü düzeltildi; ürün seçili tik işareti güçlendirildi; ölçümlerde kesimci filtrelerine kayıt sayısı eklendi.", "assetVersion": "444"};
+const BASE_CACHE = META.cacheName || 'mesaha-app-v445-acilis-overlay-kapali-acil-fix';
 const SHELL_CACHE = BASE_CACHE + '-shell';
 const ASSET_CACHE = BASE_CACHE + '-assets';
 const RUNTIME_CACHE = BASE_CACHE + '-runtime';
 const OFFLINE_TIMEOUT_MS = 3000;
-const VERSION_Q = String(META.assetVersion || META.build || 443);
+const VERSION_Q = String(META.assetVersion || META.build || 445);
 
 
 const SHELL_ASSETS = [
   './', './index.html', './admin.html', './temizle.html', './manifest.json', './version.json', './service-worker.js',
-  './js/version.js?v=444', './js/mesaha-early-optimizer.js?v=444', './js/mesaha-utils.js?v=444', './js/mesaha-data-guard.js?v=444',
-  './js/mesaha-stability-core.js?v=444', './js/mesaha-supabase-config.js?v=444', './js/mesaha-firebase.js?v=444', './js/mesaha-offline-core.js?v=444',
-  './js/mesaha-render-storage.js?v=444', './js/mesaha-sound.js?v=444'
+  './js/version.js?v=445', './js/mesaha-early-optimizer.js?v=445', './js/mesaha-utils.js?v=445', './js/mesaha-data-guard.js?v=445',
+  './js/mesaha-stability-core.js?v=445', './js/mesaha-supabase-config.js?v=445', './js/mesaha-firebase.js?v=445', './js/mesaha-offline-core.js?v=445',
+  './js/mesaha-render-storage.js?v=445', './js/mesaha-sound.js?v=445'
 ];
 const STATIC_ASSETS = [
-  './assets/icon-192.png', './assets/icon-512.png', './assets/mesaha_logo.png', './assets/hero_forest_cover.png?v=444',
-  './assets/mesaha_onay.wav?v=444', './assets/mesaha_uyari.wav?v=444'
+  './assets/icon-192.png', './assets/icon-512.png', './assets/mesaha_logo.png', './assets/hero_forest_cover.png?v=445',
+  './assets/mesaha_onay.wav?v=445', './assets/mesaha_uyari.wav?v=445'
 ];
 function timeoutReject(ms,label){return new Promise((_,reject)=>setTimeout(()=>reject(new Error(label||'network-timeout')),ms||OFFLINE_TIMEOUT_MS));}
 function networkWithTimeout(request,options,ms){return Promise.race([fetch(request,options||{}),timeoutReject(ms||OFFLINE_TIMEOUT_MS,'network-timeout')]);}
