@@ -1,12 +1,12 @@
 {
-  "app": "V4.35",
-  "version": "v450_urun_secim_tiiiiiiiik",
-  "build": 450,
-  "visibleVersion": "V4.35 •ExelanceX•",
-  "shortVersion": "V4.35 •ExelanceX•",
-  "name": "Mesaha İO V4.35 •ExelanceX•",
-  "cacheName": "mesaha-app-v450-urun-secim-tik",
-  "builtAt": "2026-07-05T09:55:00+03:00",
-  "notes": "Seçili ürün butonlarında tik işareti görünürlüğü düzeltildi.",
-  "assetVersion": "450"
+  "app": "V4.36",
+  "version": "v451_offline_guvenlik",
+  "build": 451,
+  "visibleVersion": "V4.36 •ExelanceX•",
+  "shortVersion": "V4.36 •ExelanceX•",
+  "name": "Mesaha İO V4.36 •ExelanceX•",
+  "cacheName": "mesaha-app-v451-offline-guvenlik",
+  "builtAt": "2026-07-05T10:15:00+03:00",
+  "notes": "Çevrimdışı yenileme güvenliği güçlendirildi; eski cache silme yeni önbellek doğrulanmadan çalışmaz; temel butonlar için offline güvenlik bağlayıcısı eklendi.",
+  "assetVersion": "451"
 }
