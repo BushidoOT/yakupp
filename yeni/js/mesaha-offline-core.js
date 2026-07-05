@@ -4,16 +4,16 @@
   window.__mesahaOfflineCore = true;
 
   var FALLBACK_META = {
-  "app": "V4.37",
-  "version": "v452_offline_sw_kayit",
-  "build": 452,
-  "visibleVersion": "V4.37 •ExelanceX•",
-  "shortVersion": "V4.37 •ExelanceX•",
-  "name": "Mesaha İO V4.37 •ExelanceX•",
-  "cacheName": "mesaha-app-v452-offline-sw-kayit",
+  "app": "V4.38",
+  "version": "v453_offline_entry_koruma",
+  "build": 453,
+  "visibleVersion": "V4.38 •ExelanceX•",
+  "shortVersion": "V4.38 •ExelanceX•",
+  "name": "Mesaha İO V4.38 •ExelanceX•",
+  "cacheName": "mesaha-app-v453-offline-entry-koruma",
   "builtAt": "2026-07-05T10:45:00+03:00",
   "notes": "Service worker kayıt hatası düzeltildi; version.js hem sayfa hem service worker içinde çalışır; çevrimdışı yenilemede Chrome offline ekranına düşme engellendi.",
-  "assetVersion": "452"
+  "assetVersion": "453"
 };
   var META = (window.MESAHA_VERSION && typeof window.MESAHA_VERSION === 'object') ? window.MESAHA_VERSION : FALLBACK_META;
   var ASSET_VERSION = String(META.assetVersion || META.build || '405');

@@ -1,5 +1,3 @@
 (function(root){
-  root.MESAHA_VERSION={"app":"V4.38","version":"v453_offline_entry_koruma","build":453,"visibleVersion":"V4.38 •ExelanceX•","shortVersion":"V4.38 •ExelanceX•","name":"Mesaha İO V4.38 •ExelanceX•","cacheName":"mesaha-app-v453-offline-entry-koruma","builtAt":"2026-07-05T11:20:00+03:00","notes":"Çevrimdışı yenileme sonrası Mesaha Gir ekranına geçiş koruması düzeltildi.","assetVersion":"453"};
-  root.MESAHA_VERSION_TEXT=root.MESAHA_VERSION.visibleVersion;
-  root.MESAHA_VERSION_SHORT=root.MESAHA_VERSION.shortVersion;
+  root.MESAHA_VERSION={"app":"V4.39","version":"v454_filtre_kesimci_fix","build":454,"visibleVersion":"V4.39 •ExelanceX•","shortVersion":"V4.39 •ExelanceX•","name":"Mesaha İO V4.39 •ExelanceX•","cacheName":"mesaha-app-v454-filtre-kesimci-fix","builtAt":"2026-07-05T11:55:00+03:00","notes":"Ölçümler filtresi ve kesimci seçenekleri güçlendirildi.","assetVersion":"454"};
 })(typeof self!=='undefined'?self:window);
