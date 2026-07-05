@@ -4,19 +4,19 @@
   window.__mesahaOfflineCore = true;
 
   var FALLBACK_META = {
-  "app": "V4.40",
-  "version": "v455_offline_filtre_log_temizlik",
-  "build": 455,
-  "visibleVersion": "V4.40 •ExelanceX•",
-  "shortVersion": "V4.40 •ExelanceX•",
-  "name": "Mesaha İO V4.40 •ExelanceX•",
-  "cacheName": "mesaha-app-v455-offline-filtre-log-temizlik",
-  "builtAt": "2026-07-05T12:20:00+03:00",
-  "notes": "Offline, filtre ve hata günlüğü temizlik paketi.",
-  "assetVersion": "455"
+  "app": "V4.41",
+  "version": "v456_ios_url_baslangic_temizligi",
+  "build": 456,
+  "visibleVersion": "V4.41 •ExelanceX•",
+  "shortVersion": "V4.41 •ExelanceX•",
+  "name": "Mesaha İO V4.41 •ExelanceX•",
+  "cacheName": "mesaha-app-v456-ios-url-baslangic-temizligi",
+  "builtAt": "2026-07-05T14:10:00+03:00",
+  "notes": "iOS eski URL ve başlangıç temizliği.",
+  "assetVersion": "456"
 };
   var META = (window.MESAHA_VERSION && typeof window.MESAHA_VERSION === 'object') ? window.MESAHA_VERSION : FALLBACK_META;
-  var ASSET_VERSION = String(META.assetVersion || META.build || '455');
+  var ASSET_VERSION = String(META.assetVersion || META.build || '456');
 
   function lock(name, value){
     try {
