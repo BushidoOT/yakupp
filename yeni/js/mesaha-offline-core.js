@@ -6,14 +6,14 @@
   var FALLBACK_META = {
   "app": "V3.90",
   "version": "v405-kesimci-duzenle-sil-koruma",
-  "build": 449,
+  "build": 450,
   "visibleVersion": "V3.90 •ExelanceX•",
   "shortVersion": "V3.90 •ExelanceX•",
   "name": "Mesaha İO V3.90 •ExelanceX•",
   "cacheName": "mesaha-app-v405-kesimci-duzenle-sil-koruma",
   "builtAt": "2026-06-27T13:25:00+03:00",
   "notes": "Kesimci isim düzenleme eklendi; kesimci yanında düzenle/sil butonları gösterilir; kayıt bağlı kesimci silinmez.",
-  "assetVersion":"449"
+  "assetVersion":"450"
 };
   var META = (window.MESAHA_VERSION && typeof window.MESAHA_VERSION === 'object') ? window.MESAHA_VERSION : FALLBACK_META;
   var ASSET_VERSION = String(META.assetVersion || META.build || '405');
