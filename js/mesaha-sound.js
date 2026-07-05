@@ -5,10 +5,9 @@
   if (window.__mesahaSingleSoundEngineV377) return;
   window.__mesahaSingleSoundEngineV377 = true;
 
-  var VERSION = String((window.MESAHA_VERSION && (window.MESAHA_VERSION.assetVersion || window.MESAHA_VERSION.build)) || '405');
   var SRC = {
-    success: './assets/mesaha_onay.wav?v=' + VERSION,
-    warning: './assets/mesaha_uyari.wav?v=' + VERSION
+    success: './assets/mesaha_onay.wav',
+    warning: './assets/mesaha_uyari.wav'
   };
 
   var pool = { success:null, warning:null };

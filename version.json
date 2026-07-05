@@ -1,12 +1,12 @@
 {
-  "app": "V3.94",
-  "version": "v409_kesimci_secimi_ziplama_fix",
-  "build": 409,
-  "visibleVersion": "V3.94 •ExelanceX•",
-  "shortVersion": "V3.94 •ExelanceX•",
-  "name": "Mesaha İO V3.94 •ExelanceX•",
-  "cacheName": "mesaha-app-v409-kesimci-secimi-ziplama-fix",
-  "builtAt": "2026-06-28T00:45:00+03:00",
-  "notes": "Mesaha Gir ekranında Kaydet sırasında Kesimci seçilmedi alanının küçülüp büyümesinden kaynaklanan ekran zıplaması düzeltildi.",
-  "assetVersion": "409"
+  "app": "V4.44",
+  "version": "v459_stabilite_yedek_surum_temizlik",
+  "build": 459,
+  "visibleVersion": "V4.44 •ExelanceX•",
+  "shortVersion": "V4.44 •ExelanceX•",
+  "name": "Mesaha İO V4.44 •ExelanceX•",
+  "cacheName": "mesaha-app-v459-stabilite-yedek-surum-temizlik",
+  "builtAt": "2026-07-05T15:45:00+03:00",
+  "notes": "",
+  "assetVersion": "459"
 }

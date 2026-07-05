@@ -3,15 +3,22 @@
   if (window.__mesahaRenderStorage) return;
   window.__mesahaRenderStorage = true;
 
-  var renderTimer = 0;
-  var recordsTimer = 0;
-  var lightTimer = 0;
+  var renderTimer = 0, recordsTimer = 0, lightTimer = 0;
   function safe(fn){ try { if (typeof fn === 'function') return fn(); } catch(e){} }
-  function recordsViewVisible(){ var v=document.getElementById('recordsView')||document.getElementById('recordsPage')||document.querySelector('[data-view=records]'); return !v || !v.classList || !v.classList.contains('hidden'); }
+  function active(id){ var el=document.getElementById(id); return !!(el && el.classList && el.classList.contains('active')); }
+  function entryViewActive(){ return active('entryView') || (document.body && document.body.classList.contains('entry-open')); }
+  function recordsViewVisible(){ return active('recordsView'); }
+  function fastEntryRefresh(){
+    if (window.MesahaV433Refresh && typeof window.MesahaV433Refresh.fastAfterSave === 'function') return safe(window.MesahaV433Refresh.fastAfterSave);
+    safe(function(){ if(window.MesahaV433Refresh && typeof window.MesahaV433Refresh.renderShortcuts === 'function') window.MesahaV433Refresh.renderShortcuts(); });
+    safe(function(){ if(window.mesahaV305) window.mesahaV305.updateBeyanTotals(); });
+  }
   function renderAllSoon(delay){
     clearTimeout(renderTimer);
     renderTimer = setTimeout(function(){
       if (document.hidden) return;
+      // Stabil: Mesaha Gir açıkken full render inputları geri yazmasın; hafif yenile.
+      if (entryViewActive()) { fastEntryRefresh(); return; }
       safe(window.renderAll);
       safe(function(){ if(window.mesahaV305) window.mesahaV305.updateBeyanTotals(); });
     }, delay || 90);
@@ -20,7 +27,7 @@
     clearTimeout(recordsTimer);
     recordsTimer = setTimeout(function(){
       if (document.hidden) return;
-      if (!recordsViewVisible()) { lightRefreshSoon(60); return; }
+      if (!recordsViewVisible()) { lightRefreshSoon(80); return; }
       if (window.mesahaV303 && typeof window.mesahaV303.records === 'function') safe(window.mesahaV303.records);
       else safe(window.renderRecords);
       safe(function(){ if(window.mesahaV305) window.mesahaV305.updateBeyanTotals(); });
@@ -30,25 +37,16 @@
     clearTimeout(lightTimer);
     lightTimer = setTimeout(function(){
       if (document.hidden) return;
+      safe(function(){ if(window.MesahaV433Refresh && typeof window.MesahaV433Refresh.fastAfterSave === 'function') window.MesahaV433Refresh.fastAfterSave(); });
       safe(function(){ if(window.mesahaV305) window.mesahaV305.updateBeyanTotals(); });
       safe(function(){ if(window.mesahaV304) window.mesahaV304.updateExportScopeInfo(); });
     }, delay || 120);
   }
-  function flushLocalSettings(){
-    try { if (typeof window.__flushSettings === 'function') window.__flushSettings(); } catch(e) {}
-  }
-  window.addEventListener('mesaha:records-saved', function(){ renderRecordsSoon(80); }, {passive:true});
-  window.addEventListener('mesaha:settings-saved', function(){ lightRefreshSoon(120); }, {passive:true});
+  function flushLocalSettings(){ try { if (typeof window.__flushSettings === 'function') window.__flushSettings(); } catch(e) {} }
+  window.addEventListener('mesaha:records-saved', function(){ renderRecordsSoon(120); }, {passive:true});
+  window.addEventListener('mesaha:settings-saved', function(){ lightRefreshSoon(220); }, {passive:true});
   window.addEventListener('pagehide', flushLocalSettings, {passive:true});
   document.addEventListener('visibilitychange', function(){ if(document.hidden) flushLocalSettings(); }, {passive:true});
-
-  var renderStorageApi = {
-    renderAllSoon: renderAllSoon,
-    renderRecordsSoon: renderRecordsSoon,
-    lightRefreshSoon: lightRefreshSoon,
-    flushSettings: flushLocalSettings
-  };
-  window.MesahaRenderStorage = renderStorageApi;
-  window.MesahaRenderStorageV383 = renderStorageApi;
-  window.MesahaRenderStorageV382 = renderStorageApi;
+  var api = { renderAllSoon: renderAllSoon, renderRecordsSoon: renderRecordsSoon, lightRefreshSoon: lightRefreshSoon, flushSettings: flushLocalSettings };
+  window.MesahaRenderStorage = api; window.MesahaRenderStorageV383 = api; window.MesahaRenderStorageV382 = api;
 })();
