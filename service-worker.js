@@ -14,7 +14,7 @@ const SHELL_ASSETS = [
   './', './index.html', './css/app.css', './admin.html', './temizle.html', './guncelle.html', './manifest.json', './version.json', './service-worker.js',
   './js/version.js', './js/mesaha-early-optimizer.js', './js/mesaha-utils.js', './js/mesaha-data-guard.js',
   './js/mesaha-stability-core.js', './js/mesaha-url-cleanup.js', './js/mesaha-supabase-config.js', './js/mesaha-firebase.js', './js/mesaha-offline-core.js',
-  './js/mesaha-render-storage.js', './js/mesaha-sound.js', './js/mesaha-storage-health.js', './js/mesaha-records-performance.js', './js/mesaha-error-log.js', './js/mesaha-filter-cutter-fix.js'
+  './js/mesaha-render-storage.js', './js/mesaha-sound.js', './js/mesaha-storage-health.js', './js/mesaha-records-performance.js', './js/mesaha-error-log.js', './js/mesaha-filter-cutter-fix.js', './js/mesaha-fast-tap-nav.js'
 ];
 const STATIC_ASSETS = [
   './assets/icon-192.png', './assets/icon-512.png', './assets/mesaha_logo.png', './assets/hero_forest_cover.webp', './assets/hero_forest_cover.png',
@@ -162,7 +162,7 @@ self.addEventListener('fetch',event=>{
   const isShell=path.endsWith('/index.html')||path.endsWith('/admin.html')||path.endsWith('/temizle.html')||path.endsWith('/guncelle.html')||path.endsWith('/manifest.json')||path.endsWith('/version.json')||path.endsWith('/service-worker.js')||isJs||isCss;
   if(event.request.mode==='navigate'){
     event.respondWith((async()=>{
-      const fallback=path.endsWith('/admin.html')?'./admin.html':path.endsWith('/temizle.html')?'./temizle.html':'./index.html';
+      const fallback=path.endsWith('/admin.html')?'./admin.html':path.endsWith('/temizle.html')?'./temizle.html':path.endsWith('/guncelle.html')?'./guncelle.html':'./index.html';
       try{
         const r=await networkWithTimeout(event.request,{cache:'no-store'},OFFLINE_TIMEOUT_MS);
         event.waitUntil(safePut(SHELL_CACHE,fallback,r.clone()).then(()=>precache()).catch(()=>{}));

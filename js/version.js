@@ -1,6 +1,6 @@
 (function(root){
   'use strict';
-  var info = {"app":"V4.45","version":"v460_eski_surum_guncelleme_koprusu","build":460,"visibleVersion":"V4.45 •ExelanceX•","shortVersion":"V4.45 •ExelanceX•","name":"Mesaha İO V4.45 •ExelanceX•","cacheName":"mesaha-app-v460-eski-surum-guncelleme-koprusu","builtAt":"2026-07-05T16:10:00+03:00","notes":"","assetVersion":"460","latestVersion":"v460_eski_surum_guncelleme_koprusu","latestBuild":460,"currentBuild":460,"minSupportedBuild":409,"forceUpdate":true,"updateUrl":"./temizle.html","cleanUrl":"./guncelle.html"};
+  var info = {"app":"V4.46","version":"v461_hizli_tus_tepkisi","build":461,"visibleVersion":"V4.46 •ExelanceX•","shortVersion":"V4.46 •ExelanceX•","name":"Mesaha İO V4.46 •ExelanceX•","cacheName":"mesaha-app-v461-hizli-tus-tepkisi","builtAt":"2026-07-05T19:30:00+03:00","notes":"","assetVersion":"461","latestVersion":"v461_hizli_tus_tepkisi","latestBuild":461,"currentBuild":461,"minSupportedBuild":409,"forceUpdate":true,"updateUrl":"./temizle.html","cleanUrl":"./guncelle.html"};
   try{ Object.freeze(info); }catch(e){}
   function expose(name,value){
     try{ Object.defineProperty(root,name,{configurable:false,enumerable:true,get:function(){return value;},set:function(){}}); }
