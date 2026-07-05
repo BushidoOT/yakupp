@@ -1,7 +1,7 @@
 (function(){
   'use strict';
-  if(window.__mesahaFilterCutterFixV456) return;
-  window.__mesahaFilterCutterFixV456 = true;
+  if(window.__mesahaFilterCutterFix) return;
+  window.__mesahaFilterCutterFix = true;
 
   var SETTINGS_KEY='cam_mesaha_ayarlar_v1';
   var STORAGE_KEY='cam_mesaha_kayitlari_v1';
@@ -25,7 +25,7 @@
     try{var s=appState(); if(s){ if(!s.settings)s.settings={}; Object.assign(s.settings,st); st=s.settings; }}catch(e){}
     jsonSet(SETTINGS_KEY,st);
     try{ if(window.__flushSettings) window.__flushSettings(); }catch(e){}
-    dispatch('mesaha:settings-saved',{source:'v456-filter-cutter-fix'});
+    dispatch('mesaha:settings-saved',{source:'filter-cutter-fix'});
   }
   function uniq(arr){var out=[];(arr||[]).forEach(function(x){x=clean(x); if(x && out.indexOf(x)<0)out.push(x)}); return out}
   function cutterOf(r){return clean(r && (r.cutter || r.kesimci))}
@@ -113,7 +113,7 @@
       var th=$('treeFilterText'); if(th) th.textContent='Seçili: '+(st.treeFilter||'Tümü');
       var ch=$('cutterFilterText'); if(ch) ch.textContent='Seçili: '+(st.cutterFilter||'Tümü')+' ('+countCutter(st.cutterFilter||'Tümü',stats)+' kayıt)';
     }catch(e){
-      try{ if(window.MesahaErrorLog&&window.MesahaErrorLog.error) window.MesahaErrorLog.error('v456-filter-render',e); }catch(_){}
+      try{ if(window.MesahaErrorLog&&window.MesahaErrorLog.error) window.MesahaErrorLog.error('filter-render',e); }catch(_){}
     }
     rendering=false;
   }
@@ -172,8 +172,8 @@
     renderCuttersAndSelects();
     [200,700,1500,3000].forEach(function(ms){setTimeout(renderCuttersAndSelects,ms)});
     var rec=$('recordsView');
-    if(rec && window.MutationObserver && !rec.__v456FilterWatch){
-      rec.__v456FilterWatch=true;
+    if(rec && window.MutationObserver && !rec.__filterWatch){
+      rec.__filterWatch=true;
       new MutationObserver(function(){schedule(80)}).observe(rec,{childList:true,subtree:true});
     }
     setInterval(function(){
@@ -183,7 +183,7 @@
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true}); else boot();
   var api={render:renderCuttersAndSelects,filters:renderFilters,syncCutters:syncCutterStore,stats:buildStats,clearStats:invalidateStats};
-  window.MesahaFilterCutterFixV456=api;
+  window.MesahaFilterCutterFix=api;
   window.MesahaFilterCutterFixV455=api;
   window.MesahaFilterCutterFixV454=api;
 })();

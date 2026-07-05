@@ -1,6 +1,6 @@
 (function(){
   'use strict';
-  if(window.MesahaErrorLog && window.MesahaErrorLog.__v456) return;
+  if(window.MesahaErrorLog && window.MesahaErrorLog.__current) return;
   var KEY='mesaha_error_log_v446';
   var MAX=50;
   function now(){try{return new Date().toISOString();}catch(e){return String(Date.now());}}
@@ -34,9 +34,8 @@
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true}); else bind();
   [500,1500,3500].forEach(function(ms){setTimeout(bind,ms);});
-  var api={__v456:true,__v446:true,add:add,info:info,error:error,list:read,clear:clear,download:download};
+  var api={__current:true,__v446:true,add:add,info:info,error:error,list:read,clear:clear,download:download};
   window.MesahaErrorLog=api;
   window.MesahaErrorLogV446=api;
   window.MesahaErrorLogV455=api;
-  window.MesahaErrorLogV456=api;
-})();
+  })();

@@ -3,7 +3,7 @@
    Veriler Supabase REST tablolarına yazılır/okunur. */
 (function(){
   'use strict';
-  var VERSION='v456_ios_url_baslangic_temizligi';
+  var VERSION=(window.MESAHA_VERSION&&window.MESAHA_VERSION.version)||'local';
   var readyPromise=null;
   var lastOkMs=0;
   var lastError='';
@@ -162,7 +162,7 @@
     })();}
     try{return await readyPromise;}catch(e){readyPromise=null;lastError=e&&e.message?e.message:String(e||'Supabase hata');throw e;}
   }
-  async function health(){var r=await ready();await r.db.collection('healthChecks').doc('client').set({ok:true,atMs:Date.now(),appVersion:(window.APP_VERSION||'V4.41'),source:'supabase'},{merge:true});lastOkMs=Date.now();lastError='';return r;}
+  async function health(){var r=await ready();await r.db.collection('healthChecks').doc('client').set({ok:true,atMs:Date.now(),appVersion:((window.MESAHA_VERSION&&window.MESAHA_VERSION.visibleVersion)||window.APP_VERSION||'Mesaha İO'),source:'supabase'},{merge:true});lastOkMs=Date.now();lastError='';return r;}
   function reset(){readyPromise=null;lastError='';}
   function status(){return{ok:!!lastOkMs,lastOkMs:lastOkMs,lastError:lastError,online:navigator.onLine!==false,provider:'supabase',version:VERSION};}
 

@@ -3,20 +3,9 @@
   if (window.__mesahaOfflineCore) return;
   window.__mesahaOfflineCore = true;
 
-  var FALLBACK_META = {
-  "app": "V4.41",
-  "version": "v456_ios_url_baslangic_temizligi",
-  "build": 456,
-  "visibleVersion": "V4.41 •ExelanceX•",
-  "shortVersion": "V4.41 •ExelanceX•",
-  "name": "Mesaha İO V4.41 •ExelanceX•",
-  "cacheName": "mesaha-app-v456-ios-url-baslangic-temizligi",
-  "builtAt": "2026-07-05T14:10:00+03:00",
-  "notes": "iOS eski URL ve başlangıç temizliği.",
-  "assetVersion": "456"
-};
+  var FALLBACK_META = {app:'Mesaha İO', version:'local', build:0, visibleVersion:'Mesaha İO', shortVersion:'Mesaha İO', name:'Mesaha İO', cacheName:'mesaha-app-local', assetVersion:''};
   var META = (window.MESAHA_VERSION && typeof window.MESAHA_VERSION === 'object') ? window.MESAHA_VERSION : FALLBACK_META;
-  var ASSET_VERSION = String(META.assetVersion || META.build || '456');
+  var ASSET_VERSION = String(META.assetVersion || META.build || '');
 
   function lock(name, value){
     try {
@@ -63,10 +52,10 @@
 
   var CORE_ASSETS = [
     './index.html', './admin.html', './manifest.json', './version.json', './service-worker.js', './temizle.html',
-    './js/version.js?v=' + ASSET_VERSION, './js/mesaha-sound.js?v=' + ASSET_VERSION, './js/mesaha-firebase.js?v=' + ASSET_VERSION,
-    './js/mesaha-early-optimizer.js?v=' + ASSET_VERSION, './js/mesaha-offline-core.js?v=' + ASSET_VERSION,
-    './assets/icon-192.png', './assets/icon-512.png', './assets/mesaha_logo.png', './assets/hero_forest_cover.webp?v=' + ASSET_VERSION,
-    './assets/mesaha_onay.wav?v=' + ASSET_VERSION, './assets/mesaha_uyari.wav?v=' + ASSET_VERSION
+    './js/version.js', './js/mesaha-sound.js', './js/mesaha-firebase.js',
+    './js/mesaha-early-optimizer.js', './js/mesaha-offline-core.js',
+    './assets/icon-192.png', './assets/icon-512.png', './assets/mesaha_logo.png', './assets/hero_forest_cover.webp',
+    './assets/mesaha_onay.wav', './assets/mesaha_uyari.wav'
   ];
 
   function warmCache(){
@@ -89,7 +78,7 @@
 
   function registerServiceWorker(){
     if (!('serviceWorker' in navigator)) return;
-    navigator.serviceWorker.register('./service-worker.js?v=' + ASSET_VERSION, {scope:'./', updateViaCache:'none'}).then(function(reg){
+    navigator.serviceWorker.register('./service-worker.js', {scope:'./', updateViaCache:'none'}).then(function(reg){
       try {
         var last = Number(localStorage.getItem('mesaha_sw_update_check_current') || 0);
         if (navigator.onLine && Date.now() - last > 15 * 60 * 1000) {
