@@ -1,12 +1,19 @@
 {
-  "app": "V4.44",
-  "version": "v459_stabilite_yedek_surum_temizliiiik",
-  "build": 459,
-  "visibleVersion": "V4.44 •ExelanceX•",
-  "shortVersion": "V4.44 •ExelanceX•",
-  "name": "Mesaha İO V4.44 •ExelanceX•",
-  "cacheName": "mesaha-app-v459-stabilite-yedek-surum-temizlik",
-  "builtAt": "2026-07-05T15:45:00+03:00",
+  "app": "V4.45",
+  "version": "v460_eski_surum_guncelleme_koprusu",
+  "build": 460,
+  "visibleVersion": "V4.45 •ExelanceX•",
+  "shortVersion": "V4.45 •ExelanceX•",
+  "name": "Mesaha İO V4.45 •ExelanceX•",
+  "cacheName": "mesaha-app-v460-eski-surum-guncelleme-koprusu",
+  "builtAt": "2026-07-05T16:10:00+03:00",
   "notes": "",
-  "assetVersion": "459"
+  "assetVersion": "460",
+  "latestVersion": "v460_eski_surum_guncelleme_koprusu",
+  "latestBuild": 460,
+  "currentBuild": 460,
+  "minSupportedBuild": 409,
+  "forceUpdate": true,
+  "updateUrl": "./temizle.html",
+  "cleanUrl": "./guncelle.html"
 }

@@ -11,7 +11,7 @@ const VERSION_Q = String(META.assetVersion || META.build || '');
 
 
 const SHELL_ASSETS = [
-  './', './index.html', './css/app.css', './admin.html', './temizle.html', './manifest.json', './version.json', './service-worker.js',
+  './', './index.html', './css/app.css', './admin.html', './temizle.html', './guncelle.html', './manifest.json', './version.json', './service-worker.js',
   './js/version.js', './js/mesaha-early-optimizer.js', './js/mesaha-utils.js', './js/mesaha-data-guard.js',
   './js/mesaha-stability-core.js', './js/mesaha-url-cleanup.js', './js/mesaha-supabase-config.js', './js/mesaha-firebase.js', './js/mesaha-offline-core.js',
   './js/mesaha-render-storage.js', './js/mesaha-sound.js', './js/mesaha-storage-health.js', './js/mesaha-records-performance.js', './js/mesaha-error-log.js', './js/mesaha-filter-cutter-fix.js'
@@ -60,6 +60,7 @@ function fallbackForPath(path){
   if(path.endsWith('/index.html') || path.endsWith('/')) return './index.html';
   if(path.endsWith('/admin.html')) return './admin.html';
   if(path.endsWith('/temizle.html')) return './temizle.html';
+  if(path.endsWith('/guncelle.html')) return './guncelle.html';
   if(path.endsWith('/manifest.json')) return './manifest.json';
   if(path.endsWith('/version.json')) return './version.json';
   if(path.endsWith('/service-worker.js')) return './service-worker.js';
@@ -158,7 +159,7 @@ self.addEventListener('fetch',event=>{
   const isJs=path.includes('/js/')||path.endsWith('.js');
   const isCss=path.endsWith('.css');
   const isAsset=path.includes('/assets/')||/\.(png|jpg|jpeg|webp|svg|wav|mp3|json)$/i.test(path);
-  const isShell=path.endsWith('/index.html')||path.endsWith('/admin.html')||path.endsWith('/temizle.html')||path.endsWith('/manifest.json')||path.endsWith('/version.json')||path.endsWith('/service-worker.js')||isJs||isCss;
+  const isShell=path.endsWith('/index.html')||path.endsWith('/admin.html')||path.endsWith('/temizle.html')||path.endsWith('/guncelle.html')||path.endsWith('/manifest.json')||path.endsWith('/version.json')||path.endsWith('/service-worker.js')||isJs||isCss;
   if(event.request.mode==='navigate'){
     event.respondWith((async()=>{
       const fallback=path.endsWith('/admin.html')?'./admin.html':path.endsWith('/temizle.html')?'./temizle.html':'./index.html';
