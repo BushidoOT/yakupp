@@ -4,16 +4,16 @@
   window.__mesahaOfflineCore = true;
 
   var FALLBACK_META = {
-  "app": "V3.90",
-  "version": "v405-kesimci-duzenle-sil-koruma",
-  "build": 451,
-  "visibleVersion": "V3.90 •ExelanceX•",
-  "shortVersion": "V3.90 •ExelanceX•",
-  "name": "Mesaha İO V3.90 •ExelanceX•",
-  "cacheName": "mesaha-app-v405-kesimci-duzenle-sil-koruma",
-  "builtAt": "2026-06-27T13:25:00+03:00",
-  "notes": "Kesimci isim düzenleme eklendi; kesimci yanında düzenle/sil butonları gösterilir; kayıt bağlı kesimci silinmez.",
-  "assetVersion":"451"
+  "app": "V4.37",
+  "version": "v452_offline_sw_kayit",
+  "build": 452,
+  "visibleVersion": "V4.37 •ExelanceX•",
+  "shortVersion": "V4.37 •ExelanceX•",
+  "name": "Mesaha İO V4.37 •ExelanceX•",
+  "cacheName": "mesaha-app-v452-offline-sw-kayit",
+  "builtAt": "2026-07-05T10:45:00+03:00",
+  "notes": "Service worker kayıt hatası düzeltildi; version.js hem sayfa hem service worker içinde çalışır; çevrimdışı yenilemede Chrome offline ekranına düşme engellendi.",
+  "assetVersion": "452"
 };
   var META = (window.MESAHA_VERSION && typeof window.MESAHA_VERSION === 'object') ? window.MESAHA_VERSION : FALLBACK_META;
   var ASSET_VERSION = String(META.assetVersion || META.build || '405');
@@ -65,7 +65,7 @@
     './index.html', './admin.html', './manifest.json', './version.json', './service-worker.js', './temizle.html',
     './js/version.js?v=' + ASSET_VERSION, './js/mesaha-sound.js?v=' + ASSET_VERSION, './js/mesaha-firebase.js?v=' + ASSET_VERSION,
     './js/mesaha-early-optimizer.js?v=' + ASSET_VERSION, './js/mesaha-offline-core.js?v=' + ASSET_VERSION,
-    './assets/icon-192.png', './assets/icon-512.png', './assets/mesaha_logo.png', './assets/hero_forest_cover.png?v=' + ASSET_VERSION,
+    './assets/icon-192.png', './assets/icon-512.png', './assets/mesaha_logo.png', './assets/hero_forest_cover.webp?v=' + ASSET_VERSION,
     './assets/mesaha_onay.wav?v=' + ASSET_VERSION, './assets/mesaha_uyari.wav?v=' + ASSET_VERSION
   ];
 
@@ -89,7 +89,7 @@
 
   function registerServiceWorker(){
     if (!('serviceWorker' in navigator)) return;
-    navigator.serviceWorker.register('./service-worker.js?v=' + ASSET_VERSION).then(function(reg){
+    navigator.serviceWorker.register('./service-worker.js?v=' + ASSET_VERSION, {scope:'./', updateViaCache:'none'}).then(function(reg){
       try {
         var last = Number(localStorage.getItem('mesaha_sw_update_check_current') || 0);
         if (navigator.onLine && Date.now() - last > 15 * 60 * 1000) {

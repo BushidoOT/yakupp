@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* Mesaha İO küçük sürüm aracı. Kullanım: node tools/build-version.js V4.36 449 */
+/* Mesaha İO küçük sürüm aracı. Kullanım: node tools/build-version.js V4.37 449 */
 const fs = require('fs');
 const path = require('path');
 const root = path.resolve(__dirname, '..');
