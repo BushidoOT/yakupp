@@ -1542,8 +1542,8 @@ function load(){
   if(!state.settings.mesahaDate) state.settings.mesahaDate=todayISO();
   if(!Array.isArray(state.settings.visibleProducts) || !state.settings.visibleProducts.length) state.settings.visibleProducts=defaults.visibleProducts.slice();
   if(!Array.isArray(state.settings.visibleTrees) || !state.settings.visibleTrees.length) state.settings.visibleTrees=TREES.slice();
-  if(!state.settings.visibleTrees.includes('Kayın')) state.settings.visibleTrees.push('Kayın');
-  try{ const savedTree=localStorage.getItem('mesaha_last_tree_stable'); if(savedTree && (!Array.isArray(state.settings.visibleTrees) || state.settings.visibleTrees.includes(savedTree))) state.settings.currentTree=savedTree; }catch{}
+  try{ const savedTree=localStorage.getItem('mesaha_last_tree_stable'); if(savedTree && state.settings.visibleTrees.includes(savedTree)) state.settings.currentTree=savedTree; }catch{}
+  if(!state.settings.visibleTrees.includes(state.settings.currentTree)) state.settings.currentTree=state.settings.visibleTrees[0]||'Karaçam';
   if(!Array.isArray(state.settings.cutters)) state.settings.cutters=[];
   
 }
@@ -1629,7 +1629,7 @@ function checkChanged(e){
   if(!boxes.length){ e.target.checked=true; toast('En az bir seçim açık kalmalı.'); return; }
   if(kind==='product'){ state.settings.visibleProducts=boxes; if(!boxes.includes(state.settings.currentProduct)) state.settings.currentProduct=boxes[0]; }
   else { state.settings.visibleTrees=boxes; if(!boxes.includes(state.settings.currentTree)) state.settings.currentTree=boxes[0]; try{localStorage.setItem('mesaha_last_tree_stable', state.settings.currentTree);}catch{} }
-  saveSettings(); renderEntry(); renderHomeChecks();
+  saveSettings(); try{__flushSettings();}catch{} renderEntry(); renderHomeChecks();
 }
 function renderSummary(){
   const total=totals(state.records), week=state.records.filter(isThisWeek);
@@ -3957,23 +3957,39 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     }
   }
   async function listBackups(){const u=readPanelUser();if(!u.name||!u.seflik){throw new Error('Önce kullanıcı girişi yap')}const key=userKey(u.name,u.seflik);const {db}=await ready();const snap=await withTimeout(db.collection('backups').where('userKey','==',key).get(),16000,'Yedek listesi');const arr=[];snap.forEach(doc=>arr.push(Object.assign({docId:doc.id},doc.data()||{})));arr.sort((a,b)=>Number(b.createdAtMs||0)-Number(a.createdAtMs||0));return arr}
-  async function deleteBackupFull(db,id){throw new Error('Bulut yedek silme bu güvenli sürümde kapalı')}
+  async function deleteBackupFull(db,id){
+    const u=readPanelUser(); const key=userKey(u.name,u.seflik);
+    const ref=db.collection('backups').doc(id);
+    const doc=await withTimeout(ref.get(),12000,'Yedek kontrol');
+    if(!doc.exists) throw new Error('Yedek bulunamadı');
+    const d=doc.data()||{};
+    if(String(d.userKey||'')!==key) throw new Error('Bu yedek bu kullanıcıya ait değil');
+    const chunks=await withTimeout(ref.collection('chunks').get(),20000,'Yedek parçaları');
+    const ops=[]; chunks.forEach(c=>{const cd=c.data()||{};let cid=String(c.id||'');if(cd.index!=null)cid=String(cd.index).padStart(4,'0');else if(cid.indexOf(String(id)+'_')===0)cid=cid.slice(String(id).length+1);ops.push(ref.collection('chunks').doc(cid).delete())});
+    if(ops.length) await withTimeout(Promise.all(ops),25000,'Yedek parçaları silme');
+    await withTimeout(ref.delete(),12000,'Yedek silme');
+  }
   async function restoreCloud(id){if(!id)return;if(!confirm('Bu bulut yedeği mevcut kayıtların yerine yüklenecek. Devam edilsin mi?'))return;try{const {db}=await ready();const ref=db.collection('backups').doc(id);const doc=await withTimeout(ref.get(),12000,'Yedek okuma');if(!doc.exists)throw new Error('Yedek bulunamadı');const d=doc.data()||{};let payload=d.payload||(d.payloadText?JSON.parse(d.payloadText):{});let recs=[];if(d.recordsChunked){const chunks=await withTimeout(ref.collection('chunks').get(),25000,'Yedek parçaları');const arr=[];chunks.forEach(c=>{const cd=c.data()||{};arr.push({index:Number(cd.index||0),records:Array.isArray(cd.records)?cd.records:[]})});arr.sort((a,b)=>a.index-b.index);recs=arr.flatMap(x=>x.records)}else{recs=Array.isArray(payload.records)?payload.records:[]}if(!Array.isArray(recs))throw new Error('Yedek kayıtları okunamadı');jsonSet(STORAGE_KEY,recs);if(payload&&payload.settings)jsonSet(SETTINGS_KEY,Object.assign(settings(),payload.settings));notify('Bulut yedeği yüklendi.','Sayfa yenileniyor','success');setTimeout(()=>location.reload(),700)}catch(e){notify('Bulut yedeği yüklenemedi.',errText(e),'error')}}
-  async function deleteCloud(id){notify('Yedek silme kapalı.','Bu güvenli sürümde buluttan yedek silinmez.','warning')}
-  async function openCloudManager(){const ov=$('cloudRestoreOverlayV316'),list=$('cloudRestoreListV316'),info=$('cloudRestoreInfoV316');if(ov)ov.classList.remove('hidden');if(list)list.innerHTML='<div class="cloud-item-v316 cloud-item-v319">Yedekler yükleniyor…</div>';try{const arr=await listBackups();if(info)info.textContent=arr.length+' yedek bulundu • silme kapalı';if(!arr.length){if(list)list.innerHTML='<div class="cloud-item-v316 cloud-item-v319">Bulutta yedek bulunamadı.</div>';return}if(list)list.innerHTML=arr.slice(0,50).map(b=>'<div class="cloud-item-v316 cloud-item-v319"><div><b>'+esc(b.fileName||'Mesaha yedeği')+'</b><small>'+esc(b.createdAt||'-')+' • '+Number(b.recordCount||0).toLocaleString('tr-TR')+' kayıt • '+(Number(b.m3||0)).toLocaleString('tr-TR',{minimumFractionDigits:3,maximumFractionDigits:3})+' m³</small></div><div class="cloud-actions-v319"><button class="btn primary" data-cloud-restore-v319="'+esc(b.docId)+'" type="button">Bu Yedeği Yükle</button></div></div>').join('')}catch(e){if(info)info.textContent='Yedekler alınamadı';if(list)list.innerHTML='<div class="cloud-item-v316 cloud-item-v319">'+esc(errText(e))+'</div>'}}
+  async function deleteCloud(id){
+    if(!id)return;
+    if(!confirm('Bu bulut yedeği kalıcı olarak silinsin mi?'))return;
+    try{const {db}=await ready();await deleteBackupFull(db,id);notify('Bulut yedeği silindi.','Liste yenileniyor','success');openCloudManager();}
+    catch(e){notify('Bulut yedeği silinemedi.',errText(e),'error')}
+  }
+  async function openCloudManager(){const ov=$('cloudRestoreOverlayV316'),list=$('cloudRestoreListV316'),info=$('cloudRestoreInfoV316');if(ov)ov.classList.remove('hidden');if(list)list.innerHTML='<div class="cloud-item-v316 cloud-item-v319">Yedekler yükleniyor…</div>';try{const arr=await listBackups();if(info)info.textContent=arr.length+' yedek bulundu • silme açık';if(!arr.length){if(list)list.innerHTML='<div class="cloud-item-v316 cloud-item-v319">Bulutta yedek bulunamadı.</div>';return}if(list)list.innerHTML=arr.slice(0,50).map(b=>'<div class="cloud-item-v316 cloud-item-v319"><div><b>'+esc(b.fileName||'Mesaha yedeği')+'</b><small>'+esc(b.createdAt||'-')+' • '+Number(b.recordCount||0).toLocaleString('tr-TR')+' kayıt • '+(Number(b.m3||0)).toLocaleString('tr-TR',{minimumFractionDigits:3,maximumFractionDigits:3})+' m³</small></div><div class="cloud-actions-v319"><button class="btn primary" data-cloud-restore-v319="'+esc(b.docId)+'" type="button">Bu Yedeği Yükle</button><button class="btn red" data-cloud-delete-v319="'+esc(b.docId)+'" type="button">Sil</button></div></div>').join('')}catch(e){if(info)info.textContent='Yedekler alınamadı';if(list)list.innerHTML='<div class="cloud-item-v316 cloud-item-v319">'+esc(errText(e))+'</div>'}}
   function replaceButton(id,handler){const old=$(id);if(!old||old.__v319Replaced)return;const neu=old.cloneNode(true);neu.__v319Replaced=true;old.parentNode.replaceChild(neu,old);neu.addEventListener('click',function(ev){ev.preventDefault();ev.stopImmediatePropagation();handler(ev)},true)}
   function bind(){
     ensurePanelButton();
     replaceButton('cloudRestoreBtnV316',openCloudManager);
     replaceButton('panelBackupsV318',openCloudManager);
     const listOld=$('cloudRestoreListV316');
-    if(listOld&&!listOld.__v319List){const list=listOld.cloneNode(false);list.setAttribute('id','cloudRestoreListV316');list.__v319List=true;listOld.parentNode.replaceChild(list,listOld);list.addEventListener('click',ev=>{const r=ev.target.closest('[data-cloud-restore-v319]');if(r){ev.preventDefault();ev.stopImmediatePropagation();restoreCloud(r.getAttribute('data-cloud-restore-v319'));return}},true)}
+    if(listOld&&!listOld.__v319List){const list=listOld.cloneNode(false);list.setAttribute('id','cloudRestoreListV316');list.__v319List=true;listOld.parentNode.replaceChild(list,listOld);list.addEventListener('click',ev=>{const d=ev.target.closest('[data-cloud-delete-v319]');if(d){ev.preventDefault();ev.stopImmediatePropagation();deleteCloud(d.getAttribute('data-cloud-delete-v319'));return}const r=ev.target.closest('[data-cloud-restore-v319]');if(r){ev.preventDefault();ev.stopImmediatePropagation();restoreCloud(r.getAttribute('data-cloud-restore-v319'));return}},true)}
     const styleId='mesaha-v319-cloud-style';
-    if(!document.getElementById(styleId)){const st=document.createElement('style');st.id=styleId;st.textContent='.cloud-item-v319{grid-template-columns:1fr!important;gap:10px!important}.cloud-actions-v319{display:grid;grid-template-columns:1fr 110px;gap:8px}.cloud-actions-v319 .btn{width:100%;min-height:42px}.cloud-item-v319 small{display:block;margin-top:4px}.panel-actions-v316{grid-template-columns:1fr 1fr!important}@media(max-width:520px){.cloud-actions-v319,.panel-actions-v316{grid-template-columns:1fr!important}}';document.head.appendChild(st)}
+    if(!document.getElementById(styleId)){const st=document.createElement('style');st.id=styleId;st.textContent='.cloud-item-v319{grid-template-columns:1fr!important;gap:10px!important}.cloud-actions-v319{display:grid;grid-template-columns:1fr 92px;gap:8px}.cloud-actions-v319 .btn{width:100%;min-height:42px}.cloud-item-v319 small{display:block;margin-top:4px}.panel-actions-v316{grid-template-columns:1fr 1fr!important}@media(max-width:520px){.cloud-actions-v319,.panel-actions-v316{grid-template-columns:1fr!important}}';document.head.appendChild(st)}
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
   [300,900,1800,3000].forEach(ms=>setTimeout(bind,ms));
-  window.mesahaUserBackupsV318={open:openCloudManager,list:listBackups,deleteBackup:function(){notify('Yedek silme kapalı.','Güvenli sürüm','warning')},restore:restoreCloud};
+  window.mesahaUserBackupsV318={open:openCloudManager,list:listBackups,deleteBackup:deleteCloud,restore:restoreCloud};
 })();
 </script>
 <script id="mesaha-inline-v319-first-login-gate">
@@ -8285,7 +8301,7 @@ body.mesaha-entry-scrolling-v408 #entryView label{
   }
   function markReady(){
     try{document.documentElement.setAttribute('data-mesaha-offline-entry-guard','453')}catch(e){}
-    try{ if(window.MesahaErrorLogV446 && window.MesahaErrorLogV446.info) window.MesahaErrorLogV446.info('offline-entry-guard-ready',{build:BUILD,online:navigator.onLine}); }catch(e){}
+    try{ var k='mesaha_offline_guard_logged_'+BUILD+'_'+String(navigator.onLine!==false); if(!sessionStorage.getItem(k)){ sessionStorage.setItem(k,'1'); if(window.MesahaErrorLogV446 && window.MesahaErrorLogV446.info) window.MesahaErrorLogV446.info('offline-entry-guard-ready',{build:BUILD,online:navigator.onLine}); } }catch(e){}
   }
   function hideStartupFallback(){
     var s=$('startup');

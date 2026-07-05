@@ -7,8 +7,8 @@
     try{
       var L=window.MesahaErrorLog || window.MesahaErrorLogV446;
       var msg='old='+oldV+' build='+build();
-      if(L && typeof L.info==='function') L.info('url-version-cleaned', msg);
-      else if(L && typeof L.add==='function') L.add({level:'info',kind:'url-version-cleaned',message:msg});
+      if(L && typeof L.add==='function') L.add('url-version-cleaned', msg, {level:'info', oldVersion:String(oldV||''), targetBuild:build()});
+      else if(L && typeof L.info==='function') L.info('url-version-cleaned', {message:msg, oldVersion:String(oldV||''), targetBuild:build()});
     }catch(e){}
   }
   function clean(){

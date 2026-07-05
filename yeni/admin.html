@@ -478,15 +478,32 @@ function renderHome(){const active=state.users.slice().sort((a,b)=>n(b.lastSeenM
 function filteredUsers(){const q=($('userSearch').value||'').toLowerCase(),sf=$('seflikFilter').value,sort=$('userSort').value;let arr=state.users.filter(u=>{const text=[u.name,u.seflik,u.bolmeNo,u.lastDevice,u.deviceType,u.os,u.browser,u.deviceId,u.userAgent,u.screen,u.viewport].join(' ').toLowerCase();return (!q||text.includes(q))&&(!sf||u.seflik===sf)});arr.sort((a,b)=>sort==='records'?n(b.recordCount||b.totalRecords)-n(a.recordCount||a.totalRecords):sort==='m3'?n(b.m3||b.totalM3)-n(a.m3||a.totalM3):sort==='duration'?n(b.usageMs)-n(a.usageMs):n(b.lastSeenMs||b.lastLoginMs)-n(a.lastSeenMs||a.lastLoginMs));return arr}
 function renderUsers(){const arr=filteredUsers();$('usersList').innerHTML=arr.length?arr.map(u=>{const key=userKeyOf(u),bk=userBackups(key).length,last=n(u.lastSeenMs||u.lastLoginMs||u.updatedAtMs),active=last>=Date.now()-15*60000;return `<div class="user-card" data-user-card="${esc(key)}"><div class="topline"><div class="avatar">${esc(initials(u.name))}</div><div><b>${esc(u.name||'Kullanıcı')}</b><small>${esc(u.seflik||'-')} • Bölme ${esc(u.bolmeNo||'-')}</small></div><div class="row"><button class="btn soft" data-user-detail="${esc(key)}" type="button">Detay</button></div></div><div class="chips"><span class="chip ${active?'green':''}">${active?'Çevrimiçi':'Son: '+shortDate(last,u.lastSeen)}</span><span class="chip">${int(u.recordCount||u.totalRecords)} kayıt</span><span class="chip">${m3(u.m3||u.totalM3)} m³</span><span class="chip">${bk} yedek</span><span class="chip">${msText(u.usageMs)}</span><span class="chip">${deviceTypeOf(u)}</span></div><div class="detail"><div class="mini-grid"><div class="mini"><small>Bugün giriş</small><b>${int(u.todayLoginCount)}</b></div><div class="mini"><small>Bugün kayıt</small><b>${int(u.todayRecords)}</b></div><div class="mini"><small>Bugün süre</small><b>${msText(u.todayUsageMs)}</b></div><div class="mini"><small>Son görülme</small><b>${shortDate(last,u.lastSeen||u.lastLogin)}</b></div><div class="mini"><small>Cihaz</small><b>${esc(u.lastDevice||deviceTypeOf(u)||'-')}</b></div><div class="mini"><small>Sistem</small><b>${osOf(u)}</b></div><div class="mini"><small>Tarayıcı</small><b>${esc(u.browser||(u.lastDeviceInfo&&u.lastDeviceInfo.browser)||'-')}</b></div><div class="mini"><small>Ekran</small><b>${esc(u.screen||(u.lastDeviceInfo&&u.lastDeviceInfo.screen)||'-')}</b></div></div><div class="screen-grid" style="margin-top:12px"><div><b>Ağaç Toplamları</b>${totalsBars(u.treeTotals)}</div><div><b>Ürün Toplamları</b>${totalsBars(u.productTotals)}</div></div></div></div>`}).join(''):'<div class="empty">Kullanıcı bulunamadı.</div>'}
 
+function normalizeVersionText(v){return String(v||'').replace('•ExelanceX•','').replace(/\s+/g,' ').trim()}
 function appVersionOf(u){
   const raw = u.appVersion || u.fileVersion || (u.lastDeviceInfo && (u.lastDeviceInfo.appVersion || u.lastDeviceInfo.fileVersion)) || u.version || '-';
-  return String(raw || '-').replace('•ExelanceX•','').trim();
+  return normalizeVersionText(raw || '-');
 }
-function latestAppVersion(){return (window.MESAHA_VERSION && (window.MESAHA_VERSION.visibleVersion || window.MESAHA_VERSION.app)) || 'Mesaha İO'}
+function latestAppVersion(){return normalizeVersionText((window.MESAHA_VERSION && (window.MESAHA_VERSION.app || window.MESAHA_VERSION.visibleVersion)) || 'Mesaha İO')}
+function versionBuildOf(u){
+  const vals=[u.build,u.appBuild,u.fileBuild,u.assetVersion,u.appVersion,u.fileVersion,u.version,(u.lastDeviceInfo&&u.lastDeviceInfo.build),(u.lastDeviceInfo&&u.lastDeviceInfo.appVersion),(u.lastDeviceInfo&&u.lastDeviceInfo.fileVersion)];
+  for(const raw of vals){
+    if(raw==null||raw==='') continue;
+    if(typeof raw==='number'&&raw>0) return raw;
+    const s=String(raw);
+    let m=s.match(/(?:build|asset|v)\D*(\d{3,})/i); if(m) return Number(m[1]);
+    m=s.match(/v(\d+)_/i); if(m) return Number(m[1]);
+  }
+  return 0;
+}
 function isOldAppVersion(u){
   const v=appVersionOf(u); if(!v || v==='-') return false;
+  const meta=window.MESAHA_VERSION||{};
+  const latestBuild=Number(meta.build||0)||0;
+  const userBuild=versionBuildOf(u);
+  if(latestBuild && userBuild) return userBuild < latestBuild;
   const latest=latestAppVersion();
-  return !String(v).includes(latest) && !String(v).includes((window.MESAHA_VERSION && window.MESAHA_VERSION.version) || 'local');
+  const file=String(meta.version||'local');
+  return !(normalizeVersionText(v).includes(latest) || String(v).includes(file));
 }
 function isActiveUser(u,spanMs){const last=n(u.lastSeenMs||u.lastLoginMs||u.updatedAtMs);return last>=Date.now()-(spanMs||15*60000)}
 function userTickets(key){return state.tickets.filter(t=>userKeyOf(t)===key)}
