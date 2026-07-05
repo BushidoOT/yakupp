@@ -1,6 +1,6 @@
 (function(){
   'use strict';
-  if(window.MesahaErrorLog && window.MesahaErrorLog.__v446) return;
+  if(window.MesahaErrorLog && window.MesahaErrorLog.__v455) return;
   var KEY='mesaha_error_log_v446';
   var MAX=50;
   function now(){try{return new Date().toISOString();}catch(e){return String(Date.now());}}
@@ -12,6 +12,8 @@
   function write(arr){try{localStorage.setItem(KEY,JSON.stringify(arr.slice(-MAX)));}catch(e){}}
   function textOf(x){try{if(!x)return ''; if(x.stack)return String(x.stack); if(x.message)return String(x.message); return String(x);}catch(e){return 'unknown';}}
   function add(kind,err,extra){try{var arr=read();arr.push(Object.assign(meta(extra),{kind:kind||'error',message:textOf(err).slice(0,1600)}));write(arr);window.dispatchEvent(new CustomEvent('mesaha:error-log-updated',{detail:{count:arr.length}}));}catch(e){}}
+  function info(kind,extra){add(kind||'info','',Object.assign({level:'info'},extra||{}));}
+  function error(kind,err,extra){add(kind||'error',err,extra||{});}
   function clear(){try{localStorage.removeItem(KEY);}catch(e){} }
   function download(){
     var arr=read();
@@ -32,5 +34,8 @@
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true}); else bind();
   [500,1500,3500].forEach(function(ms){setTimeout(bind,ms);});
-  window.MesahaErrorLog={__v446:true,add:add,list:read,clear:clear,download:download};
+  var api={__v455:true,__v446:true,add:add,info:info,error:error,list:read,clear:clear,download:download};
+  window.MesahaErrorLog=api;
+  window.MesahaErrorLogV446=api;
+  window.MesahaErrorLogV455=api;
 })();

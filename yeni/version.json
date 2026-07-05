@@ -1,12 +1,12 @@
 {
-  "app": "V4.39",
-  "version": "v454_filtre_kesimci_tayahix",
-  "build": 454,
-  "visibleVersion": "V4.39 •ExelanceX•",
-  "shortVersion": "V4.39 •ExelanceX•",
-  "name": "Mesaha İO V4.39 •ExelanceX•",
-  "cacheName": "mesaha-app-v454-filtre-kesimci-fix",
-  "builtAt": "2026-07-05T11:55:00+03:00",
-  "notes": "Ölçümler filtresi ve kesimci seçenekleri güçlendirildi.",
-  "assetVersion": "454"
+  "app": "V4.40",
+  "version": "v455_offline_filtre_log_temizlik",
+  "build": 455,
+  "visibleVersion": "V4.40 •ExelanceX•",
+  "shortVersion": "V4.40 •ExelanceX•",
+  "name": "Mesaha İO V4.40 •ExelanceX•",
+  "cacheName": "mesaha-app-v455-offline-filtre-log-temizlik",
+  "builtAt": "2026-07-05T12:20:00+03:00",
+  "notes": "Offline, filtre ve hata günlüğü temizlik paketi.",
+  "assetVersion": "455"
 }

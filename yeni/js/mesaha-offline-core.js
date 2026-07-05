@@ -4,19 +4,19 @@
   window.__mesahaOfflineCore = true;
 
   var FALLBACK_META = {
-  "app": "V4.38",
-  "version": "v453_offline_entry_koruma",
-  "build": 453,
-  "visibleVersion": "V4.38 •ExelanceX•",
-  "shortVersion": "V4.38 •ExelanceX•",
-  "name": "Mesaha İO V4.38 •ExelanceX•",
-  "cacheName": "mesaha-app-v453-offline-entry-koruma",
-  "builtAt": "2026-07-05T10:45:00+03:00",
-  "notes": "Service worker kayıt hatası düzeltildi; version.js hem sayfa hem service worker içinde çalışır; çevrimdışı yenilemede Chrome offline ekranına düşme engellendi.",
-  "assetVersion": "453"
+  "app": "V4.40",
+  "version": "v455_offline_filtre_log_temizlik",
+  "build": 455,
+  "visibleVersion": "V4.40 •ExelanceX•",
+  "shortVersion": "V4.40 •ExelanceX•",
+  "name": "Mesaha İO V4.40 •ExelanceX•",
+  "cacheName": "mesaha-app-v455-offline-filtre-log-temizlik",
+  "builtAt": "2026-07-05T12:20:00+03:00",
+  "notes": "Offline, filtre ve hata günlüğü temizlik paketi.",
+  "assetVersion": "455"
 };
   var META = (window.MESAHA_VERSION && typeof window.MESAHA_VERSION === 'object') ? window.MESAHA_VERSION : FALLBACK_META;
-  var ASSET_VERSION = String(META.assetVersion || META.build || '405');
+  var ASSET_VERSION = String(META.assetVersion || META.build || '455');
 
   function lock(name, value){
     try {
