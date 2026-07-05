@@ -1,23 +1,23 @@
-try{ importScripts('./js/version.js?v=452'); }catch(e){}
+try{ importScripts('./js/version.js?v=453'); }catch(e){}
 
-const META = self.MESAHA_VERSION || {"app":"V4.37","version":"v452_offline_sw_kayit","build":452,"visibleVersion":"V4.37 •ExelanceX•","shortVersion":"V4.37 •ExelanceX•","name":"Mesaha İO V4.37 •ExelanceX•","cacheName":"mesaha-app-v452-offline-sw-kayit","builtAt":"2026-07-05T10:45:00+03:00","notes":"Service worker kayıt hatası düzeltildi; version.js hem sayfa hem service worker içinde çalışır; çevrimdışı yenilemede Chrome offline ekranına düşme engellendi.","assetVersion":"452"};
-const BASE_CACHE = META.cacheName || 'mesaha-app-v452-offline-sw-kayit';
+const META = self.MESAHA_VERSION || {"app":"V4.38","version":"v453_offline_entry_koruma","build":453,"visibleVersion":"V4.38 •ExelanceX•","shortVersion":"V4.38 •ExelanceX•","name":"Mesaha İO V4.38 •ExelanceX•","cacheName":"mesaha-app-v453-offline-entry-koruma","builtAt":"2026-07-05T10:45:00+03:00","notes":"Service worker kayıt hatası düzeltildi; version.js hem sayfa hem service worker içinde çalışır; çevrimdışı yenilemede Chrome offline ekranına düşme engellendi.","assetVersion":"453"};
+const BASE_CACHE = META.cacheName || 'mesaha-app-v453-offline-entry-koruma';
 const SHELL_CACHE = BASE_CACHE + '-shell';
 const ASSET_CACHE = BASE_CACHE + '-assets';
 const RUNTIME_CACHE = BASE_CACHE + '-runtime';
 const OFFLINE_TIMEOUT_MS = 3000;
-const VERSION_Q = String(META.assetVersion || META.build || 452);
+const VERSION_Q = String(META.assetVersion || META.build || 453);
 
 
 const SHELL_ASSETS = [
-  './', './index.html', './css/app.css?v=452', './admin.html', './temizle.html', './manifest.json', './version.json', './service-worker.js',
-  './js/version.js?v=452', './js/mesaha-early-optimizer.js?v=452', './js/mesaha-utils.js?v=452', './js/mesaha-data-guard.js?v=452',
-  './js/mesaha-stability-core.js?v=452', './js/mesaha-supabase-config.js?v=452', './js/mesaha-firebase.js?v=452', './js/mesaha-offline-core.js?v=452',
-  './js/mesaha-render-storage.js?v=452', './js/mesaha-sound.js?v=452', './js/mesaha-storage-health.js?v=452', './js/mesaha-records-performance.js?v=452', './js/mesaha-error-log.js?v=452'
+  './', './index.html', './css/app.css?v=453', './admin.html', './temizle.html', './manifest.json', './version.json', './service-worker.js',
+  './js/version.js?v=453', './js/mesaha-early-optimizer.js?v=453', './js/mesaha-utils.js?v=453', './js/mesaha-data-guard.js?v=453',
+  './js/mesaha-stability-core.js?v=453', './js/mesaha-supabase-config.js?v=453', './js/mesaha-firebase.js?v=453', './js/mesaha-offline-core.js?v=453',
+  './js/mesaha-render-storage.js?v=453', './js/mesaha-sound.js?v=453', './js/mesaha-storage-health.js?v=453', './js/mesaha-records-performance.js?v=453', './js/mesaha-error-log.js?v=453'
 ];
 const STATIC_ASSETS = [
-  './assets/icon-192.png', './assets/icon-512.png', './assets/mesaha_logo.png', './assets/hero_forest_cover.webp?v=452', './assets/hero_forest_cover.png',
-  './assets/mesaha_onay.wav?v=452', './assets/mesaha_uyari.wav?v=452'
+  './assets/icon-192.png', './assets/icon-512.png', './assets/mesaha_logo.png', './assets/hero_forest_cover.webp?v=453', './assets/hero_forest_cover.png',
+  './assets/mesaha_onay.wav?v=453', './assets/mesaha_uyari.wav?v=453'
 ];
 function timeoutReject(ms,label){return new Promise((_,reject)=>setTimeout(()=>reject(new Error(label||'network-timeout')),ms||OFFLINE_TIMEOUT_MS));}
 function networkWithTimeout(request,options,ms){return Promise.race([fetch(request,options||{}),timeoutReject(ms||OFFLINE_TIMEOUT_MS,'network-timeout')]);}
@@ -77,7 +77,7 @@ async function cacheOne(cacheName,u){
       return true;
     }
   }catch(e){}
-  /* v452: ağ yoksa eski sağlam cache'ten yeni cache'e kopyala; offline reload kırılmasın. */
+  /* v453: ağ yoksa eski sağlam cache'ten yeni cache'e kopyala; offline reload kırılmasın. */
   try{
     const url = new URL(abs);
     const cached = await matchAcrossCaches(new Request(abs), fallbackForPath(url.pathname));
@@ -97,15 +97,15 @@ async function hasCached(cacheName,u){
     return !!(await cache.match(u,{ignoreSearch:true}) || await cache.match(abs,{ignoreSearch:true}) || await cache.match(plainUrl(abs),{ignoreSearch:true}));
   }catch(e){ return false; }
 }
-async function hasUsableShellV452(){
+async function hasUsableShellV453(){
   return (await hasCached(SHELL_CACHE,'./index.html')) &&
-         (await hasCached(SHELL_CACHE,'./css/app.css?v=452')) &&
-         (await hasCached(SHELL_CACHE,'./js/mesaha-utils.js?v=452'));
+         (await hasCached(SHELL_CACHE,'./css/app.css?v=453')) &&
+         (await hasCached(SHELL_CACHE,'./js/mesaha-utils.js?v=453'));
 }
 async function precache(){
   await Promise.allSettled(SHELL_ASSETS.map(u=>cacheOne(SHELL_CACHE,u)));
   await Promise.allSettled(STATIC_ASSETS.map(u=>cacheOne(ASSET_CACHE,u)));
-  /* v452: GitHub Pages klasör URL'leri (/yakupp/, /yakupp/yeni/) için index alias kaydı. */
+  /* v453: GitHub Pages klasör URL'leri (/yakupp/, /yakupp/yeni/) için index alias kaydı. */
   try{
     const cache=await caches.open(SHELL_CACHE);
     const index=await matchAcrossCaches(new Request(new URL('./index.html', self.location.href).href),'./index.html');
@@ -114,7 +114,7 @@ async function precache(){
       await cache.put(new URL('./index.html', self.location.href).href, index.clone());
     }
   }catch(e){}
-  return hasUsableShellV452();
+  return hasUsableShellV453();
 }
 function offlineJson(){return new Response(JSON.stringify({offline:true,timeout:true,message:'3 saniye içinde bağlantı kurulamadı, offline mod kullanılıyor.'}),{status:504,statusText:'Offline Timeout',headers:{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store'}});}
 function offlineHtml(){return new Response('<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mesaha İO Offline</title><body style="font-family:Arial;padding:24px;background:#f4f7f6;color:#101828"><h2>Mesaha İO offline açılıyor</h2><p>Ön bellek hazır değilse uygulamayı internet varken bir kez açın veya /yeni/temizle.html sayfasını çalıştırın.</p></body>',{status:200,headers:{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store'}});}
@@ -130,23 +130,23 @@ async function clearOldMesahaCachesV446(){
 self.addEventListener('install',event=>{
   event.waitUntil((async()=>{
     const ok = await precache();
-    /* v452: temel kabuk hazır değilse eski worker devrede kalsın; boş/donuk offline sayfa oluşmasın. */
+    /* v453: temel kabuk hazır değilse eski worker devrede kalsın; boş/donuk offline sayfa oluşmasın. */
     if(ok) await self.skipWaiting();
   })());
 });
 self.addEventListener('activate',event=>{
   event.waitUntil((async()=>{
     const ok = await precache();
-    /* v452: yeni cache doğrulanmadan eski cache'leri silme. Çevrimdışı yenilemenin kilitlenme sebebi buydu. */
+    /* v453: yeni cache doğrulanmadan eski cache'leri silme. Çevrimdışı yenilemenin kilitlenme sebebi buydu. */
     if(ok) await clearOldMesahaCachesV446();
     await self.clients.claim();
   })());
 });
 self.addEventListener('message',event=>{
   const d=event.data||{};
-  if(d.type==='SKIP_WAITING') event.waitUntil((async()=>{ if(await hasUsableShellV452()) await self.skipWaiting(); })());
+  if(d.type==='SKIP_WAITING') event.waitUntil((async()=>{ if(await hasUsableShellV453()) await self.skipWaiting(); })());
   if(d.type==='WARM_CACHE'||d.type==='REPAIR_CACHE') event.waitUntil(precache());
-  if(d.type==='CLEAR_OLD_CACHES') event.waitUntil((async()=>{ if(await hasUsableShellV452()) await clearOldMesahaCachesV446(); })());
+  if(d.type==='CLEAR_OLD_CACHES') event.waitUntil((async()=>{ if(await hasUsableShellV453()) await clearOldMesahaCachesV446(); })());
 });
 self.addEventListener('fetch',event=>{
   if(event.request.method!=='GET') return;
@@ -166,7 +166,7 @@ self.addEventListener('fetch',event=>{
         event.waitUntil(safePut(SHELL_CACHE,fallback,r.clone()).then(()=>precache()).catch(()=>{}));
         return r;
       }catch(e){
-        /* v452: offline yenilemede her zaman sağlam uygulama kabuğuna düş. */
+        /* v453: offline yenilemede her zaman sağlam uygulama kabuğuna düş. */
         const cached = await matchAcrossCaches(event.request,fallback) || await matchAcrossCaches(new Request(new URL('./', self.location.href).href),'./index.html') || await matchAcrossCaches(new Request(new URL('./index.html', self.location.href).href),'./index.html');
         return cached || offlineHtml();
       }
@@ -181,7 +181,7 @@ self.addEventListener('fetch',event=>{
         const cached=await matchAcrossCaches(event.request,fallback);
         if(cached) return cached;
         if(isVersion) return offlineJson();
-        if(isJs) return new Response('/* v452: Mesaha offline JS cache bulunamadı. Uygulama online açılınca cache onarılır. */',{status:200,headers:{'Content-Type':'application/javascript; charset=utf-8','Cache-Control':'no-store'}});
+        if(isJs) return new Response('/* v453: Mesaha offline JS cache bulunamadı. Uygulama online açılınca cache onarılır. */',{status:200,headers:{'Content-Type':'application/javascript; charset=utf-8','Cache-Control':'no-store'}});
         return Response.error();
       }
     })()); return;
