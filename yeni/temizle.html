@@ -8,7 +8,7 @@
 <script src="./js/version.js"></script>
 </head><body><div class="card"><div class="spin"></div><h1>Ön bellek onarılıyor…</h1><p>Eski cache temizleniyor. Kayıtlar ve ayarlar silinmez.</p></div><script>
 (function(){
-  function done(){ setTimeout(function(){ location.replace('./index.html'); },900); }
+  function done(){ setTimeout(function(){ location.replace('./index.html?updated=' + (new Date().getTime())); },900); }
   function setVersionKeys(){ try{ var v=(window.MESAHA_VERSION&&window.MESAHA_VERSION.version)||'local'; localStorage.setItem('mesaha_last_seen_version',v); localStorage.setItem('mesaha_current_version',v); localStorage.setItem('mesaha_cache_repair_current',String(Date.now())); }catch(e){} }
   try{
     var sw = ('serviceWorker' in navigator) ? navigator.serviceWorker.getRegistrations().then(function(regs){ return Promise.all(regs.map(function(r){ return r.unregister().catch(function(){}); })); }) : Promise.resolve();

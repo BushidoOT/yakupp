@@ -2493,7 +2493,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
           if(remote){
             setStep('version','ok','Sürüm kontrol edildi');
             const current = window.MESAHA_VERSION || {};
-            if(remote && remote.version && current.version && remote.version !== current.version){
+            var remoteBuild=Number(remote&&remote.build||0)||0; var currentBuild=Number(current&&current.build||0)||0; if(remote && ((remote.version && current.version && remote.version !== current.version) || (remoteBuild && currentBuild && remoteBuild > currentBuild))){
               const promptKey = 'mesaha_update_prompt_seen_' + String(remote.version).replace(/[^a-zA-Z0-9_.-]/g,'_');
               let lastPrompt = 0;
               try{ lastPrompt = Number(localStorage.getItem(promptKey) || 0); }catch{}
@@ -6518,7 +6518,7 @@ body.mesaha-user-panel-open-v393 .panel-card-v316{padding-bottom:calc(86px + env
   function $(id){return document.getElementById(id)}
   function setVersionMeta(){
     try{
-      window.MESAHA_VERSION = Object.assign({}, window.MESAHA_VERSION||{}, {app:'Mesaha İO',visibleVersion:DISPLAY,shortVersion:DISPLAY,name:'Mesaha İO '+DISPLAY,version:SLUG,build:((window.MESAHA_VERSION&&window.MESAHA_VERSION.build)||0),cacheName:'mesaha-app-local',assetVersion:String((window.MESAHA_VERSION&&window.MESAHA_VERSION.assetVersion)||'')});
+      /* central version locked */
       localStorage.setItem('mesaha_current_version', SLUG);
     }catch(e){}
   }
@@ -7041,7 +7041,7 @@ async function ready(){
   function renderNotes(){
     var box=$('panelUpdateNotesV392'); if(box&&box.parentNode) box.parentNode.removeChild(box);
   }
-  function versionSync(){try{if(window.MESAHA_VERSION){window.MESAHA_VERSION.app='Mesaha İO';window.MESAHA_VERSION.visibleVersion=DISPLAY;window.MESAHA_VERSION.shortVersion=DISPLAY;window.MESAHA_VERSION.version='local';window.MESAHA_VERSION.build=((window.MESAHA_VERSION&&window.MESAHA_VERSION.build)||0);window.MESAHA_VERSION.cacheName='mesaha-app-local';window.MESAHA_VERSION.assetVersion=String((window.MESAHA_VERSION&&window.MESAHA_VERSION.assetVersion)||'');}}catch(e){} }
+  function versionSync(){try{if(window.MESAHA_VERSION){/* central version locked */}}catch(e){} }
   function boot(){versionSync();cleanDeletedCutters();renderNotes();[200,700,1400,2600].forEach(function(ms){setTimeout(function(){versionSync();cleanDeletedCutters();renderNotes();},ms)});}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
   ['mesaha:settings-saved','mesaha:records-saved'].forEach(function(evt){window.addEventListener(evt,function(){setTimeout(function(){cleanDeletedCutters();renderNotes();},80)})});
@@ -8411,6 +8411,7 @@ body.mesaha-entry-scrolling-v408 #entryView label{
 })();
 </script>
 
+<script src="./js/mesaha-fast-tap-nav.js"></script>
 </body>
 </html>
 
