@@ -1,6 +1,6 @@
 (function(root){
   'use strict';
-  var info = {"app":"V4.42","version":"v457_merkezi_surum_sistemi","build":457,"visibleVersion":"V4.42 •ExelanceX•","shortVersion":"V4.42 •ExelanceX•","name":"Mesaha İO V4.42 •ExelanceX•","cacheName":"mesaha-app-v457-merkezi-surum-sistemi","builtAt":"2026-07-05T14:40:00+03:00","notes":"Merkezi sürüm sistemi.","assetVersion":"457"};
+  var info = {"app":"V4.43","version":"v458_panel_notlari_duyuru_silme","build":458,"visibleVersion":"V4.43 •ExelanceX•","shortVersion":"V4.43 •ExelanceX•","name":"Mesaha İO V4.43 •ExelanceX•","cacheName":"mesaha-app-v458-panel-notlari-duyuru-silme","builtAt":"2026-07-05T15:05:00+03:00","notes":"","assetVersion":"458"};
   try{ Object.freeze(info); }catch(e){}
   function expose(name,value){
     try{ Object.defineProperty(root,name,{configurable:false,enumerable:true,get:function(){return value;},set:function(){}}); }

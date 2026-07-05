@@ -33,6 +33,20 @@
 <script src="./js/mesaha-stability-core.js"></script>
 <script src="./js/mesaha-error-log.js"></script>
 <script src="./js/mesaha-url-cleanup.js"></script>
+<script id="mesaha-v458-user-panel-notes-removed">
+(function(){
+  'use strict';
+  function removeNotes(){
+    try{
+      var box=document.getElementById('panelUpdateNotesV392');
+      if(box&&box.parentNode) box.parentNode.removeChild(box);
+    }catch(e){}
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',removeNotes,{once:true});else removeNotes();
+  try{setTimeout(removeNotes,300);setTimeout(removeNotes,1000);setTimeout(removeNotes,2500);}catch(e){}
+})();
+</script>
+
 <link href="./css/app.css" rel="stylesheet"/>
 <style id="mesaha-v319-login-style">
 .user-badge.login-needed{background:#fff7ed;color:#9a3412;border-color:#fed7aa;box-shadow:0 10px 22px rgba(245,158,11,.12)}
@@ -6202,17 +6216,10 @@ body.mesaha-panel-open-v392 .bottom-nav{display:none!important;opacity:0!importa
 .panel-overlay-v316{z-index:2147483400!important;padding:14px 14px calc(18px + env(safe-area-inset-bottom,0px))!important;}
 .panel-card-v316{max-height:calc(100vh - 34px - env(safe-area-inset-bottom,0px))!important;padding-bottom:calc(28px + env(safe-area-inset-bottom,0px))!important;scroll-padding-bottom:120px!important;}
 .panel-section-v316:last-child{margin-bottom:calc(22px + env(safe-area-inset-bottom,0px))!important;}
-.update-notes-v392{border:1px solid #dbeafe;border-radius:22px;background:linear-gradient(135deg,#eff6ff,#ffffff);padding:14px;margin-top:13px;color:#10233f;}
-.update-notes-v392 .notes-head-v392{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;}
-.update-notes-v392 b{color:#1e3a8a;}
-.update-notes-v392 small{color:#64748b;font-weight:850;}
-.update-notes-v392 ul{margin:8px 0 0;padding-left:18px;display:grid;gap:7px;}
-.update-notes-v392 li{font-weight:800;line-height:1.35;color:#243b63;}
-.update-notes-v392 .version-chip-v392{display:inline-flex;align-items:center;justify-content:center;border-radius:999px;background:#dbeafe;color:#1d4ed8;padding:5px 9px;font-weight:950;font-size:12px;white-space:nowrap;}
 a.guide-link-v392,.orbis-video-link-v392{color:#1d4ed8!important;font-weight:950;text-decoration:none;border-bottom:1px solid rgba(29,78,216,.35);}
 a.video-link-v392,.orbis-video-link-v392{display:inline-flex;align-items:center;gap:6px;border:1px solid #fecaca!important;background:#fff1f2;color:#be123c!important;border-radius:999px;padding:7px 10px;margin-top:6px;text-decoration:none!important;}
 .orbis-video-note-v392{margin-top:10px;border:1px solid #fecaca;background:#fff1f2;border-radius:14px;padding:10px;color:#7f1d1d;font-weight:850;}
-@media(max-width:520px){.panel-card-v316{width:100%!important;border-radius:24px 24px 20px 20px!important;}.update-notes-v392 .notes-head-v392{align-items:flex-start;flex-direction:column;}}
+@media(max-width:520px){.panel-card-v316{width:100%!important;border-radius:24px 24px 20px 20px!important;}}
 </style>
 <script id="mesaha-inline-v392-panel-guide-video-hotfix">
 (function(){
@@ -6228,22 +6235,7 @@ a.video-link-v392,.orbis-video-link-v392{display:inline-flex;align-items:center;
   }
   function syncPanelState(){document.body.classList.toggle('mesaha-panel-open-v392', panelOpen());}
   function addUpdateNotes(){
-    var panel=$('userPanelOverlayV316'); if(!panel || $('panelUpdateNotesV392')) return;
-    var actions=panel.querySelector('.panel-actions-v316'); if(!actions) return;
-    var box=document.createElement('div');
-    box.className='update-notes-v392';
-    box.id='panelUpdateNotesV392';
-    box.innerHTML='<div class="notes-head-v392"><b>Güncelleme Notları</b><span class="version-chip-v392">Mesaha İO</span></div>'+
-      '<small>Son değişiklikleri buradan takip edebilirsiniz.</small>'+
-      '<ul>'+
-      '<li><b>V3.92:</b> Kesimci düzenleme ve kayıt varken silme koruması eklendi.</li>'+
-      '<li><b>V3.80:</b> Mobil kullanıcı panelinde arka sayfa kayması ve input yakınlaşma sorunu düzeltildi.</li>'+
-      '<li><b>V3.77:</b> Kullanıcı panelindeki alt menü çakışması düzeltildi; kılavuza kısa link ve ORBİS aktarım videosu eklendi.</li>'+
-      '<li><b>V3.76:</b> Beyan/Özet hesabı ORBİS mantığıyla aynı hale getirildi; silinen kayıtların Excel dosyasına gitmesi engellendi.</li>'+
-      '<li><b>V3.75:</b> Küçük hata düzenlemeleri yapıldı; Mesaha dosyası indirme butonu daha belirgin hale getirildi.</li>'+
-      '<li><b>V3.73:</b> Offline açılış, cache, pil ve stabilite iyileştirmeleri yapıldı.</li>'+
-      '</ul>';
-    actions.insertAdjacentElement('afterend', box);
+    var old=$('panelUpdateNotesV392'); if(old&&old.parentNode) old.parentNode.removeChild(old);
   }
   function upgradeGuideLinks(){
     document.querySelectorAll('.guide-card b').forEach(function(b){
@@ -6433,7 +6425,6 @@ a.video-link-v392,.orbis-video-link-v392{display:inline-flex;align-items:center;
 }
 body.mesaha-user-panel-open-v393 .panel-floating-close-v393{display:inline-flex!important;}
 body.mesaha-user-panel-open-v393 .panel-card-v316{padding-bottom:calc(86px + env(safe-area-inset-bottom,0px))!important;}
-.update-notes-v392 .notes-head-v392 .version-chip-v392{background:#dcfce7!important;color:#166534!important;}
 @media(max-width:520px){.panel-title-v316 h2{font-size:18px!important}.panel-floating-close-v393{left:14px!important;right:14px!important;width:auto!important;}}
 </style>
 <script id="mesaha-inline-v394-video-links-final-hotfix">
@@ -6470,23 +6461,7 @@ body.mesaha-user-panel-open-v393 .panel-card-v316{padding-bottom:calc(86px + env
     var close2=$('panelClose2V316'); if(close2){ close2.textContent='Kullanıcı Panelini Kapat'; close2.onclick=closeUserPanel; }
   }
   function rewriteUpdateNotes(){
-    var panel=$('userPanelOverlayV316'); if(!panel) return;
-    var box=$('panelUpdateNotesV392');
-    if(!box){
-      var actions=panel.querySelector('.panel-actions-v316'); if(!actions) return;
-      box=document.createElement('div'); box.id='panelUpdateNotesV392'; box.className='update-notes-v392';
-      actions.insertAdjacentElement('afterend', box);
-    }
-    box.innerHTML='<div class="notes-head-v392"><b>Güncelleme Notları</b><span class="version-chip-v392">Mesaha İO</span></div>'+
-      '<small>Son değişiklikleri buradan takip edebilirsiniz.</small>'+
-      '<ul>'+
-      '<li><b>V3.92:</b> Kesimci düzenleme ve kayıt varken silme koruması eklendi.</li>'+
-      '<li><b>V3.80:</b> Mobil kullanıcı panelinde arka sayfa kayması ve input yakınlaşma sorunu düzeltildi.</li>'+
-      '<li><b>V3.77:</b> Kullanıcı panelindeki alt menü çakışması düzeltildi; kılavuza kısa link ve ORBİS aktarım videosu eklendi.</li>'+
-      '<li><b>V3.76:</b> Beyan/Özet hesabı ORBİS mantığıyla aynı hale getirildi; silinen kayıtların Excel dosyasına gitmesi engellendi.</li>'+
-      '<li><b>V3.75:</b> Küçük hata düzenlemeleri yapıldı; Mesaha dosyası indirme butonu daha belirgin hale getirildi.</li>'+
-      '<li><b>V3.73:</b> Offline açılış, cache, pil ve stabilite iyileştirmeleri yapıldı.</li>'+
-      '</ul>';
+    var old=$('panelUpdateNotesV392'); if(old&&old.parentNode) old.parentNode.removeChild(old);
   }
   function versionText(){
     try{
@@ -7010,47 +6985,16 @@ async function ready(){
   try{window.MesahaBulkCutterTransferV406={render:ensureUi,transfer:transferSelected,populate:populateCutterSelect}}catch(e){}
 })();
 </script>
-<style id="mesaha-v407-update-notes-collapsible-style">
-#panelUpdateNotesV392.update-notes-v407{border:1px solid #bfdbfe!important;background:linear-gradient(180deg,#eff6ff,#ffffff)!important;border-radius:22px!important;padding:0!important;overflow:hidden!important;box-shadow:0 12px 28px rgba(30,64,175,.08)!important;}
-.update-notes-v407 .notes-toggle-v407{width:100%!important;border:0!important;background:transparent!important;color:#1e3a8a!important;padding:18px 20px!important;display:grid!important;grid-template-columns:1fr auto auto!important;gap:10px!important;align-items:center!important;text-align:left!important;font-weight:950!important;font-size:24px!important;}
-.update-notes-v407 .notes-toggle-v407 small{display:block!important;color:#64748b!important;font-size:13px!important;margin-top:4px!important;font-weight:850!important;}
-.update-notes-v407 .version-chip-v407{background:#dcfce7!important;color:#166534!important;border-radius:999px!important;padding:8px 13px!important;font-size:15px!important;white-space:nowrap!important;}
-.update-notes-v407 .notes-arrow-v407{font-size:22px!important;transition:transform .18s ease!important;}
-.update-notes-v407.open .notes-arrow-v407{transform:rotate(180deg)!important;}
-.update-notes-v407 .notes-body-v407{display:none!important;padding:0 20px 18px!important;}
-.update-notes-v407.open .notes-body-v407{display:block!important;}
-.update-notes-v407 .notes-list-v407{margin:0!important;padding:0!important;list-style:none!important;display:grid!important;gap:9px!important;}
-.update-notes-v407 .notes-list-v407 li{background:#fff!important;border:1px solid #dbeafe!important;border-radius:15px!important;padding:11px 12px!important;color:#1f2a44!important;font-weight:850!important;line-height:1.35!important;}
-.update-notes-v407 .notes-list-v407 b{color:#1e40af!important;}
-@media(max-width:520px){.update-notes-v407 .notes-toggle-v407{font-size:22px!important;grid-template-columns:1fr auto!important}.update-notes-v407 .notes-arrow-v407{grid-column:2}.update-notes-v407 .version-chip-v407{grid-column:2;grid-row:1}.update-notes-v407 .notes-body-v407{padding-left:14px!important;padding-right:14px!important}.update-notes-v407 .notes-toggle-v407{padding-left:14px!important;padding-right:14px!important}}
-</style>
-<script id="mesaha-inline-v407-update-notes-cutter-guard">
+<script id="mesaha-inline-v407-cutter-guard">
 (function(){
   'use strict';
-  if(window.__mesahaV407UpdateNotesCutterGuard) return;
-  window.__mesahaV407UpdateNotesCutterGuard = true;
+  if(window.__mesahaV407CutterGuard) return;
+  window.__mesahaV407CutterGuard = true;
   var REMOVED_KEY='mesaha_removed_cutters_v407';
   var MEM_KEY='mesaha_entry_memory_v373';
   var SETTINGS_KEY='cam_mesaha_ayarlar_v1';
   var DISPLAY='Mesaha İO';
-  var NOTES=[
-    ['Mesaha İO','Geçersiz boy girişi sonrası odak zıplaması düzeltildi; Kaydet tek sefer çalışacak şekilde güçlendirildi.'],
-    ['Mesaha İO','Tek sürümlük genel log tutucu eklendi.'],
-    ['V3.98','Güncelleme notları sadeleştirildi; teknik yönetim ifadeleri kullanıcı panosunda gizlendi.'],
-    ['V3.97','Bulut veri okuma kararlılığı artırıldı; bağlantı durumu daha doğru kontrol edilir.'],
-    ['V3.96','Bildirim alanı sadeleştirildi; süresi dolan duyurular otomatik gizlenir.'],
-    ['V3.95','Bulut bağlantısı güçlendirildi; bağlantı var/yok kontrolü daha güvenilir hale getirildi.'],
-    ['V3.94','Mesaha Gir ekranında kesimci seçimi alanı sabitlendi; Kaydet sonrası ekran zıplaması giderildi.'],
-    ['V3.93','Mesaha Gir ekranında Kaydet sonrası ekran zıplaması düzeltildi; kaydırma sırasında yanlışlıkla tıklama engellendi.'],
-    ['V3.92','Güncelleme notları açılır/kapanır hale getirildi; son 15 sürüm gösterimi eklendi; silinen kesimcinin geri gelmesi engellendi.'],
-    ['V3.91','Ölçümlerde Tümünü Seç aktif filtredeki kayıtları seçer; seçili kayıtları kesimciye aktarma eklendi.'],
-    ['V3.90','Kesimci düzenleme, silme butonu ve kayıt varken kesimci silmeme koruması eklendi.'],
-    ['V3.89','Ağaç türlerine Kayın eklendi; ORBİS aktarımında ağaç ID 11 olarak gider.'],
-    ['V3.88','Buluttan Getir/Buluta Yedekle tarafında uyumluluk hatası düzeltildi.'],
-    ['V3.87','Silme/düzeltme sonrası ORBİS Excel dosyasının bozulma riski düzeltildi.'],
-    ['V3.86','Terminal Chrome çevrimdışı yenileme sonrası butonların çalışmama riski azaltıldı.'],
-    ['V3.85','Kayıt, yedek ve destek altyapısında kararlılık iyileştirmeleri yapıldı.']
-  ];  function $(id){return document.getElementById(id)}
+  var NOTES=[];  function $(id){return document.getElementById(id)}
   function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]})}
   function clean(v){return String(v==null?'':v).trim().replace(/\s+/g,' ')}
   function readJson(k,f){try{return JSON.parse(localStorage.getItem(k)||'')||f}catch(e){return f}}
@@ -7079,20 +7023,8 @@ async function ready(){
     saveSettingsNow(st);
   }
   function renderNotes(){
-    var panel=$('userPanelOverlayV316'); if(!panel)return;
-    var box=$('panelUpdateNotesV392');
-    if(!box){var actions=panel.querySelector('.panel-actions-v316'); if(!actions)return; box=document.createElement('div'); box.id='panelUpdateNotesV392'; actions.insertAdjacentElement('afterend',box);}
-    var open=localStorage.getItem('mesaha_update_notes_open_v411')==='1';
-    var cls='update-notes-v392 update-notes-v407 '+(open?'open':'');
-    var sig=(open?'1':'0')+'-'+NOTES.length+'-v407';
-    box.className=cls;
-    if(box.dataset.v407Sig===sig && box.querySelector('.notes-toggle-v407')) return;
-    box.dataset.v407='1';
-    box.dataset.v407Sig=sig;
-    var lis=NOTES.map(function(n){return '<li><b>'+esc(n[0])+':</b> '+esc(n[1])+'</li>';}).join('');
-    box.innerHTML='<button class="notes-toggle-v407" type="button" aria-expanded="'+(open?'true':'false')+'"><span>Güncelleme Notları<small>Son 15 sürüm buradan takip edilir. Aç/kapat.</small></span><span class="version-chip-v407">Mesaha İO</span><span class="notes-arrow-v407">⌄</span></button><div class="notes-body-v407"><ul class="notes-list-v407">'+lis+'</ul></div>';
+    var box=$('panelUpdateNotesV392'); if(box&&box.parentNode) box.parentNode.removeChild(box);
   }
-  document.addEventListener('click',function(ev){var t=ev.target&&ev.target.closest&&ev.target.closest('.notes-toggle-v407'); if(!t)return; ev.preventDefault(); var box=$('panelUpdateNotesV392'); var open=!(box&&box.classList.contains('open')); try{localStorage.setItem('mesaha_update_notes_open_v411',open?'1':'0')}catch(e){} renderNotes();},true);
   function versionSync(){try{if(window.MESAHA_VERSION){window.MESAHA_VERSION.app='Mesaha İO';window.MESAHA_VERSION.visibleVersion=DISPLAY;window.MESAHA_VERSION.shortVersion=DISPLAY;window.MESAHA_VERSION.version='local';window.MESAHA_VERSION.build=((window.MESAHA_VERSION&&window.MESAHA_VERSION.build)||0);window.MESAHA_VERSION.cacheName='mesaha-app-local';window.MESAHA_VERSION.assetVersion=String((window.MESAHA_VERSION&&window.MESAHA_VERSION.assetVersion)||'');}}catch(e){} }
   function boot(){versionSync();cleanDeletedCutters();renderNotes();[200,700,1400,2600].forEach(function(ms){setTimeout(function(){versionSync();cleanDeletedCutters();renderNotes();},ms)});}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
