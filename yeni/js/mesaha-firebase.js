@@ -3,7 +3,7 @@
    Veriler Supabase REST tablolarına yazılır/okunur. */
 (function(){
   'use strict';
-  var VERSION='v442_mobil_yerlesim_duzeltme';
+  var VERSION='v449_depolama_hazirlik';
   var readyPromise=null;
   var lastOkMs=0;
   var lastError='';

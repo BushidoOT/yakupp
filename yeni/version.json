@@ -1,12 +1,12 @@
 {
-  "app": "V4.28",
-  "version": "v443_son_barkod_urun_kesimci",
-  "build": 443,
-  "visibleVersion": "V4.28 •ExelanceX•",
-  "shortVersion": "V4.28 •ExelanceX•",
-  "name": "Mesaha İO V4.28 •ExelanceX•",
-  "cacheName": "mesaha-app-v443-son-barkod-urun-kesimci",
-  "builtAt": "2026-07-04T22:40:00+03:00",
-  "notes": "Son barkod kartları temizlendi; ürün seçimlerinde seçili olan butonda tik görünür hale getirildi; Ölçümler > Kesimci filtresinde her kesimcinin kayıt sayısı gösterildi.",
-  "assetVersion": "443"
+  "app": "V4.34",
+  "version": "v449_depolama_hazirlik",
+  "build": 449,
+  "visibleVersion": "V4.34 •ExelanceX•",
+  "shortVersion": "V4.34 •ExelanceX•",
+  "name": "Mesaha İO V4.34 •ExelanceX•",
+  "cacheName": "mesaha-app-v449-depolama-hazirlik",
+  "builtAt": "2026-07-05T09:35:00+03:00",
+  "notes": "Parça 4 - Depolama hazırlığı",
+  "assetVersion": "449"
 }

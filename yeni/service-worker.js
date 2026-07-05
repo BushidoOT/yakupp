@@ -1,23 +1,23 @@
-importScripts('./js/version.js?v=443');
+importScripts('./js/version.js?v=449');
 
-const META = self.MESAHA_VERSION || {"app":"V4.28","version":"v443_son_barkod_urun_kesimci","build":443,"visibleVersion":"V4.28 •ExelanceX•","shortVersion":"V4.28 •ExelanceX•","name":"Mesaha İO V4.28 •ExelanceX•","cacheName":"mesaha-app-v443-son-barkod-urun-kesimci","builtAt":"2026-07-04T22:40:00+03:00","notes":"Son barkod kartları temizlendi; ürün seçimlerinde seçili olan butonda tik görünür hale getirildi; Ölçümler > Kesimci filtresinde her kesimcinin kayıt sayısı gösterildi.","assetVersion":"443"};
-const BASE_CACHE = META.cacheName || 'mesaha-app-v443-son-barkod-urun-kesimci';
+const META = self.MESAHA_VERSION || {"app":"V4.34","version":"v449_depolama_hazirlik","build": 449,"visibleVersion":"V4.34 •ExelanceX•","shortVersion":"V4.34 •ExelanceX•","name":"Mesaha İO V4.34 •ExelanceX•","cacheName":"mesaha-app-v449-depolama-hazirlik","builtAt":"2026-07-05T09:27:32+03:00","notes":"Depolama sağlık kontrolü ve veri büyüklüğü uyarı altyapısı eklendi.","assetVersion":"449"};
+const BASE_CACHE = META.cacheName || 'mesaha-app-v449-depolama-hazirlik';
 const SHELL_CACHE = BASE_CACHE + '-shell';
 const ASSET_CACHE = BASE_CACHE + '-assets';
 const RUNTIME_CACHE = BASE_CACHE + '-runtime';
 const OFFLINE_TIMEOUT_MS = 3000;
-const VERSION_Q = String(META.assetVersion || META.build || 443);
+const VERSION_Q = String(META.assetVersion || META.build || 449);
 
 
 const SHELL_ASSETS = [
-  './', './index.html', './admin.html', './temizle.html', './manifest.json', './version.json', './service-worker.js',
-  './js/version.js?v=443', './js/mesaha-early-optimizer.js?v=443', './js/mesaha-utils.js?v=443', './js/mesaha-data-guard.js?v=443',
-  './js/mesaha-stability-core.js?v=443', './js/mesaha-supabase-config.js?v=443', './js/mesaha-firebase.js?v=443', './js/mesaha-offline-core.js?v=443',
-  './js/mesaha-render-storage.js?v=443', './js/mesaha-sound.js?v=443'
+  './', './index.html', './css/app.css?v=449', './admin.html', './temizle.html', './manifest.json', './version.json', './service-worker.js',
+  './js/version.js?v=449', './js/mesaha-early-optimizer.js?v=449', './js/mesaha-utils.js?v=449', './js/mesaha-data-guard.js?v=449',
+  './js/mesaha-stability-core.js?v=449', './js/mesaha-supabase-config.js?v=449', './js/mesaha-firebase.js?v=449', './js/mesaha-offline-core.js?v=449',
+  './js/mesaha-render-storage.js?v=449', './js/mesaha-sound.js?v=449', './js/mesaha-storage-health.js?v=449', './js/mesaha-records-performance.js?v=449', './js/mesaha-error-log.js?v=449'
 ];
 const STATIC_ASSETS = [
-  './assets/icon-192.png', './assets/icon-512.png', './assets/mesaha_logo.png', './assets/hero_forest_cover.png?v=443',
-  './assets/mesaha_onay.wav?v=443', './assets/mesaha_uyari.wav?v=443'
+  './assets/icon-192.png', './assets/icon-512.png', './assets/mesaha_logo.png', './assets/hero_forest_cover.webp?v=449', './assets/hero_forest_cover.png',
+  './assets/mesaha_onay.wav?v=449', './assets/mesaha_uyari.wav?v=449'
 ];
 function timeoutReject(ms,label){return new Promise((_,reject)=>setTimeout(()=>reject(new Error(label||'network-timeout')),ms||OFFLINE_TIMEOUT_MS));}
 function networkWithTimeout(request,options,ms){return Promise.race([fetch(request,options||{}),timeoutReject(ms||OFFLINE_TIMEOUT_MS,'network-timeout')]);}
@@ -41,6 +41,7 @@ async function safePut(cacheName, request, response){
     return true;
   }catch(e){ return false; }
 }
+/* v445: ignoreSearch aktif; ?fresh ve ?v sorguları aynı dosya olarak eşleşir. */
 async function matchAcrossCaches(request, fallback){
   const tries=[];
   tries.push(request);
@@ -75,11 +76,19 @@ async function precache(){
 function offlineJson(){return new Response(JSON.stringify({offline:true,timeout:true,message:'3 saniye içinde bağlantı kurulamadı, offline mod kullanılıyor.'}),{status:504,statusText:'Offline Timeout',headers:{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store'}});}
 function offlineHtml(){return new Response('<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mesaha İO Offline</title><body style="font-family:Arial;padding:24px;background:#f4f7f6;color:#101828"><h2>Mesaha İO offline açılıyor</h2><p>Ön bellek hazır değilse uygulamayı internet varken bir kez açın veya /yeni/temizle.html sayfasını çalıştırın.</p></body>',{status:200,headers:{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store'}});}
 
+
+function mesahaCacheKeyV446(k){ return /^mesaha-app-/.test(k) || /^mesaha-/.test(k) || /mesaha/i.test(k); }
+async function clearOldMesahaCachesV446(){
+  const keep = new Set([SHELL_CACHE, ASSET_CACHE, RUNTIME_CACHE]);
+  const keys = await caches.keys();
+  await Promise.all(keys.filter(k=>mesahaCacheKeyV446(k) && !keep.has(k)).map(k=>caches.delete(k)));
+}
+
 self.addEventListener('install',event=>{ event.waitUntil(precache().then(()=>self.skipWaiting())); });
 self.addEventListener('activate',event=>{
-  event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>/^mesaha-app-/.test(k)&&![SHELL_CACHE,ASSET_CACHE,RUNTIME_CACHE].includes(k)).map(k=>caches.delete(k)))).then(()=>self.clients.claim()).then(()=>precache()));
+  event.waitUntil(clearOldMesahaCachesV446().then(()=>self.clients.claim()).then(()=>precache()));
 });
-self.addEventListener('message',event=>{ const d=event.data||{}; if(d.type==='SKIP_WAITING') self.skipWaiting(); if(d.type==='WARM_CACHE'||d.type==='REPAIR_CACHE') event.waitUntil(precache()); });
+self.addEventListener('message',event=>{ const d=event.data||{}; if(d.type==='SKIP_WAITING') self.skipWaiting(); if(d.type==='WARM_CACHE'||d.type==='REPAIR_CACHE') event.waitUntil(precache()); if(d.type==='CLEAR_OLD_CACHES') event.waitUntil(clearOldMesahaCachesV446()); });
 self.addEventListener('fetch',event=>{
   if(event.request.method!=='GET') return;
   const url=new URL(event.request.url); if(url.origin!==self.location.origin) return;
