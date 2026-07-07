@@ -3764,7 +3764,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 })();
 </script>
 <script id="mesaha-inline-v316-user-admin-panel">
-/* v316: Kullanıcı Paneli + Yönetim Paneli + Supabase eşitleme */
+/* v316: Kullanıcı Paneli + Supabase eşitleme */
 (function(){
   'use strict';
   const STORAGE_KEY = 'cam_mesaha_kayitlari_v1';
@@ -3847,20 +3847,19 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     try{usage.firstSeen=payload.firstSeen; usage.firstSeenMs=payload.firstSeenMs; jsonSet(USAGE_KEY,usage);}catch(e){}
     await db.collection('users').doc(key).set(payload, {merge:true});
     await db.collection('usageStats').doc(key).set(payload, {merge:true});
-    setSyncText('Yönetim ekranına gönderildi • '+new Date().toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'}));
+    setSyncText('Bilgiler gönderildi • '+new Date().toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'}));
     return true;
   }
   function setSyncText(t){ const el=$('panelSyncTextV316'); if(el) el.textContent=t; }
   function renderPanelStats(){ const usage=flushUsage(); const stats=summarize(Number(localStorage.getItem('mesaha_stats_reset_at_v316')||0)); const u=readPanelUser(); const box=$('panelStatsV316'); if(box) box.innerHTML=[['Toplam Kayıt', stats.recordCount.toLocaleString('tr-TR')],['Toplam m³', fmtM3(stats.m3)],['Bugün Giriş', Number(usage.todayLoginCount||0).toLocaleString('tr-TR')],['Bugün Süre', fmtMs(usage.todayMs)],['Toplam Süre', fmtMs(usage.totalMs)],['Son Görülme', usage.lastSeen||'-']].map(a=>'<div class="panel-stat-v316"><small>'+a[0]+'</small><b>'+a[1]+'</b></div>').join(''); const dev=$('panelDeviceV316'); if(dev) dev.value=(deviceInfo().platform||'Cihaz')+' • '+(deviceInfo().screen||''); const n=$('panelNameV316'), s=$('panelSeflikV316'), b=$('panelBolmeV316'); if(n) n.value=u.name; if(s) s.value=u.seflik; if(b) b.value=u.bolmeNo; }
   function openPanel(){ renderPanelStats(); const ov=$('userPanelOverlayV316'); if(ov) ov.classList.remove('hidden'); setSyncText('Kullanıcı ve cihaz bilgisi güvenli şekilde kaydedilir'); }
   function closePanel(){ const ov=$('userPanelOverlayV316'); if(ov) ov.classList.add('hidden'); }
-  function savePanel(){ const name=clean(($('panelNameV316')||{}).value), seflik=clean(($('panelSeflikV316')||{}).value); if(!name||!seflik){toast('Kullanıcı adı ve şeflik gerekli.','İlk giriş için doldur','warning');return} writePanelUser({name:name, seflik:seflik, bolmeNo:($('panelBolmeV316')||{}).value}); renderPanelStats(); setSyncText('Kullanıcı kaydedildi • bilgiler gönderiliyor…'); toast('Kullanıcı bilgileri kaydedildi.','Bilgiler gönderiliyor','success'); syncUser('panel-save').catch(e=>{setSyncText('Yönetim gönderimi başarısız: '+(e&&e.message?e.message:'İnternet yok'));}); }
+  function savePanel(){ const name=clean(($('panelNameV316')||{}).value), seflik=clean(($('panelSeflikV316')||{}).value); if(!name||!seflik){toast('Kullanıcı adı ve şeflik gerekli.','İlk giriş için doldur','warning');return} writePanelUser({name:name, seflik:seflik, bolmeNo:($('panelBolmeV316')||{}).value}); renderPanelStats(); setSyncText('Kullanıcı kaydedildi • bilgiler gönderiliyor…'); toast('Kullanıcı bilgileri kaydedildi.','Bilgiler gönderiliyor','success'); syncUser('panel-save').catch(e=>{setSyncText('Gönderim başarısız: '+(e&&e.message?e.message:'İnternet yok'));}); }
   async function cloudBackup(){ try{ const user=readPanelUser(); if(!user.name||!user.seflik){toast('Önce kullanıcı girişi yap.','Kullanıcı Paneli’ni doldur','warning');openPanel();return} const key=userKey(user.name,user.seflik); const recs=records(); const data={version:((window.MESAHA_VERSION&&window.MESAHA_VERSION.version)||'local'),type:'mesaha-cloud-backup',exportedAt:new Date().toISOString(),user,settings:settings()}; const {db}=await firebaseReady(); const id=['fb',key,Date.now().toString(36)].join('_'); const chunkSize=200; const chunkCount=Math.max(1, Math.ceil(recs.length/chunkSize)); const ref=db.collection('backups').doc(id); await ref.set({id,userKey:key,name:user.name,seflik:user.seflik,bolmeNo:user.bolmeNo,fileName:'Mesaha_Bulut_Yedek_'+key+'_'+trDate()+'.json',payload:data,recordsChunked:true,chunkCount,recordCount:recs.length,m3:summarize(0).m3,createdAt:trText(),createdAtMs:Date.now(),source:'supabase'}); for(let i=0;i<chunkCount;i++){ await ref.collection('chunks').doc(String(i).padStart(4,'0')).set({index:i,records:recs.slice(i*chunkSize,(i+1)*chunkSize)}); } toast('Bulut yedeği alındı.','Kayıtlar güvenli','success'); }catch(e){ toast('Bulut yedek alınamadı.', e&&e.message?e.message:'İnterneti kontrol et','error'); } }
   async function openCloudRestore(){ const ov=$('cloudRestoreOverlayV316'); const list=$('cloudRestoreListV316'); const info=$('cloudRestoreInfoV316'); if(ov) ov.classList.remove('hidden'); if(list) list.innerHTML='<div class="cloud-item-v316">Yedekler yükleniyor…</div>'; try{ const user=readPanelUser(); const key=userKey(user.name,user.seflik); const {db}=await firebaseReady(); const snap=await db.collection('backups').where('userKey','==',key).get(); const arr=[]; snap.forEach(doc=>{ const d=doc.data()||{}; arr.push(Object.assign({docId:doc.id}, d)); }); arr.sort((a,b)=>Number(b.createdAtMs||0)-Number(a.createdAtMs||0)); if(info) info.textContent=arr.length+' yedek bulundu'; if(!arr.length){ if(list) list.innerHTML='<div class="cloud-item-v316">Bulutta yedek bulunamadı.</div>'; return; } if(list) list.innerHTML=arr.slice(0,30).map((b,i)=>'<div class="cloud-item-v316"><b>'+esc(b.fileName||'Mesaha yedeği')+'</b><small>'+esc(b.createdAt||'-')+' • '+Number(b.recordCount||0)+' kayıt</small><button class="btn primary" data-cloud-restore="'+esc(b.docId)+'" type="button">Bu Yedeği Yükle</button></div>').join(''); }catch(e){ if(info) info.textContent='Yedekler alınamadı'; if(list) list.innerHTML='<div class="cloud-item-v316">'+esc(e&&e.message?e.message:'İnterneti kontrol et')+'</div>'; } }
   async function restoreCloud(id){ if(!id) return; if(!confirm('Bu bulut yedeği mevcut kayıtların yerine yüklenecek. Devam edilsin mi?')) return; try{ const {db}=await firebaseReady(); const ref=db.collection('backups').doc(id); const doc=await ref.get(); if(!doc.exists) throw new Error('Yedek bulunamadı'); const d=doc.data()||{}; let payload=d.payload || (d.payloadText ? JSON.parse(d.payloadText) : null); let recs=[]; if(d.recordsChunked){ const chunks=await ref.collection('chunks').get(); const arr=[]; chunks.forEach(c=>{ const cd=c.data()||{}; arr.push({index:Number(cd.index||0),records:Array.isArray(cd.records)?cd.records:[]}); }); arr.sort((a,b)=>a.index-b.index); recs=arr.flatMap(x=>x.records); payload=payload||{}; } else { if(!payload || !Array.isArray(payload.records)) throw new Error('Yedek formatı geçersiz'); recs=payload.records; } if(!Array.isArray(recs)) throw new Error('Yedek kayıtları okunamadı'); jsonSet(STORAGE_KEY, recs); if(payload && payload.settings) jsonSet(SETTINGS_KEY, Object.assign(settings(), payload.settings)); toast('Bulut yedeği yüklendi.','Sayfa yenileniyor','success'); setTimeout(()=>location.reload(),700); }catch(e){ toast('Bulut yedeği yüklenemedi.', e&&e.message?e.message:'Hata','error'); } }
-  function openAdmin(){ return; }
   async function sendSupport(){ const msg=clean(($('panelSupportTextV316')||{}).value); const user0=readPanelUser(); if(!user0.name||!user0.seflik){toast('Önce kullanıcı girişi yap.','Kullanıcı Paneli’ni doldur','warning');return} if(!msg){ toast('Sorun bildirimi boş.','Kısa bir açıklama yaz','warning'); return; } try{ const user=readPanelUser(); const {db}=await firebaseReady(); await db.collection('supportTickets').add({userKey:userKey(user.name,user.seflik),name:user.name,seflik:user.seflik,bolmeNo:user.bolmeNo,message:msg,status:'new',createdAt:trText(),createdAtMs:Date.now(),appVersion:((window.MESAHA_VERSION&&window.MESAHA_VERSION.visibleVersion)||'Mesaha İO'),device:deviceInfo()}); const ta=$('panelSupportTextV316'); if(ta) ta.value=''; toast('Sorun bildirimi gönderildi.','Destek ekranına iletildi','success'); }catch(e){ toast('Bildirim gönderilemedi.', e&&e.message?e.message:'İnternet yok','error'); } }
-  function bind(){ loadUsage(); const badge=$('userBadge'); if(badge){ badge.setAttribute('title','Kullanıcı Paneli'); badge.addEventListener('click', openPanel); } const btn=$('userPanelBtnV316'); if(btn) btn.addEventListener('click', openPanel); const x=$('userPanelCloseV316'); if(x) x.addEventListener('click', closePanel); const x2=$('panelClose2V316'); if(x2) x2.addEventListener('click', closePanel); const save=$('panelSaveV316'); if(save) save.addEventListener('click', savePanel); const sync=$('panelSyncV316'); if(sync) sync.addEventListener('click', ()=>{ setSyncText('Bilgiler gönderiliyor…'); syncUser('manual-sync').then(()=>toast('Bilgiler güncellendi.','Kullanıcı ve cihaz bilgisi gönderildi','success')).catch(e=>{setSyncText('Gönderilemedi: '+(e&&e.message?e.message:'İnternet yok')); toast('Bilgiler güncellenemedi.', e&&e.message?e.message:'İnterneti kontrol et','error');}); }); const admin=$('panelAdminOpenV316'); if(admin) admin.addEventListener('click', openAdmin); const support=$('panelSupportSendV316'); if(support) support.addEventListener('click', sendSupport); const cb=$('cloudBackupBtnV316'); if(cb) cb.addEventListener('click', cloudBackup); const cr=$('cloudRestoreBtnV316'); if(cr) cr.addEventListener('click', openCloudRestore); const crc=$('cloudRestoreCloseV316'); if(crc) crc.addEventListener('click', ()=>{ const ov=$('cloudRestoreOverlayV316'); if(ov) ov.classList.add('hidden'); }); const list=$('cloudRestoreListV316'); if(list) list.addEventListener('click', e=>{ const b=e.target.closest('[data-cloud-restore]'); if(b) restoreCloud(b.getAttribute('data-cloud-restore')); }); window.addEventListener('pagehide', flushUsage); window.addEventListener('online', ()=>{syncUser('online').catch(()=>{});}); document.addEventListener('visibilitychange',()=>{if(!document.hidden) syncUser('visible').catch(()=>{});}); setTimeout(()=>syncUser('startup').catch(()=>{}),2500); setInterval(()=>syncUser('periodic').catch(()=>{}),300000); /* v361: kullanıcı/cihaz yönetim otomatik sync açık */ }
+  function bind(){ loadUsage(); const badge=$('userBadge'); if(badge){ badge.setAttribute('title','Kullanıcı Paneli'); badge.addEventListener('click', openPanel); } const btn=$('userPanelBtnV316'); if(btn) btn.addEventListener('click', openPanel); const x=$('userPanelCloseV316'); if(x) x.addEventListener('click', closePanel); const x2=$('panelClose2V316'); if(x2) x2.addEventListener('click', closePanel); const save=$('panelSaveV316'); if(save) save.addEventListener('click', savePanel); const sync=$('panelSyncV316'); if(sync) sync.addEventListener('click', ()=>{ setSyncText('Bilgiler gönderiliyor…'); syncUser('manual-sync').then(()=>toast('Bilgiler güncellendi.','Kullanıcı ve cihaz bilgisi gönderildi','success')).catch(e=>{setSyncText('Gönderilemedi: '+(e&&e.message?e.message:'İnternet yok')); toast('Bilgiler güncellenemedi.', e&&e.message?e.message:'İnterneti kontrol et','error');}); }); const support=$('panelSupportSendV316'); if(support) support.addEventListener('click', sendSupport); const cb=$('cloudBackupBtnV316'); if(cb) cb.addEventListener('click', cloudBackup); const cr=$('cloudRestoreBtnV316'); if(cr) cr.addEventListener('click', openCloudRestore); const crc=$('cloudRestoreCloseV316'); if(crc) crc.addEventListener('click', ()=>{ const ov=$('cloudRestoreOverlayV316'); if(ov) ov.classList.add('hidden'); }); const list=$('cloudRestoreListV316'); if(list) list.addEventListener('click', e=>{ const b=e.target.closest('[data-cloud-restore]'); if(b) restoreCloud(b.getAttribute('data-cloud-restore')); }); window.addEventListener('pagehide', flushUsage); window.addEventListener('online', ()=>{syncUser('online').catch(()=>{});}); document.addEventListener('visibilitychange',()=>{if(!document.hidden) syncUser('visible').catch(()=>{});}); setTimeout(()=>syncUser('startup').catch(()=>{}),2500); setInterval(()=>syncUser('periodic').catch(()=>{}),300000); /* v361: kullanıcı/cihaz otomatik sync açık */ }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', bind, {once:true}); else bind();
   window.mesahaPanelV316 = {open:openPanel, sync:syncUser, cloudBackup, openCloudRestore};
 })();
@@ -4199,7 +4198,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 
 </style>
 <script id="mesaha-inline-v323-export-send-final">
-/* v323: Aktif süre cihazda hesaplanır. Yönetim istatistiği sadece Mesaha Dosyasını İndir basılınca gönderilir. Offline XLS akışı asla engellenmez. */
+/* v323: Aktif süre cihazda hesaplanır. İstatistik sadece Mesaha Dosyasını İndir basılınca gönderilir. Offline XLS akışı asla engellenmez. */
 (function(){
   'use strict';
   const STORAGE_KEY='cam_mesaha_kayitlari_v1';
@@ -6693,38 +6692,6 @@ body.mesaha-cloud-panel-open-v395 #cloudRestoreOverlayV316 .panel-card-v316{touc
 body.mesaha-user-panel-open-v395 #userPanelOverlayV316:not(.hidden),
 body.mesaha-cloud-panel-open-v395 #cloudRestoreOverlayV316:not(.hidden){touch-action:auto!important;}
 </style>
-<style id="mesaha-v400-admin-broadcast-style">
-.admin-broadcasts-v400{border-color:#bfdbfe!important;background:linear-gradient(135deg,#eff6ff,#ffffff)!important}
-.broadcast-card-user-v400{border:1px solid #dbeafe;border-radius:18px;background:#fff;padding:12px;margin:9px 0;color:#10233f}
-.broadcast-card-user-v400 b{display:block;color:#1d4ed8}.broadcast-card-user-v400 div{margin:6px 0;line-height:1.35}.broadcast-card-user-v400 small{color:#64748b}.broadcast-empty-v400{border:1px dashed #bfdbfe;border-radius:16px;background:#fff;padding:12px;color:#64748b;text-align:center}
-</style>
-<script id="mesaha-v400-admin-broadcasts">
-(function(){
-  'use strict';
-  var PANEL_USER_KEY='mesaha_panel_user_v316', SEEN_KEY='mesaha_admin_broadcast_seen_v400';
-  var readyPromise=null;
-  function $(id){return document.getElementById(id)}
-  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]})}
-  function clean(v){return String(v==null?'':v).trim()}
-  function fold(s){return clean(s).toLocaleLowerCase('tr-TR').replace(/[ç]/g,'c').replace(/[ğ]/g,'g').replace(/[ı]/g,'i').replace(/[ö]/g,'o').replace(/[ş]/g,'s').replace(/[ü]/g,'u')}
-  function userKey(name,seflik){return (fold(name)+'__'+fold(seflik)).replace(/[^a-z0-9_-]+/g,'_').slice(0,120)||'bos'}
-  function jsonGet(k,f){try{var v=localStorage.getItem(k);return v?JSON.parse(v):f}catch(e){return f}}
-  function jsonSet(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
-  function user(){return Object.assign({name:'',seflik:'',bolmeNo:''},jsonGet(PANEL_USER_KEY,{}))}
-  function toast(a,b,t){try{if(window.toast)window.toast(a,b,t)}catch(e){}}
-async function ready(){
-    if(window.mesahaSupabaseV380 && typeof window.mesahaSupabaseV380.ready === 'function') return await window.mesahaSupabaseV380.ready();
-    if(window.mesahaSupabase && typeof window.mesahaSupabase.ready === 'function') return await window.mesahaSupabase.ready();
-    throw new Error('Supabase bağlantı motoru yüklenemedi');
-  }
-  function ensureBox(){var panel=$('userPanelOverlayV316');if(!panel||$('panelAdminBroadcastsV400'))return;var support=$('panelSupportTextV316');var host=support&&support.closest&&support.closest('.panel-section-v316');var html='<div class="panel-section-v316 admin-broadcasts-v400" id="panelAdminBroadcastsV400"><b>Duyurular</b><p class="hint">Yöneticiden gelen güncelleme ve bilgilendirmeler burada görünür. Duyurular 7 gün sonra otomatik silinir.</p><div id="panelAdminBroadcastListV400"><div class="broadcast-empty-v400">Duyurular internet varken alınır.</div></div><button class="btn soft" id="panelAdminBroadcastRefreshV400" type="button">Duyuruları Yenile</button></div>';if(host)host.insertAdjacentHTML('beforebegin',html);else{var card=panel.querySelector('.panel-card-v316');if(card)card.insertAdjacentHTML('beforeend',html)}}
-  function visibleToUser(x,u,key){if(!x||x.status==='deleted')return false;var keys=Array.isArray(x.targetUserKeys)?x.targetUserKeys:[];if(x.target==='all')return true;if(keys.indexOf(key)>-1)return true;if(x.target==='seflik'&&x.seflik&&fold(x.seflik)===fold(u.seflik))return true;return false}
-  function render(arr){var box=$('panelAdminBroadcastListV400');if(!box)return;box.innerHTML=arr.length?arr.slice(0,8).map(function(x){return '<div class="broadcast-card-user-v400"><b>'+esc(x.title||'Duyuru')+'</b><div>'+esc(x.message||'-')+'</div><small>'+esc(x.createdAt||'-')+'</small></div>'}).join(''):'<div class="broadcast-empty-v400">Şu an duyuru yok.</div>'}
-  async function loadBroadcasts(){ensureBox();var box=$('panelAdminBroadcastListV400');if(!box)return;var u=user();if(!u.name||!u.seflik){box.innerHTML='<div class="broadcast-empty-v400">Duyurular için önce kullanıcı bilgilerini kaydedin.</div>';return}if(!navigator.onLine){box.innerHTML='<div class="broadcast-empty-v400">Duyurular internet varken alınır.</div>';return}try{var key=userKey(u.name,u.seflik), r=await ready(), snap=await r.db.collection('adminBroadcasts').get(), arr=[];snap.forEach(function(d){arr.push(Object.assign({id:d.id},d.data()||{}))});arr=arr.filter(function(x){return visibleToUser(x,u,key) && x.status!=='deleted' && (!Number(x.createdAtMs||0) || (Date.now()-Number(x.createdAtMs||0) < 7*24*60*60*1000));}).sort(function(a,b){return Number(b.createdAtMs||0)-Number(a.createdAtMs||0)});render(arr);var seen=jsonGet(SEEN_KEY,{});var newest=arr.filter(function(x){return !seen[x.id]}).slice(0,1);if(newest.length){toast(newest[0].title||'Duyuru',newest[0].message||'Yeni bildirim var','info');arr.forEach(function(x){seen[x.id]=Date.now()});jsonSet(SEEN_KEY,seen)}}catch(e){box.innerHTML='<div class="broadcast-empty-v400">Duyurular alınamadı.</div>'}}
-  function bind(){ensureBox();var b=$('panelAdminBroadcastRefreshV400');if(b&&!b.__v400){b.__v400=true;b.addEventListener('click',loadBroadcasts)}var panel=$('userPanelOverlayV316');if(panel&&window.MutationObserver&&!panel.__broadcastV400){panel.__broadcastV400=true;new MutationObserver(function(){if(!panel.classList.contains('hidden'))setTimeout(loadBroadcasts,500)}).observe(panel,{attributes:true,attributeFilter:['class']})}['userPanelBtnV316','userBadge'].forEach(function(id){var el=$(id);if(el&&!el.__broadcastV400){el.__broadcastV400=true;el.addEventListener('click',function(){setTimeout(loadBroadcasts,650)})}});window.addEventListener('online',function(){setTimeout(loadBroadcasts,800)});setTimeout(loadBroadcasts,4200)}
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
-})();
-</script>
 <style id="mesaha-v406-cutter-manager-style">
 /* v406: Kesimci yönetimi - düzenle/sil butonları ve kayıt varken silme koruması */
 #entryView #cutterChips.cutter-manager-v406{display:flex!important;flex-wrap:nowrap!important;gap:8px!important;overflow-x:auto!important;overflow-y:hidden!important;-webkit-overflow-scrolling:touch!important;padding:2px 2px 6px!important;scrollbar-width:none!important;align-items:stretch!important}
@@ -8412,7 +8379,22 @@ body.mesaha-entry-scrolling-v408 #entryView label{
 
 <script src="./js/mesaha-fast-tap-nav.js"></script>
 <script src="./js/mesaha-terminal-performance.js"></script>
-<script src="./js/mesaha-drive-bridge.js"></script>
+<script src="./js/mesaha-hybrid-cloud.js"></script>
+
+<script id="mesaha-v465-admin-isolation">
+(function(){
+  'use strict';
+  function clean(){
+    try{
+      document.querySelectorAll('#panelAdminOpenV316,[data-admin-open],[data-open-admin],[href*="admin.html"],[href*="yonetim"]').forEach(function(el){ el.remove(); });
+      var b=document.getElementById('panelAdminBroadcastsV400'); if(b) b.remove();
+      if(window.mesahaPanelV316){ window.mesahaPanelV316.openAdmin=function(){ return false; }; }
+    }catch(e){}
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',clean,{once:true}); else clean();
+  [250,900,1800,3600].forEach(function(ms){ setTimeout(clean,ms); });
+})();
+</script>
 </body>
 </html>
 

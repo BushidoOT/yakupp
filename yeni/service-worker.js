@@ -11,10 +11,10 @@ const VERSION_Q = String(META.assetVersion || META.build || '');
 
 
 const SHELL_ASSETS = [
-  './', './index.html', './css/app.css', './yonetim/', './yonetim/index.html', './temizle.html', './guncelle.html', './manifest.json', './version.json', './service-worker.js',
+  './', './index.html', './css/app.css', './temizle.html', './guncelle.html', './manifest.json', './version.json', './service-worker.js',
   './js/version.js', './js/mesaha-early-optimizer.js', './js/mesaha-utils.js', './js/mesaha-data-guard.js',
   './js/mesaha-stability-core.js', './js/mesaha-url-cleanup.js', './js/mesaha-supabase-config.js', './js/mesaha-firebase.js', './js/mesaha-offline-core.js',
-  './js/mesaha-render-storage.js', './js/mesaha-sound.js', './js/mesaha-storage-health.js', './js/mesaha-records-performance.js', './js/mesaha-error-log.js', './js/mesaha-filter-cutter-fix.js', './js/mesaha-fast-tap-nav.js', './js/mesaha-terminal-performance.js', './js/mesaha-drive-bridge.js'
+  './js/mesaha-render-storage.js', './js/mesaha-sound.js', './js/mesaha-storage-health.js', './js/mesaha-records-performance.js', './js/mesaha-error-log.js', './js/mesaha-filter-cutter-fix.js', './js/mesaha-fast-tap-nav.js', './js/mesaha-terminal-performance.js', './js/mesaha-hybrid-cloud.js'
 ];
 const STATIC_ASSETS = [
   './assets/icon-192.png', './assets/icon-512.png', './assets/mesaha_logo.png', './assets/hero_forest_cover.webp', './assets/hero_forest_cover.png',
@@ -57,9 +57,7 @@ async function matchAcrossCaches(request, fallback){
   return null;
 }
 function fallbackForPath(path){
-  if(path.endsWith('/yonetim/') || path.endsWith('/yonetim/index.html')) return './yonetim/index.html';
   if(path.endsWith('/index.html') || path.endsWith('/')) return './index.html';
-  if(path.endsWith('/admin.html')) return './index.html';
   if(path.endsWith('/temizle.html')) return './temizle.html';
   if(path.endsWith('/guncelle.html')) return './guncelle.html';
   if(path.endsWith('/manifest.json')) return './manifest.json';
@@ -155,15 +153,17 @@ self.addEventListener('fetch',event=>{
   if(event.request.method!=='GET') return;
   const url=new URL(event.request.url); if(url.origin!==self.location.origin) return;
   const path=url.pathname;
+  if(path.endsWith('/admin.html')){ event.respondWith(fetch(event.request,{cache:'no-store'}).catch(()=>offlineHtml())); return; }
+  if(path.endsWith('/yonetim/') || path.endsWith('/yonetim/index.html')){ event.respondWith(fetch(event.request,{cache:'no-store'}).catch(()=>offlineHtml())); return; }
   const isVersion=path.endsWith('/version.json');
   const isPing=isVersion&&(url.searchParams.has('net')||url.searchParams.has('check')||url.searchParams.has('ping'));
   const isJs=path.includes('/js/')||path.endsWith('.js');
   const isCss=path.endsWith('.css');
   const isAsset=path.includes('/assets/')||/\.(png|jpg|jpeg|webp|svg|wav|mp3|json)$/i.test(path);
-  const isShell=path.endsWith('/index.html')||path.endsWith('/yonetim/index.html')||path.endsWith('/temizle.html')||path.endsWith('/guncelle.html')||path.endsWith('/manifest.json')||path.endsWith('/version.json')||path.endsWith('/service-worker.js')||isJs||isCss;
+  const isShell=path.endsWith('/index.html')||path.endsWith('/temizle.html')||path.endsWith('/guncelle.html')||path.endsWith('/manifest.json')||path.endsWith('/version.json')||path.endsWith('/service-worker.js')||isJs||isCss;
   if(event.request.mode==='navigate'){
     event.respondWith((async()=>{
-      const fallback=(path.endsWith('/yonetim/')||path.endsWith('/yonetim/index.html'))?'./yonetim/index.html':path.endsWith('/temizle.html')?'./temizle.html':path.endsWith('/guncelle.html')?'./guncelle.html':'./index.html';
+      const fallback=path.endsWith('/temizle.html')?'./temizle.html':path.endsWith('/guncelle.html')?'./guncelle.html':'./index.html';
       try{
         const r=await networkWithTimeout(event.request,{cache:'no-store'},OFFLINE_TIMEOUT_MS);
         event.waitUntil(safePut(SHELL_CACHE,fallback,r.clone()).then(()=>precache()).catch(()=>{}));

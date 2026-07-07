@@ -1,4 +1,4 @@
-/* Mesaha İO V463 — Google Drive yedek köprüsü */
+/* Mesaha İO V465 — Google Drive yedek köprüsü */
 (function(){
   'use strict';
   var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzOYh2MyOQmwVQh-7Jm9KyjaFjmjSwgHZSw7XKAVzDS1ibmcM5bQZVYdn-NyesI-ph7/exec';
@@ -115,6 +115,7 @@
 
   function hardenUi(){
     var adm=$('panelAdminOpenV316'); if(adm) adm.remove();
+    document.querySelectorAll&&document.querySelectorAll('[data-admin-open],[data-open-admin],[href*="admin.html"],[href*="yonetim"]').forEach(function(el){el.remove();});
     var sync=$('panelSyncV316'); if(sync) sync.textContent='Drive Hazır';
     replaceButton('cloudBackupBtnV316','Drive’a Yedekle',function(){ backup().catch(function(e){ toast('Drive yedek alınamadı.', errText(e), 'error'); }); });
     replaceButton('cloudRestoreBtnV316','Drive’dan Getir',openRestore);
@@ -132,7 +133,7 @@
     window.mesahaPanelV316 = window.mesahaPanelV316 || {};
     window.mesahaPanelV316.cloudBackup = backup;
     window.mesahaPanelV316.openCloudRestore = openRestore;
-    window.mesahaPanelV316.openAdmin = function(){ location.href='./yonetim/'; };
+    window.mesahaPanelV316.openAdmin = function(){ return false; };
     if(window.mesahaOnlineV317){ window.mesahaOnlineV317.backup=backup; window.mesahaOnlineV317.restoreOpen=openRestore; }
     if(window.mesahaUserBackupsV318){
       window.mesahaUserBackupsV318.open=openRestore;
