@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Mesaha İO Yönetim</title>
+<style>
+:root{--bg:#f6f8fb;--card:#fff;--line:#e5e7eb;--text:#111827;--muted:#64748b;--green:#16a34a;--red:#dc2626;--blue:#2563eb}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:linear-gradient(180deg,#f8fafc,#eef6f1);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--text);font-weight:650}.app{width:min(980px,100%);margin:0 auto;padding:18px 14px 90px}.top{position:sticky;top:0;z-index:10;background:rgba(255,255,255,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);margin:0 -14px 18px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px}.brand{display:flex;align-items:center;gap:10px}.brand img{width:46px;height:46px;object-fit:contain;border-radius:14px;border:1px solid var(--line);background:#fff}.brand b{display:block;font-size:20px}.brand small{display:block;color:var(--muted);font-size:12px}.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:16px;margin:12px 0;box-shadow:0 10px 26px rgba(15,23,42,.06)}input,button{font:inherit}input{width:100%;min-height:46px;border:1px solid #dbe2ea;border-radius:15px;padding:11px 12px;outline:none;font-weight:800}label{display:block;margin:10px 0;font-weight:900}button,.btn{border:0;border-radius:15px;min-height:44px;padding:10px 14px;font-weight:950;background:#fff;border:1px solid var(--line);display:inline-flex;align-items:center;justify-content:center;text-decoration:none;color:var(--text)}.primary{background:var(--green);border-color:var(--green);color:#fff}.danger{background:#fef2f2;border-color:#fecaca;color:#991b1b}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.kpi{border:1px solid var(--line);background:#fff;border-radius:18px;padding:13px}.kpi small{display:block;color:var(--muted)}.kpi b{font-size:24px}.item{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;border:1px solid var(--line);border-radius:18px;padding:12px;margin:9px 0;background:#fff}.item b{display:block}.item small{display:block;color:var(--muted);margin-top:4px;line-height:1.35}.hidden{display:none!important}.msg{color:var(--muted);font-weight:800}@media(max-width:640px){.grid,.kpis,.item{grid-template-columns:1fr}.top{align-items:flex-start;flex-direction:column}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top"><div class="brand"><img src="../assets/mesaha_logo.png" alt=""><div><b>Mesaha İO Yönetim</b><small>Ayrı yönetim paneli • Drive yedekleri</small></div></div><a class="btn" href="../index.html">Uygulamaya Dön</a></div>
+  <section class="card" id="loginCard">
+    <h2>Yönetici Girişi</h2>
+    <p class="msg">Bu panel sadece yetkili kullanıcı içindir.</p>
+    <div class="grid"><label>Kullanıcı adı<input id="u" autocomplete="username" placeholder="yakupduzgun"></label><label>Şeflik<input id="s" autocomplete="organization" placeholder="Yaylacık_43"></label></div>
+    <button class="primary" id="login">Giriş Yap</button>
+    <p class="msg" id="loginMsg"></p>
+  </section>
+  <main id="panel" class="hidden">
+    <section class="card"><div class="row" style="justify-content:space-between"><div><h2 style="margin:0">Drive Yedekleri</h2><p class="msg" id="status">Hazırlanıyor…</p></div><div class="row"><button class="primary" id="refresh">Yenile</button><button id="export">Listeyi İndir</button></div></div></section>
+    <section class="kpis"><div class="kpi"><small>Toplam yedek</small><b id="kCount">0</b></div><div class="kpi"><small>Toplam kayıt</small><b id="kRec">0</b></div><div class="kpi"><small>Toplam m³</small><b id="kM3">0</b></div></section>
+    <section class="card"><label>Filtre<input id="filter" placeholder="Kullanıcı, şeflik, bölme veya dosya adı ara"></label><div id="list"><div class="msg">Yedekler yükleniyor…</div></div></section>
+  </main>
+</div>
+<script>
+(function(){
+'use strict';
+var BRIDGE_URL='https://script.google.com/macros/s/AKfycbzOYh2MyOQmwVQh-7Jm9KyjaFjmjSwgHZSw7XKAVzDS1ibmcM5bQZVYdn-NyesI-ph7/exec', SECRET='MESAHAYEDEK_2026_YAKUP_43', ADMIN_USER='yakupduzgun', ADMIN_SEFLIK='Yaylacık_43', items=[];
+function $(id){return document.getElementById(id)}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]})}
+function norm(s){return String(s||'').trim().toLocaleLowerCase('tr-TR')}
+function okLogin(){return norm($('u').value)===ADMIN_USER && String($('s').value||'').trim()===ADMIN_SEFLIK}
+async function post(action,data){var res=await fetch(BRIDGE_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(Object.assign({secret:SECRET,action:action},data||{})),redirect:'follow',cache:'no-store'});var txt=await res.text();var j=null;try{j=JSON.parse(txt)}catch(e){throw new Error('Köprü cevabı okunamadı')}if(!res.ok||!j.ok)throw new Error(j.error||('Hata '+res.status));return j}
+function render(){var q=norm($('filter').value), arr=items.filter(function(x){var all=[x.name,x.username,x.seflik,x.bolme,x.userKey,x.createdAt].join(' ');return !q||norm(all).indexOf(q)>-1});$('kCount').textContent=String(items.length);$('kRec').textContent=items.reduce(function(a,x){return a+Number(x.count||0)},0).toLocaleString('tr-TR');$('kM3').textContent=items.reduce(function(a,x){return a+Number(x.totalVolume||0)},0).toLocaleString('tr-TR',{maximumFractionDigits:3});$('list').innerHTML=arr.length?arr.map(function(x){var link='https://drive.google.com/file/d/'+encodeURIComponent(x.id)+'/view';return '<div class="item"><div><b>'+esc(x.name||'Mesaha yedeği')+'</b><small>'+esc(x.createdAt||'-')+' • '+esc(x.username||'-')+' • '+esc(x.seflik||'-')+' • '+esc(x.bolme||'-')+'<br>'+Number(x.count||0).toLocaleString('tr-TR')+' kayıt • '+Number(x.totalVolume||0).toLocaleString('tr-TR',{minimumFractionDigits:3,maximumFractionDigits:3})+' m³</small></div><a class="btn" target="_blank" rel="noopener" href="'+link+'">Drive’da Aç</a></div>'}).join(''):'<div class="msg">Yedek bulunamadı.</div>'}
+async function load(){$('status').textContent='Drive yedekleri alınıyor…';try{var j=await post('adminList',{username:ADMIN_USER,seflik:ADMIN_SEFLIK});items=j.items||[];$('status').textContent=items.length+' yedek listelendi';render()}catch(e){$('status').textContent='Yedekler alınamadı: '+(e.message||e)}}
+function login(){if(!okLogin()){$('loginMsg').textContent='Kullanıcı adı veya şeflik hatalı.';return}sessionStorage.setItem('mesaha_yonetim_ok_v463','1');$('loginCard').classList.add('hidden');$('panel').classList.remove('hidden');load()}
+$('login').addEventListener('click',login);$('s').addEventListener('keydown',function(e){if(e.key==='Enter')login()});$('refresh').addEventListener('click',load);$('filter').addEventListener('input',render);$('export').addEventListener('click',function(){var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify({exportedAt:new Date().toISOString(),items:items},null,2)],{type:'application/json'}));a.download='mesaha_drive_yedek_listesi.json';a.click();setTimeout(function(){URL.revokeObjectURL(a.href)},1000)});if(sessionStorage.getItem('mesaha_yonetim_ok_v463')==='1'){$('u').value=ADMIN_USER;$('s').value=ADMIN_SEFLIK;login()}
+})();
+</script>
+</body>
+</html>

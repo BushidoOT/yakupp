@@ -662,7 +662,6 @@ body.mesaha-keyboard-open #saveBtn, body.mesaha-keyboard-open .save-btn{position
 <div class="panel-actions-v316">
 <button class="btn primary" id="panelSaveV316" type="button">Bilgileri Kaydet</button>
 <button class="btn soft" id="panelSyncV316" type="button">Bulutla Eşitle</button>
-<button class="btn orange" id="panelAdminOpenV316" type="button">Yönetici Paneli</button>
 <button class="btn soft" id="panelClose2V316" type="button">Kapat</button>
 </div>
 <div class="panel-section-v316">
@@ -1552,7 +1551,7 @@ function migrateRecord(r){ if(!r) return null; return {
   productType:normalizeProductType(r.productType || r.odunTuru || r.odunAdi || r.product || 'Tomruk'), treeType:r.treeType || r.species || r.agacTuru || r.agacAdi || 'Karaçam', cutter:r.cutter || r.kesimci || '', productionDate:r.productionDate || r.uretimTarihi || state.settings?.mesahaDate || todayISO(),
   createdAt:r.createdAt || new Date().toISOString(), updatedAt:r.updatedAt || ''
 }; }
-function saveRecords(){ const payload=JSON.stringify(state.records); try{ if(payload.length<2000000){ const old=localStorage.getItem(STORAGE_KEY); if(old) localStorage.setItem(STORAGE_KEY+'_last_ok', old); } }catch(e){} localStorage.setItem(STORAGE_KEY, payload); try{ if(window.MesahaDataGuard&&window.MesahaDataGuard.snapshot) setTimeout(function(){window.MesahaDataGuard.snapshot();},80); }catch(e){} try{ window.dispatchEvent(new CustomEvent('mesaha:records-saved',{detail:{count:state.records.length}})); }catch(e){} }
+let __lastOkAt=0,__lastOkCount=-1; function saveRecords(){ const payload=JSON.stringify(state.records); try{ const n=Date.now?Date.now():(new Date()).getTime(); const c=state.records.length; if(payload.length<2500000 && (n-__lastOkAt>45000 || (c>0 && c%25===0 && c!==__lastOkCount))){ const old=localStorage.getItem(STORAGE_KEY); if(old && old!==payload){ localStorage.setItem(STORAGE_KEY+'_last_ok', old); __lastOkAt=n; __lastOkCount=c; } } }catch(e){} try{ localStorage.setItem(STORAGE_KEY, payload); }catch(e){ try{ window.dispatchEvent(new CustomEvent('mesaha:storage-error',{detail:{key:STORAGE_KEY,message:e&&e.message?e.message:String(e)}})); }catch(_){} } try{ window.dispatchEvent(new CustomEvent('mesaha:records-saved',{detail:{count:state.records.length}})); }catch(e){} }
 let __settingsSaveTimer=0,__settingsSaveLast=''; function __flushSettings(){ try{ const payload=JSON.stringify(state.settings); if(payload!==__settingsSaveLast){ localStorage.setItem(SETTINGS_KEY,payload); __settingsSaveLast=payload; try{ window.dispatchEvent(new CustomEvent('mesaha:settings-saved')); }catch(e){} } }catch(e){} } function saveSettings(){ clearTimeout(__settingsSaveTimer); __settingsSaveTimer=setTimeout(__flushSettings,220); } try{window.__flushSettings=__flushSettings;}catch(e){} window.addEventListener('pagehide',__flushSettings); document.addEventListener('visibilitychange',function(){if(document.hidden)__flushSettings();});
 function bind(){
   $('openEntryBtn').addEventListener('click', () => openEntry());
@@ -8412,6 +8411,8 @@ body.mesaha-entry-scrolling-v408 #entryView label{
 </script>
 
 <script src="./js/mesaha-fast-tap-nav.js"></script>
+<script src="./js/mesaha-terminal-performance.js"></script>
+<script src="./js/mesaha-drive-bridge.js"></script>
 </body>
 </html>
 

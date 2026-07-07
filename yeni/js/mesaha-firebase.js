@@ -34,6 +34,15 @@
     return map[field]||null;
   }
   function deepClone(x){try{return JSON.parse(JSON.stringify(x||{}));}catch(e){return Object.assign({},x||{});}}
+  function isBlockedTestRow(row){
+    try{
+      var id=String((row&&row.id)||'');
+      var payload=(row&&row.payload)||{};
+      var key=String((row&&row.user_key)||payload.userKey||payload.user_key||'');
+      var name=String((row&&row.name)||payload.name||'');
+      return /^spam_/i.test(id) || /stress_test/i.test(key) || /Stress Test/i.test(name);
+    }catch(e){ return false; }
+  }
   function isIncrement(v){return v && typeof v==='object' && v.__mesahaIncrement===true;}
   function mergeData(oldData,newData){
     var out=deepClone(oldData||{}), data=newData||{};
@@ -97,10 +106,14 @@
     });
   }
   function upsert(table,row){
+    if(isBlockedTestRow(row)) return Promise.resolve(row);
     return request(table,'on_conflict=id',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=representation'},body:JSON.stringify(row)}).then(function(r){return Array.isArray(r)?r[0]:r;});
   }
   function getById(table,id){return request(table,'id=eq.'+enc(id)+'&select=*&limit=1',{method:'GET'}).then(function(arr){return (arr||[])[0]||null;});}
-  function deleteById(table,id){return request(table,'id=eq.'+enc(id),{method:'DELETE',headers:{Prefer:'return=minimal'}});}
+  function deleteById(table,id){
+    /* V463 güvenlik: istemciden kalıcı DELETE kapalı. Yanlış/boş filtre veri silemesin. */
+    return Promise.reject(new Error('Kalıcı silme güvenlik için kapalı. Yedekler Drive’da korunur.'));
+  }
 
   function DocumentRef(table,id,parent){this.table=table;this.id=String(id);this.parent=parent||null;}
   DocumentRef.prototype.get=function(){var self=this;return getById(this.table,this._rowId()).then(function(r){return new DocSnap(self.id,r);});};
