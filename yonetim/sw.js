@@ -1,8 +1,9 @@
-/* Mesaha İO Yönetim V515 admin service worker */
-const CACHE='mesaha-admin-v515';
+/* Mesaha İO Yönetim V516 admin service worker */
+const CACHE='mesaha-admin-v516';
+const APP_SHELL='./index.html?source=adminpwa';
 const ASSETS=[
   './',
-  './index.html',
+  APP_SHELL,
   './manifest.json',
   '../assets/icon-192.png',
   '../assets/icon-512.png',
@@ -16,8 +17,8 @@ self.addEventListener('fetch',e=>{
   const u=new URL(e.request.url);
   if(u.origin!==self.location.origin) return;
   if(e.request.mode==='navigate'){
-    e.respondWith(fetch(e.request,{cache:'no-store'}).then(r=>{const c=r.clone();caches.open(CACHE).then(cache=>cache.put('./index.html',c)).catch(()=>{});return r;}).catch(async()=>{return (await caches.match('./index.html')) || Response.error();}));
+    e.respondWith(fetch(e.request,{cache:'no-store'}).then(r=>{const c=r.clone();caches.open(CACHE).then(cache=>cache.put(APP_SHELL,c)).catch(()=>{});return r;}).catch(async()=>{return (await caches.match(APP_SHELL)) || Response.error();}));
     return;
   }
-  e.respondWith(caches.match(e.request,{ignoreSearch:true}).then(hit=> hit || fetch(e.request).then(r=>{const c=r.clone();caches.open(CACHE).then(cache=>cache.put(e.request,c)).catch(()=>{});return r;}).catch(()=>caches.match('./index.html'))));
+  e.respondWith(caches.match(e.request,{ignoreSearch:true}).then(hit=> hit || fetch(e.request).then(r=>{const c=r.clone();caches.open(CACHE).then(cache=>cache.put(e.request,c)).catch(()=>{});return r;}).catch(()=>caches.match(APP_SHELL))));
 });

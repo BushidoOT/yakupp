@@ -1,9 +1,9 @@
 {
-  "id": "./",
+  "id": "/yakupp-yonetim-v516",
   "name": "Mesaha İO Yönetim",
   "short_name": "Yönetim",
-  "description": "Mesaha İO yönetim ve güvenlik paneli",
-  "start_url": "./index.html",
+  "description": "Mesaha İO yönetim, güvenlik ve yedek paneli",
+  "start_url": "./index.html?source=adminpwa",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f6f8fb",
@@ -20,5 +20,6 @@
       "sizes": "512x512",
       "type": "image/png"
     }
-  ]
+  ],
+  "prefer_related_applications": false
 }
