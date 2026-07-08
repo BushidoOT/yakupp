@@ -1,11 +1,12 @@
-/* Mesaha İO V506 — Yedek ekranı sığma + kullanıcı yedek gizleme düzeltmesi
+/* Mesaha İO V508 — Engelli IP/kullanıcı/cihaz tam ekran kilidi
    Buluta Yedekle: Edge Function guard + güvenli Supabase V2 + Google Drive.
    Buluttan Getir: Edge Function guard + iki kaynak birlikte listelenir.
    Kullanıcı yedek silme: gerçek silme yok; kullanıcı listesinden gizlenir.
    ORBİS/XLS/hacim tarafına dokunmaz. */
 (function(){
   'use strict';
-  if(window.__mesahaHybridCloudV506) return;
+  if(window.__mesahaHybridCloudV508) return;
+  window.__mesahaHybridCloudV508 = true;
   window.__mesahaHybridCloudV506 = true;
   window.__mesahaHybridCloudV505 = true;
 
@@ -68,6 +69,33 @@
   function hideBackupLocal(source,id,user){ var arr=hiddenList(), k=hiddenKey(source,id,user||readUser()); if(arr.indexOf(k)<0){ arr.push(k); jsonSet(HIDDEN_KEY,arr.slice(-600)); } }
   function getSessionToken(){ try{ var s=jsonGet(SESSION_KEY,null); return clean(s&&s.access_token); }catch(e){ return ''; } }
   function getDeviceId(){ try{ return clean(localStorage.getItem(DEVICE_KEY)||''); }catch(e){ return ''; } }
+  function showBlockedScreen(reason){
+    try{
+      if(document.getElementById('mesahaAccessBlockedV508')) return;
+      var st=document.createElement('style');
+      st.id='mesahaAccessBlockedStyleV508';
+      st.textContent='#mesahaAccessBlockedV508{position:fixed;inset:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;background:linear-gradient(145deg,#111827 0%,#450a0a 100%);padding:22px;box-sizing:border-box;color:#fff;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;text-align:center}#mesahaAccessBlockedV508 .box{width:min(520px,100%);background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.22);box-shadow:0 24px 90px rgba(0,0,0,.35);border-radius:30px;padding:28px 22px;backdrop-filter:blur(14px)}#mesahaAccessBlockedV508 .icon{width:74px;height:74px;margin:0 auto 16px;border-radius:24px;display:grid;place-items:center;background:#dc2626;color:#fff;font-size:42px;font-weight:1000}#mesahaAccessBlockedV508 h1{margin:0 0 12px;font-size:28px;line-height:1.08;font-weight:1000;letter-spacing:-.03em}#mesahaAccessBlockedV508 p{margin:0;color:#fee2e2;font-size:16px;line-height:1.45;font-weight:800}#mesahaAccessBlockedV508 small{display:block;margin-top:14px;color:rgba(255,255,255,.62);font-size:12px;font-weight:800;word-break:break-word}html.mesaha-blocked-v508,body.mesaha-blocked-v508{overflow:hidden!important}';
+      document.head.appendChild(st);
+      var ov=document.createElement('div');
+      ov.id='mesahaAccessBlockedV508';
+      ov.innerHTML='<div class="box"><div class="icon">×</div><h1>Bu cihaz ve kullanıcı engellendi</h1><p>Uygulamayı kullanamazsınız. Lütfen yönetici ile iletişime geçin.</p>'+(reason?'<small>'+esc(reason)+'</small>':'')+'</div>';
+      document.documentElement.classList.add('mesaha-blocked-v508');
+      document.body.classList.add('mesaha-blocked-v508');
+      document.body.appendChild(ov);
+      try{ document.querySelectorAll('button,input,select,textarea,a').forEach(function(el){ if(!ov.contains(el)) el.setAttribute('tabindex','-1'); }); }catch(e){}
+    }catch(e){ try{ alert('Bu cihaz ve kullanıcı engellendi'); }catch(_){} }
+  }
+  function isBlockedError(e){
+    var m=String(e&&e.message?e.message:e||'');
+    return !!(e&&e.blocked) || /Güvenlik engeli|blocked|engellendi|engelli|ban/i.test(m);
+  }
+  var startupGuardDone=false;
+  async function startupGuardCheck(){
+    if(startupGuardDone) return;
+    startupGuardDone=true;
+    try{ await guardCheck('app_open', readUser(), {source:'startup'}); }
+    catch(e){ if(isBlockedError(e)) showBlockedScreen('Erişim yönetici tarafından kapatıldı.'); else startupGuardDone=false; }
+  }
   async function guardCheck(action,user,extra){
     user=user||readUser();
     try{ await supabaseReady(); }catch(e){ throw e; }
@@ -88,7 +116,12 @@
     try{ json=txt?JSON.parse(txt):{}; }catch(e){ json={ok:false,error:'Güvenlik cevabı okunamadı'}; }
     if(!res.ok || !json.ok || json.blocked){
       var reason=(json&&json.reason)||(json&&json.error)||('Güvenlik kontrolü reddetti '+res.status);
-      throw new Error('Güvenlik engeli: '+reason);
+      var er=new Error('Güvenlik engeli: '+reason);
+      er.blocked=!!(json&&json.blocked) || res.status===403;
+      er.reason=reason;
+      er.guardResponse=json;
+      if(er.blocked) showBlockedScreen('Erişim yönetici tarafından kapatıldı.');
+      throw er;
     }
     return json;
   }
@@ -360,13 +393,15 @@
   }
   function expose(){
     ensureV505Style();
-    var api={version:'v506',backup:hybridBackup,list:combinedList,openCloudRestore:openCloud,restore:restore,deleteBackup:deleteBackup,backupSupabase:backupSupabase,backupDrive:backupDrive};
+    var api={version:'v508',backup:hybridBackup,list:combinedList,openCloudRestore:openCloud,restore:restore,deleteBackup:deleteBackup,backupSupabase:backupSupabase,backupDrive:backupDrive};
     window.MESAHA_HYBRID_CLOUD_V501=api;
     window.MESAHA_HYBRID_CLOUD_V505=api;
     window.MESAHA_HYBRID_CLOUD_V506=api;
+    window.MESAHA_HYBRID_CLOUD_V508=api;
     window.mesahaHybridCloudV501=api;
     window.mesahaHybridCloudV505=api;
     window.mesahaHybridCloudV506=api;
+    window.mesahaHybridCloudV508=api;
     window.mesahaPanelV316=window.mesahaPanelV316||{};
     window.mesahaPanelV316.cloudBackup=hybridBackup;
     window.mesahaPanelV316.openCloudRestore=openCloud;
@@ -378,6 +413,11 @@
       window.mesahaUserBackupsV318.deleteBackup=deleteBackup;
     }
   }
-  function boot(){ expose(); bind(); [250,800,1600,3200,6000].forEach(function(ms){ setTimeout(function(){ expose(); bind(); },ms); }); }
+  function boot(){
+    expose();
+    bind();
+    [250,800,1600,3200,6000].forEach(function(ms){ setTimeout(function(){ expose(); bind(); },ms); });
+    [1200,5000,12000].forEach(function(ms){ setTimeout(function(){ startupGuardCheck().catch(function(){}); },ms); });
+  }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true}); else boot();
 })();
