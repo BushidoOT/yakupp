@@ -1,9 +1,9 @@
 {
-  "id": "/yakupp-yonetim-v516",
+  "id": "/yakupp/yonetim/mesaha-io-yonetim-v517",
   "name": "Mesaha İO Yönetim",
   "short_name": "Yönetim",
   "description": "Mesaha İO yönetim, güvenlik ve yedek paneli",
-  "start_url": "./index.html?source=adminpwa",
+  "start_url": "./index.html?app=yonetim-v517",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f6f8fb",
@@ -13,12 +13,14 @@
     {
       "src": "../assets/icon-192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
       "src": "../assets/icon-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ],
   "prefer_related_applications": false
