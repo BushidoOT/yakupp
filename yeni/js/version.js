@@ -1,6 +1,6 @@
 (function(root){
   'use strict';
-  var info = {"app": "V5.06", "version": "v506_yedek_silme_ekran_sigdirma", "build": 506, "visibleVersion": "V5.06 •ExelanceX•", "shortVersion": "V5.06 •ExelanceX•", "name": "Mesaha İO V5.06 •ExelanceX•", "cacheName": "mesaha-app-v506-yedek-silme-ekran-sigdirma", "builtAt": "2026-07-08T10:58:00+03:00", "notes": "", "assetVersion": "506", "latestVersion": "v506_yedek_silme_ekran_sigdirma", "latestBuild": 506, "currentBuild": 506, "minSupportedBuild": 409, "forceUpdate": true, "updateUrl": "./temizle.html", "cleanUrl": "./guncelle.html"};
+  var info = {"app": "V5.07", "version": "v507_yedek_silme_sade_uyari", "build": 507, "visibleVersion": "V5.07 •ExelanceX•", "shortVersion": "V5.07 •ExelanceX•", "name": "Mesaha İO V5.07 •ExelanceX•", "cacheName": "mesaha-app-v507-yedek-silme-sade-uyari", "builtAt": "2026-07-08T11:10:00+03:00", "notes": "", "assetVersion": "507", "latestVersion": "v507_yedek_silme_sade_uyari", "latestBuild": 507, "currentBuild": 507, "minSupportedBuild": 409, "forceUpdate": true, "updateUrl": "./temizle.html", "cleanUrl": "./guncelle.html"};
   try{ Object.freeze(info); }catch(e){}
   function expose(name,value){
     try{ Object.defineProperty(root,name,{configurable:false,enumerable:true,get:function(){return value;},set:function(){}}); }

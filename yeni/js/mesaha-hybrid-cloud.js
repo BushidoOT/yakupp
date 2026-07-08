@@ -228,14 +228,13 @@
   }
   async function deleteBackup(source,id){
     if(!id) return;
-    var label=source==='drive'?'Google Drive':'Supabase';
-    if(!confirm(label+' yedeği listenden kaldırılsın mı? Gerçek yedek silinmez, sadece sana görünmez.')) return;
+    if(!confirm('Yedek silinsin mi?')) return;
     try{
       var user=readUser();
       await guardCheck('hide_backup',user,{source:source,slot_id:id});
       hideBackupLocal(source,id,user);
       if(source==='supabase') await deleteSupabase(id); else await deleteDrive(id);
-      toast('Yedek listeden kaldırıldı.', label+' yedeği silinmedi, sadece sana görünmez.','success');
+      toast('Yedek silindi.','','success');
       setTimeout(openCloud,250);
     }catch(e){
       toast('Yedek silinemedi.', errText(e),'error');
