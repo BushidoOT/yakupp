@@ -1,6 +1,6 @@
-/* Mesaha İO Yönetim V520 - ayrı admin PWA service worker */
-const CACHE='mesaha-yonetim-v520';
-const SHELL='./index.html?app=yonetim-v520';
+/* Mesaha İO Yönetim V521 - ayrı admin PWA service worker */
+const CACHE='mesaha-yonetim-v521';
+const SHELL='./index.html?app=yonetim-v521';
 const ASSETS=['./',SHELL,'./manifest.json','../assets/icon-192.png','../assets/icon-512.png','../assets/mesaha_logo.png','../js/version.js','../js/mesaha-supabase-config.js','../js/mesaha-firebase.js'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',e=>{e.waitUntil((async()=>{const keys=await caches.keys();await Promise.all(keys.filter(k=>/^mesaha-yonetim-/.test(k)&&k!==CACHE).map(k=>caches.delete(k)));await self.clients.claim()})())});

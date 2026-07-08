@@ -83,12 +83,25 @@ a{color:inherit;text-decoration:none}.hidden{display:none!important}
 .sync-card-v520{border:1px solid #dbeafe!important;background:#eff6ff!important}
 .sync-card-v520 .icon{background:#fff!important;color:#2563eb!important}
 
+
+/* V521 IP detay açılma ve analiz düzeltmeleri */
+.activity-card .user-detail.open,.activity-card.open .user-detail,.user-detail.open{display:block!important}
+.ip-summary-v521{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:12px 0}
+.ip-summary-v521 .mini{background:#fbfdff}
+.event-detail-grid-v521{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:8px}
+.event-detail-line-v521{border:1px solid #e2e8f0;border-radius:15px;padding:11px;background:#fff;display:grid;gap:6px}
+.event-detail-line-v521 b{display:block}.event-detail-line-v521 small{display:block;color:#64748b;font-weight:850;word-break:break-word}
+.event-detail-raw-v521{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:8px;white-space:pre-wrap;max-height:160px;overflow:auto;color:#334155}
+.event-tools-v521{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.event-tools-v521 .btn{min-height:34px;border-radius:12px;font-size:12px;padding:7px 9px;box-shadow:none}
+@media(max-width:760px){.ip-summary-v521,.event-detail-grid-v521{grid-template-columns:1fr}}
+
 </style>
 </head>
 <body>
 <div class="app">
   <header class="top">
-    <div class="brand"><img alt="" src="../assets/mesaha_logo.png"/><div><b>Mesaha İO Yönetim</b><small>Kurtarma ve Güvenlik Merkezi</small><div class="version-pill" id="versionPill">Admin V5.20 • Sürüm hazırlanıyor</div><div class="sync-mini-v520" id="syncMiniV520">Son senkron bekleniyor</div></div></div>
+    <div class="brand"><img alt="" src="../assets/mesaha_logo.png"/><div><b>Mesaha İO Yönetim</b><small>Kurtarma ve Güvenlik Merkezi</small><div class="version-pill" id="versionPill">Admin V5.21 • Sürüm hazırlanıyor</div><div class="sync-mini-v520" id="syncMiniV520">Son senkron bekleniyor</div></div></div>
     <div class="top-actions"><button class="btn soft" id="appBtn" type="button">↗ Uygulama</button><button class="btn green" id="refreshBtn" type="button">⟳ Yenile</button></div>
   </header>
 
@@ -252,7 +265,8 @@ a{color:inherit;text-decoration:none}.hidden{display:none!important}
         </div>
       </div>
       <div class="panel-card" style="margin-top:14px">
-        <div class="section-head"><div><h2>Son IP Hareketleri</h2><p>Boş sistem kayıtları ayrı toplanır; gerçek kullanıcılar ana listede görünür.</p></div></div>
+        <div class="section-head"><div><h2>Son IP Hareketleri</h2><p>Boş sistem kayıtları ayrı toplanır; gerçek kullanıcılar ana listede görünür.</p></div><div class="row"><button class="btn soft" id="openAllIpDetailsBtn" type="button">Tüm Detayları Aç</button><button class="btn soft" id="showUnmatchedIpBtn" type="button">Eşleşmeyenleri Göster</button></div></div>
+        <div class="ip-summary-v521" id="ipMatchSummaryV521"></div>
         <div class="list" id="eventsList"><div class="empty">Hareketler bekleniyor…</div></div>
       </div>
     </section>
@@ -278,7 +292,7 @@ a{color:inherit;text-decoration:none}.hidden{display:none!important}
 
 const ADMIN_USER='yakupduzgun';
 const ADMIN_SEFLIK='Yaylacık_43';
-const ADMIN_PANEL_VERSION='Admin V5.20';
+const ADMIN_PANEL_VERSION='Admin V5.21';
 const GUARD_FUNCTION_URL='https://swrbpdpotmirnmtqnuba.supabase.co/functions/v1/smooth-function';
 const ADMIN_KEY_STORE='mesaha_admin_guard_key_v505';
 const SESSION_KEY='mesaha_supabase_v500_session';
@@ -467,6 +481,12 @@ function renderOverview(){
 
 function eventGroups(items){const map={},groups=[],system=[];(items||[]).forEach(e=>{const k=eventKey(e);if(k){if(!map[k]){map[k]=[];groups.push(map[k])}map[k].push(e)}else system.push(e)});groups.sort((a,b)=>String(b[0].created_at||'').localeCompare(String(a[0].created_at||'')));return {groups,system}}
 function renderEventList(el,items,limit,compact){const {groups,system}=eventGroups(items);const list=groups.slice(0,limit||999);if(!list.length&&!system.length){el.innerHTML='<div class="empty">Henüz IP hareketi yok.</div>';return}el.innerHTML=list.map((arr,i)=>eventCard(arr,i,compact)).join('')+(system.length&&!compact?systemCard(system):'')}
+
+function eventRawPreviewV521(d){try{const o={event_type:d.event_type||'',time:d.created_at||'',ip:d.ip_address||'',device:d.device_id||'',user_key:d.user_key||'',name:d.name||'',seflik:d.seflik||'',version:d.app_version||'',match:eventMatchLabelV520(d)};return JSON.stringify(o,null,2)}catch(e){return ''}}
+function eventDetailRowsV521(arr){return '<div class="event-detail-grid-v521">'+arr.slice(0,60).map(function(d,idx){const user=eventUser(d)||'-',sef=eventSeflik(d)||'-',ip=clean(d.ip_address)||'-',dev=clean(d.device_id)||'-',raw=clean(d.user_key||d.userKey)||'-',match=eventMatchLabelV520(d),ok=findUserForEvent(d);return '<div class="event-detail-line-v521"><div><span class="badge '+(d.blocked?'warn':'')+'">'+esc(d.blocked?'Engellendi':'İzin verildi')+'</span> <b>'+esc(d.event_type||'ip_hareketi')+'</b></div><small>Tarih: '+esc(d.created_at||'-')+'</small><small>IP: '+esc(ip)+' • Cihaz: '+esc(dev)+'</small><small>Kullanıcı: '+esc(user)+' • Şeflik: '+esc(sef)+'</small><small>Kullanıcı anahtarı: '+esc(raw)+'</small><span class="match-debug-v520 '+(ok?'ok':'warn')+'">'+esc(match)+'</span><div class="event-tools-v521"><button class="btn soft" data-copy-ip-v521="'+esc(ip)+'" type="button">IP Kopyala</button><button class="btn soft" data-copy-device-v521="'+esc(dev)+'" type="button">Cihaz Kopyala</button><button class="btn soft" data-copy-userkey-v521="'+esc(raw)+'" type="button">Anahtar Kopyala</button></div><pre class="event-detail-raw-v521">'+esc(eventRawPreviewV521(d))+'</pre></div>'}).join('')+'</div>'}
+function renderIpMatchSummaryV521(){const el=$('ipMatchSummaryV521');if(!el)return;const st=computeMatchStatsV520();const sys=eventGroups(state.events).system.length;const unmatched=eventGroups(state.events).groups.filter(g=>!findUserForEvent(g[0])).length;el.innerHTML='<div class="mini"><small>Toplam kullanıcı hareketi</small><b>'+int(st.total)+'</b></div><div class="mini"><small>Kullanıcı eşleşti</small><b>'+int(st.matched)+'</b></div><div class="mini"><small>Eşleşmeyen</small><b>'+int(unmatched)+'</b></div><div class="mini"><small>Sistem/Admin kayıt</small><b>'+int(sys)+'</b></div>'}
+function filterUnmatchedEventsV521(){const {groups,system}=eventGroups(state.events);const items=[];groups.forEach(g=>{if(!findUserForEvent(g[0]))items.push.apply(items,g)});renderEventList($('eventsList'),items,999,false);renderIpMatchSummaryV521();toast(items.length?'Eşleşmeyen IP kayıtları gösteriliyor':'Eşleşmeyen kayıt yok')}
+function toggleAllIpDetailsV521(open){document.querySelectorAll('#eventsList .activity-card .user-detail').forEach(box=>box.classList.toggle('open',open));document.querySelectorAll('#eventsList [data-event-detail],#eventsList [data-system-detail]').forEach(btn=>{btn.textContent=open?'Detayları Gizle':'Detaylı Kayıtlar';btn.classList.toggle('green',open)})}
 function eventCard(arr,i,compact){const e=arr[0]||{},user=eventUser(e)||'—',sef=eventSeflik(e)||'—',ip=clean(e.ip_address)||'-',dev=clean(e.device_id)||'-',raw=clean(e.user_key||e.userKey),warn=e.blocked||/block|ban/i.test(e.event_type||'');return `<div class="activity-card">
   <div class="activity-main">
     <div class="activity-head"><span class="dot ${warn?'warn':''}"></span><span class="avatar light">👤</span><span class="activity-name">${esc(user+' • '+sef)}</span><span class="badge ${warn?'warn':''}">${warn?'Şüpheli':'İzin verildi'}</span></div>
@@ -476,11 +496,11 @@ function eventCard(arr,i,compact){const e=arr[0]||{},user=eventUser(e)||'—',se
     ${ip&&ip!=='-'?`<button class="btn danger" data-ban-ip="${esc(ip)}" data-ban-user="${esc(raw)}" data-ban-device="${esc(dev)}" type="button">IP + Kullanıcı Ban</button>`:''}
     ${raw?`<button class="btn warn" data-ban-user-only="${esc(raw)}" type="button">Kullanıcıyı Engelle</button>`:`<button class="btn warn" disabled type="button">Kullanıcıyı Engelle</button>`}
     ${dev&&dev!=='-'?`<button class="btn soft" data-ban-device-only="${esc(dev)}" type="button">Cihazı Engelle</button>`:''}
-    <button class="btn soft" data-event-detail="${i}" type="button">Detaylı Kayıtlar</button>
+    <button class="btn soft" data-event-detail="${i}" type="button">Detaylı Kayıtlar (${arr.length})</button>
   </div>
-  <div class="user-detail" id="eventDetail${i}">${arr.slice(0,40).map(d=>`<div class="mini"><small>${esc(d.event_type||'detay')}</small><b>${esc(d.created_at||'-')}</b><small>IP: ${esc(d.ip_address||'-')} • Kullanıcı: ${esc(eventUser(d)||'-')} • Şeflik: ${esc(eventSeflik(d)||'-')}</small></div>`).join('')}</div>
+  <div class="user-detail" id="eventDetail${i}">${eventDetailRowsV521(arr)}</div>
 </div>`}
-function systemCard(system){return `<div class="activity-card"><div><b>Detaylı sistem kayıtları</b><div class="meta">${system.length} boş/admin/sistem kaydı ana listeden gizlendi.</div></div><button class="btn soft" data-system-detail type="button">Detaylı Kayıtlar</button><div class="user-detail" id="systemDetail">${system.slice(0,60).map(d=>`<div class="mini"><small>${esc(d.event_type||'detay')}</small><b>${esc(d.created_at||'-')}</b><small>IP: ${esc(d.ip_address||'-')} • Cihaz: ${esc(d.device_id||'-')}</small></div>`).join('')}</div></div>`}
+function systemCard(system){return `<div class="activity-card"><div><b>Detaylı sistem kayıtları</b><div class="meta">${system.length} boş/admin/sistem kaydı ana listeden gizlendi.</div></div><button class="btn soft" data-system-detail type="button">Detaylı Kayıtlar (${system.length})</button><div class="user-detail" id="systemDetail">${eventDetailRowsV521(system)}</div></div>`}
 
 function filteredUsers(){const q=clean($('userSearch').value).toLowerCase();const sf=$('seflikFilter').value;const sort=$('userSort').value;let arr=state.users.filter(u=>(!q||[u.name,u.seflik,u.bolmeNo,u.deviceId,u.appVersion].join(' ').toLowerCase().includes(q))&&(!sf||u.seflik===sf));arr=arr.slice();if(sort==='records')arr.sort((a,b)=>n(b.recordCount)-n(a.recordCount));else if(sort==='m3')arr.sort((a,b)=>n(b.m3)-n(a.m3));else if(sort==='backup')arr.sort((a,b)=>userBackups(userKeyOf(b)).length-userBackups(userKeyOf(a)).length);else arr.sort((a,b)=>n(b.lastSeenMs||b.updatedAtMs)-n(a.lastSeenMs||a.updatedAtMs));return arr}
 function renderUsers(){const arr=filteredUsers();$('usersList').innerHTML=arr.length?arr.map(u=>{const k=userKeyOf(u),bk=userBackups(k).length,last=n(u.lastSeenMs||u.updatedAtMs),active=last>=Date.now()-15*60000,old=isOldVersion(u),tickets=userTickets(k).length;return `<div class="user-card" data-user-card="${esc(k)}">
@@ -562,7 +582,7 @@ function renderOperationCenterV519(){
   if($('operationStatusV519'))$('operationStatusV519').textContent=riskUsersV519().length+' riskli • IP '+int((state.matchStats&&state.matchStats.matched)||0)+'/'+int((state.matchStats&&state.matchStats.total)||0);
   if($('operationListV519')){
     const arr=riskUsersV519().slice(0,12);
-    $('operationListV519').innerHTML=arr.length?arr.map(x=>{const k=userKeyOf(x.u),cls=x.info.score<55?'bad':'warn';return `<div class="risk-user-v519"><div class="top"><div><b>${esc(x.u.name||'Kullanıcı')} • ${esc(x.u.seflik||'-')}</b><small>${esc(x.info.reasons.join(' • ')||'Kontrol gerekli')}</small></div><span class="risk-chip-v519 ${cls}">${esc(x.info.level)} • ${int(x.info.score)}</span></div><div class="row"><button class="btn soft" data-user-detail="${esc(k)}" type="button">Detay</button><button class="btn warn" data-user-warning="${esc(k)}" type="button">Yedek Uyarısı</button><button class="btn soft" data-user-update-warning-v519="${esc(k)}" type="button">Güncelleme Uyarısı</button></div></div>`}).join(''):'<div class="empty">Riskli kullanıcı görünmüyor.</div>';
+    $('operationListV519').innerHTML=arr.length?arr.map(x=>{const k=userKeyOf(x.u),cls=x.info.score<55?'bad':'warn';return `<div class="risk-user-v519"><div class="top"><div><b>${esc(x.u.name||'Kullanıcı')} • ${esc(x.u.seflik||'-')}</b><small>${esc(x.info.reasons.join(' • ')||'Kontrol gerekli')}</small></div><span class="risk-chip-v519 ${cls}">${esc(x.info.level)} • ${int(x.info.score)}</span></div><div class="row"><button class="btn soft" data-user-detail="${esc(k)}" type="button">Detay</button><button class="btn warn" data-user-warning="${esc(k)}" type="button">Yedek Uyarısı</button><button class="btn soft" data-user-update-warning-v521="${esc(k)}" type="button">Güncelleme Uyarısı</button></div></div>`}).join(''):'<div class="empty">Riskli kullanıcı görünmüyor.</div>';
   }
   const map={users:state.users.length>0,backups:state.backups.length>0,security:state.sources.events||state.sources.blocks,version:true};
   document.querySelectorAll('[data-check-v519]').forEach(ch=>{const k=ch.getAttribute('data-check-v519');ch.checked=!!map[k]});
@@ -580,7 +600,7 @@ function fillBroadcastSeflikV519(){
 }
 
 function renderTools(){fillBroadcastSeflikV519();renderOperationCenterV519();const arr=state.broadcasts||[];$('broadcastList').innerHTML=arr.length?arr.slice(0,30).map(b=>`<div class="ticket"><div class="section-head"><div><h3>${esc(b.title||'Duyuru')}</h3><p>${esc(b.createdAt||'-')} • ${int((b.targetUserKeys||[]).length||b.targetCount)} kullanıcı</p></div><button class="btn danger" data-broadcast-delete="${esc(b.id)}" type="button">Sil</button></div><p>${esc(b.message||'-')}</p></div>`).join(''):'<div class="empty">Aktif duyuru yok.</div>'}
-function renderSecurity(){updateRiskPanels();computeMatchStatsV520();renderEventList($('eventsList'),state.events,999,false);$('blocksList').innerHTML=state.blocks.filter(b=>b.active!==false).length?state.blocks.filter(b=>b.active!==false).map(b=>`<div class="activity-card"><div><span class="badge red">${esc(b.block_type||'engel')}</span> <b>${esc(b.block_value||'-')}</b><div class="meta">${esc(b.reason||'-')} • ${esc(b.created_at||'-')}</div></div><button class="btn soft" data-remove-block="${esc(b.id)}" type="button">Engeli Kaldır</button></div>`).join(''):'<div class="empty">Aktif engel yok.</div>'}
+function renderSecurity(){updateRiskPanels();computeMatchStatsV520();renderIpMatchSummaryV521();renderEventList($('eventsList'),state.events,999,false);$('blocksList').innerHTML=state.blocks.filter(b=>b.active!==false).length?state.blocks.filter(b=>b.active!==false).map(b=>`<div class="activity-card"><div><span class="badge red">${esc(b.block_type||'engel')}</span> <b>${esc(b.block_value||'-')}</b><div class="meta">${esc(b.reason||'-')} • ${esc(b.created_at||'-')}</div></div><button class="btn soft" data-remove-block="${esc(b.id)}" type="button">Engeli Kaldır</button></div>`).join(''):'<div class="empty">Aktif engel yok.</div>'}
 
 
 function riskInfo(){
@@ -638,7 +658,8 @@ async function deleteBroadcast(id){if(!confirm('Duyuru silinsin mi?'))return;try
 function showUserDetail(key){const u=findUser(key);if(!u)return;const b=userBackups(key).slice().sort((a,b)=>n(b.createdAtMs)-n(a.createdAtMs)),t=userTickets(key),events=securityEventsForUser(key);const latest=b[0];const userRisk=(isOldVersion(u)?25:0)+(b.length?0:35)+(events.some(e=>e.blocked)?25:0)+(n(u.lastSeenMs||u.updatedAtMs)&&n(u.lastSeenMs||u.updatedAtMs)<Date.now()-30*86400000?15:0);$('modalTitle').textContent=(u.name||'-')+' • kullanıcı detayı';$('modalBody').innerHTML=`<div class="risk-wrap" style="margin-bottom:14px"><div class="risk-circle" style="--risk-deg:${Math.max(0,100-userRisk)*3.6}deg"><b>${Math.max(0,100-userRisk)}</b></div><div class="risk-lines"><div class="risk-line"><small>Kullanıcı riski</small><b class="${userRisk?'risk-warn':'risk-good'}">${userRisk?'Kontrol gerekli':'Normal'}</b></div><div class="risk-line"><small>Son yedek</small><b>${latest?esc(latest.createdAt||shortDate(latest.createdAtMs)):'Yedek yok'}</b></div><div class="risk-line"><small>Güvenlik hareketi</small><b>${int(events.length)}</b></div></div></div><div class="mini-grid"><div class="mini"><small>Kullanıcı</small><b>${esc(u.name||'-')}</b></div><div class="mini"><small>Şeflik</small><b>${esc(u.seflik||'-')}</b></div><div class="mini"><small>Bölme</small><b>${esc(u.bolmeNo||'-')}</b></div><div class="mini"><small>Sürüm</small><b>${esc(normalizeVersion(u.appVersion||u.fileVersion||'-'))}</b></div><div class="mini"><small>Kayıt</small><b>${int(u.recordCount)}</b></div><div class="mini"><small>Hacim</small><b>${m3(u.m3)}</b></div><div class="mini"><small>Yedek</small><b>${int(b.length)}</b></div><div class="mini"><small>Destek</small><b>${int(t.length)}</b></div><div class="mini"><small>Cihaz ID</small><b>${esc(u.deviceId||'-')}</b></div><div class="mini"><small>Cihaz</small><b>${esc(u.lastDevice||'-')}</b></div><div class="mini"><small>Son görülme</small><b>${esc(shortDate(u.lastSeenMs,u.lastSeen))}</b></div><div class="mini"><small>Kaynak</small><b>${esc((u.sources||[]).join(', ')||u.source||'-')}</b></div></div><h3>Son Yedekler</h3><div class="backup-timeline">${b.length?b.slice(0,6).map(x=>`<div class="mini"><small>${esc(x.source)} • ${esc(x.createdAt||'-')}</small><b>${esc(x.fileName||'Yedek')}</b><small>${int(x.recordCount)} kayıt • ${m3(x.m3)} m³ • ${esc(backupVersion(x))}</small></div>`).join(''):'<div class="empty">Bu kullanıcı için yedek yok.</div>'}</div><h3>Güvenlik Hareketleri</h3><div class="security-mini-list">${events.length?events.map(e=>`<div class="security-mini"><b>${esc(e.ip_address||'-')} • ${esc(e.device_id||'-')}</b><small>${esc(e.created_at||'-')} • ${esc(e.event_type||'hareket')} • ${esc(normalizeVersion(e.app_version))}</small></div>`).join(''):'<div class="empty">Güvenlik hareketi yok.</div>'}</div><div class="row" style="margin-top:14px"><button class="btn green" onclick="window.MesahaAdminDownloadUserRecovery&&window.MesahaAdminDownloadUserRecovery('${esc(key)}')" type="button">Bu Kullanıcının Kurtarma Paketini İndir</button></div>`;$('modal').classList.add('show')}
 function go(tab){document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id==='tab-'+tab));document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));window.scrollTo({top:0,behavior:'smooth'})}
 function appHome(){const url=new URL('../index.html?from=yonetim',location.href).href;try{window.top.location.href=url}catch(e){location.href=url}}
-function unlock(){const u=clean($('adminUser').value).toLocaleLowerCase('tr-TR'),s=clean($('adminSeflik').value);if(u===ADMIN_USER&&s===ADMIN_SEFLIK){sessionStorage.setItem('mesaha_yonetim_ok_v518','1');$('loginCard').classList.add('hidden');$('main').classList.remove('hidden');$('tabs').classList.remove('hidden');loadAll()}else{$('loginMsg').textContent='Giriş bilgileri hatalı.'}}
+function unlock(){const u=clean($('adminUser').value).toLocaleLowerCase('tr-TR'),s=clean($('adminSeflik').value);if(u===ADMIN_USER&&s===ADMIN_SEFLIK){sessionStorage.setItem('mesaha_yonetim_ok_v521','1');$('loginCard').classList.add('hidden');$('main').classList.remove('hidden');$('tabs').classList.remove('hidden');loadAll()}else{$('loginMsg').textContent='Giriş bilgileri hatalı.'}}
+function copyTextV521(v){v=clean(v);if(!v||v==='-'){toast('Kopyalanacak değer yok');return}if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(v).then(()=>toast('Kopyalandı')).catch(()=>toast(v));}else{toast(v)}}
 function bind(){
   $('versionPill').textContent=ADMIN_PANEL_VERSION+' • '+appVersion()+' • Hazır';
   $('loginCard').addEventListener('submit',e=>{e.preventDefault();unlock()});
@@ -672,12 +693,14 @@ function bind(){
   if($('downloadAuditBtn'))$('downloadAuditBtn').addEventListener('click',()=>downloadJson('mesaha_admin_islem_gecmisi_v519.json',state.actionLogs||[]));
   if($('saveAdminNoteBtn'))$('saveAdminNoteBtn').addEventListener('click',()=>{try{localStorage.setItem('mesaha_admin_note_v519',clean($('adminNoteInputV519').value));toast('Admin notu kaydedildi')}catch(e){toast('Not kaydedilemedi')}});
   if($('broadcastTarget'))$('broadcastTarget').addEventListener('change',()=>{const w=$('broadcastSeflikWrap');if(w)w.style.display=$('broadcastTarget').value==='seflik'?'block':''});
+  if($('openAllIpDetailsBtn'))$('openAllIpDetailsBtn').addEventListener('click',function(){const anyClosed=Array.from(document.querySelectorAll('#eventsList .activity-card .user-detail')).some(x=>!x.classList.contains('open'));toggleAllIpDetailsV521(anyClosed);this.textContent=anyClosed?'Tüm Detayları Kapat':'Tüm Detayları Aç'});
+  if($('showUnmatchedIpBtn'))$('showUnmatchedIpBtn').addEventListener('click',filterUnmatchedEventsV521);
   $('modalClose').addEventListener('click',()=>$('modal').classList.remove('show'));
   $('modal').addEventListener('click',e=>{if(e.target===$('modal'))$('modal').classList.remove('show')});
   document.body.addEventListener('click',e=>{
     const card=e.target.closest('[data-user-card]');if(card&&!e.target.closest('button')){card.classList.toggle('open');return}
     const ud=e.target.closest('[data-user-detail]');if(ud){showUserDetail(ud.dataset.userDetail);return}
-    const uw=e.target.closest('[data-user-warning]');if(uw){sendWarning(uw.dataset.userWarning).catch(x=>toast(errText(x)));return}const uuw=e.target.closest('[data-user-update-warning-v519]');if(uuw){sendUpdateWarningV519(uuw.dataset.userUpdateWarningV519).catch(x=>toast(errText(x)));return}
+    const uw=e.target.closest('[data-user-warning]');if(uw){sendWarning(uw.dataset.userWarning).catch(x=>toast(errText(x)));return}const uuw=e.target.closest('[data-user-update-warning-v521]');if(uuw){sendUpdateWarningV519(uuw.dataset.userUpdateWarningV521).catch(x=>toast(errText(x)));return}
     const up=e.target.closest('[data-user-passive]');if(up){passiveUser(up.dataset.userPassive);return}
     const ua=e.target.closest('[data-user-archive]');if(ua){archiveUser(ua.dataset.userArchive);return}
     const bd=e.target.closest('[data-backup-download]');if(bd){backupDownload(bd.dataset.backupDownload);return}
@@ -686,14 +709,15 @@ function bind(){
     const bu=e.target.closest('[data-ban-user-only]');if(bu){addBlock('user_key',bu.dataset.banUserOnly,'Şüpheli kullanıcı').then(()=>loadAll()).catch(x=>toast(errText(x)));return}
     const dev=e.target.closest('[data-ban-device-only]');if(dev){addBlock('device_id',dev.dataset.banDeviceOnly,'Şüpheli cihaz').then(()=>loadAll()).catch(x=>toast(errText(x)));return}
     const rb=e.target.closest('[data-remove-block]');if(rb){removeBlock(rb.dataset.removeBlock).catch(x=>toast(errText(x)));return}
-    const ed=e.target.closest('[data-event-detail]');if(ed){const box=ed.closest('.activity-card').querySelector('.user-detail');if(box)box.classList.toggle('open');return}
-    const sd=e.target.closest('[data-system-detail]');if(sd){const box=$('systemDetail');if(box)box.classList.toggle('open');return}
+    const ed=e.target.closest('[data-event-detail]');if(ed){const box=ed.closest('.activity-card').querySelector('.user-detail');if(box){const open=!box.classList.contains('open');box.classList.toggle('open',open);ed.textContent=open?'Detayları Gizle':'Detaylı Kayıtlar';ed.classList.toggle('green',open)}return}
+    const sd=e.target.closest('[data-system-detail]');if(sd){const box=$('systemDetail');if(box){const open=!box.classList.contains('open');box.classList.toggle('open',open);sd.textContent=open?'Detayları Gizle':'Detaylı Kayıtlar';sd.classList.toggle('green',open)}return}
+    const cip=e.target.closest('[data-copy-ip-v521]');if(cip){copyTextV521(cip.dataset.copyIpV521);return}const cdv=e.target.closest('[data-copy-device-v521]');if(cdv){copyTextV521(cdv.dataset.copyDeviceV521);return}const cuk=e.target.closest('[data-copy-userkey-v521]');if(cuk){copyTextV521(cuk.dataset.copyUserkeyV521);return}
     const tr=e.target.closest('[data-ticket-reply]');if(tr){replyTicket(tr.dataset.ticketReply);return}
     const td=e.target.closest('[data-ticket-delete]');if(td){deleteTicket(td.dataset.ticketDelete);return}
     const read=e.target.closest('[data-ticket-read]');if(read){markTicketRead(read.dataset.ticketRead);return}
     const bc=e.target.closest('[data-broadcast-delete]');if(bc){deleteBroadcast(bc.dataset.broadcastDelete);return}
   });
-  if(sessionStorage.getItem('mesaha_yonetim_ok_v518')==='1'){ $('loginCard').classList.add('hidden');$('main').classList.remove('hidden');$('tabs').classList.remove('hidden');loadAll(); }
+  if(sessionStorage.getItem('mesaha_yonetim_ok_v521')==='1'){ $('loginCard').classList.add('hidden');$('main').classList.remove('hidden');$('tabs').classList.remove('hidden');loadAll(); }
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
 try{if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js',{scope:'./'}).catch(()=>{}));}}catch(e){}
