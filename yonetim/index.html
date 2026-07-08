@@ -4,7 +4,10 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
 <meta name="theme-color" content="#ffffff"/>
-<link rel="manifest" href="../manifest.json"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<meta name="apple-mobile-web-app-title" content="Mesaha İO Yönetim"/>
+<link rel="manifest" href="./manifest.json"/>
 <link rel="apple-touch-icon" href="../assets/icon-192.png"/>
 <title>Mesaha İO Yönetim</title>
 <style id="mesaha-admin-style">
@@ -952,8 +955,24 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   function blankLikeV512(v){v=clean(v);return !v||v==='-'||v==='__'||v==='___'||/^_+$/.test(v)||/^bos(_|$)/i.test(v)||/^kullanici\s*yok$/i.test(v)}
   function prettyUserKeyV510(v){v=clean(v);if(blankLikeV512(v))return '';var first=v.split('__')[0]||v;first=first.replace(/[_-]+/g,' ').trim();return blankLikeV512(first)?'':(first||v)}
   function rawUserKeyOfEvent(x){var v=clean(x&&x.user_key)||clean(x&&x.userKey)||'';return blankLikeV512(v)?'':v}
-  function displayUserOfEvent(x){var v=clean(x&&x.name)||clean(x&&x.user_name)||prettyUserKeyV510(rawUserKeyOfEvent(x));return blankLikeV512(v)?'':v}
-  function eventSeflikOf(x){var v=clean(x&&x.seflik);return blankLikeV512(v)?'':v}
+  function findUserFromEventV514(x){
+    var raw=rawUserKeyOfEvent(x);
+    var dev=clean(x&&x.device_id);
+    var name=clean(x&&x.name)||clean(x&&x.user_name);
+    var seflik=clean(x&&x.seflik);
+    var arr=(window.state&&window.state.users)||state&&state.users||[];
+    for(var i=0;i<arr.length;i++){
+      var u=arr[i]||{};
+      var uk=clean(u.userKey||u.user_key||u.id);
+      var ud=clean(u.deviceId||(u.lastDeviceInfo&&u.lastDeviceInfo.deviceId)||(u.lastDeviceInfo&&u.lastDeviceInfo.installId));
+      if(raw&&uk&&raw===uk) return u;
+      if(dev&&ud&&dev===ud) return u;
+      if(name&&seflik&&clean(u.name)===name&&clean(u.seflik)===seflik) return u;
+    }
+    return null;
+  }
+  function displayUserOfEvent(x){var v=clean(x&&x.name)||clean(x&&x.user_name); if(blankLikeV512(v)){ var u=findUserFromEventV514(x); v=clean(u&&u.name)||prettyUserKeyV510(rawUserKeyOfEvent(x)); } return blankLikeV512(v)?'':v}
+  function eventSeflikOf(x){var v=clean(x&&x.seflik); if(blankLikeV512(v)){ var u=findUserFromEventV514(x); v=clean(u&&u.seflik); } return blankLikeV512(v)?'':v}
   function userTitleOfEvent(x){var user=displayUserOfEvent(x);var seflik=eventSeflikOf(x)||'-';return {user:user,seflik:seflik}}
   function isUserEventV512(x){return !!(displayUserOfEvent(x)||eventSeflikOf(x)||rawUserKeyOfEvent(x))}
   function eventIdentityKey(x){if(!isUserEventV512(x))return '';var raw=rawUserKeyOfEvent(x);var name=displayUserOfEvent(x);var seflik=eventSeflikOf(x);var dev=clean(x&&x.device_id);return 'u:'+(raw||name)+'|s:'+seflik+'|d:'+dev}
@@ -967,7 +986,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   }
   function guardVersionOfEvent(x){return normalizeGuardVersionText((x&&x.app_version)||'')||'-'}
   function detailLinesV509(arr){return arr.slice(0,40).map(function(d){var ip=clean(d.ip_address), user=displayUserOfEvent(d)||'Kullanıcı yok', dev=clean(d.device_id);return '<div class="guard-detail-line-v509"><div><span class="guard-badge-v505 '+(d.blocked?'blocked':'ok')+'">'+(d.blocked?'Engellendi':'İzin verildi')+'</span> <b>'+esc(d.event_type||'detay')+'</b></div><small>'+esc(eventDate(d))+'</small><small>IP: <span class="guard-ip-v505">'+esc(ip||'-')+'</span> • Kullanıcı: '+esc(user)+' • Şeflik: '+esc(eventSeflikOf(d)||'-')+'</small><small>Cihaz: '+esc(dev||'-')+' • Sürüm: '+esc(guardVersionOfEvent(d))+'</small></div>'}).join('')}
-  function eventCardV509(arr,idx){var x=arr[0]||{}, ip=clean(x.ip_address), rawUser=rawUserKeyOfEvent(x), shownUser=displayUserOfEvent(x), dev=clean(x.device_id), title=userTitleOfEvent(x), detId='guardDetailV509_'+idx;return '<div class="guard-row-v505"><div class="guard-title-v509"><span class="guard-badge-v505 '+(x.blocked?'blocked':'ok')+'">'+(x.blocked?'Engelli':'Aktif')+'</span> <b>'+esc((title.user||'Kullanıcı')+' • '+title.seflik)+'</b></div><div class="guard-meta-grid-v509"><small>IP: <span class="guard-ip-v505">'+esc(ip||'-')+'</span></small><small>Cihaz: '+esc(dev||'-')+'</small><small>Sürüm: '+esc(guardVersionOfEvent(x))+'</small><small>Tarih: '+esc(eventDate(x))+'</small><small>Kullanıcı adı: '+esc(shownUser||'-')+'</small><small>Şeflik: '+esc(title.seflik)+'</small></div><div class="guard-actions-v505">'+(ip?'<button class="btn danger" data-guard-ban-ip="'+esc(ip)+'" data-guard-ip-user="'+esc(rawUser||'')+'" data-guard-ip-device="'+esc(dev||'')+'" type="button">IP + Kullanıcı Ban</button>':'')+(rawUser?'<button class="btn warn" data-guard-ban-user="'+esc(rawUser)+'" type="button">Kullanıcıyı Engelle</button>':'')+(dev?'<button class="btn soft" data-guard-ban-device="'+esc(dev)+'" type="button">Cihazı Engelle</button>':'')+'<button class="btn soft guard-detail-btn-v509" data-guard-toggle-detail="'+detId+'" type="button">Detaylı Kayıtlar</button></div><div class="guard-detail-v509" id="'+detId+'">'+detailLinesV509(arr)+'</div></div>'}
+  function eventCardV509(arr,idx){var x=arr[0]||{}, ip=clean(x.ip_address), rawUser=rawUserKeyOfEvent(x), shownUser=displayUserOfEvent(x), dev=clean(x.device_id), title=userTitleOfEvent(x), detId='guardDetailV509_'+idx;var titleText=(title.user&&title.seflik)?(title.user+' • '+title.seflik):(title.user||title.seflik||'Kullanıcı');return '<div class="guard-row-v505"><div class="guard-title-v509"><span class="guard-badge-v505 '+(x.blocked?'blocked':'ok')+'">'+(x.blocked?'Engelli':'Aktif')+'</span> <b>'+esc(titleText)+'</b></div><div class="guard-meta-grid-v509"><small>IP: <span class="guard-ip-v505">'+esc(ip||'-')+'</span></small><small>Cihaz: '+esc(dev||'-')+'</small><small>Sürüm: '+esc(guardVersionOfEvent(x))+'</small><small>Tarih: '+esc(eventDate(x))+'</small><small>Kullanıcı adı: '+esc(shownUser||'-')+'</small><small>Şeflik: '+esc(title.seflik||'-')+'</small></div><div class="guard-actions-v505">'+(ip?'<button class="btn danger" data-guard-ban-ip="'+esc(ip)+'" data-guard-ip-user="'+esc(rawUser||'')+'" data-guard-ip-device="'+esc(dev||'')+'" type="button">IP + Kullanıcı Ban</button>':'')+(rawUser?'<button class="btn warn" data-guard-ban-user="'+esc(rawUser)+'" type="button">Kullanıcıyı Engelle</button>':'')+(dev?'<button class="btn soft" data-guard-ban-device="'+esc(dev)+'" type="button">Cihazı Engelle</button>':'')+'<button class="btn soft guard-detail-btn-v509" data-guard-toggle-detail="'+detId+'" type="button">Detaylı Kayıtlar</button></div><div class="guard-detail-v509" id="'+detId+'">'+detailLinesV509(arr)+'</div></div>'}
   function renderEvents(items){var el=$('guardEventsV505');if(!el)return;items=items||[];if(!items.length){el.innerHTML='<div class="empty">Henüz güvenlik hareketi yok. Uygulamadan bulut işlemi yapılınca burada IP görünecek.</div>';return}var groups=[],map={},system=[];items.forEach(function(x){var k=eventIdentityKey(x);if(k){if(!map[k]){map[k]=[];groups.push(map[k]);}map[k].push(x)}else system.push(x)});groups.sort(function(a,b){return String(eventDate(b[0])).localeCompare(String(eventDate(a[0])))});var html=groups.map(function(arr,i){return eventCardV509(arr,i)}).join('');if(system.length){var detId='guardSystemDetailV509';html+='<div class="guard-row-v505 guard-system-detail-v509"><div class="guard-title-v509"><b>Detaylı sistem kayıtları</b></div><small>Kullanıcı adı/şefliği olmayan '+system.length+' admin, cihaz veya sistem hareketi ana listeden gizlendi.</small><div class="guard-actions-v505"><button class="btn soft guard-detail-btn-v509" data-guard-toggle-detail="'+detId+'" type="button">Detaylı Kayıtlar</button></div><div class="guard-detail-v509" id="'+detId+'">'+detailLinesV509(system)+'</div></div>'}el.innerHTML=html||'<div class="empty">Gösterilecek kullanıcı hareketi yok. Boş cihaz/admin kayıtları Detaylı sistem kayıtları içinde toplandı.</div>'}
   async function renderSecurityGuard(){ensureUi();var ev=await guardCall('admin_list_events',{});var bl=await guardCall('admin_list_blocks',{});renderEvents(ev.items||[]);renderBlocks(bl.items||[]);}
   window.renderSecurityGuardV505=renderSecurityGuard;
@@ -976,5 +995,17 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 })();
 </script>
 
+
+<script>
+(function(){
+  try{
+    if('serviceWorker' in navigator){
+      window.addEventListener('load',function(){
+        navigator.serviceWorker.register('./sw.js',{scope:'./'}).catch(function(){});
+      });
+    }
+  }catch(e){}
+})();
+</script>
 </body>
 </html>
