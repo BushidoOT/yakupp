@@ -74,12 +74,21 @@ a{color:inherit;text-decoration:none}.hidden{display:none!important}
 .admin-note-input-v519{min-height:112px}
 @media(max-width:980px){.op-grid-v519{grid-template-columns:1fr}.op-actions-v519{grid-template-columns:1fr}}
 
+
+/* V520 senkron ve IP-kullanıcı eşleştirme düzeltmeleri */
+.sync-mini-v520{display:inline-flex;align-items:center;gap:6px;margin-top:6px;padding:5px 9px;border-radius:999px;background:#f8fafc;border:1px solid #e2e8f0;color:#475569;font-size:12px;font-weight:950}
+.match-debug-v520{display:inline-flex;align-items:center;gap:6px;width:max-content;max-width:100%;padding:5px 8px;border-radius:999px;background:#f1f5f9;border:1px solid #e2e8f0;color:#475569;font-size:12px;font-weight:950}
+.match-debug-v520.ok{background:#ecfdf3;border-color:#bbf7d0;color:#166534}
+.match-debug-v520.warn{background:#fff7ed;border-color:#fed7aa;color:#9a3412}
+.sync-card-v520{border:1px solid #dbeafe!important;background:#eff6ff!important}
+.sync-card-v520 .icon{background:#fff!important;color:#2563eb!important}
+
 </style>
 </head>
 <body>
 <div class="app">
   <header class="top">
-    <div class="brand"><img alt="" src="../assets/mesaha_logo.png"/><div><b>Mesaha İO Yönetim</b><small>Kurtarma ve Güvenlik Merkezi</small><div class="version-pill" id="versionPill">Admin V5.19 • Sürüm hazırlanıyor</div></div></div>
+    <div class="brand"><img alt="" src="../assets/mesaha_logo.png"/><div><b>Mesaha İO Yönetim</b><small>Kurtarma ve Güvenlik Merkezi</small><div class="version-pill" id="versionPill">Admin V5.20 • Sürüm hazırlanıyor</div><div class="sync-mini-v520" id="syncMiniV520">Son senkron bekleniyor</div></div></div>
     <div class="top-actions"><button class="btn soft" id="appBtn" type="button">↗ Uygulama</button><button class="btn green" id="refreshBtn" type="button">⟳ Yenile</button></div>
   </header>
 
@@ -102,6 +111,7 @@ a{color:inherit;text-decoration:none}.hidden{display:none!important}
           <div class="summary-card"><div class="icon">📱</div><div class="label">Aktif Cihaz</div><div class="value" id="sumDevices">0</div><div class="sub" id="sumDevicesSub">● 0 çevrimiçi</div></div>
           <div class="summary-card"><div class="icon">☁️</div><div class="label">Bulut Yedek</div><div class="value" id="sumBackups">0</div><div class="sub" id="sumBackupsSub">Son 24 saatte 0</div></div>
           <div class="summary-card warn"><div class="icon">🛡️</div><div class="label">Açık Engel</div><div class="value" id="sumBlocks">0</div><div class="sub" id="sumBlocksSub">Engel yok</div></div>
+          <div class="summary-card sync-card-v520"><div class="icon">🔄</div><div class="label">Son Senkron</div><div class="value" id="sumSyncTimeV520">-</div><div class="sub" id="sumSyncSubV520">Veri bekleniyor</div></div>
         </div>
 
         <div class="security-hero">
@@ -268,7 +278,7 @@ a{color:inherit;text-decoration:none}.hidden{display:none!important}
 
 const ADMIN_USER='yakupduzgun';
 const ADMIN_SEFLIK='Yaylacık_43';
-const ADMIN_PANEL_VERSION='Admin V5.19';
+const ADMIN_PANEL_VERSION='Admin V5.20';
 const GUARD_FUNCTION_URL='https://swrbpdpotmirnmtqnuba.supabase.co/functions/v1/smooth-function';
 const ADMIN_KEY_STORE='mesaha_admin_guard_key_v505';
 const SESSION_KEY='mesaha_supabase_v500_session';
@@ -276,7 +286,7 @@ const DRIVE_BRIDGE_URL='https://script.google.com/macros/s/AKfycbzOYh2MyOQmwVQh-
 const DRIVE_SECRET='MESAHAYEDEK_2026_YAKUP_43';
 
 const $=id=>document.getElementById(id);
-const state={users:[],backups:[],tickets:[],broadcasts:[],usage:[],logs:[],actionLogs:[],events:[],blocks:[],sources:{},errors:{},ready:false,lastScanMs:0};
+const state={users:[],backups:[],tickets:[],broadcasts:[],usage:[],logs:[],actionLogs:[],events:[],blocks:[],matchStats:{total:0,matched:0,unmatched:0},sources:{},errors:{},ready:false,lastScanMs:0};
 window.MESAHA_ADMIN_STATE=state;
 
 function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
@@ -306,19 +316,80 @@ async function getCol(db,name){const snap=await db.collection(name).get({source:
 async function getColSafe(db,name){try{return await getCol(db,name)}catch(e){state.errors[name]=errText(e);return []}}
 async function bridgePost(action,data){const res=await fetch(DRIVE_BRIDGE_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(Object.assign({secret:DRIVE_SECRET,action},data||{})),redirect:'follow',cache:'no-store'});const txt=await res.text();let j={};try{j=JSON.parse(txt)}catch(e){throw new Error('Drive cevabı okunamadı')};if(!res.ok||!j.ok)throw new Error(j.error||('Drive hata '+res.status));return j}
 
-function mapProfile(r){r=r||{};const d=r.device_info||r.deviceInfo||{};const payload=r.payload||{};const name=clean(r.name||payload.name||payload.userName||'');const seflik=clean(r.seflik||r.seflik_name||payload.seflik||'');const ms=dateMs(r.updated_at||r.last_seen_at||payload.updatedAt||payload.lastSeen)||Date.now();return {id:r.user_key||r.user_id||r.id||userKey(name,seflik),userKey:r.user_key||userKey(name,seflik),name:name||'Kullanıcı',seflik,bolmeNo:r.bolme_no||payload.bolmeNo||'',appVersion:r.app_version||payload.appVersion||payload.version||'',fileVersion:r.file_version||payload.fileVersion||'',deviceId:d.deviceId||d.installId||d.id||r.device_id||'',deviceInfo:d,lastDevice:[d.os,d.browser,d.screen].filter(Boolean).join(' • ')||d.platform||'',deviceType:d.deviceType||'',os:d.os||'',browser:d.browser||'',screen:d.screen||'',lastSeen:r.updated_at||r.last_seen_at||payload.updatedAt||'',lastSeenMs:ms,updatedAtMs:ms,recordCount:Number(r.record_count||payload.recordCount||payload.totalRecords||0)||0,m3:Number(r.total_volume||payload.m3||payload.totalM3||0)||0,source:'profile'}}
 
-function mapUsage(r){r=r||{};const p=r.payload||r;const name=clean(p.name||p.userName||p.user&&p.user.name||'');const seflik=clean(p.seflik||p.user&&p.user.seflik||'');const ms=dateMs(r.updated_at||r.last_seen_at||p.updatedAt||p.lastSeen||p.createdAt)||Date.now();return {id:p.userKey||r.user_id||r.id||userKey(name,seflik),userKey:p.userKey||p.user_key||userKey(name,seflik),name:name||p.userKey||'Kullanıcı',seflik,bolmeNo:p.bolmeNo||'',appVersion:r.app_version||p.appVersion||p.version||'',deviceId:p.deviceId||p.installId||p.lastDeviceInfo&&p.lastDeviceInfo.deviceId||'',deviceInfo:p.lastDeviceInfo||{},lastDevice:p.lastDevice||'',lastSeen:p.lastSeen||r.last_seen_at||r.updated_at||'',lastSeenMs:ms,updatedAtMs:ms,recordCount:Number(r.record_count||p.recordCount||p.totalRecords||0)||0,m3:Number(r.total_volume||p.m3||p.totalM3||0)||0,todayRecords:Number(p.todayRecords||0)||0,usageMs:Number(p.usageMs||0)||0,source:'usage'}}
+function firstNonEmpty(){for(let i=0;i<arguments.length;i++){const v=arguments[i];if(v!=null&&String(v).trim()!=='')return v}return ''}
+function compactId(v){return clean(v).toLocaleLowerCase('tr-TR').normalize('NFKD').replace(/[\u0300-\u036f]/g,'').replace(/[^\w]+/g,'')}
+function sameLooseId(a,b){a=compactId(a);b=compactId(b);if(!a||!b)return false;if(a===b)return true;if(a.length>=12&&b.length>=12&&(a.includes(b)||b.includes(a)))return true;return false}
+function splitMaybe(v){return clean(v).split(/[,;|\s]+/).map(clean).filter(Boolean)}
+function userDeviceIds(u){
+  const d=u&&u.deviceInfo||{};
+  return [
+    u&&u.deviceId,u&&u.installId,u&&u.uid,u&&u.sessionId,
+    d.deviceId,d.device_id,d.installId,d.install_id,d.installID,d.id,d.uid,d.sessionId,
+    d.clientId,d.client_id,d.fingerprint,d.deviceFingerprint
+  ].concat(splitMaybe(u&&u.deviceIds)).filter(Boolean);
+}
+function userIpIds(u){
+  const d=u&&u.deviceInfo||{};
+  return [u&&u.ip,u&&u.lastIp,u&&u.ip_address,u&&u.ipAddress,d.ip,d.ip_address,d.ipAddress,d.lastIp].concat(splitMaybe(u&&u.ips)).filter(Boolean);
+}
+function eventNested(e){return (e&&(e.payload||e.meta||e.metadata||e.data))||{}}
+function normalizeName(v){return compactId(clean(v).replace(/[_-]+/g,' '))}
+function userNameKey(u){return normalizeName((u&&u.name)||'')+'__'+normalizeName((u&&u.seflik)||'')}
+function mapProfile(r){r=r||{};const payload=r.payload||r.profile||{};const d=r.device_info||r.deviceInfo||payload.deviceInfo||payload.lastDeviceInfo||payload.device_info||{};const name=clean(firstNonEmpty(r.name,r.user_name,r.username,r.displayName,payload.name,payload.userName,payload.username,payload.user&&payload.user.name));const seflik=clean(firstNonEmpty(r.seflik,r.seflik_name,r.sheflik,r.birim,payload.seflik,payload.seflik_name,payload.sheflik,payload.user&&payload.user.seflik));const deviceId=clean(firstNonEmpty(r.device_id,r.deviceId,r.install_id,r.installId,payload.device_id,payload.deviceId,payload.install_id,payload.installId,d.deviceId,d.device_id,d.installId,d.install_id,d.installID,d.id,d.uid));const ip=clean(firstNonEmpty(r.ip_address,r.ipAddress,r.ip,r.last_ip,r.lastIp,payload.ip_address,payload.ipAddress,payload.ip,payload.lastIp,d.ip_address,d.ipAddress,d.ip,d.lastIp));const ms=dateMs(firstNonEmpty(r.updated_at,r.last_seen_at,r.created_at,payload.updatedAt,payload.lastSeen,payload.createdAt))||Date.now();return {id:firstNonEmpty(r.user_key,r.userKey,r.user_id,r.id,userKey(name,seflik)),userKey:firstNonEmpty(r.user_key,r.userKey,payload.userKey,payload.user_key,userKey(name,seflik)),name:name||'Kullanıcı',seflik,bolmeNo:firstNonEmpty(r.bolme_no,r.bolmeNo,payload.bolmeNo,payload.bolme_no),appVersion:firstNonEmpty(r.app_version,r.appVersion,payload.appVersion,payload.visibleVersion,payload.version),fileVersion:firstNonEmpty(r.file_version,r.fileVersion,payload.fileVersion),deviceId,installId:firstNonEmpty(r.install_id,r.installId,payload.install_id,payload.installId,d.installId,d.install_id),deviceInfo:d,lastDevice:[firstNonEmpty(d.os,r.os),firstNonEmpty(d.browser,r.browser),firstNonEmpty(d.screen,r.screen)].filter(Boolean).join(' • ')||d.platform||'',deviceType:firstNonEmpty(r.device_type,r.deviceType,d.deviceType,d.device_type),os:firstNonEmpty(r.os,d.os),browser:firstNonEmpty(r.browser,d.browser),screen:firstNonEmpty(r.screen,d.screen),ip,lastIp:ip,lastSeen:firstNonEmpty(r.updated_at,r.last_seen_at,payload.updatedAt,payload.lastSeen),lastSeenMs:ms,updatedAtMs:ms,recordCount:Number(firstNonEmpty(r.record_count,r.total_records,payload.recordCount,payload.totalRecords,0))||0,m3:Number(firstNonEmpty(r.total_volume,r.totalM3,payload.m3,payload.totalM3,0))||0,source:'profile',raw:r}}
+
+function mapUsage(r){r=r||{};const p=r.payload||r;const ldi=p.lastDeviceInfo||p.deviceInfo||p.device_info||{};const name=clean(firstNonEmpty(p.name,p.userName,p.username,p.user&&p.user.name,r.name,r.user_name));const seflik=clean(firstNonEmpty(p.seflik,p.sheflik,p.user&&p.user.seflik,r.seflik,r.seflik_name));const deviceId=clean(firstNonEmpty(p.deviceId,p.device_id,p.installId,p.install_id,ldi.deviceId,ldi.device_id,ldi.installId,ldi.install_id,r.device_id,r.deviceId));const ip=clean(firstNonEmpty(p.ip,p.ip_address,p.ipAddress,p.lastIp,ldi.ip,ldi.ip_address,ldi.ipAddress,r.ip,r.ip_address));const ms=dateMs(firstNonEmpty(r.updated_at,r.last_seen_at,p.updatedAt,p.lastSeen,p.createdAt))||Date.now();return {id:firstNonEmpty(p.userKey,p.user_key,r.user_key,r.user_id,r.id,userKey(name,seflik)),userKey:firstNonEmpty(p.userKey,p.user_key,r.user_key,userKey(name,seflik)),name:name||p.userKey||'Kullanıcı',seflik,bolmeNo:firstNonEmpty(p.bolmeNo,p.bolme_no),appVersion:firstNonEmpty(r.app_version,p.appVersion,p.visibleVersion,p.version),fileVersion:firstNonEmpty(p.fileVersion,p.file_version),deviceId,installId:firstNonEmpty(p.installId,p.install_id,ldi.installId,ldi.install_id),deviceInfo:ldi,lastDevice:p.lastDevice||'',lastSeen:p.lastSeen||r.last_seen_at||r.updated_at||'',lastSeenMs:ms,updatedAtMs:ms,ip,lastIp:ip,recordCount:Number(firstNonEmpty(r.record_count,p.recordCount,p.totalRecords,0))||0,m3:Number(firstNonEmpty(r.total_volume,p.m3,p.totalM3,0))||0,todayRecords:Number(p.todayRecords||0)||0,usageMs:Number(p.usageMs||0)||0,source:'usage'}}
 function mapBackup(r){r=r||{};const p=r.payload||r;const u=p.user||{};const name=clean(r.name||p.name||u.name||'');const seflik=clean(r.seflik||p.seflik||u.seflik||'');const key=p.userKey||p.user_key||r.user_key||userKey(name,seflik);const ms=Number(p.createdAtMs||r.createdAtMs||0)||dateMs(p.createdAt||r.created_at||r.updated_at)||Date.now();return {id:r.id||('supa_'+clean(r.user_id||key)+'_'+clean(r.slot_id||ms)),source:r.source||'supabase',slotId:r.slot_id||p.slotId||'',driveFileId:r.driveFileId||'',userKey:key,name:name||'Kullanıcı',seflik,bolmeNo:p.bolmeNo||u.bolmeNo||r.bolmeNo||'',fileName:r.backup_name||p.fileName||r.fileName||('Mesaha_Bulut_Yedek_'+(r.slot_id||'latest')+'.json'),recordCount:Number(r.record_count||p.recordCount||p.count||0)||0,totalRecords:Number(r.record_count||p.totalRecords||p.count||0)||0,m3:Number(r.total_volume||p.m3||p.totalVolume||0)||0,createdAt:p.createdAt||r.created_at||r.updated_at||'',createdAtMs:ms,updatedAt:r.updated_at||'',updatedAtMs:dateMs(r.updated_at)||ms,appVersion:p.appVersion||r.app_version||p.version||'',fileVersion:p.fileVersion||p.version||'',payload:p,raw:r}}
 function mapDriveBackup(x){return {id:'drive_'+x.id,source:'google-drive',driveFileId:x.id,fileName:x.name||'Drive yedeği',name:x.username||'',seflik:x.seflik||'',bolmeNo:x.bolme||'',userKey:x.userKey||userKey(x.username,x.seflik),recordCount:Number(x.count||0)||0,totalRecords:Number(x.count||0)||0,m3:Number(x.totalVolume||0)||0,createdAt:x.createdAt||'',createdAtMs:dateMs(x.createdAt)||0,appVersion:x.version||'',fileVersion:x.version||'',driveLink:'https://drive.google.com/file/d/'+encodeURIComponent(x.id)+'/view'}}
 function mapLog(r){r=r||{};const p=r.payload||r;const msg=clean(p.message||r.message||p.text||'');const name=clean(p.name||p.userName||p.user&&p.user.name||'');const seflik=clean(p.seflik||p.user&&p.user.seflik||'');const ms=Number(p.createdAtMs||r.createdAtMs||0)||dateMs(p.createdAt||r.created_at||r.updated_at)||Date.now();return {id:r.id||p.id||('log_'+ms),userKey:p.userKey||p.user_key||userKey(name,seflik),name,seflik,message:msg,status:p.status||r.status||'new',createdAt:p.createdAt||r.created_at||'',createdAtMs:ms,adminReply:p.adminReply||p.reply||'',level:p.level||r.level||'',source:'log',raw:r}}
-function mapEvent(x){x=x||{};return Object.assign({},x,{ip_address:clean(x.ip_address||x.ip||''),device_id:clean(x.device_id||x.deviceId||''),user_key:clean(x.user_key||x.userKey||''),name:clean(x.name||x.user_name||''),seflik:clean(x.seflik||''),app_version:clean(x.app_version||x.version||''),created_at:x.created_at||x.createdAt||x.time||'',blocked:x.blocked===true||x.allowed===false})}
+function mapEvent(x){x=x||{};const p=eventNested(x);const u=x.user||x.profile||p.user||p.profile||{};const d=x.device||p.device||p.deviceInfo||p.lastDeviceInfo||{};return Object.assign({},x,{ip_address:clean(firstNonEmpty(x.ip_address,x.ipAddress,x.ip,p.ip_address,p.ipAddress,p.ip,d.ip_address,d.ipAddress,d.ip)),device_id:clean(firstNonEmpty(x.device_id,x.deviceId,x.install_id,x.installId,p.device_id,p.deviceId,p.install_id,p.installId,d.device_id,d.deviceId,d.install_id,d.installId,d.id)),user_key:clean(firstNonEmpty(x.user_key,x.userKey,x.user_id,x.userId,p.user_key,p.userKey,p.user_id,p.userId,u.user_key,u.userKey,u.id)),name:clean(firstNonEmpty(x.name,x.user_name,x.username,x.displayName,p.name,p.user_name,p.username,p.userName,u.name,u.userName,u.username)),seflik:clean(firstNonEmpty(x.seflik,x.seflik_name,x.sheflik,x.birim,p.seflik,p.seflik_name,p.sheflik,p.birim,u.seflik,u.seflik_name,u.birim)),app_version:clean(firstNonEmpty(x.app_version,x.appVersion,x.version,p.app_version,p.appVersion,p.visibleVersion,p.version)),created_at:firstNonEmpty(x.created_at,x.createdAt,x.time,p.created_at,p.createdAt,p.time),blocked:x.blocked===true||x.allowed===false||/block|ban|denied/i.test(String(x.event_type||p.event_type||'')),raw_payload:p})}
 
-function mergeUsers(arr){const map=new Map();(arr||[]).forEach(u=>{const k=userKeyOf(u);if(!k)return;const old=map.get(k)||{};const newer=n(u.lastSeenMs||u.updatedAtMs)>=n(old.lastSeenMs||old.updatedAtMs);const out=Object.assign({},old);['userKey','name','seflik','bolmeNo'].forEach(key=>{if(!out[key]&&u[key])out[key]=u[key]});if(newer){['appVersion','fileVersion','deviceId','deviceInfo','lastDevice','deviceType','os','browser','screen','lastSeen','lastSeenMs','updatedAtMs','usageMs','todayRecords'].forEach(key=>{if(u[key]!=null&&u[key]!=='')out[key]=u[key]})}if(n(u.recordCount)>n(out.recordCount))out.recordCount=n(u.recordCount);if(n(u.totalRecords)>n(out.recordCount))out.recordCount=n(u.totalRecords);if(n(u.m3)>n(out.m3))out.m3=n(u.m3);out.sources=Array.from(new Set([...(out.sources||[]),u.source].filter(Boolean)));map.set(k,out)});return [...map.values()].filter(u=>u.name||u.seflik).sort((a,b)=>n(b.lastSeenMs||b.updatedAtMs)-n(a.lastSeenMs||a.updatedAtMs))}
+function mergeUsers(arr){const map=new Map();(arr||[]).forEach(u=>{const k=userKeyOf(u);if(!k)return;const old=map.get(k)||{};const newer=n(u.lastSeenMs||u.updatedAtMs)>=n(old.lastSeenMs||old.updatedAtMs);const out=Object.assign({},old);['userKey','name','seflik','bolmeNo'].forEach(key=>{if(!out[key]&&u[key])out[key]=u[key]});if(newer){['appVersion','fileVersion','deviceId','installId','deviceInfo','lastDevice','deviceType','os','browser','screen','ip','lastIp','lastSeen','lastSeenMs','updatedAtMs','usageMs','todayRecords'].forEach(key=>{if(u[key]!=null&&u[key]!=='')out[key]=u[key]})}if(n(u.recordCount)>n(out.recordCount))out.recordCount=n(u.recordCount);if(n(u.totalRecords)>n(out.recordCount))out.recordCount=n(u.totalRecords);if(n(u.m3)>n(out.m3))out.m3=n(u.m3);out.sources=Array.from(new Set([...(out.sources||[]),u.source].filter(Boolean)));map.set(k,out)});return [...map.values()].filter(u=>u.name||u.seflik).sort((a,b)=>n(b.lastSeenMs||b.updatedAtMs)-n(a.lastSeenMs||a.updatedAtMs))}
 function activeRows(arr){return (arr||[]).filter(x=>x&&x.status!=='archived'&&x.status!=='deleted'&&x.archived!==true&&x.deleted!==true)}
-function findUserForEvent(e){const raw=clean(e.user_key||e.userKey);const dev=clean(e.device_id||e.deviceId);const name=clean(e.name||e.user_name);const seflik=clean(e.seflik);return state.users.find(u=>(raw&&userKeyOf(u)===raw.toLowerCase())||(dev&&clean(u.deviceId||u.deviceInfo&&u.deviceInfo.deviceId||u.deviceInfo&&u.deviceInfo.installId)===dev)||(name&&seflik&&clean(u.name)===name&&clean(u.seflik)===seflik))||null}
-function eventUser(e){const u=findUserForEvent(e);return clean(e.name||e.user_name)||clean(u&&u.name)||prettyKey(clean(e.user_key||e.userKey))||''}
-function eventSeflik(e){const u=findUserForEvent(e);return clean(e.seflik)||clean(u&&u.seflik)||''}
+function findUserForEvent(e){
+  e=e||{};
+  const raw=clean(e.user_key||e.userKey).toLocaleLowerCase('tr-TR');
+  const dev=clean(e.device_id||e.deviceId);
+  const ip=clean(e.ip_address||e.ip);
+  const name=clean(e.name||e.user_name);
+  const seflik=clean(e.seflik);
+  if(!state._userIndexV520) buildUserIndexV520();
+  const idx=state._userIndexV520||{};
+  const rawVariants=[raw,compactId(raw),raw.replace(/^u:/,'')].filter(Boolean);
+  for(const k of rawVariants){if(idx.byKey&&idx.byKey[k]){e._matchV520='user_key';return idx.byKey[k]}}
+  for(const u of state.users){
+    if(dev&&userDeviceIds(u).some(id=>sameLooseId(id,dev))){e._matchV520='device';return u}
+  }
+  const nk=normalizeName(name)+'__'+normalizeName(seflik);
+  if(name&&seflik&&idx.byName&&idx.byName[nk]){e._matchV520='name_seflik';return idx.byName[nk]}
+  if(raw&&raw.includes('__')){
+    const parts=raw.split('__');const rk=normalizeName(parts[0])+'__'+normalizeName(parts.slice(1).join('__'));
+    if(idx.byName&&idx.byName[rk]){e._matchV520='raw_name_seflik';return idx.byName[rk]}
+  }
+  const onlyName=normalizeName(name||prettyKey(raw));
+  if(onlyName&&idx.byOnlyName&&idx.byOnlyName[onlyName]&&idx.byOnlyName[onlyName].length===1){e._matchV520='unique_name';return idx.byOnlyName[onlyName][0]}
+  if(ip){
+    const hits=state.users.filter(u=>userIpIds(u).some(x=>sameLooseId(x,ip)));
+    if(hits.length===1){e._matchV520='ip';return hits[0]}
+  }
+  e._matchV520='';
+  return null;
+}
+function buildUserIndexV520(){
+  const byKey={},byName={},byOnlyName={};
+  (state.users||[]).forEach(u=>{
+    const keys=[userKeyOf(u),u.userKey,u.id,u.user_id,u.uid].filter(Boolean);
+    keys.forEach(k=>{byKey[clean(k).toLocaleLowerCase('tr-TR')]=u;byKey[compactId(k)]=u});
+    userDeviceIds(u).forEach(d=>{if(d){byKey['dev_'+compactId(d)]=u}});
+    const nk=userNameKey(u);if(nk!=='__')byName[nk]=u;
+    const on=normalizeName(u.name);if(on){if(!byOnlyName[on])byOnlyName[on]=[];byOnlyName[on].push(u)}
+  });
+  state._userIndexV520={byKey,byName,byOnlyName};
+}
+function computeMatchStatsV520(){let total=0,matched=0;(state.events||[]).forEach(e=>{if(eventKey(e)){total++; if(findUserForEvent(e))matched++;}});state.matchStats={total,matched,unmatched:Math.max(0,total-matched)};return state.matchStats}
+function eventUser(e){const u=findUserForEvent(e);return clean(e&&e.name||e&&e.user_name)||clean(u&&u.name)||prettyKey(clean(e&&e.user_key||e&&e.userKey))||''}
+function eventSeflik(e){const u=findUserForEvent(e);return clean(e&&e.seflik)||clean(u&&u.seflik)||''}
+function eventMatchLabelV520(e){findUserForEvent(e);const m=e&&e._matchV520;return m==='user_key'?'Kullanıcı anahtarı eşleşti':m==='device'?'Cihaz ID eşleşti':m==='name_seflik'||m==='raw_name_seflik'?'İsim/şeflik eşleşti':m==='unique_name'?'Tekil isim eşleşti':m==='ip'?'IP eşleşti':'Eşleşme yok'}
 function prettyKey(k){k=clean(k);if(!k||k==='-'||/^_+$/.test(k))return '';return k.split('__')[0].replace(/[_-]+/g,' ').trim()}
 function eventKey(e){const user=eventUser(e),sef=eventSeflik(e),raw=clean(e.user_key||e.userKey),dev=clean(e.device_id||e.deviceId);if(!user&&!sef&&!raw)return '';return 'u:'+(raw||user)+'|s:'+sef+'|d:'+dev}
 function userBackups(k){return state.backups.filter(b=>userKeyOf(b)===k)}
@@ -363,11 +434,14 @@ async function loadAll(){
     }
     const drive=await loadDriveBackups();
     state.users=mergeUsers([...profiles,...usage,...backups]);
+    state._userIndexV520=null;
     state.backups=activeRows([...backups,...drive]).sort((a,b)=>n(b.createdAtMs||b.updatedAtMs)-n(a.createdAtMs||a.updatedAtMs));
     state.tickets=activeRows(tickets).filter(t=>t.message).sort((a,b)=>n(b.createdAtMs)-n(a.createdAtMs));
     state.usage=usage; state.logs=logs; state.broadcasts=activeRows(broadcasts||[]).sort((a,b)=>n(b.createdAtMs)-n(a.createdAtMs));
     try{const ev=await guardCall('admin_list_events',{limit:1000});state.events=(ev.items||[]).map(mapEvent);state.sources.events=true}catch(e){state.errors.events=errText(e);state.events=[]}
     try{const bl=await guardCall('admin_list_blocks',{});state.blocks=bl.items||[];state.sources.blocks=true}catch(e){state.errors.blocks=errText(e);state.blocks=[]}
+    state.lastSyncText=new Date().toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'});
+    computeMatchStatsV520();
     state.ready=true; state.lastScanMs=Date.now();
     setSync('Veri okundu • Kullanıcı:'+state.users.length+' • Yedek:'+state.backups.length+' • Destek:'+state.tickets.length);
     fillFilters(); renderAll();
@@ -375,7 +449,7 @@ async function loadAll(){
     state.ready=false; setSync('Okuma hatası: '+errText(e)); toast(errText(e));
   }finally{$('refreshBtn').disabled=false}
 }
-function setSync(t){const el=$('versionPill');if(el)el.textContent=ADMIN_PANEL_VERSION+' • '+appVersion()+' • '+t}
+function setSync(t){const el=$('versionPill');if(el)el.textContent=ADMIN_PANEL_VERSION+' • '+appVersion()+' • '+t;const s=$('syncMiniV520');if(s)s.textContent='Son senkron: '+(state.lastSyncText||'bekleniyor')+' • '+t}
 
 function fillFilters(){const sel=$('seflikFilter');const cur=sel.value;const vals=[...new Set(state.users.map(u=>u.seflik).filter(Boolean))].sort((a,b)=>String(a).localeCompare(String(b),'tr'));sel.innerHTML='<option value="">Tüm Şeflikler</option>'+vals.map(v=>'<option value="'+esc(v)+'">'+esc(v)+'</option>').join('');sel.value=cur}
 
@@ -385,7 +459,7 @@ function renderOverview(){
   $('sumDevices').textContent=int(state.users.length);$('sumDevicesSub').textContent='● '+int(activeNow())+' çevrimiçi';
   $('sumBackups').textContent=int(state.backups.length);$('sumBackupsSub').textContent='Son 24 saatte '+int(backups24());
   const activeBlocks=state.blocks.filter(b=>b.active!==false);$('sumBlocks').textContent=int(activeBlocks.length);$('sumBlocksSub').textContent=activeBlocks.length?'İnceleme gerekli':'Engel yok';
-  const s=suspiciousCount();$('threatCount').textContent=int(s);$('lastScan').textContent=ago(state.lastScanMs);$('updateState').textContent=oldUsers().length?'Eski Sürüm':'Güncel';$('updateVersion').textContent=appVersion().replace('•ExelanceX•','').trim();$('statusPill').textContent=s?'● İncele':'● Normal';$('statusPill').style.color=s?'#b45309':'#166534';$('securityNotice').innerHTML='<div class="ok">✓</div><div>'+(s?'Sistemde '+int(s)+' şüpheli iz bulundu. Güvenlik sekmesinden incele.':'Sisteminiz güvende. Herhangi bir kritik tehdit tespit edilmedi.')+'</div>';
+  const s=suspiciousCount();$('threatCount').textContent=int(s);$('lastScan').textContent=ago(state.lastScanMs);$('updateState').textContent=oldUsers().length?'Eski Sürüm':'Güncel';$('updateVersion').textContent=appVersion().replace('•ExelanceX•','').trim();$('statusPill').textContent=s?'● İncele':'● Normal';$('statusPill').style.color=s?'#b45309':'#166534';if($('sumSyncTimeV520'))$('sumSyncTimeV520').textContent=state.lastSyncText||'-';if($('sumSyncSubV520'))$('sumSyncSubV520').textContent='IP eşleşme '+int((state.matchStats&&state.matchStats.matched)||0)+'/'+int((state.matchStats&&state.matchStats.total)||0);$('securityNotice').innerHTML='<div class="ok">✓</div><div>'+(s?'Sistemde '+int(s)+' şüpheli iz bulundu. Güvenlik sekmesinden incele.':'Sisteminiz güvende. Herhangi bir kritik tehdit tespit edilmedi.')+'</div>';
   renderEventList($('overviewEvents'),state.events,3,true);
   renderBackupList($('overviewBackups'),state.backups.slice(0,1),true);
   updateRiskPanels();
@@ -396,7 +470,7 @@ function renderEventList(el,items,limit,compact){const {groups,system}=eventGrou
 function eventCard(arr,i,compact){const e=arr[0]||{},user=eventUser(e)||'—',sef=eventSeflik(e)||'—',ip=clean(e.ip_address)||'-',dev=clean(e.device_id)||'-',raw=clean(e.user_key||e.userKey),warn=e.blocked||/block|ban/i.test(e.event_type||'');return `<div class="activity-card">
   <div class="activity-main">
     <div class="activity-head"><span class="dot ${warn?'warn':''}"></span><span class="avatar light">👤</span><span class="activity-name">${esc(user+' • '+sef)}</span><span class="badge ${warn?'warn':''}">${warn?'Şüpheli':'İzin verildi'}</span></div>
-    <div class="meta"><div>IP: <span class="mono">${esc(ip)}</span> • Cihaz: ${esc(dev)}</div><div>Sürüm: ${esc(normalizeVersion(e.app_version))} • ${esc(e.created_at||'-')}</div></div>
+    <div class="meta"><div>IP: <span class="mono">${esc(ip)}</span> • Cihaz: ${esc(dev)}</div><div>Sürüm: ${esc(normalizeVersion(e.app_version))} • ${esc(e.created_at||'-')}</div><div><span class="match-debug-v520 ${findUserForEvent(e)?'ok':'warn'}">${esc(eventMatchLabelV520(e))}</span></div></div>
   </div>
   <div class="actions">
     ${ip&&ip!=='-'?`<button class="btn danger" data-ban-ip="${esc(ip)}" data-ban-user="${esc(raw)}" data-ban-device="${esc(dev)}" type="button">IP + Kullanıcı Ban</button>`:''}
@@ -485,7 +559,7 @@ function downloadRiskReportV519(){
   downloadJson('mesaha_admin_risk_raporu_v519.json',payload);
 }
 function renderOperationCenterV519(){
-  if($('operationStatusV519'))$('operationStatusV519').textContent=riskUsersV519().length+' riskli';
+  if($('operationStatusV519'))$('operationStatusV519').textContent=riskUsersV519().length+' riskli • IP '+int((state.matchStats&&state.matchStats.matched)||0)+'/'+int((state.matchStats&&state.matchStats.total)||0);
   if($('operationListV519')){
     const arr=riskUsersV519().slice(0,12);
     $('operationListV519').innerHTML=arr.length?arr.map(x=>{const k=userKeyOf(x.u),cls=x.info.score<55?'bad':'warn';return `<div class="risk-user-v519"><div class="top"><div><b>${esc(x.u.name||'Kullanıcı')} • ${esc(x.u.seflik||'-')}</b><small>${esc(x.info.reasons.join(' • ')||'Kontrol gerekli')}</small></div><span class="risk-chip-v519 ${cls}">${esc(x.info.level)} • ${int(x.info.score)}</span></div><div class="row"><button class="btn soft" data-user-detail="${esc(k)}" type="button">Detay</button><button class="btn warn" data-user-warning="${esc(k)}" type="button">Yedek Uyarısı</button><button class="btn soft" data-user-update-warning-v519="${esc(k)}" type="button">Güncelleme Uyarısı</button></div></div>`}).join(''):'<div class="empty">Riskli kullanıcı görünmüyor.</div>';
@@ -506,7 +580,7 @@ function fillBroadcastSeflikV519(){
 }
 
 function renderTools(){fillBroadcastSeflikV519();renderOperationCenterV519();const arr=state.broadcasts||[];$('broadcastList').innerHTML=arr.length?arr.slice(0,30).map(b=>`<div class="ticket"><div class="section-head"><div><h3>${esc(b.title||'Duyuru')}</h3><p>${esc(b.createdAt||'-')} • ${int((b.targetUserKeys||[]).length||b.targetCount)} kullanıcı</p></div><button class="btn danger" data-broadcast-delete="${esc(b.id)}" type="button">Sil</button></div><p>${esc(b.message||'-')}</p></div>`).join(''):'<div class="empty">Aktif duyuru yok.</div>'}
-function renderSecurity(){updateRiskPanels();renderEventList($('eventsList'),state.events,999,false);$('blocksList').innerHTML=state.blocks.filter(b=>b.active!==false).length?state.blocks.filter(b=>b.active!==false).map(b=>`<div class="activity-card"><div><span class="badge red">${esc(b.block_type||'engel')}</span> <b>${esc(b.block_value||'-')}</b><div class="meta">${esc(b.reason||'-')} • ${esc(b.created_at||'-')}</div></div><button class="btn soft" data-remove-block="${esc(b.id)}" type="button">Engeli Kaldır</button></div>`).join(''):'<div class="empty">Aktif engel yok.</div>'}
+function renderSecurity(){updateRiskPanels();computeMatchStatsV520();renderEventList($('eventsList'),state.events,999,false);$('blocksList').innerHTML=state.blocks.filter(b=>b.active!==false).length?state.blocks.filter(b=>b.active!==false).map(b=>`<div class="activity-card"><div><span class="badge red">${esc(b.block_type||'engel')}</span> <b>${esc(b.block_value||'-')}</b><div class="meta">${esc(b.reason||'-')} • ${esc(b.created_at||'-')}</div></div><button class="btn soft" data-remove-block="${esc(b.id)}" type="button">Engeli Kaldır</button></div>`).join(''):'<div class="empty">Aktif engel yok.</div>'}
 
 
 function riskInfo(){
