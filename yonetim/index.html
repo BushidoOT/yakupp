@@ -208,12 +208,18 @@ body:after{width:420px;height:420px;right:-90px;top:140px;background:radial-grad
   .tab{font-size:11px}
 }
 
+
+/* V524 IP senkron düzeltmesi */
+.sync-source-v524{display:inline-flex;align-items:center;gap:6px;padding:5px 8px;border-radius:999px;background:#eef6ff;border:1px solid #bfdbfe;color:#1d4ed8;font-size:12px;font-weight:1000}
+.activity-card.sync-event-v524{border-color:#bfdbfe;background:linear-gradient(180deg,#f8fbff,#fff)}
+.activity-card.sync-event-v524 .dot{background:#2563eb;box-shadow:0 0 0 5px #dbeafe}
+
 </style>
 </head>
 <body>
 <div class="app">
   <header class="top">
-    <div class="brand"><img alt="" src="../assets/mesaha_logo.png"/><div><b>Mesaha İO Yönetim</b><small>Kurtarma ve Güvenlik Merkezi</small><div class="version-pill" id="versionPill">Admin V5.23 • Sürüm hazırlanıyor</div><div class="sync-mini-v520" id="syncMiniV520">Son senkron bekleniyor</div></div></div>
+    <div class="brand"><img alt="" src="../assets/mesaha_logo.png"/><div><b>Mesaha İO Yönetim</b><small>Kurtarma ve Güvenlik Merkezi</small><div class="version-pill" id="versionPill">Admin V5.24 • Sürüm hazırlanıyor</div><div class="sync-mini-v520" id="syncMiniV520">Son senkron bekleniyor</div></div></div>
     <div class="top-actions"><button class="btn soft" id="appBtn" type="button">↗ Uygulama</button><button class="btn green" id="refreshBtn" type="button">⟳ Yenile</button></div>
   </header>
 
@@ -439,7 +445,7 @@ body:after{width:420px;height:420px;right:-90px;top:140px;background:radial-grad
 
 const ADMIN_USER='yakupduzgun';
 const ADMIN_SEFLIK='Yaylacık_43';
-const ADMIN_PANEL_VERSION='Admin V5.23';
+const ADMIN_PANEL_VERSION='Admin V5.24';
 const GUARD_FUNCTION_URL='https://swrbpdpotmirnmtqnuba.supabase.co/functions/v1/smooth-function';
 const ADMIN_KEY_STORE='mesaha_admin_guard_key_v505';
 const SESSION_KEY='mesaha_supabase_v500_session';
@@ -570,6 +576,89 @@ function noBackupUsers(){return state.users.filter(u=>!userBackups(userKeyOf(u))
 function suspiciousCount(){return state.events.filter(e=>e.blocked||/spam|stress|simulasyon|ban|block/i.test([e.event_type,e.reason,e.name,e.user_key].join(' '))).length}
 async function loadDriveBackups(){try{const j=await bridgePost('adminList',{username:ADMIN_USER,seflik:ADMIN_SEFLIK});return (j.items||[]).map(mapDriveBackup)}catch(e){state.errors.drive=errText(e);return []}}
 
+
+function eventDateIsoV524(ms,txt){
+  if(txt) return txt;
+  ms=n(ms)||Date.now();
+  try{return new Date(ms).toISOString()}catch(e){return new Date().toISOString()}
+}
+function latestBackupByUserV524(){
+  const map={};
+  (state.backups||[]).forEach(b=>{
+    const k=userKeyOf(b);
+    if(!k)return;
+    if(!map[k]||n(b.createdAtMs||b.updatedAtMs)>n(map[k].createdAtMs||map[k].updatedAtMs)) map[k]=b;
+  });
+  return map;
+}
+function synthesizeIpEventsV524(){
+  const out=[];
+  const latestBackup=latestBackupByUserV524();
+  (state.users||[]).forEach(u=>{
+    const k=userKeyOf(u);
+    if(!k)return;
+    const b=latestBackup[k]||null;
+    const last=n(u.lastSeenMs||u.updatedAtMs)||n(b&&b.createdAtMs)||Date.now();
+    out.push(mapEvent({
+      id:'sync_user_'+k,
+      event_type:'user_sync',
+      synthetic:true,
+      sync_source:'users',
+      created_at:eventDateIsoV524(last,u.lastSeen),
+      ip_address:firstNonEmpty(u.ip,u.lastIp,u.ip_address,u.ipAddress),
+      device_id:firstNonEmpty(u.deviceId,u.installId,u.deviceInfo&&u.deviceInfo.deviceId,u.deviceInfo&&u.deviceInfo.installId),
+      user_key:k,
+      name:u.name||'Kullanıcı',
+      seflik:u.seflik||'',
+      app_version:firstNonEmpty(u.appVersion,u.fileVersion),
+      reason:'Kullanıcı senkron kaydı'
+    }));
+    if(b){
+      out.push(mapEvent({
+        id:'sync_backup_'+(b.id||k),
+        event_type:'backup_sync',
+        synthetic:true,
+        sync_source:b.source||'backup',
+        created_at:eventDateIsoV524(b.createdAtMs||b.updatedAtMs,b.createdAt||b.updatedAt),
+        ip_address:firstNonEmpty(b.ip,b.ip_address,b.ipAddress,u.ip,u.lastIp),
+        device_id:firstNonEmpty(b.deviceId,b.device_id,b.installId,u.deviceId,u.installId,u.deviceInfo&&u.deviceInfo.deviceId),
+        user_key:k,
+        name:b.name||u.name||'Kullanıcı',
+        seflik:b.seflik||u.seflik||'',
+        app_version:firstNonEmpty(b.appVersion,b.fileVersion,u.appVersion,u.fileVersion),
+        reason:'Yedek senkron kaydı'
+      }));
+    }
+  });
+  return out;
+}
+function eventUniqueKeyV524(e){
+  e=e||{};
+  const t=clean(e.event_type||e.type);
+  const k=clean(e.user_key||e.userKey);
+  const d=clean(e.device_id||e.deviceId);
+  const ip=clean(e.ip_address||e.ip);
+  const time=clean(e.created_at||e.createdAt||e.time);
+  return [t,k,d,ip,time].join('|').toLowerCase();
+}
+function mergeEventsV524(edgeEvents, syncEvents){
+  const seen=new Set(), out=[];
+  (edgeEvents||[]).forEach(e=>{const k=eventUniqueKeyV524(e)||('edge_'+out.length); if(!seen.has(k)){seen.add(k);out.push(e)}});
+  (syncEvents||[]).forEach(e=>{
+    const k=eventUniqueKeyV524(e);
+    const user=clean(e.user_key||e.userKey);
+    const exists=(edgeEvents||[]).some(x=>{
+      const xu=clean(x.user_key||x.userKey);
+      const xn=clean(x.name||x.user_name);
+      const xs=clean(x.seflik);
+      return (user&&xu&&user===xu) || (xn&&xs&&xn===clean(e.name)&&xs===clean(e.seflik));
+    });
+    if(!seen.has(k) && !exists){seen.add(k);out.push(e)}
+  });
+  out.sort((a,b)=>String(b.created_at||'').localeCompare(String(a.created_at||'')));
+  return out;
+}
+
 async function loadAll(){
   $('refreshBtn').disabled=true;
   try{
@@ -605,7 +694,10 @@ async function loadAll(){
     state.backups=activeRows([...backups,...drive]).sort((a,b)=>n(b.createdAtMs||b.updatedAtMs)-n(a.createdAtMs||a.updatedAtMs));
     state.tickets=activeRows(tickets).filter(t=>t.message).sort((a,b)=>n(b.createdAtMs)-n(a.createdAtMs));
     state.usage=usage; state.logs=logs; state.broadcasts=activeRows(broadcasts||[]).sort((a,b)=>n(b.createdAtMs)-n(a.createdAtMs));
-    try{const ev=await guardCall('admin_list_events',{limit:1000});state.events=(ev.items||[]).map(mapEvent);state.sources.events=true}catch(e){state.errors.events=errText(e);state.events=[]}
+    let edgeEvents=[];
+    try{const ev=await guardCall('admin_list_events',{limit:3000});edgeEvents=(ev.items||[]).map(mapEvent);state.sources.events=true}catch(e){state.errors.events=errText(e);edgeEvents=[]}
+    state.events=mergeEventsV524(edgeEvents,synthesizeIpEventsV524());
+    state.sources.syncEvents=true;
     try{const bl=await guardCall('admin_list_blocks',{});state.blocks=bl.items||[];state.sources.blocks=true}catch(e){state.errors.blocks=errText(e);state.blocks=[]}
     state.lastSyncText=new Date().toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'});
     computeMatchStatsV520();
@@ -690,7 +782,8 @@ function eventRawPreviewV521(d){
       seflik:displayEventSeflikV523(d)||'-',
       version:d.app_version||d.version||'-',
       match:eventMatchLabelV520(d),
-      admin_event:isAdminEventV522(d)?'Evet':'Hayır'
+      admin_event:isAdminEventV522(d)?'Evet':'Hayır',
+      sync_source:d.synthetic?(d.sync_source||'senkron'):'edge/ip_kaydi'
     };
     return JSON.stringify(o,null,2)
   }catch(e){return ''}
@@ -757,9 +850,9 @@ function eventCard(arr,i,compact){
   const raw=clean(e.user_key||e.userKey);
   const admin=isAdminEventV522(e);
   const warn=!admin&&(e.blocked||/block|ban/i.test(e.event_type||''));
-  return `<div class="activity-card ${admin?'admin-event-v522':''}">
+  return `<div class="activity-card ${admin?'admin-event-v522':''} ${e.synthetic?'sync-event-v524':''}">
   <div class="activity-main">
-    <div class="activity-head"><span class="dot ${warn?'warn':''}"></span><span class="avatar light">${admin?'🛠️':'👤'}</span><span class="activity-name">${esc(user+' • '+sef)}</span><span class="badge ${admin?'':' '+(warn?'warn':'')}">${admin?'Admin kayıt':(warn?'Şüpheli':'İzin verildi')}</span><span class="detail-toggle-v522">${arr.length} kayıt</span></div>
+    <div class="activity-head"><span class="dot ${warn?'warn':''}"></span><span class="avatar light">${admin?'🛠️':'👤'}</span><span class="activity-name">${esc(user+' • '+sef)}</span><span class="badge ${admin?'':' '+(warn?'warn':'')}">${admin?'Admin kayıt':(warn?'Şüpheli':'İzin verildi')}</span><span class="detail-toggle-v522">${arr.length} kayıt</span>${e.synthetic?'<span class="sync-source-v524">Senkron</span>':''}</div>
     <div class="meta"><div>IP: <span class="mono">${esc(ip)}</span> • Cihaz: ${esc(dev)}</div><div>Sürüm: ${esc(normalizeVersion(e.app_version))} • ${esc(e.created_at||'-')}</div><div><span class="match-debug-v520 ${findUserForEvent(e)?'ok':'warn'}">${esc(eventMatchLabelV520(e))}</span></div></div>
   </div>
   <div class="actions">
