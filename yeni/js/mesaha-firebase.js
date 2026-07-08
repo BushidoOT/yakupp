@@ -1,4 +1,4 @@
-/* Mesaha İO V500 — Güvenli Supabase v2 uyumluluk motoru
+/* Mesaha İO V504 — Güvenli Supabase v2 uyumluluk motoru
    Amaç: Eski Firebase/Supabase çağrılarını bozmadan yeni RLS güvenli tablolara yönlendirmek.
    - Anonymous Auth ile gerçek kullanıcı oturumu açar.
    - REST isteklerinde anon key değil access_token kullanır.
@@ -105,7 +105,7 @@
     if(table==='mesaha_backup_slots'){
       var slot=safeSlot(id); var p=data.payload || (data.payloadText?safeJson(data.payloadText,{}):data) || data;
       var name=clean(data.fileName||data.backupName||data.backup_name||('Mesaha_Bulut_Yedek_'+slot+'.json')).slice(0,180);
-      return {user_id:userId,slot_id:slot,backup_name:name,record_count:Number(data.recordCount||data.count||0)||0,total_volume:Number(data.totalVolume||data.m3||0)||0,payload:p,archived:false};
+      return {user_id:userId,slot_id:slot,backup_name:name,record_count:Number(data.recordCount||data.count||0)||0,total_volume:Number(data.totalVolume||data.m3||0)||0,payload:p,archived:data.archived===true};
     }
     if(table==='mesaha_backup_chunks'){
       var slotId=safeSlot(parent&&parent.id||'latest');

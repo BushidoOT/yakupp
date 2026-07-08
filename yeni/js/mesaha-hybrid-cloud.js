@@ -1,11 +1,12 @@
-/* Mesaha İO V501 — Hibrit bulut yedekleme
-   Buluta Yedekle: önce güvenli Supabase V2, sonra Google Drive köprüsü.
-   Buluttan Getir: Supabase ve Drive yedeklerini birlikte listeler.
-   Kalıcı silme yoktur. ORBİS/XLS/hacim tarafına dokunmaz. */
+/* Mesaha İO V505 — Güvenlik kontrollü hibrit bulut yedekleme
+   Buluta Yedekle: Edge Function guard + güvenli Supabase V2 + Google Drive.
+   Buluttan Getir: Edge Function guard + iki kaynak birlikte listelenir.
+   Kullanıcı yedek silme: gerçek silme yok; kullanıcı listesinden gizlenir.
+   ORBİS/XLS/hacim tarafına dokunmaz. */
 (function(){
   'use strict';
-  if(window.__mesahaHybridCloudV501) return;
-  window.__mesahaHybridCloudV501 = true;
+  if(window.__mesahaHybridCloudV505) return;
+  window.__mesahaHybridCloudV505 = true;
 
   var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzOYh2MyOQmwVQh-7Jm9KyjaFjmjSwgHZSw7XKAVzDS1ibmcM5bQZVYdn-NyesI-ph7/exec';
   var SECRET = 'MESAHAYEDEK_2026_YAKUP_43';
@@ -15,6 +16,10 @@
   var SLOT_KEY = 'mesaha_supabase_backup_slot_index_v501';
   var DRIVE_CONFIG_KEY = 'mesaha_drive_bridge_url_v463';
   var CHUNK_SIZE = 180;
+  var GUARD_URL = 'https://swrbpdpotmirnmtqnuba.supabase.co/functions/v1/smooth-function';
+  var HIDDEN_KEY = 'mesaha_hidden_cloud_backups_v505';
+  var SESSION_KEY = 'mesaha_supabase_v500_session';
+  var DEVICE_KEY = 'mesaha_supabase_v500_device';
 
   function $(id){ return document.getElementById(id); }
   function clean(v){ return String(v == null ? '' : v).trim(); }
@@ -56,6 +61,37 @@
     return 'slot_'+(n%5);
   }
 
+  function hiddenList(){ var a=jsonGet(HIDDEN_KEY,[]); return Array.isArray(a)?a:[]; }
+  function hiddenKey(source,id,user){ return [source||'cloud', userKey((user||{}).name,(user||{}).seflik), clean(id)].join('::'); }
+  function isHidden(source,id,user){ var k=hiddenKey(source,id,user||readUser()); return hiddenList().indexOf(k)>=0; }
+  function hideBackupLocal(source,id,user){ var arr=hiddenList(), k=hiddenKey(source,id,user||readUser()); if(arr.indexOf(k)<0){ arr.push(k); jsonSet(HIDDEN_KEY,arr.slice(-600)); } }
+  function getSessionToken(){ try{ var s=jsonGet(SESSION_KEY,null); return clean(s&&s.access_token); }catch(e){ return ''; } }
+  function getDeviceId(){ try{ return clean(localStorage.getItem(DEVICE_KEY)||''); }catch(e){ return ''; } }
+  async function guardCheck(action,user,extra){
+    user=user||readUser();
+    try{ await supabaseReady(); }catch(e){ throw e; }
+    var token=getSessionToken();
+    var cfg=window.MESAHA_SUPABASE_CONFIG||{};
+    if(!token) throw new Error('Güvenlik oturumu alınamadı');
+    var body=Object.assign({
+      action:action||'check',
+      userKey:userKey(user.name,user.seflik),
+      name:user.name,
+      seflik:user.seflik,
+      deviceId:getDeviceId(),
+      appVersion:versionText(),
+      source:'mesaha-web-v505'
+    }, extra||{});
+    var res=await fetch(GUARD_URL,{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token,apikey:clean(cfg.anonKey||cfg.anon_key||'')},body:JSON.stringify(body),cache:'no-store'});
+    var txt=await res.text(), json=null;
+    try{ json=txt?JSON.parse(txt):{}; }catch(e){ json={ok:false,error:'Güvenlik cevabı okunamadı'}; }
+    if(!res.ok || !json.ok || json.blocked){
+      var reason=(json&&json.reason)||(json&&json.error)||('Güvenlik kontrolü reddetti '+res.status);
+      throw new Error('Güvenlik engeli: '+reason);
+    }
+    return json;
+  }
+
   async function supabaseReady(){
     if(!window.mesahaSupabaseV380 || typeof window.mesahaSupabaseV380.ready !== 'function') throw new Error('Supabase bağlantı motoru hazır değil');
     return await window.mesahaSupabaseV380.ready();
@@ -81,7 +117,7 @@
       m3:totalM3(list),
       createdAt:trText(),
       createdAtMs:Date.now(),
-      source:'supabase-v2+drive-v501',
+      source:'supabase-v2+drive-v505',
       fileVersion:versionRaw(),
       appVersion:versionText(),
       archived:false
@@ -119,6 +155,7 @@
         raw:d
       });
     });
+    arr=arr.filter(function(x){ return !isHidden('supabase', x.id, readUser()); });
     arr.sort(function(a,b){ return (b.createdAtMs||0)-(a.createdAtMs||0); });
     return arr;
   }
@@ -161,7 +198,7 @@
     var out=await drivePost('list',{userKey:userKey(user.name,user.seflik)});
     return (out.items||[]).map(function(b){
       return {source:'drive', id:b.id, name:b.name||'Drive yedeği', createdAt:b.createdAt||'', createdAtMs:Date.parse(b.createdAt||'')||0, count:Number(b.count||0)||0, totalVolume:Number(b.totalVolume||0)||0, raw:b};
-    }).sort(function(a,b){ return (b.createdAtMs||0)-(a.createdAtMs||0); });
+    }).filter(function(x){ return !isHidden('drive', x.id, user); }).sort(function(a,b){ return (b.createdAtMs||0)-(a.createdAtMs||0); });
   }
   async function readDrive(fileId){
     var user=requireUser();
@@ -174,10 +211,38 @@
     return payload;
   }
 
+  async function deleteSupabase(slotId){
+    if(!slotId) throw new Error('Yedek kimliği eksik');
+    var r=await supabaseReady();
+    await r.db.collection('backups').doc(slotId).set({archived:true,archivedAt:trText(),archivedAtMs:Date.now()},{merge:true});
+    return {ok:true,source:'supabase',id:slotId};
+  }
+  async function deleteDrive(fileId){
+    var user=requireUser();
+    hideBackupLocal('drive',fileId,user);
+    return {ok:true,source:'drive',id:fileId,hidden:true};
+  }
+  async function deleteBackup(source,id){
+    if(!id) return;
+    var label=source==='drive'?'Google Drive':'Supabase';
+    if(!confirm(label+' yedeği listenden gizlensin mi? Gerçek dosya silinmez.')) return;
+    try{
+      var user=readUser();
+      await guardCheck('hide_backup',user,{source:source,slot_id:id});
+      hideBackupLocal(source,id,user);
+      if(source==='supabase') await deleteSupabase(id); else await deleteDrive(id);
+      toast('Yedek gizlendi.', label+' yedeği sadece kullanıcı listenden kaldırıldı.','success');
+      setTimeout(openCloud,250);
+    }catch(e){
+      toast('Yedek silinemedi.', errText(e),'error');
+    }
+  }
+
   async function hybridBackup(){
     var user=requireUser();
     var list=records();
     var payload=backupPayload(user,list);
+    await guardCheck('backup',user,{record_count:list.length,source:'hybrid'});
     setBusy(true,'Buluta yükleniyor…');
     var ok=[], fail=[];
     try{
@@ -192,7 +257,8 @@
   }
 
   async function combinedList(){
-    requireUser();
+    var user=requireUser();
+    await guardCheck('list_backups',user,{source:'hybrid'});
     var sup=[], drv=[], errors=[];
     try{ sup=await listSupabase(); }catch(e){ errors.push('Supabase: '+errText(e)); }
     try{ drv=await listDrive(); }catch(e){ errors.push('Drive: '+errText(e)); }
@@ -212,7 +278,7 @@
       if(info) info.textContent=arr.length+' yedek bulundu'+(data.errors&&data.errors.length?' • '+data.errors.join(' • '):'');
       if(!arr.length){ if(box) box.innerHTML='<div class="cloud-item-v316">Bulutta bu kullanıcıya ait yedek bulunamadı.</div>'; return; }
       if(box) box.innerHTML=arr.slice(0,80).map(function(b){
-        return '<div class="cloud-item-v316 cloud-item-v501"><div><span class="pill '+sourceClass(b.source)+'">'+sourceLabel(b.source)+'</span><b>'+esc(b.name||'Mesaha yedeği')+'</b><small>'+esc(b.createdAt||'-')+' • '+Number(b.count||0).toLocaleString('tr-TR')+' kayıt • '+Number(b.totalVolume||0).toLocaleString('tr-TR',{minimumFractionDigits:3,maximumFractionDigits:3})+' m³</small></div><button class="btn primary" data-hybrid-source-v501="'+esc(b.source)+'" data-hybrid-id-v501="'+esc(b.id)+'" type="button">Bu Yedeği Yükle</button></div>';
+        return '<div class="cloud-item-v316 cloud-item-v504"><div><span class="pill '+sourceClass(b.source)+'">'+sourceLabel(b.source)+'</span><b>'+esc(b.name||'Mesaha yedeği')+'</b><small>'+esc(b.createdAt||'-')+' • '+Number(b.count||0).toLocaleString('tr-TR')+' kayıt • '+Number(b.totalVolume||0).toLocaleString('tr-TR',{minimumFractionDigits:3,maximumFractionDigits:3})+' m³</small></div><div class="cloud-actions-v504"><button class="btn primary" data-hybrid-source-v501="'+esc(b.source)+'" data-hybrid-id-v501="'+esc(b.id)+'" type="button">Bu Yedeği Yükle</button><button class="btn danger" data-hybrid-delete-source-v504="'+esc(b.source)+'" data-hybrid-delete-id-v504="'+esc(b.id)+'" type="button">Sil</button></div></div>';
       }).join('');
     }catch(e){ if(info) info.textContent='Yedekler alınamadı'; if(box) box.innerHTML='<div class="cloud-item-v316">'+esc(errText(e))+'</div>'; }
   }
@@ -220,6 +286,7 @@
     if(!id) return;
     if(!confirm('Bu bulut yedeği mevcut kayıtların yerine yüklenecek. Devam edilsin mi?')) return;
     try{
+      await guardCheck('restore_backup',readUser(),{source:source,slot_id:id});
       var payload = source==='drive' ? await readDrive(id) : await readSupabase(id);
       var recs=payload.records || ((payload.payload||{}).records);
       var st=payload.settings || ((payload.payload||{}).settings);
@@ -241,7 +308,7 @@
     try{
       document.querySelectorAll('#panelAdminOpenV316,[data-admin-open],[data-open-admin],[href*="admin.html"],[href*="yonetim"]').forEach(function(el){ el.remove(); });
     }catch(e){}
-    var sync=$('panelSyncV316'); if(sync) sync.textContent='Supabase + Drive Hazır';
+    var sync=$('panelSyncV316'); if(sync){ sync.textContent=''; sync.style.display='none'; sync.setAttribute('hidden','hidden'); }
     replaceButton('cloudBackupBtnV316','Buluta Yedekle',function(){ hybridBackup().catch(function(e){ toast('Buluta yedeklenemedi.',errText(e),'error'); }); });
     replaceButton('cloudRestoreBtnV316','Buluttan Getir',openCloud);
     replaceButton('panelBackupsV318','Bulut Yedeklerim',openCloud);
@@ -249,15 +316,29 @@
     if(box && !box.__hybridV501){
       box.__hybridV501=true;
       box.addEventListener('click',function(ev){
+        var d=ev.target&&ev.target.closest&&ev.target.closest('[data-hybrid-delete-id-v504]');
+        if(d){ ev.preventDefault(); ev.stopPropagation(); ev.stopImmediatePropagation(); deleteBackup(d.getAttribute('data-hybrid-delete-source-v504'), d.getAttribute('data-hybrid-delete-id-v504')); return; }
         var b=ev.target&&ev.target.closest&&ev.target.closest('[data-hybrid-id-v501]');
         if(b){ ev.preventDefault(); ev.stopPropagation(); ev.stopImmediatePropagation(); restore(b.getAttribute('data-hybrid-source-v501'), b.getAttribute('data-hybrid-id-v501')); }
       },true);
     }
   }
+  function ensureV505Style(){
+    if(document.getElementById('mesaha-v504-user-panel-clean-style')) return;
+    var st=document.createElement('style');
+    st.id='mesaha-v504-user-panel-clean-style';
+    st.textContent='#panelSyncV316,#userPanelCloseV316,#panelCloseInlineV393{display:none!important;visibility:hidden!important;pointer-events:none!important}.cloud-item-v504{grid-template-columns:1fr!important;gap:10px!important}.cloud-actions-v504{display:grid;grid-template-columns:minmax(0,1fr) 86px;gap:8px;margin-top:8px}.cloud-actions-v504 .btn{width:100%;min-height:42px}@media(max-width:520px){.cloud-actions-v504{grid-template-columns:1fr!important}}';
+    document.head.appendChild(st);
+  }
   function expose(){
-    var api={version:'v501',backup:hybridBackup,list:combinedList,openCloudRestore:openCloud,restore:restore,backupSupabase:backupSupabase,backupDrive:backupDrive};
+    ensureV505Style();
+    var api={version:'v505',backup:hybridBackup,list:combinedList,openCloudRestore:openCloud,restore:restore,deleteBackup:deleteBackup,backupSupabase:backupSupabase,backupDrive:backupDrive};
     window.MESAHA_HYBRID_CLOUD_V501=api;
+    window.MESAHA_HYBRID_CLOUD_V505=api;
+    window.MESAHA_HYBRID_CLOUD_V505=api;
     window.mesahaHybridCloudV501=api;
+    window.mesahaHybridCloudV505=api;
+    window.mesahaHybridCloudV505=api;
     window.mesahaPanelV316=window.mesahaPanelV316||{};
     window.mesahaPanelV316.cloudBackup=hybridBackup;
     window.mesahaPanelV316.openCloudRestore=openCloud;
@@ -266,7 +347,7 @@
     if(window.mesahaUserBackupsV318){
       window.mesahaUserBackupsV318.open=openCloud;
       window.mesahaUserBackupsV318.list=combinedList;
-      window.mesahaUserBackupsV318.deleteBackup=function(){ toast('Silme kapalı.','Yedekler korunuyor. Drive’da silinse bile çöp kutusunda kalır.','warning'); };
+      window.mesahaUserBackupsV318.deleteBackup=deleteBackup;
     }
   }
   function boot(){ expose(); bind(); [250,800,1600,3200,6000].forEach(function(ms){ setTimeout(function(){ expose(); bind(); },ms); }); }

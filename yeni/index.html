@@ -650,7 +650,7 @@ body.mesaha-keyboard-open #saveBtn, body.mesaha-keyboard-open .save-btn{position
 <div class="panel-card-v316">
 <div class="panel-head-v316">
 <div class="panel-title-v316"><img alt="" src="./assets/mesaha_logo.png"/><div><h2 id="userPanelTitleV316">Kullanıcı Paneli</h2><small id="panelSyncTextV316">Yerel bilgiler hazırlanıyor…</small></div></div>
-<button class="panel-close-v316" id="userPanelCloseV316" type="button">×</button>
+<button class="panel-close-v316" hidden="" id="userPanelCloseV316" type="button" style="display:none">×</button>
 </div>
 <div class="panel-grid-v316">
 <label class="panel-field-v316">Kullanıcı Adı<input autocomplete="name" id="panelNameV316" type="text"/></label>
@@ -661,7 +661,7 @@ body.mesaha-keyboard-open #saveBtn, body.mesaha-keyboard-open .save-btn{position
 <div class="panel-stats-v316" id="panelStatsV316"></div>
 <div class="panel-actions-v316">
 <button class="btn primary" id="panelSaveV316" type="button">Bilgileri Kaydet</button>
-<button class="btn soft" id="panelSyncV316" type="button">Bulutla Eşitle</button>
+<button class="btn soft" hidden="" id="panelSyncV316" type="button" style="display:none"></button>
 <button class="btn soft" id="panelClose2V316" type="button">Kapat</button>
 </div>
 <div class="panel-section-v316">
@@ -8380,6 +8380,24 @@ body.mesaha-entry-scrolling-v408 #entryView label{
 <script src="./js/mesaha-fast-tap-nav.js"></script>
 <script src="./js/mesaha-terminal-performance.js"></script>
 <script src="./js/mesaha-hybrid-cloud.js"></script>
+
+<script id="mesaha-v504-user-panel-cleanup">
+(function(){
+  'use strict';
+  function clean(){
+    try{
+      var sync=document.getElementById('panelSyncV316');
+      if(sync){ sync.textContent=''; sync.style.display='none'; sync.setAttribute('hidden','hidden'); }
+      ['userPanelCloseV316','panelCloseInlineV393'].forEach(function(id){ var el=document.getElementById(id); if(el){ el.style.display='none'; el.setAttribute('hidden','hidden'); el.onclick=null; } });
+      document.querySelectorAll('#panelAdminOpenV316,[data-admin-open],[data-open-admin],[href*="admin.html"],[href*="yonetim"]').forEach(function(el){ el.remove(); });
+      var b=document.getElementById('panelAdminBroadcastsV400'); if(b) b.remove();
+      if(window.mesahaPanelV316){ window.mesahaPanelV316.openAdmin=function(){ return false; }; }
+    }catch(e){}
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',clean,{once:true}); else clean();
+  [200,700,1500,3000,6000].forEach(function(ms){ setTimeout(clean,ms); });
+})();
+</script>
 
 <script id="mesaha-v465-admin-isolation">
 (function(){

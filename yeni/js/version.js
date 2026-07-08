@@ -1,6 +1,6 @@
 (function(root){
   'use strict';
-  var info = {"app":"V5.01","version":"v501_supabase_drive_cift_yedek","build":501,"visibleVersion":"V5.01 •ExelanceX•","shortVersion":"V5.01 •ExelanceX•","name":"Mesaha İO V5.01 •ExelanceX•","cacheName":"mesaha-app-v501-supabase-drive-cift-yedek","builtAt":"2026-07-08T01:15:00+03:00","notes":"","assetVersion":"501","latestVersion":"v501_supabase_drive_cift_yedek","latestBuild":501,"currentBuild":501,"minSupportedBuild":409,"forceUpdate":true,"updateUrl":"./temizle.html","cleanUrl":"./guncelle.html"};
+  var info = {"app": "V5.05", "version": "v505_ip_ban_kullanici_engelleme", "build": 505, "visibleVersion": "V5.05 •ExelanceX•", "shortVersion": "V5.05 •ExelanceX•", "name": "Mesaha İO V5.05 •ExelanceX•", "cacheName": "mesaha-app-v505-ip-ban-kullanici-engelleme", "builtAt": "2026-07-08T10:25:00+03:00", "notes": "", "assetVersion": "505", "latestVersion": "v505_ip_ban_kullanici_engelleme", "latestBuild": 505, "currentBuild": 505, "minSupportedBuild": 409, "forceUpdate": true, "updateUrl": "./temizle.html", "cleanUrl": "./guncelle.html"};
   try{ Object.freeze(info); }catch(e){}
   function expose(name,value){
     try{ Object.defineProperty(root,name,{configurable:false,enumerable:true,get:function(){return value;},set:function(){}}); }
