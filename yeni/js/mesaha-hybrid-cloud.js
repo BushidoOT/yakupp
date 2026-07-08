@@ -1,11 +1,12 @@
-/* Mesaha İO V505 — Güvenlik kontrollü hibrit bulut yedekleme
+/* Mesaha İO V506 — Yedek ekranı sığma + kullanıcı yedek gizleme düzeltmesi
    Buluta Yedekle: Edge Function guard + güvenli Supabase V2 + Google Drive.
    Buluttan Getir: Edge Function guard + iki kaynak birlikte listelenir.
    Kullanıcı yedek silme: gerçek silme yok; kullanıcı listesinden gizlenir.
    ORBİS/XLS/hacim tarafına dokunmaz. */
 (function(){
   'use strict';
-  if(window.__mesahaHybridCloudV505) return;
+  if(window.__mesahaHybridCloudV506) return;
+  window.__mesahaHybridCloudV506 = true;
   window.__mesahaHybridCloudV505 = true;
 
   var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzOYh2MyOQmwVQh-7Jm9KyjaFjmjSwgHZSw7XKAVzDS1ibmcM5bQZVYdn-NyesI-ph7/exec';
@@ -155,7 +156,10 @@
         raw:d
       });
     });
-    arr=arr.filter(function(x){ return !isHidden('supabase', x.id, readUser()); });
+    arr=arr.filter(function(x){
+      var raw=x.raw||{};
+      return raw.archived!==true && raw.hidden!==true && !isHidden('supabase', x.id, readUser());
+    });
     arr.sort(function(a,b){ return (b.createdAtMs||0)-(a.createdAtMs||0); });
     return arr;
   }
@@ -225,13 +229,13 @@
   async function deleteBackup(source,id){
     if(!id) return;
     var label=source==='drive'?'Google Drive':'Supabase';
-    if(!confirm(label+' yedeği listenden gizlensin mi? Gerçek dosya silinmez.')) return;
+    if(!confirm(label+' yedeği listenden kaldırılsın mı? Gerçek yedek silinmez, sadece sana görünmez.')) return;
     try{
       var user=readUser();
       await guardCheck('hide_backup',user,{source:source,slot_id:id});
       hideBackupLocal(source,id,user);
       if(source==='supabase') await deleteSupabase(id); else await deleteDrive(id);
-      toast('Yedek gizlendi.', label+' yedeği sadece kullanıcı listenden kaldırıldı.','success');
+      toast('Yedek listeden kaldırıldı.', label+' yedeği silinmedi, sadece sana görünmez.','success');
       setTimeout(openCloud,250);
     }catch(e){
       toast('Yedek silinemedi.', errText(e),'error');
@@ -272,15 +276,20 @@
     var ov=$('cloudRestoreOverlayV316'), box=$('cloudRestoreListV316'), info=$('cloudRestoreInfoV316');
     if(ov) ov.classList.remove('hidden');
     if(info) info.textContent='Bulut yedekleri hazırlanıyor…';
-    if(box) box.innerHTML='<div class="cloud-item-v316">Supabase ve Drive yedekleri yükleniyor…</div>';
+    if(box) box.innerHTML='<div class="cloud-item-v316 cloud-item-v506">Supabase ve Drive yedekleri yükleniyor…</div>';
     try{
       var data=await combinedList(), arr=data.items||[];
       if(info) info.textContent=arr.length+' yedek bulundu'+(data.errors&&data.errors.length?' • '+data.errors.join(' • '):'');
-      if(!arr.length){ if(box) box.innerHTML='<div class="cloud-item-v316">Bulutta bu kullanıcıya ait yedek bulunamadı.</div>'; return; }
+      if(!arr.length){ if(box) box.innerHTML='<div class="cloud-item-v316 cloud-item-v506">Bulutta bu kullanıcıya ait yedek bulunamadı.</div>'; return; }
       if(box) box.innerHTML=arr.slice(0,80).map(function(b){
-        return '<div class="cloud-item-v316 cloud-item-v504"><div><span class="pill '+sourceClass(b.source)+'">'+sourceLabel(b.source)+'</span><b>'+esc(b.name||'Mesaha yedeği')+'</b><small>'+esc(b.createdAt||'-')+' • '+Number(b.count||0).toLocaleString('tr-TR')+' kayıt • '+Number(b.totalVolume||0).toLocaleString('tr-TR',{minimumFractionDigits:3,maximumFractionDigits:3})+' m³</small></div><div class="cloud-actions-v504"><button class="btn primary" data-hybrid-source-v501="'+esc(b.source)+'" data-hybrid-id-v501="'+esc(b.id)+'" type="button">Bu Yedeği Yükle</button><button class="btn danger" data-hybrid-delete-source-v504="'+esc(b.source)+'" data-hybrid-delete-id-v504="'+esc(b.id)+'" type="button">Sil</button></div></div>';
+        var count=Number(b.count||0).toLocaleString('tr-TR');
+        var m3=Number(b.totalVolume||0).toLocaleString('tr-TR',{minimumFractionDigits:3,maximumFractionDigits:3});
+        return '<div class="cloud-item-v316 cloud-item-v506" data-cloud-card-source="'+esc(b.source)+'">'
+          + '<div class="cloud-head-v506"><span class="cloud-badge-v506 '+sourceClass(b.source)+'">'+sourceLabel(b.source)+'</span><div class="cloud-title-wrap-v506"><b class="cloud-title-v506">'+esc(b.name||'Mesaha yedeği')+'</b><small>'+esc(b.createdAt||'-')+' • '+count+' kayıt • '+m3+' m³</small></div></div>'
+          + '<div class="cloud-actions-v506"><button class="btn primary" data-hybrid-source-v501="'+esc(b.source)+'" data-hybrid-id-v501="'+esc(b.id)+'" type="button">Yükle</button><button class="btn danger cloud-delete-btn-v506" data-hybrid-delete-source-v506="'+esc(b.source)+'" data-hybrid-delete-id-v506="'+esc(b.id)+'" type="button">Sil</button></div>'
+          + '</div>';
       }).join('');
-    }catch(e){ if(info) info.textContent='Yedekler alınamadı'; if(box) box.innerHTML='<div class="cloud-item-v316">'+esc(errText(e))+'</div>'; }
+    }catch(e){ if(info) info.textContent='Yedekler alınamadı'; if(box) box.innerHTML='<div class="cloud-item-v316 cloud-item-v506">'+esc(errText(e))+'</div>'; }
   }
   async function restore(source,id){
     if(!id) return;
@@ -316,29 +325,49 @@
     if(box && !box.__hybridV501){
       box.__hybridV501=true;
       box.addEventListener('click',function(ev){
-        var d=ev.target&&ev.target.closest&&ev.target.closest('[data-hybrid-delete-id-v504]');
-        if(d){ ev.preventDefault(); ev.stopPropagation(); ev.stopImmediatePropagation(); deleteBackup(d.getAttribute('data-hybrid-delete-source-v504'), d.getAttribute('data-hybrid-delete-id-v504')); return; }
+        var d=ev.target&&ev.target.closest&&ev.target.closest('[data-hybrid-delete-id-v506],[data-hybrid-delete-id-v504]');
+        if(d){ ev.preventDefault(); ev.stopPropagation(); ev.stopImmediatePropagation(); deleteBackup(d.getAttribute('data-hybrid-delete-source-v506')||d.getAttribute('data-hybrid-delete-source-v504'), d.getAttribute('data-hybrid-delete-id-v506')||d.getAttribute('data-hybrid-delete-id-v504')); return; }
         var b=ev.target&&ev.target.closest&&ev.target.closest('[data-hybrid-id-v501]');
         if(b){ ev.preventDefault(); ev.stopPropagation(); ev.stopImmediatePropagation(); restore(b.getAttribute('data-hybrid-source-v501'), b.getAttribute('data-hybrid-id-v501')); }
       },true);
     }
   }
   function ensureV505Style(){
-    if(document.getElementById('mesaha-v504-user-panel-clean-style')) return;
+    if(document.getElementById('mesaha-v506-cloud-fit-style')) return;
     var st=document.createElement('style');
-    st.id='mesaha-v504-user-panel-clean-style';
-    st.textContent='#panelSyncV316,#userPanelCloseV316,#panelCloseInlineV393{display:none!important;visibility:hidden!important;pointer-events:none!important}.cloud-item-v504{grid-template-columns:1fr!important;gap:10px!important}.cloud-actions-v504{display:grid;grid-template-columns:minmax(0,1fr) 86px;gap:8px;margin-top:8px}.cloud-actions-v504 .btn{width:100%;min-height:42px}@media(max-width:520px){.cloud-actions-v504{grid-template-columns:1fr!important}}';
+    st.id='mesaha-v506-cloud-fit-style';
+    st.textContent=[
+      '#panelSyncV316,#userPanelCloseV316,#panelCloseInlineV393{display:none!important;visibility:hidden!important;pointer-events:none!important}',
+      '#cloudRestoreOverlayV316{align-items:center!important;justify-content:center!important;padding:10px!important;box-sizing:border-box!important;}',
+      '#cloudRestoreOverlayV316 .panel-card-v316{width:min(640px,calc(100vw - 18px))!important;max-width:calc(100vw - 18px)!important;max-height:calc(100dvh - 18px)!important;display:flex!important;flex-direction:column!important;overflow:hidden!important;padding:18px!important;box-sizing:border-box!important;}',
+      '#cloudRestoreOverlayV316 .panel-title-v316{flex:0 0 auto!important;display:flex!important;align-items:center!important;gap:10px!important;min-width:0!important;padding-right:52px!important;}',
+      '#cloudRestoreOverlayV316 .panel-title-v316 h2{font-size:22px!important;line-height:1.05!important;margin:0!important;white-space:normal!important;}',
+      '#cloudRestoreOverlayV316 .panel-title-v316 small{font-size:13px!important;line-height:1.2!important;}',
+      '#cloudRestoreCloseV316{position:absolute!important;right:14px!important;top:14px!important;width:46px!important;height:46px!important;min-width:46px!important;border-radius:18px!important;z-index:3!important;}',
+      '#cloudRestoreListV316{flex:1 1 auto!important;min-height:0!important;overflow-y:auto!important;overflow-x:hidden!important;-webkit-overflow-scrolling:touch!important;padding:8px 2px 4px!important;display:grid!important;gap:10px!important;}',
+      '#cloudRestoreListV316 .cloud-item-v316.cloud-item-v506{width:100%!important;max-width:100%!important;box-sizing:border-box!important;display:block!important;overflow:visible!important;padding:12px!important;border-radius:18px!important;}',
+      '.cloud-head-v506{display:flex!important;align-items:flex-start!important;gap:9px!important;min-width:0!important;width:100%!important;}',
+      '.cloud-badge-v506{flex:0 0 auto!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;min-width:54px!important;max-width:58px!important;padding:5px 7px!important;border-radius:13px!important;font-size:11px!important;font-weight:950!important;text-align:center!important;line-height:1.08!important;white-space:normal!important;word-break:break-word!important;}',
+      '.cloud-badge-v506.green{background:#e9f9ef!important;color:#0d5f3b!important;border:1px solid #c9eed7!important}.cloud-badge-v506.blue{background:#e9f1ff!important;color:#1d4ed8!important;border:1px solid #c9dafe!important}',
+      '.cloud-title-wrap-v506{min-width:0!important;flex:1 1 auto!important;display:block!important;}',
+      '.cloud-title-v506{display:block!important;max-width:100%!important;white-space:normal!important;overflow-wrap:anywhere!important;word-break:break-word!important;font-size:16px!important;line-height:1.16!important;margin:1px 0 5px!important;}',
+      '.cloud-title-wrap-v506 small{display:block!important;max-width:100%!important;white-space:normal!important;overflow-wrap:anywhere!important;font-size:13px!important;line-height:1.2!important;}',
+      '.cloud-actions-v506{display:grid!important;grid-template-columns:minmax(0,1fr) 82px!important;gap:8px!important;margin-top:10px!important;width:100%!important;}',
+      '.cloud-actions-v506 .btn{width:100%!important;min-width:0!important;min-height:42px!important;border-radius:14px!important;font-size:14px!important;font-weight:950!important;padding:8px 10px!important;}',
+      '.cloud-delete-btn-v506{display:inline-flex!important;visibility:visible!important;opacity:1!important;background:#dc2626!important;color:#fff!important;border-color:#dc2626!important;}',
+      '@media(max-width:390px){#cloudRestoreOverlayV316 .panel-card-v316{padding:14px!important;width:calc(100vw - 12px)!important;max-width:calc(100vw - 12px)!important;}.cloud-badge-v506{min-width:46px!important;max-width:50px!important;font-size:10px!important;padding:5px!important}.cloud-title-v506{font-size:15px!important}.cloud-actions-v506{grid-template-columns:minmax(0,1fr) 72px!important;gap:7px!important}.cloud-actions-v506 .btn{font-size:13px!important;padding:7px 8px!important}}'
+    ].join('');
     document.head.appendChild(st);
   }
   function expose(){
     ensureV505Style();
-    var api={version:'v505',backup:hybridBackup,list:combinedList,openCloudRestore:openCloud,restore:restore,deleteBackup:deleteBackup,backupSupabase:backupSupabase,backupDrive:backupDrive};
+    var api={version:'v506',backup:hybridBackup,list:combinedList,openCloudRestore:openCloud,restore:restore,deleteBackup:deleteBackup,backupSupabase:backupSupabase,backupDrive:backupDrive};
     window.MESAHA_HYBRID_CLOUD_V501=api;
     window.MESAHA_HYBRID_CLOUD_V505=api;
-    window.MESAHA_HYBRID_CLOUD_V505=api;
+    window.MESAHA_HYBRID_CLOUD_V506=api;
     window.mesahaHybridCloudV501=api;
     window.mesahaHybridCloudV505=api;
-    window.mesahaHybridCloudV505=api;
+    window.mesahaHybridCloudV506=api;
     window.mesahaPanelV316=window.mesahaPanelV316||{};
     window.mesahaPanelV316.cloudBackup=hybridBackup;
     window.mesahaPanelV316.openCloudRestore=openCloud;

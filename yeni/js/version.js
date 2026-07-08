@@ -1,6 +1,6 @@
 (function(root){
   'use strict';
-  var info = {"app": "V5.05", "version": "v505_ip_ban_kullanici_engelleme", "build": 505, "visibleVersion": "V5.05 •ExelanceX•", "shortVersion": "V5.05 •ExelanceX•", "name": "Mesaha İO V5.05 •ExelanceX•", "cacheName": "mesaha-app-v505-ip-ban-kullanici-engelleme", "builtAt": "2026-07-08T10:25:00+03:00", "notes": "", "assetVersion": "505", "latestVersion": "v505_ip_ban_kullanici_engelleme", "latestBuild": 505, "currentBuild": 505, "minSupportedBuild": 409, "forceUpdate": true, "updateUrl": "./temizle.html", "cleanUrl": "./guncelle.html"};
+  var info = {"app": "V5.06", "version": "v506_yedek_silme_ekran_sigdirma", "build": 506, "visibleVersion": "V5.06 •ExelanceX•", "shortVersion": "V5.06 •ExelanceX•", "name": "Mesaha İO V5.06 •ExelanceX•", "cacheName": "mesaha-app-v506-yedek-silme-ekran-sigdirma", "builtAt": "2026-07-08T10:58:00+03:00", "notes": "", "assetVersion": "506", "latestVersion": "v506_yedek_silme_ekran_sigdirma", "latestBuild": 506, "currentBuild": 506, "minSupportedBuild": 409, "forceUpdate": true, "updateUrl": "./temizle.html", "cleanUrl": "./guncelle.html"};
   try{ Object.freeze(info); }catch(e){}
   function expose(name,value){
     try{ Object.defineProperty(root,name,{configurable:false,enumerable:true,get:function(){return value;},set:function(){}}); }
