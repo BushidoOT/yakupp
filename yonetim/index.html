@@ -57,12 +57,29 @@ a{color:inherit;text-decoration:none}.hidden{display:none!important}
 .risk-wrap{display:grid;grid-template-columns:120px 1fr;gap:16px;align-items:center;border:1px solid #dceee0;border-radius:22px;background:#fff;padding:14px}.risk-circle{width:112px;height:112px;border-radius:999px;display:grid;place-items:center;background:conic-gradient(#16a34a var(--risk-deg,360deg),#edf2f7 0deg);box-shadow:inset 0 0 0 12px #fff;border:1px solid #e5e7eb}.risk-circle b{font-size:30px}.risk-lines{display:grid;gap:8px}.risk-line{display:flex;align-items:center;justify-content:space-between;gap:12px;border:1px solid #eef2f7;border-radius:14px;padding:10px;background:#fbfcfd}.risk-line small{color:#667085;font-weight:900}.risk-line b{font-size:16px}.risk-good{color:#166534}.risk-warn{color:#b45309}.risk-bad{color:#b91c1c}
 .management-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}.admin-note{border:1px dashed #cbd5e1;background:#f8fafc;border-radius:16px;padding:12px;color:#475467;font-weight:850;line-height:1.45}.recovery-list{display:grid;gap:10px}.recovery-item{border:1px solid #e5e7eb;border-radius:16px;padding:12px;background:#fff;display:flex;justify-content:space-between;gap:12px;align-items:center}.recovery-item small{display:block;color:#667085;font-weight:850}.login-hint{font-size:13px;color:#667085!important;margin-top:8px!important}.backup-timeline{display:grid;gap:8px}.backup-timeline .mini{background:#fbfcfd}.security-mini-list{display:grid;gap:8px}.security-mini{border:1px solid #e5e7eb;border-radius:14px;padding:10px;background:#fff}.settings-card-v518{display:grid;gap:10px}.danger-text{color:#b91c1c}.ok-text{color:#166534}.warn-text{color:#b45309}@media(max-width:980px){.management-grid{grid-template-columns:1fr}.risk-wrap{grid-template-columns:1fr}.risk-circle{margin:auto}}
 
+
+/* V519 operasyon ve denetim geliştirmeleri */
+.op-grid-v519{display:grid;grid-template-columns:1.15fr .85fr;gap:14px;margin-top:14px}
+.op-actions-v519{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.op-actions-v519 .btn{min-height:46px}
+.audit-row-v519{border:1px solid var(--line);border-radius:18px;background:#fff;padding:12px;display:grid;grid-template-columns:42px 1fr auto;gap:10px;align-items:center}
+.audit-ico-v519{width:42px;height:42px;border-radius:14px;background:#f1f5f9;display:grid;place-items:center;font-size:20px}
+.audit-row-v519 b{display:block}.audit-row-v519 small{display:block;color:var(--muted);font-weight:850}
+.risk-user-v519{border:1px solid var(--line);border-radius:18px;background:#fff;padding:12px;display:grid;gap:9px}
+.risk-user-v519 .top{position:static;margin:0;padding:0;background:transparent;border:0;box-shadow:none;display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.risk-chip-v519{border-radius:999px;padding:7px 10px;font-size:12px;font-weight:1000;border:1px solid #dbeee0;background:#effaf1;color:#166534}
+.risk-chip-v519.warn{background:#fff7ed;border-color:#fed7aa;color:#9a3412}
+.risk-chip-v519.bad{background:#fff1f2;border-color:#fecaca;color:#b91c1c}
+.checklist-v519{display:grid;gap:9px}.check-v519{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:16px;background:#fff;padding:11px}.check-v519 input{width:auto;margin-top:3px}.check-v519 div{display:grid;gap:2px}.check-v519 small{color:var(--muted);font-weight:800}
+.admin-note-input-v519{min-height:112px}
+@media(max-width:980px){.op-grid-v519{grid-template-columns:1fr}.op-actions-v519{grid-template-columns:1fr}}
+
 </style>
 </head>
 <body>
 <div class="app">
   <header class="top">
-    <div class="brand"><img alt="" src="../assets/mesaha_logo.png"/><div><b>Mesaha İO Yönetim</b><small>Kurtarma ve Güvenlik Merkezi</small><div class="version-pill" id="versionPill">Admin V5.18 • Sürüm hazırlanıyor</div></div></div>
+    <div class="brand"><img alt="" src="../assets/mesaha_logo.png"/><div><b>Mesaha İO Yönetim</b><small>Kurtarma ve Güvenlik Merkezi</small><div class="version-pill" id="versionPill">Admin V5.19 • Sürüm hazırlanıyor</div></div></div>
     <div class="top-actions"><button class="btn soft" id="appBtn" type="button">↗ Uygulama</button><button class="btn green" id="refreshBtn" type="button">⟳ Yenile</button></div>
   </header>
 
@@ -160,7 +177,7 @@ a{color:inherit;text-decoration:none}.hidden{display:none!important}
       <div class="two-col">
         <div class="panel-card">
           <h2>Toplu Bildirim Gönder</h2>
-          <label class="field"><span>Hedef</span><select id="broadcastTarget"><option value="all">Tüm kullanıcılar</option><option value="old">Eski sürüm kullananlar</option><option value="nobackup">Yedeği olmayanlar</option><option value="active">Bugün aktif olanlar</option></select></label>
+          <label class="field"><span>Hedef</span><select id="broadcastTarget"><option value="all">Tüm kullanıcılar</option><option value="old">Eski sürüm kullananlar</option><option value="nobackup">Yedeği olmayanlar</option><option value="active">Bugün aktif olanlar</option><option value="seflik">Seçili şeflik</option><option value="risk">Riskli kullanıcılar</option></select></label><label class="field" id="broadcastSeflikWrap"><span>Şeflik seç</span><select id="broadcastSeflik"><option value="">Şeflik seç</option></select></label>
           <label class="field"><span>Başlık</span><input id="broadcastTitle" maxlength="80" placeholder="Örn: Yeni güncelleme yayınlandı"/></label>
           <label class="field"><span>Mesaj</span><textarea id="broadcastMessage" rows="4" maxlength="500" placeholder="Kullanıcılara gösterilecek mesaj"></textarea></label>
           <button class="btn green" id="sendBroadcast" type="button">Toplu Bildirim Gönder</button>
@@ -172,6 +189,31 @@ a{color:inherit;text-decoration:none}.hidden{display:none!important}
           <button class="btn soft" id="downloadBackupsBtn" type="button">Yedekleri JSON İndir</button>
           <button class="btn soft" id="clearAdminKeyBtn" type="button">Güvenlik Anahtarını Değiştir</button>
           <div class="notice"><div class="ok">✓</div><div>Silme işlemleri kalıcı silme yerine arşiv/gizleme mantığıyla yapılır.</div></div>
+        </div>
+      </div>
+      <div class="op-grid-v519">
+        <div class="panel-card">
+          <div class="section-head"><div><h2>Akıllı Operasyon Merkezi</h2><p>Riskli kullanıcıları, yedek durumunu ve dışa aktarmaları tek yerden yönet.</p></div><span class="badge" id="operationStatusV519">Hazır</span></div>
+          <div class="op-actions-v519">
+            <button class="btn green" id="downloadRiskReportBtn" type="button">Risk Raporu İndir</button>
+            <button class="btn soft" id="downloadUsersCsvBtn" type="button">Kullanıcı CSV İndir</button>
+            <button class="btn soft" id="downloadBackupsCsvBtn" type="button">Yedek CSV İndir</button>
+            <button class="btn warn" id="showRiskUsersBtn" type="button">Riskli Kullanıcıları Göster</button>
+            <button class="btn soft" id="copySystemSummaryBtn" type="button">Sistem Özetini Kopyala</button>
+            <button class="btn soft" id="downloadAuditBtn" type="button">Admin İşlem Geçmişi İndir</button>
+          </div>
+          <div class="list" id="operationListV519"><div class="empty">Operasyon listesi bekleniyor.</div></div>
+        </div>
+        <div class="panel-card">
+          <h2>Yayın Öncesi Kontrol Listesi</h2>
+          <div class="checklist-v519" id="publishChecklistV519">
+            <label class="check-v519"><input type="checkbox" data-check-v519="users"/><div><b>Kullanıcılar okunuyor</b><small>Panel toplam kullanıcı ve cihaz bilgisini okuyabiliyor.</small></div></label>
+            <label class="check-v519"><input type="checkbox" data-check-v519="backups"/><div><b>Yedekler görünüyor</b><small>Supabase/Drive yedekleri listeleniyor.</small></div></label>
+            <label class="check-v519"><input type="checkbox" data-check-v519="security"/><div><b>Güvenlik merkezi çalışıyor</b><small>IP hareketleri ve aktif engeller okunuyor.</small></div></label>
+            <label class="check-v519"><input type="checkbox" data-check-v519="version"/><div><b>Sürüm takibi güncel</b><small>Eski sürüm kullananlar ayrılıyor.</small></div></label>
+          </div>
+          <label class="field"><span>Admin notu</span><textarea id="adminNoteInputV519" class="admin-note-input-v519" placeholder="Yayın, bakım veya kullanıcı takip notu yaz..."></textarea></label>
+          <button class="btn green" id="saveAdminNoteBtn" type="button">Admin Notunu Kaydet</button>
         </div>
       </div>
       <div class="panel-card" style="margin-top:14px">
@@ -226,7 +268,7 @@ a{color:inherit;text-decoration:none}.hidden{display:none!important}
 
 const ADMIN_USER='yakupduzgun';
 const ADMIN_SEFLIK='Yaylacık_43';
-const ADMIN_PANEL_VERSION='Admin V5.18';
+const ADMIN_PANEL_VERSION='Admin V5.19';
 const GUARD_FUNCTION_URL='https://swrbpdpotmirnmtqnuba.supabase.co/functions/v1/smooth-function';
 const ADMIN_KEY_STORE='mesaha_admin_guard_key_v505';
 const SESSION_KEY='mesaha_supabase_v500_session';
@@ -234,7 +276,7 @@ const DRIVE_BRIDGE_URL='https://script.google.com/macros/s/AKfycbzOYh2MyOQmwVQh-
 const DRIVE_SECRET='MESAHAYEDEK_2026_YAKUP_43';
 
 const $=id=>document.getElementById(id);
-const state={users:[],backups:[],tickets:[],broadcasts:[],usage:[],logs:[],events:[],blocks:[],sources:{},errors:{},ready:false,lastScanMs:0};
+const state={users:[],backups:[],tickets:[],broadcasts:[],usage:[],logs:[],actionLogs:[],events:[],blocks:[],sources:{},errors:{},ready:false,lastScanMs:0};
 window.MESAHA_ADMIN_STATE=state;
 
 function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
@@ -303,11 +345,12 @@ async function loadAll(){
       backups=(adminAll.backups||[]).map(mapBackup);
       logs=(adminAll.logs||[]).map(mapLog);
       tickets=logs.filter(x=>x.message&&!/health-ok/i.test(x.message)&&x.userKey);
+      state.actionLogs=logs.filter(x=>/admin|block|broadcast|archive|settings/i.test([x.message,x.level,x.status].join(' '))).slice(0,120);
       state.sources.adminEdge=true;
     }else{
       const r=await ready();const db=r.db;
-      const [usersRaw,backupsRaw,ticketsRaw,usageRaw,broadcastsRaw,logsRaw]=await Promise.all([
-        getColSafe(db,'users'),getColSafe(db,'backups'),getColSafe(db,'supportTickets'),getColSafe(db,'usageStats'),getColSafe(db,'adminBroadcasts'),getColSafe(db,'mesaha_log_current')
+      const [usersRaw,backupsRaw,ticketsRaw,usageRaw,broadcastsRaw,logsRaw,actionLogsRaw]=await Promise.all([
+        getColSafe(db,'users'),getColSafe(db,'backups'),getColSafe(db,'supportTickets'),getColSafe(db,'usageStats'),getColSafe(db,'adminBroadcasts'),getColSafe(db,'mesaha_log_current'),getColSafe(db,'adminActionLogs')
       ]);
       profiles=usersRaw.map(mapProfile);
       usage=usageRaw.map(mapUsage);
@@ -315,6 +358,7 @@ async function loadAll(){
       tickets=ticketsRaw.map(mapLog);
       logs=logsRaw.map(mapLog);
       broadcasts=broadcastsRaw;
+      state.actionLogs=(actionLogsRaw||[]).map(mapAdminActionV519);
       state.sources.direct=true;
     }
     const drive=await loadDriveBackups();
@@ -400,7 +444,68 @@ function renderTickets(){const arr=state.tickets;$('ticketsList').innerHTML=arr.
   <p>${esc(t.message||'-')}</p>${t.adminReply?`<div class="notice"><div class="ok">↩</div><div>${esc(t.adminReply)}</div></div>`:''}
   <div class="reply-box"><textarea rows="2" data-reply-text="${esc(t.id)}" placeholder="Cevap yaz..."></textarea><div class="row"><button class="btn green" data-ticket-reply="${esc(t.id)}" type="button">Cevap Gönder</button><button class="btn soft" data-ticket-read="${esc(t.id)}" type="button">Okundu</button><button class="btn danger" data-ticket-delete="${esc(t.id)}" type="button">Sil</button></div></div>
 </div>`).join(''):'<div class="empty">Destek mesajı yok.</div>'}
-function renderTools(){const arr=state.broadcasts||[];$('broadcastList').innerHTML=arr.length?arr.slice(0,30).map(b=>`<div class="ticket"><div class="section-head"><div><h3>${esc(b.title||'Duyuru')}</h3><p>${esc(b.createdAt||'-')} • ${int((b.targetUserKeys||[]).length||b.targetCount)} kullanıcı</p></div><button class="btn danger" data-broadcast-delete="${esc(b.id)}" type="button">Sil</button></div><p>${esc(b.message||'-')}</p></div>`).join(''):'<div class="empty">Aktif duyuru yok.</div>'}
+
+function mapAdminActionV519(r){r=r||{};const p=r.payload||r;const ms=Number(p.createdAtMs||p.atMs||r.createdAtMs||0)||dateMs(p.createdAt||p.at||r.created_at)||Date.now();return {id:r.id||p.id||('act_'+ms),type:p.type||p.action||p.event||r.action||'admin',target:p.target||p.targetId||p.userKey||'',message:p.message||p.note||p.reason||'',createdAt:p.createdAt||p.at||r.created_at||'',createdAtMs:ms,raw:r}}
+function userRiskInfoV519(u){
+  const key=userKeyOf(u), reasons=[];
+  const old=isOldVersion(u), backupCount=userBackups(key).length;
+  const last=n(u.lastSeenMs||u.updatedAtMs);
+  const days=last?Math.floor((Date.now()-last)/86400000):999;
+  const events=securityEventsForUser(key);
+  if(old) reasons.push('Eski sürüm');
+  if(!backupCount) reasons.push('Yedek yok');
+  if(days>30) reasons.push('30+ gün pasif');
+  if(events.some(e=>e.blocked)) reasons.push('Engelli/şüpheli hareket');
+  const score=Math.max(0,100-(old?22:0)-(!backupCount?28:0)-(days>30?18:0)-(events.some(e=>e.blocked)?25:0));
+  const level=score>=80?'Güvenli':score>=55?'Dikkat':'Riskli';
+  return {score,level,reasons,backupCount,days,events};
+}
+function riskUsersV519(){return state.users.map(u=>({u,info:userRiskInfoV519(u)})).filter(x=>x.info.level!=='Güvenli'||x.info.reasons.length).sort((a,b)=>a.info.score-b.info.score)}
+function toCsvV519(rows,cols){const escCsv=v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"';return [cols.map(c=>escCsv(c[0])).join(',')].concat(rows.map(r=>cols.map(c=>escCsv(typeof c[1]==='function'?c[1](r):r[c[1]])).join(','))).join('\n')}
+function downloadTextV519(name,text,type){const blob=new Blob([text],{type:type||'text/plain;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+function downloadCsvV519(name,rows,cols){downloadTextV519(name,toCsvV519(rows,cols),'text/csv;charset=utf-8')}
+function systemSummaryV519(){
+  const r=riskInfo();
+  return [
+    'Mesaha İO Admin Özeti',
+    'Panel: '+ADMIN_PANEL_VERSION,
+    'Tarih: '+nowText(),
+    'Kullanıcı: '+state.users.length,
+    'Yedek: '+state.backups.length,
+    'Destek: '+state.tickets.length,
+    'Aktif engel: '+state.blocks.filter(b=>b.active!==false).length,
+    'Güvenlik puanı: '+r.score+' / '+r.status,
+    'Eski sürüm: '+oldUsers().length,
+    'Yedeksiz: '+noBackupUsers().length,
+    'Şüpheli hareket: '+suspiciousCount()
+  ].join('\n');
+}
+function downloadRiskReportV519(){
+  const payload={exportedAt:new Date().toISOString(),adminPanelVersion:ADMIN_PANEL_VERSION,summary:{users:state.users.length,backups:state.backups.length,tickets:state.tickets.length,activeBlocks:state.blocks.filter(b=>b.active!==false).length,risk:riskInfo()},riskUsers:riskUsersV519().map(x=>({userKey:userKeyOf(x.u),name:x.u.name,seflik:x.u.seflik,score:x.info.score,level:x.info.level,reasons:x.info.reasons,lastSeen:x.u.lastSeen,backups:x.info.backupCount,appVersion:x.u.appVersion||x.u.fileVersion||''})),sources:state.sources,errors:state.errors};
+  downloadJson('mesaha_admin_risk_raporu_v519.json',payload);
+}
+function renderOperationCenterV519(){
+  if($('operationStatusV519'))$('operationStatusV519').textContent=riskUsersV519().length+' riskli';
+  if($('operationListV519')){
+    const arr=riskUsersV519().slice(0,12);
+    $('operationListV519').innerHTML=arr.length?arr.map(x=>{const k=userKeyOf(x.u),cls=x.info.score<55?'bad':'warn';return `<div class="risk-user-v519"><div class="top"><div><b>${esc(x.u.name||'Kullanıcı')} • ${esc(x.u.seflik||'-')}</b><small>${esc(x.info.reasons.join(' • ')||'Kontrol gerekli')}</small></div><span class="risk-chip-v519 ${cls}">${esc(x.info.level)} • ${int(x.info.score)}</span></div><div class="row"><button class="btn soft" data-user-detail="${esc(k)}" type="button">Detay</button><button class="btn warn" data-user-warning="${esc(k)}" type="button">Yedek Uyarısı</button><button class="btn soft" data-user-update-warning-v519="${esc(k)}" type="button">Güncelleme Uyarısı</button></div></div>`}).join(''):'<div class="empty">Riskli kullanıcı görünmüyor.</div>';
+  }
+  const map={users:state.users.length>0,backups:state.backups.length>0,security:state.sources.events||state.sources.blocks,version:true};
+  document.querySelectorAll('[data-check-v519]').forEach(ch=>{const k=ch.getAttribute('data-check-v519');ch.checked=!!map[k]});
+  try{const note=localStorage.getItem('mesaha_admin_note_v519')||'';if($('adminNoteInputV519')&&!$('adminNoteInputV519').value)$('adminNoteInputV519').value=note;}catch(e){}
+}
+function renderAuditV519(){
+  return (state.actionLogs||[]).slice(0,80).map(a=>`<div class="audit-row-v519"><div class="audit-ico-v519">🧾</div><div><b>${esc(a.type||'admin')}</b><small>${esc(a.message||a.target||'-')}</small></div><small>${esc(a.createdAt||shortDate(a.createdAtMs))}</small></div>`).join('')||'<div class="empty">Admin işlem geçmişi yok.</div>';
+}
+function fillBroadcastSeflikV519(){
+  const sel=$('broadcastSeflik'); if(!sel) return;
+  const cur=sel.value;
+  const vals=[...new Set(state.users.map(u=>u.seflik).filter(Boolean))].sort((a,b)=>String(a).localeCompare(String(b),'tr'));
+  sel.innerHTML='<option value="">Şeflik seç</option>'+vals.map(v=>'<option value="'+esc(v)+'">'+esc(v)+'</option>').join('');
+  sel.value=cur;
+}
+
+function renderTools(){fillBroadcastSeflikV519();renderOperationCenterV519();const arr=state.broadcasts||[];$('broadcastList').innerHTML=arr.length?arr.slice(0,30).map(b=>`<div class="ticket"><div class="section-head"><div><h3>${esc(b.title||'Duyuru')}</h3><p>${esc(b.createdAt||'-')} • ${int((b.targetUserKeys||[]).length||b.targetCount)} kullanıcı</p></div><button class="btn danger" data-broadcast-delete="${esc(b.id)}" type="button">Sil</button></div><p>${esc(b.message||'-')}</p></div>`).join(''):'<div class="empty">Aktif duyuru yok.</div>'}
 function renderSecurity(){updateRiskPanels();renderEventList($('eventsList'),state.events,999,false);$('blocksList').innerHTML=state.blocks.filter(b=>b.active!==false).length?state.blocks.filter(b=>b.active!==false).map(b=>`<div class="activity-card"><div><span class="badge red">${esc(b.block_type||'engel')}</span> <b>${esc(b.block_value||'-')}</b><div class="meta">${esc(b.reason||'-')} • ${esc(b.created_at||'-')}</div></div><button class="btn soft" data-remove-block="${esc(b.id)}" type="button">Engeli Kaldır</button></div>`).join(''):'<div class="empty">Aktif engel yok.</div>'}
 
 
@@ -444,6 +549,7 @@ async function addBlock(type,value,reason,quiet){value=clean(value);if(!value)re
 async function addIpUserDevice(btn){const ip=clean(btn.dataset.banIp),user=clean(btn.dataset.banUser),dev=clean(btn.dataset.banDevice);if(!confirm('IP ile birlikte bağlı kullanıcı/cihaz da engellensin mi?'))return;let ok=0;try{if(await addBlock('ip',ip,'Şüpheli IP',true))ok++}catch(e){}try{if(user&&await addBlock('user_key',user,'IP ban ile kullanıcı engellendi',true))ok++}catch(e){}try{if(dev&&await addBlock('device_id',dev,'IP ban ile cihaz engellendi',true))ok++}catch(e){}toast(ok+' engel eklendi');await loadAll()}
 async function removeBlock(id){if(!confirm('Bu engel kaldırılsın mı?'))return;await guardCall('admin_remove_block',{id});toast('Engel kaldırıldı');await loadAll()}
 async function sendWarning(key){const u=findUser(key);if(!u){toast('Kullanıcı bulunamadı');return}const title='Yedek uyarısı';const message='Lütfen Mesaha İO içinde bulut yedeğini kontrol et ve güncel yedek al.';await sendBroadcastTo([key],title,message,'backup-warning');toast('Yedek uyarısı gönderildi')}
+async function sendUpdateWarningV519(key){const u=findUser(key);if(!u){toast('Kullanıcı bulunamadı');return}await sendBroadcastTo([key],'Güncelleme uyarısı','Mesaha İO uygulamasını güncellemen gerekiyor. Lütfen uygulamayı yenileyip tekrar giriş yap.', 'update-warning');toast('Güncelleme uyarısı gönderildi')}
 async function sendBroadcastTo(keys,title,message,target){try{const {db}=await ready();const id='bc_'+Date.now().toString(36);await db.collection('adminBroadcasts').doc(id).set({id,title,message,target:target||'manual',targetUserKeys:keys,targetCount:keys.length,status:'active',createdAt:nowText(),createdAtMs:Date.now(),appVersion:appVersion(),build:(window.MESAHA_VERSION&&window.MESAHA_VERSION.build)||518});}catch(e){throw new Error('Bildirim yazılamadı: '+errText(e))}}
 async function archiveUser(key){const u=findUser(key);if(!u||!confirm((u.name||key)+' arşivlensin mi?'))return;try{const {db}=await ready();await db.collection('users').doc(u.id||key).set({status:'archived',archived:true,archivedAt:nowText(),archivedAtMs:Date.now()},{merge:true});toast('Kullanıcı arşivlendi');await loadAll()}catch(e){toast(errText(e))}}
 async function passiveUser(key){const u=findUser(key);if(!u)return;try{const {db}=await ready();await db.collection('users').doc(u.id||key).set({status:'passive',disabled:true,updatedAt:nowText(),updatedAtMs:Date.now()},{merge:true});toast('Kullanıcı pasifleştirildi');await loadAll()}catch(e){toast(errText(e))}}
@@ -452,7 +558,7 @@ function backupDownload(id){const b=findBackup(id);if(!b)return;if(b.driveLink){
 async function replyTicket(id){const ta=document.querySelector('[data-reply-text="'+CSS.escape(id)+'"]');const msg=clean(ta&&ta.value);if(!msg){toast('Cevap boş');return}try{const {db}=await ready();await db.collection('supportTickets').doc(id).set({adminReply:msg,reply:msg,status:'answered',adminReplyAt:nowText(),adminReplyAtMs:Date.now(),updatedAt:nowText(),updatedAtMs:Date.now()},{merge:true});toast('Cevap gönderildi');await loadAll()}catch(e){toast(errText(e))}}
 async function markTicketRead(id){try{const {db}=await ready();await db.collection('supportTickets').doc(id).set({status:'read',readAt:nowText(),readAtMs:Date.now()},{merge:true});toast('Okundu');await loadAll()}catch(e){toast(errText(e))}}
 async function deleteTicket(id){if(!confirm('Mesaj silinsin mi?'))return;try{const {db}=await ready();await db.collection('supportTickets').doc(id).set({status:'deleted',deleted:true,deletedAt:nowText(),deletedAtMs:Date.now()},{merge:true});toast('Mesaj silindi');await loadAll()}catch(e){toast(errText(e))}}
-async function sendBroadcast(){const target=$('broadcastTarget').value,title=clean($('broadcastTitle').value),message=clean($('broadcastMessage').value);if(!title||!message){toast('Başlık ve mesaj gerekli');return}let users=state.users.slice();if(target==='old')users=oldUsers();if(target==='nobackup')users=noBackupUsers();if(target==='active')users=state.users.filter(u=>n(u.lastSeenMs||u.updatedAtMs)>=todayStart());const keys=users.map(userKeyOf).filter(Boolean);if(!keys.length){toast('Hedef kullanıcı yok');return}if(!confirm(keys.length+' kullanıcıya bildirim gönderilsin mi?'))return;await sendBroadcastTo(keys,title,message,target);$('broadcastTitle').value='';$('broadcastMessage').value='';toast('Bildirim gönderildi');await loadAll()}
+async function sendBroadcast(){const target=$('broadcastTarget').value,title=clean($('broadcastTitle').value),message=clean($('broadcastMessage').value);if(!title||!message){toast('Başlık ve mesaj gerekli');return}let users=state.users.slice();if(target==='old')users=oldUsers();if(target==='nobackup')users=noBackupUsers();if(target==='active')users=state.users.filter(u=>n(u.lastSeenMs||u.updatedAtMs)>=todayStart());if(target==='risk')users=riskUsersV519().map(x=>x.u);if(target==='seflik'){const s=clean($('broadcastSeflik')&&$('broadcastSeflik').value);users=state.users.filter(u=>clean(u.seflik)===s);}const keys=users.map(userKeyOf).filter(Boolean);if(!keys.length){toast('Hedef kullanıcı yok');return}if(!confirm(keys.length+' kullanıcıya bildirim gönderilsin mi?'))return;await sendBroadcastTo(keys,title,message,target);$('broadcastTitle').value='';$('broadcastMessage').value='';toast('Bildirim gönderildi');await loadAll()}
 async function deleteBroadcast(id){if(!confirm('Duyuru silinsin mi?'))return;try{const {db}=await ready();await db.collection('adminBroadcasts').doc(id).set({status:'deleted',deleted:true,deletedAt:nowText(),deletedAtMs:Date.now()},{merge:true});toast('Duyuru silindi');await loadAll()}catch(e){toast(errText(e))}}
 
 function showUserDetail(key){const u=findUser(key);if(!u)return;const b=userBackups(key).slice().sort((a,b)=>n(b.createdAtMs)-n(a.createdAtMs)),t=userTickets(key),events=securityEventsForUser(key);const latest=b[0];const userRisk=(isOldVersion(u)?25:0)+(b.length?0:35)+(events.some(e=>e.blocked)?25:0)+(n(u.lastSeenMs||u.updatedAtMs)&&n(u.lastSeenMs||u.updatedAtMs)<Date.now()-30*86400000?15:0);$('modalTitle').textContent=(u.name||'-')+' • kullanıcı detayı';$('modalBody').innerHTML=`<div class="risk-wrap" style="margin-bottom:14px"><div class="risk-circle" style="--risk-deg:${Math.max(0,100-userRisk)*3.6}deg"><b>${Math.max(0,100-userRisk)}</b></div><div class="risk-lines"><div class="risk-line"><small>Kullanıcı riski</small><b class="${userRisk?'risk-warn':'risk-good'}">${userRisk?'Kontrol gerekli':'Normal'}</b></div><div class="risk-line"><small>Son yedek</small><b>${latest?esc(latest.createdAt||shortDate(latest.createdAtMs)):'Yedek yok'}</b></div><div class="risk-line"><small>Güvenlik hareketi</small><b>${int(events.length)}</b></div></div></div><div class="mini-grid"><div class="mini"><small>Kullanıcı</small><b>${esc(u.name||'-')}</b></div><div class="mini"><small>Şeflik</small><b>${esc(u.seflik||'-')}</b></div><div class="mini"><small>Bölme</small><b>${esc(u.bolmeNo||'-')}</b></div><div class="mini"><small>Sürüm</small><b>${esc(normalizeVersion(u.appVersion||u.fileVersion||'-'))}</b></div><div class="mini"><small>Kayıt</small><b>${int(u.recordCount)}</b></div><div class="mini"><small>Hacim</small><b>${m3(u.m3)}</b></div><div class="mini"><small>Yedek</small><b>${int(b.length)}</b></div><div class="mini"><small>Destek</small><b>${int(t.length)}</b></div><div class="mini"><small>Cihaz ID</small><b>${esc(u.deviceId||'-')}</b></div><div class="mini"><small>Cihaz</small><b>${esc(u.lastDevice||'-')}</b></div><div class="mini"><small>Son görülme</small><b>${esc(shortDate(u.lastSeenMs,u.lastSeen))}</b></div><div class="mini"><small>Kaynak</small><b>${esc((u.sources||[]).join(', ')||u.source||'-')}</b></div></div><h3>Son Yedekler</h3><div class="backup-timeline">${b.length?b.slice(0,6).map(x=>`<div class="mini"><small>${esc(x.source)} • ${esc(x.createdAt||'-')}</small><b>${esc(x.fileName||'Yedek')}</b><small>${int(x.recordCount)} kayıt • ${m3(x.m3)} m³ • ${esc(backupVersion(x))}</small></div>`).join(''):'<div class="empty">Bu kullanıcı için yedek yok.</div>'}</div><h3>Güvenlik Hareketleri</h3><div class="security-mini-list">${events.length?events.map(e=>`<div class="security-mini"><b>${esc(e.ip_address||'-')} • ${esc(e.device_id||'-')}</b><small>${esc(e.created_at||'-')} • ${esc(e.event_type||'hareket')} • ${esc(normalizeVersion(e.app_version))}</small></div>`).join(''):'<div class="empty">Güvenlik hareketi yok.</div>'}</div><div class="row" style="margin-top:14px"><button class="btn green" onclick="window.MesahaAdminDownloadUserRecovery&&window.MesahaAdminDownloadUserRecovery('${esc(key)}')" type="button">Bu Kullanıcının Kurtarma Paketini İndir</button></div>`;$('modal').classList.add('show')}
@@ -484,12 +590,20 @@ function bind(){
   const warnOld=$('warnOldVersionBtn'); if(warnOld)warnOld.addEventListener('click',()=>warnOldVersionUsers().catch(x=>toast(errText(x))));
   const saveUpd=$('saveUpdateSettingsBtn'); if(saveUpd)saveUpd.addEventListener('click',saveUpdateSettings);
   $('clearAdminKeyBtn').addEventListener('click',()=>{localStorage.removeItem(ADMIN_KEY_STORE);toast('Anahtar sıfırlandı')});
+  if($('downloadRiskReportBtn'))$('downloadRiskReportBtn').addEventListener('click',downloadRiskReportV519);
+  if($('downloadUsersCsvBtn'))$('downloadUsersCsvBtn').addEventListener('click',()=>downloadCsvV519('mesaha_admin_kullanicilar_v519.csv',state.users,[['Kullanıcı','name'],['Şeflik','seflik'],['Bölme','bolmeNo'],['Kayıt',u=>u.recordCount||0],['m3',u=>u.m3||0],['Sürüm',u=>normalizeVersion(u.appVersion||u.fileVersion||'')],['Son görülme','lastSeen'],['Cihaz','deviceId']]));
+  if($('downloadBackupsCsvBtn'))$('downloadBackupsCsvBtn').addEventListener('click',()=>downloadCsvV519('mesaha_admin_yedekler_v519.csv',state.backups,[['Dosya','fileName'],['Kullanıcı','name'],['Şeflik','seflik'],['Kayıt',b=>b.recordCount||b.totalRecords||0],['m3',b=>b.m3||0],['Sürüm',backupVersion],['Tarih','createdAt'],['Kaynak','source']]));
+  if($('showRiskUsersBtn'))$('showRiskUsersBtn').addEventListener('click',()=>{renderOperationCenterV519();toast('Riskli kullanıcılar listelendi')});
+  if($('copySystemSummaryBtn'))$('copySystemSummaryBtn').addEventListener('click',()=>{navigator.clipboard&&navigator.clipboard.writeText(systemSummaryV519()).then(()=>toast('Sistem özeti kopyalandı')).catch(()=>downloadTextV519('mesaha_admin_ozet.txt',systemSummaryV519()))});
+  if($('downloadAuditBtn'))$('downloadAuditBtn').addEventListener('click',()=>downloadJson('mesaha_admin_islem_gecmisi_v519.json',state.actionLogs||[]));
+  if($('saveAdminNoteBtn'))$('saveAdminNoteBtn').addEventListener('click',()=>{try{localStorage.setItem('mesaha_admin_note_v519',clean($('adminNoteInputV519').value));toast('Admin notu kaydedildi')}catch(e){toast('Not kaydedilemedi')}});
+  if($('broadcastTarget'))$('broadcastTarget').addEventListener('change',()=>{const w=$('broadcastSeflikWrap');if(w)w.style.display=$('broadcastTarget').value==='seflik'?'block':''});
   $('modalClose').addEventListener('click',()=>$('modal').classList.remove('show'));
   $('modal').addEventListener('click',e=>{if(e.target===$('modal'))$('modal').classList.remove('show')});
   document.body.addEventListener('click',e=>{
     const card=e.target.closest('[data-user-card]');if(card&&!e.target.closest('button')){card.classList.toggle('open');return}
     const ud=e.target.closest('[data-user-detail]');if(ud){showUserDetail(ud.dataset.userDetail);return}
-    const uw=e.target.closest('[data-user-warning]');if(uw){sendWarning(uw.dataset.userWarning).catch(x=>toast(errText(x)));return}
+    const uw=e.target.closest('[data-user-warning]');if(uw){sendWarning(uw.dataset.userWarning).catch(x=>toast(errText(x)));return}const uuw=e.target.closest('[data-user-update-warning-v519]');if(uuw){sendUpdateWarningV519(uuw.dataset.userUpdateWarningV519).catch(x=>toast(errText(x)));return}
     const up=e.target.closest('[data-user-passive]');if(up){passiveUser(up.dataset.userPassive);return}
     const ua=e.target.closest('[data-user-archive]');if(ua){archiveUser(ua.dataset.userArchive);return}
     const bd=e.target.closest('[data-backup-download]');if(bd){backupDownload(bd.dataset.backupDownload);return}
