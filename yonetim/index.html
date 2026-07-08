@@ -448,12 +448,28 @@ async function getColSafe(db,name,required){
 }
 async function bridgePost428(action,data){const res=await fetch(DRIVE_BRIDGE_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(Object.assign({secret:DRIVE_SECRET,action:action},data||{})),redirect:'follow',cache:'no-store'});const txt=await res.text();let j;try{j=JSON.parse(txt)}catch(e){throw new Error('Drive cevabı okunamadı')}if(!res.ok||!j.ok)throw new Error(j.error||('Drive hata '+res.status));return j}
 async function loadDriveBackups428(){try{const j=await bridgePost428('adminList',{username:ADMIN_USER,seflik:ADMIN_SEFLIK});return (j.items||[]).map(x=>({id:'drive_'+x.id,driveFileId:x.id,source:'google-drive',fileName:x.name||'Drive yedeği',name:x.username||'',seflik:x.seflik||'',bolmeNo:x.bolme||'',userKey:x.userKey||'',recordCount:Number(x.count||0),totalRecords:Number(x.count||0),m3:Number(x.totalVolume||0),totalM3:Number(x.totalVolume||0),createdAt:x.createdAt||'',createdAtMs:Date.parse(x.createdAt||'')||0,fileVersion:x.version||'',appVersion:x.version||'',driveLink:'https://drive.google.com/file/d/'+encodeURIComponent(x.id)+'/view'}))}catch(e){state.collectionErrors.driveBackups=errText(e);return []}}
+const GUARD_FUNCTION_URL_V511='https://swrbpdpotmirnmtqnuba.supabase.co/functions/v1/smooth-function';
+const ADMIN_KEY_STORE_V511='mesaha_admin_guard_key_v505';
+const SESSION_KEY_V511='mesaha_supabase_v500_session';
+function adminKeyV511(){let k='';try{k=String(localStorage.getItem(ADMIN_KEY_STORE_V511)||'').trim()}catch(e){}if(!k){k=String(prompt('Yönetim veri anahtarını giriniz')||'').trim();try{if(k)localStorage.setItem(ADMIN_KEY_STORE_V511,k)}catch(e){}}return k}
+function sessionTokenV511(){try{const s=JSON.parse(localStorage.getItem(SESSION_KEY_V511)||'{}');return String(s&&s.access_token||'').trim()}catch(e){return ''}}
+async function adminGuardCallV511(action,data){try{if(window.mesahaSupabaseV380&&window.mesahaSupabaseV380.ready)await window.mesahaSupabaseV380.ready()}catch(e){}const key=adminKeyV511();if(!key)throw new Error('Yönetim veri anahtarı yok');const c=window.MESAHA_SUPABASE_CONFIG||{};const token=sessionTokenV511();const res=await fetch(GUARD_FUNCTION_URL_V511,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token,'apikey':String(c.anonKey||c.anon_key||'').trim()},body:JSON.stringify(Object.assign({action:action,admin_key:key},data||{})),cache:'no-store'});const txt=await res.text();let j={};try{j=txt?JSON.parse(txt):{}}catch(e){throw new Error('Yönetim veri cevabı okunamadı')}if(!res.ok||!j.ok)throw new Error(j.error||j.reason||('Yönetim veri servisi hata '+res.status));return j}
+function msIsoV511(x){const ms=Date.parse(String(x||''));return Number.isFinite(ms)?ms:0}
+function rowTimeV511(r){return msIsoV511(r&&((r.payload&&r.payload.updatedAt)||(r.payload&&r.payload.createdAt)||r.updated_at||r.created_at||r.last_seen_at))||Date.now()}
+function adminUserFromProfileV511(r){r=r||{};const d=r.device_info||{};const ms=rowTimeV511(r);return {id:r.user_key||r.user_id,userKey:r.user_key||'',name:r.name||'Kullanıcı',seflik:r.seflik||'',bolmeNo:r.bolme_no||'',appVersion:r.app_version||'',fileVersion:r.file_version||'',deviceId:d.deviceId||d.installId||d.id||'',lastDeviceInfo:d,lastDevice:d.lastDevice||d.platform||[d.os,d.browser,d.screen].filter(Boolean).join(' • '),deviceType:d.deviceType||'',os:d.os||'',browser:d.browser||'',screen:d.screen||'',viewport:d.viewport||'',userAgent:d.userAgent||'',lastSeen:r.updated_at||r.created_at||'',lastSeenMs:ms,lastLogin:r.updated_at||r.created_at||'',lastLoginMs:ms,updatedAt:r.updated_at||r.created_at||'',updatedAtMs:ms,source:'admin_edge_profiles'}}
+function adminUsageFromRowV511(r){r=r||{};const p=Object.assign({},r.payload||{});const ms=rowTimeV511(r);p.id=p.id||p.userKey||r.user_id||'usage';p.userKey=p.userKey||p.user_key||'';p.recordCount=Number(r.record_count||p.recordCount||p.totalRecords||0)||0;p.totalRecords=p.recordCount;p.totalM3=Number(r.total_volume||p.totalM3||p.m3||0)||0;p.m3=p.totalM3;p.appVersion=p.appVersion||r.app_version||'';p.updatedAt=p.updatedAt||r.updated_at||r.last_seen_at||'';p.updatedAtMs=p.updatedAtMs||ms;p.lastSeen=p.lastSeen||r.last_seen_at||r.updated_at||'';p.lastSeenMs=p.lastSeenMs||ms;p.source='admin_edge_usage';return p}
+function adminBackupFromSlotV511(r){r=r||{};const p=Object.assign({},r.payload||{}),u=p.user||{};const name=p.name||u.name||'',seflik=p.seflik||u.seflik||'';const tmp={name:name,seflik:seflik,userKey:p.userKey||p.user_key||''};const key=p.userKey||p.user_key||userKeyOf(tmp)||'';const ms=rowTimeV511(r);return {id:'supa_'+String(r.user_id||'u')+'_'+String(r.slot_id||'latest'),slotId:r.slot_id||'latest',supabaseUserId:r.user_id||'',source:'supabase',userKey:key,name:name,seflik:seflik,bolmeNo:p.bolmeNo||u.bolmeNo||'',fileName:r.backup_name||p.fileName||('Supabase yedeği '+(r.slot_id||'latest')),payload:p,recordCount:Number(r.record_count||p.recordCount||p.count||0)||0,totalRecords:Number(r.record_count||p.recordCount||p.count||0)||0,m3:Number(r.total_volume||p.m3||p.totalVolume||0)||0,totalM3:Number(r.total_volume||p.m3||p.totalVolume||0)||0,createdAt:p.createdAt||r.created_at||'',createdAtMs:Number(p.createdAtMs||0)||ms,updatedAt:r.updated_at||'',updatedAtMs:ms,appVersion:p.appVersion||p.visibleVersion||'',fileVersion:p.fileVersion||p.version||'',archived:r.archived===true||p.archived===true,raw:r}}
+function adminLogFromRowV511(r){r=r||{};const p=Object.assign({},r.payload||{});const ms=rowTimeV511(r);p.id=p.id||r.id||('log_'+ms);p.level=p.level||r.level||'';p.message=p.message||r.message||'';p.createdAt=p.createdAt||r.created_at||r.updated_at||'';p.createdAtMs=Number(p.createdAtMs||0)||ms;p.updatedAt=p.updatedAt||r.updated_at||'';p.updatedAtMs=Number(p.updatedAtMs||0)||ms;p.source='admin_edge_log';return p}
+function splitAdminLogsV511(rows){const all=(rows||[]).map(adminLogFromRowV511);return {tickets:all.filter(x=>x&&x.userKey&&x.message&&x.message!=='health-ok'&&!x.scopeText&&!/health-ok/i.test(String(x.message))),exports:all.filter(x=>x&&(x.scopeText||x.scopeMode||x.lastExportScopeText)),health:all.filter(x=>/health-ok/i.test(String(x.message||''))||x.level==='health')}}
+async function loadAdminAllV511(){try{return await adminGuardCallV511('admin_list_all',{limit:2500})}catch(e){state.collectionErrors.adminEdge=errText(e);return null}}
+
 async function loadAll(){
   try{
     $('syncInfo').textContent='Supabase verileri okunuyor…';
     state.collectionErrors={};
+    state.adminEdgeRead=false;
     const {db}=await ready();
-    const [users,backups,tickets,usage,broadcastsRaw,exportsRaw,archivesRaw,settingsRaw,healthRaw]=await Promise.all([
+    let [users,backups,tickets,usage,broadcastsRaw,exportsRaw,archivesRaw,settingsRaw,healthRaw]=await Promise.all([
       getColSafe(db,'users',true),
       getColSafe(db,'backups',true),
       getColSafe(db,'supportTickets',true),
@@ -464,6 +480,19 @@ async function loadAll(){
       getColSafe(db,'adminSettings',false),
       getColSafe(db,'healthChecks',false)
     ]);
+    const adminAllV511=await loadAdminAllV511();
+    if(adminAllV511&&adminAllV511.ok){
+      if(Array.isArray(adminAllV511.profiles)||Array.isArray(adminAllV511.users)) users=(adminAllV511.profiles||adminAllV511.users||[]).map(adminUserFromProfileV511);
+      if(Array.isArray(adminAllV511.usage)) usage=(adminAllV511.usage||[]).map(adminUsageFromRowV511);
+      if(Array.isArray(adminAllV511.backups)) backups=(adminAllV511.backups||[]).map(adminBackupFromSlotV511);
+      if(Array.isArray(adminAllV511.logs)){
+        const sp=splitAdminLogsV511(adminAllV511.logs);
+        if(sp.tickets.length) tickets=sp.tickets;
+        if(sp.exports.length) exportsRaw=sp.exports;
+        if(sp.health.length) healthRaw=sp.health;
+      }
+      state.adminEdgeRead=true;
+    }
     const driveBackups=await loadDriveBackups428();
     state.permissions=[];
     state.actionLogs=[];
@@ -484,7 +513,7 @@ async function loadAll(){
     const errs=Object.keys(state.collectionErrors||{});
     const dataCount=state.users.length+state.backups.length+state.tickets.length+state.usage.length+state.exports.length;
     if(dataCount>0){
-      $('syncInfo').textContent=(errs.length?'Kısmi okundu':'Supabase veri okundu')+' • Kullanıcı:'+identitySummaryV422().users+' • Yedek:'+state.backups.length+' • Bildirim:'+state.tickets.length;
+      $('syncInfo').textContent=(state.adminEdgeRead?'Tüm kullanıcı verisi okundu':(errs.length?'Kısmi okundu':'Supabase veri okundu'))+' • Kullanıcı:'+identitySummaryV422().users+' • Yedek:'+state.backups.length+' • Bildirim:'+state.tickets.length;
     }else if(errs.length){
       $('syncInfo').textContent='Supabase bağlandı ama veri okunamadı: '+errs.join(', ');
     }else{
