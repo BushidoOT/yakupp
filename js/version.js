@@ -1,6 +1,6 @@
 (function(root){
   'use strict';
-  var info = {"app": "V5.12", "version": "v512_panel_bos_kayit_temizligi", "build": 512, "visibleVersion": "V5.12 •ExelanceX•", "shortVersion": "V5.12 •ExelanceX•", "name": "Mesaha İO V5.12 •ExelanceX•", "cacheName": "mesaha-app-v512-panel-bos-kayit-temizligi", "builtAt": "2026-07-08T13:25:00+03:00", "notes": "", "assetVersion": "512", "latestVersion": "v512_panel_bos_kayit_temizligi", "latestBuild": 512, "currentBuild": 512, "minSupportedBuild": 409, "forceUpdate": true, "updateUrl": "./temizle.html", "cleanUrl": "./guncelle.html"};
+  var info = {"app": "V5.13", "version": "v513_admin_guvenlik_hata_duzeltme", "build": 513, "visibleVersion": "V5.13 •ExelanceX•", "shortVersion": "V5.13 •ExelanceX•", "name": "Mesaha İO V5.13 •ExelanceX•", "cacheName": "mesaha-app-v513-admin-guvenlik-hata-duzeltme", "builtAt": "2026-07-08T13:55:00+03:00", "notes": "", "assetVersion": "513", "latestVersion": "v513_admin_guvenlik_hata_duzeltme", "latestBuild": 513, "currentBuild": 513, "minSupportedBuild": 409, "forceUpdate": true, "updateUrl": "./temizle.html", "cleanUrl": "./guncelle.html"};
   try{ Object.freeze(info); }catch(e){}
   function expose(name,value){
     try{ Object.defineProperty(root,name,{configurable:false,enumerable:true,get:function(){return value;},set:function(){}}); }
