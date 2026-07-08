@@ -137,12 +137,83 @@ body:after{width:420px;height:420px;right:-90px;top:140px;background:radial-grad
 @media(max-width:980px){.visual-hero-v522{grid-template-columns:1fr}.summary-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:640px){.hero-panel-v522 h2{font-size:30px}.hero-illu-v522{grid-template-columns:1fr}.summary-grid{grid-template-columns:1fr}.illu-card-v522{min-height:150px}}
 
+
+/* V523 arayüz toparlama: yeni özellik yok, düzen/okunabilirlik düzeltmeleri */
+.app{padding-bottom:132px}
+.top{gap:14px;align-items:center}
+.brand{flex:1 1 auto}
+.brand>div{min-width:0}
+.brand b{max-width:100%;display:block}
+.top-actions{margin-left:auto}
+.version-pill,.sync-mini-v520{max-width:min(620px,100%);white-space:normal;line-height:1.25}
+.visual-hero-v522{align-items:stretch}
+.hero-panel-v522{min-height:214px;display:flex;flex-direction:column;justify-content:center}
+.hero-illu-v522{min-width:0}
+.illu-card-v522{min-width:0}
+.summary-grid{grid-template-columns:repeat(auto-fit,minmax(168px,1fr))}
+.summary-card{min-width:0;min-height:142px}
+.summary-card .value{font-size:clamp(30px,4vw,42px)}
+.security-metrics{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.security-metric{border-right:0;border-bottom:0}
+.activity-card{grid-template-columns:minmax(0,1fr) minmax(260px,360px);align-items:start}
+.activity-main,.activity-head,.meta{min-width:0}
+.activity-name{font-size:clamp(18px,2.4vw,24px);line-height:1.18;word-break:break-word;overflow-wrap:anywhere}
+.meta{word-break:break-word;overflow-wrap:anywhere}
+.actions{width:100%;grid-template-columns:repeat(2,minmax(0,1fr));min-width:0}
+.actions .btn{white-space:normal;line-height:1.15}
+.user-detail{grid-column:1/-1;width:100%}
+.user-detail.open{display:block!important}
+.event-detail-list-v521{display:grid;gap:12px}
+.event-detail-item-v521{border:1px solid #e5e7eb;border-radius:18px;padding:14px;background:#fff;display:grid;gap:10px}
+.event-detail-item-v521.admin-event-v522{background:#f8fafc}
+.event-detail-raw-v521{max-height:220px;overflow:auto;white-space:pre-wrap;word-break:break-word;font-size:12px;line-height:1.35}
+.event-tools-v521{display:flex;gap:8px;flex-wrap:wrap}
+.event-tools-v521 .btn{min-height:38px;padding:8px 12px}
+.system-zone-v522{grid-column:1/-1;margin-top:4px}
+.system-zone-v522 .section-head{align-items:flex-start}
+.panel-card{min-width:0}
+.backup-card,.user-card{min-width:0}
+.tabs{bottom:max(12px,env(safe-area-inset-bottom));width:min(880px,calc(100vw - 18px))}
+.tab{min-width:0}
+.modal-card{padding-bottom:calc(18px + env(safe-area-inset-bottom))}
+@media(max-width:980px){
+  .top{position:sticky;display:grid;grid-template-columns:1fr auto}
+  .brand{grid-column:1/-1}
+  .top-actions{grid-column:1/-1;width:100%;display:grid;grid-template-columns:1fr 1fr;margin-left:0}
+  .top-actions .btn{width:100%}
+  .visual-hero-v522{grid-template-columns:1fr}
+  .hero-illu-v522{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .activity-card{grid-template-columns:1fr}
+  .actions{grid-template-columns:1fr 1fr}
+}
+@media(max-width:640px){
+  .app{padding:12px 12px 126px}
+  .top{margin:-12px -12px 14px;padding:12px}
+  .brand{gap:10px}
+  .brand img{width:48px;height:48px;border-radius:16px}
+  .brand b{font-size:21px;white-space:normal}
+  .brand small{font-size:13px}
+  .version-pill,.sync-mini-v520{font-size:11px;padding:5px 8px}
+  .hero-panel-v522{min-height:178px;padding:18px;border-radius:24px}
+  .hero-panel-v522 h2{font-size:26px}
+  .hero-badges-v522 span{font-size:12px;padding:7px 10px}
+  .hero-illu-v522{grid-template-columns:1fr}
+  .illu-card-v522{min-height:128px;border-radius:20px}
+  .illu-card-v522 .svg{width:96px;height:96px}
+  .summary-card{min-height:126px;padding:16px}
+  .summary-card .icon{width:50px;height:50px;font-size:24px}
+  .security-hero,.panel-card{border-radius:22px;padding:15px}
+  .actions,.backup-actions,.user-actions{grid-template-columns:1fr}
+  .tabs{grid-template-columns:repeat(7,74px);overflow-x:auto;justify-content:flex-start;border-radius:22px}
+  .tab{font-size:11px}
+}
+
 </style>
 </head>
 <body>
 <div class="app">
   <header class="top">
-    <div class="brand"><img alt="" src="../assets/mesaha_logo.png"/><div><b>Mesaha İO Yönetim</b><small>Kurtarma ve Güvenlik Merkezi</small><div class="version-pill" id="versionPill">Admin V5.22 • Sürüm hazırlanıyor</div><div class="sync-mini-v520" id="syncMiniV520">Son senkron bekleniyor</div></div></div>
+    <div class="brand"><img alt="" src="../assets/mesaha_logo.png"/><div><b>Mesaha İO Yönetim</b><small>Kurtarma ve Güvenlik Merkezi</small><div class="version-pill" id="versionPill">Admin V5.23 • Sürüm hazırlanıyor</div><div class="sync-mini-v520" id="syncMiniV520">Son senkron bekleniyor</div></div></div>
     <div class="top-actions"><button class="btn soft" id="appBtn" type="button">↗ Uygulama</button><button class="btn green" id="refreshBtn" type="button">⟳ Yenile</button></div>
   </header>
 
@@ -368,7 +439,7 @@ body:after{width:420px;height:420px;right:-90px;top:140px;background:radial-grad
 
 const ADMIN_USER='yakupduzgun';
 const ADMIN_SEFLIK='Yaylacık_43';
-const ADMIN_PANEL_VERSION='Admin V5.22';
+const ADMIN_PANEL_VERSION='Admin V5.23';
 const GUARD_FUNCTION_URL='https://swrbpdpotmirnmtqnuba.supabase.co/functions/v1/smooth-function';
 const ADMIN_KEY_STORE='mesaha_admin_guard_key_v505';
 const SESSION_KEY='mesaha_supabase_v500_session';
@@ -571,13 +642,18 @@ function isAdminEventV522(e){
   const raw=clean(e.user_key||e.userKey);
   const dev=clean(e.device_id||e.deviceId);
   const version=clean(e.app_version||e.version);
-  return /^admin[_-]/.test(t) || /^system[_-]/.test(t) || /^panel[_-]/.test(t) || /admin/.test(t) || ((!name&&!seflik&&!dev&&!version)&&(isUuidLikeV522(raw)||/^dev_/i.test(raw)||raw.length>20));
+  return /^admin[_-]/.test(t) || /^system[_-]/.test(t) || /^panel[_-]/.test(t) || /admin/.test(t) || /_block$|block_|remove_block|add_block/i.test(t) || ((!name&&!seflik&&!dev&&!version)&&(isUuidLikeV522(raw)||/^dev_/i.test(raw)||raw.length>20));
 }
 function displayEventUserV522(e){
   if(isAdminEventV522(e)) return 'Admin / Sistem Kaydı';
   const u=eventUser(e);
   if(!u || isUuidLikeV522(u)) return 'Tanımsız kullanıcı';
   return u;
+}
+function displayEventSeflikV523(e){
+  if(isAdminEventV522(e)) return 'Panel';
+  const s=eventSeflik(e);
+  return s || '—';
 }
 function eventGroups(items){
   const map={},groups=[],system=[];
@@ -611,7 +687,7 @@ function eventRawPreviewV521(d){
       device:d.device_id||'-',
       user_key:d.user_key||'-',
       name:displayEventUserV522(d)||'-',
-      seflik:eventSeflik(d)||'-',
+      seflik:displayEventSeflikV523(d)||'-',
       version:d.app_version||d.version||'-',
       match:eventMatchLabelV520(d),
       admin_event:isAdminEventV522(d)?'Evet':'Hayır'
@@ -626,7 +702,7 @@ function eventDetailRowsV521(arr){
     const raw=clean(d.user_key||d.userKey)||'-';
     const match=eventMatchLabelV520(d);
     const user=displayEventUserV522(d)||'-';
-    const sef=eventSeflik(d)||'-';
+    const sef=displayEventSeflikV523(d)||'-';
     const admin=isAdminEventV522(d);
     const title=admin?'Admin kaydı':(d.blocked?'Engellendi':'Hareket');
     return `<div class="event-detail-item-v521 ${admin?'admin-event-v522':''}">
@@ -675,7 +751,7 @@ function toggleAllIpDetailsV521(open){document.querySelectorAll('#eventsList .ac
 function eventCard(arr,i,compact){
   const e=arr[0]||{};
   const user=displayEventUserV522(e)||'—';
-  const sef=eventSeflik(e)||'—';
+  const sef=displayEventSeflikV523(e)||'—';
   const ip=clean(e.ip_address)||'-';
   const dev=clean(e.device_id)||'-';
   const raw=clean(e.user_key||e.userKey);
