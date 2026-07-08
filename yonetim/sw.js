@@ -1,5 +1,5 @@
-/* Mesaha İO Yönetim V514 admin service worker */
-const CACHE='mesaha-admin-v514';
+/* Mesaha İO Yönetim V515 admin service worker */
+const CACHE='mesaha-admin-v515';
 const ASSETS=[
   './',
   './index.html',

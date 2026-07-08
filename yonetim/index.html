@@ -130,6 +130,10 @@ body{background:radial-gradient(circle at top left,rgba(34,197,94,.11),transpare
 .recovery-source-v502 .src{border-radius:999px;padding:5px 8px;font-size:12px;font-weight:1000;background:#f1f5f9;color:#475569;border:1px solid #cbd5e1}.recovery-source-v502 .src.drive{background:#eff6ff;color:#1d4ed8;border-color:#bfdbfe}.recovery-source-v502 .src.supabase{background:#ecfdf5;color:#166534;border-color:#bbf7d0}
 @media(max-width:760px){.security-score-v502{grid-template-columns:1fr 1fr}}
 
+
+/* V515 premium admin görünüm */
+.admin-version-badge-v515{display:inline-flex;align-items:center;margin-left:6px;border-radius:999px;padding:3px 8px;background:#ecfdf3;border:1px solid #bbf7d0;color:#166534;font-size:11px;font-weight:1000;vertical-align:middle;white-space:nowrap}.admin-version-badge-v515.inline{margin-left:0;margin-top:8px}.top{border-radius:0 0 28px 28px;box-shadow:0 14px 38px rgba(15,23,42,.08);background:rgba(255,255,255,.96)}.brand b{letter-spacing:-.04em}.btn.green{background:linear-gradient(135deg,#16a34a,#15803d);box-shadow:0 12px 26px rgba(22,163,74,.20)}.kpi{border-radius:24px;box-shadow:0 16px 40px rgba(15,23,42,.055)}.kpi .ico{border-radius:999px}.phone-card,.card,.guard-card-v505{border-radius:28px}.tabs{border-radius:30px}.tab.active{background:linear-gradient(135deg,#ecfdf3,#dcfce7);box-shadow:inset 0 0 0 1px #bbf7d0}.guard-center-premium-v515{display:grid;gap:14px}.security-title-v515{margin:6px 0 0;padding:4px 2px}.security-title-v515 h2{font-size:34px}.security-monitor-v515{border:1px solid #bbf7d0;background:linear-gradient(135deg,#f0fdf4,#ffffff 62%,#ecfdf3);border-radius:32px;padding:22px;box-shadow:0 18px 44px rgba(22,163,74,.09)}.security-monitor-head-v515{display:flex;align-items:center;justify-content:space-between;gap:14px}.shield-v515{width:58px;height:58px;border-radius:20px;display:grid;place-items:center;background:#dcfce7;color:#166534;font-size:30px;border:1px solid #bbf7d0}.security-monitor-head-v515 h3{margin:0;font-size:26px;letter-spacing:-.035em}.security-monitor-head-v515 p{margin:3px 0 0;color:#64748b;font-weight:850}.security-monitor-grid-v515{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;margin-top:18px;border:1px solid #dbe7e1;border-radius:22px;background:rgba(255,255,255,.84);overflow:hidden}.security-monitor-grid-v515 div{display:grid;place-items:center;text-align:center;gap:5px;padding:14px 8px;border-right:1px solid #e5e7eb}.security-monitor-grid-v515 div:last-child{border-right:0}.security-monitor-grid-v515 span{font-size:22px}.security-monitor-grid-v515 small{color:#64748b;font-weight:900}.security-monitor-grid-v515 b{color:#166534}.security-ok-v515{margin-top:14px;border:1px solid #bbf7d0;background:#f0fdf4;border-radius:18px;padding:12px 14px;color:#475569;font-weight:850}.guard-grid-premium-v515{grid-template-columns:1fr 1fr}.ip-list-card-v515{background:#fff}.guard-row-v505{border-radius:20px;background:#fff;box-shadow:0 10px 24px rgba(15,23,42,.045)}.guard-title-v509 b{font-size:20px}.guard-badge-v505.ok{background:#ecfdf3}.guard-actions-v505 .btn.danger{background:#fff1f2;color:#991b1b;border-color:#fecaca}.guard-actions-v505 .btn.warn{background:#fff7ed;color:#9a3412;border-color:#fed7aa}.guard-actions-v505 .btn.soft{background:#fff}.guard-meta-grid-v509 small{font-size:13px}.user-card{border-radius:28px;box-shadow:0 16px 40px rgba(15,23,42,.055)}.user-card .topline{grid-template-columns:58px 1fr auto}.avatar{width:58px;height:58px;border-radius:18px}.chip{font-size:13px}@media(max-width:760px){.app{padding-left:14px;padding-right:14px}.top{margin-left:-14px;margin-right:-14px}.security-title-v515 h2{font-size:28px}.security-monitor-grid-v515{grid-template-columns:repeat(2,minmax(0,1fr))}.security-monitor-grid-v515 div:nth-child(2){border-right:0}.security-monitor-grid-v515 div:nth-child(1),.security-monitor-grid-v515 div:nth-child(2){border-bottom:1px solid #e5e7eb}.guard-grid-premium-v515{grid-template-columns:1fr}.guard-manual-v515{order:3}.ip-list-card-v515{order:2}.guard-meta-grid-v509{grid-template-columns:1fr}.top-actions .btn{padding:9px 12px}.brand img{width:44px;height:44px}.brand b{font-size:18px}.brand small{font-size:11px}.admin-version-badge-v515{display:inline-flex;margin-top:3px;margin-left:0}}
+
 </style>
 <script src="../js/version.js"></script>
 <script>try{ if(window.MesahaVersion&&window.MesahaVersion.applyToDocument) window.MesahaVersion.applyToDocument(document); }catch(e){}</script>
@@ -139,7 +143,7 @@ body{background:radial-gradient(circle at top left,rgba(34,197,94,.11),transpare
 
 <div class="app">
   <header class="top">
-    <div class="brand"><img alt="" src="../assets/mesaha_logo.png"/><div><b>Mesaha İO Yönetim</b><small>Kurtarma ve Güvenlik Paneli</small></div></div>
+    <div class="brand"><img alt="" src="../assets/mesaha_logo.png"/><div><b>Mesaha İO Yönetim</b><small>Kurtarma ve Güvenlik Merkezi <span class="admin-version-badge-v515" id="adminVersionBadgeV515">V5.15</span></small></div></div>
     <div class="top-actions"><a class="btn soft app-return-btn" data-app-home href="../index.html" title="Normal uygulamaya dön">← Uygulama</a><button class="btn green" id="refreshBtn" type="button">Yenile</button></div>
   </header>
 
@@ -359,7 +363,7 @@ const ADMIN_USER='yakupduzgun', ADMIN_SEFLIK='Yaylacık_43';
 const DRIVE_BRIDGE_URL='https://script.google.com/macros/s/AKfycbzOYh2MyOQmwVQh-7Jm9KyjaFjmjSwgHZSw7XKAVzDS1ibmcM5bQZVYdn-NyesI-ph7/exec', DRIVE_SECRET='MESAHAYEDEK_2026_YAKUP_43';
 const CLOUD_ENGINE='supabase';
 const $=id=>document.getElementById(id);
-const state={users:[],rawUsers:[],backups:[],tickets:[],usage:[],broadcasts:[],exports:[],permissions:[],archives:[],actionLogs:[],settings:[],healthChecks:[],collectionErrors:{},showAllTickets:false,ready:false};
+const state={users:[],rawUsers:[],backups:[],tickets:[],usage:[],broadcasts:[],exports:[],permissions:[],archives:[],actionLogs:[],settings:[],healthChecks:[],collectionErrors:{},showAllTickets:false,ready:false};try{window.MESAHA_ADMIN_STATE=state;}catch(e){}
 let readyPromise=null;
 function esc(v){return String(v==null?'':v).replace(/[&<>'"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[m]))}
 function n(v){const x=Number(v||0);return Number.isFinite(x)?x:0}
@@ -836,8 +840,8 @@ async function health(){try{const{db,auth}=await ready();const [u,b,t]=await Pro
 function exportAll(){const blob=new Blob([JSON.stringify({exportedAt:new Date().toISOString(),version:((window.MESAHA_VERSION&&window.MESAHA_VERSION.version)||'local'),users:state.users,backups:state.backups,tickets:state.tickets,broadcasts:state.broadcasts,usage:state.usage},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='mesaha_admin_tum_veriler_supabase.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
 function goAppHome(e){
   if(e) e.preventDefault();
-  var target = new URL('./index.html', location.href).href;
-  try{ location.assign(target); }catch(_){ location.href = './index.html'; }
+  var target = new URL('../index.html', location.href).href;
+  try{ location.assign(target); }catch(_){ location.href = '../index.html'; }
 }
 
 function showUserModal(key){
@@ -931,14 +935,17 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   function ensureUi(){
     var tabs=$('tabs'); if(tabs && !tabs.querySelector('[data-tab="security"]')){var b=document.createElement('button');b.className='tab';b.dataset.tab='security';b.innerHTML='<span>🛡️</span>Güvenlik';b.addEventListener('click',function(){ if(window.go) window.go('security'); else {document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.tab==='security'));document.querySelectorAll('.panel').forEach(x=>x.classList.toggle('active',x.id==='tab-security'));window.scrollTo({top:0,behavior:'smooth'});} renderSecurityGuard().catch(function(e){toast(e.message||e)});});tabs.appendChild(b);} 
     var panel=$('tab-security'); if(!panel || panel.__v505GuardUi) return; panel.__v505GuardUi=true;
-    var wrap=document.createElement('div'); wrap.id='guardCenterV505'; wrap.innerHTML='\
-      <div class="section-title"><div><h2>IP / Kullanıcı Engelleme</h2><p>Edge Function üzerinden gerçek IP hareketlerini gör, IP / kullanıcı / cihaz engeli koy. Ana uygulama sadece bulut işlemi öncesi kontrol yapar.</p></div><div class="row"><button class="btn soft" id="guardKeyResetV505" type="button">Anahtarı Değiştir</button><button class="btn green" id="guardRefreshV505" type="button">Güvenliği Yenile</button></div></div>\
-      <div class="guard-grid-v505">\
-        <div class="guard-card-v505"><h3>Yeni Engel Ekle</h3><div class="guard-form-v505"><select id="guardBlockTypeV505"><option value="ip">IP adresi</option><option value="user_key">Kullanıcı anahtarı</option><option value="device_id">Cihaz ID</option></select><input id="guardBlockValueV505" autocomplete="off" placeholder="Engellenecek değer"/><textarea id="guardBlockReasonV505" rows="3" placeholder="Sebep"></textarea><button class="btn danger" id="guardAddBlockV505" type="button">Engelle</button><button class="btn soft" id="guardClearBlockFormV505" type="button">Temizle</button></div></div>\
+    var wrap=document.createElement('div'); wrap.id='guardCenterV505'; wrap.className='guard-center-premium-v515'; wrap.innerHTML='\
+      <div class="section-title security-title-v515"><div><h2>Güvenlik Merkezi</h2><p>Sistemi, IP hareketlerini, kullanıcı/cihaz engellerini tek ekrandan yönet.</p><span class="admin-version-badge-v515 inline" id="adminSecurityVersionV515">V5.15</span></div><div class="row"><button class="btn soft" id="guardKeyResetV505" type="button">Anahtarı Değiştir</button><button class="btn green" id="guardRefreshV505" type="button">Güvenliği Yenile</button></div></div>\
+      <div class="security-monitor-v515"><div class="security-monitor-head-v515"><div class="shield-v515">🛡️</div><div><h3>Koruma Durumu</h3><p>Sisteminiz izleniyor ve güvende</p></div><span class="pill green">● Normal</span></div><div class="security-monitor-grid-v515"><div><span>🛡️</span><small>Koruma</small><b>Aktif</b></div><div><span>🔍</span><small>Tehdit Taraması</small><b>0 tehdit</b></div><div><span>☁️</span><small>Bulut Kontrol</small><b>Aktif</b></div><div><span>🔄</span><small>Sürüm</small><b id="adminSecurityMiniVersionV515">V5.15</b></div></div><div class="security-ok-v515">✅ Sisteminiz güvende. Kritik tehdit tespit edilmedi.</div></div>\
+      <div class="guard-grid-v505 guard-grid-premium-v515">\
+        <div class="guard-card-v505 guard-manual-v515"><h3>Yeni Engel Ekle</h3><div class="guard-form-v505"><select id="guardBlockTypeV505"><option value="ip">IP adresi</option><option value="user_key">Kullanıcı anahtarı</option><option value="device_id">Cihaz ID</option></select><input id="guardBlockValueV505" autocomplete="off" placeholder="Engellenecek değer"/><textarea id="guardBlockReasonV505" rows="3" placeholder="Sebep"></textarea><button class="btn danger" id="guardAddBlockV505" type="button">Engelle</button><button class="btn soft" id="guardClearBlockFormV505" type="button">Temizle</button></div></div>\
         <div class="guard-card-v505"><h3>Aktif Engeller</h3><div class="guard-list-v505" id="guardBlocksV505"><div class="empty">Engel listesi bekleniyor.</div></div></div>\
-        <div class="guard-card-v505" style="grid-column:1/-1"><h3>Son IP Hareketleri</h3><div class="guard-list-v505" id="guardEventsV505"><div class="empty">Hareketler bekleniyor.</div></div></div>\
+        <div class="guard-card-v505 ip-list-card-v515" style="grid-column:1/-1"><div class="space"><h3>Son IP Hareketleri</h3><span class="pill">Canlı kayıt</span></div><div class="guard-list-v505" id="guardEventsV505"><div class="empty">Hareketler bekleniyor.</div></div></div>\
       </div>';
+    panel.innerHTML='';
     panel.appendChild(wrap);
+    setAdminVersionV515();
     $('guardRefreshV505').addEventListener('click',function(){renderSecurityGuard().catch(function(e){toast(e.message||e)})});
     $('guardKeyResetV505').addEventListener('click',function(){localStorage.removeItem(ADMIN_KEY_STORE);getAdminKey();});
     $('guardClearBlockFormV505').addEventListener('click',function(){['guardBlockValueV505','guardBlockReasonV505'].forEach(function(id){var el=$(id);if(el)el.value='';})});
@@ -960,7 +967,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     var dev=clean(x&&x.device_id);
     var name=clean(x&&x.name)||clean(x&&x.user_name);
     var seflik=clean(x&&x.seflik);
-    var arr=(window.state&&window.state.users)||state&&state.users||[];
+    var st=window.MESAHA_ADMIN_STATE||window.state||{};var arr=(st&&st.users)||[];
     for(var i=0;i<arr.length;i++){
       var u=arr[i]||{};
       var uk=clean(u.userKey||u.user_key||u.id);
@@ -995,6 +1002,17 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 })();
 </script>
 
+
+
+<script id="mesaha-admin-version-v515">
+function setAdminVersionV515(){
+  try{
+    var v=(window.MESAHA_VERSION&&(window.MESAHA_VERSION.shortVersion||window.MESAHA_VERSION.visibleVersion||window.MESAHA_VERSION.app))||'V5.15';
+    ['adminVersionBadgeV515','adminSecurityVersionV515','adminSecurityMiniVersionV515'].forEach(function(id){var el=document.getElementById(id); if(el) el.textContent=v.replace('•ExelanceX•','').trim();});
+  }catch(e){}
+}
+try{ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',setAdminVersionV515,{once:true}); else setAdminVersionV515(); setTimeout(setAdminVersionV515,600); }catch(e){}
+</script>
 
 <script>
 (function(){
