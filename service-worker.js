@@ -1,4 +1,4 @@
-/* Mesaha İO V511 service worker reads the current build from js/version.js. */
+/* Mesaha İO V512 service worker reads the current build from js/version.js. */
 try{ importScripts('./js/version.js'); }catch(e){}
 
 const META = self.MESAHA_VERSION || {app:'Mesaha İO',version:'local',build:0,visibleVersion:'Mesaha İO',shortVersion:'Mesaha İO',name:'Mesaha İO',cacheName:'mesaha-app-local',assetVersion:''};
