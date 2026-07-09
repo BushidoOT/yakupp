@@ -58,17 +58,17 @@
 
 
 
-/* V536 destek/duyuru/ağaç türü ve cihaz görünümü düzeltmeleri */
-.device-tags-v531 .warn-v536{color:#9a3412!important;background:#fff7ed!important;border-color:#fed7aa!important}
+/* V537 destek/duyuru/ağaç türü ve cihaz görünümü düzeltmeleri */
+.device-tags-v531 .warn-v537{color:#9a3412!important;background:#fff7ed!important;border-color:#fed7aa!important}
 
-.stats-source-note-v536{font-size:13px;color:#64748b;font-weight:850;margin-top:8px}
+.stats-source-note-v537{font-size:13px;color:#64748b;font-weight:850;margin-top:8px}
 
 </style>
 </head>
 <body>
 <div class="app">
 <header class="top">
-  <div class="brand"><img src="../assets/mesaha_logo.png" alt=""/><div><h1>Mesaha İO Yönetim</h1><p>Kurtarma ve Güvenlik Merkezi 🛡️</p><div class="pill-row"><span class="pill" id="versionPill">Admin V5.36 • Hazır</span><span class="pill gray" id="syncPill">Son senkron bekleniyor</span></div></div></div>
+  <div class="brand"><img src="../assets/mesaha_logo.png" alt=""/><div><h1>Mesaha İO Yönetim</h1><p>Kurtarma ve Güvenlik Merkezi 🛡️</p><div class="pill-row"><span class="pill" id="versionPill">Admin V5.37 • Hazır</span><span class="pill gray" id="syncPill">Son senkron bekleniyor</span></div></div></div>
   <div class="top-actions"><button class="btn soft" id="appBtn" type="button">↗ Uygulama</button><button class="btn green" id="refreshBtn" type="button">⟳ Yenile</button></div>
 </header>
 <section class="card login" id="loginCard">
@@ -123,16 +123,16 @@
 <div class="modal" id="modal"><div class="modal-card"><div class="section-head"><h2 id="modalTitle">Detay</h2><button class="btn soft" id="modalClose">Kapat</button></div><div id="modalBody"></div></div></div><div class="toast" id="toast"></div>
 <script>
 (function(){'use strict';
-const ADMIN_PANEL_VERSION='Admin V5.36';
+const ADMIN_PANEL_VERSION='Admin V5.37';
 const ADMIN_NAMES=['yakupduzgun','yakup','bushidoot'];
 const ADMIN_PASS=['yaylacık_43','yaylacik_43','yaylacık','yaylacik'];
-const SESSION_KEY='mesaha_yonetim_login_v536';
+const SESSION_KEY='mesaha_yonetim_login_v537';
 const ADMIN_KEY_STORE='mesaha_admin_guard_key_v505';
 const GUARD_FUNCTION_URL='https://swrbpdpotmirnmtqnuba.supabase.co/functions/v1/smooth-function';
 const DRIVE_BRIDGE_URL='https://script.google.com/macros/s/AKfycbzOYh2MyOQmwVQh-7Jm9KyjaFjmjSwgHZSw7XKAVzDS1ibmcM5bQZVYdn-NyesI-ph7/exec';
 const DRIVE_SECRET='MESAHAYEDEK_2026_YAKUP_43';
 const $=id=>document.getElementById(id);const state={users:[],backups:[],events:[],blocks:[],sources:{},errors:{},lastSync:0};window.MESAHA_ADMIN_STATE=state;
-function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}function clean(v){return String(v==null?'':v).trim()}function n(v){const x=Number(v||0);return Number.isFinite(x)?x:0}function int(v){return Math.round(n(v)).toLocaleString('tr-TR')}function m3(v){return n(v).toLocaleString('tr-TR',{minimumFractionDigits:3,maximumFractionDigits:3})}function dateMs(v){if(typeof v==='number')return v;const ms=Date.parse(String(v||''));return Number.isFinite(ms)?ms:0}function fmt(ms,txt){ms=n(ms)||dateMs(txt);return ms?new Date(ms).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):(txt||'-')}function todayStart(){const d=new Date();d.setHours(0,0,0,0);return d.getTime()}function ago(ms){ms=n(ms);if(!ms)return '-';const m=Math.round(Math.max(0,Date.now()-ms)/60000);if(m<1)return 'şimdi';if(m<60)return m+' dk önce';const h=Math.round(m/60);return h<24?h+' sa önce':Math.round(h/24)+' gün önce'}function appVersion(){return (window.MESAHA_VERSION&&window.MESAHA_VERSION.shortVersion)||'V5.36 •ExelanceX•'}function toast(msg){const el=$('toast');el.textContent=String(msg||'');el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),3000)}function errText(e){return ((e&&e.message)||String(e||'Hata')).slice(0,160)}function downloadJson(name,data){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json;charset=utf-8'}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}function norm(v){return clean(v).toLocaleLowerCase('tr-TR').normalize('NFKD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'')}function initials(name){return clean(name).split(/\s+/).slice(0,2).map(x=>x[0]||'').join('').toUpperCase()||'?'}function userKey(name,seflik){return (clean(name)+'__'+clean(seflik)).toLocaleLowerCase('tr-TR')}function userKeyOf(u){return clean(u&& (u.userKey||u.user_key||u.id)) || userKey(u&&u.name,u&&u.seflik)}function oldVer(v){const s=String(v||'');let m=s.match(/V?(\d+)\.(\d+)/i);if(m)return Number(m[1]+String(m[2]).padStart(2,'0'));m=s.match(/v(\d{3})/i);return m?Number(m[1]):0}function isOld(u){const latest=Number((window.MESAHA_VERSION&&window.MESAHA_VERSION.build)||529);const b=oldVer(u.appVersion||u.fileVersion);return b&&b<latest}
+function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}function clean(v){return String(v==null?'':v).trim()}function n(v){const x=Number(v||0);return Number.isFinite(x)?x:0}function int(v){return Math.round(n(v)).toLocaleString('tr-TR')}function m3(v){return n(v).toLocaleString('tr-TR',{minimumFractionDigits:3,maximumFractionDigits:3})}function dateMs(v){if(typeof v==='number')return v;const ms=Date.parse(String(v||''));return Number.isFinite(ms)?ms:0}function fmt(ms,txt){ms=n(ms)||dateMs(txt);return ms?new Date(ms).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):(txt||'-')}function todayStart(){const d=new Date();d.setHours(0,0,0,0);return d.getTime()}function ago(ms){ms=n(ms);if(!ms)return '-';const m=Math.round(Math.max(0,Date.now()-ms)/60000);if(m<1)return 'şimdi';if(m<60)return m+' dk önce';const h=Math.round(m/60);return h<24?h+' sa önce':Math.round(h/24)+' gün önce'}function appVersion(){return (window.MESAHA_VERSION&&window.MESAHA_VERSION.shortVersion)||'V5.37 •ExelanceX•'}function toast(msg){const el=$('toast');el.textContent=String(msg||'');el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),3000)}function errText(e){return ((e&&e.message)||String(e||'Hata')).slice(0,160)}function downloadJson(name,data){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json;charset=utf-8'}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}function norm(v){return clean(v).toLocaleLowerCase('tr-TR').normalize('NFKD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'')}function initials(name){return clean(name).split(/\s+/).slice(0,2).map(x=>x[0]||'').join('').toUpperCase()||'?'}function userKey(name,seflik){return (clean(name)+'__'+clean(seflik)).toLocaleLowerCase('tr-TR')}function userKeyOf(u){return clean(u&& (u.userKey||u.user_key||u.id)) || userKey(u&&u.name,u&&u.seflik)}function oldVer(v){const s=String(v||'');let m=s.match(/V?(\d+)\.(\d+)/i);if(m)return Number(m[1]+String(m[2]).padStart(2,'0'));m=s.match(/v(\d{3})/i);return m?Number(m[1]):0}function isOld(u){const latest=Number((window.MESAHA_VERSION&&window.MESAHA_VERSION.build)||529);const b=oldVer(u.appVersion||u.fileVersion);return b&&b<latest}
 async function ready(){if(window.mesahaSupabaseV380&&window.mesahaSupabaseV380.ready)return await window.mesahaSupabaseV380.ready();if(window.mesahaSupabase&&window.mesahaSupabase.ready)return await window.mesahaSupabase.ready();throw new Error('Supabase bağlantısı yok')}function readToken(){try{return clean(JSON.parse(localStorage.getItem('mesaha_supabase_v500_session')||'{}').access_token)}catch(e){return ''}}function adminKey(){let k=clean(localStorage.getItem(ADMIN_KEY_STORE)||'');if(!k){k=clean(prompt('Yönetim anahtarını giriniz')||'');if(k)localStorage.setItem(ADMIN_KEY_STORE,k)}return k}async function guardCall(action,data){const k=adminKey();if(!k)throw new Error('Yönetim anahtarı gerekli');const cfg=window.MESAHA_SUPABASE_CONFIG||{};const r=await fetch(GUARD_FUNCTION_URL,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+readToken(),'apikey':clean(cfg.anonKey||cfg.anon_key||'')},body:JSON.stringify(Object.assign({action,admin_key:k},data||{})),cache:'no-store'});const t=await r.text();let j={};try{j=t?JSON.parse(t):{}}catch(e){throw new Error('Edge cevabı okunamadı')}if(!r.ok||!j.ok)throw new Error(j.error||j.reason||('Edge hata '+r.status));return j}async function getColSafe(db,name){try{const s=await db.collection(name).get({source:'server'}).catch(()=>db.collection(name).get());const a=[];s.forEach(d=>a.push(Object.assign({id:d.id},d.data()||{})));return a}catch(e){state.errors[name]=errText(e);return []}}async function bridgePost(action,data){const r=await fetch(DRIVE_BRIDGE_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(Object.assign({secret:DRIVE_SECRET,action},data||{})),cache:'no-store'});const t=await r.text();let j={};try{j=JSON.parse(t)}catch(e){throw new Error('Drive cevabı okunamadı')}if(!r.ok||!j.ok)throw new Error(j.error||'Drive hata');return j}
 function first(){for(let i=0;i<arguments.length;i++){const v=arguments[i];if(v!=null&&String(v).trim()!=='')return v}return ''}
 
@@ -169,7 +169,7 @@ function detectBrowserV531(v){
 function deviceSummaryV531(v){return {platform:detectPlatformV531(v),browser:detectBrowserV531(v)}}
 
 
-function normalizeTotalsV536(obj){
+function normalizeTotalsV537(obj){
   if(!obj)return {};
   if(typeof obj==='string'){
     try{obj=JSON.parse(obj)}catch(e){return {}}
@@ -181,8 +181,8 @@ function normalizeTotalsV536(obj){
   }
   return (typeof obj==='object')?obj:{};
 }
-function totalsToRowsV536(obj){
-  obj=normalizeTotalsV536(obj);const out=[];
+function totalsToRowsV537(obj){
+  obj=normalizeTotalsV537(obj);const out=[];
   Object.keys(obj||{}).forEach(function(k){
     const v=obj[k];let adet=0,m3v=0;
     if(v&&typeof v==='object'){adet=Number(first(v.adet,v.count,v.recordCount,v.totalRecords,0))||0;m3v=Number(first(v.m3,v.hacim,v.volume,v.totalM3,v.value,0))||0}
@@ -191,29 +191,29 @@ function totalsToRowsV536(obj){
   });
   return out;
 }
-function userSummaryTreeRowsV536(u){
+function userSummaryTreeRowsV537(u){
   let rows=summaryObjRowsV532(u&&u.treeTotals);
   userBackups(userKeyOf(u||{})).forEach(function(b){rows=mergeRowsV532(rows,summaryObjRowsV532(b.treeTotals))});
   return rows;
 }
-function userSummaryWoodRowsV536(u){
+function userSummaryWoodRowsV537(u){
   let rows=summaryObjRowsV532(u&&u.productTotals);
   userBackups(userKeyOf(u||{})).forEach(function(b){rows=mergeRowsV532(rows,summaryObjRowsV532(b.productTotals))});
   return rows;
 }
 
 function summaryObjRowsV532(obj){
-  return totalsToRowsV536(obj);
+  return totalsToRowsV537(obj);
 }
 function mergeRowsV532(a,b){
   const map={};
   (a||[]).concat(b||[]).forEach(r=>{const k=r.name||'Belirsiz';if(!map[k])map[k]={name:k,adet:0,metre:0,m3:0};map[k].adet+=n(r.adet);map[k].metre+=n(r.metre);map[k].m3+=n(r.m3)});
   return Object.values(map).sort((x,y)=>n(y.adet)-n(x.adet)||n(y.m3)-n(x.m3));
 }
-function userTreeRowsV532(u,records){const sum=userSummaryTreeRowsV536(u);return sum.length?sum:(records&&records.length?aggregateRecordsV530(records,recordTreeV530):[])}
-function userWoodRowsV532(u,records){const sum=userSummaryWoodRowsV536(u);return sum.length?sum:(records&&records.length?aggregateRecordsV530(records,recordWoodV530):[])}
-function allTreeRowsV532(records){let rows=[];state.users.forEach(u=>{rows=mergeRowsV532(rows,userSummaryTreeRowsV536(u))}); if(rows.length)return rows; return aggregateRecordsV530(records,recordTreeV530)}
-function allWoodRowsV532(records){let rows=[];state.users.forEach(u=>{rows=mergeRowsV532(rows,userSummaryWoodRowsV536(u))}); if(rows.length)return rows; return aggregateRecordsV530(records,recordWoodV530)}
+function userTreeRowsV532(u,records){const sum=userSummaryTreeRowsV537(u);return sum.length?sum:(records&&records.length?aggregateRecordsV530(records,recordTreeV530):[])}
+function userWoodRowsV532(u,records){const sum=userSummaryWoodRowsV537(u);return sum.length?sum:(records&&records.length?aggregateRecordsV530(records,recordWoodV530):[])}
+function allTreeRowsV532(records){let rows=[];state.users.forEach(u=>{rows=mergeRowsV532(rows,userSummaryTreeRowsV537(u))}); if(rows.length)return rows; return aggregateRecordsV530(records,recordTreeV530)}
+function allWoodRowsV532(records){let rows=[];state.users.forEach(u=>{rows=mergeRowsV532(rows,userSummaryWoodRowsV537(u))}); if(rows.length)return rows; return aggregateRecordsV530(records,recordWoodV530)}
 function findUserFlexibleV532(k,name,seflik,index){
   const ix=Number(index);
   const nn=compact(name), ss=compact(seflik), kk=clean(k);
@@ -295,26 +295,44 @@ function userEventsV530(k){
 }
 function userDeviceListV530(u,k){
   const list=[];
-  function labelUnknown(v){return v&&v!=='Bilinmiyor'?v:'Bilinmiyor - kullanıcı uygulamayı güncel sürümle açınca dolacak'}
   function add(device,ip,version,time,source,raw){
-    device=clean(device);ip=clean(ip);version=clean(version);raw=raw||{};
-    if(!device&&!ip&&!version&&!raw)return;
-    const ds=deviceSummaryV531(Object.assign({},raw,{device,ip,version,lastDevice:first(raw.lastDevice,u&&u.lastDevice),userAgent:first(raw.userAgent,raw.ua,u&&u.userAgent,raw.lastDevice,u&&u.lastDevice),platform:first(raw.platform,raw.os,u&&u.platform,raw.deviceType,u&&u.deviceType),browser:first(raw.browser,u&&u.browser)}));
-    const platform=labelUnknown(ds.platform),browser=labelUnknown(ds.browser);
-    const key=[device,ip,version,platform,browser].join('|');
-    if(!list.some(x=>x.key===key))list.push({key,device,ip,version,time,source,platform,browser,unknown:/Bilinmiyor/.test(platform+' '+browser)})
+    raw=raw||{}; device=clean(device); ip=clean(ip); version=clean(version);
+    const raw2=Object.assign({},raw,{device,ip,version,userAgent:first(raw.userAgent,raw.ua,u&&u.userAgent),os:first(raw.os,u&&u.os),platform:first(raw.os,u&&u.os,raw.platform,u&&u.platform,raw.platformRaw,u&&u.platformRaw),browser:first(raw.browser,u&&u.browser)});
+    const ds=deviceSummaryV531(raw2);
+    if(!device&&!ip&&!version&&!ds.platform&&!ds.browser)return;
+    const key=[device,ip,version,ds.platform,ds.browser,source].join('|');
+    if(!list.some(x=>x.key===key))list.push({key,device,ip,version,time,source,platform:ds.platform,browser:ds.browser,raw:raw2})
   }
-  add(u.deviceId,u.ip,u.appVersion||u.fileVersion,u.lastSeen,'Kullanıcı profili',Object.assign({},u.raw||{},u.deviceInfo||{},u));
-  userEventsV530(k).forEach(e=>add(e.device_id,e.ip_address,e.app_version,e.created_at,'IP kaydı',e.raw_payload||e.metadata||e));
-  userBackups(k).forEach(b=>add(first(b.deviceId,b.raw&&b.raw.deviceId,b.raw&&b.raw.device_id,b.raw&&b.raw.installId),first(b.ip,b.raw&&b.raw.ip,b.raw&&b.raw.ip_address),b.appVersion,b.createdAt,'Drive yedeği',b.raw||b));
+  add(u.deviceId,u.ip,u.appVersion||u.fileVersion,u.lastSeen,'Kullanıcı profili',Object.assign({},u.raw||{},u.deviceInfo||{},u.lastDeviceInfo||{},u));
+  userEventsV530(k).forEach(e=>add(e.device_id,e.ip_address,e.app_version,e.created_at,'IP kaydı',e.raw_payload||e));
+  userBackups(k).forEach(b=>add(first(b.deviceId,b.raw&&b.raw.deviceId,b.raw&&b.raw.device_id,b.raw&&b.raw.installId),first(b.ip,b.raw&&b.raw.ip,b.raw&&b.raw.ip_address),b.appVersion,b.createdAt,'Drive yedeği',Object.assign({},b.raw||{},b)));
   return list;
 }
 
-function mapProfile(r){r=r||{};const p=r.payload||{},d=r.device_info||r.deviceInfo||p.deviceInfo||p.lastDeviceInfo||{};const name=clean(first(r.name,r.user_name,p.name,p.userName,p.user&&p.user.name));const seflik=clean(first(r.seflik,r.seflik_name,p.seflik,p.user&&p.user.seflik));const ms=dateMs(first(r.updated_at,r.last_seen_at,p.updatedAt,p.lastSeen,r.created_at))||0;return {id:first(r.user_key,r.user_id,r.id,userKey(name,seflik)),userKey:first(r.user_key,p.userKey,userKey(name,seflik)),name:name||'Kullanıcı',seflik,bolmeNo:first(r.bolme_no,p.bolmeNo),appVersion:first(r.app_version,p.appVersion,p.version),fileVersion:first(r.file_version,p.fileVersion),deviceId:first(r.device_id,r.deviceId,p.deviceId,p.installId,d.deviceId,d.installId,d.id),ip:first(r.ip_address,r.ip,p.ip,p.ipAddress,d.ip,d.ipAddress),lastSeen:first(r.updated_at,r.last_seen_at,p.lastSeen,p.updatedAt),lastSeenMs:ms,recordCount:Number(first(r.record_count,p.recordCount,p.totalRecords,0))||0,m3:Number(first(r.total_volume,p.m3,p.totalM3,0))||0,treeTotals:normalizeTotalsV536(first(r.treeTotals,r.tree_totals,r.agacTotals,r.agac_totals,p.treeTotals,p.tree_totals,p.agacTotals,p.agac_totals,{})),productTotals:normalizeTotalsV536(first(r.productTotals,r.product_totals,r.odunTotals,r.odun_totals,p.productTotals,p.product_totals,p.odunTotals,p.odun_totals,{})),deviceInfo:d,lastDevice:first(p.lastDevice,r.lastDevice,d.model,d.platform,d.os,d.userAgent),platform:first(r.platform,r.os,p.platform,p.os,d.platform,d.os),browser:first(r.browser,p.browser,d.browser,d.browserName),userAgent:first(r.userAgent,p.userAgent,d.userAgent,d.ua),raw:r,source:'user'}}function mapUsage(r){r=r||{};const p=r.payload||r,d=p.lastDeviceInfo||p.deviceInfo||{};return mapProfile(Object.assign({},r,{payload:p,device_info:d,name:first(p.name,p.userName,r.name),seflik:first(p.seflik,r.seflik),updated_at:first(r.updated_at,p.lastSeen,p.updatedAt),app_version:first(r.app_version,p.appVersion,p.version),device_id:first(p.deviceId,d.deviceId,p.installId,d.installId),ip_address:first(p.ip,p.ipAddress,d.ip)}))}function mapDriveBackup(x){const name=clean(x.username||x.name||'');const seflik=clean(x.seflik||'');return {id:'drive_'+x.id,driveFileId:x.id,source:'google-drive',fileName:x.name||'Drive yedeği',name,seflik,userKey:x.userKey||userKey(name,seflik),bolmeNo:x.bolme||x.slot||'',recordCount:Number(x.count||x.recordCount||0)||0,m3:Number(x.totalVolume||x.m3||0)||0,createdAt:x.createdAt||x.modifiedTime||'',createdAtMs:dateMs(x.createdAt||x.modifiedTime)||0,appVersion:x.version||'',driveLink:'https://drive.google.com/file/d/'+encodeURIComponent(x.id)+'/view',records:extractRecordsV530(x),treeTotals:first(x.treeTotals,x.agacTotals,x.ağaçTotals,{}),productTotals:first(x.productTotals,x.odunTotals,x.emvalTotals,{}),platform:first(x.platform,x.os,x.devicePlatform,x.device&&x.device.platform),browser:first(x.browser,x.deviceBrowser,x.device&&x.device.browser),deviceId:first(x.deviceId,x.device_id,x.installId,x.device&&x.device.deviceId),ip:first(x.ip,x.ip_address,x.ipAddress),raw:x}}function mapEvent(x){x=x||{};const p=x.payload||x.meta||{};return Object.assign({},x,{ip_address:clean(first(x.ip_address,x.ipAddress,x.ip,p.ip_address,p.ip)),device_id:clean(first(x.device_id,x.deviceId,x.install_id,x.installId,p.device_id,p.deviceId,p.installId)),user_key:clean(first(x.user_key,x.userKey,x.user_id,p.user_key,p.userKey)),name:clean(first(x.name,x.user_name,x.username,p.name,p.userName)),seflik:clean(first(x.seflik,x.seflik_name,p.seflik)),app_version:clean(first(x.app_version,x.appVersion,x.version,p.appVersion,p.version)),created_at:first(x.created_at,x.createdAt,x.time,p.createdAt),blocked:x.blocked===true||x.allowed===false||/block|ban/i.test(String(x.event_type||''))})}
-function mergeUsers(items){const m=new Map();(items||[]).forEach(u=>{const k=userKeyOf(u);if(!k)return;const old=m.get(k)||{};const out=Object.assign({},old);['id','userKey','name','seflik','bolmeNo'].forEach(x=>{if(!out[x]&&u[x])out[x]=u[x]});if(n(u.lastSeenMs)>=n(out.lastSeenMs)){['appVersion','fileVersion','deviceId','ip','lastSeen','lastSeenMs'].forEach(x=>{if(u[x])out[x]=u[x]})}out.recordCount=Math.max(n(out.recordCount),n(u.recordCount));out.m3=Math.max(n(out.m3),n(u.m3));m.set(k,out)});return [...m.values()].sort((a,b)=>n(b.lastSeenMs)-n(a.lastSeenMs))}function userBackups(k){const kk=clean(k);return state.backups.filter(b=>{const keys=[userKeyOf(b),b.userKey,b.id,userKey(b.name,b.seflik),compact(b.name)+'__'+compact(b.seflik)].filter(Boolean);return keys.some(x=>sameUserKeyV531(x,kk))})}function activeToday(){const s=todayStart();return state.users.filter(u=>n(u.lastSeenMs)>=s).length}function activeNow(){return state.users.filter(u=>n(u.lastSeenMs)>=Date.now()-15*60000).length}function driveVolume(){return state.backups.reduce((a,b)=>a+n(b.m3),0)}function noBackupUsers(){return state.users.filter(u=>!userBackups(userKeyOf(u)).length)}function oldUsers(){return state.users.filter(isOld)}function isAdminEvent(e){const t=clean(e&&e.event_type).toLowerCase();const raw=clean(e&&e.user_key);return /^admin|system|panel/.test(t)||/add_block|remove_block|block/.test(t)||(!clean(e.name)&&!clean(e.seflik)&&!clean(e.device_id)&&raw.length>20)}function compact(v){return norm(v)}function findUserForEvent(e){const raw=clean(e.user_key).toLocaleLowerCase('tr-TR'),dev=compact(e.device_id),name=compact(e.name),sef=compact(e.seflik);for(const u of state.users){if(raw&&(userKeyOf(u).toLocaleLowerCase('tr-TR')===raw||compact(userKeyOf(u))===compact(raw)))return u;if(dev&&compact(u.deviceId)===dev)return u;if(name&&sef&&compact(u.name)===name&&compact(u.seflik)===sef)return u}return null}function eventUser(e){if(isAdminEvent(e))return 'Admin / Sistem Kaydı';const u=findUserForEvent(e);return clean(e.name)||clean(u&&u.name)||'Tanımsız kullanıcı'}function eventSeflik(e){if(isAdminEvent(e))return 'Panel';const u=findUserForEvent(e);return clean(e.seflik)||clean(u&&u.seflik)||'—'}function eventTime(e){return dateMs(e.created_at)||n(e.createdAtMs)||0}function synthEvents(){const out=[];state.users.forEach(u=>{out.push(mapEvent({event_type:'user_sync',synthetic:true,created_at:new Date(n(u.lastSeenMs)||Date.now()).toISOString(),ip_address:u.ip||'',device_id:u.deviceId||'',user_key:userKeyOf(u),name:u.name,seflik:u.seflik,app_version:u.appVersion||u.fileVersion}))});state.backups.forEach(b=>{out.push(mapEvent({event_type:'drive_backup_sync',synthetic:true,created_at:new Date(n(b.createdAtMs)||Date.now()).toISOString(),ip_address:'',device_id:'',user_key:userKeyOf(b),name:b.name,seflik:b.seflik,app_version:b.appVersion}))});return out}function mergedEvents(edge){const seen=new Set(),out=[];[...(edge||[]),...synthEvents()].forEach(e=>{const key=[e.event_type,e.user_key,e.device_id,e.ip_address,e.created_at].join('|').toLowerCase();if(!seen.has(key)){seen.add(key);out.push(e)}});return out.sort((a,b)=>eventTime(b)-eventTime(a))}
+function mapProfile(r){r=r||{};const p=r.payload||{},d=r.device_info||r.deviceInfo||p.deviceInfo||p.lastDeviceInfo||{};const name=clean(first(r.name,r.user_name,p.name,p.userName,p.user&&p.user.name));const seflik=clean(first(r.seflik,r.seflik_name,p.seflik,p.user&&p.user.seflik));const ms=dateMs(first(r.updated_at,r.last_seen_at,p.updatedAt,p.lastSeen,r.created_at))||0;return {id:first(r.user_key,r.user_id,r.id,userKey(name,seflik)),userKey:first(r.user_key,p.userKey,userKey(name,seflik)),name:name||'Kullanıcı',seflik,bolmeNo:first(r.bolme_no,p.bolmeNo),appVersion:first(r.app_version,p.appVersion,p.version),fileVersion:first(r.file_version,p.fileVersion),deviceId:first(r.device_id,r.deviceId,p.deviceId,p.installId,d.deviceId,d.installId,d.id),ip:first(r.ip_address,r.ip,p.ip,p.ipAddress,d.ip,d.ipAddress),lastSeen:first(r.updated_at,r.last_seen_at,p.lastSeen,p.updatedAt),lastSeenMs:ms,recordCount:Number(first(r.record_count,p.recordCount,p.totalRecords,0))||0,m3:Number(first(r.total_volume,p.m3,p.totalM3,0))||0,treeTotals:normalizeTotalsV537(first(r.treeTotals,r.tree_totals,r.agacTotals,r.agac_totals,p.treeTotals,p.tree_totals,p.agacTotals,p.agac_totals,{})),productTotals:normalizeTotalsV537(first(r.productTotals,r.product_totals,r.odunTotals,r.odun_totals,p.productTotals,p.product_totals,p.odunTotals,p.odun_totals,{})),deviceInfo:d,lastDevice:first(p.lastDevice,r.lastDevice,d.model,d.platform,d.os,d.userAgent),platform:first(r.os,p.os,d.os,r.platform,p.platform,d.platform),platformRaw:first(r.platform,p.platform,d.platform),os:first(r.os,p.os,d.os),browser:first(r.browser,p.browser,d.browser,d.browserName),userAgent:first(r.userAgent,p.userAgent,d.userAgent,d.ua),raw:r,source:'user'}}function mapUsage(r){r=r||{};const p=r.payload||r,d=p.lastDeviceInfo||p.deviceInfo||{};return mapProfile(Object.assign({},r,{payload:p,device_info:d,name:first(p.name,p.userName,r.name),seflik:first(p.seflik,r.seflik),updated_at:first(r.updated_at,p.lastSeen,p.updatedAt),app_version:first(r.app_version,p.appVersion,p.version),device_id:first(p.deviceId,d.deviceId,p.installId,d.installId),ip_address:first(p.ip,p.ipAddress,d.ip)}))}function mapDriveBackup(x){const name=clean(x.username||x.name||'');const seflik=clean(x.seflik||'');return {id:'drive_'+x.id,driveFileId:x.id,source:'google-drive',fileName:x.name||'Drive yedeği',name,seflik,userKey:x.userKey||userKey(name,seflik),bolmeNo:x.bolme||x.slot||'',recordCount:Number(x.count||x.recordCount||0)||0,m3:Number(x.totalVolume||x.m3||0)||0,createdAt:x.createdAt||x.modifiedTime||'',createdAtMs:dateMs(x.createdAt||x.modifiedTime)||0,appVersion:x.version||'',driveLink:'https://drive.google.com/file/d/'+encodeURIComponent(x.id)+'/view',records:extractRecordsV530(x),treeTotals:first(x.treeTotals,x.agacTotals,x.ağaçTotals,{}),productTotals:first(x.productTotals,x.odunTotals,x.emvalTotals,{}),platform:first(x.platform,x.os,x.devicePlatform,x.device&&x.device.platform),browser:first(x.browser,x.deviceBrowser,x.device&&x.device.browser),deviceId:first(x.deviceId,x.device_id,x.installId,x.device&&x.device.deviceId),ip:first(x.ip,x.ip_address,x.ipAddress),raw:x}}function mapEvent(x){x=x||{};const p=x.payload||x.meta||{};return Object.assign({},x,{ip_address:clean(first(x.ip_address,x.ipAddress,x.ip,p.ip_address,p.ip)),device_id:clean(first(x.device_id,x.deviceId,x.install_id,x.installId,p.device_id,p.deviceId,p.installId)),user_key:clean(first(x.user_key,x.userKey,x.user_id,p.user_key,p.userKey)),name:clean(first(x.name,x.user_name,x.username,p.name,p.userName)),seflik:clean(first(x.seflik,x.seflik_name,p.seflik)),app_version:clean(first(x.app_version,x.appVersion,x.version,p.appVersion,p.version)),created_at:first(x.created_at,x.createdAt,x.time,p.createdAt),blocked:x.blocked===true||x.allowed===false||/block|ban/i.test(String(x.event_type||''))})}
+function mergeUsers(items){
+  const m=new Map();
+  (items||[]).forEach(u=>{
+    const k=userKeyOf(u); if(!k)return;
+    const old=m.get(k)||{};
+    const out=Object.assign({},old);
+    ['id','userKey','name','seflik','bolmeNo'].forEach(x=>{if(!out[x]&&u[x])out[x]=u[x]});
+    const newer=n(u.lastSeenMs)>=n(out.lastSeenMs);
+    const keepAlways=['treeTotals','productTotals','lastExportTreeTotals','lastExportProductTotals','deviceInfo','lastDeviceInfo','raw'];
+    keepAlways.forEach(x=>{if((out[x]==null||JSON.stringify(out[x])==='{}'||out[x]==='')&&u[x])out[x]=u[x]});
+    const deviceFields=['appVersion','fileVersion','deviceId','ip','lastSeen','lastSeenMs','lastDevice','deviceType','os','platform','platformRaw','browser','userAgent','screen','viewport','language','timezone','pixelRatio'];
+    deviceFields.forEach(x=>{if((newer||!out[x])&&u[x])out[x]=u[x]});
+    if(u.deviceInfo||u.lastDeviceInfo){out.deviceInfo=u.deviceInfo||u.lastDeviceInfo;out.lastDeviceInfo=u.lastDeviceInfo||u.deviceInfo}
+    out.recordCount=Math.max(n(out.recordCount),n(u.recordCount));
+    out.m3=Math.max(n(out.m3),n(u.m3));
+    out.sources=Array.from(new Set([...(out.sources||[]),u.source].filter(Boolean)));
+    m.set(k,out)
+  });
+  return [...m.values()].sort((a,b)=>n(b.lastSeenMs)-n(a.lastSeenMs))
+}function userBackups(k){const kk=clean(k);return state.backups.filter(b=>{const keys=[userKeyOf(b),b.userKey,b.id,userKey(b.name,b.seflik),compact(b.name)+'__'+compact(b.seflik)].filter(Boolean);return keys.some(x=>sameUserKeyV531(x,kk))})}function activeToday(){const s=todayStart();return state.users.filter(u=>n(u.lastSeenMs)>=s).length}function activeNow(){return state.users.filter(u=>n(u.lastSeenMs)>=Date.now()-15*60000).length}function driveVolume(){return state.backups.reduce((a,b)=>a+n(b.m3),0)}function noBackupUsers(){return state.users.filter(u=>!userBackups(userKeyOf(u)).length)}function oldUsers(){return state.users.filter(isOld)}function isAdminEvent(e){const t=clean(e&&e.event_type).toLowerCase();const raw=clean(e&&e.user_key);return /^admin|system|panel/.test(t)||/add_block|remove_block|block/.test(t)||(!clean(e.name)&&!clean(e.seflik)&&!clean(e.device_id)&&raw.length>20)}function compact(v){return norm(v)}function findUserForEvent(e){const raw=clean(e.user_key).toLocaleLowerCase('tr-TR'),dev=compact(e.device_id),name=compact(e.name),sef=compact(e.seflik);for(const u of state.users){if(raw&&(userKeyOf(u).toLocaleLowerCase('tr-TR')===raw||compact(userKeyOf(u))===compact(raw)))return u;if(dev&&compact(u.deviceId)===dev)return u;if(name&&sef&&compact(u.name)===name&&compact(u.seflik)===sef)return u}return null}function eventUser(e){if(isAdminEvent(e))return 'Admin / Sistem Kaydı';const u=findUserForEvent(e);return clean(e.name)||clean(u&&u.name)||'Tanımsız kullanıcı'}function eventSeflik(e){if(isAdminEvent(e))return 'Panel';const u=findUserForEvent(e);return clean(e.seflik)||clean(u&&u.seflik)||'—'}function eventTime(e){return dateMs(e.created_at)||n(e.createdAtMs)||0}function synthEvents(){const out=[];state.users.forEach(u=>{out.push(mapEvent({event_type:'user_sync',synthetic:true,created_at:new Date(n(u.lastSeenMs)||Date.now()).toISOString(),ip_address:u.ip||'',device_id:u.deviceId||'',user_key:userKeyOf(u),name:u.name,seflik:u.seflik,app_version:u.appVersion||u.fileVersion}))});state.backups.forEach(b=>{out.push(mapEvent({event_type:'drive_backup_sync',synthetic:true,created_at:new Date(n(b.createdAtMs)||Date.now()).toISOString(),ip_address:'',device_id:'',user_key:userKeyOf(b),name:b.name,seflik:b.seflik,app_version:b.appVersion}))});return out}function mergedEvents(edge){const seen=new Set(),out=[];[...(edge||[]),...synthEvents()].forEach(e=>{const key=[e.event_type,e.user_key,e.device_id,e.ip_address,e.created_at].join('|').toLowerCase();if(!seen.has(key)){seen.add(key);out.push(e)}});return out.sort((a,b)=>eventTime(b)-eventTime(a))}
 async function loadDrive(){try{const j=await bridgePost('adminList',{username:'yakupduzgun',seflik:'Yaylacık_43'});state.sources.drive=true;return (j.items||[]).map(mapDriveBackup).filter(b=>b.driveFileId)}catch(e){state.errors.drive=errText(e);return []}}
 
-function mergeByIdV536(arr){
+function mergeByIdV537(arr){
   const m=new Map();(arr||[]).forEach(x=>{if(!x)return;const id=clean(x.id)||clean(x.userKey)+'_'+clean(x.createdAtMs||x.createdAt);if(id&&!m.has(id))m.set(id,x)});return [...m.values()]
 }
 
@@ -366,7 +384,7 @@ function showUser(k,name,seflik,index){
     </div>
     <div class="detail-section-v530">
       <div class="detail-title-v530"><h3>Cihaz ve Giriş Bilgileri</h3><span class="pill gray">${int(devices.length)} kayıt</span></div>
-      <div class="device-list-v530">${devices.length?devices.map(d=>`<div class="device-card-v530"><b>${esc(d.device||'Cihaz yok')}</b><span>IP: ${esc(d.ip||'-')} • Sürüm: ${esc(d.version||'-')}</span><div class="device-tags-v531"><span class="${/bilinmiyor|olabilir/i.test(d.platform)?'unknown-v532':''}">${esc(d.platform||'Bilinmiyor')}</span><span class="${/bilinmiyor/i.test(d.browser)?'unknown-v532':''}">${esc(d.browser||'Bilinmiyor')}</span><span>${esc(d.source||'-')}</span></div><small>${esc(d.time||'-')}</small></div>`).join(''):'<div class="stats-empty-v530">Cihaz/IP bilgisi bulunamadı.</div>'}</div>
+      <div class="device-list-v530">${devices.length?devices.map(d=>`<div class="device-card-v530"><b>${esc(d.device||'Cihaz yok')}</b><span>IP: ${esc(d.ip||'-')} • Sürüm: ${esc(d.version||'-')}</span><div class="device-tags-v531"><span class="${/bilinmiyor|olabilir/i.test(d.platform)?'unknown-v532':''}">${esc(labelUnknown(d.platform))}</span><span class="${/bilinmiyor/i.test(d.browser)?'unknown-v532':''}">${esc(labelUnknown(d.browser))}</span><span>${esc(d.source||'-')}</span></div><small>${esc(d.time||'-')}</small></div>`).join(''):'<div class="stats-empty-v530">Cihaz/IP bilgisi bulunamadı.</div>'}</div>
       <div class="detail-title-v530"><h3>Ağaç Türü Detayı</h3></div>
       ${statRowsHtmlV530(treeRows).replace(/stats-/g,'detail-')}
       <div class="detail-title-v530"><h3>Odun / Emval Türü Detayı</h3></div>
