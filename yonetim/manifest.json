@@ -1,9 +1,9 @@
 {
-  "id": "/yakupp/yonetim/mesaha-io-yonetim-v527",
+  "id": "/yakupp/yonetim/mesaha-io-yonetim-v528",
   "name": "Mesaha İO Yönetim",
   "short_name": "Yönetim",
-  "description": "Mesaha İO admin paneli IP arama ve son giriş sıralama düzeltmesi",
-  "start_url": "./index.html?app=yonetim-v527",
+  "description": "Mesaha İO admin paneli tam paket V5.28",
+  "start_url": "./index.html?app=yonetim-v528",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f6f8fb",
