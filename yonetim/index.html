@@ -89,7 +89,7 @@ body.ok .app{display:grid;grid-template-columns:260px 1fr}
 .head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px;border-bottom:1px solid rgba(15,23,42,.07)}
 .head h3{margin:0;font-size:18px;letter-spacing:-.03em}.head-actions{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}
 .tiny{min-height:30px;border-radius:10px;border:1px solid var(--line);background:rgba(255,255,255,.70);padding:0 10px;font-size:12px;font-weight:950;color:#334155}
-.tiny.red{background:#fff1f2;border-color:#fecdd3;color:#b91c1c}.tiny.green{background:#ecfdf3;border-color:#bbf7d0;color:#08733d}.tiny.blue{background:#eff6ff;border-color:#bfdbfe;color:#1d4ed8}
+.tiny.red{background:#fff1f2;border-color:#fecdd3;color:#b91c1c}.tiny:disabled{opacity:.45;cursor:not-allowed;background:#f8fafc;color:#94a3b8;border-color:#e2e8f0}.tiny.green{background:#ecfdf3;border-color:#bbf7d0;color:#08733d}.tiny.blue{background:#eff6ff;border-color:#bfdbfe;color:#1d4ed8}
 .live{font-size:12px;color:#16a34a;margin-left:8px}.live:before{content:"• ";font-size:20px;vertical-align:-2px}
 .table{overflow:auto}
 table{width:100%;border-collapse:collapse;font-size:13px;min-width:760px}
@@ -150,7 +150,7 @@ th{color:#334155;font-size:12px;background:rgba(248,250,252,.55)}
     </nav>
     <div class="side-bottom">
       <button class="btn" onclick="logoutPanel()">Oturumu Kapat</button>
-      <div class="version"><span>v5.10 / Build 510</span><span class="okpill">Güncel</span></div>
+      <div class="version"><span>v5.11 / Build 511</span><span class="okpill">Güncel</span></div>
     </div>
   </aside>
 
@@ -222,6 +222,21 @@ function ago(v){let ms=dateMs(v);if(!ms)return "-";let m=Math.max(0,Math.round((
 function key(name,seflik){return (clean(name)+"__"+clean(seflik)).toLocaleLowerCase("tr-TR")}
 function ukey(u){return clean(first(u.userKey,u.user_key,u.key))||key(u.name,u.seflik)}
 function initials(u){return (clean(u.name)||clean(u.username)||"?").split(/\s+/).slice(0,2).map(x=>x[0]).join("").toLocaleUpperCase("tr-TR")}
+function compact(v){return clean(v).toLocaleLowerCase("tr-TR").normalize("NFKD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"")}
+function samePerson(a,b){
+  if(!a||!b)return false;
+  const an=compact(a.name||a.username), bn=compact(b.name||b.username);
+  const as=compact(a.seflik), bs=compact(b.seflik);
+  if(an&&bn&&an===bn&&(!as||!bs||as===bs))return true;
+  const ak=compact(a.userKey), bk=compact(b.userKey);
+  return !!(ak&&bk&&ak===bk);
+}
+function isRealVersion(v){return /^v?\d+(\.\d+)+/i.test(clean(v))}
+function blockValue(u,type){
+  if(type==="ip")return clean(u.ip);
+  if(type==="device")return clean(u.deviceId)||clean(u.device);
+  return clean(u.userKey)||clean(u.username)||key(u.name,u.seflik)||clean(u.name);
+}
 document.addEventListener("DOMContentLoaded",()=>{document.querySelectorAll("[data-view]").forEach(b=>b.onclick=()=>setView(b.dataset.view));$("loginForm").onsubmit=login;$("globalSearch").oninput=e=>{if($("userSearch"))$("userSearch").value=e.target.value;renderUsers()};$("userSearch").oninput=renderUsers;$("statusFilter").onchange=renderUsers;if(sessionStorage.getItem("mesaha_panel_v510")==="ok")unlock()});
 function login(e){e.preventDefault();if(clean($("loginUser").value)===CONFIG.adminUser&&clean($("loginPass").value)===CONFIG.adminPass){sessionStorage.setItem("mesaha_panel_v510","ok");localStorage.setItem("mesaha_admin_key_v510",CONFIG.adminPass);unlock()}else $("loginErr").classList.add("show")}
 function unlock(){document.body.classList.add("ok");loadAll()}
@@ -244,26 +259,140 @@ function mapDrive(x){x=x||{};let p=prod(x),name=clean(first(x.username,x.user_na
 function mapLog(x){x=x||{};let p=x.payload||x.meta||{},time=first(x.created_at,x.createdAt,x.time,x.date,x.tarih,p.createdAt),user=clean(first(x.name,x.username,x.user_name,x.kullanici,x.userName,p.name,p.username,"Sistem")),seflik=clean(first(x.seflik,x.seflik_name,x.department,p.seflik,"-"));return{time:fdate(time),ms:dateMs(time),type:clean(first(x.type,x.event_type,x.action,x.islem,x.operation,"Kayıt")),user,seflik,ip:clean(first(x.ip,x.ip_address,x.ipAddress,p.ip,p.ip_address,"-")),desc:clean(first(x.description,x.desc,x.message,x.aciklama,x.detail,x.details,p.reason,"")),userKey:clean(first(x.user_key,x.userKey,p.user_key,p.userKey))||key(user,seflik),deviceId:clean(first(x.device_id,x.deviceId,p.device_id,p.deviceId))}}
 function logSeed(l){return{source:"log",userKey:l.userKey,name:l.user==="Sistem"?"":l.user,seflik:l.seflik==="-"?"":l.seflik,ip:l.ip,lastSeen:l.time,lastMs:l.ms,deviceId:l.deviceId}}
 function uniq(a,fn){let m=new Map();a.forEach(x=>{let k=fn(x);if(k&&!m.has(k))m.set(k,x)});return[...m.values()]}
-function merge(items){let m=new Map();items.filter(Boolean).forEach(u=>{let k=ukey(u);if(!k||k==="__")return;let o=m.get(k)||{userKey:k,records:[],ips:[]};["id","name","username","seflik","device","deviceId","platform","ip","version"].forEach(f=>{if(!o[f]&&u[f])o[f]=u[f]});if(num(u.lastMs)>=num(o.lastMs)){o.lastSeen=u.lastSeen||u.backupDate||o.lastSeen;o.lastMs=u.lastMs||u.createdMs||o.lastMs}if(num(u.createdMs)>=num(o.lastBackupMs)){o.backup=u.backupDate||o.backup;o.lastBackupMs=u.createdMs||o.lastBackupMs;o.backupSize=u.backupSize||o.backupSize}o.todayCount=Math.max(num(o.todayCount),num(u.todayCount),num(u.backupCount));o.todayM3=Math.max(num(o.todayM3),num(u.todayM3));o.weekM3=Math.max(num(o.weekM3),num(u.weekM3));if(Array.isArray(u.records)&&u.records.length)o.records=u.records;if(u.ip&&!o.ips.includes(u.ip))o.ips.push(u.ip);m.set(k,o)});return[...m.values()].filter(u=>clean(u.name)||clean(u.username)).sort((a,b)=>num(b.lastMs||b.lastBackupMs)-num(a.lastMs||a.lastBackupMs))}
-function markBlocks(){state.users.forEach(u=>{let s=state.blocks.map(b=>JSON.stringify(b||{}).toLocaleLowerCase("tr-TR")).join(" ");let blocked=(u.ip&&s.includes(u.ip.toLowerCase()))||(u.deviceId&&s.includes(u.deviceId.toLowerCase()))||(u.userKey&&s.includes(u.userKey.toLowerCase()))||(u.username&&s.includes(u.username.toLowerCase()));if(blocked)u.status="Engellendi";else if(u.version&&Number(String(u.version).match(/\d+\.\d+/)?.[0]||0)<2.6)u.status="Uyarı";else if(u.lastMs&&Date.now()-u.lastMs<20*60*1000)u.status="Çevrimiçi";else u.status=u.lastMs?"Çevrimdışı":"Bilinmiyor"})}
+function merge(items){
+  let list=items.filter(Boolean).filter(u=>clean(u.name)||clean(u.username)||clean(u.userKey));
+  let out=[];
+  list.forEach(u=>{
+    let hit=out.find(o=>samePerson(o,u));
+    if(!hit){
+      hit={userKey:ukey(u)||key(u.name,u.seflik),records:[],ips:[]};
+      out.push(hit);
+    }
+    ["id","name","username","seflik","device","deviceId","platform","ip","version"].forEach(f=>{
+      if((!hit[f]||hit[f]==="-"||hit[f]==="Mesaha İO") && u[f]) hit[f]=u[f];
+      if(f==="version" && isRealVersion(u[f])) hit[f]=u[f];
+    });
+    if(num(u.lastMs)>=num(hit.lastMs)){hit.lastSeen=u.lastSeen||u.backupDate||hit.lastSeen;hit.lastMs=u.lastMs||u.createdMs||hit.lastMs}
+    if(num(u.createdMs)>=num(hit.lastBackupMs)){hit.backup=u.backupDate||hit.backup;hit.lastBackupMs=u.createdMs||hit.lastBackupMs;hit.backupSize=u.backupSize||hit.backupSize}
+    hit.todayCount=Math.max(num(hit.todayCount),num(u.todayCount),num(u.backupCount));
+    hit.todayM3=Math.max(num(hit.todayM3),num(u.todayM3));
+    hit.weekM3=Math.max(num(hit.weekM3),num(u.weekM3));
+    if(Array.isArray(u.records)&&u.records.length)hit.records=u.records;
+    if(u.ip&&u.ip!=="-"&&!hit.ips.includes(u.ip))hit.ips.push(u.ip);
+  });
+  return out.filter(u=>clean(u.name)||clean(u.username)).sort((a,b)=>num(b.lastMs||b.lastBackupMs)-num(a.lastMs||a.lastBackupMs));
+}
+function markBlocks(){
+  state.users.forEach(u=>{
+    let s=state.blocks.map(b=>JSON.stringify(b||{}).toLocaleLowerCase("tr-TR")).join(" ");
+    let blocked=(u.ip&&u.ip!=="-"&&s.includes(u.ip.toLowerCase()))||(u.deviceId&&s.includes(u.deviceId.toLowerCase()))||(u.userKey&&s.includes(u.userKey.toLowerCase()))||(u.username&&s.includes(u.username.toLowerCase()));
+    if(blocked)u.status="Engellendi";
+    else if(isRealVersion(u.version)&&Number(String(u.version).match(/\d+\.\d+/)?.[0]||0)<2.6)u.status="Uyarı";
+    else if(u.lastMs&&Date.now()-u.lastMs<20*60*1000)u.status="Çevrimiçi";
+    else u.status=u.lastMs?"Çevrimdışı":"Bilinmiyor";
+  });
+}
 function renderAll(){renderAlert();renderKpis();renderMain();renderUsers();renderBackups();renderLogs();renderActivity();renderStats();renderMini()}
 function renderAlert(){let a=$("alert"),src=Object.keys(state.sources),err=Object.entries(state.errors).filter(x=>x[1]);if(state.users.length||state.backups.length||state.logs.length){a.classList.remove("show");a.innerHTML="";return}a.classList.add("show");a.innerHTML=`Canlı veri bulunamadı. Panel artık örnek veri göstermiyor; Supabase / Edge / Drive kaynaklarından veri bekliyor.<small>Başarılı kaynak: ${src.length?src.join(", "):"yok"}<br>Hatalar: ${err.slice(0,5).map(([k,v])=>k+": "+v).join(" | ")||"yok"}</small>`}
 function renderKpis(){let active=state.users.filter(u=>u.status==="Çevrimiçi").length,prod=state.users.reduce((s,u)=>s+num(u.todayM3),0),blocked=state.users.filter(u=>u.status==="Engellendi").length,warn=state.users.filter(u=>u.status==="Uyarı").length;let data=[["users","Toplam Kullanıcı",fmt(state.users.length),state.users.length?"Canlı veri":"Veri bekleniyor",""],["office","Aktif Kullanıcı",fmt(active),"Şu an çevrimiçi","teal"],["phone","Günlük Üretim",m3(prod)+" m³","Gerçek kayıtlardan","blue"],["shield","Engelli / Uyarı",fmt(blocked+warn),blocked+" engelli • "+warn+" uyarı","red"]];$("kpis").innerHTML=data.map(x=>`<div class="card kpi"><div class="ico ${x[4]}">${icon(x[0])}</div><div><small>${x[1]}</small><b>${x[2]}</b><div class="trend ${x[4]==="red"?"red":""}">${x[3]}</div></div></div>`).join("")}
 function icon(n){return({users:'<svg viewBox="0 0 24 24" fill="none"><path d="M16 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2M9.5 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" stroke="currentColor"/></svg>',office:'<svg viewBox="0 0 24 24" fill="none"><path d="M4 21V5a2 2 0 0 1 2-2h7v18M13 8h5a2 2 0 0 1 2 2v11" stroke="currentColor"/></svg>',phone:'<svg viewBox="0 0 24 24" fill="none"><path d="M8 2h8a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z" stroke="currentColor"/></svg>',shield:'<svg viewBox="0 0 24 24" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor"/></svg>'})[n]||""}
 function badge(s){let c=s==="Engellendi"?"red":s==="Uyarı"?"orange":s==="Çevrimdışı"||s==="Bilinmiyor"?"gray":"";return`<span class="badge ${c}">${s||"Bilinmiyor"}</span>`}
 function rowEmpty(c,t){return`<tr><td colspan="${c}" class="empty">${t}</td></tr>`}
-function renderMain(){let rows=state.users.slice(0,10).map(u=>`<tr><td><div class="usercell"><div class="miniav">${initials(u)}</div><div><b>${clean(u.name)||clean(u.username)}</b><span>${clean(u.username)||u.userKey}</span></div></div></td><td>${clean(u.seflik)||"-"}</td><td>${clean(u.device)||"-"}</td><td>${clean(u.ip)||"-"}</td><td><b>${fmt(u.todayCount)} adet</b> / ${m3(u.todayM3)} m³</td><td>${ago(u.lastMs||u.lastBackupMs)}</td><td>${badge(u.status)}</td><td><button class="tiny" onclick="openUser('${u.userKey}')">Detay</button> <button class="tiny red" onclick="blockUser('${u.userKey}','ip')">IP</button> <button class="tiny red" onclick="blockUser('${u.userKey}','user')">Kullanıcı</button></td></tr>`).join("");$("mainRows").innerHTML=rows||rowEmpty(8,"Supabase / Drive üzerinden kullanıcı verisi gelmedi.")}
-function renderUsers(){let q=($("userSearch").value||$("globalSearch").value||"").toLocaleLowerCase("tr-TR").trim(),st=$("statusFilter").value;let arr=state.users.filter(u=>(!st||u.status===st)&&(!q||JSON.stringify(u).toLocaleLowerCase("tr-TR").includes(q)));$("userList").innerHTML=arr.map(u=>`<article class="usercard"><div class="ucmain"><div class="bigav">${initials(u)}</div><div><h3>${clean(u.name)||clean(u.username)}</h3><p>${clean(u.username)||u.userKey}<br>${clean(u.seflik)||"-"}</p></div></div><div class="info"><div class="chip"><small>Cihaz</small><b>${clean(u.device)||"-"}${u.platform?" • "+u.platform:""}</b></div><div class="chip"><small>IP Adresi</small><b>${clean(u.ip)||"-"}</b></div><div class="chip"><small>Sürüm</small><b>${clean(u.version)||"-"}</b></div><div class="chip"><small>Son İşlem</small><b>${ago(u.lastMs||u.lastBackupMs)}</b></div></div><div class="info"><div class="chip"><small>Bugünkü Adet</small><b>${fmt(u.todayCount)}</b></div><div class="chip"><small>Bugünkü m³</small><b>${m3(u.todayM3)}</b></div><div class="chip"><small>Haftalık m³</small><b>${m3(u.weekM3)}</b></div><div class="chip"><small>Durum</small><b>${u.status||"Bilinmiyor"}</b></div></div><div class="ucactions"><button class="tiny" onclick="openUser('${u.userKey}')">Detay</button><button class="tiny red" onclick="blockUser('${u.userKey}','ip')">IP Engelle</button><button class="tiny red" onclick="blockUser('${u.userKey}','device')">Cihaz Engelle</button><button class="tiny red" onclick="blockUser('${u.userKey}','user')">Kullanıcı Engelle</button></div></article>`).join("")||`<div class="empty card">Canlı kullanıcı verisi bulunamadı.</div>`}
+function renderMain(){
+  let rows=state.users.slice(0,10).map(u=>{
+    const canIp=!!clean(u.ip)&&clean(u.ip)!=="-";
+    const canUser=!!blockValue(u,"user");
+    return `<tr><td><div class="usercell"><div class="miniav">${initials(u)}</div><div><b>${clean(u.name)||clean(u.username)}</b><span>${clean(u.username)||u.userKey}</span></div></div></td><td>${clean(u.seflik)||"-"}</td><td>${clean(u.device)||"-"}</td><td>${clean(u.ip)||"-"}</td><td><b>${fmt(u.todayCount)} adet</b> / ${m3(u.todayM3)} m³</td><td>${ago(u.lastMs||u.lastBackupMs)}</td><td>${badge(u.status)}</td><td><button class="tiny" onclick="openUser('${u.userKey}')">Detay</button> <button class="tiny red" ${canIp?"":"disabled"} onclick="blockUser('${u.userKey}','ip')">IP</button> <button class="tiny red" ${canUser?"":"disabled"} onclick="blockUser('${u.userKey}','user')">Kullanıcı</button></td></tr>`;
+  }).join("");
+  $("mainRows").innerHTML=rows||rowEmpty(8,"Supabase / Drive üzerinden kullanıcı verisi gelmedi.");
+}
+function renderUsers(){
+  let q=($("userSearch").value||$("globalSearch").value||"").toLocaleLowerCase("tr-TR").trim(),st=$("statusFilter").value;
+  let arr=state.users.filter(u=>(!st||u.status===st)&&(!q||JSON.stringify(u).toLocaleLowerCase("tr-TR").includes(q)));
+  $("userList").innerHTML=arr.map(u=>{
+    const canIp=!!clean(u.ip)&&clean(u.ip)!=="-";
+    const canDevice=!!blockValue(u,"device");
+    const canUser=!!blockValue(u,"user");
+    return `<article class="usercard"><div class="ucmain"><div class="bigav">${initials(u)}</div><div><h3>${clean(u.name)||clean(u.username)}</h3><p>${clean(u.username)||u.userKey}<br>${clean(u.seflik)||"-"}</p></div></div><div class="info"><div class="chip"><small>Cihaz</small><b>${clean(u.device)||"-"}${u.platform?" • "+u.platform:""}</b></div><div class="chip"><small>IP Adresi</small><b>${clean(u.ip)||"-"}</b></div><div class="chip"><small>Sürüm</small><b>${clean(u.version)||"-"}</b></div><div class="chip"><small>Son İşlem</small><b>${ago(u.lastMs||u.lastBackupMs)}</b></div></div><div class="info"><div class="chip"><small>Bugünkü Adet</small><b>${fmt(u.todayCount)}</b></div><div class="chip"><small>Bugünkü m³</small><b>${m3(u.todayM3)}</b></div><div class="chip"><small>Haftalık m³</small><b>${m3(u.weekM3)}</b></div><div class="chip"><small>Durum</small><b>${u.status||"Bilinmiyor"}</b></div></div><div class="ucactions"><button class="tiny" onclick="openUser('${u.userKey}')">Detay</button><button class="tiny red" ${canIp?"":"disabled"} onclick="blockUser('${u.userKey}','ip')">IP Engelle</button><button class="tiny red" ${canDevice?"":"disabled"} onclick="blockUser('${u.userKey}','device')">Cihaz Engelle</button><button class="tiny red" ${canUser?"":"disabled"} onclick="blockUser('${u.userKey}','user')">Kullanıcı Engelle</button></div></article>`;
+  }).join("")||`<div class="empty card">Canlı kullanıcı verisi bulunamadı.</div>`;
+}
 function renderBackups(){let last=state.backups[0];$("backupTotal").textContent=fmt(state.backups.length);$("lastBackup").textContent=last?fdate(last.backupDate).split(" ")[0]:"-";$("backupSize").textContent="-";$("backupStatus").innerHTML=last?`<div class="badge">Son yedek başarılı</div><h3>${clean(last.name)||clean(last.username)||"Kullanıcı"}</h3><p>${clean(last.source)} • ${fdate(last.backupDate)}<br>Boyut: ${clean(last.backupSize)||"-"} • Kayıt: ${fmt(last.backupCount||last.todayCount)}</p>`:`<div class="empty">Yedek verisi gelmedi.</div>`;$("backupList").innerHTML=state.backups.map(b=>`<div class="backup"><div><h3>${clean(b.name)||clean(b.username)||"İsimsiz kullanıcı"}</h3><p>${clean(b.seflik)||"-"} • ${clean(b.source)||"-"}</p></div><div class="chip"><small>Tarih</small><b>${fdate(b.backupDate)}</b></div><div class="chip"><small>Dosya / Kayıt</small><b>${fmt(b.backupCount||b.todayCount)}</b></div><div class="chip"><small>Boyut</small><b>${clean(b.backupSize)||"-"}</b></div><div class="ucactions"><span class="badge">Başarılı</span><button class="tiny green" onclick="toast('Yedek indirme için canlı bağlantı kullanılacak')">İndir</button><button class="tiny blue" onclick="toast('Kurtarma işlemi canlı endpoint ile yapılacak')">Kurtar</button></div></div>`).join("")||`<div class="empty card">Yedek verisi gelmedi.</div>`}
 function renderMini(){let total=state.users.reduce((s,u)=>s+num(u.todayM3),0),count=state.users.reduce((s,u)=>s+num(u.todayCount),0);$("miniStats").innerHTML=[["Adet",fmt(count)],["Hacim",m3(total)+" m³"],["Aktif",state.users.filter(u=>u.status==="Çevrimiçi").length],["Uyarı",state.users.filter(u=>u.status!=="Çevrimiçi").length]].map(x=>`<div class="metric"><small>${x[0]}</small><b>${x[1]}</b></div>`).join("")}
 function fillLogUsers(){let opts=["Tüm Kullanıcılar"].concat(state.users.map(u=>clean(u.name)||clean(u.username)).filter(Boolean));$("logUser").innerHTML=opts.map(o=>`<option>${o}</option>`).join("")}
 function renderLogs(){fillLogUsers();let type=$("logType").value,user=$("logUser").value;let rows=state.logs.filter(r=>(type==="Tüm İşlemler"||r.type===type)&&(user==="Tüm Kullanıcılar"||r.user===user));$("logRows").innerHTML=rows.map(r=>`<tr><td>${r.time}</td><td>${r.type}</td><td>${r.user}</td><td>${r.seflik}</td><td>${r.ip}</td><td>${r.desc}</td></tr>`).join("")||rowEmpty(6,"Detaylı kayıt verisi gelmedi.");$("logCount").textContent=`Toplam ${fmt(rows.length)} kayıt`;$("sourceInfo").textContent="Kaynak: "+(Object.keys(state.sources).join(", ")||"yok")}
 function renderActivity(){let items=state.logs.slice(0,5);$("activity").innerHTML=items.map(i=>`<div class="activity-item"><div class="actico ${/ban|engel/i.test(i.type)?"red":""}">●</div><div><b>${i.desc||i.type}</b><small>${i.user} tarafından</small></div><div class="time">${i.time}</div></div>`).join("")||`<div class="empty">Son işlem verisi yok.</div>`}
 function renderStats(){let total=state.users.reduce((s,u)=>s+num(u.todayM3),0),count=state.users.reduce((s,u)=>s+num(u.todayCount),0),active=state.users.filter(u=>u.status==="Çevrimiçi").length;$("statCards").innerHTML=[["Bugünkü Üretim",m3(total)+" m³","Toplam "+fmt(count)+" kayıt"],["Aktif Kullanıcı",fmt(active),"Son bağlantıya göre"],["Yedek Sayısı",fmt(state.backups.length),"Supabase + Drive"]].map(s=>`<div class="stat"><small>${s[0]}</small><b>${s[1]}</b><span class="trend">${s[2]}</span></div>`).join("");$("statsRows").innerHTML=state.users.map(u=>`<tr><td><div class="usercell"><div class="miniav">${initials(u)}</div><div><b>${clean(u.name)||clean(u.username)}</b><span>${clean(u.seflik)||"-"}</span></div></div></td><td>${fmt(u.todayCount)}</td><td>${m3(u.todayM3)}</td><td>${m3(u.weekM3)}</td><td>${fdate(u.backup)}</td><td>${badge(u.status)}</td></tr>`).join("")||rowEmpty(6,"İstatistik için canlı veri gelmedi.")}
-function openUser(k){let u=state.users.find(x=>x.userKey===k);if(!u)return;$("modalTitle").textContent=clean(u.name)||clean(u.username);$("modalSub").textContent=`${clean(u.seflik)||"-"} • ${clean(u.device)||"-"} • ${clean(u.ip)||"-"}`;let rec=Array.isArray(u.records)?u.records:[];$("modalBody").innerHTML=`<div class="detailcard"><h4>Kullanıcı ve Cihaz Bilgileri</h4>${kv("Kullanıcı",clean(u.name)||clean(u.username))}${kv("Şeflik",clean(u.seflik)||"-")}${kv("Cihaz",clean(u.device)||"-")}${kv("Cihaz ID",clean(u.deviceId)||"-")}${kv("IP Adresi",clean(u.ip)||"-")}${kv("Sürüm",clean(u.version)||"-")}${kv("Durum",u.status||"-")}<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px"><button class="tiny red" onclick="blockUser('${u.userKey}','ip')">IP Engelle</button><button class="tiny red" onclick="blockUser('${u.userKey}','device')">Cihaz Engelle</button><button class="tiny red" onclick="blockUser('${u.userKey}','user')">Kullanıcı Engelle</button><button class="tiny green" onclick="unblockUser('${u.userKey}')">Engeli Kaldır</button></div></div><div class="detailcard"><h4>Günlük Üretim Detayı</h4>${kv("Bugünkü Adet",fmt(u.todayCount))}${kv("Bugünkü m³",m3(u.todayM3))}${kv("Haftalık m³",m3(u.weekM3))}${kv("Son Yedek",fdate(u.backup))}<div class="table" style="margin-top:12px"><table style="min-width:420px"><thead><tr><th>Tür</th><th>Adet</th><th>m³</th></tr></thead><tbody>${rec.map(r=>`<tr><td>${r.name||"-"}</td><td>${fmt(r.count)}</td><td>${m3(r.m3)}</td></tr>`).join("")||rowEmpty(3,"Üretim tür detayı yok.")}</tbody></table></div></div><div class="detailcard"><h4>IP Hareketleri</h4>${(u.ips||[]).map(ip=>kv("IP",ip)).join("")||kv("IP","-")}</div><div class="detailcard"><h4>Yedekler</h4>${kv("Son Yedek",fdate(u.backup))}${kv("Boyut",clean(u.backupSize)||"-")}${kv("Durum",u.backup?"Başarılı":"Yedek bulunamadı")}</div>`;$("modal").classList.add("open")}
+function openUser(k){
+  let u=state.users.find(x=>x.userKey===k);if(!u)return;
+  $("modalTitle").textContent=clean(u.name)||clean(u.username);
+  $("modalSub").textContent=`${clean(u.seflik)||"-"} • ${clean(u.device)||"-"} • ${clean(u.ip)||"-"}`;
+  let rec=Array.isArray(u.records)?u.records:[];
+  const canIp=!!clean(u.ip)&&clean(u.ip)!=="-";
+  const canDevice=!!blockValue(u,"device");
+  const canUser=!!blockValue(u,"user");
+  $("modalBody").innerHTML=`<div class="detailcard"><h4>Kullanıcı ve Cihaz Bilgileri</h4>${kv("Kullanıcı",clean(u.name)||clean(u.username))}${kv("Şeflik",clean(u.seflik)||"-")}${kv("Cihaz",clean(u.device)||"-")}${kv("Cihaz ID",clean(u.deviceId)||"-")}${kv("IP Adresi",clean(u.ip)||"-")}${kv("Sürüm",clean(u.version)||"-")}${kv("Durum",u.status||"-")}<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px"><button class="tiny red" ${canIp?"":"disabled"} onclick="blockUser('${u.userKey}','ip')">IP Engelle</button><button class="tiny red" ${canDevice?"":"disabled"} onclick="blockUser('${u.userKey}','device')">Cihaz Engelle</button><button class="tiny red" ${canUser?"":"disabled"} onclick="blockUser('${u.userKey}','user')">Kullanıcı Engelle</button><button class="tiny green" onclick="unblockUser('${u.userKey}')">Engeli Kaldır</button></div></div><div class="detailcard"><h4>Günlük Üretim Detayı</h4>${kv("Bugünkü Adet",fmt(u.todayCount))}${kv("Bugünkü m³",m3(u.todayM3))}${kv("Haftalık m³",m3(u.weekM3))}${kv("Son Yedek",fdate(u.backup))}<div class="table" style="margin-top:12px"><table style="min-width:420px"><thead><tr><th>Tür</th><th>Adet</th><th>m³</th></tr></thead><tbody>${rec.map(r=>`<tr><td>${r.name||"-"}</td><td>${fmt(r.count)}</td><td>${m3(r.m3)}</td></tr>`).join("")||rowEmpty(3,"Üretim tür detayı yok.")}</tbody></table></div></div><div class="detailcard"><h4>IP Hareketleri</h4>${(u.ips||[]).map(ip=>kv("IP",ip)).join("")||kv("IP","-")}</div><div class="detailcard"><h4>Yedekler</h4>${kv("Son Yedek",fdate(u.backup))}${kv("Boyut",clean(u.backupSize)||"-")}${kv("Durum",u.backup?"Başarılı":"Yedek bulunamadı")}</div>`;
+  $("modal").classList.add("open");
+}
 function kv(a,b){return`<div class="kv"><span>${a}</span><b>${b}</b></div>`}function closeModal(){$("modal").classList.remove("open")}
-async function blockUser(k,type){let u=state.users.find(x=>x.userKey===k);if(!u)return;let label={ip:"IP",user:"Kullanıcı",device:"Cihaz"}[type]||type;if(!confirm(`${clean(u.name)||clean(u.username)} için ${label} engeli eklensin mi?`))return;try{await edge("admin_add_block",{type,ip:u.ip,user_key:u.userKey,username:u.username,device_id:u.deviceId,reason:`Panel üzerinden ${label} engeli`});toast(`${label} engeli eklendi.`);loadAll()}catch(e){toast(`Engel eklenemedi: ${e.message||e}`)}}
-async function unblockUser(k){let u=state.users.find(x=>x.userKey===k);if(!u)return;try{await edge("admin_remove_block",{ip:u.ip,user_key:u.userKey,username:u.username,device_id:u.deviceId});toast("Engel kaldırıldı.");loadAll()}catch(e){toast(`Engel kaldırılamadı: ${e.message||e}`)}}
+async async function blockUser(k,type){
+  let u=state.users.find(x=>x.userKey===k);if(!u)return;
+  let label={ip:"IP",user:"Kullanıcı",device:"Cihaz"}[type]||type;
+  let value=blockValue(u,type);
+  if(!value){toast(`${label} engelleme için gerekli değer yok.`);return;}
+  if(!confirm(`${clean(u.name)||clean(u.username)} için ${label} engeli eklensin mi?`))return;
+  const payload={
+    type:type,
+    value:value,
+    block_type:type,
+    block_value:value,
+    target_type:type,
+    target_value:value,
+    ip:type==="ip"?value:clean(u.ip),
+    ip_address:type==="ip"?value:clean(u.ip),
+    user_key:type==="user"?value:clean(u.userKey),
+    username:clean(u.username)||clean(u.name),
+    user_name:clean(u.name)||clean(u.username),
+    name:clean(u.name)||clean(u.username),
+    seflik:clean(u.seflik),
+    device_id:type==="device"?value:clean(u.deviceId),
+    deviceId:type==="device"?value:clean(u.deviceId),
+    device:type==="device"?value:clean(u.device),
+    reason:`Panel üzerinden ${label} engeli`
+  };
+  try{
+    await edge("admin_add_block",payload);
+    toast(`${label} engeli eklendi.`);
+    loadAll();
+  }catch(e){
+    toast(`Engel eklenemedi: ${e.message||e}`);
+  }
+}
+async async function unblockUser(k){
+  let u=state.users.find(x=>x.userKey===k);if(!u)return;
+  const payload={
+    type:"all",
+    value:blockValue(u,"user"),
+    block_type:"all",
+    block_value:blockValue(u,"user"),
+    ip:clean(u.ip),
+    ip_address:clean(u.ip),
+    user_key:clean(u.userKey),
+    username:clean(u.username)||clean(u.name),
+    user_name:clean(u.name)||clean(u.username),
+    name:clean(u.name)||clean(u.username),
+    seflik:clean(u.seflik),
+    device_id:clean(u.deviceId),
+    deviceId:clean(u.deviceId),
+    device:clean(u.device)
+  };
+  try{
+    await edge("admin_remove_block",payload);
+    toast("Engel kaldırıldı.");
+    loadAll();
+  }catch(e){
+    toast(`Engel kaldırılamadı: ${e.message||e}`);
+  }
+}
 function csv(name,rows){let out=rows.map(r=>r.map(x=>`"${String(x??"").replace(/"/g,'""')}"`).join(";")).join("\n"),a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\ufeff"+out],{type:"text/csv;charset=utf-8"}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
 function exportCurrent(){state.view==="users"?exportUsers():state.view==="backups"?exportBackups():state.view==="stats"?exportStats():exportLogs()}function exportUsers(){csv("mesaha_kullanicilar.csv",[["Kullanıcı","Şeflik","Cihaz","IP","Bugünkü Adet","Bugünkü m3","Durum"]].concat(state.users.map(u=>[u.name,u.seflik,u.device,u.ip,u.todayCount,u.todayM3,u.status])))}function exportBackups(){csv("mesaha_yedekler.csv",[["Kullanıcı","Şeflik","Tarih","Kaynak","Boyut"]].concat(state.backups.map(b=>[b.name,b.seflik,fdate(b.backupDate),b.source,b.backupSize])))}function exportLogs(){csv("mesaha_detayli_kayitlar.csv",[["Tarih","İşlem","Kullanıcı","Şeflik","IP","Açıklama"]].concat(state.logs.map(l=>[l.time,l.type,l.user,l.seflik,l.ip,l.desc])))}function exportStats(){csv("mesaha_detayli_istatistikler.csv",[["Kullanıcı","Bugünkü Adet","Bugünkü m3","Haftalık m3","Son Yedek","Durum"]].concat(state.users.map(u=>[u.name,u.todayCount,u.todayM3,u.weekM3,fdate(u.backup),u.status])))}
 function loading(x){$("loading").classList.toggle("show",!!x)}function toast(msg){let t=$("toast");t.textContent=msg;t.classList.add("show");clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("show"),3500)}
