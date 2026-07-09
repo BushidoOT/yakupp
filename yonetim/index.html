@@ -214,12 +214,43 @@ body:after{width:420px;height:420px;right:-90px;top:140px;background:radial-grad
 .activity-card.sync-event-v524{border-color:#bfdbfe;background:linear-gradient(180deg,#f8fbff,#fff)}
 .activity-card.sync-event-v524 .dot{background:#2563eb;box-shadow:0 0 0 5px #dbeafe}
 
+
+/* V525 destek ekranı düzeltmesi */
+.support-card-v525{border:1px solid var(--line);border-radius:24px;background:#fff;box-shadow:var(--shadow2);padding:18px;display:grid;gap:14px}
+.support-card-v525.real{border-color:#bbf7d0;background:linear-gradient(180deg,#fbfffc,#fff)}
+.support-card-v525.warn{border-color:#fed7aa;background:linear-gradient(180deg,#fffaf4,#fff)}
+.support-head-v525{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap}
+.support-user-v525{display:flex;gap:12px;align-items:flex-start}
+.support-avatar-v525{width:48px;height:48px;border-radius:16px;background:linear-gradient(135deg,#16a34a,#2563eb);color:#fff;display:grid;place-items:center;font-weight:1000}
+.support-title-v525 b{display:block;font-size:22px;letter-spacing:-.03em}
+.support-title-v525 small{display:block;color:var(--muted);font-weight:850;margin-top:4px}
+.support-message-v525{border:1px solid #e5e7eb;border-radius:18px;background:#f8fafc;padding:14px;display:grid;gap:8px}
+.support-message-v525 h3{margin:0;font-size:16px;color:#475467}
+.support-message-v525 p{margin:0;font-size:20px;line-height:1.35;color:#1f2937;font-weight:900;white-space:pre-wrap}
+.support-message-v525 .muted{color:#94a3b8;font-size:15px;font-weight:850}
+.support-meta-v525{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.support-meta-v525 .mini{background:#fff}
+.support-actions-v525{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:start}
+.support-actions-v525 textarea{min-height:78px}
+.support-buttons-v525{display:flex;gap:8px;flex-wrap:wrap}
+.support-note-v525{font-size:13px;color:#64748b;font-weight:850}
+@media(max-width:680px){.support-actions-v525{grid-template-columns:1fr}.support-buttons-v525 .btn{flex:1 1 120px}}
+
+
+/* V527 güvenlik/IP arama ve doğru sıralama */
+.ip-toolbar-v527{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;margin-top:10px}
+.ip-toolbar-v527 input{min-height:46px}
+.ip-toolbar-v527 .btn{min-height:46px;box-shadow:none}
+.ip-sort-note-v527{font-size:13px;color:#64748b;font-weight:850}
+.ip-latest-pill-v527{display:inline-flex;align-items:center;gap:6px;border:1px solid #bbf7d0;background:#ecfdf3;color:#166534;border-radius:999px;padding:6px 10px;font-size:12px;font-weight:1000}
+@media(max-width:720px){.ip-toolbar-v527{grid-template-columns:1fr}.ip-toolbar-v527 .btn{width:100%}}
+
 </style>
 </head>
 <body>
 <div class="app">
   <header class="top">
-    <div class="brand"><img alt="" src="../assets/mesaha_logo.png"/><div><b>Mesaha İO Yönetim</b><small>Kurtarma ve Güvenlik Merkezi</small><div class="version-pill" id="versionPill">Admin V5.24 • Sürüm hazırlanıyor</div><div class="sync-mini-v520" id="syncMiniV520">Son senkron bekleniyor</div></div></div>
+    <div class="brand"><img alt="" src="../assets/mesaha_logo.png"/><div><b>Mesaha İO Yönetim</b><small>Kurtarma ve Güvenlik Merkezi</small><div class="version-pill" id="versionPill">Admin V5.27 • Sürüm hazırlanıyor</div><div class="sync-mini-v520" id="syncMiniV520">Son senkron bekleniyor</div></div></div>
     <div class="top-actions"><button class="btn soft" id="appBtn" type="button">↗ Uygulama</button><button class="btn green" id="refreshBtn" type="button">⟳ Yenile</button></div>
   </header>
 
@@ -418,7 +449,7 @@ body:after{width:420px;height:420px;right:-90px;top:140px;background:radial-grad
         </div>
       </div>
       <div class="panel-card" style="margin-top:14px">
-        <div class="section-head"><div><h2>Son IP Hareketleri</h2><p>Boş sistem kayıtları ayrı toplanır; gerçek kullanıcılar ana listede görünür.</p></div><div class="row"><button class="btn soft" id="openAllIpDetailsBtn" type="button">Tüm Detayları Aç</button><button class="btn soft" id="showUnmatchedIpBtn" type="button">Eşleşmeyenleri Göster</button></div></div>
+        <div class="section-head"><div><h2>Son IP Hareketleri</h2><p>En son giriş yapan kullanıcılar en üstte görünür. Arama kullanıcı, şeflik, IP, cihaz ve sürümde çalışır.</p></div><div class="row"><button class="btn soft" id="openAllIpDetailsBtn" type="button">Tüm Detayları Aç</button><button class="btn soft" id="showUnmatchedIpBtn" type="button">Eşleşmeyenleri Göster</button></div></div>
         <div class="ip-summary-v521" id="ipMatchSummaryV521"></div>
         <div class="list" id="eventsList"><div class="empty">Hareketler bekleniyor…</div></div>
       </div>
@@ -445,7 +476,7 @@ body:after{width:420px;height:420px;right:-90px;top:140px;background:radial-grad
 
 const ADMIN_USER='yakupduzgun';
 const ADMIN_SEFLIK='Yaylacık_43';
-const ADMIN_PANEL_VERSION='Admin V5.24';
+const ADMIN_PANEL_VERSION='Admin V5.27';
 const GUARD_FUNCTION_URL='https://swrbpdpotmirnmtqnuba.supabase.co/functions/v1/smooth-function';
 const ADMIN_KEY_STORE='mesaha_admin_guard_key_v505';
 const SESSION_KEY='mesaha_supabase_v500_session';
@@ -508,7 +539,7 @@ function mapProfile(r){r=r||{};const payload=r.payload||r.profile||{};const d=r.
 function mapUsage(r){r=r||{};const p=r.payload||r;const ldi=p.lastDeviceInfo||p.deviceInfo||p.device_info||{};const name=clean(firstNonEmpty(p.name,p.userName,p.username,p.user&&p.user.name,r.name,r.user_name));const seflik=clean(firstNonEmpty(p.seflik,p.sheflik,p.user&&p.user.seflik,r.seflik,r.seflik_name));const deviceId=clean(firstNonEmpty(p.deviceId,p.device_id,p.installId,p.install_id,ldi.deviceId,ldi.device_id,ldi.installId,ldi.install_id,r.device_id,r.deviceId));const ip=clean(firstNonEmpty(p.ip,p.ip_address,p.ipAddress,p.lastIp,ldi.ip,ldi.ip_address,ldi.ipAddress,r.ip,r.ip_address));const ms=dateMs(firstNonEmpty(r.updated_at,r.last_seen_at,p.updatedAt,p.lastSeen,p.createdAt))||Date.now();return {id:firstNonEmpty(p.userKey,p.user_key,r.user_key,r.user_id,r.id,userKey(name,seflik)),userKey:firstNonEmpty(p.userKey,p.user_key,r.user_key,userKey(name,seflik)),name:name||p.userKey||'Kullanıcı',seflik,bolmeNo:firstNonEmpty(p.bolmeNo,p.bolme_no),appVersion:firstNonEmpty(r.app_version,p.appVersion,p.visibleVersion,p.version),fileVersion:firstNonEmpty(p.fileVersion,p.file_version),deviceId,installId:firstNonEmpty(p.installId,p.install_id,ldi.installId,ldi.install_id),deviceInfo:ldi,lastDevice:p.lastDevice||'',lastSeen:p.lastSeen||r.last_seen_at||r.updated_at||'',lastSeenMs:ms,updatedAtMs:ms,ip,lastIp:ip,recordCount:Number(firstNonEmpty(r.record_count,p.recordCount,p.totalRecords,0))||0,m3:Number(firstNonEmpty(r.total_volume,p.m3,p.totalM3,0))||0,todayRecords:Number(p.todayRecords||0)||0,usageMs:Number(p.usageMs||0)||0,source:'usage'}}
 function mapBackup(r){r=r||{};const p=r.payload||r;const u=p.user||{};const name=clean(r.name||p.name||u.name||'');const seflik=clean(r.seflik||p.seflik||u.seflik||'');const key=p.userKey||p.user_key||r.user_key||userKey(name,seflik);const ms=Number(p.createdAtMs||r.createdAtMs||0)||dateMs(p.createdAt||r.created_at||r.updated_at)||Date.now();return {id:r.id||('supa_'+clean(r.user_id||key)+'_'+clean(r.slot_id||ms)),source:r.source||'supabase',slotId:r.slot_id||p.slotId||'',driveFileId:r.driveFileId||'',userKey:key,name:name||'Kullanıcı',seflik,bolmeNo:p.bolmeNo||u.bolmeNo||r.bolmeNo||'',fileName:r.backup_name||p.fileName||r.fileName||('Mesaha_Bulut_Yedek_'+(r.slot_id||'latest')+'.json'),recordCount:Number(r.record_count||p.recordCount||p.count||0)||0,totalRecords:Number(r.record_count||p.totalRecords||p.count||0)||0,m3:Number(r.total_volume||p.m3||p.totalVolume||0)||0,createdAt:p.createdAt||r.created_at||r.updated_at||'',createdAtMs:ms,updatedAt:r.updated_at||'',updatedAtMs:dateMs(r.updated_at)||ms,appVersion:p.appVersion||r.app_version||p.version||'',fileVersion:p.fileVersion||p.version||'',payload:p,raw:r}}
 function mapDriveBackup(x){return {id:'drive_'+x.id,source:'google-drive',driveFileId:x.id,fileName:x.name||'Drive yedeği',name:x.username||'',seflik:x.seflik||'',bolmeNo:x.bolme||'',userKey:x.userKey||userKey(x.username,x.seflik),recordCount:Number(x.count||0)||0,totalRecords:Number(x.count||0)||0,m3:Number(x.totalVolume||0)||0,createdAt:x.createdAt||'',createdAtMs:dateMs(x.createdAt)||0,appVersion:x.version||'',fileVersion:x.version||'',driveLink:'https://drive.google.com/file/d/'+encodeURIComponent(x.id)+'/view'}}
-function mapLog(r){r=r||{};const p=r.payload||r;const msg=clean(p.message||r.message||p.text||'');const name=clean(p.name||p.userName||p.user&&p.user.name||'');const seflik=clean(p.seflik||p.user&&p.user.seflik||'');const ms=Number(p.createdAtMs||r.createdAtMs||0)||dateMs(p.createdAt||r.created_at||r.updated_at)||Date.now();return {id:r.id||p.id||('log_'+ms),userKey:p.userKey||p.user_key||userKey(name,seflik),name,seflik,message:msg,status:p.status||r.status||'new',createdAt:p.createdAt||r.created_at||'',createdAtMs:ms,adminReply:p.adminReply||p.reply||'',level:p.level||r.level||'',source:'log',raw:r}}
+function mapLog(r){r=r||{};const p=r.payload||r;const msg=clean(firstNonEmpty(p.message,p.mesaj,p.text,p.body,p.description,r.message,r.text));const subject=clean(firstNonEmpty(p.subject,p.title,p.konu,p.type,r.subject,r.title,r.type));const name=clean(firstNonEmpty(p.name,p.userName,p.username,p.user&&p.user.name,r.name,r.user_name));const seflik=clean(firstNonEmpty(p.seflik,p.user&&p.user.seflik,r.seflik,r.seflik_name));const ms=Number(p.createdAtMs||r.createdAtMs||0)||dateMs(firstNonEmpty(p.createdAt,r.created_at,r.updated_at,p.time,r.time))||Date.now();return {id:r.id||p.id||('log_'+ms),userKey:p.userKey||p.user_key||r.user_key||userKey(name,seflik),name,seflik,subject,message:msg,status:p.status||r.status||'new',createdAt:p.createdAt||r.created_at||r.updated_at||'',createdAtMs:ms,adminReply:p.adminReply||p.reply||r.adminReply||'',level:p.level||r.level||'',category:p.category||p.kind||r.category||'',source:'log',raw:r}}
 function mapEvent(x){x=x||{};const p=eventNested(x);const u=x.user||x.profile||p.user||p.profile||{};const d=x.device||p.device||p.deviceInfo||p.lastDeviceInfo||{};return Object.assign({},x,{ip_address:clean(firstNonEmpty(x.ip_address,x.ipAddress,x.ip,p.ip_address,p.ipAddress,p.ip,d.ip_address,d.ipAddress,d.ip)),device_id:clean(firstNonEmpty(x.device_id,x.deviceId,x.install_id,x.installId,p.device_id,p.deviceId,p.install_id,p.installId,d.device_id,d.deviceId,d.install_id,d.installId,d.id)),user_key:clean(firstNonEmpty(x.user_key,x.userKey,x.user_id,x.userId,p.user_key,p.userKey,p.user_id,p.userId,u.user_key,u.userKey,u.id)),name:clean(firstNonEmpty(x.name,x.user_name,x.username,x.displayName,p.name,p.user_name,p.username,p.userName,u.name,u.userName,u.username)),seflik:clean(firstNonEmpty(x.seflik,x.seflik_name,x.sheflik,x.birim,p.seflik,p.seflik_name,p.sheflik,p.birim,u.seflik,u.seflik_name,u.birim)),app_version:clean(firstNonEmpty(x.app_version,x.appVersion,x.version,p.app_version,p.appVersion,p.visibleVersion,p.version)),created_at:firstNonEmpty(x.created_at,x.createdAt,x.time,p.created_at,p.createdAt,p.time),blocked:x.blocked===true||x.allowed===false||/block|ban|denied/i.test(String(x.event_type||p.event_type||'')),raw_payload:p})}
 
 function mergeUsers(arr){const map=new Map();(arr||[]).forEach(u=>{const k=userKeyOf(u);if(!k)return;const old=map.get(k)||{};const newer=n(u.lastSeenMs||u.updatedAtMs)>=n(old.lastSeenMs||old.updatedAtMs);const out=Object.assign({},old);['userKey','name','seflik','bolmeNo'].forEach(key=>{if(!out[key]&&u[key])out[key]=u[key]});if(newer){['appVersion','fileVersion','deviceId','installId','deviceInfo','lastDevice','deviceType','os','browser','screen','ip','lastIp','lastSeen','lastSeenMs','updatedAtMs','usageMs','todayRecords'].forEach(key=>{if(u[key]!=null&&u[key]!=='')out[key]=u[key]})}if(n(u.recordCount)>n(out.recordCount))out.recordCount=n(u.recordCount);if(n(u.totalRecords)>n(out.recordCount))out.recordCount=n(u.totalRecords);if(n(u.m3)>n(out.m3))out.m3=n(u.m3);out.sources=Array.from(new Set([...(out.sources||[]),u.source].filter(Boolean)));map.set(k,out)});return [...map.values()].filter(u=>u.name||u.seflik).sort((a,b)=>n(b.lastSeenMs||b.updatedAtMs)-n(a.lastSeenMs||a.updatedAtMs))}
@@ -671,7 +702,7 @@ async function loadAll(){
       usage=(adminAll.usage||[]).map(mapUsage);
       backups=(adminAll.backups||[]).map(mapBackup);
       logs=(adminAll.logs||[]).map(mapLog);
-      tickets=logs.filter(x=>x.message&&!/health-ok/i.test(x.message)&&x.userKey);
+      tickets=((adminAll.tickets||adminAll.supportTickets||[]).length?(adminAll.tickets||adminAll.supportTickets||[]).map(x=>Object.assign(mapLog(x),{source:'supportTickets',realTicket:true})):logs.filter(isRealSupportTicketV525));
       state.actionLogs=logs.filter(x=>/admin|block|broadcast|archive|settings/i.test([x.message,x.level,x.status].join(' '))).slice(0,120);
       state.sources.adminEdge=true;
     }else{
@@ -682,7 +713,7 @@ async function loadAll(){
       profiles=usersRaw.map(mapProfile);
       usage=usageRaw.map(mapUsage);
       backups=backupsRaw.map(mapBackup);
-      tickets=ticketsRaw.map(mapLog);
+      tickets=ticketsRaw.map(x=>Object.assign(mapLog(x),{source:'supportTickets',realTicket:true}));
       logs=logsRaw.map(mapLog);
       broadcasts=broadcastsRaw;
       state.actionLogs=(actionLogsRaw||[]).map(mapAdminActionV519);
@@ -692,7 +723,7 @@ async function loadAll(){
     state.users=mergeUsers([...profiles,...usage,...backups]);
     state._userIndexV520=null;
     state.backups=activeRows([...backups,...drive]).sort((a,b)=>n(b.createdAtMs||b.updatedAtMs)-n(a.createdAtMs||a.updatedAtMs));
-    state.tickets=activeRows(tickets).filter(t=>t.message).sort((a,b)=>n(b.createdAtMs)-n(a.createdAtMs));
+    state.tickets=activeRows(tickets).filter(isRealSupportTicketV525).sort((a,b)=>n(b.createdAtMs)-n(a.createdAtMs));
     state.usage=usage; state.logs=logs; state.broadcasts=activeRows(broadcasts||[]).sort((a,b)=>n(b.createdAtMs)-n(a.createdAtMs));
     let edgeEvents=[];
     try{const ev=await guardCall('admin_list_events',{limit:3000});edgeEvents=(ev.items||[]).map(mapEvent);state.sources.events=true}catch(e){state.errors.events=errText(e);edgeEvents=[]}
@@ -747,6 +778,34 @@ function displayEventSeflikV523(e){
   const s=eventSeflik(e);
   return s || '—';
 }
+
+function eventTimeMsV527(e){
+  e=e||{};
+  return dateMs(e.created_at||e.createdAt||e.time)||n(e.createdAtMs)||n(e.timeMs)||0
+}
+function groupTimeMsV527(arr){
+  return Math.max.apply(null,(arr||[]).map(eventTimeMsV527).concat([0]))
+}
+function ipSearchQueryV527(){
+  const el=$('ipSearchV527');
+  return clean(el&&el.value).toLocaleLowerCase('tr-TR')
+}
+function eventSearchTextV527(e){
+  e=e||{};
+  const u=(typeof displayEventUserV522==='function'?displayEventUserV522(e):eventUser(e))||'';
+  const s=(typeof displayEventSeflikV523==='function'?displayEventSeflikV523(e):eventSeflik(e))||'';
+  return [u,s,e.ip_address,e.ip,e.device_id,e.deviceId,e.user_key,e.userKey,e.event_type,e.app_version,e.version,e.created_at,(typeof eventMatchLabelV520==='function'?eventMatchLabelV520(e):'')].join(' ').toLocaleLowerCase('tr-TR')
+}
+function filterIpItemsV527(items){
+  const q=ipSearchQueryV527();
+  if(!q) return items||[];
+  return (items||[]).filter(e=>eventSearchTextV527(e).includes(q))
+}
+function updateIpSearchInfoV527(count){
+  const el=$('ipSearchCountV527');
+  if(el) el.textContent=(ipSearchQueryV527()?('Arama sonucu: '+int(count)+' kayıt'):'Sıralama: en yeni üstte');
+}
+
 function eventGroups(items){
   const map={},groups=[],system=[];
   (items||[]).forEach(e=>{
@@ -759,13 +818,16 @@ function eventGroups(items){
       system.push(e);
     }
   });
-  groups.sort((a,b)=>String(b[0].created_at||'').localeCompare(String(a[0].created_at||'')));
-  system.sort((a,b)=>String(b.created_at||'').localeCompare(String(a.created_at||'')));
+  groups.forEach(g=>g.sort((a,b)=>eventTimeMsV527(b)-eventTimeMsV527(a)));
+  groups.sort((a,b)=>groupTimeMsV527(b)-groupTimeMsV527(a));
+  system.sort((a,b)=>eventTimeMsV527(b)-eventTimeMsV527(a));
   return {groups,system}
 }
 function renderEventList(el,items,limit,compact){
-  const {groups,system}=eventGroups(items);
+  const source=(el&&el.id==='eventsList')?filterIpItemsV527(items):items;
+  const {groups,system}=eventGroups(source);
   const list=groups.slice(0,limit||999);
+  if(el&&el.id==='eventsList') updateIpSearchInfoV527(groups.length+system.length);
   if(!list.length&&!system.length){el.innerHTML='<div class="empty">Henüz IP hareketi yok.</div>';return}
   el.innerHTML=list.map((arr,i)=>eventCard(arr,i,compact)).join('')+(system.length&&!compact?systemCard(system):'')
 }
@@ -903,11 +965,82 @@ function renderBackupList(el,arr,compact){el.innerHTML=arr.length?arr.map(b=>{co
 </div>`}).join(''):'<div class="empty">Bulut yedeği yok.</div>'}
 function renderBackups(){const q=clean($('backupSearch').value).toLowerCase(),src=$('backupSource').value;let arr=state.backups.filter(b=>(!q||[b.fileName,b.name,b.seflik,b.userKey].join(' ').toLowerCase().includes(q))&&(!src||b.source===src));renderBackupList($('backupsList'),arr,false)}
 
-function renderTickets(){const arr=state.tickets;$('ticketsList').innerHTML=arr.length?arr.map(t=>`<div class="ticket">
-  <div class="section-head"><div><h3>${esc(t.name||'Kullanıcı')} • ${esc(t.seflik||'-')}</h3><p>${esc(t.createdAt||'-')} • ${esc(t.status||'new')}</p></div><span class="badge ${t.adminReply?'':'warn'}">${t.adminReply?'Cevaplandı':'Yeni'}</span></div>
-  <p>${esc(t.message||'-')}</p>${t.adminReply?`<div class="notice"><div class="ok">↩</div><div>${esc(t.adminReply)}</div></div>`:''}
-  <div class="reply-box"><textarea rows="2" data-reply-text="${esc(t.id)}" placeholder="Cevap yaz..."></textarea><div class="row"><button class="btn green" data-ticket-reply="${esc(t.id)}" type="button">Cevap Gönder</button><button class="btn soft" data-ticket-read="${esc(t.id)}" type="button">Okundu</button><button class="btn danger" data-ticket-delete="${esc(t.id)}" type="button">Sil</button></div></div>
-</div>`).join(''):'<div class="empty">Destek mesajı yok.</div>'}
+
+function isGenericActionMessageV525(t){
+  const m=clean(t&&t.message).toLocaleLowerCase('tr-TR');
+  const s=clean(t&&t.subject).toLocaleLowerCase('tr-TR');
+  const c=clean(t&&t.category).toLocaleLowerCase('tr-TR');
+  const raw=JSON.stringify((t&&t.raw)||{}).toLocaleLowerCase('tr-TR');
+  if(/support|destek|yardım|yardim|talep|ticket/.test(c+' '+s+' '+raw)) return false;
+  return /^(mesaha işlem|mesaha islem|işlem|islem|yedek işlem|yedek islem|kullanıcı işlem|kullanici islem)$/i.test(m);
+}
+function isRealSupportTicketV525(t){
+  if(!t) return false;
+  if(t.realTicket || t.source==='supportTickets') return !isGenericActionMessageV525(t) || clean(t.adminReply);
+  const raw=JSON.stringify(t.raw||{}).toLocaleLowerCase('tr-TR');
+  if(/support|destek|yardım|yardim|talep|ticket/.test(raw)) return true;
+  return !isGenericActionMessageV525(t) && clean(t.message).length>0 && !/health-ok|sync-ok|login-ok/i.test(t.message);
+}
+function ticketSubjectV525(t){
+  const s=clean(t.subject);
+  if(s) return s;
+  const m=clean(t.message);
+  if(/^mesaha işlem$/i.test(m)||/^mesaha islem$/i.test(m)) return 'Mesaha işlem bildirimi';
+  return 'Kullanıcı mesajı';
+}
+function ticketMessageV525(t){
+  const m=clean(t.message);
+  if(!m || /^mesaha işlem$/i.test(m) || /^mesaha islem$/i.test(m)) return '';
+  return m;
+}
+function ticketUserKeyV525(t){return clean(t&&t.userKey)||userKey(t&&t.name,t&&t.seflik)}
+function ticketStatusTextV525(t){const st=clean(t&&t.status)||'new';if(t&&t.adminReply)return 'Cevaplandı';if(st==='read')return 'Okundu';if(st==='answered')return 'Cevaplandı';if(st==='new')return 'Yeni';return st}
+
+function renderTickets(){
+  const arr=(state.tickets||[]).filter(isRealSupportTicketV525).sort((a,b)=>{
+    const aw=a.adminReply?1:0,bw=b.adminReply?1:0;
+    if(aw!==bw)return aw-bw;
+    return n(b.createdAtMs)-n(a.createdAtMs);
+  });
+  $('ticketsList').innerHTML=arr.length?arr.map(t=>{
+    const key=ticketUserKeyV525(t);
+    const msg=ticketMessageV525(t);
+    const status=ticketStatusTextV525(t);
+    const needsText=!msg;
+    return `<div class="support-card-v525 ${needsText?'warn':'real'}">
+      <div class="support-head-v525">
+        <div class="support-user-v525">
+          <div class="support-avatar-v525">${esc(initials(t.name||'K'))}</div>
+          <div class="support-title-v525">
+            <b>${esc(t.name||'Kullanıcı')} • ${esc(t.seflik||'-')}</b>
+            <small>${esc(t.createdAt||shortDate(t.createdAtMs))} • ${esc(status)}</small>
+          </div>
+        </div>
+        <span class="badge ${t.adminReply?'':'warn'}">${esc(status)}</span>
+      </div>
+      <div class="support-meta-v525">
+        <div class="mini"><small>Konu</small><b>${esc(ticketSubjectV525(t))}</b></div>
+        <div class="mini"><small>Kullanıcı anahtarı</small><b>${esc(key||'-')}</b></div>
+        <div class="mini"><small>Kaynak</small><b>${esc(t.source||'destek')}</b></div>
+      </div>
+      <div class="support-message-v525">
+        <h3>Kullanıcı mesajı</h3>
+        ${msg?`<p>${esc(msg)}</p>`:`<p class="muted">Kullanıcı açıklama yazmamış. Bu kayıt genel işlem bildirimi gibi görünüyor.</p>`}
+      </div>
+      ${t.adminReply?`<div class="notice"><div class="ok">↩</div><div>${esc(t.adminReply)}</div></div>`:''}
+      <div class="support-actions-v525">
+        <textarea rows="2" data-reply-text="${esc(t.id)}" placeholder="Cevap yaz..."></textarea>
+        <div class="support-buttons-v525">
+          <button class="btn green" data-ticket-reply="${esc(t.id)}" type="button">Cevap Gönder</button>
+          <button class="btn soft" data-ticket-read="${esc(t.id)}" type="button">Okundu</button>
+          <button class="btn soft" data-user-detail="${esc(key)}" type="button">Kullanıcı Detayı</button>
+          <button class="btn danger" data-ticket-delete="${esc(t.id)}" type="button">Sil</button>
+        </div>
+      </div>
+      <div class="support-note-v525">Destek ekranında yalnız gerçek destek/talep kayıtları gösterilir. Genel “Mesaha işlem” logları burada temizlenir.</div>
+    </div>`
+  }).join(''):'<div class="empty">Gerçek destek mesajı yok. Genel işlem logları destek listesinden temizlendi.</div>'
+}
 
 function mapAdminActionV519(r){r=r||{};const p=r.payload||r;const ms=Number(p.createdAtMs||p.atMs||r.createdAtMs||0)||dateMs(p.createdAt||p.at||r.created_at)||Date.now();return {id:r.id||p.id||('act_'+ms),type:p.type||p.action||p.event||r.action||'admin',target:p.target||p.targetId||p.userKey||'',message:p.message||p.note||p.reason||'',createdAt:p.createdAt||p.at||r.created_at||'',createdAtMs:ms,raw:r}}
 function userRiskInfoV519(u){
@@ -1039,6 +1172,9 @@ function bind(){
   document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.tab)));
   document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.go)));
   ['usersRefresh','statsRefresh','backupsRefresh','ticketsRefresh','toolsRefresh','securityRefresh','securityRefreshTop'].forEach(id=>{const el=$(id);if(el)el.addEventListener('click',loadAll)});
+  if($('ipSearchV527'))$('ipSearchV527').addEventListener('input',()=>renderSecurity());
+  if($('clearIpSearchV527'))$('clearIpSearchV527').addEventListener('click',()=>{if($('ipSearchV527'))$('ipSearchV527').value='';renderSecurity();});
+
   ['userSearch','seflikFilter','userSort'].forEach(id=>$(id).addEventListener('input',renderUsers));
   $('clearUserFilters').addEventListener('click',()=>{$('userSearch').value='';$('seflikFilter').value='';$('userSort').value='last';renderUsers()});
   ['backupSearch','backupSource'].forEach(id=>$(id).addEventListener('input',renderBackups));
