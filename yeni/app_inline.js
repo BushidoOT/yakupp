@@ -1,16 +1,4 @@
-<!DOCTYPE html>
 
-<html lang="tr">
-<head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" name="viewport"/>
-<meta content="#f4f7f6" name="theme-color"/>
-<link href="./manifest.json" rel="manifest"/>
-<link href="./assets/icon-192.png" rel="apple-touch-icon"/>
-<title>Mesaha İO</title>
-<meta content="yes" name="apple-mobile-web-app-capable"/>
-<meta content="Mesaha İO" name="apple-mobile-web-app-title"/>
-<script>
   (function(){
     var q = new URLSearchParams(location.search);
     if(q.get('reset') === '1' || q.get('clear') === '1'){
@@ -24,16 +12,16 @@
       });
     }
   })();
-  </script>
-<script src="./js/version.js"></script>
-<script>try{ if(window.MesahaVersion&&window.MesahaVersion.applyToDocument) window.MesahaVersion.applyToDocument(document); }catch(e){}</script>
-<script src="./js/mesaha-early-optimizer.js"></script>
-<script src="./js/mesaha-utils.js"></script>
-<script src="./js/mesaha-data-guard.js"></script>
-<script src="./js/mesaha-stability-core.js"></script>
-<script src="./js/mesaha-error-log.js"></script>
-<script src="./js/mesaha-url-cleanup.js"></script>
-<script id="mesaha-v458-user-panel-notes-removed">
+  
+
+try{ if(window.MesahaVersion&&window.MesahaVersion.applyToDocument) window.MesahaVersion.applyToDocument(document); }catch(e){}
+
+
+
+
+
+
+
 (function(){
   'use strict';
   function removeNotes(){
@@ -45,638 +33,8 @@
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',removeNotes,{once:true});else removeNotes();
   try{setTimeout(removeNotes,300);setTimeout(removeNotes,1000);setTimeout(removeNotes,2500);}catch(e){}
 })();
-</script>
 
-<link href="./css/app.css" rel="stylesheet"/>
-<style id="mesaha-v319-login-style">
-.user-badge.login-needed{background:#fff7ed;color:#9a3412;border-color:#fed7aa;box-shadow:0 10px 22px rgba(245,158,11,.12)}
 
-.panel-field-v316 input:invalid{border-color:#f59e0b;box-shadow:0 0 0 4px rgba(245,158,11,.12)}
-</style>
-<style id="mesaha-layout-compat">
-/* v358: tablet ve büyük ekran uyumluluğu */
-html, body{
-  width:100%;
-  min-width:0;
-  overflow-x:hidden;
-}
-.app{
-  width:100%!important;
-  max-width:min(1280px, calc(100vw - 20px))!important;
-  margin-left:auto!important;
-  margin-right:auto!important;
-  padding-left:clamp(10px, 2vw, 24px)!important;
-  padding-right:clamp(10px, 2vw, 24px)!important;
-}
-.topbar{
-  width:auto!important;
-  margin-left:calc(clamp(10px, 2vw, 24px) * -1)!important;
-  margin-right:calc(clamp(10px, 2vw, 24px) * -1)!important;
-}
-.card,.hero-card,.status-card{
-  width:100%;
-}
-.hero-card{
-  background-position:center right!important;
-}
-.bottom-nav{
-  max-width:min(760px, calc(100vw - 24px))!important;
-  left:50%!important;
-  right:auto!important;
-  width:min(760px, calc(100vw - 24px))!important;
-  transform:translateX(-50%)!important;
-}
-
-/* Büyük telefon / küçük tablet */
-@media (min-width: 640px){
-  .app{
-    max-width:min(980px, calc(100vw - 28px))!important;
-    padding-bottom:calc(112px + env(safe-area-inset-bottom,0px))!important;
-  }
-  .hero-card{
-    min-height:170px!important;
-    padding:22px!important;
-  }
-  .hero-card h1{
-    font-size:36px!important;
-  }
-  .hero-card p{
-    font-size:18px!important;
-    max-width:430px!important;
-  }
-  .status-card{
-    grid-template-columns:1fr 1fr!important;
-    gap:16px!important;
-  }
-  .summary-grid{
-    grid-template-columns:repeat(3, minmax(0,1fr))!important;
-  }
-  .summary-grid.small,
-  .product-totals,
-  .grid.two,
-  .measure-grid,
-  .product-grid,
-  .action-grid{
-    grid-template-columns:repeat(2, minmax(0,1fr))!important;
-  }
-  .recent-list{
-    grid-template-columns:repeat(3, minmax(0,1fr))!important;
-  }
-}
-
-/* Tablet */
-@media (min-width: 820px){
-  .app{
-    max-width:min(1120px, calc(100vw - 36px))!important;
-  }
-  .topbar{
-    border-radius:0 0 26px 26px!important;
-  }
-  .card,.hero-card,.status-card{
-    padding:22px!important;
-    margin:14px 0!important;
-  }
-  .hero-card{
-    min-height:195px!important;
-  }
-  .hero-card h1{
-    font-size:44px!important;
-  }
-  .hero-card p{
-    font-size:21px!important;
-    max-width:520px!important;
-  }
-  .entry-form.card{
-    max-width:980px!important;
-    margin-left:auto!important;
-    margin-right:auto!important;
-  }
-  .barcode-save{
-    grid-template-columns:minmax(0,1fr) 190px!important;
-  }
-  .quick-grid{
-    grid-template-columns:repeat(5, minmax(0,1fr))!important;
-  }
-  .record-toolbar,
-  .record-select-actions{
-    display:flex!important;
-    flex-wrap:wrap!important;
-    gap:10px!important;
-    align-items:center!important;
-  }
-  .record-toolbar input{
-    flex:1 1 320px!important;
-  }
-}
-
-/* Büyük tablet / masaüstü */
-@media (min-width: 1100px){
-  .app{
-    max-width:min(1240px, calc(100vw - 48px))!important;
-  }
-  .hero-card{
-    min-height:220px!important;
-  }
-  .hero-card h1{
-    font-size:52px!important;
-  }
-  .hero-card p{
-    font-size:24px!important;
-    max-width:600px!important;
-  }
-  .status-card{
-    grid-template-columns:repeat(2, minmax(0,1fr))!important;
-  }
-  .product-totals{
-    grid-template-columns:repeat(3, minmax(0,1fr))!important;
-  }
-  .record-card{
-    grid-template-columns:auto minmax(0,1fr) auto!important;
-  }
-}
-
-/* Çok küçük ekran koruması */
-@media (max-width: 380px){
-  .app{
-    max-width:100%!important;
-    padding-left:8px!important;
-    padding-right:8px!important;
-  }
-  .bottom-nav{
-    width:calc(100vw - 16px)!important;
-    max-width:calc(100vw - 16px)!important;
-  }
-}
-</style>
-<style id="mesaha-v360-hero-background-force">
-/* v360: kapak görselini bütün responsive katmanların üstünde zorla uygula */
-.hero-card,
-#homeView .hero-card,
-section.hero-card{
-  position:relative!important;
-  overflow:hidden!important;
-  background-image:
-    linear-gradient(90deg,
-      rgba(255,255,255,.96) 0%,
-      rgba(255,255,255,.90) 28%,
-      rgba(255,255,255,.68) 52%,
-      rgba(255,255,255,.20) 100%),
-    url("./assets/hero_forest_cover.webp")!important;
-  background-size:cover!important;
-  background-position:center right!important;
-  background-repeat:no-repeat!important;
-  background-color:#f6faf8!important;
-}
-.hero-card::before{
-  content:""!important;
-  position:absolute!important;
-  inset:0!important;
-  pointer-events:none!important;
-  background:linear-gradient(90deg,rgba(255,255,255,.10),rgba(255,255,255,0))!important;
-}
-.hero-card > div:first-child{
-  position:relative!important;
-  z-index:2!important;
-}
-.hero-forest{
-  display:none!important;
-}
-.hero-fact,
-#heroFact,
-.hero-card p{
-  position:relative!important;
-  z-index:2!important;
-  max-width:min(680px,68%)!important;
-}
-@media(max-width:640px){
-  .hero-card,
-  #homeView .hero-card,
-  section.hero-card{
-    background-position:center right!important;
-  }
-  .hero-fact,
-  #heroFact,
-  .hero-card p{
-    max-width:64%!important;
-  }
-}
-</style>
-<style id="mesaha-layout-compat-2">
-/* v369: kullanım netliği */
-#entryHomeBtn{
-  background:linear-gradient(135deg,#2563eb,#1d4ed8)!important;
-  border-color:#1d4ed8!important;
-  color:#ffffff!important;
-  box-shadow:0 12px 28px rgba(37,99,235,.28)!important;
-}
-#entryHomeBtn::before{
-  content:"← ";
-  font-weight:1000;
-}
-#deleteAllBtn{
-  background:linear-gradient(135deg,#ef4444,#b91c1c)!important;
-  border-color:#991b1b!important;
-  color:#ffffff!important;
-  box-shadow:0 12px 28px rgba(239,68,68,.28)!important;
-}
-#deleteAllBtn:hover,#deleteAllBtn:active{
-  filter:brightness(.96)!important;
-}
-.recent-edit-hint{
-  margin:0 0 10px!important;
-  color:#2563eb!important;
-  font-size:13px!important;
-  font-weight:900!important;
-  background:#eff6ff!important;
-  border:1px solid #bfdbfe!important;
-  border-radius:14px!important;
-  padding:8px 10px!important;
-}
-.recent-item{
-  cursor:pointer!important;
-}
-@media(max-width:640px){
-  #entryHomeBtn{
-    min-height:46px!important;
-    border-radius:16px!important;
-    padding:10px 13px!important;
-  }
-  #deleteAllBtn{
-    min-height:46px!important;
-  }
-  .recent-edit-hint{
-    font-size:12px!important;
-    padding:7px 9px!important;
-  }
-}
-</style>
-<style id="mesaha-v374-battery-css">
-@media (pointer:coarse){
-  .hero-card,.status-card,.card,.record-card,.bottom-nav,.topbar,.product-btn,.save-btn{
-    -webkit-backdrop-filter:none!important;
-    backdrop-filter:none!important;
-  }
-}
-</style>
-<style id="mesaha-layout-compat-3">
-/* v375: Ölçüm Özeti / Bakım içindeki sahte 0 Kayıt kartı kaldırıldı */
-.summary-card .summary-grid::after,
-.summary-card .summary-grid::before{
-  content:none!important;
-  display:none!important;
-}
-.summary-card .summary-grid{
-  grid-template-columns:repeat(4,minmax(0,1fr))!important;
-}
-.summary-card .diameter-range-card{
-  background:linear-gradient(135deg,#f0fdf4,#fff)!important;
-}
-.summary-card .diameter-range-card b{
-  font-size:19px!important;
-  white-space:nowrap!important;
-}
-.summary-card .diameter-range-card small{
-  line-height:1.15!important;
-}
-@media(max-width:620px){
-  .summary-card .summary-grid{
-    grid-template-columns:1fr 1fr!important;
-  }
-}
-@media(max-width:380px){
-  .summary-card .summary-grid{
-    grid-template-columns:1fr!important;
-  }
-}
-</style>
-<style id="mesaha-v386-critical-stability-css">
-/* v389: kritik mobil stabilite katmanı - tasarım değiştirmez, sadece çakışan eski yamaları dengeler. */
-html,body{overscroll-behavior-y:contain;}
-body.mesaha-keyboard-open .bottom-nav{transform:translateY(110%);pointer-events:none;}
-body.mesaha-keyboard-open #saveBtn, body.mesaha-keyboard-open .save-btn{position:relative;z-index:20;}
-#entryView:not(.hidden){contain:layout style;}
-#recordsView.hidden, [data-view="records"].hidden{content-visibility:hidden;}
-.mesaha-offline .online-only{opacity:.55;filter:grayscale(.25);}
-@media (prefers-reduced-motion: reduce){*,*::before,*::after{animation-duration:.001ms;animation-iteration-count:1;scroll-behavior:auto;}}
-</style>
-<style id="mesaha-v406-bulk-cutter-transfer-style">
-.bulk-cutter-transfer-v406{
-  display:flex;
-  gap:8px;
-  align-items:center;
-  flex-wrap:wrap;
-  margin-top:8px;
-  padding:8px;
-  border:1px solid rgba(15,118,110,.16);
-  border-radius:16px;
-  background:rgba(240,253,250,.72);
-}
-.bulk-cutter-transfer-v406 select{
-  flex:1 1 180px;
-  min-width:0;
-  height:42px;
-  border-radius:14px;
-  border:1px solid rgba(15,23,42,.14);
-  background:#fff;
-  padding:0 12px;
-  font-weight:800;
-  color:#0f172a;
-  font-size:16px;
-}
-.bulk-cutter-transfer-v406 .btn{
-  white-space:nowrap;
-  min-height:42px;
-}
-.bulk-cutter-transfer-v406 small{
-  flex-basis:100%;
-  color:#64748b;
-  font-weight:700;
-  line-height:1.25;
-}
-@media(max-width:560px){
-  .bulk-cutter-transfer-v406{align-items:stretch;}
-  .bulk-cutter-transfer-v406 select,.bulk-cutter-transfer-v406 .btn{width:100%;}
-}
-</style>
-
-<style id="mesaha-v536-telegram-panel-style">
-#panelTelegramSupportV536{border:1px solid #bae6fd;background:linear-gradient(135deg,#e0f2fe,#ffffff);border-radius:20px;padding:14px;margin-top:14px;box-shadow:0 8px 20px rgba(14,165,233,.12)}
-#panelTelegramSupportV536 b{display:block;color:#075985;font-size:18px;margin-bottom:6px}
-#panelTelegramSupportV536 .telegram-panel-btn-v536{background:linear-gradient(135deg,#0ea5e9,#0284c7)!important;color:#fff!important;border-color:#0284c7!important;text-decoration:none;margin-top:10px}
-</style>
-</head>
-<body>
-<div class="startup" id="startup">
-<div class="startup-card startup-card-v311">
-<img alt="" src="./assets/mesaha_logo.png"/>
-<strong>Mesaha İO</strong>
-<span id="startupTitle">Mesaha İO hazırlanıyor…</span>
-<ul class="startup-steps" id="startupSteps">
-<li data-step="files">Dosyalar kontrol ediliyor</li>
-<li data-step="records">Kayıtlar kontrol ediliyor</li>
-<li data-step="version">Sürüm kontrol ediliyor</li>
-<li data-step="offline">Offline çalışma hazırlanıyor</li>
-</ul>
-</div>
-</div>
-<div class="app" id="app">
-<header class="topbar">
-<div class="brand">
-<img alt="Mesaha İO" src="./assets/mesaha_logo.png"/>
-<div class="version-card"><b id="versionText">Mesaha İO</b><small></small></div>
-</div>
-<div class="user-badge login-needed" id="userBadge">Giriş Yap</div>
-<div class="top-actions-v316"><button class="panel-btn-v316" id="userPanelBtnV316" type="button">👤 Kullanıcı Paneli</button></div>
-</header>
-<main>
-<section class="view active" id="homeView">
-<section class="hero-card">
-<img alt="Orman manzarası" class="hero-cover-image" decoding="async" fetchpriority="high" src="./assets/hero_forest_cover.webp"/>
-<div>
-<h1>Merhaba!</h1>
-<p>Orman ölçümlerini kolayca kaydedin ve yönetin.</p>
-</div>
-<div class="hero-forest"><span></span><span></span><span></span></div>
-</section>
-<section class="status-card">
-<div class="status-item net-status" id="netStatusCard"><span class="status-icon" id="netIcon">⌁</span><div><small>Bağlantı durumu</small><b id="netText">Kontrol ediliyor</b><em id="netSubText">Bağlantı kontrol ediliyor…</em></div></div>
-<button class="status-item entry-launch" id="openEntryBtn" type="button"><span class="status-icon flash">⚡</span><div><small>Giriş Modu</small><b>Mesaha Gir</b><em>Dokun ve hızlı mesaha girişine geç</em></div></button>
-</section>
-<section class="card file-card">
-<div class="section-head"><h2>Dosya Bilgileri</h2><span>Açık</span></div>
-<div class="grid two">
-<label>Bölme No<input autocomplete="off" id="bolmeNo" inputmode="text" type="text"/></label>
-<label>Şeflik<input autocomplete="off" id="seflik" inputmode="text" type="text"/></label>
-</div>
-<label>Not / Ekip Bilgisi<input autocomplete="off" id="ekipNot" inputmode="text" type="text"/></label>
-<p class="hint">Bu bilgiler sistem Excel’ine yazılmaz; dosya adını düzenli oluşturmak ve takip kolaylığı için kullanılır.</p>
-</section>
-<section class="card settings-card">
-<h2>Giriş Ayarları</h2>
-<label class="setting-block">Mesaha Tarihi<input id="mesahaDate" type="date"/></label>
-<div class="setting-block"><b>Odun Türleri</b><p>Tikli olan odun türleri Giriş Modu içinde görünür.</p><div class="check-grid" id="homeProductChecks"></div></div>
-<div class="setting-block"><b>Ağaç Türleri</b><p>Tikli olan ağaç türleri Hızlı Giriş içinde görünür.</p><div class="check-grid" id="homeTreeChecks"></div></div>
-</section>
-<section class="card sound-card">
-<h2>Ses Ayarı</h2>
-<button class="btn soft" id="soundBtn" type="button">Ses: Açık</button>
-<label class="setting-block barcode-check-setting-v526"><b>Barkod Kontrolü</b><p>40 barkodda bir son barkodu ekranda kontrol için gösterir. İstemeyen kapatabilir.</p><label class="check-card"><input id="barcodeCheckToggle" type="checkbox" checked><span id="barcodeCheckText">Barkod kontrolü: Açık</span></label></label>
-</section>
-<section class="card maintenance-card">
-<h2>Bakım / Güncelleme</h2>
-<div class="action-grid">
-<button class="btn soft" id="forceUpdateBtn" type="button">Yeni Sürümü Güncelle</button>
-<button class="btn warning" id="clearCacheBtn" type="button">Ön Bellek Temizle</button>
-<button class="btn soft" id="downloadErrorLogBtn" type="button">Hata Günlüğü İndir</button>
-<button class="btn warning" id="clearErrorLogBtn" type="button">Hata Günlüğünü Sil</button>
-<button class="btn soft" id="storageHealthBtn" type="button">Depolama Durumunu Kontrol Et</button>
-<button class="btn soft" id="downloadStorageHealthBtn" type="button">Depolama Raporu İndir</button>
-</div>
-<div class="update-status-box" id="updateStatusBox">Sürüm kontrol ediliyor…</div>
-</section>
-<section class="card detail-summary-card">
-<div class="section-head"><h2>Detaylı Özet</h2><span id="todayText">Bugün</span></div>
-<div class="detail-summary-grid" id="detailSummary"></div>
-</section>
-<section class="card summary-card">
-<div class="section-head"><h2>Ölçüm Özeti</h2><button class="btn soft" id="weekBtn" type="button">Bu Hafta</button></div>
-<div class="summary-grid">
-<div><span>🌲</span><b id="sumCount">0</b><small>Ölçüm</small></div>
-<div><span>⌀</span><b id="sumAvg">0 cm</b><small>Ort. Çap</small></div>
-<div><span>◉</span><b id="sumM3">0 m³</b><small>Tahmini Hacim</small></div>
-<div class="diameter-range-card"><span>↕</span><b id="sumMinMax">- / - cm</b><small>En Küçük / En Büyük Çap</small></div>
-</div>
-</section>
-</section>
-<section class="view entry-view" id="entryView">
-<header class="entry-top"><div class="version-card"><b>Mesaha İO</b><small></small></div><button class="btn primary" id="entryHomeBtn" type="button">🏠 Ana Sayfaya Dön</button></header>
-<section class="entry-total"><div><small>Toplam Adet</small><b id="entryTotalCount">0</b></div><div><small>Toplam m³</small><b id="entryTotalM3">0 m³</b></div></section>
-<section class="entry-form card">
-<div class="cutter-row"><div class="chip-wrap" id="cutterChips"></div><button class="btn primary" id="addCutterBtn" type="button">＋ Kesimci Ekle</button></div>
-<div class="tree-entry-block">
-<label>Ağaç Türü</label>
-<div class="tree-head"><button class="btn ghost" id="treeToggleBtn" type="button">Ağaç Türü Seç: Karaçam</button><span class="pill" id="treeCurrent">Karaçam</span></div>
-<div class="tree-panel" id="treePanel"></div>
-</div>
-<div class="measure-grid measure-grid-v311">
-<label>Boy<input autocomplete="off" id="lengthInput" inputmode="decimal" min="0" step="0.01" type="number"/><div class="quick-grid" id="lengthChips"></div></label>
-<label>Çap<input autocomplete="off" id="diameterInput" inputmode="numeric" min="1" step="1" type="number"/><div class="quick-grid" id="diameterChips"></div></label>
-</div>
-<div><label>Ürün Türü</label><div class="product-grid" id="productButtons"></div></div>
-<div class="barcode-save"><label>Barkod No<input autocapitalize="characters" autocomplete="off" id="barcodeInput" type="text"/></label><button class="save-btn" id="saveBtn" type="button">Kaydet</button></div>
-<div class="recent-box"><h3>Son Girilen 3 Barkod</h3><p class="recent-edit-hint">Düzenlemek için barkod kartının üzerine tıklayın.</p><div class="recent-list" id="recentList"></div></div>
-<button class="btn warning full" id="clearBtn" type="button">Alanları Temizle</button>
-<button class="btn soft full hidden" id="cancelEditBtn" type="button">Düzenlemeyi İptal Et</button>
-</section>
-</section>
-<section class="view" id="recordsView">
-<section class="card records-card">
-<div class="section-head"><h2>BEYAN</h2><span id="recordCountPill">0 kayıt</span></div>
-<div class="summary-grid small"><div><small>Toplam m³</small><b id="recTotalM3">0 m³</b></div><div><small>Toplam Adet</small><b id="recTotalCount">0</b></div></div>
-<div class="product-totals" id="productTotals"></div>
-<div class="action-grid">
-<button class="btn green" id="downloadXlsBtn" type="button">Mesaha Dosyasını İndir</button>
-<button class="btn soft" id="backupBtn" type="button">Yedek Al</button>
-<button class="btn soft" id="restoreBtn" type="button">Yedek Yükle</button>
-<button class="btn primary" id="cloudBackupBtnV316" type="button">Buluta Yedekle</button>
-<button class="btn soft" id="cloudRestoreBtnV316" type="button">Buluttan Getir</button>
-<button class="btn orange" id="printBtn" type="button">Beyan İndir</button>
-</div>
-<div class="record-toolbar record-tools-lower">
-<input autocomplete="off" id="recordSearch" placeholder="Barkod, ağaç, ürün veya kesimci ara..." type="search"/>
-<div class="export-scope-info" id="exportScopeInfo">İndirilecek: Tüm kayıtlar</div>
-<div class="record-select-actions">
-<span id="selectedInfo">0 seçili</span>
-<button class="btn soft" id="selectFilteredBtn" type="button">Filtrelenenleri Seç</button>
-<button class="btn soft" id="clearSelectionBtn" type="button">Seçimi Temizle</button>
-<button class="btn warning" id="bulkDeleteBtn" type="button">Seçilileri Sil</button>
-<button class="btn soft hidden" id="undoDeleteBtn" type="button">Geri Al</button>
-<button class="btn danger" id="deleteAllBtn" type="button">Tümünü Sil</button>
-</div>
-</div>
-<div class="filter-box"><div class="filter-head"><b>Ağaç filtresi</b><span id="treeFilterText">Seçili: Tümü</span></div><div class="filter-chips" id="treeFilters"></div></div>
-<div class="filter-box"><div class="filter-head"><b>Kesimci filtresi</b><span id="cutterFilterText">Seçili: Tümü</span></div><div class="filter-chips" id="cutterFilters"></div></div>
-<input accept="application/json,.json,.zip,application/zip" hidden="" id="restoreInput" type="file"/>
-<div class="record-list" id="recordList"></div>
-<div class="pager" id="pager"></div>
-</section>
-</section>
-<section class="view" id="guideView">
-<section class="card guide-card guide-guide-clean">
-<div class="section-head"><h2>Kılavuz</h2><span>Yardım</span></div>
-<div class="guide-section-guide-clean app-video-guide-v394" id="appUsageVideoGuideV394">
-<h3>Uygulama Kullanımı Videosu</h3>
-<p class="guide-note-guide-clean">Uygulamayı kullanmaya başlamadan önce kısa anlatım videosunu izleyebilirsiniz.</p>
-<a class="guide-link-v392 video-link-v392 app-video-link-v394" href="https://youtube.com/shorts/4yRRIRNptro?si=EgpHz-hQmnxFuqu2" rel="noopener" target="_blank">Uygulama kullanım videosunu açınız</a>
-</div>
-<div class="guide-section-guide-clean">
-<h3>1. Kurulum</h3>
-<ol>
-<li>Uygulamayı Chrome veya Safari üzerinden açınız.</li>
-<li>Adres olarak <a class="guide-link-v392" href="https://www.kisa.link/jxXNL" rel="noopener" target="_blank">https://www.kisa.link/jxXNL</a> bağlantısını kullanabilirsiniz.</li>
-<li>Android cihazda Chrome menüsünden <b>Ana ekrana ekle</b> seçiniz.</li>
-<li>iPhone / iOS cihazda Safari üzerinden açıp paylaş menüsünden <b>Ana Ekrana Ekle</b> seçiniz.</li>
-<li>Güncelleme sonrası sayfayı 2-3 kez yenileyiniz.</li>
-</ol>
-</div>
-<div class="guide-section-guide-clean">
-<h3>Terminal Kurulumu</h3>
-<ol>
-<li>Terminal cihazında uygulama / terminal menüsünü açınız.</li>
-<li>İlk gelen ekranda sağ alttaki en son seçeneğe dokununuz.</li>
-<li>Açılan bölümde <b>Yeşil Takip</b> yazan seçeneği açınız.</li>
-<li>Bu işlem sizi Chrome uygulamasına yönlendirir.</li>
-<li>Chrome’un arama / adres çubuğuna <a class="guide-link-v392" href="https://www.kisa.link/jxXNL" rel="noopener" target="_blank">https://www.kisa.link/jxXNL</a> yazıp aratınız.</li>
-<li>Terminal kendi internetiyle uygulamayı açmazsa terminali Wi‑Fi’ye bağlayıp tekrar deneyiniz.</li>
-<li>Uygulama açıldıktan sonra Chrome’da sağ üstteki üç çizgi / menü simgesine basınız.</li>
-<li>Menüdeki yıldız simgesine dokunup onaylayınız.</li>
-<li>Böylece uygulama <b>Mobil Yer İşaretleri</b> bölümüne kaydedilir.</li>
-<li>İnternetsiz arazide kullanmak için Chrome menüsünden <b>Mobil Yer İşaretleri</b> bölümüne girip uygulama adına basınız.</li>
-</ol>
-<p class="guide-note-guide-clean"><b>Not:</b> Uygulamayı arazide kullanmadan önce bir kez internet varken açıp hazır hale getirmeniz önerilir.</p>
-</div>
-<div class="guide-section-guide-clean">
-<h3>2. Yeni Kayıt</h3>
-<ol>
-<li>Ağaç türünü seçiniz.</li>
-<li>Ürün türünü seçiniz.</li>
-<li>Boy, çap, barkod, adet ve üretim tarihini giriniz.</li>
-<li><b>Kaydet</b> butonuna basınız.</li>
-<li>Aynı barkod iki kez kaydedilemez; uyarı verirse barkodu kontrol ediniz.</li>
-</ol>
-</div>
-<div class="guide-section-guide-clean">
-<h3>3. Kayıtlar</h3>
-<ol>
-<li>Kayıtlar / Ölçümler sekmesinde kayıtları görebilir ve arayabilirsiniz.</li>
-<li><b>Düzelt</b> ile kayıt düzenlenir, <b>Sil</b> ile tek kayıt silinir.</li>
-<li>Toplu seçim ile birden fazla kaydı silebilir, ürün veya ağaç türünü değiştirebilirsiniz.</li>
-<li><b>Mesaha Dosyasını İndir</b> butonu ORBİS uyumlu Excel dosyası oluşturur.</li>
-<li><b>Beyan İndir</b> butonu seçili filtrelere göre yazdırılabilir PDF beyan özeti indirir.</li>
-</ol>
-</div>
-<div class="guide-section-guide-clean">
-<h3>4. ORBİS’e Aktarma</h3>
-<ol>
-<li>Mesaha dosyasını indirdikten sonra dosyayı bilgisayara aktarınız.</li>
-<li>ORBİS sisteminde <b>İşletme Pazarlama</b> modülüne giriniz.</li>
-<li><b>Kesme Faaliyetleri Raporu</b> ekranını açınız.</li>
-<li>Şeflik ve bölme bilgilerini giriniz.</li>
-<li>Bölmenin üzerine çift tıklayınız.</li>
-<li>Dosya yükleme bölümünden mesaha dosyasını seçip <b>Excel’den Aktar</b> deyiniz.</li>
-<li>Video anlatım için <a class="guide-link-v392 video-link-v392" href="https://youtube.com/shorts/J25xp8NrHw8?si=-SeJsWMar3Ja3O4I" rel="noopener" target="_blank">ORBİS aktarım videosunu açınız</a>.</li>
-</ol>
-</div>
-<div class="guide-section-guide-clean">
-<h3>5. Bulut Yedek</h3>
-<ol>
-<li><b>Buluta Yedekle</b> internet varsa kayıtları buluta gönderir.</li>
-<li><b>Buluttan Getir</b> aktif kullanıcıya ait yedekleri listeler.</li>
-<li>Başka cihazdaki yedekler için <b>Farklı Kullanıcı / Şeflik Ara</b> seçeneğini kullanınız.</li>
-<li>İnternet yoksa bulut çalışmaz; cihazdaki kayıtlar etkilenmez.</li>
-</ol>
-</div>
-<div class="guide-section-guide-clean">
-<h3>6. Sorun Çözme</h3>
-<ol>
-<li>Güncelleme görünmüyorsa sayfayı 2-3 kez yenileyiniz.</li>
-<li>Bulut çalışmıyorsa interneti ve bağlantı ayarlarını kontrol ediniz.</li>
-<li>Excel hatası alırsanız kayıtları kontrol edip tekrar dışa aktarınız.</li>
-<li>Yardım için Telegram: <b>@ExelanceX</b></li>
-</ol>
-</div>
-</section>
-</section>
-</main>
-</div>
-<nav class="bottom-nav" id="bottomNav">
-<button class="active" data-nav="home" type="button"><span>🏠</span><b>Ana Ekran</b></button>
-<button data-nav="records" type="button"><span>📏</span><b>Ölçümler</b></button>
-<button data-nav="guide" type="button"><span>▰</span><b>Kılavuz</b></button>
-</nav>
-<div aria-modal="true" class="modal-backdrop hidden" id="modernModal" role="dialog">
-<div class="modal-card">
-<button class="modal-close" id="modalCloseBtn" type="button">×</button>
-<div class="modal-icon" id="modalIcon">ℹ</div>
-<h2 id="modalTitle">Bilgi</h2>
-<div class="modal-body" id="modalBody"></div>
-<div class="modal-actions" id="modalActions"></div>
-</div>
-</div>
-<div aria-labelledby="userPanelTitleV316" aria-modal="true" class="panel-overlay-v316 hidden" id="userPanelOverlayV316" role="dialog">
-<div class="panel-card-v316">
-<div class="panel-head-v316">
-<div class="panel-title-v316"><img alt="" src="./assets/mesaha_logo.png"/><div><h2 id="userPanelTitleV316">Kullanıcı Paneli</h2><small id="panelSyncTextV316">Yerel bilgiler hazırlanıyor…</small></div></div>
-<button class="panel-close-v316" hidden="" id="userPanelCloseV316" type="button" style="display:none">×</button>
-</div>
-<div class="panel-grid-v316">
-<label class="panel-field-v316">Kullanıcı Adı<input autocomplete="name" id="panelNameV316" type="text"/></label>
-<label class="panel-field-v316">Şeflik<input autocomplete="organization" id="panelSeflikV316" type="text"/></label>
-<label class="panel-field-v316">Bölme No<input id="panelBolmeV316" inputmode="text" type="text"/></label>
-<label class="panel-field-v316">Cihaz<input id="panelDeviceV316" readonly="" type="text"/></label>
-</div>
-<div class="panel-stats-v316" id="panelStatsV316"></div>
-<div class="panel-actions-v316">
-<button class="btn primary" id="panelSaveV316" type="button">Bilgileri Kaydet</button>
-<button class="btn soft" hidden="" id="panelSyncV316" type="button" style="display:none"></button>
-<button class="btn soft" id="panelClose2V316" type="button">Kapat</button>
-</div>
-<div class="panel-section-v316" id="panelTelegramSupportV536">
-<b>Telegram Destek Grubu</b>
-<p class="hint">Sorun, destek ve güncelleme takibi için Telegram grubuna katılabilirsiniz.</p>
-<a class="btn primary full telegram-panel-btn-v536" id="panelTelegramJoinV536" href="https://t.me/+LpsvthN4BM5kYWI0" target="_blank" rel="noopener">✈ Telegram Grubuna Katıl</a>
-</div>
-<div aria-modal="true" class="panel-overlay-v316 hidden" id="cloudRestoreOverlayV316" role="dialog">
-<div class="panel-card-v316">
-<div class="panel-head-v316">
-<div class="panel-title-v316"><img alt="" src="./assets/mesaha_logo.png"/><div><h2>Buluttan Yedek Getir</h2><small id="cloudRestoreInfoV316">Yedekler hazırlanıyor…</small></div></div>
-<button class="panel-close-v316" id="cloudRestoreCloseV316" type="button">×</button>
-</div>
-<div class="cloud-list-v316" id="cloudRestoreListV316"></div>
-</div>
-</div>
-<div class="toast" id="toast"></div>
-<script id="mesaha-inline-orbis-v313">
 (function(root){
 'use strict';
 const HEADERS = ["agacId","agacAdi","odunId","odunAdi","kaliteSinifi","boySinifi","adet","cap","boy","hacim","uretimTarihi","barkodNo"];
@@ -1311,8 +669,8 @@ function makeXls(records){ return s12MakeSystemXls(makeRows(records)); }
 root.OrbisXls = { downloadXls, makeXls, headers: HEADERS };
 })(window);
 
-  </script>
-<script id="mesaha-inline-app-v313">
+  
+
 (function(){
 'use strict';
 const STORAGE_KEY = 'cam_mesaha_kayitlari_v1';
@@ -1956,8 +1314,8 @@ function boot(){ load(); bind(); renderAll(); showView('home'); setTimeout(()=>$
 if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true}); else boot();
 })();
 
-  </script>
-<script id="mesaha-inline-v313-patch-1">
+  
+
 
 
 /* v311: yönetim hariç eksik parçalar - canlı ölçüm, aynı barkod, seçimli kayıtlar, bakım, özet */
@@ -2395,8 +1753,8 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   window.mesahaV303 = {render:renderAllV303, live:updateLiveBox, records:renderRecordsV303, selected:selectedList, filtered:filteredRecordsV303};
 })();
 
-  </script>
-<script id="mesaha-inline-v313-patch-2">
+  
+
 
 
 /* v311: modern pencereler + yedek zip + başlangıç/güncelleme + seçili/filtreli bilgi */
@@ -3005,8 +2363,8 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   window.mesahaV304 = {modal, backupZip, clearCacheFlow, forceUpdateFlow, updateExportScopeInfo};
 })();
 
-  </script>
-<script id="mesaha-inline-v313-patch-3">
+  
+
 
 
 /* v311: Boy solda / Çap sağda, klavye kapanmasın, seçili filtre BEYAN toplamı, düzenlemede barkod devamı */
@@ -3188,8 +2546,8 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   window.mesahaV305 = {focusDiameter, updateBeyanTotals};
 })();
 
-  </script>
-<script id="mesaha-inline-v313-patch-4">
+  
+
 
 
 /* v311: mobil oturum + ölçüm kısayollarında klavye kapanmasın */
@@ -3296,8 +2654,8 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   window.mesahaV306 = {bindMeasureButtons, focusAndSelect};
 })();
 
-  </script>
-<script id="mesaha-inline-v313-patch-5">
+  
+
 
 
 /* v311: iOS klavyede Kaydet butonunu klavye üstünde tut */
@@ -3379,8 +2737,8 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   window.mesahaV307 = {updateKeyboardState};
 })();
 
-  </script>
-<script id="mesaha-inline-v313-patch-6">
+  
+
 
 
 /* v311: detaylı kayıt toast + bakım güncelleme bildirimi */
@@ -3476,8 +2834,8 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   window.mesahaV310 = {checkUpdateStatus, savedToast:window.mesahaV310SavedToast};
 })();
 
-  </script>
-<script id="mesaha-inline-v313-patch-7">
+  
+
 
 
 /* v311: kayıt bildirimi klavye üstüne + boy son değer + ölçüm butonları üstte */
@@ -3543,8 +2901,8 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   [200,700,1500].forEach(ms => setTimeout(boot, ms));
 })();
 
-  </script>
-<script id="mesaha-inline-v315-toast-date-fix">
+  
+
 
 
 /* v313: kayıt alındı toast görünürlüğü + güncel mesaha tarihi */
@@ -3622,8 +2980,8 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   }
 })();
 
-  </script>
-<script id="mesaha-inline-v315-warning-print-fix">
+  
+
 
 /* v315: ürün/çap uyarıları aynı kayan barda + BEYAN üst özeti yazdır */
 (function(){
@@ -3771,8 +3129,8 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   }
 })();
 
-  </script>
-<script id="mesaha-inline-v315-warning-toast-bind-final">
+  
+
 /* v315: yerel toast fonksiyonunda kaybolan ürün/çap uyarılarını kayan kayıt barına bağla */
 (function(){
   'use strict';
@@ -3788,10 +3146,10 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, {once:true}); else boot();
   [100,400,1000,2000].forEach(ms => setTimeout(boot, ms));
 })();
-  </script>
-<script id="mesaha-supabase-config-v427" src="./js/mesaha-supabase-config.js"></script>
-<script id="mesaha-firebase-engine-v378" src="./js/mesaha-firebase.js"></script>
-<script id="mesaha-v427-supabase-guard">
+  
+
+
+
 (function(){
   'use strict';
   if(window.mesahaSupabaseV380 && typeof window.mesahaSupabaseV380.ready === 'function'){
@@ -3799,8 +3157,8 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     window.mesahaSupabaseV383 = window.mesahaSupabaseV380;
   }
 })();
-</script>
-<script id="mesaha-inline-v316-user-admin-panel">
+
+
 /* v316: Kullanıcı Paneli + Supabase eşitleme */
 (function(){
   'use strict';
@@ -3898,8 +3256,8 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', bind, {once:true}); else bind();
   window.mesahaPanelV316 = {open:openPanel, sync:syncUser, cloudBackup, openCloudRestore};
 })();
-  </script>
-<script id="mesaha-inline-v323-online-firebase">
+  
+
 /* v317: Supabase online bağlantı, yönetim güncelleme ve bulut yedek düzeltmesi */
 (function(){
   'use strict';
@@ -3955,8 +3313,8 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   function bind(){loadUsage();renderPanelStats();capture('panelSaveV316',savePanelV317);capture('panelSyncV316',()=>{setSyncText('İstatistikler sadece Mesaha dosyası indirince gönderilir');toast('Hazır.','Mesaha Dosyasını İndir basınca yönetim güncellenir','success')});capture('cloudBackupBtnV316',cloudBackup);capture('cloudRestoreBtnV316',openCloudRestore);const list=$('cloudRestoreListV316');if(list&&!list.__mesahaV317Bound){list.__mesahaV317Bound=true;list.addEventListener('click',ev=>{const b=ev.target.closest('[data-cloud-restore-v317], [data-cloud-restore]');if(b){ev.preventDefault();ev.stopImmediatePropagation();restoreCloud(b.getAttribute('data-cloud-restore-v317')||b.getAttribute('data-cloud-restore'))}},true)}window.addEventListener('online',()=>{setSyncText('Online: Mesaha indirince bilgiler güncellenir')});window.addEventListener('pagehide',flushUsage);window.mesahaOnlineV317={ready:firebaseReady,sync:syncUser,backup:cloudBackup,restoreOpen:openCloudRestore}}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
 })();
-</script>
-<script id="mesaha-inline-v319-user-backup-delete">
+
+
 /* v319: Kullanıcı kendi bulut yedeklerini yükleyebilir ve silebilir */
 (function(){
   'use strict';
@@ -4022,8 +3380,8 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   [300,900,1800,3000].forEach(ms=>setTimeout(bind,ms));
   window.mesahaUserBackupsV318={open:openCloudManager,list:listBackups,deleteBackup:deleteCloud,restore:restoreCloud};
 })();
-</script>
-<script id="mesaha-inline-v319-first-login-gate">
+
+
 /* v319: İlk kullanıcı girişinde otomatik Yakup/Yaylacık yazma kapatıldı */
 (function(){
   'use strict';
@@ -4081,20 +3439,8 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   [600,1400,3000,5500].forEach(ms=>setTimeout(apply,ms));
   window.mesahaLoginGateV319={apply:apply,hasUser:hasUser,open:openLoginOnce};
 })();
-</script>
-<style id="mesaha-style-v321-first-login">
-.first-login-v321{position:fixed;inset:0;z-index:99998;background:rgba(15,23,42,.48);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);display:flex;align-items:flex-end;justify-content:center;padding:18px}.first-login-v321.hidden{display:none!important}.first-login-card-v321{width:min(440px,100%);background:var(--card,#fff);color:var(--text,#0f172a);border:1px solid var(--line,#dbe3ea);border-radius:30px;padding:22px;box-shadow:0 24px 80px rgba(0,0,0,.28)}.first-login-logo-v321{display:flex;align-items:center;gap:12px;margin-bottom:18px}.first-login-logo-v321 img{width:56px;height:56px;object-fit:contain}.first-login-logo-v321 b{display:block;font-size:24px;line-height:1.05}.first-login-logo-v321 small{display:block;color:var(--muted,#64748b);font-weight:850;margin-top:3px}.first-login-card-v321 label{display:block;margin:12px 0 0;font-weight:950}.first-login-card-v321 input{margin-top:8px}.first-login-actions-v321{display:grid;grid-template-columns:1fr;gap:10px;margin-top:16px}.first-login-primary-v321{min-height:56px;border:0;border-radius:19px;background:#16a34a;color:#fff;font-weight:1000;font-size:19px;box-shadow:0 14px 28px rgba(22,163,74,.22)}.first-login-note-v321{margin:12px 0 0;color:var(--muted,#64748b);font-size:13px;font-weight:800;line-height:1.35}
-</style>
-<div aria-labelledby="firstLoginTitleV321" aria-modal="true" class="first-login-v321 hidden" id="firstLoginOverlayV321" role="dialog">
-<div class="first-login-card-v321">
-<div class="first-login-logo-v321"><img alt="Mesaha İO" src="./assets/mesaha_logo.png"/><div><b id="firstLoginTitleV321">İlk Giriş</b><small>Sadece kullanıcı adı ve şeflik gir</small></div></div>
-<label>Kullanıcı Adı<input autocomplete="name" id="firstLoginNameV321" placeholder="Örn: Yakup" type="text"/></label>
-<label>Şeflik<input autocomplete="organization" id="firstLoginSeflikV321" placeholder="Örn: Yaylacık" type="text"/></label>
-<div class="first-login-actions-v321"><button class="first-login-primary-v321" id="firstLoginSaveV321" type="button">Giriş Yap</button></div>
-<p class="first-login-note-v321">Bu bilgiler yedekleri ve kullanıcı kayıtlarını sana bağlamak için kullanılır.</p>
-</div>
-</div>
-<script id="mesaha-inline-v321-first-login-simple">
+
+
 /* v321: İlk açılışta büyük kullanıcı paneli yerine sadece ad + şeflik isteyen küçük giriş ekranı */
 (function(){
   'use strict';
@@ -4137,28 +3483,8 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
   [1200,2600,5200].forEach(ms=>setTimeout(()=>{if(!hasUser())closeBigPanel()},ms));
 })();
-</script>
-<style id="mesaha-style-v323-top-user-label">
-/* v323: Üstteki kullanıcı paneli butonu girişten sonra ad + şeflik gösterir */
-.panel-btn-v316.identity-v323{
-  max-width:min(58vw,360px)!important;
-  overflow:hidden!important;
-  text-overflow:ellipsis!important;
-  white-space:nowrap!important;
-  text-align:left!important;
-  justify-content:flex-start!important;
-}
-.panel-btn-v316.identity-v323.login-needed{
-  background:#fff7ed!important;
-  color:#9a3412!important;
-  border-color:#fed7aa!important;
-}
 
-@media(max-width:520px){
-  .panel-btn-v316.identity-v323{max-width:64vw!important;font-size:13px!important;padding-left:10px!important;padding-right:10px!important}
-}
-</style>
-<script id="mesaha-inline-v323-top-user-label">
+
 (function(){
   'use strict';
   const PANEL_KEY='mesaha_panel_user_v316';
@@ -4224,13 +3550,8 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',start); else start();
   window.mesahaTopUserLabelV323={refresh:apply};
 })();
-</script>
-<style id="mesaha-style-v323-export-send-final">
-/* v323: panelde otomatik bulut istatistiği kapalı; kullanıcı verisi Mesaha dosyası indirilince gönderilir */
-#panelSyncTextV316.export-only-v323{color:#64748b!important;font-weight:900!important}
 
-</style>
-<script id="mesaha-inline-v323-export-send-final">
+
 /* v323: Aktif süre cihazda hesaplanır. İstatistik sadece Mesaha Dosyasını İndir basılınca gönderilir. Offline XLS akışı asla engellenmez. */
 (function(){
   'use strict';
@@ -4276,74 +3597,8 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   function boot(){loadUsage();setSyncText('İstatistikler Mesaha dosyası indirince gönderilir');setInterval(flushUsage,60000);window.addEventListener('visibilitychange',flushUsage);window.addEventListener('pagehide',flushUsage);window.mesahaExportStatsV323={send,flush:flushUsage,readUsage:()=>jsonGet(USAGE_KEY,{})}}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
-</script>
-<style id="mesaha-lovable-exact-pass-v325-1">
-/* v325 — Lovable referans tasarımının aydınlık düzen katmanı. */
-:root{
-  --forest:#0d5f3b!important; --forest-2:#0a4d31!important; --mint:#effaf4!important; --mint-2:#e5f5ec!important;
-  --paper:#ffffff!important; --ink:#162b23!important; --muted:#66756f!important; --line:#dcebe4!important;
-  --tomruk:#f5a400!important; --maden:#2f80ed!important; --kagit:#e14b4b!important; --sanayi:#2fb36f!important; --tel:#7b61ff!important;
-  --bg:#eef8f2!important; --card:rgba(255,255,255,.94)!important; --text:#162b23!important; --green:#0d5f3b!important; --green-light:#0a4d31!important;
-  --shadow:0 16px 42px rgba(14,80,52,.11)!important; --radius:22px!important;
-}
-html,body{width:100%!important;max-width:100%!important;overflow-x:hidden!important;min-height:100dvh!important;}
-body{
-  margin:0!important;color:var(--ink)!important;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Arial,sans-serif!important;font-weight:780!important;
-  background:
-    radial-gradient(circle at 10% 4%,rgba(255,255,255,.96) 0 7%,transparent 22%),
-    radial-gradient(circle at 92% 0%,rgba(255,255,255,.90) 0 10%,transparent 26%),
-    linear-gradient(180deg,#f7fbf8 0%,#eef8f2 42%,#bfd9c9 100%)!important;
-}
-body::before,body::after{content:"";position:fixed;pointer-events:none;z-index:-2;left:0;right:0;bottom:0;}
-body::before{height:70vh;opacity:.34;background:
-  linear-gradient(145deg,transparent 0 54%,rgba(12,84,52,.22) 55% 59%,transparent 60%) 0 100%/120px 210px repeat-x,
-  linear-gradient(145deg,transparent 0 55%,rgba(12,84,52,.16) 56% 60%,transparent 61%) 36px 100%/164px 270px repeat-x,
-  linear-gradient(180deg,transparent 0%,rgba(11,74,47,.18) 65%,rgba(5,45,29,.38) 100%);
-}
-body::after{height:30vh;z-index:-1;opacity:.46;background:radial-gradient(ellipse at 8% 100%,rgba(12,84,52,.34) 0 18%,transparent 44%),radial-gradient(ellipse at 94% 100%,rgba(12,84,52,.28) 0 24%,transparent 52%);}
 
 
-*{box-sizing:border-box!important;-webkit-tap-highlight-color:transparent!important;}
-button,input,textarea{font:inherit!important;}button{touch-action:manipulation!important;cursor:pointer!important;}input,textarea{outline:none!important;}
-#startup{background:linear-gradient(180deg,#f7fbf8,#e7f5ed)!important;}.startup-card{border-radius:30px!important;background:#ffffffee!important;border:1px solid var(--line)!important;box-shadow:0 24px 80px rgba(14,80,52,.16)!important;}.startup-card img{width:68px!important;height:68px!important;border-radius:50%!important;object-fit:cover!important;}.startup-card strong{font-size:18px!important;color:var(--forest)!important;}
-#app.app{width:min(100%,430px)!important;max-width:430px!important;min-height:100dvh!important;margin:0 auto!important;padding:12px 12px calc(92px + env(safe-area-inset-bottom,0px))!important;background:linear-gradient(180deg,rgba(255,255,255,.78),rgba(250,254,252,.94))!important;box-shadow:0 0 0 1px rgba(255,255,255,.58),0 26px 90px rgba(12,62,40,.18)!important;position:relative!important;}
-@media(max-width:430px){#app.app{box-shadow:none!important;max-width:100%!important;}}
-.topbar{position:sticky!important;top:0!important;z-index:90!important;margin:-12px -12px 8px!important;padding:12px 10px 7px!important;background:linear-gradient(180deg,rgba(255,255,255,.92),rgba(255,255,255,.72))!important;backdrop-filter:blur(18px)!important;-webkit-backdrop-filter:blur(18px)!important;border:0!important;box-shadow:none!important;display:grid!important;grid-template-columns:auto auto 1fr!important;align-items:start!important;gap:7px!important;}
-
-.brand{display:flex!important;align-items:center!important;gap:7px!important;min-width:0!important;grid-column:1/3!important;grid-row:1!important;}
-.brand img{width:34px!important;height:34px!important;border-radius:50%!important;object-fit:cover!important;background:#fff!important;box-shadow:0 6px 14px rgba(13,95,59,.18)!important;}
-.version-card{display:flex!important;align-items:center!important;gap:5px!important;background:transparent!important;border:0!important;box-shadow:none!important;padding:4px 4px!important;border-radius:12px!important;color:#233d33!important;}
-.version-card b{font-size:12px!important;font-weight:950!important;line-height:1!important;color:#233d33!important;}.version-card small{display:none!important;}
-#userBadge{grid-column:3!important;grid-row:1!important;justify-self:end!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;max-width:150px!important;min-height:32px!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;padding:7px 10px!important;border-radius:13px!important;background:#e4f6ec!important;border:1px solid #d4eedf!important;color:var(--forest)!important;font-size:11px!important;font-weight:950!important;box-shadow:0 8px 18px rgba(13,95,59,.08)!important;}
-#userBadge::before{content:"♟";font-size:10px;margin-right:4px;opacity:.78;}.login-needed{opacity:1!important;}
-.online-pill-v325{grid-column:3!important;grid-row:2!important;justify-self:end!important;margin-top:2px!important;border:1px solid #cfebdc!important;background:#e8f8ef!important;color:var(--forest)!important;border-radius:999px!important;padding:5px 10px!important;font-size:10px!important;font-weight:950!important;line-height:1!important;}
-.top-actions-v316{display:none!important;}
-.view{display:none!important;}.view.active{display:block!important;}
-.card,.hero-card,.status-card,.entry-form,.records-card,.guide-card,.settings-card,.sound-card,.maintenance-card,.panel-card-v316{background:var(--card)!important;border:1px solid rgba(220,235,228,.96)!important;border-radius:22px!important;box-shadow:0 12px 30px rgba(23,74,50,.085)!important;margin:10px 0!important;padding:14px!important;}
-.hero-card{position:relative!important;min-height:132px!important;overflow:hidden!important;display:flex!important;align-items:flex-start!important;justify-content:space-between!important;background:linear-gradient(90deg,rgba(255,255,255,.97) 0%,rgba(255,255,255,.92) 26%,rgba(255,255,255,.70) 48%,rgba(255,255,255,.18) 100%),url('./assets/hero_forest_cover.webp') center right/cover no-repeat!important;border-color:#dfeae5!important;}
-.hero-card::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(255,255,255,.06),rgba(255,255,255,0));pointer-events:none;}
-.hero-card h1{position:relative!important;z-index:1!important;font-size:18px!important;line-height:1.08!important;margin:4px 0 8px!important;color:#173328!important;font-weight:950!important;letter-spacing:-.02em!important;text-shadow:0 1px 0 rgba(255,255,255,.40)!important;}.hero-card p{position:relative!important;z-index:1!important;max-width:220px!important;margin:0!important;font-size:12px!important;line-height:1.36!important;color:#4f655b!important;font-weight:780!important;text-shadow:0 1px 0 rgba(255,255,255,.35)!important;}.hero-forest{display:none!important;}
-.status-card{display:grid!important;grid-template-columns:1fr!important;gap:8px!important;margin-top:-16px!important;position:relative!important;z-index:2!important;background:rgba(255,255,255,.82)!important;}
-.status-item{display:flex!important;align-items:center!important;gap:11px!important;min-height:68px!important;border:1px solid #e1eee8!important;background:#fff!important;border-radius:18px!important;box-shadow:0 7px 18px rgba(23,74,50,.045)!important;padding:11px!important;text-align:left!important;color:var(--ink)!important;}
-.status-icon{width:40px!important;height:40px!important;flex:0 0 40px!important;display:grid!important;place-items:center!important;border-radius:18px!important;background:#eaf8f0!important;color:var(--forest)!important;font-size:20px!important;}.flash,.entry-launch .status-icon{background:#fff7d9!important;color:#e7a500!important;}.status-item small{display:block!important;font-size:10px!important;color:#71817b!important;font-weight:850!important;line-height:1.2!important;margin:0 0 2px!important;}.status-item b{display:block!important;font-size:16px!important;line-height:1.05!important;color:#173b2d!important;font-weight:950!important;}.status-item em{display:block!important;margin-top:2px!important;font-size:11px!important;color:#66756f!important;line-height:1.25!important;font-style:normal!important;font-weight:760!important;}.entry-launch{background:#fbfefc!important;border-color:#dfeee6!important;}
-.section-head{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:8px!important;margin-bottom:9px!important;}.section-head h2,.card h2,.guide-card h2,.settings-card h2,.sound-card h2,.maintenance-card h2{font-size:16px!important;line-height:1.16!important;margin:0 0 10px!important;color:#1e342d!important;font-weight:950!important;letter-spacing:-.01em!important;}.section-head h2{margin:0!important;}.section-head span,.pill,#recordCountPill,#todayText,#weekBtn{background:#e7f6ee!important;color:var(--forest)!important;border:1px solid #d6edde!important;border-radius:999px!important;padding:6px 10px!important;font-size:10px!important;font-weight:950!important;min-height:auto!important;}.file-card .section-head span{font-size:0!important;}.file-card .section-head span::after{content:"Düzenle";font-size:10px!important;}
-.grid.two{grid-template-columns:1fr 1fr!important;gap:8px!important;}label{display:block!important;font-size:11px!important;color:#5e6f68!important;font-weight:900!important;margin:6px 0!important;}input,textarea{width:100%!important;height:42px!important;background:#fff!important;border:1px solid #dfeae5!important;border-radius:14px!important;color:#173b2d!important;font-size:13px!important;font-weight:850!important;padding:9px 11px!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.9)!important;}input:focus,textarea:focus{border-color:#9bd8b8!important;box-shadow:0 0 0 4px rgba(13,95,59,.10)!important;}.hint,.setting-block p{font-size:10px!important;line-height:1.35!important;color:#6b7b76!important;font-weight:760!important;}
-.settings-card,.sound-card,.maintenance-card{background:#fff!important;}.setting-block{background:#fbfefc!important;border:0!important;border-top:1px solid #edf4f0!important;border-radius:0!important;padding:12px 0!important;margin:0!important;box-shadow:none!important;}.setting-block:first-of-type{border-top:0!important;padding-top:0!important;}.setting-block>b{display:block!important;font-size:13px!important;color:#223832!important;margin-bottom:2px!important;}.check-grid{display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important;margin-top:10px!important;}.check-card{position:relative!important;min-height:42px!important;border-radius:13px!important;background:#fff!important;border:1px solid #dfeae5!important;box-shadow:0 6px 14px rgba(23,74,50,.04)!important;padding:8px 9px!important;font-size:11px!important;color:#253b34!important;font-weight:950!important;display:flex!important;align-items:center!important;gap:8px!important;}.check-card input{width:16px!important;height:16px!important;margin:0!important;accent-color:var(--forest)!important;}.check-card:has(input:checked){background:#f1fbf5!important;border-color:#bde6cd!important;box-shadow:0 8px 18px rgba(13,95,59,.08)!important;}.check-card:has(input:checked)::after{content:"✓";margin-left:auto;color:#65a984;font-size:11px;}
-.btn{min-height:42px!important;border-radius:14px!important;padding:9px 12px!important;font-size:12px!important;font-weight:950!important;border:1px solid #dfeae5!important;background:#fff!important;color:#244238!important;box-shadow:0 7px 16px rgba(23,74,50,.05)!important;text-decoration:none!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;}.btn.primary,.btn.green,#downloadXlsBtn{background:linear-gradient(180deg,#15945a,#0d5f3b)!important;border-color:#0d5f3b!important;color:#fff!important;}.btn.soft{background:#eff7fb!important;color:#22505c!important;border-color:#dceaf2!important;}.btn.warning{background:#fff6ed!important;color:#9a4b13!important;border-color:#f5dec9!important;}.btn.orange{background:linear-gradient(180deg,#ffb31f,#f59e0b)!important;color:#fff!important;border-color:#f59e0b!important;}.btn.full{width:100%!important;}
-.summary-grid{display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important;}.summary-grid>div,.detail-summary-grid>div{min-height:72px!important;border:1px solid #e3eee8!important;border-radius:17px!important;background:linear-gradient(135deg,#fbfefc,#f1fbf5)!important;padding:12px!important;box-shadow:0 7px 16px rgba(23,74,50,.04)!important;}.summary-grid span{display:block!important;font-size:20px!important;line-height:1!important;color:var(--forest)!important;}.summary-grid b,.detail-summary-grid b{display:block!important;margin:5px 0 0!important;font-size:19px!important;line-height:1.08!important;color:#142b22!important;font-weight:950!important;}.summary-grid small,.detail-summary-grid small{font-size:10px!important;color:#6b7b76!important;font-weight:850!important;}.summary-card .section-head h2::after{content:" / Bakım";}.summary-card .summary-grid>div:nth-child(3){grid-column:auto!important;}.summary-card .summary-grid::after{content:"0";display:block;min-height:72px;border:1px solid #e3eee8;border-radius:17px;background:linear-gradient(135deg,#fbfefc,#f1fbf5);padding:28px 12px 12px;box-shadow:0 7px 16px rgba(23,74,50,.04);font-size:19px;line-height:1.08;color:#142b22;font-weight:950;}.summary-card .summary-grid{position:relative!important;}.summary-card .summary-grid::before{content:"Kayıt";position:absolute;right:calc(25% - 26px);bottom:48px;font-size:10px;color:#6b7b76;font-weight:850;z-index:1;}
-.detail-summary-grid{display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important;}.detail-summary-card{background:#fff!important;}.detail-summary-card .section-head h2{font-size:15px!important;}
-.records-card>.section-head h2{font-size:17px!important;text-transform:uppercase!important;}.records-card>.section-head h2::after{content:" / ÖZET";}.summary-grid.small{grid-template-columns:1fr 1fr!important;}.records-card .summary-grid.small>div{min-height:82px!important;background:linear-gradient(135deg,#f0faf4,#fff)!important;}.records-card .summary-grid.small b{font-size:22px!important;}.product-totals{display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important;margin:10px 0 12px!important;}.prod-total{position:relative!important;min-height:78px!important;border:1px solid #e3eee8!important;border-left-width:6px!important;border-radius:17px!important;background:#fff!important;padding:12px!important;box-shadow:0 7px 16px rgba(23,74,50,.045)!important;}.prod-total.product-tomruk{border-left-color:var(--tomruk)!important}.prod-total.product-maden{border-left-color:var(--maden)!important}.prod-total.product-kagit{border-left-color:var(--kagit)!important}.prod-total.product-sanayi{border-left-color:var(--sanayi)!important}.prod-total.product-tel{border-left-color:var(--tel)!important}.prod-total b{font-size:18px!important;margin:4px 0!important;color:#152c23!important;}.prod-total small{font-size:10px!important;color:#6b7b76!important;font-weight:850!important;}
-.action-grid{display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important;margin-top:10px!important;}#downloadXlsBtn{grid-column:1/-1!important;min-height:46px!important;}#backupBtn{order:5!important;}#restoreBtn{order:2!important;}#cloudBackupBtnV316{order:3!important;}#cloudRestoreBtnV316{order:4!important;}#printBtn{order:6!important;}.record-tools-lower{margin-top:12px!important;}.record-toolbar{background:#fff!important;border:1px solid #e3eee8!important;border-radius:20px!important;padding:12px!important;box-shadow:0 8px 20px rgba(23,74,50,.055)!important;}.record-toolbar::before{content:"Ölçümler";display:block;font-size:17px;font-weight:950;color:#1e342d;margin:0 0 9px;}.record-toolbar input[type=search]{padding-left:34px!important;background:#fbfefc!important;}.record-toolbar{position:relative!important;}.record-toolbar::after{content:"⌕";position:absolute;top:55px;left:22px;color:#9aa9a3;font-size:14px;}.record-select-actions{display:grid!important;grid-template-columns:1fr 1fr!important;gap:7px!important;margin-top:8px!important;}.record-select-actions .btn,#selectedInfo{width:100%!important;justify-content:center!important;text-align:center!important;font-size:11px!important;}.export-scope-info{border-radius:14px!important;background:#ecfdf5!important;border:1px dashed #a9dfbd!important;color:var(--forest)!important;font-size:10px!important;padding:9px!important;margin-top:8px!important;}.filter-box{border:0!important;background:transparent!important;padding:0!important;margin:8px 0!important;}.filter-head{font-size:11px!important;color:#55665f!important;}.filter-chips,.chip-wrap{display:flex!important;gap:7px!important;overflow-x:auto!important;flex-wrap:nowrap!important;padding-bottom:2px!important;-webkit-overflow-scrolling:touch!important;}.filter-chip,.chip{white-space:nowrap!important;border-radius:999px!important;border:1px solid #dfeae5!important;background:#fff!important;color:#365348!important;min-height:34px!important;padding:8px 11px!important;font-size:11px!important;font-weight:950!important;box-shadow:0 5px 12px rgba(23,74,50,.04)!important;}.filter-chip.active,.chip.active{background:#0d5f3b!important;color:#fff!important;border-color:#0d5f3b!important;}
-.product-filter-v325{display:flex;gap:7px;overflow-x:auto;flex-wrap:nowrap;padding:0 0 8px;margin:4px 0 3px;-webkit-overflow-scrolling:touch;}.product-filter-v325 button{white-space:nowrap;border-radius:999px;border:1px solid #dfeae5;background:#fff;color:#365348;min-height:34px;padding:8px 11px;font-size:11px;font-weight:950;box-shadow:0 5px 12px rgba(23,74,50,.04);}.product-filter-v325 button.active{background:#0d5f3b;color:#fff;border-color:#0d5f3b;}.product-filter-v325 .tomruk{background:#fff6d8;color:#805700;border-color:#ffe3a0}.product-filter-v325 .maden{background:#eaf3ff;color:#1458a6;border-color:#d3e6ff}.product-filter-v325 .kagit{background:#fff0f0;color:#a13a3a;border-color:#ffd9d9}.product-filter-v325 .sanayi{background:#ecfbf2;color:#1d7d4e;border-color:#cef0dc}.product-filter-v325 .tel{background:#f0edff;color:#5b49c9;border-color:#ddd7ff}
-.record-list{display:grid!important;gap:8px!important;margin-top:10px!important;}.record-card{display:grid!important;grid-template-columns:auto 1fr!important;gap:8px!important;border-radius:16px!important;background:#fff!important;border:1px solid #e3eee8!important;border-left-width:6px!important;padding:10px!important;box-shadow:0 7px 17px rgba(23,74,50,.05)!important;}.record-card.product-tomruk{border-left-color:var(--tomruk)!important}.record-card.product-maden{border-left-color:var(--maden)!important}.record-card.product-kagit{border-left-color:var(--kagit)!important}.record-card.product-sanayi{border-left-color:var(--sanayi)!important}.record-card.product-tel{border-left-color:var(--tel)!important}.record-main b{font-size:12px!important;}.record-main small{font-size:10px!important;line-height:1.35!important;}.record-actions{grid-column:2!important;justify-content:flex-start!important;display:flex!important;gap:6px!important;}.record-actions button{font-size:10px!important;padding:7px 9px!important;border-radius:11px!important;border:1px solid #dfeae5!important;background:#f7fbf9!important;}
-#recordList>p.hint{min-height:246px!important;margin:12px 0!important;border-radius:22px!important;background:linear-gradient(180deg,#ffffff,#fbfefc)!important;border:1px solid #e3eee8!important;display:flex!important;align-items:flex-end!important;justify-content:center!important;text-align:center!important;padding:162px 16px 58px!important;font-size:0!important;color:#66756f!important;position:relative!important;box-shadow:0 8px 20px rgba(23,74,50,.05)!important;}#recordList>p.hint::before{content:"";position:absolute;top:30px;left:50%;transform:translateX(-50%);width:156px;height:104px;border-radius:50% 45% 48% 45%;background:radial-gradient(ellipse at 50% 90%,rgba(13,95,59,.10) 0 45%,transparent 46%),linear-gradient(150deg,transparent 0 52%,rgba(13,95,59,.28) 52% 56%,transparent 56%) 16px 23px/36px 64px repeat-x,linear-gradient(180deg,#eef8f2,#d8eee2);}#recordList>p.hint::after{content:"Kayıt bulunamadı\A Henüz ölçüm kaydı oluşturulmamış.";white-space:pre-line;font-size:13px!important;line-height:1.55;color:#51635d;font-weight:900;}#recordList>p.hint .new-btn-v325{display:none!important;}.empty-new-btn-v325{position:absolute;left:50%;bottom:20px;transform:translateX(-50%);border:0;border-radius:14px;background:linear-gradient(180deg,#15945a,#0d5f3b);color:#fff;padding:11px 20px;font-size:12px;font-weight:950;box-shadow:0 12px 24px rgba(13,95,59,.20);}
-.entry-top{position:sticky!important;top:0!important;z-index:70!important;background:linear-gradient(180deg,rgba(255,255,255,.95),rgba(255,255,255,.82))!important;padding:9px 0 7px!important;margin-bottom:8px!important;display:flex!important;align-items:center!important;justify-content:space-between!important;gap:8px!important;}.entry-top .version-card{background:#e7f6ee!important;border:1px solid #d6edde!important;padding:8px 10px!important;}.entry-top .btn{min-height:38px!important;}.entry-total{display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important;background:transparent!important;border:0!important;box-shadow:none!important;margin:8px 0!important;}.entry-total div{border:1px solid #e3eee8!important;border-radius:17px!important;background:linear-gradient(135deg,#fbfefc,#f1fbf5)!important;padding:10px!important;text-align:center!important;box-shadow:0 7px 16px rgba(23,74,50,.04)!important;}.entry-total b{font-size:20px!important;color:#142b22!important;}.entry-total small{font-size:10px!important;color:#6b7b76!important;}.entry-form{display:grid!important;gap:10px!important;padding:12px!important;}.cutter-row{grid-template-columns:1fr auto!important;gap:8px!important;}.tree-head{display:grid!important;grid-template-columns:1fr auto!important;gap:8px!important;}.tree-panel.open{display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important;}.tree-option{min-height:40px!important;border-radius:14px!important;border:1px solid #dfeae5!important;background:#fff!important;padding:9px!important;font-size:11px!important;}.tree-option input{width:16px!important;height:16px!important;}.measure-grid,.measure-grid-v311{display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important;}.measure-grid label,.measure-grid-v311 label{background:#fff!important;border:1px solid #e1eee8!important;border-radius:16px!important;padding:9px!important;}.measure-grid input{height:38px!important;text-align:center!important;font-size:20px!important;font-weight:950!important;border-radius:13px!important;}.quick-grid{display:grid!important;grid-template-columns:repeat(3,1fr)!important;gap:5px!important;margin-top:6px!important;}.quick-grid button{min-height:34px!important;border:1px solid #dfeae5!important;border-radius:11px!important;background:#f7fbf9!important;font-size:14px!important;font-weight:950!important;}.product-grid{display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important;}.product-btn{min-height:48px!important;border-radius:16px!important;font-size:14px!important;font-weight:950!important;border-width:1.5px!important;}.product-btn.active::after{top:-8px!important;right:9px!important;font-size:10px!important;padding:1px 8px!important;background:#0d5f3b!important;border:2px solid #fff!important;}.product-tomruk{border-color:var(--tomruk)!important;background:#fff6d8!important;color:#805700!important}.product-maden{border-color:var(--maden)!important;background:#eaf3ff!important;color:#1458a6!important}.product-kagit{border-color:var(--kagit)!important;background:#fff0f0!important;color:#a13a3a!important}.product-sanayi{border-color:var(--sanayi)!important;background:#ecfbf2!important;color:#1d7d4e!important}.product-tel{border-color:var(--tel)!important;background:#f0edff!important;color:#5b49c9!important}.barcode-save{display:grid!important;grid-template-columns:1fr 104px!important;gap:8px!important;}.barcode-save label{background:#fff!important;border:1px solid #e1eee8!important;border-radius:16px!important;padding:8px!important;margin:0!important;}.barcode-save input{height:38px!important;text-align:center!important;font-size:17px!important;text-transform:uppercase!important;}.save-btn{min-height:58px!important;border:0!important;border-radius:18px!important;background:linear-gradient(180deg,#18a664,#0d5f3b)!important;color:#fff!important;font-size:17px!important;font-weight:950!important;box-shadow:0 14px 30px rgba(13,95,59,.24)!important;}.recent-box{border-radius:18px!important;background:#fbfefc!important;border:1px solid #e3eee8!important;padding:12px!important;}.recent-box h3{font-size:13px!important;margin:0 0 8px!important;color:#1e342d!important;}.recent-list{grid-template-columns:1fr!important;gap:7px!important;}.recent-item{border-radius:14px!important;background:#fff!important;border:1px solid #e3eee8!important;border-left-width:6px!important;min-height:54px!important;}.recent-item b{font-size:13px!important;}.recent-item small{font-size:10px!important;}.recent-item.product-tomruk{border-left-color:var(--tomruk)!important;background:#fffaf0!important}.recent-item.product-maden{border-left-color:var(--maden)!important;background:#f2f8ff!important}.recent-item.product-kagit{border-left-color:var(--kagit)!important;background:#fff6f6!important}.recent-item.product-sanayi{border-left-color:var(--sanayi)!important;background:#f3fbf6!important}.recent-item.product-tel{border-left-color:var(--tel)!important;background:#f7f5ff!important}
-.bottom-nav{position:fixed!important;left:50%!important;right:auto!important;transform:translateX(-50%)!important;bottom:calc(env(safe-area-inset-bottom,0px) + 8px)!important;width:min(calc(100% - 16px),410px)!important;display:grid!important;grid-template-columns:repeat(4,1fr)!important;gap:4px!important;padding:7px!important;border-radius:22px!important;background:rgba(255,255,255,.94)!important;border:1px solid rgba(220,235,228,.95)!important;box-shadow:0 16px 42px rgba(23,74,50,.16)!important;backdrop-filter:blur(18px)!important;-webkit-backdrop-filter:blur(18px)!important;z-index:1000!important;}.bottom-nav button{min-height:54px!important;border:0!important;border-radius:16px!important;background:transparent!important;color:#7b8a85!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:2px!important;box-shadow:none!important;padding:4px!important;}.bottom-nav button.active{background:#edf9f2!important;color:var(--forest)!important;}.bottom-nav span{font-size:19px!important;line-height:1!important;}.bottom-nav b{font-size:9px!important;font-weight:950!important;}
-.toast,.float-toast-v315{left:50%!important;transform:translateX(-50%)!important;width:min(calc(100% - 24px),390px)!important;bottom:calc(82px + env(safe-area-inset-bottom,0px))!important;z-index:10060!important;border-radius:18px!important;background:rgba(13,95,59,.96)!important;color:#fff!important;box-shadow:0 16px 36px rgba(13,95,59,.28)!important;}.update-status-box{border-radius:14px!important;background:#fff7d8!important;border:1px solid #f2df9f!important;color:#8a650b!important;font-size:10px!important;padding:9px!important;margin-top:8px!important;}.modal-backdrop,.panel-overlay-v316{backdrop-filter:blur(8px)!important;-webkit-backdrop-filter:blur(8px)!important;}.modal-card,.panel-card-v316{width:min(92vw,400px)!important;border-radius:24px!important;background:#fff!important;color:#162b23!important;}.modal-icon{background:#eaf8f0!important;color:var(--forest)!important;}.guide-card{font-size:12px!important;line-height:1.5!important;}.guide-card ol{padding-left:20px!important;color:#44564f!important;}.guide-card li{margin:8px 0!important;}
-.settings-title-v325{display:flex;align-items:center;gap:10px;margin:4px 0 10px;}.settings-title-v325 .back{width:34px;height:34px;border-radius:14px;border:1px solid #dfeae5;background:#fff;color:var(--forest);font-weight:950;box-shadow:0 7px 16px rgba(23,74,50,.05);}.settings-title-v325 h2{font-size:17px;margin:0;color:#1e342d;font-weight:950;}.home-date-card-v325 .calendar-mark{position:absolute;right:24px;bottom:22px;color:#84958e;font-size:15px;}.home-date-card-v325{position:relative;}
-@media(max-width:370px){#userBadge{max-width:122px!important;font-size:10px!important}.check-grid{grid-template-columns:1fr 1fr!important}.product-grid{grid-template-columns:1fr 1fr!important}.barcode-save{grid-template-columns:1fr 92px!important}.bottom-nav b{font-size:8px!important}.bottom-nav span{font-size:17px!important}.grid.two{grid-template-columns:1fr 1fr!important}}
-</style>
-<script id="mesaha-lovable-exact-pass-v325-2">
 (function(){
   'use strict';
   function $(id){return document.getElementById(id)}
@@ -4372,7 +3627,7 @@ button,input,textarea{font:inherit!important;}button{touch-action:manipulation!i
     if(!nav.__v325){nav.__v325=true;nav.addEventListener('click',function(e){var b=e.target.closest('[data-nav]'); if(!b)return; if(b.dataset.nav==='settings'){e.preventDefault();e.stopImmediatePropagation();showLocal('settings');}},true);}
   }
   
-function moveBarcodeSettingV536(){
+function moveBarcodeSettingV534(){
   var bc=document.querySelector('.barcode-check-setting-v526');
   var sound=document.querySelector('#settingsView .sound-card')||document.querySelector('.sound-card');
   if(bc&&sound&&bc.parentNode!==sound){sound.appendChild(bc)}
@@ -4389,7 +3644,7 @@ function buildSettingsView(){
       homeSettings.classList.add('home-date-card-v325');
       if(!qs('.calendar-mark',homeSettings)){var c=document.createElement('span');c.className='calendar-mark';c.textContent='▣';homeSettings.appendChild(c);} 
     }
-    ['sound-card','maintenance-card'].forEach(function(cls){var el=qs('#homeView .'+cls)||qs('#settingsView .'+cls); if(el)view.appendChild(el);}); moveBarcodeSettingV536();
+    ['sound-card','maintenance-card'].forEach(function(cls){var el=qs('#homeView .'+cls)||qs('#settingsView .'+cls); if(el)view.appendChild(el);}); moveBarcodeSettingV534();
     qsa('#settingsView .setting-block').forEach(function(bl){ if(bl.querySelector('#homeProductChecks')){var b=qs('b',bl); if(b)b.textContent='Odun Türleri';} if(bl.querySelector('#homeTreeChecks')){var b2=qs('b',bl); if(b2)b2.textContent='Ağaç Türleri';} });
   }
   function polishHome(){
@@ -4450,44 +3705,8 @@ function buildSettingsView(){
   function init(){rebuildTop();rebuildBottomNav();buildSettingsView();polishHome();polishRecords();patchShowView();observeRecords();}
   ready(function(){setTimeout(init,900);setTimeout(init,1800);window.addEventListener('online',rebuildTop);window.addEventListener('offline',rebuildTop);});
 })();
-</script>
-<style id="mesaha-v326-user-request-fixes-1">
-/* v326 — kullanıcı isteği: giriş ürün butonları, kesimci kaydırma notu, sade kullanıcı paneli, tekli bulut yükleme kilidi */
-#entryView .cutter-row{display:grid!important;grid-template-columns:1fr!important;gap:6px!important;align-items:stretch!important;}
-#entryView #cutterChips.chip-wrap{display:flex!important;flex-wrap:nowrap!important;gap:7px!important;overflow-x:auto!important;overflow-y:hidden!important;-webkit-overflow-scrolling:touch!important;scrollbar-width:none!important;padding:1px 2px 3px!important;max-width:100%!important;}
-#entryView #cutterChips.chip-wrap::-webkit-scrollbar{display:none!important;}
-#entryView #cutterChips .chip{flex:0 0 auto!important;min-height:35px!important;padding:8px 12px!important;border-radius:999px!important;font-size:11px!important;box-shadow:0 5px 12px rgba(23,74,50,.045)!important;}
-#entryView #addCutterBtn{justify-self:stretch!important;width:100%!important;min-height:39px!important;border-radius:15px!important;font-size:12px!important;padding:8px 12px!important;}
-.cutter-scroll-note-v326{margin:-2px 0 2px!important;padding:0 3px!important;color:#75867f!important;font-size:10px!important;line-height:1.25!important;font-weight:850!important;display:flex!important;align-items:center!important;gap:5px!important;}
-.cutter-scroll-note-v326 b{font-size:12px!important;color:#0d5f3b!important;line-height:1!important;}
 
-#entryView #productButtons.product-grid{display:grid!important;grid-template-columns:1fr 1fr!important;gap:9px!important;margin-top:5px!important;}
-#entryView #productButtons .product-btn{height:42px!important;min-height:42px!important;padding:0 10px!important;border-radius:999px!important;border-width:1.7px!important;font-size:16px!important;font-weight:950!important;letter-spacing:.01em!important;box-shadow:none!important;line-height:1!important;transition:transform .12s ease,box-shadow .12s ease,border-color .12s ease!important;}
-#entryView #productButtons .product-btn.active{transform:translateY(-1px)!important;box-shadow:0 13px 26px rgba(23,74,50,.14)!important;}
-#entryView #productButtons .product-btn.active::after{content:""!important;display:none!important;}
-#entryView #productButtons .product-tomruk{background:#fff8df!important;border-color:#f1d887!important;color:#4d350d!important;}
-#entryView #productButtons .product-maden{background:#eaf4ff!important;border-color:#acd0f5!important;color:#0e5596!important;}
-#entryView #productButtons .product-kagit{background:#ffedf0!important;border-color:#f4aebc!important;color:#921b34!important;}
-#entryView #productButtons .product-sanayi{background:#eef9f2!important;border-color:#249754!important;color:#0c7045!important;}
-#entryView #productButtons .product-tel{background:#f1edff!important;border-color:#cebefc!important;color:#6938b8!important;}
-@media(max-width:370px){#entryView #productButtons .product-btn{height:39px!important;min-height:39px!important;font-size:14px!important;padding:0 8px!important;}}
 
-.panel-field-v316:has(#panelBolmeV316),#panelStatsV316{display:none!important;}
-.panel-bolme-hidden-v326{display:none!important;}
-.panel-grid-v316{grid-template-columns:1fr 1fr!important;}
-@media(max-width:520px){.panel-grid-v316{grid-template-columns:1fr!important;}}
-
-.mesaha-blocking-overlay-v326{position:fixed!important;inset:0!important;z-index:21000!important;display:none!important;align-items:center!important;justify-content:center!important;padding:18px!important;background:rgba(9,32,23,.46)!important;backdrop-filter:blur(9px)!important;-webkit-backdrop-filter:blur(9px)!important;}
-.mesaha-blocking-overlay-v326.active{display:flex!important;}
-.mesaha-blocking-card-v326{width:min(92vw,360px)!important;border-radius:26px!important;background:rgba(255,255,255,.97)!important;border:1px solid #dcebe4!important;box-shadow:0 30px 90px rgba(8,37,24,.30)!important;padding:22px!important;text-align:center!important;color:#162b23!important;}
-.mesaha-blocking-spinner-v326{width:46px!important;height:46px!important;margin:0 auto 13px!important;border-radius:50%!important;border:4px solid #dcebe4!important;border-top-color:#0d5f3b!important;animation:mesahaSpinV326 .85s linear infinite!important;}
-.mesaha-blocking-card-v326 h3{margin:0 0 7px!important;font-size:18px!important;font-weight:950!important;color:#0d5f3b!important;}
-.mesaha-blocking-card-v326 p{margin:0!important;font-size:12px!important;line-height:1.42!important;font-weight:780!important;color:#60726a!important;}
-@keyframes mesahaSpinV326{to{transform:rotate(360deg)}}
-body.cloud-busy-v326 #cloudBackupBtnV316{opacity:.72!important;pointer-events:none!important;}
-body.cloud-busy-v326 #cloudBackupBtnV316::after{content:"";width:12px;height:12px;margin-left:8px;border:2px solid rgba(255,255,255,.55);border-top-color:#fff;border-radius:50%;animation:mesahaSpinV326 .8s linear infinite;}
-</style>
-<script id="mesaha-v326-user-request-fixes-2">
 (function(){
   'use strict';
   function $(id){return document.getElementById(id)}
@@ -4575,143 +3794,8 @@ body.cloud-busy-v326 #cloudBackupBtnV316::after{content:"";width:12px;height:12p
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
-</script>
-<style id="mesaha-v354-lovable-clean-light-finales-1">
-/* v330 — giriş modu ürün butonları, ayarlar sayfası sızıntısı ve mobil tarih alanı düzeltmeleri */
-.view:not(.active){display:none!important;}
-#settingsView:not(.active){display:none!important;}
-#settingsView.active{display:block!important;}
-body:not(.entry-open) #entryView:not(.active){display:none!important;}
 
-/* Giriş modu ürün butonları: daha küçük, referanstaki oval pastel stil + net seçili işareti */
-#entryView #productButtons.product-grid{
-  display:grid!important;
-  grid-template-columns:1fr 1fr!important;
-  gap:7px!important;
-  margin-top:5px!important;
-}
-#entryView #productButtons .product-btn{
-  height:36px!important;
-  min-height:36px!important;
-  padding:0 28px 0 9px!important;
-  border-radius:999px!important;
-  border-width:1.6px!important;
-  border-style:solid!important;
-  font-size:13px!important;
-  font-weight:950!important;
-  letter-spacing:.01em!important;
-  line-height:1!important;
-  box-shadow:none!important;
-  position:relative!important;
-  overflow:visible!important;
-  transform:none!important;
-}
-#entryView #productButtons .product-btn::before{display:none!important;content:none!important;}
-#entryView #productButtons .product-btn::after{
-  content:""!important;
-  position:absolute!important;
-  right:8px!important;
-  top:50%!important;
-  transform:translateY(-50%) scale(.75)!important;
-  width:16px!important;
-  height:16px!important;
-  border-radius:999px!important;
-  display:grid!important;
-  place-items:center!important;
-  font-size:11px!important;
-  font-weight:950!important;
-  opacity:.28!important;
-  background:rgba(255,255,255,.74)!important;
-  border:1px solid currentColor!important;
-  color:inherit!important;
-  padding:0!important;
-}
-#entryView #productButtons .product-btn.active{
-  border-width:2.2px!important;
-  transform:translateY(-1px)!important;
-  box-shadow:0 9px 18px rgba(23,74,50,.13),0 0 0 3px rgba(13,95,59,.055)!important;
-}
-#entryView #productButtons .product-btn.active::after{
-  content:"✓"!important;
-  opacity:1!important;
-  transform:translateY(-50%) scale(1)!important;
-  background:#fff!important;
-  border-width:2px!important;
-}
-#entryView #productButtons .product-tomruk{background:#fff8df!important;border-color:#f1d887!important;color:#4b3409!important;}
-#entryView #productButtons .product-maden{background:#edf6ff!important;border-color:#acd0f5!important;color:#0d5594!important;}
-#entryView #productButtons .product-kagit{background:#ffedf1!important;border-color:#f4aebc!important;color:#941b36!important;}
-#entryView #productButtons .product-sanayi{background:#eef9f2!important;border-color:#249754!important;color:#0c7045!important;}
-#entryView #productButtons .product-tel{background:#f1edff!important;border-color:#cebefc!important;color:#6938b8!important;}
-#entryView #productButtons .product-tomruk.active{background:#fff1a8!important;border-color:#d99b05!important;color:#3f2a00!important;}
-#entryView #productButtons .product-maden.active{background:#d8ecff!important;border-color:#1473bd!important;color:#064a86!important;}
-#entryView #productButtons .product-kagit.active{background:#ffd8e0!important;border-color:#c21f3e!important;color:#81152c!important;}
-#entryView #productButtons .product-sanayi.active{background:#ddf6e7!important;border-color:#0b8f50!important;color:#065f37!important;}
-#entryView #productButtons .product-tel.active{background:#e5dcff!important;border-color:#7742c7!important;color:#54279b!important;}
-@media(max-width:370px){
-  #entryView #productButtons .product-btn{height:34px!important;min-height:34px!important;font-size:12px!important;padding-left:8px!important;padding-right:25px!important;}
-  #entryView #productButtons{gap:6px!important;}
-}
 
-/* Mesaha tarihi mobilde dengeli kart/input görünümü */
-#homeView .settings-card.home-date-card-v325,
-#homeView .settings-card{
-  padding:12px!important;
-  border-radius:20px!important;
-}
-#homeView .settings-card>h2{
-  font-size:15px!important;
-  line-height:1.1!important;
-  margin:0 0 8px!important;
-  color:#1e342d!important;
-}
-#homeView .settings-card .date-block-v330,
-#homeView .settings-card .setting-block:has(#mesahaDate){
-  display:grid!important;
-  grid-template-columns:auto minmax(0,1fr)!important;
-  align-items:center!important;
-  gap:10px!important;
-  margin:0!important;
-  padding:9px 10px!important;
-  min-height:54px!important;
-  border-radius:17px!important;
-  background:#fbfefc!important;
-  border:1px solid #e1eee7!important;
-  box-shadow:0 8px 18px rgba(23,74,50,.045)!important;
-  font-size:12px!important;
-  color:#31483f!important;
-}
-#homeView .settings-card .date-block-v330::after,
-#homeView .settings-card .setting-block:has(#mesahaDate)::after{
-  content:"▣";
-  color:#7f928a;
-  font-size:13px;
-  margin-left:-2px;
-  grid-column:3;
-  display:none;
-}
-#homeView .settings-card #mesahaDate{
-  margin:0!important;
-  height:38px!important;
-  min-height:38px!important;
-  max-height:38px!important;
-  border-radius:13px!important;
-  padding:0 10px!important;
-  font-size:13px!important;
-  font-weight:950!important;
-  text-align:left!important;
-  width:100%!important;
-  min-width:0!important;
-  background:#fff!important;
-}
-#homeView .settings-card .calendar-mark{display:none!important;}
-@media(max-width:370px){
-  #homeView .settings-card .date-block-v330,
-  #homeView .settings-card .setting-block:has(#mesahaDate){grid-template-columns:1fr!important;gap:5px!important;}
-  #homeView .settings-card #mesahaDate{height:36px!important;font-size:12px!important;}
-}
-</style>
-<script id="mesaha-v354-lovable-clean-light-finales-2">
 (function(){
   'use strict';
   function $(id){return document.getElementById(id)}
@@ -4780,25 +3864,8 @@ body:not(.entry-open) #entryView:not(.active){display:none!important;}
   function init(){setVersions();patchBottomNav();patchDateBlock();patchProductButtons();}
   ready(function(){init();setTimeout(init,800);setTimeout(init,1800);document.addEventListener('click',function(){setTimeout(patchProductButtons,60)},true);});
 })();
-</script>
-<style id="mesaha-guide-clean-yayin-clean-style">
-.version-card{border-radius:999px!important;padding:8px 13px!important;background:linear-gradient(180deg,#ffffff,#eefaf3)!important;border:1px solid #cfe8d9!important;box-shadow:0 10px 24px rgba(13,95,59,.10)!important;max-width:100%!important}
-.version-card b{font-size:13px!important;font-weight:950!important;color:#0d5f3b!important;white-space:nowrap!important;letter-spacing:.1px!important}
-.version-card small{display:none!important}
-.guide-guide-clean{padding:16px!important}
-.guide-section-guide-clean{border:1px solid #dfeee6!important;background:linear-gradient(135deg,#ffffff,#f4fbf7)!important;border-radius:20px!important;padding:14px!important;margin:12px 0!important;box-shadow:0 8px 20px rgba(15,23,42,.045)!important}
-.guide-section-guide-clean h3{margin:0 0 9px!important;color:#0f3d2f!important;font-size:18px!important}
-.guide-section-guide-clean ol{margin:0!important;padding-left:20px!important}
-.guide-section-guide-clean li{margin:7px 0!important;line-height:1.42!important;color:#263b34!important;font-weight:760!important}
-.guide-note-guide-clean{margin:10px 0 0!important;padding:10px 12px!important;border-radius:14px!important;background:#ecfdf5!important;border:1px dashed #a7dfba!important;color:#14532d!important;font-weight:850!important}
 
 
-#legacyPrintAreaV337,.print-beyan-page-v315,.print-beyan-page-v330,.print-beyan-page-v332,.print-beyan-page-v336{display:none!important}
-#printBtn{background:linear-gradient(180deg,#fbbf24,#f59e0b)!important;color:#173429!important;border-color:#f59e0b!important;font-weight:950!important}
-#printBtn::before{content:"📄";margin-right:6px;font-size:14px}
-@media(max-width:430px){.version-card b{font-size:12px!important}.guide-section-guide-clean{padding:12px!important;border-radius:18px!important}.guide-section-guide-clean h3{font-size:16px!important}.guide-section-guide-clean li{font-size:13px!important}}
-</style>
-<script id="mesaha-guide-clean-yayin-clean-script">
 (function(){
   'use strict';
   var info=window.MESAHA_VERSION||{};
@@ -4892,18 +3959,8 @@ body:not(.entry-open) #entryView:not(.active){display:none!important;}
   [150,600,1400,2600].forEach(function(ms){setTimeout(boot,ms)});
   setInterval(function(){ if(!document.hidden) applyVersion(); },60000);
 })();
-</script>
-<style id="mesaha-sound-clean-final-fix-style">
-/* sound-clean: Ölçümler ürün filtreleri tamamen kaldırıldı */
-#productFilterV325,.product-filter-v325,.filter-chips.product-filter-v325{display:none!important;visibility:hidden!important;height:0!important;min-height:0!important;margin:0!important;padding:0!important;overflow:hidden!important;pointer-events:none!important;}
-#recordsView .record-toolbar #productFilterV325,
-#recordsView .record-toolbar .product-filter-v325{display:none!important;}
-</style>
-<style id="mesaha-v354-lovable-clean-light-final-1">
-/* v354: ilk giriş logosu ve kullanıcı adına göre karşılama */
-.first-login-logo-v321 img{display:block!important;width:56px!important;height:56px!important;object-fit:contain!important;border-radius:16px!important;background:#fff!important;box-shadow:0 8px 18px rgba(13,95,59,.12)!important;}
-</style>
-<script id="mesaha-v354-lovable-clean-light-final-2">
+
+
 (function(){
   'use strict';
   var PANEL_KEY='mesaha_panel_user_v316';
@@ -4953,8 +4010,8 @@ body:not(.entry-open) #entryView:not(.active){display:none!important;}
   [80,250,700,1300,2600,5000].forEach(function(ms){setTimeout(applyUserTexts,ms)});
   window.addEventListener('storage',applyUserTexts); document.addEventListener('visibilitychange',function(){if(!document.hidden)applyUserTexts();},{passive:true});
 })();
-</script>
-<script id="mesaha-v354-lovable-clean-light-final-3">
+
+
 (function(){
   'use strict';
   var DISPLAY='Mesaha İO';
@@ -4977,8 +4034,8 @@ body:not(.entry-open) #entryView:not(.active){display:none!important;}
   [100,500,1200,2500].forEach(function(ms){setTimeout(apply,ms)});
   setInterval(function(){ if(!document.hidden) apply(); },60000);
 })();
-</script>
-<script id="mesaha-v354-lovable-clean-light-final-4">
+
+
 (function(){
   'use strict';
   var MV=window.MESAHA_VERSION||{}, DISPLAY=MV.visibleVersion||'Mesaha İO', APP=MV.app||'Mesaha İO', BUILD=Number(MV.build||0)||0, VERSION=MV.version||'local', CACHE=MV.cacheName||'mesaha-app-local';
@@ -5003,22 +4060,8 @@ body:not(.entry-open) #entryView:not(.active){display:none!important;}
   [100,400,1000,2200,4000].forEach(function(ms){setTimeout(boot,ms)});
   setInterval(function(){ if(!document.hidden) boot(); },60000);
 })();
-</script>
-<style id="mesaha-v351-light-only-clean-style">
-:root{--bg:#f4f7f6!important;--card:#ffffff!important;--text:#101828!important;--muted:#667085!important;--line:#d9e3e1!important;--shadow:0 12px 30px rgba(15,23,42,.08)!important;color-scheme:light!important}
-html,body{background:#f4f7f6!important;color:#101828!important;color-scheme:light!important}
-body{filter:none!important}
-.topbar{display:grid!important;grid-template-columns:auto 1fr auto!important;align-items:center!important;gap:10px!important;background:rgba(255,255,255,.94)!important;border-bottom:1px solid #d9e3e1!important;box-shadow:0 8px 22px rgba(15,23,42,.06)!important}
-.brand{grid-column:1!important}.version-card{grid-column:2!important;justify-self:start!important;background:#fff!important;color:#101828!important;border-color:#d9e3e1!important}.version-card small{display:none!important}
-#userBadge{display:none!important}.top-actions-v316{display:flex!important;grid-column:3!important;grid-row:1!important;justify-self:end!important;align-items:center!important;gap:8px!important}
-#userPanelBtnV316{display:inline-flex!important;align-items:center!important;justify-content:center!important;min-height:42px!important;border-radius:16px!important;border:1px solid #d9e3e1!important;background:#fff!important;color:#14532d!important;font-weight:950!important;padding:9px 12px!important;box-shadow:0 8px 20px rgba(15,23,42,.08)!important;white-space:nowrap!important}
-#removedOnlinePillV350{display:none!important}#removedThemeButton,[aria-label="Tema"]{display:none!important;visibility:hidden!important;pointer-events:none!important}
-.card,.hero-card,.status-card,.file-card,.summary-card,.settings-card,.guide-card,.records-card,.sound-card,.maintenance-card,.panel-card-v316{background:#fff!important;color:#101828!important;border-color:#d9e3e1!important;box-shadow:0 12px 30px rgba(15,23,42,.08)!important}
-input,select,textarea{background:#fff!important;color:#101828!important;border-color:#cfd9d7!important}
-.bottom-nav{background:rgba(255,255,255,.96)!important;border-color:#d9e3e1!important;box-shadow:0 16px 36px rgba(15,23,42,.12)!important}.bottom-nav button,.nav-btn{color:#101828!important}.bottom-nav button.active,.nav-btn.active{background:#ecfdf3!important;color:#166534!important;border-color:#bbf7d0!important}
-.product-tomruk{background:#fff8db!important;color:#5f4200!important;border-color:#eab308!important}.product-maden{background:#e8f1ff!important;color:#0f3d70!important;border-color:#2563eb!important}.product-kagit{background:#fff1f2!important;color:#7f1d1d!important;border-color:#dc2626!important}.product-sanayi{background:#e8f9ee!important;color:#14532d!important;border-color:#16a34a!important}.product-tel{background:#f3eefe!important;color:#4c1d95!important;border-color:#7c3aed!important}
-</style>
-<script id="mesaha-v351-light-only-clean-script">
+
+
 (function(){
   'use strict';
   var META=window.MESAHA_VERSION||{app:'Mesaha İO',version:'local',build:0,visibleVersion:'Mesaha İO',shortVersion:'Mesaha İO',name:'Mesaha İO',cacheName:'mesaha-app-local',assetVersion:''};
@@ -5048,16 +4091,8 @@ input,select,textarea{background:#fff!important;color:#101828!important;border-c
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){clean();perfPatch()},{once:true});
   [80,250,700,1500,3000].forEach(function(ms){setTimeout(clean,ms)});
 })();
-</script>
-<style id="mesaha-v354-update-cover-fix-style">
-.hero-card{isolation:isolate!important;background:#dfeee6!important}
-.hero-cover-image{position:absolute!important;inset:0!important;z-index:0!important;width:100%!important;height:100%!important;display:block!important;object-fit:cover!important;object-position:center right!important}
-.hero-card::before{z-index:1!important}
-.hero-card::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(90deg,rgba(255,255,255,.97) 0%,rgba(255,255,255,.91) 28%,rgba(255,255,255,.66) 51%,rgba(255,255,255,.10) 100%)}
-.hero-card>div:first-of-type{position:relative!important;z-index:2!important}
-</style>
 
-<script id="mesaha-v453-sw-kayit-kontrol">
+
 (function(){
   'use strict';
   if(!('serviceWorker' in navigator)) return;
@@ -5070,10 +4105,9 @@ input,select,textarea{background:#fff!important;color:#101828!important;border-c
   }).catch(function(){});
   window.addEventListener('online', repair, {passive:true});
 })();
-</script>
 
-<script id="mesaha-offline-core-v380" src="./js/mesaha-offline-core.js"></script>
-<script id="mesaha-v354-version-guard">
+
+
 (function(){
   'use strict';
   var META=window.MESAHA_VERSION;
@@ -5106,87 +4140,8 @@ input,select,textarea{background:#fff!important;color:#101828!important;border-c
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',apply,{once:true});
   try{new MutationObserver(apply).observe(document.documentElement,{subtree:true,childList:true,characterData:true})}catch(e){}
 })();
-</script>
-<style id="mesaha-v359-final-tablet-and-facts">
-/* v359 final: sonradan gelen 430px mobil kilidini tabletlerde kırar */
-#app.app{
-  width:100%!important;
-  max-width:min(1320px, calc(100vw - 20px))!important;
-  margin-left:auto!important;
-  margin-right:auto!important;
-  padding-left:clamp(10px, 2vw, 24px)!important;
-  padding-right:clamp(10px, 2vw, 24px)!important;
-}
-#app.app .hero-card,
-#app.app .status-card,
-#app.app .card{
-  width:100%!important;
-}
-#app.app .hero-card{
-  background:
-    linear-gradient(90deg,rgba(255,255,255,.97) 0%,rgba(255,255,255,.91) 30%,rgba(255,255,255,.62) 58%,rgba(255,255,255,.13) 100%),
-    url('./assets/hero_forest_cover.webp') center right/cover no-repeat!important;
-}
-#forestFactText{
-  display:block!important;
-  max-width:520px!important;
-  min-height:38px!important;
-  margin-top:8px!important;
-  color:#315347!important;
-  font-weight:850!important;
-  line-height:1.35!important;
-  transition:opacity .22s ease, transform .22s ease!important;
-}
-#forestFactText.fact-changing{
-  opacity:.25!important;
-  transform:translateY(2px)!important;
-}
-.bottom-nav{
-  left:50%!important;
-  right:auto!important;
-  width:min(760px, calc(100vw - 24px))!important;
-  max-width:min(760px, calc(100vw - 24px))!important;
-  transform:translateX(-50%)!important;
-}
-@media (max-width:599px){
-  #app.app{max-width:100%!important;box-shadow:none!important;}
-  #forestFactText{font-size:12px!important;max-width:230px!important;min-height:34px!important;}
-}
-@media (min-width:600px){
-  #app.app{max-width:min(980px, calc(100vw - 32px))!important;}
-  #app.app .hero-card{min-height:180px!important;padding:22px!important;}
-  #app.app .hero-card h1{font-size:38px!important;}
-  #forestFactText{font-size:17px!important;max-width:470px!important;}
-  #app.app .status-card{grid-template-columns:1fr 1fr!important;gap:16px!important;}
-  #app.app .summary-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;}
-  #app.app .summary-grid.small,
-  #app.app .product-totals,
-  #app.app .grid.two,
-  #app.app .measure-grid,
-  #app.app .product-grid,
-  #app.app .action-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;}
-  #app.app .quick-grid{grid-template-columns:repeat(5,minmax(0,1fr))!important;}
-}
-@media (min-width:820px){
-  #app.app{max-width:min(1120px, calc(100vw - 44px))!important;}
-  #app.app .topbar{margin-left:calc(clamp(10px, 2vw, 24px) * -1)!important;margin-right:calc(clamp(10px, 2vw, 24px) * -1)!important;}
-  #app.app .hero-card{min-height:210px!important;}
-  #app.app .hero-card h1{font-size:46px!important;}
-  #forestFactText{font-size:20px!important;max-width:620px!important;min-height:56px!important;}
-  #app.app .entry-form.card{max-width:980px!important;margin-left:auto!important;margin-right:auto!important;}
-  #app.app .barcode-save{grid-template-columns:minmax(0,1fr) 200px!important;}
-  #app.app .record-toolbar,#app.app .record-select-actions{display:flex!important;flex-wrap:wrap!important;gap:10px!important;align-items:center!important;}
-  #app.app .record-toolbar input{flex:1 1 360px!important;}
-}
-@media (min-width:1100px){
-  #app.app{max-width:min(1320px, calc(100vw - 56px))!important;}
-  #app.app .hero-card{min-height:240px!important;}
-  #app.app .hero-card h1{font-size:56px!important;}
-  #forestFactText{font-size:22px!important;max-width:720px!important;}
-  #app.app .product-totals{grid-template-columns:repeat(3,minmax(0,1fr))!important;}
-}
-</style>
-<script id="mesaha-v359-forest-facts-rotator">
+
+
 (function(){
   const FACTS = ["Dünya kara alanının yaklaşık %31’i ormanlarla kaplıdır.", "Dünyada yaklaşık 4,06 milyar hektar orman alanı bulunur.", "Dünya orman alanı kişi başına yaklaşık 5.000 m²’ye denk gelir.", "Ormanların yaklaşık yarısı görece bozulmamış doğal yapıdadır.", "Dünya ormanlarının üçte birinden fazlası birincil ormandır.", "Dünya ormanlarının yarısından fazlası sadece 5 ülkede bulunur.", "Dünya ormanlarının yaklaşık %66’sı sadece 10 ülkede yer alır.", "Rusya, Brezilya, Kanada, ABD ve Çin en büyük orman alanlarına sahip ülkelerdendir.", "1990’dan beri yaklaşık 420 milyon hektar orman başka kullanımlara dönüştürüldü.", "2015-2020 arasında yıllık ormansızlaşma yaklaşık 10 milyon hektar oldu.", "1990’larda yıllık ormansızlaşma yaklaşık 16 milyon hektardı.", "Birincil orman alanı 1990’dan bu yana 80 milyon hektardan fazla azaldı.", "Tarımsal genişleme, ormansızlaşmanın ana nedenlerinden biridir.", "2000-2010’da tropikal ormansızlaşmanın yaklaşık %40’ı büyük ölçekli tarımdan geldi.", "2000-2010’da tropikal ormansızlaşmanın yaklaşık %33’ü geçimlik tarımdan kaynaklandı.", "Dünyada bilimsel olarak kaydedilmiş 60 binden fazla ağaç türü vardır.", "Ağaç türlerinin yaklaşık %45’i yalnızca 10 bitki ailesinde toplanır.", "Ağaç türlerinin yaklaşık %58’i sadece tek bir ülkede doğal olarak bulunur.", "2019’da 20 binden fazla ağaç türü IUCN Kırmızı Listesi’nde yer aldı.", "Kırmızı Liste’deki ağaç türlerinin 8 binden fazlası küresel ölçekte tehdit altındadır.", "1.400’den fazla ağaç türü kritik tehlike altında kabul edilir.", "Dünyada yaklaşık 392 bin damarlı bitki türü bilimce tanınır.", "Damarlı bitkilerin yaklaşık %94’ü çiçekli bitkilerdir.", "Bilinen damarlı bitkilerin yaklaşık %21’i yok olma tehdidi altındadır.", "Tropikal ormanlar, damarlı bitkilerin büyük bölümüne yaşam alanı sağlar.", "Bilimce adlandırılmış yaklaşık 144 bin mantar türü vardır.", "Mantar türlerinin büyük kısmının hâlâ bilimce tanımlanmadığı tahmin edilir.", "Toplam mantar türü sayısının 2,2 ile 3,8 milyon arasında olabileceği düşünülür.", "Dünyada yaklaşık 70 bin omurgalı türü tanımlanmıştır.", "Ormanlar yaklaşık 5 bin amfibi türüne yaşam alanı sağlar.", "Ormanlar yaklaşık 7.500 kuş türü için yaşam alanıdır.", "Ormanlar 3.700’den fazla memeli türüne ev sahipliği yapar.", "Ormanlar sadece ağaç değil; bitki, hayvan, mantar ve mikroorganizma sistemidir.", "Toprak mikropları, orman döngüsünün görünmeyen çalışanlarıdır.", "Tozlayıcı böcekler ve kuşlar, orman yenilenmesinde önemli rol oynar.", "Mangrov ormanları birçok balık ve deniz canlısı için üreme alanıdır.", "Ormanlar dünya genelinde 86 milyondan fazla yeşil işe katkı sağlar.", "Yaklaşık 880 milyon insan yakacak odun veya odun kömürü toplama işiyle ilişkilidir.", "Aşırı yoksulluk içinde yaşayan birçok insan geçiminin bir kısmında ormanlara bağlıdır.", "Korunan alanlara yılda yaklaşık 8 milyar ziyaret yapıldığı tahmin edilir.", "Yerel ve yerli halkların yönettiği alanlar, dünyanın kara alanının yaklaşık %28’ini kapsar.", "Dünya orman alanının yaklaşık %18’i yasal koruma statüsündedir.", "Korunan orman alanı dünya genelinde 700 milyon hektardan fazladır.", "Güney Amerika’da korunan orman oranı yaklaşık %31’dir.", "Avrupa’da korunan orman oranı yaklaşık %5 olarak verilir.", "2015’te tropikal yağmur ormanlarının %30’dan fazlası korunan alan içindeydi.", "Bazı boreal ve step orman tiplerinde koruma oranı %10’un altındadır.", "Bonn Challenge kapsamında 170 milyon hektar bozulmuş alanın onarımı taahhüt edilmiştir.", "Orman restorasyonu doğru yapılırsa yaşam alanlarını ve yerel geçimi destekler.", "Ormanlar karbon, su ve besin döngülerinin temel parçalarındandır.", "Orman toprağı suyu tutarak yer altı sularının beslenmesine yardım eder.", "Ağaç kökleri toprağı tutar ve erozyon riskini azaltır.", "Yaşlı ormanlar karbon depolama açısından çok değerli doğal alanlardır.", "Genç ormanlar hızlı büyür; olgun ormanlar ekosisteme denge katar.", "Orman yangınlarında küçük bir kıvılcım geniş alanları etkileyebilir.", "Bir olgun ağaç, yıllık oksijen üretimiyle yaklaşık iki kişinin ihtiyacına katkı sağlayabilir.", "Bir olgun ağaç yılda yaklaşık 50 pound karbondioksiti bağlayabilir.", "Şehir çevresindeki ağaçlar gölge sağlayarak sıcaklık etkisini azaltır.", "Ormanların korunması; suyu, toprağı, havayı ve canlı çeşitliliğini korur.", "Her doğru ölçüm, ormanın gelecekteki planlamasına katkı sağlar."];
   function pickTextBox(){
@@ -5221,8 +4176,8 @@ input,select,textarea{background:#fff!important;color:#101828!important;border-c
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, {once:true});
   else boot();
 })();
-</script>
-<script id="mesaha-v361-user-greeting-final">
+
+
 (function(){
   'use strict';
   var PANEL_KEY='mesaha_panel_user_v316', SETTINGS_KEY='cam_mesaha_ayarlar_v1';
@@ -5240,15 +4195,8 @@ input,select,textarea{background:#fff!important;color:#101828!important;border-c
   [50,150,400,900,1600,3000,5000].forEach(function(ms){setTimeout(apply,ms)});
   window.addEventListener('storage',apply); document.addEventListener('visibilitychange',function(){if(!document.hidden)apply();},{passive:true});
 })();
-</script>
-<style id="mesaha-v365-network-status-final">
-#netStatusCard.net-online .status-icon,#netStatusCard.net-online #netIcon{background:#dcfce7!important;color:#166534!important;}
-#netStatusCard.net-offline .status-icon,#netStatusCard.net-offline #netIcon{background:#fee2e2!important;color:#991b1b!important;}
-#netStatusCard.net-checking .status-icon,#netStatusCard.net-checking #netIcon{background:#fef3c7!important;color:#92400e!important;}
-#netStatusCard #netSubText{font-weight:760!important;}
-body.mesaha-offline .online-only{opacity:.55!important;filter:grayscale(.25)!important;}
-</style>
-<script id="mesaha-v365-network-status-final-2">
+
+
 (function(){
   'use strict';
   var seq=0, lastMode='';
@@ -5294,33 +4242,8 @@ body.mesaha-offline .online-only{opacity:.55!important;filter:grayscale(.25)!imp
   window.mesahaNetworkPingV365=ping;
   window.mesahaNetworkStatusV365=function(){return lastMode;};
 })();
-</script>
-<style id="mesaha-v366-terminal-save-fix">
-/* v366: el terminali Chrome/WebView dokunma uyumu */
-#saveBtn,
-.save-btn{
-  pointer-events:auto!important;
-  touch-action:manipulation!important;
-  -webkit-tap-highlight-color:rgba(22,163,74,.18)!important;
-  user-select:none!important;
-  -webkit-user-select:none!important;
-}
-body.keyboard-open-v311.entry-open #saveBtn,
-body.keyboard-open-v311.entry-open .save-btn,
-body.keyboard-open-v311 .entry-view.active #saveBtn,
-body.keyboard-open-v311 .entry-view.active .save-btn{
-  z-index:2147483000!important;
-  pointer-events:auto!important;
-  touch-action:manipulation!important;
-  transform:translateZ(0)!important;
-  will-change:transform!important;
-}
-body.keyboard-open-v311 .entry-view.active .barcode-save{
-  position:relative!important;
-  z-index:2147482000!important;
-}
-</style>
-<script id="mesaha-v366-terminal-save-fix-2">
+
+
 (function(){
   'use strict';
 
@@ -5447,51 +4370,8 @@ body.keyboard-open-v311 .entry-view.active .barcode-save{
 
   window.mesahaTerminalSaveFixV366 = {bind:bind, run:runSave};
 })();
-</script>
-<style id="mesaha-v368-terminal-home-scroll-perf">
-html.mesaha-terminal-lite,
-html.mesaha-terminal-lite body{scroll-behavior:auto!important}
-html.mesaha-terminal-lite body,
-html.mesaha-terminal-lite .app{overscroll-behavior-y:contain!important}
-html.mesaha-terminal-lite .hero-card,
-html.mesaha-terminal-lite .status-card,
-html.mesaha-terminal-lite .status-item,
-html.mesaha-terminal-lite .card,
-html.mesaha-terminal-lite .summary-card,
-html.mesaha-terminal-lite .recent-box,
-html.mesaha-terminal-lite .prod-total,
-html.mesaha-terminal-lite .record-card,
-html.mesaha-terminal-lite .bottom-nav,
-html.mesaha-terminal-lite .topbar{
-  box-shadow:none!important;
-  -webkit-backdrop-filter:none!important;
-  backdrop-filter:none!important;
-  transform:none!important;
-  will-change:auto!important;
-}
-html.mesaha-terminal-lite .hero-card{background-attachment:scroll!important}
-html.mesaha-terminal-lite .hero-card::before,
-html.mesaha-terminal-lite .hero-card::after,
-html.mesaha-terminal-lite .status-icon::before,
-html.mesaha-terminal-lite .flash::before{
-  animation:none!important;
-  transition:none!important;
-}
-html.mesaha-terminal-lite .hero-fact,
-html.mesaha-terminal-lite #heroFact,
-html.mesaha-terminal-lite .hero-quote{transition:none!important}
-html.mesaha-terminal-lite .view.active{contain:layout paint!important}
-html.mesaha-terminal-lite .bottom-nav{
-  position:sticky!important;
-  bottom:8px!important;
-}
-html.mesaha-terminal-lite.scrolling-now .bottom-nav,
-html.mesaha-terminal-lite.scrolling-now .topbar{pointer-events:none!important}
-@media (pointer:coarse) and (max-width:900px){
-  html.mesaha-terminal-lite .app{padding-bottom:96px!important}
-}
-</style>
-<script id="mesaha-v368-terminal-home-scroll-perf-2">
+
+
 (function(){
   'use strict';
   var ua=navigator.userAgent||'';
@@ -5529,49 +4409,8 @@ html.mesaha-terminal-lite.scrolling-now .topbar{pointer-events:none!important}
     active:function(){return document.documentElement.classList.contains('mesaha-terminal-lite')}
   };
 })();
-</script>
-<style id="mesaha-v370-bottom-nav-force">
-/* v370: terminal hafif modda kaybolan alt menüyü tekrar sabit ve görünür yap */
-.bottom-nav,
-html.mesaha-terminal-lite .bottom-nav,
-body.keyboard-open-v311.entry-open .bottom-nav,
-body.keyboard-open-v311 .entry-view.active ~ .bottom-nav{
-  display:grid!important;
-  visibility:visible!important;
-  opacity:1!important;
-  position:fixed!important;
-  left:50%!important;
-  right:auto!important;
-  bottom:calc(env(safe-area-inset-bottom,0px) + 8px)!important;
-  width:min(460px, calc(100vw - 18px))!important;
-  max-width:calc(100vw - 18px)!important;
-  transform:translateX(-50%)!important;
-  z-index:2147482500!important;
-  pointer-events:auto!important;
-  touch-action:manipulation!important;
-}
-html.mesaha-terminal-lite.scrolling-now .bottom-nav,
-html.mesaha-terminal-lite.scrolling-now .topbar{
-  pointer-events:auto!important;
-}
-.app{
-  padding-bottom:132px!important;
-}
-@media(min-width:620px){
-  .bottom-nav,
-  html.mesaha-terminal-lite .bottom-nav{
-    width:min(520px, calc(100vw - 22px))!important;
-  }
-}
-@media(max-width:430px){
-  .bottom-nav,
-  html.mesaha-terminal-lite .bottom-nav{
-    width:calc(100vw - 16px)!important;
-    bottom:calc(env(safe-area-inset-bottom,0px) + 6px)!important;
-  }
-}
-</style>
-<script id="mesaha-v370-bottom-nav-watch">
+
+
 (function(){
   'use strict';
   function fix(){
@@ -5589,60 +4428,8 @@ html.mesaha-terminal-lite.scrolling-now .topbar{
   window.addEventListener('resize',fix,{passive:true});
   window.addEventListener('orientationchange',function(){setTimeout(fix,250)},{passive:true});
 })();
-</script>
-<style id="mesaha-local-4">
-/* v371: terminal Chrome/WebView doğal kaydırma düzeltmesi */
-html,
-body{
-  height:auto!important;
-  min-height:100%!important;
-  overflow-x:hidden!important;
-  overflow-y:auto!important;
-  touch-action:pan-y!important;
-  -webkit-overflow-scrolling:touch!important;
-  overscroll-behavior-y:auto!important;
-}
-.app,
-.view,
-.view.active,
-#homeView,
-#entryView,
-#recordsView,
-#guideView,
-#settingsView{
-  overflow:visible!important;
-  touch-action:pan-y!important;
-  -webkit-overflow-scrolling:touch!important;
-  overscroll-behavior-y:auto!important;
-  contain:none!important;
-}
-html.mesaha-terminal-lite body,
-html.mesaha-terminal-lite .app,
-html.mesaha-terminal-lite .view.active{
-  overscroll-behavior-y:auto!important;
-  contain:none!important;
-}
-html.mesaha-terminal-lite .bottom-nav,
-.bottom-nav{
-  position:fixed!important;
-  touch-action:manipulation!important;
-}
-html.mesaha-terminal-lite.scrolling-now .bottom-nav,
-html.mesaha-terminal-lite.scrolling-now .topbar{
-  pointer-events:auto!important;
-}
-.panel-overlay.hidden,
-.modal:not(.show),
-#userPanelOverlayV316.hidden,
-#cloudRestoreOverlayV316.hidden{
-  display:none!important;
-  pointer-events:none!important;
-}
-body.scroll-fixing-v371 *{
-  scroll-behavior:auto!important;
-}
-</style>
-<script id="mesaha-local-5">
+
+
 (function(){
   'use strict';
 
@@ -5722,76 +4509,8 @@ body.scroll-fixing-v371 *{
 
   window.mesahaScrollFixV371={fix:fixScroll};
 })();
-</script>
-<style id="mesaha-local-6">
-/* v372: Mesaha girme ekranında klavye açılınca alt menü klavyenin üstüne çıkmasın */
-body.entry-open.keyboard-open-v311 .bottom-nav,
-body.mesaha-entry-keyboard-open .bottom-nav,
-html.mesaha-entry-keyboard-open .bottom-nav{
-  display:none!important;
-  visibility:hidden!important;
-  opacity:0!important;
-  pointer-events:none!important;
-}
 
-/* Klavye açıkken Kaydet butonu her cihazda görünen alanın altında sabit kalsın */
-body.entry-open.keyboard-open-v311 #saveBtn,
-body.entry-open.keyboard-open-v311 .entry-view.active .save-btn,
-body.mesaha-entry-keyboard-open #saveBtn,
-body.mesaha-entry-keyboard-open .entry-view.active .save-btn,
-html.mesaha-entry-keyboard-open #saveBtn{
-  display:inline-flex!important;
-  align-items:center!important;
-  justify-content:center!important;
-  position:fixed!important;
-  right:12px!important;
-  bottom:calc(var(--mesaha-kb-bottom-v372, 0px) + env(safe-area-inset-bottom,0px) + 10px)!important;
-  width:148px!important;
-  min-height:58px!important;
-  border-radius:22px!important;
-  z-index:2147483200!important;
-  visibility:visible!important;
-  opacity:1!important;
-  pointer-events:auto!important;
-  touch-action:manipulation!important;
-  transform:translateZ(0)!important;
-  box-shadow:0 18px 42px rgba(22,163,74,.42)!important;
-}
 
-/* Kaydet butonu sabitlenince barkod satırı altında boşluk bırak */
-body.entry-open.keyboard-open-v311 .barcode-save,
-body.mesaha-entry-keyboard-open .barcode-save{
-  padding-bottom:78px!important;
-}
-
-/* Ürün butonlarına basınca terminal Chrome sayfayı yukarı zıplatmasın */
-.entry-view.active .product-grid,
-.entry-view.active .product-btn,
-.entry-view.active #productButtons,
-.entry-view.active #productButtons button{
-  touch-action:manipulation!important;
-  -webkit-tap-highlight-color:rgba(22,163,74,.14)!important;
-  scroll-margin-top:0!important;
-  scroll-margin-bottom:0!important;
-}
-body.product-tap-lock-v372{
-  scroll-behavior:auto!important;
-  overflow-anchor:none!important;
-}
-body.product-tap-lock-v372 .entry-view.active{
-  overflow-anchor:none!important;
-}
-@media(max-width:430px){
-  body.entry-open.keyboard-open-v311 #saveBtn,
-  body.mesaha-entry-keyboard-open #saveBtn{
-    right:10px!important;
-    width:126px!important;
-    min-height:56px!important;
-    font-size:18px!important;
-  }
-}
-</style>
-<script id="mesaha-local-7">
 (function(){
   'use strict';
 
@@ -5933,8 +4652,8 @@ body.product-tap-lock-v372 .entry-view.active{
     restoreProductScroll:protectProductTap
   };
 })();
-</script>
-<script id="mesaha-v373-entry-memory-backup-cutters">
+
+
 (function(){
   'use strict';
   var KEY = 'mesaha_entry_memory_v373';
@@ -6168,58 +4887,10 @@ body.product-tap-lock-v372 .entry-view.active{
     backupNow:downloadJsonBackup
   };
 })();
-</script>
-<script src="./js/mesaha-render-storage.js"></script>
-<script id="mesaha-sound-engine-v377" src="./js/mesaha-sound.js"></script>
-<style id="mesaha-v389-xls-button-strong-hotfix">
-/* v389: Sadece Mesaha Dosyasını İndir butonu belirginleştirildi. Diğer akışlara dokunmaz. */
-#downloadXlsBtn{
-  grid-column:1/-1!important;
-  min-height:64px!important;
-  border-radius:22px!important;
-  background:linear-gradient(135deg,#1d4ed8 0%,#2563eb 48%,#0f766e 100%)!important;
-  border:2px solid #1e40af!important;
-  color:#fff!important;
-  font-size:18px!important;
-  font-weight:950!important;
-  letter-spacing:.15px!important;
-  box-shadow:0 18px 36px rgba(37,99,235,.30), inset 0 1px 0 rgba(255,255,255,.28)!important;
-  text-shadow:0 1px 1px rgba(15,23,42,.18)!important;
-}
-#downloadXlsBtn::before{
-  content:"⬇";
-  display:inline-grid;
-  place-items:center;
-  width:30px;
-  height:30px;
-  margin-right:10px;
-  border-radius:999px;
-  background:rgba(255,255,255,.18);
-  border:1px solid rgba(255,255,255,.28);
-  font-size:17px;
-  line-height:1;
-}
-#downloadXlsBtn:active{
-  transform:translateY(1px)!important;
-  box-shadow:0 10px 22px rgba(37,99,235,.24)!important;
-}
-@media(max-width:620px){
-  #downloadXlsBtn{min-height:62px!important;font-size:17px!important;border-radius:20px!important;}
-  #downloadXlsBtn::before{width:28px;height:28px;margin-right:8px;font-size:16px;}
-}
-</style>
-<style id="mesaha-v392-panel-guide-video-style">
-/* v392: kullanıcı paneli alt menü çakışması, güncelleme notları, kılavuz/video linkleri */
-body.mesaha-panel-open-v392 .bottom-nav{display:none!important;opacity:0!important;pointer-events:none!important;}
-.panel-overlay-v316{z-index:2147483400!important;padding:14px 14px calc(18px + env(safe-area-inset-bottom,0px))!important;}
-.panel-card-v316{max-height:calc(100vh - 34px - env(safe-area-inset-bottom,0px))!important;padding-bottom:calc(28px + env(safe-area-inset-bottom,0px))!important;scroll-padding-bottom:120px!important;}
-.panel-section-v316:last-child{margin-bottom:calc(22px + env(safe-area-inset-bottom,0px))!important;}
-a.guide-link-v392,.orbis-video-link-v392{color:#1d4ed8!important;font-weight:950;text-decoration:none;border-bottom:1px solid rgba(29,78,216,.35);}
-a.video-link-v392,.orbis-video-link-v392{display:inline-flex;align-items:center;gap:6px;border:1px solid #fecaca!important;background:#fff1f2;color:#be123c!important;border-radius:999px;padding:7px 10px;margin-top:6px;text-decoration:none!important;}
-.orbis-video-note-v392{margin-top:10px;border:1px solid #fecaca;background:#fff1f2;border-radius:14px;padding:10px;color:#7f1d1d;font-weight:850;}
-@media(max-width:520px){.panel-card-v316{width:100%!important;border-radius:24px 24px 20px 20px!important;}}
-</style>
-<script id="mesaha-inline-v392-panel-guide-video-hotfix">
+
+
+
+
 (function(){
   if(window.__mesahaV392PanelGuideVideoHotfix) return;
   window.__mesahaV392PanelGuideVideoHotfix = true;
@@ -6273,12 +4944,8 @@ a.video-link-v392,.orbis-video-link-v392{display:inline-flex;align-items:center;
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true}); else boot();
   [300,1000,2500].forEach(function(ms){setTimeout(boot,ms)});
 })();
-</script>
-<style id="mesaha-v392-orbis-beyan-export-style">
-/* v392: ORBİS uyumlu beyan/özet ve güvenli Excel indirme düzeltmesi */
-.export-scope-info.orbis-v392{background:#eef6ff!important;border-color:#93c5fd!important;color:#1d4ed8!important;}
-</style>
-<script id="mesaha-inline-local">
+
+
 /* v392: Silinen kayıt Excel'e gitmesin + Beyan/Özet ORBİS yuvarlama mantığı */
 (function(){
   'use strict';
@@ -6399,33 +5066,8 @@ a.video-link-v392,.orbis-video-link-v392{display:inline-flex;align-items:center;
   [80,350,900,1800,3200].forEach(ms=>setTimeout(boot,ms));
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
-</script>
-<style id="mesaha-v394-video-links-final-style">
-/* v393: kullanıcı paneli kapatma tuşu + sade güncelleme notları */
-.panel-close-v316{
-  width:46px!important;height:46px!important;min-width:46px!important;min-height:46px!important;
-  display:inline-flex!important;align-items:center!important;justify-content:center!important;
-  border-radius:16px!important;border:1px solid #fecaca!important;background:#fff1f2!important;
-  color:#991b1b!important;font-size:28px!important;font-weight:950!important;line-height:1!important;
-  box-shadow:0 8px 18px rgba(153,27,27,.12)!important;opacity:1!important;visibility:visible!important;pointer-events:auto!important;
-}
-.panel-close-v393-inline{
-  display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:7px!important;
-  border:1px solid #fecaca!important;background:#fff1f2!important;color:#991b1b!important;
-  border-radius:16px!important;padding:10px 13px!important;font-weight:950!important;font-size:14px!important;
-  box-shadow:0 8px 18px rgba(153,27,27,.10)!important;
-}
-.panel-floating-close-v393{
-  position:fixed!important;right:14px!important;bottom:calc(14px + env(safe-area-inset-bottom,0px))!important;
-  z-index:2147483646!important;display:none!important;align-items:center!important;justify-content:center!important;gap:8px!important;
-  border:1px solid #fecaca!important;background:#dc2626!important;color:#fff!important;border-radius:999px!important;
-  padding:12px 16px!important;font-weight:950!important;font-size:15px!important;box-shadow:0 16px 36px rgba(220,38,38,.32)!important;
-}
-body.mesaha-user-panel-open-v393 .panel-floating-close-v393{display:inline-flex!important;}
-body.mesaha-user-panel-open-v393 .panel-card-v316{padding-bottom:calc(86px + env(safe-area-inset-bottom,0px))!important;}
-@media(max-width:520px){.panel-title-v316 h2{font-size:18px!important}.panel-floating-close-v393{left:14px!important;right:14px!important;width:auto!important;}}
-</style>
-<script id="mesaha-inline-v394-video-links-final-hotfix">
+
+
 (function(){
   'use strict';
   if(window.__mesahaV393UserPanelCloseNotesFinalHotfix) return;
@@ -6483,13 +5125,8 @@ body.mesaha-user-panel-open-v393 .panel-card-v316{padding-bottom:calc(86px + env
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true}); else boot();
   [250,900,1800].forEach(function(ms){setTimeout(boot,ms)});
 })();
-</script>
-<style id="mesaha-v394-video-links-hotfix-style">
-/* v394: kılavuz video linkleri */
-.app-video-guide-v394{border-color:#bbf7d0!important;background:linear-gradient(135deg,#f0fdf4,#ffffff)!important;}
-.app-video-link-v394{background:#ecfdf5!important;border-color:#bbf7d0!important;color:#047857!important;}
-</style>
-<script id="mesaha-inline-v394-video-links-hotfix">
+
+
 (function(){
   if(window.__mesahaV394VideoLinksHotfix) return;
   window.__mesahaV394VideoLinksHotfix = true;
@@ -6524,59 +5161,8 @@ body.mesaha-user-panel-open-v393 .panel-card-v316{padding-bottom:calc(86px + env
   document.addEventListener('DOMContentLoaded', run);
   run(); setTimeout(run,300); setTimeout(run,1200);
 })();
-</script>
-<style id="mesaha-v395-mobile-panel-scroll-zoom-style">
-/* v395: mobil kullanıcı paneli scroll kilidi + input zoom düzeltmesi */
-html.mesaha-scroll-lock-v395,
-body.mesaha-scroll-lock-v395{
-  overflow:hidden!important;
-  overscroll-behavior:none!important;
-  touch-action:auto!important;
-}
-body.mesaha-scroll-lock-v395{
-  position:fixed!important;
-  left:0!important;right:0!important;
-  width:100%!important;
-}
-body.mesaha-user-panel-open-v395 .panel-overlay-v316,
-body.mesaha-cloud-panel-open-v395 .panel-overlay-v316{
-  position:fixed!important;
-  inset:0!important;
-  overflow:hidden!important;
-  overscroll-behavior:none!important;
-  touch-action:auto!important;
-  -webkit-overflow-scrolling:auto!important;
-}
-body.mesaha-user-panel-open-v395 #userPanelOverlayV316:not(.hidden),
-body.mesaha-cloud-panel-open-v395 #cloudRestoreOverlayV316:not(.hidden){
-  display:flex!important;
-}
-body.mesaha-user-panel-open-v395 #userPanelOverlayV316 .panel-card-v316,
-body.mesaha-cloud-panel-open-v395 #cloudRestoreOverlayV316 .panel-card-v316{
-  max-height:calc(100dvh - 22px)!important;
-  overflow-y:auto!important;
-  overflow-x:hidden!important;
-  overscroll-behavior:contain!important;
-  -webkit-overflow-scrolling:touch!important;
-  touch-action:pan-y!important;
-}
-#userPanelOverlayV316 input,
-#userPanelOverlayV316 textarea,
-#userPanelOverlayV316 select,
-#cloudRestoreOverlayV316 input,
-#cloudRestoreOverlayV316 textarea,
-#cloudRestoreOverlayV316 select,
-.app input,.app textarea,.app select,
-input[type="text"],input[type="number"],input[type="search"],textarea,select{
-  font-size:16px!important;
-  line-height:1.35!important;
-}
-@supports (-webkit-touch-callout:none){
-  #userPanelOverlayV316 input,#userPanelOverlayV316 textarea,#userPanelOverlayV316 select,
-  input,textarea,select{font-size:16px!important;}
-}
-</style>
-<script id="mesaha-inline-v395-mobile-panel-scroll-zoom-hotfix">
+
+
 (function(){
   'use strict';
   if(window.__mesahaV395MobilePanelScrollZoomHotfix) return;
@@ -6666,31 +5252,8 @@ input[type="text"],input[type="number"],input[type="search"],textarea,select{
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true}); else boot();
   [200,800,1600].forEach(function(ms){setTimeout(boot,ms);});
 })();
-</script>
-<style id="mesaha-v399-mobile-scroll-final-guard">
-/* v399: panel içi kaydırma serbest, arka sayfa sabit */
-html.mesaha-scroll-lock-v395,body.mesaha-scroll-lock-v395{touch-action:auto!important;}
-body.mesaha-scroll-lock-v395{height:100dvh!important;overflow:hidden!important;}
-body.mesaha-user-panel-open-v395 #userPanelOverlayV316 .panel-card-v316,
-body.mesaha-cloud-panel-open-v395 #cloudRestoreOverlayV316 .panel-card-v316{touch-action:pan-y!important;overscroll-behavior:contain!important;-webkit-overflow-scrolling:touch!important;}
-body.mesaha-user-panel-open-v395 #userPanelOverlayV316:not(.hidden),
-body.mesaha-cloud-panel-open-v395 #cloudRestoreOverlayV316:not(.hidden){touch-action:auto!important;}
-</style>
-<style id="mesaha-v406-cutter-manager-style">
-/* v406: Kesimci yönetimi - düzenle/sil butonları ve kayıt varken silme koruması */
-#entryView #cutterChips.cutter-manager-v406{display:flex!important;flex-wrap:nowrap!important;gap:8px!important;overflow-x:auto!important;overflow-y:hidden!important;-webkit-overflow-scrolling:touch!important;padding:2px 2px 6px!important;scrollbar-width:none!important;align-items:stretch!important}
-#entryView #cutterChips.cutter-manager-v406::-webkit-scrollbar{display:none!important}
-.cutter-chip-v406{flex:0 0 auto!important;display:inline-grid!important;grid-template-columns:auto auto auto!important;align-items:center!important;gap:4px!important;border:1px solid #dbe7e1!important;border-radius:999px!important;background:#fff!important;padding:4px!important;box-shadow:0 7px 16px rgba(15,23,42,.055)!important;min-height:42px!important}
-.cutter-chip-v406.active{background:#dcfce7!important;border-color:#8adea7!important;box-shadow:0 8px 20px rgba(22,163,74,.12)!important}
-.cutter-name-v406,.cutter-edit-v406,.cutter-delete-v406{border:0!important;border-radius:999px!important;min-height:32px!important;padding:7px 10px!important;font-weight:950!important;font-size:12px!important;line-height:1!important;white-space:nowrap!important}
-.cutter-name-v406{background:transparent!important;color:#12372a!important;max-width:160px!important;overflow:hidden!important;text-overflow:ellipsis!important}
-.cutter-edit-v406{background:#eff6ff!important;color:#1d4ed8!important;border:1px solid #bfdbfe!important}
-.cutter-delete-v406{background:#fff1f2!important;color:#be123c!important;border:1px solid #fecdd3!important}
-.cutter-none-v406{flex:0 0 auto!important;border:1px solid #dbe7e1!important;border-radius:999px!important;background:#fff!important;color:#334155!important;min-height:42px!important;padding:9px 13px!important;font-weight:950!important;white-space:nowrap!important}
-.cutter-none-v406.active{background:#dcfce7!important;color:#166534!important;border-color:#86efac!important}
-@media(max-width:430px){.cutter-name-v406{max-width:120px!important}.cutter-edit-v406,.cutter-delete-v406{padding:7px 8px!important;font-size:11px!important}.cutter-chip-v406{gap:3px!important}}
-</style>
-<script id="mesaha-v406-cutter-manager">
+
+
 (function(){
   'use strict';
   var rendering=false, timer=0;
@@ -6807,8 +5370,8 @@ body.mesaha-cloud-panel-open-v395 #cloudRestoreOverlayV316:not(.hidden){touch-ac
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
-</script>
-<script id="mesaha-inline-v406-filter-select-cutter-transfer">
+
+
 /* v406: Ölçümlerde filtreye göre tümünü seç + seçili kayıtları kesimciye aktar */
 (function(){
   'use strict';
@@ -6950,8 +5513,8 @@ body.mesaha-cloud-panel-open-v395 #cloudRestoreOverlayV316:not(.hidden){touch-ac
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
   try{window.MesahaBulkCutterTransferV406={render:ensureUi,transfer:transferSelected,populate:populateCutterSelect}}catch(e){}
 })();
-</script>
-<script id="mesaha-inline-v407-cutter-guard">
+
+
 (function(){
   'use strict';
   if(window.__mesahaV407CutterGuard) return;
@@ -6998,43 +5561,8 @@ body.mesaha-cloud-panel-open-v395 #cloudRestoreOverlayV316:not(.hidden){touch-ac
   var p=$('userPanelOverlayV316'); if(p&&window.MutationObserver&&!p.__v407NotesWatch){p.__v407NotesWatch=true; new MutationObserver(function(){setTimeout(renderNotes,60);}).observe(p,{attributes:true,attributeFilter:['class'],childList:true,subtree:true});}
   setInterval(function(){ if(!document.hidden && !(document.body&&document.body.classList.contains('entry-open'))) cleanDeletedCutters(); },30000);
 })();
-</script>
-<style id="mesaha-v408-entry-save-scroll-tap-guard-style">
-/* V3.93: Mesaha Gir ekranında kayıt sonrası zıplama ve kaydırma-tıklama çakışması önlendi */
-#entryView.entry-view,
-body.entry-open #entryView{
-  overflow-anchor:none!important;
-  overscroll-behavior-y:contain!important;
-  -webkit-overflow-scrolling:touch!important;
-}
-body.mesaha-entry-saving-v408,
-html.mesaha-entry-saving-v408{
-  scroll-behavior:auto!important;
-  overflow-anchor:none!important;
-}
-body.mesaha-entry-scrolling-v408 #entryView button,
-body.mesaha-entry-scrolling-v408 #entryView .chip,
-body.mesaha-entry-scrolling-v408 #entryView .filter-chip,
-body.mesaha-entry-scrolling-v408 #entryView .tree-option,
-body.mesaha-entry-scrolling-v408 #entryView .recent-item,
-body.mesaha-entry-scrolling-v408 #entryView label{
-  -webkit-tap-highlight-color:transparent!important;
-}
-#entryView button,
-#entryView .product-btn,
-#entryView .chip,
-#entryView .tree-option,
-#entryView .recent-item{
-  touch-action:manipulation!important;
-}
-#entryView .entry-form,
-#entryView .card,
-#entryView .measure-grid,
-#entryView .product-grid{
-  overflow-anchor:none!important;
-}
-</style>
-<script id="mesaha-v408-entry-save-scroll-tap-guard">
+
+
 (function(){
   'use strict';
   if(window.__mesahaEntrySaveScrollTapGuardV408) return;
@@ -7242,60 +5770,8 @@ body.mesaha-entry-scrolling-v408 #entryView label{
   window.addEventListener('pageshow',function(){setTimeout(boot,80);});
   window.MesahaEntryScrollTapGuardV408={sync:syncVersion,wrap:wrapSaveEntry,beginSaveGuard:beginSaveGuard};
 })();
-</script>
-<style id="mesaha-v409-cutter-static-save-fix-style">
-/* V3.94: Mesaha Gir - Kesimci seçilmedi alanı sabit; Kaydet sırasında zıplama yok */
-#entryView #cutterChips,
-#entryView #cutterChips.cutter-manager-v406{
-  min-height:50px!important;
-  align-items:center!important;
-  contain:layout paint!important;
-}
-#entryView #cutterChips .cutter-none-v406,
-#entryView #cutterChips .chip[data-cutter=""]{
-  width:150px!important;
-  min-width:150px!important;
-  max-width:150px!important;
-  height:42px!important;
-  min-height:42px!important;
-  max-height:42px!important;
-  padding:0 12px!important;
-  box-sizing:border-box!important;
-  display:inline-flex!important;
-  align-items:center!important;
-  justify-content:center!important;
-  flex:0 0 150px!important;
-  line-height:1!important;
-  font-size:12px!important;
-  transform:none!important;
-  transition:none!important;
-  white-space:nowrap!important;
-  overflow:hidden!important;
-  text-overflow:ellipsis!important;
-}
-#entryView #cutterChips .cutter-none-v406.active,
-#entryView #cutterChips .chip[data-cutter=""].active{
-  transform:none!important;
-  font-size:12px!important;
-  height:42px!important;
-}
-#entryView #cutterChips.mesaha-cutter-strip-frozen-v409{
-  overflow:hidden!important;
-  pointer-events:none!important;
-}
-#entryView #cutterChips.mesaha-cutter-strip-frozen-v409 .cutter-none-v406,
-#entryView #cutterChips.mesaha-cutter-strip-frozen-v409 .chip[data-cutter=""]{
-  transform:none!important;
-  transition:none!important;
-}
-@media(max-width:430px){
-  #entryView #cutterChips .cutter-none-v406,
-  #entryView #cutterChips .chip[data-cutter=""]{
-    width:142px!important;min-width:142px!important;max-width:142px!important;flex-basis:142px!important;font-size:11px!important;
-  }
-}
-</style>
-<script id="mesaha-v409-cutter-static-save-fix">
+
+
 (function(){
   'use strict';
   if(window.__mesahaCutterStaticSaveFixV409) return;
@@ -7384,8 +5860,8 @@ body.mesaha-entry-scrolling-v408 #entryView label{
   [120,420,900,1800,3600].forEach(function(ms){setTimeout(boot,ms)});
   try{window.MesahaCutterStaticSaveFixV409={render:stableRenderCutters,freeze:freezeCutterStrip,sync:syncVersion};}catch(e){}
 })();
-</script>
-<script id="mesaha-v411-firebase-resilience-guard">
+
+
 (function(){
   'use strict';
   if(window.__mesahaSupabaseResilienceV411) return;
@@ -7407,20 +5883,8 @@ body.mesaha-entry-scrolling-v408 #entryView label{
   window.addEventListener('online',function(){setTimeout(function(){check(true)},800)});
   document.addEventListener('click',function(ev){var t=ev.target&&ev.target.closest&&ev.target.closest('#panelSyncV316,#cloudBackupBtnV316,#cloudRestoreBtnV316'); if(t) setTimeout(function(){check(true)},2500);},true);
 })();
-</script>
-<style id="mesaha-v416-boy-focus-guard-style">
-/* Mesaha İO: Geçersiz boy değeri odak zıplaması ve çift kayıt tetiklemesini engeller */
-#entryView #lengthInput.mesaha-invalid-boy-v416{
-  border-color:#ef4444!important;
-  box-shadow:0 0 0 4px rgba(239,68,68,.13)!important;
-  background:#fff7f7!important;
-}
-#entryView.mesaha-save-lock-v416 #saveBtn{
-  pointer-events:none!important;
-  opacity:.88!important;
-}
-</style>
-<script id="mesaha-v416-boy-input-focus-guard">
+
+
 (function(){
   'use strict';
   if(window.__mesahaBoyInputFocusGuardV416) return;
@@ -7544,16 +6008,8 @@ body.mesaha-entry-scrolling-v408 #entryView label{
   [120,420,900,1800,3600].forEach(function(ms){setTimeout(bind,ms)});
   try{window.MesahaBoyInputFocusGuardV416={validate:validateBoyOnly,sync:syncVersion};}catch(e){}
 })();
-</script>
-<style id="mesaha-v422-save-single-gate-style">
-/* v418: iOS/Safari/PWA tek dokunuşta çoklu kaydı engelleyen son güvenlik katmanı */
-#entryView.mesaha-save-single-gate-v418 #saveBtn{
-  pointer-events:none!important;
-  opacity:.86!important;
-  filter:saturate(.9)!important;
-}
-</style>
-<script id="mesaha-v422-save-single-gate">
+
+
 (function(){
   'use strict';
   if(window.__mesahaIosSaveSingleGateV418) return;
@@ -7670,29 +6126,8 @@ body.mesaha-entry-scrolling-v408 #entryView label{
     status:function(){return {until:gate.until, depth:gate.depth, blocked:gate.blocked, active:entryActive(), version:VERSION};}
   };
 })();
-</script>
 
-<style id="mesaha-v429-telegram-support-style">
-:root{--telegram:#229ED9;--telegramDark:#177fb0;}
-.telegram-support-modal-v429{position:fixed;inset:0;z-index:2147482000;display:flex;align-items:center;justify-content:center;padding:18px;background:linear-gradient(135deg,rgba(3,105,161,.97),rgba(14,116,144,.95));backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);}
-.telegram-support-modal-v429.hidden{display:none!important;}
-.telegram-support-card-v429{width:min(94vw,430px);max-height:min(92vh,720px);overflow:auto;border-radius:28px;background:linear-gradient(180deg,#ffffff,#f0f9ff);color:#102a43;border:1px solid rgba(255,255,255,.7);box-shadow:0 24px 70px rgba(8,47,73,.42);padding:22px 18px 18px;text-align:center;}
-.telegram-icon-v429{width:72px;height:72px;border-radius:24px;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#38bdf8,#0284c7);color:#fff;font-size:38px;font-weight:1000;box-shadow:0 14px 30px rgba(2,132,199,.35);}
-.telegram-support-card-v429 h2{margin:4px 0 8px!important;font-size:24px!important;line-height:1.1!important;color:#075985!important;font-weight:1000!important;letter-spacing:-.02em!important;}
-.telegram-support-card-v429 p{margin:8px 0!important;font-size:14px!important;line-height:1.45!important;color:#334155!important;font-weight:800!important;}
-.telegram-link-box-v429{margin:14px 0 12px;padding:12px;border-radius:18px;background:#e0f2fe;border:1px solid #bae6fd;color:#075985;font-size:12px;font-weight:950;word-break:break-all;}
-.telegram-actions-v429{display:grid;gap:10px;margin-top:14px;}
-.telegram-join-v429,.telegram-ok-v429{appearance:none;border:0;border-radius:18px;min-height:52px;padding:13px 14px;font-weight:1000;font-size:15px;text-decoration:none;display:flex;align-items:center;justify-content:center;box-shadow:0 12px 28px rgba(2,132,199,.22);}
-.telegram-join-v429{background:linear-gradient(135deg,#0ea5e9,#0284c7);color:#fff!important;}
-.telegram-ok-v429{background:#fff;color:#0f172a;border:1px solid #cbd5e1;}
-.telegram-note-v429{font-size:11px!important;color:#64748b!important;font-weight:800!important;margin-top:10px!important;}
-.telegram-guide-box-v429{border:1px solid #bae6fd!important;background:linear-gradient(135deg,#e0f2fe,#ffffff)!important;border-radius:20px!important;padding:14px!important;margin:12px 0!important;box-shadow:0 8px 20px rgba(14,165,233,.12)!important;}
-.telegram-guide-box-v429 h3{margin:0 0 8px!important;color:#075985!important;font-size:17px!important;font-weight:1000!important;}
-.telegram-guide-box-v429 p{margin:0 0 10px!important;color:#334155!important;font-weight:850!important;line-height:1.42!important;}
-.telegram-guide-box-v429 a{display:inline-flex!important;align-items:center!important;justify-content:center!important;min-height:42px!important;border-radius:14px!important;background:#0284c7!important;color:#fff!important;padding:10px 12px!important;font-weight:1000!important;text-decoration:none!important;box-shadow:0 10px 22px rgba(2,132,199,.20)!important;}
-@media(max-width:430px){.telegram-support-card-v429{padding:19px 14px 15px;border-radius:24px}.telegram-support-card-v429 h2{font-size:21px!important}.telegram-icon-v429{width:62px;height:62px;border-radius:20px;font-size:32px}.telegram-support-card-v429 p{font-size:13px!important}.telegram-join-v429,.telegram-ok-v429{min-height:50px;font-size:14px}}
-</style>
-<script id="mesaha-v429-telegram-support-script">
+
 (function(){
   'use strict';
   var LINK='https://t.me/+LpsvthN4BM5kYWI0';
@@ -7752,31 +6187,8 @@ body.mesaha-entry-scrolling-v408 #entryView label{
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true}); else boot();
   window.MesahaTelegramSupportV429={show:function(){try{localStorage.removeItem(storageKey());}catch(e){} showDaily();},link:LINK};
 })();
-</script>
 
-<style id="mesaha-v442-stabil-cekirdek-style">
-/* v442 stabil çekirdek: mobil ölçü/kısayol ve 50 kayıt kartı */
-#mesahaBarcodeCheckV424,#mesahaBarcodeCheckV436,#mesahaBarcodeMiniV437,#mesahaBarcodeMiniV439{display:none!important;pointer-events:none!important;visibility:hidden!important;}
-#entryView .measure-grid,#entryView .measure-grid-v311{display:grid!important;grid-template-columns:1fr!important;gap:12px!important;overflow:visible!important;max-width:100%!important;}
-@media (min-width:720px){#entryView .measure-grid,#entryView .measure-grid-v311{grid-template-columns:1fr 1fr!important;}}
-#entryView #diameterChips,#entryView #lengthChips{display:grid!important;grid-template-columns:repeat(3,minmax(68px,1fr))!important;gap:10px!important;width:100%!important;max-width:100%!important;min-height:98px!important;overflow:visible!important;contain:none!important;}
-#entryView #diameterChips button,#entryView #lengthChips button{width:100%!important;min-width:0!important;height:44px!important;min-height:44px!important;border-radius:15px!important;font-size:19px!important;font-weight:900!important;padding:0 6px!important;}
-#entryView #diameterChips .shortcut-empty-v442,#entryView #lengthChips .shortcut-empty-v442{color:#94a3b8!important;background:#f8fafc!important;border:1px dashed #d8e6df!important;opacity:.70!important;pointer-events:none!important;}
-@media (max-width:380px){#entryView #diameterChips,#entryView #lengthChips{grid-template-columns:repeat(3,minmax(58px,1fr))!important;gap:8px!important;}#entryView #diameterChips button,#entryView #lengthChips button{height:40px!important;min-height:40px!important;font-size:16px!important;}}
-#mesahaBarcodeMiniV440.hidden{display:none!important;}
-#mesahaBarcodeMiniV440{position:fixed!important;left:12px!important;right:12px!important;top:44vh!important;z-index:2147483500!important;display:flex!important;justify-content:center!important;pointer-events:none!important;}
-#mesahaBarcodeMiniV440 .bc440-card{width:min(330px,calc(100vw - 34px))!important;background:#fff!important;border:1px solid rgba(15,23,42,.12)!important;border-radius:20px!important;box-shadow:0 18px 46px rgba(15,23,42,.16)!important;padding:12px 46px 12px 14px!important;pointer-events:auto!important;position:relative!important;color:#0f172a!important;}
-#mesahaBarcodeMiniV440 .bc440-close{position:absolute!important;right:10px!important;top:10px!important;width:30px!important;height:30px!important;border-radius:999px!important;border:0!important;background:#0f172a!important;color:#fff!important;font-size:22px!important;line-height:1!important;font-weight:900!important;}
-#mesahaBarcodeMiniV440 .bc440-title{display:block!important;font-size:13px!important;color:#64748b!important;margin:0 0 5px!important;}
-#mesahaBarcodeMiniV440 .bc440-barcode{font-size:24px!important;line-height:1!important;font-weight:950!important;letter-spacing:.4px!important;overflow-wrap:anywhere!important;}
-#mesahaBarcodeMiniV440 .bc440-meta{font-size:13px!important;color:#334155!important;margin-top:6px!important;font-weight:800!important;}
-#mesahaBarcodeMiniV440.product-tomruk .bc440-card{background:#fffbea!important;border-color:#fde68a!important;}
-#mesahaBarcodeMiniV440.product-maden .bc440-card{background:#eff6ff!important;border-color:#bfdbfe!important;}
-#mesahaBarcodeMiniV440.product-kagit .bc440-card{background:#fff1f2!important;border-color:#fecdd3!important;}
-#mesahaBarcodeMiniV440.product-sanayi .bc440-card{background:#ecfdf5!important;border-color:#bbf7d0!important;}
-#mesahaBarcodeMiniV440.product-tel .bc440-card{background:#f5f3ff!important;border-color:#ddd6fe!important;}
-</style>
-<script id="mesaha-v442-stabil-cekirdek-guard">
+
 (function(){
   'use strict';
   if(window.__mesahaV440StabilGuard) return; window.__mesahaV440StabilGuard=true;
@@ -7788,143 +6200,8 @@ body.mesaha-entry-scrolling-v408 #entryView label{
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run,{once:true}); else run();
   setTimeout(run,500); setTimeout(run,1800);
 })();
-</script>
 
 
-<style id="mesaha-v442-responsive-entry-layout">
-/* v442: Boy/Çap yan yana kalsın, telefon genişliğine göre otomatik ölçeklensin */
-#entryView .entry-form.card{
-  overflow:hidden!important;
-  padding:clamp(8px,2.4vw,12px)!important;
-  gap:clamp(8px,2.2vw,12px)!important;
-}
-#entryView .measure-grid,
-#entryView .measure-grid-v306,
-#entryView .measure-grid-v311{
-  display:grid!important;
-  grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
-  gap:clamp(6px,2vw,10px)!important;
-  align-items:start!important;
-  width:100%!important;
-  max-width:100%!important;
-  overflow:visible!important;
-}
-#entryView .measure-grid label,
-#entryView .measure-grid-v306 label,
-#entryView .measure-grid-v311 label{
-  min-width:0!important;
-  width:100%!important;
-  margin:0!important;
-  padding:clamp(7px,2vw,10px)!important;
-  border-radius:clamp(15px,4vw,20px)!important;
-  overflow:hidden!important;
-}
-#entryView #lengthInput,
-#entryView #diameterInput{
-  width:100%!important;
-  height:clamp(38px,10.2vw,46px)!important;
-  min-height:0!important;
-  font-size:clamp(20px,7vw,28px)!important;
-  line-height:1!important;
-  padding:4px 6px!important;
-  border-radius:clamp(12px,3.5vw,16px)!important;
-  text-align:center!important;
-}
-#entryView #lengthChips,
-#entryView #diameterChips,
-#entryView .quick-grid{
-  display:grid!important;
-  grid-template-columns:repeat(3,minmax(0,1fr))!important;
-  gap:clamp(4px,1.45vw,8px)!important;
-  margin-top:clamp(5px,1.6vw,8px)!important;
-  width:100%!important;
-  min-height:0!important;
-  max-width:100%!important;
-  overflow:visible!important;
-}
-#entryView #lengthChips button,
-#entryView #diameterChips button,
-#entryView .quick-grid button{
-  width:100%!important;
-  min-width:0!important;
-  height:clamp(32px,8.8vw,42px)!important;
-  min-height:clamp(32px,8.8vw,42px)!important;
-  padding:0 3px!important;
-  border-radius:clamp(10px,3vw,14px)!important;
-  font-size:clamp(13px,4.7vw,18px)!important;
-  line-height:1!important;
-  font-weight:950!important;
-  white-space:nowrap!important;
-}
-#entryView .product-grid{
-  display:grid!important;
-  grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
-  gap:clamp(7px,2vw,10px)!important;
-  width:100%!important;
-}
-#entryView .product-btn{
-  min-width:0!important;
-  min-height:clamp(42px,11vw,52px)!important;
-  padding:6px 8px!important;
-  border-radius:clamp(15px,4vw,20px)!important;
-  font-size:clamp(14px,4.5vw,18px)!important;
-  line-height:1.05!important;
-}
-#entryView .product-btn.active::after{
-  top:-7px!important;
-  right:8px!important;
-  padding:0 7px!important;
-  font-size:10px!important;
-  border-width:2px!important;
-}
-#entryView .tree-entry-block,
-#entryView .barcode-save label,
-#entryView .recent-box{
-  min-width:0!important;
-}
-#entryView .tree-head{
-  display:grid!important;
-  grid-template-columns:minmax(0,1fr) auto!important;
-  gap:7px!important;
-  align-items:center!important;
-}
-#entryView #treeToggleBtn{
-  min-width:0!important;
-  overflow:hidden!important;
-  text-overflow:ellipsis!important;
-  white-space:nowrap!important;
-}
-#entryView .pill#treeCurrent{
-  white-space:nowrap!important;
-  padding:8px 10px!important;
-  font-size:clamp(12px,3.8vw,15px)!important;
-}
-#entryView .barcode-save{
-  display:grid!important;
-  grid-template-columns:minmax(0,1fr) clamp(94px,27vw,132px)!important;
-  gap:8px!important;
-  align-items:stretch!important;
-}
-#entryView .save-btn{
-  min-height:clamp(52px,14vw,62px)!important;
-  font-size:clamp(17px,5.2vw,22px)!important;
-  border-radius:clamp(16px,4vw,22px)!important;
-}
-@media (max-width:360px){
-  #entryView .entry-form.card{padding:7px!important;}
-  #entryView .measure-grid,#entryView .measure-grid-v306,#entryView .measure-grid-v311{gap:6px!important;}
-  #entryView .measure-grid label,#entryView .measure-grid-v306 label,#entryView .measure-grid-v311 label{padding:7px!important;}
-  #entryView #lengthChips,#entryView #diameterChips,#entryView .quick-grid{gap:4px!important;}
-  #entryView #lengthChips button,#entryView #diameterChips button,#entryView .quick-grid button{font-size:13px!important;height:31px!important;min-height:31px!important;}
-  #entryView .product-btn{font-size:13px!important;min-height:40px!important;}
-}
-@media (max-width:330px){
-  #entryView .measure-grid,#entryView .measure-grid-v306,#entryView .measure-grid-v311{gap:5px!important;}
-  #entryView #lengthInput,#entryView #diameterInput{font-size:20px!important;height:36px!important;}
-  #entryView #lengthChips button,#entryView #diameterChips button,#entryView .quick-grid button{font-size:12px!important;height:29px!important;min-height:29px!important;border-radius:9px!important;}
-}
-</style>
-<script id="mesaha-v442-responsive-entry-layout-guard">
 (function(){
   'use strict';
   if(window.__mesahaV442ResponsiveEntryLayout) return; window.__mesahaV442ResponsiveEntryLayout=true;
@@ -7940,156 +6217,8 @@ body.mesaha-entry-scrolling-v408 #entryView label{
   ['mesaha:records-saved','mesaha:settings-saved'].forEach(function(ev){window.addEventListener(ev,function(){setTimeout(sync,40);},false);});
   setTimeout(sync,500);setTimeout(sync,1600);
 })();
-</script>
 
 
-<style id="mesaha-v445-cache-asset-cleanup-style">
-/* v445: Son barkod kartı temiz görünüm + ürün tikleri + kesimci sayaçları */
-#entryView #recentList.recent-list{
-  display:grid!important;
-  grid-template-columns:1fr!important;
-  gap:8px!important;
-  width:100%!important;
-}
-#entryView #recentList .recent-item-v425{
-  display:grid!important;
-  grid-template-columns:minmax(0,1fr) auto!important;
-  align-items:center!important;
-  gap:8px!important;
-  min-height:56px!important;
-  padding:9px 10px!important;
-  border-radius:15px!important;
-  border-left-width:7px!important;
-  overflow:hidden!important;
-  cursor:default!important;
-}
-#entryView #recentList .recent-info-v425{
-  -webkit-appearance:none!important;
-  appearance:none!important;
-  display:flex!important;
-  flex-direction:column!important;
-  align-items:flex-start!important;
-  justify-content:center!important;
-  gap:3px!important;
-  width:100%!important;
-  min-width:0!important;
-  margin:0!important;
-  padding:6px 8px!important;
-  border:0!important;
-  border-radius:12px!important;
-  background:transparent!important;
-  box-shadow:none!important;
-  color:inherit!important;
-  text-align:left!important;
-  font:inherit!important;
-  line-height:1.12!important;
-  cursor:pointer!important;
-}
-#entryView #recentList .recent-info-v425:active{
-  background:rgba(15,23,42,.045)!important;
-}
-#entryView #recentList .recent-info-v425 b{
-  display:block!important;
-  width:100%!important;
-  max-width:100%!important;
-  overflow:hidden!important;
-  text-overflow:ellipsis!important;
-  white-space:nowrap!important;
-  font-size:clamp(14px,4.1vw,17px)!important;
-  font-weight:950!important;
-  color:#111827!important;
-  letter-spacing:.15px!important;
-}
-#entryView #recentList .recent-info-v425 small{
-  display:block!important;
-  width:100%!important;
-  max-width:100%!important;
-  overflow:hidden!important;
-  text-overflow:ellipsis!important;
-  white-space:nowrap!important;
-  font-size:clamp(10px,3vw,12px)!important;
-  font-weight:850!important;
-  color:#64748b!important;
-}
-#entryView #recentList .recent-delete-v425{
-  -webkit-appearance:none!important;
-  appearance:none!important;
-  display:inline-flex!important;
-  align-items:center!important;
-  justify-content:center!important;
-  width:auto!important;
-  min-width:48px!important;
-  height:34px!important;
-  min-height:34px!important;
-  margin:0!important;
-  padding:0 12px!important;
-  border:1px solid #fecaca!important;
-  border-radius:999px!important;
-  background:#fff7f7!important;
-  color:#991b1b!important;
-  box-shadow:none!important;
-  font-size:12px!important;
-  font-weight:950!important;
-  line-height:1!important;
-  cursor:pointer!important;
-}
-#entryView #recentList .recent-delete-v425:active{
-  transform:scale(.98)!important;
-  background:#fee2e2!important;
-}
-#entryView #productButtons .product-btn{
-  position:relative!important;
-  padding-right:38px!important;
-  overflow:visible!important;
-}
-#entryView #productButtons .product-btn::after{
-  content:""!important;
-  position:absolute!important;
-  right:12px!important;
-  top:50%!important;
-  transform:translateY(-50%)!important;
-  width:19px!important;
-  height:19px!important;
-  min-width:19px!important;
-  min-height:19px!important;
-  padding:0!important;
-  border-radius:999px!important;
-  border:1.8px solid currentColor!important;
-  background:rgba(255,255,255,.72)!important;
-  color:inherit!important;
-  opacity:.42!important;
-  display:grid!important;
-  place-items:center!important;
-  font-size:13px!important;
-  font-weight:950!important;
-  line-height:1!important;
-  box-sizing:border-box!important;
-}
-#entryView #productButtons .product-btn.active::after{
-  content:"✓"!important;
-  opacity:1!important;
-  color:#fff!important;
-  border-color:transparent!important;
-  box-shadow:0 4px 10px rgba(15,23,42,.18)!important;
-}
-#entryView #productButtons .product-tomruk.active::after{background:#d99b05!important;}
-#entryView #productButtons .product-maden.active::after{background:#1473bd!important;}
-#entryView #productButtons .product-kagit.active::after{background:#c21f3e!important;}
-#entryView #productButtons .product-sanayi.active::after{background:#0b8f50!important;}
-#entryView #productButtons .product-tel.active::after{background:#7742c7!important;}
-#recordsView #cutterFilters .filter-chip{
-  display:inline-flex!important;
-  align-items:center!important;
-  gap:5px!important;
-}
-@media(max-width:380px){
-  #entryView #recentList .recent-item-v425{gap:6px!important;padding:8px!important;}
-  #entryView #recentList .recent-delete-v425{min-width:43px!important;height:32px!important;min-height:32px!important;padding:0 10px!important;font-size:11px!important;}
-  #entryView #productButtons .product-btn{padding-right:32px!important;}
-  #entryView #productButtons .product-btn::after{right:9px!important;width:17px!important;height:17px!important;min-width:17px!important;min-height:17px!important;font-size:12px!important;}
-}
-</style>
-<script id="mesaha-v445-cache-asset-cleanup-guard">
 (function(){
   'use strict';
   if(window.__mesahaV445CacheAssetCleanup) return;
@@ -8172,58 +6301,11 @@ body.mesaha-entry-scrolling-v408 #entryView label{
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true}); else boot();
 })();
-</script>
-
-<script src="./js/mesaha-records-performance.js"></script>
-<script src="./js/mesaha-storage-health.js"></script>
-<script src="./js/mesaha-filter-cutter-fix.js"></script>
 
 
-<style id="mesaha-v453-urun-secim-tik-fix">
-/* v453: Tomruk / Maden / Kağıtlık seçili butonunda net tik işareti.
-   Önceki stillerde active::after display:none kaldığı için tik görünmüyordu. */
-#entryView #productButtons .product-btn::after{
-  display:none!important;
-  content:""!important;
-}
-#entryView #productButtons .product-btn.active::after{
-  content:"✓"!important;
-  display:grid!important;
-  place-items:center!important;
-  position:absolute!important;
-  right:10px!important;
-  top:50%!important;
-  transform:translateY(-50%)!important;
-  width:21px!important;
-  height:21px!important;
-  min-width:21px!important;
-  min-height:21px!important;
-  border-radius:999px!important;
-  border:2px solid #fff!important;
-  color:#fff!important;
-  font-size:14px!important;
-  font-weight:950!important;
-  line-height:1!important;
-  opacity:1!important;
-  box-shadow:0 4px 10px rgba(15,23,42,.20)!important;
-  z-index:2!important;
-  box-sizing:border-box!important;
-}
-#entryView #productButtons .product-btn.active{
-  padding-right:40px!important;
-}
-#entryView #productButtons .product-tomruk.active::after{background:#d99b05!important;}
-#entryView #productButtons .product-maden.active::after{background:#1473bd!important;}
-#entryView #productButtons .product-kagit.active::after{background:#c21f3e!important;}
-#entryView #productButtons .product-sanayi.active::after{background:#0b8f50!important;}
-#entryView #productButtons .product-tel.active::after{background:#7742c7!important;}
-@media(max-width:380px){
-  #entryView #productButtons .product-btn.active{padding-right:34px!important;}
-  #entryView #productButtons .product-btn.active::after{right:8px!important;width:18px!important;height:18px!important;min-width:18px!important;min-height:18px!important;font-size:12px!important;}
-}
-</style>
 
-<script id="mesaha-v453-offline-entry-guard">
+
+
 /* v453: Çevrimdışı yenileme sonrası Mesaha Gir'e girerken ana menüye geri atma engellendi. */
 (function(){
   'use strict';
@@ -8359,17 +6441,14 @@ body.mesaha-entry-scrolling-v408 #entryView label{
   window.addEventListener('pageshow',function(){setTimeout(function(){bindFallbacks(); if(!isOffline()) repairCacheWhenOnline();},120)});
   window.addEventListener('online',function(){setTimeout(repairCacheWhenOnline,500)});
 })();
-</script>
-
-<script src="./js/mesaha-fast-tap-nav.js"></script>
-<script src="./js/mesaha-terminal-performance.js"></script>
-<script src="./js/mesaha-hybrid-cloud.js"></script>
 
 
-<script id="mesaha-v536-user-device-sync-only">
+
+
+
 (function(){
   'use strict';
-  if(window.__mesahaV536UserDeviceSync) return; window.__mesahaV536UserDeviceSync=true;
+  if(window.__mesahaV534UserDeviceSync) return; window.__mesahaV534UserDeviceSync=true;
   var PANEL_USER_KEY='mesaha_panel_user_v316';
   var STORAGE_KEY='cam_mesaha_kayitlari_v1';
   var DEVICE_ID_KEY='mesaha_cihaz_kodu_v1';
@@ -8389,12 +6468,12 @@ body.mesaha-entry-scrolling-v408 #entryView label{
   function volume(r){var v=Number(String((r&& (r.volume||r.hacim||r.m3))||0).replace(',','.'));return isFinite(v)?v:0}
   function summarize(){var list=records(),sum={recordCount:list.length,adet:0,m3:0,treeTotals:{},productTotals:{}};list.forEach(function(r){var q=Number(r.quantity||r.adet||1)||1,m=volume(r);sum.adet+=q;sum.m3+=m;var tree=clean(r.treeType||r.agacTuru||r.agacAdi||r.agac||'Belirsiz')||'Belirsiz';var prod=clean(r.productType||r.odunTuru||r.odunAdi||r.emval||r.emvalTuru||'Belirsiz')||'Belirsiz';sum.treeTotals[tree]=(sum.treeTotals[tree]||0)+m;sum.productTotals[prod]=(sum.productTotals[prod]||0)+m});sum.m3=Number(sum.m3.toFixed(3));return sum;}
   async function ready(){if(!window.mesahaSupabaseV380||!window.mesahaSupabaseV380.ready)throw new Error('Bağlantı yok');return await window.mesahaSupabaseV380.ready()}
-  async function forceDeviceSync(reason){try{var user=readUser(); if(!user.name||!user.seflik)return false;var info=deviceInfo(),stats=summarize(),key=userKey(user.name,user.seflik),r=await ready(),now=Date.now();var payload={id:key,userKey:key,name:user.name,seflik:user.seflik,bolmeNo:user.bolmeNo,lastSeen:new Date().toLocaleString('tr-TR'),lastSeenMs:now,recordCount:stats.recordCount,totalRecords:stats.recordCount,adet:stats.adet,totalM3:stats.m3,m3:stats.m3,treeTotals:stats.treeTotals,productTotals:stats.productTotals,deviceId:info.deviceId,lastDevice:info.lastDevice,lastDeviceInfo:info,deviceInfo:info,deviceType:info.deviceType,os:info.os,browser:info.browser,platform:info.platform,userAgent:info.userAgent,screen:info.screen,viewport:info.viewport,appVersion:info.appVersion,fileVersion:info.fileVersion,updatedBy:reason||'v536-sync',updatedAt:new Date().toLocaleString('tr-TR'),updatedAtMs:now,source:'supabase'};await r.db.collection('users').doc(key).set(payload,{merge:true});await r.db.collection('usageStats').doc(key+'_'+new Date().toISOString().slice(0,10)+'_'+info.deviceId).set(Object.assign({},payload,{type:'dailyUsage',date:new Date().toISOString().slice(0,10)}),{merge:true});return true;}catch(e){return false}}
-  function bind(){['userBadge','userPanelBtnV316'].forEach(function(id){var el=document.getElementById(id);if(el&&!el.__v536Sync){el.__v536Sync=true;el.addEventListener('click',function(){forceDeviceSync('panel-open')})}});setTimeout(function(){forceDeviceSync('startup-v536')},3500);document.addEventListener('visibilitychange',function(){if(!document.hidden)forceDeviceSync('visible-v536')});}
+  async function forceDeviceSync(reason){try{var user=readUser(); if(!user.name||!user.seflik)return false;var info=deviceInfo(),stats=summarize(),key=userKey(user.name,user.seflik),r=await ready(),now=Date.now();var payload={id:key,userKey:key,name:user.name,seflik:user.seflik,bolmeNo:user.bolmeNo,lastSeen:new Date().toLocaleString('tr-TR'),lastSeenMs:now,recordCount:stats.recordCount,totalRecords:stats.recordCount,adet:stats.adet,totalM3:stats.m3,m3:stats.m3,treeTotals:stats.treeTotals,productTotals:stats.productTotals,deviceId:info.deviceId,lastDevice:info.lastDevice,lastDeviceInfo:info,deviceInfo:info,deviceType:info.deviceType,os:info.os,browser:info.browser,platform:info.platform,userAgent:info.userAgent,screen:info.screen,viewport:info.viewport,appVersion:info.appVersion,fileVersion:info.fileVersion,updatedBy:reason||'v534-sync',updatedAt:new Date().toLocaleString('tr-TR'),updatedAtMs:now,source:'supabase'};await r.db.collection('users').doc(key).set(payload,{merge:true});await r.db.collection('usageStats').doc(key+'_'+new Date().toISOString().slice(0,10)+'_'+info.deviceId).set(Object.assign({},payload,{type:'dailyUsage',date:new Date().toISOString().slice(0,10)}),{merge:true});return true;}catch(e){return false}}
+  function bind(){['userBadge','userPanelBtnV316'].forEach(function(id){var el=document.getElementById(id);if(el&&!el.__v534Sync){el.__v534Sync=true;el.addEventListener('click',function(){forceDeviceSync('panel-open')})}});setTimeout(function(){forceDeviceSync('startup-v534')},3500);document.addEventListener('visibilitychange',function(){if(!document.hidden)forceDeviceSync('visible-v534')});}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
 })();
-</script>
-<script id="mesaha-v504-user-panel-cleanup">
+
+
 (function(){
   'use strict';
   function clean(){
@@ -8410,9 +6489,8 @@ body.mesaha-entry-scrolling-v408 #entryView label{
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',clean,{once:true}); else clean();
   [200,700,1500,3000,6000].forEach(function(ms){ setTimeout(clean,ms); });
 })();
-</script>
 
-<script id="mesaha-v465-admin-isolation">
+
 (function(){
   'use strict';
   function clean(){
@@ -8425,9 +6503,8 @@ body.mesaha-entry-scrolling-v408 #entryView label{
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',clean,{once:true}); else clean();
   [250,900,1800,3600].forEach(function(ms){ setTimeout(clean,ms); });
 })();
-</script>
 
-<script id="mesaha-v526-critical-tap-data-fix">
+
 (function(){
   'use strict';
   if(window.__mesahaV526CriticalTap) return; window.__mesahaV526CriticalTap=true;
@@ -8438,11 +6515,11 @@ body.mesaha-entry-scrolling-v408 #entryView label{
   document.addEventListener('pointerup',function(e){var b=closest(e.target); if(!b||e.pointerType==='mouse')return; e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); trigger(b);},true);
   document.addEventListener('touchend',function(e){ if(window.PointerEvent) return; var b=closest(e.target); if(!b)return; e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); trigger(b);},true);
 })();
-</script>
-<script id="mesaha-v536-settings-persistence">
+
+
 (function(){
   'use strict';
-  var SETTINGS_KEY='cam_mesaha_ayarlar_v1', PERSIST_KEY='mesaha_visible_type_settings_v536';
+  var SETTINGS_KEY='cam_mesaha_ayarlar_v1', PERSIST_KEY='mesaha_visible_type_settings_v534';
   function read(k,d){try{return JSON.parse(localStorage.getItem(k)||JSON.stringify(d))}catch(e){return d}}
   function write(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
   function current(){try{return (window.state&&window.state.settings)||read(SETTINGS_KEY,{})}catch(e){return read(SETTINGS_KEY,{})}}
@@ -8460,40 +6537,3 @@ body.mesaha-entry-scrolling-v408 #entryView label{
   document.addEventListener('visibilitychange',function(){if(document.hidden)snapshot()});
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){restore();setTimeout(restore,500);setTimeout(snapshot,1200)},{once:true});else{restore();setTimeout(restore,500);setTimeout(snapshot,1200)}
 })();
-</script>
-
-<style id="mesaha-v536-first-login-lock-style">
-body.mesaha-first-login-lock-v536 #userPanelOverlayV316.hidden{display:flex!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important}
-body.mesaha-first-login-lock-v536 #userPanelOverlayV316{display:flex!important;z-index:2147482500!important}
-body.mesaha-first-login-lock-v536 #panelClose2V316,
-body.mesaha-first-login-lock-v536 #userPanelCloseV316,
-body.mesaha-first-login-lock-v536 #panelCloseInlineV393,
-body.mesaha-first-login-lock-v536 #panelFloatingCloseV393{display:none!important;visibility:hidden!important;pointer-events:none!important}
-.first-login-note-v536{border:1px solid #fed7aa;background:#fff7ed;color:#9a3412;border-radius:16px;padding:10px 12px;margin:10px 0;font-weight:900;line-height:1.35}
-</style>
-<script id="mesaha-v536-first-login-lock-script">
-(function(){
-  'use strict';
-  if(window.__mesahaFirstLoginLockV536)return; window.__mesahaFirstLoginLockV536=true;
-  var PANEL_KEY='mesaha_panel_user_v316', SETTINGS_KEY='cam_mesaha_ayarlar_v1';
-  function $(id){return document.getElementById(id)}
-  function clean(v){return String(v==null?'':v).trim()}
-  function jget(k,f){try{var v=localStorage.getItem(k);return v?JSON.parse(v):f}catch(e){return f}}
-  function hasUser(){var p=jget(PANEL_KEY,{}),s=jget(SETTINGS_KEY,{});return !!((clean(p.name)&&clean(p.seflik))||(clean(s.ekipNot)&&clean(s.seflik)))}
-  function note(){var panel=$('userPanelOverlayV316'); if(!panel)return; if(!$('firstLoginNoteV536')){var n=document.createElement('div');n.id='firstLoginNoteV536';n.className='first-login-note-v536';n.textContent='İlk kullanım için kullanıcı adı ve şeflik bilgisi zorunludur. Bilgileri kaydetmeden uygulama kullanılamaz.';var actions=panel.querySelector('.panel-actions-v316'); if(actions)actions.parentNode.insertBefore(n,actions);}}
-  function setLocked(on){document.body.classList.toggle('mesaha-first-login-lock-v536',!!on); ['userPanelCloseV316','panelClose2V316','panelCloseInlineV393','panelFloatingCloseV393'].forEach(function(id){var el=$(id);if(el){if(on){el.setAttribute('hidden','hidden');el.style.display='none';el.disabled=true}else{if(id==='panelClose2V316'){el.removeAttribute('hidden');el.style.display='';el.disabled=false}}}})}
-  function openPanel(){var p=$('userPanelOverlayV316'); if(p){p.classList.remove('hidden');p.style.display='flex'} note(); setLocked(!hasUser()); try{var name=$('panelNameV316'); if(name&&!clean(name.value)) name.focus({preventScroll:true});}catch(e){}}
-  function enforce(){ if(!hasUser()){openPanel(); return false} setLocked(false); return true }
-  function bind(){
-    setTimeout(enforce,500); setTimeout(enforce,1800);
-    var save=$('panelSaveV316'); if(save&&!save.__v536Lock){save.__v536Lock=true; save.addEventListener('click',function(){setTimeout(function(){if(hasUser()){setLocked(false);var p=$('userPanelOverlayV316'); if(p)p.classList.add('hidden')}else openPanel();},350)},true)}
-    document.addEventListener('click',function(ev){ if(hasUser())return; var t=ev.target; if(t&&t.closest&&t.closest('#userPanelOverlayV316'))return; if(t&&t.closest&&t.closest('#userPanelBtnV316,#userBadge')){setTimeout(openPanel,0);return} ev.preventDefault(); ev.stopPropagation(); ev.stopImmediatePropagation(); openPanel(); try{ if(window.mesahaFloatToastV315) window.mesahaFloatToastV315('Önce kullanıcı girişi yap','Kullanıcı adı ve şeflik zorunlu','warning'); }catch(e){} },true);
-    document.addEventListener('visibilitychange',function(){if(!document.hidden)setTimeout(enforce,250)});
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true}); else bind();
-})();
-</script>
-
-</body>
-</html>
-
