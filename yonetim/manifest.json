@@ -1,9 +1,9 @@
 {
-  "id": "/yakupp/yonetim/mesaha-io-yonetim-v539",
+  "id": "/yakupp/yonetim/mesaha-io-yonetim-v540",
   "name": "Mesaha İO Yönetim V5.39",
   "short_name": "Mesaha Yönetim",
-  "description": "Mesaha İO sıfırdan temiz admin paneli",
-  "start_url": "./index.html?app=yonetim-v539",
+  "description": "Mesaha İO admin paneli kullanıcı tekilleştirme ve istatistik düzeltmesi",
+  "start_url": "./index.html?app=yonetim-v540",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f7faf8",
