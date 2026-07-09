@@ -1,7 +1,7 @@
 {
-  "name": "Mesaha İO V5.33",
+  "name": "Mesaha İO V5.34",
   "short_name": "Mesaha İO",
-  "start_url": "./index.html?app=mesaha-v533",
+  "start_url": "./index.html?v=534",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f7fbf7",

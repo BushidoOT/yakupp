@@ -1,9 +1,9 @@
 {
-  "id": "/yakupp/?app=mesaha-v533",
+  "id": "/yakupp/yonetim/mesaha-io-yonetim-v534",
   "name": "Mesaha İO V5.33",
   "short_name": "Mesaha İO",
-  "description": "Mesaha İO admin paneli V5.32 cihaz, istatistik ve destek düzeltmesi",
-  "start_url": "./index.html?app=mesaha-v533",
+  "description": "Mesaha İO admin paneli Telegram temizlik ve detay düzeltmesi",
+  "start_url": "./index.html?app=yonetim-v534",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f7faf8",
