@@ -9,11 +9,11 @@
 </head><body><div class="card"><div class="spin"></div><h1>Ön bellek onarılıyor…</h1><p>Eski cache temizleniyor. Kayıtlar ve ayarlar silinmez.</p></div><script>
 (function(){
   function done(){ setTimeout(function(){ location.replace('./index.html?updated=' + (new Date().getTime())); },900); }
-  function mesahaPreserveRecordsV526(){try{var k='cam_mesaha_kayitlari_v1',raw=localStorage.getItem(k)||'';var arr=raw?JSON.parse(raw):[];if(Array.isArray(arr)&&arr.length){localStorage.setItem(k+'_last_ok',raw);localStorage.setItem(k+'_mirror_v526_a',raw);localStorage.setItem(k+'_snapshot_v385',JSON.stringify({at:Date.now(),count:arr.length,payload:raw}));localStorage.setItem('mesaha_cache_repair_records_count_v526',String(arr.length));}}catch(e){}}function setVersionKeys(){ try{ var v=(window.MESAHA_VERSION&&window.MESAHA_VERSION.version)||'local'; localStorage.setItem('mesaha_last_seen_version',v); localStorage.setItem('mesaha_current_version',v); localStorage.setItem('mesaha_cache_repair_current',String(Date.now())); }catch(e){} }
+  function setVersionKeys(){ try{ var v=(window.MESAHA_VERSION&&window.MESAHA_VERSION.version)||'local'; localStorage.setItem('mesaha_last_seen_version',v); localStorage.setItem('mesaha_current_version',v); localStorage.setItem('mesaha_cache_repair_current',String(Date.now())); }catch(e){} }
   try{
     var sw = ('serviceWorker' in navigator) ? navigator.serviceWorker.getRegistrations().then(function(regs){ return Promise.all(regs.map(function(r){ return r.unregister().catch(function(){}); })); }) : Promise.resolve();
     var cc = ('caches' in window) ? caches.keys().then(function(keys){ return Promise.all(keys.map(function(k){ return caches.delete(k); })); }) : Promise.resolve();
-    Promise.all([sw,cc]).then(function(){ mesahaPreserveRecordsV526();setVersionKeys(); done(); }).catch(function(){ mesahaPreserveRecordsV526();setVersionKeys(); done(); });
-  }catch(e){ mesahaPreserveRecordsV526();setVersionKeys(); done(); }
+    Promise.all([sw,cc]).then(function(){ setVersionKeys(); done(); }).catch(function(){ setVersionKeys(); done(); });
+  }catch(e){ setVersionKeys(); done(); }
 })();
 </script></body></html>
