@@ -458,6 +458,7 @@ body.mesaha-keyboard-open #saveBtn, body.mesaha-keyboard-open .save-btn{position
 <section class="card settings-card">
 <h2>Giriş Ayarları</h2>
 <label class="setting-block">Mesaha Tarihi<input id="mesahaDate" type="date"/></label>
+<label class="setting-block barcode-check-setting-v526"><b>Barkod Kontrolü</b><p>40 barkodda bir son barkodu ekranda kontrol için gösterir. İstemeyen kapatabilir.</p><label class="check-card"><input id="barcodeCheckToggle" type="checkbox" checked><span id="barcodeCheckText">Barkod kontrolü: Açık</span></label></label>
 <div class="setting-block"><b>Odun Türleri</b><p>Tikli olan odun türleri Giriş Modu içinde görünür.</p><div class="check-grid" id="homeProductChecks"></div></div>
 <div class="setting-block"><b>Ağaç Türleri</b><p>Tikli olan ağaç türleri Hızlı Giriş içinde görünür.</p><div class="check-grid" id="homeTreeChecks"></div></div>
 </section>
@@ -1344,7 +1345,7 @@ const defaults = {
   visibleProducts:['Tomruk','Maden Direk','Kağıtlık'], visibleTrees:TREES.slice(),
   currentProduct:'Tomruk', currentTree:'Karaçam', treePanelOpen:false,
   length:'3', diameter:'', barcode:'', recentLengths:['3'], recentDiameters:[],
-  cutters:[], activeCutter:'', soundEnabled:true, treeFilter:'Tümü', cutterFilter:'Tümü'
+  cutters:[], activeCutter:'', soundEnabled:true, barcodeCheckEnabled:true, treeFilter:'Tümü', cutterFilter:'Tümü'
 };
 const state = { records:[], settings:{...defaults}, view:'home', editingId:null, toastTimer:null };
 const $ = id => document.getElementById(id);
@@ -1544,6 +1545,7 @@ function load(){
   try{ const savedTree=localStorage.getItem('mesaha_last_tree_stable'); if(savedTree && state.settings.visibleTrees.includes(savedTree)) state.settings.currentTree=savedTree; }catch{}
   if(!state.settings.visibleTrees.includes(state.settings.currentTree)) state.settings.currentTree=state.settings.visibleTrees[0]||'Karaçam';
   if(!Array.isArray(state.settings.cutters)) state.settings.cutters=[];
+  if(state.settings.barcodeCheckEnabled !== false) state.settings.barcodeCheckEnabled = true;
   
 }
 function migrateRecord(r){ if(!r) return null; return {
@@ -1551,13 +1553,55 @@ function migrateRecord(r){ if(!r) return null; return {
   productType:normalizeProductType(r.productType || r.odunTuru || r.odunAdi || r.product || 'Tomruk'), treeType:r.treeType || r.species || r.agacTuru || r.agacAdi || 'Karaçam', cutter:r.cutter || r.kesimci || '', productionDate:r.productionDate || r.uretimTarihi || state.settings?.mesahaDate || todayISO(),
   createdAt:r.createdAt || new Date().toISOString(), updatedAt:r.updatedAt || ''
 }; }
-let __lastOkAt=0,__lastOkCount=-1; function saveRecords(){ const payload=JSON.stringify(state.records); try{ const n=Date.now?Date.now():(new Date()).getTime(); const c=state.records.length; if(payload.length<2500000 && (n-__lastOkAt>45000 || (c>0 && c%25===0 && c!==__lastOkCount))){ const old=localStorage.getItem(STORAGE_KEY); if(old && old!==payload){ localStorage.setItem(STORAGE_KEY+'_last_ok', old); __lastOkAt=n; __lastOkCount=c; } } }catch(e){} try{ localStorage.setItem(STORAGE_KEY, payload); }catch(e){ try{ window.dispatchEvent(new CustomEvent('mesaha:storage-error',{detail:{key:STORAGE_KEY,message:e&&e.message?e.message:String(e)}})); }catch(_){} } try{ window.dispatchEvent(new CustomEvent('mesaha:records-saved',{detail:{count:state.records.length}})); }catch(e){} }
+let __lastOkAt=0,__lastOkCount=-1;
+const EMPTY_ALLOWED_KEY_V526='mesaha_records_allow_empty_until_v526';
+function readRecordArrayV526(key){ try{ const raw=localStorage.getItem(key); const arr=raw?JSON.parse(raw):null; if(Array.isArray(arr)) return arr; if(arr&&Array.isArray(arr.records)) return arr.records; return null; }catch(e){ return null; } }
+function allowEmptyRecordsSaveV526(){ try{ localStorage.setItem(EMPTY_ALLOWED_KEY_V526,String(Date.now()+30000)); }catch(e){} }
+function emptySaveAllowedV526(){ try{ return Number(localStorage.getItem(EMPTY_ALLOWED_KEY_V526)||0)>Date.now(); }catch(e){ return false; } }
+function bestLocalRecordsV526(){
+  const keys=[STORAGE_KEY,STORAGE_KEY+'_last_ok','cam_mesaha_kayitlari_v1_mirror_v526_a','cam_mesaha_kayitlari_v1_mirror_v526_b'];
+  let best=null;
+  keys.forEach(k=>{ const arr=readRecordArrayV526(k); if(arr&&(!best||arr.length>best.length)) best=arr; });
+  try{ const snap=JSON.parse(localStorage.getItem(STORAGE_KEY+'_snapshot_v385')||'null'); if(snap&&snap.payload){ const arr=JSON.parse(snap.payload); if(Array.isArray(arr)&&(!best||arr.length>best.length)) best=arr; } }catch(e){}
+  return best;
+}
+function writeRecordMirrorsV526(arr,payload){
+  if(!Array.isArray(arr) || !arr.length) return;
+  try{ localStorage.setItem(STORAGE_KEY+'_last_ok', payload || JSON.stringify(arr)); }catch(e){}
+  try{ localStorage.setItem('cam_mesaha_kayitlari_v1_mirror_v526_a', payload || JSON.stringify(arr)); }catch(e){}
+  try{ localStorage.setItem('cam_mesaha_kayitlari_v1_mirror_v526_b', JSON.stringify({at:Date.now(),count:arr.length,records:arr})); }catch(e){}
+  try{ localStorage.setItem(STORAGE_KEY+'_snapshot_v385', JSON.stringify({at:Date.now(), count:arr.length, payload:payload || JSON.stringify(arr)})); }catch(e){}
+}
+function saveRecords(){
+  const payload=JSON.stringify(state.records);
+  try{
+    if((state.records||[]).length===0 && !emptySaveAllowedV526()){
+      const best=bestLocalRecordsV526();
+      if(best && best.length>0){
+        state.records=best.map(migrateRecord).filter(Boolean);
+        try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state.records)); }catch(e){}
+        toast('Kayıtlar korunuyor. Tümünü silmek için Ölçümler > Tümünü Sil kullan.');
+        try{ window.dispatchEvent(new CustomEvent('mesaha:records-recovered',{detail:{count:state.records.length,reason:'empty-save-blocked'}})); }catch(e){}
+        return false;
+      }
+    }
+  }catch(e){}
+  try{
+    const n=Date.now?Date.now():(new Date()).getTime(); const c=state.records.length;
+    if(c>0 && payload.length<3500000 && (n-__lastOkAt>30000 || c!==__lastOkCount)){ writeRecordMirrorsV526(state.records,payload); __lastOkAt=n; __lastOkCount=c; }
+  }catch(e){}
+  try{ localStorage.setItem(STORAGE_KEY, payload); }catch(e){ try{ window.dispatchEvent(new CustomEvent('mesaha:storage-error',{detail:{key:STORAGE_KEY,message:e&&e.message?e.message:String(e)}})); }catch(_){} }
+  try{ window.dispatchEvent(new CustomEvent('mesaha:records-saved',{detail:{count:state.records.length}})); }catch(e){}
+  return true;
+}
+try{ window.mesahaAllowEmptyRecordsSaveV526=allowEmptyRecordsSaveV526; }catch(e){}
 let __settingsSaveTimer=0,__settingsSaveLast=''; function __flushSettings(){ try{ const payload=JSON.stringify(state.settings); if(payload!==__settingsSaveLast){ localStorage.setItem(SETTINGS_KEY,payload); __settingsSaveLast=payload; try{ window.dispatchEvent(new CustomEvent('mesaha:settings-saved')); }catch(e){} } }catch(e){} } function saveSettings(){ clearTimeout(__settingsSaveTimer); __settingsSaveTimer=setTimeout(__flushSettings,220); } try{window.__flushSettings=__flushSettings;}catch(e){} window.addEventListener('pagehide',__flushSettings); document.addEventListener('visibilitychange',function(){if(document.hidden)__flushSettings();});
 function bind(){
   $('openEntryBtn').addEventListener('click', () => openEntry());
   $('entryHomeBtn').addEventListener('click', () => showView('home'));
   /* v351: theme removed */
   $('soundBtn').addEventListener('click', () => { state.settings.soundEnabled=!state.settings.soundEnabled; saveSettings(); renderSound(); });
+  const barcodeCheckToggle=$('barcodeCheckToggle'); if(barcodeCheckToggle) barcodeCheckToggle.addEventListener('change',()=>{ state.settings.barcodeCheckEnabled = barcodeCheckToggle.checked; saveSettings(); try{__flushSettings();}catch(e){} renderBarcodeCheckSettingV526(); });
   $('treeToggleBtn').addEventListener('click', () => { state.settings.treePanelOpen=!state.settings.treePanelOpen; saveSettings(); renderEntryTrees(); });
   $('addCutterBtn').addEventListener('click', addCutter);
   $('saveBtn').addEventListener('click', saveEntry);
@@ -1613,9 +1657,10 @@ function renderNetwork(){
   }catch(e){}
 }
 function renderSound(){ $('soundBtn').textContent = state.settings.soundEnabled===false ? 'Ses: Kapalı' : 'Ses: Açık'; }
+function renderBarcodeCheckSettingV526(){ const t=$('barcodeCheckToggle'), x=$('barcodeCheckText'); const on=state.settings.barcodeCheckEnabled!==false; if(t) t.checked=on; if(x) x.textContent='Barkod kontrolü: '+(on?'Açık':'Kapalı'); }
 function renderHome(){
   $('bolmeNo').value=state.settings.bolmeNo||''; $('seflik').value=state.settings.seflik||''; $('ekipNot').value=state.settings.ekipNot||''; $('mesahaDate').value=state.settings.mesahaDate||todayISO();
-  renderHomeChecks(); renderSummary(); renderSound(); renderUser();
+  renderHomeChecks(); renderSummary(); renderSound(); renderBarcodeCheckSettingV526(); renderUser();
 }
 function renderHomeChecks(){
   $('homeProductChecks').innerHTML = PRODUCTS.map(p => checkCard('product', p.key, p.label, state.settings.visibleProducts.includes(p.key))).join('');
@@ -1781,7 +1826,7 @@ function renderRecent(){
     const r=state.records.find(x=>x.id===b.dataset.recentDelete);
     if(!r) return;
     if(confirm((r.barcode||'Bu barkod')+' silinsin mi?')){
-      state.records=state.records.filter(x=>x.id!==b.dataset.recentDelete); markQuickChipsDirty();
+      state.records=state.records.filter(x=>x.id!==b.dataset.recentDelete); if(!state.records.length) allowEmptyRecordsSaveV526(); markQuickChipsDirty();
       const last=state.records[state.records.length-1];
       state.settings.barcode=last&&last.barcode ? nextBarcode(last.barcode) : '';
       const bi=$('barcodeInput'); if(bi) bi.value=state.settings.barcode;
@@ -1810,7 +1855,7 @@ function saveEntry(){
 
 function showBarcodeMilestoneV440(rec,count){
   try{
-    count=Number(count||0); if(!rec || !count || count%50!==0) return;
+    count=Number(count||0); if(state.settings.barcodeCheckEnabled===false) return; if(!rec || !count || count%40!==0) return;
     const token='v445|'+count+'|'+String(rec.id||rec.barcode||'');
     const key='mesaha_v442_milestone_token';
     if(localStorage.getItem(key)===token) return;
@@ -1882,7 +1927,7 @@ function renderRecords(){
   renderProductTotals(); renderFilters();
   $('recordList').innerHTML = list.length ? list.slice().reverse().map(r => recordCard(r)).join('') : '<p class="hint">Kayıt bulunamadı.</p>';
   $('recordList').querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click',()=>{ const r=state.records.find(x=>x.id===b.dataset.edit); if(r) openEntry(r); }));
-  $('recordList').querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',()=>{ if(confirm('Kayıt silinsin mi?')){ state.records=state.records.filter(x=>x.id!==b.dataset.del); markQuickChipsDirty(); try{invalidateRecordStatsV447&&invalidateRecordStatsV447();}catch(e){} saveRecords(); if(window.MesahaRenderStorageV382&&window.MesahaRenderStorageV382.renderAllSoon){window.MesahaRenderStorageV382.renderAllSoon();}else{renderAll();} }}));
+  $('recordList').querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',()=>{ if(confirm('Kayıt silinsin mi?')){ state.records=state.records.filter(x=>x.id!==b.dataset.del); if(!state.records.length) allowEmptyRecordsSaveV526(); markQuickChipsDirty(); try{invalidateRecordStatsV447&&invalidateRecordStatsV447();}catch(e){} saveRecords(); if(window.MesahaRenderStorageV382&&window.MesahaRenderStorageV382.renderAllSoon){window.MesahaRenderStorageV382.renderAllSoon();}else{renderAll();} }}));
 }
 function renderProductTotals(){ const stats=recordStatsV447(); const html=PRODUCTS.map(p=>{ const t=stats.product[p.key]||{count:0,m3:0}; return `<div class="prod-total product-${p.cls}"><small>${esc(p.label)}</small><b>${fmt(t.m3,3)} m³</b><small>${t.count} adet</small></div>`; }).join(''); $('productTotals').innerHTML=html; }
 function renderFilters(){
@@ -2234,7 +2279,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
         lastDeleted = {records:list.slice()};
         const ids = new Set(list.map(r=>r.id));
         const s = appState();
-        s.records = records().filter(r => !ids.has(r.id));
+        s.records = records().filter(r => !ids.has(r.id)); if(!s.records.length){ try{window.mesahaAllowEmptyRecordsSaveV526?window.mesahaAllowEmptyRecordsSaveV526():allowEmptyRecordsSaveV526();}catch(e){} }
         selectedIds.clear();
         saveRecords();
         renderAllV303();
@@ -2264,6 +2309,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
         if(!confirm('Tüm kayıtlar silinsin mi?')) return;
         lastDeleted = {records:records().slice()};
         const s = appState();
+        try{window.mesahaAllowEmptyRecordsSaveV526?window.mesahaAllowEmptyRecordsSaveV526():allowEmptyRecordsSaveV526();}catch(e){}
         s.records = [];
         selectedIds.clear();
         saveRecords();
@@ -2750,6 +2796,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     });
     if(!ok) return;
     try{
+      try{ if(window.MesahaDataGuard&&window.MesahaDataGuard.snapshot) window.MesahaDataGuard.snapshot(); localStorage.setItem('mesaha_cache_repair_records_count_v526', String((records&&records().length)||0)); }catch(e){}
       if('serviceWorker' in navigator){
         const regs = await navigator.serviceWorker.getRegistrations();
         await Promise.all(regs.map(r => r.unregister().catch(()=>{})));
@@ -2880,7 +2927,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
         if(!ok) return;
         const ids = new Set(list.map(r => r.id));
         lastDeletedV304 = list.slice();
-        const s = appState(); s.records = records().filter(r => !ids.has(r.id)); window.state = s;
+        const s = appState(); s.records = records().filter(r => !ids.has(r.id)); if(!s.records.length){ try{window.mesahaAllowEmptyRecordsSaveV526?window.mesahaAllowEmptyRecordsSaveV526():allowEmptyRecordsSaveV526();}catch(e){} } window.state = s;
         saveRecords(); renderAfterChange(); toast('Seçili kayıtlar silindi.');
         return;
       }
@@ -2891,7 +2938,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
         const ok = await modal({title:'Tümünü Sil', type:'danger', icon:'!', html:`<p><b>${records().length}</b> kayıt tamamen silinecek.</p><div class="modal-note">Bu işlemden sonra Geri Al butonuyla son silmeyi geri alabilirsin.</div>`, buttons:[{text:'Vazgeç', value:false, cls:'ghost'}, {text:'Tümünü Sil', value:true, cls:'danger'}]});
         if(!ok) return;
         lastDeletedV304 = records().slice();
-        const s = appState(); s.records = []; window.state = s;
+        const s = appState(); try{window.mesahaAllowEmptyRecordsSaveV526?window.mesahaAllowEmptyRecordsSaveV526():allowEmptyRecordsSaveV526();}catch(e){} s.records = []; window.state = s;
         saveRecords(); renderAfterChange(); toast('Tüm kayıtlar silindi.');
         return;
       }
@@ -2913,7 +2960,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
         const ok = await modal({title:'Kayıt Sil', type:'danger', icon:'!', html:`<p><b>${esc(rec.barcode)}</b> barkodlu kayıt silinsin mi?</p>`, buttons:[{text:'Vazgeç', value:false, cls:'ghost'}, {text:'Sil', value:true, cls:'danger'}]});
         if(!ok) return;
         lastDeletedV304 = [rec];
-        const s = appState(); s.records = records().filter(r => r.id !== id); window.state = s;
+        const s = appState(); s.records = records().filter(r => r.id !== id); if(!s.records.length){try{window.mesahaAllowEmptyRecordsSaveV526?window.mesahaAllowEmptyRecordsSaveV526():allowEmptyRecordsSaveV526();}catch(e){}} window.state = s;
         saveRecords(); renderAfterChange(); toast('Kayıt silindi.');
         return;
       }
@@ -8410,6 +8457,19 @@ body.mesaha-entry-scrolling-v408 #entryView label{
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',clean,{once:true}); else clean();
   [250,900,1800,3600].forEach(function(ms){ setTimeout(clean,ms); });
+})();
+</script>
+
+<script id="mesaha-v526-critical-tap-data-fix">
+(function(){
+  'use strict';
+  if(window.__mesahaV526CriticalTap) return; window.__mesahaV526CriticalTap=true;
+  var sel='#deleteAllBtn,#bulkDeleteBtn,#backupBtn,#cloudBackupBtnV316,#cloudRestoreBtnV316,#clearCacheBtn,#forceUpdateBtn,#downloadXlsBtn,#restoreBtn,#saveBtn';
+  function closest(t){try{return t&&t.closest&&t.closest(sel)}catch(e){return null}}
+  function trigger(btn){ if(!btn||btn.disabled) return; var now=Date.now(); if(now-(btn.__v526TapRun||0)<650) return; btn.__v526TapRun=now; try{btn.click();}catch(e){} }
+  document.addEventListener('click',function(e){var b=closest(e.target); if(!b)return; if(e.isTrusted && Date.now()-(b.__v526TapRun||0)<650){e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();}},true);
+  document.addEventListener('pointerup',function(e){var b=closest(e.target); if(!b||e.pointerType==='mouse')return; e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); trigger(b);},true);
+  document.addEventListener('touchend',function(e){ if(window.PointerEvent) return; var b=closest(e.target); if(!b)return; e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); trigger(b);},true);
 })();
 </script>
 </body>
