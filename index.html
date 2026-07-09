@@ -665,6 +665,17 @@ body.mesaha-keyboard-open #saveBtn, body.mesaha-keyboard-open .save-btn{position
 <button class="btn soft" hidden="" id="panelSyncV316" type="button" style="display:none"></button>
 <button class="btn soft" id="panelClose2V316" type="button">Kapat</button>
 </div>
+<div class="panel-section-v316" id="panelUserBroadcastsV532">
+<b>Admin Duyuruları</b>
+<p class="hint">Admin panelinden gönderilen duyurular burada görünür.</p>
+<div class="support-replies-v390" id="panelBroadcastListV532">
+<div class="support-reply-card-v390">Duyurular internet varken alınır.</div>
+</div>
+<div class="support-reply-actions-v390">
+<button class="btn soft" id="panelBroadcastRefreshV532" type="button">Duyuruları Yenile</button>
+<small class="hint" id="panelBroadcastInfoV532">Bekleniyor…</small>
+</div>
+</div>
 <div class="panel-section-v316">
 <b>Sorun Bildir</b>
 <p class="hint">Buradan gönderilen mesajlar destek ekranına iletilir.</p>
@@ -8426,6 +8437,69 @@ body.mesaha-entry-scrolling-v408 #entryView label{
 <script src="./js/mesaha-fast-tap-nav.js"></script>
 <script src="./js/mesaha-terminal-performance.js"></script>
 <script src="./js/mesaha-hybrid-cloud.js"></script>
+
+
+<script id="mesaha-v532-user-device-support-broadcast">
+(function(){
+  'use strict';
+  if(window.__mesahaV532UserBroadcast) return; window.__mesahaV532UserBroadcast=true;
+  var PANEL_USER_KEY='mesaha_panel_user_v316';
+  var STORAGE_KEY='cam_mesaha_kayitlari_v1';
+  var USAGE_KEY='mesaha_usage_stats_v316';
+  var DEVICE_ID_KEY='mesaha_cihaz_kodu_v1';
+  function $(id){return document.getElementById(id)}
+  function clean(v){return String(v==null?'':v).trim()}
+  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]})}
+  function jsonGet(k,d){try{return JSON.parse(localStorage.getItem(k)||JSON.stringify(d))}catch(e){return d}}
+  function userKey(n,s){return (clean(n)+'__'+clean(s)).toLocaleLowerCase('tr-TR')}
+  function readUser(){var u=jsonGet(PANEL_USER_KEY,{});return {name:clean(u.name),seflik:clean(u.seflik),bolmeNo:clean(u.bolmeNo)}}
+  function records(){var a=jsonGet(STORAGE_KEY,[]);return Array.isArray(a)?a:[]}
+  function getDeviceId(){var id='';try{id=localStorage.getItem(DEVICE_ID_KEY)||''}catch(e){} if(!id){id=['cihaz',Date.now().toString(36),Math.random().toString(36).slice(2,8)].join('_');try{localStorage.setItem(DEVICE_ID_KEY,id)}catch(e){}} return id}
+  function deviceInfo(){
+    var ua=navigator.userAgent||'',plat=navigator.platform||'',sw=(screen&&screen.width)||'',sh=(screen&&screen.height)||'';
+    var os='Bilinmiyor'; if(/Android/i.test(ua))os='Android'; else if(/iPhone|iPad|iPod/i.test(ua))os='iOS'; else if(/Windows/i.test(ua))os='Windows'; else if(/Macintosh|Mac OS/i.test(ua))os='Mac'; else if(/Linux/i.test(ua))os='Linux';
+    var browser='Bilinmiyor'; if(/SamsungBrowser/i.test(ua))browser='Samsung Internet'; else if(/Edg\//i.test(ua))browser='Edge'; else if(/CriOS|Chrome\//i.test(ua))browser='Chrome'; else if(/FxiOS|Firefox\//i.test(ua))browser='Firefox'; else if(/Safari\//i.test(ua))browser='Safari';
+    var type=(/iPad|Tablet/i.test(ua))?'Tablet':((/Mobi|Android|iPhone|iPod/i.test(ua)||navigator.maxTouchPoints>0)?'Telefon':'Bilgisayar');
+    return {deviceId:getDeviceId(),userAgent:ua,platform:plat,os:os,browser:browser,deviceType:type,screen:sw+'x'+sh,viewport:(window.innerWidth||'')+'x'+(window.innerHeight||''),pixelRatio:window.devicePixelRatio||1,language:navigator.language||'',timezone:(Intl.DateTimeFormat().resolvedOptions().timeZone||''),lastDevice:type+' • '+os+' • '+browser+' • '+sw+'x'+sh,appVersion:(window.MESAHA_VERSION&&window.MESAHA_VERSION.visibleVersion)||'Mesaha İO',fileVersion:(window.MESAHA_VERSION&&window.MESAHA_VERSION.version)||'local'};
+  }
+  function volume(r){var v=Number(String((r&& (r.volume||r.hacim||r.m3))||0).replace(',','.'));return isFinite(v)?v:0}
+  function summarize(){
+    var list=records(),sum={recordCount:list.length,adet:0,m3:0,treeTotals:{},productTotals:{}};
+    list.forEach(function(r){var q=Number(r.quantity||r.adet||1)||1,m=volume(r);sum.adet+=q;sum.m3+=m;var tree=clean(r.treeType||r.agacTuru||r.agacAdi||r.agac||'Belirsiz')||'Belirsiz';var prod=clean(r.productType||r.odunTuru||r.odunAdi||r.emval||r.emvalTuru||'Belirsiz')||'Belirsiz';sum.treeTotals[tree]=(sum.treeTotals[tree]||0)+m;sum.productTotals[prod]=(sum.productTotals[prod]||0)+m});
+    sum.m3=Number(sum.m3.toFixed(3));return sum;
+  }
+  async function ready(){if(!window.mesahaSupabaseV380||!window.mesahaSupabaseV380.ready)throw new Error('Bağlantı yok');return await window.mesahaSupabaseV380.ready()}
+  async function forceDeviceSync(reason){
+    try{
+      var user=readUser(); if(!user.name||!user.seflik)return false;
+      var info=deviceInfo(),stats=summarize(),key=userKey(user.name,user.seflik),r=await ready(),now=Date.now();
+      var payload={id:key,userKey:key,name:user.name,seflik:user.seflik,bolmeNo:user.bolmeNo,lastSeen:new Date().toLocaleString('tr-TR'),lastSeenMs:now,recordCount:stats.recordCount,totalRecords:stats.recordCount,adet:stats.adet,totalM3:stats.m3,m3:stats.m3,treeTotals:stats.treeTotals,productTotals:stats.productTotals,deviceId:info.deviceId,lastDevice:info.lastDevice,lastDeviceInfo:info,deviceInfo:info,deviceType:info.deviceType,os:info.os,browser:info.browser,platform:info.platform,userAgent:info.userAgent,screen:info.screen,viewport:info.viewport,appVersion:info.appVersion,fileVersion:info.fileVersion,updatedBy:reason||'v532-sync',updatedAt:new Date().toLocaleString('tr-TR'),updatedAtMs:now,source:'supabase'};
+      await r.db.collection('users').doc(key).set(payload,{merge:true});
+      await r.db.collection('usageStats').doc(key+'_'+new Date().toISOString().slice(0,10)+'_'+info.deviceId).set(Object.assign({},payload,{type:'dailyUsage',date:new Date().toISOString().slice(0,10)}),{merge:true});
+      return true;
+    }catch(e){return false}
+  }
+  function renderBroadcasts(items){
+    var list=$('panelBroadcastListV532'),info=$('panelBroadcastInfoV532'); if(!list)return;
+    if(info)info.textContent=(items&&items.length?items.length+' duyuru':'Duyuru yok');
+    list.innerHTML=(items&&items.length)?items.map(function(b){return '<div class="support-reply-card-v390"><b>'+esc(b.title||'Admin duyurusu')+'</b><div>'+esc(b.message||'')+'</div><small>'+esc(b.createdAt||'')+'</small></div>'}).join(''):'<div class="support-reply-card-v390">Aktif duyuru yok.</div>';
+  }
+  async function loadBroadcasts(){
+    try{
+      var user=readUser(),key=userKey(user.name,user.seflik),r=await ready(),snap=await r.db.collection('adminBroadcasts').get(),arr=[];
+      snap.forEach(function(doc){var b=doc.data()||{};if(b.status&&b.status!=='active')return;var keys=Array.isArray(b.targetUserKeys)?b.targetUserKeys:[];var target=clean(b.target||'all');if(target==='all'||!keys.length||keys.indexOf(key)>=0)arr.push(b)});
+      arr.sort(function(a,b){return Number(b.createdAtMs||0)-Number(a.createdAtMs||0)});renderBroadcasts(arr.slice(0,10));
+    }catch(e){var info=$('panelBroadcastInfoV532');if(info)info.textContent='Duyurular alınamadı';}
+  }
+  function bind(){
+    var btn=$('panelBroadcastRefreshV532'); if(btn&&!btn.__v532){btn.__v532=true;btn.addEventListener('click',function(){loadBroadcasts();forceDeviceSync('broadcast-refresh')})}
+    ['userBadge','userPanelBtnV316'].forEach(function(id){var el=$(id);if(el&&!el.__v532b){el.__v532b=true;el.addEventListener('click',function(){setTimeout(loadBroadcasts,500);forceDeviceSync('panel-open')})}});
+    setTimeout(function(){forceDeviceSync('startup-v532');loadBroadcasts()},3500);
+    document.addEventListener('visibilitychange',function(){if(!document.hidden){forceDeviceSync('visible-v532');loadBroadcasts()}});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
+})();
+</script>
 
 <script id="mesaha-v504-user-panel-cleanup">
 (function(){
