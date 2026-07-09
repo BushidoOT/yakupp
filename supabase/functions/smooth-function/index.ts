@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.4";
 
@@ -8,285 +9,927 @@ const ADMIN_KEY = Deno.env.get("MESAHA_ADMIN_KEY") || "";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-admin-key",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
   "Content-Type": "application/json; charset=utf-8",
 };
 
 type JsonObj = Record<string, unknown>;
 
-function clean(v: unknown): string { return String(v ?? "").trim(); }
-function lower(v: unknown): string { return clean(v).toLocaleLowerCase("tr-TR"); }
-function json(data: JsonObj, status = 200): Response { return new Response(JSON.stringify(data), { status, headers: corsHeaders }); }
-async function bodyJson(req: Request): Promise<JsonObj> { try { return await req.json(); } catch { return {}; } }
-function clientIp(req: Request): string {
-  const h = req.headers;
-  const raw = h.get("x-forwarded-for") || h.get("cf-connecting-ip") || h.get("x-real-ip") || "";
-  return clean(raw.split(",")[0]);
+const TABLES = {
+  profiles: "mesaha_user_profiles",
+  usageCurrent: "mesaha_usage_current",
+  usageDaily: "mesaha_usage_daily",
+  backupSlots: "mesaha_backup_slots",
+  backupChunks: "mesaha_backup_chunks",
+  logs: "mesaha_log_current",
+  events: "mesaha_security_events",
+  blocks: "mesaha_security_blocks",
+};
+
+const IST_TZ = "Europe/Istanbul";
+
+function clean(v: unknown): string {
+  return String(v ?? "").trim();
 }
-function requireAdmin(body: JsonObj): Response | null {
-  if (!ADMIN_KEY) return json({ ok: false, error: "MESAHA_ADMIN_KEY tanımlı değil" }, 500);
-  if (clean(body.admin_key) !== ADMIN_KEY) return json({ ok: false, error: "Yönetim anahtarı hatalı" }, 401);
-  return null;
+function lower(v: unknown): string {
+  return clean(v).toLocaleLowerCase("tr-TR");
+}
+function json(data: JsonObj, status = 200): Response {
+  return new Response(JSON.stringify(data), { status, headers: corsHeaders });
+}
+async function bodyJson(req: Request): Promise<JsonObj> {
+  try {
+    const j = await req.json();
+    return obj(j);
+  } catch {
+    return {};
+  }
+}
+function obj(v: unknown): JsonObj {
+  return v && typeof v === "object" && !Array.isArray(v) ? (v as JsonObj) : {};
+}
+function arr(v: unknown): unknown[] {
+  return Array.isArray(v) ? v : [];
+}
+function first(...vals: unknown[]): string {
+  for (const v of vals) {
+    const x = clean(v);
+    if (x) return x;
+  }
+  return "";
+}
+function num(v: unknown): number {
+  if (typeof v === "number" && Number.isFinite(v)) return v;
+  const n = Number(String(v ?? "").replace(",", "."));
+  return Number.isFinite(n) ? n : 0;
+}
+function bool(v: unknown): boolean {
+  if (typeof v === "boolean") return v;
+  const s = lower(v);
+  return s === "true" || s === "1" || s === "yes" || s === "evet";
+}
+function unique<T>(items: T[]): T[] {
+  return Array.from(new Set(items.filter(Boolean))) as T[];
+}
+function safeDateMs(v: unknown): number {
+  const s = clean(v);
+  if (!s) return 0;
+  const n = Date.parse(s);
+  return Number.isFinite(n) ? n : 0;
+}
+function nowIso(): string {
+  return new Date().toISOString();
+}
+function trDate(d = new Date()): string {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: IST_TZ,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(d);
+}
+function dayKey(v?: unknown): string {
+  const s = clean(v);
+  if (!s) return trDate();
+  const m = s.match(/^(\d{4}-\d{2}-\d{2})/);
+  if (m) return m[1];
+  const ms = Date.parse(s);
+  return Number.isFinite(ms) ? trDate(new Date(ms)) : trDate();
+}
+function monthKey(date = trDate()): string {
+  return clean(date).slice(0, 7);
+}
+function weekKey(date = trDate()): string {
+  try {
+    const x = new Date(date + "T12:00:00Z");
+    const firstDay = new Date(Date.UTC(x.getUTCFullYear(), 0, 1));
+    const days = Math.floor((x.getTime() - firstDay.getTime()) / 86400000);
+    return x.getUTCFullYear() + "-W" + String(Math.ceil((days + firstDay.getUTCDay() + 1) / 7)).padStart(2, "0");
+  } catch {
+    return "";
+  }
+}
+function fold(s: unknown): string {
+  return lower(s)
+    .replace(/ç/g, "c")
+    .replace(/ğ/g, "g")
+    .replace(/ı/g, "i")
+    .replace(/ö/g, "o")
+    .replace(/ş/g, "s")
+    .replace(/ü/g, "u");
 }
 function userKeyFrom(name: unknown, seflik: unknown): string {
-  const f = (s: unknown) => lower(s).replace(/ç/g,"c").replace(/ğ/g,"g").replace(/ı/g,"i").replace(/ö/g,"o").replace(/ş/g,"s").replace(/ü/g,"u");
-  return (f(name)+"__"+f(seflik)).replace(/[^a-z0-9_\-]+/g,"_").slice(0,120);
+  return (fold(name) + "__" + fold(seflik)).replace(/[^a-z0-9_\-]+/g, "_").slice(0, 120);
 }
-function first(...vals: unknown[]): string { for (const v of vals) { const x = clean(v); if (x) return x; } return ""; }
-function obj(v: unknown): JsonObj { return v && typeof v === "object" && !Array.isArray(v) ? v as JsonObj : {}; }
-function asObj(...vals: unknown[]): JsonObj { for (const v of vals) { const o = obj(v); if (Object.keys(o).length) return o; } return {}; }
-function trDate(d = new Date()): string {
-  return new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Istanbul", year: "numeric", month: "2-digit", day: "2-digit" }).format(d);
+function getPath(data: unknown, path: string): unknown {
+  let cur: any = data;
+  for (const part of path.split(".")) {
+    if (!cur || typeof cur !== "object") return undefined;
+    cur = cur[part];
+  }
+  return cur;
 }
-function dayKey(v: unknown): string { const s = clean(v); if (!s) return ''; const m = s.match(/^(\d{4}-\d{2}-\d{2})/); if (m) return m[1]; const d = new Date(s); return Number.isFinite(d.getTime()) ? trDate(d) : ''; }
-function monthKey(date = trDate()): string { return clean(date).slice(0,7); }
-function weekKey(date = trDate()): string {
-  try { const x = new Date(date + "T12:00:00Z"); const firstDay = new Date(Date.UTC(x.getUTCFullYear(),0,1)); const days = Math.floor((x.getTime() - firstDay.getTime()) / 86400000); return x.getUTCFullYear() + "-W" + String(Math.ceil((days + firstDay.getUTCDay() + 1) / 7)).padStart(2,"0"); }
-  catch { return ""; }
+function pick(data: unknown, paths: string[]): string {
+  for (const p of paths) {
+    const v = getPath(data, p);
+    const s = clean(v);
+    if (s) return s;
+  }
+  return "";
 }
-function num(v: unknown): number { const n = Number(String(v ?? "").replace(",",".")); return Number.isFinite(n) ? n : 0; }
+function pickNum(data: unknown, paths: string[]): number {
+  for (const p of paths) {
+    const v = getPath(data, p);
+    const n = num(v);
+    if (n) return n;
+  }
+  return 0;
+}
+function pickObj(data: unknown, paths: string[]): JsonObj {
+  for (const p of paths) {
+    const v = getPath(data, p);
+    const o = obj(v);
+    if (Object.keys(o).length) return o;
+  }
+  return {};
+}
+function normalizeBlockValue(type: string, value: unknown): string {
+  const t = clean(type);
+  if (t === "user_key") return lower(value);
+  return clean(value);
+}
+function ipCandidate(v: unknown): string {
+  let s = clean(v);
+  if (!s || /^unknown$/i.test(s)) return "";
+  s = s.replace(/^for=/i, "").replace(/^\"|\"$/g, "");
+  if (s.startsWith("[")) s = s.slice(1, s.indexOf("]") > 0 ? s.indexOf("]") : undefined);
+  if (/^\d{1,3}(\.\d{1,3}){3}:\d+$/.test(s)) s = s.replace(/:\d+$/, "");
+  if (s.startsWith("::ffff:")) s = s.slice(7);
+  if (!/[.:]/.test(s)) return "";
+  return s.slice(0, 120);
+}
+function clientIpInfo(req: Request, body?: JsonObj) {
+  const h = req.headers;
+  const forwarded = clean(h.get("forwarded") || "");
+  const forwardedFor = (forwarded.match(/for=([^;,]+)/i) || [])[1] || "";
+  const rawCandidates = [
+    h.get("cf-connecting-ip"),
+    h.get("x-forwarded-for"),
+    h.get("x-real-ip"),
+    h.get("x-client-ip"),
+    h.get("fastly-client-ip"),
+    h.get("true-client-ip"),
+    forwardedFor,
+    h.get("fly-client-ip"),
+    body?.ip,
+    body?.lastIp,
+    body?.last_ip,
+    body?.ipAddress,
+    body?.ip_address,
+  ];
+  const candidates: string[] = [];
+  for (const raw of rawCandidates) {
+    const parts = clean(raw).split(",");
+    for (const part of parts) {
+      const ip = ipCandidate(part);
+      if (ip) candidates.push(ip);
+    }
+  }
+  const all = unique(candidates);
+  return {
+    ip: all[0] || "",
+    source: all[0] ? "edge-header" : "none",
+    candidates: all.slice(0, 10),
+    headers: {
+      cf: clean(h.get("cf-connecting-ip") || ""),
+      xff: clean(h.get("x-forwarded-for") || "").slice(0, 300),
+      real: clean(h.get("x-real-ip") || ""),
+      forwarded: forwarded.slice(0, 300),
+    },
+  };
+}
+function parseJwtSub(req: Request): string {
+  const token = clean((req.headers.get("authorization") || "").replace(/^Bearer\s+/i, ""));
+  if (!token.includes(".")) return "";
+  try {
+    const payload = token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
+    const padded = payload + "=".repeat((4 - (payload.length % 4)) % 4);
+    const jsonTxt = atob(padded);
+    const j = JSON.parse(jsonTxt);
+    return clean(j.sub);
+  } catch {
+    return "";
+  }
+}
+function errorText(e: unknown): string {
+  return e instanceof Error ? e.message : clean(e || "Bilinmeyen hata");
+}
+function isMissingColumn(error: unknown): boolean {
+  const m = lower(errorText(error));
+  return m.includes("column") && (m.includes("does not exist") || m.includes("not found"));
+}
+function isMissingTable(error: unknown): boolean {
+  const m = lower(errorText(error));
+  return m.includes("relation") && m.includes("does not exist");
+}
 function totalsMerge(a: JsonObj, b: JsonObj): JsonObj {
   const out: JsonObj = { ...(a || {}) };
   for (const [k, v] of Object.entries(b || {})) {
     if (v && typeof v === "object" && !Array.isArray(v)) {
-      const old = obj(out[k]); const nv = obj(v);
-      out[k] = { ...old, ...nv, adet: num(old.adet) + num(nv.adet), count: num(old.count) + num(nv.count), m3: num(old.m3) + num(nv.m3 || nv.totalM3 || nv.volume) };
-    } else out[k] = num(out[k]) + num(v);
+      const old = obj(out[k]);
+      const nv = obj(v);
+      out[k] = {
+        ...old,
+        ...nv,
+        adet: num(old.adet) + num(nv.adet ?? nv.count ?? nv.record_count),
+        count: num(old.count) + num(nv.count ?? nv.adet ?? nv.record_count),
+        m3: num(old.m3) + num(nv.m3 ?? nv.totalM3 ?? nv.total_volume ?? nv.volume),
+      };
+    } else {
+      out[k] = num(out[k]) + num(v);
+    }
   }
   return out;
 }
 
-const admin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, { auth: { persistSession: false, autoRefreshToken: false } });
+const admin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
+  auth: { persistSession: false, autoRefreshToken: false },
+});
 
 async function authUserId(req: Request): Promise<string> {
-  const token = (req.headers.get("authorization") || "").replace(/^Bearer\s+/i, "").trim();
-  if (!token || !ANON_KEY) return "";
-  try {
-    const userClient = createClient(SUPABASE_URL, ANON_KEY, { auth: { persistSession: false, autoRefreshToken: false }, global: { headers: { Authorization: `Bearer ${token}` } } });
-    const { data } = await userClient.auth.getUser();
-    return data.user?.id || "";
-  } catch { return ""; }
+  const token = clean((req.headers.get("authorization") || "").replace(/^Bearer\s+/i, ""));
+  if (token && ANON_KEY) {
+    try {
+      const userClient = createClient(SUPABASE_URL, ANON_KEY, {
+        auth: { persistSession: false, autoRefreshToken: false },
+        global: { headers: { Authorization: `Bearer ${token}` } },
+      });
+      const { data, error } = await userClient.auth.getUser();
+      if (!error && data.user?.id) return data.user.id;
+    } catch {
+      // Fallback aşağıda.
+    }
+  }
+  return parseJwtSub(req);
 }
-async function insertEvent(row: JsonObj): Promise<void> { try { await admin.from("mesaha_security_events").insert(row); } catch { /* event yazılamazsa uygulama bozulmasın */ } }
+function requireAdmin(req: Request, body: JsonObj): Response | null {
+  if (!ADMIN_KEY) return json({ ok: false, error: "MESAHA_ADMIN_KEY tanımlı değil" }, 500);
+  const given = first(body.admin_key, body.adminKey, req.headers.get("x-admin-key"));
+  if (given !== ADMIN_KEY) return json({ ok: false, error: "Yönetim anahtarı hatalı" }, 401);
+  return null;
+}
+async function insertEvent(row: JsonObj): Promise<void> {
+  try {
+    await admin.from(TABLES.events).insert({
+      ...row,
+      created_at: row.created_at || nowIso(),
+    });
+  } catch {
+    // Event yazılamazsa uygulama/admin panel çalışmaya devam etsin.
+  }
+}
+async function insertLog(row: JsonObj): Promise<void> {
+  try {
+    await admin.from(TABLES.logs).insert({
+      level: clean(row.level || "info").slice(0, 80),
+      message: clean(row.message || "Mesaha işlem").slice(0, 500),
+      payload: obj(row.payload),
+    });
+  } catch {
+    // Log zorunlu değil.
+  }
+}
+async function selectRows(table: string, opts: { order?: string; ascending?: boolean; limit?: number; eq?: Record<string, string> } = {}) {
+  try {
+    let q: any = admin.from(table).select("*");
+    for (const [k, v] of Object.entries(opts.eq || {})) q = q.eq(k, v);
+    if (opts.order) q = q.order(opts.order, { ascending: opts.ascending ?? false });
+    if (opts.limit) q = q.limit(opts.limit);
+    const { data, error } = await q;
+    if (error) {
+      if (opts.order && isMissingColumn(error.message)) {
+        let q2: any = admin.from(table).select("*");
+        for (const [k, v] of Object.entries(opts.eq || {})) q2 = q2.eq(k, v);
+        if (opts.limit) q2 = q2.limit(opts.limit);
+        const r2 = await q2;
+        if (r2.error) return { items: [], error: r2.error.message };
+        return { items: r2.data || [] };
+      }
+      return { items: [], error: error.message };
+    }
+    return { items: data || [] };
+  } catch (e) {
+    return { items: [], error: errorText(e) };
+  }
+}
+async function selectFirst(table: string, eq: Record<string, string>) {
+  const r = await selectRows(table, { eq, limit: 1 });
+  return arr(r.items)[0] || null;
+}
+async function safeUpdate(table: string, values: JsonObj, eq: Record<string, string>) {
+  try {
+    let q: any = admin.from(table).update(values);
+    for (const [k, v] of Object.entries(eq || {})) q = q.eq(k, v);
+    const { error, count } = await q.select("id", { count: "exact", head: true });
+    return { table, op: "update", eq, count: count || 0, error: error?.message || null };
+  } catch (e) {
+    return { table, op: "update", eq, count: 0, error: errorText(e) };
+  }
+}
+async function safeDelete(table: string, column: string, value: string) {
+  if (!value) return { table, column, skipped: true };
+  try {
+    const { error, count } = await admin.from(table).delete({ count: "exact" }).eq(column, value);
+    return { table, column, value, count: count || 0, error: error?.message || null };
+  } catch (e) {
+    return { table, column, value, count: 0, error: errorText(e) };
+  }
+}
+async function safeDeleteMany(table: string, columns: string[], value: string) {
+  const out: JsonObj[] = [];
+  for (const column of unique(columns)) {
+    const r = await safeDelete(table, column, value);
+    if (!r.error || !isMissingColumn(r.error)) out.push(r);
+  }
+  return out;
+}
 async function activeBlock(block_type: string, block_value: string) {
   if (!block_value) return null;
-  const { data, error } = await admin.from("mesaha_security_blocks").select("*").eq("active", true).eq("block_type", block_type).eq("block_value", block_value).limit(1);
-  if (error) return null;
-  return Array.isArray(data) && data.length ? data[0] as JsonObj : null;
+  const { items } = await selectRows(TABLES.blocks, {
+    eq: { block_type, block_value, active: "true" },
+    limit: 1,
+  });
+  return arr(items)[0] || null;
 }
-async function upsertProfileFromGuard(req: Request, body: JsonObj, userId: string, ip: string) {
-  const name = first(body.name, obj(body.user).name);
-  const seflik = first(body.seflik, obj(body.user).seflik);
-  let user_key = lower(first(body.userKey, body.user_key));
+async function anyBlock(values: { user_id?: string; user_key?: string; ip?: string; device_id?: string }) {
+  const checks = [
+    ["user_id", values.user_id || ""],
+    ["user_key", lower(values.user_key || "")],
+    ["ip", values.ip || ""],
+    ["device_id", values.device_id || ""],
+  ];
+  for (const [type, value] of checks) {
+    const b = await activeBlock(type, value);
+    if (b) return b;
+  }
+  return null;
+}
+function profileValues(body: JsonObj, userId: string, ipInfo: JsonObj): JsonObj {
+  const user = obj(body.user);
+  const deviceInfo = { ...obj(body.deviceInfo), ...obj(body.device_info), ...obj(body.lastDeviceInfo) };
+  const name = first(body.name, user.name, body.userName, body.kullanici, deviceInfo.name);
+  const seflik = first(body.seflik, user.seflik, body.seflikAdi, deviceInfo.seflik);
+  let user_key = lower(first(body.userKey, body.user_key, user.userKey, user.user_key));
   if (!user_key && name && seflik) user_key = userKeyFrom(name, seflik);
-  if (!userId || !user_key) return;
-  const deviceInfo = asObj(body.deviceInfo, body.device_info);
-  const flat = { ...body, ...deviceInfo } as JsonObj;
-  const row = {
-    user_id: userId,
-    user_key,
+  const device_id = first(body.deviceId, body.device_id, deviceInfo.deviceId, deviceInfo.device_id);
+  const app_version = first(body.appVersion, body.app_version, body.visibleVersion, body.fileVersion, deviceInfo.appVersion);
+  const platform = first(body.platform, body.os, body.deviceType, deviceInfo.os, deviceInfo.platform, deviceInfo.deviceType);
+  const browser = first(body.browser, body.browserName, deviceInfo.browser, deviceInfo.browserName);
+  const browser_version = first(body.browserVersion, body.browser_version, deviceInfo.browserVersion, deviceInfo.browser_version);
+
+  return {
+    user_id: userId || null,
+    user_key: user_key || null,
     name: name || "Kullanıcı",
     seflik: seflik || "Şeflik",
-    bolme_no: first(body.bolmeNo, body.bolme_no) || null,
-    app_version: first(body.appVersion, body.app_version, body.fileVersion, flat.appVersion) || null,
-    device_id: first(body.deviceId, body.device_id, flat.deviceId) || null,
-    last_ip: ip || null,
-    last_seen_at: new Date().toISOString(),
-    platform: first(flat.os, flat.platform, flat.deviceType) || null,
-    browser: first(flat.browser, flat.browserName) || null,
-    browser_version: first(flat.browserVersion, flat.browser_version) || null,
+    bolme_no: first(body.bolmeNo, body.bolme_no, user.bolmeNo, user.bolme_no) || null,
+    app_version: app_version || null,
+    device_id: device_id || null,
+    last_ip: clean(ipInfo.ip) || null,
+    last_seen_at: nowIso(),
+    platform: platform || null,
+    browser: browser || null,
+    browser_version: browser_version || null,
     device_info: deviceInfo,
-    payload: body,
+    payload: { ...body, edgeIp: ipInfo },
   };
-  try { await admin.from("mesaha_user_profiles").upsert(row, { onConflict: "user_id" }); } catch { /* eski şema ise sessiz geç */ }
 }
-async function checkAccess(req: Request, body: JsonObj) {
-  const ip = clientIp(req);
-  const userKey = lower(body.userKey || body.user_key);
-  const deviceId = clean(body.deviceId || body.device_id);
-  const blocks = [await activeBlock("ip", ip), await activeBlock("user_key", userKey), await activeBlock("device_id", deviceId)].filter(Boolean) as JsonObj[];
-  const blocked = blocks.length > 0;
-  const reason = blocked ? clean(blocks[0].reason) || "Yönetici engeli" : "";
+async function upsertProfile(row: JsonObj) {
+  const userId = clean(row.user_id);
+  const userKey = lower(row.user_key);
+  const deviceId = clean(row.device_id);
+  try {
+    if (userId) {
+      const { error } = await admin.from(TABLES.profiles).upsert(row, { onConflict: "user_id" });
+      if (!error) return { ok: true, mode: "upsert_user_id" };
+      if (!isMissingColumn(error.message)) return { ok: false, error: error.message };
+    }
+
+    let existing: any = null;
+    if (userKey && deviceId) existing = await selectFirst(TABLES.profiles, { user_key: userKey, device_id: deviceId });
+    if (!existing && userKey) existing = await selectFirst(TABLES.profiles, { user_key: userKey });
+
+    if (existing && clean(existing.id)) {
+      const { error } = await admin.from(TABLES.profiles).update(row).eq("id", clean(existing.id));
+      if (error) return { ok: false, error: error.message };
+      return { ok: true, mode: "update_existing" };
+    }
+
+    const { error } = await admin.from(TABLES.profiles).insert(row);
+    if (error) return { ok: false, error: error.message };
+    return { ok: true, mode: "insert" };
+  } catch (e) {
+    return { ok: false, error: errorText(e) };
+  }
+}
+async function upsertUsageCurrent(row: JsonObj, payload: JsonObj) {
+  const userId = clean(row.user_id);
+  const userKey = lower(row.user_key);
+  const deviceId = clean(row.device_id);
+  const data = {
+    user_id: userId || null,
+    user_key: userKey || null,
+    name: row.name || null,
+    seflik: row.seflik || null,
+    app_version: row.app_version || null,
+    device_id: deviceId || null,
+    last_ip: row.last_ip || null,
+    last_seen_at: nowIso(),
+    payload,
+  };
+  try {
+    let existing: any = null;
+    if (userId) existing = await selectFirst(TABLES.usageCurrent, { user_id: userId });
+    if (!existing && userKey && deviceId) existing = await selectFirst(TABLES.usageCurrent, { user_key: userKey, device_id: deviceId });
+    if (!existing && userKey) existing = await selectFirst(TABLES.usageCurrent, { user_key: userKey });
+    if (existing && clean(existing.id)) {
+      const { error } = await admin.from(TABLES.usageCurrent).update(data).eq("id", clean(existing.id));
+      if (error) return { ok: false, error: error.message };
+      return { ok: true, mode: "update" };
+    }
+    const { error } = await admin.from(TABLES.usageCurrent).insert(data);
+    if (error) return { ok: false, error: error.message };
+    return { ok: true, mode: "insert" };
+  } catch (e) {
+    return { ok: false, error: errorText(e) };
+  }
+}
+function extractStats(body: JsonObj) {
+  const p = { ...body, ...obj(body.payload), ...obj(body.stats), ...obj(body.summary) } as JsonObj;
+  const date = dayKey(first(p.date, p.day, p.createdAt, p.updatedAt));
+  const recordCount = pickNum(p, ["todayRecords", "dayRecords", "recordCount", "totalRecords", "adet", "lastExportRecordCount"]);
+  const totalVolume = pickNum(p, ["todayM3", "dayM3", "totalM3", "m3", "lastExportM3", "total_volume"]);
+  return {
+    date,
+    week_key: first(p.weekKey, p.week_key) || weekKey(date),
+    month_key: first(p.monthKey, p.month_key) || monthKey(date),
+    record_count: recordCount,
+    total_volume: Number(totalVolume.toFixed(3)),
+    tree_totals: pickObj(p, ["treeTotals", "tree_totals", "lastExportTreeTotals"]),
+    product_totals: pickObj(p, ["productTotals", "product_totals", "lastExportProductTotals"]),
+    payload: p,
+  };
+}
+async function upsertUsageDaily(profile: JsonObj, body: JsonObj, ipInfo: JsonObj) {
+  const userId = clean(profile.user_id);
+  const userKey = lower(profile.user_key);
+  if (!userId && !userKey) return { ok: false, error: "user_id/user_key yok" };
+  const stats = extractStats(body);
+  const deviceId = clean(profile.device_id);
+  const id = first(body.id, body.dailyId, userKey && `${userKey}_${stats.date}_${deviceId || "nodevice"}`, userId && `${userId}_${stats.date}_${deviceId || "nodevice"}`);
+  const row = {
+    id,
+    user_id: userId || null,
+    user_key: userKey || null,
+    name: profile.name || null,
+    seflik: profile.seflik || null,
+    date: stats.date,
+    week_key: stats.week_key,
+    month_key: stats.month_key,
+    record_count: stats.record_count,
+    total_volume: stats.total_volume,
+    tree_totals: stats.tree_totals,
+    product_totals: stats.product_totals,
+    app_version: profile.app_version || null,
+    device_id: deviceId || null,
+    last_ip: clean(ipInfo.ip) || null,
+    payload: { ...stats.payload, edgeIp: ipInfo },
+    last_seen_at: nowIso(),
+  };
+  try {
+    const { error } = await admin.from(TABLES.usageDaily).upsert(row, { onConflict: "id" });
+    if (error) return { ok: false, error: error.message };
+    return { ok: true, id };
+  } catch (e) {
+    return { ok: false, error: errorText(e) };
+  }
+}
+async function guardAndProfile(req: Request, body: JsonObj, writeDaily = false) {
+  const ipInfo = clientIpInfo(req, body);
   const userId = await authUserId(req);
-  await upsertProfileFromGuard(req, body, userId, ip);
-  await insertEvent({ user_id: userId || null, ip_address: ip || null, user_key: userKey || null, name: clean(body.name) || null, seflik: clean(body.seflik) || null, device_id: deviceId || null, app_version: clean(body.appVersion || body.app_version) || null, event_type: clean(body.action || "check").slice(0, 80), blocked, reason: reason || null, metadata: body });
-  if (blocked) return json({ ok: false, blocked: true, reason, ip }, 403);
-  return json({ ok: true, blocked: false, ip });
+  const profile = profileValues(body, userId, ipInfo);
+  const block = await anyBlock({
+    user_id: userId,
+    user_key: clean(profile.user_key),
+    ip: clean(ipInfo.ip),
+    device_id: clean(profile.device_id),
+  });
+  const blocked = !!block;
+  const reason = blocked ? first(block.reason, "Yönetici engeli") : "";
+
+  const profileResult = await upsertProfile(profile);
+  const usageResult = await upsertUsageCurrent(profile, { ...body, edgeIp: ipInfo });
+  let dailyResult: JsonObj | null = null;
+  if (writeDaily) dailyResult = await upsertUsageDaily(profile, body, ipInfo);
+
+  await insertEvent({
+    user_id: userId || null,
+    ip_address: clean(ipInfo.ip) || null,
+    user_key: clean(profile.user_key) || null,
+    name: clean(profile.name) || null,
+    seflik: clean(profile.seflik) || null,
+    device_id: clean(profile.device_id) || null,
+    app_version: clean(profile.app_version) || null,
+    event_type: clean(body.action || "check").slice(0, 80),
+    blocked,
+    reason: reason || null,
+    metadata: { ...body, edgeIp: ipInfo, profileResult, usageResult, dailyResult },
+  });
+
+  if (blocked) return json({ ok: false, blocked: true, reason, ip: clean(ipInfo.ip), block }, 403);
+  return json({ ok: true, blocked: false, ip: clean(ipInfo.ip), ipInfo, profile: profileResult, usage: usageResult, daily: dailyResult });
 }
-async function listTable(table: string, order = "updated_at", limit = 1000) {
-  let q = admin.from(table).select("*").limit(limit);
-  try { q = q.order(order, { ascending: false }); } catch { /* yoksa sıralamasız */ }
-  const { data, error } = await q;
-  if (error) return { items: [], error: error.message };
-  return { items: data || [] };
+function shouldWriteDaily(action: string): boolean {
+  const a = lower(action);
+  return [
+    "sync_usage",
+    "usage_sync",
+    "usage_ping",
+    "export_stats",
+    "xls_download",
+    "mesaha_download",
+    "backup_stats",
+    "cloud_backup_stats",
+    "cloud_backup",
+    "drive_backup",
+    "yedek_al",
+    "buluta_yedekle",
+  ].includes(a);
 }
 function aggregateDaily(items: JsonObj[]) {
-  const today = trDate(); const wk = weekKey(today); const mo = monthKey(today);
+  const today = trDate();
+  const wk = weekKey(today);
+  const mo = monthKey(today);
   const map = new Map<string, JsonObj>();
+
   for (const r of items || []) {
-    const p = obj(r.payload); const key = first(r.user_key, p.userKey, p.user_key, r.user_id); if (!key) continue;
-    const date = dayKey(first(r.date, p.date, p.day, r.created_at, p.createdAt)) || trDate(); const w = first(r.week_key, p.weekKey) || weekKey(date); const m = first(r.month_key, p.monthKey) || monthKey(date);
-    const old = map.get(key) || { user_key: key, name: first(r.name, p.name), seflik: first(r.seflik, p.seflik), payload: { userKey: key, name: first(r.name, p.name), seflik: first(r.seflik, p.seflik), todayRecords: 0, todayM3: 0, weekRecordCount: 0, weekM3: 0, monthRecordCount: 0, monthM3: 0, treeTotals: {}, productTotals: {} } } as JsonObj;
+    const p = obj(r.payload);
+    const key = first(r.user_key, p.userKey, p.user_key, r.user_id, p.id);
+    if (!key) continue;
+    const date = dayKey(first(r.date, p.date, p.day, r.created_at, p.createdAt));
+    const w = first(r.week_key, p.weekKey, p.week_key) || weekKey(date);
+    const m = first(r.month_key, p.monthKey, p.month_key) || monthKey(date);
+    const count = num(first(r.record_count, p.todayRecords, p.dayRecords, p.recordCount, p.totalRecords, p.adet, p.lastExportRecordCount));
+    const vol = num(first(r.total_volume, p.todayM3, p.dayM3, p.totalM3, p.m3, p.lastExportM3));
+
+    const old = map.get(key) || {
+      user_key: key,
+      user_id: first(r.user_id, p.user_id),
+      name: first(r.name, p.name),
+      seflik: first(r.seflik, p.seflik),
+      last_ip: first(r.last_ip, p.lastIp, p.ip),
+      device_id: first(r.device_id, p.deviceId),
+      app_version: first(r.app_version, p.appVersion, p.fileVersion),
+      last_seen_at: first(r.last_seen_at, r.updated_at, r.created_at),
+      payload: {
+        userKey: key,
+        name: first(r.name, p.name),
+        seflik: first(r.seflik, p.seflik),
+        todayRecords: 0,
+        todayM3: 0,
+        weekRecordCount: 0,
+        weekM3: 0,
+        monthRecordCount: 0,
+        monthM3: 0,
+        treeTotals: {},
+        productTotals: {},
+      },
+    } as JsonObj;
+
     const outp = obj(old.payload);
-    const count = num(first(r.record_count, p.todayRecords, p.recordCount, p.totalRecords, p.adet)); const vol = num(first(r.total_volume, p.todayM3, p.totalM3, p.m3));
-    if (date === today) { outp.todayRecords = num(outp.todayRecords) + count; outp.todayM3 = num(outp.todayM3) + vol; }
-    if (w === wk) { outp.weekRecordCount = num(outp.weekRecordCount) + count; outp.weekM3 = num(outp.weekM3) + vol; }
-    if (m === mo) { outp.monthRecordCount = num(outp.monthRecordCount) + count; outp.monthM3 = num(outp.monthM3) + vol; }
-    outp.treeTotals = totalsMerge(obj(outp.treeTotals), asObj(r.tree_totals, p.treeTotals, p.tree_totals));
-    outp.productTotals = totalsMerge(obj(outp.productTotals), asObj(r.product_totals, p.productTotals, p.product_totals));
+    if (date === today) {
+      outp.todayRecords = num(outp.todayRecords) + count;
+      outp.todayM3 = Number((num(outp.todayM3) + vol).toFixed(3));
+    }
+    if (w === wk) {
+      outp.weekRecordCount = num(outp.weekRecordCount) + count;
+      outp.weekM3 = Number((num(outp.weekM3) + vol).toFixed(3));
+    }
+    if (m === mo) {
+      outp.monthRecordCount = num(outp.monthRecordCount) + count;
+      outp.monthM3 = Number((num(outp.monthM3) + vol).toFixed(3));
+    }
+    outp.treeTotals = totalsMerge(obj(outp.treeTotals), pickObj({ r, p, ...r, ...p }, ["tree_totals", "treeTotals", "p.treeTotals", "p.tree_totals"]));
+    outp.productTotals = totalsMerge(obj(outp.productTotals), pickObj({ r, p, ...r, ...p }, ["product_totals", "productTotals", "p.productTotals", "p.product_totals"]));
+
     old.payload = outp;
-    old.record_count = num(outp.monthRecordCount) || Math.max(num(old.record_count), count); old.total_volume = num(outp.monthM3) || Math.max(num(old.total_volume), vol); old.updated_at = new Date().toISOString();
+    old.record_count = num(outp.monthRecordCount) || Math.max(num(old.record_count), count);
+    old.total_volume = num(outp.monthM3) || Math.max(num(old.total_volume), vol);
+    old.updated_at = first(r.updated_at, r.last_seen_at, r.created_at, old.updated_at, nowIso());
     map.set(key, old);
   }
   return Array.from(map.values());
 }
+function rowUserKey(r: JsonObj): string {
+  const p = obj(r.payload);
+  return lower(first(r.user_key, p.userKey, p.user_key, r.user_id, p.id));
+}
+function rowUserId(r: JsonObj): string {
+  return clean(first(r.user_id, obj(r.payload).user_id));
+}
+function rowLastSeen(r: JsonObj): string {
+  const p = obj(r.payload);
+  return first(r.last_seen_at, r.updated_at, p.lastSeenAt, p.lastSeen, p.updatedAt, r.created_at);
+}
+function rowIp(r: JsonObj): string {
+  const p = obj(r.payload);
+  const meta = obj(r.metadata);
+  return first(r.last_ip, r.ip_address, p.lastIp, p.last_ip, p.ip, p.ipAddress, meta.edgeIp && obj(meta.edgeIp).ip, meta.ip);
+}
+function enrichProfiles(profiles: JsonObj[], usage: JsonObj[], daily: JsonObj[], events: JsonObj[]) {
+  const byKey = new Map<string, JsonObj>();
+  const byId = new Map<string, JsonObj>();
+  const touch = (r: JsonObj) => {
+    const key = rowUserKey(r);
+    const id = rowUserId(r);
+    const ip = rowIp(r);
+    const seen = rowLastSeen(r) || first(r.created_at);
+    if (key) {
+      const old = byKey.get(key) || {};
+      if (ip && (!old.ip || safeDateMs(seen) >= safeDateMs(old.seen))) byKey.set(key, { ip, seen, row: r });
+      else if (!old.ip) byKey.set(key, { ip, seen, row: r });
+    }
+    if (id) {
+      const old = byId.get(id) || {};
+      if (ip && (!old.ip || safeDateMs(seen) >= safeDateMs(old.seen))) byId.set(id, { ip, seen, row: r });
+      else if (!old.ip) byId.set(id, { ip, seen, row: r });
+    }
+  };
+  [...usage, ...daily, ...events].forEach((x) => touch(obj(x)));
+
+  return (profiles || []).map((raw) => {
+    const r = { ...obj(raw) };
+    const key = rowUserKey(r);
+    const id = rowUserId(r);
+    const hit = (key && byKey.get(key)) || (id && byId.get(id)) || null;
+    if (hit) {
+      if (!clean(r.last_ip) && clean(hit.ip)) r.last_ip = clean(hit.ip);
+      if (!clean(r.last_seen_at) && clean(hit.seen)) r.last_seen_at = clean(hit.seen);
+    }
+    const p = obj(r.payload);
+    r.ip = first(r.last_ip, p.ip, p.lastIp);
+    r.lastIp = r.ip;
+    return r;
+  });
+}
+function onlineSummary(profiles: JsonObj[], events: JsonObj[]) {
+  const today = trDate();
+  const now = Date.now();
+  const seenToday = new Set<string>();
+  const onlineNow = new Set<string>();
+  const add = (r: JsonObj) => {
+    const key = rowUserKey(r) || rowUserId(r) || clean(first(r.name, obj(r.payload).name)) + "__" + clean(first(r.seflik, obj(r.payload).seflik));
+    if (!key) return;
+    const seen = rowLastSeen(r) || first(r.created_at);
+    if (dayKey(seen) === today) seenToday.add(key);
+    const ms = safeDateMs(seen);
+    if (ms && now - ms <= 15 * 60 * 1000) onlineNow.add(key);
+  };
+  profiles.forEach((x) => add(obj(x)));
+  events.forEach((x) => add(obj(x)));
+  return { todayOnline: seenToday.size, onlineNow: onlineNow.size, totalUsers: profiles.length };
+}
 async function adminListAll(body: JsonObj) {
   const limit = Math.min(Math.max(Number(body.limit || 2500) || 2500, 100), 5000);
-  const [profiles, usage, backups, logs, daily] = await Promise.all([
-    listTable("mesaha_user_profiles", "last_seen_at", limit),
-    listTable("mesaha_usage_current", "last_seen_at", limit),
-    listTable("mesaha_backup_slots", "updated_at", limit),
-    listTable("mesaha_log_current", "updated_at", limit),
-    listTable("mesaha_usage_daily", "date", limit),
+  const [profiles0, usage, backups, logs, daily, events, blocks] = await Promise.all([
+    selectRows(TABLES.profiles, { order: "last_seen_at", limit }),
+    selectRows(TABLES.usageCurrent, { order: "last_seen_at", limit }),
+    selectRows(TABLES.backupSlots, { order: "updated_at", limit }),
+    selectRows(TABLES.logs, { order: "updated_at", limit }),
+    selectRows(TABLES.usageDaily, { order: "date", limit }),
+    selectRows(TABLES.events, { order: "created_at", limit: Math.min(limit, 3000) }),
+    selectRows(TABLES.blocks, { order: "created_at", limit: 1000 }),
   ]);
-  const [events, blocks] = await Promise.all([ listTable("mesaha_security_events", "created_at", Math.min(limit, 3000)), listTable("mesaha_security_blocks", "created_at", 1000) ]);
-  const dailyAgg = aggregateDaily(daily.items as JsonObj[]);
-  return json({ ok: true, profiles: profiles.items, usage: [...(usage.items as JsonObj[]), ...dailyAgg], daily_usage: daily.items, backups: backups.items, logs: logs.items, events: events.items, blocks: blocks.items, errors: { profiles: profiles.error, usage: usage.error, daily_usage: daily.error, backups: backups.error, logs: logs.error, events: events.error, blocks: blocks.error } });
+
+  const profiles = enrichProfiles(
+    arr(profiles0.items).map(obj),
+    arr(usage.items).map(obj),
+    arr(daily.items).map(obj),
+    arr(events.items).map(obj),
+  );
+  const dailyAgg = aggregateDaily(arr(daily.items).map(obj));
+  const summary = onlineSummary(profiles, arr(events.items).map(obj));
+
+  return json({
+    ok: true,
+    profiles,
+    users: profiles,
+    usage: [...arr(usage.items).map(obj), ...dailyAgg],
+    daily_usage: daily.items,
+    dailyUsage: daily.items,
+    backups: backups.items,
+    logs: logs.items,
+    events: events.items,
+    blocks: blocks.items,
+    security_blocks: blocks.items,
+    summary: { ...summary, generatedAt: nowIso(), today: trDate() },
+    errors: {
+      profiles: profiles0.error || null,
+      usage: usage.error || null,
+      daily_usage: daily.error || null,
+      backups: backups.error || null,
+      logs: logs.error || null,
+      events: events.error || null,
+      blocks: blocks.error || null,
+    },
+  });
 }
 async function adminListEvents(body: JsonObj) {
-  const limit = Math.min(Math.max(Number(body.limit || 500) || 500, 50), 2000);
-  const { data, error } = await admin.from("mesaha_security_events").select("*").order("created_at", { ascending: false }).limit(limit);
-  if (error) return json({ ok: false, error: error.message }, 500);
-  return json({ ok: true, items: data || [] });
+  const limit = Math.min(Math.max(Number(body.limit || 500) || 500, 50), 3000);
+  const r = await selectRows(TABLES.events, { order: "created_at", limit });
+  if (r.error) return json({ ok: false, error: r.error }, 500);
+  return json({ ok: true, items: r.items || [] });
 }
 async function adminListBlocks() {
-  const { data, error } = await admin.from("mesaha_security_blocks").select("*").order("created_at", { ascending: false }).limit(1000);
-  if (error) return json({ ok: false, error: error.message }, 500);
-  return json({ ok: true, items: data || [] });
+  const r = await selectRows(TABLES.blocks, { order: "created_at", limit: 1000 });
+  if (r.error) return json({ ok: false, error: r.error }, 500);
+  return json({ ok: true, items: r.items || [] });
 }
 async function adminAddBlock(req: Request, body: JsonObj) {
   const block_type = clean(body.block_type || body.type);
-  const block_value = block_type === "user_key" ? lower(body.block_value || body.value) : clean(body.block_value || body.value);
+  const block_value = normalizeBlockValue(block_type, body.block_value || body.value);
   if (!block_type || !block_value) return json({ ok: false, error: "Engel tipi veya değeri boş" }, 400);
-
   const reason = clean(body.reason) || "Admin engeli";
-  const row = { block_type, block_value, reason, active: true };
+  const row = { block_type, block_value, reason, active: true, updated_at: nowIso() };
 
-  // Aynı kullanıcı/IP daha önce engellendiyse tekrar insert yapma.
-  // Eski kayıt pasif olsa bile unique index (block_type, block_value) yüzünden duplicate hatası verir.
-  // Bu yüzden önce mevcut kaydı bulup aktif hale getiriyoruz.
-  const { data: existingRows, error: lookupError } = await admin
-    .from("mesaha_security_blocks")
-    .select("*")
-    .eq("block_type", block_type)
-    .eq("block_value", block_value)
-    .limit(1);
-
-  if (lookupError) return json({ ok: false, error: lookupError.message }, 500);
-
-  if (Array.isArray(existingRows) && existingRows.length) {
-    const existing = existingRows[0] as JsonObj;
-    const { data: updated, error: updateError } = await admin
-      .from("mesaha_security_blocks")
-      .update({ active: true, reason, updated_at: new Date().toISOString() })
-      .eq("id", clean(existing.id))
+  try {
+    const { data, error } = await admin
+      .from(TABLES.blocks)
+      .upsert(row, { onConflict: "block_type,block_value" })
       .select("*")
       .limit(1);
 
-    if (updateError) return json({ ok: false, error: updateError.message }, 500);
-
-    await insertEvent({
-      ip_address: clientIp(req) || null,
-      event_type: "admin_add_block_existing",
-      blocked: false,
-      metadata: { ...row, existing_id: clean(existing.id) },
-    });
-
-    return json({
-      ok: true,
-      item: Array.isArray(updated) && updated.length ? updated[0] : existing,
-      duplicate: true,
-      reactivated: existing.active === false,
-      message: existing.active === false ? "Engel tekrar aktif edildi" : "Bu kayıt zaten engelli",
-    });
-  }
-
-  const { data, error } = await admin.from("mesaha_security_blocks").insert(row).select("*").limit(1);
-  if (error) {
-    const old = await activeBlock(block_type, block_value);
-    if (old) return json({ ok: true, item: old, duplicate: true, message: "Bu kayıt zaten engelli" });
-    if (clean(error.message).toLowerCase().includes("duplicate key")) {
-      return json({ ok: true, duplicate: true, message: "Bu kayıt zaten engelli" });
+    if (error) {
+      const existing = await selectFirst(TABLES.blocks, { block_type, block_value });
+      if (existing) {
+        const id = clean((existing as JsonObj).id);
+        let q: any = admin.from(TABLES.blocks).update({ active: true, reason, updated_at: nowIso() });
+        if (id) q = q.eq("id", id);
+        else q = q.eq("block_type", block_type).eq("block_value", block_value);
+        const u = await q.select("*").limit(1);
+        if (u.error) return json({ ok: false, error: u.error.message }, 500);
+        await insertEvent({ ip_address: clientIpInfo(req).ip || null, event_type: "admin_add_block_existing", blocked: false, metadata: { block_type, block_value, reason } });
+        return json({ ok: true, duplicate: true, message: "Bu kayıt zaten engelliydi, aktif hale getirildi", item: arr(u.data)[0] || existing });
+      }
+      if (lower(error.message).includes("duplicate key")) return json({ ok: true, duplicate: true, message: "Bu kayıt zaten engelli" });
+      return json({ ok: false, error: error.message }, 500);
     }
-    return json({ ok: false, error: error.message }, 500);
-  }
 
-  await insertEvent({ ip_address: clientIp(req) || null, event_type: "admin_add_block", blocked: false, metadata: row });
-  return json({ ok: true, item: Array.isArray(data) ? data[0] : data });
+    await insertEvent({ ip_address: clientIpInfo(req).ip || null, event_type: "admin_add_block", blocked: false, metadata: { block_type, block_value, reason } });
+    return json({ ok: true, item: arr(data)[0] || row });
+  } catch (e) {
+    return json({ ok: false, error: errorText(e) }, 500);
+  }
 }
 async function adminRemoveBlock(req: Request, body: JsonObj) {
-  const id = clean(body.id); const block_type = clean(body.block_type || body.type); const block_value = block_type === "user_key" ? lower(body.block_value || body.value) : clean(body.block_value || body.value);
-  let q = admin.from("mesaha_security_blocks").update({ active: false });
-  if (id) q = q.eq("id", id); else if (block_type && block_value) q = q.eq("block_type", block_type).eq("block_value", block_value); else return json({ ok: false, error: "Engel ID veya tip/değer boş" }, 400);
-  const { error } = await q; if (error) return json({ ok: false, error: error.message }, 500);
-  await insertEvent({ ip_address: clientIp(req) || null, event_type: "admin_remove_block", blocked: false, metadata: { id, block_type, block_value } });
-  return json({ ok: true });
+  const id = clean(body.id);
+  const block_type = clean(body.block_type || body.type);
+  const block_value = normalizeBlockValue(block_type, body.block_value || body.value);
+  if (!id && (!block_type || !block_value)) return json({ ok: false, error: "Engel ID veya tip/değer boş" }, 400);
+  try {
+    let q: any = admin.from(TABLES.blocks).update({ active: false, updated_at: nowIso() });
+    if (id) q = q.eq("id", id);
+    else q = q.eq("block_type", block_type).eq("block_value", block_value);
+    const { error } = await q;
+    if (error) return json({ ok: false, error: error.message }, 500);
+    await insertEvent({ ip_address: clientIpInfo(req).ip || null, event_type: "admin_remove_block", blocked: false, metadata: { id, block_type, block_value } });
+    return json({ ok: true });
+  } catch (e) {
+    return json({ ok: false, error: errorText(e) }, 500);
+  }
 }
-async function safeDelete(table: string, column: string, value: string) {
-  if (!value) return { table, column, skipped: true };
-  try { const { error, count } = await admin.from(table).delete({ count: "exact" }).eq(column, value); return { table, column, value, count: count || 0, error: error?.message || null }; }
-  catch (e) { return { table, column, value, count: 0, error: e instanceof Error ? e.message : String(e) }; }
-}
-async function safeDeleteByAny(table: string, columns: string[], value: string) { const out = []; for (const column of columns) out.push(await safeDelete(table, column, value)); return out; }
-async function safeDeleteByNameSeflik(table: string, name: string, seflik: string) {
-  if (!name || !seflik) return { table, skipped: true, reason: "name/seflik boş" };
-  try { const { error, count } = await admin.from(table).delete({ count: "exact" }).eq("name", name).eq("seflik", seflik); return { table, column: "name+seflik", value: `${name} / ${seflik}`, count: count || 0, error: error?.message || null }; }
-  catch (e) { return { table, column: "name+seflik", value: `${name} / ${seflik}`, count: 0, error: e instanceof Error ? e.message : String(e) }; }
+async function findBackupRefs(driveFileId: string) {
+  const matches: JsonObj[] = [];
+  for (const col of ["drive_file_id", "file_id", "id", "slot_id"]) {
+    try {
+      const r = await selectRows(TABLES.backupSlots, { eq: { [col]: driveFileId }, limit: 100 });
+      if (!r.error) matches.push(...arr(r.items).map(obj));
+    } catch {
+      // kolon yoksa sorun değil.
+    }
+  }
+  const slotIds = unique(matches.map((r) => first(r.slot_id, r.id)).filter(Boolean));
+  return { matches, slotIds };
 }
 async function adminHideDriveBackup(req: Request, body: JsonObj) {
   const drive_file_id = clean(body.drive_file_id || body.file_id || body.fileId || body.id);
   if (!drive_file_id) return json({ ok: false, error: "Drive yedek ID boş" }, 400);
-  const payload = { action: "admin_hide_drive_backup", drive_file_id, user_key: clean(body.user_key || body.userKey) || null, name: clean(body.name) || null, seflik: clean(body.seflik) || null, hidden_at: new Date().toISOString() };
-  const supabaseDeletes = [ ...(await safeDeleteByAny("mesaha_backup_slots", ["drive_file_id", "driveFileId", "file_id", "fileId", "id", "slot_id"], drive_file_id)), ...(await safeDeleteByAny("mesaha_backup_chunks", ["drive_file_id", "driveFileId", "file_id", "fileId", "slot_id"], drive_file_id)) ];
-  const [{ error: eventError }, { error: logError }] = await Promise.all([ admin.from("mesaha_security_events").insert({ ip_address: clientIp(req) || null, event_type: "admin_hide_drive_backup", blocked: false, metadata: payload }), admin.from("mesaha_log_current").insert({ level: "admin_hidden_drive_backup", message: "Drive yedeği panelden gizlendi", payload }) ]);
-  if (eventError && logError) return json({ ok: false, error: eventError.message || logError.message }, 500);
-  return json({ ok: true, supabaseDeletes, warnings: { events: eventError?.message || null, logs: logError?.message || null } });
+
+  const refs = await findBackupRefs(drive_file_id);
+  const results: unknown[] = [];
+  results.push(...(await safeDeleteMany(TABLES.backupSlots, ["drive_file_id", "file_id", "id", "slot_id"], drive_file_id)));
+  results.push(...(await safeDeleteMany(TABLES.backupChunks, ["drive_file_id", "file_id", "slot_id"], drive_file_id)));
+  for (const slotId of refs.slotIds) {
+    results.push(...(await safeDeleteMany(TABLES.backupChunks, ["slot_id"], slotId)));
+  }
+
+  const payload = {
+    action: "admin_hide_drive_backup",
+    drive_file_id,
+    user_key: clean(body.user_key || body.userKey) || null,
+    name: clean(body.name) || null,
+    seflik: clean(body.seflik) || null,
+    hidden_at: nowIso(),
+    refs,
+  };
+  await insertEvent({ ip_address: clientIpInfo(req).ip || null, event_type: "admin_hide_drive_backup", blocked: false, metadata: payload });
+  await insertLog({ level: "admin_hidden_drive_backup", message: "Drive yedeği panelden gizlendi", payload });
+
+  return json({ ok: true, supabaseDeletes: results, hidden: payload });
+}
+async function resolveUser(body: JsonObj) {
+  let user_id = clean(body.user_id || body.userId);
+  let user_key = lower(body.user_key || body.userKey);
+  const name = clean(body.name);
+  const seflik = clean(body.seflik);
+  if (!user_key && name && seflik) user_key = userKeyFrom(name, seflik);
+
+  if (!user_id && user_key) {
+    const row = await selectFirst(TABLES.profiles, { user_key });
+    if (row) user_id = clean((row as JsonObj).user_id);
+  }
+  if (!user_key && user_id) {
+    const row = await selectFirst(TABLES.profiles, { user_id });
+    if (row) user_key = lower((row as JsonObj).user_key);
+  }
+  return { user_id, user_key, name, seflik };
 }
 async function adminDeleteUser(req: Request, body: JsonObj) {
-  let user_id = clean(body.user_id || body.userId); let user_key = lower(body.user_key || body.userKey); const name = clean(body.name); const seflik = clean(body.seflik);
-  if (!user_id && user_key) { const { data } = await admin.from("mesaha_user_profiles").select("user_id,user_key").eq("user_key", user_key).limit(1); if (Array.isArray(data) && data[0]) user_id = clean((data[0] as JsonObj).user_id); }
-  if (!user_key && user_id) { const { data } = await admin.from("mesaha_user_profiles").select("user_id,user_key").eq("user_id", user_id).limit(1); if (Array.isArray(data) && data[0]) user_key = lower((data[0] as JsonObj).user_key); }
-  if (!user_id && !user_key && name && seflik) user_key = userKeyFrom(name, seflik);
-  if (!user_id && !user_key) return json({ ok: false, error: "Kullanıcı kimliği bulunamadı" }, 400);
-  const results = [] as unknown[];
-  if (user_id) {
-    results.push(await safeDelete("mesaha_backup_chunks", "user_id", user_id)); results.push(await safeDelete("mesaha_backup_slots", "user_id", user_id)); results.push(await safeDelete("mesaha_usage_daily", "user_id", user_id)); results.push(await safeDelete("mesaha_usage_current", "user_id", user_id)); results.push(await safeDelete("mesaha_log_current", "user_id", user_id)); results.push(await safeDelete("mesaha_user_profiles", "user_id", user_id));
-    try { const { error } = await admin.auth.admin.deleteUser(user_id); results.push({ table: "auth.users", column: "id", value: user_id, error: error?.message || null }); } catch (e) { results.push({ table: "auth.users", column: "id", value: user_id, error: e instanceof Error ? e.message : String(e) }); }
+  const u = await resolveUser(body);
+  if (!u.user_id && !u.user_key && !(u.name && u.seflik)) return json({ ok: false, error: "Kullanıcı kimliği bulunamadı" }, 400);
+
+  const results: unknown[] = [];
+  const driveIds = unique(arr(body.drive_file_ids).map((x) => clean(x)).filter(Boolean)).slice(0, 500);
+
+  if (u.user_id) {
+    for (const table of [TABLES.backupChunks, TABLES.backupSlots, TABLES.usageDaily, TABLES.usageCurrent, TABLES.logs, TABLES.events, TABLES.profiles]) {
+      results.push(await safeDelete(table, "user_id", u.user_id));
+    }
+    try {
+      const { error } = await admin.auth.admin.deleteUser(u.user_id);
+      results.push({ table: "auth.users", column: "id", value: u.user_id, error: error?.message || null });
+    } catch (e) {
+      results.push({ table: "auth.users", column: "id", value: u.user_id, error: errorText(e) });
+    }
   }
-  if (user_key) {
-    results.push(...(await safeDeleteByAny("mesaha_backup_chunks", ["user_key", "userKey"], user_key))); results.push(...(await safeDeleteByAny("mesaha_backup_slots", ["user_key", "userKey"], user_key))); results.push(...(await safeDeleteByAny("mesaha_usage_daily", ["user_key", "userKey"], user_key))); results.push(...(await safeDeleteByAny("mesaha_usage_current", ["user_key", "userKey"], user_key))); results.push(...(await safeDeleteByAny("mesaha_log_current", ["user_key", "userKey"], user_key))); results.push(...(await safeDeleteByAny("mesaha_security_events", ["user_key", "userKey"], user_key))); results.push(await safeDelete("mesaha_user_profiles", "user_key", user_key));
-    try { await admin.from("mesaha_security_blocks").update({ active: false }).eq("block_type", "user_key").eq("block_value", user_key); } catch { /* yoksa sorun değil */ }
+
+  if (u.user_key) {
+    for (const table of [TABLES.backupChunks, TABLES.backupSlots, TABLES.usageDaily, TABLES.usageCurrent, TABLES.logs, TABLES.events, TABLES.profiles]) {
+      results.push(await safeDelete(table, "user_key", u.user_key));
+    }
+    try {
+      await admin.from(TABLES.blocks).update({ active: false, updated_at: nowIso() }).eq("block_type", "user_key").eq("block_value", u.user_key);
+    } catch {
+      // sorun değil.
+    }
   }
-  if (name && seflik) { results.push(await safeDeleteByNameSeflik("mesaha_backup_slots", name, seflik)); results.push(await safeDeleteByNameSeflik("mesaha_usage_daily", name, seflik)); results.push(await safeDeleteByNameSeflik("mesaha_usage_current", name, seflik)); results.push(await safeDeleteByNameSeflik("mesaha_user_profiles", name, seflik)); }
-  const ids = Array.isArray(body.drive_file_ids) ? body.drive_file_ids.map((x) => clean(x)).filter(Boolean).slice(0, 250) : [];
-  for (const drive_file_id of ids) {
-    results.push(...(await safeDeleteByAny("mesaha_backup_slots", ["drive_file_id", "driveFileId", "file_id", "fileId", "id", "slot_id"], drive_file_id))); results.push(...(await safeDeleteByAny("mesaha_backup_chunks", ["drive_file_id", "driveFileId", "file_id", "fileId", "slot_id"], drive_file_id)));
-    const payload = { action: "admin_hide_drive_backup", drive_file_id, user_key, name, seflik, hidden_at: new Date().toISOString(), reason: "admin_delete_user" };
-    await Promise.allSettled([ admin.from("mesaha_security_events").insert({ ip_address: clientIp(req) || null, event_type: "admin_hide_drive_backup", blocked: false, metadata: payload }), admin.from("mesaha_log_current").insert({ level: "admin_hidden_drive_backup", message: "Kullanıcı silindiği için Drive yedeği panelden gizlendi", payload }) ]);
+
+  if (u.name && u.seflik) {
+    for (const table of [TABLES.backupSlots, TABLES.usageDaily, TABLES.usageCurrent, TABLES.profiles]) {
+      try {
+        const { error, count } = await admin.from(table).delete({ count: "exact" }).eq("name", u.name).eq("seflik", u.seflik);
+        results.push({ table, column: "name+seflik", value: `${u.name} / ${u.seflik}`, count: count || 0, error: error?.message || null });
+      } catch (e) {
+        results.push({ table, column: "name+seflik", value: `${u.name} / ${u.seflik}`, count: 0, error: errorText(e) });
+      }
+    }
   }
-  await insertEvent({ ip_address: clientIp(req) || null, event_type: "admin_delete_user", blocked: false, metadata: { user_id, user_key, name, seflik, drive_file_count: ids.length, results } });
-  return json({ ok: true, user_id, user_key, results });
+
+  for (const drive_file_id of driveIds) {
+    results.push(...(await safeDeleteMany(TABLES.backupSlots, ["drive_file_id", "file_id", "id", "slot_id"], drive_file_id)));
+    results.push(...(await safeDeleteMany(TABLES.backupChunks, ["drive_file_id", "file_id", "slot_id"], drive_file_id)));
+    const payload = { action: "admin_hide_drive_backup", reason: "admin_delete_user", drive_file_id, user_key: u.user_key, name: u.name, seflik: u.seflik, hidden_at: nowIso() };
+    await insertEvent({ ip_address: clientIpInfo(req).ip || null, event_type: "admin_hide_drive_backup", blocked: false, metadata: payload });
+    await insertLog({ level: "admin_hidden_drive_backup", message: "Kullanıcı silindiği için Drive yedeği panelden gizlendi", payload });
+  }
+
+  await insertEvent({ ip_address: clientIpInfo(req).ip || null, event_type: "admin_delete_user", blocked: false, metadata: { ...u, drive_file_count: driveIds.length, results } });
+  return json({ ok: true, ...u, results });
 }
 
 serve(async (req: Request) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   if (req.method !== "POST") return json({ ok: false, error: "Sadece POST" }, 405);
   if (!SUPABASE_URL || !SERVICE_ROLE_KEY) return json({ ok: false, error: "Supabase Edge Function secret eksik" }, 500);
-  const body = await bodyJson(req); const action = clean(body.action || "check");
+
+  const body = await bodyJson(req);
+  const action = clean(body.action || "check");
+
   try {
     if (action.startsWith("admin_")) {
-      const denied = requireAdmin(body); if (denied) return denied;
+      const denied = requireAdmin(req, body);
+      if (denied) return denied;
       if (action === "admin_list_all") return await adminListAll(body);
       if (action === "admin_list_events") return await adminListEvents(body);
       if (action === "admin_list_blocks") return await adminListBlocks();
@@ -294,8 +937,11 @@ serve(async (req: Request) => {
       if (action === "admin_remove_block") return await adminRemoveBlock(req, body);
       if (action === "admin_hide_drive_backup") return await adminHideDriveBackup(req, body);
       if (action === "admin_delete_user") return await adminDeleteUser(req, body);
-      return json({ ok: false, error: "Bilinmeyen admin işlem" }, 400);
+      return json({ ok: false, error: "Bilinmeyen admin işlem: " + action }, 400);
     }
-    return await checkAccess(req, body);
-  } catch (e) { return json({ ok: false, error: e instanceof Error ? e.message : String(e) }, 500); }
+
+    return await guardAndProfile(req, body, shouldWriteDaily(action));
+  } catch (e) {
+    return json({ ok: false, error: errorText(e) }, 500);
+  }
 });

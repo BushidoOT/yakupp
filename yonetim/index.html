@@ -27,6 +27,11 @@ button,input,select{font:inherit}button{cursor:pointer}button:disabled{opacity:.
 @media(max-width:1040px){.summary{grid-template-columns:repeat(3,minmax(0,1fr))}.user-card{grid-template-columns:56px minmax(0,1fr);grid-template-areas:"avatar main" "metrics metrics" "actions actions"}.user-card .avatar{grid-area:avatar}.user-card .user-main{grid-area:main;min-width:0}.user-card .user-metrics{grid-area:metrics;grid-template-columns:repeat(3,minmax(0,1fr))}.user-card .actions{grid-area:actions;grid-template-columns:repeat(3,minmax(0,1fr));min-width:0}.backup-card{grid-template-columns:1fr}.backup-card .actions{grid-template-columns:repeat(2,minmax(0,1fr));min-width:0}}
 @media(max-width:640px){.summary{grid-template-columns:repeat(2,minmax(0,1fr))}.summary-card:first-child{grid-column:span 1}.summary-card{min-height:82px;padding:10px 11px}.summary-card b{font-size:23px}.summary-card small,.summary-card span{font-size:10.5px}.section-head .pill{width:100%;justify-content:center}.user-card{grid-template-columns:44px minmax(0,1fr)!important;gap:8px!important}.avatar{width:44px!important;height:44px!important}.user-card h3,.backup-card h3,.block-card h3{font-size:17px!important}.meta{font-size:11.5px!important}.user-metrics,.backup-metrics{grid-template-columns:repeat(3,minmax(0,1fr))!important}.user-card .actions{grid-template-columns:repeat(3,minmax(0,1fr))!important}.user-card .actions .btn,.backup-card .actions .btn,.block-card .actions .btn{font-size:10.5px;line-height:1.12;padding-left:4px;padding-right:4px}.mini{padding:8px}.mini b{font-size:14px}.tabs{box-shadow:0 -14px 42px rgba(15,23,42,.16)}.tab{min-height:51px}.ip-strong-v518{font-size:15px!important;line-height:1.2;max-width:100%;overflow-wrap:anywhere}}
 @media(max-width:360px){.summary{grid-template-columns:1fr 1fr}.user-card .actions{grid-template-columns:1fr!important}.user-metrics,.backup-metrics{grid-template-columns:1fr 1fr!important}.summary-card b{font-size:21px}.tab i{font-size:17px}.tab span{font-size:8.5px}}
+
+.stat-note-v522{border:1px solid #bbf7d0;background:#f0fdf4;color:#166534;border-radius:16px;padding:10px 12px;font-weight:900;line-height:1.35}
+.stat-row span{min-width:0;word-break:break-word}.stat-row b{font-size:15px}.stat-row .num{text-align:right;font-variant-numeric:tabular-nums}
+@media(max-width:640px) and (orientation:portrait){.stats-grid{margin-bottom:8px}.stat-note-v522{font-size:12px}.stat-row .num{text-align:left}.summary-card b{font-size:23px}}
+
 </style>
 </head>
 <body>
@@ -41,7 +46,7 @@ button,input,select{font:inherit}button{cursor:pointer}button:disabled{opacity:.
 </section>
 <div class="app hidden" id="app">
   <header class="top">
-    <div class="brand"><img src="../assets/icon-192.png" alt=""><div><h1>Mesaha İO Yönetim</h1><p id="statusText">Hazır</p><div class="pill-row"><span class="pill" id="versionPill">Admin V5.17</span><span class="pill gray" id="sourcePill">Veri bekleniyor</span></div></div></div>
+    <div class="brand"><img src="../assets/icon-192.png" alt=""><div><h1>Mesaha İO Yönetim</h1><p id="statusText">Hazır</p><div class="pill-row"><span class="pill" id="versionPill">Admin V5.22</span><span class="pill gray" id="sourcePill">Veri bekleniyor</span></div></div></div>
     <div class="top-actions"><button class="btn soft" id="refreshBtn" type="button">Yenile</button><a class="btn soft" href="../index.html">Uygulama</a></div>
   </header>
   <main class="main">
@@ -78,17 +83,17 @@ button,input,select{font:inherit}button{cursor:pointer}button:disabled{opacity:.
 <div class="modal" id="modal"><div class="modal-card"><div class="section-head"><h2 id="modalTitle">Detay</h2><button class="btn soft" id="modalClose" type="button">Kapat</button></div><div id="modalBody"></div></div></div><div class="toast" id="toast"></div>
 <script>
 (function(){'use strict';
-const ADMIN_VERSION='Admin V5.21';
+const ADMIN_VERSION='Admin V5.22';
 const ADMIN_USER='yakupduzgun';
 const ADMIN_PASS='Yaylacık_43';
-const SESSION_KEY='mesaha_admin_panel_v521_login';
-const ADMIN_KEY_SESSION='mesaha_admin_panel_v521_key';
+const SESSION_KEY='mesaha_admin_panel_v522_login';
+const ADMIN_KEY_SESSION='mesaha_admin_panel_v522_key';
 const EDGE_URL='https://swrbpdpotmirnmtqnuba.supabase.co/functions/v1/smooth-function';
 const DRIVE_URL='https://script.google.com/macros/s/AKfycbzOYh2MyOQmwVQh-7Jm9KyjaFjmjSwgHZSw7XKAVzDS1ibmcM5bQZVYdn-NyesI-ph7/exec';
 const DRIVE_SECRET='MESAHAYEDEK_2026_YAKUP_43';
 const $=id=>document.getElementById(id);
 const state={profiles:[],usage:[],dailyUsage:[],logs:[],users:[],blocks:[],backups:[],hiddenDrive:new Set(),range:'day',errors:{},loaded:false};
-window.MESAHA_ADMIN_STATE_V521=state;
+window.MESAHA_ADMIN_STATE_V522=state;
 function clean(v){return String(v==null?'':v).trim()}function lower(v){return clean(v).toLocaleLowerCase('tr-TR')}function compact(v){return lower(v).normalize('NFKD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'')}function esc(v){return clean(v).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}function n(v){const x=Number(String(v??0).replace(',','.'));return Number.isFinite(x)?x:0}function int(v){return Math.round(n(v)).toLocaleString('tr-TR')}function m3(v){return n(v).toLocaleString('tr-TR',{minimumFractionDigits:3,maximumFractionDigits:3})}function first(){for(let i=0;i<arguments.length;i++){const v=arguments[i];if(v!==undefined&&v!==null&&clean(v)!=='')return v}return ''}function parse(v){if(!v)return v;if(typeof v==='string'){try{return JSON.parse(v)}catch(e){return v}}return v}function obj(v){v=parse(v);return v&&typeof v==='object'?v:{}}function ms(v){if(typeof v==='number')return v;const d=Date.parse(clean(v));return Number.isFinite(d)?d:0}function fmt(t,txt){const x=n(t)||ms(txt);return x?new Date(x).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):(txt||'-')}function initials(v){return clean(v).split(/\s+/).slice(0,2).map(x=>x[0]||'').join('').toUpperCase()||'?'}function toast(t){const el=$('toast');el.textContent=clean(t);el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),3000)}function err(e){return ((e&&e.message)||String(e||'Hata')).slice(0,180)}function userKey(name,seflik){return (lower(name)+'__'+lower(seflik)).replace(/[^a-z0-9_\-]+/g,'_').slice(0,120)}function dateKey(v){if(v===undefined||v===null||v==='')return '';if(typeof v==='number'){try{return new Date(v).toLocaleDateString('en-CA',{timeZone:'Europe/Istanbul'})}catch(e){return ''}}const c=clean(v);let m=c.match(/^(\d{4}-\d{2}-\d{2})/);if(m)return m[1];const t=Date.parse(c);if(Number.isFinite(t))return new Date(t).toLocaleDateString('en-CA',{timeZone:'Europe/Istanbul'});return ''}function todayKey(){return dateKey(Date.now())}function monthKeyOf(v){return dateKey(v).slice(0,7)}function weekKeyOf(v){const k=dateKey(v);if(!k)return '';const d=new Date(k+'T12:00:00Z');const f=new Date(Date.UTC(d.getUTCFullYear(),0,1));const days=Math.floor((d.getTime()-f.getTime())/86400000);return d.getUTCFullYear()+'-W'+String(Math.ceil((days+f.getUTCDay()+1)/7)).padStart(2,'0')}function isToday(v){return dateKey(v)===todayKey()}function startOfTodayMs(){const d=new Date();d.setHours(0,0,0,0);return d.getTime()}function activeTodayUsers(){const start=startOfTodayMs();return state.users.filter(u=>n(u.lastSeenMs)>=start).length}function keyOf(u){u=u||{};const p=obj(u.payload);const name=first(u.name,u.username,u.user_name,p.name,p.user&&p.user.name);const seflik=first(u.seflik,u.seflik_name,p.seflik,p.user&&p.user.seflik);return clean(first(u.user_key,u.userKey,p.userKey,u.id,name&&seflik?userKey(name,seflik):''))}function readAdminKey(){return sessionStorage.getItem(ADMIN_KEY_SESSION)||ADMIN_PASS}
 function setStatus(t){$('statusText').textContent=t;$('sourcePill').textContent=state.loaded?'Canlı veri yüklendi':'Veri bekleniyor'}
 function download(name,data){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json;charset=utf-8'}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
@@ -120,6 +125,80 @@ function renderBackups(){const arr=filteredBackups();$('backupsCount').textConte
 function filteredBlocks(){let arr=state.blocks.slice();if($('blockFilter').value==='active')arr=arr.filter(b=>b.active!==false);const q=lower($('blockSearch').value);if(q)arr=arr.filter(b=>JSON.stringify(b).toLocaleLowerCase('tr-TR').includes(q));return arr}
 function findUserByBlockValue(v){const cv=compact(v),lv=lower(v);return state.users.find(u=>compact(u.userKey)===cv||lower(u.userKey)===lv||clean(u.id)===clean(v))}
 function renderBlocks(){const arr=filteredBlocks();$('blocksCount').textContent=int(arr.length)+' engel';$('blocksList').innerHTML=arr.length?arr.map(b=>{const type=first(b.block_type,b.type);const val=first(b.block_value,b.value);const u=type==='user_key'?findUserByBlockValue(val):null;return `<div class="block-card"><div class="block-main"><h3>${esc(type)} • ${esc(val)}</h3><div class="meta">Sebep: ${esc(first(b.reason,'-'))}<br>Tarih: ${esc(fmt(0,first(b.created_at,b.updated_at)))}</div><div class="pill-row"><span class="badge ${b.active===false?'gray':'red'}">${b.active===false?'Pasif':'Aktif'}</span>${u&&u.ip&&u.ip!=='-'?`<span class="badge gray">IP: ${esc(u.ip)}</span>`:''}</div></div><div class="actions"><button class="btn soft small" data-remove-block="${esc(first(b.id,''))}" data-remove-type="${esc(type)}" data-remove-value="${esc(val)}">Engeli Kaldır</button>${type==='user_key'?`<button class="btn warn small" data-ip-for-user="${esc(val)}">IP Engelle</button>`:''}</div></div>`}).join(''):'<div class="empty">Engel kaydı yok.</div>'}
+
+function statHtml(rows){
+  rows=mergeRows(rows||[]);
+  if(!rows.length)return '<div class="empty">Veri yok.</div>';
+  return '<div class="stat-table"><div class="stat-row head"><span>Ad</span><span>Adet</span><span>m³</span></div>'+rows.map(r=>`<div class="stat-row"><span data-label="Ad"><b>${esc(r.name)}</b></span><span class="num" data-label="Adet">${int(r.adet)}</span><span class="num" data-label="m³">${m3(r.m3)}</span></div>`).join('')+'</div>';
+}
+function inRangeMs(t,range){
+  const x=n(t)||ms(t);if(!x)return false;const d=new Date(x);const now=new Date();
+  if(range==='all')return true;
+  if(range==='day')return dateKey(x)===todayKey();
+  if(range==='month')return monthKeyOf(x)===monthKeyOf(Date.now());
+  if(range==='week')return weekKeyOf(dateKey(x))===weekKeyOf(todayKey());
+  return true;
+}
+function backupRowsForUser(u,range){
+  const ck=compact(u.userKey),nm=lower(u.name),sf=lower(u.seflik);
+  return state.backups.filter(b=>{
+    const same=(compact(b.userKey)===ck)||((nm&&nm===lower(b.name))&&(sf&&sf===lower(b.seflik)));
+    if(!same)return false;
+    return range==='all'||inRangeMs(b.createdAtMs||b.createdAt,range);
+  });
+}
+function rangeValue(u,range){
+  const lastInRange=inRangeMs(u.lastSeenMs||u.lastSeen,range);
+  let adet=0,vol=0,trees=[],woods=[];
+  if(range==='day'){
+    adet=n(u.todayRecords);vol=n(u.todayM3);trees=u.todayTreeRows||[];woods=u.todayWoodRows||[];
+    if(!adet&&!vol&&lastInRange){adet=n(u.recordCount);vol=n(u.m3);trees=u.treeRows||[];woods=u.woodRows||[];}
+  }else if(range==='week'){
+    adet=n(u.weekRecords);vol=n(u.weekM3);trees=u.weekTreeRows||[];woods=u.weekWoodRows||[];
+    if(!adet&&!vol&&lastInRange){adet=n(u.recordCount);vol=n(u.m3);trees=u.treeRows||[];woods=u.woodRows||[];}
+  }else if(range==='month'){
+    adet=n(u.monthRecords);vol=n(u.monthM3);trees=u.monthTreeRows||[];woods=u.monthWoodRows||[];
+    if(!adet&&!vol&&lastInRange){adet=n(u.recordCount);vol=n(u.m3);trees=u.treeRows||[];woods=u.woodRows||[];}
+  }else{
+    adet=n(u.recordCount);vol=n(u.m3);trees=u.treeRows||[];woods=u.woodRows||[];
+  }
+  const backs=backupRowsForUser(u,range);
+  if(!adet&&!vol&&backs.length){
+    const newest=backs.slice().sort((a,b)=>n(b.createdAtMs)-n(a.createdAtMs))[0];
+    adet=n(newest.recordCount);vol=n(newest.m3);
+  }
+  return {adet, m3:vol, treeRows:trees||[], woodRows:woods||[]};
+}
+function statRangeLabel(){return state.range==='day'?'gün':state.range==='week'?'hafta':state.range==='month'?'ay':'tümü'}
+function renderStats(){
+  document.querySelectorAll('[data-range]').forEach(b=>b.classList.toggle('active',b.dataset.range===state.range));
+  const users=state.users.slice();
+  const userRows=[], treeRows=[], woodRows=[];
+  let totalAdet=0,totalM3=0;
+  users.forEach(u=>{
+    const v=rangeValue(u,state.range);
+    if(v.adet||v.m3){
+      userRows.push({name:(u.name||'Kullanıcı')+' • '+(u.seflik||'-'),adet:v.adet,m3:v.m3});
+      totalAdet+=n(v.adet);totalM3+=n(v.m3);
+    }
+    (v.treeRows||[]).forEach(r=>treeRows.push(r));
+    (v.woodRows||[]).forEach(r=>woodRows.push(r));
+  });
+  // Genel toplam hiç gelmediyse, görünür Drive yedeklerinden güvenli yedek toplamı al.
+  if(!totalAdet&&!totalM3&&state.backups.length){
+    const backs=state.backups.filter(b=>state.range==='all'||inRangeMs(b.createdAtMs||b.createdAt,state.range));
+    backs.forEach(b=>{totalAdet+=n(b.recordCount);totalM3+=n(b.m3);userRows.push({name:(b.name||'Kullanıcı')+' • '+(b.seflik||'-'),adet:n(b.recordCount),m3:n(b.m3)});});
+  }
+  $('sumAdet').textContent=int(totalAdet);
+  $('sumM3').textContent=m3(totalM3);
+  $('sumRange').textContent=statRangeLabel();
+  $('userStats').innerHTML=statHtml(userRows);
+  $('treeStats').innerHTML=statHtml(treeRows);
+  $('woodStats').innerHTML=statHtml(woodRows);
+  const note=$('statsNote');
+  if(note)note.innerHTML=`<div class="stat-note-v522">${esc(statRangeLabel())} istatistiği canlı Supabase daily verisinden okunur; daily boşsa kullanıcının son eşitlemesi ve Drive yedekleriyle güvenli tamamlanır.</div>`;
+}
+
 function renderSummary(){$('sumUsers').textContent=int(state.users.length);$('sumTodayOnline').textContent=int(activeTodayUsers());$('sumBackups').textContent=int(state.backups.length);$('versionPill').textContent=ADMIN_VERSION+' • '+((window.MESAHA_VERSION&&window.MESAHA_VERSION.shortVersion)||'');$('sourcePill').textContent=Object.keys(state.errors).length?'Eksik: '+Object.keys(state.errors).join(', '):'Canlı veri yüklendi'}function renderAll(){renderSummary();renderUsers();renderStats();renderBackups();renderBlocks()}
 function showDetail(idx){const u=state.users[Number(idx)];if(!u)return;const backs=userBackups(u);$('modalTitle').textContent=u.name+' • Kullanıcı Detayı';$('modalBody').innerHTML=`<div class="mini-grid"><div class="mini"><small>Kullanıcı</small><b>${esc(u.name)}</b></div><div class="mini"><small>Şeflik</small><b>${esc(u.seflik)}</b></div><div class="mini"><small>Sürüm</small><b>${esc(u.appVersion||'-')}</b></div><div class="mini"><small>IP</small><b>${esc(u.ip||'-')}</b></div><div class="mini"><small>Cihaz</small><b>${esc(u.deviceId||'-')}</b></div><div class="mini"><small>Platform</small><b>${esc(u.platform||'-')}</b></div></div><h3>Ağaç türü detayı</h3>${statHtml(u.treeRows||[])}<h3>Odun / emval detayı</h3>${statHtml(u.woodRows||[])}<h3>Drive yedekleri</h3>${statHtml(backs.map(b=>({name:b.fileName,adet:b.recordCount,m3:b.m3})))}<h3>Ham veri</h3><pre class="raw">${esc(JSON.stringify(u.raw||u,null,2))}</pre>`;$('modal').classList.add('show')}
 async function addBlock(type,value,reason){
