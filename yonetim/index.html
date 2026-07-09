@@ -128,7 +128,7 @@ th{color:#334155;font-size:12px;background:rgba(248,250,252,.55)}
 </head>
 <body>
 <div class="login">
-  <form class="login-card" id="loginForm">
+  <form class="login-card" id="loginForm" action="javascript:void(0)" onsubmit="return login(event)">
     <div class="logo"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3l7 8h-4l4 5h-5v5h-4v-5H5l4-5H5l7-8z" fill="currentColor"/></svg></div>
     <h1>Mesaha İO Yönetim</h1>
     <p>Yönetim paneline giriş yapmak için kullanıcı adı ve şifre gir.</p>
@@ -150,7 +150,7 @@ th{color:#334155;font-size:12px;background:rgba(248,250,252,.55)}
     </nav>
     <div class="side-bottom">
       <button class="btn" onclick="logoutPanel()">Oturumu Kapat</button>
-      <div class="version"><span>v5.11 / Build 511</span><span class="okpill">Güncel</span></div>
+      <div class="version"><span>v5.12 / Build 512</span><span class="okpill">Güncel</span></div>
     </div>
   </aside>
 
@@ -237,10 +237,10 @@ function blockValue(u,type){
   if(type==="device")return clean(u.deviceId)||clean(u.device);
   return clean(u.userKey)||clean(u.username)||key(u.name,u.seflik)||clean(u.name);
 }
-document.addEventListener("DOMContentLoaded",()=>{document.querySelectorAll("[data-view]").forEach(b=>b.onclick=()=>setView(b.dataset.view));$("loginForm").onsubmit=login;$("globalSearch").oninput=e=>{if($("userSearch"))$("userSearch").value=e.target.value;renderUsers()};$("userSearch").oninput=renderUsers;$("statusFilter").onchange=renderUsers;if(sessionStorage.getItem("mesaha_panel_v510")==="ok")unlock()});
-function login(e){e.preventDefault();if(clean($("loginUser").value)===CONFIG.adminUser&&clean($("loginPass").value)===CONFIG.adminPass){sessionStorage.setItem("mesaha_panel_v510","ok");localStorage.setItem("mesaha_admin_key_v510",CONFIG.adminPass);unlock()}else $("loginErr").classList.add("show")}
+document.addEventListener("DOMContentLoaded",()=>{document.querySelectorAll("[data-view]").forEach(b=>b.onclick=()=>setView(b.dataset.view));$("loginForm").addEventListener("submit",login);$("globalSearch").oninput=e=>{if($("userSearch"))$("userSearch").value=e.target.value;renderUsers()};$("userSearch").oninput=renderUsers;$("statusFilter").onchange=renderUsers;if(sessionStorage.getItem("mesaha_panel_v512")==="ok")unlock()});
+function login(e){if(e&&e.preventDefault)e.preventDefault();if(clean($("loginUser").value)===CONFIG.adminUser&&clean($("loginPass").value)===CONFIG.adminPass){sessionStorage.setItem("mesaha_panel_v512","ok");localStorage.setItem("mesaha_admin_key_v512",CONFIG.adminPass);unlock()}else $("loginErr").classList.add("show");return false}
 function unlock(){document.body.classList.add("ok");loadAll()}
-function logoutPanel(){sessionStorage.removeItem("mesaha_panel_v510");localStorage.removeItem("mesaha_admin_key_v510");location.reload()}
+function logoutPanel(){sessionStorage.removeItem("mesaha_panel_v512");localStorage.removeItem("mesaha_admin_key_v512");location.reload()}
 function setView(v){state.view=v;document.querySelectorAll(".view").forEach(x=>x.classList.toggle("active",x.id===v));document.querySelectorAll(".nav button").forEach(x=>x.classList.toggle("active",x.dataset.view===v));let t={dashboard:"Yönetim Paneli",users:"Kullanıcılar",backups:"Yedekler",stats:"Detaylı İstatistikler"}[v]||"Yönetim Paneli";$("pageTitle").textContent=t;$("crumb").textContent=t}
 async function loadAll(){loading(1);state.errors={};state.sources={};let profiles=[],usage=[],backups=[],logs=[],blocks=[];try{let j=await edge("admin_list_all",{limit:5000});state.sources.edgeAll=1;profiles=profiles.concat((j.profiles||j.users||j.items||[]).map(mapProfile));usage=usage.concat((j.usage||j.stats||[]).map(mapUsage));backups=backups.concat((j.backups||j.backup_slots||[]).map(mapBackup));logs=logs.concat((j.logs||j.events||[]).map(mapLog))}catch(e){state.errors.edgeAll=e.message}
 try{let j=await edge("admin_list_events",{limit:5000});state.sources.edgeEvents=1;logs=logs.concat((j.items||j.events||[]).map(mapLog))}catch(e){state.errors.edgeEvents=e.message}
@@ -248,7 +248,7 @@ try{let j=await edge("admin_list_blocks",{});state.sources.edgeBlocks=1;blocks=b
 for(let [name,fn,arr] of [["mesaha_user_profiles",mapProfile,profiles],["mesaha_usage_current",mapUsage,usage],["mesaha_backup_slots",mapBackup,backups],["mesaha_log_current",mapLog,logs],["mesaha_security_events",mapLog,logs],["mesaha_security_blocks",x=>x,blocks]]){try{let j=await rest(name);state.sources[name]=1;arr.push(...j.map(fn))}catch(e){state.errors[name]=e.message}}
 try{let j=await drive("adminList",{username:CONFIG.adminUser,seflik:CONFIG.adminPass});state.sources.drive=1;backups=backups.concat((j.items||j.files||j.backups||[]).map(mapDrive))}catch(e){state.errors.drive=e.message}
 state.backups=uniq(backups.filter(Boolean),b=>b.id||b.userKey+"_"+b.createdMs+"_"+b.source).sort((a,b)=>num(b.createdMs)-num(a.createdMs));state.logs=uniq(logs.filter(Boolean),l=>JSON.stringify([l.ms,l.type,l.user,l.ip,l.desc])).sort((a,b)=>num(b.ms)-num(a.ms));state.blocks=blocks;state.users=merge(profiles.concat(usage).concat(state.backups).concat(state.logs.map(logSeed)));markBlocks();renderAll();loading(0)}
-async function edge(action,data){let r=await fetch(CONFIG.edgeUrl,{method:"POST",headers:{"Content-Type":"application/json","apikey":CONFIG.publishableKey,"Authorization":"Bearer "+CONFIG.publishableKey},body:JSON.stringify(Object.assign({action,admin_key:localStorage.getItem("mesaha_admin_key_v510")||CONFIG.adminPass},data||{})),cache:"no-store"});let t=await r.text(),j={};try{j=t?JSON.parse(t):{}}catch(e){throw Error("Edge JSON değil")}if(!r.ok||j.ok===false)throw Error(j.error||j.reason||"Edge hata "+r.status);return j}
+async function edge(action,data){let r=await fetch(CONFIG.edgeUrl,{method:"POST",headers:{"Content-Type":"application/json","apikey":CONFIG.publishableKey,"Authorization":"Bearer "+CONFIG.publishableKey},body:JSON.stringify(Object.assign({action,admin_key:localStorage.getItem("mesaha_admin_key_v512")||CONFIG.adminPass},data||{})),cache:"no-store"});let t=await r.text(),j={};try{j=t?JSON.parse(t):{}}catch(e){throw Error("Edge JSON değil")}if(!r.ok||j.ok===false)throw Error(j.error||j.reason||"Edge hata "+r.status);return j}
 async function rest(table){let r=await fetch(`${CONFIG.supabaseUrl}/rest/v1/${table}?select=*&limit=5000`,{headers:{"apikey":CONFIG.publishableKey,"Authorization":"Bearer "+CONFIG.publishableKey,"Accept":"application/json"},cache:"no-store"});let t=await r.text(),j=[];try{j=t?JSON.parse(t):[]}catch(e){throw Error(table+" JSON değil")}if(!r.ok)throw Error(j.message||j.error||table+" "+r.status);return Array.isArray(j)?j:[]}
 async function drive(action,data){let r=await fetch(CONFIG.driveUrl,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(Object.assign({secret:CONFIG.driveSecret,action},data||{})),cache:"no-store"});let t=await r.text(),j={};try{j=t?JSON.parse(t):{}}catch(e){throw Error("Drive JSON değil")}if(!r.ok||j.ok===false)throw Error(j.error||j.reason||"Drive hata "+r.status);return j}
 function prod(x){let rows=[],o=first(x.productTotals,x.product_totals,x.treeTotals,x.tree_totals,x.summary,x.totals);if(typeof o==="string"){try{o=JSON.parse(o)}catch(e){o=null}}if(Array.isArray(o))rows=o.map(y=>({name:first(y.name,y.label,y.type,"Belirsiz"),count:num(first(y.count,y.adet,y.recordCount,0)),m3:num(first(y.m3,y.hacim,y.volume,y.totalM3,0))}));else if(o&&typeof o==="object")rows=Object.entries(o).map(([k,v])=>v&&typeof v==="object"?{name:k,count:num(first(v.count,v.adet,0)),m3:num(first(v.m3,v.hacim,v.volume,v.value,0))}:{name:k,count:0,m3:num(v)});return{count:num(first(x.todayCount,x.today_count,x.recordCount,x.record_count,x.count,x.totalRecords,rows.reduce((s,r)=>s+r.count,0))),m3:num(first(x.todayM3,x.today_m3,x.m3,x.totalVolume,x.total_volume,x.volume,x.hacim,rows.reduce((s,r)=>s+r.m3,0))),rows}}
@@ -334,7 +334,7 @@ function openUser(k){
   $("modal").classList.add("open");
 }
 function kv(a,b){return`<div class="kv"><span>${a}</span><b>${b}</b></div>`}function closeModal(){$("modal").classList.remove("open")}
-async async function blockUser(k,type){
+async function blockUser(k,type){
   let u=state.users.find(x=>x.userKey===k);if(!u)return;
   let label={ip:"IP",user:"Kullanıcı",device:"Cihaz"}[type]||type;
   let value=blockValue(u,type);
@@ -367,7 +367,7 @@ async async function blockUser(k,type){
     toast(`Engel eklenemedi: ${e.message||e}`);
   }
 }
-async async function unblockUser(k){
+async function unblockUser(k){
   let u=state.users.find(x=>x.userKey===k);if(!u)return;
   const payload={
     type:"all",
