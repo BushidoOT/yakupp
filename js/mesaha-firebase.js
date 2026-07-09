@@ -89,18 +89,29 @@
     if(parent && parent.table==='mesaha_backup_slots' && name==='chunks') return 'mesaha_backup_chunks';
     var n=String(name||'');
     if(n==='users') return 'mesaha_user_profiles';
-    if(n==='usageStats') return 'mesaha_usage_current';
+    if(n==='usageStats') return 'mesaha_usage_daily';
     if(n==='backups') return 'mesaha_backup_slots';
     if(n==='supportTickets' || n==='exportLogs' || n==='healthChecks' || n==='debugLogs' || n==='adminLogs') return 'mesaha_log_current';
     return 'mesaha_log_current';
   }
+
+  function localDate(){var d=new Date(); d.setMinutes(d.getMinutes()-d.getTimezoneOffset()); return d.toISOString().slice(0,10);}
+  function monthKeyFromDate(date){return String(date||localDate()).slice(0,7);}
+  function weekKeyFromDate(date){try{var x=new Date(String(date||localDate())+'T12:00:00');var first=new Date(x.getFullYear(),0,1);var days=Math.floor((x-first)/86400000);return x.getFullYear()+'-W'+String(Math.ceil((days+first.getDay()+1)/7)).padStart(2,'0');}catch(e){return '';}}
+  function lastKnownIp(data){data=data||{};try{return clean(data.ip||data.ipAddress||data.ip_address||data.lastIp||data.last_ip||localStorage.getItem('mesaha_last_seen_ip_v518')||'');}catch(e){return clean(data.ip||data.ipAddress||data.ip_address||data.lastIp||data.last_ip||'');}}
+
   function rowFromData(table,id,data,parent){
     data=deepClone(data||{}); var userId=uid();
     if(table==='mesaha_user_profiles'){
-      return {user_id:userId,user_key:clean(data.userKey||data.user_key||id||userId).slice(0,80)||userId,name:clean(data.name||'Kullanıcı').slice(0,120)||'Kullanıcı',seflik:clean(data.seflik||'Şeflik').slice(0,120)||'Şeflik',bolme_no:clean(data.bolmeNo||data.bolme_no||'').slice(0,80)||null,app_version:clean(data.appVersion||data.fileVersion||VERSION).slice(0,120),device_info:data.lastDeviceInfo||data.deviceInfo||data.device||{}};
+      return {user_id:userId,user_key:clean(data.userKey||data.user_key||id||userId).slice(0,120)||userId,name:clean(data.name||'Kullanıcı').slice(0,120)||'Kullanıcı',seflik:clean(data.seflik||'Şeflik').slice(0,120)||'Şeflik',bolme_no:clean(data.bolmeNo||data.bolme_no||'').slice(0,80)||null,app_version:clean(data.appVersion||data.fileVersion||VERSION).slice(0,120),device_id:clean(data.deviceId||data.device_id||(data.lastDeviceInfo&&data.lastDeviceInfo.deviceId)||'').slice(0,120)||null,last_ip:lastKnownIp(data)||null,platform:clean(data.os||data.platform||data.deviceType||(data.lastDeviceInfo&&data.lastDeviceInfo.platform)||'').slice(0,120)||null,browser:clean(data.browser||(data.lastDeviceInfo&&data.lastDeviceInfo.browser)||'').slice(0,80)||null,browser_version:clean(data.browserVersion||(data.lastDeviceInfo&&data.lastDeviceInfo.browserVersion)||'').slice(0,60)||null,last_seen_at:new Date().toISOString(),device_info:data.lastDeviceInfo||data.deviceInfo||data.device||{},payload:data};
     }
     if(table==='mesaha_usage_current'){
-      return {user_id:userId,record_count:Number(data.recordCount||data.totalRecords||data.adet||0)||0,total_volume:Number(data.totalM3||data.m3||0)||0,last_seen_at:new Date().toISOString(),app_version:clean(data.appVersion||data.fileVersion||VERSION).slice(0,120),payload:data};
+      return {user_id:userId,user_key:clean(data.userKey||data.user_key||'').slice(0,120)||null,name:clean(data.name||'').slice(0,120)||null,seflik:clean(data.seflik||'').slice(0,120)||null,record_count:Number(data.recordCount||data.totalRecords||data.adet||0)||0,total_volume:Number(data.totalM3||data.m3||0)||0,last_seen_at:new Date().toISOString(),app_version:clean(data.appVersion||data.fileVersion||VERSION).slice(0,120),device_id:clean(data.deviceId||data.device_id||'').slice(0,120)||null,last_ip:lastKnownIp(data)||null,payload:data};
+    }
+    if(table==='mesaha_usage_daily'){
+      var dt=clean(data.date||data.day||localDate()).slice(0,10)||localDate();
+      var rowId=clean(data.id||id||((data.userKey||data.user_key||userId)+'_'+dt));
+      return {id:rowId,user_id:userId,user_key:clean(data.userKey||data.user_key||'').slice(0,120)||null,name:clean(data.name||'').slice(0,120)||null,seflik:clean(data.seflik||'').slice(0,120)||null,date:dt,week_key:clean(data.weekKey||data.week_key||weekKeyFromDate(dt)).slice(0,20)||null,month_key:clean(data.monthKey||data.month_key||monthKeyFromDate(dt)).slice(0,12)||null,record_count:Number(data.todayRecords||data.dayRecords||data.recordCount||data.totalRecords||data.adet||0)||0,total_volume:Number(data.todayM3||data.dayM3||data.totalM3||data.m3||0)||0,tree_totals:data.treeTotals||data.tree_totals||{},product_totals:data.productTotals||data.product_totals||{},last_seen_at:new Date().toISOString(),app_version:clean(data.appVersion||data.fileVersion||VERSION).slice(0,120),device_id:clean(data.deviceId||data.device_id||'').slice(0,120)||null,last_ip:lastKnownIp(data)||null,payload:data};
     }
     if(table==='mesaha_backup_slots'){
       var slot=safeSlot(id); var p=data.payload || (data.payloadText?safeJson(data.payloadText,{}):data) || data;
@@ -115,8 +126,9 @@
   }
   function dataFromRow(table,row){
     row=row||{};
-    if(table==='mesaha_user_profiles') return {id:row.user_key||row.user_id,userKey:row.user_key,name:row.name,seflik:row.seflik,bolmeNo:row.bolme_no,appVersion:row.app_version,lastDeviceInfo:row.device_info,updatedAt:trNow(),updatedAtMs:msFromIso(row.updated_at||row.created_at)};
-    if(table==='mesaha_usage_current') {var p=deepClone(row.payload||{}); p.recordCount=row.record_count||p.recordCount||0; p.totalM3=row.total_volume||p.totalM3||0; p.updatedAtMs=msFromIso(row.updated_at||row.last_seen_at); return p;}
+    if(table==='mesaha_user_profiles') return {id:row.user_key||row.user_id,userKey:row.user_key,name:row.name,seflik:row.seflik,bolmeNo:row.bolme_no,appVersion:row.app_version,deviceId:row.device_id,lastIp:row.last_ip,ip:row.last_ip,platform:row.platform,browser:row.browser,browserVersion:row.browser_version,lastDeviceInfo:row.device_info,payload:row.payload||{},updatedAt:trNow(),updatedAtMs:msFromIso(row.last_seen_at||row.updated_at||row.created_at)};
+    if(table==='mesaha_usage_current') {var p=deepClone(row.payload||{}); p.userKey=row.user_key||p.userKey; p.name=row.name||p.name; p.seflik=row.seflik||p.seflik; p.deviceId=row.device_id||p.deviceId; p.lastIp=row.last_ip||p.lastIp; p.ip=row.last_ip||p.ip; p.recordCount=row.record_count||p.recordCount||0; p.totalM3=row.total_volume||p.totalM3||0; p.updatedAtMs=msFromIso(row.updated_at||row.last_seen_at); return p;}
+    if(table==='mesaha_usage_daily') {var p=deepClone(row.payload||{}); p.id=row.id||p.id; p.userKey=row.user_key||p.userKey; p.name=row.name||p.name; p.seflik=row.seflik||p.seflik; p.date=row.date||p.date; p.weekKey=row.week_key||p.weekKey; p.monthKey=row.month_key||p.monthKey; p.todayRecords=row.record_count||p.todayRecords||p.recordCount||0; p.todayM3=row.total_volume||p.todayM3||p.m3||0; p.recordCount=row.record_count||p.recordCount||0; p.totalM3=row.total_volume||p.totalM3||0; p.m3=row.total_volume||p.m3||0; p.treeTotals=row.tree_totals||p.treeTotals||{}; p.productTotals=row.product_totals||p.productTotals||{}; p.deviceId=row.device_id||p.deviceId; p.lastIp=row.last_ip||p.lastIp; p.ip=row.last_ip||p.ip; p.updatedAtMs=msFromIso(row.updated_at||row.last_seen_at); return p;}
     if(table==='mesaha_backup_slots') {var p=deepClone(row.payload||{}); p.id=row.slot_id; p.slotId=row.slot_id; p.userKey=p.userKey||''; p.fileName=p.fileName||row.backup_name||('Mesaha yedeği '+row.slot_id); p.recordCount=row.record_count||p.recordCount||0; p.m3=row.total_volume||p.m3||0; p.createdAt=p.createdAt||row.created_at||''; p.createdAtMs=p.createdAtMs||msFromIso(row.created_at); p.updatedAtMs=msFromIso(row.updated_at||row.created_at); return p;}
     if(table==='mesaha_backup_chunks') return {index:row.chunk_index,records:Array.isArray(row.records)?row.records:[]};
     var lp=deepClone(row.payload||{}); lp.message=lp.message||row.message; lp.level=lp.level||row.level; lp.updatedAtMs=msFromIso(row.updated_at); return lp;
@@ -131,6 +143,7 @@
   async function getCurrent(table,id,parent){
     await session(); var userId=uid();
     if(table==='mesaha_backup_slots') return request(table,'user_id=eq.'+enc(userId)+'&slot_id=eq.'+enc(safeSlot(id))+'&select=*&limit=1',{method:'GET'}).then(function(a){return (a||[])[0]||null;});
+    if(table==='mesaha_usage_daily') return request(table,'user_id=eq.'+enc(userId)+'&id=eq.'+enc(id)+'&select=*&limit=1',{method:'GET'}).then(function(a){return (a||[])[0]||null;});
     if(table==='mesaha_backup_chunks') return request(table,'user_id=eq.'+enc(userId)+'&slot_id=eq.'+enc(safeSlot(parent&&parent.id||'latest'))+'&chunk_index=eq.'+enc(Number(id||0)||0)+'&select=*&limit=1',{method:'GET'}).then(function(a){return (a||[])[0]||null;});
     return request(table,'user_id=eq.'+enc(userId)+'&select=*&limit=1',{method:'GET'}).then(function(a){return (a||[])[0]||null;});
   }
@@ -143,6 +156,7 @@
     var row=rowFromData(this.table,this.id,data,this.parent);
     if(this.table==='mesaha_backup_slots') return upsert(this.table,row,'user_id,slot_id');
     if(this.table==='mesaha_backup_chunks') return upsert(this.table,row,'user_id,slot_id,chunk_index');
+    if(this.table==='mesaha_usage_daily') return upsert(this.table,row,'id');
     return upsert(this.table,row,'user_id');
   };
   DocumentRef.prototype.delete=function(){return Promise.reject(new Error('Kalıcı silme güvenlik için kapalı.'));};
@@ -157,6 +171,7 @@
   CollectionRef.prototype.get=async function(){
     await session(); var userId=uid(), table=this.table, qs='user_id=eq.'+enc(userId)+'&select=*';
     if(table==='mesaha_backup_slots') qs+='&archived=eq.false';
+    if(table==='mesaha_usage_daily') qs+='&order=date.desc';
     if(table==='mesaha_backup_chunks') qs+='&slot_id=eq.'+enc(safeSlot(this.parent&&this.parent.id||'latest'))+'&order=chunk_index.asc';
     if(this._limit) qs+='&limit='+Number(this._limit);
     var rows=[]; try{rows=await request(table,qs,{method:'GET'});}catch(e){rows=[];}

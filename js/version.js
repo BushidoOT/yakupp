@@ -1,6 +1,6 @@
 (function(root){
   'use strict';
-  var info = {"app": "V5.15", "version": "v515_barkod40_kayit_ayar_koruma_telegram", "build": 515, "visibleVersion": "V5.15 •ExelanceX•", "shortVersion": "V5.15 •ExelanceX•", "name": "Mesaha İO V5.15 •ExelanceX•", "cacheName": "mesaha-app-v515-barkod40-kayit-ayar-koruma-telegram", "builtAt": "2026-07-09T20:00:00+03:00", "notes": "", "assetVersion": "515", "latestVersion": "v515_barkod40_kayit_ayar_koruma_telegram", "latestBuild": 515, "currentBuild": 515, "minSupportedBuild": 409, "forceUpdate": true, "updateUrl": "./temizle.html", "cleanUrl": "./guncelle.html"};
+  var info = {"app": "V5.17", "version": "v518_supabase_admin_schema_ip_fix", "build": 517, "visibleVersion": "V5.18 •ExelanceX•", "shortVersion": "V5.18 •ExelanceX•", "name": "Mesaha İO V5.18 •ExelanceX•", "cacheName": "mesaha-app-v517-yonetim-panel-mobil-duzeltme", "builtAt": "2026-07-09T20:55:00+03:00", "notes": "", "assetVersion": "517", "latestVersion": "v518_supabase_admin_schema_ip_fix", "latestBuild": 517, "currentBuild": 517, "minSupportedBuild": 409, "forceUpdate": true, "updateUrl": "./temizle.html", "cleanUrl": "./guncelle.html"};
   try{ Object.freeze(info); }catch(e){}
   function expose(name,value){
     try{ Object.defineProperty(root,name,{configurable:false,enumerable:true,get:function(){return value;},set:function(){}}); }

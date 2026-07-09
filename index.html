@@ -8370,6 +8370,36 @@ body.mesaha-entry-scrolling-v408 #entryView label{
   [250,900,1800,3600].forEach(function(ms){ setTimeout(clean,ms); });
 })();
 </script>
+
+<style id="mesaha-v518-ip-panel-style">
+.panel-ip-v518 input,#panelIpV518{font-weight:1000!important;color:#064e3b!important;background:#ecfdf5!important;border-color:#bbf7d0!important;}
+.mesaha-ip-card-v518{border:1px solid #bbf7d0;background:#f0fdf4;border-radius:16px;padding:10px 12px;color:#064e3b;font-weight:900;line-height:1.45;margin:8px 0;word-break:break-word;}
+.mesaha-ip-card-v518 b{font-size:14px}.mesaha-ip-card-v518 small{display:block;color:#166534;font-size:12px;margin-top:2px}
+</style>
+<script id="mesaha-v518-ip-profile-ping">
+(function(){
+  'use strict';
+  if(window.__mesahaIpProfilePingV518) return; window.__mesahaIpProfilePingV518=true;
+  var EDGE_URL='https://swrbpdpotmirnmtqnuba.supabase.co/functions/v1/smooth-function';
+  var SETTINGS_KEY='cam_mesaha_ayarlar_v1', PANEL_KEY='mesaha_panel_user_v316', SESSION_KEY='mesaha_supabase_v500_session', IP_KEY='mesaha_last_seen_ip_v518', DEV1='mesaha_cihaz_kodu_v1', DEV2='mesaha_supabase_v500_device';
+  function $(id){return document.getElementById(id)}
+  function clean(v){return String(v==null?'':v).trim()}
+  function getJson(k,f){try{var v=localStorage.getItem(k);return v?JSON.parse(v):f}catch(e){return f}}
+  function fold(s){return clean(s).toLocaleLowerCase('tr-TR').replace(/[ç]/g,'c').replace(/[ğ]/g,'g').replace(/[ı]/g,'i').replace(/[ö]/g,'o').replace(/[ş]/g,'s').replace(/[ü]/g,'u')}
+  function userKey(name,seflik){return (fold(name)+'__'+fold(seflik)).replace(/[^a-z0-9_-]+/g,'_').slice(0,120)||'bos'}
+  function readUser(){var u=getJson(PANEL_KEY,{}), st=getJson(SETTINGS_KEY,{});return{name:clean(u.name||st.ekipNot),seflik:clean(u.seflik||st.seflik),bolmeNo:clean(u.bolmeNo||st.bolmeNo)}}
+  function token(){var s=getJson(SESSION_KEY,null);return clean(s&&s.access_token)}
+  function deviceId(){try{return clean(localStorage.getItem(DEV1)||localStorage.getItem(DEV2)||'')}catch(e){return ''}}
+  function browserInfo(){var ua=navigator.userAgent||'', name='Tarayıcı', ver=''; var m; if((m=ua.match(/SamsungBrowser\/([\d.]+)/i))){name='Samsung Internet';ver=m[1]} else if((m=ua.match(/Edg\/([\d.]+)/i))){name='Edge';ver=m[1]} else if((m=ua.match(/Chrome\/([\d.]+)/i))){name='Chrome';ver=m[1]} else if((m=ua.match(/CriOS\/([\d.]+)/i))){name='Chrome iOS';ver=m[1]} else if((m=ua.match(/Firefox\/([\d.]+)/i))){name='Firefox';ver=m[1]} else if((m=ua.match(/Version\/([\d.]+).*Safari/i))){name='Safari';ver=m[1]} return {browser:name,browserVersion:ver}}
+  function deviceInfo(){var ua=navigator.userAgent||'', sw=(screen&&screen.width)||'', sh=(screen&&screen.height)||'', vw=window.innerWidth||'', vh=window.innerHeight||'', bi=browserInfo(); var os='Bilinmiyor'; if(/Android/i.test(ua))os='Android'; else if(/iPhone|iPad|iPod/i.test(ua))os='iOS'; else if(/Windows/i.test(ua))os='Windows'; else if(/Mac OS/i.test(ua))os='macOS'; else if(/Linux/i.test(ua))os='Linux'; return {deviceId:deviceId(),os:os,platform:navigator.platform||os,browser:bi.browser,browserVersion:bi.browserVersion,userAgent:ua,screen:sw+'x'+sh,viewport:vw+'x'+vh,language:navigator.language||'',timezone:(Intl.DateTimeFormat().resolvedOptions().timeZone||''),appVersion:(window.MESAHA_VERSION&&window.MESAHA_VERSION.visibleVersion)||'Mesaha İO',fileVersion:(window.MESAHA_VERSION&&window.MESAHA_VERSION.version)||'local'} }
+  function renderIp(){var ip='';try{ip=localStorage.getItem(IP_KEY)||''}catch(e){} var dev=$('panelDeviceV316'), u=readUser(), info=deviceInfo(); if(dev) dev.value=[info.os,info.browser+(info.browserVersion?' '+info.browserVersion:''),info.screen].filter(Boolean).join(' • '); var grid=document.querySelector('#userPanelOverlayV316 .panel-grid-v316'); if(grid && !$('panelIpV518')){var lab=document.createElement('label');lab.className='panel-field-v316 panel-ip-v518';lab.innerHTML='IP Adresi<input id="panelIpV518" readonly type="text" placeholder="IP alınıyor…">';grid.appendChild(lab)} var inp=$('panelIpV518'); if(inp) inp.value=ip||'IP alınıyor…'; var tel=$('panelTelegramSectionV515'); if(tel && !$('panelIpCardV518')){var card=document.createElement('div');card.id='panelIpCardV518';card.className='mesaha-ip-card-v518';tel.parentNode.insertBefore(card,tel)} var c=$('panelIpCardV518'); if(c)c.innerHTML='<b>Bağlantı IP:</b> '+(ip||'Alınıyor…')+'<small>'+[u.name&&u.seflik?(u.name+' • '+u.seflik):'',info.os+' • '+info.browser,info.screen].filter(Boolean).join(' / ')+'</small>' }
+  async function ping(reason){renderIp(); var u=readUser(); if(!u.name||!u.seflik) return false; try{ if(window.mesahaSupabaseV380&&window.mesahaSupabaseV380.ready) await window.mesahaSupabaseV380.ready(); }catch(e){} var t=token(); if(!t) return false; var cfg=window.MESAHA_SUPABASE_CONFIG||{}, info=deviceInfo(); var body={action:reason||'profile_ping',userKey:userKey(u.name,u.seflik),name:u.name,seflik:u.seflik,bolmeNo:u.bolmeNo,deviceId:info.deviceId,deviceInfo:info,appVersion:info.appVersion,fileVersion:info.fileVersion,source:'mesaha-v518-ip-ping'}; try{var res=await fetch(EDGE_URL,{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+t,apikey:clean(cfg.anonKey||cfg.anon_key||'')},body:JSON.stringify(body),cache:'no-store'}); var txt=await res.text(), j={}; try{j=txt?JSON.parse(txt):{}}catch(e){} if(j&&j.ip){try{localStorage.setItem(IP_KEY,j.ip)}catch(e){}} renderIp(); return !!(j&&j.ok)}catch(e){renderIp(); return false}}
+  function bind(){renderIp(); setTimeout(function(){ping('profile_ping')},2000); setInterval(function(){ping('profile_ping_periodic')},300000); window.addEventListener('online',function(){ping('profile_ping_online')}); document.addEventListener('visibilitychange',function(){if(!document.hidden) ping('profile_ping_visible')}); document.addEventListener('click',function(ev){if(ev.target&&ev.target.closest&&ev.target.closest('#userPanelBtnV316,#userBadge,#panelSaveV316'))setTimeout(function(){renderIp();ping('profile_ping_panel')},500)},true); var ov=$('userPanelOverlayV316'); if(ov&&window.MutationObserver&&!ov.__ipV518){ov.__ipV518=true;new MutationObserver(renderIp).observe(ov,{attributes:true,attributeFilter:['class'],subtree:false})}}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
+  window.MesahaIpV518={ping:ping,render:renderIp};
+})();
+</script>
+
 </body>
 </html>
 
