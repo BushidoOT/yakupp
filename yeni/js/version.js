@@ -1,6 +1,6 @@
 (function(root){
   'use strict';
-  var info = {"app": "V5.36", "version": "v536_kullanici_giris_detay_nav_fix", "build": 536, "visibleVersion": "V5.36 •ExelanceX•", "shortVersion": "V5.36 •ExelanceX•", "name": "Mesaha İO V5.36 •ExelanceX•", "cacheName": "mesaha-app-v536-kullanici-giris-detay-nav-fix", "builtAt": "2026-07-09T22:15:00+03:00", "notes": "", "assetVersion": "536", "latestVersion": "v536_kullanici_giris_detay_nav_fix", "latestBuild": 536, "currentBuild": 536, "minSupportedBuild": 409, "forceUpdate": true, "updateUrl": "./temizle.html", "cleanUrl": "./guncelle.html"};
+  var info = {"app": "V5.43", "version": "v543_admin_engel_cihaz_ip_fix", "build": 543, "visibleVersion": "V5.43 •ExelanceX•", "shortVersion": "V5.43 •ExelanceX•", "name": "Mesaha İO V5.43 •ExelanceX•", "cacheName": "mesaha-app-v543-admin-engel-cihaz-ip-fix", "builtAt": "2026-07-09T23:43:00+03:00", "notes": "", "assetVersion": "543", "latestVersion": "v543_admin_engel_cihaz_ip_fix", "latestBuild": 543, "currentBuild": 543, "minSupportedBuild": 409, "forceUpdate": true, "updateUrl": "./temizle.html", "cleanUrl": "./guncelle.html"};
   root.MESAHA_VERSION = info;
   root.MesahaVersion = root.MesahaVersion || {};
   root.MesahaVersion.info = info;

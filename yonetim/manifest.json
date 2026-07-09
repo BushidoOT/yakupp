@@ -1,9 +1,9 @@
 {
-  "id": "/yakupp/yonetim/mesaha-io-yonetim-v541",
-  "name": "Mesaha İO Yönetim V5.39",
+  "id": "/yakupp/yonetim/mesaha-io-yonetim-v543",
+  "name": "Mesaha İO Yönetim V5.43",
   "short_name": "Mesaha Yönetim",
-  "description": "Mesaha İO admin paneli engel kaldırma, emval adet ve buluttan getir düzeltmesi",
-  "start_url": "./index.html?app=yonetim-v541",
+  "description": "Mesaha İO admin paneli canlı veri, cihaz/IP ve engel düzeltmeleri",
+  "start_url": "./index.html?app=yonetim-v543",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f7faf8",

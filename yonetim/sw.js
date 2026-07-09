@@ -1,6 +1,6 @@
-/* Mesaha İO Yönetim V5.41 */
-const CACHE='mesaha-yonetim-v541-clean';
-const SHELL='./index.html?app=yonetim-v541';
+/* Mesaha İO Yönetim V5.43 */
+const CACHE='mesaha-yonetim-v543-admin-fix';
+const SHELL='./index.html?app=yonetim-v543';
 const ASSETS=['./',SHELL,'./manifest.json','../assets/icon-192.png','../assets/icon-512.png','../assets/mesaha_logo.png','../js/version.js','../js/mesaha-supabase-config.js','../js/mesaha-firebase.js'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',e=>{e.waitUntil((async()=>{const keys=await caches.keys();await Promise.all(keys.filter(k=>/^mesaha-yonetim-/.test(k)&&k!==CACHE).map(k=>caches.delete(k)));await self.clients.claim()})())});

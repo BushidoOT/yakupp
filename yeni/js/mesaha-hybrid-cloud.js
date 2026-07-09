@@ -1,4 +1,4 @@
-/* Mesaha İO V508 — Engelli IP/kullanıcı/cihaz tam ekran kilidi
+/* Mesaha İO V543 — Engelli IP/kullanıcı/cihaz canlı kontrol
    Buluta Yedekle: Edge Function guard + güvenli Supabase V2 + Google Drive.
    Buluttan Getir: Edge Function guard + iki kaynak birlikte listelenir.
    Kullanıcı yedek silme: gerçek silme yok; kullanıcı listesinden gizlenir.
@@ -69,6 +69,17 @@
   function hideBackupLocal(source,id,user){ var arr=hiddenList(), k=hiddenKey(source,id,user||readUser()); if(arr.indexOf(k)<0){ arr.push(k); jsonSet(HIDDEN_KEY,arr.slice(-600)); } }
   function getSessionToken(){ try{ var s=jsonGet(SESSION_KEY,null); return clean(s&&s.access_token); }catch(e){ return ''; } }
   function getDeviceId(){ try{ return clean(localStorage.getItem(DEVICE_KEY)||''); }catch(e){ return ''; } }
+  function deviceInfoV543(){
+    var ua = (navigator && navigator.userAgent) || '';
+    var sw = (screen && screen.width) || '';
+    var sh = (screen && screen.height) || '';
+    var os = 'Bilinmiyor';
+    if(/Android/i.test(ua)) os='Android'; else if(/iPhone|iPad|iPod/i.test(ua)) os='iOS'; else if(/Windows/i.test(ua)) os='Windows'; else if(/Macintosh|Mac OS/i.test(ua)) os='Mac'; else if(/Linux/i.test(ua)) os='Linux';
+    var browser = 'Bilinmiyor';
+    if(/SamsungBrowser/i.test(ua)) browser='Samsung Internet'; else if(/Edg\//i.test(ua)) browser='Edge'; else if(/CriOS|Chrome\//i.test(ua)) browser='Chrome'; else if(/FxiOS|Firefox\//i.test(ua)) browser='Firefox'; else if(/Safari\//i.test(ua)) browser='Safari';
+    var type = (/iPad|Tablet/i.test(ua)) ? 'Tablet' : ((/Mobi|Android|iPhone|iPod/i.test(ua) || (navigator && navigator.maxTouchPoints>0)) ? 'Telefon' : 'Bilgisayar');
+    return {deviceId:getDeviceId(), userAgent:ua, platform:(navigator&&navigator.platform)||'', os:os, browser:browser, deviceType:type, screen:sw+'x'+sh, viewport:(window.innerWidth||'')+'x'+(window.innerHeight||''), pixelRatio:window.devicePixelRatio||1, language:(navigator&&navigator.language)||'', timezone:(Intl.DateTimeFormat().resolvedOptions().timeZone||''), lastDevice:type+' • '+os+' • '+browser+' • '+sw+'x'+sh};
+  }
   function showBlockedScreen(reason){
     try{
       if(document.getElementById('mesahaAccessBlockedV508')) return;
@@ -89,27 +100,46 @@
     var m=String(e&&e.message?e.message:e||'');
     return !!(e&&e.blocked) || /Güvenlik engeli|blocked|engellendi|engelli|ban/i.test(m);
   }
-  var startupGuardDone=false;
-  async function startupGuardCheck(){
-    if(startupGuardDone) return;
-    startupGuardDone=true;
-    try{ await guardCheck('app_open', readUser(), {source:'startup'}); }
-    catch(e){ if(isBlockedError(e)) showBlockedScreen('Erişim yönetici tarafından kapatıldı.'); else startupGuardDone=false; }
+  var lastGuardMsV543=0, lastGuardSigV543='';
+  function guardSigV543(user){ user=user||readUser(); return userKey(user.name,user.seflik)+'|'+getDeviceId(); }
+  async function liveGuardCheckV543(reason, force){
+    var user=readUser(), sig=guardSigV543(user), now=Date.now();
+    if(!force && sig===lastGuardSigV543 && now-lastGuardMsV543<30000) return true;
+    try{
+      await guardCheck('app_open', user, {source:reason||'live-guard-v543'});
+      lastGuardSigV543=sig; lastGuardMsV543=Date.now();
+      return true;
+    }catch(e){
+      if(isBlockedError(e)) showBlockedScreen('Erişim yönetici tarafından kapatıldı.');
+      return false;
+    }
   }
+  async function startupGuardCheck(){ return liveGuardCheckV543('startup-v543', true); }
   async function guardCheck(action,user,extra){
     user=user||readUser();
     try{ await supabaseReady(); }catch(e){ throw e; }
     var token=getSessionToken();
     var cfg=window.MESAHA_SUPABASE_CONFIG||{};
     if(!token) throw new Error('Güvenlik oturumu alınamadı');
+    var info=deviceInfoV543();
     var body=Object.assign({
       action:action||'check',
       userKey:userKey(user.name,user.seflik),
       name:user.name,
       seflik:user.seflik,
-      deviceId:getDeviceId(),
+      deviceId:info.deviceId,
+      device:info,
+      deviceInfo:info,
+      os:info.os,
+      browser:info.browser,
+      platform:info.platform,
+      deviceType:info.deviceType,
+      screen:info.screen,
+      viewport:info.viewport,
+      userAgent:info.userAgent,
       appVersion:versionText(),
-      source:'mesaha-web-v505'
+      fileVersion:versionRaw(),
+      source:'mesaha-web-v543'
     }, extra||{});
     var res=await fetch(GUARD_URL,{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token,apikey:clean(cfg.anonKey||cfg.anon_key||'')},body:JSON.stringify(body),cache:'no-store'});
     var txt=await res.text(), json=null;
@@ -353,6 +383,8 @@
     replaceButton('cloudBackupBtnV316','Buluta Yedekle',function(){ hybridBackup().catch(function(e){ toast('Buluta yedeklenemedi.',errText(e),'error'); }); });
     replaceButton('cloudRestoreBtnV316','Buluttan Getir',openCloud);
     replaceButton('panelBackupsV318','Bulut Yedeklerim',openCloud);
+    var saveBtnV543=$('panelSaveV316');
+    if(saveBtnV543 && !saveBtnV543.__mesahaGuardV543){ saveBtnV543.__mesahaGuardV543=true; saveBtnV543.addEventListener('click',function(){ setTimeout(function(){ liveGuardCheckV543('panel-save-v543', true).catch(function(){}); },900); },true); }
     var box=$('cloudRestoreListV316');
     if(box && !box.__hybridV501){
       box.__hybridV501=true;
@@ -418,6 +450,11 @@
     bind();
     [250,800,1600,3200,6000].forEach(function(ms){ setTimeout(function(){ expose(); bind(); },ms); });
     [1200,5000,12000].forEach(function(ms){ setTimeout(function(){ startupGuardCheck().catch(function(){}); },ms); });
+    try{
+      setInterval(function(){ liveGuardCheckV543('periodic-v543', false).catch(function(){}); },60000);
+      window.addEventListener('online',function(){ liveGuardCheckV543('online-v543', true).catch(function(){}); });
+      document.addEventListener('visibilitychange',function(){ if(!document.hidden) liveGuardCheckV543('visible-v543', true).catch(function(){}); });
+    }catch(e){}
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true}); else boot();
 })();
