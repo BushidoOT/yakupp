@@ -1,9 +1,9 @@
 {
-  "id": "/yakupp/yonetim/mesaha-io-yonetim-v532",
-  "name": "Mesaha İO Yönetim",
-  "short_name": "Yönetim",
+  "id": "/yakupp/?app=mesaha-v533",
+  "name": "Mesaha İO V5.33",
+  "short_name": "Mesaha İO",
   "description": "Mesaha İO admin paneli V5.32 cihaz, istatistik ve destek düzeltmesi",
-  "start_url": "./index.html?app=yonetim-v532",
+  "start_url": "./index.html?app=mesaha-v533",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f7faf8",

@@ -120,11 +120,13 @@ async function listTable(table: string, order = "updated_at", limit = 1000) {
 
 async function adminListAll(body: JsonObj) {
   const limit = Math.min(Math.max(Number(body.limit || 2500) || 2500, 100), 5000);
-  const [profiles, usage, backups, logs] = await Promise.all([
+  const [profiles, usage, backups, logs, support, broadcasts] = await Promise.all([
     listTable("mesaha_user_profiles", "updated_at", limit),
     listTable("mesaha_usage_current", "updated_at", limit),
     listTable("mesaha_backup_slots", "updated_at", limit),
     listTable("mesaha_log_current", "updated_at", limit),
+    listTable("supportTickets", "updated_at", limit),
+    listTable("adminBroadcasts", "updated_at", limit),
   ]);
   return json({
     ok: true,
@@ -132,7 +134,9 @@ async function adminListAll(body: JsonObj) {
     usage: usage.items,
     backups: backups.items,
     logs: logs.items,
-    errors: { profiles: profiles.error, usage: usage.error, backups: backups.error, logs: logs.error },
+    tickets: support.items,
+    broadcasts: broadcasts.items,
+    errors: { profiles: profiles.error, usage: usage.error, backups: backups.error, logs: logs.error, support: support.error, broadcasts: broadcasts.error },
   });
 }
 

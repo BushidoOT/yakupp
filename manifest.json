@@ -1,7 +1,7 @@
 {
-  "name": "Mesaha İO",
+  "name": "Mesaha İO V5.33",
   "short_name": "Mesaha İO",
-  "start_url": "./index.html",
+  "start_url": "./index.html?app=mesaha-v533",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f7fbf7",
@@ -19,6 +19,6 @@
       "type": "image/png"
     }
   ],
-  "id": "./",
+  "id": "/yakupp/?app=mesaha-v533",
   "description": "Mesaha İO saha ölçüm ve yedek uygulaması"
 }

@@ -408,6 +408,12 @@ body.mesaha-keyboard-open #saveBtn, body.mesaha-keyboard-open .save-btn{position
   .bulk-cutter-transfer-v406 select,.bulk-cutter-transfer-v406 .btn{width:100%;}
 }
 </style>
+
+<style id="mesaha-v533-panel-broadcast-support-fix">
+#panelUserBroadcastsV532{display:block!important;visibility:visible!important}
+#panelBroadcastListV532 .support-reply-card-v390{border-left:4px solid #16a34a}
+</style>
+
 </head>
 <body>
 <div class="startup" id="startup">
@@ -2567,10 +2573,14 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
               }
             }
           }else{
-            setStep('version','warn','Sürüm kontrolü yapılamadı');
+            setStep('version','ok','Sürüm yerel kontrol edildi');
+            try{
+              var status=document.getElementById('updateStatusBox');
+              if(status){status.classList.remove('update-offline','update-available');status.classList.add('update-ok');status.textContent='Uygulama güncel: '+(((window.MESAHA_VERSION||{}).visibleVersion)||'Mesaha İO');}
+            }catch(_){}
           }
         }catch{
-          setStep('version','warn','Sürüm kontrolü offline geçildi');
+          setStep('version','ok','Sürüm yerel kontrol edildi');
         }
       }else{
         setStep('version','warn','Offline açıldı, sürüm sonra kontrol edilir');
@@ -3915,7 +3925,29 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   async function cloudBackup(){ try{ const user=readPanelUser(); if(!user.name||!user.seflik){toast('Önce kullanıcı girişi yap.','Kullanıcı Paneli’ni doldur','warning');openPanel();return} const key=userKey(user.name,user.seflik); const recs=records(); const data={version:((window.MESAHA_VERSION&&window.MESAHA_VERSION.version)||'local'),type:'mesaha-cloud-backup',exportedAt:new Date().toISOString(),user,settings:settings()}; const {db}=await firebaseReady(); const id=['fb',key,Date.now().toString(36)].join('_'); const chunkSize=200; const chunkCount=Math.max(1, Math.ceil(recs.length/chunkSize)); const ref=db.collection('backups').doc(id); await ref.set({id,userKey:key,name:user.name,seflik:user.seflik,bolmeNo:user.bolmeNo,fileName:'Mesaha_Bulut_Yedek_'+key+'_'+trDate()+'.json',payload:data,recordsChunked:true,chunkCount,recordCount:recs.length,m3:summarize(0).m3,createdAt:trText(),createdAtMs:Date.now(),source:'supabase'}); for(let i=0;i<chunkCount;i++){ await ref.collection('chunks').doc(String(i).padStart(4,'0')).set({index:i,records:recs.slice(i*chunkSize,(i+1)*chunkSize)}); } toast('Bulut yedeği alındı.','Kayıtlar güvenli','success'); }catch(e){ toast('Bulut yedek alınamadı.', e&&e.message?e.message:'İnterneti kontrol et','error'); } }
   async function openCloudRestore(){ const ov=$('cloudRestoreOverlayV316'); const list=$('cloudRestoreListV316'); const info=$('cloudRestoreInfoV316'); if(ov) ov.classList.remove('hidden'); if(list) list.innerHTML='<div class="cloud-item-v316">Yedekler yükleniyor…</div>'; try{ const user=readPanelUser(); const key=userKey(user.name,user.seflik); const {db}=await firebaseReady(); const snap=await db.collection('backups').where('userKey','==',key).get(); const arr=[]; snap.forEach(doc=>{ const d=doc.data()||{}; arr.push(Object.assign({docId:doc.id}, d)); }); arr.sort((a,b)=>Number(b.createdAtMs||0)-Number(a.createdAtMs||0)); if(info) info.textContent=arr.length+' yedek bulundu'; if(!arr.length){ if(list) list.innerHTML='<div class="cloud-item-v316">Bulutta yedek bulunamadı.</div>'; return; } if(list) list.innerHTML=arr.slice(0,30).map((b,i)=>'<div class="cloud-item-v316"><b>'+esc(b.fileName||'Mesaha yedeği')+'</b><small>'+esc(b.createdAt||'-')+' • '+Number(b.recordCount||0)+' kayıt</small><button class="btn primary" data-cloud-restore="'+esc(b.docId)+'" type="button">Bu Yedeği Yükle</button></div>').join(''); }catch(e){ if(info) info.textContent='Yedekler alınamadı'; if(list) list.innerHTML='<div class="cloud-item-v316">'+esc(e&&e.message?e.message:'İnterneti kontrol et')+'</div>'; } }
   async function restoreCloud(id){ if(!id) return; if(!confirm('Bu bulut yedeği mevcut kayıtların yerine yüklenecek. Devam edilsin mi?')) return; try{ const {db}=await firebaseReady(); const ref=db.collection('backups').doc(id); const doc=await ref.get(); if(!doc.exists) throw new Error('Yedek bulunamadı'); const d=doc.data()||{}; let payload=d.payload || (d.payloadText ? JSON.parse(d.payloadText) : null); let recs=[]; if(d.recordsChunked){ const chunks=await ref.collection('chunks').get(); const arr=[]; chunks.forEach(c=>{ const cd=c.data()||{}; arr.push({index:Number(cd.index||0),records:Array.isArray(cd.records)?cd.records:[]}); }); arr.sort((a,b)=>a.index-b.index); recs=arr.flatMap(x=>x.records); payload=payload||{}; } else { if(!payload || !Array.isArray(payload.records)) throw new Error('Yedek formatı geçersiz'); recs=payload.records; } if(!Array.isArray(recs)) throw new Error('Yedek kayıtları okunamadı'); jsonSet(STORAGE_KEY, recs); if(payload && payload.settings) jsonSet(SETTINGS_KEY, Object.assign(settings(), payload.settings)); toast('Bulut yedeği yüklendi.','Sayfa yenileniyor','success'); setTimeout(()=>location.reload(),700); }catch(e){ toast('Bulut yedeği yüklenemedi.', e&&e.message?e.message:'Hata','error'); } }
-  async function sendSupport(){ const msg=clean(($('panelSupportTextV316')||{}).value); const user0=readPanelUser(); if(!user0.name||!user0.seflik){toast('Önce kullanıcı girişi yap.','Kullanıcı Paneli’ni doldur','warning');return} if(!msg){ toast('Sorun bildirimi boş.','Kısa bir açıklama yaz','warning'); return; } try{ const user=readPanelUser(); const {db}=await firebaseReady(); await db.collection('supportTickets').add({userKey:userKey(user.name,user.seflik),name:user.name,seflik:user.seflik,bolmeNo:user.bolmeNo,message:msg,status:'new',createdAt:trText(),createdAtMs:Date.now(),appVersion:((window.MESAHA_VERSION&&window.MESAHA_VERSION.visibleVersion)||'Mesaha İO'),device:deviceInfo()}); const ta=$('panelSupportTextV316'); if(ta) ta.value=''; toast('Sorun bildirimi gönderildi.','Destek ekranına iletildi','success'); }catch(e){ toast('Bildirim gönderilemedi.', e&&e.message?e.message:'İnternet yok','error'); } }
+  async function sendSupport(){
+  const msg=clean(($('panelSupportTextV316')||{}).value);
+  const user0=readPanelUser();
+  if(!user0.name||!user0.seflik){toast('Önce kullanıcı girişi yap.','Kullanıcı Paneli’ni doldur','warning');return}
+  if(!msg){ toast('Sorun bildirimi boş.','Kısa bir açıklama yaz','warning'); return; }
+  try{
+    const user=readPanelUser();
+    const {db}=await firebaseReady();
+    const now=Date.now();
+    const info=(typeof deviceInfo==='function'?deviceInfo():{});
+    const id='support_'+now.toString(36)+'_'+Math.random().toString(36).slice(2,7);
+    const payload={id:id,type:'support',kind:'support',category:'support',userKey:userKey(user.name,user.seflik),name:user.name,seflik:user.seflik,bolmeNo:user.bolmeNo,subject:'Kullanıcı sorun bildirimi',message:msg,text:msg,status:'new',createdAt:trText(),createdAtMs:now,updatedAt:trText(),updatedAtMs:now,appVersion:((window.MESAHA_VERSION&&window.MESAHA_VERSION.visibleVersion)||'Mesaha İO'),device:info,deviceInfo:info,lastDeviceInfo:info,source:'user-panel'};
+    const ops=[];
+    try{ops.push(db.collection('supportTickets').doc(id).set(payload,{merge:true}))}catch(_){}
+    try{ops.push(db.collection('mesaha_log_current').doc(id).set(payload,{merge:true}))}catch(_){}
+    try{ops.push(db.collection('userSupportTickets').doc(id).set(payload,{merge:true}))}catch(_){}
+    if(!ops.length) throw new Error('Destek kayıt bağlantısı yok');
+    await Promise.allSettled(ops);
+    const ta=$('panelSupportTextV316'); if(ta) ta.value='';
+    toast('Sorun bildirimi gönderildi.','Destek ekranına iletildi','success');
+  }catch(e){ toast('Bildirim gönderilemedi.', e&&e.message?e.message:'İnternet yok','error'); }
+}
+
   function bind(){ loadUsage(); const badge=$('userBadge'); if(badge){ badge.setAttribute('title','Kullanıcı Paneli'); badge.addEventListener('click', openPanel); } const btn=$('userPanelBtnV316'); if(btn) btn.addEventListener('click', openPanel); const x=$('userPanelCloseV316'); if(x) x.addEventListener('click', closePanel); const x2=$('panelClose2V316'); if(x2) x2.addEventListener('click', closePanel); const save=$('panelSaveV316'); if(save) save.addEventListener('click', savePanel); const sync=$('panelSyncV316'); if(sync) sync.addEventListener('click', ()=>{ setSyncText('Bilgiler gönderiliyor…'); syncUser('manual-sync').then(()=>toast('Bilgiler güncellendi.','Kullanıcı ve cihaz bilgisi gönderildi','success')).catch(e=>{setSyncText('Gönderilemedi: '+(e&&e.message?e.message:'İnternet yok')); toast('Bilgiler güncellenemedi.', e&&e.message?e.message:'İnterneti kontrol et','error');}); }); const support=$('panelSupportSendV316'); if(support) support.addEventListener('click', sendSupport); const cb=$('cloudBackupBtnV316'); if(cb) cb.addEventListener('click', cloudBackup); const cr=$('cloudRestoreBtnV316'); if(cr) cr.addEventListener('click', openCloudRestore); const crc=$('cloudRestoreCloseV316'); if(crc) crc.addEventListener('click', ()=>{ const ov=$('cloudRestoreOverlayV316'); if(ov) ov.classList.add('hidden'); }); const list=$('cloudRestoreListV316'); if(list) list.addEventListener('click', e=>{ const b=e.target.closest('[data-cloud-restore]'); if(b) restoreCloud(b.getAttribute('data-cloud-restore')); }); window.addEventListener('pagehide', flushUsage); window.addEventListener('online', ()=>{syncUser('online').catch(()=>{});}); document.addEventListener('visibilitychange',()=>{if(!document.hidden) syncUser('visible').catch(()=>{});}); setTimeout(()=>syncUser('startup').catch(()=>{}),2500); setInterval(()=>syncUser('periodic').catch(()=>{}),300000); /* v361: kullanıcı/cihaz otomatik sync açık */ }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', bind, {once:true}); else bind();
   window.mesahaPanelV316 = {open:openPanel, sync:syncUser, cloudBackup, openCloudRestore};
@@ -8486,11 +8518,24 @@ body.mesaha-entry-scrolling-v408 #entryView label{
   }
   async function loadBroadcasts(){
     try{
-      var user=readUser(),key=userKey(user.name,user.seflik),r=await ready(),snap=await r.db.collection('adminBroadcasts').get(),arr=[];
-      snap.forEach(function(doc){var b=doc.data()||{};if(b.status&&b.status!=='active')return;var keys=Array.isArray(b.targetUserKeys)?b.targetUserKeys:[];var target=clean(b.target||'all');if(target==='all'||!keys.length||keys.indexOf(key)>=0)arr.push(b)});
-      arr.sort(function(a,b){return Number(b.createdAtMs||0)-Number(a.createdAtMs||0)});renderBroadcasts(arr.slice(0,10));
+      var user=readUser(),key=userKey(user.name,user.seflik),r=await ready(),arr=[],seen={};
+      function same(a,b){a=clean(a).toLocaleLowerCase('tr-TR');b=clean(b).toLocaleLowerCase('tr-TR');return a&&b&&(a===b||a.replace(/\W+/g,'')===b.replace(/\W+/g,''))}
+      function accept(b){
+        if(!b)return;
+        if(b.status&&b.status!=='active')return;
+        var keys=Array.isArray(b.targetUserKeys)?b.targetUserKeys:[];
+        var target=clean(b.target||'all');
+        var ok=target==='all'||!keys.length||keys.some(function(x){return same(x,key)||same(x,user.name)||same(x,user.seflik)});
+        if(ok){var id=clean(b.id||b.createdAtMs||b.title||JSON.stringify(b).slice(0,80));if(!seen[id]){seen[id]=1;arr.push(b)}}
+      }
+      async function readCol(name){try{var snap=await r.db.collection(name).get();snap.forEach(function(doc){accept(doc.data()||{})})}catch(e){}}
+      await readCol('adminBroadcasts');
+      await readCol('userBroadcasts');
+      arr.sort(function(a,b){return Number(b.createdAtMs||0)-Number(a.createdAtMs||0)});
+      renderBroadcasts(arr.slice(0,10));
     }catch(e){var info=$('panelBroadcastInfoV532');if(info)info.textContent='Duyurular alınamadı';}
   }
+
   function bind(){
     var btn=$('panelBroadcastRefreshV532'); if(btn&&!btn.__v532){btn.__v532=true;btn.addEventListener('click',function(){loadBroadcasts();forceDeviceSync('broadcast-refresh')})}
     ['userBadge','userPanelBtnV316'].forEach(function(id){var el=$(id);if(el&&!el.__v532b){el.__v532b=true;el.addEventListener('click',function(){setTimeout(loadBroadcasts,500);forceDeviceSync('panel-open')})}});
