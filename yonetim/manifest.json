@@ -1,27 +1,9 @@
 {
-  "id": "/yakupp/yonetim/mesaha-io-yonetim-v537",
-  "name": "Mesaha İO V5.33",
-  "short_name": "Mesaha İO",
-  "description": "Mesaha İO admin paneli Telegram temizlik ve detay düzeltmesi",
-  "start_url": "./index.html?app=yonetim-v537",
-  "scope": "./",
+  "name": "Mesaha İO Yönetim",
+  "short_name": "Mesaha Yönetim",
+  "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#f7faf8",
-  "theme_color": "#ffffff",
-  "orientation": "portrait",
-  "icons": [
-    {
-      "src": "../assets/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "../assets/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
-    }
-  ],
-  "prefer_related_applications": false
+  "background_color": "#eef8f1",
+  "theme_color": "#118846",
+  "description": "Mesaha İO sade yönetim paneli"
 }
