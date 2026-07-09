@@ -1,6 +1,6 @@
 (function(root){
   'use strict';
-  var info = {"app": "V5.14", "version": "v514_admin_ayri_pwa_ip_duzeltme", "build": 514, "visibleVersion": "V5.14 •ExelanceX•", "shortVersion": "V5.14 •ExelanceX•", "name": "Mesaha İO V5.14 •ExelanceX•", "cacheName": "mesaha-app-v514-admin-ayri-pwa-ip-duzeltme", "builtAt": "2026-07-08T18:10:00+03:00", "notes": "", "assetVersion": "514", "latestVersion": "v514_admin_ayri_pwa_ip_duzeltme", "latestBuild": 514, "currentBuild": 514, "minSupportedBuild": 409, "forceUpdate": true, "updateUrl": "./temizle.html", "cleanUrl": "./guncelle.html"};
+  var info = {"app": "V5.15", "version": "v515_barkod40_kayit_ayar_koruma_telegram", "build": 515, "visibleVersion": "V5.15 •ExelanceX•", "shortVersion": "V5.15 •ExelanceX•", "name": "Mesaha İO V5.15 •ExelanceX•", "cacheName": "mesaha-app-v515-barkod40-kayit-ayar-koruma-telegram", "builtAt": "2026-07-09T20:00:00+03:00", "notes": "", "assetVersion": "515", "latestVersion": "v515_barkod40_kayit_ayar_koruma_telegram", "latestBuild": 515, "currentBuild": 515, "minSupportedBuild": 409, "forceUpdate": true, "updateUrl": "./temizle.html", "cleanUrl": "./guncelle.html"};
   try{ Object.freeze(info); }catch(e){}
   function expose(name,value){
     try{ Object.defineProperty(root,name,{configurable:false,enumerable:true,get:function(){return value;},set:function(){}}); }
