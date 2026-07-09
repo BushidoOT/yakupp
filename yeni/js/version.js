@@ -1,21 +1,61 @@
 (function(root){
   'use strict';
-  var info = {"app": "V5.43", "version": "v543_admin_engel_cihaz_ip_fix", "build": 543, "visibleVersion": "V5.43 •ExelanceX•", "shortVersion": "V5.43 •ExelanceX•", "name": "Mesaha İO V5.43 •ExelanceX•", "cacheName": "mesaha-app-v543-admin-engel-cihaz-ip-fix", "builtAt": "2026-07-09T23:43:00+03:00", "notes": "", "assetVersion": "543", "latestVersion": "v543_admin_engel_cihaz_ip_fix", "latestBuild": 543, "currentBuild": 543, "minSupportedBuild": 409, "forceUpdate": true, "updateUrl": "./temizle.html", "cleanUrl": "./guncelle.html"};
-  root.MESAHA_VERSION = info;
-  root.MesahaVersion = root.MesahaVersion || {};
-  root.MesahaVersion.info = info;
-  root.MesahaVersion.applyToDocument = function(doc){ try{ doc.documentElement.setAttribute('data-mesaha-build', String(info.build||'')); }catch(e){} };
-  root.MesahaVersion.fetchRemote = async function(){
+  var info = {"app": "V5.15", "version": "v515_barkod40_kayit_ayar_koruma_telegram", "build": 515, "visibleVersion": "V5.15 •ExelanceX•", "shortVersion": "V5.15 •ExelanceX•", "name": "Mesaha İO V5.15 •ExelanceX•", "cacheName": "mesaha-app-v515-barkod40-kayit-ayar-koruma-telegram", "builtAt": "2026-07-09T20:00:00+03:00", "notes": "", "assetVersion": "515", "latestVersion": "v515_barkod40_kayit_ayar_koruma_telegram", "latestBuild": 515, "currentBuild": 515, "minSupportedBuild": 409, "forceUpdate": true, "updateUrl": "./temizle.html", "cleanUrl": "./guncelle.html"};
+  try{ Object.freeze(info); }catch(e){}
+  function expose(name,value){
+    try{ Object.defineProperty(root,name,{configurable:false,enumerable:true,get:function(){return value;},set:function(){}}); }
+    catch(e){ try{ root[name]=value; }catch(_){} }
+  }
+  expose('MESAHA_VERSION', info);
+  expose('MESAHA_VERSION_TEXT', info.visibleVersion);
+  expose('MESAHA_VERSION_SHORT', info.shortVersion);
+  expose('APP_VERSION', info.visibleVersion);
+  expose('FILE_VERSION', info.version);
+  function text(){ return info.visibleVersion || info.app || info.version || 'Mesaha İO'; }
+  function build(){ return Number(info.build || 0) || 0; }
+  function parseVersionJs(txt){
     try{
-      var url = new URL('./version.json', root.location ? root.location.href : './version.json');
-      url.searchParams.set('v', String(Date.now()));
-      var ctrl = new AbortController();
-      var timer = setTimeout(function(){try{ctrl.abort()}catch(e){}}, 2500);
-      var res = await fetch(url.href, {cache:'no-store', signal:ctrl.signal});
-      clearTimeout(timer);
-      if(!res || !res.ok) return info;
-      var j = await res.json();
-      return j && (j.build || j.version) ? j : info;
-    }catch(e){ return info; }
-  };
-})(typeof window!=='undefined'?window:this);
+      var m = String(txt || '').match(/MESAHA_VERSION\s*=\s*(\{[\s\S]*?\})\s*;/);
+      if(!m) m = String(txt || '').match(/var\s+info\s*=\s*(\{[\s\S]*?\})\s*;/);
+      return m ? JSON.parse(m[1]) : null;
+    }catch(e){ return null; }
+  }
+  function fetchRemote(){
+    if(!root.fetch) return Promise.reject(new Error('fetch yok'));
+    var t = Date.now();
+    return root.fetch('./js/version.js?check=' + t, {cache:'no-store', headers:{'Cache-Control':'no-cache'}})
+      .then(function(res){ if(!res.ok) throw new Error('version.js okunamadı'); return res.text(); })
+      .then(function(txt){ var v=parseVersionJs(txt); if(!v) throw new Error('version.js parse edilemedi'); return v; })
+      .catch(function(){
+        return root.fetch('./version.json?check=' + t, {cache:'no-store', headers:{'Cache-Control':'no-cache'}})
+          .then(function(res){ if(!res.ok) throw new Error('version.json okunamadı'); return res.json(); });
+      });
+  }
+  function applyToDocument(doc){
+    try{
+      doc = doc || root.document;
+      if(!doc) return;
+      doc.title = info.name || ('Mesaha İO ' + text());
+      var apple = doc.querySelector('meta[name="apple-mobile-web-app-title"]');
+      if(apple) apple.setAttribute('content', info.app || 'Mesaha İO');
+      var vt = doc.getElementById('versionText');
+      if(vt) vt.textContent = info.shortVersion || text();
+      var st = doc.querySelector('#startup strong');
+      if(st) st.textContent = info.visibleVersion || text();
+      var cards = doc.querySelectorAll ? doc.querySelectorAll('.version-card b') : [];
+      for(var i=0;i<cards.length;i++){ cards[i].textContent = info.shortVersion || text(); }
+      var smalls = doc.querySelectorAll ? doc.querySelectorAll('.version-card small') : [];
+      for(var j=0;j<smalls.length;j++){ smalls[j].textContent = ''; }
+    }catch(e){}
+  }
+  var api = {current:info,text:text,build:build,parseVersionJs:parseVersionJs,fetchRemote:fetchRemote,applyToDocument:applyToDocument};
+  expose('MesahaVersion', api);
+  try{
+    if(root.document){
+      var boot=function(){ applyToDocument(root.document); };
+      if(root.document.readyState==='loading') root.document.addEventListener('DOMContentLoaded', boot, {once:true}); else boot();
+      [50,300,900,1800,4000].forEach(function(ms){ root.setTimeout(boot,ms); });
+      root.setInterval(boot, 15000);
+    }
+  }catch(e){}
+})(typeof self !== 'undefined' ? self : window);
