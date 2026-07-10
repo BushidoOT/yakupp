@@ -1,6 +1,6 @@
 (function(root){
   'use strict';
-  var info={"app":"Mesaha İO","version":"v535_yakupp","build":535,"visibleVersion":"V5.35 •Yakupp•","shortVersion":"V5.35","name":"Mesaha İO V5.35 •Yakupp•","cacheName":"mesaha-app-v535-yakupp","builtAt":"2026-07-10T18:55:00+03:00","notes":"Boy kısayolları son kullanılan boylardan, çap kısayolları en sık kullanılan çaplardan oluşturuldu. Mobil dokunma ve kısayol seçim akışı düzeltildi.","assetVersion":"535","latestVersion":"v535_yakupp","latestBuild":535,"currentBuild":535,"minSupportedBuild":409,"forceUpdate":false,"updateUrl":"./guncelle.html","cleanUrl":"./temizle.html","version_id":"v535_yakupp","versionId":"v535_yakupp","id":"v535_yakupp","updated_at":"2026-07-10T18:55:00+03:00"};
+  var info={"app":"Mesaha İO","version":"v536_yakupp","build":536,"visibleVersion":"V5.36 •Yakupp•","shortVersion":"V5.36","name":"Mesaha İO V5.36 •Yakupp•","cacheName":"mesaha-app-v536-yakupp","builtAt":"2026-07-10T18:37:00+03:00","notes":"Boy ve çap kısayolları kayıt sonrası anında yenilenir. Şefliğe Gönder + Drive Yedekle sarı, Buluttaki Yedekleri Senkronize Et yeşil yapıldı.","assetVersion":"536","latestVersion":"v536_yakupp","latestBuild":536,"currentBuild":536,"minSupportedBuild":409,"forceUpdate":false,"updateUrl":"./guncelle.html","cleanUrl":"./temizle.html","version_id":"v536_yakupp","versionId":"v536_yakupp","id":"v536_yakupp","updated_at":"2026-07-10T18:37:00+03:00"};
   function clone(v){try{return JSON.parse(JSON.stringify(v));}catch(e){return v;}}
   function applyToDocument(doc){
     if(!doc)return info;

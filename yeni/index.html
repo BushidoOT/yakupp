@@ -1858,6 +1858,39 @@ function renderQuickChips(){
   try{window.mesahaQuickChipsDirtyV444=markQuickChipsDirty;}catch(e){}
 }
 
+/* V5.36: Kayıt/ayar depolama olaylarından sonra giriş ekranındaki kısayolları canlı yenile. */
+let __quickChipRefreshTimerV536=0;
+function refreshQuickChipsV536(immediate){
+  const run=()=>{
+    __quickChipRefreshTimerV536=0;
+    try{markQuickChipsDirty();renderQuickChips();}catch(e){}
+    try{renderRecent();}catch(e){}
+    try{
+      const t=totals(state.records||[]);
+      const countEl=$('entryTotalCount'),m3El=$('entryTotalM3');
+      if(countEl)countEl.textContent=t.count.toLocaleString('tr-TR');
+      if(m3El)m3El.textContent=`${fmt(t.m3,3)} m³`;
+    }catch(e){}
+  };
+  if(immediate){clearTimeout(__quickChipRefreshTimerV536);run();return;}
+  clearTimeout(__quickChipRefreshTimerV536);
+  __quickChipRefreshTimerV536=setTimeout(()=>{
+    if(typeof requestAnimationFrame==='function')requestAnimationFrame(run);else run();
+  },16);
+}
+try{
+  const oldRefresh=window.MesahaV433Refresh||{};
+  window.MesahaV433Refresh=Object.assign({},oldRefresh,{
+    renderShortcuts:()=>refreshQuickChipsV536(true),
+    fastAfterSave:()=>refreshQuickChipsV536(true)
+  });
+  if(!window.__mesahaQuickChipLiveBoundV536){
+    window.__mesahaQuickChipLiveBoundV536=true;
+    window.addEventListener('mesaha:records-saved',()=>refreshQuickChipsV536(false),{passive:true});
+    window.addEventListener('mesaha:settings-saved',()=>refreshQuickChipsV536(false),{passive:true});
+  }
+}catch(e){}
+
 function renderProducts(){
   state.settings.visibleProducts = (state.settings.visibleProducts||[]).map(normalizeProductType).filter(k=>PRODUCTS.some(p=>p.key===k));
   if(!state.settings.visibleProducts.length) state.settings.visibleProducts=defaults.visibleProducts.slice();
@@ -1946,6 +1979,8 @@ async function saveEntry(){
     const result=await __saveAllV527(wasEditing?'record-update':'record-add');
     if(result&&result.ok===false) throw new Error(result.error||'Kayıt kalıcı depolamaya yazılamadı');
 
+    /* V5.36: Boy/çap kısayollarını kayıt sonrasında sayfa yenilemeden anında güncelle. */
+    try{ markQuickChipsDirty(); renderQuickChips(); }catch(e){}
     try{showBarcodeMilestoneV440(rec,state.records.length)}catch(e){}
     if(window.MesahaRenderStorageV382&&window.MesahaRenderStorageV382.renderAllSoon) window.MesahaRenderStorageV382.renderAllSoon();
     else renderAll();
