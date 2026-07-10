@@ -130,3 +130,22 @@ body.seflik-send-open-v531 #bottomNav{display:none!important}
 .seflik-division-actions-v529 .seflik-delete-btn-v533{grid-column:1/-1;background:#fff1f2!important;color:#b91c1c!important;border-color:#fecaca!important}
 .seflik-division-actions-v529 .seflik-delete-btn-v533:hover{background:#ffe4e6!important}
 @media(max-width:520px){.seflik-division-actions-v529{grid-template-columns:1fr}.seflik-division-actions-v529 .seflik-delete-btn-v533{grid-column:auto}}
+
+
+/* V5.34 •Yakupp• — sade bölüm kartı ve güvenli gönderim ekranı */
+.seflik-division-actions-v529{grid-template-columns:minmax(0,1fr) auto!important;align-items:stretch}
+.seflik-division-actions-v529 .seflik-delete-btn-v533{grid-column:auto!important;min-width:112px}
+.seflik-transfer-overlay-v534{position:fixed;inset:0;z-index:12050;display:grid;place-items:center;padding:22px max(18px,env(safe-area-inset-right,0px)) max(22px,env(safe-area-inset-bottom,0px)) max(18px,env(safe-area-inset-left,0px));background:rgba(8,34,23,.72);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.seflik-transfer-overlay-v534.hidden{display:none!important}
+.seflik-transfer-card-v534{width:min(360px,100%);border:1px solid rgba(255,255,255,.72);border-radius:24px;background:#fff;padding:25px 21px 20px;text-align:center;box-shadow:0 28px 80px rgba(4,25,16,.38)}
+.seflik-transfer-card-v534 h3{margin:14px 0 5px;color:#173d2b;font-size:21px;line-height:1.2}
+.seflik-transfer-card-v534 p{margin:0;color:#5f7569;font-size:13px;font-weight:800;line-height:1.5}
+.seflik-transfer-card-v534 small{display:block;margin-top:12px;color:#7c8e84;font-size:11px;font-weight:750}
+.seflik-transfer-spinner-v534{display:block;width:48px;height:48px;margin:0 auto;border:5px solid #dcefe3;border-top-color:#1c7449;border-radius:50%;animation:seflikTransferSpinV534 .78s linear infinite}
+.seflik-transfer-progress-v534{height:8px;margin-top:17px;overflow:hidden;border-radius:999px;background:#e7f1eb}
+.seflik-transfer-progress-v534 span{display:block;width:4%;height:100%;border-radius:inherit;background:linear-gradient(90deg,#17683f,#48a56e);transition:width .22s ease}
+body.seflik-transfer-busy-v534{overflow:hidden!important;touch-action:none!important}
+body.seflik-transfer-busy-v534 #bottomNav{visibility:hidden!important;pointer-events:none!important}
+@keyframes seflikTransferSpinV534{to{transform:rotate(360deg)}}
+@media(max-width:520px){.seflik-division-actions-v529{grid-template-columns:1fr!important}.seflik-division-actions-v529 .seflik-delete-btn-v533{min-width:0}}
+@media(prefers-reduced-motion:reduce){.seflik-transfer-spinner-v534{animation-duration:1.5s}}
