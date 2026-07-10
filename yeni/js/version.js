@@ -1,61 +1,9 @@
-(function(root){
+(function(){
   'use strict';
-  var info = {"app": "V5.15", "version": "v515_barkod40_kayit_ayar_koruma_telegram", "build": 515, "visibleVersion": "V5.15 •ExelanceX•", "shortVersion": "V5.15 •ExelanceX•", "name": "Mesaha İO V5.15 •ExelanceX•", "cacheName": "mesaha-app-v515-barkod40-kayit-ayar-koruma-telegram", "builtAt": "2026-07-09T20:00:00+03:00", "notes": "", "assetVersion": "515", "latestVersion": "v515_barkod40_kayit_ayar_koruma_telegram", "latestBuild": 515, "currentBuild": 515, "minSupportedBuild": 409, "forceUpdate": true, "updateUrl": "./temizle.html", "cleanUrl": "./guncelle.html"};
-  try{ Object.freeze(info); }catch(e){}
-  function expose(name,value){
-    try{ Object.defineProperty(root,name,{configurable:false,enumerable:true,get:function(){return value;},set:function(){}}); }
-    catch(e){ try{ root[name]=value; }catch(_){} }
-  }
-  expose('MESAHA_VERSION', info);
-  expose('MESAHA_VERSION_TEXT', info.visibleVersion);
-  expose('MESAHA_VERSION_SHORT', info.shortVersion);
-  expose('APP_VERSION', info.visibleVersion);
-  expose('FILE_VERSION', info.version);
-  function text(){ return info.visibleVersion || info.app || info.version || 'Mesaha İO'; }
-  function build(){ return Number(info.build || 0) || 0; }
-  function parseVersionJs(txt){
-    try{
-      var m = String(txt || '').match(/MESAHA_VERSION\s*=\s*(\{[\s\S]*?\})\s*;/);
-      if(!m) m = String(txt || '').match(/var\s+info\s*=\s*(\{[\s\S]*?\})\s*;/);
-      return m ? JSON.parse(m[1]) : null;
-    }catch(e){ return null; }
-  }
-  function fetchRemote(){
-    if(!root.fetch) return Promise.reject(new Error('fetch yok'));
-    var t = Date.now();
-    return root.fetch('./js/version.js?check=' + t, {cache:'no-store', headers:{'Cache-Control':'no-cache'}})
-      .then(function(res){ if(!res.ok) throw new Error('version.js okunamadı'); return res.text(); })
-      .then(function(txt){ var v=parseVersionJs(txt); if(!v) throw new Error('version.js parse edilemedi'); return v; })
-      .catch(function(){
-        return root.fetch('./version.json?check=' + t, {cache:'no-store', headers:{'Cache-Control':'no-cache'}})
-          .then(function(res){ if(!res.ok) throw new Error('version.json okunamadı'); return res.json(); });
-      });
-  }
-  function applyToDocument(doc){
-    try{
-      doc = doc || root.document;
-      if(!doc) return;
-      doc.title = info.name || ('Mesaha İO ' + text());
-      var apple = doc.querySelector('meta[name="apple-mobile-web-app-title"]');
-      if(apple) apple.setAttribute('content', info.app || 'Mesaha İO');
-      var vt = doc.getElementById('versionText');
-      if(vt) vt.textContent = info.shortVersion || text();
-      var st = doc.querySelector('#startup strong');
-      if(st) st.textContent = info.visibleVersion || text();
-      var cards = doc.querySelectorAll ? doc.querySelectorAll('.version-card b') : [];
-      for(var i=0;i<cards.length;i++){ cards[i].textContent = info.shortVersion || text(); }
-      var smalls = doc.querySelectorAll ? doc.querySelectorAll('.version-card small') : [];
-      for(var j=0;j<smalls.length;j++){ smalls[j].textContent = ''; }
-    }catch(e){}
-  }
-  var api = {current:info,text:text,build:build,parseVersionJs:parseVersionJs,fetchRemote:fetchRemote,applyToDocument:applyToDocument};
-  expose('MesahaVersion', api);
-  try{
-    if(root.document){
-      var boot=function(){ applyToDocument(root.document); };
-      if(root.document.readyState==='loading') root.document.addEventListener('DOMContentLoaded', boot, {once:true}); else boot();
-      [50,300,900,1800,4000].forEach(function(ms){ root.setTimeout(boot,ms); });
-      root.setInterval(boot, 15000);
-    }
-  }catch(e){}
-})(typeof self !== 'undefined' ? self : window);
+  var info={"app":"Mesaha İO","version":"v529_seflik_bolme_devam","build":529,"visibleVersion":"V5.29 •Şeflik DevamX•","shortVersion":"V5.29","name":"Mesaha İO V5.29 •Şeflik DevamX•","cacheName":"mesaha-app-v529-seflik-devam","builtAt":"2026-07-10T18:00:00+03:00","notes":"Şeflik Klasöründe Bölme Oluştur, açık bölmeye gönderim, ölçümlerden Şefliğe Gönder ve Mesahaya Devam Et.","assetVersion":"529","latestVersion":"v529_seflik_bolme_devam","latestBuild":529,"currentBuild":529,"minSupportedBuild":409,"forceUpdate":false,"updateUrl":"./guncelle.html","cleanUrl":"./temizle.html","version_id":"v529_seflik_bolme_devam","versionId":"v529_seflik_bolme_devam","id":"v529_seflik_bolme_devam","updated_at":"2026-07-10T18:00:00+03:00"};
+  function clone(v){try{return JSON.parse(JSON.stringify(v));}catch(e){return v;}}
+  function applyToDocument(doc){doc=doc||document;try{doc.title=info.name;}catch(e){}try{doc.querySelectorAll('[data-version],[data-app-version]').forEach(function(el){el.textContent=info.visibleVersion;});}catch(e){}return info;}
+  async function fetchRemote(){var url='./version.json?check='+Date.now();var ctrl=typeof AbortController!=='undefined'?new AbortController():null;var timer=ctrl?setTimeout(function(){ctrl.abort();},4500):0;try{var res=await fetch(url,{cache:'no-store',headers:{'Cache-Control':'no-cache'},signal:ctrl&&ctrl.signal});if(!res.ok)throw new Error('Sürüm bilgisi alınamadı: '+res.status);var remote=await res.json();return remote&&typeof remote==='object'?remote:null;}finally{if(timer)clearTimeout(timer);}}
+  function isNewer(remote){if(!remote)return false;var rb=Number(remote.build||remote.latestBuild||0)||0;var cb=Number(info.build||0)||0;if(rb&&cb)return rb>cb;return !!(remote.version&&remote.version!==info.version);}
+  var frozen=Object.freeze(info);window.MESAHA_VERSION=frozen;window.MESAHA_BUILD=529;window.MESAHA_VERSION_ID=info.version;window.MESAHA_VERSION_TEXT=info.visibleVersion;window.MESAHA_VERSION_SHORT=info.shortVersion;window.MesahaVersion={current:frozen,applyToDocument:applyToDocument,fetchRemote:fetchRemote,isNewer:isNewer,clone:clone};try{self.MESAHA_VERSION=frozen;self.MesahaVersion=window.MesahaVersion;}catch(e){}
+})();

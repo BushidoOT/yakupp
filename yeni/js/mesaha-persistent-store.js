@@ -1,88 +1,326 @@
+/* Mesaha İO V5.27 — Revision tabanlı kalıcı depolama motoru
+   IndexedDB ana güvenli kopyadır. localStorage yalnızca hızlı başlangıç uyumluluğu için
+   tek kayıt/ayar kopyası ve küçük metadata taşır. Eski mirror/snapshot kopyaları temizlenir. */
 (function(){
   'use strict';
-  if(window.MesahaPersistentStoreV515) return;
-  var DB_NAME='mesaha_io_persistent_v515';
+  if(window.MesahaStorageV527) return;
+
+  var DB_NAME='mesaha_io_storage_v527';
   var DB_VERSION=1;
-  var STORE='kv';
+  var STORE='documents';
   var RECORDS_KEY='cam_mesaha_kayitlari_v1';
   var SETTINGS_KEY='cam_mesaha_ayarlar_v1';
-  var readyPromise=null;
-  function parse(v,f){try{return v?JSON.parse(v):f}catch(e){return f}}
-  function readLS(k,f){try{return parse(localStorage.getItem(k),f)}catch(e){return f}}
-  function writeLS(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}}
-  function openDb(){
-    if(readyPromise) return readyPromise;
-    readyPromise=new Promise(function(resolve,reject){
-      if(!('indexedDB' in window)){reject(new Error('IndexedDB yok'));return;}
-      var req=indexedDB.open(DB_NAME,DB_VERSION);
-      req.onupgradeneeded=function(){var db=req.result; if(!db.objectStoreNames.contains(STORE)) db.createObjectStore(STORE,{keyPath:'key'});};
-      req.onsuccess=function(){resolve(req.result)};
-      req.onerror=function(){reject(req.error||new Error('IndexedDB açılamadı'))};
-    });
-    return readyPromise;
+  var RECORDS_META='mesaha_v527_records_meta';
+  var SETTINGS_META='mesaha_v527_settings_meta';
+  var LEGACY_RECORD_KEYS=[RECORDS_KEY+'_mirror_v515',RECORDS_KEY+'_last_ok',RECORDS_KEY+'_snapshot_v385',RECORDS_KEY+'_mirror_meta_v515'];
+  var LEGACY_SETTINGS_KEYS=[SETTINGS_KEY+'_mirror_v515',SETTINGS_KEY+'_mirror_meta_v515'];
+  var dbPromise=null;
+  var writeChain=Promise.resolve();
+  var seq=0;
+  var bootRecords=[];
+  var bootSettings={};
+  var bootRecordMeta=null;
+  var bootSettingsMeta=null;
+  var lastCommittedRecords=[];
+  var lastCommittedSettings={};
+
+  function now(){return Date.now();}
+  function clone(v,f){try{return JSON.parse(JSON.stringify(v));}catch(e){return f;}}
+  function parse(raw,f){try{return raw==null?f:JSON.parse(raw);}catch(e){return f;}}
+  function readJson(k,f){try{return parse(localStorage.getItem(k),f);}catch(e){return f;}}
+  function writeJson(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true;}catch(e){return false;}}
+  function cleanLegacy(){
+    try{LEGACY_RECORD_KEYS.concat(LEGACY_SETTINGS_KEYS).forEach(function(k){localStorage.removeItem(k);});}catch(e){}
   }
-  function put(key,value){
+  function checksum(value){
+    var s=''; try{s=JSON.stringify(value);}catch(e){s='';}
+    var h=2166136261;
+    for(var i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}
+    return (h>>>0).toString(16)+':'+s.length;
+  }
+  function readMeta(key){var m=readJson(key,null);return m&&typeof m==='object'?m:null;}
+  function nextRevision(meta){
+    seq=(seq+1)%1000;
+    var candidate=now()*1000+seq;
+    return Math.max(candidate,Number(meta&&meta.revision||0)+1);
+  }
+  function legacyRecords(){
+    var raw=null;
+    try{raw=localStorage.getItem(RECORDS_KEY);}catch(e){}
+    if(raw!==null){
+      var direct=parse(raw,null);
+      if(Array.isArray(direct)) return direct;
+    }
+    /* Ana anahtar yok/bozuksa ancak o zaman eski sağlam kopyaya bak. [] geçerli silme durumudur. */
+    for(var i=0;i<LEGACY_RECORD_KEYS.length;i++){
+      if(/meta/i.test(LEGACY_RECORD_KEYS[i])||/snapshot/i.test(LEGACY_RECORD_KEYS[i])) continue;
+      var a=readJson(LEGACY_RECORD_KEYS[i],null);
+      if(Array.isArray(a)) return a;
+    }
+    var snap=readJson(RECORDS_KEY+'_snapshot_v385',null);
+    if(snap&&snap.payload){var b=parse(snap.payload,null);if(Array.isArray(b))return b;}
+    return [];
+  }
+  function legacySettings(){
+    var raw=null; try{raw=localStorage.getItem(SETTINGS_KEY);}catch(e){}
+    if(raw!==null){var direct=parse(raw,null);if(direct&&typeof direct==='object'&&!Array.isArray(direct))return direct;}
+    var old=readJson(SETTINGS_KEY+'_mirror_v515',null);
+    return old&&typeof old==='object'&&!Array.isArray(old)?old:{};
+  }
+  function makeEnvelope(kind,value,meta,reason){
+    var at=now();
+    var val=clone(value,kind==='records'?[]:{});
+    var rev=nextRevision(meta);
+    return {
+      key:kind,
+      schema:2,
+      revision:rev,
+      updatedAt:at,
+      deletedAt:kind==='records'&&Array.isArray(val)&&val.length===0?at:0,
+      count:kind==='records'&&Array.isArray(val)?val.length:Object.keys(val||{}).length,
+      checksum:checksum(val),
+      reason:String(reason||'save').slice(0,80),
+      value:val
+    };
+  }
+  function openDb(){
+    if(dbPromise) return dbPromise;
+    dbPromise=new Promise(function(resolve,reject){
+      if(!('indexedDB' in window)){reject(new Error('IndexedDB kullanılamıyor'));return;}
+      var req=indexedDB.open(DB_NAME,DB_VERSION);
+      req.onupgradeneeded=function(){var db=req.result;if(!db.objectStoreNames.contains(STORE))db.createObjectStore(STORE,{keyPath:'key'});};
+      req.onsuccess=function(){resolve(req.result);};
+      req.onerror=function(){reject(req.error||new Error('IndexedDB açılamadı'));};
+      req.onblocked=function(){reject(new Error('IndexedDB başka sekme tarafından kilitli'));};
+    });
+    return dbPromise;
+  }
+  function idbGet(key){
+    return openDb().then(function(db){return new Promise(function(resolve,reject){
+      var tx=db.transaction(STORE,'readonly');var req=tx.objectStore(STORE).get(key);
+      req.onsuccess=function(){resolve(req.result||null);};
+      req.onerror=function(){reject(req.error||new Error('IndexedDB okunamadı'));};
+    });});
+  }
+  function idbPut(envelope){
     return openDb().then(function(db){return new Promise(function(resolve,reject){
       var tx=db.transaction(STORE,'readwrite');
-      tx.objectStore(STORE).put({key:key,value:value,updatedAt:Date.now()});
-      tx.oncomplete=function(){resolve(true)};
-      tx.onerror=function(){reject(tx.error||new Error('Yazılamadı'))};
-    })}).catch(function(){return false});
+      tx.objectStore(STORE).put(envelope);
+      tx.oncomplete=function(){resolve(true);};
+      tx.onerror=function(){reject(tx.error||new Error('IndexedDB yazılamadı'));};
+      tx.onabort=function(){reject(tx.error||new Error('IndexedDB işlemi iptal oldu'));};
+    });});
   }
-  function get(key){
+  function idbPutPair(rec,set){
     return openDb().then(function(db){return new Promise(function(resolve,reject){
-      var tx=db.transaction(STORE,'readonly'); var req=tx.objectStore(STORE).get(key);
-      req.onsuccess=function(){resolve(req.result||null)};
-      req.onerror=function(){reject(req.error||new Error('Okunamadı'))};
-    })}).catch(function(){return null});
+      var tx=db.transaction(STORE,'readwrite');var st=tx.objectStore(STORE);st.put(rec);st.put(set);
+      tx.oncomplete=function(){resolve(true);};
+      tx.onerror=function(){reject(tx.error||new Error('IndexedDB toplu yazma başarısız'));};
+      tx.onabort=function(){reject(tx.error||new Error('IndexedDB toplu işlem iptal'));};
+    });});
   }
-  function appRecords(){try{return window.state&&Array.isArray(window.state.records)?window.state.records:null}catch(e){return null}}
-  function appSettings(){try{return window.state&&window.state.settings?window.state.settings:null}catch(e){return null}}
-  function toast(t,s,k){try{if(typeof window.mesahaFloatToastV315==='function')return window.mesahaFloatToastV315(t,s||'',k||'warning'); if(typeof window.toast==='function')return window.toast([t,s].filter(Boolean).join(' - '));}catch(e){}}
-  function saveRecords(list){
-    if(!Array.isArray(list)) list=appRecords();
-    if(!Array.isArray(list)) return;
-    try{localStorage.setItem(RECORDS_KEY+'_mirror_v515',JSON.stringify(list)); localStorage.setItem(RECORDS_KEY+'_mirror_meta_v515',JSON.stringify({count:list.length,at:Date.now()}));}catch(e){}
-    put('records',list);
+  function notifyFailure(kind,error){
+    try{window.dispatchEvent(new CustomEvent('mesaha:storage-error',{detail:{key:kind,message:error&&error.message?error.message:String(error||'Depolama hatası')}}));}catch(e){}
   }
-  function saveSettings(st){
-    st=st||appSettings(); if(!st||typeof st!=='object') return;
-    try{localStorage.setItem(SETTINGS_KEY+'_mirror_v515',JSON.stringify(st)); localStorage.setItem(SETTINGS_KEY+'_mirror_meta_v515',JSON.stringify({at:Date.now()}));}catch(e){}
-    put('settings',st);
+  function commitCompat(kind,envelope){
+    var dataKey=kind==='records'?RECORDS_KEY:SETTINGS_KEY;
+    var metaKey=kind==='records'?RECORDS_META:SETTINGS_META;
+    var okData=writeJson(dataKey,envelope.value);
+    var okMeta=writeJson(metaKey,{revision:envelope.revision,updatedAt:envelope.updatedAt,deletedAt:envelope.deletedAt||0,count:envelope.count,checksum:envelope.checksum,schema:2});
+    cleanLegacy();
+    return okData&&okMeta;
   }
-  function localMirrorRecords(){
-    var a=readLS(RECORDS_KEY,null); if(Array.isArray(a)&&a.length) return a;
-    var b=readLS(RECORDS_KEY+'_mirror_v515',null); if(Array.isArray(b)&&b.length) return b;
-    var c=readLS(RECORDS_KEY+'_last_ok',null); if(Array.isArray(c)&&c.length) return c;
-    return Array.isArray(a)?a:[];
+  function captureCompat(kind){
+    var dataKey=kind==='records'?RECORDS_KEY:SETTINGS_KEY;
+    var metaKey=kind==='records'?RECORDS_META:SETTINGS_META;
+    var out={data:null,meta:null,hasData:false,hasMeta:false};
+    try{out.data=localStorage.getItem(dataKey);out.hasData=out.data!==null;}catch(e){}
+    try{out.meta=localStorage.getItem(metaKey);out.hasMeta=out.meta!==null;}catch(e){}
+    return out;
   }
-  async function recoverIntoApp(){
+  function restoreCompat(kind,snap){
+    var dataKey=kind==='records'?RECORDS_KEY:SETTINGS_KEY;
+    var metaKey=kind==='records'?RECORDS_META:SETTINGS_META;
+    try{if(snap&&snap.hasData)localStorage.setItem(dataKey,snap.data);else localStorage.removeItem(dataKey);}catch(e){}
+    try{if(snap&&snap.hasMeta)localStorage.setItem(metaKey,snap.meta);else localStorage.removeItem(metaKey);}catch(e){}
+  }
+  function verifyCompat(kind,envelope){
+    var dataKey=kind==='records'?RECORDS_KEY:SETTINGS_KEY;
+    var metaKey=kind==='records'?RECORDS_META:SETTINGS_META;
+    var val=readJson(dataKey,null),meta=readMeta(metaKey);
+    var typeOk=kind==='records'?Array.isArray(val):!!(val&&typeof val==='object'&&!Array.isArray(val));
+    return !!(typeOk&&meta&&Number(meta.revision||0)===Number(envelope.revision||0)&&meta.checksum===envelope.checksum&&checksum(val)===envelope.checksum);
+  }
+  function queuePut(kind,envelope){
+    writeChain=writeChain.catch(function(){return null;}).then(async function(){
+      var snap=captureCompat(kind);
+      var oldBoot=kind==='records'?clone(bootRecords,[]):clone(bootSettings,{});
+      var oldMeta=kind==='records'?clone(bootRecordMeta,null):clone(bootSettingsMeta,null);
+      try{
+        if(!commitCompat(kind,envelope)||!verifyCompat(kind,envelope)) throw new Error('Yerel depolama doğrulaması başarısız');
+        await idbPut(envelope);
+        var check=await idbGet(kind);
+        if(!check||Number(check.revision)!==Number(envelope.revision)||check.checksum!==envelope.checksum||checksum(check.value)!==envelope.checksum) throw new Error('IndexedDB doğrulaması başarısız');
+        if(kind==='records'){
+          bootRecords=clone(envelope.value,[]);
+          bootRecordMeta={revision:envelope.revision,updatedAt:envelope.updatedAt,deletedAt:envelope.deletedAt,count:envelope.count,checksum:envelope.checksum};
+          lastCommittedRecords=clone(envelope.value,[]);
+          try{window.dispatchEvent(new CustomEvent('mesaha:records-saved',{detail:{count:envelope.count,revision:envelope.revision,verified:true}}));}catch(e){}
+        }else{
+          bootSettings=clone(envelope.value,{});
+          bootSettingsMeta={revision:envelope.revision,updatedAt:envelope.updatedAt,count:envelope.count,checksum:envelope.checksum};
+          lastCommittedSettings=clone(envelope.value,{});
+          try{window.dispatchEvent(new CustomEvent('mesaha:settings-saved',{detail:{revision:envelope.revision,verified:true}}));}catch(e){}
+        }
+        return {ok:true,localStorage:true,indexedDB:true,verified:true,revision:envelope.revision};
+      }catch(err){
+        restoreCompat(kind,snap);
+        if(kind==='records'){bootRecords=oldBoot;bootRecordMeta=oldMeta;}else{bootSettings=oldBoot;bootSettingsMeta=oldMeta;}
+        notifyFailure(kind,err);
+        return {ok:false,localStorage:false,indexedDB:false,verified:false,revision:envelope.revision,error:String(err&&err.message||err)};
+      }
+    });
+    return writeChain;
+  }
+  function saveRecords(list,opts){
+    list=Array.isArray(list)?list:[];
+    var current=readMeta(RECORDS_META)||bootRecordMeta||{};
+    var env=makeEnvelope('records',list,current,opts&&opts.reason);
+    return queuePut('records',env);
+  }
+  function saveSettings(settings,opts){
+    settings=settings&&typeof settings==='object'&&!Array.isArray(settings)?settings:{};
+    var current=readMeta(SETTINGS_META)||bootSettingsMeta||{};
+    var env=makeEnvelope('settings',settings,current,opts&&opts.reason);
+    return queuePut('settings',env);
+  }
+  function replaceAll(records,settings,opts){
+    records=Array.isArray(records)?records:[];
+    settings=settings&&typeof settings==='object'&&!Array.isArray(settings)?settings:{};
+    var rec=makeEnvelope('records',records,readMeta(RECORDS_META)||bootRecordMeta||{},opts&&opts.reason||'replace');
+    var set=makeEnvelope('settings',settings,readMeta(SETTINGS_META)||bootSettingsMeta||{},opts&&opts.reason||'replace');
+    writeChain=writeChain.catch(function(){return null;}).then(async function(){
+      var recSnap=captureCompat('records'),setSnap=captureCompat('settings');
+      var oldRecords=clone(bootRecords,[]),oldSettings=clone(bootSettings,{}),oldRecMeta=clone(bootRecordMeta,null),oldSetMeta=clone(bootSettingsMeta,null);
+      try{
+        if(!commitCompat('records',rec)||!commitCompat('settings',set)||!verifyCompat('records',rec)||!verifyCompat('settings',set)) throw new Error('Yerel toplu depolama doğrulaması başarısız');
+        await idbPutPair(rec,set);
+        var pair=await Promise.all([idbGet('records'),idbGet('settings')]);
+        if(!pair[0]||!pair[1]||Number(pair[0].revision)!==Number(rec.revision)||Number(pair[1].revision)!==Number(set.revision)||pair[0].checksum!==rec.checksum||pair[1].checksum!==set.checksum||checksum(pair[0].value)!==rec.checksum||checksum(pair[1].value)!==set.checksum) throw new Error('IndexedDB toplu doğrulaması başarısız');
+        bootRecords=clone(rec.value,[]);bootSettings=clone(set.value,{});
+        bootRecordMeta={revision:rec.revision,updatedAt:rec.updatedAt,deletedAt:rec.deletedAt,count:rec.count,checksum:rec.checksum};
+        bootSettingsMeta={revision:set.revision,updatedAt:set.updatedAt,count:set.count,checksum:set.checksum};
+        lastCommittedRecords=clone(rec.value,[]);lastCommittedSettings=clone(set.value,{});
+        try{window.dispatchEvent(new CustomEvent('mesaha:records-saved',{detail:{count:rec.count,revision:rec.revision,verified:true,replace:true}}));}catch(e){}
+        try{window.dispatchEvent(new CustomEvent('mesaha:settings-saved',{detail:{revision:set.revision,verified:true,replace:true}}));}catch(e){}
+        return {ok:true,localStorage:true,indexedDB:true,verified:true,recordsRevision:rec.revision,settingsRevision:set.revision};
+      }catch(err){
+        restoreCompat('records',recSnap);restoreCompat('settings',setSnap);
+        bootRecords=oldRecords;bootSettings=oldSettings;bootRecordMeta=oldRecMeta;bootSettingsMeta=oldSetMeta;
+        notifyFailure('replace',err);
+        return {ok:false,localStorage:false,indexedDB:false,verified:false,error:String(err&&err.message||err)};
+      }
+    });
+    return writeChain;
+  }
+  function applyToApp(records,settings,reason){
     try{
-      if(navigator.storage&&navigator.storage.persist) navigator.storage.persist().catch(function(){});
-      var localRecords=localMirrorRecords();
-      var dbRec=await get('records');
-      var dbRecords=dbRec&&Array.isArray(dbRec.value)?dbRec.value:[];
-      if(dbRecords.length>localRecords.length){
-        writeLS(RECORDS_KEY,dbRecords); writeLS(RECORDS_KEY+'_mirror_v515',dbRecords);
-        if(window.state&&Array.isArray(window.state.records)){window.state.records=dbRecords;}
-        try{if(typeof window.renderAll==='function')window.renderAll(); else if(window.MesahaRenderStorageV382&&window.MesahaRenderStorageV382.renderAllSoon)window.MesahaRenderStorageV382.renderAllSoon();}catch(e){}
-        toast('Kayıtlar güvenli kopyadan geri alındı.',dbRecords.length+' kayıt yüklendi.','warning');
-      }else if(localRecords.length){ saveRecords(localRecords); }
-      var localSettings=readLS(SETTINGS_KEY,null)||readLS(SETTINGS_KEY+'_mirror_v515',null)||{};
-      var dbSet=await get('settings');
-      var dbSettings=dbSet&&dbSet.value&&typeof dbSet.value==='object'?dbSet.value:null;
-      if(dbSettings){
-        var merged=Object.assign({},localSettings,dbSettings);
-        if(window.state&&window.state.settings){window.state.settings=Object.assign(window.state.settings,merged);}
-        writeLS(SETTINGS_KEY,merged); writeLS(SETTINGS_KEY+'_mirror_v515',merged);
-        try{if(typeof window.renderAll==='function')window.renderAll();}catch(e){}
-      }else if(localSettings&&Object.keys(localSettings).length){ saveSettings(localSettings); }
+      if(window.state){
+        if(Array.isArray(records)) window.state.records=clone(records,[]);
+        if(settings&&typeof settings==='object') window.state.settings=Object.assign(window.state.settings||{},clone(settings,{}));
+      }
+      try{if(typeof window.renderAll==='function')window.renderAll();else if(window.MesahaRenderStorageV382&&window.MesahaRenderStorageV382.renderAllSoon)window.MesahaRenderStorageV382.renderAllSoon();}catch(e){}
+      try{window.dispatchEvent(new CustomEvent('mesaha:storage-recovered',{detail:{reason:reason||'recovery',count:Array.isArray(records)?records.length:0}}));}catch(e){}
     }catch(e){}
   }
-  window.addEventListener('mesaha:records-saved',function(){setTimeout(function(){saveRecords();},80)},{passive:true});
-  window.addEventListener('mesaha:settings-saved',function(){setTimeout(function(){saveSettings();},80)},{passive:true});
-  window.addEventListener('pagehide',function(){saveRecords();saveSettings();},{passive:true});
-  document.addEventListener('visibilitychange',function(){if(document.hidden){saveRecords();saveSettings();}else setTimeout(recoverIntoApp,250);},{passive:true});
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(recoverIntoApp,500);},{once:true}); else setTimeout(recoverIntoApp,500);
-  window.MesahaPersistentStoreV515={__v515:true,saveRecords:saveRecords,saveSettings:saveSettings,recoverIntoApp:recoverIntoApp};
+  async function recoverIntoApp(){
+    var localRecMeta=readMeta(RECORDS_META)||bootRecordMeta||{};
+    var localSetMeta=readMeta(SETTINGS_META)||bootSettingsMeta||{};
+    var localRecRaw=readJson(RECORDS_KEY,null);
+    var localSetRaw=readJson(SETTINGS_KEY,null);
+    var localRecValid=Array.isArray(localRecRaw)&&(!localRecMeta.checksum||checksum(localRecRaw)===localRecMeta.checksum);
+    var localSetValid=!!(localSetRaw&&typeof localSetRaw==='object'&&!Array.isArray(localSetRaw))&&(!localSetMeta.checksum||checksum(localSetRaw)===localSetMeta.checksum);
+    var dbRec=null,dbSet=null;
+    try{var pair=await Promise.all([idbGet('records').catch(function(){return null;}),idbGet('settings').catch(function(){return null;})]);dbRec=pair[0];dbSet=pair[1];}catch(e){}
+    var dbRecValid=!!(dbRec&&Array.isArray(dbRec.value)&&(!dbRec.checksum||checksum(dbRec.value)===dbRec.checksum));
+    var dbSetValid=!!(dbSet&&dbSet.value&&typeof dbSet.value==='object'&&!Array.isArray(dbSet.value)&&(!dbSet.checksum||checksum(dbSet.value)===dbSet.checksum));
+    var changed=false;
+
+    if(dbRecValid&&(!localRecValid||Number(dbRec.revision||0)>Number(localRecMeta.revision||0))){
+      commitCompat('records',dbRec);bootRecords=clone(dbRec.value,[]);bootRecordMeta=dbRec;
+      if(window.state)window.state.records=clone(dbRec.value,[]);changed=true;
+    }else if(localRecValid&&(!dbRecValid||Number(localRecMeta.revision||0)>Number(dbRec&&dbRec.revision||0))){
+      bootRecords=clone(localRecRaw,[]);
+      var recEnv=makeEnvelope('records',bootRecords,localRecMeta,'bootstrap-sync');
+      recEnv.revision=Number(localRecMeta.revision||recEnv.revision);recEnv.updatedAt=Number(localRecMeta.updatedAt||recEnv.updatedAt);recEnv.deletedAt=Number(localRecMeta.deletedAt||recEnv.deletedAt);recEnv.checksum=localRecMeta.checksum||checksum(bootRecords);recEnv.count=bootRecords.length;
+      try{await idbPut(recEnv);dbRec=recEnv;dbRecValid=true;}catch(e){notifyFailure('records-bootstrap',e);}
+    }else if(!localRecValid&&!dbRecValid){
+      notifyFailure('records-recovery',new Error('Kayıt kopyalarının doğrulaması başarısız'));
+    }
+
+    if(dbSetValid&&(!localSetValid||Number(dbSet.revision||0)>Number(localSetMeta.revision||0))){
+      commitCompat('settings',dbSet);bootSettings=clone(dbSet.value,{});bootSettingsMeta=dbSet;
+      if(window.state)window.state.settings=Object.assign(window.state.settings||{},clone(dbSet.value,{}));changed=true;
+    }else if(localSetValid&&(!dbSetValid||Number(localSetMeta.revision||0)>Number(dbSet&&dbSet.revision||0))){
+      bootSettings=clone(localSetRaw,{});
+      var setEnv=makeEnvelope('settings',bootSettings,localSetMeta,'bootstrap-sync');
+      setEnv.revision=Number(localSetMeta.revision||setEnv.revision);setEnv.updatedAt=Number(localSetMeta.updatedAt||setEnv.updatedAt);setEnv.checksum=localSetMeta.checksum||checksum(bootSettings);setEnv.count=Object.keys(bootSettings||{}).length;
+      try{await idbPut(setEnv);dbSet=setEnv;dbSetValid=true;}catch(e){notifyFailure('settings-bootstrap',e);}
+    }else if(!localSetValid&&!dbSetValid){
+      notifyFailure('settings-recovery',new Error('Ayar kopyalarının doğrulaması başarısız'));
+    }
+
+    lastCommittedRecords=clone(dbRecValid&&Number(dbRec.revision||0)>=Number((readMeta(RECORDS_META)||{}).revision||0)?dbRec.value:bootRecords,[]);
+    lastCommittedSettings=clone(dbSetValid&&Number(dbSet.revision||0)>=Number((readMeta(SETTINGS_META)||{}).revision||0)?dbSet.value:bootSettings,{});
+    if(changed)applyToApp(window.state&&window.state.records,window.state&&window.state.settings,'newer-or-valid-revision');
+    cleanLegacy();
+    return {ok:true,changed:changed,records:Array.isArray(window.state&&window.state.records)?window.state.records.length:bootRecords.length};
+  }
+  function flush(){return writeChain.catch(function(){return null;});}
+  function info(){
+    return {
+      recordsMeta:readMeta(RECORDS_META)||bootRecordMeta,
+      settingsMeta:readMeta(SETTINGS_META)||bootSettingsMeta,
+      recordsCount:(window.state&&Array.isArray(window.state.records)?window.state.records:bootRecords).length,
+      pending:false,
+      database:DB_NAME
+    };
+  }
+
+  /* Senkron başlangıç migrasyonu: ana [] kaydı kesin silme olarak kabul edilir. */
+  bootRecords=legacyRecords();
+  bootSettings=legacySettings();
+  bootRecordMeta=readMeta(RECORDS_META);
+  bootSettingsMeta=readMeta(SETTINGS_META);
+  if(!bootRecordMeta){
+    bootRecordMeta={revision:nextRevision(null),updatedAt:now(),deletedAt:bootRecords.length===0?now():0,count:bootRecords.length,checksum:checksum(bootRecords),schema:2};
+    writeJson(RECORDS_META,bootRecordMeta);writeJson(RECORDS_KEY,bootRecords);
+  }
+  if(!bootSettingsMeta){
+    bootSettingsMeta={revision:nextRevision(null),updatedAt:now(),count:Object.keys(bootSettings||{}).length,checksum:checksum(bootSettings),schema:2};
+    writeJson(SETTINGS_META,bootSettingsMeta);writeJson(SETTINGS_KEY,bootSettings);
+  }
+  cleanLegacy();
+
+  var api={
+    __v527:true,
+    bootstrapRecords:function(){return clone(bootRecords,[]);},
+    bootstrapSettings:function(){return clone(bootSettings,{});},
+    saveRecords:saveRecords,
+    saveSettings:saveSettings,
+    replaceAll:replaceAll,
+    clearRecords:function(reason){return saveRecords([],{reason:reason||'clear'});},
+    recoverIntoApp:recoverIntoApp,
+    flush:flush,
+    info:info,
+    lastCommittedRecords:function(){return clone(lastCommittedRecords,[]);},
+    lastCommittedSettings:function(){return clone(lastCommittedSettings,{});}
+  };
+  window.MesahaStorageV527=api;
+  /* Eski çağrı adları yalnızca uyumluluk için aynı güvenli motora yönlenir. */
+  window.MesahaPersistentStoreV515={__v527:true,saveRecords:saveRecords,saveSettings:saveSettings,recoverIntoApp:recoverIntoApp};
+
+  try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(function(){});}catch(e){}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(recoverIntoApp,80);},{once:true});else setTimeout(recoverIntoApp,80);
+  window.addEventListener('pagehide',function(){flush();},{passive:true});
 })();
