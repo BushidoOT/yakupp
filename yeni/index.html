@@ -7907,6 +7907,21 @@ body.mesaha-floating-save-open-v537 .bottom-nav{display:none!important;visibilit
 })();
 </script>
 
+
+<style id="mesaha-v538-ios-touch-style">
+/* V5.38 — iPhone'da kaydırma sonrası ölçü alanları ilk dokunuşta odaklanır. */
+@supports (-webkit-touch-callout:none){
+  #entryView.active .measure-grid label,
+  #entryView.active .barcode-save label{position:relative!important;z-index:12!important;pointer-events:auto!important;touch-action:manipulation!important;}
+  #entryView.active #diameterInput,
+  #entryView.active #lengthInput,
+  #entryView.active #barcodeInput,
+  #entryView.active #quantityInput{position:relative!important;z-index:14!important;pointer-events:auto!important;touch-action:manipulation!important;-webkit-user-select:text!important;user-select:text!important;-webkit-tap-highlight-color:rgba(37,99,235,.12)!important;}
+  #entryHomeBtn{position:relative!important;z-index:30!important;pointer-events:auto!important;touch-action:manipulation!important;}
+}
+</style>
+<script src="./js/mesaha-ios-touch-v538.js?v=538"></script>
+
 </body>
 </html>
 
