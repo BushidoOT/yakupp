@@ -7795,73 +7795,82 @@ body.seflik-send-open-v531 #bottomNav{display:none!important;visibility:hidden!i
 #seflikSendOverlayV529 .seflik-send-actions-v529 .btn{min-height:50px!important;pointer-events:auto!important;touch-action:manipulation!important;}
 #seflikFolderSyncV528{white-space:normal!important;line-height:1.15!important;padding:9px 10px!important;}
 
-/* Önceki sürümlerde asıl Kaydet butonu klavye açılınca fixed yapılıyordu.
-   V5.31'de asıl buton formda kalır; ayrı yüzen buton kaydetme olayını tetikler. */
-body.entry-open.keyboard-open-v311 #saveBtn,
-body.entry-open.keyboard-open-v311 .entry-view.active .save-btn,
-body.mesaha-entry-keyboard-open #saveBtn,
-body.mesaha-entry-keyboard-open .entry-view.active .save-btn,
-html.mesaha-entry-keyboard-open #saveBtn{
-  position:relative!important;
-  right:auto!important;left:auto!important;bottom:auto!important;top:auto!important;
-  width:100%!important;
-  z-index:20!important;
-  transform:none!important;
-  box-shadow:0 14px 30px rgba(13,95,59,.24)!important;
-}
+/* V5.37 — Kalıcı Kaydet kaldırıldı; yalnız giriş alanı odaktayken yüzen Kaydet görünür. */
+#entryView #saveBtn{display:none!important;visibility:hidden!important;position:absolute!important;width:1px!important;height:1px!important;min-height:0!important;opacity:0!important;pointer-events:none!important;overflow:hidden!important;}
+#entryView .barcode-save{grid-template-columns:minmax(0,1fr)!important;padding-bottom:0!important;}
+#entryView .barcode-save>label{grid-column:1/-1!important;}
 .floating-save-btn-v531{
-  display:none;position:fixed;right:10px;
-  bottom:calc(var(--mesaha-kb-bottom-v372,var(--keyboard-bottom-v311,0px)) + env(safe-area-inset-bottom,0px) + 10px);
-  width:clamp(118px,31vw,150px);min-height:56px;
-  align-items:center;justify-content:center;
-  border:1px solid rgba(255,255,255,.42);border-radius:21px;
-  background:linear-gradient(180deg,#1bb56f,#0d6b42);color:#fff;
-  font-size:19px;font-weight:950;box-shadow:0 18px 44px rgba(13,95,59,.48);
-  z-index:2147483500;pointer-events:auto;touch-action:manipulation;
-  -webkit-tap-highlight-color:rgba(255,255,255,.2);user-select:none;-webkit-user-select:none;
+  display:none!important;position:fixed!important;right:10px!important;
+  bottom:calc(var(--mesaha-kb-bottom-v537,0px) + env(safe-area-inset-bottom,0px) + 10px)!important;
+  width:clamp(122px,32vw,154px)!important;min-height:58px!important;
+  align-items:center!important;justify-content:center!important;
+  border:1px solid rgba(255,255,255,.44)!important;border-radius:21px!important;
+  background:linear-gradient(180deg,#1bb56f,#0d6b42)!important;color:#fff!important;
+  font-size:19px!important;font-weight:950!important;box-shadow:0 18px 44px rgba(13,95,59,.48)!important;
+  z-index:2147483500!important;pointer-events:auto!important;touch-action:manipulation!important;
+  -webkit-tap-highlight-color:rgba(255,255,255,.2)!important;user-select:none!important;-webkit-user-select:none!important;
 }
-body.entry-open.keyboard-open-v311 #floatingSaveBtnV531,
-body.mesaha-entry-keyboard-open #floatingSaveBtnV531,
-html.mesaha-entry-keyboard-open body #floatingSaveBtnV531{display:inline-flex!important;}
-#floatingSaveBtnV531[disabled],#floatingSaveBtnV531[aria-busy="true"]{opacity:.58!important;filter:saturate(.65);}
-@media(max-width:380px){.floating-save-btn-v531{right:8px;width:116px;min-height:53px;font-size:17px;}}
+body.mesaha-floating-save-open-v537 #floatingSaveBtnV531,
+html.mesaha-floating-save-open-v537 body #floatingSaveBtnV531{display:inline-flex!important;visibility:visible!important;opacity:1!important;}
+body:not(.mesaha-floating-save-open-v537) #floatingSaveBtnV531,
+html:not(.mesaha-floating-save-open-v537) body #floatingSaveBtnV531{display:none!important;visibility:hidden!important;opacity:0!important;}
+#floatingSaveBtnV531[disabled],#floatingSaveBtnV531[aria-busy="true"]{opacity:.58!important;filter:saturate(.65)!important;}
+body.mesaha-floating-save-open-v537 .bottom-nav{display:none!important;visibility:hidden!important;pointer-events:none!important;}
+@media(max-width:380px){.floating-save-btn-v531{right:8px!important;width:118px!important;min-height:54px!important;font-size:17px!important;}}
 </style>
-<script id="mesaha-v531-modal-floating-save-fix-js">
+<script id="mesaha-v537-modal-floating-save-fix-js">
 (function(){
   'use strict';
-  if(window.__mesahaV531ModalFloatingSave) return;
-  window.__mesahaV531ModalFloatingSave=true;
-  var lastFire=0,busy=false;
+  if(window.__mesahaV537FloatingSave)return;
+  window.__mesahaV537FloatingSave=true;
+
+  var lastFire=0,busy=false,hideTimer=0,keyboardTimer=0;
   function byId(id){return document.getElementById(id)}
+  function entryOpen(){var entry=byId('entryView');return !!(entry&&entry.classList.contains('active'));}
+  function validInput(el){return !!(el&&['diameterInput','lengthInput','barcodeInput','quantityInput'].indexOf(el.id)>=0);}
+  function focusedInput(){return validInput(document.activeElement);}
+  function keyboardInset(){
+    try{
+      if(window.visualViewport){
+        var vv=window.visualViewport;
+        return Math.max(0,Math.round(window.innerHeight-vv.height-vv.offsetTop));
+      }
+    }catch(e){}
+    return 0;
+  }
   function syncFloating(){
     var original=byId('saveBtn'),floating=byId('floatingSaveBtnV531');
     if(!floating||!original)return;
+    var open=entryOpen()&&focusedInput();
+    document.body.classList.toggle('mesaha-floating-save-open-v537',open);
+    document.documentElement.classList.toggle('mesaha-floating-save-open-v537',open);
+    document.documentElement.style.setProperty('--mesaha-kb-bottom-v537',open?keyboardInset()+'px':'0px');
     floating.disabled=!!original.disabled;
     floating.setAttribute('aria-busy',original.getAttribute('aria-busy')==='true'?'true':'false');
     floating.textContent=(original.textContent||'Kaydet').trim()||'Kaydet';
   }
+  function scheduleSync(delay){clearTimeout(keyboardTimer);syncFloating();keyboardTimer=setTimeout(syncFloating,Number(delay||120));}
   function fireSave(ev){
-    if(ev){try{ev.preventDefault();ev.stopPropagation();}catch(e){}}
-    var now=Date.now();if(busy||now-lastFire<650)return false;
+    if(ev){try{ev.preventDefault();ev.stopPropagation();ev.stopImmediatePropagation();}catch(e){}}
+    var now=Date.now();if(busy||now-lastFire<600)return false;
     var original=byId('saveBtn');if(!original||original.disabled)return false;
     lastFire=now;busy=true;syncFloating();
-    try{
-      original.click();
-    }catch(e){
-      try{if(typeof window.saveEntry==='function')window.saveEntry();}catch(_e){}
-    }
-    setTimeout(function(){busy=false;syncFloating();},700);
+    try{original.click();}catch(e){try{if(typeof window.saveEntry==='function')window.saveEntry();}catch(_e){}}
+    setTimeout(function(){busy=false;syncFloating();},750);
     return false;
   }
-  function bind(){
+  function bindFloating(){
     var floating=byId('floatingSaveBtnV531'),original=byId('saveBtn');
-    if(!floating||floating.__v531Bound)return;
+    if(!floating||!original||floating.__v537Bound)return;
+    floating.__v537Bound=true;
+    // Eski V5.31 zamanlayıcısının yeniden bağlanmasını engelle.
     floating.__v531Bound=true;
-    if(window.PointerEvent)floating.addEventListener('pointerup',fireSave,{passive:false,capture:true});
+    floating.addEventListener('pointerdown',function(ev){ev.preventDefault();},{passive:false,capture:true});
+    floating.addEventListener('pointerup',fireSave,{passive:false,capture:true});
+    floating.addEventListener('touchstart',function(ev){ev.preventDefault();},{passive:false,capture:true});
     floating.addEventListener('touchend',fireSave,{passive:false,capture:true});
     floating.addEventListener('click',fireSave,{passive:false,capture:true});
-    if(original&&window.MutationObserver){new MutationObserver(syncFloating).observe(original,{attributes:true,childList:true,subtree:true});}
-    syncFloating();
+    if(window.MutationObserver)new MutationObserver(syncFloating).observe(original,{attributes:true,childList:true,subtree:true});
   }
   function syncModalViewport(){
     var ov=byId('seflikSendOverlayV529');if(!ov)return;
@@ -7872,24 +7881,29 @@ html.mesaha-entry-keyboard-open body #floatingSaveBtnV531{display:inline-flex!im
     document.documentElement.style.setProperty('--seflik-vv-top-v531',top+'px');
   }
   function watchModal(){
-    var ov=byId('seflikSendOverlayV529');if(!ov||ov.__v531Watch)return;
-    ov.__v531Watch=true;
-    var apply=function(){
-      var open=!ov.classList.contains('hidden')&&ov.getAttribute('aria-hidden')!=='true';
-      document.body.classList.toggle('seflik-send-open-v531',open);
-      if(open)syncModalViewport();
-    };
+    var ov=byId('seflikSendOverlayV529');if(!ov||ov.__v537Watch)return;
+    ov.__v537Watch=true;
+    var apply=function(){var open=!ov.classList.contains('hidden')&&ov.getAttribute('aria-hidden')!=='true';document.body.classList.toggle('seflik-send-open-v531',open);if(open)syncModalViewport();};
     if(window.MutationObserver)new MutationObserver(apply).observe(ov,{attributes:true,attributeFilter:['class','aria-hidden']});
     apply();
   }
-  function boot(){bind();watchModal();syncModalViewport();}
+  function boot(){bindFloating();watchModal();scheduleSync(80);syncModalViewport();}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
-  window.addEventListener('resize',syncModalViewport,{passive:true});
-  window.addEventListener('orientationchange',function(){setTimeout(syncModalViewport,180)},{passive:true});
-  if(window.visualViewport){window.visualViewport.addEventListener('resize',syncModalViewport,{passive:true});window.visualViewport.addEventListener('scroll',syncModalViewport,{passive:true});}
-  document.addEventListener('focusin',function(){setTimeout(function(){syncFloating();syncModalViewport();},60)},true);
-  [100,500,1200].forEach(function(ms){setTimeout(boot,ms)});
-  window.MesahaV531={fireFloatingSave:fireSave,syncModalViewport:syncModalViewport};
+
+  document.addEventListener('focusin',function(ev){
+    if(validInput(ev.target)){clearTimeout(hideTimer);scheduleSync(40);setTimeout(syncFloating,180);setTimeout(syncFloating,420);}
+  },true);
+  document.addEventListener('focusout',function(){clearTimeout(hideTimer);hideTimer=setTimeout(syncFloating,260);},true);
+  document.addEventListener('click',function(){setTimeout(syncFloating,70);},true);
+  window.addEventListener('resize',function(){scheduleSync(80);syncModalViewport();},{passive:true});
+  window.addEventListener('orientationchange',function(){setTimeout(function(){scheduleSync(100);syncModalViewport();},220);},{passive:true});
+  if(window.visualViewport){
+    window.visualViewport.addEventListener('resize',function(){scheduleSync(50);syncModalViewport();},{passive:true});
+    window.visualViewport.addEventListener('scroll',function(){scheduleSync(30);syncModalViewport();},{passive:true});
+  }
+  var entry=byId('entryView');if(entry&&window.MutationObserver)new MutationObserver(function(){scheduleSync(40);}).observe(entry,{attributes:true,attributeFilter:['class']});
+  [80,350,900,1800].forEach(function(ms){setTimeout(boot,ms)});
+  window.MesahaV537={fireFloatingSave:fireSave,syncFloatingSave:syncFloating,syncModalViewport:syncModalViewport};
 })();
 </script>
 

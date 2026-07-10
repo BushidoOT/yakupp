@@ -1,6 +1,6 @@
 (function(root){
   'use strict';
-  var info={"app":"Mesaha İO","version":"v536_yakupp","build":536,"visibleVersion":"V5.36 •Yakupp•","shortVersion":"V5.36","name":"Mesaha İO V5.36 •Yakupp•","cacheName":"mesaha-app-v536-yakupp","builtAt":"2026-07-10T18:37:00+03:00","notes":"Boy ve çap kısayolları kayıt sonrası anında yenilenir. Şefliğe Gönder + Drive Yedekle sarı, Buluttaki Yedekleri Senkronize Et yeşil yapıldı.","assetVersion":"536","latestVersion":"v536_yakupp","latestBuild":536,"currentBuild":536,"minSupportedBuild":409,"forceUpdate":false,"updateUrl":"./guncelle.html","cleanUrl":"./temizle.html","version_id":"v536_yakupp","versionId":"v536_yakupp","id":"v536_yakupp","updated_at":"2026-07-10T18:37:00+03:00"};
+  var info={"app":"Mesaha İO","version":"v537_yakupp","build":537,"visibleVersion":"V5.37 •Yakupp•","shortVersion":"V5.37","name":"Mesaha İO V5.37 •Yakupp•","cacheName":"mio-app-v537-yakupp","builtAt":"2026-07-10T19:05:00+03:00","notes":"Güncelleme tek dokunuşta tamamlanır. Kalıcı Kaydet kaldırıldı; giriş alanlarında klavye açılınca yüzen Kaydet güvenilir şekilde görünür.","assetVersion":"537","latestVersion":"v537_yakupp","latestBuild":537,"currentBuild":537,"minSupportedBuild":409,"forceUpdate":false,"updateUrl":"./guncelle.html","cleanUrl":"./temizle.html","version_id":"v537_yakupp","versionId":"v537_yakupp","id":"v537_yakupp","updated_at":"2026-07-10T19:05:00+03:00"};
   function clone(v){try{return JSON.parse(JSON.stringify(v));}catch(e){return v;}}
   function applyToDocument(doc){
     if(!doc)return info;
@@ -12,9 +12,9 @@
   async function fetchRemote(){
     var url='./version.json?check='+Date.now();
     var ctrl=typeof AbortController!=='undefined'?new AbortController():null;
-    var timer=ctrl?setTimeout(function(){ctrl.abort();},4500):0;
+    var timer=ctrl?setTimeout(function(){ctrl.abort();},6500):0;
     try{
-      var res=await fetch(url,{cache:'no-store',headers:{'Cache-Control':'no-cache'},signal:ctrl&&ctrl.signal});
+      var res=await fetch(url,{cache:'no-store',headers:{'Cache-Control':'no-cache, no-store, must-revalidate','Pragma':'no-cache'},signal:ctrl&&ctrl.signal});
       if(!res.ok)throw new Error('Sürüm bilgisi alınamadı: '+res.status);
       var remote=await res.json();
       return remote&&typeof remote==='object'?remote:null;
