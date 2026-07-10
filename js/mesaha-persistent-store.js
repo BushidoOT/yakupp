@@ -23,6 +23,8 @@
   var bootSettingsMeta=null;
   var lastCommittedRecords=[];
   var lastCommittedSettings={};
+  var pendingReplicas=Object.create(null);
+  var replicaRetryTimer=0;
 
   function now(){return Date.now();}
   function clone(v,f){try{return JSON.parse(JSON.stringify(v));}catch(e){return f;}}
@@ -83,15 +85,23 @@
       value:val
     };
   }
+  function resetDb(db){
+    try{if(db)db.close();}catch(e){}
+    dbPromise=null;
+  }
   function openDb(){
     if(dbPromise) return dbPromise;
     dbPromise=new Promise(function(resolve,reject){
-      if(!('indexedDB' in window)){reject(new Error('IndexedDB kullanılamıyor'));return;}
+      if(!('indexedDB' in window)){dbPromise=null;reject(new Error('IndexedDB kullanılamıyor'));return;}
       var req=indexedDB.open(DB_NAME,DB_VERSION);
       req.onupgradeneeded=function(){var db=req.result;if(!db.objectStoreNames.contains(STORE))db.createObjectStore(STORE,{keyPath:'key'});};
-      req.onsuccess=function(){resolve(req.result);};
-      req.onerror=function(){reject(req.error||new Error('IndexedDB açılamadı'));};
-      req.onblocked=function(){reject(new Error('IndexedDB başka sekme tarafından kilitli'));};
+      req.onsuccess=function(){
+        var db=req.result;
+        try{db.onversionchange=function(){resetDb(db);};}catch(e){}
+        resolve(db);
+      };
+      req.onerror=function(){var err=req.error||new Error('IndexedDB açılamadı');dbPromise=null;reject(err);};
+      req.onblocked=function(){dbPromise=null;reject(new Error('IndexedDB başka sekme tarafından kilitli'));};
     });
     return dbPromise;
   }
@@ -107,20 +117,62 @@
       var tx=db.transaction(STORE,'readwrite');
       tx.objectStore(STORE).put(envelope);
       tx.oncomplete=function(){resolve(true);};
-      tx.onerror=function(){reject(tx.error||new Error('IndexedDB yazılamadı'));};
-      tx.onabort=function(){reject(tx.error||new Error('IndexedDB işlemi iptal oldu'));};
+      tx.onerror=function(){var err=tx.error||new Error('IndexedDB yazılamadı');resetDb(db);reject(err);};
+      tx.onabort=function(){var err=tx.error||new Error('IndexedDB işlemi iptal oldu');resetDb(db);reject(err);};
     });});
   }
   function idbPutPair(rec,set){
     return openDb().then(function(db){return new Promise(function(resolve,reject){
       var tx=db.transaction(STORE,'readwrite');var st=tx.objectStore(STORE);st.put(rec);st.put(set);
       tx.oncomplete=function(){resolve(true);};
-      tx.onerror=function(){reject(tx.error||new Error('IndexedDB toplu yazma başarısız'));};
-      tx.onabort=function(){reject(tx.error||new Error('IndexedDB toplu işlem iptal'));};
+      tx.onerror=function(){var err=tx.error||new Error('IndexedDB toplu yazma başarısız');resetDb(db);reject(err);};
+      tx.onabort=function(){var err=tx.error||new Error('IndexedDB toplu işlem iptal');resetDb(db);reject(err);};
     });});
   }
-  function notifyFailure(kind,error){
-    try{window.dispatchEvent(new CustomEvent('mesaha:storage-error',{detail:{key:kind,message:error&&error.message?error.message:String(error||'Depolama hatası')}}));}catch(e){}
+  function notifyFailure(kind,error,extra){
+    var detail={key:kind,message:error&&error.message?error.message:String(error||'Depolama hatası'),fatal:true};
+    try{Object.assign(detail,extra||{});}catch(e){}
+    try{window.dispatchEvent(new CustomEvent('mesaha:storage-error',{detail:detail}));}catch(e){}
+  }
+  function notifyWarning(kind,error,extra){
+    var detail={key:kind,message:error&&error.message?error.message:String(error||'Depolama yedeği gecikti'),fatal:false,degraded:true};
+    try{Object.assign(detail,extra||{});}catch(e){}
+    try{window.dispatchEvent(new CustomEvent('mesaha:storage-warning',{detail:detail}));}catch(e){}
+  }
+  function withDeadline(promise,ms,label){
+    var timer=0;
+    return Promise.race([promise,new Promise(function(_,reject){timer=setTimeout(function(){reject(new Error(label||'Depolama zaman aşımı'));},ms||4500);})]).finally(function(){if(timer)clearTimeout(timer);});
+  }
+  async function verifyIdbEnvelope(kind,envelope){
+    await withDeadline(idbPut(envelope),4500,'IndexedDB yazma zaman aşımı');
+    var check=await withDeadline(idbGet(kind),3000,'IndexedDB doğrulama zaman aşımı');
+    if(!check||Number(check.revision)!==Number(envelope.revision)||check.checksum!==envelope.checksum||checksum(check.value)!==envelope.checksum) throw new Error('IndexedDB doğrulaması başarısız');
+    return true;
+  }
+  function scheduleReplicaRetry(kind,envelope,needsLocal,needsIdb){
+    pendingReplicas[kind]={envelope:clone(envelope,null),needsLocal:!!needsLocal,needsIdb:!!needsIdb,attempts:0};
+    if(replicaRetryTimer)return;
+    replicaRetryTimer=setTimeout(retryReplicas,1200);
+  }
+  async function retryReplicas(){
+    replicaRetryTimer=0;
+    var keys=Object.keys(pendingReplicas);
+    var remain=false;
+    for(var i=0;i<keys.length;i++){
+      var kind=keys[i],job=pendingReplicas[kind];
+      if(!job||!job.envelope){delete pendingReplicas[kind];continue;}
+      job.attempts++;
+      if(job.needsLocal){
+        try{job.needsLocal=!(commitCompat(kind,job.envelope)&&verifyCompat(kind,job.envelope));}catch(e){job.needsLocal=true;}
+      }
+      if(job.needsIdb){
+        try{await verifyIdbEnvelope(kind,job.envelope);job.needsIdb=false;}catch(e){job.needsIdb=true;}
+      }
+      if(!job.needsLocal&&!job.needsIdb){delete pendingReplicas[kind];}
+      else if(job.attempts<8){remain=true;}
+      else{notifyWarning(kind,new Error('İkinci depolama kopyası daha sonra yeniden denenecek'),{replicaRetryExhausted:true,localPending:job.needsLocal,indexedDBPending:job.needsIdb});delete pendingReplicas[kind];}
+    }
+    if(remain&&!replicaRetryTimer)replicaRetryTimer=setTimeout(retryReplicas,Math.min(15000,1200+keys.length*900));
   }
   function commitCompat(kind,envelope){
     var dataKey=kind==='records'?RECORDS_KEY:SETTINGS_KEY;
@@ -151,34 +203,41 @@
     var typeOk=kind==='records'?Array.isArray(val):!!(val&&typeof val==='object'&&!Array.isArray(val));
     return !!(typeOk&&meta&&Number(meta.revision||0)===Number(envelope.revision||0)&&meta.checksum===envelope.checksum&&checksum(val)===envelope.checksum);
   }
+  function applyCommitted(kind,envelope,localOk,idbOk){
+    if(kind==='records'){
+      bootRecords=clone(envelope.value,[]);
+      bootRecordMeta={revision:envelope.revision,updatedAt:envelope.updatedAt,deletedAt:envelope.deletedAt,count:envelope.count,checksum:envelope.checksum};
+      lastCommittedRecords=clone(envelope.value,[]);
+      try{window.dispatchEvent(new CustomEvent('mesaha:records-saved',{detail:{count:envelope.count,revision:envelope.revision,verified:true,durable:true,degraded:!(localOk&&idbOk),localStorage:localOk,indexedDB:idbOk}}));}catch(e){}
+    }else{
+      bootSettings=clone(envelope.value,{});
+      bootSettingsMeta={revision:envelope.revision,updatedAt:envelope.updatedAt,count:envelope.count,checksum:envelope.checksum};
+      lastCommittedSettings=clone(envelope.value,{});
+      try{window.dispatchEvent(new CustomEvent('mesaha:settings-saved',{detail:{revision:envelope.revision,verified:true,durable:true,degraded:!(localOk&&idbOk),localStorage:localOk,indexedDB:idbOk}}));}catch(e){}
+    }
+  }
   function queuePut(kind,envelope){
     writeChain=writeChain.catch(function(){return null;}).then(async function(){
       var snap=captureCompat(kind);
       var oldBoot=kind==='records'?clone(bootRecords,[]):clone(bootSettings,{});
       var oldMeta=kind==='records'?clone(bootRecordMeta,null):clone(bootSettingsMeta,null);
-      try{
-        if(!commitCompat(kind,envelope)||!verifyCompat(kind,envelope)) throw new Error('Yerel depolama doğrulaması başarısız');
-        await idbPut(envelope);
-        var check=await idbGet(kind);
-        if(!check||Number(check.revision)!==Number(envelope.revision)||check.checksum!==envelope.checksum||checksum(check.value)!==envelope.checksum) throw new Error('IndexedDB doğrulaması başarısız');
-        if(kind==='records'){
-          bootRecords=clone(envelope.value,[]);
-          bootRecordMeta={revision:envelope.revision,updatedAt:envelope.updatedAt,deletedAt:envelope.deletedAt,count:envelope.count,checksum:envelope.checksum};
-          lastCommittedRecords=clone(envelope.value,[]);
-          try{window.dispatchEvent(new CustomEvent('mesaha:records-saved',{detail:{count:envelope.count,revision:envelope.revision,verified:true}}));}catch(e){}
-        }else{
-          bootSettings=clone(envelope.value,{});
-          bootSettingsMeta={revision:envelope.revision,updatedAt:envelope.updatedAt,count:envelope.count,checksum:envelope.checksum};
-          lastCommittedSettings=clone(envelope.value,{});
-          try{window.dispatchEvent(new CustomEvent('mesaha:settings-saved',{detail:{revision:envelope.revision,verified:true}}));}catch(e){}
-        }
-        return {ok:true,localStorage:true,indexedDB:true,verified:true,revision:envelope.revision};
-      }catch(err){
+      var localOk=false,idbOk=false,localErr=null,idbErr=null;
+      try{localOk=!!(commitCompat(kind,envelope)&&verifyCompat(kind,envelope));if(!localOk)localErr=new Error('Yerel depolama doğrulaması başarısız');}catch(e){localErr=e;localOk=false;}
+      try{await verifyIdbEnvelope(kind,envelope);idbOk=true;}catch(e){idbErr=e;idbOk=false;}
+      if(!localOk&&!idbOk){
         restoreCompat(kind,snap);
         if(kind==='records'){bootRecords=oldBoot;bootRecordMeta=oldMeta;}else{bootSettings=oldBoot;bootSettingsMeta=oldMeta;}
-        notifyFailure(kind,err);
-        return {ok:false,localStorage:false,indexedDB:false,verified:false,revision:envelope.revision,error:String(err&&err.message||err)};
+        var fatalErr=idbErr||localErr||new Error('Kayıt hiçbir kalıcı depoya yazılamadı');
+        notifyFailure(kind,fatalErr,{localStorage:false,indexedDB:false});
+        return {ok:false,localStorage:false,indexedDB:false,verified:false,durable:false,revision:envelope.revision,error:String(fatalErr&&fatalErr.message||fatalErr)};
       }
+      if(!localOk)restoreCompat(kind,snap);
+      applyCommitted(kind,envelope,localOk,idbOk);
+      if(!localOk||!idbOk){
+        scheduleReplicaRetry(kind,envelope,!localOk,!idbOk);
+        notifyWarning(kind,idbErr||localErr||new Error('İkinci depolama kopyası gecikti'),{localStorage:localOk,indexedDB:idbOk,revision:envelope.revision});
+      }
+      return {ok:true,localStorage:localOk,indexedDB:idbOk,verified:true,durable:true,degraded:!(localOk&&idbOk),revision:envelope.revision};
     });
     return writeChain;
   }
@@ -202,24 +261,31 @@
     writeChain=writeChain.catch(function(){return null;}).then(async function(){
       var recSnap=captureCompat('records'),setSnap=captureCompat('settings');
       var oldRecords=clone(bootRecords,[]),oldSettings=clone(bootSettings,{}),oldRecMeta=clone(bootRecordMeta,null),oldSetMeta=clone(bootSettingsMeta,null);
+      var localRecOk=false,localSetOk=false,idbOk=false,localErr=null,idbErr=null;
+      try{localRecOk=!!(commitCompat('records',rec)&&verifyCompat('records',rec));if(!localRecOk)localErr=new Error('Yerel kayıt doğrulaması başarısız');}catch(e){localErr=e;}
+      try{localSetOk=!!(commitCompat('settings',set)&&verifyCompat('settings',set));if(!localSetOk&&!localErr)localErr=new Error('Yerel ayar doğrulaması başarısız');}catch(e){if(!localErr)localErr=e;}
       try{
-        if(!commitCompat('records',rec)||!commitCompat('settings',set)||!verifyCompat('records',rec)||!verifyCompat('settings',set)) throw new Error('Yerel toplu depolama doğrulaması başarısız');
-        await idbPutPair(rec,set);
-        var pair=await Promise.all([idbGet('records'),idbGet('settings')]);
-        if(!pair[0]||!pair[1]||Number(pair[0].revision)!==Number(rec.revision)||Number(pair[1].revision)!==Number(set.revision)||pair[0].checksum!==rec.checksum||pair[1].checksum!==set.checksum||checksum(pair[0].value)!==rec.checksum||checksum(pair[1].value)!==set.checksum) throw new Error('IndexedDB toplu doğrulaması başarısız');
-        bootRecords=clone(rec.value,[]);bootSettings=clone(set.value,{});
-        bootRecordMeta={revision:rec.revision,updatedAt:rec.updatedAt,deletedAt:rec.deletedAt,count:rec.count,checksum:rec.checksum};
-        bootSettingsMeta={revision:set.revision,updatedAt:set.updatedAt,count:set.count,checksum:set.checksum};
-        lastCommittedRecords=clone(rec.value,[]);lastCommittedSettings=clone(set.value,{});
-        try{window.dispatchEvent(new CustomEvent('mesaha:records-saved',{detail:{count:rec.count,revision:rec.revision,verified:true,replace:true}}));}catch(e){}
-        try{window.dispatchEvent(new CustomEvent('mesaha:settings-saved',{detail:{revision:set.revision,verified:true,replace:true}}));}catch(e){}
-        return {ok:true,localStorage:true,indexedDB:true,verified:true,recordsRevision:rec.revision,settingsRevision:set.revision};
-      }catch(err){
+        await withDeadline(idbPutPair(rec,set),5000,'IndexedDB toplu yazma zaman aşımı');
+        var pair=await withDeadline(Promise.all([idbGet('records'),idbGet('settings')]),3500,'IndexedDB toplu doğrulama zaman aşımı');
+        idbOk=!!(pair[0]&&pair[1]&&Number(pair[0].revision)===Number(rec.revision)&&Number(pair[1].revision)===Number(set.revision)&&pair[0].checksum===rec.checksum&&pair[1].checksum===set.checksum&&checksum(pair[0].value)===rec.checksum&&checksum(pair[1].value)===set.checksum);
+        if(!idbOk)throw new Error('IndexedDB toplu doğrulaması başarısız');
+      }catch(e){idbErr=e;idbOk=false;}
+      var recordsSafe=localRecOk||idbOk,settingsSafe=localSetOk||idbOk;
+      if(!recordsSafe||!settingsSafe){
         restoreCompat('records',recSnap);restoreCompat('settings',setSnap);
         bootRecords=oldRecords;bootSettings=oldSettings;bootRecordMeta=oldRecMeta;bootSettingsMeta=oldSetMeta;
-        notifyFailure('replace',err);
-        return {ok:false,localStorage:false,indexedDB:false,verified:false,error:String(err&&err.message||err)};
+        var fatalErr=idbErr||localErr||new Error('Toplu veri hiçbir kalıcı depoya yazılamadı');
+        notifyFailure('replace',fatalErr,{localRecords:localRecOk,localSettings:localSetOk,indexedDB:idbOk});
+        return {ok:false,localStorage:false,indexedDB:false,verified:false,durable:false,error:String(fatalErr&&fatalErr.message||fatalErr)};
       }
+      if(!localRecOk)restoreCompat('records',recSnap);
+      if(!localSetOk)restoreCompat('settings',setSnap);
+      applyCommitted('records',rec,localRecOk,idbOk);
+      applyCommitted('settings',set,localSetOk,idbOk);
+      if(!localRecOk||!idbOk)scheduleReplicaRetry('records',rec,!localRecOk,!idbOk);
+      if(!localSetOk||!idbOk)scheduleReplicaRetry('settings',set,!localSetOk,!idbOk);
+      if(!localRecOk||!localSetOk||!idbOk)notifyWarning('replace',idbErr||localErr||new Error('İkinci depolama kopyası gecikti'),{localRecords:localRecOk,localSettings:localSetOk,indexedDB:idbOk});
+      return {ok:true,localStorage:localRecOk&&localSetOk,indexedDB:idbOk,verified:true,durable:true,degraded:!(localRecOk&&localSetOk&&idbOk),recordsRevision:rec.revision,settingsRevision:set.revision};
     });
     return writeChain;
   }
@@ -253,7 +319,7 @@
       bootRecords=clone(localRecRaw,[]);
       var recEnv=makeEnvelope('records',bootRecords,localRecMeta,'bootstrap-sync');
       recEnv.revision=Number(localRecMeta.revision||recEnv.revision);recEnv.updatedAt=Number(localRecMeta.updatedAt||recEnv.updatedAt);recEnv.deletedAt=Number(localRecMeta.deletedAt||recEnv.deletedAt);recEnv.checksum=localRecMeta.checksum||checksum(bootRecords);recEnv.count=bootRecords.length;
-      try{await idbPut(recEnv);dbRec=recEnv;dbRecValid=true;}catch(e){notifyFailure('records-bootstrap',e);}
+      try{await idbPut(recEnv);dbRec=recEnv;dbRecValid=true;}catch(e){notifyWarning('records-bootstrap',e,{recovery:true});}
     }else if(!localRecValid&&!dbRecValid){
       notifyFailure('records-recovery',new Error('Kayıt kopyalarının doğrulaması başarısız'));
     }
@@ -265,7 +331,7 @@
       bootSettings=clone(localSetRaw,{});
       var setEnv=makeEnvelope('settings',bootSettings,localSetMeta,'bootstrap-sync');
       setEnv.revision=Number(localSetMeta.revision||setEnv.revision);setEnv.updatedAt=Number(localSetMeta.updatedAt||setEnv.updatedAt);setEnv.checksum=localSetMeta.checksum||checksum(bootSettings);setEnv.count=Object.keys(bootSettings||{}).length;
-      try{await idbPut(setEnv);dbSet=setEnv;dbSetValid=true;}catch(e){notifyFailure('settings-bootstrap',e);}
+      try{await idbPut(setEnv);dbSet=setEnv;dbSetValid=true;}catch(e){notifyWarning('settings-bootstrap',e,{recovery:true});}
     }else if(!localSetValid&&!dbSetValid){
       notifyFailure('settings-recovery',new Error('Ayar kopyalarının doğrulaması başarısız'));
     }
