@@ -510,14 +510,14 @@ body.mesaha-keyboard-open #saveBtn, body.mesaha-keyboard-open .save-btn{position
 <div class="section-head"><h2>BEYAN</h2><span id="recordCountPill">0 kayıt</span></div>
 <div class="summary-grid small"><div><small>Toplam m³</small><b id="recTotalM3">0 m³</b></div><div><small>Toplam Adet</small><b id="recTotalCount">0</b></div></div>
 <div class="product-totals" id="productTotals"></div>
-<div class="action-grid">
+<div class="action-grid records-action-grid-v530">
 <button class="btn green" id="downloadXlsBtn" type="button">Mesaha Dosyasını İndir</button>
+<button class="btn seflik-record-send-v529 seflik-record-send-v530" id="seflikSendFromRecordsV529" type="button">Şefliğe Gönder</button>
+<button class="btn soft" id="printBtn" type="button">Beyan İndir</button>
 <button class="btn soft" id="backupBtn" type="button">Yedek Al</button>
 <button class="btn soft" id="restoreBtn" type="button">Yedek Yükle</button>
-<button class="btn primary" id="cloudBackupBtnV316" type="button">Buluta Yedekle</button>
-<button class="btn seflik-record-send-v529" id="seflikSendFromRecordsV529" type="button">Şefliğe Gönder</button>
+<button class="btn soft" id="cloudBackupBtnV316" type="button">Buluta Yükle</button>
 <button class="btn soft" id="cloudRestoreBtnV316" type="button">Buluttan Getir</button>
-<button class="btn orange" id="printBtn" type="button">Beyan İndir</button>
 </div>
 <div class="record-toolbar record-tools-lower">
 <input autocomplete="off" id="recordSearch" placeholder="Barkod, ağaç, ürün veya kesimci ara..." type="search"/>
@@ -627,7 +627,7 @@ body.mesaha-keyboard-open #saveBtn, body.mesaha-keyboard-open .save-btn{position
 <div class="guide-section-guide-clean">
 <h3>5. Bulut Yedek</h3>
 <ol>
-<li><b>Buluta Yedekle</b> internet varsa kayıtları buluta gönderir.</li>
+<li><b>Buluta Yükle</b> internet varsa kayıtları buluta gönderir.</li>
 <li><b>Buluttan Getir</b> aktif kullanıcıya ait yedekleri listeler.</li>
 <li>Başka cihazdaki yedekler için <b>Farklı Kullanıcı / Şeflik Ara</b> seçeneğini kullanınız.</li>
 <li>İnternet yoksa bulut çalışmaz; cihazdaki kayıtlar etkilenmez.</li>
@@ -4405,7 +4405,7 @@ body.cloud-busy-v326 #cloudBackupBtnV316::after{content:"";width:12px;height:12p
         cloudBusy=false;
         document.body.classList.remove('cloud-busy-v326');
         btn.disabled=false;
-        btn.textContent=oldText||'Buluta Yedekle';
+        btn.textContent=oldText||'Buluta Yükle';
       },700);
     }
   }
@@ -7553,6 +7553,60 @@ body.mesaha-entry-scrolling-v408 #entryView label{
 
 <script src="./js/mesaha-runtime-v527.js"></script>
 <script src="./js/mesaha-seflik-folder-v529.js"></script>
+
+<style id="mesaha-v530-seflik-ui-fix">
+/* V5.30 — Ölçümler buton sırası ve Şeflik Klasörü okunabilirlik düzeltmesi */
+#recordsView .records-action-grid-v530{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;gap:8px!important;margin:10px 0 8px!important;}
+#recordsView .records-action-grid-v530 #downloadXlsBtn{grid-column:1/-1!important;grid-row:1!important;min-height:48px!important;}
+#recordsView .records-action-grid-v530 #seflikSendFromRecordsV529{grid-column:1!important;grid-row:2!important;order:initial!important;background:linear-gradient(180deg,#ffc334,#f5a400)!important;border-color:#e8a400!important;color:#533700!important;box-shadow:0 9px 20px rgba(245,164,0,.18)!important;}
+#recordsView .records-action-grid-v530 #printBtn{grid-column:2!important;grid-row:2!important;order:initial!important;}
+#recordsView .records-action-grid-v530 #backupBtn{grid-column:1!important;grid-row:3!important;order:initial!important;}
+#recordsView .records-action-grid-v530 #restoreBtn{grid-column:2!important;grid-row:3!important;order:initial!important;}
+#recordsView .records-action-grid-v530 #cloudBackupBtnV316{grid-column:1!important;grid-row:4!important;order:initial!important;}
+#recordsView .records-action-grid-v530 #cloudRestoreBtnV316{grid-column:2!important;grid-row:4!important;order:initial!important;}
+#recordsView .records-action-grid-v530 #printBtn,
+#recordsView .records-action-grid-v530 #backupBtn,
+#recordsView .records-action-grid-v530 #restoreBtn,
+#recordsView .records-action-grid-v530 #cloudBackupBtnV316,
+#recordsView .records-action-grid-v530 #cloudRestoreBtnV316{background:#eff7fb!important;color:#22505c!important;border-color:#dceaf2!important;box-shadow:0 7px 16px rgba(34,80,92,.055)!important;}
+
+#seflikFolderView{padding-bottom:20px!important;}
+#seflikFolderView .seflik-folder-shell{gap:12px!important;}
+#seflikFolderView .card{opacity:1!important;filter:none!important;}
+#seflikFolderView .card.seflik-folder-hero{background:linear-gradient(135deg,#0d5f3b 0%,#16734a 58%,#26915f 100%)!important;color:#fff!important;border:1px solid rgba(13,95,59,.34)!important;box-shadow:0 15px 35px rgba(13,95,59,.18)!important;padding:16px!important;}
+#seflikFolderView .seflik-folder-hero h2{color:#fff!important;font-size:20px!important;margin:0!important;}
+#seflikFolderView .seflik-folder-hero p{color:#e5fff0!important;opacity:1!important;font-size:13px!important;font-weight:820!important;line-height:1.5!important;margin:7px 0 0!important;}
+#seflikFolderView .seflik-folder-badge{color:#fff!important;background:rgba(255,255,255,.14)!important;border-color:rgba(255,255,255,.3)!important;}
+#seflikFolderView .seflik-folder-metric{background:rgba(255,255,255,.13)!important;border-color:rgba(255,255,255,.22)!important;}
+#seflikFolderView .seflik-folder-metric small{color:#d9fbe8!important;opacity:1!important;font-size:10px!important;}
+#seflikFolderView .seflik-folder-metric b{color:#fff!important;opacity:1!important;font-size:18px!important;}
+#seflikFolderView .seflik-folder-control,
+#seflikFolderView .seflik-folder-shell>section.card:not(.seflik-folder-hero){background:#fff!important;border:1px solid #dcebe4!important;box-shadow:0 10px 24px rgba(23,74,50,.065)!important;padding:15px!important;}
+#seflikFolderView .section-head h2,
+#seflikFolderView .seflik-folder-list-head h2{color:#1d392f!important;opacity:1!important;font-size:18px!important;margin:0!important;}
+#seflikFolderView .section-head span{color:#17683f!important;background:#eaf8ef!important;border:1px solid #cde7d7!important;opacity:1!important;font-size:11px!important;}
+#seflikFolderView .seflik-folder-list-head small,
+#seflikFolderView .seflik-folder-hint-v529{color:#536c60!important;opacity:1!important;}
+#seflikFolderView .seflik-create-row-v529{grid-template-columns:minmax(0,1fr) 146px!important;gap:9px!important;align-items:end!important;}
+#seflikFolderView .seflik-create-row-v529 label,
+#seflikFolderView .seflik-folder-control label{color:#294438!important;opacity:1!important;}
+#seflikFolderView input,
+#seflikFolderView select{color:#183d2b!important;background:#fff!important;border-color:#bdd6c8!important;opacity:1!important;}
+#seflikFolderView input::placeholder{color:#7c8983!important;opacity:1!important;}
+#seflikFolderView #seflikFolderCreateV529{background:linear-gradient(180deg,#15945a,#0d5f3b)!important;color:#fff!important;border-color:#0d5f3b!important;white-space:nowrap!important;padding-left:10px!important;padding-right:10px!important;}
+#seflikFolderView .seflik-folder-status{color:#335244!important;background:#f2f8f4!important;opacity:1!important;}
+#seflikFolderView .seflik-folder-empty{color:#526d60!important;background:#f8fcf9!important;opacity:1!important;}
+#seflikFolderView .seflik-folder-empty small{color:#6a7f73!important;opacity:1!important;}
+#seflikFolderView .seflik-division-card{background:#fff!important;opacity:1!important;}
+#seflikFolderView .seflik-division-title b,
+#seflikFolderView .seflik-division-stat b{color:#183d2b!important;opacity:1!important;}
+#seflikFolderView .seflik-division-title small,
+#seflikFolderView .seflik-division-stat small,
+#seflikFolderView .seflik-division-meta{color:#62776c!important;opacity:1!important;}
+#seflikFolderView .seflik-local-pending-v530{display:inline-flex;align-items:center;border-radius:999px;padding:4px 7px;background:#fff7d8;color:#8a650b;border:1px solid #f2df9f;font-size:9px;font-weight:950;margin-left:5px;vertical-align:middle;}
+@media(max-width:390px){#seflikFolderView .seflik-create-row-v529{grid-template-columns:1fr!important;}#seflikFolderView #seflikFolderCreateV529{width:100%!important;}}
+</style>
+
 </body>
 </html>
 

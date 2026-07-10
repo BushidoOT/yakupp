@@ -12,6 +12,7 @@
   var SESSION_KEY='mesaha_supabase_v500_session';
   var CACHE_KEY='mesaha_seflik_folder_cache_v529';
   var LAST_BOLME_KEY='mesaha_seflik_folder_last_bolme_v529';
+  var PENDING_DIVISIONS_KEY='mesaha_seflik_folder_pending_divisions_v530';
   var CHUNK_SIZE=180;
   var divisions=[];
   var busy=false;
@@ -58,7 +59,14 @@
     }finally{if(timer)clearTimeout(timer)}
   }
 
-  function openDivisions(){return divisions.filter(function(x){return clean(x.status||'open')==='open'})}
+  function divisionId(x){return fold(x&&x.bolme_no).replace(/[^a-z0-9_-]+/g,'_')}
+  function normalizeDivision(x,fallbackBolme){x=Object.assign({},x||{});x.bolme_no=clean(x.bolme_no||fallbackBolme);x.status=fold(x.status||'open')==='open'?'open':clean(x.status||'open');x.record_count=num(x.record_count);x.total_volume=num(x.total_volume);x.contributors=Array.isArray(x.contributors)?x.contributors.filter(Boolean):[];return x}
+  function pendingDivisions(){var u=user(),p=readJson(PENDING_DIVISIONS_KEY,{}),list=p&&p.seflik===u.seflik&&Array.isArray(p.divisions)?p.divisions:[];return list.map(function(x){return normalizeDivision(x)}).filter(function(x){return !!x.bolme_no})}
+  function savePending(list){writeJson(PENDING_DIVISIONS_KEY,{seflik:user().seflik,updatedAt:new Date().toISOString(),divisions:(list||[]).map(function(x){return normalizeDivision(x)})})}
+  function mergeRemoteDivisions(remote){var remoteList=(Array.isArray(remote)?remote:[]).map(function(x){return normalizeDivision(x)}),map=new Map();remoteList.forEach(function(x){if(x.bolme_no)map.set(divisionId(x),x)});var unresolved=[];pendingDivisions().forEach(function(x){var k=divisionId(x);if(!map.has(k)){x.local_pending=true;map.set(k,x);unresolved.push(x)}});savePending(unresolved);return Array.from(map.values())}
+  function cacheAndRender(){var u=user();writeJson(CACHE_KEY,{at:new Date().toISOString(),seflik:u.seflik,divisions:divisions});renderList()}
+  function upsertLocalDivision(row,asPending){var x=normalizeDivision(row),k=divisionId(x),found=false;divisions=divisions.map(function(d){if(divisionId(d)===k){found=true;return Object.assign({},d,x)}return d});if(!found)divisions.unshift(x);if(asPending){var p=pendingDivisions(),pf=false;p=p.map(function(d){if(divisionId(d)===k){pf=true;return Object.assign({},d,x,{local_pending:true})}return d});if(!pf)p.unshift(Object.assign({},x,{local_pending:true}));savePending(p)}cacheAndRender();return x}
+  function openDivisions(){return divisions.filter(function(x){return fold(x.status||'open')==='open'})}
   function selectedBolme(){return clean(($('seflikFolderBolmeV528')||{}).value)}
   function currentLocalList(){return records().slice()}
   function updatePreview(){
@@ -89,7 +97,7 @@
     var list=openDivisions();
     if(!list.length){box.innerHTML='<div class="seflik-folder-empty">Henüz açık bölme oluşturulmamış.<br><small>“Bölme Oluştur” ile ilk ortak çalışma alanını açın.</small></div>';return}
     box.innerHTML=list.map(function(x){var contributors=(x.contributors||[]).filter(Boolean),drive=!!x.drive_backed_up,empty=num(x.record_count)===0;return '<article class="seflik-division-card">'+
-      '<div class="seflik-division-top"><div class="seflik-division-title"><span class="seflik-division-icon">📁</span><div><b>Bölme '+esc(x.bolme_no||'-')+'</b><small>'+esc(contributors.length?contributors.join(', '):(x.created_by_name?('Oluşturan: '+x.created_by_name):'Henüz mesaha gönderilmedi'))+'</small></div></div><span class="seflik-open-pill">Açık</span></div>'+
+      '<div class="seflik-division-top"><div class="seflik-division-title"><span class="seflik-division-icon">📁</span><div><b>Bölme '+esc(x.bolme_no||'-')+(x.local_pending?' <span class="seflik-local-pending-v530">Sunucu doğrulanıyor</span>':'')+'</b><small>'+esc(contributors.length?contributors.join(', '):(x.created_by_name?('Oluşturan: '+x.created_by_name):'Henüz mesaha gönderilmedi'))+'</small></div></div><span class="seflik-open-pill">Açık</span></div>'+
       '<div class="seflik-division-stats"><div class="seflik-division-stat"><small>MESaha ADEDİ</small><b>'+num(x.record_count).toLocaleString('tr-TR')+'</b></div><div class="seflik-division-stat"><small>TOPLAM m³</small><b>'+fmt(x.total_volume,3)+'</b></div><div class="seflik-division-stat"><small>KULLANICI</small><b>'+contributors.length+'</b></div></div>'+
       '<div class="seflik-division-meta"><span>Son işlem: '+esc(dateText(x.updated_at||x.created_at))+'</span><span>'+(drive?'✓ Drive yedekli':'Drive yedeği bekleniyor')+'</span></div>'+
       '<div class="seflik-division-actions seflik-division-actions-v529"><button class="btn soft" type="button" data-seflik-read="'+esc(x.bolme_no)+'">Kayıtları Gör</button><button class="btn primary" type="button" data-seflik-continue="'+esc(x.bolme_no)+'">'+(empty?'Mesahaya Başla':'Mesahaya Devam Et')+'</button></div></article>'}).join('');
@@ -99,7 +107,7 @@
     var u=user();if(!validIdentity(u)){notify('Önce kullanıcı girişi yapın','Şeflik Klasörü için kullanıcı adı ve şeflik zorunlu.','warning');return false}
     if(!navigator.onLine){var cached=readJson(CACHE_KEY,null);if(cached&&Array.isArray(cached.divisions)){divisions=cached.divisions;renderList();setStatus('Çevrimdışı: son senkronize edilen klasör gösteriliyor.','');return true}throw new Error('Senkronizasyon için internet gerekli')}
     setStatus('Şeflik klasörü senkronize ediliyor…','busy');
-    var out=await edge('seflik_folder_list',{});divisions=Array.isArray(out.divisions)?out.divisions:(Array.isArray(out.summaries)?out.summaries:[]);writeJson(CACHE_KEY,{at:new Date().toISOString(),seflik:u.seflik,divisions:divisions});renderList();setStatus('Senkronizasyon tamamlandı • '+new Date().toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'}),'success');if(showToast)notify('Şeflik klasörü güncellendi',openDivisions().length+' açık bölme bulundu.','success');return true;
+    var out=await edge('seflik_folder_list',{});var remote=Array.isArray(out.divisions)?out.divisions:(Array.isArray(out.summaries)?out.summaries:[]);divisions=mergeRemoteDivisions(remote);cacheAndRender();setStatus('Senkronizasyon tamamlandı • '+new Date().toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'}),'success');if(showToast)notify('Şeflik klasörü güncellendi',openDivisions().length+' açık bölme bulundu.','success');return true;
   }
 
   async function createDivision(){
@@ -112,11 +120,17 @@
     try{
       var out=await edge('seflik_folder_create_division',{bolmeNo:bolme});
       if(input)input.value='';
-      await syncFolder(false);
+      var created=normalizeDivision(out&&out.division?out.division:{bolme_no:bolme,status:'open',created_by_name:u.name,created_at:new Date().toISOString(),updated_at:new Date().toISOString(),record_count:0,total_volume:0,contributors:[]},bolme);
+      upsertLocalDivision(Object.assign({},created,{local_pending:true}),true);
+      var confirmed=false;
+      for(var attempt=0;attempt<3&&!confirmed;attempt++){
+        if(attempt)await new Promise(function(resolve){setTimeout(resolve,attempt*450)});
+        try{await syncFolder(false);confirmed=openDivisions().some(function(x){return divisionId(x)===divisionId({bolme_no:bolme})&&!x.local_pending})}catch(syncError){}
+      }
       var select=$('seflikFolderBolmeV528');if(select){select.value=bolme;localStorage.setItem(LAST_BOLME_KEY,bolme)}
       updatePreview();
-      setStatus('Bölme '+bolme+' ortak klasörde açıldı.','success');
-      notify(out.duplicate?'Bölme zaten açıktı':'Bölme oluşturuldu','Bölme '+bolme+' artık senkronizasyona açık.','success');
+      setStatus(confirmed?('Bölme '+bolme+' ortak klasörde açıldı.'):('Bölme '+bolme+' oluşturuldu; sunucu listesi doğrulanıyor.'),confirmed?'success':'busy');
+      notify(out.duplicate?'Bölme zaten açıktı':'Bölme oluşturuldu','Bölme '+bolme+' artık listede ve senkronizasyona açık.','success');
     }catch(e){setStatus('Bölme oluşturulamadı: '+String(e&&e.message?e.message:e),'error');notify('Bölme oluşturulamadı',String(e&&e.message?e.message:e),'error')}
     finally{busy=false;if(btn)btn.disabled=false;updatePreview()}
   }
@@ -242,7 +256,7 @@
     var overlay=$('seflikSendOverlayV529');if(overlay)overlay.addEventListener('click',function(e){if(e.target===overlay&&!busy)closeSendModal()});
     document.addEventListener('click',function(ev){var n=ev.target.closest&&ev.target.closest('[data-nav="seflikFolder"]');if(n)setTimeout(function(){fillIdentity();var cache=readJson(CACHE_KEY,null);if(cache&&cache.seflik===user().seflik&&Array.isArray(cache.divisions)){divisions=cache.divisions;renderList()}if(navigator.onLine)syncFolder(false).catch(function(e){setStatus(String(e&&e.message?e.message:e),'error')})},70)},true);
     window.addEventListener('mesaha:records-saved',updatePreview);window.addEventListener('online',function(){if(document.getElementById('seflikFolderView')&&document.getElementById('seflikFolderView').classList.contains('active'))syncFolder(false).catch(function(){})});
-    fillIdentity();var cache=readJson(CACHE_KEY,null);if(cache&&cache.seflik===user().seflik&&Array.isArray(cache.divisions))divisions=cache.divisions;renderList();
+    fillIdentity();var cache=readJson(CACHE_KEY,null);if(cache&&cache.seflik===user().seflik&&Array.isArray(cache.divisions))divisions=cache.divisions;divisions=mergeRemoteDivisions(divisions);renderList();
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
   window.MesahaSeflikFolderV529={sync:syncFolder,send:sendFolder,sendToDivision:sendToDivision,createDivision:createDivision,openDivision:openDivision,continueDivision:continueDivision,getDivisions:function(){return divisions.slice()}};

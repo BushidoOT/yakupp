@@ -669,7 +669,7 @@ async function seflikFolderCreateDivision(req: Request, body: JsonObj) {
     return json({ ok: false, error: isMissingTable(error.message) ? "Şeflik Bölme tablosu kurulmamış. V5.29 SQL migration çalıştırılmalı." : error.message }, isMissingTable(error.message) ? 503 : 500);
   }
   await insertEvent({ user_id: ctx.userId, ip_address: clean(ctx.ipInfo.ip) || null, user_key: ctx.userKey || null, name: clean(ctx.profile.name), seflik: ctx.seflik, device_id: clean(ctx.profile.device_id) || null, app_version: clean(ctx.profile.app_version) || null, event_type: "seflik_folder_create_division", blocked: false, metadata: row });
-  return json({ ok: true, division: arr(data)[0] || row });
+  return json({ ok: true, division: { ...(arr(data)[0] || row), record_count: 0, total_volume: 0, contributors: [], drive_backed_up: false }, server_time: nowIso() });
 }
 async function seflikFolderPush(req: Request, body: JsonObj) {
   const ctx: any = await seflikFolderContext(req, body);
@@ -790,12 +790,19 @@ async function seflikFolderFinish(req: Request, body: JsonObj) {
 async function seflikFolderList(req: Request, body: JsonObj) {
   const ctx: any = await seflikFolderContext(req, body);
   if (ctx.response) return ctx.response;
-  const [divisionResult, recResult, syncResult] = await Promise.all([
+  let [divisionResult, recResult, syncResult] = await Promise.all([
     selectAllPaged(TABLES.seflikDivisions, { seflik_key: ctx.seflikKey }, "updated_at", 5000),
     selectAllPaged(TABLES.seflikRecords, { seflik_key: ctx.seflikKey }, "updated_at", 30000),
     selectAllPaged(TABLES.seflikSyncs, { seflik_key: ctx.seflikKey }, "created_at", 5000),
   ]);
   if (divisionResult.error) return json({ ok: false, error: isMissingTable(divisionResult.error) ? "Şeflik Bölme tablosu kurulmamış. V5.29 SQL migration çalıştırılmalı." : divisionResult.error }, isMissingTable(divisionResult.error) ? 503 : 500);
+  /* Eski/uyumsuz seflik_key ile kaydedilmiş satırlar varsa şeflik adından güvenli fallback yap. */
+  if (!(divisionResult.items || []).length) {
+    const fallbackDivisions = await selectAllPaged(TABLES.seflikDivisions, {}, "updated_at", 5000);
+    if (!fallbackDivisions.error) {
+      divisionResult = { ...fallbackDivisions, items: (fallbackDivisions.items || []).filter((row) => stableFolderKey(obj(row).seflik, 160) === ctx.seflikKey) };
+    }
+  }
   if (recResult.error) return json({ ok: false, error: isMissingTable(recResult.error) ? "Şeflik Klasörü tabloları kurulmamış. V5.28 SQL migration çalıştırılmalı." : recResult.error }, isMissingTable(recResult.error) ? 503 : 500);
 
   const latestSync = new Map<string, JsonObj>();
@@ -826,7 +833,7 @@ async function seflikFolderList(req: Request, body: JsonObj) {
       id: clean(d.id),
       bolme_key: bolmeKey,
       bolme_no: clean(d.bolme_no),
-      status: clean(d.status || "open"),
+      status: lower(d.status || "open") === "open" ? "open" : clean(d.status || "open"),
       created_by_name: clean(d.created_by_name),
       created_at: clean(d.created_at),
       updated_at: first(d.last_activity_at, d.updated_at, d.created_at),
@@ -869,7 +876,7 @@ async function seflikFolderList(req: Request, body: JsonObj) {
     return g;
   }).sort((a: any, b: any) => safeDateMs(b.updated_at) - safeDateMs(a.updated_at));
 
-  return json({ ok: true, seflik: ctx.seflik, seflikKey: ctx.seflikKey, divisions: summaries, summaries, truncated: !!recResult.truncated });
+  return json({ ok: true, seflik: ctx.seflik, seflikKey: ctx.seflikKey, divisions: summaries, summaries, divisionCount: summaries.length, server_time: nowIso(), truncated: !!recResult.truncated });
 }
 
 async function seflikFolderRead(req: Request, body: JsonObj) {
