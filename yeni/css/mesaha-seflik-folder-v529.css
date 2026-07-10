@@ -116,3 +116,11 @@
   .seflik-division-actions-v529{grid-template-columns:1fr}
   .seflik-send-modal-v529{padding:16px}
 }
+
+
+/* V5.31 — modal güvenli alan ve uzun senkronizasyon etiketi */
+body.seflik-send-open-v531 #bottomNav{display:none!important}
+.seflik-send-overlay-v529{padding-bottom:max(12px,env(safe-area-inset-bottom,0px))}
+.seflik-send-modal-v529{max-height:calc(100dvh - 24px - env(safe-area-inset-bottom,0px));overflow-y:auto;-webkit-overflow-scrolling:touch}
+.seflik-send-actions-v529{position:sticky;bottom:0;background:#fff;padding-top:10px;padding-bottom:max(4px,env(safe-area-inset-bottom,0px));z-index:3}
+#seflikFolderSyncV528{white-space:normal;line-height:1.15}

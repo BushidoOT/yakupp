@@ -230,8 +230,14 @@
     if(select)select.innerHTML='<option value="">Bölme seçin</option>'+list.map(function(x){return '<option value="'+esc(x.bolme_no)+'">Bölme '+esc(x.bolme_no)+' • '+num(x.record_count).toLocaleString('tr-TR')+' kayıt • '+fmt(x.total_volume,3)+' m³</option>'}).join('');
     var meta=$('seflikSendMetaV529'),local=currentLocalList(),m3=local.reduce(function(a,r){return a+volume(r)},0);if(meta)meta.textContent=local.length.toLocaleString('tr-TR')+' yerel kayıt • '+fmt(m3,3)+' m³ gönderilecek';
   }
-  function openSendModal(){var ov=$('seflikSendOverlayV529');if(ov){fillSendModal();ov.classList.remove('hidden');ov.setAttribute('aria-hidden','false')}}
-  function closeSendModal(){var ov=$('seflikSendOverlayV529');if(ov){ov.classList.add('hidden');ov.setAttribute('aria-hidden','true')}}
+  function syncSendModalViewportV531(){
+    var vv=window.visualViewport,ov=$('seflikSendOverlayV529');if(!ov)return;
+    var h=Math.max(280,Math.round(vv?vv.height:window.innerHeight)),top=Math.max(0,Math.round(vv?vv.offsetTop:0));
+    document.documentElement.style.setProperty('--seflik-vv-height-v531',h+'px');
+    document.documentElement.style.setProperty('--seflik-vv-top-v531',top+'px');
+  }
+  function openSendModal(){var ov=$('seflikSendOverlayV529');if(ov){fillSendModal();syncSendModalViewportV531();document.body.classList.add('seflik-send-open-v531');ov.classList.remove('hidden');ov.setAttribute('aria-hidden','false');setTimeout(syncSendModalViewportV531,60)}}
+  function closeSendModal(){var ov=$('seflikSendOverlayV529');if(ov){ov.classList.add('hidden');ov.setAttribute('aria-hidden','true')}document.body.classList.remove('seflik-send-open-v531')}
   async function recordsSendClick(){
     var u=user();if(!validIdentity(u)){notify('Kullanıcı bilgisi eksik','Önce kullanıcı panelinden ad ve şeflik kaydedin.','warning');return}
     if(!records().length){notify('Gönderilecek kayıt yok','Ölçümler sayfasında kayıt bulunmuyor.','warning');return}
@@ -254,6 +260,7 @@
     var modalCancel=$('seflikSendCancelV529');if(modalCancel)modalCancel.addEventListener('click',closeSendModal);
     var modalConfirm=$('seflikSendConfirmV529');if(modalConfirm)modalConfirm.addEventListener('click',function(){if(modalBusy)return;var b=clean(($('seflikSendSelectV529')||{}).value);if(!b){notify('Bölme seçin','Gönderilecek açık bölmeyi seçin.','warning');return}modalBusy=true;modalConfirm.disabled=true;sendToDivision(b,records(),'records')});
     var overlay=$('seflikSendOverlayV529');if(overlay)overlay.addEventListener('click',function(e){if(e.target===overlay&&!busy)closeSendModal()});
+    if(window.visualViewport&&!window.__seflikModalViewportV531){window.__seflikModalViewportV531=true;window.visualViewport.addEventListener('resize',syncSendModalViewportV531,{passive:true});window.visualViewport.addEventListener('scroll',syncSendModalViewportV531,{passive:true})}
     document.addEventListener('click',function(ev){var n=ev.target.closest&&ev.target.closest('[data-nav="seflikFolder"]');if(n)setTimeout(function(){fillIdentity();var cache=readJson(CACHE_KEY,null);if(cache&&cache.seflik===user().seflik&&Array.isArray(cache.divisions)){divisions=cache.divisions;renderList()}if(navigator.onLine)syncFolder(false).catch(function(e){setStatus(String(e&&e.message?e.message:e),'error')})},70)},true);
     window.addEventListener('mesaha:records-saved',updatePreview);window.addEventListener('online',function(){if(document.getElementById('seflikFolderView')&&document.getElementById('seflikFolderView').classList.contains('active'))syncFolder(false).catch(function(){})});
     fillIdentity();var cache=readJson(CACHE_KEY,null);if(cache&&cache.seflik===user().seflik&&Array.isArray(cache.divisions))divisions=cache.divisions;divisions=mergeRemoteDivisions(divisions);renderList();
