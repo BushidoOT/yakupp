@@ -6,6 +6,7 @@
   var PANEL_KEY='mesaha_panel_user_v316';
   var SETTINGS_KEY='cam_mesaha_ayarlar_v1';
   var INSTALL_KEY='mesaha_install_identity_v527';
+  var lastStorageToastAt=0;
   function clean(v){return String(v==null?'':v).trim().replace(/\s+/g,' ');}
   function read(k,f){try{var v=localStorage.getItem(k);return v?JSON.parse(v):f;}catch(e){return f;}}
   function write(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true;}catch(e){return false;}}
@@ -82,9 +83,14 @@
     },true);
   }
   function bindErrors(){
+    window.addEventListener('mesaha:storage-warning',function(ev){
+      var d=ev.detail||{};log('storage.replica-warning',d.message||'İkinci depolama kopyası gecikti',d);
+    });
     window.addEventListener('mesaha:storage-error',function(ev){
       var d=ev.detail||{};log('storage.failure',d.message||'Depolama hatası',d);
-      toast('Depolama sorunu','Kayıtlar kalıcı yazılamadıysa telefon alanını kontrol edin.','error');
+      if(d.fatal!==true)return;
+      var t=Date.now();if(t-lastStorageToastAt<5000)return;lastStorageToastAt=t;
+      toast('Kayıt kaydedilemedi','Uygulamayı açık tutup tekrar deneyin. Sorun sürerse önce yedek alın.','error');
     });
     window.addEventListener('mesaha:storage-recovered',function(ev){try{if(ev.detail&&ev.detail.reason==='newer-revision')toast('Kayıtlar doğrulandı',String(ev.detail.count||0)+' kayıt güvenli depodan açıldı.','success');}catch(e){};});
     if('serviceWorker' in navigator){
