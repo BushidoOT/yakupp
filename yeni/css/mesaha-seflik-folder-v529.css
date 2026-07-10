@@ -124,3 +124,9 @@ body.seflik-send-open-v531 #bottomNav{display:none!important}
 .seflik-send-modal-v529{max-height:calc(100dvh - 24px - env(safe-area-inset-bottom,0px));overflow-y:auto;-webkit-overflow-scrolling:touch}
 .seflik-send-actions-v529{position:sticky;bottom:0;background:#fff;padding-top:10px;padding-bottom:max(4px,env(safe-area-inset-bottom,0px));z-index:3}
 #seflikFolderSyncV528{white-space:normal;line-height:1.15}
+
+/* V5.33 — Kalıcı bölme silme */
+.seflik-division-actions-v529{grid-template-columns:1fr 1fr}
+.seflik-division-actions-v529 .seflik-delete-btn-v533{grid-column:1/-1;background:#fff1f2!important;color:#b91c1c!important;border-color:#fecaca!important}
+.seflik-division-actions-v529 .seflik-delete-btn-v533:hover{background:#ffe4e6!important}
+@media(max-width:520px){.seflik-division-actions-v529{grid-template-columns:1fr}.seflik-division-actions-v529 .seflik-delete-btn-v533{grid-column:auto}}

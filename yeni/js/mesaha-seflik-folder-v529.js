@@ -100,7 +100,7 @@
       '<div class="seflik-division-top"><div class="seflik-division-title"><span class="seflik-division-icon">📁</span><div><b>Bölme '+esc(x.bolme_no||'-')+(x.local_pending?' <span class="seflik-local-pending-v530">Sunucu doğrulanıyor</span>':'')+'</b><small>'+esc(contributors.length?contributors.join(', '):(x.created_by_name?('Oluşturan: '+x.created_by_name):'Henüz mesaha gönderilmedi'))+'</small></div></div><span class="seflik-open-pill">Açık</span></div>'+
       '<div class="seflik-division-stats"><div class="seflik-division-stat"><small>MESaha ADEDİ</small><b>'+num(x.record_count).toLocaleString('tr-TR')+'</b></div><div class="seflik-division-stat"><small>TOPLAM m³</small><b>'+fmt(x.total_volume,3)+'</b></div><div class="seflik-division-stat"><small>KULLANICI</small><b>'+contributors.length+'</b></div></div>'+
       '<div class="seflik-division-meta"><span>Son işlem: '+esc(dateText(x.updated_at||x.created_at))+'</span><span>'+(drive?'✓ Drive yedekli':'Drive yedeği bekleniyor')+'</span></div>'+
-      '<div class="seflik-division-actions seflik-division-actions-v529"><button class="btn soft" type="button" data-seflik-read="'+esc(x.bolme_no)+'">Kayıtları Gör</button><button class="btn primary" type="button" data-seflik-continue="'+esc(x.bolme_no)+'">'+(empty?'Mesahaya Başla':'Mesahaya Devam Et')+'</button></div></article>'}).join('');
+      '<div class="seflik-division-actions seflik-division-actions-v529"><button class="btn soft" type="button" data-seflik-read="'+esc(x.bolme_no)+'">Kayıtları Gör</button><button class="btn primary" type="button" data-seflik-continue="'+esc(x.bolme_no)+'">'+(empty?'Mesahaya Başla':'Mesahaya Devam Et')+'</button><button class="btn danger seflik-delete-btn-v533" type="button" data-seflik-delete="'+esc(x.bolme_no)+'">Bölmeyi Sil</button></div></article>'}).join('');
   }
 
   async function syncFolder(showToast){
@@ -225,6 +225,32 @@
     }catch(e){setStatus('Bölme yüklenemedi: '+String(e&&e.message?e.message:e),'error');notify('Mesahaya devam edilemedi',String(e&&e.message?e.message:e),'error')}
   }
 
+
+  async function deleteDivision(bolme){
+    bolme=clean(bolme);if(!bolme||busy)return false;
+    var row=divisions.find(function(x){return clean(x.bolme_no)===bolme})||{};
+    var count=num(row.record_count),m3=num(row.total_volume);
+    var typed=prompt('Bölme '+bolme+' kalıcı olarak silinecek. Bu bölmedeki ortak kayıtlar, senkronizasyonlar ve bağlı yedek kayıtları silinir. İşlemi onaylamak için bölme numarasını yazın:',bolme);
+    if(typed===null)return false;
+    if(clean(typed)!==bolme){notify('Bölme silinmedi','Girilen bölme numarası eşleşmiyor.','warning');return false}
+    if(!confirm('SON UYARI: Bölme '+bolme+' ve '+count+' kayıt ('+fmt(m3,3)+' m³) tamamen silinecek. Bu işlem geri alınamaz. Devam edilsin mi?'))return false;
+    busy=true;setStatus('Bölme '+bolme+' kalıcı olarak siliniyor…','busy');renderList();
+    try{
+      var out=await edge('seflik_folder_delete_division',{bolmeNo:bolme,confirmBolme:bolme,permanent:true});
+      divisions=divisions.filter(function(x){return clean(x.bolme_no)!==bolme});
+      var pending=pendingDivisions().filter(function(x){return clean(x.bolme_no)!==bolme});savePending(pending);
+      try{if(clean(localStorage.getItem(LAST_BOLME_KEY))===bolme)localStorage.removeItem(LAST_BOLME_KEY)}catch(e){}
+      cacheAndRender();
+      var detail=$('seflikFolderDetailV528');if(detail)detail.classList.remove('open');
+      setStatus('Bölme '+bolme+' kalıcı olarak silindi.','success');
+      var driveWarn=Array.isArray(out&&out.drive_delete_failed)&&out.drive_delete_failed.length?(' • '+out.drive_delete_failed.length+' Drive dosyası silinemedi'):' ';
+      notify('Bölme silindi','Bölme '+bolme+' ve bağlı sunucu kayıtları tamamen kaldırıldı.'+driveWarn,driveWarn.trim()?'warning':'success');
+      try{await syncFolder(false)}catch(e){}
+      return true;
+    }catch(e){setStatus(String(e&&e.message?e.message:e),'error');notify('Bölme silinemedi',String(e&&e.message?e.message:e),'error');return false}
+    finally{busy=false;renderList()}
+  }
+
   function fillSendModal(){
     var select=$('seflikSendSelectV529'),list=openDivisions().slice().sort(function(a,b){return clean(a.bolme_no).localeCompare(clean(b.bolme_no),'tr',{numeric:true})});
     if(select)select.innerHTML='<option value="">Bölme seçin</option>'+list.map(function(x){return '<option value="'+esc(x.bolme_no)+'">Bölme '+esc(x.bolme_no)+' • '+num(x.record_count).toLocaleString('tr-TR')+' kayıt • '+fmt(x.total_volume,3)+' m³</option>'}).join('');
@@ -252,7 +278,7 @@
     var newInput=$('seflikFolderNewBolmeV529');if(newInput)newInput.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();createDivision()}});
     var send=$('seflikFolderSendV528');if(send)send.addEventListener('click',sendFolder);
     var sync=$('seflikFolderSyncV528');if(sync)sync.addEventListener('click',function(){syncFolder(true).catch(function(e){setStatus(String(e&&e.message?e.message:e),'error');notify('Senkronizasyon başarısız',String(e&&e.message?e.message:e),'error')})});
-    var list=$('seflikFolderListV528');if(list)list.addEventListener('click',function(ev){var read=ev.target.closest('[data-seflik-read]');if(read){openDivision(read.getAttribute('data-seflik-read'));return}var cont=ev.target.closest('[data-seflik-continue]');if(cont)continueDivision(cont.getAttribute('data-seflik-continue'))});
+    var list=$('seflikFolderListV528');if(list)list.addEventListener('click',function(ev){var read=ev.target.closest('[data-seflik-read]');if(read){openDivision(read.getAttribute('data-seflik-read'));return}var cont=ev.target.closest('[data-seflik-continue]');if(cont){continueDivision(cont.getAttribute('data-seflik-continue'));return}var del=ev.target.closest('[data-seflik-delete]');if(del)deleteDivision(del.getAttribute('data-seflik-delete'))});
     var close=$('seflikFolderDetailCloseV528');if(close)close.addEventListener('click',function(){var d=$('seflikFolderDetailV528');if(d)d.classList.remove('open')});
     var shortcut=$('seflikFolderHomeShortcutV528');if(shortcut){var openShortcut=function(){try{if(typeof window.showView==='function')window.showView('seflikFolder');else{var n=document.querySelector('[data-nav="seflikFolder"]');if(n)n.click()}}catch(e){var n=document.querySelector('[data-nav="seflikFolder"]');if(n)n.click()}};shortcut.addEventListener('click',openShortcut);shortcut.addEventListener('keydown',function(ev){if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();openShortcut()}})}
     var recordsBtn=$('seflikSendFromRecordsV529');if(recordsBtn)recordsBtn.addEventListener('click',recordsSendClick);
@@ -266,5 +292,5 @@
     fillIdentity();var cache=readJson(CACHE_KEY,null);if(cache&&cache.seflik===user().seflik&&Array.isArray(cache.divisions))divisions=cache.divisions;divisions=mergeRemoteDivisions(divisions);renderList();
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
-  window.MesahaSeflikFolderV529={sync:syncFolder,send:sendFolder,sendToDivision:sendToDivision,createDivision:createDivision,openDivision:openDivision,continueDivision:continueDivision,getDivisions:function(){return divisions.slice()}};
+  window.MesahaSeflikFolderV529={sync:syncFolder,send:sendFolder,sendToDivision:sendToDivision,createDivision:createDivision,openDivision:openDivision,continueDivision:continueDivision,deleteDivision:deleteDivision,getDivisions:function(){return divisions.slice()}};
 })();
