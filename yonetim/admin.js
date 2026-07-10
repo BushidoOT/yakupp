@@ -487,7 +487,7 @@
   }
   function renderBackups() {
     const rows=filteredBackups(); $('backupCountBadge').textContent=`${fmtInt(rows.length)} yedek`;
-    $('backupList').innerHTML=rows.length?rows.map((b)=>`<article class="backup-card" data-backup-id="${escapeHtml(b.driveFileId)}"><div class="backup-main"><div class="file-badge">JSON</div><div><h3>${escapeHtml(b.fileName)}</h3><p>${escapeHtml(b.name)} • ${escapeHtml(b.seflik)}</p><p>${escapeHtml(fmtDate(b.createdAt))}${b.version&&b.version!=='-'?` • ${escapeHtml(b.version)}`:''}</p></div></div><div class="backup-stats"><div><small>Kayıt</small><b>${fmtInt(b.count)}</b></div><div><small>m³</small><b>${fmtM3(b.volume)}</b></div></div><div class="backup-actions"><a class="button info small" href="${escapeHtml(b.driveLink||'#')}" target="_blank" rel="noopener">Drive aç</a><button class="button danger small" data-action="hide-backup" data-backup-id="${escapeHtml(b.driveFileId)}" type="button">Sil / Gizle</button></div></article>`).join(''):'<div class="empty-state">Görünen Drive yedeği yok.</div>';
+    $('backupList').innerHTML=rows.length?rows.map((b)=>`<article class="backup-card" data-backup-id="${escapeHtml(b.driveFileId)}"><div class="backup-main"><div class="file-badge">JSON</div><div><h3>${escapeHtml(b.fileName)}</h3><p>${escapeHtml(b.name)} • ${escapeHtml(b.seflik)}</p><p>${escapeHtml(fmtDate(b.createdAt))}${b.version&&b.version!=='-'?` • ${escapeHtml(b.version)}`:''}</p></div></div><div class="backup-stats"><div><small>Kayıt</small><b>${fmtInt(b.count)}</b></div><div><small>m³</small><b>${fmtM3(b.volume)}</b></div></div><div class="backup-actions"><a class="button info small" href="${escapeHtml(b.driveLink||'#')}" target="_blank" rel="noopener">Drive aç</a><button class="button danger small" data-action="hide-backup" data-backup-id="${escapeHtml(b.driveFileId)}" type="button">Kalıcı Sil</button></div></article>`).join(''):'<div class="empty-state">Görünen Drive yedeği yok.</div>';
   }
 
   function activeBlocks(type=state.blockView) { return state.blocks.filter((b)=>b.active&&b.type===type).sort((a,b)=>ms(b.createdAt)-ms(a.createdAt)); }
@@ -517,16 +517,23 @@
     await edge('admin_add_block',{block_type:type,block_value:value,reason:'Admin panel engeli'});toast('Engel eklendi');await loadAll();
   }
   async function deleteUser(user){
-    if(!confirm(`${user.name} kullanıcısı ve Supabase kayıtları silinsin mi? Drive dosyaları fiziksel olarak korunur.`))return;
+    const typed=prompt(`${user.name} kullanıcısı, tüm Supabase yedekleri ve kullanıcının oluşturduğu Şeflik bölmeleri kalıcı olarak silinecek. İşlem geri alınamaz. Onaylamak için kullanıcı adını yazın:`,user.name);
+    if(typed===null)return;
+    if(clean(typed)!==clean(user.name)){toast('Kullanıcı silinmedi: ad eşleşmiyor');return}
+    if(!confirm(`SON UYARI: ${user.name} kullanıcısı, bağlı yedek kayıtları ve oluşturduğu bölmeler tamamen silinsin mi?`))return;
     const ids=relatedBackups(user).map((b)=>b.driveFileId).filter(Boolean);
-    await edge('admin_delete_user',{user_id:user.id,user_key:user.userKey,name:user.name,seflik:user.seflik,drive_file_ids:ids});
-    state.users=state.users.filter((u)=>identityKey(u)!==identityKey(user));state.backups=state.backups.filter((b)=>identityKey(b)!==identityKey(user));renderAll();toast('Kullanıcı silindi');
+    const out=await edge('admin_delete_user',{user_id:user.id,user_key:user.userKey,name:user.name,seflik:user.seflik,drive_file_ids:ids,permanent:true});
+    state.users=state.users.filter((u)=>identityKey(u)!==identityKey(user));state.backups=state.backups.filter((b)=>identityKey(b)!==identityKey(user));renderAll();
+    const failed=Array.isArray(out&&out.drive_delete_failed)?out.drive_delete_failed:[];
+    toast(failed.length?`Kullanıcı silindi; ${failed.length} Drive dosyası silinemedi`:'Kullanıcı ve bağlı kayıtlar kalıcı silindi');
   }
   async function hideBackup(id){
     const backup=state.backups.find((b)=>clean(b.driveFileId)===clean(id));if(!backup)throw new Error('Yedek bulunamadı');
-    if(!confirm('Bu yedek admin panelinden kaldırılsın mı? Google Drive dosyası fiziksel olarak silinmez.'))return;
+    if(!confirm('Bu yedek Supabase ve Google Drive üzerinden kalıcı olarak silinsin mi? Bu işlem geri alınamaz.'))return;
+    const out=await edge('admin_hide_drive_backup',{drive_file_id:id,file_id:id,user_key:backup.userKey,name:backup.name,seflik:backup.seflik,permanent:true});
     state.hiddenBackupIds.add(clean(id));saveHiddenSet(state.hiddenBackupIds);state.backups=state.backups.filter((b)=>clean(b.driveFileId)!==clean(id));renderBackups();renderSummary();
-    try{await edge('admin_hide_drive_backup',{drive_file_id:id,file_id:id,user_key:backup.userKey,name:backup.name,seflik:backup.seflik});toast('Yedek panelden kaldırıldı')}catch(error){toast(`Panelden kaldırıldı; Edge uyarısı: ${errorText(error)}`)}
+    const failed=Array.isArray(out&&out.drive_delete_failed)?out.drive_delete_failed:[];
+    toast(failed.length?'Yedek Supabase’den silindi; Drive silme başarısız':'Yedek kalıcı olarak silindi');
   }
   async function unblock(button){await edge('admin_remove_block',{id:button.dataset.blockId,block_type:button.dataset.blockType,block_value:button.dataset.blockValue});toast('Engel kaldırıldı');await loadAll()}
   async function addIp(){const ip=prompt('Engellenecek IP adresi:');if(!clean(ip))return;if(!isLikelyIp(ip)&&!confirm('Girilen değer standart IP biçiminde görünmüyor. Yine de engellensin mi?'))return;await edge('admin_add_block',{block_type:'ip',block_value:clean(ip),reason:'Manuel IP engeli'});toast('IP engeli eklendi');await loadAll()}

@@ -33,6 +33,12 @@
   function records(){ var r=jsonGet(STORAGE_KEY, []); return Array.isArray(r) ? r : []; }
   function settings(){ return Object.assign({ekipNot:'',seflik:'',bolmeNo:''}, jsonGet(SETTINGS_KEY, {})); }
   function readUser(){ var u=jsonGet(PANEL_USER_KEY, {}), st=settings(); return {name:clean(u.name||st.ekipNot), seflik:clean(u.seflik||st.seflik), bolmeNo:clean(u.bolmeNo||st.bolmeNo)}; }
+  function validIdentity(user){
+    user=user||{}; var name=clean(user.name),seflik=clean(user.seflik);
+    if(window.MesahaRuntimeV527&&typeof window.MesahaRuntimeV527.validIdentity==='function')return window.MesahaRuntimeV527.validIdentity(name,seflik);
+    var n=name.toLocaleLowerCase('tr-TR'),s=seflik.toLocaleLowerCase('tr-TR');
+    return name.length>1&&seflik.length>1&&!/^(kullanıcı|kullanici|user|guest|misafir|boş|bos|-)$/.test(n)&&!/^(şeflik|seflik|unknown|bilinmiyor|boş|bos|-)$/.test(s);
+  }
   function versionText(){ return (window.MESAHA_VERSION&&window.MESAHA_VERSION.visibleVersion) || window.APP_VERSION || 'Mesaha İO'; }
   function versionRaw(){ return (window.MESAHA_VERSION&&window.MESAHA_VERSION.version) || window.FILE_VERSION || 'local'; }
   function toast(t,s,k){ try{ if(typeof window.mesahaFloatToastV315==='function') return window.mesahaFloatToastV315(t,s||'',k||'success'); }catch(e){} try{ if(typeof window.toast==='function') return window.toast(t,s||'',k||'success'); }catch(e){} try{ alert(t+(s?'\n'+s:'')); }catch(e){} }
@@ -47,7 +53,7 @@
   }
   function requireUser(){
     var user=readUser();
-    if(!user.name || !user.seflik){
+    if(!validIdentity(user)){
       toast('Önce kullanıcı girişi yap.','Kullanıcı adı ve şeflik gerekli.','warning');
       try{ if(window.mesahaPanelV316 && window.mesahaPanelV316.open) window.mesahaPanelV316.open(); }catch(e){}
       throw new Error('Kullanıcı bilgisi eksik');
@@ -92,12 +98,16 @@
   var startupGuardDone=false;
   async function startupGuardCheck(){
     if(startupGuardDone) return;
+    var user=readUser();
+    /* Boş/genel profil Edge Function tarafında sahte kullanıcı oluşturmasın. Güvenlik kontrolü gerçek kimlik kaydedilince başlar. */
+    if(!validIdentity(user)) return;
     startupGuardDone=true;
-    try{ await guardCheck('app_open', readUser(), {source:'startup'}); }
+    try{ await guardCheck('app_open', user, {source:'startup'}); }
     catch(e){ if(isBlockedError(e)) showBlockedScreen('Erişim yönetici tarafından kapatıldı.'); else startupGuardDone=false; }
   }
   async function guardCheck(action,user,extra){
     user=user||readUser();
+    if(!validIdentity(user)) throw new Error('Geçerli kullanıcı adı ve şeflik gerekli');
     try{ await supabaseReady(); }catch(e){ throw e; }
     var token=getSessionToken();
     var cfg=window.MESAHA_SUPABASE_CONFIG||{};
@@ -332,9 +342,11 @@
       var recs=payload.records || ((payload.payload||{}).records);
       var st=payload.settings || ((payload.payload||{}).settings);
       if(!Array.isArray(recs)) throw new Error('Yedek kayıtları bulunamadı');
-      jsonSet(STORAGE_KEY,recs);
-      if(st) jsonSet(SETTINGS_KEY,Object.assign(settings(),st));
-      toast('Bulut yedeği yüklendi.','Sayfa yenileniyor.','success');
+      var merged=st?Object.assign(settings(),st):settings();
+      var saved=window.MesahaStorageV527?await window.MesahaStorageV527.replaceAll(recs,merged,{reason:'cloud-restore-'+source}):{ok:false,error:'Depolama motoru hazır değil'};
+      if(!saved||saved.ok===false) throw new Error(saved&&saved.error||'Yedek kalıcı depolamaya yazılamadı');
+      if(window.state){window.state.records=recs;window.state.settings=merged;}
+      toast('Bulut yedeği yüklendi.','Kalıcı depolama doğrulandı; sayfa yenileniyor.','success');
       setTimeout(function(){ location.reload(); },700);
     }catch(e){ toast('Bulut yedeği yüklenemedi.',errText(e),'error'); }
   }

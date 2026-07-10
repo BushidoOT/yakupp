@@ -56,6 +56,44 @@
     } finally { setBusy(false); }
   }
 
+
+  async function backupCustom(options){
+    options=options||{};
+    var user=readUser();
+    if(!user.name||!user.seflik) throw new Error('Önce kullanıcı girişi yap');
+    var list=Array.isArray(options.records)?options.records:records();
+    var bolme=clean(options.bolmeNo||options.bolme||user.bolmeNo);
+    if(!bolme) throw new Error('Bölme numarası seçilmedi');
+    if(!list.length) throw new Error('Drive yedeği için kayıt yok');
+    var payload={
+      type:clean(options.type||'mesaha-drive-backup'),
+      exportedAt:new Date().toISOString(),
+      version:versionRaw(),
+      visibleVersion:versionText(),
+      user:{name:user.name,seflik:user.seflik,bolmeNo:bolme},
+      settings:Object.assign({},settings(),{bolmeNo:bolme}),
+      records:list,
+      sharedFolder:options.sharedFolder===true||clean(options.type)==='mesaha-seflik-folder-backup'
+    };
+    setBusy(true);
+    try{
+      var out=await post('backup',{
+        userKey:userKey(user.name,user.seflik),
+        username:user.name,
+        seflik:user.seflik,
+        bolme:bolme,
+        count:list.length,
+        totalVolume:totalM3(list),
+        version:versionText(),
+        payload:payload,
+        folderMode:payload.sharedFolder?'seflik':'user'
+      });
+      try{localStorage.setItem('mesaha_last_drive_backup_v463',JSON.stringify({id:out.id,name:out.name,at:new Date().toISOString(),count:list.length,bolme:bolme,type:payload.type}));}catch(e){}
+      if(!options.silent) toast('Drive yedeği alındı.','Bölme '+bolme+' kayıtları Google Drive’a gönderildi.','success');
+      return out;
+    }finally{setBusy(false);}
+  }
+
   async function list(){
     var user = readUser();
     if(!user.name || !user.seflik) throw new Error('Önce kullanıcı girişi yap');
@@ -84,9 +122,20 @@
       var recs = payload.records || ((payload.payload||{}).records);
       var st = payload.settings || ((payload.payload||{}).settings);
       if(!Array.isArray(recs)) throw new Error('Yedek kayıtları bulunamadı');
-      jsonSet(STORAGE_KEY, recs);
-      if(st) jsonSet(SETTINGS_KEY, Object.assign(settings(), st));
-      toast('Drive yedeği yüklendi.','Sayfa yenileniyor.','success');
+      var mergedSettings = st ? Object.assign({}, settings(), st) : settings();
+      var saved = null;
+      if(window.MesahaStorageV527 && typeof window.MesahaStorageV527.replaceAll === 'function'){
+        saved = await window.MesahaStorageV527.replaceAll(recs, mergedSettings, {reason:'drive-restore'});
+      }else{
+        var recOk = jsonSet(STORAGE_KEY, recs);
+        var setOk = jsonSet(SETTINGS_KEY, mergedSettings);
+        saved = {ok:!!(recOk && setOk), legacy:true};
+      }
+      if(!saved || saved.ok === false) throw new Error((saved&&saved.error)||'Drive yedeği kalıcı depolamaya yazılamadı');
+      try{
+        if(window.state){ window.state.records = recs; window.state.settings = mergedSettings; }
+      }catch(e){}
+      toast('Drive yedeği yüklendi.','Kayıtlar ve ayarlar güvenli şekilde yenilendi.','success');
       setTimeout(function(){ location.reload(); },700);
     }catch(e){ toast('Drive yedeği yüklenemedi.', errText(e), 'error'); }
   }
@@ -128,7 +177,7 @@
   }
 
   function expose(){
-    window.MESAHA_DRIVE_BRIDGE_V463 = {url:bridgeUrl(), backup:backup, list:list, openRestore:openRestore, restore:restore, post:post};
+    window.MESAHA_DRIVE_BRIDGE_V463 = {url:bridgeUrl(), backup:backup, backupCustom:backupCustom, list:list, openRestore:openRestore, restore:restore, post:post};
     window.mesahaDriveBridgeV463 = window.MESAHA_DRIVE_BRIDGE_V463;
     window.mesahaPanelV316 = window.mesahaPanelV316 || {};
     window.mesahaPanelV316.cloudBackup = backup;

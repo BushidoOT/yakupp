@@ -22,10 +22,13 @@
   function dispatch(name,detail){try{window.dispatchEvent(new CustomEvent(name,{detail:detail||{}}))}catch(e){}}
   function commitSettings(st){
     st=st||settings();
-    try{var s=appState(); if(s){ if(!s.settings)s.settings={}; Object.assign(s.settings,st); st=s.settings; }}catch(e){}
+    try{var s=appState();if(s){if(!s.settings)s.settings={};Object.assign(s.settings,st);st=s.settings;}}catch(e){}
+    try{
+      if(window.MesahaStorageV527){window.MesahaStorageV527.saveSettings(st,{reason:'filter-cutter'});return;}
+      if(window.__flushSettings){window.__flushSettings('filter-cutter');return;}
+    }catch(e){}
     jsonSet(SETTINGS_KEY,st);
-    try{ if(window.__flushSettings) window.__flushSettings(); }catch(e){}
-    dispatch('mesaha:settings-saved',{source:'filter-cutter-fix'});
+    dispatch('mesaha:settings-saved',{source:'filter-cutter-fallback'});
   }
   function uniq(arr){var out=[];(arr||[]).forEach(function(x){x=clean(x); if(x && out.indexOf(x)<0)out.push(x)}); return out}
   function cutterOf(r){return clean(r && (r.cutter || r.kesimci))}
@@ -179,7 +182,7 @@
     setInterval(function(){
       var rv=$('recordsView'), ev=$('entryView');
       if((rv&&rv.classList.contains('active')) || (ev&&ev.classList.contains('active'))) renderCuttersAndSelects();
-    },3200);
+    },12000);
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true}); else boot();
   var api={render:renderCuttersAndSelects,filters:renderFilters,syncCutters:syncCutterStore,stats:buildStats,clearStats:invalidateStats};

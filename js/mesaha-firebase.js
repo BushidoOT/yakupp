@@ -38,6 +38,14 @@
     d=d||{}; var id=String(d.id||''), key=String(d.userKey||d.user_key||''), name=String(d.name||''), sef=String(d.seflik||'');
     return /^spam_/i.test(id) || /stress[_\s-]*test/i.test(key) || /stress tester/i.test(name) || /^simulasyon$/i.test(sef);
   }
+  function validIdentity(name,seflik){
+    name=clean(name);seflik=clean(seflik);
+    if(!name||!seflik)return false;
+    var n=name.toLocaleLowerCase('tr-TR'),s=seflik.toLocaleLowerCase('tr-TR');
+    if(/^(kullanıcı|kullanici|user|guest|misafir|boş|bos|-)$/.test(n))return false;
+    if(/^(şeflik|seflik|unknown|bilinmiyor|boş|bos|-)$/.test(s))return false;
+    return name.length>=2&&seflik.length>=2;
+  }
   function activeSession(){
     if(authSession && authSession.access_token && Number(authSession.expires_at||0)*1000 > Date.now()+60000) return authSession;
     try{var s=safeJson(localStorage.getItem(SESSION_KEY)||'',null); if(s&&s.access_token&&Number(s.expires_at||0)*1000>Date.now()+60000){authSession=s;return s;}}catch(e){}
@@ -103,7 +111,7 @@
   function rowFromData(table,id,data,parent){
     data=deepClone(data||{}); var userId=uid();
     if(table==='mesaha_user_profiles'){
-      return {user_id:userId,user_key:clean(data.userKey||data.user_key||id||userId).slice(0,120)||userId,name:clean(data.name||'Kullanıcı').slice(0,120)||'Kullanıcı',seflik:clean(data.seflik||'Şeflik').slice(0,120)||'Şeflik',bolme_no:clean(data.bolmeNo||data.bolme_no||'').slice(0,80)||null,app_version:clean(data.appVersion||data.fileVersion||VERSION).slice(0,120),device_id:clean(data.deviceId||data.device_id||(data.lastDeviceInfo&&data.lastDeviceInfo.deviceId)||'').slice(0,120)||null,last_ip:lastKnownIp(data)||null,platform:clean(data.os||data.platform||data.deviceType||(data.lastDeviceInfo&&data.lastDeviceInfo.platform)||'').slice(0,120)||null,browser:clean(data.browser||(data.lastDeviceInfo&&data.lastDeviceInfo.browser)||'').slice(0,80)||null,browser_version:clean(data.browserVersion||(data.lastDeviceInfo&&data.lastDeviceInfo.browserVersion)||'').slice(0,60)||null,last_seen_at:new Date().toISOString(),device_info:data.lastDeviceInfo||data.deviceInfo||data.device||{},payload:data};
+      if(!validIdentity(data.name,data.seflik)) throw new Error('Kullanıcı adı ve şeflik doğrulanmadan profil yazılamaz.'); return {user_id:userId,user_key:clean(data.userKey||data.user_key||id||userId).slice(0,120)||userId,name:clean(data.name).slice(0,120),seflik:clean(data.seflik).slice(0,120),bolme_no:clean(data.bolmeNo||data.bolme_no||'').slice(0,80)||null,app_version:clean(data.appVersion||data.fileVersion||VERSION).slice(0,120),device_id:clean(data.deviceId||data.device_id||(data.lastDeviceInfo&&data.lastDeviceInfo.deviceId)||'').slice(0,120)||null,last_ip:lastKnownIp(data)||null,platform:clean(data.os||data.platform||data.deviceType||(data.lastDeviceInfo&&data.lastDeviceInfo.platform)||'').slice(0,120)||null,browser:clean(data.browser||(data.lastDeviceInfo&&data.lastDeviceInfo.browser)||'').slice(0,80)||null,browser_version:clean(data.browserVersion||(data.lastDeviceInfo&&data.lastDeviceInfo.browserVersion)||'').slice(0,60)||null,last_seen_at:new Date().toISOString(),device_info:data.lastDeviceInfo||data.deviceInfo||data.device||{},payload:data};
     }
     if(table==='mesaha_usage_current'){
       return {user_id:userId,user_key:clean(data.userKey||data.user_key||'').slice(0,120)||null,name:clean(data.name||'').slice(0,120)||null,seflik:clean(data.seflik||'').slice(0,120)||null,record_count:Number(data.recordCount||data.totalRecords||data.adet||0)||0,total_volume:Number(data.totalM3||data.m3||0)||0,last_seen_at:new Date().toISOString(),app_version:clean(data.appVersion||data.fileVersion||VERSION).slice(0,120),device_id:clean(data.deviceId||data.device_id||'').slice(0,120)||null,last_ip:lastKnownIp(data)||null,payload:data};
@@ -152,6 +160,7 @@
   DocumentRef.prototype.get=function(){var self=this;return getCurrent(this.table,this.id,this.parent).then(function(r){return new DocSnap(self.id,r,self.table);});};
   DocumentRef.prototype.set=async function(data,opt){
     await session(); data=deepClone(data||{}); if(blockedPayload(data)) throw new Error('Güvenlik: test/spam kayıt engellendi.');
+    if((this.table==='mesaha_user_profiles'||this.table==='mesaha_usage_current'||this.table==='mesaha_usage_daily')&&!validIdentity(data.name,data.seflik)) throw new Error('Kullanıcı adı ve şeflik eksik; buluta kullanıcı verisi yazılmadı.');
     if(opt&&opt.merge){try{var old=await getCurrent(this.table,this.id,this.parent); data=mergeData(dataFromRow(this.table,old||{}),data);}catch(e){}}
     var row=rowFromData(this.table,this.id,data,this.parent);
     if(this.table==='mesaha_backup_slots') return upsert(this.table,row,'user_id,slot_id');

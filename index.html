@@ -3,7 +3,7 @@
 <html lang="tr">
 <head>
 <meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" name="viewport"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
 <meta content="#f4f7f6" name="theme-color"/>
 <link href="./manifest.json" rel="manifest"/>
 <link href="./assets/icon-192.png" rel="apple-touch-icon"/>
@@ -11,26 +11,17 @@
 <meta content="yes" name="apple-mobile-web-app-capable"/>
 <meta content="Mesaha İO" name="apple-mobile-web-app-title"/>
 <script>
-  (function(){
-    var q = new URLSearchParams(location.search);
-    if(q.get('reset') === '1' || q.get('clear') === '1'){
-      Promise.resolve().then(async function(){
-        try{ if('serviceWorker' in navigator){ var regs = await navigator.serviceWorker.getRegistrations(); await Promise.all(regs.map(function(r){ return r.unregister(); })); } }catch(e){}
-        try{ if('caches' in window){ var keys = await caches.keys(); await Promise.all(keys.map(function(k){ return caches.delete(k); })); } }catch(e){}
-        if(!sessionStorage.getItem('mesaha_reset_done_current')){
-          sessionStorage.setItem('mesaha_reset_done_current','1');
-          location.replace('./index.html');
-        }
-      });
-    }
-  })();
-  </script>
+(function(){
+  try{var q=new URLSearchParams(location.search);window.__mesahaSafeResetRequested=(q.get('reset')==='1'||q.get('clear')==='1');}catch(e){window.__mesahaSafeResetRequested=false;}
+})();
+</script>
 <script src="./js/version.js"></script>
 <script>try{ if(window.MesahaVersion&&window.MesahaVersion.applyToDocument) window.MesahaVersion.applyToDocument(document); }catch(e){}</script>
 <script src="./js/mesaha-early-optimizer.js"></script>
 <script src="./js/mesaha-utils.js"></script>
 <script src="./js/mesaha-data-guard.js"></script>
 <script src="./js/mesaha-persistent-store.js"></script>
+<script src="./js/mesaha-update-manager-v527.js"></script>
 <script src="./js/mesaha-stability-core.js"></script>
 <script src="./js/mesaha-error-log.js"></script>
 <script src="./js/mesaha-url-cleanup.js"></script>
@@ -49,6 +40,7 @@
 </script>
 
 <link href="./css/app.css" rel="stylesheet"/>
+<link href="./css/mesaha-seflik-folder-v529.css" rel="stylesheet"/>
 <style id="mesaha-v515-user-panel-clean-style">
 #panelTelegramSectionV515{display:grid!important;gap:10px!important;}
 #panelTelegramSectionV515 .panel-telegram-join-v515{min-height:52px!important;font-size:14px!important;}
@@ -405,6 +397,11 @@ body.mesaha-keyboard-open #saveBtn, body.mesaha-keyboard-open .save-btn{position
   .bulk-cutter-transfer-v406 select,.bulk-cutter-transfer-v406 .btn{width:100%;}
 }
 </style>
+
+<style id="mesaha-v535-shortcut-fix-style">
+#entryView #diameterChips button[data-dia],#entryView #lengthChips button[data-len]{cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;pointer-events:auto!important;position:relative;z-index:2}
+#entryView #diameterChips button[data-dia]:active,#entryView #lengthChips button[data-len]:active,#entryView .shortcut-selected-v535{transform:scale(.96)!important;background:#dcfce7!important;border-color:#86efac!important;color:#166534!important}
+</style>
 </head>
 <body>
 <div class="startup" id="startup">
@@ -442,6 +439,9 @@ body.mesaha-keyboard-open #saveBtn, body.mesaha-keyboard-open .save-btn{position
 <section class="status-card">
 <div class="status-item net-status" id="netStatusCard"><span class="status-icon" id="netIcon">⌁</span><div><small>Bağlantı durumu</small><b id="netText">Kontrol ediliyor</b><em id="netSubText">Bağlantı kontrol ediliyor…</em></div></div>
 <button class="status-item entry-launch" id="openEntryBtn" type="button"><span class="status-icon flash">⚡</span><div><small>Giriş Modu</small><b>Mesaha Gir</b><em>Dokun ve hızlı mesaha girişine geç</em></div></button>
+</section>
+<section class="seflik-folder-home-shortcut" id="seflikFolderHomeShortcutV528" role="button" tabindex="0" aria-label="Şeflik Klasörünü aç">
+<div class="left"><span class="ico">📁</span><div><b>Şeflik Klasörü</b><small>Aynı şeflikteki mesahaları bölme bazlı senkronize edin.</small></div></div><span class="arrow">›</span>
 </section>
 <section class="card file-card">
 <div class="section-head"><h2>Dosya Bilgileri</h2><span>Açık</span></div>
@@ -509,19 +509,21 @@ body.mesaha-keyboard-open #saveBtn, body.mesaha-keyboard-open .save-btn{position
 <button class="btn warning full" id="clearBtn" type="button">Alanları Temizle</button>
 <button class="btn soft full hidden" id="cancelEditBtn" type="button">Düzenlemeyi İptal Et</button>
 </section>
+<button aria-label="Kaydı kaydet" class="floating-save-btn-v531" id="floatingSaveBtnV531" type="button">Kaydet</button>
 </section>
 <section class="view" id="recordsView">
 <section class="card records-card">
 <div class="section-head"><h2>BEYAN</h2><span id="recordCountPill">0 kayıt</span></div>
 <div class="summary-grid small"><div><small>Toplam m³</small><b id="recTotalM3">0 m³</b></div><div><small>Toplam Adet</small><b id="recTotalCount">0</b></div></div>
 <div class="product-totals" id="productTotals"></div>
-<div class="action-grid">
+<div class="action-grid records-action-grid-v530">
 <button class="btn green" id="downloadXlsBtn" type="button">Mesaha Dosyasını İndir</button>
+<button class="btn seflik-record-send-v529 seflik-record-send-v530" id="seflikSendFromRecordsV529" type="button">Şefliğe Gönder</button>
+<button class="btn soft" id="printBtn" type="button">Beyan İndir</button>
 <button class="btn soft" id="backupBtn" type="button">Yedek Al</button>
 <button class="btn soft" id="restoreBtn" type="button">Yedek Yükle</button>
-<button class="btn primary" id="cloudBackupBtnV316" type="button">Buluta Yedekle</button>
+<button class="btn soft" id="cloudBackupBtnV316" type="button">Buluta Yükle</button>
 <button class="btn soft" id="cloudRestoreBtnV316" type="button">Buluttan Getir</button>
-<button class="btn orange" id="printBtn" type="button">Beyan İndir</button>
 </div>
 <div class="record-toolbar record-tools-lower">
 <input autocomplete="off" id="recordSearch" placeholder="Barkod, ağaç, ürün veya kesimci ara..." type="search"/>
@@ -541,6 +543,26 @@ body.mesaha-keyboard-open #saveBtn, body.mesaha-keyboard-open .save-btn{position
 <div class="record-list" id="recordList"></div>
 <div class="pager" id="pager"></div>
 </section>
+</section>
+<section class="view" id="seflikFolderView">
+<div class="seflik-folder-shell">
+<section class="card seflik-folder-hero">
+<div class="seflik-folder-hero-head"><div><h2>Şeflik Klasörü</h2><p>Aynı şeflikteki kullanıcıların ortak mesaha alanı. Kayıtlar bölme bazında görüntülenir.</p></div><span class="seflik-folder-badge">☁ Ortak klasör</span></div>
+<div class="seflik-folder-metrics"><div class="seflik-folder-metric"><small>BÖLME</small><b id="seflikFolderMetricBolmeV528">0</b></div><div class="seflik-folder-metric"><small>KAYIT</small><b id="seflikFolderMetricCountV528">0</b></div><div class="seflik-folder-metric"><small>TOPLAM HACİM</small><b id="seflikFolderMetricM3V528">0,000 m³</b></div></div>
+</section>
+<section class="card seflik-folder-control">
+<div class="section-head"><h2>Bölme Yönetimi</h2><span id="seflikFolderIdentityV528">Şeflik seçilmedi</span></div>
+<div class="seflik-create-row-v529"><label>Yeni Bölme Numarası<input id="seflikFolderNewBolmeV529" inputmode="text" autocomplete="off" placeholder="Örn. 43"/></label><button class="btn primary" id="seflikFolderCreateV529" type="button">＋ Bölme Oluştur</button></div>
+<p class="seflik-folder-hint-v529">Yalnızca burada oluşturulan açık bölmelere senkronizasyon ve gönderim yapılabilir.</p>
+<div class="seflik-folder-divider-v529"></div>
+<div class="section-head"><h2>Seçili Bölmeye Gönder</h2><span>Açık bölmeler</span></div>
+<div class="seflik-folder-control-grid"><label>Bölme Seç<select id="seflikFolderBolmeV528"><option value="">Açık bölme seçin</option></select></label><div class="seflik-folder-status" id="seflikFolderLocalPreviewV528">Önce açık bir bölme seçin</div></div>
+<div class="seflik-folder-actions"><button class="btn seflik-folder-send" id="seflikFolderSendV528" type="button">Şefliğe Gönder + Drive Yedekle</button><button class="btn soft" id="seflikFolderSyncV528" type="button">Buluttaki Yedekleri Senkronize Et</button></div>
+<div class="seflik-folder-progress" id="seflikFolderProgressV528"><span></span></div><div class="seflik-folder-status" id="seflikFolderStatusV528">Önce bölme oluşturun veya açık bir bölme seçin.</div>
+</section>
+<section class="card"><div class="seflik-folder-list-head"><h2>Şeflik Mesahaları</h2><small id="seflikFolderRemoteMetaV528">Henüz ortak kayıt yok</small></div><div class="seflik-folder-list" id="seflikFolderListV528"></div></section>
+<section class="card seflik-folder-detail" id="seflikFolderDetailV528"><div class="seflik-folder-detail-head"><h2 id="seflikFolderDetailTitleV528">Bölme Kayıtları</h2><button class="btn soft" id="seflikFolderDetailCloseV528" type="button">Kapat</button></div><div class="seflik-folder-records" id="seflikFolderRecordsV528"></div></section>
+</div>
 </section>
 <section class="view" id="guideView">
 <section class="card guide-card guide-guide-clean">
@@ -611,14 +633,25 @@ body.mesaha-keyboard-open #saveBtn, body.mesaha-keyboard-open .save-btn{position
 <div class="guide-section-guide-clean">
 <h3>5. Bulut Yedek</h3>
 <ol>
-<li><b>Buluta Yedekle</b> internet varsa kayıtları buluta gönderir.</li>
+<li><b>Buluta Yükle</b> internet varsa kayıtları buluta gönderir.</li>
 <li><b>Buluttan Getir</b> aktif kullanıcıya ait yedekleri listeler.</li>
 <li>Başka cihazdaki yedekler için <b>Farklı Kullanıcı / Şeflik Ara</b> seçeneğini kullanınız.</li>
 <li>İnternet yoksa bulut çalışmaz; cihazdaki kayıtlar etkilenmez.</li>
 </ol>
 </div>
 <div class="guide-section-guide-clean">
-<h3>6. Sorun Çözme</h3>
+<h3>6. Şeflik Klasörü</h3>
+<ol>
+<li>Ana menüden <b>Şeflik Klasörü</b> bölümünü açınız.</li>
+<li><b>Bölme Oluştur</b> ile ortak çalışılacak bölmeyi açınız. Yalnızca açık bölmelere veri gönderilebilir.</li>
+<li>Ölçümler ekranındaki <b>Şefliğe Gönder</b> butonundan açık bölmeyi seçip kayıtları sunucuya gönderebilirsiniz.</li>
+<li>Gönderim sırasında ortak klasör güncellenir ve Google Drive yedeği alınır.</li>
+<li>Aynı şeflik adıyla giriş yapan kullanıcılar <b>Buluttaki Yedekleri Senkronize Et</b> dediğinde bölme bazlı kayıt adedi ve toplam m³ değerini görebilir.</li>
+<li><b>Mesahaya Devam Et</b> seçilen bölmenin kayıtlarını cihaza yükler. İşlemden önce mevcut yerel kayıtların silineceği uyarısı gösterilir.</li>
+</ol>
+</div>
+<div class="guide-section-guide-clean">
+<h3>7. Sorun Çözme</h3>
 <ol>
 <li>Güncelleme görünmüyorsa sayfayı 2-3 kez yenileyiniz.</li>
 <li>Bulut çalışmıyorsa interneti ve bağlantı ayarlarını kontrol ediniz.</li>
@@ -633,6 +666,7 @@ body.mesaha-keyboard-open #saveBtn, body.mesaha-keyboard-open .save-btn{position
 <nav class="bottom-nav" id="bottomNav">
 <button class="active" data-nav="home" type="button"><span>🏠</span><b>Ana Ekran</b></button>
 <button data-nav="records" type="button"><span>📏</span><b>Ölçümler</b></button>
+<button data-nav="seflikFolder" type="button"><span>📁</span><b>Şeflik</b></button>
 <button data-nav="guide" type="button"><span>▰</span><b>Kılavuz</b></button>
 </nav>
 <div aria-modal="true" class="modal-backdrop hidden" id="modernModal" role="dialog">
@@ -677,6 +711,16 @@ body.mesaha-keyboard-open #saveBtn, body.mesaha-keyboard-open .save-btn{position
 <button class="panel-close-v316" id="cloudRestoreCloseV316" type="button">×</button>
 </div>
 <div class="cloud-list-v316" id="cloudRestoreListV316"></div>
+</div>
+</div>
+
+<div aria-hidden="true" aria-modal="true" class="seflik-send-overlay-v529 hidden" id="seflikSendOverlayV529" role="dialog">
+<div class="seflik-send-modal-v529">
+<div class="seflik-send-head-v529"><div><h2>Şefliğe Gönder</h2><small>Açık bölmelerden birini seçin</small></div><button id="seflikSendCloseV529" type="button" aria-label="Kapat">×</button></div>
+<label class="seflik-send-field-v529">Bölme<select id="seflikSendSelectV529"><option value="">Bölme seçin</option></select></label>
+<div class="seflik-send-meta-v529" id="seflikSendMetaV529">Kayıtlar hazırlanıyor…</div>
+<div class="seflik-send-warning-v529">Gönderim tamamlandığında seçili bölme güncellenecek ve Google Drive yedeği alınacaktır.</div>
+<div class="seflik-send-actions-v529"><button class="btn soft" id="seflikSendCancelV529" type="button">Vazgeç</button><button class="btn primary" id="seflikSendConfirmV529" type="button">Gönder</button></div>
 </div>
 </div>
 <div class="toast" id="toast"></div>
@@ -1529,18 +1573,12 @@ function toast(msg){
 function load(){
   try{ if(window.MesahaDataGuard&&window.MesahaDataGuard.recoverIfNeeded) window.MesahaDataGuard.recoverIfNeeded(); }catch(e){}
   try{
-    let raw = localStorage.getItem(STORAGE_KEY);
-    if(!raw || raw==='[]'){
-      const mirror = localStorage.getItem(STORAGE_KEY+'_mirror_v515') || localStorage.getItem(STORAGE_KEY+'_last_ok') || '';
-      if(mirror && mirror !== '[]') raw = mirror;
-    }
-    const r=JSON.parse(raw||'[]');
+    const r=(window.MesahaStorageV527&&window.MesahaStorageV527.bootstrapRecords)?window.MesahaStorageV527.bootstrapRecords():JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]');
     state.records = Array.isArray(r) ? r.map(migrateRecord).filter(Boolean) : [];
-  }catch{ try{ if(window.MesahaDataGuard&&window.MesahaDataGuard.recoverIfNeeded) window.MesahaDataGuard.recoverIfNeeded(); }catch(e){} state.records=[]; }
+  }catch{ state.records=[]; }
   try{
-    let rawS = localStorage.getItem(SETTINGS_KEY);
-    if(!rawS || rawS==='{}') rawS = localStorage.getItem(SETTINGS_KEY+'_mirror_v515') || rawS;
-    const s=JSON.parse(rawS||'{}'); state.settings = {...defaults, ...s};
+    const st=(window.MesahaStorageV527&&window.MesahaStorageV527.bootstrapSettings)?window.MesahaStorageV527.bootstrapSettings():JSON.parse(localStorage.getItem(SETTINGS_KEY)||'{}');
+    state.settings = {...defaults, ...(st&&typeof st==='object'?st:{})};
   }catch{ state.settings={...defaults}; }
   if(!state.settings.mesahaDate) state.settings.mesahaDate=todayISO();
   if(!Array.isArray(state.settings.visibleProducts) || !state.settings.visibleProducts.length) state.settings.visibleProducts=defaults.visibleProducts.slice();
@@ -1557,15 +1595,14 @@ function load(){
   if(!state.settings.visibleProducts.includes(state.settings.currentProduct)) state.settings.currentProduct=state.settings.visibleProducts[0]||'Tomruk';
   if(!state.settings.visibleTrees.includes(state.settings.currentTree)) state.settings.currentTree=state.settings.visibleTrees[0]||'Karaçam';
   if(!Array.isArray(state.settings.cutters)) state.settings.cutters=[];
-  try{ if(window.MesahaPersistentStoreV515) window.MesahaPersistentStoreV515.recoverIntoApp(); }catch(e){}
 }
 function migrateRecord(r){ if(!r) return null; return {
   id:r.id || uid(), barcode:norm(r.barcode || r.barkodNo), diameter:String(r.diameter || r.cap || ''), length:String(r.length || r.boy || ''), quantity:Number(r.quantity || r.adet || 1),
   productType:normalizeProductType(r.productType || r.odunTuru || r.odunAdi || r.product || 'Tomruk'), treeType:r.treeType || r.species || r.agacTuru || r.agacAdi || 'Karaçam', cutter:r.cutter || r.kesimci || '', productionDate:r.productionDate || r.uretimTarihi || state.settings?.mesahaDate || todayISO(),
   createdAt:r.createdAt || new Date().toISOString(), updatedAt:r.updatedAt || ''
 }; }
-let __lastOkAt=0,__lastOkCount=-1; function saveRecords(){ const payload=JSON.stringify(state.records); try{ const n=Date.now?Date.now():(new Date()).getTime(); const c=state.records.length; if(payload.length<2500000 && (n-__lastOkAt>45000 || (c>0 && c%25===0 && c!==__lastOkCount))){ const old=localStorage.getItem(STORAGE_KEY); if(old && old!==payload){ localStorage.setItem(STORAGE_KEY+'_last_ok', old); __lastOkAt=n; __lastOkCount=c; } } }catch(e){} try{ localStorage.setItem(STORAGE_KEY, payload); localStorage.setItem(STORAGE_KEY+'_mirror_v515', payload); localStorage.setItem(STORAGE_KEY+'_mirror_meta_v515', JSON.stringify({count:state.records.length,at:Date.now()})); }catch(e){ try{ window.dispatchEvent(new CustomEvent('mesaha:storage-error',{detail:{key:STORAGE_KEY,message:e&&e.message?e.message:String(e)}})); }catch(_){} } try{ if(window.MesahaPersistentStoreV515) window.MesahaPersistentStoreV515.saveRecords(state.records); }catch(e){} try{ window.dispatchEvent(new CustomEvent('mesaha:records-saved',{detail:{count:state.records.length}})); }catch(e){} }
-let __settingsSaveTimer=0,__settingsSaveLast=''; function __flushSettings(){ try{ state.settings.barcodeControlEvery=40; const payload=JSON.stringify(state.settings); if(payload!==__settingsSaveLast){ localStorage.setItem(SETTINGS_KEY,payload); localStorage.setItem(SETTINGS_KEY+'_mirror_v515',payload); localStorage.setItem(SETTINGS_KEY+'_mirror_meta_v515', JSON.stringify({at:Date.now()})); __settingsSaveLast=payload; try{ if(window.MesahaPersistentStoreV515) window.MesahaPersistentStoreV515.saveSettings(state.settings); }catch(e){} try{ window.dispatchEvent(new CustomEvent('mesaha:settings-saved')); }catch(e){} } }catch(e){} } function saveSettings(){ clearTimeout(__settingsSaveTimer); __settingsSaveTimer=setTimeout(__flushSettings,220); } try{window.__flushSettings=__flushSettings;}catch(e){} window.addEventListener('pagehide',__flushSettings); document.addEventListener('visibilitychange',function(){if(document.hidden)__flushSettings();});
+function saveRecords(reason){ if(window.MesahaStorageV527&&window.MesahaStorageV527.saveRecords) return window.MesahaStorageV527.saveRecords(state.records,{reason:reason||'app-save'}); try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state.records));window.dispatchEvent(new CustomEvent('mesaha:records-saved',{detail:{count:state.records.length,verified:false}}));return Promise.resolve({ok:true,localStorage:true,indexedDB:false});}catch(e){try{window.dispatchEvent(new CustomEvent('mesaha:storage-error',{detail:{key:STORAGE_KEY,message:e&&e.message?e.message:String(e)}}));}catch(_){}return Promise.resolve({ok:false,error:String(e)});} }
+let __settingsSaveTimer=0,__settingsSaveLast=''; async function __flushSettings(reason){ try{ state.settings.barcodeControlEvery=40; const payload=JSON.stringify(state.settings); if(payload===__settingsSaveLast)return {ok:true,unchanged:true}; let result; if(window.MesahaStorageV527&&window.MesahaStorageV527.saveSettings) result=await window.MesahaStorageV527.saveSettings(state.settings,{reason:reason||'settings-save'}); else { localStorage.setItem(SETTINGS_KEY,payload); window.dispatchEvent(new CustomEvent('mesaha:settings-saved')); result={ok:true,localStorage:true}; } if(result&&result.ok!==false)__settingsSaveLast=payload; return result; }catch(e){try{window.dispatchEvent(new CustomEvent('mesaha:storage-error',{detail:{key:SETTINGS_KEY,message:e&&e.message?e.message:String(e)}}));}catch(_){}return {ok:false,error:String(e)};} } function saveSettings(){ clearTimeout(__settingsSaveTimer); __settingsSaveTimer=setTimeout(function(){__flushSettings('settings-debounce');},220); } async function __saveAllV527(reason){ clearTimeout(__settingsSaveTimer); try{ state.settings.barcodeControlEvery=40; let result; if(window.MesahaStorageV527&&window.MesahaStorageV527.replaceAll)result=await window.MesahaStorageV527.replaceAll(state.records,state.settings,{reason:reason||'app-transaction'});else{const pair=await Promise.all([saveRecords(reason||'app-transaction'),__flushSettings(reason||'app-transaction')]);result=pair.some(x=>x&&x.ok===false)?{ok:false,error:'Kalıcı depolama işlemi başarısız'}:{ok:true};} if(result&&result.ok!==false)__settingsSaveLast=JSON.stringify(state.settings); return result;}catch(e){try{window.dispatchEvent(new CustomEvent('mesaha:storage-error',{detail:{key:'records+settings',message:e&&e.message?e.message:String(e)}}));}catch(_){}return {ok:false,error:String(e)};} } try{window.__flushSettings=__flushSettings;window.__saveAllV527=__saveAllV527;}catch(e){} window.addEventListener('pagehide',function(){__flushSettings('pagehide');}); document.addEventListener('visibilitychange',function(){if(document.hidden)__flushSettings('hidden');});
 function bind(){
   $('openEntryBtn').addEventListener('click', () => openEntry());
   $('entryHomeBtn').addEventListener('click', () => showView('home'));
@@ -1574,7 +1611,7 @@ function bind(){
   const bcToggle=$('barcodeControlEnabled'); if(bcToggle) bcToggle.addEventListener('change', () => { state.settings.barcodeControlEnabled=bcToggle.checked; state.settings.barcodeControlEvery=40; saveSettings(); try{__flushSettings();}catch{} toast(bcToggle.checked ? 'Barkod kontrolü açıldı.' : 'Barkod kontrolü kapatıldı.'); });
   $('treeToggleBtn').addEventListener('click', () => { state.settings.treePanelOpen=!state.settings.treePanelOpen; saveSettings(); renderEntryTrees(); });
   $('addCutterBtn').addEventListener('click', addCutter);
-  $('saveBtn').addEventListener('click', saveEntry);
+  $('saveBtn').addEventListener('click', function(ev){if(ev&&ev.detail>1)return;return saveEntry();});
   $('diameterInput').addEventListener('input', () => { const clean = String($('diameterInput').value||'').replace(/\D/g,'').slice(0,3); if($('diameterInput').value !== clean) $('diameterInput').value = clean; state.settings.diameter=clean; saveSettings(); });
   $('lengthInput').addEventListener('input', () => { let clean = String($('lengthInput').value||'').replace(',', '.').replace(/[^0-9.]/g,''); const firstDot=clean.indexOf('.'); if(firstDot>=0) clean=clean.slice(0,firstDot+1)+clean.slice(firstDot+1).replace(/\./g,''); if($('lengthInput').value !== clean) $('lengthInput').value = clean; state.settings.length=clean; saveSettings(); });
   $('barcodeInput').addEventListener('input', () => { state.settings.barcode=String($('barcodeInput').value||'').toUpperCase(); $('barcodeInput').value=state.settings.barcode; saveSettings(); });
@@ -1598,7 +1635,7 @@ function settingsFromInputs(){ state.settings.bolmeNo=$('bolmeNo').value; state.
 function entryInputChanged(){ state.settings.diameter=$('diameterInput').value; state.settings.length=$('lengthInput').value; state.settings.barcode=$('barcodeInput').value.toUpperCase(); if($('barcodeInput').value!==state.settings.barcode) $('barcodeInput').value=state.settings.barcode; saveSettings(); }
 function showView(view){
   state.view=view; document.body.classList.toggle('entry-open', view==='entry');
-  ['home','entry','records','guide'].forEach(v => $(`${v}View`)?.classList.toggle('active', v===view));
+  ['home','entry','records','seflikFolder','guide'].forEach(v => $(`${v}View`)?.classList.toggle('active', v===view));
   document.querySelectorAll('#bottomNav button').forEach(b => b.classList.toggle('active', b.dataset.nav===view));
   if(view==='records') renderRecords();
   if(view==='home') renderHome();
@@ -1734,34 +1771,125 @@ function getQuickChipCapCache(clearMs){
   }
   return rebuildQuickChipCapCache(clearMs);
 }
+let __quickChipTapV535={button:null,at:0};
+function normalizeQuickChipNumberV535(value,roundInteger){
+  const n=Number(String(value??'').replace(',','.').trim());
+  if(!Number.isFinite(n)||n<=0) return '';
+  return roundInteger?String(Math.round(n)):String(Number(n.toFixed(2)));
+}
+function applyQuickChipV535(kind,value,button){
+  value=normalizeQuickChipNumberV535(value,kind==='diameter');
+  if(!value) return false;
+  const input=$(kind==='diameter'?'diameterInput':'lengthInput');
+  if(!input) return false;
+  input.value=value;
+  if(kind==='diameter') state.settings.diameter=value;
+  else state.settings.length=value;
+  try{input.dispatchEvent(new Event('input',{bubbles:true}));}catch(e){try{entryInputChanged();}catch(_){}}
+  try{input.dispatchEvent(new Event('change',{bubbles:true}));}catch(e){}
+  try{saveSettings();}catch(e){}
+  try{vibrate('chip');}catch(e){}
+  try{button&&button.classList.add('shortcut-selected-v535');setTimeout(()=>button&&button.classList.remove('shortcut-selected-v535'),180);}catch(e){}
+  try{input.focus({preventScroll:true});const p=String(input.value||'').length;input.setSelectionRange&&input.setSelectionRange(p,p);}catch(e){}
+  return true;
+}
+function bindQuickChipContainerV535(container,kind){
+  if(!container||container.__quickChipBoundV535) return;
+  container.__quickChipBoundV535=true;
+  const handle=function(ev){
+    const attr=kind==='diameter'?'data-dia':'data-len';
+    const button=ev.target&&ev.target.closest?ev.target.closest('button['+attr+']'):null;
+    if(!button||button.disabled||!container.contains(button)) return;
+    const now=Date.now();
+    if(__quickChipTapV535.button===button&&now-__quickChipTapV535.at<420){
+      if(ev.type==='click'){ev.preventDefault();ev.stopPropagation();}
+      return;
+    }
+    __quickChipTapV535={button:button,at:now};
+    ev.preventDefault();
+    applyQuickChipV535(kind,button.getAttribute(attr),button);
+  };
+  if(window.PointerEvent) container.addEventListener('pointerup',handle,{passive:false});
+  container.addEventListener('click',handle,false);
+}
 function renderQuickChips(){
   const dc=$('diameterChips'), lc=$('lengthChips');
   if(!dc || !lc) return;
-  const CLEAR_MS_KEY='mesaha_v442_shortcut_clear_ms';
-  const getClearMs=()=>{try{return Number(sessionStorage.getItem(CLEAR_MS_KEY)||0)||0;}catch(e){return 0;}};
-  const clearMs=getClearMs();
-  const makePlaceholder=n=>Array.from({length:n},(_,i)=>`<button type="button" class="shortcut-empty-v442" disabled aria-disabled="true">—</button>`).join('');
-  const records=state.records||[];
-  const capCache=getQuickChipCapCache(clearMs);
-  const capMap=capCache.capMap||{};
-  let capList=Object.keys(capMap).sort((a,b)=>(capMap[b].count-capMap[a].count)||(capMap[b].last-capMap[a].last)||(Number(a)-Number(b))).slice(0,6);
-  if(!clearMs){ ['20','21','22','23','24','25','26','27','28','30','32','35','40'].forEach(v=>{ if(capList.length<6 && !capList.includes(v)) capList.push(v); }); }
-  const lenList=[], seen={};
-  const addLen=v=>{ v=String(v||'').replace(',','.').trim(); const n=Number(v); if(!Number.isFinite(n)||n<=0) return; v=String(n); if(!seen[v]){ seen[v]=1; lenList.push(v); } };
-  if(!clearMs){ addLen(state.settings.length); (state.settings.recentLengths||[]).forEach(addLen); }
-  const recentSource = clearMs ? records.filter(r=>parseQuickChipMs(r.createdAt||r.updatedAt)>clearMs).slice(-50) : records.slice(-50);
-  recentSource.reverse().forEach(r=>addLen(r.length||r.boy));
-  if(!clearMs){ ['3','4','2.5','3.5','4.5','5','6','2'].forEach(addLen); }
-  const capHtml=capList.slice(0,6).map(v=>`<button type="button" data-dia="${esc(v)}">${esc(v)}</button>`).join('') + makePlaceholder(Math.max(0,6-capList.length));
-  const lenHtml=lenList.slice(0,6).map(v=>`<button type="button" data-len="${esc(v)}">${esc(v)}</button>`).join('') + makePlaceholder(Math.max(0,6-lenList.length));
+  try{sessionStorage.removeItem('mesaha_v442_shortcut_clear_ms');}catch(e){}
+  const makePlaceholder=n=>Array.from({length:n},()=>`<button type="button" class="shortcut-empty-v442" disabled aria-disabled="true">—</button>`).join('');
+  const records=Array.isArray(state.records)?state.records:[];
+
+  /* Çap: en çok kullanılan değerler; eşitlikte en son kullanılan öne gelir. */
+  const diameterMap=Object.create(null);
+  records.forEach((r,index)=>{
+    const value=normalizeQuickChipNumberV535(r&&(r.diameter??r.cap??r.capCm),'diameter');
+    if(!value) return;
+    if(!diameterMap[value]) diameterMap[value]={count:0,last:-1};
+    diameterMap[value].count+=1;
+    diameterMap[value].last=index;
+  });
+  const capList=Object.keys(diameterMap)
+    .sort((a,b)=>(diameterMap[b].count-diameterMap[a].count)||(diameterMap[b].last-diameterMap[a].last)||(Number(a)-Number(b)))
+    .slice(0,6);
+  (state.settings.recentDiameters||[]).forEach(v=>{
+    v=normalizeQuickChipNumberV535(v,true);
+    if(v&&!capList.includes(v)&&capList.length<6) capList.push(v);
+  });
+
+  /* Boy: kayıt sırasına göre en son kullanılan benzersiz değerler. */
+  const lenList=[],seenLength=Object.create(null);
+  const addLength=v=>{
+    v=normalizeQuickChipNumberV535(v,false);
+    if(!v||seenLength[v]||lenList.length>=6) return;
+    seenLength[v]=true;lenList.push(v);
+  };
+  for(let i=records.length-1;i>=0&&lenList.length<6;i--) addLength(records[i]&&(records[i].length??records[i].boy));
+  (state.settings.recentLengths||[]).forEach(addLength);
+  addLength(state.settings.length);
+
+  const capHtml=capList.map(v=>`<button type="button" data-dia="${esc(v)}" aria-label="Çap ${esc(v)} seç">${esc(v)}</button>`).join('')+makePlaceholder(Math.max(0,6-capList.length));
+  const lenHtml=lenList.map(v=>`<button type="button" data-len="${esc(v)}" aria-label="Boy ${esc(v)} seç">${esc(v)}</button>`).join('')+makePlaceholder(Math.max(0,6-lenList.length));
   if(dc.innerHTML!==capHtml) dc.innerHTML=capHtml;
   if(lc.innerHTML!==lenHtml) lc.innerHTML=lenHtml;
-  dc.classList.toggle('shortcut-cleared-v442', !!clearMs);
-  lc.classList.toggle('shortcut-cleared-v442', !!clearMs);
-  dc.querySelectorAll('[data-dia]').forEach(b=>b.addEventListener('click',()=>{ vibrate('chip'); $('diameterInput').value=b.dataset.dia; entryInputChanged(); try{$('diameterInput').focus({preventScroll:true});}catch{} }));
-  lc.querySelectorAll('[data-len]').forEach(b=>b.addEventListener('click',()=>{ vibrate('chip'); $('lengthInput').value=b.dataset.len; entryInputChanged(); try{$('lengthInput').focus({preventScroll:true});}catch{} }));
-  try{ window.mesahaQuickChipsDirtyV444 = markQuickChipsDirty; }catch(e){}
+  dc.classList.remove('shortcut-cleared-v442');
+  lc.classList.remove('shortcut-cleared-v442');
+  bindQuickChipContainerV535(dc,'diameter');
+  bindQuickChipContainerV535(lc,'length');
+  try{window.mesahaQuickChipsDirtyV444=markQuickChipsDirty;}catch(e){}
 }
+
+/* V5.36: Kayıt/ayar depolama olaylarından sonra giriş ekranındaki kısayolları canlı yenile. */
+let __quickChipRefreshTimerV536=0;
+function refreshQuickChipsV536(immediate){
+  const run=()=>{
+    __quickChipRefreshTimerV536=0;
+    try{markQuickChipsDirty();renderQuickChips();}catch(e){}
+    try{renderRecent();}catch(e){}
+    try{
+      const t=totals(state.records||[]);
+      const countEl=$('entryTotalCount'),m3El=$('entryTotalM3');
+      if(countEl)countEl.textContent=t.count.toLocaleString('tr-TR');
+      if(m3El)m3El.textContent=`${fmt(t.m3,3)} m³`;
+    }catch(e){}
+  };
+  if(immediate){clearTimeout(__quickChipRefreshTimerV536);run();return;}
+  clearTimeout(__quickChipRefreshTimerV536);
+  __quickChipRefreshTimerV536=setTimeout(()=>{
+    if(typeof requestAnimationFrame==='function')requestAnimationFrame(run);else run();
+  },16);
+}
+try{
+  const oldRefresh=window.MesahaV433Refresh||{};
+  window.MesahaV433Refresh=Object.assign({},oldRefresh,{
+    renderShortcuts:()=>refreshQuickChipsV536(true),
+    fastAfterSave:()=>refreshQuickChipsV536(true)
+  });
+  if(!window.__mesahaQuickChipLiveBoundV536){
+    window.__mesahaQuickChipLiveBoundV536=true;
+    window.addEventListener('mesaha:records-saved',()=>refreshQuickChipsV536(false),{passive:true});
+    window.addEventListener('mesaha:settings-saved',()=>refreshQuickChipsV536(false),{passive:true});
+  }
+}catch(e){}
 
 function renderProducts(){
   state.settings.visibleProducts = (state.settings.visibleProducts||[]).map(normalizeProductType).filter(k=>PRODUCTS.some(p=>p.key===k));
@@ -1790,36 +1918,90 @@ function renderRecent(){
     return `<div class="recent-item product-${p.cls} recent-item-v425" data-recent-row="${r.id}"><button class="recent-info-v425" data-edit="${r.id}" type="button"><b>${esc(r.barcode)}</b><small>${esc(r.treeType)} • ${esc(p.label)} • ${esc(r.diameter)} çap / ${esc(r.length)} boy</small></button><button class="recent-delete-v425" data-recent-delete="${r.id}" type="button" aria-label="${esc(r.barcode)} barkodunu sil">Sil</button></div>`;
   }).join('') : '<p class="hint">Henüz kayıt yok.</p>';
   $('recentList').querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click',()=>{ const r=state.records.find(x=>x.id===b.dataset.edit); if(r) openEntry(r); }));
-  $('recentList').querySelectorAll('[data-recent-delete]').forEach(b=>b.addEventListener('click',(ev)=>{
+  $('recentList').querySelectorAll('[data-recent-delete]').forEach(b=>b.addEventListener('click',async(ev)=>{
     ev.preventDefault(); ev.stopPropagation();
     const r=state.records.find(x=>x.id===b.dataset.recentDelete);
-    if(!r) return;
-    if(confirm((r.barcode||'Bu barkod')+' silinsin mi?')){
-      state.records=state.records.filter(x=>x.id!==b.dataset.recentDelete); markQuickChipsDirty();
-      const last=state.records[state.records.length-1];
-      state.settings.barcode=last&&last.barcode ? nextBarcode(last.barcode) : '';
-      const bi=$('barcodeInput'); if(bi) bi.value=state.settings.barcode;
-      saveRecords(); saveSettings();
-      renderRecent(); renderQuickChips(); renderSummary();
-      if(state.view==='records') renderRecords();
-      toast('Barkod silindi.');
-    }
+    if(!r||!confirm((r.barcode||'Bu barkod')+' silinsin mi?'))return;
+    const before=state.records.slice(),beforeSettings={...state.settings};
+    state.records=state.records.filter(x=>x.id!==b.dataset.recentDelete); markQuickChipsDirty();
+    const last=state.records[state.records.length-1];
+    state.settings.barcode=last&&last.barcode?nextBarcode(last.barcode):'';
+    const bi=$('barcodeInput');if(bi)bi.value=state.settings.barcode;
+    const result=await __saveAllV527('recent-delete');
+    if(result&&result.ok===false){state.records=before;state.settings=beforeSettings;toast('Silme kaydedilemedi.');return;}
+    renderRecent();renderQuickChips();renderSummary();if(state.view==='records')renderRecords();toast('Barkod silindi.');
   }));
 }
-function saveEntry(){
+async function saveEntry(){
+  if(window.__mesahaSaveBusyV527) return false;
   const wasEditing = Boolean(state.editingId);
   const returnBarcodeAfterEdit = state.editingReturnBarcode || state.settings.barcode || '';
-  const barcode=norm($('barcodeInput').value).toUpperCase(); const diameter=norm($('diameterInput').value); const length=norm($('lengthInput').value);
-  if(!barcode) return toast('Barkod giriniz.');
-  if(!validateBarcode(barcode)) return;
-  if(!diameter) return toast('Çap giriniz.');
-  if(!length) return toast('Boy giriniz.');
-  if(!validateProductRules(state.settings.currentProduct, diameter, length)) return;
-  const duplicate = state.records.find(r => String(r.barcode||'').toUpperCase()===barcode && r.id!==state.editingId); if(duplicate) return toast('Bu barkod daha önce kayıtlı.');
-  const rec = { id: state.editingId || uid(), barcode, diameter, length, quantity:Math.max(1, num($('quantityInput') && $('quantityInput').value || 1)), productType:normalizeProductType(state.settings.currentProduct), treeType:state.settings.currentTree, cutter:state.settings.activeCutter||'', productionDate:state.settings.mesahaDate||todayISO(), createdAt:new Date().toISOString(), updatedAt: state.editingId ? new Date().toISOString() : '' };
-  if(state.editingId){ const i=state.records.findIndex(r=>r.id===state.editingId); if(i>=0) state.records[i]=rec; state.editingId=null; state.editingReturnBarcode=''; $('cancelEditBtn').classList.add('hidden'); markQuickChipsDirty(); }
-  else state.records.push(rec);
-  state.settings.quantity = '1'; state.settings.length = length; state.settings.diameter = ''; if($('lengthInput')) $('lengthInput').value = length; rememberChip('recentDiameters', diameter); rememberChip('recentLengths', length); state.settings.barcode = wasEditing ? (returnBarcodeAfterEdit || nextBarcode(barcode)) : nextBarcode(barcode); $('barcodeInput').value=state.settings.barcode; saveRecords(); saveSettings(); try{showBarcodeMilestoneV440(rec,state.records.length)}catch(e){} if(window.MesahaRenderStorageV382&&window.MesahaRenderStorageV382.renderAllSoon){window.MesahaRenderStorageV382.renderAllSoon();}else{renderAll();} if(window.mesahaV310SavedToast){ window.mesahaV310SavedToast(rec, wasEditing); } else toast(wasEditing ? 'Kayıt güncellendi.' : 'Kayıt alındı.'); try{ setTimeout(()=>{ $('diameterInput').value=''; $('diameterInput').focus({preventScroll:true}); const dl=String($('diameterInput').value||'').length; try{$('diameterInput').setSelectionRange(dl,dl);}catch{} }, 0); }catch{} vibrate('save'); if(state.settings.soundEnabled!==false) beep();
+  const barcode=norm($('barcodeInput').value).toUpperCase();
+  const diameter=norm($('diameterInput').value);
+  const length=norm($('lengthInput').value);
+  if(!barcode){ toast('Barkod giriniz.'); return false; }
+  if(!validateBarcode(barcode)) return false;
+  if(!diameter){ toast('Çap giriniz.'); return false; }
+  if(!length){ toast('Boy giriniz.'); return false; }
+  if(window.MesahaBoyInputFocusGuardV416&&typeof window.MesahaBoyInputFocusGuardV416.validate==='function'&&!window.MesahaBoyInputFocusGuardV416.validate()) return false;
+  if(!validateProductRules(state.settings.currentProduct, diameter, length)) return false;
+  const duplicate = state.records.find(r => String(r.barcode||'').toUpperCase()===barcode && r.id!==state.editingId);
+  if(duplicate){ toast('Bu barkod daha önce kayıtlı.'); return false; }
+
+  window.__mesahaSaveBusyV527=true;
+  const entry=$('entryView');
+  const saveBtn=$('saveBtn');
+  if(entry)entry.classList.add('mesaha-save-single-gate-v418');
+  if(saveBtn)saveBtn.setAttribute('aria-busy','true');
+  const beforeRecords=state.records.slice();
+  const beforeSettings={...state.settings};
+  let rec=null;
+  try{
+    const oldRec=state.editingId?state.records.find(r=>r.id===state.editingId):null;
+    rec = { id: state.editingId || uid(), barcode, diameter, length, quantity:Math.max(1, num($('quantityInput') && $('quantityInput').value || 1)), productType:normalizeProductType(state.settings.currentProduct), treeType:state.settings.currentTree, cutter:state.settings.activeCutter||'', productionDate:state.settings.mesahaDate||todayISO(), bolmeNo:(oldRec&&oldRec.bolmeNo)||state.settings.bolmeNo||'', seflik:(oldRec&&oldRec.seflik)||state.settings.seflik||'', createdAt:(oldRec&&oldRec.createdAt)||new Date().toISOString(), updatedAt: state.editingId ? new Date().toISOString() : '' };
+    if(state.editingId){
+      const i=state.records.findIndex(r=>r.id===state.editingId);
+      if(i>=0) state.records[i]=rec;
+      state.editingId=null;
+      state.editingReturnBarcode='';
+      $('cancelEditBtn').classList.add('hidden');
+      markQuickChipsDirty();
+    } else state.records.push(rec);
+    state.settings.quantity='1';
+    state.settings.length=length;
+    state.settings.diameter='';
+    if($('lengthInput')) $('lengthInput').value=length;
+    rememberChip('recentDiameters',diameter);
+    rememberChip('recentLengths',length);
+    state.settings.barcode=wasEditing?(returnBarcodeAfterEdit||nextBarcode(barcode)):(state.settings.sameBarcodeMode===true?barcode:nextBarcode(barcode));
+    $('barcodeInput').value=state.settings.barcode;
+
+    const result=await __saveAllV527(wasEditing?'record-update':'record-add');
+    if(result&&result.ok===false) throw new Error(result.error||'Kayıt kalıcı depolamaya yazılamadı');
+
+    /* V5.36: Boy/çap kısayollarını kayıt sonrasında sayfa yenilemeden anında güncelle. */
+    try{ markQuickChipsDirty(); renderQuickChips(); }catch(e){}
+    try{showBarcodeMilestoneV440(rec,state.records.length)}catch(e){}
+    if(window.MesahaRenderStorageV382&&window.MesahaRenderStorageV382.renderAllSoon) window.MesahaRenderStorageV382.renderAllSoon();
+    else renderAll();
+    if(window.mesahaV310SavedToast) window.mesahaV310SavedToast(rec,wasEditing);
+    else toast(wasEditing?'Kayıt güncellendi.':'Kayıt alındı.');
+    try{setTimeout(()=>{const d=$('diameterInput');if(!d)return;d.value='';d.focus({preventScroll:true});try{d.setSelectionRange(0,0)}catch{}},20)}catch(e){}
+    vibrate('save');
+    if(state.settings.soundEnabled!==false) beep();
+    return true;
+  }catch(err){
+    state.records=beforeRecords;
+    state.settings=beforeSettings;
+    try{if(window.MesahaRenderStorageV382&&window.MesahaRenderStorageV382.renderAllSoon)window.MesahaRenderStorageV382.renderAllSoon();else renderAll();}catch(e){}
+    try{if(window.MesahaErrorLog)window.MesahaErrorLog.error('record.save',err,{count:state.records.length});}catch(e){}
+    toast('Kayıt kaydedilemedi. Telefon depolamasını kontrol edin.');
+    return false;
+  }finally{
+    window.__mesahaSaveBusyV527=false;
+    if(entry)entry.classList.remove('mesaha-save-single-gate-v418');
+    if(saveBtn)saveBtn.removeAttribute('aria-busy');
+  }
 }
 
 function showBarcodeMilestoneV440(rec,count){
@@ -1851,9 +2033,8 @@ function clearEntry(show=true){
   state.settings.diameter='';
   state.settings.length='';
   state.settings.barcode='';
-  state.settings.recentDiameters=[];
-  state.settings.recentLengths=[];
-  try{sessionStorage.setItem('mesaha_v442_shortcut_clear_ms', String(Date.now()));}catch(e){}
+  /* V5.35: Alanları temizlemek geçmiş kullanım kısayollarını silmez. */
+  try{sessionStorage.removeItem('mesaha_v442_shortcut_clear_ms');}catch(e){}
   const d=$('diameterInput'), l=$('lengthInput'), b=$('barcodeInput');
   if(d) d.value='';
   if(l) l.value='';
@@ -1896,7 +2077,7 @@ function renderRecords(){
   renderProductTotals(); renderFilters();
   $('recordList').innerHTML = list.length ? list.slice().reverse().map(r => recordCard(r)).join('') : '<p class="hint">Kayıt bulunamadı.</p>';
   $('recordList').querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click',()=>{ const r=state.records.find(x=>x.id===b.dataset.edit); if(r) openEntry(r); }));
-  $('recordList').querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',()=>{ if(confirm('Kayıt silinsin mi?')){ state.records=state.records.filter(x=>x.id!==b.dataset.del); markQuickChipsDirty(); try{invalidateRecordStatsV447&&invalidateRecordStatsV447();}catch(e){} saveRecords(); if(window.MesahaRenderStorageV382&&window.MesahaRenderStorageV382.renderAllSoon){window.MesahaRenderStorageV382.renderAllSoon();}else{renderAll();} }}));
+  $('recordList').querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',async()=>{if(!confirm('Kayıt silinsin mi?'))return;const before=state.records.slice();state.records=state.records.filter(x=>x.id!==b.dataset.del);markQuickChipsDirty();try{invalidateRecordStatsV447&&invalidateRecordStatsV447();}catch(e){}const result=await saveRecords('record-delete');if(result&&result.ok===false){state.records=before;toast('Silme kaydedilemedi.');return;}if(window.MesahaRenderStorageV382&&window.MesahaRenderStorageV382.renderAllSoon)window.MesahaRenderStorageV382.renderAllSoon();else renderAll();}));
 }
 function renderProductTotals(){ const stats=recordStatsV447(); const html=PRODUCTS.map(p=>{ const t=stats.product[p.key]||{count:0,m3:0}; return `<div class="prod-total product-${p.cls}"><small>${esc(p.label)}</small><b>${fmt(t.m3,3)} m³</b><small>${t.count} adet</small></div>`; }).join(''); $('productTotals').innerHTML=html; }
 function renderFilters(){
@@ -1923,9 +2104,35 @@ function exportXls(){
   if(window.OrbisXls) window.OrbisXls.downloadXls(ordered, file); else toast('XLS modülü yüklenmedi.');
 }
 function backupJson(){ const data={version:((window.MESAHA_VERSION&&window.MESAHA_VERSION.version)||'local'), exportedAt:new Date().toISOString(), records:state.records, settings:state.settings}; downloadText(JSON.stringify(data,null,2), `mesaha_yedek_${formatDateFile()}.json`, 'application/json'); toast('Yedek indirildi.'); }
-function restoreJson(e){ const file=e.target.files && e.target.files[0]; if(!file) return; const reader=new FileReader(); reader.onload=()=>{ try{ const data=JSON.parse(reader.result); const records=Array.isArray(data) ? data : data.records; if(!Array.isArray(records)) throw new Error('records yok'); state.records=records.map(migrateRecord).filter(Boolean); markQuickChipsDirty(); if(data.settings) state.settings={...state.settings,...data.settings}; saveRecords(); saveSettings(); if(window.MesahaRenderStorageV382&&window.MesahaRenderStorageV382.renderAllSoon){window.MesahaRenderStorageV382.renderAllSoon();}else{renderAll();} toast('Yedek yüklendi.'); }catch(err){ toast('Yedek okunamadı.'); } e.target.value=''; }; reader.readAsText(file); }
+function restoreJson(e){
+  const file=e.target.files&&e.target.files[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=async()=>{
+    try{
+      const data=JSON.parse(reader.result);
+      const records=Array.isArray(data)?data:data.records;
+      if(!Array.isArray(records))throw new Error('records yok');
+      const migrated=records.map(migrateRecord).filter(Boolean);
+      const mergedSettings=data.settings?{...state.settings,...data.settings}:{...state.settings};
+      const result=window.MesahaStorageV527?await window.MesahaStorageV527.replaceAll(migrated,mergedSettings,{reason:'json-restore'}):{ok:false,error:'Depolama motoru hazır değil'};
+      if(!result||result.ok===false)throw new Error(result&&result.error||'Yedek yazılamadı');
+      state.records=migrated;
+      state.settings=mergedSettings;
+      markQuickChipsDirty();
+      if(window.MesahaRenderStorageV382&&window.MesahaRenderStorageV382.renderAllSoon)window.MesahaRenderStorageV382.renderAllSoon();else renderAll();
+      toast('Yedek yüklendi.');
+    }catch(err){
+      try{if(window.MesahaErrorLog)window.MesahaErrorLog.error('backup.local.restore',err);}catch(e){}
+      toast('Yedek okunamadı veya kalıcı yazılamadı.');
+    }
+    e.target.value='';
+  };
+  reader.readAsText(file);
+}
 function downloadText(content, filename, type){ const blob=new Blob([content],{type}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=filename; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),1000); }
 window.state = state;
+window.showView = showView;
 window.renderAll = renderAll;
 window.renderRecords = renderRecords;
 window.openEntry = openEntry;
@@ -2052,31 +2259,8 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   }
 
   function patchSaveEntry(){
-    if(window.__v311SavePatched) return;
-    window.__v311SavePatched = true;
-
-    const old = window.saveEntry;
-    if(typeof old !== 'function') return;
-
-    window.saveEntry = function(){
-      const beforeBarcode = norm($('barcodeInput') && $('barcodeInput').value).toUpperCase();
-      const beforeCount = records().length;
-      const result = old.apply(this, arguments);
-      const afterCount = records().length;
-
-      if(settings().sameBarcodeMode === true && afterCount > beforeCount && beforeBarcode){
-        settings().barcode = beforeBarcode;
-        if($('barcodeInput')) $('barcodeInput').value = beforeBarcode;
-        saveSettings();
-      }
-
-      updateLiveBox();
-      renderDetailSummary();
-      renderRecordsV303();
-      return result;
-    };
-
-    try { saveEntry = window.saveEntry; } catch {}
+    window.__v311SavePatched=true;
+    /* V5.27: same-barcode and rendering are handled inside the canonical async save transaction. */
   }
 
   function patchRecordMigration(){
@@ -2201,20 +2385,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     const save = $('saveBtn');
     if(save && !save.__v311SameRestore){
       save.__v311SameRestore = true;
-      save.addEventListener('click', () => {
-        const beforeBarcode = norm($('barcodeInput') && $('barcodeInput').value).toUpperCase();
-        const beforeCount = records().length;
-        setTimeout(() => {
-          if(settings().sameBarcodeMode === true && records().length > beforeCount && beforeBarcode){
-            settings().barcode = beforeBarcode;
-            if($('barcodeInput')) $('barcodeInput').value = beforeBarcode;
-            saveSettings();
-          }
-          updateLiveBox();
-          renderDetailSummary();
-          renderRecordsV303();
-        }, 0);
-      });
+      /* V5.27: aynı barkod ve kayıt sonrası çizim canonical async saveEntry tarafından tek işlemde yönetilir. */
     }
 
     const search = $('recordSearch');
@@ -2273,16 +2444,14 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     const delAll = $('deleteAllBtn');
     if(delAll && !delAll.__v311){
       delAll.__v311 = true;
-      delAll.addEventListener('click', () => {
-        if(!records().length) return toast('Silinecek kayıt yok.');
-        if(!confirm('Tüm kayıtlar silinsin mi?')) return;
-        lastDeleted = {records:records().slice()};
-        const s = appState();
-        s.records = [];
-        selectedIds.clear();
-        saveRecords();
-        renderAllV303();
-        toast('Tüm kayıtlar silindi.');
+      delAll.addEventListener('click', async () => {
+        if(!records().length)return toast('Silinecek kayıt yok.');
+        if(!confirm('Tüm kayıtlar silinsin mi?'))return;
+        lastDeleted={records:records().slice()};
+        const s=appState();s.records=[];selectedIds.clear();
+        const result=await saveRecords('legacy-delete-all');
+        if(result&&result.ok===false){s.records=lastDeleted.records.slice();toast('Silme kaydedilemedi.');return;}
+        renderAllV303();toast('Tüm kayıtlar silindi.');
       });
     }
 
@@ -2332,32 +2501,13 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   }
 
   async function clearCacheOnly(){
-    try{
-      if('caches' in window){
-        const keys = await caches.keys();
-        await Promise.all(keys.map(k => caches.delete(k)));
-      }
-      toast('Ön bellek temizlendi.');
-    }catch{
-      toast('Ön bellek temizlenemedi.');
-    }
+    try{if(window.MesahaUpdateV527)await window.MesahaUpdateV527.repair();toast('Ön bellek güvenli şekilde onarıldı.');}
+    catch(e){toast('Ön bellek onarılamadı.');}
   }
 
   async function forceUpdate(){
-    try{
-      if('serviceWorker' in navigator){
-        const regs = await navigator.serviceWorker.getRegistrations();
-        await Promise.all(regs.map(r => r.update()));
-      }
-      if('caches' in window){
-        const keys = await caches.keys();
-        await Promise.all(keys.map(k => caches.delete(k)));
-      }
-      toast('Yeni sürüm kontrol edildi. Sayfa yenileniyor.');
-      setTimeout(()=>location.reload(), 800);
-    }catch{
-      toast('Güncelleme yapılamadı.');
-    }
+    try{if(window.MesahaUpdateV527)await window.MesahaUpdateV527.updateAndReload({delay:450});else location.replace('./guncelle.html');}
+    catch(e){toast('Güncelleme yapılamadı.');}
   }
 
   function boot(){
@@ -2719,109 +2869,41 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     const text = await file.text();
     return JSON.parse(text);
   }
-  function restoreData(data){
+  async function restoreData(data){
     const recs = Array.isArray(data) ? data : data.records;
     if(!Array.isArray(recs)) throw new Error('Yedek içinde kayıt listesi bulunamadı.');
     const s = appState();
     if(!s) throw new Error('Uygulama hazır değil.');
-    s.records = recs.map(r => ({
+    const migrated=recs.map(r => ({
       id:r.id || (Date.now().toString(36)+Math.random().toString(36).slice(2,8)),
-      barcode:norm(r.barcode || r.barkodNo),
-      diameter:String(r.diameter || r.cap || ''),
-      length:String(r.length || r.boy || ''),
-      quantity:Number(r.quantity || r.adet || 1),
-      productType:r.productType || r.odunTuru || r.odunAdi || 'Tomruk',
-      treeType:r.treeType || r.species || r.agacTuru || r.agacAdi || 'Karaçam',
-      cutter:r.cutter || r.kesimci || '',
-      productionDate:r.productionDate || r.uretimTarihi || settings().mesahaDate || new Date().toISOString().slice(0,10),
-      createdAt:r.createdAt || new Date().toISOString(),
-      updatedAt:r.updatedAt || ''
+      barcode:norm(r.barcode || r.barkodNo), diameter:String(r.diameter || r.cap || ''), length:String(r.length || r.boy || ''), quantity:Number(r.quantity || r.adet || 1),
+      productType:r.productType || r.odunTuru || r.odunAdi || 'Tomruk', treeType:r.treeType || r.species || r.agacTuru || r.agacAdi || 'Karaçam', cutter:r.cutter || r.kesimci || '',
+      productionDate:r.productionDate || r.uretimTarihi || settings().mesahaDate || new Date().toISOString().slice(0,10), createdAt:r.createdAt || new Date().toISOString(), updatedAt:r.updatedAt || ''
     })).filter(r => r.barcode);
-    if(data.settings && typeof data.settings === 'object'){
-      s.settings = Object.assign({}, s.settings || {}, data.settings || {}, {sameBarcodeMode:false, quantity:'1'});
-      window.state = s;
-    }
-    saveRecords(); saveSettings(); renderAfterChange();
+    const mergedSettings=data.settings&&typeof data.settings==='object'?Object.assign({},s.settings||{},data.settings,{sameBarcodeMode:false,quantity:'1'}):Object.assign({},s.settings||{},{sameBarcodeMode:false,quantity:'1'});
+    const result=window.MesahaStorageV527?await window.MesahaStorageV527.replaceAll(migrated,mergedSettings,{reason:'local-backup-restore'}):{ok:false,error:'Depolama motoru hazır değil'};
+    if(!result||result.ok===false)throw new Error(result&&result.error||'Yedek kalıcı depolamaya yazılamadı');
+    s.records=migrated;s.settings=mergedSettings;window.state=s;
+    renderAfterChange();
   }
 
   async function clearCacheFlow(){
     if(!navigator.onLine){
-      await modal({
-        title:'İnternet yok',
-        type:'danger',
-        icon:'!',
-        html:'<p>Ön bellek temizleme işlemini internet yokken uygulamayın.</p><div class="modal-note">Ön bellek temizlendikten sonra uygulama yeni dosyaları internetten tekrar alır. İnternet yoksa uygulama eksik açılabilir.</div>',
-        buttons:[{text:'Tamam', value:true, cls:'primary'}]
-      });
+      await modal({title:'İnternet yok',type:'danger',icon:'!',html:'<p>Ön bellek onarımı internet bağlantısı gerektirir. Kayıtlarınız cihazda korunur.</p>',buttons:[{text:'Tamam',value:true,cls:'primary'}]});
       return;
     }
-    const ok = await modal({
-      title:'Ön Bellek Temizle',
-      type:'warn',
-      icon:'♻',
-      html:'<p>Bu işlem eski uygulama dosyalarını temizler. Kayıtların ve yedeklerin silinmez.</p><div class="modal-note">Dikkat: İnternet yokken uygulamayın. Temizleme bitince sistem kendini otomatik yeniden başlatır.</div>',
-      buttons:[{text:'Vazgeç', value:false, cls:'ghost'}, {text:'Temizle ve Yeniden Başlat', value:true, cls:'primary'}]
-    });
-    if(!ok) return;
-    try{
-      if('serviceWorker' in navigator){
-        const regs = await navigator.serviceWorker.getRegistrations();
-        await Promise.all(regs.map(r => r.unregister().catch(()=>{})));
-      }
-      if('caches' in window){
-        const keys = await caches.keys();
-        await Promise.all(keys.map(k => caches.delete(k)));
-      }
-      await modal({title:'Ön bellek temizlendi', type:'success', icon:'✓', html:'<p>Eski dosyalar temizlendi. Uygulama şimdi kendini yeniden başlatacak.</p>', buttons:[{text:'Yeniden Başlat', value:true, cls:'primary'}]});
-      location.replace('./temizle.html');
-    }catch{
-      modal({title:'Temizleme başarısız', type:'danger', icon:'!', message:'Ön bellek temizlenemedi.'});
-    }
+    const ok=await modal({title:'Ön Belleği Onar',type:'warn',icon:'♻',html:'<p>Yalnızca Mesaha İO eski uygulama cache dosyaları yenilenir.</p><div class="modal-note">Kayıtlar, ayarlar ve diğer sitelerin cache alanları silinmez. Service worker kaldırılmaz.</div>',buttons:[{text:'Vazgeç',value:false,cls:'ghost'},{text:'Onar ve Yeniden Başlat',value:true,cls:'primary'}]});
+    if(!ok)return;
+    try{if(window.MesahaUpdateV527)await window.MesahaUpdateV527.updateAndReload({delay:450});else location.replace('./guncelle.html');}catch(err){modal({title:'Ön bellek onarılamadı',type:'danger',icon:'!',message:err&&err.message?err.message:'Güncelleme hatası'});}
   }
+
   async function forceUpdateFlow(){
-    async function fetchRemoteVersion(){
-      if(window.MesahaVersion && typeof window.MesahaVersion.fetchRemote==='function') return await window.MesahaVersion.fetchRemote();
-      throw new Error('Sürüm merkezi okunamadı');
-    }
-    const current = window.MESAHA_VERSION || {};
-    let remote = null;
-    try{ remote = await fetchRemoteVersion(); }catch{}
-    const remoteText = remote ? (remote.visibleVersion || remote.app || remote.version || 'Yeni sürüm') : 'Sürüm bilgisi alınamadı';
-    const same = remote && current.version && remote.version === current.version;
-    const ok = await modal({
-      title: same ? 'Sürüm Güncel' : 'Yeni Sürümü Güncelle',
-      type: same ? 'success' : 'warn',
-      icon:'↻',
-      html:(same
-        ? `<p>Şu anki sürüm güncel görünüyor: <b>${remoteText}</b></p><div class="modal-note">Yine de takılma varsa ön belleği temizleyip yeniden başlatabilirsin.</div>`
-        : `<p>Uygulama son dosyaları kontrol edecek ve ön belleği temizleyip yeniden başlatacak.</p><div class="modal-note">Bulunan sürüm: <b>${remoteText}</b><br>İşlem için internet bağlantısı açık olmalı.</div>`),
-      buttons:[{text:'Vazgeç', value:false, cls:'ghost'}, {text:same ? 'Yine De Yenile' : 'Güncelle', value:true, cls:'primary'}]
-    });
-    if(!ok) return;
-    if(!navigator.onLine){
-      await modal({title:'İnternet yok', type:'danger', icon:'!', html:'<p>Güncelleme için internet bağlantısı gerekiyor.</p>', buttons:[{text:'Tamam', value:true, cls:'primary'}]});
-      return;
-    }
+    if(!navigator.onLine){await modal({title:'İnternet yok',type:'danger',icon:'!',message:'Yeni sürüm kontrolü için internet bağlantısı gerekli.'});return;}
     try{
-      if('serviceWorker' in navigator){
-        const regs = await navigator.serviceWorker.getRegistrations();
-        await Promise.all(regs.map(r => r.unregister().catch(()=>{})));
-      }
-      if('caches' in window){
-        const keys = await caches.keys();
-        await Promise.all(keys.map(k => caches.delete(k)));
-      }
-      await fetch('./index.html?preload=' + Date.now(), {cache:'reload'}).catch(()=>{});
-      await modal({title:'Güncelleme hazır', type:'success', icon:'✓', html:'<p>Dosyalar yenilendi. Uygulama şimdi yeniden başlatılacak.</p>', buttons:[{text:'Yeniden Başlat', value:true, cls:'primary'}]});
-      try{
-        var mv=(window.MESAHA_VERSION&&window.MESAHA_VERSION.version)||'local';
-        localStorage.setItem('mesaha_last_seen_version',mv);
-        localStorage.setItem('mesaha_current_version',mv);
-      }catch{}
-      location.replace('./temizle.html');
-    }catch{
-      modal({title:'Güncelleme yapılamadı', type:'danger', icon:'!', message:'Bağlantı veya tarayıcı önbelleği nedeniyle güncelleme tamamlanamadı.'});
-    }
+      let check=null;if(window.MesahaUpdateV527)check=await window.MesahaUpdateV527.check();
+      if(check&&!check.newer){await modal({title:'Sürüm güncel',type:'success',icon:'✓',html:`<p><b>${esc((window.MESAHA_VERSION&&window.MESAHA_VERSION.visibleVersion)||'Mesaha İO')}</b> kullanılıyor.</p>`,buttons:[{text:'Tamam',value:true,cls:'primary'}]});return;}
+      if(window.MesahaUpdateV527)await window.MesahaUpdateV527.updateAndReload({delay:450});else location.replace('./guncelle.html');
+    }catch(err){modal({title:'Güncelleme yapılamadı',type:'danger',icon:'!',message:err&&err.message?err.message:'Bağlantı hatası'});}
   }
 
   function bindIntercepts(){
@@ -2895,7 +2977,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
         const ids = new Set(list.map(r => r.id));
         lastDeletedV304 = list.slice();
         const s = appState(); s.records = records().filter(r => !ids.has(r.id)); window.state = s;
-        saveRecords(); renderAfterChange(); toast('Seçili kayıtlar silindi.');
+        const saved=await saveRecords('bulk-delete'); if(saved&&saved.ok===false){s.records=records().concat(lastDeletedV304);window.state=s;renderAfterChange();toast('Silme kaydedilemedi. Depolamayı kontrol edin.');return;} renderAfterChange(); toast('Seçili kayıtlar silindi.');
         return;
       }
 
@@ -2906,7 +2988,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
         if(!ok) return;
         lastDeletedV304 = records().slice();
         const s = appState(); s.records = []; window.state = s;
-        saveRecords(); renderAfterChange(); toast('Tüm kayıtlar silindi.');
+        const saved=await saveRecords('delete-all'); if(saved&&saved.ok===false){s.records=lastDeletedV304.slice();window.state=s;renderAfterChange();toast('Silme kaydedilemedi. Depolamayı kontrol edin.');return;} renderAfterChange(); toast('Tüm kayıtlar silindi.');
         return;
       }
 
@@ -2915,7 +2997,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
         if(!lastDeletedV304 || !lastDeletedV304.length){ toast('Geri alınacak silme yok.'); return; }
         const s = appState(); s.records = records().concat(lastDeletedV304); window.state = s;
         lastDeletedV304 = null;
-        saveRecords(); renderAfterChange(); toast('Silme geri alındı.');
+        const saved=await saveRecords('undo-delete'); if(saved&&saved.ok===false){toast('Geri alma kaydedilemedi.');return;} renderAfterChange(); toast('Silme geri alındı.');
         return;
       }
 
@@ -2928,7 +3010,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
         if(!ok) return;
         lastDeletedV304 = [rec];
         const s = appState(); s.records = records().filter(r => r.id !== id); window.state = s;
-        saveRecords(); renderAfterChange(); toast('Kayıt silindi.');
+        const saved=await saveRecords('single-delete'); if(saved&&saved.ok===false){s.records=records().concat(lastDeletedV304);window.state=s;renderAfterChange();toast('Silme kaydedilemedi. Depolamayı kontrol edin.');return;} renderAfterChange(); toast('Kayıt silindi.');
         return;
       }
     }, true);
@@ -2942,7 +3024,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
       if(!file) return;
       try{
         const data = await readBackupFile(file);
-        restoreData(data);
+        await restoreData(data);
         await modal({title:'Yedek yüklendi', type:'success', icon:'✓', html:`<p>Yedek başarıyla yüklendi.</p><div class="modal-note">Toplam kayıt: ${records().length}</div>`, buttons:[{text:'Tamam', value:true, cls:'primary'}]});
       }catch(err){
         modal({title:'Yedek okunamadı', type:'danger', icon:'!', html:`<p>Seçilen dosya geri yüklenemedi.</p><div class="modal-note">${esc(err && err.message ? err.message : 'Dosya hatalı veya uyumsuz.')}</div>`});
@@ -3039,7 +3121,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
       const el = $(id);
       if(!el || el.__v311Select) return;
       el.__v311Select = true;
-      ['focus','click','pointerup','touchend'].forEach(evt => {
+      ['focus','click'].forEach(evt => {
         el.addEventListener(evt, () => selectInput(el), {passive:true});
       });
     });
@@ -3058,39 +3140,12 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   }
 
   function bindSaveKeepKeyboard(){
-    const btn = $('saveBtn');
-    if(!btn || btn.__v311KeepKeyboard) return;
-    btn.__v311KeepKeyboard = true;
-
-    let handled = false;
-    function run(ev){
-      if(ev){
-        ev.preventDefault();
-        ev.stopPropagation();
-        if(ev.stopImmediatePropagation) ev.stopImmediatePropagation();
-      }
-      if(handled) return;
-      handled = true;
-      try{
-        if(typeof window.saveEntry === 'function') window.saveEntry();
-        else if(typeof saveEntry === 'function') saveEntry();
-      }catch(e){ console.error(e); }
-      setTimeout(() => {
-        focusDiameter();
-        updateBeyanTotals();
-      }, 80);
-      setTimeout(() => { handled = false; }, 550);
-    }
-
-    btn.addEventListener('pointerdown', run, true);
-    btn.addEventListener('touchstart', run, true);
-    btn.addEventListener('click', function(ev){
-      if(handled){
-        ev.preventDefault();
-        ev.stopPropagation();
-        if(ev.stopImmediatePropagation) ev.stopImmediatePropagation();
-      }
-    }, true);
+    const btn=$('saveBtn');
+    if(!btn||btn.__v527KeepKeyboard)return;
+    btn.__v527KeepKeyboard=true;
+    btn.addEventListener('click',function(){
+      setTimeout(function(){focusDiameter();updateBeyanTotals();},140);
+    },{passive:true});
   }
 
   function updateBeyanTotals(){
@@ -3167,113 +3222,19 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 
   </script>
 <script id="mesaha-inline-v313-patch-4">
-
-
-/* v311: mobil oturum + ölçüm kısayollarında klavye kapanmasın */
 (function(){
   'use strict';
-
-  const $ = id => document.getElementById(id);
-
-  function focusNoSelectV309(el){
-    if(!el) return;
-    try{
-      el.focus({preventScroll:true});
-      const len = String(el.value || '').length;
-      try{ el.setSelectionRange(len, len); }catch{}
-    }catch{ try{ el.focus(); }catch{} }
+  function selectInput(el){if(!el)return;try{el.focus({preventScroll:true});setTimeout(function(){try{el.select()}catch(e){}},0);}catch(e){}}
+  function bind(){
+    ['diameterInput','lengthInput'].forEach(function(id){var el=document.getElementById(id);if(!el||el.__v527InputSelect)return;el.__v527InputSelect=true;el.addEventListener('focus',function(){selectInput(el)},{passive:true});el.addEventListener('click',function(){selectInput(el)},{passive:true});});
+    document.documentElement.style.setProperty('--vh',(window.innerHeight*.01)+'px');
   }
-
-  function focusAndSelect(el){
-    if(!el) return;
-    try{
-      el.focus({preventScroll:true});
-      setTimeout(()=>{ try{ el.select(); }catch{} }, 0);
-    }catch{
-      try{ el.focus(); el.select(); }catch{}
-    }
-  }
-
-  function bindMeasureButtons(){
-    const diameter = $('diameterInput');
-    const length = $('lengthInput');
-
-    document.querySelectorAll('#diameterChips button,[data-dia]').forEach(btn => {
-      if(btn.__v311Measure) return;
-      btn.__v311Measure = true;
-      const run = ev => {
-        if(ev){
-          ev.preventDefault();
-          ev.stopPropagation();
-          if(ev.stopImmediatePropagation) ev.stopImmediatePropagation();
-        }
-        if(diameter){
-          diameter.value = btn.dataset.dia || btn.textContent.trim();
-          try{ if(typeof entryInputChanged === 'function') entryInputChanged(); }catch{}
-          focusNoSelectV309(diameter);
-          setTimeout(()=>focusNoSelectV309(diameter), 80);
-        }
-      };
-      btn.addEventListener('pointerdown', run, true);
-      btn.addEventListener('touchstart', run, true);
-      btn.addEventListener('click', run, true);
-    });
-
-    document.querySelectorAll('#lengthChips button,[data-len]').forEach(btn => {
-      if(btn.__v311Measure) return;
-      btn.__v311Measure = true;
-      const run = ev => {
-        if(ev){
-          ev.preventDefault();
-          ev.stopPropagation();
-          if(ev.stopImmediatePropagation) ev.stopImmediatePropagation();
-        }
-        if(length){
-          length.value = btn.dataset.len || btn.textContent.trim();
-          try{ if(typeof entryInputChanged === 'function') entryInputChanged(); }catch{}
-          focusAndSelect(length);
-          setTimeout(()=>focusAndSelect(length), 80);
-        }
-      };
-      btn.addEventListener('pointerdown', run, true);
-      btn.addEventListener('touchstart', run, true);
-      btn.addEventListener('click', run, true);
-    });
-
-    ['diameterInput','lengthInput'].forEach(id => {
-      const el = $(id);
-      if(!el || el.__v311Tap) return;
-      el.__v311Tap = true;
-      el.addEventListener('focus', () => focusAndSelect(el), true);
-      el.addEventListener('click', () => focusAndSelect(el), true);
-    });
-  }
-
-  function stabilizeViewport(){
-    document.documentElement.style.setProperty('--vh', (window.innerHeight * 0.01) + 'px');
-    document.body.classList.toggle('keyboard-open-v311', window.visualViewport ? window.visualViewport.height < window.innerHeight - 120 : false);
-  }
-
-  function boot(){
-    bindMeasureButtons();
-    stabilizeViewport();
-  }
-
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, {once:true});
-  else boot();
-
-  document.addEventListener('click', () => setTimeout(bindMeasureButtons, 50), true);
-  document.addEventListener('focusin', () => setTimeout(bindMeasureButtons, 50), true);
-  [100,400,1000,2200,4200].forEach(ms => setTimeout(boot, ms));
-  /* v381: 900ms ölçüm butonu bind interval kaldırıldı; boot/focus/click yeterli. */
-
-  window.addEventListener('resize', stabilizeViewport);
-  if(window.visualViewport) window.visualViewport.addEventListener('resize', stabilizeViewport);
-
-  window.mesahaV306 = {bindMeasureButtons, focusAndSelect};
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
+  window.addEventListener('resize',bind,{passive:true});
+  if(window.visualViewport)window.visualViewport.addEventListener('resize',bind,{passive:true});
+  window.mesahaV306={bindMeasureButtons:function(){},focusAndSelect:selectInput,managedBy:'V5.27'};
 })();
-
-  </script>
+</script>
 <script id="mesaha-inline-v313-patch-5">
 
 
@@ -3799,7 +3760,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   const jsonSet=(window.MesahaUtils&&window.MesahaUtils.jsonSet)||function(key,value){try{localStorage.setItem(key,JSON.stringify(value));return true}catch{return false}};
   function records(){ const r=jsonGet(STORAGE_KEY, []); return Array.isArray(r) ? r : []; }
   function settings(){ return Object.assign({ekipNot:'',seflik:'',bolmeNo:''}, jsonGet(SETTINGS_KEY, {})); }
-  function saveSettings(s){ jsonSet(SETTINGS_KEY, s); try{ if(window.state && window.state.settings) Object.assign(window.state.settings, s); }catch{} }
+  function saveSettings(s){ try{if(window.state&&window.state.settings)Object.assign(window.state.settings,s||{});if(window.MesahaStorageV527)return window.MesahaStorageV527.saveSettings(window.state&&window.state.settings?window.state.settings:(s||{}),{reason:'panel-settings'});}catch(e){} return jsonSet(SETTINGS_KEY,s||{}); }
   function fold(s){ return clean(s).toLocaleLowerCase('tr-TR').replace(/[ç]/g,'c').replace(/[ğ]/g,'g').replace(/[ı]/g,'i').replace(/[ö]/g,'o').replace(/[ş]/g,'s').replace(/[ü]/g,'u'); }
   function userKey(name,seflik){ return (fold(name)+'__'+fold(seflik)).replace(/[^a-z0-9_-]+/g,'_').slice(0,120) || 'bos'; }
   function getDeviceId(){ let id=''; try{id=localStorage.getItem(DEVICE_ID_KEY)||'';}catch{} if(!id){ id=['cihaz',Date.now().toString(36),Math.random().toString(36).slice(2,8)].join('_'); try{localStorage.setItem(DEVICE_ID_KEY,id);}catch{} } return id; }
@@ -3870,7 +3831,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   function savePanel(){ const name=clean(($('panelNameV316')||{}).value), seflik=clean(($('panelSeflikV316')||{}).value); if(!name||!seflik){toast('Kullanıcı adı ve şeflik gerekli.','İlk giriş için doldur','warning');return} writePanelUser({name:name, seflik:seflik, bolmeNo:($('panelBolmeV316')||{}).value}); renderPanelStats(); setSyncText('Kullanıcı yerelde kaydedildi • mesaha verisi yalnızca Mesaha/Yedek işlemlerinde gönderilir'); toast('Kullanıcı bilgileri kaydedildi.','Mesaha verisi gereksiz yere gönderilmez','success'); }
   async function cloudBackup(){ try{ const user=readPanelUser(); if(!user.name||!user.seflik){toast('Önce kullanıcı girişi yap.','Kullanıcı Paneli’ni doldur','warning');openPanel();return} const key=userKey(user.name,user.seflik); const recs=records(); const data={version:((window.MESAHA_VERSION&&window.MESAHA_VERSION.version)||'local'),type:'mesaha-cloud-backup',exportedAt:new Date().toISOString(),user,settings:settings()}; const {db}=await firebaseReady(); const id=['fb',key,Date.now().toString(36)].join('_'); const chunkSize=200; const chunkCount=Math.max(1, Math.ceil(recs.length/chunkSize)); const ref=db.collection('backups').doc(id); await ref.set({id,userKey:key,name:user.name,seflik:user.seflik,bolmeNo:user.bolmeNo,fileName:'Mesaha_Bulut_Yedek_'+key+'_'+trDate()+'.json',payload:data,recordsChunked:true,chunkCount,recordCount:recs.length,m3:summarize(0).m3,createdAt:trText(),createdAtMs:Date.now(),source:'supabase'}); for(let i=0;i<chunkCount;i++){ await ref.collection('chunks').doc(String(i).padStart(4,'0')).set({index:i,records:recs.slice(i*chunkSize,(i+1)*chunkSize)}); } toast('Bulut yedeği alındı.','Kayıtlar güvenli','success'); try{ await syncUser('cloud-backup'); }catch(_e){} }catch(e){ toast('Bulut yedek alınamadı.', e&&e.message?e.message:'İnterneti kontrol et','error'); } }
   async function openCloudRestore(){ const ov=$('cloudRestoreOverlayV316'); const list=$('cloudRestoreListV316'); const info=$('cloudRestoreInfoV316'); if(ov) ov.classList.remove('hidden'); if(list) list.innerHTML='<div class="cloud-item-v316">Yedekler yükleniyor…</div>'; try{ const user=readPanelUser(); const key=userKey(user.name,user.seflik); const {db}=await firebaseReady(); const snap=await db.collection('backups').where('userKey','==',key).get(); const arr=[]; snap.forEach(doc=>{ const d=doc.data()||{}; arr.push(Object.assign({docId:doc.id}, d)); }); arr.sort((a,b)=>Number(b.createdAtMs||0)-Number(a.createdAtMs||0)); if(info) info.textContent=arr.length+' yedek bulundu'; if(!arr.length){ if(list) list.innerHTML='<div class="cloud-item-v316">Bulutta yedek bulunamadı.</div>'; return; } if(list) list.innerHTML=arr.slice(0,30).map((b,i)=>'<div class="cloud-item-v316"><b>'+esc(b.fileName||'Mesaha yedeği')+'</b><small>'+esc(b.createdAt||'-')+' • '+Number(b.recordCount||0)+' kayıt</small><button class="btn primary" data-cloud-restore="'+esc(b.docId)+'" type="button">Bu Yedeği Yükle</button></div>').join(''); }catch(e){ if(info) info.textContent='Yedekler alınamadı'; if(list) list.innerHTML='<div class="cloud-item-v316">'+esc(e&&e.message?e.message:'İnterneti kontrol et')+'</div>'; } }
-  async function restoreCloud(id){ if(!id) return; if(!confirm('Bu bulut yedeği mevcut kayıtların yerine yüklenecek. Devam edilsin mi?')) return; try{ const {db}=await firebaseReady(); const ref=db.collection('backups').doc(id); const doc=await ref.get(); if(!doc.exists) throw new Error('Yedek bulunamadı'); const d=doc.data()||{}; let payload=d.payload || (d.payloadText ? JSON.parse(d.payloadText) : null); let recs=[]; if(d.recordsChunked){ const chunks=await ref.collection('chunks').get(); const arr=[]; chunks.forEach(c=>{ const cd=c.data()||{}; arr.push({index:Number(cd.index||0),records:Array.isArray(cd.records)?cd.records:[]}); }); arr.sort((a,b)=>a.index-b.index); recs=arr.flatMap(x=>x.records); payload=payload||{}; } else { if(!payload || !Array.isArray(payload.records)) throw new Error('Yedek formatı geçersiz'); recs=payload.records; } if(!Array.isArray(recs)) throw new Error('Yedek kayıtları okunamadı'); jsonSet(STORAGE_KEY, recs); if(payload && payload.settings) jsonSet(SETTINGS_KEY, Object.assign(settings(), payload.settings)); toast('Bulut yedeği yüklendi.','Sayfa yenileniyor','success'); setTimeout(()=>location.reload(),700); }catch(e){ toast('Bulut yedeği yüklenemedi.', e&&e.message?e.message:'Hata','error'); } }
+  async function restoreCloud(id){ if(!id) return; if(!confirm('Bu bulut yedeği mevcut kayıtların yerine yüklenecek. Devam edilsin mi?')) return; try{ const {db}=await firebaseReady(); const ref=db.collection('backups').doc(id); const doc=await ref.get(); if(!doc.exists) throw new Error('Yedek bulunamadı'); const d=doc.data()||{}; let payload=d.payload || (d.payloadText ? JSON.parse(d.payloadText) : null); let recs=[]; if(d.recordsChunked){ const chunks=await ref.collection('chunks').get(); const arr=[]; chunks.forEach(c=>{ const cd=c.data()||{}; arr.push({index:Number(cd.index||0),records:Array.isArray(cd.records)?cd.records:[]}); }); arr.sort((a,b)=>a.index-b.index); recs=arr.flatMap(x=>x.records); payload=payload||{}; } else { if(!payload || !Array.isArray(payload.records)) throw new Error('Yedek formatı geçersiz'); recs=payload.records; } if(!Array.isArray(recs)) throw new Error('Yedek kayıtları okunamadı'); const merged=payload&&payload.settings?Object.assign({},settings(),payload.settings):Object.assign({},settings()); const rr=window.MesahaStorageV527?await window.MesahaStorageV527.replaceAll(recs,merged,{reason:'legacy-cloud-restore'}):{ok:false}; if(!rr||rr.ok===false)throw new Error('Yedek kalıcı depolamaya yazılamadı'); toast('Bulut yedeği yüklendi.','Sayfa yenileniyor','success'); setTimeout(()=>location.reload(),700); }catch(e){ toast('Bulut yedeği yüklenemedi.', e&&e.message?e.message:'Hata','error'); } }
   function sendSupport(){}
   function bind(){ loadUsage(); const badge=$('userBadge'); if(badge){ badge.setAttribute('title','Kullanıcı Paneli'); badge.addEventListener('click', openPanel); } const btn=$('userPanelBtnV316'); if(btn) btn.addEventListener('click', openPanel); const x=$('userPanelCloseV316'); if(x) x.addEventListener('click', closePanel); const x2=$('panelClose2V316'); if(x2) x2.addEventListener('click', closePanel); const save=$('panelSaveV316'); if(save) save.addEventListener('click', savePanel); const sync=$('panelSyncV316'); if(sync) sync.addEventListener('click', ()=>{ setSyncText('Mesaha verisi sadece Mesaha dosyası / Yedek Al / Buluta Yedekle işlemlerinde gönderilir'); toast('Hazır.','Gereksiz otomatik istatistik gönderimi kapalı','success'); }); const cb=$('cloudBackupBtnV316'); if(cb) cb.addEventListener('click', cloudBackup); const cr=$('cloudRestoreBtnV316'); if(cr) cr.addEventListener('click', openCloudRestore); const crc=$('cloudRestoreCloseV316'); if(crc) crc.addEventListener('click', ()=>{ const ov=$('cloudRestoreOverlayV316'); if(ov) ov.classList.add('hidden'); }); const list=$('cloudRestoreListV316'); if(list) list.addEventListener('click', e=>{ const b=e.target.closest('[data-cloud-restore]'); if(b) restoreCloud(b.getAttribute('data-cloud-restore')); }); window.addEventListener('pagehide', flushUsage); setSyncText('Otomatik istatistik kapalı • Mesaha/Yedek işleminde gönderilir'); /* v519: otomatik startup/online/visible/periodic admin istatistik sync kapalı */ }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', bind, {once:true}); else bind();
@@ -3899,7 +3860,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   const jsonSet=(window.MesahaUtils&&window.MesahaUtils.jsonSet)||function(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch{return false}}
   function records(){const r=jsonGet(STORAGE_KEY,[]);return Array.isArray(r)?r:[]}
   function settings(){return Object.assign({ekipNot:'',seflik:'',bolmeNo:''},jsonGet(SETTINGS_KEY,{}))}
-  function saveSettings(s){jsonSet(SETTINGS_KEY,s);try{if(window.state&&window.state.settings)Object.assign(window.state.settings,s)}catch{}}
+  function saveSettings(s){try{if(window.state&&window.state.settings)Object.assign(window.state.settings,s||{});if(window.MesahaStorageV527)return window.MesahaStorageV527.saveSettings(window.state&&window.state.settings?window.state.settings:(s||{}),{reason:'panel-settings'});}catch(e){}return jsonSet(SETTINGS_KEY,s||{})}
   function fold(s){return clean(s).toLocaleLowerCase('tr-TR').replace(/[ç]/g,'c').replace(/[ğ]/g,'g').replace(/[ı]/g,'i').replace(/[ö]/g,'o').replace(/[ş]/g,'s').replace(/[ü]/g,'u')}
   function userKey(name,seflik){return (fold(name)+'__'+fold(seflik)).replace(/[^a-z0-9_-]+/g,'_').slice(0,120)||'bos'}
   function trDate(){const d=new Date();d.setMinutes(d.getMinutes()-d.getTimezoneOffset());return d.toISOString().slice(0,10)}
@@ -3920,6 +3881,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   function toast(title,sub,kind){if(typeof window.mesahaFloatToastV315==='function')window.mesahaFloatToastV315(title,sub||'',kind||'warning');else if(typeof window.toast==='function')window.toast(title)}
   function errText(e){const msg=String(e&&e.message?e.message:e||'Hata');if(/permission/i.test(msg))return 'Supabase RLS/policy kontrol et';if(/network|offline|internet/i.test(msg))return 'İnternet bağlantısını kontrol et';if(/timeout|zaman/i.test(msg))return 'Bağlantı zaman aşımına uğradı';return msg.slice(0,120)}
   function withTimeout(p,ms,label){let t;return Promise.race([p,new Promise((_,rej)=>{t=setTimeout(()=>rej(new Error((label||'İşlem')+' zaman aşımı')),ms||12000)})]).finally(()=>clearTimeout(t))}
+  function capture(){/* V5.27: eski v317 buton çoğaltıcıları devre dışı; canonical runtime/hybrid handler kullanılır. */}
   function loadScript(src){return withTimeout(new Promise((res,rej)=>{const found=document.querySelector('script[src="'+src+'"]');if(found)return res();const s=document.createElement('script');s.src=src;s.async=true;s.crossOrigin='anonymous';s.onload=res;s.onerror=()=>rej(new Error('Supabase bağlantı motoru yüklenemedi'));document.head.appendChild(s)}),12000,'Supabase')}
   async function firebaseReady(){return await window.mesahaSupabaseV380.ready();}
   async function resetAtMs(){try{const {db}=await firebaseReady();const doc=await withTimeout(db.collection('adminSettings').doc('statsReset').get(),10000,'Reset bilgisi');const d=doc.exists?(doc.data()||{}):{};return Number(d.resetAtMs||0)}catch{return Number(localStorage.getItem('mesaha_stats_reset_at_v316')||0)}}
@@ -3929,7 +3891,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   async function cloudBackup(){try{setSyncText('Bulut yedeği gönderiliyor…');const user=readPanelUser();if(!user.name||!user.seflik){toast('Önce kullanıcı girişi yap.','Kullanıcı Paneli’ni doldur','warning');openPanel();return}const key=userKey(user.name,user.seflik);const recs=records();const setts=settings();const stats=summarize(0);const {db}=await firebaseReady();const id=['fb',key,Date.now().toString(36)].join('_');const fileName='Mesaha_Bulut_Yedek_'+key+'_'+trDate()+'.json';const payload={app:'Mesaha İO',type:'mesaha-cloud-backup',backupType:'mesaha-cloud-v319',version:APP_VERSION,fileVersion:FILE_VERSION,exportedAt:new Date().toISOString(),user,settings:setts,records:recs};let docPayload={id,userKey:key,name:user.name,seflik:user.seflik,bolmeNo:user.bolmeNo,fileName,recordCount:recs.length,m3:stats.m3,createdAt:trText(),createdAtMs:Date.now(),createdAtIso:new Date().toISOString(),source:'supabase',appVersion:APP_VERSION,fileVersion:FILE_VERSION};const json=JSON.stringify(payload);const ref=db.collection('backups').doc(id);if(json.length<850000){docPayload.payload=payload;docPayload.payloadText=json;docPayload.recordsChunked=false;docPayload.chunkCount=0;await withTimeout(ref.set(docPayload),20000,'Bulut yedek')}else{const chunkSize=150;const chunkCount=Math.max(1,Math.ceil(recs.length/chunkSize));docPayload.payload=Object.assign({},payload,{records:[]});docPayload.payloadText=JSON.stringify(docPayload.payload);docPayload.recordsChunked=true;docPayload.chunkCount=chunkCount;await withTimeout(ref.set(docPayload),20000,'Bulut yedek');let batch=db.batch(),ops=0;for(let i=0;i<chunkCount;i++){batch.set(ref.collection('chunks').doc(String(i).padStart(4,'0')),{index:i,records:recs.slice(i*chunkSize,(i+1)*chunkSize)});ops++;if(ops>=430){await withTimeout(batch.commit(),20000,'Yedek parça');batch=db.batch();ops=0}}if(ops)await withTimeout(batch.commit(),20000,'Yedek parça')}toast('Bulut yedeği alındı.','Yedek güvenli alana kaydedildi','success');try{await syncUser('cloud-backup')}catch(_e){}}catch(e){toast('Bulut yedek alınamadı.',errText(e),'error');setSyncText('Bulut hatası: '+errText(e))}}
   async function listBackups(){const user=readPanelUser();if(!user.name||!user.seflik){throw new Error('Önce kullanıcı girişi yap')}const key=userKey(user.name,user.seflik);const {db}=await firebaseReady();const snap=await withTimeout(db.collection('backups').where('userKey','==',key).get(),15000,'Yedek listesi');const arr=[];snap.forEach(doc=>arr.push(Object.assign({docId:doc.id},doc.data()||{})));arr.sort((a,b)=>Number(b.createdAtMs||0)-Number(a.createdAtMs||0));return arr}
   async function openCloudRestore(){const ov=$('cloudRestoreOverlayV316'),list=$('cloudRestoreListV316'),info=$('cloudRestoreInfoV316');if(ov)ov.classList.remove('hidden');if(list)list.innerHTML='<div class="cloud-item-v316">Yedekler yükleniyor…</div>';try{const arr=await listBackups();if(info)info.textContent=arr.length+' yedek bulundu';if(!arr.length){if(list)list.innerHTML='<div class="cloud-item-v316">Bulutta yedek bulunamadı.</div>';return}if(list)list.innerHTML=arr.slice(0,40).map(b=>'<div class="cloud-item-v316"><b>'+esc(b.fileName||'Mesaha yedeği')+'</b><small>'+esc(b.createdAt||'-')+' • '+Number(b.recordCount||0).toLocaleString('tr-TR')+' kayıt</small><button class="btn primary" data-cloud-restore-v317="'+esc(b.docId)+'" type="button">Bu Yedeği Yükle</button></div>').join('')}catch(e){if(info)info.textContent='Yedekler alınamadı';if(list)list.innerHTML='<div class="cloud-item-v316">'+esc(errText(e))+'</div>'}}
-  async function restoreCloud(id){if(!id)return;if(!confirm('Bu bulut yedeği mevcut kayıtların yerine yüklenecek. Devam edilsin mi?'))return;try{const {db}=await firebaseReady();const ref=db.collection('backups').doc(id);const doc=await withTimeout(ref.get(),12000,'Yedek okuma');if(!doc.exists)throw new Error('Yedek bulunamadı');const d=doc.data()||{};let payload=d.payload||(d.payloadText?JSON.parse(d.payloadText):{});let recs=[];if(d.recordsChunked){const chunks=await withTimeout(ref.collection('chunks').get(),20000,'Yedek parçaları');const arr=[];chunks.forEach(c=>{const cd=c.data()||{};arr.push({index:Number(cd.index||0),records:Array.isArray(cd.records)?cd.records:[]})});arr.sort((a,b)=>a.index-b.index);recs=arr.flatMap(x=>x.records)}else{recs=Array.isArray(payload.records)?payload.records:[]}if(!Array.isArray(recs))throw new Error('Yedek kayıtları okunamadı');jsonSet(STORAGE_KEY,recs);if(payload&&payload.settings)jsonSet(SETTINGS_KEY,Object.assign(settings(),payload.settings));toast('Bulut yedeği yüklendi.','Sayfa yenileniyor','success');setTimeout(()=>location.reload(),700)}catch(e){toast('Bulut yedeği yüklenemedi.',errText(e),'error')}}
+  async function restoreCloud(id){if(!id)return;if(!confirm('Bu bulut yedeği mevcut kayıtların yerine yüklenecek. Devam edilsin mi?'))return;try{const {db}=await firebaseReady();const ref=db.collection('backups').doc(id);const doc=await withTimeout(ref.get(),12000,'Yedek okuma');if(!doc.exists)throw new Error('Yedek bulunamadı');const d=doc.data()||{};let payload=d.payload||(d.payloadText?JSON.parse(d.payloadText):{});let recs=[];if(d.recordsChunked){const chunks=await withTimeout(ref.collection('chunks').get(),20000,'Yedek parçaları');const arr=[];chunks.forEach(c=>{const cd=c.data()||{};arr.push({index:Number(cd.index||0),records:Array.isArray(cd.records)?cd.records:[]})});arr.sort((a,b)=>a.index-b.index);recs=arr.flatMap(x=>x.records)}else{recs=Array.isArray(payload.records)?payload.records:[]}if(!Array.isArray(recs))throw new Error('Yedek kayıtları okunamadı');const merged=payload&&payload.settings?Object.assign({},settings(),payload.settings):Object.assign({},settings());const rr=window.MesahaStorageV527?await window.MesahaStorageV527.replaceAll(recs,merged,{reason:'legacy-cloud-restore'}):{ok:false};if(!rr||rr.ok===false)throw new Error('Yedek kalıcı depolamaya yazılamadı');toast('Bulut yedeği yüklendi.','Sayfa yenileniyor','success');setTimeout(()=>location.reload(),700)}catch(e){toast('Bulut yedeği yüklenemedi.',errText(e),'error')}}
   function sendSupport(){}
   function bind(){loadUsage();renderPanelStats();capture('panelSaveV316',savePanelV317);capture('panelSyncV316',()=>{setSyncText('İstatistikler sadece Mesaha dosyası indirince gönderilir');toast('Hazır.','Mesaha Dosyasını İndir basınca yönetim güncellenir','success')});capture('cloudBackupBtnV316',cloudBackup);capture('cloudRestoreBtnV316',openCloudRestore);const list=$('cloudRestoreListV316');if(list&&!list.__mesahaV317Bound){list.__mesahaV317Bound=true;list.addEventListener('click',ev=>{const b=ev.target.closest('[data-cloud-restore-v317], [data-cloud-restore]');if(b){ev.preventDefault();ev.stopImmediatePropagation();restoreCloud(b.getAttribute('data-cloud-restore-v317')||b.getAttribute('data-cloud-restore'))}},true)}window.addEventListener('online',()=>{setSyncText('Online: Mesaha indirince bilgiler güncellenir')});window.addEventListener('pagehide',flushUsage);window.mesahaOnlineV317={ready:firebaseReady,sync:syncUser,backup:cloudBackup,restoreOpen:openCloudRestore}}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
@@ -3979,7 +3941,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     if(ops.length) await withTimeout(Promise.all(ops),25000,'Yedek parçaları silme');
     await withTimeout(ref.delete(),12000,'Yedek silme');
   }
-  async function restoreCloud(id){if(!id)return;if(!confirm('Bu bulut yedeği mevcut kayıtların yerine yüklenecek. Devam edilsin mi?'))return;try{const {db}=await ready();const ref=db.collection('backups').doc(id);const doc=await withTimeout(ref.get(),12000,'Yedek okuma');if(!doc.exists)throw new Error('Yedek bulunamadı');const d=doc.data()||{};let payload=d.payload||(d.payloadText?JSON.parse(d.payloadText):{});let recs=[];if(d.recordsChunked){const chunks=await withTimeout(ref.collection('chunks').get(),25000,'Yedek parçaları');const arr=[];chunks.forEach(c=>{const cd=c.data()||{};arr.push({index:Number(cd.index||0),records:Array.isArray(cd.records)?cd.records:[]})});arr.sort((a,b)=>a.index-b.index);recs=arr.flatMap(x=>x.records)}else{recs=Array.isArray(payload.records)?payload.records:[]}if(!Array.isArray(recs))throw new Error('Yedek kayıtları okunamadı');jsonSet(STORAGE_KEY,recs);if(payload&&payload.settings)jsonSet(SETTINGS_KEY,Object.assign(settings(),payload.settings));notify('Bulut yedeği yüklendi.','Sayfa yenileniyor','success');setTimeout(()=>location.reload(),700)}catch(e){notify('Bulut yedeği yüklenemedi.',errText(e),'error')}}
+  async function restoreCloud(id){if(!id)return;if(!confirm('Bu bulut yedeği mevcut kayıtların yerine yüklenecek. Devam edilsin mi?'))return;try{const {db}=await ready();const ref=db.collection('backups').doc(id);const doc=await withTimeout(ref.get(),12000,'Yedek okuma');if(!doc.exists)throw new Error('Yedek bulunamadı');const d=doc.data()||{};let payload=d.payload||(d.payloadText?JSON.parse(d.payloadText):{});let recs=[];if(d.recordsChunked){const chunks=await withTimeout(ref.collection('chunks').get(),25000,'Yedek parçaları');const arr=[];chunks.forEach(c=>{const cd=c.data()||{};arr.push({index:Number(cd.index||0),records:Array.isArray(cd.records)?cd.records:[]})});arr.sort((a,b)=>a.index-b.index);recs=arr.flatMap(x=>x.records)}else{recs=Array.isArray(payload.records)?payload.records:[]}if(!Array.isArray(recs))throw new Error('Yedek kayıtları okunamadı');const merged=payload&&payload.settings?Object.assign({},settings(),payload.settings):Object.assign({},settings());const rr=window.MesahaStorageV527?await window.MesahaStorageV527.replaceAll(recs,merged,{reason:'legacy-cloud-restore'}):{ok:false};if(!rr||rr.ok===false)throw new Error('Yedek kalıcı depolamaya yazılamadı');notify('Bulut yedeği yüklendi.','Sayfa yenileniyor','success');setTimeout(()=>location.reload(),700)}catch(e){notify('Bulut yedeği yüklenemedi.',errText(e),'error')}}
   async function deleteCloud(id){
     if(!id)return;
     if(!confirm('Bu bulut yedeği kalıcı olarak silinsin mi?'))return;
@@ -4012,7 +3974,8 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   function clean(v){return String(v==null?'':v).trim()}
   const jsonGet=(window.MesahaUtils&&window.MesahaUtils.jsonGet)||function(k,f){try{const v=localStorage.getItem(k);return v?JSON.parse(v):f}catch{return f}}
   const jsonSet=(window.MesahaUtils&&window.MesahaUtils.jsonSet)||function(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch{return false}}
-  function hasUser(){const u=jsonGet(PANEL_KEY,{});return !!(clean(u.name)&&clean(u.seflik))}
+  function validUser(name,seflik){if(window.MesahaRuntimeV527&&typeof window.MesahaRuntimeV527.validIdentity==='function')return window.MesahaRuntimeV527.validIdentity(name,seflik);name=clean(name);seflik=clean(seflik);const n=name.toLocaleLowerCase('tr-TR'),sf=seflik.toLocaleLowerCase('tr-TR');return name.length>1&&seflik.length>1&&!/^(kullanıcı|kullanici|user|guest|misafir|boş|bos|-)$/.test(n)&&!/^(şeflik|seflik|unknown|bilinmiyor|boş|bos|-)$/.test(sf)}
+  function hasUser(){const u=jsonGet(PANEL_KEY,{});return validUser(u.name,u.seflik)}
   function notify(t,s,k){try{if(typeof window.mesahaFloatToastV315==='function')return window.mesahaFloatToastV315(t,s||'',k||'warning')}catch{} try{if(typeof window.toast==='function')return window.toast(t)}catch{} }
   function clearFakeDefaultsOnFresh(){
     if(hasUser()) return;
@@ -4020,7 +3983,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     const n=clean(s.ekipNot), sf=clean(s.seflik);
     if((!n&&!sf) || (n==='Yakup' && sf==='Yaylacık')){
       s.ekipNot=''; s.seflik='';
-      jsonSet(SETTINGS_KEY,s);
+      try{if(window.state&&window.state.settings)Object.assign(window.state.settings,s||{});if(window.MesahaStorageV527)window.MesahaStorageV527.saveSettings(window.state&&window.state.settings?window.state.settings:s,{reason:'legacy-panel-save'});else jsonSet(SETTINGS_KEY,s);}catch(e){jsonSet(SETTINGS_KEY,s);}
       ['ekipNot','seflik'].forEach(id=>{const el=$(id); if(el) el.value=''});
     }
   }
@@ -4074,47 +4037,112 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 </div>
 </div>
 <script id="mesaha-inline-v321-first-login-simple">
-/* v321: İlk açılışta büyük kullanıcı paneli yerine sadece ad + şeflik isteyen küçük giriş ekranı */
+/* V5.32: İlk kayıt/giriş düğmesi yerel kayıtla anında tamamlanır; ağ veya IndexedDB beklenmez. */
 (function(){
   'use strict';
-  const PANEL_KEY='mesaha_panel_user_v316', SETTINGS_KEY='cam_mesaha_ayarlar_v1';
+  const PANEL_KEY='mesaha_panel_user_v316';
+  const SETTINGS_KEY='cam_mesaha_ayarlar_v1';
+  let saveBusy=false;
   function $(id){return document.getElementById(id)}
-  function clean(v){return String(v==null?'':v).trim()}
-  const jsonGet=(window.MesahaUtils&&window.MesahaUtils.jsonGet)||function(k,f){try{const v=localStorage.getItem(k);return v?JSON.parse(v):f}catch{return f}}
-  const jsonSet=(window.MesahaUtils&&window.MesahaUtils.jsonSet)||function(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch{return false}}
-  function hasUser(){const u=jsonGet(PANEL_KEY,{});return !!(clean(u.name)&&clean(u.seflik))}
-  function toast(t,s,k){try{if(typeof window.mesahaFloatToastV315==='function')return window.mesahaFloatToastV315(t,s||'',k||'warning')}catch{} try{if(typeof window.toast==='function')return window.toast(t,s||'',k||'warning')}catch{} alert(t)}
-  function closeBigPanel(){const big=$('userPanelOverlayV316'); if(big) big.classList.add('hidden')}
-  function open(){ if(hasUser()) return; closeBigPanel(); const ov=$('firstLoginOverlayV321'); if(!ov) return; ov.classList.remove('hidden'); setTimeout(()=>{try{($('firstLoginNameV321')||{}).focus()}catch{}},100) }
-  function close(){ const ov=$('firstLoginOverlayV321'); if(ov) ov.classList.add('hidden') }
-  function save(){
-    const name=clean(($('firstLoginNameV321')||{}).value), seflik=clean(($('firstLoginSeflikV321')||{}).value);
-    if(!name||!seflik){toast('Kullanıcı adı ve şeflik gerekli.','İlk giriş için doldur','warning');return}
-    const settings=jsonGet(SETTINGS_KEY,{}); settings.ekipNot=name; settings.seflik=seflik; jsonSet(SETTINGS_KEY,settings);
-    jsonSet(PANEL_KEY,{name,seflik,bolmeNo:clean(settings.bolmeNo||''),updatedAt:new Date().toISOString()});
-    try{localStorage.setItem('mesaha_user_confirmed_v319','1')}catch{}
-    ['ekipNot','seflik'].forEach(id=>{const el=$(id); if(el){el.value=settings[id]||''; try{el.dispatchEvent(new Event('input',{bubbles:true}))}catch{}}});
-    const badge=$('userBadge'); if(badge){badge.textContent=name+' • '+seflik; badge.classList.remove('login-needed')}
-    const btn=$('userPanelBtnV316'); if(btn) btn.textContent='👤 Kullanıcı Paneli';
-    close();
-    try{ if(window.mesahaLoginGateV319) window.mesahaLoginGateV319.apply(); }catch{}
-    try{ if(window.mesahaOnlineV317&&typeof window.mesahaOnlineV317.sync==='function') window.mesahaOnlineV317.sync('first-login-v321').catch(()=>{}); }catch{}
-    toast('Giriş yapıldı.','Kullanıcı bilgisi kaydedildi','success');
+  function clean(v){return String(v==null?'':v).trim().replace(/\s+/g,' ')}
+  function jsonGet(k,f){try{const v=localStorage.getItem(k);return v?JSON.parse(v):f}catch(e){return f}}
+  function jsonSet(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}}
+  function validIdentity(name,seflik){
+    try{if(window.MesahaRuntimeV527&&typeof window.MesahaRuntimeV527.validIdentity==='function')return window.MesahaRuntimeV527.validIdentity(name,seflik)}catch(e){}
+    name=clean(name);seflik=clean(seflik);
+    if(name.length<2||seflik.length<2)return false;
+    const n=name.toLocaleLowerCase('tr-TR'),s=seflik.toLocaleLowerCase('tr-TR');
+    return !/^(kullanıcı|kullanici|user|guest|misafir|boş|bos|-)$/.test(n)&&!/^(şeflik|seflik|unknown|bilinmiyor|boş|bos|-)$/.test(s);
   }
-  function boot(){
-    const saveBtn=$('firstLoginSaveV321'); if(saveBtn&&!saveBtn.__v321){saveBtn.__v321=true; saveBtn.addEventListener('click',save)}
-    ['firstLoginNameV321','firstLoginSeflikV321'].forEach(id=>{const el=$(id); if(el&&!el.__v321){el.__v321=true; el.addEventListener('keydown',e=>{if(e.key==='Enter')save()})}});
-    if(!hasUser()){
-      closeBigPanel();
-      const badge=$('userBadge'); if(badge){badge.textContent='Giriş Yap'; badge.classList.add('login-needed')}
-      const btn=$('userPanelBtnV316'); if(btn) btn.textContent='👤 Giriş Yap';
-      setTimeout(()=>{closeBigPanel(); open();},450);
-      setTimeout(closeBigPanel,1050);
+  function hasUser(){const u=jsonGet(PANEL_KEY,{});return validIdentity(u.name,u.seflik)}
+  function toast(t,s,k){
+    try{if(typeof window.mesahaFloatToastV315==='function')return window.mesahaFloatToastV315(t,s||'',k||'warning')}catch(e){}
+    try{if(typeof window.toast==='function')return window.toast(t,s||'',k||'warning')}catch(e){}
+    try{alert([t,s].filter(Boolean).join('\n'))}catch(e){}
+  }
+  function log(kind,err,extra){try{if(window.MesahaErrorLog)window.MesahaErrorLog.error(kind,err,extra||{})}catch(e){}}
+  function closeBigPanel(){const big=$('userPanelOverlayV316');if(big)big.classList.add('hidden')}
+  function open(){
+    if(hasUser())return;
+    closeBigPanel();
+    const ov=$('firstLoginOverlayV321');if(!ov)return;
+    ov.classList.remove('hidden');
+    setTimeout(()=>{try{($('firstLoginNameV321')||{}).focus()}catch(e){}},100);
+  }
+  function close(){const ov=$('firstLoginOverlayV321');if(ov)ov.classList.add('hidden')}
+  function setField(id,value){const el=$(id);if(!el)return;el.value=value||'';try{el.dispatchEvent(new Event('input',{bubbles:true}))}catch(e){}}
+  function finishUi(name,seflik,settings){
+    setField('ekipNot',name);setField('seflik',seflik);
+    setField('panelNameV316',name);setField('panelSeflikV316',seflik);
+    if(settings&&settings.bolmeNo)setField('panelBolmeV316',settings.bolmeNo);
+    const badge=$('userBadge');if(badge){badge.textContent=name+' • '+seflik;badge.classList.remove('login-needed');badge.title='Kullanıcı panelini aç'}
+    const btn=$('userPanelBtnV316');if(btn){btn.textContent='👤 '+name+' • '+seflik;btn.classList.remove('login-needed')}
+    const title=$('userPanelTitleV316');if(title)title.textContent='Kullanıcı Paneli';
+    closeBigPanel();close();
+    try{sessionStorage.removeItem('mesaha_v319_login_prompted')}catch(e){}
+    try{if(window.mesahaLoginGateV319)window.mesahaLoginGateV319.apply()}catch(e){}
+    try{if(typeof window.renderUser==='function')window.renderUser()}catch(e){}
+    try{window.dispatchEvent(new CustomEvent('mesaha:user-login',{detail:{name,seflik}}))}catch(e){}
+  }
+  function backgroundDurableSave(settings,name,seflik){
+    try{
+      if(!window.MesahaStorageV527||typeof window.MesahaStorageV527.saveSettings!=='function')return;
+      const work=window.MesahaStorageV527.saveSettings(settings,{reason:'first-login-v532'});
+      const timeout=new Promise(resolve=>setTimeout(()=>resolve({ok:false,timeout:true,error:'Depolama doğrulaması zaman aşımına uğradı'}),5000));
+      Promise.race([Promise.resolve(work),timeout]).then(result=>{
+        if(!result||result.ok===false){
+          log('first-login.durable-save',new Error(result&&result.error||'Kalıcı depolama doğrulanamadı'),{name,seflik,timeout:!!(result&&result.timeout)});
+          toast('Giriş tamamlandı.','Güvenli depolama arka planda tekrar doğrulanacak.','warning');
+        }
+      }).catch(err=>log('first-login.durable-save',err,{name,seflik}));
+    }catch(err){log('first-login.durable-save-start',err,{name,seflik})}
+  }
+  function save(){
+    if(saveBusy)return;
+    const name=clean(($('firstLoginNameV321')||{}).value),seflik=clean(($('firstLoginSeflikV321')||{}).value);
+    if(!validIdentity(name,seflik)){toast('Geçerli kullanıcı adı ve şeflik gerekli.','Boş veya genel ad kullanılamaz.','warning');return}
+    const button=$('firstLoginSaveV321');saveBusy=true;
+    if(button){button.disabled=true;button.setAttribute('aria-busy','true');button.dataset.oldText=button.textContent||'Giriş Yap';button.textContent='Kaydediliyor…'}
+    try{
+      const current=jsonGet(SETTINGS_KEY,{}),settings=Object.assign({},current,{ekipNot:name,seflik:seflik});
+      if(window.state&&window.state.settings)Object.assign(window.state.settings,settings);
+      const effective=(window.state&&window.state.settings)?window.state.settings:settings;
+      let installId='';
+      try{if(window.MesahaRuntimeV527&&typeof window.MesahaRuntimeV527.installIdentity==='function')installId=clean(window.MesahaRuntimeV527.installIdentity().id)}catch(e){}
+      const settingsOk=jsonSet(SETTINGS_KEY,effective);
+      const panelOk=jsonSet(PANEL_KEY,{name,seflik,bolmeNo:clean(effective.bolmeNo||''),updatedAt:new Date().toISOString(),installId:installId||undefined});
+      try{localStorage.setItem('mesaha_user_confirmed_v319','1');if(installId)localStorage.setItem('mesaha_install_id_v527',installId)}catch(e){}
+      if(!settingsOk||!panelOk)throw new Error('Tarayıcı yerel depolamasına yazılamadı');
+      finishUi(name,seflik,effective);
+      toast('Giriş yapıldı.','Kullanıcı bilgileri kaydedildi.','success');
+      backgroundDurableSave(effective,name,seflik);
+      setTimeout(()=>{try{if(window.MesahaIpV518)window.MesahaIpV518.ping('profile_ping_first_login')}catch(e){}},400);
+    }catch(err){
+      log('first-login.save',err,{name,seflik});
+      toast('Giriş kaydedilemedi.','Tarayıcı depolama iznini ve boş alanı kontrol edin.','error');
+      open();
+    }finally{
+      saveBusy=false;
+      if(button){button.disabled=false;button.removeAttribute('aria-busy');button.textContent=button.dataset.oldText||'Giriş Yap'}
     }
   }
+  function bind(){
+    const saveBtn=$('firstLoginSaveV321');
+    if(saveBtn&&!saveBtn.__v532){
+      saveBtn.__v532=true;
+      saveBtn.addEventListener('click',function(ev){ev.preventDefault();ev.stopPropagation();ev.stopImmediatePropagation();save()},true);
+    }
+    ['firstLoginNameV321','firstLoginSeflikV321'].forEach(id=>{const el=$(id);if(el&&!el.__v532){el.__v532=true;el.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();save()}})}});
+    if(!hasUser()){
+      closeBigPanel();
+      const badge=$('userBadge');if(badge){badge.textContent='Giriş Yap';badge.classList.add('login-needed')}
+      const btn=$('userPanelBtnV316');if(btn)btn.textContent='👤 Giriş Yap';
+      setTimeout(open,350);
+    }else close();
+  }
   window.mesahaFirstLoginV321={open,close,save,hasUser};
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
-  [1200,2600,5200].forEach(ms=>setTimeout(()=>{if(!hasUser())closeBigPanel()},ms));
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
+  [1000,2500,5000].forEach(ms=>setTimeout(()=>{if(!hasUser())closeBigPanel()},ms));
 })();
 </script>
 <style id="mesaha-style-v323-top-user-label">
@@ -4345,7 +4373,7 @@ button,input,textarea{font:inherit!important;}button{touch-action:manipulation!i
   }
   function rebuildBottomNav(){
     var nav=$('bottomNav'); if(!nav) return;
-    var defs=[['home','⌂','Ana Sayfa'],['records','◷','Ölçümler'],['guide','▣','Kılavuz'],['settings','⚙','Ayarlar']];
+    var defs=[['home','⌂','Ana Sayfa'],['records','◷','Ölçümler'],['seflikFolder','▰','Şeflik'],['guide','▣','Kılavuz'],['settings','⚙','Ayarlar']];
     defs.forEach(function(d){var b=nav.querySelector('[data-nav="'+d[0]+'"]'); if(!b){b=document.createElement('button');b.type='button';b.dataset.nav=d[0];nav.appendChild(b);} b.innerHTML='<span>'+d[1]+'</span><b>'+d[2]+'</b>';});
     qsa('button',nav).forEach(function(b){if(!defs.some(function(d){return d[0]===b.dataset.nav;})) b.remove();});
     if(!nav.__v325){nav.__v325=true;nav.addEventListener('click',function(e){var b=e.target.closest('[data-nav]'); if(!b)return; if(b.dataset.nav==='settings'){e.preventDefault();e.stopImmediatePropagation();showLocal('settings');}},true);}
@@ -4377,7 +4405,7 @@ button,input,textarea{font:inherit!important;}button{touch-action:manipulation!i
     var sec=qs('.summary-card .section-head h2'); if(sec && sec.textContent.indexOf('Ölçüm Özeti')===-1) sec.textContent='Ölçüm Özeti';
     // Ana sayfa sırası referansa göre kalsın: hero, bağlantı/giriş, dosya, tarih, özet, detay.
     var home=$('homeView'); if(home){
-      var order=['.hero-card','.status-card','.file-card','.settings-card','.summary-card','.detail-summary-card'];
+      var order=['.hero-card','.status-card','.seflik-folder-home-shortcut','.file-card','.settings-card','.summary-card','.detail-summary-card'];
       order.forEach(function(sel){var el=qs(sel,home); if(el) home.appendChild(el);});
     }
   }
@@ -4405,7 +4433,7 @@ button,input,textarea{font:inherit!important;}button{touch-action:manipulation!i
     var backup=$('backupBtn'); if(backup) backup.textContent='Yedek Al';
   }
   function showLocal(view){
-    ['home','entry','records','guide','settings'].forEach(function(v){var el=$(v+'View'); if(el) el.classList.toggle('active',v===view);});
+    ['home','entry','records','seflikFolder','guide','settings'].forEach(function(v){var el=$(v+'View'); if(el) el.classList.toggle('active',v===view);});
     document.body.classList.toggle('entry-open',view==='entry');
     qsa('#bottomNav button').forEach(function(b){b.classList.toggle('active',b.dataset.nav===view);});
     try{if(view==='records'&&window.mesahaV303&&window.mesahaV303.records)window.mesahaV303.records();else if(view==='records'&&window.renderRecords)window.renderRecords();}catch(e){}
@@ -4533,7 +4561,7 @@ body.cloud-busy-v326 #cloudBackupBtnV316::after{content:"";width:12px;height:12p
         cloudBusy=false;
         document.body.classList.remove('cloud-busy-v326');
         btn.disabled=false;
-        btn.textContent=oldText||'Buluta Yedekle';
+        btn.textContent=oldText||'Buluta Yükle';
       },700);
     }
   }
@@ -4698,7 +4726,7 @@ body:not(.entry-open) #entryView:not(.active){display:none!important;}
     if(document.title) document.title='Mesaha İO Mesaha İO';
   }
   function robustShow(view){
-    ['home','entry','records','guide','settings'].forEach(function(v){var el=$(v+'View'); if(el){el.classList.toggle('active',v===view); el.style.display=(v===view?'block':'none');}});
+    ['home','entry','records','seflikFolder','guide','settings'].forEach(function(v){var el=$(v+'View'); if(el){el.classList.toggle('active',v===view); el.style.display=(v===view?'block':'none');}});
     document.body.classList.toggle('entry-open',view==='entry');
     qsa('#bottomNav button').forEach(function(b){b.classList.toggle('active',b.dataset.nav===view)});
     if(view==='records'){
@@ -4709,7 +4737,7 @@ body:not(.entry-open) #entryView:not(.active){display:none!important;}
     }
     window.scrollTo({top:0,behavior:'instant'});
     setTimeout(function(){
-      ['home','entry','records','guide','settings'].forEach(function(v){var el=$(v+'View'); if(el){el.classList.toggle('active',v===view); el.style.display=(v===view?'block':'none');}});
+      ['home','entry','records','seflikFolder','guide','settings'].forEach(function(v){var el=$(v+'View'); if(el){el.classList.toggle('active',v===view); el.style.display=(v===view?'block':'none');}});
       qsa('#bottomNav button').forEach(function(b){b.classList.toggle('active',b.dataset.nav===view)});
       setVersions();
     },120);
@@ -4859,11 +4887,11 @@ body:not(.entry-open) #entryView:not(.active){display:none!important;}
     finally{running=false;if(btn){btn.disabled=false;btn.textContent='Beyan İndir'}}
     return false;
   }
-  function bind(){var btn=$('printBtn');if(btn&&!btn.__guideCleanPdfBound){btn.__guideCleanPdfBound=true;['click','touchend','pointerup'].forEach(function(t){btn.addEventListener(t,downloadBeyanPdf,{capture:true,passive:false})});}}
+  function bind(){var btn=$('printBtn');if(btn&&!btn.__guideCleanPdfBound){btn.__guideCleanPdfBound=true;['click'].forEach(function(t){btn.addEventListener(t,downloadBeyanPdf,{capture:true,passive:false})});}}
   function boot(){applyVersion();bind();}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
   [150,600,1400,2600].forEach(function(ms){setTimeout(boot,ms)});
-  setInterval(function(){ if(!document.hidden) applyVersion(); },60000);
+  /* V5.27: sürüm metni merkezi update-manager/offline-core tarafından yönetilir. */
 })();
 </script>
 <style id="mesaha-sound-clean-final-fix-style">
@@ -4930,51 +4958,32 @@ body:not(.entry-open) #entryView:not(.active){display:none!important;}
 <script id="mesaha-v354-lovable-clean-light-final-3">
 (function(){
   'use strict';
-  var DISPLAY='Mesaha İO';
-  var APP='Mesaha İO';
-  var BUILD=(window.MESAHA_VERSION&&window.MESAHA_VERSION.build)||0;
-  function $(id){return document.getElementById(id)}
-  function qsa(sel){return Array.prototype.slice.call(document.querySelectorAll(sel))}
-  function apply(){
-    document.title='Mesaha İO '+DISPLAY;
-    var apple=document.querySelector('meta[name="apple-mobile-web-app-title"]'); if(apple) apple.setAttribute('content',APP);
-    var vt=$('versionText'); if(vt) vt.textContent=DISPLAY;
-    var st=document.querySelector('#startup strong'); if(st) st.textContent=DISPLAY;
-    qsa('.version-card b').forEach(function(b){ b.textContent=DISPLAY; });
-    qsa('.version-card small').forEach(function(s){ s.textContent=''; });
-    window.MESAHA_VERSION={app:APP,version:'local',build:BUILD,visibleVersion:DISPLAY,shortVersion:DISPLAY,name:'Mesaha İO '+DISPLAY,cacheName:'mesaha-app-local',assetVersion:String((window.MESAHA_VERSION&&window.MESAHA_VERSION.assetVersion)||'')};
-    window.MESAHA_VERSION_TEXT=DISPLAY;
-    window.MESAHA_VERSION_SHORT=DISPLAY;
-  }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',apply,{once:true}); else apply();
-  [100,500,1200,2500].forEach(function(ms){setTimeout(apply,ms)});
-  setInterval(function(){ if(!document.hidden) apply(); },60000);
+  /* V5.27: Eski scriptin MESAHA_VERSION nesnesini "local" ile ezmesi kapatıldı. */
 })();
 </script>
 <script id="mesaha-v354-lovable-clean-light-final-4">
 (function(){
   'use strict';
-  var MV=window.MESAHA_VERSION||{}, DISPLAY=MV.visibleVersion||'Mesaha İO', APP=MV.app||'Mesaha İO', BUILD=Number(MV.build||0)||0, VERSION=MV.version||'local', CACHE=MV.cacheName||'mesaha-app-local';
   function $(id){return document.getElementById(id)}
   function qsa(sel){return Array.prototype.slice.call(document.querySelectorAll(sel))}
   function applyVersion(){
-    document.title='Mesaha İO '+DISPLAY;
-    var apple=document.querySelector('meta[name="apple-mobile-web-app-title"]'); if(apple) apple.setAttribute('content',APP);
-    var vt=$('versionText'); if(vt) vt.textContent=DISPLAY;
-    var st=document.querySelector('#startup strong'); if(st) st.textContent=DISPLAY;
-    qsa('.version-card b').forEach(function(b){b.textContent=DISPLAY;});
+    var mv=window.MESAHA_VERSION||{};
+    var display=mv.visibleVersion||mv.shortVersion||'Mesaha İO';
+    var app=mv.app||'Mesaha İO';
+    document.title=app+' '+display;
+    var apple=document.querySelector('meta[name="apple-mobile-web-app-title"]'); if(apple) apple.setAttribute('content',app);
+    var vt=$('versionText'); if(vt) vt.textContent=display;
+    var st=document.querySelector('#startup strong'); if(st) st.textContent=display;
+    qsa('.version-card b').forEach(function(b){b.textContent=display;});
     qsa('.version-card small').forEach(function(s){s.textContent='';});
-    window.MESAHA_VERSION={app:APP,version:VERSION,build:BUILD,visibleVersion:DISPLAY,shortVersion:DISPLAY,name:'Mesaha İO '+DISPLAY,cacheName:CACHE,assetVersion:String((window.MESAHA_VERSION&&window.MESAHA_VERSION.assetVersion)||'')};
-    window.MESAHA_VERSION_TEXT=DISPLAY; window.MESAHA_VERSION_SHORT=DISPLAY;
   }
   function bindBadgePanel(){
-    var badge=$('userBadge'); var btn=$('userPanelBtnV316');
-    if(badge && btn && !badge.__v351LightOnlyOptimized){badge.__v351LightOnlyOptimized=true; badge.addEventListener('click',function(ev){ev.preventDefault(); btn.click();},true);}
+    var badge=$('userBadge'), btn=$('userPanelBtnV316');
+    if(badge&&btn&&!badge.__v527PanelBound){badge.__v527PanelBound=true;badge.addEventListener('click',function(ev){ev.preventDefault();btn.click();},true);}
   }
   function boot(){applyVersion();bindBadgePanel();}
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true}); else boot();
-  [100,400,1000,2200,4000].forEach(function(ms){setTimeout(boot,ms)});
-  setInterval(function(){ if(!document.hidden) boot(); },60000);
+  [100,500,1500].forEach(function(ms){setTimeout(boot,ms)});
 })();
 </script>
 <style id="mesaha-v351-light-only-clean-style">
@@ -5001,7 +5010,7 @@ input,select,textarea{background:#fff!important;color:#101828!important;border-c
     document.documentElement.classList.remove('light');
     document.body.classList.remove('light');
     try{localStorage.removeItem('mesaha_removed_theme_key')}catch(e){}
-    try{var s=JSON.parse(localStorage.getItem('cam_mesaha_ayarlar_v1')||'{}'); if(s.theme) delete s.theme; localStorage.setItem('cam_mesaha_ayarlar_v1',JSON.stringify(s)); if(window.state&&window.state.settings) delete window.state.settings.theme;}catch(e){}
+    try{var s=(window.state&&window.state.settings)||JSON.parse(localStorage.getItem('cam_mesaha_ayarlar_v1')||'{}');if(s.theme)delete s.theme;if(window.state&&window.state.settings)delete window.state.settings.theme;if(window.MesahaStorageV527)window.MesahaStorageV527.saveSettings(s,{reason:'remove-theme'});else localStorage.setItem('cam_mesaha_ayarlar_v1',JSON.stringify(s));}catch(e){}
     var b=$('removedThemeButton'); if(b) b.remove();
     all('[aria-label="Tema"],#removedOnlinePillV350').forEach(function(x){x.remove()});
     var top=document.querySelector('.topbar'); var actions=document.querySelector('.top-actions-v316'); var panel=$('userPanelBtnV316');
@@ -5296,129 +5305,8 @@ body.keyboard-open-v311 .entry-view.active .barcode-save{
 <script id="mesaha-v366-terminal-save-fix-2">
 (function(){
   'use strict';
-
-  var lastRun = 0;
-  var LOCK_MS = 850;
-
-  const byId=(window.MesahaUtils&&window.MesahaUtils.byId)||function(id){ return document.getElementById(id); }
-
-  function isEntryActive(){
-    var entry = byId('entryView');
-    return !!(entry && entry.classList.contains('active'));
-  }
-
-  function eventPoint(ev){
-    var t = ev && ev.changedTouches && ev.changedTouches[0] || ev && ev.touches && ev.touches[0] || ev;
-    if(!t) return null;
-    var x = Number(t.clientX), y = Number(t.clientY);
-    if(!Number.isFinite(x) || !Number.isFinite(y)) return null;
-    return {x:x,y:y};
-  }
-
-  function insideSaveButton(ev){
-    var btn = byId('saveBtn');
-    if(!btn) return false;
-
-    var target = ev && ev.target;
-    if(target && target.closest && target.closest('#saveBtn,.save-btn')) return true;
-
-    try{
-      var path = ev.composedPath ? ev.composedPath() : [];
-      if(path && path.some(function(el){ return el && el.id === 'saveBtn'; })) return true;
-    }catch(e){}
-
-    var p = eventPoint(ev);
-    if(!p) return false;
-    var r = btn.getBoundingClientRect();
-    // 10px tolerans: bazı terminallerde koordinat/viewport farkı oluyor.
-    return p.x >= r.left-10 && p.x <= r.right+10 && p.y >= r.top-10 && p.y <= r.bottom+10;
-  }
-
-  function focusDiameterLater(){
-    setTimeout(function(){
-      var d = byId('diameterInput');
-      if(!d) return;
-      try{
-        d.focus({preventScroll:true});
-        var len = String(d.value || '').length;
-        try{ d.setSelectionRange(len,len); }catch(e){}
-      }catch(e){
-        try{ d.focus(); }catch(_){}
-      }
-    },90);
-  }
-
-  function runSave(ev){
-    if(!isEntryActive()) return;
-    if(!insideSaveButton(ev)) return;
-
-    if(ev){
-      try{ ev.preventDefault(); }catch(e){}
-      try{ ev.stopPropagation(); }catch(e){}
-      try{ ev.stopImmediatePropagation(); }catch(e){}
-    }
-
-    var now = Date.now();
-    if(now - lastRun < LOCK_MS) return;
-    lastRun = now;
-
-    try{
-      // Bazı el terminallerinde input event gecikebiliyor; değerleri local state'e zorla yaz.
-      var d = byId('diameterInput'), l = byId('lengthInput'), b = byId('barcodeInput');
-      if(window.state && window.state.settings){
-        if(d) window.state.settings.diameter = String(d.value || '');
-        if(l) window.state.settings.length = String(l.value || '');
-        if(b) window.state.settings.barcode = String(b.value || '').toUpperCase();
-      }
-    }catch(e){}
-
-    try{ if(typeof window.vibrate === 'function') window.vibrate('chip'); }catch(e){}
-
-    try{
-      if(typeof window.saveEntry === 'function') window.saveEntry();
-      else {
-        var btn = byId('saveBtn');
-        if(btn) btn.click();
-      }
-    }catch(e){
-      console.error('v366 terminal save error', e);
-      try{
-        if(typeof window.toast === 'function') window.toast('Kaydet çalıştırılamadı.');
-      }catch(_){}
-    }
-
-    focusDiameterLater();
-
-    try{
-      if(typeof window.renderRecords === 'function') setTimeout(window.renderRecords,120);
-      if(typeof window.renderAll === 'function') setTimeout(window.renderAll,160);
-    }catch(e){}
-  }
-
-  function bind(){
-    var btn = byId('saveBtn');
-    if(btn && !btn.__v366TerminalSaveBound){
-      btn.__v366TerminalSaveBound = true;
-      ['pointerdown','pointerup','touchstart','touchend','mousedown','mouseup','click'].forEach(function(type){
-        btn.addEventListener(type, runSave, {capture:true, passive:false});
-      });
-    }
-
-    if(!document.__v366TerminalSaveCapture){
-      document.__v366TerminalSaveCapture = true;
-      ['pointerdown','pointerup','touchstart','touchend','mousedown','mouseup','click'].forEach(function(type){
-        document.addEventListener(type, runSave, {capture:true, passive:false});
-      });
-    }
-  }
-
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bind, {once:true});
-  else bind();
-
-  [100,350,900,1800,3500].forEach(function(ms){ setTimeout(bind, ms); });
-  /* v381: terminal save bind interval kaldırıldı; ilk bind + gecikmeli bind yeterli. */
-
-  window.mesahaTerminalSaveFixV366 = {bind:bind, run:runSave};
+  function focusDiameter(){var d=document.getElementById('diameterInput');if(!d)return;setTimeout(function(){try{d.focus({preventScroll:true});}catch(e){}},100);}
+  window.mesahaTerminalSaveFixV366={bind:function(){},run:function(){},focus:focusDiameter,disabledBy:'V5.27'};
 })();
 </script>
 <style id="mesaha-v368-terminal-home-scroll-perf">
@@ -5618,82 +5506,13 @@ body.scroll-fixing-v371 *{
 <script id="mesaha-local-5">
 (function(){
   'use strict';
-
-  function removeBlockingSaveCapture(){
-    // v366'da document seviyesinde touchstart/touchend yakalama bazı el terminallerinde scroll'u kilitleyebiliyor.
-    // Aynı namespace'i devre dışı bırakıp sadece buton üstünden hafif kaydet desteği veriyoruz.
-    try{
-      document.__v366TerminalSaveCapture = true;
-    }catch(e){}
-  }
-
-  var lock = false;
-  var lastRun = 0;
-  const byId=(window.MesahaUtils&&window.MesahaUtils.byId)||function(id){return document.getElementById(id)}
-  function isEntryActive(){
-    var entry=byId('entryView');
-    return !!(entry && entry.classList.contains('active'));
-  }
-  function runSave(ev){
-    var now=Date.now();
-    if(now-lastRun<850)return;
-    lastRun=now;
-    if(ev){
-      try{ev.preventDefault()}catch(e){}
-      try{ev.stopPropagation()}catch(e){}
-    }
-    try{
-      var d=byId('diameterInput'), l=byId('lengthInput'), b=byId('barcodeInput');
-      if(window.state && window.state.settings){
-        if(d) window.state.settings.diameter=String(d.value||'');
-        if(l) window.state.settings.length=String(l.value||'');
-        if(b) window.state.settings.barcode=String(b.value||'').toUpperCase();
-      }
-    }catch(e){}
-    try{
-      if(typeof window.saveEntry==='function') window.saveEntry();
-      else {
-        var btn=byId('saveBtn');
-        if(btn) btn.click();
-      }
-    }catch(e){console.error(e)}
-  }
-
-  function bindSafeSaveButton(){
-    var btn=byId('saveBtn');
-    if(!btn || btn.__v371SafeSaveBound)return;
-    btn.__v371SafeSaveBound=true;
-    btn.style.touchAction='manipulation';
-    btn.style.pointerEvents='auto';
-    // Sadece buton üzerinde yakalıyoruz; document genelinde touch yakalama yok.
-    ['pointerup','touchend','click'].forEach(function(type){
-      btn.addEventListener(type,function(ev){
-        if(!isEntryActive())return;
-        runSave(ev);
-      },{capture:true,passive:false});
-    });
-  }
-
   function fixScroll(){
     document.documentElement.classList.add('scroll-fixing-v371');
-    removeBlockingSaveCapture();
-    bindSafeSaveButton();
-    try{
-      document.body.style.overflowY='auto';
-      document.documentElement.style.overflowY='auto';
-      document.body.style.touchAction='pan-y';
-      document.documentElement.style.touchAction='pan-y';
-    }catch(e){}
+    try{document.body.style.overflowY='auto';document.documentElement.style.overflowY='auto';document.body.style.touchAction='pan-y';document.documentElement.style.touchAction='pan-y';}catch(e){}
   }
-
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',fixScroll,{once:true});
-  else fixScroll();
-
-  [80,250,700,1500,3000,6000].forEach(function(ms){setTimeout(fixScroll,ms)});
-  window.addEventListener('orientationchange',function(){setTimeout(fixScroll,250)},{passive:true});
-  window.addEventListener('resize',function(){setTimeout(fixScroll,120)},{passive:true});
-
-  window.mesahaScrollFixV371={fix:fixScroll};
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fixScroll,{once:true});else fixScroll();
+  window.addEventListener('orientationchange',function(){setTimeout(fixScroll,180)},{passive:true});
+  window.mesahaScrollFixV371={fix:fixScroll,saveBindingDisabledBy:'V5.27'};
 })();
 </script>
 <style id="mesaha-local-6">
@@ -5928,9 +5747,10 @@ body.product-tap-lock-v372 .entry-view.active{
     return next;
   }
   function saveSettingsMirror(){
-    var s = stateSettings();
-    if(!s) return;
-    try{ localStorage.setItem(SETTINGS_KEY, JSON.stringify(s)); }catch(e){}
+    var s=stateSettings();
+    if(!s)return Promise.resolve({ok:false});
+    try{if(window.MesahaStorageV527)return window.MesahaStorageV527.saveSettings(s,{reason:'entry-memory'});if(window.__flushSettings)return window.__flushSettings('entry-memory');}catch(e){}
+    return Promise.resolve({ok:false});
   }
 
   function persistNow(){
@@ -6097,20 +5917,7 @@ body.product-tap-lock-v372 .entry-view.active{
     }, true);
   }
 
-  // JSON.parse sarmalayıcı: yedekten okunan payload'a kesimcileri geri ekler.
-  if(!JSON.__mesahaV373ParseWrapped){
-    JSON.__mesahaV373ParseWrapped = true;
-    var nativeParse = JSON.parse;
-    JSON.parse = function(){
-      var out = nativeParse.apply(JSON, arguments);
-      try{
-        if(out && typeof out === 'object' && (Array.isArray(out.records) || out.app === 'Mesaha İO')){
-          out = mergeRestoredPayload(out);
-        }
-      }catch(e){}
-      return out;
-    };
-  }
+  /* V5.27: global JSON.parse değiştirilmez; yedek birleşimi yalnız geri yükleme akışında yapılır. */
 
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bind, {once:true});
   else bind();
@@ -6120,19 +5927,7 @@ body.product-tap-lock-v372 .entry-view.active{
   window.addEventListener('beforeunload', persistNow, {passive:true});
   document.addEventListener('visibilitychange', function(){ if(document.hidden) persistNow(); else setTimeout(restore,120); }, {passive:true});
 
-  function wrapSave(){
-    if(!window.saveEntry || window.saveEntry.__v373MemoryWrapped) return;
-    var old = window.saveEntry;
-    var wrapped = function(){
-      var r = old.apply(this, arguments);
-      setTimeout(persistNow, 80);
-      setTimeout(persistNow, 250);
-      return r;
-    };
-    wrapped.__v373MemoryWrapped = true;
-    window.saveEntry = wrapped;
-  }
-  [200,800,1800,3500].forEach(function(ms){ setTimeout(wrapSave, ms); });
+  /* V5.27: kayıt sonrası kalıcı hafıza canonical mesaha:records-saved olayıyla güncellenir. */
 
   window.mesahaEntryMemoryBackupV373 = {
     persist:persistNow,
@@ -6292,7 +6087,6 @@ a.video-link-v392,.orbis-video-link-v392{display:inline-flex;align-items:center;
     const fromStore=readJson(STORAGE_KEY,[]);
     const list=sanitize(fromState||fromStore||[]);
     if(s){s.records=list;window.state=s}
-    try{localStorage.setItem(STORAGE_KEY,JSON.stringify(list))}catch(e){}
     return list;
   }
   function rowVolume(r){const d=num(r&&r.diameter),l=num(r&&r.length),q=Math.max(1,Number(r&&r.quantity||1)||1);if(!d||!l)return 0;return round3(Math.PI*Math.pow(d/100,2)/4*l*q)}
@@ -6675,8 +6469,9 @@ body.mesaha-cloud-panel-open-v395 #cloudRestoreOverlayV316:not(.hidden){touch-ac
   function settings(){var s=state(); if(!s) return null; if(!s.settings) s.settings={}; if(!Array.isArray(s.settings.cutters)) s.settings.cutters=[]; return s.settings}
   function records(){var s=state(); return s&&Array.isArray(s.records)?s.records:[]}
   function toast(msg){try{if(window.toast)return window.toast(msg)}catch(e){} try{alert(msg)}catch(e){}}
-  function saveSettings(){try{if(window.__flushSettings)window.__flushSettings();else if(window.saveSettings)window.saveSettings()}catch(e){} }
-  function saveRecords(){try{if(window.saveRecords)window.saveRecords()}catch(e){} }
+  function saveSettings(reason){try{if(window.__flushSettings)return window.__flushSettings(reason||'cutter-settings');if(window.saveSettings)return window.saveSettings()}catch(e){} return Promise.resolve({ok:false,error:'Ayar depolama motoru hazır değil'}); }
+  function saveRecords(reason){try{if(window.saveRecords)return window.saveRecords(reason||'cutter-records')}catch(e){} return Promise.resolve({ok:false,error:'Kayıt depolama motoru hazır değil'}); }
+  function saveAll(reason){try{if(window.__saveAllV527)return window.__saveAllV527(reason||'cutter-transaction')}catch(e){} return Promise.all([saveRecords(reason),saveSettings(reason)]).then(function(a){return a.some(function(x){return x&&x.ok===false})?{ok:false}:{ok:true};}); }
   function redrawOthers(){try{if(window.MesahaRenderStorageV382&&window.MesahaRenderStorageV382.renderAllSoon)window.MesahaRenderStorageV382.renderAllSoon();else if(window.renderAll)window.renderAll()}catch(e){} setTimeout(render,120)}
   function unique(arr){var out=[]; (arr||[]).forEach(function(x){x=clean(x); if(x && out.indexOf(x)<0)out.push(x)}); return out}
   function readRemoved(){
@@ -6726,40 +6521,46 @@ body.mesaha-cloud-panel-open-v395 #cloudRestoreOverlayV316:not(.hidden){touch-ac
   }
   function schedule(){clearTimeout(timer); timer=setTimeout(render,60)}
   function selectCutter(name){var st=settings(); if(!st)return; st.activeCutter=clean(name); saveSettings(); render();}
-  function editCutter(oldName){
+  async function editCutter(oldName){
     oldName=clean(oldName); if(!oldName)return;
     var st=settings(); if(!st)return;
     var next=clean(prompt('Kesimci yeni ismini yazınız:', oldName));
     if(!next||next===oldName)return;
     var list=cutterList();
     if(list.some(function(x){return x.toLocaleLowerCase('tr-TR')===next.toLocaleLowerCase('tr-TR') && x!==oldName})){toast('Bu isimde kesimci zaten var.');return;}
+    var beforeRecords=JSON.parse(JSON.stringify(records()));
+    var beforeSettings=JSON.parse(JSON.stringify(st));
     unmarkRemoved(oldName); unmarkRemoved(next);
     st.cutters=unique((st.cutters||[]).map(function(x){return clean(x)===oldName?next:x}).concat([next]));
     if(clean(st.activeCutter)===oldName)st.activeCutter=next;
     if(clean(st.cutterFilter)===oldName)st.cutterFilter=next;
     var changed=0;
-    records().forEach(function(r){if(clean(r&&r.cutter)===oldName){r.cutter=next; r.updatedAt=r.updatedAt||new Date().toISOString(); changed++;}});
-    saveRecords(); saveSettings();
+    records().forEach(function(r){if(clean(r&&r.cutter)===oldName){r.cutter=next; r.updatedAt=new Date().toISOString(); changed++;}});
+    var result=await saveAll('cutter-rename');
+    if(result&&result.ok===false){var app=state();if(app){app.records=beforeRecords;app.settings=beforeSettings;}toast('Kesimci değişikliği kaydedilemedi.');redrawOthers();return;}
     toast(changed?('Kesimci ismi güncellendi. '+changed+' kayıt yeni isme bağlandı.'):'Kesimci ismi güncellendi.');
     redrawOthers();
   }
-  function deleteCutter(name){
+  async function deleteCutter(name){
     name=clean(name); if(!name)return;
     var st=settings(); if(!st)return;
     var cnt=countByCutter(name);
     if(cnt>0){toast(name+' kesimcisine ait '+cnt+' kayıt var. Kayıt varken kesimci silinmez.');return;}
     if(!confirm(name+' kesimcisini silmek istiyor musun?'))return;
+    var beforeSettings=JSON.parse(JSON.stringify(st));
     markRemoved(name);
     st.cutters=unique((st.cutters||[]).filter(function(x){return clean(x)!==name}));
     if(clean(st.activeCutter)===name)st.activeCutter='';
     if(clean(st.cutterFilter)===name)st.cutterFilter='Tümü';
+    var result=await saveSettings('cutter-delete');
+    if(result&&result.ok===false){var app=state();if(app)app.settings=beforeSettings;toast('Kesimci silme kaydedilemedi.');redrawOthers();return;}
     try{
       var mem=JSON.parse(localStorage.getItem('mesaha_entry_memory_v373')||'{}')||{};
       if(clean(mem.activeCutter)===name) mem.activeCutter='';
       if(Array.isArray(mem.cutters)) mem.cutters=unique(mem.cutters.filter(function(x){return clean(x)!==name;}));
       localStorage.setItem('mesaha_entry_memory_v373',JSON.stringify(mem));
     }catch(e){}
-    saveSettings(); toast('Kesimci silindi. Tekrar otomatik seçilmeyecek.'); redrawOthers();
+    toast('Kesimci silindi. Tekrar otomatik seçilmeyecek.'); redrawOthers();
   }
   document.addEventListener('click',function(ev){
     var t=ev.target&&ev.target.closest&&ev.target.closest('[data-cutter-select-v406],[data-cutter-edit-v406],[data-cutter-delete-v406]');
@@ -6798,8 +6599,9 @@ body.mesaha-cloud-panel-open-v395 #cloudRestoreOverlayV316:not(.hidden){touch-ac
   function settings(){var s=state(); if(s){ if(!s.settings)s.settings={}; return s.settings; } try{return JSON.parse(localStorage.getItem(SETTINGS_KEY)||'{}')||{}}catch(e){return {}}}
   function records(){var s=state(); if(s&&Array.isArray(s.records))return s.records; try{var r=JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]'); return Array.isArray(r)?r:[]}catch(e){return []}}
   function toast(msg){try{if(window.toast)return window.toast(msg)}catch(e){} try{alert(msg)}catch(e){}}
-  function saveSettings(){try{if(window.__flushSettings)return window.__flushSettings(); if(window.saveSettings)return window.saveSettings()}catch(e){} try{localStorage.setItem(SETTINGS_KEY,JSON.stringify(settings()))}catch(e){}}
-  function saveRecords(){try{if(window.saveRecords)return window.saveRecords()}catch(e){} try{localStorage.setItem(STORAGE_KEY,JSON.stringify(records()))}catch(e){} try{window.dispatchEvent(new CustomEvent('mesaha:records-saved',{detail:{count:records().length}}))}catch(e){}}
+  function saveSettings(reason){try{if(window.__flushSettings)return window.__flushSettings(reason||'bulk-cutter-settings');if(window.saveSettings)return window.saveSettings()}catch(e){}return Promise.resolve({ok:false,error:'Ayar depolama motoru hazır değil'});}
+  function saveRecords(reason){try{if(window.saveRecords)return window.saveRecords(reason||'bulk-cutter-records')}catch(e){}return Promise.resolve({ok:false,error:'Kayıt depolama motoru hazır değil'});}
+  function saveAll(reason){try{if(window.__saveAllV527)return window.__saveAllV527(reason||'bulk-cutter-transaction')}catch(e){}return Promise.all([saveRecords(reason),saveSettings(reason)]).then(function(a){return a.some(function(x){return x&&x.ok===false})?{ok:false}:{ok:true};});}
   function renderAll(){
     try{if(window.MesahaRenderStorageV382&&window.MesahaRenderStorageV382.renderAllSoon)window.MesahaRenderStorageV382.renderAllSoon();else if(window.renderAll)window.renderAll()}catch(e){}
     try{if(window.mesahaV303&&window.mesahaV303.render)window.mesahaV303.render();else if(window.mesahaV303&&window.mesahaV303.records)window.mesahaV303.records()}catch(e){}
@@ -6859,7 +6661,7 @@ body.mesaha-cloud-panel-open-v395 #cloudRestoreOverlayV316:not(.hidden){touch-ac
     if(q)parts.push('Arama: '+q);
     return parts.length?parts.join(' / '):'Tüm kayıtlar';
   }
-  function transferSelected(){
+  async function transferSelected(){
     var list=selected();
     if(!list.length){toast('Aktarılacak seçili kayıt yok. Önce Tümünü Seç veya kayıtları işaretle.');return;}
     var sel=$('bulkCutterSelectV406');
@@ -6874,6 +6676,8 @@ body.mesaha-cloud-panel-open-v395 #cloudRestoreOverlayV316:not(.hidden){touch-ac
     }
     var text=target?target:'Kesimci seçilmedi';
     if(!confirm(list.length+' seçili kayıt "'+text+'" kesimcisine aktarılsın mı?'))return;
+    var beforeRecords=JSON.parse(JSON.stringify(records()));
+    var beforeSettings=JSON.parse(JSON.stringify(st));
     var ids={}; list.forEach(function(r){if(r&&r.id)ids[r.id]=true});
     var changed=0, now=new Date().toISOString();
     records().forEach(function(r){
@@ -6888,8 +6692,8 @@ body.mesaha-cloud-panel-open-v395 #cloudRestoreOverlayV316:not(.hidden){touch-ac
       unmarkRemoved(target);
       if(st.cutters.indexOf(target)<0)st.cutters.push(target);
     }
-    saveSettings();
-    saveRecords();
+    var result=await saveAll('bulk-cutter-transfer');
+    if(result&&result.ok===false){var app=state();if(app){app.records=beforeRecords;app.settings=beforeSettings;}toast('Kesimci aktarımı kaydedilemedi.');renderAll();return;}
     try{var clear=$('clearSelectionBtn'); if(clear)clear.click();}catch(e){}
     toast(changed+' kayıt kesimciye aktarıldı.');
     renderAll();
@@ -6917,7 +6721,7 @@ body.mesaha-cloud-panel-open-v395 #cloudRestoreOverlayV316:not(.hidden){touch-ac
     },true);
     document.addEventListener('input',function(){setTimeout(updateHint,120)},true);
     ['mesaha:records-saved','mesaha:settings-saved'].forEach(function(evt){window.addEventListener(evt,function(){setTimeout(function(){populateCutterSelect();updateHint();},150)})});
-    setInterval(function(){if(document.getElementById('recordsView')){ensureUi();populateCutterSelect();updateHint();}},2500);
+    setInterval(function(){if(!document.hidden&&document.getElementById('recordsView')){ensureUi();populateCutterSelect();updateHint();}},12000);
   }
   function boot(){bind(); [120,500,1200,2400].forEach(function(ms){setTimeout(function(){ensureUi();populateCutterSelect();updateHint();},ms)})}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
@@ -6944,7 +6748,7 @@ body.mesaha-cloud-panel-open-v395 #cloudRestoreOverlayV316:not(.hidden){touch-ac
   function unique(arr){var out=[];(arr||[]).forEach(function(x){x=clean(x); if(x&&out.indexOf(x)<0)out.push(x)});return out}
   function removed(){var st=settings(); return unique([].concat(readJson(REMOVED_KEY,[])||[], Array.isArray(st.removedCuttersV407)?st.removedCuttersV407:[]));}
   function activeRecordCutters(){return unique(records().map(function(r){return r&&r.cutter;}));}
-  function saveSettingsNow(st){try{if(window.state&&window.state.settings)Object.assign(window.state.settings,st||{});}catch(e){} try{localStorage.setItem(SETTINGS_KEY,JSON.stringify(settings()))}catch(e){} try{if(window.__flushSettings)window.__flushSettings();else if(window.saveSettings)window.saveSettings()}catch(e){} }
+  function saveSettingsNow(st){try{if(window.state&&window.state.settings)Object.assign(window.state.settings,st||{});if(window.MesahaStorageV527)return window.MesahaStorageV527.saveSettings(settings(),{reason:'cutter-guard'});if(window.__flushSettings)return window.__flushSettings('cutter-guard');if(window.saveSettings)return window.saveSettings()}catch(e){} }
   function cleanDeletedCutters(){
     var st=settings(); if(!st)return;
     var rem=removed(), active=activeRecordCutters();
@@ -7010,210 +6814,7 @@ body.mesaha-entry-scrolling-v408 #entryView label{
 <script id="mesaha-v408-entry-save-scroll-tap-guard">
 (function(){
   'use strict';
-  if(window.__mesahaEntrySaveScrollTapGuardV408) return;
-  window.__mesahaEntrySaveScrollTapGuardV408 = true;
-
-  var VERSION_DISPLAY='Mesaha İO';
-  var VERSION_APP='Mesaha İO';
-  var VERSION_CODE='local';
-  var BUILD=(window.MESAHA_VERSION&&window.MESAHA_VERSION.build)||0;
-  var CACHE='mesaha-app-local';
-  var saveGuardUntil = 0;
-  var saveGuardY = 0;
-  var saveGuardActiveInput = '';
-  var tapBlockUntil = 0;
-  var downInfo = null;
-  var nativeFocus = null;
-  var focusPatchTimer = 0;
-  var rafTimer = 0;
-
-  function byId(id){ return document.getElementById(id); }
-  function entry(){ return byId('entryView'); }
-  function entryActive(){ var e=entry(); return !!(e && e.classList.contains('active')); }
-  function isEntryInput(el){ return !!(el && ['diameterInput','lengthInput','barcodeInput','quantityInput'].indexOf(el.id) >= 0); }
-  function currentY(){ return window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0; }
-  function setY(y){
-    try{ window.scrollTo({top:Math.max(0,y), left:0, behavior:'auto'}); }
-    catch(e){ try{ window.scrollTo(0,Math.max(0,y)); }catch(_){} }
-  }
-  function sameViewport(y){ return Math.abs(currentY() - y) <= 2; }
-  function restoreY(y){
-    if(!entryActive()) return;
-    if(!Number.isFinite(y)) return;
-    if(!sameViewport(y)) setY(y);
-  }
-  function restoreSeries(y){
-    [0,16,40,80,140,240,380,620].forEach(function(ms){
-      setTimeout(function(){ restoreY(y); }, ms);
-    });
-    try{
-      cancelAnimationFrame(rafTimer);
-      var started=Date.now();
-      function loop(){
-        if(Date.now()-started>520) return;
-        restoreY(y);
-        rafTimer=requestAnimationFrame(loop);
-      }
-      rafTimer=requestAnimationFrame(loop);
-    }catch(e){}
-  }
-  function syncVersion(){
-    try{
-      if(window.MESAHA_VERSION){
-        window.MESAHA_VERSION.app=VERSION_APP;
-        window.MESAHA_VERSION.version=VERSION_CODE;
-        window.MESAHA_VERSION.build=BUILD;
-        window.MESAHA_VERSION.visibleVersion=VERSION_DISPLAY;
-        window.MESAHA_VERSION.shortVersion=VERSION_DISPLAY;
-        window.MESAHA_VERSION.name='Mesaha İO '+VERSION_DISPLAY;
-        window.MESAHA_VERSION.cacheName=CACHE;
-        window.MESAHA_VERSION.assetVersion=String(BUILD);
-      }
-    }catch(e){}
-    try{
-      var vt=byId('versionText'); if(vt) vt.textContent=VERSION_DISPLAY;
-      document.querySelectorAll('.version-card b').forEach(function(b){
-        var t=(b.textContent||'').trim();
-        if(!t || /^V3\.\d+/.test(t)) b.textContent=VERSION_DISPLAY;
-      });
-      document.querySelectorAll('.version-card small').forEach(function(s){ if((s.textContent||'').indexOf('v40')===0) s.textContent=VERSION_CODE; });
-      var chip=document.querySelector('.version-chip-v407'); if(chip) chip.textContent='Mesaha İO';
-      if(document.title && /Mesaha İO/.test(document.title)) document.title='Mesaha İO '+VERSION_DISPLAY;
-    }catch(e){}
-  }
-
-  function patchFocusDuringSave(){
-    if(nativeFocus || !window.HTMLElement || !HTMLElement.prototype) return;
-    nativeFocus = HTMLElement.prototype.focus;
-    HTMLElement.prototype.focus = function(opts){
-      if(entryActive() && isEntryInput(this) && Date.now() < saveGuardUntil){
-        var y = saveGuardY || currentY();
-        try{ nativeFocus.call(this, {preventScroll:true}); }
-        catch(e){ try{ nativeFocus.call(this); }catch(_){} }
-        restoreSeries(y);
-        return;
-      }
-      return nativeFocus.apply(this, arguments);
-    };
-  }
-  function unpatchFocusLater(){
-    clearTimeout(focusPatchTimer);
-    focusPatchTimer=setTimeout(function(){
-      if(nativeFocus){
-        try{ HTMLElement.prototype.focus = nativeFocus; }catch(e){}
-        nativeFocus = null;
-      }
-    }, 900);
-  }
-  function beginSaveGuard(){
-    if(!entryActive()) return currentY();
-    var y=currentY();
-    saveGuardY=y;
-    saveGuardUntil=Date.now()+950;
-    var a=document.activeElement;
-    saveGuardActiveInput = isEntryInput(a) ? a.id : '';
-    try{ document.body.classList.add('mesaha-entry-saving-v408'); document.documentElement.classList.add('mesaha-entry-saving-v408'); }catch(e){}
-    patchFocusDuringSave();
-    restoreSeries(y);
-    return y;
-  }
-  function endSaveGuard(y){
-    restoreSeries(Number.isFinite(y)?y:saveGuardY);
-    setTimeout(function(){
-      try{ document.body.classList.remove('mesaha-entry-saving-v408'); document.documentElement.classList.remove('mesaha-entry-saving-v408'); }catch(e){}
-    }, 760);
-    unpatchFocusLater();
-  }
-  function wrapSaveEntry(){
-    if(!window.saveEntry || window.saveEntry.__v408ScrollGuard) return;
-    var old=window.saveEntry;
-    var wrapped=function(){
-      var guard=entryActive();
-      var y=guard ? beginSaveGuard() : currentY();
-      var res;
-      try{ res=old.apply(this, arguments); }
-      finally{ if(guard) endSaveGuard(y); }
-      return res;
-    };
-    wrapped.__v408ScrollGuard=true;
-    window.saveEntry=wrapped;
-    try{ saveEntry=wrapped; }catch(e){}
-  }
-
-  function point(ev){
-    var t=(ev.changedTouches&&ev.changedTouches[0]) || (ev.touches&&ev.touches[0]) || ev;
-    if(!t) return null;
-    var x=Number(t.clientX), y=Number(t.clientY);
-    if(!Number.isFinite(x)||!Number.isFinite(y)) return null;
-    return {x:x,y:y,time:Date.now()};
-  }
-  function insideEntryTarget(ev){
-    var t=ev && ev.target;
-    return !!(t && t.closest && t.closest('#entryView'));
-  }
-  function actionableTarget(ev){
-    var t=ev && ev.target;
-    if(!t || !t.closest) return null;
-    return t.closest('button,a,label,input,select,textarea,[data-product],[data-dia],[data-len],[data-edit]');
-  }
-  function startTrack(ev){
-    if(!entryActive() || !insideEntryTarget(ev)) return;
-    var p=point(ev); if(!p) return;
-    downInfo={x:p.x,y:p.y,time:p.time,moved:false};
-  }
-  function moveTrack(ev){
-    if(!downInfo || !entryActive()) return;
-    var p=point(ev); if(!p) return;
-    var dx=Math.abs(p.x-downInfo.x), dy=Math.abs(p.y-downInfo.y);
-    if(dx>8 || dy>8){
-      downInfo.moved=true;
-      tapBlockUntil=Date.now()+260;
-      try{ document.body.classList.add('mesaha-entry-scrolling-v408'); }catch(e){}
-    }
-  }
-  function endTrack(ev){
-    if(!downInfo) return;
-    if(downInfo.moved){
-      tapBlockUntil=Date.now()+320;
-      setTimeout(function(){ if(Date.now()>tapBlockUntil) document.body.classList.remove('mesaha-entry-scrolling-v408'); },360);
-    }
-    downInfo=null;
-  }
-  function blockGhostClick(ev){
-    if(!entryActive() || !insideEntryTarget(ev)) return;
-    if(Date.now() > tapBlockUntil) return;
-    var a=actionableTarget(ev);
-    if(!a) return;
-    try{ ev.preventDefault(); }catch(e){}
-    try{ ev.stopPropagation(); }catch(e){}
-    try{ ev.stopImmediatePropagation(); }catch(e){}
-  }
-  function bindTapGuard(){
-    if(document.__mesahaV408TapGuard) return;
-    document.__mesahaV408TapGuard=true;
-    ['touchstart','pointerdown','mousedown'].forEach(function(evt){document.addEventListener(evt,startTrack,{capture:true,passive:true});});
-    ['touchmove','pointermove','mousemove'].forEach(function(evt){document.addEventListener(evt,moveTrack,{capture:true,passive:true});});
-    ['touchend','touchcancel','pointerup','pointercancel','mouseup'].forEach(function(evt){document.addEventListener(evt,endTrack,{capture:true,passive:true});});
-    ['click','dblclick'].forEach(function(evt){document.addEventListener(evt,blockGhostClick,{capture:true,passive:false});});
-  }
-  function bindSavePreGuard(){
-    var btn=byId('saveBtn');
-    if(!btn || btn.__v408PreGuard) return;
-    btn.__v408PreGuard=true;
-    ['touchstart','pointerdown','mousedown'].forEach(function(evt){
-      btn.addEventListener(evt,function(){ if(entryActive()) beginSaveGuard(); },{capture:true,passive:true});
-    });
-  }
-  function boot(){
-    syncVersion();
-    wrapSaveEntry();
-    bindTapGuard();
-    bindSavePreGuard();
-    [120,420,900,1800,3600].forEach(function(ms){setTimeout(function(){syncVersion();wrapSaveEntry();bindSavePreGuard();},ms);});
-  }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true}); else boot();
-  window.addEventListener('pageshow',function(){setTimeout(boot,80);});
-  window.MesahaEntryScrollTapGuardV408={sync:syncVersion,wrap:wrapSaveEntry,beginSaveGuard:beginSaveGuard};
+  window.MesahaEntryScrollTapGuardV408={sync:function(){},wrap:function(){},beginSaveGuard:function(){},disabledBy:'V5.27'};
 })();
 </script>
 <style id="mesaha-v409-cutter-static-save-fix-style">
@@ -7271,91 +6872,9 @@ body.mesaha-entry-scrolling-v408 #entryView label{
 <script id="mesaha-v409-cutter-static-save-fix">
 (function(){
   'use strict';
-  if(window.__mesahaCutterStaticSaveFixV409) return;
-  window.__mesahaCutterStaticSaveFixV409 = true;
-  var MV=window.MESAHA_VERSION||{}, DISPLAY=MV.visibleVersion||'Mesaha İO', APP=MV.app||'Mesaha İO', BUILD=Number(MV.build||0)||0, VERSION=MV.version||'local', CACHE=MV.cacheName||'mesaha-app-local';
-  var REMOVED_KEY='mesaha_removed_cutters_v407';
-  var SETTINGS_KEY='cam_mesaha_ayarlar_v1';
-  var frozenTimer=0, saveWrapped=false;
-  function $(id){return document.getElementById(id)}
-  function clean(v){return String(v==null?'':v).trim().replace(/\s+/g,' ')}
-  function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]})}
-  function readJson(k,f){try{return JSON.parse(localStorage.getItem(k)||'')||f}catch(e){return f}}
-  function state(){try{return window.state||null}catch(e){return null}}
-  function settings(){var s=state(); if(s){ if(!s.settings)s.settings={}; if(!Array.isArray(s.settings.cutters))s.settings.cutters=[]; return s.settings; } return readJson(SETTINGS_KEY,{cutters:[]})||{cutters:[]};}
-  function records(){var s=state(); if(s&&Array.isArray(s.records))return s.records; return readJson('cam_mesaha_kayitlari_v1',[])||[];}
-  function unique(arr){var out=[];(arr||[]).forEach(function(x){x=clean(x);if(x&&out.indexOf(x)<0)out.push(x)});return out}
-  function removed(){var st=settings(); return unique([].concat(readJson(REMOVED_KEY,[])||[], Array.isArray(st.removedCuttersV407)?st.removedCuttersV407:[]));}
-  function activeRecordCutters(){return unique(records().map(function(r){return r&&r.cutter;}));}
-  function saveSettingsSoft(){try{if(window.__flushSettings)window.__flushSettings();else if(window.saveSettings)window.saveSettings();}catch(e){} }
-  function cutterList(){
-    var st=settings(), active=activeRecordCutters(), rem=removed();
-    var list=unique([].concat(st.cutters||[], st.activeCutter||[], active)).filter(function(c){return rem.indexOf(c)<0 || active.indexOf(c)>-1;});
-    var changed=false;
-    if(st.activeCutter && list.indexOf(clean(st.activeCutter))<0){st.activeCutter=''; changed=true;}
-    if(st.cutterFilter && st.cutterFilter!=='Tümü' && list.indexOf(clean(st.cutterFilter))<0){st.cutterFilter='Tümü'; changed=true;}
-    if(JSON.stringify(st.cutters||[])!==JSON.stringify(list)){st.cutters=list; changed=true;}
-    if(changed) saveSettingsSoft();
-    return list;
-  }
-  function stableRenderCutters(){
-    var chips=$('cutterChips'), st=settings(); if(!chips||!st)return;
-    var list=cutterList();
-    chips.classList.add('cutter-manager-v406','cutter-static-v409');
-    var html='<button class="cutter-none-v406 '+(!st.activeCutter?'active':'')+'" data-cutter-select-v406="" type="button">Kesimci seçilmedi</button>';
-    html+=list.map(function(c){
-      var active=clean(st.activeCutter)===c;
-      return '<span class="cutter-chip-v406 '+(active?'active':'')+'" data-cutter-name-v406="'+esc(c)+'">'
-        +'<button class="cutter-name-v406" data-cutter-select-v406="'+esc(c)+'" type="button" title="'+esc(c)+'">'+esc(c)+'</button>'
-        +'<button class="cutter-edit-v406" data-cutter-edit-v406="'+esc(c)+'" type="button">Düzenle</button>'
-        +'<button class="cutter-delete-v406" data-cutter-delete-v406="'+esc(c)+'" type="button">Sil</button>'
-        +'</span>';
-    }).join('');
-    if(chips.innerHTML!==html) chips.innerHTML=html;
-  }
-  function overrideBaseRender(){
-    try{window.renderCutters=stableRenderCutters;}catch(e){}
-    try{renderCutters=stableRenderCutters;}catch(e){}
-    try{if(window.MesahaCutterManagerV406)window.MesahaCutterManagerV406.render=stableRenderCutters;}catch(e){}
-  }
-  function syncVersion(){
-    try{window.MESAHA_VERSION=Object.assign({},window.MESAHA_VERSION||{},{app:APP,version:VERSION,build:BUILD,visibleVersion:DISPLAY,shortVersion:DISPLAY,name:'Mesaha İO '+DISPLAY,cacheName:CACHE,assetVersion:String((window.MESAHA_VERSION&&window.MESAHA_VERSION.assetVersion)||'')});}catch(e){}
-    try{var vt=$('versionText'); if(vt)vt.textContent=DISPLAY; document.querySelectorAll('.version-card b').forEach(function(b){if(/^V3\.\d+/.test((b.textContent||'').trim()))b.textContent=DISPLAY;}); var chip=document.querySelector('.version-chip-v407'); if(chip)chip.textContent='Mesaha İO';}catch(e){}
-  }
-  function freezeCutterStrip(){
-    var chips=$('cutterChips'); if(!chips)return;
-    clearTimeout(frozenTimer);
-    var h=Math.max(48,Math.ceil(chips.getBoundingClientRect().height||0));
-    chips.style.minHeight=h+'px';
-    chips.style.height=h+'px';
-    chips.classList.add('mesaha-cutter-strip-frozen-v409');
-    frozenTimer=setTimeout(function(){try{chips.classList.remove('mesaha-cutter-strip-frozen-v409'); chips.style.height=''; chips.style.minHeight=''; stableRenderCutters();}catch(e){}},900);
-  }
-  function wrapSave(){
-    if(saveWrapped || !window.saveEntry || window.saveEntry.__v409CutterStatic) return;
-    var old=window.saveEntry;
-    var wrapped=function(){
-      var y=window.scrollY||document.documentElement.scrollTop||0;
-      freezeCutterStrip();
-      var res;
-      try{res=old.apply(this,arguments);}finally{
-        setTimeout(function(){stableRenderCutters(); try{window.scrollTo({top:y,left:0,behavior:'auto'});}catch(e){try{window.scrollTo(0,y)}catch(_){}}},0);
-        setTimeout(function(){try{window.scrollTo({top:y,left:0,behavior:'auto'});}catch(e){}},80);
-        setTimeout(function(){try{window.scrollTo({top:y,left:0,behavior:'auto'});}catch(e){}},180);
-      }
-      return res;
-    };
-    wrapped.__v409CutterStatic=true;
-    window.saveEntry=wrapped;
-    try{saveEntry=wrapped;}catch(e){}
-    saveWrapped=true;
-  }
-  function bindSaveButton(){var b=$('saveBtn'); if(b&&!b.__v409Freeze){b.__v409Freeze=true; ['touchstart','pointerdown','mousedown','click'].forEach(function(evt){b.addEventListener(evt,freezeCutterStrip,{capture:true,passive:true});});}}
-  function boot(){syncVersion();overrideBaseRender();stableRenderCutters();wrapSave();bindSaveButton();}
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
-  ['mesaha:records-saved','mesaha:settings-saved'].forEach(function(evt){window.addEventListener(evt,function(){setTimeout(function(){overrideBaseRender();stableRenderCutters();},40)})});
-  [120,420,900,1800,3600].forEach(function(ms){setTimeout(boot,ms)});
-  try{window.MesahaCutterStaticSaveFixV409={render:stableRenderCutters,freeze:freezeCutterStrip,sync:syncVersion};}catch(e){}
+  function sync(){try{if(window.MesahaVersion)window.MesahaVersion.applyToDocument(document);}catch(e){}}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',sync,{once:true});else sync();
+  window.MesahaCutterStaticSaveFixV409={render:function(){},freeze:function(){},sync:sync,saveWrapperDisabledBy:'V5.27'};
 })();
 </script>
 <script id="mesaha-v411-firebase-resilience-guard">
@@ -7396,126 +6915,30 @@ body.mesaha-entry-scrolling-v408 #entryView label{
 <script id="mesaha-v416-boy-input-focus-guard">
 (function(){
   'use strict';
-  if(window.__mesahaBoyInputFocusGuardV416) return;
-  window.__mesahaBoyInputFocusGuardV416 = true;
-
-  var MV=window.MESAHA_VERSION||{}, DISPLAY=MV.visibleVersion||'Mesaha İO', APP=MV.app||'Mesaha İO', BUILD=Number(MV.build||0)||0, VERSION=MV.version||'local', CACHE=MV.cacheName||'mesaha-app-local';
-  var saveLockUntil=0, toastLockUntil=0, lastStableY=0;
-
+  if(window.__mesahaBoyInputFocusGuardV416)return;
+  window.__mesahaBoyInputFocusGuardV416=true;
+  var toastLockUntil=0;
   function $(id){return document.getElementById(id)}
-  function clean(v){return String(v==null?'':v).trim().replace(',', '.')}
-  function num(v){var n=Number(clean(v)); return Number.isFinite(n)?n:0}
-  function entryActive(){var e=$('entryView'); return !!(e && e.classList.contains('active'))}
-  function isSaveTarget(ev){var t=ev && ev.target; return !!(t && t.closest && t.closest('#saveBtn,.save-btn'))}
-  function y(){return window.scrollY||document.documentElement.scrollTop||document.body.scrollTop||0}
-  function restoreY(pos){
-    if(!Number.isFinite(pos)) pos=lastStableY||0;
-    [0,60,140,260,420].forEach(function(ms){
-      setTimeout(function(){try{window.scrollTo({top:pos,left:0,behavior:'auto'})}catch(e){try{window.scrollTo(0,pos)}catch(_){}}},ms);
-    });
-  }
-  function toastOnce(msg,sub,type){
-    var now=Date.now();
-    if(now<toastLockUntil) return;
-    toastLockUntil=now+900;
-    try{ if(typeof window.toast==='function') window.toast(msg,sub||'',type||'warning'); else void(0); }catch(e){}
-  }
-  function stableFocus(el){
-    if(!el) return;
-    var pos=y();
-    try{
-      el.focus({preventScroll:true});
-      var l=String(el.value||'').length;
-      try{el.setSelectionRange(l,l)}catch(e){}
-    }catch(e){try{el.focus()}catch(_){}}
-    restoreY(pos);
-  }
+  function clean(v){return String(v==null?'':v).trim().replace(',','.')}
+  function toastOnce(msg){var n=Date.now();if(n<toastLockUntil)return;toastLockUntil=n+800;try{if(typeof window.toast==='function')window.toast(msg);}catch(e){}}
+  function stableFocus(el){if(!el)return;try{el.focus({preventScroll:true});var n=String(el.value||'').length;try{el.setSelectionRange(n,n)}catch(e){}}catch(e){}}
   function validateBoyOnly(){
-    var l=$('lengthInput');
-    if(!l) return true;
-    var raw=clean(l.value);
-    var n=num(raw);
-    var invalid=false, msg='';
-    if(raw && (!Number.isFinite(Number(raw)) || n<=0)){invalid=true; msg='Boy 0’dan büyük olmalı.'}
-    else if(n>50){invalid=true; msg='Boy 50 üzerinde olamaz.'}
-    l.classList.toggle('mesaha-invalid-boy-v416', invalid);
-    if(invalid){
-      toastOnce(msg || 'Boy değeri geçersiz.', 'Değeri düzelt; ekran zıplaması engellendi.', 'warning');
-      stableFocus(l);
-      return false;
-    }
+    var l=$('lengthInput');if(!l)return true;
+    var raw=clean(l.value),n=Number(raw),invalid=false,msg='';
+    if(raw&&(!Number.isFinite(n)||n<=0)){invalid=true;msg='Boy 0’dan büyük olmalı.'}
+    else if(n>50){invalid=true;msg='Boy 50 üzerinde olamaz.'}
+    l.classList.toggle('mesaha-invalid-boy-v416',invalid);
+    if(invalid){toastOnce(msg);stableFocus(l);return false;}
     return true;
   }
-  function syncVersion(){
-    try{
-      window.MESAHA_VERSION=Object.assign({},window.MESAHA_VERSION||{},{
-        app:APP,version:VERSION,build:BUILD,visibleVersion:DISPLAY,shortVersion:DISPLAY,
-        name:'Mesaha İO '+DISPLAY,cacheName:CACHE,assetVersion:String((window.MESAHA_VERSION&&window.MESAHA_VERSION.assetVersion)||'')
-      });
-    }catch(e){}
-    try{
-      var vt=$('versionText'); if(vt)vt.textContent=DISPLAY;
-      document.querySelectorAll('.version-card b').forEach(function(b){ if(/^V\d+\.\d+/.test((b.textContent||'').trim())) b.textContent=DISPLAY; });
-      var chip=document.querySelector('.version-chip-v407'); if(chip) chip.textContent=APP;
-      document.title='Mesaha İO '+DISPLAY;
-    }catch(e){}
-  }
-  function handleSaveEvent(ev){
-    if(!entryActive() || !isSaveTarget(ev)) return;
-    var now=Date.now();
-    if(ev){
-      try{ev.preventDefault()}catch(e){}
-      try{ev.stopPropagation()}catch(e){}
-      try{ev.stopImmediatePropagation()}catch(e){}
-    }
-    if(now<saveLockUntil) return;
-    saveLockUntil=now+760;
-    var entry=$('entryView');
-    lastStableY=y();
-    try{ if(entry) entry.classList.add('mesaha-save-lock-v416'); }catch(e){}
-    if(!validateBoyOnly()){
-      restoreY(lastStableY);
-      setTimeout(function(){try{if(entry)entry.classList.remove('mesaha-save-lock-v416')}catch(e){}},260);
-      return;
-    }
-    try{
-      var d=$('diameterInput'), l=$('lengthInput'), b=$('barcodeInput');
-      if(window.state && window.state.settings){
-        if(d) window.state.settings.diameter=String(d.value||'');
-        if(l) window.state.settings.length=String(l.value||'');
-        if(b) window.state.settings.barcode=String(b.value||'').toUpperCase();
-      }
-      if(typeof window.saveEntry==='function') window.saveEntry();
-      else {
-        var btn=$('saveBtn');
-        if(btn) btn.click();
-      }
-    }catch(e){
-      try{console.error('v416 save guard error', e)}catch(_){}
-      toastOnce('Kaydet çalıştırılamadı.', e&&e.message?e.message:'Tekrar dene', 'error');
-    }finally{
-      restoreY(lastStableY);
-      setTimeout(function(){try{if(entry)entry.classList.remove('mesaha-save-lock-v416')}catch(e){}},520);
-    }
-  }
+  function syncVersion(){try{if(window.MesahaVersion)window.MesahaVersion.applyToDocument(document);}catch(e){}}
   function bind(){
     syncVersion();
     var l=$('lengthInput');
-    if(l && !l.__v416BoyGuard){
-      l.__v416BoyGuard=true;
-      l.addEventListener('input',function(){validateBoyOnly()},true);
-      l.addEventListener('blur',function(){setTimeout(validateBoyOnly,40)},true);
-    }
-    if(!document.__v416SaveCapture){
-      document.__v416SaveCapture=true;
-      ['pointerdown','touchstart','click'].forEach(function(evt){
-        document.addEventListener(evt,handleSaveEvent,{capture:true,passive:false});
-      });
-    }
+    if(l&&!l.__v527BoyGuard){l.__v527BoyGuard=true;l.addEventListener('input',validateBoyOnly,{passive:true});l.addEventListener('blur',function(){setTimeout(validateBoyOnly,40)},{passive:true});}
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
-  [120,420,900,1800,3600].forEach(function(ms){setTimeout(bind,ms)});
-  try{window.MesahaBoyInputFocusGuardV416={validate:validateBoyOnly,sync:syncVersion};}catch(e){}
+  window.MesahaBoyInputFocusGuardV416={validate:validateBoyOnly,sync:syncVersion,saveCaptureDisabledBy:'V5.27'};
 })();
 </script>
 <style id="mesaha-v422-save-single-gate-style">
@@ -7529,119 +6952,8 @@ body.mesaha-entry-scrolling-v408 #entryView label{
 <script id="mesaha-v422-save-single-gate">
 (function(){
   'use strict';
-  if(window.__mesahaIosSaveSingleGateV418) return;
-  window.__mesahaIosSaveSingleGateV418 = true;
-
-  var MV=window.MESAHA_VERSION||{}, APP=MV.app||'Mesaha İO', DISPLAY=MV.visibleVersion||'Mesaha İO', BUILD=Number(MV.build||0)||0, VERSION=MV.version||'local', CACHE=MV.cacheName||'mesaha-app-local';
-  var LOCK_MS = 720;
-  var installTimer = null;
-  var gate = {until:0, depth:0, blocked:0, lastAcceptedAt:0};
-
-  function byId(id){return document.getElementById(id)}
-  function entryActive(){
-    var e = byId('entryView');
-    return !!(e && e.classList && e.classList.contains('active'));
-  }
-  function field(id){var el=byId(id); return el ? String(el.value||'') : ''}
-  function signature(){
-    try{
-      var st = window.state && window.state.settings ? window.state.settings : {};
-      return [
-        field('barcodeInput').toUpperCase(),
-        field('diameterInput'),
-        field('lengthInput'),
-        st.currentProduct || '',
-        st.activeCutter || '',
-        window.state && window.state.editingId ? String(window.state.editingId) : ''
-      ].join('|');
-    }catch(e){return ''}
-  }
-  function markSaving(on){
-    try{
-      var e=byId('entryView');
-      if(e) e.classList.toggle('mesaha-save-single-gate-v418', !!on);
-    }catch(e){}
-  }
-  function syncVersion(){
-    try{
-      window.MESAHA_VERSION = Object.assign({}, window.MESAHA_VERSION || {}, {
-        app:APP, version:VERSION, build:BUILD, visibleVersion:DISPLAY, shortVersion:DISPLAY,
-        name:'Mesaha İO '+DISPLAY, cacheName:CACHE, assetVersion:String((window.MESAHA_VERSION&&window.MESAHA_VERSION.assetVersion)||'')
-      });
-      window.APP_VERSION = APP;
-      var vt=byId('versionText'); if(vt) vt.textContent=DISPLAY;
-      var chip=document.querySelector('.version-chip-v407'); if(chip) chip.textContent=APP;
-      document.title='Mesaha İO '+DISPLAY;
-    }catch(e){}
-  }
-  function isAlreadyOurWrapper(fn){
-    return !!(fn && fn.__mesahaV418SingleSaveGuard);
-  }
-  function install(){
-    syncVersion();
-    var fn = window.saveEntry;
-    if(typeof fn !== 'function') return;
-    if(isAlreadyOurWrapper(fn)) return;
-
-    var wrapped = function(){
-      // İç içe wrapper zincirinde gerçek kaydı engelleme; sadece dış çağrıları tekilleştir.
-      if(gate.depth > 0){
-        return fn.apply(this, arguments);
-      }
-
-      var active = entryActive();
-      var now = Date.now();
-      if(active && now < gate.until){
-        gate.blocked++;
-        return false;
-      }
-
-      if(active){
-        gate.until = now + LOCK_MS;
-        gate.lastAcceptedAt = now;
-        markSaving(true);
-      }
-
-      gate.depth++;
-      try{
-        return fn.apply(this, arguments);
-      }finally{
-        gate.depth = Math.max(0, gate.depth - 1);
-        if(active){
-          setTimeout(function(){ markSaving(false); }, LOCK_MS);
-        }
-      }
-    };
-
-    // Eski debug davranışı kapalıdır; kayıt işlemi sadece gerçek kayıt akışını çalıştırır.
-    wrapped.__mesahaV418SingleSaveGuard = true;
-    wrapped.__mesahaDebugWrappedV415 = true;
-    wrapped.__mesahaV418Inner = fn;
-
-    try{ window.saveEntry = wrapped; }catch(e){}
-    try{ saveEntry = wrapped; }catch(e){}
-  }
-
-  function boot(){
-    install();
-    clearInterval(installTimer);
-    var tries = 0;
-    installTimer = setInterval(function(){
-      tries++;
-      install();
-      if(tries > 60) clearInterval(installTimer);
-    }, 500);
-  }
-
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, {once:true});
-  else boot();
-
-  [80,180,420,900,1800,3600,7000,12000,18000,24000,30000].forEach(function(ms){ setTimeout(install, ms); });
-
-  window.MesahaSaveSingleGateV418 = {
-    install:install,
-    status:function(){return {until:gate.until, depth:gate.depth, blocked:gate.blocked, active:entryActive(), version:VERSION};}
-  };
+  window.__mesahaIosSaveSingleGateV418=true;
+  window.MesahaSaveSingleGateV418={install:function(){},status:function(){return {busy:!!window.__mesahaSaveBusyV527,managedBy:'V5.27'};}};
 })();
 </script>
 
@@ -8207,7 +7519,7 @@ body.mesaha-entry-scrolling-v408 #entryView label{
   function qsa(sel,root){return Array.prototype.slice.call((root||document).querySelectorAll(sel))}
   function isOffline(){return navigator && navigator.onLine===false}
   function hardShow(view){
-    ['home','entry','records','guide','settings'].forEach(function(v){
+    ['home','entry','records','seflikFolder','guide','settings'].forEach(function(v){
       var el=$(v+'View');
       if(el){
         el.classList.toggle('active',v===view);
@@ -8294,18 +7606,9 @@ body.mesaha-entry-scrolling-v408 #entryView label{
       },false);
     }
     var save=$('saveBtn');
-    if(save && !save.__v453OfflineFallback){
-      save.__v453OfflineFallback=true;
-      save.addEventListener('click',function(){
-        userNavigated=true;
-        var before=0; try{before=(window.state&&window.state.records&&window.state.records.length)||0}catch(e){}
-        setTimeout(function(){
-          var after=0; try{after=(window.state&&window.state.records&&window.state.records.length)||0}catch(e){}
-          if(before===after && typeof window.saveEntry==='function'){
-            try{ window.saveEntry(); }catch(e){}
-          }
-        },160);
-      },false);
+    if(save&&!save.__v527OfflineFallback){
+      save.__v527OfflineFallback=true;
+      save.addEventListener('click',function(){userNavigated=true;},{passive:true});
     }
     var clear=$('clearBtn');
     if(clear && !clear.__v453OfflineFallback){
@@ -8388,12 +7691,13 @@ body.mesaha-entry-scrolling-v408 #entryView label{
   function fold(s){return clean(s).toLocaleLowerCase('tr-TR').replace(/[ç]/g,'c').replace(/[ğ]/g,'g').replace(/[ı]/g,'i').replace(/[ö]/g,'o').replace(/[ş]/g,'s').replace(/[ü]/g,'u')}
   function userKey(name,seflik){return (fold(name)+'__'+fold(seflik)).replace(/[^a-z0-9_-]+/g,'_').slice(0,120)||'bos'}
   function readUser(){var u=getJson(PANEL_KEY,{}), st=getJson(SETTINGS_KEY,{});return{name:clean(u.name||st.ekipNot),seflik:clean(u.seflik||st.seflik),bolmeNo:clean(u.bolmeNo||st.bolmeNo)}}
+  function validIdentity(u){u=u||{};if(window.MesahaRuntimeV527&&typeof window.MesahaRuntimeV527.validIdentity==='function')return window.MesahaRuntimeV527.validIdentity(u.name,u.seflik);var n=clean(u.name),sf=clean(u.seflik),ln=n.toLocaleLowerCase('tr-TR'),ls=sf.toLocaleLowerCase('tr-TR');return n.length>1&&sf.length>1&&!/^(kullanıcı|kullanici|user|guest|misafir|boş|bos|-)$/.test(ln)&&!/^(şeflik|seflik|unknown|bilinmiyor|boş|bos|-)$/.test(ls)}
   function token(){var s=getJson(SESSION_KEY,null);return clean(s&&s.access_token)}
   function deviceId(){try{return clean(localStorage.getItem(DEV1)||localStorage.getItem(DEV2)||'')}catch(e){return ''}}
   function browserInfo(){var ua=navigator.userAgent||'', name='Tarayıcı', ver=''; var m; if((m=ua.match(/SamsungBrowser\/([\d.]+)/i))){name='Samsung Internet';ver=m[1]} else if((m=ua.match(/Edg\/([\d.]+)/i))){name='Edge';ver=m[1]} else if((m=ua.match(/Chrome\/([\d.]+)/i))){name='Chrome';ver=m[1]} else if((m=ua.match(/CriOS\/([\d.]+)/i))){name='Chrome iOS';ver=m[1]} else if((m=ua.match(/Firefox\/([\d.]+)/i))){name='Firefox';ver=m[1]} else if((m=ua.match(/Version\/([\d.]+).*Safari/i))){name='Safari';ver=m[1]} return {browser:name,browserVersion:ver}}
   function deviceInfo(){var ua=navigator.userAgent||'', sw=(screen&&screen.width)||'', sh=(screen&&screen.height)||'', vw=window.innerWidth||'', vh=window.innerHeight||'', bi=browserInfo(); var os='Bilinmiyor'; if(/Android/i.test(ua))os='Android'; else if(/iPhone|iPad|iPod/i.test(ua))os='iOS'; else if(/Windows/i.test(ua))os='Windows'; else if(/Mac OS/i.test(ua))os='macOS'; else if(/Linux/i.test(ua))os='Linux'; return {deviceId:deviceId(),os:os,platform:navigator.platform||os,browser:bi.browser,browserVersion:bi.browserVersion,userAgent:ua,screen:sw+'x'+sh,viewport:vw+'x'+vh,language:navigator.language||'',timezone:(Intl.DateTimeFormat().resolvedOptions().timeZone||''),appVersion:(window.MESAHA_VERSION&&window.MESAHA_VERSION.visibleVersion)||'Mesaha İO',fileVersion:(window.MESAHA_VERSION&&window.MESAHA_VERSION.version)||'local'} }
   function renderIp(){var ip='';try{ip=localStorage.getItem(IP_KEY)||''}catch(e){} var dev=$('panelDeviceV316'), u=readUser(), info=deviceInfo(); if(dev) dev.value=[info.os,info.browser+(info.browserVersion?' '+info.browserVersion:''),info.screen].filter(Boolean).join(' • '); var grid=document.querySelector('#userPanelOverlayV316 .panel-grid-v316'); if(grid && !$('panelIpV518')){var lab=document.createElement('label');lab.className='panel-field-v316 panel-ip-v518';lab.innerHTML='IP Adresi<input id="panelIpV518" readonly type="text" placeholder="IP alınıyor…">';grid.appendChild(lab)} var inp=$('panelIpV518'); if(inp) inp.value=ip||'IP alınıyor…'; var tel=$('panelTelegramSectionV515'); if(tel && !$('panelIpCardV518')){var card=document.createElement('div');card.id='panelIpCardV518';card.className='mesaha-ip-card-v518';tel.parentNode.insertBefore(card,tel)} var c=$('panelIpCardV518'); if(c)c.innerHTML='<b>Bağlantı IP:</b> '+(ip||'Alınıyor…')+'<small>'+[u.name&&u.seflik?(u.name+' • '+u.seflik):'',info.os+' • '+info.browser,info.screen].filter(Boolean).join(' / ')+'</small>' }
-  async function ping(reason){renderIp(); var u=readUser(); if(!u.name||!u.seflik) return false; try{ if(window.mesahaSupabaseV380&&window.mesahaSupabaseV380.ready) await window.mesahaSupabaseV380.ready(); }catch(e){} var t=token(); if(!t) return false; var cfg=window.MESAHA_SUPABASE_CONFIG||{}, info=deviceInfo(); var body={action:reason||'profile_ping',userKey:userKey(u.name,u.seflik),name:u.name,seflik:u.seflik,bolmeNo:u.bolmeNo,deviceId:info.deviceId,deviceInfo:info,appVersion:info.appVersion,fileVersion:info.fileVersion,source:'mesaha-v518-ip-ping'}; try{var res=await fetch(EDGE_URL,{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+t,apikey:clean(cfg.anonKey||cfg.anon_key||'')},body:JSON.stringify(body),cache:'no-store'}); var txt=await res.text(), j={}; try{j=txt?JSON.parse(txt):{}}catch(e){} if(j&&j.ip){try{localStorage.setItem(IP_KEY,j.ip)}catch(e){}} renderIp(); return !!(j&&j.ok)}catch(e){renderIp(); return false}}
+  async function ping(reason){renderIp(); var u=readUser(); if(!validIdentity(u)) return false; try{ if(window.mesahaSupabaseV380&&window.mesahaSupabaseV380.ready) await window.mesahaSupabaseV380.ready(); }catch(e){} var t=token(); if(!t) return false; var cfg=window.MESAHA_SUPABASE_CONFIG||{}, info=deviceInfo(); var body={action:reason||'profile_ping',userKey:userKey(u.name,u.seflik),name:u.name,seflik:u.seflik,bolmeNo:u.bolmeNo,deviceId:info.deviceId,deviceInfo:info,appVersion:info.appVersion,fileVersion:info.fileVersion,source:'mesaha-v518-ip-ping'}; try{var res=await fetch(EDGE_URL,{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+t,apikey:clean(cfg.anonKey||cfg.anon_key||'')},body:JSON.stringify(body),cache:'no-store'}); var txt=await res.text(), j={}; try{j=txt?JSON.parse(txt):{}}catch(e){} if(j&&j.ip){try{localStorage.setItem(IP_KEY,j.ip)}catch(e){}} renderIp(); return !!(j&&j.ok)}catch(e){renderIp(); return false}}
   function bind(){renderIp(); setTimeout(function(){ping('profile_ping')},2000); setInterval(function(){ping('profile_ping_periodic')},300000); window.addEventListener('online',function(){ping('profile_ping_online')}); document.addEventListener('visibilitychange',function(){if(!document.hidden) ping('profile_ping_visible')}); document.addEventListener('click',function(ev){if(ev.target&&ev.target.closest&&ev.target.closest('#userPanelBtnV316,#userBadge,#panelSaveV316'))setTimeout(function(){renderIp();ping('profile_ping_panel')},500)},true); var ov=$('userPanelOverlayV316'); if(ov&&window.MutationObserver&&!ov.__ipV518){ov.__ipV518=true;new MutationObserver(renderIp).observe(ov,{attributes:true,attributeFilter:['class'],subtree:false})}}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
   window.MesahaIpV518={ping:ping,render:renderIp};
@@ -8401,61 +7705,222 @@ body.mesaha-entry-scrolling-v408 #entryView label{
 </script>
 
 
-<script id="mesaha-v519-ios-tap-and-export-policy">
-/* v519: iPhone/iOS kritik buton dokunma sağlamlaştırma + sadece Mesaha/Yedek işleminde admin istatistik gönderimi */
+
+
+<script src="./js/mesaha-runtime-v527.js"></script>
+<script src="./js/mesaha-seflik-folder-v529.js"></script>
+
+<style id="mesaha-v530-seflik-ui-fix">
+/* V5.30 — Ölçümler buton sırası ve Şeflik Klasörü okunabilirlik düzeltmesi */
+#recordsView .records-action-grid-v530{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;gap:8px!important;margin:10px 0 8px!important;}
+#recordsView .records-action-grid-v530 #downloadXlsBtn{grid-column:1/-1!important;grid-row:1!important;min-height:48px!important;}
+#recordsView .records-action-grid-v530 #seflikSendFromRecordsV529{grid-column:1!important;grid-row:2!important;order:initial!important;background:linear-gradient(180deg,#ffc334,#f5a400)!important;border-color:#e8a400!important;color:#533700!important;box-shadow:0 9px 20px rgba(245,164,0,.18)!important;}
+#recordsView .records-action-grid-v530 #printBtn{grid-column:2!important;grid-row:2!important;order:initial!important;}
+#recordsView .records-action-grid-v530 #backupBtn{grid-column:1!important;grid-row:3!important;order:initial!important;}
+#recordsView .records-action-grid-v530 #restoreBtn{grid-column:2!important;grid-row:3!important;order:initial!important;}
+#recordsView .records-action-grid-v530 #cloudBackupBtnV316{grid-column:1!important;grid-row:4!important;order:initial!important;}
+#recordsView .records-action-grid-v530 #cloudRestoreBtnV316{grid-column:2!important;grid-row:4!important;order:initial!important;}
+#recordsView .records-action-grid-v530 #printBtn,
+#recordsView .records-action-grid-v530 #backupBtn,
+#recordsView .records-action-grid-v530 #restoreBtn,
+#recordsView .records-action-grid-v530 #cloudBackupBtnV316,
+#recordsView .records-action-grid-v530 #cloudRestoreBtnV316{background:#eff7fb!important;color:#22505c!important;border-color:#dceaf2!important;box-shadow:0 7px 16px rgba(34,80,92,.055)!important;}
+
+#seflikFolderView{padding-bottom:20px!important;}
+#seflikFolderView .seflik-folder-shell{gap:12px!important;}
+#seflikFolderView .card{opacity:1!important;filter:none!important;}
+#seflikFolderView .card.seflik-folder-hero{background:linear-gradient(135deg,#0d5f3b 0%,#16734a 58%,#26915f 100%)!important;color:#fff!important;border:1px solid rgba(13,95,59,.34)!important;box-shadow:0 15px 35px rgba(13,95,59,.18)!important;padding:16px!important;}
+#seflikFolderView .seflik-folder-hero h2{color:#fff!important;font-size:20px!important;margin:0!important;}
+#seflikFolderView .seflik-folder-hero p{color:#e5fff0!important;opacity:1!important;font-size:13px!important;font-weight:820!important;line-height:1.5!important;margin:7px 0 0!important;}
+#seflikFolderView .seflik-folder-badge{color:#fff!important;background:rgba(255,255,255,.14)!important;border-color:rgba(255,255,255,.3)!important;}
+#seflikFolderView .seflik-folder-metric{background:rgba(255,255,255,.13)!important;border-color:rgba(255,255,255,.22)!important;}
+#seflikFolderView .seflik-folder-metric small{color:#d9fbe8!important;opacity:1!important;font-size:10px!important;}
+#seflikFolderView .seflik-folder-metric b{color:#fff!important;opacity:1!important;font-size:18px!important;}
+#seflikFolderView .seflik-folder-control,
+#seflikFolderView .seflik-folder-shell>section.card:not(.seflik-folder-hero){background:#fff!important;border:1px solid #dcebe4!important;box-shadow:0 10px 24px rgba(23,74,50,.065)!important;padding:15px!important;}
+#seflikFolderView .section-head h2,
+#seflikFolderView .seflik-folder-list-head h2{color:#1d392f!important;opacity:1!important;font-size:18px!important;margin:0!important;}
+#seflikFolderView .section-head span{color:#17683f!important;background:#eaf8ef!important;border:1px solid #cde7d7!important;opacity:1!important;font-size:11px!important;}
+#seflikFolderView .seflik-folder-list-head small,
+#seflikFolderView .seflik-folder-hint-v529{color:#536c60!important;opacity:1!important;}
+#seflikFolderView .seflik-create-row-v529{grid-template-columns:minmax(0,1fr) 146px!important;gap:9px!important;align-items:end!important;}
+#seflikFolderView .seflik-create-row-v529 label,
+#seflikFolderView .seflik-folder-control label{color:#294438!important;opacity:1!important;}
+#seflikFolderView input,
+#seflikFolderView select{color:#183d2b!important;background:#fff!important;border-color:#bdd6c8!important;opacity:1!important;}
+#seflikFolderView input::placeholder{color:#7c8983!important;opacity:1!important;}
+#seflikFolderView #seflikFolderCreateV529{background:linear-gradient(180deg,#15945a,#0d5f3b)!important;color:#fff!important;border-color:#0d5f3b!important;white-space:nowrap!important;padding-left:10px!important;padding-right:10px!important;}
+#seflikFolderView .seflik-folder-status{color:#335244!important;background:#f2f8f4!important;opacity:1!important;}
+#seflikFolderView .seflik-folder-empty{color:#526d60!important;background:#f8fcf9!important;opacity:1!important;}
+#seflikFolderView .seflik-folder-empty small{color:#6a7f73!important;opacity:1!important;}
+#seflikFolderView .seflik-division-card{background:#fff!important;opacity:1!important;}
+#seflikFolderView .seflik-division-title b,
+#seflikFolderView .seflik-division-stat b{color:#183d2b!important;opacity:1!important;}
+#seflikFolderView .seflik-division-title small,
+#seflikFolderView .seflik-division-stat small,
+#seflikFolderView .seflik-division-meta{color:#62776c!important;opacity:1!important;}
+#seflikFolderView .seflik-local-pending-v530{display:inline-flex;align-items:center;border-radius:999px;padding:4px 7px;background:#fff7d8;color:#8a650b;border:1px solid #f2df9f;font-size:9px;font-weight:950;margin-left:5px;vertical-align:middle;}
+@media(max-width:390px){#seflikFolderView .seflik-create-row-v529{grid-template-columns:1fr!important;}#seflikFolderView #seflikFolderCreateV529{width:100%!important;}}
+</style>
+
+<style id="mesaha-v531-modal-floating-save-fix">
+/* V5.31 — Şefliğe Gönder penceresi ve bağımsız yüzen Kaydet */
+body.seflik-send-open-v531{overflow:hidden!important;overscroll-behavior:none!important;}
+body.seflik-send-open-v531 #bottomNav{display:none!important;visibility:hidden!important;pointer-events:none!important;}
+#seflikSendOverlayV529{
+  top:var(--seflik-vv-top-v531,0px)!important;
+  bottom:auto!important;
+  height:var(--seflik-vv-height-v531,100dvh)!important;
+  min-height:0!important;
+  padding:12px 12px max(12px,env(safe-area-inset-bottom,0px))!important;
+  overflow:hidden!important;
+  align-items:flex-end!important;
+}
+#seflikSendOverlayV529 .seflik-send-modal-v529{
+  max-height:calc(var(--seflik-vv-height-v531,100dvh) - 24px - env(safe-area-inset-bottom,0px))!important;
+  overflow-y:auto!important;
+  overscroll-behavior:contain!important;
+  -webkit-overflow-scrolling:touch!important;
+  padding-bottom:max(12px,env(safe-area-inset-bottom,0px))!important;
+}
+#seflikSendOverlayV529 .seflik-send-actions-v529{
+  position:sticky!important;
+  bottom:0!important;
+  z-index:4!important;
+  background:linear-gradient(180deg,rgba(255,255,255,.86),#fff 30%)!important;
+  margin:0 -3px -3px!important;
+  padding:12px 3px max(4px,env(safe-area-inset-bottom,0px))!important;
+  border-top:1px solid #e1eee7!important;
+}
+#seflikSendOverlayV529 .seflik-send-actions-v529 .btn{min-height:50px!important;pointer-events:auto!important;touch-action:manipulation!important;}
+#seflikFolderSyncV528{white-space:normal!important;line-height:1.15!important;padding:9px 10px!important;}
+
+/* V5.37 — Kalıcı Kaydet kaldırıldı; yalnız giriş alanı odaktayken yüzen Kaydet görünür. */
+#entryView #saveBtn{display:none!important;visibility:hidden!important;position:absolute!important;width:1px!important;height:1px!important;min-height:0!important;opacity:0!important;pointer-events:none!important;overflow:hidden!important;}
+#entryView .barcode-save{grid-template-columns:minmax(0,1fr)!important;padding-bottom:0!important;}
+#entryView .barcode-save>label{grid-column:1/-1!important;}
+.floating-save-btn-v531{
+  display:none!important;position:fixed!important;right:10px!important;
+  bottom:calc(var(--mesaha-kb-bottom-v537,0px) + env(safe-area-inset-bottom,0px) + 10px)!important;
+  width:clamp(122px,32vw,154px)!important;min-height:58px!important;
+  align-items:center!important;justify-content:center!important;
+  border:1px solid rgba(255,255,255,.44)!important;border-radius:21px!important;
+  background:linear-gradient(180deg,#1bb56f,#0d6b42)!important;color:#fff!important;
+  font-size:19px!important;font-weight:950!important;box-shadow:0 18px 44px rgba(13,95,59,.48)!important;
+  z-index:2147483500!important;pointer-events:auto!important;touch-action:manipulation!important;
+  -webkit-tap-highlight-color:rgba(255,255,255,.2)!important;user-select:none!important;-webkit-user-select:none!important;
+}
+body.mesaha-floating-save-open-v537 #floatingSaveBtnV531,
+html.mesaha-floating-save-open-v537 body #floatingSaveBtnV531{display:inline-flex!important;visibility:visible!important;opacity:1!important;}
+body:not(.mesaha-floating-save-open-v537) #floatingSaveBtnV531,
+html:not(.mesaha-floating-save-open-v537) body #floatingSaveBtnV531{display:none!important;visibility:hidden!important;opacity:0!important;}
+#floatingSaveBtnV531[disabled],#floatingSaveBtnV531[aria-busy="true"]{opacity:.58!important;filter:saturate(.65)!important;}
+body.mesaha-floating-save-open-v537 .bottom-nav{display:none!important;visibility:hidden!important;pointer-events:none!important;}
+@media(max-width:380px){.floating-save-btn-v531{right:8px!important;width:118px!important;min-height:54px!important;font-size:17px!important;}}
+</style>
+<script id="mesaha-v537-modal-floating-save-fix-js">
 (function(){
   'use strict';
-  var isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent||'') || ((navigator.platform||'')==='MacIntel' && navigator.maxTouchPoints>1);
-  var lastTapAt=0;
-  function $(id){return document.getElementById(id)}
-  function toast(t,s,k){try{if(typeof window.mesahaFloatToastV315==='function')return window.mesahaFloatToastV315(t,s||'',k||'success');if(typeof window.toast==='function')return window.toast(t)}catch(e){}}
-  function records(){try{var r=JSON.parse(localStorage.getItem('cam_mesaha_kayitlari_v1')||'[]');return Array.isArray(r)?r:[]}catch(e){return[]}}
-  function fireClick(el,ev){
-    if(!el)return;
-    var now=Date.now();
-    if(now-lastTapAt<420)return;
-    lastTapAt=now;
-    try{el.classList.add('ios-tap-active-v519');setTimeout(function(){el.classList.remove('ios-tap-active-v519')},180)}catch(e){}
-    if(ev){try{ev.preventDefault()}catch(e){} try{ev.stopPropagation()}catch(e){} try{ev.stopImmediatePropagation()}catch(e){}}
-    setTimeout(function(){try{el.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true,view:window}))}catch(e){try{el.click()}catch(_e){}}},0);
-  }
-  function bindTap(el){
-    if(!el || el.__v519Tap)return; el.__v519Tap=true;
-    if(isIOS){
-      el.addEventListener('touchend',function(ev){fireClick(el,ev)}, {capture:true,passive:false});
-      el.addEventListener('pointerup',function(ev){ if(ev.pointerType==='touch') fireClick(el,ev); }, true);
-    }
-  }
-  function bindAll(){
-    ['downloadXlsBtn','backupBtn','cloudBackupBtnV316','deleteAllBtn','bulkDeleteBtn','selectFilteredBtn','clearSelectionBtn','undoDeleteBtn','printBtn'].forEach(function(id){bindTap($(id))});
-    document.querySelectorAll('.record-select-actions button,.action-grid button,.panel-actions-v316 button,.bottom-nav button').forEach(bindTap);
-  }
-  function sendExport(reason,mode){
+  if(window.__mesahaV537FloatingSave)return;
+  window.__mesahaV537FloatingSave=true;
+
+  var lastFire=0,busy=false,hideTimer=0,keyboardTimer=0;
+  function byId(id){return document.getElementById(id)}
+  function entryOpen(){var entry=byId('entryView');return !!(entry&&entry.classList.contains('active'));}
+  function validInput(el){return !!(el&&['diameterInput','lengthInput','barcodeInput','quantityInput'].indexOf(el.id)>=0);}
+  function focusedInput(){return validInput(document.activeElement);}
+  function keyboardInset(){
     try{
-      if(window.mesahaExportStatsV323 && typeof window.mesahaExportStatsV323.send==='function'){
-        var list=records();
-        window.mesahaExportStatsV323.send(reason||'manual-backup',{list:list.slice(),text:mode||'Yedek Al',mode:reason||'backup'});
+      if(window.visualViewport){
+        var vv=window.visualViewport;
+        return Math.max(0,Math.round(window.innerHeight-vv.height-vv.offsetTop));
       }
     }catch(e){}
+    return 0;
   }
-  function bindPolicy(){
-    var b=$('backupBtn');
-    if(b&&!b.__v519BackupSend){b.__v519BackupSend=true;b.addEventListener('click',function(){setTimeout(function(){sendExport('local-backup-json','Yedek Al')},900)},true)}
-    var cb=$('cloudBackupBtnV316');
-    if(cb&&!cb.__v519CloudSend){cb.__v519CloudSend=true;cb.addEventListener('click',function(){setTimeout(function(){sendExport('cloud-backup','Buluta Yedekle')},1800)},true)}
-    var sync=$('panelSyncV316');
-    if(sync&&!sync.__v519NoManualStats){sync.__v519NoManualStats=true;sync.addEventListener('click',function(ev){try{ev.preventDefault();ev.stopImmediatePropagation()}catch(e){} toast('Otomatik gönderim kapalı.','Mesaha dosyası indir / Yedek Al / Buluta Yedekle ile gönderilir','success');},true)}
+  function syncFloating(){
+    var original=byId('saveBtn'),floating=byId('floatingSaveBtnV531');
+    if(!floating||!original)return;
+    var open=entryOpen()&&focusedInput();
+    document.body.classList.toggle('mesaha-floating-save-open-v537',open);
+    document.documentElement.classList.toggle('mesaha-floating-save-open-v537',open);
+    document.documentElement.style.setProperty('--mesaha-kb-bottom-v537',open?keyboardInset()+'px':'0px');
+    floating.disabled=!!original.disabled;
+    floating.setAttribute('aria-busy',original.getAttribute('aria-busy')==='true'?'true':'false');
+    floating.textContent=(original.textContent||'Kaydet').trim()||'Kaydet';
   }
-  function boot(){bindAll();bindPolicy();}
+  function scheduleSync(delay){clearTimeout(keyboardTimer);syncFloating();keyboardTimer=setTimeout(syncFloating,Number(delay||120));}
+  function fireSave(ev){
+    if(ev){try{ev.preventDefault();ev.stopPropagation();ev.stopImmediatePropagation();}catch(e){}}
+    var now=Date.now();if(busy||now-lastFire<600)return false;
+    var original=byId('saveBtn');if(!original||original.disabled)return false;
+    lastFire=now;busy=true;syncFloating();
+    try{original.click();}catch(e){try{if(typeof window.saveEntry==='function')window.saveEntry();}catch(_e){}}
+    setTimeout(function(){busy=false;syncFloating();},750);
+    return false;
+  }
+  function bindFloating(){
+    var floating=byId('floatingSaveBtnV531'),original=byId('saveBtn');
+    if(!floating||!original||floating.__v537Bound)return;
+    floating.__v537Bound=true;
+    // Eski V5.31 zamanlayıcısının yeniden bağlanmasını engelle.
+    floating.__v531Bound=true;
+    floating.addEventListener('pointerdown',function(ev){ev.preventDefault();},{passive:false,capture:true});
+    floating.addEventListener('pointerup',fireSave,{passive:false,capture:true});
+    floating.addEventListener('touchstart',function(ev){ev.preventDefault();},{passive:false,capture:true});
+    floating.addEventListener('touchend',fireSave,{passive:false,capture:true});
+    floating.addEventListener('click',fireSave,{passive:false,capture:true});
+    if(window.MutationObserver)new MutationObserver(syncFloating).observe(original,{attributes:true,childList:true,subtree:true});
+  }
+  function syncModalViewport(){
+    var ov=byId('seflikSendOverlayV529');if(!ov)return;
+    var vv=window.visualViewport;
+    var h=Math.max(280,Math.round(vv?vv.height:window.innerHeight));
+    var top=Math.max(0,Math.round(vv?vv.offsetTop:0));
+    document.documentElement.style.setProperty('--seflik-vv-height-v531',h+'px');
+    document.documentElement.style.setProperty('--seflik-vv-top-v531',top+'px');
+  }
+  function watchModal(){
+    var ov=byId('seflikSendOverlayV529');if(!ov||ov.__v537Watch)return;
+    ov.__v537Watch=true;
+    var apply=function(){var open=!ov.classList.contains('hidden')&&ov.getAttribute('aria-hidden')!=='true';document.body.classList.toggle('seflik-send-open-v531',open);if(open)syncModalViewport();};
+    if(window.MutationObserver)new MutationObserver(apply).observe(ov,{attributes:true,attributeFilter:['class','aria-hidden']});
+    apply();
+  }
+  function boot(){bindFloating();watchModal();scheduleSync(80);syncModalViewport();}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
-  [300,900,1800,3200,5200].forEach(function(ms){setTimeout(boot,ms)});
-  document.addEventListener('click',function(){setTimeout(boot,80)},true);
+
+  document.addEventListener('focusin',function(ev){
+    if(validInput(ev.target)){clearTimeout(hideTimer);scheduleSync(40);setTimeout(syncFloating,180);setTimeout(syncFloating,420);}
+  },true);
+  document.addEventListener('focusout',function(){clearTimeout(hideTimer);hideTimer=setTimeout(syncFloating,260);},true);
+  document.addEventListener('click',function(){setTimeout(syncFloating,70);},true);
+  window.addEventListener('resize',function(){scheduleSync(80);syncModalViewport();},{passive:true});
+  window.addEventListener('orientationchange',function(){setTimeout(function(){scheduleSync(100);syncModalViewport();},220);},{passive:true});
+  if(window.visualViewport){
+    window.visualViewport.addEventListener('resize',function(){scheduleSync(50);syncModalViewport();},{passive:true});
+    window.visualViewport.addEventListener('scroll',function(){scheduleSync(30);syncModalViewport();},{passive:true});
+  }
+  var entry=byId('entryView');if(entry&&window.MutationObserver)new MutationObserver(function(){scheduleSync(40);}).observe(entry,{attributes:true,attributeFilter:['class']});
+  [80,350,900,1800].forEach(function(ms){setTimeout(boot,ms)});
+  window.MesahaV537={fireFloatingSave:fireSave,syncFloatingSave:syncFloating,syncModalViewport:syncModalViewport};
 })();
 </script>
-<style id="mesaha-v519-ios-tap-style">
-button{touch-action:manipulation!important;-webkit-user-select:none!important;user-select:none!important;}
-.ios-tap-active-v519{transform:scale(.985)!important;filter:brightness(.98)!important;}
+
+
+<style id="mesaha-v538-ios-touch-style">
+/* V5.38 — iPhone'da kaydırma sonrası ölçü alanları ilk dokunuşta odaklanır. */
+@supports (-webkit-touch-callout:none){
+  #entryView.active .measure-grid label,
+  #entryView.active .barcode-save label{position:relative!important;z-index:12!important;pointer-events:auto!important;touch-action:manipulation!important;}
+  #entryView.active #diameterInput,
+  #entryView.active #lengthInput,
+  #entryView.active #barcodeInput,
+  #entryView.active #quantityInput{position:relative!important;z-index:14!important;pointer-events:auto!important;touch-action:manipulation!important;-webkit-user-select:text!important;user-select:text!important;-webkit-tap-highlight-color:rgba(37,99,235,.12)!important;}
+  #entryHomeBtn{position:relative!important;z-index:30!important;pointer-events:auto!important;touch-action:manipulation!important;}
+}
 </style>
+<script src="./js/mesaha-ios-touch-v538.js?v=538"></script>
 
 </body>
 </html>

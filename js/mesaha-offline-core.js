@@ -59,21 +59,14 @@
   ];
 
   function warmCache(){
-    if (!('caches' in window) || !navigator.onLine || connectionSaveData()) return;
-    var last = 0;
-    try { last = Number(localStorage.getItem('mesaha_cache_warm_current') || 0); } catch(e) {}
-    if (Date.now() - last < 6 * 60 * 60 * 1000) return;
-    try { localStorage.setItem('mesaha_cache_warm_current', String(Date.now())); } catch(e) {}
-    var runner = function(){
-      caches.open(META.cacheName).then(function(cache){
-        return Promise.allSettled(CORE_ASSETS.map(function(url){
-          return fetch(url, {cache:'reload'}).then(function(res){
-            if (res && res.ok) return cache.put(url, res.clone());
-          }).catch(function(){});
-        }));
-      }).catch(function(){});
-    };
-    try { requestIdleCallback(runner, {timeout: 2500}); } catch(e) { setTimeout(runner, 500); }
+    if(!('serviceWorker' in navigator)||!navigator.onLine||connectionSaveData())return;
+    var last=0;
+    try{last=Number(localStorage.getItem('mesaha_cache_warm_current')||0);}catch(e){}
+    if(Date.now()-last<6*60*60*1000)return;
+    try{localStorage.setItem('mesaha_cache_warm_current',String(Date.now()));}catch(e){}
+    navigator.serviceWorker.ready.then(function(reg){
+      try{if(reg&&reg.active)reg.active.postMessage({type:'REPAIR_CACHE',build:META.build||527});}catch(e){}
+    }).catch(function(){});
   }
 
   function registerServiceWorker(){
