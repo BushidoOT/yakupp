@@ -397,6 +397,11 @@ body.mesaha-keyboard-open #saveBtn, body.mesaha-keyboard-open .save-btn{position
   .bulk-cutter-transfer-v406 select,.bulk-cutter-transfer-v406 .btn{width:100%;}
 }
 </style>
+
+<style id="mesaha-v535-shortcut-fix-style">
+#entryView #diameterChips button[data-dia],#entryView #lengthChips button[data-len]{cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;pointer-events:auto!important;position:relative;z-index:2}
+#entryView #diameterChips button[data-dia]:active,#entryView #lengthChips button[data-len]:active,#entryView .shortcut-selected-v535{transform:scale(.96)!important;background:#dcfce7!important;border-color:#86efac!important;color:#166534!important}
+</style>
 </head>
 <body>
 <div class="startup" id="startup">
@@ -1766,33 +1771,91 @@ function getQuickChipCapCache(clearMs){
   }
   return rebuildQuickChipCapCache(clearMs);
 }
+let __quickChipTapV535={button:null,at:0};
+function normalizeQuickChipNumberV535(value,roundInteger){
+  const n=Number(String(value??'').replace(',','.').trim());
+  if(!Number.isFinite(n)||n<=0) return '';
+  return roundInteger?String(Math.round(n)):String(Number(n.toFixed(2)));
+}
+function applyQuickChipV535(kind,value,button){
+  value=normalizeQuickChipNumberV535(value,kind==='diameter');
+  if(!value) return false;
+  const input=$(kind==='diameter'?'diameterInput':'lengthInput');
+  if(!input) return false;
+  input.value=value;
+  if(kind==='diameter') state.settings.diameter=value;
+  else state.settings.length=value;
+  try{input.dispatchEvent(new Event('input',{bubbles:true}));}catch(e){try{entryInputChanged();}catch(_){}}
+  try{input.dispatchEvent(new Event('change',{bubbles:true}));}catch(e){}
+  try{saveSettings();}catch(e){}
+  try{vibrate('chip');}catch(e){}
+  try{button&&button.classList.add('shortcut-selected-v535');setTimeout(()=>button&&button.classList.remove('shortcut-selected-v535'),180);}catch(e){}
+  try{input.focus({preventScroll:true});const p=String(input.value||'').length;input.setSelectionRange&&input.setSelectionRange(p,p);}catch(e){}
+  return true;
+}
+function bindQuickChipContainerV535(container,kind){
+  if(!container||container.__quickChipBoundV535) return;
+  container.__quickChipBoundV535=true;
+  const handle=function(ev){
+    const attr=kind==='diameter'?'data-dia':'data-len';
+    const button=ev.target&&ev.target.closest?ev.target.closest('button['+attr+']'):null;
+    if(!button||button.disabled||!container.contains(button)) return;
+    const now=Date.now();
+    if(__quickChipTapV535.button===button&&now-__quickChipTapV535.at<420){
+      if(ev.type==='click'){ev.preventDefault();ev.stopPropagation();}
+      return;
+    }
+    __quickChipTapV535={button:button,at:now};
+    ev.preventDefault();
+    applyQuickChipV535(kind,button.getAttribute(attr),button);
+  };
+  if(window.PointerEvent) container.addEventListener('pointerup',handle,{passive:false});
+  container.addEventListener('click',handle,false);
+}
 function renderQuickChips(){
   const dc=$('diameterChips'), lc=$('lengthChips');
   if(!dc || !lc) return;
-  const CLEAR_MS_KEY='mesaha_v442_shortcut_clear_ms';
-  const getClearMs=()=>{try{return Number(sessionStorage.getItem(CLEAR_MS_KEY)||0)||0;}catch(e){return 0;}};
-  const clearMs=getClearMs();
-  const makePlaceholder=n=>Array.from({length:n},(_,i)=>`<button type="button" class="shortcut-empty-v442" disabled aria-disabled="true">—</button>`).join('');
-  const records=state.records||[];
-  const capCache=getQuickChipCapCache(clearMs);
-  const capMap=capCache.capMap||{};
-  let capList=Object.keys(capMap).sort((a,b)=>(capMap[b].count-capMap[a].count)||(capMap[b].last-capMap[a].last)||(Number(a)-Number(b))).slice(0,6);
-  if(!clearMs){ ['20','21','22','23','24','25','26','27','28','30','32','35','40'].forEach(v=>{ if(capList.length<6 && !capList.includes(v)) capList.push(v); }); }
-  const lenList=[], seen={};
-  const addLen=v=>{ v=String(v||'').replace(',','.').trim(); const n=Number(v); if(!Number.isFinite(n)||n<=0) return; v=String(n); if(!seen[v]){ seen[v]=1; lenList.push(v); } };
-  if(!clearMs){ addLen(state.settings.length); (state.settings.recentLengths||[]).forEach(addLen); }
-  const recentSource = clearMs ? records.filter(r=>parseQuickChipMs(r.createdAt||r.updatedAt)>clearMs).slice(-50) : records.slice(-50);
-  recentSource.reverse().forEach(r=>addLen(r.length||r.boy));
-  if(!clearMs){ ['3','4','2.5','3.5','4.5','5','6','2'].forEach(addLen); }
-  const capHtml=capList.slice(0,6).map(v=>`<button type="button" data-dia="${esc(v)}">${esc(v)}</button>`).join('') + makePlaceholder(Math.max(0,6-capList.length));
-  const lenHtml=lenList.slice(0,6).map(v=>`<button type="button" data-len="${esc(v)}">${esc(v)}</button>`).join('') + makePlaceholder(Math.max(0,6-lenList.length));
+  try{sessionStorage.removeItem('mesaha_v442_shortcut_clear_ms');}catch(e){}
+  const makePlaceholder=n=>Array.from({length:n},()=>`<button type="button" class="shortcut-empty-v442" disabled aria-disabled="true">—</button>`).join('');
+  const records=Array.isArray(state.records)?state.records:[];
+
+  /* Çap: en çok kullanılan değerler; eşitlikte en son kullanılan öne gelir. */
+  const diameterMap=Object.create(null);
+  records.forEach((r,index)=>{
+    const value=normalizeQuickChipNumberV535(r&&(r.diameter??r.cap??r.capCm),'diameter');
+    if(!value) return;
+    if(!diameterMap[value]) diameterMap[value]={count:0,last:-1};
+    diameterMap[value].count+=1;
+    diameterMap[value].last=index;
+  });
+  const capList=Object.keys(diameterMap)
+    .sort((a,b)=>(diameterMap[b].count-diameterMap[a].count)||(diameterMap[b].last-diameterMap[a].last)||(Number(a)-Number(b)))
+    .slice(0,6);
+  (state.settings.recentDiameters||[]).forEach(v=>{
+    v=normalizeQuickChipNumberV535(v,true);
+    if(v&&!capList.includes(v)&&capList.length<6) capList.push(v);
+  });
+
+  /* Boy: kayıt sırasına göre en son kullanılan benzersiz değerler. */
+  const lenList=[],seenLength=Object.create(null);
+  const addLength=v=>{
+    v=normalizeQuickChipNumberV535(v,false);
+    if(!v||seenLength[v]||lenList.length>=6) return;
+    seenLength[v]=true;lenList.push(v);
+  };
+  for(let i=records.length-1;i>=0&&lenList.length<6;i--) addLength(records[i]&&(records[i].length??records[i].boy));
+  (state.settings.recentLengths||[]).forEach(addLength);
+  addLength(state.settings.length);
+
+  const capHtml=capList.map(v=>`<button type="button" data-dia="${esc(v)}" aria-label="Çap ${esc(v)} seç">${esc(v)}</button>`).join('')+makePlaceholder(Math.max(0,6-capList.length));
+  const lenHtml=lenList.map(v=>`<button type="button" data-len="${esc(v)}" aria-label="Boy ${esc(v)} seç">${esc(v)}</button>`).join('')+makePlaceholder(Math.max(0,6-lenList.length));
   if(dc.innerHTML!==capHtml) dc.innerHTML=capHtml;
   if(lc.innerHTML!==lenHtml) lc.innerHTML=lenHtml;
-  dc.classList.toggle('shortcut-cleared-v442', !!clearMs);
-  lc.classList.toggle('shortcut-cleared-v442', !!clearMs);
-  dc.querySelectorAll('[data-dia]').forEach(b=>b.addEventListener('click',()=>{ vibrate('chip'); $('diameterInput').value=b.dataset.dia; entryInputChanged(); try{$('diameterInput').focus({preventScroll:true});}catch{} }));
-  lc.querySelectorAll('[data-len]').forEach(b=>b.addEventListener('click',()=>{ vibrate('chip'); $('lengthInput').value=b.dataset.len; entryInputChanged(); try{$('lengthInput').focus({preventScroll:true});}catch{} }));
-  try{ window.mesahaQuickChipsDirtyV444 = markQuickChipsDirty; }catch(e){}
+  dc.classList.remove('shortcut-cleared-v442');
+  lc.classList.remove('shortcut-cleared-v442');
+  bindQuickChipContainerV535(dc,'diameter');
+  bindQuickChipContainerV535(lc,'length');
+  try{window.mesahaQuickChipsDirtyV444=markQuickChipsDirty;}catch(e){}
 }
 
 function renderProducts(){
@@ -1935,9 +1998,8 @@ function clearEntry(show=true){
   state.settings.diameter='';
   state.settings.length='';
   state.settings.barcode='';
-  state.settings.recentDiameters=[];
-  state.settings.recentLengths=[];
-  try{sessionStorage.setItem('mesaha_v442_shortcut_clear_ms', String(Date.now()));}catch(e){}
+  /* V5.35: Alanları temizlemek geçmiş kullanım kısayollarını silmez. */
+  try{sessionStorage.removeItem('mesaha_v442_shortcut_clear_ms');}catch(e){}
   const d=$('diameterInput'), l=$('lengthInput'), b=$('barcodeInput');
   if(d) d.value='';
   if(l) l.value='';
