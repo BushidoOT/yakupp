@@ -3940,54 +3940,112 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 </div>
 </div>
 <script id="mesaha-inline-v321-first-login-simple">
-/* v321: İlk açılışta büyük kullanıcı paneli yerine sadece ad + şeflik isteyen küçük giriş ekranı */
+/* V5.32: İlk kayıt/giriş düğmesi yerel kayıtla anında tamamlanır; ağ veya IndexedDB beklenmez. */
 (function(){
   'use strict';
-  const PANEL_KEY='mesaha_panel_user_v316', SETTINGS_KEY='cam_mesaha_ayarlar_v1';
+  const PANEL_KEY='mesaha_panel_user_v316';
+  const SETTINGS_KEY='cam_mesaha_ayarlar_v1';
+  let saveBusy=false;
   function $(id){return document.getElementById(id)}
-  function clean(v){return String(v==null?'':v).trim()}
-  const jsonGet=(window.MesahaUtils&&window.MesahaUtils.jsonGet)||function(k,f){try{const v=localStorage.getItem(k);return v?JSON.parse(v):f}catch{return f}}
-  const jsonSet=(window.MesahaUtils&&window.MesahaUtils.jsonSet)||function(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch{return false}}
-  function hasUser(){const u=jsonGet(PANEL_KEY,{});return !!(clean(u.name)&&clean(u.seflik))}
-  function toast(t,s,k){try{if(typeof window.mesahaFloatToastV315==='function')return window.mesahaFloatToastV315(t,s||'',k||'warning')}catch{} try{if(typeof window.toast==='function')return window.toast(t,s||'',k||'warning')}catch{} alert(t)}
-  function closeBigPanel(){const big=$('userPanelOverlayV316'); if(big) big.classList.add('hidden')}
-  function open(){ if(hasUser()) return; closeBigPanel(); const ov=$('firstLoginOverlayV321'); if(!ov) return; ov.classList.remove('hidden'); setTimeout(()=>{try{($('firstLoginNameV321')||{}).focus()}catch{}},100) }
-  function close(){ const ov=$('firstLoginOverlayV321'); if(ov) ov.classList.add('hidden') }
-  async function save(){
-    const name=clean(($('firstLoginNameV321')||{}).value), seflik=clean(($('firstLoginSeflikV321')||{}).value);
-    if(!validUser(name,seflik)){toast('Geçerli kullanıcı adı ve şeflik gerekli.','Boş veya genel ad kullanılamaz','warning');return}
-    const current=jsonGet(SETTINGS_KEY,{}), before=JSON.parse(JSON.stringify(current||{}));
-    const settings=Object.assign({},current,{ekipNot:name,seflik:seflik});
-    try{
-      if(window.state&&window.state.settings)Object.assign(window.state.settings,settings);
-      const result=window.MesahaStorageV527?await window.MesahaStorageV527.saveSettings(window.state&&window.state.settings?window.state.settings:settings,{reason:'first-login'}):(jsonSet(SETTINGS_KEY,settings)?{ok:true}:{ok:false});
-      if(!result||result.ok===false)throw new Error(result&&result.error||'Kullanıcı bilgisi kaydedilemedi');
-    }catch(e){if(window.state&&window.state.settings)window.state.settings=before;toast('Giriş kaydedilemedi.','Telefon depolamasını kontrol et','error');return}
-    jsonSet(PANEL_KEY,{name,seflik,bolmeNo:clean(settings.bolmeNo||''),updatedAt:new Date().toISOString()});
-    try{localStorage.setItem('mesaha_user_confirmed_v319','1')}catch{}
-    ['ekipNot','seflik'].forEach(id=>{const el=$(id); if(el){el.value=settings[id]||''; try{el.dispatchEvent(new Event('input',{bubbles:true}))}catch{}}});
-    const badge=$('userBadge'); if(badge){badge.textContent=name+' • '+seflik; badge.classList.remove('login-needed')}
-    const btn=$('userPanelBtnV316'); if(btn) btn.textContent='👤 Kullanıcı Paneli';
-    close();
-    try{ if(window.mesahaLoginGateV319) window.mesahaLoginGateV319.apply(); }catch{}
-    /* Mesaha adet/m³ verisi ilk girişte gönderilmez; yalnız Mesaha dosyası veya yedek işlemlerinde gönderilir. */
-    toast('Giriş yapıldı.','Kullanıcı bilgisi kaydedildi','success');
-    try{if(window.MesahaIpV518)window.MesahaIpV518.ping('profile_ping_first_login');}catch(e){}
+  function clean(v){return String(v==null?'':v).trim().replace(/\s+/g,' ')}
+  function jsonGet(k,f){try{const v=localStorage.getItem(k);return v?JSON.parse(v):f}catch(e){return f}}
+  function jsonSet(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}}
+  function validIdentity(name,seflik){
+    try{if(window.MesahaRuntimeV527&&typeof window.MesahaRuntimeV527.validIdentity==='function')return window.MesahaRuntimeV527.validIdentity(name,seflik)}catch(e){}
+    name=clean(name);seflik=clean(seflik);
+    if(name.length<2||seflik.length<2)return false;
+    const n=name.toLocaleLowerCase('tr-TR'),s=seflik.toLocaleLowerCase('tr-TR');
+    return !/^(kullanıcı|kullanici|user|guest|misafir|boş|bos|-)$/.test(n)&&!/^(şeflik|seflik|unknown|bilinmiyor|boş|bos|-)$/.test(s);
   }
-  function boot(){
-    const saveBtn=$('firstLoginSaveV321'); if(saveBtn&&!saveBtn.__v321){saveBtn.__v321=true; saveBtn.addEventListener('click',save)}
-    ['firstLoginNameV321','firstLoginSeflikV321'].forEach(id=>{const el=$(id); if(el&&!el.__v321){el.__v321=true; el.addEventListener('keydown',e=>{if(e.key==='Enter')save()})}});
-    if(!hasUser()){
-      closeBigPanel();
-      const badge=$('userBadge'); if(badge){badge.textContent='Giriş Yap'; badge.classList.add('login-needed')}
-      const btn=$('userPanelBtnV316'); if(btn) btn.textContent='👤 Giriş Yap';
-      setTimeout(()=>{closeBigPanel(); open();},450);
-      setTimeout(closeBigPanel,1050);
+  function hasUser(){const u=jsonGet(PANEL_KEY,{});return validIdentity(u.name,u.seflik)}
+  function toast(t,s,k){
+    try{if(typeof window.mesahaFloatToastV315==='function')return window.mesahaFloatToastV315(t,s||'',k||'warning')}catch(e){}
+    try{if(typeof window.toast==='function')return window.toast(t,s||'',k||'warning')}catch(e){}
+    try{alert([t,s].filter(Boolean).join('\n'))}catch(e){}
+  }
+  function log(kind,err,extra){try{if(window.MesahaErrorLog)window.MesahaErrorLog.error(kind,err,extra||{})}catch(e){}}
+  function closeBigPanel(){const big=$('userPanelOverlayV316');if(big)big.classList.add('hidden')}
+  function open(){
+    if(hasUser())return;
+    closeBigPanel();
+    const ov=$('firstLoginOverlayV321');if(!ov)return;
+    ov.classList.remove('hidden');
+    setTimeout(()=>{try{($('firstLoginNameV321')||{}).focus()}catch(e){}},100);
+  }
+  function close(){const ov=$('firstLoginOverlayV321');if(ov)ov.classList.add('hidden')}
+  function setField(id,value){const el=$(id);if(!el)return;el.value=value||'';try{el.dispatchEvent(new Event('input',{bubbles:true}))}catch(e){}}
+  function finishUi(name,seflik,settings){
+    setField('ekipNot',name);setField('seflik',seflik);
+    setField('panelNameV316',name);setField('panelSeflikV316',seflik);
+    if(settings&&settings.bolmeNo)setField('panelBolmeV316',settings.bolmeNo);
+    const badge=$('userBadge');if(badge){badge.textContent=name+' • '+seflik;badge.classList.remove('login-needed');badge.title='Kullanıcı panelini aç'}
+    const btn=$('userPanelBtnV316');if(btn){btn.textContent='👤 '+name+' • '+seflik;btn.classList.remove('login-needed')}
+    const title=$('userPanelTitleV316');if(title)title.textContent='Kullanıcı Paneli';
+    closeBigPanel();close();
+    try{sessionStorage.removeItem('mesaha_v319_login_prompted')}catch(e){}
+    try{if(window.mesahaLoginGateV319)window.mesahaLoginGateV319.apply()}catch(e){}
+    try{if(typeof window.renderUser==='function')window.renderUser()}catch(e){}
+    try{window.dispatchEvent(new CustomEvent('mesaha:user-login',{detail:{name,seflik}}))}catch(e){}
+  }
+  function backgroundDurableSave(settings,name,seflik){
+    try{
+      if(!window.MesahaStorageV527||typeof window.MesahaStorageV527.saveSettings!=='function')return;
+      const work=window.MesahaStorageV527.saveSettings(settings,{reason:'first-login-v532'});
+      const timeout=new Promise(resolve=>setTimeout(()=>resolve({ok:false,timeout:true,error:'Depolama doğrulaması zaman aşımına uğradı'}),5000));
+      Promise.race([Promise.resolve(work),timeout]).then(result=>{
+        if(!result||result.ok===false){
+          log('first-login.durable-save',new Error(result&&result.error||'Kalıcı depolama doğrulanamadı'),{name,seflik,timeout:!!(result&&result.timeout)});
+          toast('Giriş tamamlandı.','Güvenli depolama arka planda tekrar doğrulanacak.','warning');
+        }
+      }).catch(err=>log('first-login.durable-save',err,{name,seflik}));
+    }catch(err){log('first-login.durable-save-start',err,{name,seflik})}
+  }
+  function save(){
+    if(saveBusy)return;
+    const name=clean(($('firstLoginNameV321')||{}).value),seflik=clean(($('firstLoginSeflikV321')||{}).value);
+    if(!validIdentity(name,seflik)){toast('Geçerli kullanıcı adı ve şeflik gerekli.','Boş veya genel ad kullanılamaz.','warning');return}
+    const button=$('firstLoginSaveV321');saveBusy=true;
+    if(button){button.disabled=true;button.setAttribute('aria-busy','true');button.dataset.oldText=button.textContent||'Giriş Yap';button.textContent='Kaydediliyor…'}
+    try{
+      const current=jsonGet(SETTINGS_KEY,{}),settings=Object.assign({},current,{ekipNot:name,seflik:seflik});
+      if(window.state&&window.state.settings)Object.assign(window.state.settings,settings);
+      const effective=(window.state&&window.state.settings)?window.state.settings:settings;
+      let installId='';
+      try{if(window.MesahaRuntimeV527&&typeof window.MesahaRuntimeV527.installIdentity==='function')installId=clean(window.MesahaRuntimeV527.installIdentity().id)}catch(e){}
+      const settingsOk=jsonSet(SETTINGS_KEY,effective);
+      const panelOk=jsonSet(PANEL_KEY,{name,seflik,bolmeNo:clean(effective.bolmeNo||''),updatedAt:new Date().toISOString(),installId:installId||undefined});
+      try{localStorage.setItem('mesaha_user_confirmed_v319','1');if(installId)localStorage.setItem('mesaha_install_id_v527',installId)}catch(e){}
+      if(!settingsOk||!panelOk)throw new Error('Tarayıcı yerel depolamasına yazılamadı');
+      finishUi(name,seflik,effective);
+      toast('Giriş yapıldı.','Kullanıcı bilgileri kaydedildi.','success');
+      backgroundDurableSave(effective,name,seflik);
+      setTimeout(()=>{try{if(window.MesahaIpV518)window.MesahaIpV518.ping('profile_ping_first_login')}catch(e){}},400);
+    }catch(err){
+      log('first-login.save',err,{name,seflik});
+      toast('Giriş kaydedilemedi.','Tarayıcı depolama iznini ve boş alanı kontrol edin.','error');
+      open();
+    }finally{
+      saveBusy=false;
+      if(button){button.disabled=false;button.removeAttribute('aria-busy');button.textContent=button.dataset.oldText||'Giriş Yap'}
     }
   }
+  function bind(){
+    const saveBtn=$('firstLoginSaveV321');
+    if(saveBtn&&!saveBtn.__v532){
+      saveBtn.__v532=true;
+      saveBtn.addEventListener('click',function(ev){ev.preventDefault();ev.stopPropagation();ev.stopImmediatePropagation();save()},true);
+    }
+    ['firstLoginNameV321','firstLoginSeflikV321'].forEach(id=>{const el=$(id);if(el&&!el.__v532){el.__v532=true;el.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();save()}})}});
+    if(!hasUser()){
+      closeBigPanel();
+      const badge=$('userBadge');if(badge){badge.textContent='Giriş Yap';badge.classList.add('login-needed')}
+      const btn=$('userPanelBtnV316');if(btn)btn.textContent='👤 Giriş Yap';
+      setTimeout(open,350);
+    }else close();
+  }
   window.mesahaFirstLoginV321={open,close,save,hasUser};
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
-  [1200,2600,5200].forEach(ms=>setTimeout(()=>{if(!hasUser())closeBigPanel()},ms));
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
+  [1000,2500,5000].forEach(ms=>setTimeout(()=>{if(!hasUser())closeBigPanel()},ms));
 })();
 </script>
 <style id="mesaha-style-v323-top-user-label">
