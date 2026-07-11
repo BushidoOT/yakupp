@@ -1,4 +1,4 @@
-/* Mesaha İO V5.48 — Güvenli Edge/anti-spam bulut motoru
+/* Mesaha İO V5.49 — Google geçişi ve kesin engel ayrımı eklenmiş güvenli Edge/anti-spam bulut motoru
    Buluta Yedekle: Edge Function guard + güvenli Supabase V2 + Google Drive.
    Buluttan Getir: Edge Function guard + iki kaynak birlikte listelenir.
    Kullanıcı yedek silme: gerçek silme yok; kullanıcı listesinden gizlenir.
@@ -86,9 +86,18 @@
       try{ document.querySelectorAll('button,input,select,textarea,a').forEach(function(el){ if(!ov.contains(el)) el.setAttribute('tabindex','-1'); }); }catch(e){}
     }catch(e){ try{ alert('Bu cihaz ve kullanıcı engellendi'); }catch(_){} }
   }
+  function errorPayload(e){
+    return e&&e.payload&&typeof e.payload==='object'?e.payload:{};
+  }
+  function isAuthGateError(e){
+    var p=errorPayload(e);
+    return p.google_required===true || p.access_required===true || p.auth_required===true;
+  }
   function isBlockedError(e){
-    var m=String(e&&e.message?e.message:e||'');
-    return !!(e&&e.blocked) || /Güvenlik engeli|blocked|engellendi|engelli|ban/i.test(m);
+    var p=errorPayload(e);
+    /* Yalnız sunucunun açıkça blocked:true döndürdüğü gerçek güvenlik engelleri tam ekranı açar.
+       Google doğrulaması veya yönetici onayı eksikliği nedeniyle gelen 403 artık ban sayılmaz. */
+    return p.blocked===true || (e&&e.blocked===true);
   }
   var startupGuardDone=false;
   async function startupGuardCheck(){
@@ -98,7 +107,11 @@
     if(!validIdentity(user)) return;
     startupGuardDone=true;
     try{ await guardCheck('app_open', user, {source:'startup'}); }
-    catch(e){ if(isBlockedError(e)) showBlockedScreen('Erişim yönetici tarafından kapatıldı.'); else startupGuardDone=false; }
+    catch(e){
+      if(isBlockedError(e)) showBlockedScreen('Erişim yönetici tarafından kapatıldı.');
+      else if(isAuthGateError(e)) startupGuardDone=true;
+      else startupGuardDone=false;
+    }
   }
   async function guardCheck(action,user,extra){
     user=user||readUser();
@@ -106,9 +119,12 @@
     var api=window.mesahaSupabaseV380||window.mesahaSupabaseV383||window.mesahaSupabase;
     if(!api||typeof api.edge!=='function') throw new Error('Güvenli sunucu bağlantısı hazır değil');
     try{
-      return await api.edge(action||'profile_ping',Object.assign({userKey:userKey(user.name,user.seflik),name:user.name,seflik:user.seflik,bolmeNo:user.bolmeNo,deviceId:getDeviceId(),appVersion:versionText(),source:'mesaha-web-v548'},extra||{}));
+      return await api.edge(action||'profile_ping',Object.assign({userKey:userKey(user.name,user.seflik),name:user.name,seflik:user.seflik,bolmeNo:user.bolmeNo,deviceId:getDeviceId(),appVersion:versionText(),source:'mesaha-web-v549'},extra||{}));
     }catch(e){
-      if(e&&e.status===403){e.blocked=true;showBlockedScreen('Erişim yönetici tarafından kapatıldı.');}
+      if(isBlockedError(e)){
+        e.blocked=true;
+        showBlockedScreen('Erişim yönetici tarafından kapatıldı.');
+      }
       throw e;
     }
   }

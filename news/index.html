@@ -24,7 +24,7 @@
 <script src="./js/mesaha-data-guard.js"></script>
 <script src="./js/mesaha-persistent-store.js"></script>
 <script src="./js/mesaha-update-manager-v527.js"></script>
-<script src="./js/mesaha-ios-actions-v546.js?v=548"></script>
+<script src="./js/mesaha-ios-actions-v546.js?v=549"></script>
 <script src="./js/mesaha-stability-core.js"></script>
 <script src="./js/mesaha-error-log.js"></script>
 <script src="./js/mesaha-url-cleanup.js"></script>
@@ -4295,7 +4295,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
         weekRecordCount:fullStats.weekRecordCount,weekM3:fullStats.weekM3,treeTotals:fullStats.treeTotals,productTotals:fullStats.productTotals,
         lastExportRecordCount:scopeStats.recordCount,lastExportM3:scopeStats.m3,lastExportTreeTotals:scopeStats.treeTotals,lastExportProductTotals:scopeStats.productTotals,
         scopeText:scope&&scope.text||approved,scopeMode:scope&&scope.mode||approved,usageMs:Number(usage.totalMs||0),todayUsageMs:Number(usage.todayMs||0),
-        deviceId:info.deviceId,deviceInfo:info,appVersion:APP_VERSION,fileVersion:FILE_VERSION,updatedAt:trText(),updatedAtMs:now,source:'mesaha-v548-approved-stats'
+        deviceId:info.deviceId,deviceInfo:info,appVersion:APP_VERSION,fileVersion:FILE_VERSION,updatedAt:trText(),updatedAtMs:now,source:'mesaha-v549-approved-stats'
       };
       await withTimeout(api.edge('stats_sync',payload),15000,'İstatistik gönderimi');
       setSyncText('İstatistik güncellendi • '+new Date().toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'}));return true;
@@ -5473,7 +5473,7 @@ body.product-tap-lock-v372 .entry-view.active{
  function settings(){return window.state&&window.state.settings?window.state.settings:{}}
  function records(){return window.state&&Array.isArray(window.state.records)?window.state.records:[]}
  function persist(){try{if(window.__flushSettings)return window.__flushSettings('entry-memory-v543')}catch(e){}return Promise.resolve({ok:true})}
- function payload(){var s=settings(),list=records();return{app:'Mesaha İO',backupVersion:'v548',exportedAt:new Date().toISOString(),records:list,settings:s,cutters:Array.from(new Set([].concat(s.cutters||[],list.map(function(r){return r&&r.cutter})).filter(Boolean))),activeCutter:s.activeCutter||''}}
+ function payload(){var s=settings(),list=records();return{app:'Mesaha İO',backupVersion:'v549',exportedAt:new Date().toISOString(),records:list,settings:s,cutters:Array.from(new Set([].concat(s.cutters||[],list.map(function(r){return r&&r.cutter})).filter(Boolean))),activeCutter:s.activeCutter||''}}
  window.mesahaEntryMemoryBackupV373={persist:persist,restore:function(){},backupPayload:payload,backupNow:function(){try{if(typeof window.backupJson==='function')return window.backupJson()}catch(e){}}};
 
 })();
@@ -6976,7 +6976,7 @@ body.mesaha-entry-scrolling-v408 #entryView label{
 </script>
 <script src="./js/mesaha-fast-tap-nav.js"></script>
 
-<script src="./js/mesaha-drive-bridge.js?v=548"></script>
+<script src="./js/mesaha-drive-bridge.js?v=549"></script>
 <script src="./js/mesaha-hybrid-cloud.js"></script>
 <script id="mesaha-v504-user-panel-cleanup">
 (function(){
@@ -7030,7 +7030,7 @@ body.mesaha-entry-scrolling-v408 #entryView label{
     try{
       var api=window.mesahaSupabaseV380||window.mesahaSupabaseV383||window.mesahaSupabase;
       if(!api||typeof api.edge!=='function')return false;
-      var info=deviceInfo(),body={userKey:userKey(u.name,u.seflik),name:u.name,seflik:u.seflik,bolmeNo:u.bolmeNo,deviceId:info.deviceId,deviceInfo:info,appVersion:info.appVersion,fileVersion:info.fileVersion,heartbeatReason:reason||'visible',source:'mesaha-v548-profile-heartbeat'};
+      var info=deviceInfo(),body={userKey:userKey(u.name,u.seflik),name:u.name,seflik:u.seflik,bolmeNo:u.bolmeNo,deviceId:info.deviceId,deviceInfo:info,appVersion:info.appVersion,fileVersion:info.fileVersion,heartbeatReason:reason||'visible',source:'mesaha-v549-profile-heartbeat'};
       var j=await api.edge('profile_ping',body);
       if(j&&j.ip){try{localStorage.setItem(IP_KEY,j.ip)}catch(e){}}
       try{localStorage.setItem(LAST_PING_KEY,String(Date.now()))}catch(e){}
@@ -7263,8 +7263,8 @@ body.mesaha-floating-save-open-v537 .bottom-nav{display:none!important;visibilit
   #entryHomeBtn{position:relative!important;z-index:30!important;pointer-events:auto!important;touch-action:manipulation!important;}
 }
 </style>
-<script src="./js/mesaha-ios-touch-v538.js?v=548"></script>
-<script src="./js/mesaha-product-touch-v540.js?v=548"></script>
+<script src="./js/mesaha-ios-touch-v538.js?v=549"></script>
+<script src="./js/mesaha-product-touch-v540.js?v=549"></script>
 
 
 </body>
