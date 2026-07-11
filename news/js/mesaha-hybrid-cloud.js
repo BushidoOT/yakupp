@@ -1,4 +1,4 @@
-/* Mesaha İO V5.49 — Google geçişi ve kesin engel ayrımı eklenmiş güvenli Edge/anti-spam bulut motoru
+/* Mesaha İO V5.50 — mevcut cihaz geçişi, user_id tabanlı kesin engel ve güvenli Edge/anti-spam bulut motoru
    Buluta Yedekle: Edge Function guard + güvenli Supabase V2 + Google Drive.
    Buluttan Getir: Edge Function guard + iki kaynak birlikte listelenir.
    Kullanıcı yedek silme: gerçek silme yok; kullanıcı listesinden gizlenir.
@@ -70,6 +70,14 @@
   function hideBackupLocal(source,id,user){ var arr=hiddenList(), k=hiddenKey(source,id,user||readUser()); if(arr.indexOf(k)<0){ arr.push(k); jsonSet(HIDDEN_KEY,arr.slice(-600)); } }
   function getSessionToken(){ try{ var s=jsonGet(SESSION_KEY,null); return clean(s&&s.access_token); }catch(e){ return ''; } }
   function getDeviceId(){ try{ return clean(localStorage.getItem(DEVICE_KEY)||''); }catch(e){ return ''; } }
+  function clearBlockedScreen(){
+    try{
+      var ov=document.getElementById('mesahaAccessBlockedV508');if(ov&&ov.parentNode)ov.parentNode.removeChild(ov);
+      var st=document.getElementById('mesahaAccessBlockedStyleV508');if(st&&st.parentNode)st.parentNode.removeChild(st);
+      document.documentElement.classList.remove('mesaha-blocked-v508');document.body&&document.body.classList.remove('mesaha-blocked-v508');
+      document.querySelectorAll('[data-mesaha-blocked-tab-v550]').forEach(function(el){var old=el.getAttribute('data-mesaha-blocked-tab-v550');el.removeAttribute('data-mesaha-blocked-tab-v550');if(old==='__none__')el.removeAttribute('tabindex');else el.setAttribute('tabindex',old)});
+    }catch(e){}
+  }
   function showBlockedScreen(reason){
     try{
       if(document.getElementById('mesahaAccessBlockedV508')) return;
@@ -83,7 +91,7 @@
       document.documentElement.classList.add('mesaha-blocked-v508');
       document.body.classList.add('mesaha-blocked-v508');
       document.body.appendChild(ov);
-      try{ document.querySelectorAll('button,input,select,textarea,a').forEach(function(el){ if(!ov.contains(el)) el.setAttribute('tabindex','-1'); }); }catch(e){}
+      try{ document.querySelectorAll('button,input,select,textarea,a').forEach(function(el){ if(!ov.contains(el)){el.setAttribute('data-mesaha-blocked-tab-v550',el.hasAttribute('tabindex')?el.getAttribute('tabindex'):'__none__');el.setAttribute('tabindex','-1')} }); }catch(e){}
     }catch(e){ try{ alert('Bu cihaz ve kullanıcı engellendi'); }catch(_){} }
   }
   function errorPayload(e){
@@ -106,7 +114,7 @@
     /* Boş/genel profil Edge Function tarafında sahte kullanıcı oluşturmasın. Güvenlik kontrolü gerçek kimlik kaydedilince başlar. */
     if(!validIdentity(user)) return;
     startupGuardDone=true;
-    try{ await guardCheck('app_open', user, {source:'startup'}); }
+    try{ await guardCheck('app_open', user, {source:'startup'}); clearBlockedScreen(); }
     catch(e){
       if(isBlockedError(e)) showBlockedScreen('Erişim yönetici tarafından kapatıldı.');
       else if(isAuthGateError(e)) startupGuardDone=true;
@@ -119,7 +127,7 @@
     var api=window.mesahaSupabaseV380||window.mesahaSupabaseV383||window.mesahaSupabase;
     if(!api||typeof api.edge!=='function') throw new Error('Güvenli sunucu bağlantısı hazır değil');
     try{
-      return await api.edge(action||'profile_ping',Object.assign({userKey:userKey(user.name,user.seflik),name:user.name,seflik:user.seflik,bolmeNo:user.bolmeNo,deviceId:getDeviceId(),appVersion:versionText(),source:'mesaha-web-v549'},extra||{}));
+      return await api.edge(action||'profile_ping',Object.assign({userKey:userKey(user.name,user.seflik),name:user.name,seflik:user.seflik,bolmeNo:user.bolmeNo,deviceId:getDeviceId(),appVersion:versionText(),source:'mesaha-web-v550'},extra||{}));
     }catch(e){
       if(isBlockedError(e)){
         e.blocked=true;
@@ -406,6 +414,8 @@
     window.mesahaHybridCloudV506=api;
     window.mesahaHybridCloudV508=api;
     window.mesahaShowBlockedV547=showBlockedScreen;
+    window.mesahaClearBlockedV550=clearBlockedScreen;
+    if(!window.__mesahaV550StaleBlockCleared){window.__mesahaV550StaleBlockCleared=true;if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',clearBlockedScreen,{once:true});else clearBlockedScreen();}
     window.mesahaPanelV316=window.mesahaPanelV316||{};
     window.mesahaPanelV316.cloudBackup=hybridBackup;
     window.mesahaPanelV316.openCloudRestore=openCloud;

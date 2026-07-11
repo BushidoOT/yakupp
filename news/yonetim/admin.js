@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const ADMIN_VERSION = 'V5.49 •Yakupp•';
+  const ADMIN_VERSION = 'V5.50 •Yakupp•';
   const EDGE_URL = 'https://swrbpdpotmirnmtqnuba.supabase.co/functions/v1/smooth-function';
   const SESSION_KEY = 'mesaha_admin_auth_v548_session';
   const LAST_ACTIVITY_KEY = 'mesaha_admin_auth_v548_activity';
@@ -340,8 +340,10 @@
 
   function relatedBackups(user) { const key = identityKey(user); return state.backups.filter((b) => identityKey(b) === key); }
   function isBlockedUser(user) {
-    const key = lower(user.userKey), ip = clean(user.ip), device = clean(user.deviceId);
-    return state.blocks.some((b) => b.active && ((b.type === 'user_key' && lower(b.value) === key) || (b.type === 'ip' && b.value === ip) || (b.type === 'device_id' && b.value === device)));
+    const id = clean(user.id);
+    const accessRevoked = state.userAccess.some((x) => clean(x.user_id) === id && clean(x.status) === 'revoked');
+    const idBlocked = state.blocks.some((b) => b.active && b.type === 'user_id' && clean(b.value) === id);
+    return accessRevoked || idBlocked;
   }
   function onlineNow(user) { return user.lastSeenMs && Date.now() - user.lastSeenMs <= 15 * 60 * 1000; }
   function seenToday(user) { return dateKey(user.lastSeen) === todayKey(); }
@@ -535,11 +537,12 @@
   function closeModal(){$('modal').classList.remove('is-open');$('modal').setAttribute('aria-hidden','true')}
 
   async function blockUser(user){
-    const options=[`1 - Kullanıcı (${user.name})`,user.ip&&user.ip!=='-'?`2 - IP (${user.ip})`:'',user.deviceId&&user.deviceId!=='-'?`3 - Cihaz (${user.deviceId})`:''].filter(Boolean).join('\n');
+    const hasId=clean(user.id)&&user.id!=='-';
+    const options=[hasId?`1 - Doğrulanmış hesap (${user.name})`:`1 - Eski kullanıcı anahtarı (${user.name})`,user.ip&&user.ip!=='-'?`2 - IP (${user.ip})`:'',user.deviceId&&user.deviceId!=='-'?`3 - Cihaz (${user.deviceId})`:''].filter(Boolean).join('\n');
     const choice=prompt(`Engel türünü seç:\n${options}`,'1'); if(!choice)return;
-    let type='user_key',value=user.userKey;if(choice==='2'){type='ip';value=user.ip}else if(choice==='3'){type='device_id';value=user.deviceId}
+    let type=hasId?'user_id':'user_key',value=hasId?user.id:user.userKey;if(choice==='2'){type='ip';value=user.ip}else if(choice==='3'){type='device_id';value=user.deviceId}
     if(!clean(value)||value==='-')throw new Error('Engellenecek değer bulunamadı');
-    await edge('admin_add_block',{block_type:type,block_value:value,reason:'Admin panel engeli'});toast('Engel eklendi');await loadAll();
+    await edge('admin_add_block',{block_type:type,block_value:value,reason:'Admin panel engeli'});toast(type==='user_id'?'Doğrulanmış hesap engellendi':'Engel eklendi');await loadAll();
   }
   async function deleteUser(user){
     const typed=prompt(`${user.name} kullanıcısı, tüm Supabase yedekleri ve kullanıcının oluşturduğu Şeflik bölmeleri kalıcı olarak silinecek. İşlem geri alınamaz. Onaylamak için kullanıcı adını yazın:`,user.name);
@@ -572,7 +575,7 @@
     if(!/^\S+@\S+\.\S+$/.test(email)||password.length<12){$('loginMessage').textContent='Geçerli admin e-postası ve en az 12 karakterli parola gerekli.';return}
     $('loginMessage').textContent='Giriş doğrulanıyor…';$('loginBtn').disabled=true;
     try{const out=await rawEdge('admin_login',{email,password});saveSession(out.session);$('loginPass').value='';$('loginMessage').textContent='';showAdmin();await loadAll()}
-    catch(error){clearSession();const retry=Number(error.payload&&error.payload.retry_after||0);$('loginMessage').textContent=retry?`Giriş kilitlendi. ${Math.ceil(retry/60)} dakika sonra tekrar deneyin.`:errorText(error)}
+    catch(error){clearSession();$('loginMessage').textContent=errorText(error)}
     finally{$('loginBtn').disabled=false}
   }
   function showAdmin(){$('loginView').classList.add('is-hidden');$('adminView').classList.remove('is-hidden');touchActivity()}
