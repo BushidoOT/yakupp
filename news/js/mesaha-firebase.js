@@ -236,10 +236,16 @@
   function reset(){readyPromise=null;authSession=null;lastError='';clearSession();}
   function status(){return{ok:!!lastOkMs,lastOkMs:lastOkMs,lastError:lastError,online:navigator.onLine!==false,provider:'supabase-google-v548',uid:uid(),google:isGoogle(),anonymous:isAnonymous(),version:VERSION};}
   async function getAccessToken(){var s=await session();return clean(s&&s.access_token);}
+  function delay(ms){return new Promise(function(resolve){setTimeout(resolve,ms)})}
+  async function edgeOnce(url,token,payload){
+    var c=cfg(),ctrl=typeof AbortController!=='undefined'?new AbortController():null,timer=ctrl?setTimeout(function(){ctrl.abort()},15000):0;
+    try{return await fetch(url,{method:'POST',cache:'no-store',headers:{'Content-Type':'application/json',apikey:c.anonKey,Authorization:'Bearer '+token},body:payload,signal:ctrl&&ctrl.signal})}finally{if(timer)clearTimeout(timer)}
+  }
   async function edge(action,data){
     var c=cfg(), token=await getAccessToken();
-    var url=c.url+'/functions/v1/smooth-function';
-    var res=await fetch(url,{method:'POST',cache:'no-store',headers:{'Content-Type':'application/json',apikey:c.anonKey,Authorization:'Bearer '+token},body:JSON.stringify(Object.assign({action:String(action||'check')},data||{}))});
+    var url=c.url+'/functions/v1/smooth-function',payload=JSON.stringify(Object.assign({action:String(action||'check')},data||{})),res,lastError;
+    for(var attempt=0;attempt<2;attempt++){try{res=await edgeOnce(url,token,payload);break}catch(e){lastError=e;if(attempt===0&&navigator.onLine!==false){await delay(650);continue}throw new Error(/abort/i.test(String(e&&e.name||''))?'Sunucu bağlantısı zaman aşımına uğradı.':'Sunucuya bağlanılamadı. İnternet bağlantısını kontrol edip tekrar deneyin.')}}
+    if(!res)throw lastError||new Error('Sunucuya bağlanılamadı.');
     var text=await res.text(), out=safeJson(text,{});
     if(!res.ok || !out || out.ok===false){
       if(out&&(out.access_required||out.google_required)){try{window.dispatchEvent(new CustomEvent('mesaha:google-auth-required',{detail:out}))}catch(e){}}
