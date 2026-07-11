@@ -5047,7 +5047,7 @@ input,select,textarea{background:#fff!important;color:#101828!important;border-c
 })();
 </script>
 <script id="mesaha-offline-core-v380" src="./js/mesaha-offline-core.js"></script>
-<script id="mesaha-v544-version-display-guard">
+<script id="mesaha-v545-version-display-guard">
 (function(){
   'use strict';
   function apply(){
@@ -5059,7 +5059,7 @@ input,select,textarea{background:#fff!important;color:#101828!important;border-c
     try{var version=document.getElementById('versionText');if(version)version.textContent=text;}catch(e){}
     try{Array.prototype.forEach.call(document.querySelectorAll('.version-card b'),function(el){el.textContent=text});Array.prototype.forEach.call(document.querySelectorAll('.version-card small'),function(el){el.textContent=''})}catch(e){}
   }
-  window.mesahaApplyVersionV544=apply;
+  window.mesahaApplyVersionV545=apply;
   apply();
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply,{once:true});
   window.addEventListener('pageshow',apply,{passive:true});
@@ -5254,124 +5254,13 @@ body.mesaha-offline .online-only{opacity:.55!important;filter:grayscale(.25)!imp
   window.mesahaNetworkStatusV365=function(){return lastMode;};
 })();
 </script>
-<style id="mesaha-v366-terminal-save-fix">
-/* v366: el terminali Chrome/WebView dokunma uyumu */
-#saveBtn,
-.save-btn{
-  pointer-events:auto!important;
-  touch-action:manipulation!important;
-  -webkit-tap-highlight-color:rgba(22,163,74,.18)!important;
-  user-select:none!important;
-  -webkit-user-select:none!important;
-}
-body.keyboard-open-v311.entry-open #saveBtn,
-body.keyboard-open-v311.entry-open .save-btn,
-body.keyboard-open-v311 .entry-view.active #saveBtn,
-body.keyboard-open-v311 .entry-view.active .save-btn{
-  z-index:2147483000!important;
-  pointer-events:auto!important;
-  touch-action:manipulation!important;
-  transform:translateZ(0)!important;
-  will-change:transform!important;
-}
-body.keyboard-open-v311 .entry-view.active .barcode-save{
-  position:relative!important;
-  z-index:2147482000!important;
-}
-</style>
-<script id="mesaha-v366-terminal-save-fix-2">
-(function(){
-  'use strict';
-  function focusDiameter(){var d=document.getElementById('diameterInput');if(!d)return;setTimeout(function(){try{d.focus({preventScroll:true});}catch(e){}},100);}
-  window.mesahaTerminalSaveFixV366={bind:function(){},run:function(){},focus:focusDiameter,disabledBy:'V5.27'};
-})();
-</script>
-<style id="mesaha-v368-terminal-home-scroll-perf">
-html.mesaha-terminal-lite,
-html.mesaha-terminal-lite body{scroll-behavior:auto!important}
-html.mesaha-terminal-lite body,
-html.mesaha-terminal-lite .app{overscroll-behavior-y:contain!important}
-html.mesaha-terminal-lite .hero-card,
-html.mesaha-terminal-lite .status-card,
-html.mesaha-terminal-lite .status-item,
-html.mesaha-terminal-lite .card,
-html.mesaha-terminal-lite .summary-card,
-html.mesaha-terminal-lite .recent-box,
-html.mesaha-terminal-lite .prod-total,
-html.mesaha-terminal-lite .record-card,
-html.mesaha-terminal-lite .bottom-nav,
-html.mesaha-terminal-lite .topbar{
-  box-shadow:none!important;
-  -webkit-backdrop-filter:none!important;
-  backdrop-filter:none!important;
-  transform:none!important;
-  will-change:auto!important;
-}
-html.mesaha-terminal-lite .hero-card{background-attachment:scroll!important}
-html.mesaha-terminal-lite .hero-card::before,
-html.mesaha-terminal-lite .hero-card::after,
-html.mesaha-terminal-lite .status-icon::before,
-html.mesaha-terminal-lite .flash::before{
-  animation:none!important;
-  transition:none!important;
-}
-html.mesaha-terminal-lite .hero-fact,
-html.mesaha-terminal-lite #heroFact,
-html.mesaha-terminal-lite .hero-quote{transition:none!important}
-html.mesaha-terminal-lite .view.active{contain:layout paint!important}
-html.mesaha-terminal-lite .bottom-nav{
-  position:sticky!important;
-  bottom:8px!important;
-}
-html.mesaha-terminal-lite.scrolling-now .bottom-nav,
-html.mesaha-terminal-lite.scrolling-now .topbar{pointer-events:none!important}
-@media (pointer:coarse) and (max-width:900px){
-  html.mesaha-terminal-lite .app{padding-bottom:96px!important}
-}
-</style>
-<script id="mesaha-v368-terminal-home-scroll-perf-2">
-(function(){
-  'use strict';
-  var ua=navigator.userAgent||'';
-  var isTerminalLike=/Android/i.test(ua)&&!/iPhone|iPad|iPod/i.test(ua);
-  var lowMemory=false;
-  try{lowMemory=!!(navigator.deviceMemory&&navigator.deviceMemory<=4)}catch(e){}
-  var coarse=false;
-  try{coarse=!!(window.matchMedia&&matchMedia('(pointer: coarse)').matches)}catch(e){}
-  if(isTerminalLike&&(coarse||lowMemory||window.innerWidth<=900)){
-    document.documentElement.classList.add('mesaha-terminal-lite');
-  }
-  var scrollTimer=null,lastY=0;
-  function onScroll(){
-    if(!document.documentElement.classList.contains('mesaha-terminal-lite'))return;
-    var y=window.scrollY||document.documentElement.scrollTop||0;
-    if(Math.abs(y-lastY)<2)return;
-    lastY=y;
-    document.documentElement.classList.add('scrolling-now');
-    clearTimeout(scrollTimer);
-    scrollTimer=setTimeout(function(){document.documentElement.classList.remove('scrolling-now')},180);
-  }
-  window.addEventListener('scroll',onScroll,{passive:true});
-  window.addEventListener('touchmove',onScroll,{passive:true});
-  var resizeTimer=null;
-  window.addEventListener('resize',function(){
-    if(!document.documentElement.classList.contains('mesaha-terminal-lite'))return;
-    clearTimeout(resizeTimer);
-    resizeTimer=setTimeout(function(){
-      try{document.documentElement.style.setProperty('--vh368',window.innerHeight+'px')}catch(e){}
-    },160);
-  },{passive:true});
-  window.mesahaTerminalLiteV368={
-    enable:function(){document.documentElement.classList.add('mesaha-terminal-lite')},
-    disable:function(){document.documentElement.classList.remove('mesaha-terminal-lite')},
-    active:function(){return document.documentElement.classList.contains('mesaha-terminal-lite')}
-  };
-})();
-</script>
+
+
+
+
 <style id="mesaha-v370-bottom-nav-force">
 /* v370: terminal hafif modda kaybolan alt menüyü tekrar sabit ve görünür yap */
 .bottom-nav,
-html.mesaha-terminal-lite .bottom-nav,
 body.keyboard-open-v311.entry-open .bottom-nav,
 body.keyboard-open-v311 .entry-view.active ~ .bottom-nav{
   display:grid!important;
@@ -5388,22 +5277,16 @@ body.keyboard-open-v311 .entry-view.active ~ .bottom-nav{
   pointer-events:auto!important;
   touch-action:manipulation!important;
 }
-html.mesaha-terminal-lite.scrolling-now .bottom-nav,
-html.mesaha-terminal-lite.scrolling-now .topbar{
-  pointer-events:auto!important;
-}
 .app{
   padding-bottom:132px!important;
 }
 @media(min-width:620px){
-  .bottom-nav,
-  html.mesaha-terminal-lite .bottom-nav{
+  .bottom-nav{
     width:min(520px, calc(100vw - 22px))!important;
   }
 }
 @media(max-width:430px){
-  .bottom-nav,
-  html.mesaha-terminal-lite .bottom-nav{
+  .bottom-nav{
     width:calc(100vw - 16px)!important;
     bottom:calc(env(safe-area-inset-bottom,0px) + 6px)!important;
   }
@@ -5454,20 +5337,9 @@ body{
   overscroll-behavior-y:auto!important;
   contain:none!important;
 }
-html.mesaha-terminal-lite body,
-html.mesaha-terminal-lite .app,
-html.mesaha-terminal-lite .view.active{
-  overscroll-behavior-y:auto!important;
-  contain:none!important;
-}
-html.mesaha-terminal-lite .bottom-nav,
 .bottom-nav{
   position:fixed!important;
   touch-action:manipulation!important;
-}
-html.mesaha-terminal-lite.scrolling-now .bottom-nav,
-html.mesaha-terminal-lite.scrolling-now .topbar{
-  pointer-events:auto!important;
 }
 .panel-overlay.hidden,
 .modal:not(.show),
@@ -5574,9 +5446,9 @@ body.product-tap-lock-v372 .entry-view.active{
  function settings(){return window.state&&window.state.settings?window.state.settings:{}}
  function records(){return window.state&&Array.isArray(window.state.records)?window.state.records:[]}
  function persist(){try{if(window.__flushSettings)return window.__flushSettings('entry-memory-v543')}catch(e){}return Promise.resolve({ok:true})}
- function payload(){var s=settings(),list=records();return{app:'Mesaha İO',backupVersion:'v543',exportedAt:new Date().toISOString(),records:list,settings:s,cutters:Array.from(new Set([].concat(s.cutters||[],list.map(function(r){return r&&r.cutter})).filter(Boolean))),activeCutter:s.activeCutter||''}}
+ function payload(){var s=settings(),list=records();return{app:'Mesaha İO',backupVersion:'v545',exportedAt:new Date().toISOString(),records:list,settings:s,cutters:Array.from(new Set([].concat(s.cutters||[],list.map(function(r){return r&&r.cutter})).filter(Boolean))),activeCutter:s.activeCutter||''}}
  window.mesahaEntryMemoryBackupV373={persist:persist,restore:function(){},backupPayload:payload,backupNow:function(){try{if(typeof window.backupJson==='function')return window.backupJson()}catch(e){}}};
- window.addEventListener('pagehide',persist,{passive:true});
+
 })();
 </script>
 <script src="./js/mesaha-render-storage.js"></script>
@@ -7076,7 +6948,7 @@ body.mesaha-entry-scrolling-v408 #entryView label{
 })();
 </script>
 <script src="./js/mesaha-fast-tap-nav.js"></script>
-<script src="./js/mesaha-terminal-performance.js"></script>
+
 <script src="./js/mesaha-hybrid-cloud.js"></script>
 <script id="mesaha-v504-user-panel-cleanup">
 (function(){
@@ -7341,9 +7213,9 @@ body.mesaha-floating-save-open-v537 .bottom-nav{display:none!important;visibilit
   #entryHomeBtn{position:relative!important;z-index:30!important;pointer-events:auto!important;touch-action:manipulation!important;}
 }
 </style>
-<script src="./js/mesaha-ios-touch-v538.js?v=544"></script>
-<script src="./js/mesaha-product-touch-v540.js?v=544"></script>
+<script src="./js/mesaha-ios-touch-v538.js?v=545"></script>
+<script src="./js/mesaha-product-touch-v540.js?v=545"></script>
 
-<script id="mesaha-v544-final-version-lock">(function(){function a(){try{if(window.mesahaApplyVersionV544)window.mesahaApplyVersionV544();else if(window.MesahaVersion&&window.MesahaVersion.applyToDocument)window.MesahaVersion.applyToDocument(document)}catch(e){}}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',a,{once:true});else a();window.addEventListener('pageshow',a,{passive:true});setTimeout(a,50);setTimeout(a,1000);})();</script>
+
 </body>
 </html>

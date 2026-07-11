@@ -13,6 +13,7 @@
   var pool = { success:null, warning:null };
   var last = { success:0, warning:0, any:0 };
   var unlocked = false;
+  var userGesture = false;
   var original = {};
   var wrapped = {};
   var installed = {};
@@ -37,8 +38,10 @@
     if(!pool.warning) pool.warning = makeAudio('warning');
   }
 
-  function unlock(){
-    if(unlocked) return;
+  function unlock(ev){
+    if(ev && ev.isTrusted === false) return;
+    if(ev && ev.isTrusted === true) userGesture = true;
+    if(!userGesture || unlocked) return;
     unlocked = true;
     ensure();
     ['success','warning'].forEach(function(kind){
@@ -112,6 +115,7 @@
   function play(kind, force){
     kind = normalizeKind(kind);
     if(!force && !enabled()) return;
+    if(!userGesture) return;
     var now = Date.now();
     if(!force){
       if(now - last.any < 170) return;          // toast + float toast çift sarmasını susturur
@@ -196,7 +200,6 @@
       singleEngine:true
     };
 
-    window.mesahaSound = api;
     window.mesahaSound = api;
     window.mesahaSoundFixV377 = api;
     window.mesahaSoundFixV376 = api;

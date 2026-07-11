@@ -65,13 +65,13 @@
     if(Date.now()-last<6*60*60*1000)return;
     try{localStorage.setItem('mesaha_cache_warm_current',String(Date.now()));}catch(e){}
     navigator.serviceWorker.ready.then(function(reg){
-      try{if(reg&&reg.active)reg.active.postMessage({type:'REPAIR_CACHE',build:META.build||544,integrityId:META.integrityId||''});}catch(e){}
+      try{if(reg&&reg.active)reg.active.postMessage({type:'REPAIR_CACHE',build:META.build||545,integrityId:META.integrityId||''});}catch(e){}
     }).catch(function(){});
   }
 
   function registerServiceWorker(){
     if (!('serviceWorker' in navigator)) return;
-    navigator.serviceWorker.register('./service-worker.js?build='+encodeURIComponent(META.build||544)+'&integrity='+encodeURIComponent(META.integrityId||''), {scope:'./', updateViaCache:'none'}).then(function(reg){
+    navigator.serviceWorker.register('./service-worker.js?build='+encodeURIComponent(META.build||545)+'&integrity='+encodeURIComponent(META.integrityId||''), {scope:'./', updateViaCache:'none'}).then(function(reg){
       try {
         var last = Number(localStorage.getItem('mesaha_sw_update_check_current') || 0);
         if (navigator.onLine && Date.now() - last > 15 * 60 * 1000) {

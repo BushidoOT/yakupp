@@ -1,18 +1,18 @@
-/* Mesaha İO V5.44 — kesin worker kimlikli atomik PWA güncelleme yöneticisi */
+/* Mesaha İO V5.45 — kesin worker kimlikli atomik PWA güncelleme yöneticisi */
 (function(){
   'use strict';
   var previous=window.MesahaUpdateV527;
-  if(previous&&Number(previous.apiVersion||0)>=544)return;
-  var API_VERSION=544;
+  if(previous&&Number(previous.apiVersion||0)>=545)return;
+  var API_VERSION=545;
   var localInfo=window.MESAHA_VERSION||{};
-  var localBuild=Number(localInfo.build||544)||544;
+  var localBuild=Number(localInfo.build||545)||545;
   var localIntegrity=String(localInfo.integrityId||'');
 
   function wait(ms){return new Promise(function(resolve){setTimeout(resolve,ms)})}
   function integrityOf(info){return String(info&&info.integrityId||localIntegrity||'')}
   function verifiedStatus(st,target,integrity){
     var b=Number(target||0),id=String(integrity||'');
-    return !!(st&&st.ready&&Number(st.build)===b&&st.integrity==='sha256'&&Number(st.criticalCount||0)>=31&&id&&String(st.integrityId||'')===id);
+    return !!(st&&st.ready&&Number(st.build)===b&&st.integrity==='sha256'&&Number(st.criticalCount||0)>=30&&id&&String(st.integrityId||'')===id);
   }
   function isAppCache(n){return /^(mesaha|mio)(-|_)/i.test(String(n||''))||/mesaha/i.test(String(n||''))}
   function buildOf(r){return Number(r&&((r.build||r.latestBuild))||localBuild)||localBuild}
