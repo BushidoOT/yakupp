@@ -1,6 +1,6 @@
-/* Mesaha İO V5.27 — Revision tabanlı kalıcı depolama motoru
-   IndexedDB ana güvenli kopyadır. localStorage yalnızca hızlı başlangıç uyumluluğu için
-   tek kayıt/ayar kopyası ve küçük metadata taşır. Eski mirror/snapshot kopyaları temizlenir. */
+/* Mesaha İO V5.42 — Revision tabanlı kalıcı depolama motoru
+   IndexedDB ana kalıcı depodur. localStorage hızlı başlangıç/uyumluluk kopyası olarak
+   son doğrulanmış revision ile arka planda güncellenir. Eski mirror/snapshot kopyaları temizlenir. */
 (function(){
   'use strict';
   if(window.MesahaStorageV527) return;
@@ -34,11 +34,16 @@
   function cleanLegacy(){
     try{LEGACY_RECORD_KEYS.concat(LEGACY_SETTINGS_KEYS).forEach(function(k){localStorage.removeItem(k);});}catch(e){}
   }
-  function checksum(value){
-    var s=''; try{s=JSON.stringify(value);}catch(e){s='';}
+  function checksumText(s){
+    s=String(s==null?'':s);
     var h=2166136261;
     for(var i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}
     return (h>>>0).toString(16)+':'+s.length;
+  }
+  function checksum(value){var s='';try{s=JSON.stringify(value);}catch(e){}return checksumText(s);}
+  function packValue(value,fallback){
+    try{var text=JSON.stringify(value);return {value:JSON.parse(text),text:text};}
+    catch(e){var safe=clone(fallback,fallback);var raw=JSON.stringify(safe);return {value:safe,text:raw};}
   }
   function readMeta(key){var m=readJson(key,null);return m&&typeof m==='object'?m:null;}
   function nextRevision(meta){
@@ -70,8 +75,7 @@
     return old&&typeof old==='object'&&!Array.isArray(old)?old:{};
   }
   function makeEnvelope(kind,value,meta,reason){
-    var at=now();
-    var val=clone(value,kind==='records'?[]:{});
+    var at=now(),packed=packValue(value,kind==='records'?[]:{}),val=packed.value;
     var rev=nextRevision(meta);
     return {
       key:kind,
@@ -80,7 +84,7 @@
       updatedAt:at,
       deletedAt:kind==='records'&&Array.isArray(val)&&val.length===0?at:0,
       count:kind==='records'&&Array.isArray(val)?val.length:Object.keys(val||{}).length,
-      checksum:checksum(val),
+      checksum:checksumText(packed.text),
       reason:String(reason||'save').slice(0,80),
       value:val
     };
@@ -163,10 +167,18 @@
       if(!job||!job.envelope){delete pendingReplicas[kind];continue;}
       job.attempts++;
       if(job.needsLocal){
-        try{job.needsLocal=!(commitCompat(kind,job.envelope)&&verifyCompat(kind,job.envelope));}catch(e){job.needsLocal=true;}
+        try{
+          var localMeta=readMeta(kind==='records'?RECORDS_META:SETTINGS_META);
+          if(localMeta&&Number(localMeta.revision||0)>Number(job.envelope.revision||0))job.needsLocal=false;
+          else job.needsLocal=!(commitCompat(kind,job.envelope)&&verifyCompat(kind,job.envelope));
+        }catch(e){job.needsLocal=true;}
       }
       if(job.needsIdb){
-        try{await verifyIdbEnvelope(kind,job.envelope);job.needsIdb=false;}catch(e){job.needsIdb=true;}
+        try{
+          var dbCurrent=await idbGet(kind).catch(function(){return null;});
+          if(dbCurrent&&Number(dbCurrent.revision||0)>Number(job.envelope.revision||0))job.needsIdb=false;
+          else{await verifyIdbEnvelope(kind,job.envelope);job.needsIdb=false;}
+        }catch(e){job.needsIdb=true;}
       }
       if(!job.needsLocal&&!job.needsIdb){delete pendingReplicas[kind];}
       else if(job.attempts<8){remain=true;}
@@ -203,17 +215,46 @@
     var typeOk=kind==='records'?Array.isArray(val):!!(val&&typeof val==='object'&&!Array.isArray(val));
     return !!(typeOk&&meta&&Number(meta.revision||0)===Number(envelope.revision||0)&&meta.checksum===envelope.checksum&&checksum(val)===envelope.checksum);
   }
+  function checkpointKind(kind,value,reason){
+    var metaKey=kind==='records'?RECORDS_META:SETTINGS_META;
+    var current=readMeta(metaKey)||(kind==='records'?bootRecordMeta:bootSettingsMeta)||{};
+    var safe=kind==='records'?(Array.isArray(value)?value:[]):(value&&typeof value==='object'&&!Array.isArray(value)?value:{});
+    var packed=packValue(safe,kind==='records'?[]:{}),sum=checksumText(packed.text);
+    if(current&&current.checksum===sum){
+      var existing=kind==='records'?readJson(RECORDS_KEY,null):readJson(SETTINGS_KEY,null);
+      var typeOk=kind==='records'?Array.isArray(existing):!!(existing&&typeof existing==='object'&&!Array.isArray(existing));
+      if(typeOk&&checksum(existing)===sum)return {ok:true,unchanged:true,revision:Number(current.revision||0)};
+    }
+    var env=makeEnvelope(kind,packed.value,current,reason||'checkpoint');
+    var snap=captureCompat(kind);
+    try{
+      if(!(commitCompat(kind,env)&&verifyCompat(kind,env)))throw new Error('Yerel checkpoint doğrulaması başarısız');
+      if(kind==='records'){
+        bootRecords=clone(env.value,[]);bootRecordMeta={revision:env.revision,updatedAt:env.updatedAt,deletedAt:env.deletedAt,count:env.count,checksum:env.checksum};lastCommittedRecords=clone(env.value,[]);
+      }else{
+        bootSettings=clone(env.value,{});bootSettingsMeta={revision:env.revision,updatedAt:env.updatedAt,count:env.count,checksum:env.checksum};lastCommittedSettings=clone(env.value,{});
+      }
+      scheduleReplicaRetry(kind,env,false,true);
+      return {ok:true,localStorage:true,indexedDBPending:true,checkpoint:true,revision:env.revision};
+    }catch(e){restoreCompat(kind,snap);notifyWarning(kind,e,{checkpoint:true});return {ok:false,error:String(e&&e.message||e)};}
+  }
+  function checkpointAll(records,settings,opts){
+    var reason=opts&&opts.reason||'checkpoint';
+    var r=checkpointKind('records',records,reason+'-records');
+    var st=checkpointKind('settings',settings,reason+'-settings');
+    return {ok:r.ok!==false&&st.ok!==false,records:r,settings:st};
+  }
   function applyCommitted(kind,envelope,localOk,idbOk){
     if(kind==='records'){
       bootRecords=clone(envelope.value,[]);
       bootRecordMeta={revision:envelope.revision,updatedAt:envelope.updatedAt,deletedAt:envelope.deletedAt,count:envelope.count,checksum:envelope.checksum};
       lastCommittedRecords=clone(envelope.value,[]);
-      try{window.dispatchEvent(new CustomEvent('mesaha:records-saved',{detail:{count:envelope.count,revision:envelope.revision,verified:true,durable:true,degraded:!(localOk&&idbOk),localStorage:localOk,indexedDB:idbOk}}));}catch(e){}
+      try{window.dispatchEvent(new CustomEvent('mesaha:records-saved',{detail:{count:envelope.count,revision:envelope.revision,reason:envelope.reason||'save',verified:true,durable:true,degraded:!idbOk,localStorage:localOk,indexedDB:idbOk,localStoragePending:!!(idbOk&&!localOk)}}));}catch(e){}
     }else{
       bootSettings=clone(envelope.value,{});
       bootSettingsMeta={revision:envelope.revision,updatedAt:envelope.updatedAt,count:envelope.count,checksum:envelope.checksum};
       lastCommittedSettings=clone(envelope.value,{});
-      try{window.dispatchEvent(new CustomEvent('mesaha:settings-saved',{detail:{revision:envelope.revision,verified:true,durable:true,degraded:!(localOk&&idbOk),localStorage:localOk,indexedDB:idbOk}}));}catch(e){}
+      try{window.dispatchEvent(new CustomEvent('mesaha:settings-saved',{detail:{revision:envelope.revision,reason:envelope.reason||'save',verified:true,durable:true,degraded:!idbOk,localStorage:localOk,indexedDB:idbOk,localStoragePending:!!(idbOk&&!localOk)}}));}catch(e){}
     }
   }
   function queuePut(kind,envelope){
@@ -221,23 +262,30 @@
       var snap=captureCompat(kind);
       var oldBoot=kind==='records'?clone(bootRecords,[]):clone(bootSettings,{});
       var oldMeta=kind==='records'?clone(bootRecordMeta,null):clone(bootSettingsMeta,null);
-      var localOk=false,idbOk=false,localErr=null,idbErr=null;
-      try{localOk=!!(commitCompat(kind,envelope)&&verifyCompat(kind,envelope));if(!localOk)localErr=new Error('Yerel depolama doğrulaması başarısız');}catch(e){localErr=e;localOk=false;}
-      try{await verifyIdbEnvelope(kind,envelope);idbOk=true;}catch(e){idbErr=e;idbOk=false;}
-      if(!localOk&&!idbOk){
-        restoreCompat(kind,snap);
-        if(kind==='records'){bootRecords=oldBoot;bootRecordMeta=oldMeta;}else{bootSettings=oldBoot;bootSettingsMeta=oldMeta;}
-        var fatalErr=idbErr||localErr||new Error('Kayıt hiçbir kalıcı depoya yazılamadı');
-        notifyFailure(kind,fatalErr,{localStorage:false,indexedDB:false});
-        return {ok:false,localStorage:false,indexedDB:false,verified:false,durable:false,revision:envelope.revision,error:String(fatalErr&&fatalErr.message||fatalErr)};
+      var idbOk=false,localOk=false,idbErr=null,localErr=null;
+
+      /* Ana yol: IndexedDB. Büyük localStorage JSON yazımı kullanıcı dokunuşunu bloke etmez. */
+      try{await verifyIdbEnvelope(kind,envelope);idbOk=true;}catch(e){idbErr=e;}
+      if(idbOk){
+        applyCommitted(kind,envelope,false,true);
+        scheduleReplicaRetry(kind,envelope,true,false);
+        return {ok:true,localStorage:false,indexedDB:true,localStoragePending:true,verified:true,durable:true,degraded:false,revision:envelope.revision};
       }
-      if(!localOk)restoreCompat(kind,snap);
-      applyCommitted(kind,envelope,localOk,idbOk);
-      if(!localOk||!idbOk){
-        scheduleReplicaRetry(kind,envelope,!localOk,!idbOk);
-        notifyWarning(kind,idbErr||localErr||new Error('İkinci depolama kopyası gecikti'),{localStorage:localOk,indexedDB:idbOk,revision:envelope.revision});
+
+      /* IndexedDB geçici olarak kullanılamıyorsa doğrulanmış localStorage kalıcı fallback'tir. */
+      try{localOk=!!(commitCompat(kind,envelope)&&verifyCompat(kind,envelope));if(!localOk)localErr=new Error('Yerel depolama doğrulaması başarısız');}catch(e){localErr=e;}
+      if(localOk){
+        applyCommitted(kind,envelope,true,false);
+        scheduleReplicaRetry(kind,envelope,false,true);
+        notifyWarning(kind,idbErr||new Error('IndexedDB kopyası gecikti'),{localStorage:true,indexedDB:false,revision:envelope.revision});
+        return {ok:true,localStorage:true,indexedDB:false,indexedDBPending:true,verified:true,durable:true,degraded:true,revision:envelope.revision};
       }
-      return {ok:true,localStorage:localOk,indexedDB:idbOk,verified:true,durable:true,degraded:!(localOk&&idbOk),revision:envelope.revision};
+
+      restoreCompat(kind,snap);
+      if(kind==='records'){bootRecords=oldBoot;bootRecordMeta=oldMeta;}else{bootSettings=oldBoot;bootSettingsMeta=oldMeta;}
+      var fatalErr=idbErr||localErr||new Error('Kayıt hiçbir kalıcı depoya yazılamadı');
+      notifyFailure(kind,fatalErr,{localStorage:false,indexedDB:false});
+      return {ok:false,localStorage:false,indexedDB:false,verified:false,durable:false,revision:envelope.revision,error:String(fatalErr&&fatalErr.message||fatalErr)};
     });
     return writeChain;
   }
@@ -261,31 +309,35 @@
     writeChain=writeChain.catch(function(){return null;}).then(async function(){
       var recSnap=captureCompat('records'),setSnap=captureCompat('settings');
       var oldRecords=clone(bootRecords,[]),oldSettings=clone(bootSettings,{}),oldRecMeta=clone(bootRecordMeta,null),oldSetMeta=clone(bootSettingsMeta,null);
-      var localRecOk=false,localSetOk=false,idbOk=false,localErr=null,idbErr=null;
-      try{localRecOk=!!(commitCompat('records',rec)&&verifyCompat('records',rec));if(!localRecOk)localErr=new Error('Yerel kayıt doğrulaması başarısız');}catch(e){localErr=e;}
-      try{localSetOk=!!(commitCompat('settings',set)&&verifyCompat('settings',set));if(!localSetOk&&!localErr)localErr=new Error('Yerel ayar doğrulaması başarısız');}catch(e){if(!localErr)localErr=e;}
+      var idbOk=false,localRecOk=false,localSetOk=false,idbErr=null,localErr=null;
+
       try{
         await withDeadline(idbPutPair(rec,set),5000,'IndexedDB toplu yazma zaman aşımı');
         var pair=await withDeadline(Promise.all([idbGet('records'),idbGet('settings')]),3500,'IndexedDB toplu doğrulama zaman aşımı');
         idbOk=!!(pair[0]&&pair[1]&&Number(pair[0].revision)===Number(rec.revision)&&Number(pair[1].revision)===Number(set.revision)&&pair[0].checksum===rec.checksum&&pair[1].checksum===set.checksum&&checksum(pair[0].value)===rec.checksum&&checksum(pair[1].value)===set.checksum);
         if(!idbOk)throw new Error('IndexedDB toplu doğrulaması başarısız');
       }catch(e){idbErr=e;idbOk=false;}
-      var recordsSafe=localRecOk||idbOk,settingsSafe=localSetOk||idbOk;
-      if(!recordsSafe||!settingsSafe){
-        restoreCompat('records',recSnap);restoreCompat('settings',setSnap);
-        bootRecords=oldRecords;bootSettings=oldSettings;bootRecordMeta=oldRecMeta;bootSettingsMeta=oldSetMeta;
-        var fatalErr=idbErr||localErr||new Error('Toplu veri hiçbir kalıcı depoya yazılamadı');
-        notifyFailure('replace',fatalErr,{localRecords:localRecOk,localSettings:localSetOk,indexedDB:idbOk});
-        return {ok:false,localStorage:false,indexedDB:false,verified:false,durable:false,error:String(fatalErr&&fatalErr.message||fatalErr)};
+
+      if(idbOk){
+        applyCommitted('records',rec,false,true);applyCommitted('settings',set,false,true);
+        scheduleReplicaRetry('records',rec,true,false);scheduleReplicaRetry('settings',set,true,false);
+        return {ok:true,localStorage:false,indexedDB:true,localStoragePending:true,verified:true,durable:true,degraded:false,recordsRevision:rec.revision,settingsRevision:set.revision};
       }
-      if(!localRecOk)restoreCompat('records',recSnap);
-      if(!localSetOk)restoreCompat('settings',setSnap);
-      applyCommitted('records',rec,localRecOk,idbOk);
-      applyCommitted('settings',set,localSetOk,idbOk);
-      if(!localRecOk||!idbOk)scheduleReplicaRetry('records',rec,!localRecOk,!idbOk);
-      if(!localSetOk||!idbOk)scheduleReplicaRetry('settings',set,!localSetOk,!idbOk);
-      if(!localRecOk||!localSetOk||!idbOk)notifyWarning('replace',idbErr||localErr||new Error('İkinci depolama kopyası gecikti'),{localRecords:localRecOk,localSettings:localSetOk,indexedDB:idbOk});
-      return {ok:true,localStorage:localRecOk&&localSetOk,indexedDB:idbOk,verified:true,durable:true,degraded:!(localRecOk&&localSetOk&&idbOk),recordsRevision:rec.revision,settingsRevision:set.revision};
+
+      try{localRecOk=!!(commitCompat('records',rec)&&verifyCompat('records',rec));if(!localRecOk)localErr=new Error('Yerel kayıt doğrulaması başarısız');}catch(e){localErr=e;}
+      try{localSetOk=!!(commitCompat('settings',set)&&verifyCompat('settings',set));if(!localSetOk&&!localErr)localErr=new Error('Yerel ayar doğrulaması başarısız');}catch(e){if(!localErr)localErr=e;}
+      if(localRecOk&&localSetOk){
+        applyCommitted('records',rec,true,false);applyCommitted('settings',set,true,false);
+        scheduleReplicaRetry('records',rec,false,true);scheduleReplicaRetry('settings',set,false,true);
+        notifyWarning('replace',idbErr||new Error('IndexedDB toplu kopyası gecikti'),{localRecords:true,localSettings:true,indexedDB:false});
+        return {ok:true,localStorage:true,indexedDB:false,indexedDBPending:true,verified:true,durable:true,degraded:true,recordsRevision:rec.revision,settingsRevision:set.revision};
+      }
+
+      restoreCompat('records',recSnap);restoreCompat('settings',setSnap);
+      bootRecords=oldRecords;bootSettings=oldSettings;bootRecordMeta=oldRecMeta;bootSettingsMeta=oldSetMeta;
+      var fatalErr=idbErr||localErr||new Error('Toplu veri hiçbir kalıcı depoya yazılamadı');
+      notifyFailure('replace',fatalErr,{localRecords:localRecOk,localSettings:localSetOk,indexedDB:false});
+      return {ok:false,localStorage:false,indexedDB:false,verified:false,durable:false,error:String(fatalErr&&fatalErr.message||fatalErr)};
     });
     return writeChain;
   }
@@ -342,13 +394,20 @@
     cleanLegacy();
     return {ok:true,changed:changed,records:Array.isArray(window.state&&window.state.records)?window.state.records.length:bootRecords.length};
   }
-  function flush(){return writeChain.catch(function(){return null;});}
+  async function flush(){
+    await writeChain.catch(function(){return null;});
+    if(Object.keys(pendingReplicas).length){
+      if(replicaRetryTimer){clearTimeout(replicaRetryTimer);replicaRetryTimer=0;}
+      await retryReplicas();
+    }
+    return true;
+  }
   function info(){
     return {
       recordsMeta:readMeta(RECORDS_META)||bootRecordMeta,
       settingsMeta:readMeta(SETTINGS_META)||bootSettingsMeta,
       recordsCount:(window.state&&Array.isArray(window.state.records)?window.state.records:bootRecords).length,
-      pending:false,
+      pending:Object.keys(pendingReplicas).length>0,
       database:DB_NAME
     };
   }
@@ -375,6 +434,9 @@
     saveRecords:saveRecords,
     saveSettings:saveSettings,
     replaceAll:replaceAll,
+    checkpointRecords:function(records,reason){return checkpointKind('records',records,reason||'manual-records-checkpoint');},
+    checkpointSettings:function(settings,reason){return checkpointKind('settings',settings,reason||'manual-settings-checkpoint');},
+    checkpointAll:checkpointAll,
     clearRecords:function(reason){return saveRecords([],{reason:reason||'clear'});},
     recoverIntoApp:recoverIntoApp,
     flush:flush,
@@ -388,5 +450,5 @@
 
   try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(function(){});}catch(e){}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(recoverIntoApp,80);},{once:true});else setTimeout(recoverIntoApp,80);
-  window.addEventListener('pagehide',function(){flush();},{passive:true});
+  window.addEventListener('pagehide',function(){try{if(window.state)checkpointAll(window.state.records,window.state.settings,{reason:'pagehide'});}catch(e){}flush();},{passive:true});
 })();

@@ -38,7 +38,6 @@
   try{setTimeout(removeNotes,300);setTimeout(removeNotes,1000);setTimeout(removeNotes,2500);}catch(e){}
 })();
 </script>
-
 <link href="./css/app.css" rel="stylesheet"/>
 <link href="./css/mesaha-seflik-folder-v529.css" rel="stylesheet"/>
 <style id="mesaha-v515-user-panel-clean-style">
@@ -46,7 +45,6 @@
 #panelTelegramSectionV515 .panel-telegram-join-v515{min-height:52px!important;font-size:14px!important;}
 #barcodeControlSettingV515 .barcode-control-toggle-v515{margin-top:10px!important;}
 </style>
-
 <style id="mesaha-v319-login-style">
 .user-badge.login-needed{background:#fff7ed;color:#9a3412;border-color:#fed7aa;box-shadow:0 10px 22px rgba(245,158,11,.12)}
 
@@ -397,7 +395,6 @@ body.mesaha-keyboard-open #saveBtn, body.mesaha-keyboard-open .save-btn{position
   .bulk-cutter-transfer-v406 select,.bulk-cutter-transfer-v406 .btn{width:100%;}
 }
 </style>
-
 <style id="mesaha-v535-shortcut-fix-style">
 #entryView #diameterChips button[data-dia],#entryView #lengthChips button[data-len]{cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;pointer-events:auto!important;position:relative;z-index:2}
 #entryView #diameterChips button[data-dia]:active,#entryView #lengthChips button[data-len]:active,#entryView .shortcut-selected-v535{transform:scale(.96)!important;background:#dcfce7!important;border-color:#86efac!important;color:#166534!important}
@@ -440,7 +437,7 @@ body.mesaha-keyboard-open #saveBtn, body.mesaha-keyboard-open .save-btn{position
 <div class="status-item net-status" id="netStatusCard"><span class="status-icon" id="netIcon">⌁</span><div><small>Bağlantı durumu</small><b id="netText">Kontrol ediliyor</b><em id="netSubText">Bağlantı kontrol ediliyor…</em></div></div>
 <button class="status-item entry-launch" id="openEntryBtn" type="button"><span class="status-icon flash">⚡</span><div><small>Giriş Modu</small><b>Mesaha Gir</b><em>Dokun ve hızlı mesaha girişine geç</em></div></button>
 </section>
-<section class="seflik-folder-home-shortcut" id="seflikFolderHomeShortcutV528" role="button" tabindex="0" aria-label="Şeflik Klasörünü aç">
+<section aria-label="Şeflik Klasörünü aç" class="seflik-folder-home-shortcut" id="seflikFolderHomeShortcutV528" role="button" tabindex="0">
 <div class="left"><span class="ico">📁</span><div><b>Şeflik Klasörü</b><small>Aynı şeflikteki mesahaları bölme bazlı senkronize edin.</small></div></div><span class="arrow">›</span>
 </section>
 <section class="card file-card">
@@ -457,7 +454,7 @@ body.mesaha-keyboard-open #saveBtn, body.mesaha-keyboard-open .save-btn{position
 <label class="setting-block">Mesaha Tarihi<input id="mesahaDate" type="date"/></label>
 <div class="setting-block"><b>Odun Türleri</b><p>Tikli olan odun türleri Giriş Modu içinde görünür.</p><div class="check-grid" id="homeProductChecks"></div></div>
 <div class="setting-block"><b>Ağaç Türleri</b><p>Tikli olan ağaç türleri Hızlı Giriş içinde görünür.</p><div class="check-grid" id="homeTreeChecks"></div></div>
-<div class="setting-block" id="barcodeControlSettingV515"><b>Barkod Kontrolü</b><p>Aktifken her 40 barkodda son barkod kontrol ekranı açılır.</p><label class="check-card barcode-control-toggle-v515"><input type="checkbox" id="barcodeControlEnabled" checked=""><span>40 barkodda bir kontrol ekranı göster</span></label></div>
+<div class="setting-block" id="barcodeControlSettingV515"><b>Barkod Kontrolü</b><p>Aktifken her 40 barkodda son barkod kontrol ekranı açılır.</p><label class="check-card barcode-control-toggle-v515"><input checked="" id="barcodeControlEnabled" type="checkbox"/><span>40 barkodda bir kontrol ekranı göster</span></label></div>
 </section>
 <section class="card sound-card">
 <h2>Ses Ayarı</h2>
@@ -500,7 +497,7 @@ body.mesaha-keyboard-open #saveBtn, body.mesaha-keyboard-open .save-btn{position
 <div class="tree-panel" id="treePanel"></div>
 </div>
 <div class="measure-grid measure-grid-v311">
-<label>Boy<input autocomplete="off" id="lengthInput" inputmode="decimal" min="0" step="0.01" type="number"/><div class="quick-grid" id="lengthChips"></div></label>
+<label>Boy<input autocomplete="off" id="lengthInput" inputmode="decimal" min="0" step="0.01" type="number"><div class="quick-grid" id="lengthChips"></div></input></label>
 <label>Çap<input autocomplete="off" id="diameterInput" inputmode="numeric" min="1" step="1" type="number"/><div class="quick-grid" id="diameterChips"></div></label>
 </div>
 <div><label>Ürün Türü</label><div class="product-grid" id="productButtons"></div></div>
@@ -552,7 +549,7 @@ body.mesaha-keyboard-open #saveBtn, body.mesaha-keyboard-open .save-btn{position
 </section>
 <section class="card seflik-folder-control">
 <div class="section-head"><h2>Bölme Yönetimi</h2><span id="seflikFolderIdentityV528">Şeflik seçilmedi</span></div>
-<div class="seflik-create-row-v529"><label>Yeni Bölme Numarası<input id="seflikFolderNewBolmeV529" inputmode="text" autocomplete="off" placeholder="Örn. 43"/></label><button class="btn primary" id="seflikFolderCreateV529" type="button">＋ Bölme Oluştur</button></div>
+<div class="seflik-create-row-v529"><label>Yeni Bölme Numarası<input autocomplete="off" id="seflikFolderNewBolmeV529" inputmode="text" placeholder="Örn. 43"/></label><button class="btn primary" id="seflikFolderCreateV529" type="button">＋ Bölme Oluştur</button></div>
 <p class="seflik-folder-hint-v529">Yalnızca burada oluşturulan açık bölmelere senkronizasyon ve gönderim yapılabilir.</p>
 <div class="seflik-folder-divider-v529"></div>
 <div class="section-head"><h2>Seçili Bölmeye Gönder</h2><span>Açık bölmeler</span></div>
@@ -682,7 +679,7 @@ body.mesaha-keyboard-open #saveBtn, body.mesaha-keyboard-open .save-btn{position
 <div class="panel-card-v316">
 <div class="panel-head-v316">
 <div class="panel-title-v316"><img alt="" src="./assets/mesaha_logo.png"/><div><h2 id="userPanelTitleV316">Kullanıcı Paneli</h2><small id="panelSyncTextV316">Yerel bilgiler hazırlanıyor…</small></div></div>
-<button class="panel-close-v316" hidden="" id="userPanelCloseV316" type="button" style="display:none">×</button>
+<button class="panel-close-v316" hidden="" id="userPanelCloseV316" style="display:none" type="button">×</button>
 </div>
 <div class="panel-grid-v316">
 <label class="panel-field-v316">Kullanıcı Adı<input autocomplete="name" id="panelNameV316" type="text"/></label>
@@ -693,14 +690,13 @@ body.mesaha-keyboard-open #saveBtn, body.mesaha-keyboard-open .save-btn{position
 <div class="panel-stats-v316" id="panelStatsV316"></div>
 <div class="panel-actions-v316">
 <button class="btn primary" id="panelSaveV316" type="button">Bilgileri Kaydet</button>
-<button class="btn soft" hidden="" id="panelSyncV316" type="button" style="display:none"></button>
+<button class="btn soft" hidden="" id="panelSyncV316" style="display:none" type="button"></button>
 <button class="btn soft" id="panelClose2V316" type="button">Kapat</button>
 </div>
-
 <div class="panel-section-v316" id="panelTelegramSectionV515">
 <b>Telegram Destek Grubu</b>
 <p class="hint">Destek, güncelleme ve kullanım yardımı için Telegram grubuna katılabilirsiniz.</p>
-<a class="btn primary full panel-telegram-join-v515" href="https://t.me/+LpsvthN4BM5kYWI0" target="_blank" rel="noopener">Telegram'a Katıl</a>
+<a class="btn primary full panel-telegram-join-v515" href="https://t.me/+LpsvthN4BM5kYWI0" rel="noopener" target="_blank">Telegram'a Katıl</a>
 </div>
 </div>
 </div>
@@ -713,10 +709,9 @@ body.mesaha-keyboard-open #saveBtn, body.mesaha-keyboard-open .save-btn{position
 <div class="cloud-list-v316" id="cloudRestoreListV316"></div>
 </div>
 </div>
-
 <div aria-hidden="true" aria-modal="true" class="seflik-send-overlay-v529 hidden" id="seflikSendOverlayV529" role="dialog">
 <div class="seflik-send-modal-v529">
-<div class="seflik-send-head-v529"><div><h2>Şefliğe Gönder</h2><small>Açık bölmelerden birini seçin</small></div><button id="seflikSendCloseV529" type="button" aria-label="Kapat">×</button></div>
+<div class="seflik-send-head-v529"><div><h2>Şefliğe Gönder</h2><small>Açık bölmelerden birini seçin</small></div><button aria-label="Kapat" id="seflikSendCloseV529" type="button">×</button></div>
 <label class="seflik-send-field-v529">Bölme<select id="seflikSendSelectV529"><option value="">Bölme seçin</option></select></label>
 <div class="seflik-send-meta-v529" id="seflikSendMetaV529">Kayıtlar hazırlanıyor…</div>
 <div class="seflik-send-warning-v529">Gönderim tamamlandığında seçili bölme güncellenecek ve Google Drive yedeği alınacaktır.</div>
@@ -1602,7 +1597,7 @@ function migrateRecord(r){ if(!r) return null; return {
   createdAt:r.createdAt || new Date().toISOString(), updatedAt:r.updatedAt || ''
 }; }
 function saveRecords(reason){ if(window.MesahaStorageV527&&window.MesahaStorageV527.saveRecords) return window.MesahaStorageV527.saveRecords(state.records,{reason:reason||'app-save'}); try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state.records));window.dispatchEvent(new CustomEvent('mesaha:records-saved',{detail:{count:state.records.length,verified:false}}));return Promise.resolve({ok:true,localStorage:true,indexedDB:false});}catch(e){try{window.dispatchEvent(new CustomEvent('mesaha:storage-error',{detail:{key:STORAGE_KEY,message:e&&e.message?e.message:String(e)}}));}catch(_){}return Promise.resolve({ok:false,error:String(e)});} }
-let __settingsSaveTimer=0,__settingsSaveLast=''; async function __flushSettings(reason){ try{ state.settings.barcodeControlEvery=40; const payload=JSON.stringify(state.settings); if(payload===__settingsSaveLast)return {ok:true,unchanged:true}; let result; if(window.MesahaStorageV527&&window.MesahaStorageV527.saveSettings) result=await window.MesahaStorageV527.saveSettings(state.settings,{reason:reason||'settings-save'}); else { localStorage.setItem(SETTINGS_KEY,payload); window.dispatchEvent(new CustomEvent('mesaha:settings-saved')); result={ok:true,localStorage:true}; } if(result&&result.ok!==false)__settingsSaveLast=payload; return result; }catch(e){try{window.dispatchEvent(new CustomEvent('mesaha:storage-error',{detail:{key:SETTINGS_KEY,message:e&&e.message?e.message:String(e)}}));}catch(_){}return {ok:false,error:String(e)};} } function saveSettings(){ clearTimeout(__settingsSaveTimer); __settingsSaveTimer=setTimeout(function(){__flushSettings('settings-debounce');},220); } async function __saveAllV527(reason){ clearTimeout(__settingsSaveTimer); try{ state.settings.barcodeControlEvery=40; let result; if(window.MesahaStorageV527&&window.MesahaStorageV527.replaceAll)result=await window.MesahaStorageV527.replaceAll(state.records,state.settings,{reason:reason||'app-transaction'});else{const pair=await Promise.all([saveRecords(reason||'app-transaction'),__flushSettings(reason||'app-transaction')]);result=pair.some(x=>x&&x.ok===false)?{ok:false,error:'Kalıcı depolama işlemi başarısız'}:{ok:true};} if(result&&result.ok!==false)__settingsSaveLast=JSON.stringify(state.settings); return result;}catch(e){try{window.dispatchEvent(new CustomEvent('mesaha:storage-error',{detail:{key:'records+settings',message:e&&e.message?e.message:String(e)}}));}catch(_){}return {ok:false,error:String(e)};} } try{window.__flushSettings=__flushSettings;window.__saveAllV527=__saveAllV527;}catch(e){} window.addEventListener('pagehide',function(){__flushSettings('pagehide');}); document.addEventListener('visibilitychange',function(){if(document.hidden)__flushSettings('hidden');});
+let __settingsSaveTimer=0,__settingsSaveLast=''; async function __flushSettings(reason){ try{ state.settings.barcodeControlEvery=40; const payload=JSON.stringify(state.settings); if(payload===__settingsSaveLast)return {ok:true,unchanged:true}; let result; if(window.MesahaStorageV527&&window.MesahaStorageV527.saveSettings) result=await window.MesahaStorageV527.saveSettings(state.settings,{reason:reason||'settings-save'}); else { localStorage.setItem(SETTINGS_KEY,payload); window.dispatchEvent(new CustomEvent('mesaha:settings-saved')); result={ok:true,localStorage:true}; } if(result&&result.ok!==false)__settingsSaveLast=payload; return result; }catch(e){try{window.dispatchEvent(new CustomEvent('mesaha:storage-error',{detail:{key:SETTINGS_KEY,message:e&&e.message?e.message:String(e)}}));}catch(_){}return {ok:false,error:String(e)};} } function saveSettings(){ clearTimeout(__settingsSaveTimer); __settingsSaveTimer=setTimeout(function(){__flushSettings('settings-debounce');},220); } async function __saveAllV527(reason){ clearTimeout(__settingsSaveTimer); try{ state.settings.barcodeControlEvery=40; let result; if(window.MesahaStorageV527&&window.MesahaStorageV527.replaceAll)result=await window.MesahaStorageV527.replaceAll(state.records,state.settings,{reason:reason||'app-transaction'});else{const pair=await Promise.all([saveRecords(reason||'app-transaction'),__flushSettings(reason||'app-transaction')]);result=pair.some(x=>x&&x.ok===false)?{ok:false,error:'Kalıcı depolama işlemi başarısız'}:{ok:true};} if(result&&result.ok!==false)__settingsSaveLast=JSON.stringify(state.settings); return result;}catch(e){try{window.dispatchEvent(new CustomEvent('mesaha:storage-error',{detail:{key:'records+settings',message:e&&e.message?e.message:String(e)}}));}catch(_){}return {ok:false,error:String(e)};} } function __checkpointStateV542(reason){try{state.settings.barcodeControlEvery=40;if(window.MesahaStorageV527&&window.MesahaStorageV527.checkpointAll){const r=window.MesahaStorageV527.checkpointAll(state.records,state.settings,{reason:reason||'lifecycle'});if(r&&r.ok!==false)__settingsSaveLast=JSON.stringify(state.settings);return r;}}catch(e){}return null;} try{window.__flushSettings=__flushSettings;window.__saveAllV527=__saveAllV527;window.__checkpointStateV542=__checkpointStateV542;}catch(e){} window.addEventListener('pagehide',function(){__checkpointStateV542('pagehide');__flushSettings('pagehide');}); document.addEventListener('visibilitychange',function(){if(document.hidden){__checkpointStateV542('hidden');__flushSettings('hidden');}});
 function bind(){
   $('openEntryBtn').addEventListener('click', () => openEntry());
   $('entryHomeBtn').addEventListener('click', () => showView('home'));
@@ -1744,7 +1739,7 @@ function quickChipAddCap(map,r,i){
   const key=quickChipRecordDiameter(r);
   if(!key) return;
   if(!map[key]) map[key]={count:0,last:0};
-  map[key].count+=quickChipRecordQty(r);
+  map[key].count+=1;
   map[key].last=i;
 }
 function rebuildQuickChipCapCache(clearMs){
@@ -1794,23 +1789,15 @@ function applyQuickChipV535(kind,value,button){
   return true;
 }
 function bindQuickChipContainerV535(container,kind){
-  if(!container||container.__quickChipBoundV535) return;
-  container.__quickChipBoundV535=true;
-  const handle=function(ev){
-    const attr=kind==='diameter'?'data-dia':'data-len';
-    const button=ev.target&&ev.target.closest?ev.target.closest('button['+attr+']'):null;
-    if(!button||button.disabled||!container.contains(button)) return;
-    const now=Date.now();
-    if(__quickChipTapV535.button===button&&now-__quickChipTapV535.at<420){
-      if(ev.type==='click'){ev.preventDefault();ev.stopPropagation();}
-      return;
-    }
-    __quickChipTapV535={button:button,at:now};
-    ev.preventDefault();
-    applyQuickChipV535(kind,button.getAttribute(attr),button);
-  };
-  if(window.PointerEvent) container.addEventListener('pointerup',handle,{passive:false});
-  container.addEventListener('click',handle,false);
+  if(!container||container.__quickChipBoundV542) return;
+  container.__quickChipBoundV542=true;container.__quickChipBoundV535=true;
+  const isIOS=/iPad|iPhone|iPod/i.test(navigator.userAgent||'')||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+  const attr=kind==='diameter'?'data-dia':'data-len';
+  const findButton=ev=>ev.target&&ev.target.closest?ev.target.closest('button['+attr+']'):null;
+  const apply=function(ev){const button=findButton(ev);if(!button||button.disabled||!container.contains(button))return;const t=Date.now();if(__quickChipTapV535.button===button&&t-__quickChipTapV535.at<420)return;__quickChipTapV535={button,at:t};ev.preventDefault();applyQuickChipV535(kind,button.getAttribute(attr),button);};
+  if(isIOS&&window.PointerEvent){container.addEventListener('pointerup',function(ev){if(ev.pointerType!=='mouse')apply(ev);},{passive:false});container.addEventListener('click',function(ev){const b=findButton(ev);if(b&&__quickChipTapV535.button===b&&Date.now()-__quickChipTapV535.at<900){ev.preventDefault();ev.stopPropagation();}},{capture:true,passive:false});}
+  else if(isIOS){container.addEventListener('touchend',apply,{passive:false});container.addEventListener('click',function(ev){const b=findButton(ev);if(b&&__quickChipTapV535.button===b&&Date.now()-__quickChipTapV535.at<900){ev.preventDefault();ev.stopPropagation();}},{capture:true,passive:false});}
+  else container.addEventListener('click',apply,false);
 }
 function renderQuickChips(){
   const dc=$('diameterChips'), lc=$('lengthChips');
@@ -1819,15 +1806,8 @@ function renderQuickChips(){
   const makePlaceholder=n=>Array.from({length:n},()=>`<button type="button" class="shortcut-empty-v442" disabled aria-disabled="true">—</button>`).join('');
   const records=Array.isArray(state.records)?state.records:[];
 
-  /* Çap: en çok kullanılan değerler; eşitlikte en son kullanılan öne gelir. */
-  const diameterMap=Object.create(null);
-  records.forEach((r,index)=>{
-    const value=normalizeQuickChipNumberV535(r&&(r.diameter??r.cap??r.capCm),'diameter');
-    if(!value) return;
-    if(!diameterMap[value]) diameterMap[value]={count:0,last:-1};
-    diameterMap[value].count+=1;
-    diameterMap[value].last=index;
-  });
+  /* Çap: V5.42 artımlı cache; kayıt başına tüm liste tekrar taranmaz. */
+  const diameterMap=getQuickChipCapCache(0).capMap||Object.create(null);
   const capList=Object.keys(diameterMap)
     .sort((a,b)=>(diameterMap[b].count-diameterMap[a].count)||(diameterMap[b].last-diameterMap[a].last)||(Number(a)-Number(b)))
     .slice(0,6);
@@ -1863,10 +1843,10 @@ let __quickChipRefreshTimerV536=0;
 function refreshQuickChipsV536(immediate){
   const run=()=>{
     __quickChipRefreshTimerV536=0;
-    try{markQuickChipsDirty();renderQuickChips();}catch(e){}
+    try{renderQuickChips();}catch(e){}
     try{renderRecent();}catch(e){}
     try{
-      const t=totals(state.records||[]);
+      const t=recordStatsV447().total;
       const countEl=$('entryTotalCount'),m3El=$('entryTotalM3');
       if(countEl)countEl.textContent=t.count.toLocaleString('tr-TR');
       if(m3El)m3El.textContent=`${fmt(t.m3,3)} m³`;
@@ -1934,74 +1914,44 @@ function renderRecent(){
 }
 async function saveEntry(){
   if(window.__mesahaSaveBusyV527) return false;
-  const wasEditing = Boolean(state.editingId);
-  const returnBarcodeAfterEdit = state.editingReturnBarcode || state.settings.barcode || '';
-  const barcode=norm($('barcodeInput').value).toUpperCase();
-  const diameter=norm($('diameterInput').value);
-  const length=norm($('lengthInput').value);
-  if(!barcode){ toast('Barkod giriniz.'); return false; }
-  if(!validateBarcode(barcode)) return false;
-  if(!diameter){ toast('Çap giriniz.'); return false; }
-  if(!length){ toast('Boy giriniz.'); return false; }
-  if(window.MesahaBoyInputFocusGuardV416&&typeof window.MesahaBoyInputFocusGuardV416.validate==='function'&&!window.MesahaBoyInputFocusGuardV416.validate()) return false;
-  if(!validateProductRules(state.settings.currentProduct, diameter, length)) return false;
-  const duplicate = state.records.find(r => String(r.barcode||'').toUpperCase()===barcode && r.id!==state.editingId);
-  if(duplicate){ toast('Bu barkod daha önce kayıtlı.'); return false; }
+  const wasEditing=Boolean(state.editingId),returnBarcodeAfterEdit=state.editingReturnBarcode||state.settings.barcode||'';
+  const barcode=norm($('barcodeInput').value).toUpperCase(),diameter=norm($('diameterInput').value),length=norm($('lengthInput').value);
+  if(!barcode){toast('Barkod giriniz.');return false;} if(!validateBarcode(barcode))return false;
+  if(!diameter){toast('Çap giriniz.');return false;} if(!length){toast('Boy giriniz.');return false;}
+  if(window.MesahaBoyInputFocusGuardV416&&typeof window.MesahaBoyInputFocusGuardV416.validate==='function'&&!window.MesahaBoyInputFocusGuardV416.validate())return false;
+  if(!validateProductRules(state.settings.currentProduct,diameter,length))return false;
+  const duplicate=state.records.find(r=>String(r.barcode||'').toUpperCase()===barcode&&r.id!==state.editingId);if(duplicate){toast('Bu barkod daha önce kayıtlı.');return false;}
 
   window.__mesahaSaveBusyV527=true;
-  const entry=$('entryView');
-  const saveBtn=$('saveBtn');
-  if(entry)entry.classList.add('mesaha-save-single-gate-v418');
-  if(saveBtn)saveBtn.setAttribute('aria-busy','true');
+  const entry=$('entryView'),saveBtn=$('saveBtn');if(entry)entry.classList.add('mesaha-save-single-gate-v418');if(saveBtn)saveBtn.setAttribute('aria-busy','true');
   const beforeRecords=state.records.slice();
-  const beforeSettings={...state.settings};
+  let beforeSettings;try{beforeSettings=typeof structuredClone==='function'?structuredClone(state.settings):JSON.parse(JSON.stringify(state.settings));}catch(e){beforeSettings={...state.settings};}
   let rec=null;
   try{
     const oldRec=state.editingId?state.records.find(r=>r.id===state.editingId):null;
-    rec = { id: state.editingId || uid(), barcode, diameter, length, quantity:Math.max(1, num($('quantityInput') && $('quantityInput').value || 1)), productType:normalizeProductType(state.settings.currentProduct), treeType:state.settings.currentTree, cutter:state.settings.activeCutter||'', productionDate:state.settings.mesahaDate||todayISO(), bolmeNo:(oldRec&&oldRec.bolmeNo)||state.settings.bolmeNo||'', seflik:(oldRec&&oldRec.seflik)||state.settings.seflik||'', createdAt:(oldRec&&oldRec.createdAt)||new Date().toISOString(), updatedAt: state.editingId ? new Date().toISOString() : '' };
-    if(state.editingId){
-      const i=state.records.findIndex(r=>r.id===state.editingId);
-      if(i>=0) state.records[i]=rec;
-      state.editingId=null;
-      state.editingReturnBarcode='';
-      $('cancelEditBtn').classList.add('hidden');
-      markQuickChipsDirty();
-    } else state.records.push(rec);
-    state.settings.quantity='1';
-    state.settings.length=length;
-    state.settings.diameter='';
-    if($('lengthInput')) $('lengthInput').value=length;
-    rememberChip('recentDiameters',diameter);
-    rememberChip('recentLengths',length);
-    state.settings.barcode=wasEditing?(returnBarcodeAfterEdit||nextBarcode(barcode)):(state.settings.sameBarcodeMode===true?barcode:nextBarcode(barcode));
-    $('barcodeInput').value=state.settings.barcode;
-
+    rec={id:state.editingId||uid(),barcode,diameter,length,quantity:Math.max(1,num($('quantityInput')&&$('quantityInput').value||1)),productType:normalizeProductType(state.settings.currentProduct),treeType:state.settings.currentTree,cutter:state.settings.activeCutter||'',productionDate:state.settings.mesahaDate||todayISO(),bolmeNo:(oldRec&&oldRec.bolmeNo)||state.settings.bolmeNo||'',seflik:(oldRec&&oldRec.seflik)||state.settings.seflik||'',createdAt:(oldRec&&oldRec.createdAt)||new Date().toISOString(),updatedAt:state.editingId?new Date().toISOString():''};
+    if(state.editingId){const i=state.records.findIndex(r=>r.id===state.editingId);if(i>=0)state.records[i]=rec;state.editingId=null;state.editingReturnBarcode='';$('cancelEditBtn').classList.add('hidden');markQuickChipsDirty();}
+    else state.records.push(rec);
+    state.settings.quantity='1';state.settings.length=length;state.settings.diameter='';if($('lengthInput'))$('lengthInput').value=length;
+    rememberChip('recentDiameters',diameter);rememberChip('recentLengths',length);
+    state.settings.barcode=wasEditing?(returnBarcodeAfterEdit||nextBarcode(barcode)):(state.settings.sameBarcodeMode===true?barcode:nextBarcode(barcode));$('barcodeInput').value=state.settings.barcode;
     const result=await __saveAllV527(wasEditing?'record-update':'record-add');
-    if(result&&result.ok===false) throw new Error(result.error||'Kayıt kalıcı depolamaya yazılamadı');
-
-    /* V5.36: Boy/çap kısayollarını kayıt sonrasında sayfa yenilemeden anında güncelle. */
-    try{ markQuickChipsDirty(); renderQuickChips(); }catch(e){}
-    try{showBarcodeMilestoneV440(rec,state.records.length)}catch(e){}
-    if(window.MesahaRenderStorageV382&&window.MesahaRenderStorageV382.renderAllSoon) window.MesahaRenderStorageV382.renderAllSoon();
-    else renderAll();
-    if(window.mesahaV310SavedToast) window.mesahaV310SavedToast(rec,wasEditing);
-    else toast(wasEditing?'Kayıt güncellendi.':'Kayıt alındı.');
-    try{setTimeout(()=>{const d=$('diameterInput');if(!d)return;d.value='';d.focus({preventScroll:true});try{d.setSelectionRange(0,0)}catch{}},20)}catch(e){}
-    vibrate('save');
-    if(state.settings.soundEnabled!==false) beep();
-    return true;
+    if(result&&result.ok===false)throw new Error(result.error||'Kayıt kalıcı depolamaya yazılamadı');
   }catch(err){
-    state.records=beforeRecords;
-    state.settings=beforeSettings;
+    state.records=beforeRecords;state.settings=beforeSettings;
     try{if(window.MesahaRenderStorageV382&&window.MesahaRenderStorageV382.renderAllSoon)window.MesahaRenderStorageV382.renderAllSoon();else renderAll();}catch(e){}
     try{if(window.MesahaErrorLog)window.MesahaErrorLog.error('record.save',err,{count:state.records.length});}catch(e){}
     toast('Kayıt kaydedilemedi. Telefon depolamasını kontrol edin.');
-    return false;
-  }finally{
-    window.__mesahaSaveBusyV527=false;
-    if(entry)entry.classList.remove('mesaha-save-single-gate-v418');
-    if(saveBtn)saveBtn.removeAttribute('aria-busy');
+    window.__mesahaSaveBusyV527=false;if(entry)entry.classList.remove('mesaha-save-single-gate-v418');if(saveBtn)saveBtn.removeAttribute('aria-busy');return false;
   }
+
+  /* Kalıcı yazım tamamlandı. Bundan sonraki görsel/ses hataları kaydı geri alamaz. */
+  const post=(name,fn)=>{try{return fn();}catch(err){try{if(window.MesahaErrorLog)window.MesahaErrorLog.error('record.post-save.'+name,err,{id:rec&&rec.id});}catch(e){}}};
+  post('milestone',()=>showBarcodeMilestoneV440(rec,state.records.length));
+  post('toast',()=>window.mesahaV310SavedToast?window.mesahaV310SavedToast(rec,wasEditing):toast(wasEditing?'Kayıt güncellendi.':'Kayıt alındı.'));
+  post('focus',()=>setTimeout(()=>{const d=$('diameterInput');if(!d)return;d.value='';d.focus({preventScroll:true});try{d.setSelectionRange(0,0)}catch{}},20));
+  post('vibrate',()=>vibrate('save'));if(state.settings.soundEnabled!==false)post('sound',()=>beep());
+  window.__mesahaSaveBusyV527=false;if(entry)entry.classList.remove('mesaha-save-single-gate-v418');if(saveBtn)saveBtn.removeAttribute('aria-busy');return true;
 }
 
 function showBarcodeMilestoneV440(rec,count){
@@ -2901,7 +2851,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     if(!navigator.onLine){await modal({title:'İnternet yok',type:'danger',icon:'!',message:'Yeni sürüm kontrolü için internet bağlantısı gerekli.'});return;}
     try{
       let check=null;if(window.MesahaUpdateV527)check=await window.MesahaUpdateV527.check();
-      if(check&&!check.newer){await modal({title:'Sürüm güncel',type:'success',icon:'✓',html:`<p><b>${esc((window.MESAHA_VERSION&&window.MESAHA_VERSION.visibleVersion)||'Mesaha İO')}</b> kullanılıyor.</p>`,buttons:[{text:'Tamam',value:true,cls:'primary'}]});return;}
+      if(check&&!check.unavailable&&!check.newer){await modal({title:'Sürüm güncel',type:'success',icon:'✓',html:`<p><b>${esc((window.MESAHA_VERSION&&window.MESAHA_VERSION.visibleVersion)||'Mesaha İO')}</b> kullanılıyor.</p>`,buttons:[{text:'Tamam',value:true,cls:'primary'}]});return;}
       if(window.MesahaUpdateV527)await window.MesahaUpdateV527.updateAndReload({delay:450});else location.replace('./guncelle.html');
     }catch(err){modal({title:'Güncelleme yapılamadı',type:'danger',icon:'!',message:err&&err.message?err.message:'Bağlantı hatası'});}
   }
@@ -3031,8 +2981,13 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
       }
     }, true);
 
-    document.addEventListener('change', updateExportScopeInfo, true);
-    document.addEventListener('input', updateExportScopeInfo, true);
+    let exportScopeTimerV542=0;
+    function scheduleExportScopeV542(delay=90){clearTimeout(exportScopeTimerV542);exportScopeTimerV542=setTimeout(updateExportScopeInfo,delay);}
+    document.addEventListener('input', ev => {if(ev.target&&ev.target.id==='recordSearch')scheduleExportScopeV542(90);}, true);
+    document.addEventListener('change', ev => {const t=ev.target;if(t&&(t.id==='recordSearch'||t.matches&&t.matches('#recordsView input,#recordsView select')))scheduleExportScopeV542(90);}, true);
+    document.addEventListener('click', ev => {if(ev.target&&ev.target.closest&&ev.target.closest('#recordsView,[data-tree-filter],[data-cutter-filter]'))scheduleExportScopeV542(100);}, true);
+    window.addEventListener('mesaha:records-saved',()=>scheduleExportScopeV542(60),{passive:true});
+    window.addEventListener('mesaha:settings-saved',()=>scheduleExportScopeV542(100),{passive:true});
   }
 
   function removeSameBarcodeAndQuantity(){
@@ -3144,7 +3099,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     if(!btn||btn.__v527KeepKeyboard)return;
     btn.__v527KeepKeyboard=true;
     btn.addEventListener('click',function(){
-      setTimeout(function(){focusDiameter();updateBeyanTotals();},140);
+      setTimeout(focusDiameter,140);
     },{passive:true});
   }
 
@@ -3211,9 +3166,13 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, {once:true});
   else boot();
 
-  document.addEventListener('click', () => setTimeout(updateBeyanTotals, 80), true);
-  document.addEventListener('input', () => setTimeout(updateBeyanTotals, 80), true);
-  document.addEventListener('change', () => setTimeout(updateBeyanTotals, 80), true);
+  let beyanFallbackTimerV542=0;
+  function scheduleFallbackTotalsV542(delay=90){
+    if(window.mesahaV305&&window.mesahaV305.updateBeyanTotals!==updateBeyanTotals)return;
+    clearTimeout(beyanFallbackTimerV542);beyanFallbackTimerV542=setTimeout(updateBeyanTotals,delay);
+  }
+  window.addEventListener('mesaha:records-saved',()=>scheduleFallbackTotalsV542(70),{passive:true});
+  window.addEventListener('mesaha:settings-saved',()=>scheduleFallbackTotalsV542(110),{passive:true});
   [100,400,1000,2200].forEach(ms => setTimeout(boot, ms));
   /* v381: 900ms beyan toplam interval kaldırıldı; input/change/click olayları güncelliyor. */
 
@@ -5038,7 +4997,6 @@ input,select,textarea{background:#fff!important;color:#101828!important;border-c
 .hero-card::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(90deg,rgba(255,255,255,.97) 0%,rgba(255,255,255,.91) 28%,rgba(255,255,255,.66) 51%,rgba(255,255,255,.10) 100%)}
 .hero-card>div:first-of-type{position:relative!important;z-index:2!important}
 </style>
-
 <script id="mesaha-v453-sw-kayit-kontrol">
 (function(){
   'use strict';
@@ -5053,7 +5011,6 @@ input,select,textarea{background:#fff!important;color:#101828!important;border-c
   window.addEventListener('online', repair, {passive:true});
 })();
 </script>
-
 <script id="mesaha-offline-core-v380" src="./js/mesaha-offline-core.js"></script>
 <script id="mesaha-v354-version-guard">
 (function(){
@@ -5585,356 +5542,21 @@ body.product-tap-lock-v372 .entry-view.active{
 </style>
 <script id="mesaha-local-7">
 (function(){
-  'use strict';
-
-  var restoreTimer = null;
-  var keyboardTimer = null;
-  var baseHeight = window.innerHeight || 0;
-  var lastProductTapY = null;
-
-  const byId=(window.MesahaUtils&&window.MesahaUtils.byId)||function(id){ return document.getElementById(id); }
-
-  function entryActive(){
-    var e = byId('entryView');
-    return !!(e && e.classList.contains('active'));
-  }
-
-  function focusedEntryInput(){
-    var a = document.activeElement;
-    return !!(a && ['diameterInput','lengthInput','barcodeInput','quantityInput'].indexOf(a.id) >= 0);
-  }
-
-  function keyboardInset(){
-    try{
-      if(window.visualViewport){
-        var vv = window.visualViewport;
-        var inset = Math.max(0, Math.round(window.innerHeight - vv.height - vv.offsetTop));
-        // Android Chrome bazen layout viewport'u küçültür, inset 0 gelir; bu durumda fixed zaten görünen alana göre çalışır.
-        return inset;
-      }
-    }catch(e){}
-    return 0;
-  }
-
-  function keyboardLikelyOpen(){
-    var inset = keyboardInset();
-    var h = window.innerHeight || 0;
-    var shrunk = baseHeight && h && (baseHeight - h > 110);
-    return entryActive() && focusedEntryInput() && (inset > 45 || shrunk || document.body.classList.contains('keyboard-open-v311'));
-  }
-
-  function syncKeyboardClass(){
-    var inset = keyboardInset();
-    var open = keyboardLikelyOpen();
-    document.body.classList.toggle('mesaha-entry-keyboard-open', open);
-    document.documentElement.classList.toggle('mesaha-entry-keyboard-open', open);
-    document.documentElement.style.setProperty('--mesaha-kb-bottom-v372', open ? Math.max(0, inset) + 'px' : '0px');
-    var btn = byId('saveBtn');
-    if(btn && open){
-      btn.style.position = 'fixed';
-      btn.style.zIndex = '2147483200';
-      btn.style.visibility = 'visible';
-      btn.style.opacity = '1';
-      btn.style.pointerEvents = 'auto';
-    }
-  }
-
-  function delayedKeyboardSync(){
-    clearTimeout(keyboardTimer);
-    syncKeyboardClass();
-    keyboardTimer = setTimeout(syncKeyboardClass, 160);
-  }
-
-  function currentY(){
-    return window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;
-  }
-
-  function restoreY(y){
-    try{ window.scrollTo({top:y, left:0, behavior:'auto'}); }
-    catch(e){ try{ window.scrollTo(0,y); }catch(_){} }
-  }
-
-  function isProductTapTarget(ev){
-    var t = ev && ev.target;
-    if(!t || !t.closest) return false;
-    return !!t.closest('#productButtons button,.product-btn,[data-product]');
-  }
-
-  function protectProductTap(ev){
-    if(!entryActive() || !isProductTapTarget(ev)) return;
-    var y = currentY();
-    lastProductTapY = y;
-    document.body.classList.add('product-tap-lock-v372');
-
-    clearTimeout(restoreTimer);
-    [0,35,80,150,260,420].forEach(function(ms){
-      setTimeout(function(){
-        if(lastProductTapY === null) return;
-        if(Math.abs(currentY() - lastProductTapY) > 40) restoreY(lastProductTapY);
-      }, ms);
-    });
-
-    restoreTimer = setTimeout(function(){
-      document.body.classList.remove('product-tap-lock-v372');
-      lastProductTapY = null;
-    }, 520);
-  }
-
-  function bind(){
-    if((window.innerHeight || 0) > baseHeight) baseHeight = window.innerHeight || baseHeight;
-    syncKeyboardClass();
-
-    function isKeyboardInputEvent(ev){
-      var t = ev && ev.target;
-      return !!(t && t.closest && t.closest('#entryView input,#entryView textarea'));
-    }
-    ['focusin','focusout','input','change'].forEach(function(evt){
-      document.addEventListener(evt, function(ev){ if(isKeyboardInputEvent(ev)) delayedKeyboardSync(); }, {capture:true, passive:true});
-    });
-
-    if(window.visualViewport){
-      window.visualViewport.addEventListener('resize', delayedKeyboardSync, {passive:true});
-      window.visualViewport.addEventListener('scroll', delayedKeyboardSync, {passive:true});
-    }
-
-    window.addEventListener('resize', function(){
-      if(!focusedEntryInput() && (window.innerHeight || 0) > baseHeight) baseHeight = window.innerHeight || baseHeight;
-      delayedKeyboardSync();
-    }, {passive:true});
-
-    window.addEventListener('orientationchange', function(){
-      setTimeout(function(){ baseHeight = window.innerHeight || baseHeight; delayedKeyboardSync(); }, 300);
-    }, {passive:true});
-
-    var productGrid = byId('productButtons');
-    if(productGrid && !productGrid.__v444ProductTapBound){
-      productGrid.__v444ProductTapBound = true;
-      ['pointerdown','touchstart','mousedown'].forEach(function(evt){
-        productGrid.addEventListener(evt, protectProductTap, {capture:true, passive:true});
-      });
-    }
-  }
-
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bind, {once:true});
-  else bind();
-
-  [120,400,1000,2200,4200].forEach(function(ms){ setTimeout(delayedKeyboardSync, ms); });
-
-  window.mesahaKeyboardSaveFixV372 = {
-    sync:syncKeyboardClass,
-    restoreProductScroll:protectProductTap
-  };
+ 'use strict';if(window.__mesahaKeyboardCompatV543)return;window.__mesahaKeyboardCompatV543=true;
+ function sync(){try{if(window.MesahaV537&&window.MesahaV537.syncFloatingSave)window.MesahaV537.syncFloatingSave()}catch(e){}}
+ window.mesahaKeyboardSaveFixV372={sync:sync,restoreProductScroll:function(){}};
+ document.addEventListener('focusin',function(ev){if(ev.target&&/^(diameterInput|lengthInput|barcodeInput|quantityInput)$/.test(ev.target.id))setTimeout(sync,20)},true);
 })();
 </script>
 <script id="mesaha-v373-entry-memory-backup-cutters">
 (function(){
-  'use strict';
-  var KEY = 'mesaha_entry_memory_v373';
-  var SETTINGS_KEY = 'cam_mesaha_ayarlar_v1';
-
-  function $(id){ return document.getElementById(id); }
-  function readJson(k, fallback){ try{ return JSON.parse(localStorage.getItem(k)||'') || fallback; }catch(e){ return fallback; } }
-  function writeJson(k, value){ try{ localStorage.setItem(k, JSON.stringify(value)); }catch(e){} }
-  function upper(v){ return String(v||'').trim().toUpperCase(); }
-  function stateSettings(){ try{ return window.state && window.state.settings ? window.state.settings : null; }catch(e){ return null; } }
-  function records(){ try{ return window.state && Array.isArray(window.state.records) ? window.state.records : []; }catch(e){ return []; } }
-
-  function readMem(){ return readJson(KEY, {}); }
-  function writeMem(partial){
-    var old = readMem();
-    var next = Object.assign({}, old, partial || {}, {updatedAt: Date.now()});
-    writeJson(KEY, next);
-    return next;
-  }
-  function saveSettingsMirror(){
-    var s=stateSettings();
-    if(!s)return Promise.resolve({ok:false});
-    try{if(window.MesahaStorageV527)return window.MesahaStorageV527.saveSettings(s,{reason:'entry-memory'});if(window.__flushSettings)return window.__flushSettings('entry-memory');}catch(e){}
-    return Promise.resolve({ok:false});
-  }
-
-  function persistNow(){
-    var s = stateSettings() || {};
-    var b = $('barcodeInput');
-    var mem = {};
-    var barcode = upper((b && b.value) || s.barcode || '');
-    if(barcode) mem.barcode = barcode;
-    if(s.activeCutter) mem.activeCutter = String(s.activeCutter);
-    if(Array.isArray(s.cutters)) mem.cutters = s.cutters.filter(Boolean);
-    if(Object.keys(mem).length) writeMem(mem);
-    saveSettingsMirror();
-  }
-
-  function restore(){
-    var mem = readMem();
-    var s = stateSettings();
-    if(!s) return;
-    var changed = false;
-
-    if((!s.barcode || !String(s.barcode).trim()) && mem.barcode){
-      s.barcode = upper(mem.barcode);
-      changed = true;
-    }
-    if((!s.activeCutter || !String(s.activeCutter).trim()) && mem.activeCutter){
-      s.activeCutter = String(mem.activeCutter);
-      changed = true;
-    }
-    if(Array.isArray(mem.cutters) && mem.cutters.length){
-      var merged = Array.from(new Set([].concat(Array.isArray(s.cutters)?s.cutters:[], mem.cutters, s.activeCutter || []).filter(Boolean)));
-      if(JSON.stringify(merged) !== JSON.stringify(s.cutters || [])){
-        s.cutters = merged;
-        changed = true;
-      }
-    }
-    var b = $('barcodeInput');
-    if(b && (!b.value || !String(b.value).trim()) && s.barcode){
-      b.value = upper(s.barcode);
-    }
-    if(changed){
-      saveSettingsMirror();
-      try{ if(typeof window.renderAll === 'function') window.renderAll(); }catch(e){}
-      try{ if(typeof window.renderCutters === 'function') window.renderCutters(); }catch(e){}
-    }
-  }
-
-  function buildBackupPayload(){
-    var s = stateSettings() || {};
-    persistNow();
-    var mem = readMem();
-    var cutters = Array.from(new Set([].concat(
-      Array.isArray(s.cutters) ? s.cutters : [],
-      Array.isArray(mem.cutters) ? mem.cutters : [],
-      s.activeCutter || mem.activeCutter || [],
-      records().map(function(r){ return r && r.cutter; })
-    ).filter(Boolean)));
-    return {
-      app:'Mesaha İO',
-      backupVersion:'v373-cutters',
-      exportedAt:new Date().toISOString(),
-      records:records(),
-      settings:Object.assign({}, s, {
-        barcode: upper((s.barcode || mem.barcode || '')),
-        activeCutter: s.activeCutter || mem.activeCutter || '',
-        cutters: cutters
-      }),
-      cutters: cutters,
-      activeCutter: s.activeCutter || mem.activeCutter || ''
-    };
-  }
-
-  function downloadJsonBackup(){
-    var data = buildBackupPayload();
-    var name = 'mesaha_yedek_' + (data.settings && data.settings.seflik ? String(data.settings.seflik).replace(/\s+/g,'_') + '_' : '') + new Date().toISOString().slice(0,16).replace(/[-:T]/g,'') + '.json';
-    var blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json;charset=utf-8'});
-    var url = URL.createObjectURL(blob);
-    var a = document.createElement('a');
-    a.href = url;
-    a.download = name;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    setTimeout(function(){ URL.revokeObjectURL(url); }, 1500);
-    try{ if(window.toast) window.toast('Yedek alındı. Kesimciler dahil edildi.'); }catch(e){}
-  }
-
-  function mergeRestoredPayload(obj){
-    if(!obj || typeof obj !== 'object') return obj;
-    var s = stateSettings() || {};
-    var incomingSettings = obj.settings || {};
-    var cutters = Array.from(new Set([].concat(
-      Array.isArray(s.cutters) ? s.cutters : [],
-      Array.isArray(incomingSettings.cutters) ? incomingSettings.cutters : [],
-      Array.isArray(obj.cutters) ? obj.cutters : [],
-      incomingSettings.activeCutter || obj.activeCutter || [],
-      Array.isArray(obj.records) ? obj.records.map(function(r){ return r && r.cutter; }) : []
-    ).filter(Boolean)));
-    incomingSettings.cutters = cutters;
-    incomingSettings.activeCutter = incomingSettings.activeCutter || obj.activeCutter || s.activeCutter || cutters[0] || '';
-    obj.settings = Object.assign({}, incomingSettings);
-    writeMem({cutters:cutters, activeCutter:incomingSettings.activeCutter, barcode:incomingSettings.barcode || s.barcode || ''});
-    return obj;
-  }
-
-  function wrapBackupFunctions(){
-    if(window.backupZip && !window.backupZip.__v373CuttersWrapped){
-      var oldZip = window.backupZip;
-      var wrappedZip = function(){
-        // Eski ZIP yedek fonksiyonu kesimcileri dahil etmiyorsa JSON yedek kullan.
-        try{ return downloadJsonBackup(); }
-        catch(e){ console.error(e); return oldZip.apply(this, arguments); }
-      };
-      wrappedZip.__v373CuttersWrapped = true;
-      window.backupZip = wrappedZip;
-    }
-    if(window.backupData && !window.backupData.__v373CuttersWrapped){
-      var old = window.backupData;
-      var wrapped = function(){
-        persistNow();
-        return old.apply(this, arguments);
-      };
-      wrapped.__v373CuttersWrapped = true;
-      window.backupData = wrapped;
-    }
-  }
-
-  function bind(){
-    restore();
-    wrapBackupFunctions();
-
-    var b = $('barcodeInput');
-    if(b && !b.__v373Memory){
-      b.__v373Memory = true;
-      ['input','change','blur'].forEach(function(evt){
-        b.addEventListener(evt, function(){
-          var val = upper(b.value);
-          if(val) writeMem({barcode:val});
-          persistNow();
-        }, {passive:true});
-      });
-    }
-
-    var chips = $('cutterChips');
-    if(chips && !chips.__v373Memory){
-      chips.__v373Memory = true;
-      chips.addEventListener('click', function(){
-        setTimeout(function(){
-          var s = stateSettings() || {};
-          if(s.activeCutter) writeMem({activeCutter:s.activeCutter, cutters:Array.isArray(s.cutters)?s.cutters:[]});
-          persistNow();
-        }, 80);
-      }, true);
-    }
-
-    document.addEventListener('click', function(ev){
-      var t = ev.target;
-      if(!t || !t.closest) return;
-      if(t.closest('#backupBtn,#zipBackupBtn,#backupZipBtn,[data-backup],[data-action="backup"],[data-action="backupZip"]')){
-        setTimeout(function(){
-          persistNow();
-          wrapBackupFunctions();
-        }, 0);
-      }
-    }, true);
-  }
-
-  /* V5.27: global JSON.parse değiştirilmez; yedek birleşimi yalnız geri yükleme akışında yapılır. */
-
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bind, {once:true});
-  else bind();
-
-  [120,500,1200,2400,5000].forEach(function(ms){ setTimeout(function(){ restore(); bind(); wrapBackupFunctions(); }, ms); });
-  window.addEventListener('pagehide', persistNow, {passive:true});
-  window.addEventListener('beforeunload', persistNow, {passive:true});
-  document.addEventListener('visibilitychange', function(){ if(document.hidden) persistNow(); else setTimeout(restore,120); }, {passive:true});
-
-  /* V5.27: kayıt sonrası kalıcı hafıza canonical mesaha:records-saved olayıyla güncellenir. */
-
-  window.mesahaEntryMemoryBackupV373 = {
-    persist:persistNow,
-    restore:restore,
-    backupPayload:buildBackupPayload,
-    backupNow:downloadJsonBackup
-  };
+ 'use strict';
+ function settings(){return window.state&&window.state.settings?window.state.settings:{}}
+ function records(){return window.state&&Array.isArray(window.state.records)?window.state.records:[]}
+ function persist(){try{if(window.__flushSettings)return window.__flushSettings('entry-memory-v543')}catch(e){}return Promise.resolve({ok:true})}
+ function payload(){var s=settings(),list=records();return{app:'Mesaha İO',backupVersion:'v543',exportedAt:new Date().toISOString(),records:list,settings:s,cutters:Array.from(new Set([].concat(s.cutters||[],list.map(function(r){return r&&r.cutter})).filter(Boolean))),activeCutter:s.activeCutter||''}}
+ window.mesahaEntryMemoryBackupV373={persist:persist,restore:function(){},backupPayload:payload,backupNow:function(){try{if(typeof window.backupJson==='function')return window.backupJson()}catch(e){}}};
+ window.addEventListener('pagehide',persist,{passive:true});
 })();
 </script>
 <script src="./js/mesaha-render-storage.js"></script>
@@ -6161,8 +5783,18 @@ a.video-link-v392,.orbis-video-link-v392{display:inline-flex;align-items:center;
     wrapOrbisDownload();updateBeyan();
   }
   document.addEventListener('click',intercept,true);
-  ['input','change','mesaha:records-saved'].forEach(evt=>window.addEventListener(evt,()=>setTimeout(boot,90),true));
-  ['click','input','change'].forEach(evt=>document.addEventListener(evt,()=>setTimeout(updateBeyan,120),true));
+  let beyanTimerV542=0;
+  function scheduleBeyanV542(delay=100){clearTimeout(beyanTimerV542);beyanTimerV542=setTimeout(updateBeyan,delay);}
+  function relevantBeyanTargetV542(ev){
+    const t=ev&&ev.target;if(!t)return false;
+    if(t.id==='recordSearch'||t.id==='treeFilter'||t.id==='cutterFilter'||t.id==='bulkCutterSelectV406')return true;
+    return !!(t.closest&&t.closest('#recordsView,[data-tree-filter],[data-cutter-filter],#clearSelectionBtn,#selectFilteredBtn,#bulkCutterTransferBtnV406'));
+  }
+  window.addEventListener('mesaha:records-saved',()=>scheduleBeyanV542(60),{passive:true});
+  window.addEventListener('mesaha:settings-saved',()=>scheduleBeyanV542(100),{passive:true});
+  document.addEventListener('input',ev=>{if(relevantBeyanTargetV542(ev))scheduleBeyanV542(90)},true);
+  document.addEventListener('change',ev=>{if(relevantBeyanTargetV542(ev))scheduleBeyanV542(90)},true);
+  document.addEventListener('click',ev=>{if(relevantBeyanTargetV542(ev))scheduleBeyanV542(110)},true);
   [80,350,900,1800,3200].forEach(ms=>setTimeout(boot,ms));
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
@@ -6719,7 +6351,7 @@ body.mesaha-cloud-panel-open-v395 #cloudRestoreOverlayV316:not(.hidden){touch-ac
       if(ev.target&&ev.target.id==='bulkCutterSelectV406')return;
       setTimeout(function(){populateCutterSelect();updateHint();},120);
     },true);
-    document.addEventListener('input',function(){setTimeout(updateHint,120)},true);
+    document.addEventListener('input',function(ev){if(ev.target&&ev.target.id==='recordSearch')setTimeout(updateHint,120)},true);
     ['mesaha:records-saved','mesaha:settings-saved'].forEach(function(evt){window.addEventListener(evt,function(){setTimeout(function(){populateCutterSelect();updateHint();},150)})});
     setInterval(function(){if(!document.hidden&&document.getElementById('recordsView')){ensureUi();populateCutterSelect();updateHint();}},12000);
   }
@@ -6956,7 +6588,6 @@ body.mesaha-entry-scrolling-v408 #entryView label{
   window.MesahaSaveSingleGateV418={install:function(){},status:function(){return {busy:!!window.__mesahaSaveBusyV527,managedBy:'V5.27'};}};
 })();
 </script>
-
 <style id="mesaha-v429-telegram-support-style">
 :root{--telegram:#229ED9;--telegramDark:#177fb0;}
 .telegram-support-modal-v429{position:fixed;inset:0;z-index:2147482000;display:flex;align-items:center;justify-content:center;padding:18px;background:linear-gradient(135deg,rgba(3,105,161,.97),rgba(14,116,144,.95));backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);}
@@ -7038,7 +6669,6 @@ body.mesaha-entry-scrolling-v408 #entryView label{
   window.MesahaTelegramSupportV429={show:function(){try{localStorage.removeItem(storageKey());}catch(e){} showDaily();},link:LINK};
 })();
 </script>
-
 <style id="mesaha-v442-stabil-cekirdek-style">
 /* v515 stabil çekirdek: mobil ölçü/kısayol ve 40 barkod kontrol kartı */
 #mesahaBarcodeCheckV424,#mesahaBarcodeCheckV436,#mesahaBarcodeMiniV437,#mesahaBarcodeMiniV439{display:none!important;pointer-events:none!important;visibility:hidden!important;}
@@ -7063,19 +6693,11 @@ body.mesaha-entry-scrolling-v408 #entryView label{
 </style>
 <script id="mesaha-v442-stabil-cekirdek-guard">
 (function(){
-  'use strict';
-  if(window.__mesahaV440StabilGuard) return; window.__mesahaV440StabilGuard=true;
-  function $(id){return document.getElementById(id)}
-  function hideOld(){['mesahaBarcodeCheckV424','mesahaBarcodeCheckV436','mesahaBarcodeMiniV437','mesahaBarcodeMiniV439'].forEach(function(id){var el=$(id); if(el){el.classList.add('hidden'); el.style.display='none';}})}
-  function cleanRefs(){try{document.querySelectorAll('script[src*="?v="]').forEach(function(s){s.src=s.src.replace(/\?v=\d+/, '')})}catch(e){}}
-  function markVersion(){try{window.APP_VERSION='Mesaha İO'; document.querySelectorAll('#versionText,.version-card b').forEach(function(el){el.textContent='Mesaha İO'});}catch(e){}}
-  function run(){hideOld();cleanRefs();markVersion();}
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run,{once:true}); else run();
-  setTimeout(run,500); setTimeout(run,1800);
+ 'use strict';if(window.__mesahaV543LegacyModalGuard)return;window.__mesahaV543LegacyModalGuard=true;
+ function run(){['mesahaBarcodeCheckV424','mesahaBarcodeCheckV436','mesahaBarcodeMiniV437','mesahaBarcodeMiniV439'].forEach(function(id){var e=document.getElementById(id);if(e){e.classList.add('hidden');e.style.display='none'}});try{if(window.MesahaVersion)window.MesahaVersion.applyToDocument(document)}catch(e){}}
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run,{once:true});else run();
 })();
 </script>
-
-
 <style id="mesaha-v442-responsive-entry-layout">
 /* v442: Boy/Çap yan yana kalsın, telefon genişliğine göre otomatik ölçeklensin */
 #entryView .entry-form.card{
@@ -7226,8 +6848,6 @@ body.mesaha-entry-scrolling-v408 #entryView label{
   setTimeout(sync,500);setTimeout(sync,1600);
 })();
 </script>
-
-
 <style id="mesaha-v445-cache-asset-cleanup-style">
 /* v445: Son barkod kartı temiz görünüm + ürün tikleri + kesimci sayaçları */
 #entryView #recentList.recent-list{
@@ -7376,94 +6996,15 @@ body.mesaha-entry-scrolling-v408 #entryView label{
 </style>
 <script id="mesaha-v445-cache-asset-cleanup-guard">
 (function(){
-  'use strict';
-  if(window.__mesahaV445CacheAssetCleanup) return;
-  window.__mesahaV445CacheAssetCleanup = true;
-
-  var STORAGE_KEY='cam_mesaha_kayitlari_v1';
-  var SETTINGS_KEY='cam_mesaha_ayarlar_v1';
-  var timer=null;
-
-  function $(id){return document.getElementById(id)}
-  function clean(v){return String(v==null?'':v).trim().replace(/\s+/g,' ')}
-  function jsonGet(key,fallback){try{var v=localStorage.getItem(key);return v?JSON.parse(v):fallback}catch(e){return fallback}}
-  function state(){try{return window.state||null}catch(e){return null}}
-  function settings(){var s=state();return s&&s.settings?s.settings:(jsonGet(SETTINGS_KEY,{})||{})}
-  function records(){var s=state();var list=s&&Array.isArray(s.records)?s.records:jsonGet(STORAGE_KEY,[]);return Array.isArray(list)?list:[]}
-  function cutterOf(r){return clean(r && (r.cutter || r.kesimci))}
-  function countFor(raw,list){
-    var name=clean(raw), arr=list||records();
-    if(!name || name==='Tümü') return arr.length;
-    if(name==='Kesimci kaydı yok') return arr.filter(function(r){return !cutterOf(r)}).length;
-    return arr.filter(function(r){return cutterOf(r)===name}).length;
-  }
-  function labelFor(raw,list){
-    var name=clean(raw)||'Tümü';
-    return name+' ('+countFor(name,list)+' kayıt)';
-  }
-  function patchCutterFilterCounts(){
-    var wrap=$('cutterFilters');
-    if(!wrap) return;
-    var list=records();
-    wrap.querySelectorAll('[data-cutter-filter]').forEach(function(btn){
-      var raw=btn.getAttribute('data-cutter-filter') || btn.dataset.cutterFilter || 'Tümü';
-      var text=labelFor(raw,list);
-      if(btn.textContent!==text) btn.textContent=text;
-      btn.setAttribute('title',text);
-      btn.setAttribute('aria-label',text);
-    });
-    var st=settings();
-    var active=(st&&st.cutterFilter)||'Tümü';
-    var head=$('cutterFilterText');
-    if(head) head.textContent='Seçili: '+labelFor(active,list);
-  }
-  function patchRecentClick(){
-    var wrap=$('recentList');
-    if(!wrap || wrap.__v445RecentClick) return;
-    wrap.__v445RecentClick=true;
-    wrap.addEventListener('click',function(ev){
-      var del=ev.target && ev.target.closest && ev.target.closest('[data-recent-delete]');
-      if(del) return;
-      var row=ev.target && ev.target.closest && ev.target.closest('[data-recent-row]');
-      if(!row) return;
-      var btn=row.querySelector('[data-edit]');
-      if(btn && ev.target!==btn && !(ev.target.closest && ev.target.closest('[data-edit]'))) btn.click();
-    },false);
-  }
-  function patchProductButtons(){
-    var grid=$('productButtons');
-    if(!grid) return;
-    grid.querySelectorAll('.product-btn').forEach(function(btn){
-      btn.setAttribute('aria-pressed',btn.classList.contains('active')?'true':'false');
-      if(!btn.getAttribute('title')) btn.setAttribute('title',clean(btn.textContent));
-    });
-  }
-  function run(){patchCutterFilterCounts();patchRecentClick();patchProductButtons();}
-  function schedule(){clearTimeout(timer);timer=setTimeout(run,40)}
-  function boot(){
-    run();
-    ['cutterFilters','recentList','productButtons','recordList'].forEach(function(id){
-      var el=$(id);
-      if(el && window.MutationObserver && !el.__v445Watch){
-        el.__v445Watch=true;
-        new MutationObserver(schedule).observe(el,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:['class','data-cutter-filter']});
-      }
-    });
-    ['mesaha:records-saved','mesaha:settings-saved','storage','resize'].forEach(function(evt){window.addEventListener(evt,schedule,false)});
-    document.addEventListener('click',function(ev){
-      if(ev.target && ev.target.closest && ev.target.closest('[data-cutter-filter],[data-product],[data-recent-delete],[data-edit]')) setTimeout(schedule,80);
-    },true);
-    [200,700,1500,3000].forEach(function(ms){setTimeout(run,ms)});
-  }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true}); else boot();
+ 'use strict';if(window.__mesahaV543AccessibilityGuard)return;window.__mesahaV543AccessibilityGuard=true;
+ function run(){var p=document.getElementById('productButtons');if(p)p.querySelectorAll('[data-product]').forEach(function(b){b.setAttribute('aria-pressed',b.classList.contains('active')?'true':'false');if(!b.title)b.title=(b.textContent||'').trim()})}
+ document.addEventListener('click',function(ev){var row=ev.target&&ev.target.closest&&ev.target.closest('[data-recent-row]');if(!row||ev.target.closest('[data-recent-delete],[data-edit]'))return;var b=row.querySelector('[data-edit]');if(b)b.click()},false);
+ window.addEventListener('mesaha:records-saved',function(){setTimeout(run,40)},{passive:true});window.addEventListener('mesaha:settings-saved',function(){setTimeout(run,40)},{passive:true});if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run,{once:true});else run();
 })();
 </script>
-
 <script src="./js/mesaha-records-performance.js"></script>
 <script src="./js/mesaha-storage-health.js"></script>
 <script src="./js/mesaha-filter-cutter-fix.js"></script>
-
-
 <style id="mesaha-v453-urun-secim-tik-fix">
 /* v453: Tomruk / Maden / Kağıtlık seçili butonunda net tik işareti.
    Önceki stillerde active::after display:none kaldığı için tik görünmüyordu. */
@@ -7507,140 +7048,16 @@ body.mesaha-entry-scrolling-v408 #entryView label{
   #entryView #productButtons .product-btn.active::after{right:8px!important;width:18px!important;height:18px!important;min-width:18px!important;min-height:18px!important;font-size:12px!important;}
 }
 </style>
-
 <script id="mesaha-v453-offline-entry-guard">
-/* v453: Çevrimdışı yenileme sonrası Mesaha Gir'e girerken ana menüye geri atma engellendi. */
 (function(){
-  'use strict';
-  var BUILD=(window.MESAHA_VERSION&&window.MESAHA_VERSION.build)||0;
-  var userNavigated=false;
-  var firstSafetyDone=false;
-  function $(id){return document.getElementById(id)}
-  function qsa(sel,root){return Array.prototype.slice.call((root||document).querySelectorAll(sel))}
-  function isOffline(){return navigator && navigator.onLine===false}
-  function hardShow(view){
-    ['home','entry','records','seflikFolder','guide','settings'].forEach(function(v){
-      var el=$(v+'View');
-      if(el){
-        el.classList.toggle('active',v===view);
-        el.style.display=(v===view?'block':'none');
-      }
-    });
-    if(document.body) document.body.classList.toggle('entry-open',view==='entry');
-    qsa('#bottomNav button').forEach(function(b){b.classList.toggle('active',b.dataset.nav===view)});
-    try{window.scrollTo(0,0)}catch(e){}
-  }
-  function show(view){
-    try{ if(typeof window.showView==='function'){ window.showView(view); return; } }catch(e){}
-    hardShow(view);
-  }
-  function markReady(){
-    try{document.documentElement.setAttribute('data-mesaha-offline-entry-guard','453')}catch(e){}
-    try{ var k='mesaha_offline_guard_logged_'+BUILD+'_'+String(navigator.onLine!==false); if(!sessionStorage.getItem(k)){ sessionStorage.setItem(k,'1'); if(window.MesahaErrorLogV446 && window.MesahaErrorLogV446.info) window.MesahaErrorLogV446.info('offline-entry-guard-ready',{build:BUILD,online:navigator.onLine}); } }catch(e){}
-  }
-  function hideStartupFallback(){
-    var s=$('startup');
-    if(s) s.classList.add('hide');
-  }
-  function safeEntryOpen(){
-    userNavigated=true;
-    try{
-      if(typeof window.openEntry==='function'){
-        window.openEntry();
-      }else{
-        hardShow('entry');
-        if(typeof window.renderEntry==='function'){
-          try{window.renderEntry()}catch(e){}
-        }
-      }
-    }catch(e){
-      hardShow('entry');
-    }
-    setTimeout(function(){
-      var entry=$('entryView');
-      if(entry && !entry.classList.contains('active')) hardShow('entry');
-    },120);
-  }
-  function oneTimeOfflineBootSafety(){
-    if(firstSafetyDone || userNavigated || !isOffline()) return;
-    firstSafetyDone=true;
-    setTimeout(function(){
-      if(userNavigated) return;
-      var home=$('homeView'), entry=$('entryView'), open=$('openEntryBtn');
-      if(!home || !entry) return;
-      /* Sadece ilk açılışta giriş ekranı aktif ama ana giriş butonu yoksa/uygulama yarım boot ettiyse ana ekrana toparla. */
-      var entryActive = entry.classList.contains('active') || (document.body && document.body.classList.contains('entry-open'));
-      var shellLooksReady = !!open && !!$('saveBtn') && !!$('productButtons');
-      if(entryActive && !shellLooksReady) hardShow('home');
-    },420);
-  }
-  function bindFallbacks(){
-    var open=$('openEntryBtn');
-    if(open && !open.__v453OfflineFallback){
-      open.__v453OfflineFallback=true;
-      open.addEventListener('click',function(){
-        userNavigated=true;
-        setTimeout(function(){
-          var entry=$('entryView');
-          if(entry && !entry.classList.contains('active')) safeEntryOpen();
-        },80);
-      },false);
-    }
-    var home=$('entryHomeBtn');
-    if(home && !home.__v453OfflineFallback){
-      home.__v453OfflineFallback=true;
-      home.addEventListener('click',function(){ userNavigated=true; setTimeout(function(){ show('home'); },30); },false);
-    }
-    var nav=$('bottomNav');
-    if(nav && !nav.__v453OfflineFallback){
-      nav.__v453OfflineFallback=true;
-      nav.addEventListener('click',function(ev){
-        var b=ev.target && ev.target.closest ? ev.target.closest('[data-nav]') : null;
-        if(!b) return;
-        userNavigated=true;
-        var view=b.getAttribute('data-nav');
-        setTimeout(function(){
-          var target=$(view+'View');
-          if(target && !target.classList.contains('active')) show(view);
-        },90);
-      },false);
-    }
-    var save=$('saveBtn');
-    if(save&&!save.__v527OfflineFallback){
-      save.__v527OfflineFallback=true;
-      save.addEventListener('click',function(){userNavigated=true;},{passive:true});
-    }
-    var clear=$('clearBtn');
-    if(clear && !clear.__v453OfflineFallback){
-      clear.__v453OfflineFallback=true;
-      clear.addEventListener('click',function(){ userNavigated=true; setTimeout(function(){ try{ if(typeof window.clearEntry==='function') window.clearEntry(); }catch(e){} },80); },false);
-    }
-  }
-  function repairCacheWhenOnline(){
-    try{
-      if('serviceWorker' in navigator && navigator.serviceWorker.controller){
-        navigator.serviceWorker.controller.postMessage({type:'REPAIR_CACHE',build:BUILD});
-      }
-    }catch(e){}
-  }
-  function boot(){
-    markReady();
-    bindFallbacks();
-    oneTimeOfflineBootSafety();
-    setTimeout(hideStartupFallback,2600);
-    if(!isOffline()) setTimeout(repairCacheWhenOnline,1200);
-    [400,1200,2600].forEach(function(ms){setTimeout(bindFallbacks,ms)});
-  }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true}); else boot();
-  window.addEventListener('pageshow',function(){setTimeout(function(){bindFallbacks(); if(!isOffline()) repairCacheWhenOnline();},120)});
-  window.addEventListener('online',function(){setTimeout(repairCacheWhenOnline,500)});
+ 'use strict';if(window.__mesahaV543OfflineBootGuard)return;window.__mesahaV543OfflineBootGuard=true;
+ function boot(){try{document.documentElement.setAttribute('data-mesaha-offline-entry-guard','543');var s=document.getElementById('startup');setTimeout(function(){if(s)s.classList.add('hide')},2600)}catch(e){}}
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();window.addEventListener('pageshow',boot,{passive:true});
 })();
 </script>
-
 <script src="./js/mesaha-fast-tap-nav.js"></script>
 <script src="./js/mesaha-terminal-performance.js"></script>
 <script src="./js/mesaha-hybrid-cloud.js"></script>
-
 <script id="mesaha-v504-user-panel-cleanup">
 (function(){
   'use strict';
@@ -7658,22 +7075,9 @@ body.mesaha-entry-scrolling-v408 #entryView label{
   [200,700,1500,3000,6000].forEach(function(ms){ setTimeout(clean,ms); });
 })();
 </script>
-
 <script id="mesaha-v465-admin-isolation">
-(function(){
-  'use strict';
-  function clean(){
-    try{
-      document.querySelectorAll('#panelAdminOpenV316,[data-admin-open],[data-open-admin],[href*="admin.html"],[href*="yonetim"]').forEach(function(el){ el.remove(); });
-      var b=document.getElementById('panelAdminBroadcastsV400'); if(b) b.remove();
-      if(window.mesahaPanelV316){ window.mesahaPanelV316.openAdmin=function(){ return false; }; }
-    }catch(e){}
-  }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',clean,{once:true}); else clean();
-  [250,900,1800,3600].forEach(function(ms){ setTimeout(clean,ms); });
-})();
+(function(){'use strict';window.__mesahaAdminIsolationManagedByV504=true;})();
 </script>
-
 <style id="mesaha-v518-ip-panel-style">
 .panel-ip-v518 input,#panelIpV518{font-weight:1000!important;color:#064e3b!important;background:#ecfdf5!important;border-color:#bbf7d0!important;}
 .mesaha-ip-card-v518{border:1px solid #bbf7d0;background:#f0fdf4;border-radius:16px;padding:10px 12px;color:#064e3b;font-weight:900;line-height:1.45;margin:8px 0;word-break:break-word;}
@@ -7703,13 +7107,8 @@ body.mesaha-entry-scrolling-v408 #entryView label{
   window.MesahaIpV518={ping:ping,render:renderIp};
 })();
 </script>
-
-
-
-
 <script src="./js/mesaha-runtime-v527.js"></script>
 <script src="./js/mesaha-seflik-folder-v529.js"></script>
-
 <style id="mesaha-v530-seflik-ui-fix">
 /* V5.30 — Ölçümler buton sırası ve Şeflik Klasörü okunabilirlik düzeltmesi */
 #recordsView .records-action-grid-v530{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;gap:8px!important;margin:10px 0 8px!important;}
@@ -7762,7 +7161,6 @@ body.mesaha-entry-scrolling-v408 #entryView label{
 #seflikFolderView .seflik-local-pending-v530{display:inline-flex;align-items:center;border-radius:999px;padding:4px 7px;background:#fff7d8;color:#8a650b;border:1px solid #f2df9f;font-size:9px;font-weight:950;margin-left:5px;vertical-align:middle;}
 @media(max-width:390px){#seflikFolderView .seflik-create-row-v529{grid-template-columns:1fr!important;}#seflikFolderView #seflikFolderCreateV529{width:100%!important;}}
 </style>
-
 <style id="mesaha-v531-modal-floating-save-fix">
 /* V5.31 — Şefliğe Gönder penceresi ve bağımsız yüzen Kaydet */
 body.seflik-send-open-v531{overflow:hidden!important;overscroll-behavior:none!important;}
@@ -7865,11 +7263,16 @@ body.mesaha-floating-save-open-v537 .bottom-nav{display:none!important;visibilit
     floating.__v537Bound=true;
     // Eski V5.31 zamanlayıcısının yeniden bağlanmasını engelle.
     floating.__v531Bound=true;
-    floating.addEventListener('pointerdown',function(ev){ev.preventDefault();},{passive:false,capture:true});
-    floating.addEventListener('pointerup',fireSave,{passive:false,capture:true});
-    floating.addEventListener('touchstart',function(ev){ev.preventDefault();},{passive:false,capture:true});
-    floating.addEventListener('touchend',fireSave,{passive:false,capture:true});
-    floating.addEventListener('click',fireSave,{passive:false,capture:true});
+    var isIOS=/iPad|iPhone|iPod/i.test(navigator.userAgent||'')||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+    if(isIOS&&window.PointerEvent){
+      floating.addEventListener('pointerdown',function(ev){if(ev.pointerType!=='mouse')ev.preventDefault();},{passive:false,capture:true});
+      floating.addEventListener('pointerup',function(ev){if(ev.pointerType!=='mouse')fireSave(ev);},{passive:false,capture:true});
+      floating.addEventListener('click',function(ev){if(Date.now()-lastFire<900){ev.preventDefault();ev.stopPropagation();ev.stopImmediatePropagation();}},{passive:false,capture:true});
+    }else if(isIOS){
+      floating.addEventListener('touchstart',function(ev){ev.preventDefault();},{passive:false,capture:true});
+      floating.addEventListener('touchend',fireSave,{passive:false,capture:true});
+      floating.addEventListener('click',function(ev){if(Date.now()-lastFire<900){ev.preventDefault();ev.stopPropagation();ev.stopImmediatePropagation();}},{passive:false,capture:true});
+    }else floating.addEventListener('click',fireSave,{passive:false,capture:true});
     if(window.MutationObserver)new MutationObserver(syncFloating).observe(original,{attributes:true,childList:true,subtree:true});
   }
   function syncModalViewport(){
@@ -7906,8 +7309,6 @@ body.mesaha-floating-save-open-v537 .bottom-nav{display:none!important;visibilit
   window.MesahaV537={fireFloatingSave:fireSave,syncFloatingSave:syncFloating,syncModalViewport:syncModalViewport};
 })();
 </script>
-
-
 <style id="mesaha-v538-ios-touch-style">
 /* V5.38 — iPhone'da kaydırma sonrası ölçü alanları ilk dokunuşta odaklanır. */
 @supports (-webkit-touch-callout:none){
@@ -7920,9 +7321,7 @@ body.mesaha-floating-save-open-v537 .bottom-nav{display:none!important;visibilit
   #entryHomeBtn{position:relative!important;z-index:30!important;pointer-events:auto!important;touch-action:manipulation!important;}
 }
 </style>
-<script src="./js/mesaha-ios-touch-v538.js?v=538"></script>
-<script src="./js/mesaha-product-touch-v540.js?v=540"></script>
-
+<script src="./js/mesaha-ios-touch-v538.js?v=543"></script>
+<script src="./js/mesaha-product-touch-v540.js?v=543"></script>
 </body>
 </html>
-

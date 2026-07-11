@@ -20,8 +20,10 @@
 
   // Stabil: Her input/click için global yakalama yok; Mesaha Gir ekranı hafif kalır.
   // Artık sadece kayıt/ayar kaydı, sayfa görünür olma ve manuel refresh olaylarında hafif yenileme yapıyoruz.
-  window.addEventListener('mesaha:records-saved', function(){ later('totals', callTotals, 80); later('binders', callBinders, 130); }, {passive:true});
-  window.addEventListener('mesaha:settings-saved', function(){ later('totals', callTotals, 180); }, {passive:true});
+  var commitKind={records:false,settings:false},commitTimer=0;
+  function queueCommit(kind){commitKind[kind]=true;clearTimeout(commitTimer);commitTimer=setTimeout(function(){var records=commitKind.records;commitKind={records:false,settings:false};later('totals',callTotals,records?50:120);if(records)later('binders',callBinders,100);},45);}
+  window.addEventListener('mesaha:records-saved', function(){ queueCommit('records'); }, {passive:true});
+  window.addEventListener('mesaha:settings-saved', function(){ queueCommit('settings'); }, {passive:true});
   window.addEventListener('mesaha:light-refresh', function(){ later('totals', callTotals, 60); later('binders', callBinders, 120); }, {passive:true});
   document.addEventListener('visibilitychange', function(){ if(!document.hidden){ later('totals', callTotals, 160); later('binders', callBinders, 220); } }, {passive:true});
   window.addEventListener('pageshow', function(){ later('totals', callTotals, 160); later('binders', callBinders, 220); }, {passive:true});
