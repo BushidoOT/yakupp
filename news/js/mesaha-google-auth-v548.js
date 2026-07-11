@@ -1,4 +1,4 @@
-/* Mesaha İO V5.51 — Google sağlayıcı ön kontrolü, anlaşılır hata ve admin onay kapısı.
+/* Mesaha İO V5.52 — Google sağlayıcı ön kontrolü, anlaşılır hata ve admin onay kapısı.
    - Yeni anonim kullanıcı üretmez.
    - Mevcut anonim Supabase oturumunu Google kimliğine linkleyerek user_id ve yedekleri korur.
    - Google hesabı doğrulansa dahi admin onayı olmadan sunucu işlemleri açılmaz.
@@ -18,6 +18,31 @@
   function setJson(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}}
   function cfg(){var c=window.MESAHA_SUPABASE_CONFIG||{};return{url:clean(c.url).replace(/\/+$/,''),anonKey:clean(c.anonKey||c.anon_key)}}
   function api(){return window.mesahaSupabase||window.mesahaCloud||null}
+  async function rpc(name,params){
+    var c=cfg(),a=api();
+    if(!a||!a.getAccessToken)throw new Error('Supabase oturum motoru hazır değil');
+    var token=await a.getAccessToken(),url=c.url+'/rest/v1/rpc/'+encodeURIComponent(name),payload=JSON.stringify(params||{}),lastError=null,res=null;
+    for(var attempt=0;attempt<2;attempt++){
+      var ctrl=typeof AbortController!=='undefined'?new AbortController():null,timer=ctrl?setTimeout(function(){ctrl.abort()},30000):0;
+      try{
+        res=await fetch(url,{method:'POST',cache:'no-store',headers:{apikey:c.anonKey,Authorization:'Bearer '+token,'Content-Type':'application/json',Accept:'application/json'},body:payload,signal:ctrl&&ctrl.signal});
+        break;
+      }catch(e){
+        lastError=e;
+        if(attempt===0&&navigator.onLine!==false){await new Promise(function(resolve){setTimeout(resolve,800)});continue}
+        var raw=clean(e&&e.name||e&&e.message||e);
+        throw new Error(/abort/i.test(raw)?'Google erişim kontrolü zaman aşımına uğradı.':'Supabase erişim servisine bağlanılamadı.');
+      }finally{if(timer)clearTimeout(timer)}
+    }
+    if(!res)throw lastError||new Error('Supabase erişim servisine bağlanılamadı.');
+    var rawText=await res.text(),out={};try{out=rawText?JSON.parse(rawText):{}}catch(e){out={message:rawText}}
+    if(!res.ok){
+      var msg=clean(out&& (out.message||out.error||out.details||out.hint) || ('RPC hata '+res.status));
+      if(/could not find the function|schema cache|does not exist/i.test(msg))msg='V5.52 Google erişim SQL kurulumu eksik. Supabase SQL Editor’da 20260712_v552_google_access_rpc.sql dosyasını çalıştır.';
+      var err=new Error(msg);err.status=res.status;err.payload=out;throw err;
+    }
+    return out&&typeof out==='object'?out:{};
+  }
   function session(){var a=api();return a&&a.getStoredSession?a.getStoredSession():null}
   function user(){var s=session()||{};return s.user||{}}
   function uid(){return clean(user().id)}
@@ -113,7 +138,7 @@
     if(!force&&known&&lastStatusAt&&Date.now()-lastStatusAt<STATUS_TTL)return known;
     if(!force&&navigator.onLine===false){if(known&&known.status==='approved')return known;throw new Error('İlk Google doğrulaması için internet gerekli.')}
     if(statusPromise)return statusPromise;
-    statusPromise=(async function(){try{var out=await a.edge('user_access_status',{deviceInfo:deviceInfo(),appVersion:(window.MESAHA_VERSION||{}).visibleVersion||'V5.51'});var x=out.access||out;x.user_id=x.user_id||uid();x.email=x.email||clean(user().email);cacheAccess(x);return x}catch(e){var c=currentAccess||cached();if(c&&c.status==='approved')return c;throw e}finally{statusPromise=null}})();
+    statusPromise=(async function(){try{var out=await rpc('mesaha_google_access_status_v552',{p_device_info:deviceInfo(),p_app_version:(window.MESAHA_VERSION||{}).visibleVersion||'V5.52'});var x=out.access||out;x.user_id=x.user_id||uid();x.email=x.email||clean(user().email);cacheAccess(x);return x}catch(e){var c=currentAccess||cached();if(c&&c.status==='approved')return c;throw e}finally{statusPromise=null}})();
     return statusPromise;
   }
   function deviceInfo(){var nav=navigator||{};return{deviceId:(api()&&api().getDeviceId?api().getDeviceId():''),platform:clean(nav.userAgentData&&nav.userAgentData.platform||nav.platform),userAgent:clean(nav.userAgent).slice(0,500),standalone:!!(window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||nav.standalone===true}}
@@ -126,7 +151,7 @@
     if(status==='rejected'||status==='revoked')return show('<div class="google-auth-status-v548 denied"><b>Erişim '+(status==='revoked'?'kapatıldı':'reddedildi')+'</b><br>'+esc(x.reason||'Yönetici ile iletişime geçin.')+'</div><div class="google-auth-email-v548">'+esc(email)+'</div>'+button('request-form','Yeniden erişim talep et','primary')+button('logout','Başka Google hesabı kullan','subtle'));
     var li=localIdentity();show('<div class="google-auth-status-v548"><b>Google hesabın doğrulandı.</b><br>Mevcut kullanıcı adı ve şefliğin için yönetici onayı iste.</div><div class="google-auth-email-v548">'+esc(email)+'</div><div class="google-auth-fields-v548"><label>Kullanıcı adı<input id="googleRequestNameV548" maxlength="120" value="'+esc(li.name)+'" autocomplete="name"></label><label>Şeflik<input id="googleRequestSeflikV548" maxlength="120" value="'+esc(li.seflik)+'" autocomplete="organization"></label></div>'+button('request','Yönetici onayı iste','green')+button('logout','Başka Google hesabı kullan','subtle')+'<p class="google-auth-note-v548">Kullanıcı adı ve şeflik artık tek başına giriş sağlamaz. Bu bilgiler yalnız doğrulanmış Google hesabına bağlanır.</p>')
   }
-  async function requestAccess(){var n=document.getElementById('googleRequestNameV548'),s=document.getElementById('googleRequestSeflikV548'),name=clean(n&&n.value),seflik=clean(s&&s.value);if(!validIdentity(name,seflik))throw new Error('Geçerli kullanıcı adı ve şeflik girin.');loading('Erişim talebi gönderiliyor…');var out=await api().edge('user_access_request',{name:name,seflik:seflik,deviceInfo:deviceInfo(),appVersion:(window.MESAHA_VERSION||{}).visibleVersion||'V5.51'});renderAccess(out.access||out)}
+  async function requestAccess(){var n=document.getElementById('googleRequestNameV548'),s=document.getElementById('googleRequestSeflikV548'),name=clean(n&&n.value),seflik=clean(s&&s.value);if(!validIdentity(name,seflik))throw new Error('Geçerli kullanıcı adı ve şeflik girin.');loading('Erişim talebi gönderiliyor…');var out=await rpc('mesaha_google_access_request_v552',{p_name:name,p_seflik:seflik,p_device_info:deviceInfo(),p_app_version:(window.MESAHA_VERSION||{}).visibleVersion||'V5.52'});renderAccess(out.access||out)}
   async function logout(){loading('Oturum kapatılıyor…');try{await api().signOut('global')}catch(e){try{api().clearSession()}catch(_e){}}clearAccess();location.replace(redirectUrl())}
   async function handle(action){if(action==='google')return beginGoogle();if(action==='refresh')return boot(true);if(action==='request')return requestAccess();if(action==='request-form')return renderAccess({status:'unregistered',email:user().email});if(action==='logout')return logout()}
   async function bootCore(force){

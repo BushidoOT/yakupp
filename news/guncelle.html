@@ -12,7 +12,7 @@
       status.textContent='Yeni uygulama dosyaları hazırlanıyor…';
       var result=window.MesahaUpdateV527?await window.MesahaUpdateV527.executeUpdatePage():null;
       var build=result&&result.targetBuild||(window.MESAHA_VERSION&&window.MESAHA_VERSION.build)||551;
-      status.textContent='Güncelleme tamamlandı. V5.51 •Yakupp• açılıyor…';
+      status.textContent='Güncelleme tamamlandı. V5.52 •Yakupp• açılıyor…';
       setTimeout(function(){openApp(build);},500);
     }catch(e){
       spin.style.display='none';
