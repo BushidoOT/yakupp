@@ -1,4 +1,4 @@
-/* Mesaha İO V539 service worker reads the current build from js/version.js. */
+/* Mesaha İO V540 service worker reads the current build from js/version.js. */
 try{ importScripts('./js/version.js'); }catch(e){}
 
 const META = self.MESAHA_VERSION || {app:'Mesaha İO',version:'local',build:0,visibleVersion:'Mesaha İO',shortVersion:'Mesaha İO',name:'Mesaha İO',cacheName:'mesaha-app-local',assetVersion:''};
@@ -14,7 +14,7 @@ const SHELL_ASSETS = [
   './', './index.html', './admin.html', './yonetim/index.html', './yonetim/admin.css', './yonetim/admin.js', './css/app.css', './temizle.html', './guncelle.html', './manifest.json', './version.json', './service-worker.js',
   './js/version.js', './js/mesaha-update-manager-v527.js', './js/mesaha-early-optimizer.js', './js/mesaha-utils.js', './js/mesaha-data-guard.js',
   './js/mesaha-stability-core.js', './js/mesaha-persistent-store.js', './js/mesaha-url-cleanup.js', './js/mesaha-supabase-config.js', './js/mesaha-firebase.js', './js/mesaha-offline-core.js',
-  './js/mesaha-render-storage.js', './js/mesaha-sound.js', './js/mesaha-storage-health.js', './js/mesaha-records-performance.js', './js/mesaha-error-log.js', './js/mesaha-filter-cutter-fix.js', './js/mesaha-fast-tap-nav.js', './js/mesaha-terminal-performance.js', './js/mesaha-hybrid-cloud.js', './js/mesaha-runtime-v527.js', './js/mesaha-seflik-folder-v529.js', './js/mesaha-ios-touch-v538.js', './css/mesaha-seflik-folder-v529.css'
+  './js/mesaha-render-storage.js', './js/mesaha-sound.js', './js/mesaha-storage-health.js', './js/mesaha-records-performance.js', './js/mesaha-error-log.js', './js/mesaha-filter-cutter-fix.js', './js/mesaha-fast-tap-nav.js', './js/mesaha-terminal-performance.js', './js/mesaha-hybrid-cloud.js', './js/mesaha-runtime-v527.js', './js/mesaha-seflik-folder-v529.js', './js/mesaha-ios-touch-v538.js', './js/mesaha-product-touch-v540.js', './css/mesaha-seflik-folder-v529.css'
 ];
 const STATIC_ASSETS = [
   './assets/icon-192.png', './assets/icon-512.png', './assets/mesaha_logo.png', './assets/hero_forest_cover.webp', './assets/hero_forest_cover.png',
