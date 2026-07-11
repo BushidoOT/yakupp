@@ -1,53 +1,63 @@
-/* Mesaha İO V543 service worker — atomik kritik kabuk ve doğrulanmış güncelleme. */
+/* Mesaha İO V543 service worker — atomik kritik kabuk ve SHA-256 doğrulanmış güncelleme. */
 try{importScripts('./js/version.js');}catch(e){}
 const META=self.MESAHA_VERSION||{app:'Mesaha İO',version:'local',build:0,visibleVersion:'Mesaha İO',shortVersion:'Mesaha İO',name:'Mesaha İO',cacheName:'mesaha-app-local',assetVersion:''};
 const BASE_CACHE=META.cacheName||'mesaha-app-current';
 const SHELL_CACHE=BASE_CACHE+'-shell',STAGE_CACHE=BASE_CACHE+'-stage',ASSET_CACHE=BASE_CACHE+'-assets',RUNTIME_CACHE=BASE_CACHE+'-runtime';
 const MARKER='./__mesaha_cache_manifest__.json',NETWORK_TIMEOUT=8000;
-const CRITICAL_ASSETS=[
- './index.html','./css/app.css','./css/mesaha-seflik-folder-v529.css','./version.json','./js/version.js','./js/mesaha-update-manager-v527.js','./js/mesaha-utils.js','./js/mesaha-data-guard.js','./js/mesaha-persistent-store.js','./js/mesaha-stability-core.js','./js/mesaha-error-log.js','./js/mesaha-offline-core.js','./js/mesaha-render-storage.js','./js/mesaha-runtime-v527.js','./js/mesaha-filter-cutter-fix.js','./js/mesaha-seflik-folder-v529.js','./js/mesaha-ios-touch-v538.js','./js/mesaha-product-touch-v540.js'
-];
-const OPTIONAL_SHELL=['./','./admin.html','./yonetim/index.html','./yonetim/admin.css','./yonetim/admin.js','./temizle.html','./guncelle.html','./manifest.json','./service-worker.js','./js/mesaha-early-optimizer.js','./js/mesaha-url-cleanup.js','./js/mesaha-supabase-config.js','./js/mesaha-firebase.js','./js/mesaha-sound.js','./js/mesaha-storage-health.js','./js/mesaha-records-performance.js','./js/mesaha-fast-tap-nav.js','./js/mesaha-terminal-performance.js','./js/mesaha-hybrid-cloud.js'];
-const STATIC_ASSETS=['./assets/icon-192.png','./assets/icon-512.png','./assets/mesaha_logo.png','./assets/hero_forest_cover.webp','./assets/hero_forest_cover.png','./assets/mesaha_onay.wav','./assets/mesaha_uyari.wav'];
+const CRITICAL_META={"./index.html":{"bytes":509816,"sha256":"38757a13c45a973a54ecd630d21c3d3aad6f3f044bd4ca791b5285ecfb19ff83"},"./guncelle.html":{"bytes":2436,"sha256":"e9306ef1cd235ee925ab28281be7b93f501da88ec62e135d3720737c6ec77442"},"./temizle.html":{"bytes":1722,"sha256":"9f01e2b0e6afac53149f6fd37dfa0f6239c286371a80c0528509af36f63c2965"},"./manifest.json":{"bytes":546,"sha256":"ba562751c2eabde1728161a33b75a9bac2dd043108f18640641a76f0e8709983"},"./version.json":{"bytes":853,"sha256":"8d3e5ab45528269cd128928154cf1c4815f7e0f0a5b8a15cd3f223e868cbac64"},"./css/app.css":{"bytes":45054,"sha256":"d1488905580e0eb44b19642b5f854bc4f7f65036382f4aa9f9d3dbb5d488964c"},"./css/mesaha-seflik-folder-v529.css":{"bytes":15008,"sha256":"355b51c0632748c69b2d0198a0cbfec1868d32afb54d91137a3196cfecca06c5"},"./js/version.js":{"bytes":3576,"sha256":"109b0c63da010612436d008ff8ac635b1e06bd66bf198876ecae634c29608854"},"./js/mesaha-early-optimizer.js":{"bytes":632,"sha256":"7bb433c8f9302c2dc4b4cddf36a0602068e82eb6d574bcc420758021e6ecb804"},"./js/mesaha-utils.js":{"bytes":3219,"sha256":"65220d6a6f02ed8a8e3c4be774e1fe1eec0e7c048261c576886f55ee6db1a0a2"},"./js/mesaha-data-guard.js":{"bytes":856,"sha256":"a7ba060dea414623bce194d168686669d896842c29479d53544e31b2b70450b5"},"./js/mesaha-persistent-store.js":{"bytes":27969,"sha256":"7a8d49cb003359f1f0a0d2986346a0d49eb52b8575305a62be06304226df1d5f"},"./js/mesaha-update-manager-v527.js":{"bytes":8249,"sha256":"b757ac1bfe4405607265edab5253a14d30859c06c7873de467edb130e5addd09"},"./js/mesaha-stability-core.js":{"bytes":2542,"sha256":"4f642949bd13d0a2a6316d581ebe422db87e0790ef1807d950753d7799b26b38"},"./js/mesaha-error-log.js":{"bytes":4479,"sha256":"6772e56c211ce68565ce1a5e10bbcd81aaae2b93b63ab0e4400ed71c4471b1fc"},"./js/mesaha-url-cleanup.js":{"bytes":1636,"sha256":"fea90b8a43cfb0877edee5f9c0f05979f753d375051ca2b72f2c8b7e8124121b"},"./js/mesaha-supabase-config.js":{"bytes":380,"sha256":"7db1a47c1ec6b5fad181da8f4fdfb3a6e73fd4b7aa97e67af00e8fc0c9c4eb3c"},"./js/mesaha-firebase.js":{"bytes":21931,"sha256":"89276c12325eb03b27400bafb188ae25f1787855e1a7122018ac86a7f8959482"},"./js/mesaha-offline-core.js":{"bytes":6326,"sha256":"1339ad770a6fa83f3b044c7f4283c6830b2a96441e2df2334869dfd5508500b4"},"./js/mesaha-render-storage.js":{"bytes":3768,"sha256":"989165bf9293ee111cafb6def87ff7cc29a9974190aabdf76f7e58412bae6909"},"./js/mesaha-sound.js":{"bytes":7942,"sha256":"a08b16c730564eb5635e55e5c76c2b1ec8703ba7c7ae861f5bfc0719f0f00261"},"./js/mesaha-records-performance.js":{"bytes":699,"sha256":"1dd93746cc32b4d806edf6fd6d90f121ae10e20fe8d55ea9c28722e651b8b60b"},"./js/mesaha-storage-health.js":{"bytes":3525,"sha256":"aebee6a017024f0eec4b5dcfd47d8e3cc34dbafefaaaaab20e92b92bb7beaff9"},"./js/mesaha-filter-cutter-fix.js":{"bytes":11022,"sha256":"ad1f13515df1b502b01217000be6f515add28266dc469700fbe1f53cb107d460"},"./js/mesaha-fast-tap-nav.js":{"bytes":1565,"sha256":"5a07cabe0ccd30a5a4d2a7dddba88bf178f99dfb2dcfc4a0c25991a1a6cfef8a"},"./js/mesaha-terminal-performance.js":{"bytes":4607,"sha256":"8414392085f45a6332c4cb203e17c110f71956eb9781657223db587478611860"},"./js/mesaha-hybrid-cloud.js":{"bytes":30209,"sha256":"d5df18da9b08209d845195e6d29b05bc7d1718a6328d10278248ff457e593a45"},"./js/mesaha-runtime-v527.js":{"bytes":7930,"sha256":"315b0ce2ab759ba8eb8a9afb85d63d39f080ba88f970427afd23093b2c0a8cb3"},"./js/mesaha-seflik-folder-v529.js":{"bytes":36621,"sha256":"e33286d8988a8795e742e0e5b01fe1f9294b171a628d0af0b070a0f1edd72bb4"},"./js/mesaha-ios-touch-v538.js":{"bytes":6309,"sha256":"7b0154b5f9dc0c5e1e569c7b1499d09416110c99750d0aebcbbbaccf297ddccb"},"./js/mesaha-product-touch-v540.js":{"bytes":6216,"sha256":"7e0d3932603839b6cbcd9d0ddb923b8e23bf13f21e3fb9a3b5652b372f07abd3"}};
+const CRITICAL_ASSETS=Object.keys(CRITICAL_META);
+const OPTIONAL_SHELL=["./","./admin.html","./yonetim/index.html","./yonetim/admin.css","./yonetim/admin.js","./service-worker.js"];
+const STATIC_ASSETS=["./assets/icon-192.png","./assets/icon-512.png","./assets/mesaha_logo.png","./assets/hero_forest_cover.webp","./assets/hero_forest_cover.png","./assets/mesaha_onay.wav","./assets/mesaha_uyari.wav"];
 function plainUrl(u){try{const x=new URL(u,self.location.href);x.search='';return x.href}catch(e){return String(u).split('?')[0]}}
 function fetchTimed(input,opts,ms){const ctrl=typeof AbortController!=='undefined'?new AbortController():null,t=ctrl?setTimeout(()=>ctrl.abort(),ms||NETWORK_TIMEOUT):0;return fetch(input,Object.assign({},opts||{},ctrl?{signal:ctrl.signal}:{})).finally(()=>{if(t)clearTimeout(t)})}
-async function validResponse(path,response){
- if(!response||!response.ok)return false;const type=response.headers.get('content-type')||'',clone=response.clone();
- if(path.endsWith('version.json')){try{const j=await clone.json();return Number(j.build||j.latestBuild||0)===Number(META.build||0)&&String(j.version||'')===String(META.version||'')}catch(e){return false}}
- if(/\.html(?:$|\?)/.test(path)){try{const t=await clone.text();return t.length>5000&&/Mesaha|mesaha/i.test(t)}catch(e){return false}}
- if(/\.js(?:$|\?)/.test(path)){try{const t=await clone.text();return t.length>80&&!/offline JS cache bulunamadı/i.test(t)}catch(e){return false}}
- if(/\.css(?:$|\?)/.test(path)){try{return (await clone.text()).length>80}catch(e){return false}}
+function hex(buffer){return Array.from(new Uint8Array(buffer)).map(b=>b.toString(16).padStart(2,'0')).join('')}
+async function verifyBytes(path,buffer){const expected=CRITICAL_META[path];if(!expected)return true;if(Number(expected.bytes)!==Number(buffer.byteLength))return false;if(!self.crypto||!self.crypto.subtle)return false;const digest=await self.crypto.subtle.digest('SHA-256',buffer);return hex(digest)===String(expected.sha256)}
+async function validateCritical(path,response){
+ if(!response||!response.ok)throw new Error('Kritik dosya alınamadı: '+path);
+ const buffer=await response.clone().arrayBuffer();
+ if(!(await verifyBytes(path,buffer)))throw new Error('Kritik dosya bütünlüğü doğrulanamadı: '+path);
+ return new Response(buffer,{status:response.status,statusText:response.statusText,headers:new Headers(response.headers)});
+}
+async function fetchCritical(path){const r=await fetchTimed(path,{cache:'reload',headers:{'Cache-Control':'no-cache'}},12000);return validateCritical(path,r)}
+async function writeMarker(cache){const body=JSON.stringify({app:META.app,version:META.version,build:META.build,critical:CRITICAL_META,integrity:'sha256',createdAt:Date.now()});await cache.put(MARKER,new Response(body,{status:200,headers:{'Content-Type':'application/json','Cache-Control':'no-store'}}))}
+async function cacheMatch(cache,path){return await cache.match(path,{ignoreSearch:true})||await cache.match(new URL(path,self.location.href).href,{ignoreSearch:true})||null}
+async function verifyCachedFile(cache,path){try{const r=await cacheMatch(cache,path);if(!r)return false;return await verifyBytes(path,await r.arrayBuffer())}catch(e){return false}}
+async function verifyCache(name){try{const c=await caches.open(name),m=await c.match(MARKER);if(!m)return false;const j=await m.json();if(Number(j.build)!==Number(META.build)||String(j.version)!==String(META.version)||j.integrity!=='sha256')return false;for(const p of CRITICAL_ASSETS)if(!(await verifyCachedFile(c,p)))return false;return true}catch(e){return false}}
+async function stageCritical(){
+ await caches.delete(STAGE_CACHE);
+ const pairs=await Promise.all(CRITICAL_ASSETS.map(async p=>[p,await fetchCritical(p)]));
+ const stage=await caches.open(STAGE_CACHE);
+ for(const [p,r] of pairs){await stage.put(p,r.clone());await stage.put(plainUrl(new URL(p,self.location.href).href),r.clone())}
+ await writeMarker(stage);
+ if(!(await verifyCache(STAGE_CACHE))){await caches.delete(STAGE_CACHE);throw new Error('Kritik önbellek doğrulanamadı')}
  return true;
 }
-async function fetchCritical(path){const r=await fetchTimed(path,{cache:'reload',headers:{'Cache-Control':'no-cache'}},12000);if(!(await validResponse(path,r)))throw new Error('Kritik dosya doğrulanamadı: '+path);return r}
-async function writeMarker(cache){const body=JSON.stringify({app:META.app,version:META.version,build:META.build,critical:CRITICAL_ASSETS,createdAt:Date.now()});await cache.put(MARKER,new Response(body,{status:200,headers:{'Content-Type':'application/json','Cache-Control':'no-store'}}))}
-async function cacheHas(cache,path){return !!(await cache.match(path,{ignoreSearch:true})||await cache.match(new URL(path,self.location.href).href,{ignoreSearch:true}))}
-async function verifyCache(name){try{const c=await caches.open(name),m=await c.match(MARKER);if(!m)return false;const j=await m.json();if(Number(j.build)!==Number(META.build)||String(j.version)!==String(META.version))return false;for(const p of CRITICAL_ASSETS)if(!(await cacheHas(c,p)))return false;return true}catch(e){return false}}
-async function stageCritical(){
- await caches.delete(STAGE_CACHE);const pairs=await Promise.all(CRITICAL_ASSETS.map(async p=>[p,await fetchCritical(p)]));const stage=await caches.open(STAGE_CACHE);
- for(const [p,r] of pairs){await stage.put(p,r.clone());await stage.put(plainUrl(new URL(p,self.location.href).href),r.clone())}
- await writeMarker(stage);if(!(await verifyCache(STAGE_CACHE))){await caches.delete(STAGE_CACHE);throw new Error('Kritik önbellek doğrulanamadı')}return true;
+async function promoteStage(){
+ const stage=await caches.open(STAGE_CACHE),target=await caches.open(SHELL_CACHE);
+ for(const p of CRITICAL_ASSETS){const r=await cacheMatch(stage,p);if(!r)throw new Error('Hazırlanan kritik dosya eksik: '+p);await target.put(p,r.clone());await target.put(plainUrl(new URL(p,self.location.href).href),r.clone())}
+ await writeMarker(target);
+ if(!(await verifyCache(SHELL_CACHE)))throw new Error('Aktif kritik önbellek doğrulanamadı');
+ await caches.delete(STAGE_CACHE);return true;
 }
-async function promoteStage(){const stage=await caches.open(STAGE_CACHE),target=await caches.open(SHELL_CACHE);for(const p of CRITICAL_ASSETS){const r=await stage.match(p,{ignoreSearch:true});if(!r)throw new Error('Hazırlanan kritik dosya eksik: '+p);await target.put(p,r.clone());await target.put(plainUrl(new URL(p,self.location.href).href),r.clone())}await writeMarker(target);if(!(await verifyCache(SHELL_CACHE)))throw new Error('Aktif kritik önbellek doğrulanamadı');await caches.delete(STAGE_CACHE);return true}
 async function prepareAtomicShell(){try{await stageCritical();await promoteStage();return true}catch(e){await caches.delete(STAGE_CACHE);throw e}}
 async function oldCached(path){const keys=await caches.keys();for(const k of keys){if(k===STAGE_CACHE)continue;try{const c=await caches.open(k),r=await c.match(path,{ignoreSearch:true});if(r)return r}catch(e){}}return null}
 async function cacheOptionalOne(name,path,allowOld){try{const r=await fetchTimed(path,{cache:'reload'},6000);if(r&&r.ok){const c=await caches.open(name);await c.put(path,r.clone());return true}}catch(e){}if(allowOld){try{const r=await oldCached(path);if(r){const c=await caches.open(name);await c.put(path,r.clone());return true}}catch(e){}}return false}
 async function warmOptional(){await Promise.allSettled(OPTIONAL_SHELL.map(p=>cacheOptionalOne(SHELL_CACHE,p,false)));await Promise.allSettled(STATIC_ASSETS.map(p=>cacheOptionalOne(ASSET_CACHE,p,true)));try{const c=await caches.open(SHELL_CACHE),idx=await c.match('./index.html');if(idx){await c.put('./',idx.clone());await c.put(new URL('./',self.location.href).href,idx.clone())}}catch(e){}return true}
 function mesahaCacheKey(k){return /^(mesaha|mio)(-|_)/i.test(String(k||''))||/mesaha/i.test(String(k||''))}
 async function clearOld(){if(!(await verifyCache(SHELL_CACHE)))return false;const keep=new Set([SHELL_CACHE,ASSET_CACHE,RUNTIME_CACHE,STAGE_CACHE]),keys=await caches.keys();await Promise.all(keys.filter(k=>mesahaCacheKey(k)&&!keep.has(k)).map(k=>caches.delete(k)));return true}
-async function status(){return {ready:await verifyCache(SHELL_CACHE),build:Number(META.build||0),version:META.version,cache:SHELL_CACHE}}
+async function status(){return {ready:await verifyCache(SHELL_CACHE),build:Number(META.build||0),version:META.version,cache:SHELL_CACHE,integrity:'sha256',criticalCount:CRITICAL_ASSETS.length}}
 function reply(event,data){try{if(event.ports&&event.ports[0])event.ports[0].postMessage(data)}catch(e){}}
 self.addEventListener('install',event=>event.waitUntil((async()=>{try{await prepareAtomicShell();await warmOptional();await self.skipWaiting()}catch(e){try{await caches.delete(STAGE_CACHE)}catch(_e){}throw e}})()));
 self.addEventListener('activate',event=>event.waitUntil((async()=>{if(await verifyCache(SHELL_CACHE)){await clearOld();await self.clients.claim();warmOptional().catch(()=>{})}})()));
 self.addEventListener('message',event=>{const d=event.data||{};
  if(d.type==='GET_STATUS')event.waitUntil(status().then(x=>reply(event,x)));
  if(d.type==='SKIP_WAITING')event.waitUntil((async()=>{const ok=await verifyCache(SHELL_CACHE);reply(event,{ok:ok,build:META.build});if(ok)await self.skipWaiting()})());
- if(d.type==='REPAIR_CACHE')event.waitUntil((async()=>{try{await prepareAtomicShell();await warmOptional();reply(event,{ok:true,ready:true,build:META.build})}catch(e){reply(event,{ok:false,ready:await verifyCache(SHELL_CACHE),build:META.build,error:String(e&&e.message||e)})}})());
+ if(d.type==='REPAIR_CACHE')event.waitUntil((async()=>{try{await prepareAtomicShell();await warmOptional();reply(event,{ok:true,ready:true,build:META.build,integrity:'sha256'})}catch(e){reply(event,{ok:false,ready:await verifyCache(SHELL_CACHE),build:META.build,error:String(e&&e.message||e)})}})());
  if(d.type==='WARM_CACHE')event.waitUntil(warmOptional().then(()=>reply(event,{ok:true,build:META.build})));
  if(d.type==='CLEAR_OLD_CACHES')event.waitUntil(clearOld().then(ok=>reply(event,{ok:ok,build:META.build})));
 });
 async function currentMatch(request,fallback){const c=await caches.open(SHELL_CACHE);return await c.match(request,{ignoreSearch:true})||fallback&&await c.match(fallback,{ignoreSearch:true})||null}
-function fallbackFor(path){if(path.endsWith('/')||path.endsWith('/index.html'))return'./index.html';if(path.endsWith('/temizle.html'))return'./temizle.html';if(path.endsWith('/guncelle.html'))return'./guncelle.html';if(path.includes('/js/'))return'./js/'+path.split('/js/').pop().split('?')[0];if(path.includes('/css/'))return'./css/'+path.split('/css/').pop().split('?')[0];return null}
+function fallbackFor(path){if(path.endsWith('/')||path.endsWith('/index.html'))return'./index.html';if(path.endsWith('/temizle.html'))return'./temizle.html';if(path.endsWith('/guncelle.html'))return'./guncelle.html';if(path.endsWith('/manifest.json'))return'./manifest.json';if(path.includes('/js/'))return'./js/'+path.split('/js/').pop().split('?')[0];if(path.includes('/css/'))return'./css/'+path.split('/css/').pop().split('?')[0];return null}
 function localVersion(){return new Response(JSON.stringify(META),{status:200,headers:{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store','X-Mesaha-Fallback':'local'}})}
 function offlineHtml(){return new Response('<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mesaha İO Offline</title><body style="font-family:Arial;padding:24px"><h2>Mesaha İO ön belleği hazırlanamadı</h2><p>İnternet varken uygulamayı yeniden açıp Ön Bellek Onar işlemini çalıştırın.</p></body>',{status:503,headers:{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store'}})}
 self.addEventListener('fetch',event=>{if(event.request.method!=='GET')return;const url=new URL(event.request.url);if(url.origin!==self.location.origin)return;const path=url.pathname;
@@ -55,7 +65,7 @@ self.addEventListener('fetch',event=>{if(event.request.method!=='GET')return;con
  const isVersion=path.endsWith('/version.json'),isPing=isVersion&&(url.searchParams.has('net')||url.searchParams.has('check')||url.searchParams.has('ping')||url.searchParams.has('fresh')||url.searchParams.has('v'));
  if(isPing){event.respondWith(fetchTimed(event.request,{cache:'no-store'},16000).then(r=>r&&r.ok?r:Promise.reject()).catch(()=>localVersion()));return}
  if(event.request.mode==='navigate'){const fb=fallbackFor(path)||'./index.html';event.respondWith(currentMatch(event.request,fb).then(r=>r||fetchTimed(event.request,{cache:'no-store'},8000).catch(()=>offlineHtml())));return}
- const rel='./'+path.split('/').filter(Boolean).slice(-2).join('/'),critical=CRITICAL_ASSETS.some(p=>path.endsWith(p.slice(1))),js=path.endsWith('.js'),css=path.endsWith('.css');
- if(critical||js||css){event.respondWith(currentMatch(event.request,fallbackFor(path)).then(r=>r||fetchTimed(event.request,{cache:'no-store'},8000).then(n=>n&&n.ok?n:Response.error()).catch(()=>isVersion?localVersion():Response.error())));return}
+ const critical=CRITICAL_ASSETS.some(p=>path.endsWith(p.slice(1))),jsPath=path.endsWith('.js'),cssPath=path.endsWith('.css');
+ if(critical||jsPath||cssPath){event.respondWith(currentMatch(event.request,fallbackFor(path)).then(r=>r||fetchTimed(event.request,{cache:'no-store'},8000).then(n=>n&&n.ok?n:Response.error()).catch(()=>isVersion?localVersion():Response.error())));return}
  event.respondWith((async()=>{const c=await caches.open(ASSET_CACHE),hit=await c.match(event.request,{ignoreSearch:true});if(hit)return hit;try{const r=await fetchTimed(event.request,{},6000);if(r&&r.ok)event.waitUntil(c.put(event.request,r.clone()));return r}catch(e){return Response.error()}})());
 });
