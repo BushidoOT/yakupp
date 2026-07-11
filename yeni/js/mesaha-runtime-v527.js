@@ -32,20 +32,51 @@
       'cam_mesaha_ayarlar_v1_mirror_v515','cam_mesaha_ayarlar_v1_mirror_meta_v515'
     ].forEach(function(k){localStorage.removeItem(k);});}catch(e){}
   }
+  function settingsCandidates(){
+    var out=[];
+    try{if(window.state&&window.state.settings)out.push(window.state.settings);}catch(e){}
+    try{if(window.MesahaStorageV527&&typeof window.MesahaStorageV527.lastCommittedSettings==='function')out.push(window.MesahaStorageV527.lastCommittedSettings());}catch(e){}
+    out.push(read(SETTINGS_KEY,{}));
+    return out;
+  }
+  function bestSettings(){
+    var list=settingsCandidates(),fallback={};
+    for(var i=0;i<list.length;i++){
+      var st=list[i];if(!st||typeof st!=='object'||Array.isArray(st))continue;
+      if(!Object.keys(fallback).length)fallback=st;
+      if(valid(st.ekipNot,st.seflik))return st;
+    }
+    return fallback;
+  }
+  function panelFromSettings(st){
+    st=st||bestSettings();
+    if(!valid(st&&st.ekipNot,st&&st.seflik))return false;
+    var u=read(PANEL_KEY,{});
+    if(!valid(u.name,u.seflik)||clean(u.name)!==clean(st.ekipNot)||clean(u.seflik)!==clean(st.seflik)||clean(u.bolmeNo)!==clean(st.bolmeNo)){
+      write(PANEL_KEY,{name:clean(st.ekipNot),seflik:clean(st.seflik),bolmeNo:clean(st.bolmeNo),updatedAt:new Date().toISOString(),installId:installIdentity().id,recovered:true});
+    }
+    return true;
+  }
   function validateSavedUser(){
-    var u=read(PANEL_KEY,{}),st=read(SETTINGS_KEY,{});
-    if(valid(u.name,u.seflik)) return true;
-    if(valid(st.ekipNot,st.seflik)){
-      try{localStorage.removeItem(PANEL_KEY);}catch(e){}
+    var u=read(PANEL_KEY,{});
+    if(valid(u.name,u.seflik))return true;
+    if(u.name||u.seflik){try{localStorage.removeItem(PANEL_KEY);}catch(e){}}
+    return panelFromSettings(bestSettings());
+  }
+  async function reconcileIdentityAfterRecovery(){
+    var st=bestSettings(),u=read(PANEL_KEY,{});
+    if(valid(st&&st.ekipNot,st&&st.seflik)){
+      panelFromSettings(st);
+      try{window.dispatchEvent(new CustomEvent('mesaha:identity-restored',{detail:{name:clean(st.ekipNot),seflik:clean(st.seflik),bolmeNo:clean(st.bolmeNo)}}));}catch(e){}
       return true;
     }
-    if(u.name||u.seflik||st.ekipNot||st.seflik){
-      try{localStorage.removeItem(PANEL_KEY);}catch(e){}
-      try{
-        st.ekipNot='';st.seflik='';st.bolmeNo='';
-        if(window.state&&window.state.settings)Object.assign(window.state.settings,st);
-        if(window.MesahaStorageV527)window.MesahaStorageV527.saveSettings(st,{reason:'invalid-identity-cleanup'});else write(SETTINGS_KEY,st);
-      }catch(e){}
+    /* Panel doğruysa ama ayar kopyası eksikse, yalnız kurtarma tamamlandıktan sonra
+       kimlik alanlarını mevcut ayarlara ekle; diğer kullanıcı tercihlerini silme. */
+    if(valid(u.name,u.seflik)){
+      var next=Object.assign({},st||{},{ekipNot:clean(u.name),seflik:clean(u.seflik),bolmeNo:clean(u.bolmeNo)});
+      try{if(window.state&&window.state.settings)Object.assign(window.state.settings,next);}catch(e){}
+      try{if(window.MesahaStorageV527)await window.MesahaStorageV527.saveSettings(next,{reason:'identity-recovery'});else write(SETTINGS_KEY,next);}catch(e){log('identity.recovery-save',e);}
+      return true;
     }
     return false;
   }
@@ -92,7 +123,11 @@
       var t=Date.now();if(t-lastStorageToastAt<5000)return;lastStorageToastAt=t;
       toast('Kayıt kaydedilemedi','Uygulamayı açık tutup tekrar deneyin. Sorun sürerse önce yedek alın.','error');
     });
-    window.addEventListener('mesaha:storage-recovered',function(ev){try{if(ev.detail&&ev.detail.reason==='newer-revision')toast('Kayıtlar doğrulandı',String(ev.detail.count||0)+' kayıt güvenli depodan açıldı.','success');}catch(e){};});
+    window.addEventListener('mesaha:storage-recovered',function(ev){
+      try{reconcileIdentityAfterRecovery();}catch(e){}
+      try{if(ev.detail&&String(ev.detail.reason||'').indexOf('newer')===0)toast('Kayıtlar doğrulandı',String(ev.detail.count||0)+' kayıt güvenli depodan açıldı.','success');}catch(e){}
+    });
+    window.addEventListener('mesaha:settings-saved',function(){try{panelFromSettings(bestSettings());}catch(e){};},{passive:true});
     if('serviceWorker' in navigator){
       navigator.serviceWorker.addEventListener('message',function(ev){if(ev.data&&ev.data.error)log('service-worker.message',ev.data.error,ev.data);});
       navigator.serviceWorker.ready.catch(function(e){log('service-worker.ready',e);});
@@ -111,8 +146,12 @@
   }
   function boot(){
     cleanLegacy();installIdentity();validateSavedUser();bindIdentityGate();bindErrors();bindPersistence();
-    try{if(window.MesahaStorageV527)window.MesahaStorageV527.recoverIntoApp();}catch(e){log('storage.recover',e);}
+    try{
+      if(window.MesahaStorageV527){
+        Promise.resolve(window.MesahaStorageV527.recoverIntoApp()).then(reconcileIdentityAfterRecovery).catch(function(e){log('storage.recover',e);});
+      }
+    }catch(e){log('storage.recover',e);}
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
-  window.MesahaRuntimeV527={validIdentity:valid,installIdentity:installIdentity,persistPanelIdentity:persistPanelIdentity,selfTest:selfTest};
+  window.MesahaRuntimeV527={validIdentity:valid,installIdentity:installIdentity,persistPanelIdentity:persistPanelIdentity,reconcileIdentity:reconcileIdentityAfterRecovery,selfTest:selfTest};
 })();

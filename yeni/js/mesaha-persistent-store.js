@@ -344,8 +344,12 @@
   function applyToApp(records,settings,reason){
     try{
       if(window.state){
-        if(Array.isArray(records)) window.state.records=clone(records,[]);
-        if(settings&&typeof settings==='object') window.state.settings=Object.assign(window.state.settings||{},clone(settings,{}));
+        var mergedSettings=settings&&typeof settings==='object'?Object.assign(window.state.settings||{},clone(settings,{})):(window.state.settings||{});
+        window.state.settings=mergedSettings;
+        if(Array.isArray(records)){
+          var fallbackBolme=String(mergedSettings.bolmeNo||'').trim(),fallbackSeflik=String(mergedSettings.seflik||'').trim();
+          window.state.records=clone(records,[]).map(function(r){if(!r||typeof r!=='object')return r;var out=Object.assign({},r);if(!String(out.bolmeNo||out.bolme||out.bolme_no||'').trim()&&fallbackBolme)out.bolmeNo=fallbackBolme;if(!String(out.seflik||out.seflikAdi||out.seflik_adi||'').trim()&&fallbackSeflik)out.seflik=fallbackSeflik;return out;});
+        }
       }
       try{if(typeof window.renderAll==='function')window.renderAll();else if(window.MesahaRenderStorageV382&&window.MesahaRenderStorageV382.renderAllSoon)window.MesahaRenderStorageV382.renderAllSoon();}catch(e){}
       try{window.dispatchEvent(new CustomEvent('mesaha:storage-recovered',{detail:{reason:reason||'recovery',count:Array.isArray(records)?records.length:0}}));}catch(e){}
@@ -364,7 +368,7 @@
     var dbSetValid=!!(dbSet&&dbSet.value&&typeof dbSet.value==='object'&&!Array.isArray(dbSet.value)&&(!dbSet.checksum||checksum(dbSet.value)===dbSet.checksum));
     var changed=false;
 
-    if(dbRecValid&&(!localRecValid||Number(dbRec.revision||0)>Number(localRecMeta.revision||0))){
+    if(dbRecValid&&(!localRecValid||localRecMeta.provisional===true||Number(dbRec.revision||0)>Number(localRecMeta.revision||0))){
       commitCompat('records',dbRec);bootRecords=clone(dbRec.value,[]);bootRecordMeta=dbRec;
       if(window.state)window.state.records=clone(dbRec.value,[]);changed=true;
     }else if(localRecValid&&(!dbRecValid||Number(localRecMeta.revision||0)>Number(dbRec&&dbRec.revision||0))){
@@ -376,7 +380,7 @@
       notifyFailure('records-recovery',new Error('Kayıt kopyalarının doğrulaması başarısız'));
     }
 
-    if(dbSetValid&&(!localSetValid||Number(dbSet.revision||0)>Number(localSetMeta.revision||0))){
+    if(dbSetValid&&(!localSetValid||localSetMeta.provisional===true||Number(dbSet.revision||0)>Number(localSetMeta.revision||0))){
       commitCompat('settings',dbSet);bootSettings=clone(dbSet.value,{});bootSettingsMeta=dbSet;
       if(window.state)window.state.settings=Object.assign(window.state.settings||{},clone(dbSet.value,{}));changed=true;
     }else if(localSetValid&&(!dbSetValid||Number(localSetMeta.revision||0)>Number(dbSet&&dbSet.revision||0))){
@@ -388,8 +392,10 @@
       notifyFailure('settings-recovery',new Error('Ayar kopyalarının doğrulaması başarısız'));
     }
 
-    lastCommittedRecords=clone(dbRecValid&&Number(dbRec.revision||0)>=Number((readMeta(RECORDS_META)||{}).revision||0)?dbRec.value:bootRecords,[]);
-    lastCommittedSettings=clone(dbSetValid&&Number(dbSet.revision||0)>=Number((readMeta(SETTINGS_META)||{}).revision||0)?dbSet.value:bootSettings,{});
+    var finalRecMeta=readMeta(RECORDS_META)||{};
+    var finalSetMeta=readMeta(SETTINGS_META)||{};
+    lastCommittedRecords=clone(dbRecValid&&(finalRecMeta.provisional===true||Number(dbRec.revision||0)>=Number(finalRecMeta.revision||0))?dbRec.value:bootRecords,[]);
+    lastCommittedSettings=clone(dbSetValid&&(finalSetMeta.provisional===true||Number(dbSet.revision||0)>=Number(finalSetMeta.revision||0))?dbSet.value:bootSettings,{});
     if(changed)applyToApp(window.state&&window.state.records,window.state&&window.state.settings,'newer-or-valid-revision');
     cleanLegacy();
     return {ok:true,changed:changed,records:Array.isArray(window.state&&window.state.records)?window.state.records.length:bootRecords.length};
@@ -417,12 +423,19 @@
   bootSettings=legacySettings();
   bootRecordMeta=readMeta(RECORDS_META);
   bootSettingsMeta=readMeta(SETTINGS_META);
+  /*
+     localStorage yalnız hızlı başlangıç kopyasıdır. Anahtar/meta eksikken açılışta
+     güncel zaman damgalı boş revision üretmek, IndexedDB'deki gerçek veriyi eski
+     sanıp üzerine yazabilirdi. Meta bulunmayan yerel veri "geçici/provisional"
+     kabul edilir: IndexedDB varsa daima o kazanır, yoksa eski yerel veri güvenle
+     ilk kez IndexedDB'ye taşınır.
+  */
   if(!bootRecordMeta){
-    bootRecordMeta={revision:nextRevision(null),updatedAt:now(),deletedAt:bootRecords.length===0?now():0,count:bootRecords.length,checksum:checksum(bootRecords),schema:2};
+    bootRecordMeta={revision:1,updatedAt:0,deletedAt:bootRecords.length===0?0:0,count:bootRecords.length,checksum:checksum(bootRecords),schema:2,provisional:true};
     writeJson(RECORDS_META,bootRecordMeta);writeJson(RECORDS_KEY,bootRecords);
   }
   if(!bootSettingsMeta){
-    bootSettingsMeta={revision:nextRevision(null),updatedAt:now(),count:Object.keys(bootSettings||{}).length,checksum:checksum(bootSettings),schema:2};
+    bootSettingsMeta={revision:1,updatedAt:0,count:Object.keys(bootSettings||{}).length,checksum:checksum(bootSettings),schema:2,provisional:true};
     writeJson(SETTINGS_META,bootSettingsMeta);writeJson(SETTINGS_KEY,bootSettings);
   }
   cleanLegacy();

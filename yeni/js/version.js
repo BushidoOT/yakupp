@@ -1,11 +1,11 @@
 (function(root){
   'use strict';
-  var info={"app":"Mesaha İO","version":"v543_yakupp","build":543,"visibleVersion":"V5.43 •Yakupp•","shortVersion":"V5.43","name":"Mesaha İO V5.43 •Yakupp•","cacheName":"mio-app-v543-yakupp","builtAt":"2026-07-11T19:10:00+03:00","notes":"Atomik service worker kurulumu, ana uygulamanın tüm JS/CSS bağımlılıklarında SHA-256 bütünlük kontrolü, güvenli güncelleme doğrulaması ve eski çakışan çalışma katmanlarının kontrollü sadeleştirilmesi.","assetVersion":"543","latestVersion":"v543_yakupp","latestBuild":543,"currentBuild":543,"minSupportedBuild":409,"forceUpdate":false,"updateUrl":"./guncelle.html","cleanUrl":"./temizle.html","version_id":"v543_yakupp","versionId":"v543_yakupp","id":"v543_yakupp","updated_at":"2026-07-11T19:10:00+03:00"};
+  var info={"app":"Mesaha İO","version":"v544_yakupp","build":544,"visibleVersion":"V5.44 •Yakupp•","shortVersion":"V5.44","name":"Mesaha İO V5.44 •Yakupp•","cacheName":"mio-app-v544-yakupp","integrityId":"v544-audit-r4","builtAt":"2026-07-11T20:45:00+03:00","notes":"Final denetim düzeltmesi: eski sürüm ve güvenli depo kurtarmalarında bölme/şeflik metadata tamamlama, ortak klasör kayıt metadata koruması, başarısız düzenlemede edit durumunun geri yüklenmesi, başlangıç kimlik kurtarması, sıkıştırılmış yanıt başlığı güvenliği, atomik cache ve kararlı offline sürüm gösterimi.","assetVersion":"544","latestVersion":"v544_yakupp","latestBuild":544,"currentBuild":544,"minSupportedBuild":409,"forceUpdate":false,"updateUrl":"./guncelle.html","cleanUrl":"./temizle.html","version_id":"v544_yakupp","versionId":"v544_yakupp","id":"v544_yakupp","updated_at":"2026-07-11T20:45:00+03:00"};
   function clone(v){try{return JSON.parse(JSON.stringify(v));}catch(e){return v;}}
   function applyToDocument(doc){
     if(!doc)return info;
     try{doc.title=info.name;}catch(e){}
-    try{doc.documentElement.setAttribute('data-mesaha-build',String(info.build));doc.documentElement.setAttribute('data-mesaha-version',info.version);}catch(e){}
+    try{doc.documentElement.setAttribute('data-mesaha-build',String(info.build));doc.documentElement.setAttribute('data-mesaha-version',info.version);doc.documentElement.setAttribute('data-mesaha-integrity',info.integrityId);}catch(e){}
     try{doc.querySelectorAll('[data-version],[data-app-version]').forEach(function(el){el.textContent=info.visibleVersion;});}catch(e){}
     return info;
   }
@@ -17,6 +17,7 @@
       var res=await fetch(url,{cache:cacheMode||'no-store',headers:{'Cache-Control':'no-cache, no-store, must-revalidate','Pragma':'no-cache'},signal:ctrl&&ctrl.signal});
       if(!res||!res.ok)throw new Error('Sürüm bilgisi alınamadı: '+(res&&res.status||'bağlantı'));
       var remote=await res.json();
+      try{if(res.headers&&res.headers.get('X-Mesaha-Fallback')==='local')remote._localFallback=true;}catch(e){}
       if(!remote||typeof remote!=='object'||!Number(remote.build||remote.latestBuild||0))throw new Error('Sürüm dosyası geçersiz');
       return remote;
     }finally{if(timer)clearTimeout(timer);}
@@ -38,11 +39,11 @@
   function isNewer(remote){
     if(!remote||remote._localFallback)return false;
     var rb=Number(remote.build||remote.latestBuild||0)||0,cb=Number(info.build||0)||0;
-    if(rb&&cb)return rb>cb;
+    if(rb&&cb){if(rb!==cb)return rb>cb;var ri=String(remote.integrityId||''),ci=String(info.integrityId||'');return !!(ri&&ci&&ri!==ci);}
     return !!(remote.version&&remote.version!==info.version);
   }
   var frozen=Object.freeze(info);
-  root.MESAHA_VERSION=frozen;root.MESAHA_BUILD=info.build;root.MESAHA_VERSION_ID=info.version;root.MESAHA_VERSION_TEXT=info.visibleVersion;root.MESAHA_VERSION_SHORT=info.shortVersion;
+  root.MESAHA_VERSION=frozen;root.MESAHA_BUILD=info.build;root.MESAHA_VERSION_ID=info.version;root.MESAHA_VERSION_TEXT=info.visibleVersion;root.MESAHA_VERSION_SHORT=info.shortVersion;root.MESAHA_INTEGRITY_ID=info.integrityId;
   root.MesahaVersion={current:frozen,info:frozen,applyToDocument:applyToDocument,fetchRemote:fetchRemote,isNewer:isNewer,clone:clone};
   try{if(typeof self!=='undefined'){self.MESAHA_VERSION=frozen;self.MesahaVersion=root.MesahaVersion;}}catch(e){}
 })(typeof window!=='undefined'?window:self);

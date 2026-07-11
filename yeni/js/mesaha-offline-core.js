@@ -3,7 +3,7 @@
   if (window.__mesahaOfflineCore) return;
   window.__mesahaOfflineCore = true;
 
-  var FALLBACK_META = {app:'Mesaha İO', version:'local', build:0, visibleVersion:'Mesaha İO', shortVersion:'Mesaha İO', name:'Mesaha İO', cacheName:'mesaha-app-local', assetVersion:''};
+  var FALLBACK_META = {app:'Mesaha İO', version:'local', build:0, visibleVersion:'Mesaha İO', shortVersion:'Mesaha İO', name:'Mesaha İO', cacheName:'mesaha-app-local', integrityId:'local', assetVersion:''};
   var META = (window.MESAHA_VERSION && typeof window.MESAHA_VERSION === 'object') ? window.MESAHA_VERSION : FALLBACK_META;
   var ASSET_VERSION = String(META.assetVersion || META.build || '');
 
@@ -30,8 +30,8 @@
     try { document.title = 'Mesaha İO ' + META.visibleVersion; } catch(e) {}
     try { var apple = document.querySelector('meta[name="apple-mobile-web-app-title"]'); if (apple) apple.setAttribute('content', META.app); } catch(e) {}
     try { var st = document.querySelector('#startup strong'); if (st) st.textContent = META.visibleVersion; } catch(e) {}
-    try { var vt = $('versionText'); if (vt) vt.textContent = META.shortVersion; } catch(e) {}
-    try { all('.version-card b').forEach(function(el){ if (/^v?\d|^V\d|Mesaha|Exelance/i.test(el.textContent || '')) el.textContent = META.shortVersion; }); } catch(e) {}
+    try { var vt = $('versionText'); if (vt) vt.textContent = META.visibleVersion; } catch(e) {}
+    try { all('.version-card b').forEach(function(el){ if (/^v?\d|^V\d|Mesaha|Exelance/i.test(el.textContent || '')) el.textContent = META.visibleVersion; }); } catch(e) {}
     try { all('.version-card small').forEach(function(el){ el.textContent = ''; }); } catch(e) {}
   }
 
@@ -65,13 +65,13 @@
     if(Date.now()-last<6*60*60*1000)return;
     try{localStorage.setItem('mesaha_cache_warm_current',String(Date.now()));}catch(e){}
     navigator.serviceWorker.ready.then(function(reg){
-      try{if(reg&&reg.active)reg.active.postMessage({type:'REPAIR_CACHE',build:META.build||527});}catch(e){}
+      try{if(reg&&reg.active)reg.active.postMessage({type:'REPAIR_CACHE',build:META.build||544,integrityId:META.integrityId||''});}catch(e){}
     }).catch(function(){});
   }
 
   function registerServiceWorker(){
     if (!('serviceWorker' in navigator)) return;
-    navigator.serviceWorker.register('./service-worker.js', {scope:'./', updateViaCache:'none'}).then(function(reg){
+    navigator.serviceWorker.register('./service-worker.js?build='+encodeURIComponent(META.build||544)+'&integrity='+encodeURIComponent(META.integrityId||''), {scope:'./', updateViaCache:'none'}).then(function(reg){
       try {
         var last = Number(localStorage.getItem('mesaha_sw_update_check_current') || 0);
         if (navigator.onLine && Date.now() - last > 15 * 60 * 1000) {
