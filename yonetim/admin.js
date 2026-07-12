@@ -1,18 +1,18 @@
 (() => {
   'use strict';
 
-  const ADMIN_VERSION = 'V5.47 •Yakupp•';
+  const ADMIN_VERSION = 'V5.72 •Yakupp•';
   const EDGE_URL = 'https://swrbpdpotmirnmtqnuba.supabase.co/functions/v1/smooth-function';
-  const SESSION_KEY = 'mesaha_admin_auth_v547_session';
-  const LAST_ACTIVITY_KEY = 'mesaha_admin_auth_v547_activity';
-  const HIDDEN_BACKUPS_KEY = 'mesaha_admin_hidden_drive_v547';
+  const SESSION_KEY = 'mesaha_admin_auth_v548_session';
+  const LAST_ACTIVITY_KEY = 'mesaha_admin_auth_v548_activity';
+  const HIDDEN_BACKUPS_KEY = 'mesaha_admin_hidden_drive_v548';
   const IDLE_MS = 20 * 60 * 1000;
   const ISTANBUL_TZ = 'Europe/Istanbul';
 
   const $ = (id) => document.getElementById(id);
   const state = {
-    page: 'users', range: 'day', blockView: 'user_key',
-    profiles: [], usage: [], daily: [], events: [], logs: [], audit: [], blocks: [], backups: [], users: [],
+    page: 'users', range: 'day', blockView: 'user_key', accessStatus: 'pending',
+    profiles: [], usage: [], daily: [], events: [], logs: [], audit: [], blocks: [], backups: [], users: [], userAccess: [], userAuthEvents: [], seflikFolders: [], seflikMembers: [],
     summary: {}, hiddenBackupIds: new Set(), loading: false, errors: {}
   };
   window.MESAHA_ADMIN_LIGHT_STATE = state;
@@ -217,6 +217,7 @@
       userKey: first(raw.user_key, payload.user_key, payload.userKey, userKeyFrom(name, seflik)),
       name, seflik, bolme: first(raw.bolme_no, payload.bolmeNo, payload.bolme),
       ip: info.ip, deviceId: info.id, platform: info.platform, browser: info.browser, version: info.version,
+      avatarUrl: first(raw.avatar_url, raw.google_avatar_url, raw.picture, raw.photo_url, payload.avatar_url, payload.google_avatar_url, payload.picture, obj(raw.metadata).avatar_url, obj(raw.metadata).google_avatar_url, obj(raw.metadata).picture),
       lastSeen, lastSeenMs: ms(lastSeen), raw
     };
   }
@@ -234,6 +235,7 @@
       count: pickNum(raw, ['count','recordCount','record_count','payload.recordCount','payload.count','payload.totalRecords']),
       volume: pickNum(raw, ['totalVolume','total_volume','m3','payload.totalM3','payload.total_volume','payload.m3']),
       version: first(raw.version, raw.appVersion, raw.app_version, payload.visibleVersion, payload.version, payload.appVersion, '-'),
+      avatarUrl: first(raw.avatar_url, raw.google_avatar_url, raw.picture, payload.avatar_url, payload.google_avatar_url, user.avatar_url, user.picture),
       tree: readTotals(raw, ['tree_totals','treeTotals','agacTotals','agac_totals']),
       wood: readTotals(raw, ['product_totals','productTotals','woodTotals','wood_totals','odunTotals','odun_totals']),
       driveLink: first(raw.webViewLink, raw.web_view_link, raw.alternateLink, raw.url, payload.webViewLink, driveFileId ? `https://drive.google.com/file/d/${encodeURIComponent(driveFileId)}/view` : ''),
@@ -263,12 +265,12 @@
       const user = raw.name ? raw : mapProfile(raw);
       if (!validUser(user)) return;
       const key = identityKey(user); if (!key) return;
-      const old = map.get(key) || {name:user.name,seflik:user.seflik,userKey:user.userKey,id:user.id,lastSeenMs:0,ip:'-',deviceId:'-',platform:'-',browser:'-',version:'-',raw:user.raw};
+      const old = map.get(key) || {name:user.name,seflik:user.seflik,userKey:user.userKey,id:user.id,lastSeenMs:0,ip:'-',deviceId:'-',platform:'-',browser:'-',version:'-',avatarUrl:'',raw:user.raw};
       if (user.lastSeenMs >= old.lastSeenMs) {
-        ['id','userKey','name','seflik','bolme','lastSeen','lastSeenMs','raw'].forEach((field) => { if (user[field] !== undefined && clean(user[field]) !== '') old[field] = user[field]; });
-        ['ip','deviceId','platform','browser','version'].forEach((field) => { if (clean(user[field]) && user[field] !== '-') old[field] = user[field]; });
+        ['id','userKey','name','seflik','bolme','lastSeen','lastSeenMs','avatarUrl','raw'].forEach((field) => { if (user[field] !== undefined && clean(user[field]) !== '') old[field] = user[field]; });
+        ['ip','deviceId','platform','browser','version','avatarUrl'].forEach((field) => { if (clean(user[field]) && user[field] !== '-') old[field] = user[field]; });
       } else {
-        ['ip','deviceId','platform','browser','version'].forEach((field) => { if ((!clean(old[field]) || old[field] === '-') && clean(user[field]) && user[field] !== '-') old[field] = user[field]; });
+        ['ip','deviceId','platform','browser','version','avatarUrl'].forEach((field) => { if ((!clean(old[field]) || old[field] === '-') && clean(user[field]) && user[field] !== '-') old[field] = user[field]; });
       }
       map.set(key, old);
       if (clean(old.id)) idIndex.set(compact(old.id), key);
@@ -278,7 +280,7 @@
     state.daily.map(mapProfile).forEach(upsertReal);
     state.backups.forEach((backup) => upsertReal({
       id:'',userKey:backup.userKey,name:backup.name,seflik:backup.seflik,lastSeen:backup.createdAt,lastSeenMs:backup.createdAtMs,
-      ip:'-',deviceId:'Drive',platform:'Drive',browser:'-',version:backup.version,raw:backup.raw
+      ip:'-',deviceId:'Drive',platform:'Drive',browser:'-',version:backup.version,avatarUrl:backup.avatarUrl,raw:backup.raw
     }));
 
     // Sadece IP/cihaz taşıyan event satırları ayrı boş kullanıcı oluşturmaz;
@@ -289,7 +291,7 @@
       const targetKey = (byKey && map.has(byKey) ? byKey : '') || (byId && idIndex.get(byId)) || '';
       if (!targetKey) return;
       const target = map.get(targetKey);
-      ['ip','deviceId','platform','browser','version'].forEach((field) => {
+      ['ip','deviceId','platform','browser','version','avatarUrl'].forEach((field) => {
         if (clean(technical[field]) && technical[field] !== '-' && ((!clean(target[field]) || target[field] === '-') || technical.lastSeenMs >= target.lastSeenMs)) target[field] = technical[field];
       });
       if (technical.lastSeenMs > target.lastSeenMs) { target.lastSeen = technical.lastSeen; target.lastSeenMs = technical.lastSeenMs; }
@@ -324,6 +326,8 @@
       state.usage = arr(data.usage);
       state.daily = arr(first(data.daily_usage, data.dailyUsage));
       state.events = arr(data.events); state.logs = arr(data.logs); state.audit = arr(first(data.admin_audit_logs,data.adminAuditLogs));
+      state.userAccess = arr(first(data.user_access,data.userAccess)); state.userAuthEvents = arr(first(data.user_auth_events,data.userAuthEvents));
+      state.seflikFolders = arr(first(data.seflik_folders,data.seflikFolders)); state.seflikMembers = arr(first(data.seflik_members,data.seflikMembers));
       state.blocks = [...arr(data.blocks), ...arr(data.security_blocks)].map(mapBlock).filter((b, i, all) => b.type && b.value && all.findIndex((x) => x.type === b.type && x.value === b.value) === i);
       state.summary = obj(data.summary); collectHiddenFromLogs();
       const driveBackups = await loadDriveBackups();
@@ -339,8 +343,39 @@
 
   function relatedBackups(user) { const key = identityKey(user); return state.backups.filter((b) => identityKey(b) === key); }
   function isBlockedUser(user) {
-    const key = lower(user.userKey), ip = clean(user.ip), device = clean(user.deviceId);
-    return state.blocks.some((b) => b.active && ((b.type === 'user_key' && lower(b.value) === key) || (b.type === 'ip' && b.value === ip) || (b.type === 'device_id' && b.value === device)));
+    const id = clean(user.id);
+    const accessRevoked = state.userAccess.some((x) => clean(x.user_id) === id && clean(x.status) === 'revoked');
+    const idBlocked = state.blocks.some((b) => b.active && b.type === 'user_id' && clean(b.value) === id);
+    const keyBlocked = state.blocks.some((b) => b.active && b.type === 'user_key' && lower(b.value) === lower(user.userKey));
+    return accessRevoked || idBlocked || keyBlocked;
+  }
+  function googleInfoForUser(user) {
+    const id = clean(user && user.id);
+    const name = lower(user && user.name), seflik = lower(user && user.seflik);
+    const rows = state.userAccess.map(obj);
+    let row = rows.find((r) => id && clean(r.user_id) === id && ['approved','revoked'].includes(clean(r.status)));
+    if (!row) row = rows.find((r) => clean(r.status) === 'approved' && lower(first(r.canonical_name, r.requested_name)) === name && lower(first(r.canonical_seflik, r.requested_seflik)) === seflik);
+    const avatarFromRaw = first(user && user.avatarUrl, path(user&&user.raw||{}, 'avatar_url'), path(user&&user.raw||{}, 'google_avatar_url'), path(user&&user.raw||{}, 'picture'), path(user&&user.raw||{}, 'metadata.avatar_url'), path(user&&user.raw||{}, 'metadata.google_avatar_url'), path(user&&user.raw||{}, 'metadata.picture'), path(user&&user.raw||{}, 'payload.avatar_url'), path(user&&user.raw||{}, 'payload.google_avatar_url'));
+    if (row) return {email:first(row.email, 'Google hesabı'), status:clean(row.status), avatarUrl:first(row.avatar_url, obj(row.metadata).avatar_url, obj(row.metadata).google_avatar_url, obj(row.metadata).picture, avatarFromRaw)};
+    const raw = lower(JSON.stringify(user && user.raw || {}));
+    if (raw.includes('google') || raw.includes('gmail.com')) return {email:first(path(user.raw||{}, 'email'), 'Google hesabı'), status:'approved', avatarUrl:avatarFromRaw};
+    return null;
+  }
+  function avatarUrlForUser(user) {
+    const google = googleInfoForUser(user) || {};
+    return first(user && user.avatarUrl, google.avatarUrl, path(user&&user.raw||{}, 'avatar_url'), path(user&&user.raw||{}, 'metadata.avatar_url'), path(user&&user.raw||{}, 'payload.avatar_url'));
+  }
+  function avatarHtml(user, cls='avatar') {
+    const url = avatarUrlForUser(user), nm = first(user && user.name, '?');
+    return url ? `<img class="${escapeHtml(cls)} user-photo-avatar" src="${escapeHtml(url)}" alt="${escapeHtml(nm)}" referrerpolicy="no-referrer" loading="lazy">` : `<div class="${escapeHtml(cls)}">${escapeHtml(initials(nm))}</div>`;
+  }
+  function terminalInfoForUser(user) {
+    const raw = lower(JSON.stringify(user && user.raw || {}));
+    const key = identityKey(user);
+    const fromRaw = /terminal-cloud|terminal[_-]?cloud|terminal[_-]?kod|terminal[_-]?code|pair[_-]?code|paireduserid|terminal_token|terminaltoken/.test(raw);
+    const fromBackup = state.backups.some((b) => identityKey(b) === key && /terminal-cloud|terminal[_-]?cloud|pair[_-]?code|terminal/.test(lower(JSON.stringify(b.raw || {}))));
+    const fromEvent = state.events.some((e) => { const p=obj(first(e.payload,e.metadata,e.detail)); return identityKey({name:first(e.name,p.name),seflik:first(e.seflik,p.seflik),userKey:first(e.user_key,p.userKey,p.user_key)})===key && /terminal/.test(lower(JSON.stringify(e))); });
+    return (fromRaw || fromBackup || fromEvent) ? {status:'paired', title:'Terminal kodu ile eşleşmiş cihaz/kullanıcı'} : null;
   }
   function onlineNow(user) { return user.lastSeenMs && Date.now() - user.lastSeenMs <= 15 * 60 * 1000; }
   function seenToday(user) { return dateKey(user.lastSeen) === todayKey(); }
@@ -411,16 +446,19 @@
   function renderUsers() {
     const users = filteredUsers(); $('userFilterInfo').textContent = `${fmtInt(users.length)} sonuç`;
     $('userList').innerHTML = users.length ? users.map((user, index) => {
-      const globalIndex = state.users.indexOf(user), blocked = isBlockedUser(user), backups = relatedBackups(user).length;
-      return `<article class="user-card">
-        <div class="user-head"><div class="avatar">${escapeHtml(initials(user.name))}</div><div class="user-title"><h3>${escapeHtml(user.name)}</h3><p>${escapeHtml(user.seflik)} • son giriş ${escapeHtml(fmtDate(user.lastSeen))}</p></div><span class="status-pill">${blocked ? 'Engelli' : onlineNow(user) ? 'Online' : 'Aktif'}</span></div>
+      const globalIndex = state.users.indexOf(user), blocked = isBlockedUser(user), backups = relatedBackups(user).length, google = googleInfoForUser(user);
+      const googleBadge = google ? `<span class="google-user-badge" title="${escapeHtml(google.email)}" aria-label="Google ile doğrulandı"><span class="google-g">G</span><b>Google</b></span>` : '';
+      const terminal = terminalInfoForUser(user);
+      const terminalBadge = terminal ? `<span class="terminal-user-badge" title="${escapeHtml(terminal.title)}" aria-label="Terminal kodu ile eşleşti"><span class="terminal-g">T</span><b>Terminal kodlu</b></span>` : '';
+      return `<article class="user-card ${google ? 'is-google-user' : ''} ${terminal ? 'is-terminal-user' : ''}">
+        <div class="user-head">${avatarHtml(user)}<div class="user-title"><h3>${escapeHtml(user.name)} ${googleBadge} ${terminalBadge}</h3><p>${escapeHtml(user.seflik)} • son giriş ${escapeHtml(fmtDate(user.lastSeen))}</p></div><span class="status-pill">${blocked ? 'Engelli' : onlineNow(user) ? 'Online' : 'Aktif'}</span></div>
         <div class="user-data">
           <div class="data-cell"><small>IP adresi</small><b class="ip">${escapeHtml(user.ip || '-')}</b></div>
           <div class="data-cell"><small>Cihaz</small><b>${escapeHtml(user.deviceId || '-')}</b></div>
           <div class="data-cell"><small>Platform</small><b>${escapeHtml(user.platform || '-')}</b></div>
           <div class="data-cell"><small>Tarayıcı</small><b>${escapeHtml(user.browser || '-')}</b></div>
           <div class="data-cell"><small>Kullandığı sürüm</small><b>${escapeHtml(user.version || 'Sürüm bekleniyor')}</b></div>
-          <div class="data-cell"><small>Drive yedek</small><b>${fmtInt(backups)}</b></div>
+          <div class="data-cell"><small>Drive yedek</small><b>${fmtInt(backups)}</b></div><div class="data-cell"><small>Giriş tipi</small><b>${terminal ? 'Terminal kodlu' : google ? 'Google' : 'Yerel'}</b></div>
         </div>
         <div class="user-actions"><button class="button info" data-action="detail" data-user-index="${globalIndex}" type="button">Detay</button><button class="button warning" data-action="block" data-user-index="${globalIndex}" type="button">Engelle</button><button class="button danger" data-action="delete-user" data-user-index="${globalIndex}" type="button">Kullanıcıyı sil</button></div>
       </article>`;
@@ -485,17 +523,22 @@
     $('backupList').innerHTML=rows.length?rows.map((b)=>`<article class="backup-card" data-backup-id="${escapeHtml(b.driveFileId)}"><div class="backup-main"><div class="file-badge">JSON</div><div><h3>${escapeHtml(b.fileName)}</h3><p>${escapeHtml(b.name)} • ${escapeHtml(b.seflik)}</p><p>${escapeHtml(fmtDate(b.createdAt))}${b.version&&b.version!=='-'?` • ${escapeHtml(b.version)}`:''}</p></div></div><div class="backup-stats"><div><small>Kayıt</small><b>${fmtInt(b.count)}</b></div><div><small>m³</small><b>${fmtM3(b.volume)}</b></div></div><div class="backup-actions"><a class="button info small" href="${escapeHtml(b.driveLink||'#')}" target="_blank" rel="noopener">Drive aç</a><button class="button danger small" data-action="hide-backup" data-backup-id="${escapeHtml(b.driveFileId)}" type="button">Kalıcı Sil</button></div></article>`).join(''):'<div class="empty-state">Görünen Drive yedeği yok.</div>';
   }
 
-  function activeBlocks(type=state.blockView) { return state.blocks.filter((b)=>b.active&&b.type===type).sort((a,b)=>ms(b.createdAt)-ms(a.createdAt)); }
+  function activeBlocks(type=state.blockView) { return state.blocks.filter((b)=>b.active&&(type==='user_key' ? (b.type==='user_key'||b.type==='user_id') : b.type===type)).sort((a,b)=>ms(b.createdAt)-ms(a.createdAt)); }
   function blockedDisplay(block) {
     if (block.type==='user_key') {
       const user=state.users.find((u)=>lower(u.userKey)===lower(block.value));
       return {title:user?user.name:'Kullanıcı engeli',sub:user?user.seflik:block.value};
     }
+    if (block.type==='user_id') {
+      const user=state.users.find((u)=>clean(u.id)===clean(block.value));
+      const google=user&&googleInfoForUser(user);
+      return {title:user?user.name:'Doğrulanmış kullanıcı engeli',sub:user?(user.seflik+(google?' • Google':'') ):block.value};
+    }
     return {title:block.type==='ip'?'IP adresi':'Cihaz',sub:block.value};
   }
   function renderBlocks() {
     const q=lower($('blockSearch').value); let rows=activeBlocks().filter((b)=>!q||[b.value,b.reason,b.createdAt].join(' ').toLocaleLowerCase('tr-TR').includes(q));
-    $('blockedUsersCount').textContent=fmtInt(activeBlocks('user_key').length);$('blockedIpsCount').textContent=fmtInt(activeBlocks('ip').length);$('blockedDevicesCount').textContent=fmtInt(activeBlocks('device_id').length);$('blockCountBadge').textContent=`${fmtInt(state.blocks.filter((b)=>b.active).length)} engel`;
+    $('blockedUsersCount').textContent=fmtInt(activeBlocks('user_key').length);$('blockedIpsCount').textContent=fmtInt(activeBlocks('ip').length);$('blockedDevicesCount').textContent=fmtInt(activeBlocks('device_id').length);$('blockCountBadge').textContent=`${fmtInt(state.blocks.filter((b)=>b.active).length)} engel`;/* user_key sekmesi doğrulanmış user_id engellerini de gösterir */
     $('blockList').innerHTML=rows.length?rows.map((b)=>{const d=blockedDisplay(b);return `<article class="block-card"><div><h3>${escapeHtml(d.title)}</h3><span class="block-value">${escapeHtml(d.sub)}</span><p>${escapeHtml(b.reason)} • ${escapeHtml(fmtDate(b.createdAt))}</p></div><div class="block-actions"><button class="button danger small" data-action="unblock" data-block-id="${escapeHtml(b.id)}" data-block-type="${escapeHtml(b.type)}" data-block-value="${escapeHtml(b.value)}" type="button">Engeli kaldır</button></div></article>`}).join(''):'<div class="empty-state">Bu bölümde aktif engel yok.</div>';
   }
 
@@ -505,17 +548,54 @@
     $('adminSecurityLogCount').textContent=fmtInt(rows.length)+' kayıt';
     box.innerHTML=rows.length?rows.map((r)=>`<article class="security-log ${r.success?'ok':'fail'}"><div><b>${escapeHtml(r.event_type||'admin_event')}</b><small>${escapeHtml(r.email||'Bilinmeyen hesap')} • ${escapeHtml(r.ip_address||'-')}</small></div><div><span>${r.success?'Başarılı':'Reddedildi'}</span><small>${escapeHtml(fmtDate(r.created_at))}${r.reason?' • '+escapeHtml(r.reason):''}</small></div></article>`).join(''):'<div class="empty-state">Henüz yönetim güvenlik kaydı yok.</div>';
   }
-  function renderAll(){renderUsers();renderStats();renderBackups();renderBlocks();renderSecurityLogs();renderSummary()}
-  function switchPage(page){state.page=page;document.querySelectorAll('.page').forEach((el)=>el.classList.toggle('is-active',el.dataset.page===page));document.querySelectorAll('.nav-item').forEach((el)=>el.classList.toggle('is-active',el.dataset.pageTarget===page));if(page==='stats')renderStats();if(page==='backups')renderBackups();if(page==='manage'){renderBlocks();renderSecurityLogs();}window.scrollTo({top:0,behavior:'smooth'})}
+  function accessStatusText(status){return({pending:'Onay bekliyor',approved:'Onaylı',rejected:'Reddedildi',revoked:'Erişim kapalı'})[clean(status)]||clean(status)||'Kayıtsız'}
+  function renderGoogleAccess(){
+    const box=$('googleAccessList');if(!box)return;
+    const pending=state.userAccess.filter((r)=>clean(r.status)==='pending').length;$('googleAccessCount').textContent=fmtInt(pending)+' bekleyen';
+    const rows=state.userAccess.map((r,i)=>({...obj(r),_index:i})).filter((r)=>clean(r.status)===state.accessStatus).sort((a,b)=>ms(b.updated_at||b.requested_at)-ms(a.updated_at||a.requested_at));
+    box.innerHTML=rows.length?rows.map((r)=>{const status=clean(r.status),name=first(r.canonical_name,r.requested_name,'İsimsiz kullanıcı'),seflik=first(r.canonical_seflik,r.requested_seflik,'Şeflik yok'),email=first(r.email,'E-posta yok');let actions='';
+      if(status==='pending')actions=`<button class="button primary small" data-action="access-approve" data-access-index="${r._index}" type="button">Onayla</button><button class="button danger small" data-action="access-reject" data-access-index="${r._index}" type="button">Reddet</button>`;
+      else if(status==='approved')actions=`<button class="button danger small" data-action="access-revoke" data-access-index="${r._index}" type="button">Erişimi kapat</button>`;
+      else actions=`<button class="button info small" data-action="access-reopen" data-access-index="${r._index}" type="button">Yeniden incele</button>`;
+      const avatar=first(r.avatar_url,obj(r.metadata).avatar_url,obj(r.metadata).google_avatar_url,obj(r.metadata).picture);
+      const avatarHtml=avatar?`<img class="google-avatar" src="${escapeHtml(avatar)}" alt="" referrerpolicy="no-referrer" loading="lazy">`:`<div class="google-avatar">G</div>`;
+      return `<article class="google-access-card ${escapeHtml(status)}"><div class="google-access-main">${avatarHtml}<div><h4>${escapeHtml(name)}</h4><p>${escapeHtml(seflik)} • ${escapeHtml(email)}</p><small>${escapeHtml(accessStatusText(status))} • ${escapeHtml(fmtDate(r.updated_at||r.requested_at))}${r.reason?' • '+escapeHtml(r.reason):''}</small></div></div><div class="google-access-actions">${actions}</div></article>`}).join(''):'<div class="empty-state">Bu bölümde Google giriş kaydı yok.</div>';
+  }
+  async function accessApprove(row){
+    const name=clean(prompt('Onaylanacak kullanıcı adı:',first(row.canonical_name,row.requested_name)));if(!name)return;
+    const seflik=clean(prompt('Onaylanacak şeflik:',first(row.canonical_seflik,row.requested_seflik)));if(!seflik)return;
+    if(!confirm(`${name} • ${seflik} hesabı bu Google hesabına bağlansın mı?`))return;
+    await edge('admin_user_access_approve',{user_id:row.user_id,name,seflik});toast('Google hesabı kullanıcıya bağlandı');await loadAll();
+  }
+  async function accessDecision(row,action){
+    const label=action.endsWith('reopen')?'yeniden incelemeye almak':action.endsWith('revoke')?'erişimini kapatmak':'reddetmek';
+    const reason=prompt(`Bu Google hesabını ${label} için açıklama:`,action.endsWith('revoke')?'Yönetici erişimi kapattı':action.endsWith('reopen')?'Yeniden inceleme':'Yönetici talebi reddetti');if(reason===null)return;
+    if(action.endsWith('revoke')&&!confirm(`${first(row.canonical_name,row.requested_name,row.email)} kullanıcısının sunucu erişimi kapatılsın mı?`))return;
+    await edge(action,{user_id:row.user_id,reason:clean(reason)});toast(action.endsWith('reopen')?'Talep yeniden incelemeye alındı':action.endsWith('revoke')?'Erişim kapatıldı':'Talep reddedildi');await loadAll();
+  }
+  function memberAvatar(m){const url=first(m.avatar_url,obj(m.metadata).avatar_url);const nm=first(m.name,m.email,'?');return url?`<img class="seflik-admin-avatar" src="${escapeHtml(url)}" alt="" referrerpolicy="no-referrer">`:`<span class="seflik-admin-avatar fallback">${escapeHtml(initials(nm))}</span>`}
+  function renderSeflikAdmin(){
+    const host=$('adminSeflikList'), badge=$('adminSeflikCount'); if(!host)return;
+    const folders=state.seflikFolders.map(obj).filter((f)=>clean(f.status||'active')==='active').sort((a,b)=>clean(a.seflik).localeCompare(clean(b.seflik),'tr'));
+    if(badge)badge.textContent=`${fmtInt(folders.length)} şeflik`;
+    if(!folders.length){host.innerHTML='<div class="empty-state">Kurulu şeflik yok.</div>';return}
+    host.innerHTML=folders.map((f)=>{
+      const key=clean(f.seflik_key), members=state.seflikMembers.map(obj).filter((m)=>clean(m.seflik_key)===key&&clean(m.status||'active')==='active').sort((a,b)=>clean(a.role)==='owner'?-1:clean(b.role)==='owner'?1:clean(a.name).localeCompare(clean(b.name),'tr'));
+      return `<article class="seflik-admin-card"><div class="seflik-admin-head"><div><h4>${escapeHtml(f.seflik||'-')}</h4><p>Kurucu: ${escapeHtml(first(f.created_by_name,'-'))} • ${escapeHtml(fmtDate(f.created_at))}</p></div><span class="counter-badge">${fmtInt(members.length)} üye</span></div><div class="seflik-admin-members">${members.length?members.map((m)=>`<div class="seflik-admin-member">${memberAvatar(m)}<div><b>${escapeHtml(first(m.name,'-'))}</b><small>${escapeHtml((clean(m.role)==='owner'?'Kurucu':'Ormancı')+(m.email?' • '+m.email:''))}</small></div></div>`).join(''):'<div class="empty-state small">Üye yok</div>'}</div></article>`;
+    }).join('');
+  }
+  function renderAll(){renderUsers();renderStats();renderBackups();renderBlocks();renderSecurityLogs();renderGoogleAccess();renderSeflikAdmin();renderSummary()}
+  function switchPage(page){state.page=page;document.querySelectorAll('.page').forEach((el)=>el.classList.toggle('is-active',el.dataset.page===page));document.querySelectorAll('.nav-item').forEach((el)=>el.classList.toggle('is-active',el.dataset.pageTarget===page));if(page==='stats')renderStats();if(page==='backups')renderBackups();if(page==='manage'){renderBlocks();renderSecurityLogs();renderGoogleAccess();renderSeflikAdmin();}window.scrollTo({top:0,behavior:'smooth'})}
   function openModal(title,html){$('modalTitle').textContent=title;$('modalBody').innerHTML=html;$('modal').classList.add('is-open');$('modal').setAttribute('aria-hidden','false')}
   function closeModal(){$('modal').classList.remove('is-open');$('modal').setAttribute('aria-hidden','true')}
 
   async function blockUser(user){
-    const options=[`1 - Kullanıcı (${user.name})`,user.ip&&user.ip!=='-'?`2 - IP (${user.ip})`:'',user.deviceId&&user.deviceId!=='-'?`3 - Cihaz (${user.deviceId})`:''].filter(Boolean).join('\n');
+    const hasId=clean(user.id)&&user.id!=='-';
+    const options=[hasId?`1 - Doğrulanmış hesap (${user.name})`:`1 - Eski kullanıcı anahtarı (${user.name})`,user.ip&&user.ip!=='-'?`2 - IP (${user.ip})`:'',user.deviceId&&user.deviceId!=='-'?`3 - Cihaz (${user.deviceId})`:''].filter(Boolean).join('\n');
     const choice=prompt(`Engel türünü seç:\n${options}`,'1'); if(!choice)return;
-    let type='user_key',value=user.userKey;if(choice==='2'){type='ip';value=user.ip}else if(choice==='3'){type='device_id';value=user.deviceId}
+    let type=hasId?'user_id':'user_key',value=hasId?user.id:user.userKey;if(choice==='2'){type='ip';value=user.ip}else if(choice==='3'){type='device_id';value=user.deviceId}
     if(!clean(value)||value==='-')throw new Error('Engellenecek değer bulunamadı');
-    await edge('admin_add_block',{block_type:type,block_value:value,reason:'Admin panel engeli'});toast('Engel eklendi');await loadAll();
+    await edge('admin_add_block',{block_type:type,block_value:value,reason:'Admin panel engeli'});toast(type==='user_id'?'Doğrulanmış hesap engellendi':'Engel eklendi');await loadAll();
   }
   async function deleteUser(user){
     const typed=prompt(`${user.name} kullanıcısı, tüm Supabase yedekleri ve kullanıcının oluşturduğu Şeflik bölmeleri kalıcı olarak silinecek. İşlem geri alınamaz. Onaylamak için kullanıcı adını yazın:`,user.name);
@@ -540,7 +620,7 @@
   async function addIp(){const ip=prompt('Engellenecek IP adresi:');if(!clean(ip))return;if(!isLikelyIp(ip)&&!confirm('Girilen değer standart IP biçiminde görünmüyor. Yine de engellensin mi?'))return;await edge('admin_add_block',{block_type:'ip',block_value:clean(ip),reason:'Manuel IP engeli'});toast('IP engeli eklendi');await loadAll()}
 
   function userDetail(user){
-    openModal('Kullanıcı detayı',`<div class="detail-grid"><div><small>Kullanıcı</small><b>${escapeHtml(user.name)}</b></div><div><small>Şeflik</small><b>${escapeHtml(user.seflik)}</b></div><div><small>IP</small><b class="ip">${escapeHtml(user.ip||'-')}</b></div><div><small>Cihaz</small><b>${escapeHtml(user.deviceId||'-')}</b></div><div><small>Platform</small><b>${escapeHtml(user.platform||'-')}</b></div><div><small>Tarayıcı</small><b>${escapeHtml(user.browser||'-')}</b></div><div><small>Kullandığı sürüm</small><b>${escapeHtml(user.version||'-')}</b></div><div><small>Son giriş</small><b>${escapeHtml(fmtDate(user.lastSeen))}</b></div></div><pre class="raw-data">${escapeHtml(JSON.stringify(user.raw||user,null,2))}</pre>`)
+    openModal('Kullanıcı detayı',`<div class="detail-grid"><div><small>Kullanıcı</small><b>${escapeHtml(user.name)}</b></div><div><small>Şeflik</small><b>${escapeHtml(user.seflik)}</b></div><div><small>IP</small><b class="ip">${escapeHtml(user.ip||'-')}</b></div><div><small>Cihaz</small><b>${escapeHtml(user.deviceId||'-')}</b></div><div><small>Platform</small><b>${escapeHtml(user.platform||'-')}</b></div><div><small>Tarayıcı</small><b>${escapeHtml(user.browser||'-')}</b></div><div><small>Kullandığı sürüm</small><b>${escapeHtml(user.version||'-')}</b></div><div><small>Giriş tipi</small><b>${terminalInfoForUser(user)?'Terminal kodlu':googleInfoForUser(user)?'Google':'Yerel'}</b></div><div><small>Son giriş</small><b>${escapeHtml(fmtDate(user.lastSeen))}</b></div></div><pre class="raw-data">${escapeHtml(JSON.stringify(user.raw||user,null,2))}</pre>`)
   }
 
   async function login(){
@@ -548,7 +628,7 @@
     if(!/^\S+@\S+\.\S+$/.test(email)||password.length<12){$('loginMessage').textContent='Geçerli admin e-postası ve en az 12 karakterli parola gerekli.';return}
     $('loginMessage').textContent='Giriş doğrulanıyor…';$('loginBtn').disabled=true;
     try{const out=await rawEdge('admin_login',{email,password});saveSession(out.session);$('loginPass').value='';$('loginMessage').textContent='';showAdmin();await loadAll()}
-    catch(error){clearSession();const retry=Number(error.payload&&error.payload.retry_after||0);$('loginMessage').textContent=retry?`Giriş kilitlendi. ${Math.ceil(retry/60)} dakika sonra tekrar deneyin.`:errorText(error)}
+    catch(error){clearSession();$('loginMessage').textContent=errorText(error)}
     finally{$('loginBtn').disabled=false}
   }
   function showAdmin(){$('loginView').classList.add('is-hidden');$('adminView').classList.remove('is-hidden');touchActivity()}
@@ -566,10 +646,11 @@
     document.querySelectorAll('.nav-item').forEach((button)=>button.addEventListener('click',()=>switchPage(button.dataset.pageTarget)));
     document.querySelectorAll('.range-tab').forEach((button)=>button.addEventListener('click',()=>{state.range=button.dataset.range;document.querySelectorAll('.range-tab').forEach((x)=>x.classList.toggle('is-active',x===button));renderStats()}));
     document.querySelectorAll('.manage-tab').forEach((button)=>button.addEventListener('click',()=>{state.blockView=button.dataset.blockView;document.querySelectorAll('.manage-tab').forEach((x)=>x.classList.toggle('is-active',x===button));renderBlocks()}));
+    document.querySelectorAll('.google-access-tab').forEach((button)=>button.addEventListener('click',()=>{state.accessStatus=button.dataset.accessStatus;document.querySelectorAll('.google-access-tab').forEach((x)=>x.classList.toggle('is-active',x===button));renderGoogleAccess()}));
     ['userSearch','userFilter'].forEach((id)=>$(id).addEventListener('input',renderUsers));['backupSearch','backupSort'].forEach((id)=>$(id).addEventListener('input',renderBackups));$('blockSearch').addEventListener('input',renderBlocks);
     $('clearUserFilter').addEventListener('click',()=>{$('userSearch').value='';$('userFilter').value='all';renderUsers()});$('clearBackupFilter').addEventListener('click',()=>{$('backupSearch').value='';$('backupSort').value='new';renderBackups()});$('addIpBtn').addEventListener('click',()=>addIp().catch((e)=>toast(errorText(e))));
     $('modalClose').addEventListener('click',closeModal);$('modal').addEventListener('click',(e)=>{if(e.target===$('modal'))closeModal()});
-    document.addEventListener('click',(e)=>{touchActivity();const button=e.target.closest('[data-action]');if(!button)return;const action=button.dataset.action;const user=state.users[Number(button.dataset.userIndex)];if(action==='detail'&&user)userDetail(user);if(action==='block'&&user)blockUser(user).catch((x)=>toast(errorText(x)));if(action==='delete-user'&&user)deleteUser(user).catch((x)=>toast(errorText(x)));if(action==='hide-backup')hideBackup(button.dataset.backupId).catch((x)=>toast(errorText(x)));if(action==='unblock')unblock(button).catch((x)=>toast(errorText(x))) });
+    document.addEventListener('click',(e)=>{touchActivity();const button=e.target.closest('[data-action]');if(!button)return;const action=button.dataset.action;const user=state.users[Number(button.dataset.userIndex)];if(action==='detail'&&user)userDetail(user);if(action==='block'&&user)blockUser(user).catch((x)=>toast(errorText(x)));if(action==='delete-user'&&user)deleteUser(user).catch((x)=>toast(errorText(x)));if(action==='hide-backup')hideBackup(button.dataset.backupId).catch((x)=>toast(errorText(x)));if(action==='unblock')unblock(button).catch((x)=>toast(errorText(x)));const access=state.userAccess[Number(button.dataset.accessIndex)];if(action==='access-approve'&&access)accessApprove(access).catch((x)=>toast(errorText(x)));if(action==='access-reject'&&access)accessDecision(access,'admin_user_access_reject').catch((x)=>toast(errorText(x)));if(action==='access-revoke'&&access)accessDecision(access,'admin_user_access_revoke').catch((x)=>toast(errorText(x)));if(action==='access-reopen'&&access)accessDecision(access,'admin_user_access_reopen').catch((x)=>toast(errorText(x))) });
     ['keydown','pointerdown','touchstart'].forEach((name)=>document.addEventListener(name,touchActivity,{passive:true}));
     setInterval(()=>{const last=Number(sessionStorage.getItem(LAST_ACTIVITY_KEY)||0);if(readSession().access_token&&last&&Date.now()-last>IDLE_MS)logout(false,true)},60000);
   }

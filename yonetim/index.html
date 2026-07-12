@@ -8,9 +8,9 @@
   <title>Mesaha İO Yönetim</title>
   <link rel="manifest" href="../manifest.json">
   <link rel="apple-touch-icon" href="../assets/icon-192.png">
-  <link rel="stylesheet" href="./admin.css?v=547">
-  <script src="../js/version.js?v=547"></script>
-  <script src="../js/mesaha-supabase-config.js?v=547"></script>
+  <link rel="stylesheet" href="./admin.css?v=551">
+  <script src="../js/version.js?v=551"></script>
+  <script src="../js/mesaha-supabase-config.js?v=551"></script>
 </head>
 <body>
   <div class="app-shell">
@@ -34,7 +34,7 @@
             <div class="brand-logo"><img src="../assets/mesaha_logo.png" alt=""></div>
             <div>
               <strong>Mesaha İO Yönetim</strong>
-              <small id="versionLabel">V5.47 •Yakupp•</small>
+              <small id="versionLabel">V5.72 •Yakupp•</small>
             </div>
           </div>
           <div class="top-actions">
@@ -146,6 +146,22 @@
           </div>
           <div id="blockList" class="block-list"></div>
 
+          <article class="surface google-access-panel">
+            <div class="card-heading"><div><h3>Google giriş talepleri</h3><p>Google hesabını mevcut kullanıcı adı ve şeflikle eşleştir; erişimi gerektiğinde kapat.</p></div><span id="googleAccessCount" class="counter-badge">0 bekleyen</span></div>
+            <div class="google-access-tabs" role="tablist">
+              <button class="google-access-tab is-active" data-access-status="pending" type="button">Bekleyen</button>
+              <button class="google-access-tab" data-access-status="approved" type="button">Onaylı</button>
+              <button class="google-access-tab" data-access-status="rejected" type="button">Reddedilen</button>
+              <button class="google-access-tab" data-access-status="revoked" type="button">Kapatılan</button>
+            </div>
+            <div id="googleAccessList" class="google-access-list"></div>
+          </article>
+
+          <article class="surface seflik-admin-panel">
+            <div class="card-heading"><div><h3>Kurulu Şeflikler</h3><p>Oluşturulan şeflikleri, kurucularını ve ekli ormancıları görüntüleyin.</p></div><span id="adminSeflikCount" class="counter-badge">0 şeflik</span></div>
+            <div id="adminSeflikList" class="seflik-admin-list"></div>
+          </article>
+
           <article class="surface admin-session-card">
             <div><h3>Yönetim oturumu</h3><p>Bu cihazdan çıkabilir veya hesabın bütün açık cihaz oturumlarını kapatabilirsiniz.</p></div>
             <button id="logoutAllBtn" class="button danger" type="button">Tüm cihazlardan çıkış</button>
@@ -174,6 +190,6 @@
     </div>
   </div>
   <div id="toast" class="toast" role="status"></div>
-  <script src="./admin.js?v=547"></script>
+  <script src="./admin.js?v=566"></script>
 </body>
 </html>

@@ -11,3 +11,31 @@
 
 /* V5.47 admin auth/security */
 .admin-session-card{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:18px;padding:18px}.admin-session-card h3{margin:0 0 5px}.admin-session-card p{margin:0;color:var(--muted);font-size:13px}.security-log-panel{margin-top:14px;padding:16px}.security-log-list{display:grid;gap:8px}.security-log{display:flex;justify-content:space-between;gap:12px;padding:12px;border:1px solid var(--line);border-radius:14px;background:#fff}.security-log>div{display:grid;gap:3px}.security-log>div:last-child{text-align:right}.security-log b,.security-log span{font-weight:900}.security-log small{color:var(--muted);font-size:11px}.security-log.ok span{color:#087443}.security-log.fail{border-color:#fecaca;background:#fff7f7}.security-log.fail span{color:#b91c1c}@media(max-width:640px){.admin-session-card,.security-log{align-items:stretch;flex-direction:column}.security-log>div:last-child{text-align:left}}
+
+/* V5.48 Google kullanıcı erişimi */
+.google-access-panel{margin-top:14px;padding:16px}.google-access-tabs{display:flex;gap:8px;overflow:auto;margin:-2px 0 13px;padding:2px 0;scrollbar-width:none}.google-access-tabs::-webkit-scrollbar{display:none}.google-access-tab{flex:0 0 auto;border:1px solid var(--line);background:#fff;color:#405047;border-radius:13px;padding:9px 13px;font-weight:900;font-size:12px}.google-access-tab.is-active{background:linear-gradient(135deg,#2563eb,#4285f4);border-color:#2563eb;color:#fff;box-shadow:0 8px 20px rgba(37,99,235,.18)}.google-access-list{display:grid;gap:10px}.google-access-card{display:flex;align-items:center;justify-content:space-between;gap:14px;border:1px solid var(--line);border-left:5px solid #f59e0b;border-radius:17px;background:#fff;padding:13px}.google-access-card.approved{border-left-color:#16a34a;background:#f8fff9}.google-access-card.rejected,.google-access-card.revoked{border-left-color:#dc2626;background:#fffafa}.google-access-main{display:flex;align-items:center;gap:11px;min-width:0}.google-access-main>div:last-child{min-width:0}.google-avatar{width:43px;height:43px;flex:0 0 auto;border-radius:14px;display:grid;place-items:center;background:linear-gradient(145deg,#eff6ff,#dbeafe);border:1px solid #bfdbfe;color:#2563eb;font-size:20px;font-weight:1000}.google-access-main h4{margin:0;font-size:15px;word-break:break-word}.google-access-main p{margin:4px 0 0;color:#475569;font-size:12px;word-break:break-word}.google-access-main small{display:block;margin-top:5px;color:var(--muted);font-size:10px;line-height:1.4}.google-access-actions{display:flex;align-items:center;justify-content:flex-end;gap:7px;flex:0 0 auto;flex-wrap:wrap}
+@media(max-width:640px){.google-access-card{align-items:stretch;flex-direction:column}.google-access-actions{display:grid;grid-template-columns:1fr 1fr}.google-access-actions .button:only-child{grid-column:1/-1}.google-access-main{align-items:flex-start}.google-access-panel{padding:13px}}
+
+/* V5.58 — Google doğrulanmış kullanıcı rozeti */
+.user-card.is-google-user{border-color:rgba(66,133,244,.22)!important;box-shadow:0 16px 38px rgba(66,133,244,.07),0 10px 24px rgba(23,74,50,.06)!important;}
+.user-title h3{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.google-user-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 8px;border:1px solid rgba(66,133,244,.22);border-radius:999px;background:linear-gradient(180deg,#fff,#f7fbff);color:#1f2937;font-size:10px;font-weight:950;line-height:1;vertical-align:middle;box-shadow:0 4px 12px rgba(66,133,244,.10);}
+.google-user-badge .google-g{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:#fff;border:1px solid #e5e7eb;color:#4285f4;font-weight:1000;font-size:12px;font-family:Arial,Helvetica,sans-serif;box-shadow:0 1px 3px rgba(15,23,42,.08);}
+.google-user-badge b{font-size:10px;font-weight:950;color:#334155;}
+.block-card .block-value{word-break:break-word;}
+
+
+.terminal-user-badge{display:inline-flex;align-items:center;gap:6px;margin-left:6px;padding:4px 8px;border-radius:999px;background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;font-size:11px;font-weight:950;vertical-align:middle}.terminal-user-badge .terminal-g{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;background:#fb923c;color:#fff;font-weight:1000}.user-card.is-terminal-user{border-left:4px solid #fb923c}
+
+/* V5.66 kurulu şeflikler admin paneli */
+.seflik-admin-list{display:grid;gap:12px}
+.seflik-admin-card{border:1px solid rgba(148,163,184,.24);border-radius:18px;background:#fff;padding:12px;box-shadow:0 10px 24px rgba(15,23,42,.04)}
+.seflik-admin-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px}
+.seflik-admin-head h4{margin:0;font-size:16px;color:#102019;font-weight:1000}.seflik-admin-head p{margin:4px 0 0;color:#64748b;font-size:12px;font-weight:800}
+.seflik-admin-members{display:grid;gap:8px}.seflik-admin-member{display:flex;align-items:center;gap:10px;border:1px solid #e2e8f0;border-radius:14px;padding:8px;background:#f8fafc}.seflik-admin-member b{display:block;font-size:13px}.seflik-admin-member small{display:block;color:#64748b;font-weight:750}.seflik-admin-avatar{width:36px;height:36px;border-radius:50%;object-fit:cover;display:grid;place-items:center;flex:none}.seflik-admin-avatar.fallback{background:#dcfce7;color:#166534;font-weight:1000}.empty-state.small{padding:10px;font-size:12px}
+
+/* V5.72 - Admin kullanıcılarında Google profil fotoğrafı */
+.user-photo-avatar.avatar,
+.avatar.user-photo-avatar{object-fit:cover;display:block;background:#fff;border-color:#dbeafe;box-shadow:0 8px 22px rgba(37,99,235,.12)}
+.google-avatar{object-fit:cover;overflow:hidden}
+.google-access-main img.google-avatar{display:block;background:#fff;border-color:#dbeafe;box-shadow:0 4px 12px rgba(37,99,235,.10)}
