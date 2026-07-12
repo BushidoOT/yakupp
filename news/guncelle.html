@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#f4f7f6"><link rel="icon" type="image/png" href="./assets/icon-192.png"><title>Mesaha İO Güncelle</title>
 <style>body{font-family:system-ui,-apple-system,Segoe UI,Arial,sans-serif;margin:0;min-height:100vh;display:grid;place-items:center;background:#f4f7f6;color:#101828}.card{background:#fff;border:1px solid #d9e3e1;border-radius:24px;padding:24px;box-shadow:0 20px 60px rgba(15,23,42,.12);text-align:center;max-width:390px;margin:16px}h1{font-size:22px;margin:0 0 8px}p{color:#667085;font-weight:700;line-height:1.45}.spin{width:44px;height:44px;margin:0 auto 14px;border-radius:50%;border:4px solid #d9e3e1;border-top-color:#22c55e;animation:s .8s linear infinite}@keyframes s{to{transform:rotate(360deg)}}button{border:0;border-radius:14px;background:#16a34a;color:#fff;font-weight:900;padding:12px 16px;margin-top:12px}button[hidden]{display:none}</style>
-<script src="./js/version.js?v=566"></script><script src="./js/mesaha-update-manager-v527.js?v=566"></script></head>
+<script src="./js/version.js?v=567"></script><script src="./js/mesaha-update-manager-v527.js?v=567"></script></head>
 <body><div class="card"><div class="spin" id="spin"></div><h1>Mesaha İO güncelleniyor…</h1><p id="status">Yeni sürüm indiriliyor ve etkinleştiriliyor. Kayıtlarınız ve ayarlarınız korunur.</p><button id="go" type="button" hidden>Ana Sayfayı Aç</button></div>
 <script>
 (function(){
@@ -11,8 +11,8 @@
     try{
       status.textContent='Yeni uygulama dosyaları hazırlanıyor…';
       var result=window.MesahaUpdateV527?await window.MesahaUpdateV527.executeUpdatePage():null;
-      var build=result&&result.targetBuild||(window.MESAHA_VERSION&&window.MESAHA_VERSION.build)||566;
-      status.textContent='Güncelleme tamamlandı. V5.66 •Yakupp• açılıyor…';
+      var build=result&&result.targetBuild||(window.MESAHA_VERSION&&window.MESAHA_VERSION.build)||567;
+      status.textContent='Güncelleme tamamlandı. V5.67 •Yakupp• açılıyor…';
       setTimeout(function(){openApp(build);},500);
     }catch(e){
       spin.style.display='none';

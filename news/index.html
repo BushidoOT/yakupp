@@ -4170,19 +4170,10 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   }
   function apply(){
     const u=readUser();
-    const ok=!!(u.name&&u.seflik);
-    const label=ok?('👤 '+u.name+' • '+u.seflik):'👤 Giriş Yap';
-    const btn=$('userPanelBtnV316');
-    if(btn){
-      btn.classList.add('identity-v323');
-      btn.classList.toggle('login-needed',!ok);
-      if(btn.textContent!==label) btn.textContent=label;
-      btn.title=ok?('Kullanıcı Paneli: '+u.name+' • '+u.seflik):'İlk giriş için kullanıcı adı ve şeflik gir';
-    }
+    const ok=!!u.name;
     const badge=$('userBadge');
     if(badge){
-      const shortLabel=ok?(u.name+' • '+u.seflik):'Giriş Yap';
-      badge.textContent=shortLabel;
+      badge.textContent=ok?u.name:'Giriş Yap';
       badge.classList.toggle('login-needed',!ok);
     }
   }
@@ -7333,6 +7324,6 @@ body.mesaha-floating-save-open-v537 .bottom-nav{display:none!important;visibilit
 })();
 </script>
 
-<script src="./js/mesaha-seflik-governance-v566.js?v=566"></script>
+<script src="./js/mesaha-seflik-governance-v567.js?v=567"></script>
 </body>
 </html>
