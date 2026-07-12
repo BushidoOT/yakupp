@@ -6037,7 +6037,7 @@ body.mesaha-cloud-panel-open-v395 #cloudRestoreOverlayV316:not(.hidden){touch-ac
     var removed=readRemoved();
     var list=unique([].concat(st.cutters||[], st.activeCutter||[], active)).filter(function(c){return removed.indexOf(c)<0 || active.indexOf(c)>-1;});
     if(st.activeCutter && list.indexOf(clean(st.activeCutter))<0) st.activeCutter='';
-    if(st.cutterFilter && st.cutterFilter!=='Tümü' && list.indexOf(clean(st.cutterFilter))<0) st.cutterFilter='Tümü';
+    if(st.cutterFilter && st.cutterFilter!=='Tümü' && st.cutterFilter!=='Kesimci kaydı yok' && list.indexOf(clean(st.cutterFilter))<0) st.cutterFilter='Tümü';
     st.cutters=list;
     return list;
   }
@@ -7325,5 +7325,36 @@ body.mesaha-floating-save-open-v537 .bottom-nav{display:none!important;visibilit
 </script>
 
 <script src="./js/mesaha-seflik-governance.js"></script>
+
+<script id="mesaha-v572-no-cutter-filter-fix">
+(function(){
+  'use strict';
+  if(window.__mesahaV572NoCutterFilterFix) return;
+  window.__mesahaV572NoCutterFilterFix = true;
+  var SPECIAL='Kesimci kaydı yok';
+  function clean(v){return String(v==null?'':v).trim().replace(/\s+/g,' ')}
+  function settings(){try{if(window.state){if(!window.state.settings)window.state.settings={};return window.state.settings;}}catch(e){} try{return JSON.parse(localStorage.getItem('cam_mesaha_ayarlar_v1')||'{}')||{}}catch(e){return {}}}
+  function save(){try{if(window.__flushSettings)return window.__flushSettings('v572-no-cutter-filter');if(window.saveSettings)return window.saveSettings();localStorage.setItem('cam_mesaha_ayarlar_v1',JSON.stringify(settings()));}catch(e){}}
+  function isNoCutterButton(el){return el&&el.getAttribute&&clean(el.getAttribute('data-cutter-filter'))===SPECIAL;}
+  function applyNoCutterFilter(ev){
+    var btn=ev.target&&ev.target.closest&&ev.target.closest('[data-cutter-filter]');
+    if(!isNoCutterButton(btn))return;
+    try{if(ev){ev.preventDefault();ev.stopPropagation();if(ev.stopImmediatePropagation)ev.stopImmediatePropagation();}}catch(e){}
+    var st=settings(); st.cutterFilter=SPECIAL; save();
+    try{if(typeof window.invalidateRecordStatsV447==='function')window.invalidateRecordStatsV447();}catch(e){}
+    try{if(typeof window.renderRecords==='function')window.renderRecords();else if(typeof window.renderAll==='function')window.renderAll();}catch(e){}
+    try{window.dispatchEvent(new CustomEvent('mesaha:settings-saved',{detail:{source:'v572-no-cutter-filter'}}));}catch(e){}
+    setTimeout(function(){
+      try{
+        var st2=settings(); if(clean(st2.cutterFilter)!==SPECIAL){st2.cutterFilter=SPECIAL; save();}
+        if(typeof window.renderRecords==='function')window.renderRecords();
+      }catch(e){}
+    },80);
+  }
+  document.addEventListener('click',applyNoCutterFilter,true);
+  document.addEventListener('touchend',applyNoCutterFilter,true);
+})();
+</script>
+
 </body>
 </html>

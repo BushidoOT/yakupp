@@ -1,4 +1,4 @@
-/* Mesaha İO V5.71 — Google Auth + güvenli Supabase uyumluluk motoru
+/* Mesaha İO V5.72 — Google Auth + güvenli Supabase uyumluluk motoru
    Amaç: Eski Firebase/Supabase çağrılarını bozmadan yalnız doğrulanmış Google oturumu ile bulut işlemlerini yürütmek.
    - Yeni anonim hesap oluşturmaz; eski anonim oturumu Google kimliğine bağlamak için korur.
    - REST isteklerinde anon key değil access_token kullanır.
