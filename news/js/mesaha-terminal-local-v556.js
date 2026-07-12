@@ -1,10 +1,11 @@
-/* Mesaha İO V5.60 — Terminal kodlu bulut destekli giriş modu
+/* Mesaha İO V5.61 — Terminal kodlu bulut destekli giriş ve sonradan kod eşleştirme
    Elle terminal modunda uygulama cihaz içi çalışır; kodla eşleşmiş terminalde Buluta Yedekle/Buluttan Getir açıktır. */
 (function(){
   'use strict';
   if(window.__mesahaTerminalLocalV556) return;
   window.__mesahaTerminalLocalV556 = true;
-  var TERMINAL_KEY='mesaha_terminal_local_mode_v557';
+  var TERMINAL_KEY='mesaha_terminal_local_mode_v556';
+  var OLD_TERMINAL_KEY='mesaha_terminal_local_mode_v557';
   var SETTINGS_KEY='cam_mesaha_ayarlar_v1';
   var PANEL_KEY='mesaha_panel_user_v316';
   var CLOUD_SELECTORS=['#cloudBackupBtnV316','#cloudRestoreBtnV316','[data-hybrid-id-v501]','[data-hybrid-delete-id-v506]'].join(',');
@@ -19,13 +20,13 @@
   function esc(v){return clean(v).replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]})}
   function jsonGet(k,f){try{var v=localStorage.getItem(k);return v?JSON.parse(v):f}catch(e){return f}}
   function jsonSet(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}}
-  function terminal(){var x=jsonGet(TERMINAL_KEY,null);return !!(x&&x.active===true)}
-  function terminalData(){return jsonGet(TERMINAL_KEY,{})||{}}
+  function terminalData(){var x=jsonGet(TERMINAL_KEY,null);if(!(x&&x.active===true)){var old=jsonGet(OLD_TERMINAL_KEY,null);if(old&&old.active===true){x=old;jsonSet(TERMINAL_KEY,old);try{localStorage.removeItem(OLD_TERMINAL_KEY)}catch(e){}}}return x||{}}
+  function terminal(){var x=terminalData();return !!(x&&x.active===true)}
   function terminalCloudAllowed(){var x=terminalData();return !!(x&&x.active===true&&x.source==='pair_code'&&x.pairedUserId&&(x.terminalToken||x.terminalCode));}
-  function user(){var u=jsonGet(PANEL_KEY,{}),s=jsonGet(SETTINGS_KEY,{}),t=jsonGet(TERMINAL_KEY,{});return{name:clean(t.name||u.name||s.ekipNot),seflik:clean(t.seflik||u.seflik||s.seflik),bolmeNo:clean(t.bolmeNo||u.bolmeNo||s.bolmeNo)}}
+  function user(){var u=jsonGet(PANEL_KEY,{}),s=jsonGet(SETTINGS_KEY,{}),t=terminalData();return{name:clean(t.name||u.name||s.ekipNot),seflik:clean(t.seflik||u.seflik||s.seflik),bolmeNo:clean(t.bolmeNo||u.bolmeNo||s.bolmeNo)}}
   function toast(title,sub,kind){try{if(typeof window.mesahaFloatToastV315==='function')return window.mesahaFloatToastV315(title,sub||'',kind||'warning')}catch(e){}try{if(typeof window.toast==='function')return window.toast(title,sub||'',kind||'warning')}catch(e){}try{alert(title+(sub?'\n'+sub:''))}catch(e){}}
   function log(event,detail,level){try{if(window.MesahaLoginLog&&typeof window.MesahaLoginLog.log==='function')window.MesahaLoginLog.log(event,detail||{},level||'info')}catch(e){}}
-  function clearTerminal(){try{localStorage.removeItem(TERMINAL_KEY)}catch(e){}try{document.documentElement.removeAttribute('data-mesaha-terminal-mode')}catch(e){}log('terminal_mode_disabled_for_google',{},'info')}
+  function clearTerminal(){try{localStorage.removeItem(TERMINAL_KEY);localStorage.removeItem(OLD_TERMINAL_KEY)}catch(e){}try{document.documentElement.removeAttribute('data-mesaha-terminal-mode')}catch(e){}log('terminal_mode_disabled_for_google',{},'info')}
   function goGoogle(){clearTerminal();try{if(window.mesahaSupabase&&window.mesahaSupabase.clearSession)window.mesahaSupabase.clearSession()}catch(e){}try{window.dispatchEvent(new CustomEvent('mesaha:google-auth-required',{detail:{reason:'terminal_cloud_feature'}}))}catch(e){}setTimeout(function(){try{if(window.MesahaGoogleAuthV548&&typeof window.MesahaGoogleAuthV548.boot==='function')window.MesahaGoogleAuthV548.boot(true)}catch(e){}},80)}
   function askGoogle(){
     log('terminal_cloud_feature_blocked',{url:location.href},'warning');
@@ -41,18 +42,25 @@
       '.terminal-card-v557{border:1px solid #c7d2fe;background:linear-gradient(180deg,#eef2ff,#f8fafc);color:#1e1b4b;border-radius:20px;padding:13px 14px;margin:10px 0;font-weight:850;box-shadow:0 8px 20px rgba(79,70,229,.08)}',
       '.terminal-card-v557 b{display:block;font-size:15px;margin-bottom:4px}.terminal-card-v557 small{display:block;color:#475569;line-height:1.35;font-weight:750}',
       '.terminal-card-v557 button{margin-top:10px;width:100%;min-height:42px;border:0;border-radius:14px;background:#fff;color:#1d4ed8;font-weight:950;box-shadow:inset 0 0 0 1px #bfdbfe}',
+      '.terminal-card-v557 input{box-sizing:border-box;width:100%;min-height:44px;border:1px solid #bfdbfe;border-radius:14px;margin-top:10px;padding:10px 12px;font:inherit;font-weight:900;background:#fff;color:#1e1b4b;text-transform:uppercase}',
       'html[data-mesaha-terminal-mode="1"] #cloudBackupBtnV316,html[data-mesaha-terminal-mode="1"] #cloudRestoreBtnV316,html[data-mesaha-terminal-mode="1"] #seflikSendFromRecordsV529,html[data-mesaha-terminal-mode="1"] #seflikFolderSendV528,html[data-mesaha-terminal-mode="1"] #seflikFolderSyncV528,html[data-mesaha-terminal-mode="1"] #seflikFolderCreateV529{background:#f1f5f9!important;color:#64748b!important;border-color:#cbd5e1!important;box-shadow:none!important}',
       'html[data-mesaha-terminal-mode="1"] [data-nav="seflikFolder"]{opacity:.55!important}',
       'html[data-mesaha-terminal-mode="1"] #seflikFolderHomeShortcutV528{opacity:.72!important;filter:grayscale(.25)!important}'
     ].join('');document.head.appendChild(st);
   }
   function terminalCardHtml(){var u=user(),ok=terminalCloudAllowed();return '<div class="terminal-card-v557" id="terminalLocalCardV556"><b>🖥 Terminal modu aktif</b><small>'+esc(u.name||'Kullanıcı')+' • '+esc(u.seflik||'Şeflik')+'<br>'+(ok?'Terminal kodu eşleşti. Buluta Yedekle ve Buluttan Getir açık.':'Bu cihaz yerel çalışır. Bulut için terminal kodu veya Google gerekir.')+'</small><button type="button" id="terminalGoogleBtnV556">Google ile giriş yap</button></div>'}
+  function terminalPairPanelHtml(){return '<div class="terminal-card-v557" id="terminalPairPanelV561"><b>Terminal kodu gir</b><small>Telefondan kullanıcı panelinde oluşturulan terminal kodunu sonradan buradan eşleştirebilirsin. Kod eşleşince Buluta Yedekle ve Buluttan Getir açılır.</small><input id="terminalPairCodePanelV561" maxlength="20" inputmode="text" autocomplete="one-time-code" placeholder="Örn: A1B2-C3D4"><button type="button" id="terminalPairApplyPanelV561">Terminal kodunu eşleştir</button></div>'}
+  function bindTerminalPairPanel(){var b=$('terminalPairApplyPanelV561');if(!b||b.__terminalPairV561)return;b.__terminalPairV561=true;b.addEventListener('click',function(ev){ev.preventDefault();ev.stopPropagation();var inp=$('terminalPairCodePanelV561'),code=clean(inp&&inp.value).toUpperCase();if(code.length<6){toast('Terminal kodu gerekli','Telefondan oluşturulan kodu girin.','warning');return}if(window.MesahaGoogleAuthV548&&typeof window.MesahaGoogleAuthV548.claimTerminalCode==='function'){window.MesahaGoogleAuthV548.claimTerminalCode(code).then(function(){boot();}).catch(function(e){toast('Kod eşleşmedi',clean(e&&e.message||e),'error')});return}toast('Giriş modülü hazır değil','Sayfayı yenileyip tekrar deneyin.','warning')},true)}
   function ensureCards(){
     if(!terminal())return;
     var status=document.querySelector('.status-card');
     if(status&&!$('terminalLocalHomeV556')){var div=document.createElement('section');div.id='terminalLocalHomeV556';div.innerHTML=terminalCardHtml();status.parentNode.insertBefore(div,status.nextSibling)}
     var panel=document.querySelector('#userPanelOverlayV316 .panel-stats-v316');
     if(panel&&!$('terminalLocalPanelV556')){var p=document.createElement('div');p.id='terminalLocalPanelV556';p.innerHTML=terminalCardHtml();panel.parentNode.insertBefore(p,panel)}
+    var card=document.querySelector('#userPanelOverlayV316 .panel-card-v316'), before=$('panelTelegramSectionV515'), pair=$('terminalPairPanelV561');
+    if(card&&terminalCloudAllowed()&&pair){try{pair.remove()}catch(e){}}
+    if(card&&!terminalCloudAllowed()&&!pair){var q=document.createElement('div');q.innerHTML=terminalPairPanelHtml();if(before&&before.parentNode)before.parentNode.insertBefore(q.firstChild,before);else card.appendChild(q.firstChild)}
+    bindTerminalPairPanel();
     document.querySelectorAll('#terminalGoogleBtnV556,#terminalLocalPanelV556 button').forEach(function(btn){if(!btn.__terminalGoogleV556){btn.__terminalGoogleV556=true;btn.addEventListener('click',function(ev){ev.preventDefault();ev.stopPropagation();goGoogle()},true)}});
   }
   function applyBadge(){

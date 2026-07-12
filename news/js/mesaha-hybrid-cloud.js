@@ -1,4 +1,4 @@
-/* Mesaha İO V5.60 — Terminal kodlu bulut + Google ad-soyad + eski ban ekranı koruması
+/* Mesaha İO V5.61 — Terminal kodlu bulut + Google ad-soyad + eski ban ekranı koruması
    Buluta Yedekle: Edge Function guard + güvenli Supabase V2 + Google Drive.
    Buluttan Getir: Edge Function guard + iki kaynak birlikte listelenir.
    Kullanıcı yedek silme: gerçek silme yok; kullanıcı listesinden gizlenir.
@@ -453,7 +453,7 @@
   }
   function expose(){
     ensureV505Style();
-    var api={version:'v560',backup:hybridBackup,list:combinedList,openCloudRestore:openCloud,restore:restore,deleteBackup:deleteBackup,backupSupabase:backupSupabase,backupDrive:backupDrive};
+    var api={version:'v561',backup:hybridBackup,list:combinedList,openCloudRestore:openCloud,restore:restore,deleteBackup:deleteBackup,backupSupabase:backupSupabase,backupDrive:backupDrive};
     window.MESAHA_HYBRID_CLOUD_V501=api;
     window.MESAHA_HYBRID_CLOUD_V505=api;
     window.MESAHA_HYBRID_CLOUD_V506=api;
