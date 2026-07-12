@@ -1,4 +1,4 @@
-/* Mesaha İO V5.78 — Stabil Şeflik Klasörü, tekil senkronizasyon ve görünürlük optimizasyonu */
+/* Mesaha İO V5.80 — Şeflik giriş yükleniyor, aktif şeflik ve üyelik senkronizasyonu */
 (function(){
   'use strict';
   if(window.MesahaSeflikFolderV529) return;
@@ -356,8 +356,9 @@
   var lastEntryWarnV577=0, entrySyncSeqV577=0;
   function showEntryConnectionWarningV577(msg){msg=clean(msg)||'Bağlantı yok. Daha sonra tekrar deneyiniz.';setStatus(msg,'error');if(Date.now()-lastEntryWarnV577>9000){lastEntryWarnV577=Date.now();notify('Senkronizasyon yapılamadı',msg,'warning')}}
   function loadCachedForEntryV577(){fillIdentity();var cache=readJson(CACHE_KEY,null);if(cache&&cache.seflik===user().seflik&&Array.isArray(cache.divisions)){divisions=cache.divisions;renderList()}}
+  function showEntryLoadingV580(){fillIdentity();var meta=$('seflikFolderRemoteMetaV528');if(meta)meta.textContent='Şeflik yükleniyor…';var box=$('seflikFolderListV528');if(box&&!openDivisions().length)box.innerHTML='<div class="seflik-folder-empty">Şeflik yükleniyor…<br><small>Bölmeler, üyeler ve senkron kayıtları kontrol ediliyor.</small></div>';setStatus('Şeflik yükleniyor…','busy')}
   async function autoSyncOnEntryV577(){
-    loadCachedForEntryV577();updatePreview(true);
+    showEntryLoadingV580();loadCachedForEntryV577();updatePreview(true);
     if(!navigator.onLine){markNeedsOnlineRefresh(true);showEntryConnectionWarningV577('Bağlantı yok. Daha sonra tekrar deneyiniz.');return false}
     if(lastSyncAt&&Date.now()-lastSyncAt<4000)return true;
     var seq=++entrySyncSeqV577;
@@ -386,8 +387,8 @@
     var modalConfirm=$('seflikSendConfirmV529');if(modalConfirm)modalConfirm.addEventListener('click',function(){if(modalBusy||busy)return;var b=clean(($('seflikSendSelectV529')||{}).value);if(!b){notify('Bölme seçin','Gönderilecek açık bölmeyi seçin.','warning');return}modalBusy=true;modalConfirm.disabled=true;Promise.resolve(sendToDivision(b,records(),'records')).finally(function(){if(!busy){modalBusy=false;modalConfirm.disabled=false}})});
     var overlay=$('seflikSendOverlayV529');if(overlay)overlay.addEventListener('click',function(e){if(e.target===overlay&&!busy)closeSendModal()});
     if(window.visualViewport&&!window.__seflikModalViewportV531){window.__seflikModalViewportV531=true;window.visualViewport.addEventListener('resize',syncSendModalViewportV531,{passive:true});window.visualViewport.addEventListener('scroll',syncSendModalViewportV531,{passive:true})}
-    document.addEventListener('click',function(ev){var n=ev.target.closest&&ev.target.closest('[data-nav="seflikFolder"]');if(n)setTimeout(function(){autoSyncOnEntryV577().catch(function(){})},70)},true);
-    window.addEventListener('mesaha:records-saved',schedulePreview,{passive:true});window.addEventListener('online',function(){setTimeout(function(){if(needsOnlineRefresh()||(document.getElementById('seflikFolderView')&&document.getElementById('seflikFolderView').classList.contains('active')))syncFolder(false,{silent:true}).catch(function(e){setStatus(String(e&&e.message?e.message:e),'error')})},900)});window.addEventListener('mesaha:auth-session-restored',function(){if(needsOnlineRefresh())setTimeout(function(){syncFolder(false,{silent:true}).catch(function(){})},400)},{passive:true});
+    document.addEventListener('click',function(ev){var n=ev.target.closest&&ev.target.closest('[data-nav="seflikFolder"]');if(n){showEntryLoadingV580();setTimeout(function(){autoSyncOnEntryV577().catch(function(){})},50)}},true);
+    window.addEventListener('mesaha:records-saved',schedulePreview,{passive:true});window.addEventListener('online',function(){setTimeout(function(){if(needsOnlineRefresh()||(document.getElementById('seflikFolderView')&&document.getElementById('seflikFolderView').classList.contains('active')))syncFolder(false,{silent:true}).catch(function(e){setStatus(String(e&&e.message?e.message:e),'error')})},900)});window.addEventListener('mesaha:auth-session-restored',function(){if(needsOnlineRefresh())setTimeout(function(){syncFolder(false,{silent:true}).catch(function(){})},400)},{passive:true});window.addEventListener('mesaha:seflik-folder-active-changed',function(){fillIdentity();setTimeout(function(){autoSyncOnEntryV577().catch(function(){})},80)},{passive:true});
     fillIdentity();var cache=readJson(CACHE_KEY,null);if(cache&&cache.seflik===user().seflik&&Array.isArray(cache.divisions))divisions=cache.divisions;divisions=mergeRemoteDivisions(divisions);renderList();setTimeout(function(){var v=document.getElementById('seflikFolderView');if(v&&v.classList.contains('active'))autoSyncOnEntryV577().catch(function(){})},180);
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
