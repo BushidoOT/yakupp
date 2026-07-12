@@ -1,4 +1,4 @@
-/* Mesaha İO V5.59 — Terminal kodlu bulut + Google girişli bulut motoru
+/* Mesaha İO V5.60 — Terminal kodlu bulut + Google ad-soyad + eski ban ekranı koruması
    Buluta Yedekle: Edge Function guard + güvenli Supabase V2 + Google Drive.
    Buluttan Getir: Edge Function guard + iki kaynak birlikte listelenir.
    Kullanıcı yedek silme: gerçek silme yok; kullanıcı listesinden gizlenir.
@@ -29,7 +29,7 @@
   function jsonSet(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); return true; }catch(e){ return false; } }
   function records(){ var r=jsonGet(STORAGE_KEY, []); return Array.isArray(r) ? r : []; }
   function settings(){ return Object.assign({ekipNot:'',seflik:'',bolmeNo:''}, jsonGet(SETTINGS_KEY, {})); }
-  function readUser(){ var u=jsonGet(PANEL_USER_KEY, {}), st=settings(); return {name:clean(u.name||st.ekipNot), seflik:clean(u.seflik||st.seflik), bolmeNo:clean(u.bolmeNo||st.bolmeNo)}; }
+  function readUser(){ var u=jsonGet(PANEL_USER_KEY, {}), st=settings(), g=clean(u.googleApproved&&u.googleFullName); return {name:clean(g||u.name||st.ekipNot), seflik:clean(u.seflik||st.seflik), bolmeNo:clean(u.bolmeNo||st.bolmeNo), googleFullName:g, googleEmail:clean(u.googleEmail)}; }
   function validIdentity(user){
     user=user||{}; var name=clean(user.name),seflik=clean(user.seflik);
     if(window.MesahaRuntimeV527&&typeof window.MesahaRuntimeV527.validIdentity==='function')return window.MesahaRuntimeV527.validIdentity(name,seflik);
@@ -66,7 +66,7 @@
     return user;
   }
   function backupPayload(user,list){
-    return {type:'mesaha-cloud-backup-v501', exportedAt:new Date().toISOString(), createdAt:trText(), createdAtMs:Date.now(), version:versionRaw(), visibleVersion:versionText(), user:user, settings:settings(), records:list};
+    return {type:'mesaha-cloud-backup-v501', exportedAt:new Date().toISOString(), createdAt:trText(), createdAtMs:Date.now(), version:versionRaw(), visibleVersion:versionText(), user:Object.assign({},user,{displayName:clean(user.googleFullName||user.name)}), settings:settings(), records:list};
   }
   function nextSlot(){
     var n=0;
@@ -88,7 +88,9 @@
       document.querySelectorAll('[data-mesaha-blocked-tab-v550]').forEach(function(el){var old=el.getAttribute('data-mesaha-blocked-tab-v550');el.removeAttribute('data-mesaha-blocked-tab-v550');if(old==='__none__')el.removeAttribute('tabindex');else el.setAttribute('tabindex',old)});
     }catch(e){}
   }
+  function staleVersionReason(reason){return /sürüm|surum|version|güncel|guncel|update|eski|cache|önbellek|onbellek/i.test(clean(reason))}
   function showBlockedScreen(reason){
+    if(staleVersionReason(reason)){clearBlockedScreen();toast('Güncelleme gerekli','Eski sürüm ban ekranı temizlendi. Uygulama güncel sürüme alınacak.','warning');try{setTimeout(function(){location.replace('./temizle.html?from=stale-ban-v560')},450)}catch(e){}return}
     try{if(window.MesahaLoginLog&&typeof window.MesahaLoginLog.log==='function')window.MesahaLoginLog.log('blocked_screen_shown',{reason:reason,source:'hybrid-cloud'},'error')}catch(_log){}
     try{
       if(document.getElementById('mesahaAccessBlockedV508')) return;
@@ -116,7 +118,7 @@
     var p=errorPayload(e);
     /* Yalnız sunucunun açıkça blocked:true döndürdüğü gerçek güvenlik engelleri tam ekranı açar.
        Google doğrulaması veya yönetici onayı eksikliği nedeniyle gelen 403 artık ban sayılmaz. */
-    return p.blocked===true || (e&&e.blocked===true);
+    var t=clean(p.block_type||p.type||p.blockType);return (p.blocked===true&&/^(user_id|user_key|device_id|ip)$/i.test(t)) || (e&&e.blocked===true&&/^(user_id|user_key|device_id|ip)$/i.test(t));
   }
   var startupGuardDone=false;
   async function startupGuardCheck(){
@@ -128,7 +130,7 @@
     startupGuardDone=true;
     try{ await guardCheck('app_open', user, {source:'startup'}); clearBlockedScreen(); }
     catch(e){
-      if(isBlockedError(e)) showBlockedScreen('Erişim yönetici tarafından kapatıldı.');
+      if(isBlockedError(e)) showBlockedScreen(clean(errorPayload(e).reason)||'Erişim yönetici tarafından kapatıldı.');
       else if(isAuthGateError(e)) startupGuardDone=true;
       else startupGuardDone=false;
     }
@@ -144,7 +146,7 @@
     }catch(e){
       if(isBlockedError(e)){
         e.blocked=true;
-        showBlockedScreen('Erişim yönetici tarafından kapatıldı.');
+        showBlockedScreen(clean(errorPayload(e).reason)||'Erişim yönetici tarafından kapatıldı.');
       }
       throw e;
     }
@@ -451,7 +453,7 @@
   }
   function expose(){
     ensureV505Style();
-    var api={version:'v559',backup:hybridBackup,list:combinedList,openCloudRestore:openCloud,restore:restore,deleteBackup:deleteBackup,backupSupabase:backupSupabase,backupDrive:backupDrive};
+    var api={version:'v560',backup:hybridBackup,list:combinedList,openCloudRestore:openCloud,restore:restore,deleteBackup:deleteBackup,backupSupabase:backupSupabase,backupDrive:backupDrive};
     window.MESAHA_HYBRID_CLOUD_V501=api;
     window.MESAHA_HYBRID_CLOUD_V505=api;
     window.MESAHA_HYBRID_CLOUD_V506=api;

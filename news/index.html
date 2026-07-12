@@ -7015,7 +7015,7 @@ body.mesaha-entry-scrolling-v408 #entryView label{
   function getJson(k,f){try{var v=localStorage.getItem(k);return v?JSON.parse(v):f}catch(e){return f}}
   function fold(s){return clean(s).toLocaleLowerCase('tr-TR').replace(/[ç]/g,'c').replace(/[ğ]/g,'g').replace(/[ı]/g,'i').replace(/[ö]/g,'o').replace(/[ş]/g,'s').replace(/[ü]/g,'u')}
   function userKey(name,seflik){return (fold(name)+'__'+fold(seflik)).replace(/[^a-z0-9_-]+/g,'_').slice(0,120)||'bos'}
-  function readUser(){var u=getJson(PANEL_KEY,{}), st=getJson(SETTINGS_KEY,{});return{name:clean(u.name||st.ekipNot),seflik:clean(u.seflik||st.seflik),bolmeNo:clean(u.bolmeNo||st.bolmeNo)}}
+  function readUser(){var u=getJson(PANEL_KEY,{}), st=getJson(SETTINGS_KEY,{});var g=clean(u.googleApproved&&u.googleFullName);return{name:clean(g||u.name||st.ekipNot),seflik:clean(u.seflik||st.seflik),bolmeNo:clean(u.bolmeNo||st.bolmeNo),googleFullName:g,googleEmail:clean(u.googleEmail)}}
   function validIdentity(u){u=u||{};if(window.MesahaRuntimeV527&&typeof window.MesahaRuntimeV527.validIdentity==='function')return window.MesahaRuntimeV527.validIdentity(u.name,u.seflik);var n=clean(u.name),sf=clean(u.seflik),ln=n.toLocaleLowerCase('tr-TR'),ls=sf.toLocaleLowerCase('tr-TR');return n.length>1&&sf.length>1&&!/^(kullanıcı|kullanici|user|guest|misafir|boş|bos|-)$/.test(ln)&&!/^(şeflik|seflik|unknown|bilinmiyor|boş|bos|-)$/.test(ls)}
   function token(){var s=getJson(SESSION_KEY,null);return clean(s&&s.access_token)}
   function deviceId(){try{return clean(localStorage.getItem(DEV1)||localStorage.getItem(DEV2)||'')}catch(e){return ''}}
@@ -7038,7 +7038,7 @@ body.mesaha-entry-scrolling-v408 #entryView label{
       if(j&&j.ip){try{localStorage.setItem(IP_KEY,j.ip)}catch(e){}}
       try{localStorage.setItem(LAST_PING_KEY,String(Date.now()))}catch(e){}
       renderIp();return !!(j&&j.ok);
-    }catch(e){var pl=e&&e.payload||{};if(pl.blocked===true&&typeof window.mesahaShowBlockedV547==='function'){try{window.mesahaShowBlockedV547(pl.reason||'Erişim yönetici tarafından kapatıldı.')}catch(_e){}}renderIp();return false}finally{pingBusy=false}
+    }catch(e){var pl=e&&e.payload||{};if(pl.blocked===true&&/^(user_id|user_key|device_id|ip)$/i.test(clean(pl.block_type||pl.type||pl.blockType))&&typeof window.mesahaShowBlockedV547==='function'){try{window.mesahaShowBlockedV547(pl.reason||'Erişim yönetici tarafından kapatıldı.')}catch(_e){}}renderIp();return false}finally{pingBusy=false}
   }
   function bind(){
     renderIp();

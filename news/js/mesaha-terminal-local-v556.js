@@ -1,4 +1,4 @@
-/* Mesaha İO V5.59 — Terminal kodlu bulut destekli giriş modu
+/* Mesaha İO V5.60 — Terminal kodlu bulut destekli giriş modu
    Elle terminal modunda uygulama cihaz içi çalışır; kodla eşleşmiş terminalde Buluta Yedekle/Buluttan Getir açıktır. */
 (function(){
   'use strict';
