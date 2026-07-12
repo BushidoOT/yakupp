@@ -1,4 +1,4 @@
-/* Mesaha İO V5.70 — kırmızı sil butonları ve stabil şeflik yönetimi */
+/* Mesaha İO V5.71 — kırmızı sil butonları ve stabil şeflik yönetimi */
 (function(){
   'use strict';
   if(window.MesahaSeflikGovernance)return; window.MesahaSeflikGovernance=true;

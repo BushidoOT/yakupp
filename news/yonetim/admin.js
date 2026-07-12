@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const ADMIN_VERSION = 'V5.70 •Yakupp•';
+  const ADMIN_VERSION = 'V5.71 •Yakupp•';
   const EDGE_URL = 'https://swrbpdpotmirnmtqnuba.supabase.co/functions/v1/smooth-function';
   const SESSION_KEY = 'mesaha_admin_auth_v548_session';
   const LAST_ACTIVITY_KEY = 'mesaha_admin_auth_v548_activity';
@@ -217,6 +217,7 @@
       userKey: first(raw.user_key, payload.user_key, payload.userKey, userKeyFrom(name, seflik)),
       name, seflik, bolme: first(raw.bolme_no, payload.bolmeNo, payload.bolme),
       ip: info.ip, deviceId: info.id, platform: info.platform, browser: info.browser, version: info.version,
+      avatarUrl: first(raw.avatar_url, raw.google_avatar_url, raw.picture, raw.photo_url, payload.avatar_url, payload.google_avatar_url, payload.picture, obj(raw.metadata).avatar_url, obj(raw.metadata).google_avatar_url, obj(raw.metadata).picture),
       lastSeen, lastSeenMs: ms(lastSeen), raw
     };
   }
@@ -234,6 +235,7 @@
       count: pickNum(raw, ['count','recordCount','record_count','payload.recordCount','payload.count','payload.totalRecords']),
       volume: pickNum(raw, ['totalVolume','total_volume','m3','payload.totalM3','payload.total_volume','payload.m3']),
       version: first(raw.version, raw.appVersion, raw.app_version, payload.visibleVersion, payload.version, payload.appVersion, '-'),
+      avatarUrl: first(raw.avatar_url, raw.google_avatar_url, raw.picture, payload.avatar_url, payload.google_avatar_url, user.avatar_url, user.picture),
       tree: readTotals(raw, ['tree_totals','treeTotals','agacTotals','agac_totals']),
       wood: readTotals(raw, ['product_totals','productTotals','woodTotals','wood_totals','odunTotals','odun_totals']),
       driveLink: first(raw.webViewLink, raw.web_view_link, raw.alternateLink, raw.url, payload.webViewLink, driveFileId ? `https://drive.google.com/file/d/${encodeURIComponent(driveFileId)}/view` : ''),
@@ -263,12 +265,12 @@
       const user = raw.name ? raw : mapProfile(raw);
       if (!validUser(user)) return;
       const key = identityKey(user); if (!key) return;
-      const old = map.get(key) || {name:user.name,seflik:user.seflik,userKey:user.userKey,id:user.id,lastSeenMs:0,ip:'-',deviceId:'-',platform:'-',browser:'-',version:'-',raw:user.raw};
+      const old = map.get(key) || {name:user.name,seflik:user.seflik,userKey:user.userKey,id:user.id,lastSeenMs:0,ip:'-',deviceId:'-',platform:'-',browser:'-',version:'-',avatarUrl:'',raw:user.raw};
       if (user.lastSeenMs >= old.lastSeenMs) {
-        ['id','userKey','name','seflik','bolme','lastSeen','lastSeenMs','raw'].forEach((field) => { if (user[field] !== undefined && clean(user[field]) !== '') old[field] = user[field]; });
-        ['ip','deviceId','platform','browser','version'].forEach((field) => { if (clean(user[field]) && user[field] !== '-') old[field] = user[field]; });
+        ['id','userKey','name','seflik','bolme','lastSeen','lastSeenMs','avatarUrl','raw'].forEach((field) => { if (user[field] !== undefined && clean(user[field]) !== '') old[field] = user[field]; });
+        ['ip','deviceId','platform','browser','version','avatarUrl'].forEach((field) => { if (clean(user[field]) && user[field] !== '-') old[field] = user[field]; });
       } else {
-        ['ip','deviceId','platform','browser','version'].forEach((field) => { if ((!clean(old[field]) || old[field] === '-') && clean(user[field]) && user[field] !== '-') old[field] = user[field]; });
+        ['ip','deviceId','platform','browser','version','avatarUrl'].forEach((field) => { if ((!clean(old[field]) || old[field] === '-') && clean(user[field]) && user[field] !== '-') old[field] = user[field]; });
       }
       map.set(key, old);
       if (clean(old.id)) idIndex.set(compact(old.id), key);
@@ -278,7 +280,7 @@
     state.daily.map(mapProfile).forEach(upsertReal);
     state.backups.forEach((backup) => upsertReal({
       id:'',userKey:backup.userKey,name:backup.name,seflik:backup.seflik,lastSeen:backup.createdAt,lastSeenMs:backup.createdAtMs,
-      ip:'-',deviceId:'Drive',platform:'Drive',browser:'-',version:backup.version,raw:backup.raw
+      ip:'-',deviceId:'Drive',platform:'Drive',browser:'-',version:backup.version,avatarUrl:backup.avatarUrl,raw:backup.raw
     }));
 
     // Sadece IP/cihaz taşıyan event satırları ayrı boş kullanıcı oluşturmaz;
@@ -289,7 +291,7 @@
       const targetKey = (byKey && map.has(byKey) ? byKey : '') || (byId && idIndex.get(byId)) || '';
       if (!targetKey) return;
       const target = map.get(targetKey);
-      ['ip','deviceId','platform','browser','version'].forEach((field) => {
+      ['ip','deviceId','platform','browser','version','avatarUrl'].forEach((field) => {
         if (clean(technical[field]) && technical[field] !== '-' && ((!clean(target[field]) || target[field] === '-') || technical.lastSeenMs >= target.lastSeenMs)) target[field] = technical[field];
       });
       if (technical.lastSeenMs > target.lastSeenMs) { target.lastSeen = technical.lastSeen; target.lastSeenMs = technical.lastSeenMs; }
@@ -353,10 +355,19 @@
     const rows = state.userAccess.map(obj);
     let row = rows.find((r) => id && clean(r.user_id) === id && ['approved','revoked'].includes(clean(r.status)));
     if (!row) row = rows.find((r) => clean(r.status) === 'approved' && lower(first(r.canonical_name, r.requested_name)) === name && lower(first(r.canonical_seflik, r.requested_seflik)) === seflik);
-    if (row) return {email:first(row.email, 'Google hesabı'), status:clean(row.status)};
+    const avatarFromRaw = first(user && user.avatarUrl, path(user&&user.raw||{}, 'avatar_url'), path(user&&user.raw||{}, 'google_avatar_url'), path(user&&user.raw||{}, 'picture'), path(user&&user.raw||{}, 'metadata.avatar_url'), path(user&&user.raw||{}, 'metadata.google_avatar_url'), path(user&&user.raw||{}, 'metadata.picture'), path(user&&user.raw||{}, 'payload.avatar_url'), path(user&&user.raw||{}, 'payload.google_avatar_url'));
+    if (row) return {email:first(row.email, 'Google hesabı'), status:clean(row.status), avatarUrl:first(row.avatar_url, obj(row.metadata).avatar_url, obj(row.metadata).google_avatar_url, obj(row.metadata).picture, avatarFromRaw)};
     const raw = lower(JSON.stringify(user && user.raw || {}));
-    if (raw.includes('google') || raw.includes('gmail.com')) return {email:first(path(user.raw||{}, 'email'), 'Google hesabı'), status:'approved'};
+    if (raw.includes('google') || raw.includes('gmail.com')) return {email:first(path(user.raw||{}, 'email'), 'Google hesabı'), status:'approved', avatarUrl:avatarFromRaw};
     return null;
+  }
+  function avatarUrlForUser(user) {
+    const google = googleInfoForUser(user) || {};
+    return first(user && user.avatarUrl, google.avatarUrl, path(user&&user.raw||{}, 'avatar_url'), path(user&&user.raw||{}, 'metadata.avatar_url'), path(user&&user.raw||{}, 'payload.avatar_url'));
+  }
+  function avatarHtml(user, cls='avatar') {
+    const url = avatarUrlForUser(user), nm = first(user && user.name, '?');
+    return url ? `<img class="${escapeHtml(cls)} user-photo-avatar" src="${escapeHtml(url)}" alt="${escapeHtml(nm)}" referrerpolicy="no-referrer" loading="lazy">` : `<div class="${escapeHtml(cls)}">${escapeHtml(initials(nm))}</div>`;
   }
   function terminalInfoForUser(user) {
     const raw = lower(JSON.stringify(user && user.raw || {}));
@@ -440,7 +451,7 @@
       const terminal = terminalInfoForUser(user);
       const terminalBadge = terminal ? `<span class="terminal-user-badge" title="${escapeHtml(terminal.title)}" aria-label="Terminal kodu ile eşleşti"><span class="terminal-g">T</span><b>Terminal kodlu</b></span>` : '';
       return `<article class="user-card ${google ? 'is-google-user' : ''} ${terminal ? 'is-terminal-user' : ''}">
-        <div class="user-head"><div class="avatar">${escapeHtml(initials(user.name))}</div><div class="user-title"><h3>${escapeHtml(user.name)} ${googleBadge} ${terminalBadge}</h3><p>${escapeHtml(user.seflik)} • son giriş ${escapeHtml(fmtDate(user.lastSeen))}</p></div><span class="status-pill">${blocked ? 'Engelli' : onlineNow(user) ? 'Online' : 'Aktif'}</span></div>
+        <div class="user-head">${avatarHtml(user)}<div class="user-title"><h3>${escapeHtml(user.name)} ${googleBadge} ${terminalBadge}</h3><p>${escapeHtml(user.seflik)} • son giriş ${escapeHtml(fmtDate(user.lastSeen))}</p></div><span class="status-pill">${blocked ? 'Engelli' : onlineNow(user) ? 'Online' : 'Aktif'}</span></div>
         <div class="user-data">
           <div class="data-cell"><small>IP adresi</small><b class="ip">${escapeHtml(user.ip || '-')}</b></div>
           <div class="data-cell"><small>Cihaz</small><b>${escapeHtml(user.deviceId || '-')}</b></div>
@@ -546,7 +557,9 @@
       if(status==='pending')actions=`<button class="button primary small" data-action="access-approve" data-access-index="${r._index}" type="button">Onayla</button><button class="button danger small" data-action="access-reject" data-access-index="${r._index}" type="button">Reddet</button>`;
       else if(status==='approved')actions=`<button class="button danger small" data-action="access-revoke" data-access-index="${r._index}" type="button">Erişimi kapat</button>`;
       else actions=`<button class="button info small" data-action="access-reopen" data-access-index="${r._index}" type="button">Yeniden incele</button>`;
-      return `<article class="google-access-card ${escapeHtml(status)}"><div class="google-access-main"><div class="google-avatar">G</div><div><h4>${escapeHtml(name)}</h4><p>${escapeHtml(seflik)} • ${escapeHtml(email)}</p><small>${escapeHtml(accessStatusText(status))} • ${escapeHtml(fmtDate(r.updated_at||r.requested_at))}${r.reason?' • '+escapeHtml(r.reason):''}</small></div></div><div class="google-access-actions">${actions}</div></article>`}).join(''):'<div class="empty-state">Bu bölümde Google giriş kaydı yok.</div>';
+      const avatar=first(r.avatar_url,obj(r.metadata).avatar_url,obj(r.metadata).google_avatar_url,obj(r.metadata).picture);
+      const avatarHtml=avatar?`<img class="google-avatar" src="${escapeHtml(avatar)}" alt="" referrerpolicy="no-referrer" loading="lazy">`:`<div class="google-avatar">G</div>`;
+      return `<article class="google-access-card ${escapeHtml(status)}"><div class="google-access-main">${avatarHtml}<div><h4>${escapeHtml(name)}</h4><p>${escapeHtml(seflik)} • ${escapeHtml(email)}</p><small>${escapeHtml(accessStatusText(status))} • ${escapeHtml(fmtDate(r.updated_at||r.requested_at))}${r.reason?' • '+escapeHtml(r.reason):''}</small></div></div><div class="google-access-actions">${actions}</div></article>`}).join(''):'<div class="empty-state">Bu bölümde Google giriş kaydı yok.</div>';
   }
   async function accessApprove(row){
     const name=clean(prompt('Onaylanacak kullanıcı adı:',first(row.canonical_name,row.requested_name)));if(!name)return;

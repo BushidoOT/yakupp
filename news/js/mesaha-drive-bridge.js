@@ -1,4 +1,4 @@
-/* Mesaha İO V5.70 — Drive yedek silme aktif ve güvenli köprü */
+/* Mesaha İO V5.71 — Drive yedek silme aktif ve güvenli köprü */
 (function(){
   'use strict';
   var STORAGE_KEY = 'cam_mesaha_kayitlari_v1';
