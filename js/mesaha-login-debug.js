@@ -1,10 +1,10 @@
-/* Mesaha İO V5.58 — giriş teşhis/log tutucu.
+/* Mesaha İO V5.73 — üretim giriş teşhis/log tutucu.
    Amaç: Google/Supabase giriş akışındaki gerçek kırılma noktasını güvenli şekilde kaydetmek. */
 (function(){
   'use strict';
-  if(window.MesahaLoginLog&&window.MesahaLoginLog.version==='v557')return;
-  var VERSION='v557', KEY='mesaha_login_debug_v557', QKEY='mesaha_login_debug_queue_v557', SID_KEY='mesaha_login_debug_session_v557';
-  var MAX_LOCAL=320, MAX_QUEUE=120, installedFetch=false, flushing=false, remoteDisabledUntil=0;
+  if(window.MesahaLoginLog&&window.MesahaLoginLog.version==='production-v573')return;
+  var VERSION='production-v573', KEY='mesaha_login_debug_current', QKEY='mesaha_login_debug_queue_current', SID_KEY='mesaha_login_debug_session_current';
+  var VERBOSE_KEY='mesaha_login_debug_verbose', MAX_LOCAL=180, MAX_QUEUE=80, installedFetch=false, flushing=false, remoteDisabledUntil=0, flushTimer=0, retryDelay=15000;
   function now(){return Date.now()}
   function clean(v){return String(v==null?'':v).trim()}
   function trunc(v,n){v=String(v==null?'':v);n=n||1200;return v.length>n?v.slice(0,n)+'…':v}
@@ -42,13 +42,16 @@
   function deviceId(){try{return clean(localStorage.getItem('mesaha_supabase_v500_device')||localStorage.getItem('mesaha_cihaz_kodu_v1')||'')}catch(e){return ''}}
   function osName(){var ua=navigator.userAgent||'';if(/Android/i.test(ua))return'Android';if(/iPhone|iPad|iPod/i.test(ua))return'iOS';if(/Windows/i.test(ua))return'Windows';if(/Mac OS/i.test(ua))return'macOS';if(/Linux/i.test(ua))return'Linux';return'Bilinmiyor'}
   function browser(){var ua=navigator.userAgent||'',m;if((m=ua.match(/SamsungBrowser\/([\d.]+)/i)))return'Samsung '+m[1];if((m=ua.match(/Edg\/([\d.]+)/i)))return'Edge '+m[1];if((m=ua.match(/CriOS\/([\d.]+)/i)))return'Chrome iOS '+m[1];if((m=ua.match(/Chrome\/([\d.]+)/i)))return'Chrome '+m[1];if((m=ua.match(/Version\/([\d.]+).*Safari/i)))return'Safari '+m[1];return clean(navigator.appName||'Tarayıcı')}
-  function base(){var v=window.MESAHA_VERSION||{}, ss=readSession(), u=(ss.user||{}), lu=localUser();return{version:'v557',sessionId:sessionId(),ts:now(),iso:new Date().toISOString(),appVersion:v.visibleVersion||v.shortVersion||'',build:Number(v.build||0)||0,page:safeUrl(location.href),path:location.pathname,online:navigator.onLine!==false,visibility:document.visibilityState||'',deviceId:deviceId(),os:osName(),browser:browser(),screen:((screen&&screen.width)||'')+'x'+((screen&&screen.height)||''),viewport:(innerWidth||'')+'x'+(innerHeight||''),standalone:!!(matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true,userId:clean(u.id),email:clean(u.email),name:lu.name,seflik:lu.seflik}}
-  function save(row){var a=get(KEY,[])||[];a.push(row);if(a.length>MAX_LOCAL)a=a.slice(-MAX_LOCAL);set(KEY,a);try{var b=sessionStorage.getItem(KEY+'_mirror');b=b?JSON.parse(b):[];b.push(row);if(b.length>80)b=b.slice(-80);sessionStorage.setItem(KEY+'_mirror',JSON.stringify(b))}catch(e){}}
-  function queue(row){var a=get(QKEY,[])||[];a.push(row);if(a.length>MAX_QUEUE)a=a.slice(-MAX_QUEUE);set(QKEY,a)}
+  function base(){var v=window.MESAHA_VERSION||{}, ss=readSession(), u=(ss.user||{}), lu=localUser();return{version:clean(v.version||VERSION),sessionId:sessionId(),ts:now(),iso:new Date().toISOString(),appVersion:v.visibleVersion||v.shortVersion||'',build:Number(v.build||0)||0,page:safeUrl(location.href),path:location.pathname,online:navigator.onLine!==false,visibility:document.visibilityState||'',deviceId:deviceId(),os:osName(),browser:browser(),screen:((screen&&screen.width)||'')+'x'+((screen&&screen.height)||''),viewport:(innerWidth||'')+'x'+(innerHeight||''),standalone:!!(matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true,userId:clean(u.id),email:clean(u.email),name:lu.name,seflik:lu.seflik}}
+  function save(row){var a=get(KEY,[])||[];a.push(row);if(a.length>MAX_LOCAL)a=a.slice(-MAX_LOCAL);set(KEY,a);try{var b=sessionStorage.getItem(KEY+'_mirror');b=b?JSON.parse(b):[];b.push(row);if(b.length>60)b=b.slice(-60);sessionStorage.setItem(KEY+'_mirror',JSON.stringify(b))}catch(e){}}
+  function verbose(){try{return localStorage.getItem(VERBOSE_KEY)==='1'}catch(e){return false}}
+  function remoteEligible(r){return verbose()||/^(error|warning)$/i.test(clean(r&&r.level))||/error|fail|blocked|denied|email_exists|timeout|rejection/i.test(clean(r&&r.event))}
+  function queue(row){if(!remoteEligible(row))return;var a=get(QKEY,[])||[];a.push(row);if(a.length>MAX_QUEUE)a=a.slice(-MAX_QUEUE);set(QKEY,a)}
+  function scheduleFlush(delay){clearTimeout(flushTimer);if(navigator.onLine===false||!(get(QKEY,[])||[]).length)return;flushTimer=setTimeout(function(){flush()},Math.max(120,Number(delay||1200)))}
   function row(event,detail,level){var b=base();b.id='log_'+b.ts.toString(36)+'_'+Math.random().toString(36).slice(2,8);b.event=clean(event||'event');b.level=level||(/error|fail|blocked|denied/i.test(b.event)?'error':'info');b.detail=sanitize(detail||{});return b}
   function log(event,detail,level){
-    var r=row(event,detail,level);save(r);queue(r);try{if(window.console&&console.debug)console.debug('[Mesaha giriş log]',r.event,r.detail)}catch(e){}
-    setTimeout(flush,20);return r;
+    var r=row(event,detail,level);save(r);queue(r);try{if(verbose()&&window.console&&console.debug)console.debug('[Mesaha giriş log]',r.event,r.detail)}catch(e){}
+    if(remoteEligible(r))scheduleFlush(r.level==='error'?180:1200);return r;
   }
   function tablePayload(r){
     var uid=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(r.userId||'')?r.userId:null;
@@ -62,14 +65,20 @@
     return true;
   }
   async function flush(){
-    if(flushing)return false;var q=get(QKEY,[])||[];if(!q.length)return true;if(navigator.onLine===false)return false;if(now()<remoteDisabledUntil)return false;flushing=true;
-    var sent=0, keep=[];
-    for(var i=0;i<q.length;i++){
-      try{await sendOne(q[i]);sent++;}
-      catch(e){keep=q.slice(i);break;}
-      if(sent>=20){keep=q.slice(i+1);break;}
-    }
-    if(keep.length>MAX_QUEUE)keep=keep.slice(-MAX_QUEUE);set(QKEY,keep);flushing=false;return sent>0;
+    if(flushing)return false;var q=get(QKEY,[])||[];if(!q.length)return true;if(navigator.onLine===false||now()<remoteDisabledUntil)return false;flushing=true;
+    var sent=0,keep=q;
+    try{
+      keep=[];
+      for(var i=0;i<q.length;i++){
+        try{await sendOne(q[i]);sent++;}
+        catch(e){keep=q.slice(i);retryDelay=Math.min(5*60*1000,Math.max(15000,retryDelay*2));break;}
+        if(sent>=12){keep=q.slice(i+1);break;}
+      }
+      if(sent>0)retryDelay=15000;
+      if(keep.length>MAX_QUEUE)keep=keep.slice(-MAX_QUEUE);set(QKEY,keep);
+      if(keep.length)scheduleFlush(retryDelay);
+      return sent>0;
+    }finally{flushing=false;}
   }
   function urlKind(u){try{var x=new URL(u,location.href), p=x.pathname; if(p.indexOf('/auth/v1/')>=0)return'auth'; if(p.indexOf('/rest/v1/rpc/mesaha_google')>=0)return'google_rpc'; if(p.indexOf('/functions/v1/smooth-function')>=0)return'edge'; if(p.endsWith('/version.json'))return'version'; return''}catch(e){return''}}
   function installFetch(){
@@ -98,11 +107,13 @@
   window.MesahaLoginLog={version:VERSION,log:log,flush:flush,copy:copy,text:text,clear:clear,summary:summary,all:function(){return get(KEY,[])||[]}};
   installFetch();bootUrlCheck();log('page_load',{referrer:safeUrl(document.referrer||''),startedAt:new Date().toISOString()},'info');
   window.addEventListener('online',function(){log('browser_online',{},'info');flush()},{passive:true});
-  window.addEventListener('offline',function(){log('browser_offline',{},'error')},{passive:true});
+  window.addEventListener('offline',function(){log('browser_offline',{},'info')},{passive:true});
   window.addEventListener('error',function(e){log('window_error',{message:e.message,filename:e.filename,lineno:e.lineno,colno:e.colno,error:e.error},'error')});
   window.addEventListener('unhandledrejection',function(e){log('promise_rejection',{reason:e.reason},'error')});
   window.addEventListener('mesaha:google-access-approved',function(e){log('google_access_approved',{access:e&&e.detail||{}},'info')});
   document.addEventListener('click',function(e){try{var el=e.target&&e.target.closest?e.target.closest('[data-google-action-v548]'):null;if(el)log('ui_google_action_click_capture',{action:el.getAttribute('data-google-action-v548'),text:(el.textContent||'').trim().slice(0,80)},'info')}catch(_e){}},true);
   window.addEventListener('mesaha:google-auth-required',function(e){log('google_auth_required_event',{detail:e&&e.detail||{}},'error')});
-  setInterval(flush,8000);
+  document.addEventListener('visibilitychange',function(){if(document.hidden)flush();else scheduleFlush(800)},{passive:true});
+  window.addEventListener('pagehide',function(){flush()},{passive:true});
+  scheduleFlush(1800);
 })();

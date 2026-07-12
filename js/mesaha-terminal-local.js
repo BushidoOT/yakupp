@@ -73,7 +73,7 @@
   function labelBlockedButtons(){
     if(!terminal())return;
     var ok=terminalCloudAllowed();
-    [['cloudBackupBtnV316',ok?'Buluta Yedekle':'Google ile giriş yap'],['cloudRestoreBtnV316',ok?'Buluttan Getir':'Google ile giriş yap'],['seflikSendFromRecordsV529','Google ile giriş yap'],['seflikFolderCreateV529','Google gerekli'],['seflikFolderSendV528','Google gerekli'],['seflikFolderSyncV528','Google gerekli']].forEach(function(x){var b=$(x[0]);if(b){b.textContent=x[1];b.title=ok?'Terminal kodu eşleşti. Bulut yedek açıktır.':'Terminal modunda bulut kapalı. Kullanmak için Google ile giriş yapın.'}});
+    [['cloudBackupBtnV316',ok?'Buluta Yedekle':'Google ile giriş yap'],['cloudRestoreBtnV316',ok?'Buluttan Getir':'Google ile giriş yap'],['seflikSendFromRecordsV529','Google ile giriş yap'],['seflikFolderCreateV529','Google gerekli'],['seflikFolderSendV528','Google gerekli'],['seflikFolderSyncV528',ok?'Kayıtları Senkronize Et':'Google ile giriş yap']].forEach(function(x){var b=$(x[0]);if(b){b.textContent=x[1];b.title=ok?'Terminal kodu eşleşti. Bulut yedek açıktır.':'Terminal modunda bulut kapalı. Kullanmak için Google ile giriş yapın.'}});
     var st=$('seflikFolderStatusV528');if(st)st.textContent=ok?'Terminal kodu eşleşti. Buluta Yedekle/Buluttan Getir açık; Şeflik Klasörü için Google gerekir.':'Terminal modunda Şeflik Klasörü kapalı. Kullanmak için Google ile giriş yapın.';
     var identity=$('seflikFolderIdentityV528');if(identity)identity.textContent=ok?'Terminal kodu eşleşti':'Google girişi gerekli';
   }

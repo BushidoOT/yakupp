@@ -60,18 +60,18 @@
 
   function warmCache(){
     if(!('serviceWorker' in navigator)||!navigator.onLine||connectionSaveData())return;
-    var last=0;
-    try{last=Number(localStorage.getItem('mesaha_cache_warm_current')||0);}catch(e){}
+    var last=0,key='mesaha_cache_warm_'+String(META.build||META.integrityId||'current');
+    try{last=Number(localStorage.getItem(key)||0);}catch(e){}
     if(Date.now()-last<6*60*60*1000)return;
-    try{localStorage.setItem('mesaha_cache_warm_current',String(Date.now()));}catch(e){}
+    try{localStorage.setItem(key,String(Date.now()));}catch(e){}
     navigator.serviceWorker.ready.then(function(reg){
-      try{if(reg&&reg.active)reg.active.postMessage({type:'REPAIR_CACHE',build:META.build||548,integrityId:META.integrityId||''});}catch(e){}
+      try{if(reg&&reg.active)reg.active.postMessage({type:'REPAIR_CACHE',build:META.build||0,integrityId:META.integrityId||''});}catch(e){}
     }).catch(function(){});
   }
 
   function registerServiceWorker(){
     if (!('serviceWorker' in navigator)) return;
-    navigator.serviceWorker.register('./service-worker.js?build='+encodeURIComponent(META.build||548)+'&integrity='+encodeURIComponent(META.integrityId||''), {scope:'./', updateViaCache:'none'}).then(function(reg){
+    navigator.serviceWorker.register('./service-worker.js?build='+encodeURIComponent(META.build||0)+'&integrity='+encodeURIComponent(META.integrityId||''), {scope:'./', updateViaCache:'none'}).then(function(reg){
       try {
         var last = Number(localStorage.getItem('mesaha_sw_update_check_current') || 0);
         if (navigator.onLine && Date.now() - last > 15 * 60 * 1000) {
@@ -94,8 +94,7 @@
   window.addEventListener('offline', setOnlineClass, {passive:true});
   window.addEventListener('pageshow', function(){ setVersionText(); setOnlineClass(); }, {passive:true});
 
-  // Eski yamalar DOM'u tekrar yazsa bile görünür sürüm bilgisi arada bozulmasın; düşük frekanslı ve hafif.
-  setInterval(setVersionText, 60000);
+  window.addEventListener('mesaha:version-refresh', setVersionText, {passive:true});
 
   var offlineApi = {
     meta: META,
@@ -133,10 +132,5 @@
       if(Date.now()-last<45000) return false;
       localStorage.setItem(KEY,String(Date.now())); return true;
     };
-    if('serviceWorker' in navigator){
-      navigator.serviceWorker.ready.then(function(reg){
-        try{ if(reg && reg.active) reg.active.postMessage({type:'WARM_CACHE'}); }catch(e){}
-      }).catch(function(){});
-    }
   } catch(e) {}
 })();

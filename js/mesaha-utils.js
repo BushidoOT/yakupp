@@ -59,10 +59,21 @@
     el.addEventListener(type, fn, opts || false);
     return true;
   }
+  function isVisible(){ return document.visibilityState !== 'hidden'; }
+  function connection(){ try { return navigator.connection || navigator.mozConnection || navigator.webkitConnection || null; } catch(e){ return null; } }
+  function saveData(){ var c=connection(); return !!(c && c.saveData); }
+  function slowConnection(){ var c=connection(), t=String(c && c.effectiveType || ''); return /(^|-)2g$|slow-2g/i.test(t); }
+  function reducedMotion(){ try { return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches); } catch(e){ return false; } }
+  function lowPower(){ return saveData() || slowConnection() || reducedMotion(); }
+  function idle(fn, timeout){
+    if(typeof requestIdleCallback === 'function') return requestIdleCallback(function(){ safe(fn); }, {timeout: timeout || 1200});
+    return setTimeout(function(){ safe(fn); }, Math.min(timeout || 180, 500));
+  }
   window.MesahaUtils = {
     __stable:true,__v384:true,
     safe:safe, clean:clean, esc:esc, qs:qs, qsa:qsa, byId:byId, ready:ready,
     jsonGet:jsonGet, jsonSet:jsonSet, debounce:debounce, throttle:throttle,
-    withTimeout:withTimeout, loadScript:loadScript, onceEvent:onceEvent
+    withTimeout:withTimeout, loadScript:loadScript, onceEvent:onceEvent,
+    isVisible:isVisible, connection:connection, saveData:saveData, slowConnection:slowConnection, reducedMotion:reducedMotion, lowPower:lowPower, idle:idle
   };
 })();

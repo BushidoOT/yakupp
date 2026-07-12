@@ -1,4 +1,4 @@
-/* Mesaha İO V5.72 — Güvenli Şeflik Klasörü ve anti-spam gönderim */
+/* Mesaha İO V5.73 — Güvenli Şeflik Klasörü ve anti-spam gönderim */
 (function(){
   'use strict';
   if(window.MesahaSeflikFolderV529) return;

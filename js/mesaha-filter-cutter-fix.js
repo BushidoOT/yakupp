@@ -173,16 +173,13 @@
 
   function boot(){
     renderCuttersAndSelects();
-    [200,700,1500,3000].forEach(function(ms){setTimeout(renderCuttersAndSelects,ms)});
+    [180,700,1800].forEach(function(ms){setTimeout(renderCuttersAndSelects,ms)});
     var rec=$('recordsView');
     if(rec && window.MutationObserver && !rec.__filterWatch){
       rec.__filterWatch=true;
       new MutationObserver(function(){schedule(80)}).observe(rec,{childList:true,subtree:true});
     }
-    setInterval(function(){
-      var rv=$('recordsView'), ev=$('entryView');
-      if((rv&&rv.classList.contains('active')) || (ev&&ev.classList.contains('active'))) renderCuttersAndSelects();
-    },12000);
+    document.addEventListener('mesaha:view-changed',function(){schedule(80)},{passive:true});
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true}); else boot();
   var api={render:renderCuttersAndSelects,filters:renderFilters,syncCutters:syncCutterStore,stats:buildStats,clearStats:invalidateStats};

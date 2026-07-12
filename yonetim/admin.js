@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const ADMIN_VERSION = 'V5.72 •Yakupp•';
+  const ADMIN_VERSION = (window.MESAHA_VERSION && window.MESAHA_VERSION.visibleVersion) || 'Mesaha İO';
   const EDGE_URL = 'https://swrbpdpotmirnmtqnuba.supabase.co/functions/v1/smooth-function';
   const SESSION_KEY = 'mesaha_admin_auth_v548_session';
   const LAST_ACTIVITY_KEY = 'mesaha_admin_auth_v548_activity';

@@ -6,7 +6,8 @@
 <script>
 (function(){
   var status=document.getElementById('status'),go=document.getElementById('go'),spin=document.getElementById('spin');
-  function build(){return (window.MESAHA_VERSION&&window.MESAHA_VERSION.build)||572;}
+  function build(){return Number(window.MESAHA_VERSION&&window.MESAHA_VERSION.build)||0;}
+  function visible(){return (window.MESAHA_VERSION&&window.MESAHA_VERSION.visibleVersion)||'Mesaha İO';}
   function openApp(b){var u=new URL('./index.html',location.href);u.searchParams.set('updated',String(b||build()||Date.now()));u.searchParams.set('fresh',String(Date.now()));location.replace(u.href);}
   async function safeClearAppCache(){
     try{if(window.MesahaUpdateV527&&window.MesahaUpdateV527.flushData)await window.MesahaUpdateV527.flushData()}catch(e){}
@@ -18,16 +19,16 @@
       status.textContent='Yeni uygulama dosyaları hazırlanıyor…';
       var result=window.MesahaUpdateV527?await window.MesahaUpdateV527.executeUpdatePage():null;
       var b=result&&result.targetBuild||build();
-      status.textContent='Güncelleme tamamlandı. V5.72 •Yakupp• açılıyor…';
+      status.textContent='Güncelleme tamamlandı. '+visible()+' açılıyor…';
       setTimeout(function(){openApp(b);},500);
     }catch(e){
       status.className='warn';
       status.textContent='Önbellek doğrulaması takıldı. Eski uygulama önbelleği temizleniyor, kayıtlarınız korunur…';
-      try{await safeClearAppCache();status.textContent='Önbellek temizlendi. V5.72 •Yakupp• açılıyor…';setTimeout(function(){openApp(572);},700);}
+      try{await safeClearAppCache();status.textContent='Önbellek temizlendi. '+visible()+' açılıyor…';setTimeout(function(){openApp(build());},700);}
       catch(_e){spin.style.display='none';status.textContent='Güncelleme tamamlanamadı. Ana sayfayı açıp tekrar deneyin.';go.hidden=false;}
     }
   }
-  go.onclick=function(){openApp(572);};
+  go.onclick=function(){openApp(build());};
   run();
 })();
 </script></body></html>

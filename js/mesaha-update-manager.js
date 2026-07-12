@@ -1,11 +1,11 @@
-/* Mesaha İO V5.48 — kesin worker kimlikli atomik PWA güncelleme yöneticisi */
+/* Mesaha İO — merkezi sürüm kimlikli atomik PWA güncelleme yöneticisi */
 (function(){
   'use strict';
   var previous=window.MesahaUpdateV527;
   if(previous&&Number(previous.apiVersion||0)>=546)return;
   var API_VERSION=546;
   var localInfo=window.MESAHA_VERSION||{};
-  var localBuild=Number(localInfo.build||548)||546;
+  var localBuild=Number(localInfo.build||0)||0;
   var localIntegrity=String(localInfo.integrityId||'');
 
   function wait(ms){return new Promise(function(resolve){setTimeout(resolve,ms)})}

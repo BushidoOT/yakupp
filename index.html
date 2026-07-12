@@ -42,7 +42,7 @@
 })();
 </script>
 <link href="./css/app.css" rel="stylesheet"/>
-<link href="./css/mesaha-seflik-folder-v529.css" rel="stylesheet"/>
+<link href="./css/mesaha-seflik-folder.css" rel="stylesheet"/>
 <style id="mesaha-v515-user-panel-clean-style">
 #panelTelegramSectionV515{display:grid!important;gap:10px!important;}
 #panelTelegramSectionV515 .panel-telegram-join-v515{min-height:52px!important;font-size:14px!important;}
@@ -402,6 +402,15 @@ body.mesaha-keyboard-open #saveBtn, body.mesaha-keyboard-open .save-btn{position
 #entryView #diameterChips button[data-dia],#entryView #lengthChips button[data-len]{cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;pointer-events:auto!important;position:relative;z-index:2}
 #entryView #diameterChips button[data-dia]:active,#entryView #lengthChips button[data-len]:active,#entryView .shortcut-selected-v535{transform:scale(.96)!important;background:#dcfce7!important;border-color:#86efac!important;color:#166534!important}
 </style>
+
+<style id="seflikV574LayoutStyles">
+.seflik-folder-hero-actions-v574{display:flex;align-items:center;justify-content:flex-end;gap:10px;flex-wrap:wrap}
+.seflik-folder-sync-primary-v574{appearance:none;border:1px solid rgba(255,255,255,.55)!important;background:#fff!important;color:#08783f!important;font-weight:900!important;border-radius:14px!important;padding:12px 16px!important;box-shadow:0 10px 24px rgba(0,0,0,.18)!important;min-height:46px;white-space:normal;line-height:1.15}
+.seflik-folder-sync-primary-v574:active{transform:scale(.98)}
+.seflik-folder-sync-primary-v574:disabled{opacity:.65;transform:none}
+.seflik-folder-mesahalar-v574{order:2}
+@media(max-width:720px){.seflik-folder-hero-head{align-items:flex-start!important}.seflik-folder-hero-actions-v574{width:100%;justify-content:stretch}.seflik-folder-hero-actions-v574 .seflik-folder-badge{flex:0 0 auto}.seflik-folder-sync-primary-v574{flex:1;min-width:190px}}
+</style>
 </head>
 <body>
 <div class="startup" id="startup">
@@ -547,9 +556,10 @@ body.mesaha-keyboard-open #saveBtn, body.mesaha-keyboard-open .save-btn{position
 <section class="view" id="seflikFolderView">
 <div class="seflik-folder-shell">
 <section class="card seflik-folder-hero">
-<div class="seflik-folder-hero-head"><div><h2>Şeflik Klasörü</h2><p>Aynı şeflikteki kullanıcıların ortak mesaha alanı. Kayıtlar bölme bazında görüntülenir.</p></div><span class="seflik-folder-badge">☁ Ortak klasör</span></div>
+<div class="seflik-folder-hero-head"><div><h2>Şeflik Klasörü</h2><p>Aynı şeflikteki kullanıcıların ortak mesaha alanı. Kayıtlar bölme bazında görüntülenir.</p></div><div class="seflik-folder-hero-actions-v574"><span class="seflik-folder-badge">☁ Ortak klasör</span><button class="btn seflik-folder-sync-primary-v574" id="seflikFolderSyncV528" type="button">↻ Kayıtları Senkronize Et</button></div></div>
 <div class="seflik-folder-metrics"><div class="seflik-folder-metric"><small>BÖLME</small><b id="seflikFolderMetricBolmeV528">0</b></div><div class="seflik-folder-metric"><small>KAYIT</small><b id="seflikFolderMetricCountV528">0</b></div><div class="seflik-folder-metric"><small>TOPLAM HACİM</small><b id="seflikFolderMetricM3V528">0,000 m³</b></div></div>
 </section>
+<section class="card seflik-folder-mesahalar-v574"><div class="seflik-folder-list-head"><h2>Şeflik Mesahaları</h2><small id="seflikFolderRemoteMetaV528">Henüz ortak kayıt yok</small></div><div class="seflik-folder-list" id="seflikFolderListV528"></div></section>
 <section class="card seflik-folder-control">
 <div class="section-head"><h2>Bölme Yönetimi</h2><span id="seflikFolderIdentityV528">Şeflik seçilmedi</span></div>
 <div class="seflik-create-row-v529"><label>Yeni Bölme Numarası<input autocomplete="off" id="seflikFolderNewBolmeV529" inputmode="text" placeholder="Örn. 43"/></label><button class="btn primary" id="seflikFolderCreateV529" type="button">＋ Bölme Oluştur</button></div>
@@ -557,10 +567,9 @@ body.mesaha-keyboard-open #saveBtn, body.mesaha-keyboard-open .save-btn{position
 <div class="seflik-folder-divider-v529"></div>
 <div class="section-head"><h2>Seçili Bölmeye Gönder</h2><span>Açık bölmeler</span></div>
 <div class="seflik-folder-control-grid"><label>Bölme Seç<select id="seflikFolderBolmeV528"><option value="">Açık bölme seçin</option></select></label><div class="seflik-folder-status" id="seflikFolderLocalPreviewV528">Önce açık bir bölme seçin</div></div>
-<div class="seflik-folder-actions"><button class="btn seflik-folder-send" id="seflikFolderSendV528" type="button">Şefliğe Gönder + Drive Yedekle</button><button class="btn soft" id="seflikFolderSyncV528" type="button">Buluttaki Yedekleri Senkronize Et</button></div>
+<div class="seflik-folder-actions"><button class="btn seflik-folder-send" id="seflikFolderSendV528" type="button">Şefliğe Gönder + Drive Yedekle</button></div>
 <div class="seflik-folder-progress" id="seflikFolderProgressV528"><span></span></div><div class="seflik-folder-status" id="seflikFolderStatusV528">Önce bölme oluşturun veya açık bir bölme seçin.</div>
 </section>
-<section class="card"><div class="seflik-folder-list-head"><h2>Şeflik Mesahaları</h2><small id="seflikFolderRemoteMetaV528">Henüz ortak kayıt yok</small></div><div class="seflik-folder-list" id="seflikFolderListV528"></div></section>
 <section class="card seflik-folder-detail" id="seflikFolderDetailV528"><div class="seflik-folder-detail-head"><h2 id="seflikFolderDetailTitleV528">Bölme Kayıtları</h2><button class="btn soft" id="seflikFolderDetailCloseV528" type="button">Kapat</button></div><div class="seflik-folder-records" id="seflikFolderRecordsV528"></div></section>
 </div>
 </section>
@@ -642,16 +651,30 @@ body.mesaha-keyboard-open #saveBtn, body.mesaha-keyboard-open .save-btn{position
 <div class="guide-section-guide-clean">
 <h3>6. Şeflik Klasörü</h3>
 <ol>
-<li>Ana menüden <b>Şeflik Klasörü</b> bölümünü açınız.</li>
-<li><b>Bölme Oluştur</b> ile ortak çalışılacak bölmeyi açınız. Yalnızca açık bölmelere veri gönderilebilir.</li>
-<li>Ölçümler ekranındaki <b>Şefliğe Gönder</b> butonundan açık bölmeyi seçip kayıtları sunucuya gönderebilirsiniz.</li>
-<li>Gönderim sırasında ortak klasör güncellenir ve Google Drive yedeği alınır.</li>
-<li>Aynı şeflik adıyla giriş yapan kullanıcılar <b>Buluttaki Yedekleri Senkronize Et</b> dediğinde bölme bazlı kayıt adedi ve toplam m³ değerini görebilir.</li>
-<li><b>Mesahaya Devam Et</b> seçilen bölmenin kayıtlarını cihaza yükler. İşlemden önce mevcut yerel kayıtların silineceği uyarısı gösterilir.</li>
+<li>Google hesabınızla giriş yapıp ana menüden <b>Şeflik Klasörü</b> bölümünü açınız.</li>
+<li>Şeflik daha önce kurulmadıysa <b>Şeflik Oluştur</b> ile kurunuz. Aynı şeflik yalnızca bir kez kurulabilir ve sadece kurucu şefliği silebilir.</li>
+<li>Kurucu, <b>Ormancı Ekle</b> alanına kullanıcının ad-soyadının en az 3 harfini yazarak önerilerden seçip şefliğe ekleyebilir. Ekli ormancıları yalnızca kurucu çıkarabilir.</li>
+<li>Üstteki <b>Kayıtları Senkronize Et</b> düğmesi ortak klasördeki güncel bölme ve kayıtları getirir.</li>
+<li><b>Şeflik Mesahaları</b> bölümünde ortak bölmeler, kayıt adetleri ve toplam hacimler görüntülenir.</li>
+<li><b>Bölme Yönetimi</b> bölümünden ortak çalışılacak açık bölmeyi oluşturunuz. Yalnızca açık bölmelere veri gönderilebilir.</li>
+<li>Ölçümler ekranındaki <b>Şefliğe Gönder</b> düğmesinden açık bölmeyi seçerek kayıtları ortak klasöre gönderiniz; gönderim sırasında Drive yedeği de alınır.</li>
+<li><b>Mesahaya Devam Et</b> seçilen bölmenin ortak kayıtlarını cihaza yükler. İşlemden önce mevcut yerel kayıtların değiştirileceği uyarısı gösterilir.</li>
 </ol>
 </div>
 <div class="guide-section-guide-clean">
-<h3>7. Sorun Çözme</h3>
+<h3>7. Terminal Kodu ile Eşleme</h3>
+<ol>
+<li>Önce telefonda veya kişisel cihazda Google hesabınızla giriş yapınız.</li>
+<li>Kullanıcı panelinden <b>Terminal Kodu Oluştur</b> düğmesine basınız ve oluşan tek kullanımlık kodu not ediniz.</li>
+<li>Terminal cihazda giriş ekranından <b>Terminal giriş modu (Misafir modu)</b> seçeneğini açınız.</li>
+<li><b>Terminal kodu gir</b> alanına telefonda oluşturduğunuz kodu yazıp eşleştirmeyi tamamlayınız.</li>
+<li>Daha önce misafir moduyla açılmış terminalde kodu sonradan girmek için kullanıcı panelindeki <b>Terminal kodu gir</b> bölümünü kullanınız.</li>
+<li>Eşleme tamamlanınca terminal, Google hesabı açmadan ilgili kullanıcıya bağlanır ve izin verilen bulut/şeflik özelliklerini kullanabilir.</li>
+<li>Kod geçersiz veya süresi dolmuşsa telefondan yeni kod oluşturunuz. Bir kod yalnızca bir terminal eşleştirmesinde kullanılabilir.</li>
+</ol>
+</div>
+<div class="guide-section-guide-clean">
+<h3>8. Sorun Çözme</h3>
 <ol>
 <li>Güncelleme görünmüyorsa sayfayı 2-3 kez yenileyiniz.</li>
 <li>Bulut çalışmıyorsa interneti ve bağlantı ayarlarını kontrol ediniz.</li>
@@ -1653,6 +1676,7 @@ function showView(view){
   document.querySelectorAll('#bottomNav button').forEach(b => b.classList.toggle('active', b.dataset.nav===view));
   if(view==='records') renderRecords();
   if(view==='home') renderHome();
+  try{window.dispatchEvent(new CustomEvent('mesaha:view-changed',{detail:{view:view}}));}catch(e){}
   try{ window.scrollTo({top:0, behavior:'auto'}); }catch{ window.scrollTo(0,0); }
 }
 function openEntry(record){
@@ -4291,7 +4315,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
       setSyncText('İstatistik güncellendi • '+new Date().toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'}));return true;
     }catch(e){setSyncText('İşlem tamamlandı • istatistik gönderimi olmadı: '+errText(e));return false}
   }
-  function boot(){loadUsage();setSyncText('İstatistikler sadece Mesaha/Yedek işlemlerinde gönderilir');setInterval(flushUsage,60000);window.addEventListener('visibilitychange',flushUsage);window.addEventListener('pagehide',flushUsage);window.mesahaExportStatsV323={send,flush:flushUsage,readUsage:()=>jsonGet(USAGE_KEY,{})}}
+  var usageTimer=0;function scheduleUsage(){clearTimeout(usageTimer);if(document.hidden)return;usageTimer=setTimeout(function(){flushUsage();scheduleUsage()},300000)}function boot(){loadUsage();setSyncText('İstatistikler sadece Mesaha/Yedek işlemlerinde gönderilir');scheduleUsage();window.addEventListener('visibilitychange',function(){flushUsage();scheduleUsage()},{passive:true});window.addEventListener('pagehide',flushUsage,{passive:true});window.mesahaExportStatsV323={send,flush:flushUsage,readUsage:()=>jsonGet(USAGE_KEY,{})}}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
 </script>
@@ -5190,11 +5214,18 @@ input,select,textarea{background:#fff!important;color:#101828!important;border-c
       index++;
     }, force ? 0 : 180);
   }
-  function boot(){
-    setFact(true);
-    if(window.__mesahaForestFactTimer) clearInterval(window.__mesahaForestFactTimer);
-    window.__mesahaForestFactTimer = setInterval(setFact, 5000);
+  function shouldRotate(){
+    var home=document.getElementById('homeView'),u=window.MesahaUtils;
+    return document.visibilityState!=='hidden'&&(!home||home.classList.contains('active'))&&!(u&&u.lowPower&&u.lowPower());
   }
+  function schedule(){
+    clearTimeout(window.__mesahaForestFactTimer);
+    if(!shouldRotate())return;
+    window.__mesahaForestFactTimer=setTimeout(function(){setFact(false);schedule();},8000);
+  }
+  function boot(){setFact(true);schedule();}
+  document.addEventListener('visibilitychange',schedule,{passive:true});
+  window.addEventListener('mesaha:view-changed',schedule,{passive:true});
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, {once:true});
   else boot();
 })();
@@ -6262,7 +6293,7 @@ body.mesaha-cloud-panel-open-v395 #cloudRestoreOverlayV316:not(.hidden){touch-ac
     },true);
     document.addEventListener('input',function(ev){if(ev.target&&ev.target.id==='recordSearch')setTimeout(updateHint,120)},true);
     ['mesaha:records-saved','mesaha:settings-saved'].forEach(function(evt){window.addEventListener(evt,function(){setTimeout(function(){populateCutterSelect();updateHint();},150)})});
-    setInterval(function(){if(!document.hidden&&document.getElementById('recordsView')){ensureUi();populateCutterSelect();updateHint();}},12000);
+    window.addEventListener('mesaha:view-changed',function(){setTimeout(function(){ensureUi();populateCutterSelect();updateHint();},80)},{passive:true});
   }
   function boot(){bind(); [120,500,1200,2400].forEach(function(ms){setTimeout(function(){ensureUi();populateCutterSelect();updateHint();},ms)})}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
@@ -6314,7 +6345,7 @@ body.mesaha-cloud-panel-open-v395 #cloudRestoreOverlayV316:not(.hidden){touch-ac
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
   ['mesaha:settings-saved','mesaha:records-saved'].forEach(function(evt){window.addEventListener(evt,function(){setTimeout(function(){cleanDeletedCutters();renderNotes();},80)})});
   var p=$('userPanelOverlayV316'); if(p&&window.MutationObserver&&!p.__v407NotesWatch){p.__v407NotesWatch=true; new MutationObserver(function(){setTimeout(renderNotes,60);}).observe(p,{attributes:true,attributeFilter:['class'],childList:true,subtree:true});}
-  setInterval(function(){ if(!document.hidden && !(document.body&&document.body.classList.contains('entry-open'))) cleanDeletedCutters(); },30000);
+  ['mesaha:records-saved','mesaha:settings-saved','pageshow'].forEach(function(evt){window.addEventListener(evt,function(){setTimeout(cleanDeletedCutters,120)},{passive:true})});
 })();
 </script>
 <style id="mesaha-v408-entry-save-scroll-tap-guard-style">
@@ -7031,10 +7062,12 @@ body.mesaha-entry-scrolling-v408 #entryView label{
   }
   function bind(){
     renderIp();
-    setTimeout(function(){ping('startup',true)},1800);
-    setInterval(function(){if(!document.hidden&&navigator.onLine!==false)ping('periodic',false)},300000);
-    window.addEventListener('online',function(){ping('online',true)});
-    document.addEventListener('visibilitychange',function(){if(!document.hidden)ping('visible',false)});
+    var heartbeatTimer=0;
+    function scheduleHeartbeat(){clearTimeout(heartbeatTimer);if(document.hidden||navigator.onLine===false)return;var u=window.MesahaUtils;if(u&&u.lowPower&&u.lowPower())return;heartbeatTimer=setTimeout(function(){ping('periodic',false);scheduleHeartbeat()},1800000)}
+    setTimeout(function(){ping('startup',true);scheduleHeartbeat()},1800);
+    window.addEventListener('online',function(){ping('online',true);scheduleHeartbeat()},{passive:true});
+    window.addEventListener('offline',function(){clearTimeout(heartbeatTimer)},{passive:true});
+    document.addEventListener('visibilitychange',function(){if(!document.hidden)ping('visible',false);scheduleHeartbeat()},{passive:true});
     var ov=$('userPanelOverlayV316');if(ov&&window.MutationObserver&&!ov.__ipV518){ov.__ipV518=true;new MutationObserver(renderIp).observe(ov,{attributes:true,attributeFilter:['class'],subtree:false})}
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
@@ -7326,7 +7359,7 @@ body.mesaha-floating-save-open-v537 .bottom-nav{display:none!important;visibilit
 
 <script src="./js/mesaha-seflik-governance.js"></script>
 
-<script id="mesaha-v572-no-cutter-filter-fix">
+<script id="mesaha-no-cutter-filter-fix">
 (function(){
   'use strict';
   if(window.__mesahaV572NoCutterFilterFix) return;
@@ -7334,7 +7367,7 @@ body.mesaha-floating-save-open-v537 .bottom-nav{display:none!important;visibilit
   var SPECIAL='Kesimci kaydı yok';
   function clean(v){return String(v==null?'':v).trim().replace(/\s+/g,' ')}
   function settings(){try{if(window.state){if(!window.state.settings)window.state.settings={};return window.state.settings;}}catch(e){} try{return JSON.parse(localStorage.getItem('cam_mesaha_ayarlar_v1')||'{}')||{}}catch(e){return {}}}
-  function save(){try{if(window.__flushSettings)return window.__flushSettings('v572-no-cutter-filter');if(window.saveSettings)return window.saveSettings();localStorage.setItem('cam_mesaha_ayarlar_v1',JSON.stringify(settings()));}catch(e){}}
+  function save(){try{if(window.__flushSettings)return window.__flushSettings('no-cutter-filter');if(window.saveSettings)return window.saveSettings();localStorage.setItem('cam_mesaha_ayarlar_v1',JSON.stringify(settings()));}catch(e){}}
   function isNoCutterButton(el){return el&&el.getAttribute&&clean(el.getAttribute('data-cutter-filter'))===SPECIAL;}
   function applyNoCutterFilter(ev){
     var btn=ev.target&&ev.target.closest&&ev.target.closest('[data-cutter-filter]');
@@ -7343,7 +7376,7 @@ body.mesaha-floating-save-open-v537 .bottom-nav{display:none!important;visibilit
     var st=settings(); st.cutterFilter=SPECIAL; save();
     try{if(typeof window.invalidateRecordStatsV447==='function')window.invalidateRecordStatsV447();}catch(e){}
     try{if(typeof window.renderRecords==='function')window.renderRecords();else if(typeof window.renderAll==='function')window.renderAll();}catch(e){}
-    try{window.dispatchEvent(new CustomEvent('mesaha:settings-saved',{detail:{source:'v572-no-cutter-filter'}}));}catch(e){}
+    try{window.dispatchEvent(new CustomEvent('mesaha:settings-saved',{detail:{source:'no-cutter-filter'}}));}catch(e){}
     setTimeout(function(){
       try{
         var st2=settings(); if(clean(st2.cutterFilter)!==SPECIAL){st2.cutterFilter=SPECIAL; save();}
