@@ -1,12 +1,13 @@
-/* Mesaha İO V5.54 — Google sağlayıcı ön kontrolü, anlaşılır hata ve admin onay kapısı.
+/* Mesaha İO V5.55 — Google OAuth doğrudan yönlendirme ve email_exists otomatik toparlama.
    - Yeni anonim kullanıcı üretmez.
-   - Mevcut anonim Supabase oturumunu Google kimliğine linkleyerek user_id ve yedekleri korur.
+   - Anonim/linkleme hatasına düşmeden mevcut Google hesabıyla doğrudan OAuth açar.
    - Google hesabı doğrulansa dahi admin onayı olmadan sunucu işlemleri açılmaz.
    - Daha önce onaylanmış cihaz offline açılışta yerel çalışmaya devam eder. */
 (function(){
   'use strict';
   var ACCESS_KEY='mesaha_google_access_v548';
   var PLAIN_OAUTH_KEY='mesaha_google_plain_oauth_v553';
+  var EMAIL_EXISTS_RETRY_KEY='mesaha_google_email_exists_retry_v555';
   var PANEL_KEY='mesaha_panel_user_v316';
   var SETTINGS_KEY='cam_mesaha_ayarlar_v1';
   var BUSY=false, overlay=null, currentAccess=null, statusPromise=null, bootPromise=null, lastStatusAt=0, identityBusy=false;
@@ -52,10 +53,15 @@
   function providers(u){u=u||user();var out=[];try{(u.identities||[]).forEach(function(x){if(x&&x.provider)out.push(String(x.provider))})}catch(e){}try{var p=u.app_metadata&&u.app_metadata.providers;if(Array.isArray(p))out=out.concat(p.map(String))}catch(e){}if(u.app_metadata&&u.app_metadata.provider)out.push(String(u.app_metadata.provider));return Array.from(new Set(out))}
   function isGoogle(){var a=api();return a&&a.isGoogle?a.isGoogle():providers().indexOf('google')>=0}
   function isAnon(){var a=api();return a&&a.isAnonymous?a.isAnonymous():user().is_anonymous===true}
-  function redirectUrl(){var u=new URL(location.href);u.hash='';['code','error','error_code','error_description','sb'].forEach(function(k){u.searchParams.delete(k)});return u.origin+u.pathname}
+  function redirectUrl(){var u=new URL(location.href);u.hash='';['code','error','error_code','error_description','sb','updated'].forEach(function(k){u.searchParams.delete(k)});var p=u.pathname.replace(/\/index\.html$/i,'/');if(!/\/$/.test(p))p=p.replace(/[^\/]*$/,'');return u.origin+p}
   function mergedAuthParams(){var p=new URLSearchParams();try{new URLSearchParams(location.search||'').forEach(function(v,k){p.set(k,v)})}catch(e){}try{var raw=location.hash&&location.hash.slice(1);if(raw)new URLSearchParams(raw).forEach(function(v,k){if(!p.has(k))p.set(k,v)})}catch(e){}return p}
   function markPlainOauth(on){try{if(on)localStorage.setItem(PLAIN_OAUTH_KEY,String(Date.now()));else localStorage.removeItem(PLAIN_OAUTH_KEY)}catch(e){}}
   function plainOauthNeeded(){try{var t=Number(localStorage.getItem(PLAIN_OAUTH_KEY)||0)||0;return !!(t&&Date.now()-t<10*60*1000)}catch(e){return false}}
+  function setEmailExistsRetry(){try{localStorage.setItem(EMAIL_EXISTS_RETRY_KEY,String(Date.now()));return true}catch(e){return false}}
+  function recentEmailExistsRetry(){try{var t=Number(localStorage.getItem(EMAIL_EXISTS_RETRY_KEY)||0)||0;return !!(t&&Date.now()-t<25000)}catch(e){return false}}
+  function clearEmailExistsRetry(){try{localStorage.removeItem(EMAIL_EXISTS_RETRY_KEY)}catch(e){}}
+  function plainOAuthUrl(reason){var redir=redirectUrl(),path='/auth/v1/authorize?provider=google&redirect_to='+encodeURIComponent(redir);var url=cfg().url+path;loginLog('oauth_plain_direct_url',{reason:reason||'',redirectUrl:redir,path:path},'debug');return url}
+  function goPlainOAuth(reason){markPlainOauth(true);try{var a=api();if(a&&a.clearSession)a.clearSession()}catch(e){}var url=plainOAuthUrl(reason);loginLog('oauth_redirect_plain_google_direct',{reason:reason||'',redirectUrl:redirectUrl()},'info');location.assign(url);return true}
   function localIdentity(){
     var panel=getJson(PANEL_KEY,{}),st={};try{st=window.state&&window.state.settings||{}}catch(e){}if(!clean(st.ekipNot)||!clean(st.seflik))st=getJson(SETTINGS_KEY,{});
     return{name:clean(panel.name||st.ekipNot),seflik:clean(panel.seflik||st.seflik),bolmeNo:clean(panel.bolmeNo||st.bolmeNo)}
@@ -117,14 +123,18 @@
       if(/email_exists|already_registered|already been registered/i.test(errCode+' '+errDesc)){
         try{var a0=api();if(a0&&a0.clearSession)a0.clearSession()}catch(e){}
         clearAccess();markPlainOauth(true);loginLog('email_exists_detected_session_cleared',{error_code:errCode,error_description:errDesc},'error');
-        var ex=new Error('Bu Google e-postası sistemde zaten kayıtlı. Eski anonim oturum Google hesabına bağlanamadı; şimdi eski oturum temizlendi. Google ile tekrar giriş yap.');
+        if(!recentEmailExistsRetry()){
+          setEmailExistsRetry();loginLog('email_exists_auto_plain_retry',{redirectUrl:redirectUrl()},'info');
+          setTimeout(function(){goPlainOAuth('email_exists_auto_retry')},150);return true;
+        }
+        var ex=new Error('Bu Google e-postası sistemde zaten kayıtlı. Eski anonim oturum temizlendi; doğrudan Google hesabıyla giriş yapılacak.');
         ex.code='email_exists';ex.canPlainGoogle=true;throw ex;
       }
       var er=new Error(errDesc||errCode||'Google girişi tamamlanamadı');er.code=errCode;throw er;
     }
     var raw=location.hash&&location.hash.slice(1);if(!raw)return false;q=new URLSearchParams(raw);if(!q.get('access_token')){loginLog('consume_callback_no_access_token',{hasHash:!!raw},'debug');return false;}
     loginLog('consume_callback_token_found',{hasRefreshToken:!!q.get('refresh_token'),expiresIn:q.get('expires_in')},'info');
-    var token=q.get('access_token'),refresh=q.get('refresh_token'),expiresIn=Number(q.get('expires_in')||3600),expiresAt=Number(q.get('expires_at')||0)||Math.floor(Date.now()/1000)+expiresIn,u=decodeJwtUser(token)||await getAuthUser(token);var a=api();if(!a||!a.saveExternalSession)throw new Error('Oturum motoru hazır değil');a.saveExternalSession({access_token:token,refresh_token:refresh,expires_at:expiresAt,expires_in:expiresIn,user:u});loginLog('external_session_saved',{userId:u&&u.id,email:u&&u.email,providers:providers(u)},'info');markPlainOauth(false);history.replaceState(null,document.title,redirectUrl());return true
+    var token=q.get('access_token'),refresh=q.get('refresh_token'),expiresIn=Number(q.get('expires_in')||3600),expiresAt=Number(q.get('expires_at')||0)||Math.floor(Date.now()/1000)+expiresIn,u=decodeJwtUser(token)||await getAuthUser(token);var a=api();if(!a||!a.saveExternalSession)throw new Error('Oturum motoru hazır değil');a.saveExternalSession({access_token:token,refresh_token:refresh,expires_at:expiresAt,expires_in:expiresIn,user:u});loginLog('external_session_saved',{userId:u&&u.id,email:u&&u.email,providers:providers(u)},'info');markPlainOauth(false);clearEmailExistsRetry();history.replaceState(null,document.title,redirectUrl());return true
   }
   function googleStartError(j,status){
     var raw=clean(j&& (j.message||j.msg||j.error_description||j.error) || '');
@@ -137,22 +147,23 @@
     var e=new Error(raw||'Google hesap bağlantısı başlatılamadı.');e.status=status||0;e.payload=j||{};return e;
   }
   async function oauthStartUrl(path,token){
-    var c=cfg(),headers={apikey:c.anonKey};if(token)headers.Authorization='Bearer '+token;
-    var r=await fetch(c.url+path,{method:'GET',cache:'no-store',headers:headers}),t=await r.text(),j={};try{j=t?JSON.parse(t):{}}catch(e){j={message:t}}
-    if(!r.ok||!j.url)throw googleStartError(j,r.status);
-    return j.url;
+    // V5.55: /auth/v1/authorize uç noktası tarayıcıdan fetch edilince bazı cihazlarda CORS/Failed to fetch veriyor.
+    // Bu endpoint zaten tarayıcı yönlendirmesi içindir; bu yüzden fetch yapmadan doğrudan açıyoruz.
+    var c=cfg(),url=c.url+String(path||'').replace(/&?skip_http_redirect=true/g,'');
+    loginLog('oauth_start_direct',{path:String(path||''),hadToken:!!token,redirectUrl:redirectUrl()},'info');
+    return url;
   }
   async function beginGoogle(){
     loginLog('begin_google_click',{hasSession:!!session(),isAnon:isAnon(),plainNeeded:plainOauthNeeded(),redirectUrl:redirectUrl()},'info');
     if(BUSY)return;BUSY=true;var a=api(),redir=redirectUrl(),path,plain=plainOauthNeeded();
     if(session()&&isAnon()&&!plain){
-      var token=await a.getAccessToken();
-      path='/auth/v1/user/identities/authorize?provider=google&redirect_to='+encodeURIComponent(redir)+'&skip_http_redirect=true';
-      var url=await oauthStartUrl(path,token);loginLog('oauth_redirect_link_identity',{path:path,redirectUrl:redir},'info');location.assign(url);return
+      loginLog('anon_session_plain_google_fallback',{reason:'identity_link_fetch_removed_v555',redirectUrl:redir},'info');
+      try{if(a&&a.clearSession)a.clearSession()}catch(e){}
+      markPlainOauth(true);plain=true;
     }
     if(plain){try{if(a&&a.clearSession)a.clearSession()}catch(e){}}
-    path='/auth/v1/authorize?provider=google&redirect_to='+encodeURIComponent(redir)+'&skip_http_redirect=true';
-    var url2=await oauthStartUrl(path,'');loginLog('oauth_redirect_plain_google',{path:path,redirectUrl:redir},'info');location.assign(url2);
+    path='/auth/v1/authorize?provider=google&redirect_to='+encodeURIComponent(redir);
+    var url2=await oauthStartUrl(path,'');loginLog('oauth_redirect_plain_google',{path:path,redirectUrl:redir,direct:true},'info');location.assign(url2);
   }
   async function accessStatus(force){
     loginLog('access_status_start',{force:!!force,hasSession:!!session(),isGoogle:isGoogle(),online:navigator.onLine!==false},'debug');
@@ -161,7 +172,7 @@
     if(!force&&known&&lastStatusAt&&Date.now()-lastStatusAt<STATUS_TTL)return known;
     if(!force&&navigator.onLine===false){if(known&&known.status==='approved')return known;throw new Error('İlk Google doğrulaması için internet gerekli.')}
     if(statusPromise)return statusPromise;
-    statusPromise=(async function(){try{var out=await rpc('mesaha_google_access_status_v552',{p_device_info:deviceInfo(),p_app_version:(window.MESAHA_VERSION||{}).visibleVersion||'V5.54'});var x=out.access||out;x.user_id=x.user_id||uid();x.email=x.email||clean(user().email);cacheAccess(x);loginLog('access_status_ok',{status:x.status,email:x.email,user_id:x.user_id},'info');return x}catch(e){loginLog('access_status_error',{error:e,message:e&&e.message},'error');var c=currentAccess||cached();if(c&&c.status==='approved')return c;throw e}finally{statusPromise=null}})();
+    statusPromise=(async function(){try{var out=await rpc('mesaha_google_access_status_v552',{p_device_info:deviceInfo(),p_app_version:(window.MESAHA_VERSION||{}).visibleVersion||'V5.55'});var x=out.access||out;x.user_id=x.user_id||uid();x.email=x.email||clean(user().email);clearEmailExistsRetry();cacheAccess(x);loginLog('access_status_ok',{status:x.status,email:x.email,user_id:x.user_id},'info');return x}catch(e){loginLog('access_status_error',{error:e,message:e&&e.message},'error');var c=currentAccess||cached();if(c&&c.status==='approved')return c;throw e}finally{statusPromise=null}})();
     return statusPromise;
   }
   function deviceInfo(){var nav=navigator||{};return{deviceId:(api()&&api().getDeviceId?api().getDeviceId():''),platform:clean(nav.userAgentData&&nav.userAgentData.platform||nav.platform),userAgent:clean(nav.userAgent).slice(0,500),standalone:!!(window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||nav.standalone===true}}
@@ -174,7 +185,7 @@
     if(status==='rejected'||status==='revoked')return show('<div class="google-auth-status-v548 denied"><b>Erişim '+(status==='revoked'?'kapatıldı':'reddedildi')+'</b><br>'+esc(x.reason||'Yönetici ile iletişime geçin.')+'</div><div class="google-auth-email-v548">'+esc(email)+'</div>'+button('request-form','Yeniden erişim talep et','primary')+button('logout','Başka Google hesabı kullan','subtle'));
     var li=localIdentity();show('<div class="google-auth-status-v548"><b>Google hesabın doğrulandı.</b><br>Mevcut kullanıcı adı ve şefliğin için yönetici onayı iste.</div><div class="google-auth-email-v548">'+esc(email)+'</div><div class="google-auth-fields-v548"><label>Kullanıcı adı<input id="googleRequestNameV548" maxlength="120" value="'+esc(li.name)+'" autocomplete="name"></label><label>Şeflik<input id="googleRequestSeflikV548" maxlength="120" value="'+esc(li.seflik)+'" autocomplete="organization"></label></div>'+button('request','Yönetici onayı iste','green')+button('logout','Başka Google hesabı kullan','subtle')+'<p class="google-auth-note-v548">Kullanıcı adı ve şeflik artık tek başına giriş sağlamaz. Bu bilgiler yalnız doğrulanmış Google hesabına bağlanır.</p>')
   }
-  async function requestAccess(){loginLog('request_access_click',{},'info');var n=document.getElementById('googleRequestNameV548'),s=document.getElementById('googleRequestSeflikV548'),name=clean(n&&n.value),seflik=clean(s&&s.value);if(!validIdentity(name,seflik))throw new Error('Geçerli kullanıcı adı ve şeflik girin.');loading('Erişim talebi gönderiliyor…');loginLog('request_access_send',{name:name,seflik:seflik},'info');var out=await rpc('mesaha_google_access_request_v552',{p_name:name,p_seflik:seflik,p_device_info:deviceInfo(),p_app_version:(window.MESAHA_VERSION||{}).visibleVersion||'V5.54'});renderAccess(out.access||out)}
+  async function requestAccess(){loginLog('request_access_click',{},'info');var n=document.getElementById('googleRequestNameV548'),s=document.getElementById('googleRequestSeflikV548'),name=clean(n&&n.value),seflik=clean(s&&s.value);if(!validIdentity(name,seflik))throw new Error('Geçerli kullanıcı adı ve şeflik girin.');loading('Erişim talebi gönderiliyor…');loginLog('request_access_send',{name:name,seflik:seflik},'info');var out=await rpc('mesaha_google_access_request_v552',{p_name:name,p_seflik:seflik,p_device_info:deviceInfo(),p_app_version:(window.MESAHA_VERSION||{}).visibleVersion||'V5.55'});renderAccess(out.access||out)}
   async function logout(){loginLog('logout_start',{},'info');loading('Oturum kapatılıyor…');try{await api().signOut('global')}catch(e){try{api().clearSession()}catch(_e){}}clearAccess();location.replace(redirectUrl())}
   async function handle(action){if(action==='google')return beginGoogle();if(action==='refresh')return boot(true);if(action==='request')return requestAccess();if(action==='request-form')return renderAccess({status:'unregistered',email:user().email});if(action==='logout')return logout()}
   async function bootCore(force){
