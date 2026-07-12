@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="theme-color" content="#f7faf5">
+  <title>Mesaha İO Yönetim</title>
+  <link rel="manifest" href="../manifest.json">
+  <link rel="apple-touch-icon" href="../assets/icon-192.png">
+  <link rel="stylesheet" href="./admin.css?v=551">
+  <script src="../js/version.js?v=551"></script>
+  <script src="../js/mesaha-supabase-config.js?v=551"></script>
+</head>
+<body>
+  <div class="app-shell">
+    <section id="loginView" class="login-view">
+      <div class="login-card">
+        <div class="login-logo"><img src="../assets/mesaha_logo.png" alt="Mesaha İO"></div>
+        <span class="eyebrow">Güvenli yönetim</span>
+        <h1>Mesaha İO Yönetim</h1>
+        <p>Kullanıcı, istatistik, Drive yedekleri ve güvenlik işlemleri.</p>
+        <label class="field"><span>Admin e-posta</span><input id="loginUser" type="email" inputmode="email" autocomplete="username" placeholder="yonetici@ornek.com"></label>
+        <label class="field"><span>Güçlü yönetim parolası</span><input id="loginPass" type="password" minlength="12" autocomplete="current-password" placeholder="En az 12 karakter"></label>
+        <button id="loginBtn" class="button primary wide" type="button">Yönetim paneline gir</button>
+        <div id="loginMessage" class="form-message" role="alert"></div>
+      </div>
+    </section>
+
+    <div id="adminView" class="admin-view is-hidden">
+      <header class="topbar">
+        <div class="brand-row">
+          <div class="brand">
+            <div class="brand-logo"><img src="../assets/mesaha_logo.png" alt=""></div>
+            <div>
+              <strong>Mesaha İO Yönetim</strong>
+              <small id="versionLabel">V5.52 •Yakupp•</small>
+            </div>
+          </div>
+          <div class="top-actions">
+            <button id="refreshBtn" class="icon-button" type="button" aria-label="Yenile" title="Yenile">↻</button>
+            <button id="logoutBtn" class="icon-button" type="button" aria-label="Bu cihazdan çıkış" title="Bu cihazdan çıkış">⎋</button>
+          </div>
+        </div>
+        <div class="health-row" aria-label="Sistem durumu">
+          <span class="health-chip"><i></i><b>Sistem</b> Sağlıklı</span>
+          <span class="health-chip"><i></i><b>Sunucu</b> Online</span>
+          <span class="health-chip"><i></i><b>Yedek</b> Aktif</span>
+        </div>
+        <div id="statusLine" class="status-line">Canlı veri bekleniyor…</div>
+      </header>
+
+      <main class="content">
+        <section id="page-users" class="page is-active" data-page="users">
+          <div class="page-heading">
+            <div><span class="eyebrow">Genel bakış</span><h2>Kullanıcılar</h2><p>Son giriş sırasına göre gerçek kullanıcılar ve cihaz bilgileri.</p></div>
+            <span id="userCountBadge" class="counter-badge">0 kullanıcı</span>
+          </div>
+
+          <div class="metric-grid metric-grid-users">
+            <article class="metric-card"><span class="metric-icon">◎</span><small>Kullanıcı</small><b id="metricUsers">0</b><em>Toplam kullanıcı</em></article>
+            <article class="metric-card"><span class="metric-icon">◉</span><small>Bugün online</small><b id="metricToday">0</b><em>Bugün giriş yapan</em></article>
+            <article class="metric-card"><span class="metric-icon">☁</span><small>Drive yedek</small><b id="metricBackups">0</b><em>Görünen yedek</em></article>
+            <article class="metric-card"><span class="metric-icon">▣</span><small>Toplam adet</small><b id="metricCount">0</b><em>Son güvenilir veri</em></article>
+            <article class="metric-card metric-wide"><span class="metric-icon">♧</span><small>Toplam m³</small><b id="metricVolume">0,000</b><em>Son güvenilir veri</em></article>
+          </div>
+
+          <div class="section-title-row"><h3>Kullanıcılar</h3><span id="userFilterInfo" class="muted">Tümü</span></div>
+          <div class="toolbar toolbar-users">
+            <label class="search-box"><span>⌕</span><input id="userSearch" placeholder="Kullanıcı, şeflik, IP, cihaz, sürüm ara"></label>
+            <select id="userFilter" aria-label="Kullanıcı filtresi"><option value="all">Tümü</option><option value="today">Bugün giriş yapan</option><option value="online">Son 15 dakika</option><option value="blocked">Engelli</option></select>
+            <button id="clearUserFilter" class="button subtle" type="button">Temizle</button>
+          </div>
+          <div id="userList" class="user-list"></div>
+        </section>
+
+        <section id="page-stats" class="page" data-page="stats">
+          <div class="page-heading">
+            <div><span class="eyebrow">Performans</span><h2>İstatistikler</h2><p>Tekrarsız, tarih bazlı adet, m³ ve tür dağılımı.</p></div>
+            <span id="statsSourceBadge" class="counter-badge">Veri yok</span>
+          </div>
+
+          <div class="range-tabs" role="tablist">
+            <button class="range-tab is-active" data-range="day" type="button">Gün</button>
+            <button class="range-tab" data-range="week" type="button">Hafta</button>
+            <button class="range-tab" data-range="month" type="button">Ay</button>
+            <button class="range-tab" data-range="all" type="button">Tümü</button>
+          </div>
+
+          <div class="stats-kpis">
+            <article><small>Toplam adet</small><b id="statsCount">0</b><span id="statsCountNote">Seçili dönem</span></article>
+            <article><small>Toplam m³</small><b id="statsVolume">0,000</b><span id="statsVolumeNote">Seçili dönem</span></article>
+          </div>
+
+          <article class="surface chart-card">
+            <div class="card-heading"><div><h3 id="chartTitle">Günlük hareket</h3><p>Adet sütun, m³ çizgi olarak gösterilir.</p></div><div class="chart-legend"><span><i class="legend-bar"></i>Adet</span><span><i class="legend-line"></i>m³</span></div></div>
+            <div id="statsChart" class="chart" aria-label="İstatistik grafiği"></div>
+          </article>
+
+          <article class="surface">
+            <div class="card-heading"><div><h3>Kullanıcı bazlı</h3><p>Seçili dönemde veri gönderen kullanıcılar.</p></div></div>
+            <div id="userRanking" class="ranking-list"></div>
+          </article>
+
+          <div class="category-grid">
+            <article class="surface"><div class="card-heading"><div><h3>Ağaç türü</h3><p>Gerçek gönderilen tür toplamları.</p></div></div><div id="treeBreakdown" class="ranking-list compact"></div></article>
+            <article class="surface"><div class="card-heading"><div><h3>Odun / Emval türü</h3><p>Gerçek gönderilen ürün toplamları.</p></div></div><div id="woodBreakdown" class="ranking-list compact"></div></article>
+          </div>
+          <div id="statsNotice" class="info-note"></div>
+        </section>
+
+        <section id="page-backups" class="page" data-page="backups">
+          <div class="page-heading">
+            <div><span class="eyebrow">Google Drive</span><h2>Yedekler</h2><p>Drive dosyaları korunur; Sil / Gizle yalnızca panel kaydını kaldırır.</p></div>
+            <span id="backupCountBadge" class="counter-badge">0 yedek</span>
+          </div>
+          <div class="toolbar">
+            <label class="search-box"><span>⌕</span><input id="backupSearch" placeholder="Yedek, kullanıcı veya tarih ara"></label>
+            <select id="backupSort" aria-label="Yedek sıralaması"><option value="new">Yeni → Eski</option><option value="old">Eski → Yeni</option></select>
+            <button id="clearBackupFilter" class="button subtle" type="button">Temizle</button>
+          </div>
+          <div id="backupList" class="backup-list"></div>
+        </section>
+
+        <section id="page-manage" class="page" data-page="manage">
+          <div class="page-heading">
+            <div><span class="eyebrow">Güvenlik</span><h2>Yönetim</h2><p>Engellenen kullanıcı, IP ve cihazları yönetin.</p></div>
+            <span id="blockCountBadge" class="counter-badge danger">0 engel</span>
+          </div>
+
+          <div class="security-summary">
+            <article><small>Engelli kullanıcı</small><b id="blockedUsersCount">0</b></article>
+            <article><small>Engelli IP</small><b id="blockedIpsCount">0</b></article>
+            <article><small>Engelli cihaz</small><b id="blockedDevicesCount">0</b></article>
+          </div>
+
+          <div class="manage-tabs">
+            <button class="manage-tab is-active" data-block-view="user_key" type="button">Kullanıcılar</button>
+            <button class="manage-tab" data-block-view="ip" type="button">IP adresleri</button>
+            <button class="manage-tab" data-block-view="device_id" type="button">Cihazlar</button>
+          </div>
+
+          <div class="toolbar toolbar-manage">
+            <label class="search-box"><span>⌕</span><input id="blockSearch" placeholder="Engel ara"></label>
+            <button id="addIpBtn" class="button primary" type="button">+ Yeni IP engelle</button>
+          </div>
+          <div id="blockList" class="block-list"></div>
+
+          <article class="surface google-access-panel">
+            <div class="card-heading"><div><h3>Google giriş talepleri</h3><p>Google hesabını mevcut kullanıcı adı ve şeflikle eşleştir; erişimi gerektiğinde kapat.</p></div><span id="googleAccessCount" class="counter-badge">0 bekleyen</span></div>
+            <div class="google-access-tabs" role="tablist">
+              <button class="google-access-tab is-active" data-access-status="pending" type="button">Bekleyen</button>
+              <button class="google-access-tab" data-access-status="approved" type="button">Onaylı</button>
+              <button class="google-access-tab" data-access-status="rejected" type="button">Reddedilen</button>
+              <button class="google-access-tab" data-access-status="revoked" type="button">Kapatılan</button>
+            </div>
+            <div id="googleAccessList" class="google-access-list"></div>
+          </article>
+
+          <article class="surface admin-session-card">
+            <div><h3>Yönetim oturumu</h3><p>Bu cihazdan çıkabilir veya hesabın bütün açık cihaz oturumlarını kapatabilirsiniz.</p></div>
+            <button id="logoutAllBtn" class="button danger" type="button">Tüm cihazlardan çıkış</button>
+          </article>
+
+          <article class="surface security-log-panel">
+            <div class="card-heading"><div><h3>Giriş ve güvenlik kayıtları</h3><p>Başarılı/başarısız admin girişleri ve yönetim işlemleri.</p></div><span id="adminSecurityLogCount" class="counter-badge">0 kayıt</span></div>
+            <div id="adminSecurityLogList" class="security-log-list"></div>
+          </article>
+        </section>
+      </main>
+
+      <nav class="bottom-nav" aria-label="Ana menü">
+        <button class="nav-item is-active" data-page-target="users" type="button"><span>♙</span><b>Kullanıcılar</b></button>
+        <button class="nav-item" data-page-target="stats" type="button"><span>▥</span><b>İstatistikler</b></button>
+        <button class="nav-item" data-page-target="backups" type="button"><span>☁</span><b>Yedekler</b></button>
+        <button class="nav-item" data-page-target="manage" type="button"><span>⚙</span><b>Yönetim</b></button>
+      </nav>
+    </div>
+  </div>
+
+  <div id="modal" class="modal" aria-hidden="true">
+    <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-heading"><h2 id="modalTitle">Detay</h2><button id="modalClose" class="icon-button" type="button">×</button></div>
+      <div id="modalBody" class="modal-body"></div>
+    </div>
+  </div>
+  <div id="toast" class="toast" role="status"></div>
+  <script src="./admin.js?v=551"></script>
+</body>
+</html>
