@@ -1,4 +1,4 @@
-/* Mesaha İO V5.57 — giriş teşhis/log tutucu.
+/* Mesaha İO V5.58 — giriş teşhis/log tutucu.
    Amaç: Google/Supabase giriş akışındaki gerçek kırılma noktasını güvenli şekilde kaydetmek. */
 (function(){
   'use strict';

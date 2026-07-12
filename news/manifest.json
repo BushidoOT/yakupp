@@ -1,6 +1,6 @@
 {
-  "name": "Mesaha İO V5.57 •Yakupp•",
-  "short_name": "Mesaha İO V5.57",
+  "name": "Mesaha İO V5.59 •Yakupp•",
+  "short_name": "Mesaha İO V5.59",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
@@ -21,5 +21,5 @@
   ],
   "id": "./",
   "description": "Mesaha İO saha ölçüm ve yedek uygulaması",
-  "version": "v557_yakupp"
+  "version": "v559_yakupp"
 }

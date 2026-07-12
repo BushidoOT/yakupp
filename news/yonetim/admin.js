@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const ADMIN_VERSION = 'V5.52 •Yakupp•';
+  const ADMIN_VERSION = 'V5.59 •Yakupp•';
   const EDGE_URL = 'https://swrbpdpotmirnmtqnuba.supabase.co/functions/v1/smooth-function';
   const SESSION_KEY = 'mesaha_admin_auth_v548_session';
   const LAST_ACTIVITY_KEY = 'mesaha_admin_auth_v548_activity';
@@ -343,7 +343,19 @@
     const id = clean(user.id);
     const accessRevoked = state.userAccess.some((x) => clean(x.user_id) === id && clean(x.status) === 'revoked');
     const idBlocked = state.blocks.some((b) => b.active && b.type === 'user_id' && clean(b.value) === id);
-    return accessRevoked || idBlocked;
+    const keyBlocked = state.blocks.some((b) => b.active && b.type === 'user_key' && lower(b.value) === lower(user.userKey));
+    return accessRevoked || idBlocked || keyBlocked;
+  }
+  function googleInfoForUser(user) {
+    const id = clean(user && user.id);
+    const name = lower(user && user.name), seflik = lower(user && user.seflik);
+    const rows = state.userAccess.map(obj);
+    let row = rows.find((r) => id && clean(r.user_id) === id && ['approved','revoked'].includes(clean(r.status)));
+    if (!row) row = rows.find((r) => clean(r.status) === 'approved' && lower(first(r.canonical_name, r.requested_name)) === name && lower(first(r.canonical_seflik, r.requested_seflik)) === seflik);
+    if (row) return {email:first(row.email, 'Google hesabı'), status:clean(row.status)};
+    const raw = lower(JSON.stringify(user && user.raw || {}));
+    if (raw.includes('google') || raw.includes('gmail.com')) return {email:first(path(user.raw||{}, 'email'), 'Google hesabı'), status:'approved'};
+    return null;
   }
   function onlineNow(user) { return user.lastSeenMs && Date.now() - user.lastSeenMs <= 15 * 60 * 1000; }
   function seenToday(user) { return dateKey(user.lastSeen) === todayKey(); }
@@ -414,9 +426,10 @@
   function renderUsers() {
     const users = filteredUsers(); $('userFilterInfo').textContent = `${fmtInt(users.length)} sonuç`;
     $('userList').innerHTML = users.length ? users.map((user, index) => {
-      const globalIndex = state.users.indexOf(user), blocked = isBlockedUser(user), backups = relatedBackups(user).length;
-      return `<article class="user-card">
-        <div class="user-head"><div class="avatar">${escapeHtml(initials(user.name))}</div><div class="user-title"><h3>${escapeHtml(user.name)}</h3><p>${escapeHtml(user.seflik)} • son giriş ${escapeHtml(fmtDate(user.lastSeen))}</p></div><span class="status-pill">${blocked ? 'Engelli' : onlineNow(user) ? 'Online' : 'Aktif'}</span></div>
+      const globalIndex = state.users.indexOf(user), blocked = isBlockedUser(user), backups = relatedBackups(user).length, google = googleInfoForUser(user);
+      const googleBadge = google ? `<span class="google-user-badge" title="${escapeHtml(google.email)}" aria-label="Google ile doğrulandı"><span class="google-g">G</span><b>Google</b></span>` : '';
+      return `<article class="user-card ${google ? 'is-google-user' : ''}">
+        <div class="user-head"><div class="avatar">${escapeHtml(initials(user.name))}</div><div class="user-title"><h3>${escapeHtml(user.name)} ${googleBadge}</h3><p>${escapeHtml(user.seflik)} • son giriş ${escapeHtml(fmtDate(user.lastSeen))}</p></div><span class="status-pill">${blocked ? 'Engelli' : onlineNow(user) ? 'Online' : 'Aktif'}</span></div>
         <div class="user-data">
           <div class="data-cell"><small>IP adresi</small><b class="ip">${escapeHtml(user.ip || '-')}</b></div>
           <div class="data-cell"><small>Cihaz</small><b>${escapeHtml(user.deviceId || '-')}</b></div>
@@ -488,17 +501,22 @@
     $('backupList').innerHTML=rows.length?rows.map((b)=>`<article class="backup-card" data-backup-id="${escapeHtml(b.driveFileId)}"><div class="backup-main"><div class="file-badge">JSON</div><div><h3>${escapeHtml(b.fileName)}</h3><p>${escapeHtml(b.name)} • ${escapeHtml(b.seflik)}</p><p>${escapeHtml(fmtDate(b.createdAt))}${b.version&&b.version!=='-'?` • ${escapeHtml(b.version)}`:''}</p></div></div><div class="backup-stats"><div><small>Kayıt</small><b>${fmtInt(b.count)}</b></div><div><small>m³</small><b>${fmtM3(b.volume)}</b></div></div><div class="backup-actions"><a class="button info small" href="${escapeHtml(b.driveLink||'#')}" target="_blank" rel="noopener">Drive aç</a><button class="button danger small" data-action="hide-backup" data-backup-id="${escapeHtml(b.driveFileId)}" type="button">Kalıcı Sil</button></div></article>`).join(''):'<div class="empty-state">Görünen Drive yedeği yok.</div>';
   }
 
-  function activeBlocks(type=state.blockView) { return state.blocks.filter((b)=>b.active&&b.type===type).sort((a,b)=>ms(b.createdAt)-ms(a.createdAt)); }
+  function activeBlocks(type=state.blockView) { return state.blocks.filter((b)=>b.active&&(type==='user_key' ? (b.type==='user_key'||b.type==='user_id') : b.type===type)).sort((a,b)=>ms(b.createdAt)-ms(a.createdAt)); }
   function blockedDisplay(block) {
     if (block.type==='user_key') {
       const user=state.users.find((u)=>lower(u.userKey)===lower(block.value));
       return {title:user?user.name:'Kullanıcı engeli',sub:user?user.seflik:block.value};
     }
+    if (block.type==='user_id') {
+      const user=state.users.find((u)=>clean(u.id)===clean(block.value));
+      const google=user&&googleInfoForUser(user);
+      return {title:user?user.name:'Doğrulanmış kullanıcı engeli',sub:user?(user.seflik+(google?' • Google':'') ):block.value};
+    }
     return {title:block.type==='ip'?'IP adresi':'Cihaz',sub:block.value};
   }
   function renderBlocks() {
     const q=lower($('blockSearch').value); let rows=activeBlocks().filter((b)=>!q||[b.value,b.reason,b.createdAt].join(' ').toLocaleLowerCase('tr-TR').includes(q));
-    $('blockedUsersCount').textContent=fmtInt(activeBlocks('user_key').length);$('blockedIpsCount').textContent=fmtInt(activeBlocks('ip').length);$('blockedDevicesCount').textContent=fmtInt(activeBlocks('device_id').length);$('blockCountBadge').textContent=`${fmtInt(state.blocks.filter((b)=>b.active).length)} engel`;
+    $('blockedUsersCount').textContent=fmtInt(activeBlocks('user_key').length);$('blockedIpsCount').textContent=fmtInt(activeBlocks('ip').length);$('blockedDevicesCount').textContent=fmtInt(activeBlocks('device_id').length);$('blockCountBadge').textContent=`${fmtInt(state.blocks.filter((b)=>b.active).length)} engel`;/* user_key sekmesi doğrulanmış user_id engellerini de gösterir */
     $('blockList').innerHTML=rows.length?rows.map((b)=>{const d=blockedDisplay(b);return `<article class="block-card"><div><h3>${escapeHtml(d.title)}</h3><span class="block-value">${escapeHtml(d.sub)}</span><p>${escapeHtml(b.reason)} • ${escapeHtml(fmtDate(b.createdAt))}</p></div><div class="block-actions"><button class="button danger small" data-action="unblock" data-block-id="${escapeHtml(b.id)}" data-block-type="${escapeHtml(b.type)}" data-block-value="${escapeHtml(b.value)}" type="button">Engeli kaldır</button></div></article>`}).join(''):'<div class="empty-state">Bu bölümde aktif engel yok.</div>';
   }
 

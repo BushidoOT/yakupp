@@ -7209,15 +7209,21 @@ body.mesaha-floating-save-open-v537 .bottom-nav{display:none!important;visibilit
     floating.__v537Bound=true;
     // Eski V5.31 zamanlayıcısının yeniden bağlanmasını engelle.
     floating.__v531Bound=true;
-    var isIOS=/iPad|iPhone|iPod/i.test(navigator.userAgent||'')||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
-    if(isIOS&&window.PointerEvent){
-      floating.addEventListener('pointerdown',function(ev){if(ev.pointerType!=='mouse')ev.preventDefault();},{passive:false,capture:true});
-      floating.addEventListener('pointerup',function(ev){if(ev.pointerType!=='mouse')fireSave(ev);},{passive:false,capture:true});
-      floating.addEventListener('click',function(ev){if(Date.now()-lastFire<900){ev.preventDefault();ev.stopPropagation();ev.stopImmediatePropagation();}},{passive:false,capture:true});
-    }else if(isIOS){
-      floating.addEventListener('touchstart',function(ev){ev.preventDefault();},{passive:false,capture:true});
+    var touchLike=('ontouchstart' in window)||(navigator.maxTouchPoints&&navigator.maxTouchPoints>0);
+    if(window.PointerEvent){
+      floating.addEventListener('pointerdown',function(ev){
+        if(ev.pointerType!=='mouse'){try{ev.preventDefault();ev.stopPropagation();}catch(e){}}
+      },{passive:false,capture:true});
+      floating.addEventListener('pointerup',function(ev){
+        if(ev.pointerType!=='mouse')return fireSave(ev);
+      },{passive:false,capture:true});
+      floating.addEventListener('click',function(ev){
+        if(Date.now()-lastFire<900){ev.preventDefault();ev.stopPropagation();ev.stopImmediatePropagation();return false;}
+      },{passive:false,capture:true});
+    }else if(touchLike){
+      floating.addEventListener('touchstart',function(ev){try{ev.preventDefault();ev.stopPropagation();}catch(e){}},{passive:false,capture:true});
       floating.addEventListener('touchend',fireSave,{passive:false,capture:true});
-      floating.addEventListener('click',function(ev){if(Date.now()-lastFire<900){ev.preventDefault();ev.stopPropagation();ev.stopImmediatePropagation();}},{passive:false,capture:true});
+      floating.addEventListener('click',function(ev){if(Date.now()-lastFire<900){ev.preventDefault();ev.stopPropagation();ev.stopImmediatePropagation();return false;}},{passive:false,capture:true});
     }else floating.addEventListener('click',fireSave,{passive:false,capture:true});
     if(window.MutationObserver)new MutationObserver(syncFloating).observe(original,{attributes:true,childList:true,subtree:true});
   }
@@ -7255,6 +7261,33 @@ body.mesaha-floating-save-open-v537 .bottom-nav{display:none!important;visibilit
   window.MesahaV537={fireFloatingSave:fireSave,syncFloatingSave:syncFloating,syncModalViewport:syncModalViewport};
 })();
 </script>
+
+<script id="mesaha-v558-android-keyboard-save-fix">
+(function(){
+  'use strict';
+  if(window.__mesahaV558AndroidSaveFix)return;window.__mesahaV558AndroidSaveFix=true;
+  var last=0;
+  function byId(id){return document.getElementById(id)}
+  function activeMeasure(){var a=document.activeElement;return a&&['diameterInput','lengthInput','barcodeInput','quantityInput'].indexOf(a.id)>=0?a:null;}
+  function fire(ev){try{if(ev&&ev.cancelable)ev.preventDefault();if(ev){ev.stopPropagation();ev.stopImmediatePropagation&&ev.stopImmediatePropagation();}}catch(e){}
+    var now=Date.now();if(now-last<650)return false;last=now;
+    var btn=byId('saveBtn');if(btn&&btn.getAttribute('aria-busy')==='true')return false;
+    try{if(typeof saveEntry==='function')return saveEntry();}catch(e){}
+    try{if(window.saveEntry&&typeof window.saveEntry==='function')return window.saveEntry();}catch(e){}
+    return false;
+  }
+  function bind(){
+    var btn=byId('saveBtn');if(btn&&!btn.__v558NoBlur){btn.__v558NoBlur=true;
+      if(window.PointerEvent){btn.addEventListener('pointerdown',function(ev){if(ev.pointerType!=='mouse'&&activeMeasure()){try{ev.preventDefault();ev.stopPropagation();}catch(e){}}},{passive:false,capture:true});btn.addEventListener('pointerup',function(ev){if(ev.pointerType!=='mouse'&&activeMeasure())return fire(ev);},{passive:false,capture:true});}
+      else{btn.addEventListener('touchstart',function(ev){if(activeMeasure()){try{ev.preventDefault();ev.stopPropagation();}catch(e){}}},{passive:false,capture:true});btn.addEventListener('touchend',function(ev){if(activeMeasure())return fire(ev);},{passive:false,capture:true});}
+      btn.addEventListener('click',function(ev){if(Date.now()-last<900){try{ev.preventDefault();ev.stopPropagation();ev.stopImmediatePropagation();}catch(e){}return false;}},true);
+    }
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
+  [200,800,1800].forEach(function(ms){setTimeout(bind,ms)});
+})();
+</script>
+
 <style id="mesaha-v538-ios-touch-style">
 /* V5.38 — iPhone'da kaydırma sonrası ölçü alanları ilk dokunuşta odaklanır. */
 @supports (-webkit-touch-callout:none){

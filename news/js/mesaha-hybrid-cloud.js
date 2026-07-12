@@ -1,4 +1,4 @@
-/* Mesaha İO V5.56 — Terminal modunda bulut kapalı; Google girişli bulut motoru
+/* Mesaha İO V5.59 — Terminal kodlu bulut + Google girişli bulut motoru
    Buluta Yedekle: Edge Function guard + güvenli Supabase V2 + Google Drive.
    Buluttan Getir: Edge Function guard + iki kaynak birlikte listelenir.
    Kullanıcı yedek silme: gerçek silme yok; kullanıcı listesinden gizlenir.
@@ -18,6 +18,7 @@
   var HIDDEN_KEY = 'mesaha_hidden_cloud_backups_v505';
   var SESSION_KEY = 'mesaha_supabase_v500_session';
   var DEVICE_KEY = 'mesaha_supabase_v500_device';
+  var TERMINAL_KEY = 'mesaha_terminal_local_mode_v556';
 
   function $(id){ return document.getElementById(id); }
   function clean(v){ return String(v == null ? '' : v).trim(); }
@@ -39,8 +40,15 @@
   function versionRaw(){ return (window.MESAHA_VERSION&&window.MESAHA_VERSION.version) || window.FILE_VERSION || 'local'; }
   function toast(t,s,k){ try{ if(typeof window.mesahaFloatToastV315==='function') return window.mesahaFloatToastV315(t,s||'',k||'success'); }catch(e){} try{ if(typeof window.toast==='function') return window.toast(t,s||'',k||'success'); }catch(e){} try{ alert(t+(s?'\n'+s:'')); }catch(e){} }
   function errText(e){ var m=String(e&&e.message?e.message:e||'Hata'); if(/Failed to fetch|Network|Load failed|internet|offline/i.test(m)) return 'İnternet bağlantısını kontrol et.'; if(/permission|rls|policy|yetkisiz|403|401/i.test(m)) return 'Yetki/RLS kontrolü gerekli.'; if(/payload|column_size|too large|413/i.test(m)) return 'Yedek boyutu fazla; parça sistemi kontrol edilmeli.'; return m.slice(0,180); }
-  function terminalMode(){try{var x=jsonGet('mesaha_terminal_local_mode_v556',null);return !!(x&&x.active===true)}catch(e){return false}}
-  function terminalCloudError(){var e=new Error('Bu özellik için Google ile giriş yap. Terminal modunda bulut kapalıdır.');e.googleRequired=true;return e}
+  function terminalData(){try{return jsonGet(TERMINAL_KEY,{})||{}}catch(e){return {}}}
+  function terminalMode(){try{var x=terminalData();return !!(x&&x.active===true)}catch(e){return false}}
+  function terminalCloudAllowed(){var x=terminalData();return !!(x&&x.active===true&&x.source==='pair_code'&&x.pairedUserId&&(x.terminalToken||x.terminalCode));}
+  function terminalCloudError(){var e=new Error(terminalMode()?'Bu terminal buluta bağlı değil. Telefonda Google ile giriş yapan kullanıcıdan Terminal kodu oluşturup bu cihaza girin.':'Bu özellik için Google ile giriş yap.');e.googleRequired=true;return e}
+  function deviceInfo(){var nav=navigator||{};return{deviceId:getDeviceId(),platform:clean((nav.userAgentData&&nav.userAgentData.platform)||nav.platform||''),userAgent:clean(nav.userAgent||'').slice(0,500),standalone:!!(window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||nav.standalone===true};}
+  function cfg(){var c=window.MESAHA_SUPABASE_CONFIG||{};return{url:clean(c.url).replace(/\/+$/,''),anonKey:clean(c.anonKey||c.anon_key)}}
+  async function anonRpc(name,params){var c=cfg();if(!c.url||!c.anonKey)throw new Error('Supabase bağlantı ayarı eksik.');var res=await fetch(c.url+'/rest/v1/rpc/'+encodeURIComponent(name),{method:'POST',cache:'no-store',headers:{apikey:c.anonKey,Authorization:'Bearer '+c.anonKey,'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify(params||{})});var txt=await res.text(),out={};try{out=txt?JSON.parse(txt):{}}catch(e){out={message:txt}}if(!res.ok||out.ok===false){throw new Error(clean(out.message||out.error||out.details||out.hint||('Terminal bulut RPC hata '+res.status)))}return out;}
+  function terminalCred(){var x=terminalData();if(!terminalCloudAllowed())return null;return{code:clean(x.terminalCode),token:clean(x.terminalToken),device:deviceInfo()}}
+  async function terminalRpc(name,params){var cr=terminalCred();if(!cr)throw terminalCloudError();return anonRpc(name,Object.assign({p_terminal_code:cr.code,p_terminal_token:cr.token,p_device_info:cr.device,p_app_version:versionText()},params||{}));}
   function volume(r){ var d=Number(String(r.diameter||r.cap||0).replace(',','.')); var l=Number(String(r.length||r.boy||0).replace(',','.')); var q=Number(r.quantity||r.adet||1); if(!d||!l) return 0; return Math.PI*Math.pow(d/100,2)/4*l*q; }
   function totalM3(list){ return (list||[]).reduce(function(a,r){ return a+volume(r); },0); }
   function trText(){ try{ return new Date().toLocaleString('tr-TR'); }catch(e){ return new Date().toISOString(); } }
@@ -126,7 +134,7 @@
     }
   }
   async function guardCheck(action,user,extra){
-    if(terminalMode()) throw terminalCloudError();
+    if(terminalMode()){if(terminalCloudAllowed())return {ok:true,terminal:true};throw terminalCloudError();}
     user=user||readUser();
     if(!validIdentity(user)) throw new Error('Geçerli kullanıcı adı ve şeflik gerekli');
     var api=window.mesahaSupabaseV380||window.mesahaSupabaseV383||window.mesahaSupabase;
@@ -234,6 +242,37 @@
     return payload;
   }
 
+
+  async function saveTerminalCloudSlot(slot,user,list,payload){
+    var chunkCount=Math.max(1, Math.ceil(list.length/CHUNK_SIZE));
+    var meta={
+      id:slot,slotId:slot,userKey:userKey(user.name,user.seflik),name:user.name,seflik:user.seflik,bolmeNo:user.bolmeNo,
+      fileName:'Mesaha_Terminal_Bulut_'+slot+'_'+Date.now().toString(36)+'.json',payload:Object.assign({},payload,{records:[]}),recordsChunked:true,chunkCount:chunkCount,recordCount:list.length,count:list.length,totalVolume:totalM3(list),m3:totalM3(list),createdAt:trText(),createdAtMs:Date.now(),source:'terminal-cloud-v559',fileVersion:versionRaw(),appVersion:versionText(),archived:false
+    };
+    await terminalRpc('mesaha_terminal_backup_slot_upsert_v559',{p_slot_id:slot,p_meta:meta});
+    for(var i=0;i<chunkCount;i++){
+      await terminalRpc('mesaha_terminal_backup_chunk_upsert_v559',{p_slot_id:slot,p_chunk_index:i,p_records:list.slice(i*CHUNK_SIZE,(i+1)*CHUNK_SIZE)});
+    }
+    return {source:'supabase',slotId:slot,chunkCount:chunkCount,count:list.length,terminal:true};
+  }
+  async function backupTerminalCloud(user,list,payload){
+    var slot=nextSlot();
+    var latest=await saveTerminalCloudSlot('latest',user,list,payload);
+    var ring=null;try{ring=await saveTerminalCloudSlot(slot,user,list,payload)}catch(e){ring={error:errText(e),slotId:slot}};
+    return {latest:latest,slot:ring};
+  }
+  async function listTerminalCloud(){
+    var out=await terminalRpc('mesaha_terminal_backup_list_v559',{}),arr=out.items||[];
+    return arr.map(function(b){return {source:'supabase',id:b.id||b.slotId||b.slot_id,name:b.name||'Terminal bulut yedeği',createdAt:b.createdAt||'',createdAtMs:Number(b.createdAtMs||0)||0,count:Number(b.count||0)||0,totalVolume:Number(b.totalVolume||0)||0,chunkCount:Number(b.chunkCount||1)||1,raw:b};}).filter(function(x){return !isHidden('supabase',x.id,readUser())}).sort(function(a,b){return (b.createdAtMs||0)-(a.createdAtMs||0)});
+  }
+  async function readTerminalCloud(slotId){
+    var out=await terminalRpc('mesaha_terminal_backup_read_v559',{p_slot_id:slotId||'latest'});
+    var payload=out.payload||out; if(payload.payload)payload=payload.payload; return payload;
+  }
+  async function deleteTerminalCloud(slotId){
+    return await terminalRpc('mesaha_terminal_backup_hide_v559',{p_slot_id:slotId||'latest'});
+  }
+
   function operationKey(prefix,user,list,extra){list=Array.isArray(list)?list:[];var last=list.length?list[list.length-1]:{};return [prefix,userKey(user.name,user.seflik),list.length,clean(last.id||last.barcode||last.barkod||''),clean(last.updatedAt||last.createdAt||last.date||''),clean(extra||'')].join(':').slice(0,240);}
   async function drivePost(action,data){
     var api=window.mesahaSupabaseV380||window.mesahaSupabaseV383||window.mesahaSupabase;
@@ -275,9 +314,9 @@
     if(!confirm('Yedek silinsin mi?')) return;
     try{
       var user=readUser();
-      await guardCheck('hide_backup',user,{source:source,slot_id:id});
+      await guardCheck('hide_backup',user,{source:terminalMode()?'terminal-cloud':source,slot_id:id});
       hideBackupLocal(source,id,user);
-      if(source==='supabase') await deleteSupabase(id); else await deleteDrive(id);
+      if(terminalMode()&&terminalCloudAllowed()) await deleteTerminalCloud(id); else if(source==='supabase') await deleteSupabase(id); else await deleteDrive(id);
       toast('Yedek silindi.','','success');
       setTimeout(openCloud,250);
     }catch(e){
@@ -290,14 +329,16 @@
     var list=records();
     var payload=backupPayload(user,list);
     var opKey=operationKey('cloud-backup',user,list,user.bolmeNo);
-    var gate=await guardCheck('backup_gate',user,{record_count:list.length,idempotencyKey:opKey,source:'hybrid'});
+    var gate=await guardCheck('backup_gate',user,{record_count:list.length,idempotencyKey:opKey,source:terminalMode()?'terminal-cloud':'hybrid'});
     if(gate&&gate.duplicate){toast('Yeni değişiklik yok.','Aynı kayıtlar daha önce buluta yedeklendi.','warning');return {ok:[],fail:[],duplicate:true};}
     setBusy(true,'Buluta yükleniyor…');
     var ok=[], fail=[];
     try{
-      try{ await backupSupabase(user,list,payload); ok.push('Supabase'); }catch(e){ fail.push('Supabase: '+errText(e)); }
-      try{ await backupDrive(user,list,payload,opKey); ok.push('Drive'); }catch(e){ fail.push('Drive: '+errText(e)); }
-      if(ok.length===2) toast('Buluta yedeklendi.','Supabase ve Google Drive tamam.','success');
+      if(terminalMode()&&terminalCloudAllowed()){await backupTerminalCloud(user,list,payload);ok.push('Terminal Bulut');}
+      else {try{ await backupSupabase(user,list,payload); ok.push('Supabase'); }catch(e){ fail.push('Supabase: '+errText(e)); }
+      try{ await backupDrive(user,list,payload,opKey); ok.push('Drive'); }catch(e){ fail.push('Drive: '+errText(e)); }}
+      if(terminalMode()&&terminalCloudAllowed()&&ok.length) toast('Terminal buluta yedeklendi.','Kullanıcıya bağlı Supabase bulut tamam.','success');
+      else if(ok.length===2) toast('Buluta yedeklendi.','Supabase ve Google Drive tamam.','success');
       else if(ok.length===1) toast('Yedek kısmen alındı.',ok[0]+' tamam • '+fail.join(' • '),'warning');
       else throw new Error(fail.join(' • ')||'Yedek alınamadı');
       try{ localStorage.setItem('mesaha_last_hybrid_backup_v501', JSON.stringify({at:new Date().toISOString(),ok:ok,fail:fail,count:list.length,operationKey:opKey})); }catch(e){}
@@ -308,8 +349,9 @@
 
   async function combinedList(){
     var user=requireUser();
-    await guardCheck('list_backups',user,{source:'hybrid'});
+    await guardCheck('list_backups',user,{source:terminalMode()?'terminal-cloud':'hybrid'});
     var sup=[], drv=[], errors=[];
+    if(terminalMode()&&terminalCloudAllowed()){try{sup=await listTerminalCloud();}catch(e){errors.push('Terminal Bulut: '+errText(e));}return {items:sup,errors:errors};}
     try{ sup=await listSupabase(); }catch(e){ errors.push('Supabase: '+errText(e)); }
     try{ drv=await listDrive(); }catch(e){ errors.push('Drive: '+errText(e)); }
     var arr=sup.concat(drv);
@@ -342,7 +384,7 @@
     if(!confirm('Bu bulut yedeği mevcut kayıtların yerine yüklenecek. Devam edilsin mi?')) return;
     try{
       await guardCheck('restore_backup',readUser(),{source:source,slot_id:id});
-      var payload = source==='drive' ? await readDrive(id) : await readSupabase(id);
+      var payload = (terminalMode()&&terminalCloudAllowed()) ? await readTerminalCloud(id) : (source==='drive' ? await readDrive(id) : await readSupabase(id));
       var recs=payload.records || ((payload.payload||{}).records);
       var st=payload.settings || ((payload.payload||{}).settings);
       if(!Array.isArray(recs)) throw new Error('Yedek kayıtları bulunamadı');
@@ -409,7 +451,7 @@
   }
   function expose(){
     ensureV505Style();
-    var api={version:'v508',backup:hybridBackup,list:combinedList,openCloudRestore:openCloud,restore:restore,deleteBackup:deleteBackup,backupSupabase:backupSupabase,backupDrive:backupDrive};
+    var api={version:'v559',backup:hybridBackup,list:combinedList,openCloudRestore:openCloud,restore:restore,deleteBackup:deleteBackup,backupSupabase:backupSupabase,backupDrive:backupDrive};
     window.MESAHA_HYBRID_CLOUD_V501=api;
     window.MESAHA_HYBRID_CLOUD_V505=api;
     window.MESAHA_HYBRID_CLOUD_V506=api;
