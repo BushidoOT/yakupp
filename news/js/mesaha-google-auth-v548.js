@@ -1,4 +1,4 @@
-/* Mesaha İO V5.63 — Google OAuth + terminal kod eşleştirme + panel üstü modal ve misafir terminal modu.
+/* Mesaha İO V5.64 — Google OAuth + terminal kod eşleştirme + panel üstü modal ve misafir terminal modu.
    - Google hesabı doğrulandıktan sonra kullanıcı otomatik onaylanır.
    - Kullanıcı panelinden terminal kodu üretilebilir.
    - Terminal cihaz Google hesabı açmadan kod ile kullanıcı/şeflik kimliğine eşleşir; bulut yedek özelliklerini kullanabilir. */
@@ -66,6 +66,8 @@
   function providers(u){u=u||user();var out=[];try{(u.identities||[]).forEach(function(x){if(x&&x.provider)out.push(String(x.provider))})}catch(e){}try{var p=u.app_metadata&&u.app_metadata.providers;if(Array.isArray(p))out=out.concat(p.map(String))}catch(e){}if(u.app_metadata&&u.app_metadata.provider)out.push(String(u.app_metadata.provider));return Array.from(new Set(out))}
   function pickGoogleNameFromUser(u){u=u||user();var names=[];function add(v){v=clean(v);if(v&&names.indexOf(v)<0)names.push(v)}try{add(u.user_metadata&&u.user_metadata.full_name);add(u.user_metadata&&u.user_metadata.name);add(u.user_metadata&&u.user_metadata.display_name)}catch(e){}try{(u.identities||[]).forEach(function(x){if(x&&x.provider==='google'){var d=x.identity_data||{};add(d.full_name);add(d.name);add(d.display_name);add(d.given_name&&d.family_name?(d.given_name+' '+d.family_name):'')}})}catch(e){}return names.find(function(n){return n.length>=2&&!/@/.test(n)&&!/^(google|user|kullanıcı|kullanici)$/i.test(n)})||''}
   function googleDisplayName(){return pickGoogleNameFromUser(user())}
+  function pickGoogleAvatarFromUser(u){u=u||user();var vals=[];function add(v){v=clean(v);if(v&&/^https?:\/\//i.test(v)&&vals.indexOf(v)<0)vals.push(v)}try{add(u.user_metadata&&u.user_metadata.avatar_url);add(u.user_metadata&&u.user_metadata.picture)}catch(e){}try{(u.identities||[]).forEach(function(x){if(x&&x.provider==='google'){var d=x.identity_data||{};add(d.avatar_url);add(d.picture)}})}catch(e){}return vals[0]||''}
+  function googleAvatarUrl(){return pickGoogleAvatarFromUser(user())}
   function isGoogle(){var a=api();return a&&a.isGoogle?a.isGoogle():providers().indexOf('google')>=0}
   function isAnon(){var a=api();return a&&a.isAnonymous?a.isAnonymous():user().is_anonymous===true}
   function redirectUrl(){var u=new URL(location.href);u.hash='';['code','error','error_code','error_description','sb','updated'].forEach(function(k){u.searchParams.delete(k)});var p=u.pathname.replace(/\/index\.html$/i,'/');if(!/\/$/.test(p))p=p.replace(/[^\/]*$/,'');return u.origin+p}
@@ -80,7 +82,7 @@
   function localIdentity(){
     var panel=getJson(PANEL_KEY,{}),st={};try{st=window.state&&window.state.settings||{}}catch(e){}if(!clean(st.ekipNot)||!clean(st.seflik))st=getJson(SETTINGS_KEY,{});
     var g=isGoogle()?googleDisplayName():'';
-    return{name:clean(g||panel.name||st.ekipNot),seflik:clean(panel.seflik||st.seflik),bolmeNo:clean(panel.bolmeNo||st.bolmeNo)}
+    return{name:clean(g||panel.name||st.ekipNot),seflik:clean(panel.seflik||st.seflik||'Dosya'),bolmeNo:clean(panel.bolmeNo||st.bolmeNo)}
   }
   function validIdentity(name,seflik){name=clean(name);seflik=clean(seflik);if(name.length<2||seflik.length<2)return false;var n=name.toLocaleLowerCase('tr-TR'),s=seflik.toLocaleLowerCase('tr-TR');return !/^(kullanıcı|kullanici|user|guest|misafir|boş|bos|-)$/.test(n)&&!/^(şeflik|seflik|unknown|bilinmiyor|boş|bos|-)$/.test(s)}
   function isTerminalMode(){try{var x=getJson(TERMINAL_MODE_KEY,null);return !!(x&&x.active===true)}catch(e){return false}}
@@ -90,7 +92,7 @@
     data=data||{};var name=clean(data.name),seflik=clean(data.seflik),bolme=clean(data.bolmeNo);
     if(!validIdentity(name,seflik))throw new Error('Terminal için kullanıcı adı ve şeflik gerekli.');
     var panel=getJson(PANEL_KEY,{});panel=Object.assign({},panel,{name:name,seflik:seflik,bolmeNo:bolme,terminalMode:true,googleApproved:false,terminalPairedUserId:clean(data.pairedUserId||''),terminalPairedEmail:clean(data.pairedEmail||''),updatedAt:new Date().toISOString()});setJson(PANEL_KEY,panel);
-    var st=getJson(SETTINGS_KEY,{});st=Object.assign({},st,{ekipNot:name,seflik:seflik});if(bolme)st.bolmeNo=bolme;setJson(SETTINGS_KEY,st);
+    var st=getJson(SETTINGS_KEY,{});st=Object.assign({},st,{ekipNot:name,seflik:clean(st.seflik||seflik||'')});if(bolme)st.bolmeNo=bolme;setJson(SETTINGS_KEY,st);
     try{if(window.state&&window.state.settings){window.state.settings.ekipNot=name;window.state.settings.seflik=seflik;if(bolme)window.state.settings.bolmeNo=bolme;if(typeof window.saveSettings==='function')window.saveSettings();}}catch(e){}
     var term={active:true,name:name,seflik:seflik,bolmeNo:bolme,createdAt:new Date().toISOString(),version:'v559',source:data.source||'manual',cloudEnabled:data.source==='pair_code'||!!data.pairedUserId};
     if(data.terminalCode)term.terminalCode=clean(data.terminalCode);if(data.terminalToken)term.terminalToken=clean(data.terminalToken);if(data.pairedUserId)term.pairedUserId=clean(data.pairedUserId);if(data.pairedEmail)term.pairedEmail=clean(data.pairedEmail);if(data.expiresAt)term.expiresAt=data.expiresAt;if(data.pairedAt)term.pairedAt=data.pairedAt;
@@ -107,7 +109,7 @@
     if(!fromPanel)loading('Terminal kodu kontrol ediliyor…');
     loginLog('terminal_code_claim_start',{codeLength:code.length,source:fromPanel?'panel':'overlay'},'info');
     try{
-      var out=await anonRpc('mesaha_claim_terminal_code_v557',{p_code:code,p_device_info:deviceInfo(),p_app_version:(window.MESAHA_VERSION||{}).visibleVersion||'V5.63'});
+      var out=await anonRpc('mesaha_claim_terminal_code_v557',{p_code:code,p_device_info:deviceInfo(),p_app_version:(window.MESAHA_VERSION||{}).visibleVersion||'V5.64'});
       var t=out.terminal||out;
       writeTerminalIdentity({name:t.name,seflik:t.seflik,bolmeNo:t.bolme_no||t.bolmeNo,terminalCode:code,terminalToken:t.terminal_token||t.token,pairedUserId:t.owner_user_id,pairedEmail:t.owner_email,expiresAt:t.expires_at,pairedAt:new Date().toISOString(),source:'pair_code'});
       hide();
@@ -129,28 +131,28 @@
   function applyIdentity(x,options){
     options=options||{};
     if(identityBusy||!x||clean(x.status)!=='approved')return false;
-    var name=clean(x.name||x.canonical_name||googleDisplayName()),seflik=clean(x.seflik||x.canonical_seflik),bolme=clean(x.bolme_no||x.bolmeNo||localIdentity().bolmeNo),gName=googleDisplayName();
+    var name=clean(x.name||x.canonical_name||googleDisplayName()),seflik=clean(x.seflik||x.canonical_seflik||localIdentity().seflik||'Dosya'),bolme=clean(x.bolme_no||x.bolmeNo||localIdentity().bolmeNo),gName=googleDisplayName(),gAvatar=clean(x.avatar_url||x.google_avatar_url||googleAvatarUrl());
     if(!validIdentity(name,seflik))return false;
     identityBusy=true;var changed=false;
     try{
       var panel=getJson(PANEL_KEY,{});
       if(clean(panel.name)!==name||clean(panel.seflik)!==seflik||clean(panel.googleUserId)!==uid()||panel.googleApproved!==true)changed=true;
-      panel=Object.assign({},panel,{name:name,seflik:seflik,bolmeNo:bolme,googleUserId:uid(),googleEmail:clean(x.email||user().email),googleFullName:clean(gName||name),googleApproved:true});setJson(PANEL_KEY,panel);
+      panel=Object.assign({},panel,{name:name,seflik:seflik,bolmeNo:bolme,googleUserId:uid(),googleEmail:clean(x.email||user().email),googleFullName:clean(gName||name),googleAvatarUrl:gAvatar,avatarUrl:gAvatar,googleApproved:true});setJson(PANEL_KEY,panel);
       var st=getJson(SETTINGS_KEY,{});
       if(clean(st.ekipNot)!==name||clean(st.seflik)!==seflik||(bolme&&clean(st.bolmeNo)!==bolme))changed=true;
-      st=Object.assign({},st,{ekipNot:name,seflik:seflik});if(bolme)st.bolmeNo=bolme;setJson(SETTINGS_KEY,st);
+      st=Object.assign({},st,{ekipNot:name,seflik:clean(st.seflik||seflik||'')});if(bolme)st.bolmeNo=bolme;setJson(SETTINGS_KEY,st);
       try{
         if(window.state&&window.state.settings){
           var ws=window.state.settings;
           if(clean(ws.ekipNot)!==name||clean(ws.seflik)!==seflik||(bolme&&clean(ws.bolmeNo)!==bolme))changed=true;
-          ws.ekipNot=name;ws.seflik=seflik;if(bolme)ws.bolmeNo=bolme;
+          ws.ekipNot=name;if(!clean(ws.seflik))ws.seflik=seflik;if(bolme)ws.bolmeNo=bolme;
           if(changed&&typeof window.saveSettings==='function')window.saveSettings();
           else if(changed&&window.MesahaStorageV527&&typeof window.MesahaStorageV527.saveSettings==='function')Promise.resolve(window.MesahaStorageV527.saveSettings(ws,{reason:'google-canonical-v548'})).catch(function(){});
         }
       }catch(e){}
       ['ekipNot','panelNameV316'].forEach(function(id){var el=document.getElementById(id);if(el){if(clean(el.value)!==name)changed=true;el.value=name;el.readOnly=true;el.setAttribute('aria-readonly','true')}});
       ['seflik','panelSeflikV316'].forEach(function(id){var el=document.getElementById(id);if(el){if(clean(el.value)!==seflik)changed=true;el.value=seflik;el.readOnly=true;el.setAttribute('aria-readonly','true')}});
-      var badge=document.getElementById('userBadge');if(badge){badge.textContent=name+' • '+seflik;badge.classList.remove('login-needed')}
+      var badge=document.getElementById('userBadge');if(badge){badge.textContent=name;badge.classList.remove('login-needed')}
       try{clearTerminalMode();ensureTerminalCodePanel()}catch(e){}
       if(changed&&!options.silent){try{window.dispatchEvent(new CustomEvent('mesaha:google-access-approved',{detail:x}));window.dispatchEvent(new Event('mesaha:settings-saved'))}catch(e){}}
       return true;
@@ -230,13 +232,13 @@
     if(!force&&known&&lastStatusAt&&Date.now()-lastStatusAt<STATUS_TTL)return known;
     if(!force&&navigator.onLine===false){if(known&&known.status==='approved')return known;throw new Error('İlk Google doğrulaması için internet gerekli.')}
     if(statusPromise)return statusPromise;
-    statusPromise=(async function(){try{var out=await rpcCompat('mesaha_google_access_status_v560','mesaha_google_access_status_v557',{p_device_info:deviceInfo(),p_app_version:(window.MESAHA_VERSION||{}).visibleVersion||'V5.63',p_google_full_name:googleDisplayName()});var x=out.access||out;x.user_id=x.user_id||uid();x.email=x.email||clean(user().email);clearEmailExistsRetry();cacheAccess(x);loginLog('access_status_ok',{status:x.status,email:x.email,user_id:x.user_id},'info');return x}catch(e){loginLog('access_status_error',{error:e,message:e&&e.message},'error');var c=currentAccess||cached();if(c&&c.status==='approved')return c;throw e}finally{statusPromise=null}})();
+    statusPromise=(async function(){try{var out=await rpcCompat('mesaha_google_access_status_v560','mesaha_google_access_status_v557',{p_device_info:deviceInfo(),p_app_version:(window.MESAHA_VERSION||{}).visibleVersion||'V5.64',p_google_full_name:googleDisplayName()});var x=out.access||out;x.user_id=x.user_id||uid();x.email=x.email||clean(user().email);clearEmailExistsRetry();cacheAccess(x);loginLog('access_status_ok',{status:x.status,email:x.email,user_id:x.user_id},'info');return x}catch(e){loginLog('access_status_error',{error:e,message:e&&e.message},'error');var c=currentAccess||cached();if(c&&c.status==='approved')return c;throw e}finally{statusPromise=null}})();
     return statusPromise;
   }
   function deviceInfo(){var nav=navigator||{};return{deviceId:(api()&&api().getDeviceId?api().getDeviceId():''),platform:clean(nav.userAgentData&&nav.userAgentData.platform||nav.platform),userAgent:clean(nav.userAgent).slice(0,500),standalone:!!(window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||nav.standalone===true}}
   function copyText(v){v=clean(v);if(navigator.clipboard&&navigator.clipboard.writeText)return navigator.clipboard.writeText(v);try{var ta=document.createElement('textarea');ta.value=v;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove()}catch(e){}return Promise.resolve()}
   function terminalCodeHtml(code,expiresAt){return '<div class="google-auth-status-v548 ok"><b>Terminal kodu hazır</b><br>Bu kodu terminal cihazdaki <b>Terminal giriş modu</b> ekranına girin.</div><div class="terminal-code-v557" id="terminalCodeValueV557">'+esc(code)+'</div><p class="google-auth-note-v548">Kod tek kullanımlıktır ve '+esc(expiresAt||'kısa süre')+' tarihine kadar geçerlidir. Terminal bu kodla kullanıcı/şeflik kimliğine eşleşir; Buluta Yedekle ve Buluttan Getir bu kullanıcı adına açık olur.</p>'+button('terminal-code-copy','Kodu kopyala','primary')+button('terminal-code-close','Kapat','subtle')}
-  async function createTerminalCode(){var x=currentAccess||cached();if(!x||clean(x.status)!=='approved')throw new Error('Terminal kodu oluşturmak için önce Google ile giriş yapın.');loading('Terminal kodu oluşturuluyor…');loginLog('terminal_code_create_start',{userId:uid()},'info');var out=await rpc('mesaha_create_terminal_code_v557',{p_label:'terminal',p_app_version:(window.MESAHA_VERSION||{}).visibleVersion||'V5.63'});var t=out.terminal||out;lastTerminalCode=clean(t.code);loginLog('terminal_code_create_ok',{expires_at:t.expires_at},'info');show(terminalCodeHtml(lastTerminalCode,t.expires_at));return out}
+  async function createTerminalCode(){var x=currentAccess||cached();if(!x||clean(x.status)!=='approved')throw new Error('Terminal kodu oluşturmak için önce Google ile giriş yapın.');loading('Terminal kodu oluşturuluyor…');loginLog('terminal_code_create_start',{userId:uid()},'info');var out=await rpc('mesaha_create_terminal_code_v557',{p_label:'terminal',p_app_version:(window.MESAHA_VERSION||{}).visibleVersion||'V5.64'});var t=out.terminal||out;lastTerminalCode=clean(t.code);loginLog('terminal_code_create_ok',{expires_at:t.expires_at},'info');show(terminalCodeHtml(lastTerminalCode,t.expires_at));return out}
   function ensureTerminalCodePanel(){try{var x=currentAccess||cached();if(!x||clean(x.status)!=='approved')return;var card=document.querySelector('#userPanelOverlayV316 .panel-card-v316');if(!card||document.getElementById('terminalCodePanelV557'))return;var before=document.getElementById('panelTelegramSectionV515'),box=document.createElement('div');box.id='terminalCodePanelV557';box.className='terminal-code-panel-v557';box.innerHTML='<b>Terminal eşleştirme</b><p>Terminal cihazda Google hesabı açmadan bu kullanıcıya bağlamak için tek kullanımlık kod oluştur.</p><button class="btn primary full" id="createTerminalCodeBtnV557" type="button">Terminal kodu oluştur</button>';if(before&&before.parentNode)before.parentNode.insertBefore(box,before);else card.appendChild(box);var btn=document.getElementById('createTerminalCodeBtnV557');if(btn&&!btn.__terminalCodeV557){btn.__terminalCodeV557=true;btn.addEventListener('click',function(ev){ev.preventDefault();createTerminalCode().catch(fail)},true)}}catch(e){}}
   function renderAccess(x){
     x=x||{};var status=clean(x.status||'unregistered');loginLog('render_access',{status:status,email:clean(x.email||user().email)},status==='approved'?'info':(status==='pending'?'info':'debug'));var email=clean(x.email||user().email);
@@ -246,10 +248,10 @@
     if(status==='pending')return show('<div class="google-auth-status-v548 pending"><b>Otomatik onay bekleniyor</b><br>Bu kullanıcı eski SQL nedeniyle beklemede görünüyor. Supabase SQL Editor’da V5.59 terminal bulut SQL dosyasını çalıştırın.</div><div class="google-auth-email-v548">'+esc(email)+'</div>'+button('refresh','Tekrar kontrol et','primary')+button('request-form','Bilgilerle tekrar dene','green')+button('logout','Başka Google hesabı kullan','subtle'));
     if(status==='rejected'||status==='revoked')return show('<div class="google-auth-status-v548 denied"><b>Erişim '+(status==='revoked'?'kapatıldı':'reddedildi')+'</b><br>'+esc(x.reason||'Yönetici ile iletişime geçin.')+'</div><div class="google-auth-email-v548">'+esc(email)+'</div>'+button('request-form','Bilgileri güncelle','primary')+button('logout','Başka Google hesabı kullan','subtle'));
     var li=localIdentity();
-    if(validIdentity(li.name,li.seflik)){setTimeout(function(){requestAccess({name:li.name,seflik:li.seflik}).catch(fail)},80);return loading('Google hesabı '+li.name+' • '+li.seflik+' kullanıcısına tanımlanıyor…')}
-    show('<div class="google-auth-status-v548"><b>Google hesabın doğrulandı.</b><br>Google ad-soyad otomatik alınır; şeflik bilgisiyle hesap admin onayı beklemeden tanımlanır.</div><div class="google-auth-email-v548">'+esc(email)+'</div><div class="google-auth-fields-v548"><label>Kullanıcı adı<input id="googleRequestNameV548" maxlength="120" value="'+esc(li.name)+'" autocomplete="name"></label><label>Şeflik<input id="googleRequestSeflikV548" maxlength="120" value="'+esc(li.seflik)+'" autocomplete="organization"></label></div>'+button('request','Google ile devam et','green')+button('logout','Başka Google hesabı kullan','subtle')+'<p class="google-auth-note-v548">İsim alanı Google profilindeki ad-soyad ile otomatik güncellenir; bulut yedek ve şeflik işlemlerinde bu isim kullanılır.</p>')
+    if(clean(li.name).length>=2){setTimeout(function(){requestAccess({name:li.name,seflik:li.seflik||'Dosya'}).catch(fail)},80);return loading('Google hesabı '+li.name+' kullanıcısına tanımlanıyor…')}
+    show('<div class="google-auth-status-v548"><b>Google hesabın doğrulandı.</b><br>Google ad-soyad otomatik alınır; şeflik artık yalnız dosya adı/mesaha bilgisi için kullanılır.</div><div class="google-auth-email-v548">'+esc(email)+'</div><div class="google-auth-fields-v548"><label>Kullanıcı adı<input id="googleRequestNameV548" maxlength="120" value="'+esc(li.name)+'" autocomplete="name"></label><label>Dosya Şefliği <small style="font-weight:700;color:#64748b">(sadece dosya adı)</small><input id="googleRequestSeflikV548" maxlength="120" value="'+esc(li.seflik)+'" autocomplete="organization"></label></div>'+button('request','Google ile devam et','green')+button('logout','Başka Google hesabı kullan','subtle')+'<p class="google-auth-note-v548">İsim alanı Google profilindeki ad-soyad ile otomatik güncellenir; bulut yedek ve şeflik işlemlerinde bu isim kullanılır.</p>')
   }
-  async function requestAccess(data){loginLog('request_access_click',{auto:!!data},'info');data=data||{};var n=document.getElementById('googleRequestNameV548'),s=document.getElementById('googleRequestSeflikV548'),gName=googleDisplayName(),name=clean(gName||data.name||n&&n.value),seflik=clean(data.seflik||s&&s.value);if(!validIdentity(name,seflik))throw new Error('Geçerli kullanıcı adı ve şeflik girin.');loading('Google hesabı kullanıcıya tanımlanıyor…');loginLog('request_access_send',{name:name,seflik:seflik,googleFullName:gName,auto:true},'info');var out=await rpcCompat('mesaha_google_access_request_v560','mesaha_google_access_request_v557',{p_name:name,p_seflik:seflik,p_device_info:deviceInfo(),p_app_version:(window.MESAHA_VERSION||{}).visibleVersion||'V5.63',p_google_full_name:gName});renderAccess(out.access||out)}
+  async function requestAccess(data){loginLog('request_access_click',{auto:!!data},'info');data=data||{};var n=document.getElementById('googleRequestNameV548'),s=document.getElementById('googleRequestSeflikV548'),gName=googleDisplayName(),name=clean(gName||data.name||n&&n.value),seflik=clean(data.seflik||s&&s.value||'Dosya');if(clean(name).length<2)throw new Error('Google ad-soyad alınamadı. Ad soyad girin.');loading('Google hesabı kullanıcıya tanımlanıyor…');loginLog('request_access_send',{name:name,seflik:seflik,googleFullName:gName,googleAvatarUrl:googleAvatarUrl(),auto:true},'info');var out=await rpcCompat('mesaha_google_access_request_v560','mesaha_google_access_request_v557',{p_name:name,p_seflik:seflik,p_device_info:deviceInfo(),p_app_version:(window.MESAHA_VERSION||{}).visibleVersion||'V5.64',p_google_full_name:gName});renderAccess(out.access||out)}
   
   async function logout(){loginLog('logout_start',{},'info');loading('Oturum kapatılıyor…');try{await api().signOut('global')}catch(e){try{api().clearSession()}catch(_e){}}clearAccess();location.replace(redirectUrl())}
   async function handle(action){if(action==='google'){clearTerminalMode();return beginGoogle()}if(action==='terminal')return terminalForm();if(action==='terminal-save')return saveTerminalFromForm();if(action==='terminal-claim')return claimTerminalCode();if(action==='terminal-code-copy')return copyText(lastTerminalCode).then(function(){try{if(typeof window.mesahaFloatToastV315==='function')window.mesahaFloatToastV315('Kod kopyalandı',lastTerminalCode,'success')}catch(e){}});if(action==='terminal-code-close'){hide();ensureTerminalCodePanel();return true}if(action==='refresh')return boot(true);if(action==='request')return requestAccess();if(action==='request-form')return renderAccess({status:'unregistered',email:user().email});if(action==='logout')return logout()}

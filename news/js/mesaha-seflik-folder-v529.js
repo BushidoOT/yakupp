@@ -10,6 +10,7 @@
   var CACHE_KEY='mesaha_seflik_folder_cache_v529';
   var LAST_BOLME_KEY='mesaha_seflik_folder_last_bolme_v529';
   var PENDING_DIVISIONS_KEY='mesaha_seflik_folder_pending_divisions_v530';
+  var ACTIVE_SEFLIK_KEY='mesaha_active_seflik_folder_v564';
   var CHUNK_SIZE=180;
   var divisions=[];
   var busy=false;
@@ -24,8 +25,9 @@
   function writeJson(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}}
   function settings(){var base=(window.state&&window.state.settings)||readJson(SETTINGS_KEY,{});return Object.assign({ekipNot:'',seflik:'',bolmeNo:''},base||{})}
   function records(){var r=(window.state&&Array.isArray(window.state.records))?window.state.records:readJson(RECORDS_KEY,[]);return Array.isArray(r)?r:[]}
-  function user(){var p=readJson(PANEL_KEY,{}),s=settings();return{name:clean(p.name||s.ekipNot),seflik:clean(p.seflik||s.seflik),bolmeNo:clean(p.bolmeNo||s.bolmeNo)}}
-  function validIdentity(u){if(window.MesahaRuntimeV527&&typeof window.MesahaRuntimeV527.validIdentity==='function')return window.MesahaRuntimeV527.validIdentity(u.name,u.seflik);return clean(u.name).length>1&&clean(u.seflik).length>1}
+  function activeSeflikFolder(){return readJson(ACTIVE_SEFLIK_KEY,{})||{}}
+  function user(){var p=readJson(PANEL_KEY,{}),s=settings(),f=activeSeflikFolder();return{name:clean(p.googleFullName||p.name||s.ekipNot),seflik:clean(f.seflik||p.activeSeflik||p.seflik||s.seflik),bolmeNo:clean(p.bolmeNo||s.bolmeNo),seflikKey:clean(f.seflik_key||f.seflikKey),folder:f}}
+  function validIdentity(u){return clean(u&&u.name).length>1&&clean(u&&u.seflik).length>1}
   function token(){var s=readJson(SESSION_KEY,null);return clean(s&&s.access_token)}
   function anonKey(){var c=window.MESAHA_SUPABASE_CONFIG||{};return clean(c.anonKey||c.anon_key)}
   function uuid(){try{return crypto.randomUUID()}catch(e){return 'sync_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2)}}
@@ -54,7 +56,7 @@
   }
   async function edge(action,payload){
     var u=user(),info=deviceInfo();
-    var body=Object.assign({name:u.name,seflik:u.seflik,bolmeNo:u.bolmeNo,deviceId:info.deviceId,deviceInfo:info,appVersion:info.appVersion,fileVersion:info.fileVersion,source:'mesaha-seflik-folder-v548'},payload||{});
+    var body=Object.assign({name:u.name,seflik:u.seflik,seflikKey:u.seflikKey,folderSeflik:u.seflik,bolmeNo:u.bolmeNo,deviceId:info.deviceId,deviceInfo:info,appVersion:info.appVersion,fileVersion:info.fileVersion,source:'mesaha-seflik-folder-v564'},payload||{});
     var api=window.mesahaSupabaseV380||window.mesahaSupabaseV383||window.mesahaSupabase;
     if(!api||typeof api.edge!=='function')throw new Error('Güvenli sunucu bağlantısı hazır değil');
     return await Promise.race([api.edge(action,body),new Promise(function(_,reject){setTimeout(function(){reject(new Error('Sunucu isteği zaman aşımı'))},35000)})]);
@@ -73,11 +75,11 @@
   function updatePreview(){
     var bolme=selectedBolme(),list=currentLocalList(),m3=list.reduce(function(a,r){return a+volume(r)},0);
     var el=$('seflikFolderLocalPreviewV528');
-    if(el)el.textContent=bolme?(list.length.toLocaleString('tr-TR')+' kayıt • '+fmt(m3,3)+' m³ • Bölme '+bolme):'Önce açık bir bölme seçin';
+    if(el)el.textContent=bolme?(list.length.toLocaleString('tr-TR')+' kayıt • '+fmt(m3,3)+' m³ • Bölme '+bolme):(!user().seflik?'Önce Şeflik Klasöründen şeflik seçin/oluşturun':'Önce açık bir bölme seçin');
     var btn=$('seflikFolderSendV528');if(btn)btn.disabled=busy||!bolme||!list.length||!openDivisions().some(function(x){return clean(x.bolme_no)===bolme});
   }
   function fillIdentity(){
-    var u=user(),name=$('seflikFolderIdentityV528');if(name)name.textContent=u.seflik||'Şeflik seçilmedi';
+    var u=user(),name=$('seflikFolderIdentityV528');if(name)name.textContent=u.seflik?('Aktif Şeflik: '+u.seflik):'Önce Şeflik oluşturun/seçin';
     var select=$('seflikFolderBolmeV528');
     if(select){
       var previous=clean(select.value||localStorage.getItem(LAST_BOLME_KEY)||u.bolmeNo);
@@ -105,7 +107,7 @@
   }
 
   async function syncFolder(showToast){
-    var u=user();if(!validIdentity(u)){notify('Önce kullanıcı girişi yapın','Şeflik Klasörü için kullanıcı adı ve şeflik zorunlu.','warning');return false}
+    var u=user();if(!clean(u.name)){notify('Önce Google ile giriş yapın','Şeflik Klasörü için Google ad-soyad gerekli.','warning');return false}if(!clean(u.seflik)){notify('Önce şeflik oluşturun veya seçin','Şeflik Klasörü içinde bir şeflik seçmeden bölme listesi alınamaz.','warning');return false}
     if(!navigator.onLine){var cached=readJson(CACHE_KEY,null);if(cached&&Array.isArray(cached.divisions)){divisions=cached.divisions;renderList();setStatus('Çevrimdışı: son senkronize edilen klasör gösteriliyor.','');return true}throw new Error('Senkronizasyon için internet gerekli')}
     setStatus('Şeflik klasörü senkronize ediliyor…','busy');
     var out=await edge('seflik_folder_list',{});var remote=Array.isArray(out.divisions)?out.divisions:(Array.isArray(out.summaries)?out.summaries:[]);divisions=mergeRemoteDivisions(remote);cacheAndRender();setStatus('Senkronizasyon tamamlandı • '+new Date().toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'}),'success');if(showToast)notify('Şeflik klasörü güncellendi',openDivisions().length+' açık bölme bulundu.','success');return true;
@@ -114,7 +116,7 @@
   async function createDivision(){
     if(busy)return;
     var u=user(),input=$('seflikFolderNewBolmeV529'),bolme=clean(input&&input.value);
-    if(!validIdentity(u)){notify('Kullanıcı bilgisi eksik','Önce kullanıcı panelinden ad ve şeflik kaydedin.','warning');return}
+    if(!clean(u.name)){notify('Kullanıcı bilgisi eksik','Önce Google ile giriş yapın.','warning');return}if(!clean(u.seflik)){notify('Şeflik seçilmedi','Önce Şeflik Klasöründe şeflik oluşturun veya seçin.','warning');return}
     if(!bolme){notify('Bölme numarası gerekli','Oluşturulacak bölme numarasını yazın.','warning');if(input)input.focus();return}
     if(!navigator.onLine){notify('İnternet bağlantısı yok','Bölme oluşturmak için çevrimiçi olun.','warning');return}
     busy=true;var btn=$('seflikFolderCreateV529');if(btn)btn.disabled=true;setStatus('Bölme oluşturuluyor…','busy');
@@ -265,7 +267,7 @@
   function closeSendModal(){var ov=$('seflikSendOverlayV529');if(ov){ov.classList.add('hidden');ov.setAttribute('aria-hidden','true')}document.body.classList.remove('seflik-send-open-v531')}
   async function recordsSendClick(){
     if(openBusy||busy||modalBusy)return;
-    var u=user(),btn=$('seflikSendFromRecordsV529');if(!validIdentity(u)){notify('Kullanıcı bilgisi eksik','Önce kullanıcı panelinden ad ve şeflik kaydedin.','warning');return}
+    var u=user(),btn=$('seflikSendFromRecordsV529');if(!clean(u.name)){notify('Kullanıcı bilgisi eksik','Önce Google ile giriş yapın.','warning');return}if(!clean(u.seflik)){notify('Şeflik seçilmedi','Önce Şeflik Klasöründe şeflik oluşturun veya seçin.','warning');return}
     if(!records().length){notify('Gönderilecek kayıt yok','Ölçümler sayfasında kayıt bulunmuyor.','warning');return}
     openBusy=true;if(btn)btn.disabled=true;showTransferOverlay('Veriler yükleniyor…','Açık bölmeler ve şeflik bilgileri kontrol ediliyor.',18);
     try{
