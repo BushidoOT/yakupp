@@ -21,7 +21,8 @@
   function name(){var p=panel(),a=access(),s=session(),u=s.user||{},m=u.user_metadata||{},t=terminal();var n=clean(p.googleFullName||p.name||a.name||a.canonical_name||t.name||m.full_name||m.name||u.email);if(n){rememberProfile(n,'');return n}return clean(profileCache().name)}
   function email(){var a=access(),s=session(),u=s.user||{},p=panel(),t=terminal();return clean(a.email||p.googleEmail||t.pairedEmail||u.email)}
   function api(){return window.mesahaSupabaseV380||window.mesahaSupabaseV383||window.mesahaSupabase||null}
-  async function edge(action,data){var a=api(); if(!a||typeof a.edge!=='function')throw new Error('Güvenli sunucu bağlantısı hazır değil.'); return await a.edge(action,Object.assign({source:'seflik-governance-v570'},data||{}));}
+  function terminalAuth(){var t=terminal();if(t.active&&clean(t.source)==='pair_code'&&(t.terminalCode||t.terminalToken))return{terminalCode:clean(t.terminalCode),terminalToken:clean(t.terminalToken),terminalPairedUserId:clean(t.pairedUserId),terminalPairedEmail:clean(t.pairedEmail)};return {}}
+  async function edge(action,data){var a=api(); if(!a||typeof a.edge!=='function')throw new Error('Güvenli sunucu bağlantısı hazır değil.'); return await a.edge(action,Object.assign({source:'seflik-governance-v577'},terminalAuth(),data||{}));}
   function toast(t,s,k){try{var f=window.mesahaFloatToastV315||window.mesahaFloatToastV314;if(typeof f==='function')return f(t,s||'',k||'success')}catch(e){} try{if(window.toast)return window.toast(t+(s?' — '+s:''))}catch(e){} alert(t+(s?'\n'+s:''));}
   function googleOk(){var a=access(),s=session(),t=terminal();return !!(s.access_token||a.status==='approved'||(t.active&&t.source==='pair_code'&&(t.pairedUserId||t.terminalToken)))}
   function googleSessionActive(){var a=access(),s=session();return !!(s.access_token||a.status==='approved')}

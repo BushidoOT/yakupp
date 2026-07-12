@@ -259,16 +259,18 @@
     try{return await fetch(url,{method:'POST',cache:'no-store',headers:{'Content-Type':'application/json',apikey:c.anonKey,Authorization:'Bearer '+token},body:payload,signal:ctrl&&ctrl.signal})}finally{if(timer)clearTimeout(timer)}
   }
   async function edge(action,data){
-    var c=cfg(), token=await getAccessToken();
+    var c=cfg(), terminalMode=!!(data&&(data.terminalCode||data.terminal_code||data.p_terminal_code)), token='';
+    try{token=await getAccessToken()}catch(e){if(terminalMode&&c.anonKey)token=c.anonKey;else throw e}
+    if(!token&&terminalMode&&c.anonKey)token=c.anonKey;
     var url=c.url+'/functions/v1/smooth-function',payload=JSON.stringify(Object.assign({action:String(action||'check')},data||{})),res,lastError;
     for(var attempt=0;attempt<2;attempt++){try{res=await edgeOnce(url,token,payload);break}catch(e){lastError=e;if(attempt===0&&navigator.onLine!==false){await delay(650);continue}throw new Error(/abort/i.test(String(e&&e.name||''))?'Sunucu bağlantısı zaman aşımına uğradı.':'Sunucuya bağlanılamadı. İnternet bağlantısını kontrol edip tekrar deneyin.')}}
     if(!res)throw lastError||new Error('Sunucuya bağlanılamadı.');
     var text=await res.text(), out=safeJson(text,{});
-    if((res.status===401||res.status===403) && storedSession()&&storedSession().refresh_token&&navigator.onLine!==false){
+    if(!terminalMode&&(res.status===401||res.status===403) && storedSession()&&storedSession().refresh_token&&navigator.onLine!==false){
       try{var ns=await refreshSession(storedSession());token=clean(ns&&ns.access_token);res=await edgeOnce(url,token,payload);text=await res.text();out=safeJson(text,{})}catch(re){lastError=re}
     }
     if(!res.ok || !out || out.ok===false){
-      if(out&&(out.access_required||out.google_required)){var msg=String((out&&out.error)||(out&&out.reason)||'');if(!/jwt|token|expired|invalid/i.test(msg)){try{window.dispatchEvent(new CustomEvent('mesaha:google-auth-required',{detail:out}))}catch(e){}}}
+      if(!terminalMode&&out&&(out.access_required||out.google_required)){var msg=String((out&&out.error)||(out&&out.reason)||'');if(!/jwt|token|expired|invalid/i.test(msg)){try{window.dispatchEvent(new CustomEvent('mesaha:google-auth-required',{detail:out}))}catch(e){}}}
       var err=new Error((out&&out.error)||(out&&out.reason)||('Edge hata '+res.status));err.status=res.status;err.payload=out;throw err;
     }
     return out;

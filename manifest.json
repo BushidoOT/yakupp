@@ -1,7 +1,7 @@
 {
-  "name": "Mesaha İO V5.76 •Yakupp•",
-  "short_name": "Mesaha İO V5.76",
-  "start_url": "./?v=576",
+  "name": "Mesaha İO V5.77 •Yakupp•",
+  "short_name": "Mesaha İO V5.77",
+  "start_url": "./?v=577",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f7fbf7",
@@ -19,7 +19,7 @@
       "type": "image/png"
     }
   ],
-  "id": "./?v=576",
-  "description": "Mesaha İO V5.76 •Yakupp•",
-  "version": "v576_yakupp"
+  "id": "./?v=577",
+  "description": "Mesaha İO V5.77 •Yakupp•",
+  "version": "v577_yakupp"
 }
