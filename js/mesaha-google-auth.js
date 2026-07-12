@@ -275,6 +275,6 @@
   window.addEventListener('mesaha:google-auth-required',function(e){try{var d=e&&e.detail||{};if(d.access)cacheAccess(d.access);var aa=approvedAccess();if(aa&&aa.status==='approved'){applyIdentity(aa,{silent:true});hide();return}boot(true).catch(fail)}catch(_e){}},{passive:true});
   window.addEventListener('mesaha:auth-session-restored',function(){try{var aa=approvedAccess();if(aa&&aa.status==='approved'){applyIdentity(aa,{silent:true});hide();}boot(true).catch(function(){})}catch(e){}},{passive:true});
   window.addEventListener('online',function(){var x=approvedAccess();if(!x||x.status!=='approved')boot(true).catch(function(){})},{passive:true});
-  ['mesaha:storage-recovered','mesaha:identity-restored','mesaha:user-login','mesaha:settings-saved'].forEach(function(name){window.addEventListener(name,enforceCanonicalSoon,{passive:true})});
+  ['mesaha:storage-recovered','mesaha:identity-restored','mesaha:user-login'].forEach(function(name){window.addEventListener(name,enforceCanonicalSoon,{passive:true})});
   window.addEventListener('pageshow',function(){setTimeout(function(){var x=approvedAccess();if(!x)boot(false).catch(function(){});ensureTerminalCodePanel()},100)},{passive:true});[500,1800,4500].forEach(function(ms){setTimeout(ensureTerminalCodePanel,ms)});
 })();

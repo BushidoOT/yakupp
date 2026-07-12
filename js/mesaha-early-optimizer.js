@@ -6,6 +6,8 @@
   try{
     document.documentElement.classList.remove('mesaha-terminal-lite','scrolling-now');
     document.documentElement.classList.add('mesaha-boot-v527');
+    var ua=navigator.userAgent||'',isIOS=/iPad|iPhone|iPod/i.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+    if(isIOS)document.documentElement.classList.add('mesaha-ios-device');
     localStorage.removeItem('mesaha_terminal_lite');
     localStorage.removeItem('mesaha_terminal_lite_active');
   }catch(e){}

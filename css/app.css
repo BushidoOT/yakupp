@@ -448,3 +448,28 @@ body.keyboard-open-v311 .entry-form{
 @keyframes mesahaLoaderSpinV545{to{transform:rotate(360deg)}}
 .mesaha-blocking-spinner-v326,.seflik-transfer-spinner-v534{animation:mesahaLoaderSpinV545 .82s linear infinite!important;animation-play-state:running!important;will-change:transform}
 body.cloud-busy-v326 #cloudBackupBtnV316::after{animation:mesahaLoaderSpinV545 .8s linear infinite!important;animation-play-state:running!important}
+
+
+/* V5.75 — iPhone ağaç seçimi ve düşük ısı giriş görünümü. */
+#entryView .tree-panel{contain:layout style paint;}
+#entryView .tree-option{
+  width:100%;min-height:44px;margin:0;text-align:left;cursor:pointer;color:var(--text);
+  appearance:none;-webkit-appearance:none;touch-action:manipulation;-webkit-tap-highlight-color:transparent;
+}
+#entryView .tree-option.active{background:#dcfce7!important;border-color:#86efac!important;color:#166534!important;box-shadow:inset 0 0 0 1px rgba(22,101,52,.08)!important;}
+#entryView .tree-option-dot{width:19px;height:19px;flex:0 0 19px;border:2px solid #94a3b8;border-radius:50%;display:grid;place-items:center;background:#fff;}
+#entryView .tree-option-dot::after{content:"";width:9px;height:9px;border-radius:50%;background:#16a34a;transform:scale(0);}
+#entryView .tree-option.active .tree-option-dot{border-color:#16a34a;}
+#entryView .tree-option.active .tree-option-dot::after{transform:scale(1);}
+html.mesaha-ios-device body.entry-open #entryView *,
+html.mesaha-ios-device body.entry-open #entryView *::before,
+html.mesaha-ios-device body.entry-open #entryView *::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;}
+html.mesaha-ios-device body.entry-open #entryView .entry-form,
+html.mesaha-ios-device body.entry-open #entryView .entry-total,
+html.mesaha-ios-device body.entry-open #entryView .entry-total>div,
+html.mesaha-ios-device body.entry-open #entryView .measure-grid label,
+html.mesaha-ios-device body.entry-open #entryView .barcode-save label,
+html.mesaha-ios-device body.entry-open #entryView .recent-box,
+html.mesaha-ios-device body.entry-open #entryView .tree-option{box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;}
+html.mesaha-ios-device body.entry-open .save-float-toast-v311,
+html.mesaha-ios-device body.entry-open .save-float-toast-v313{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;}

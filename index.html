@@ -1615,6 +1615,15 @@ function load(){
   try{ const savedTree=localStorage.getItem('mesaha_last_tree_stable'); if(savedTree && state.settings.visibleTrees.includes(savedTree)) state.settings.currentTree=savedTree; }catch{}
   if(!state.settings.visibleProducts.includes(state.settings.currentProduct)) state.settings.currentProduct=state.settings.visibleProducts[0]||'Tomruk';
   if(!state.settings.visibleTrees.includes(state.settings.currentTree)) state.settings.currentTree=state.settings.visibleTrees[0]||'Karaçam';
+  /* iPhone/saha performansı: yazım sırasında tam ayar veritabanını sürekli çalıştırmadan küçük giriş taslağını geri yükle. */
+  try{
+    const draft=JSON.parse(localStorage.getItem('mesaha_entry_draft_v575')||'null');
+    if(draft&&typeof draft==='object'&&Date.now()-Number(draft.at||0)<7*24*60*60*1000){
+      ['diameter','length','barcode','quantity'].forEach(k=>{if(draft[k]!=null)state.settings[k]=String(draft[k]);});
+      if(draft.currentTree&&state.settings.visibleTrees.includes(draft.currentTree))state.settings.currentTree=draft.currentTree;
+      if(draft.currentProduct&&state.settings.visibleProducts.includes(normalizeProductType(draft.currentProduct)))state.settings.currentProduct=normalizeProductType(draft.currentProduct);
+    }
+  }catch(e){}
   if(!Array.isArray(state.settings.cutters)) state.settings.cutters=[];
   /* Eski sürümlerde kayıt metadata alanları yüklemede düşmüşse aktif mesaha kimliğinden geri tamamla. */
   const fallbackBolme=norm(state.settings.bolmeNo||''), fallbackSeflik=norm(state.settings.seflik||'');
@@ -1639,19 +1648,54 @@ function migrateRecord(r){
   return out;
 }
 function saveRecords(reason){ if(window.MesahaStorageV527&&window.MesahaStorageV527.saveRecords) return window.MesahaStorageV527.saveRecords(state.records,{reason:reason||'app-save'}); try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state.records));window.dispatchEvent(new CustomEvent('mesaha:records-saved',{detail:{count:state.records.length,verified:false}}));return Promise.resolve({ok:true,localStorage:true,indexedDB:false});}catch(e){try{window.dispatchEvent(new CustomEvent('mesaha:storage-error',{detail:{key:STORAGE_KEY,message:e&&e.message?e.message:String(e)}}));}catch(_){}return Promise.resolve({ok:false,error:String(e)});} }
-let __settingsSaveTimer=0,__settingsSaveLast=''; async function __flushSettings(reason){ try{ state.settings.barcodeControlEvery=40; const payload=JSON.stringify(state.settings); if(payload===__settingsSaveLast)return {ok:true,unchanged:true}; let result; if(window.MesahaStorageV527&&window.MesahaStorageV527.saveSettings) result=await window.MesahaStorageV527.saveSettings(state.settings,{reason:reason||'settings-save'}); else { localStorage.setItem(SETTINGS_KEY,payload); window.dispatchEvent(new CustomEvent('mesaha:settings-saved')); result={ok:true,localStorage:true}; } if(result&&result.ok!==false)__settingsSaveLast=payload; return result; }catch(e){try{window.dispatchEvent(new CustomEvent('mesaha:storage-error',{detail:{key:SETTINGS_KEY,message:e&&e.message?e.message:String(e)}}));}catch(_){}return {ok:false,error:String(e)};} } function saveSettings(){ clearTimeout(__settingsSaveTimer); __settingsSaveTimer=setTimeout(function(){__flushSettings('settings-debounce');},220); } async function __saveAllV527(reason){ clearTimeout(__settingsSaveTimer); try{ state.settings.barcodeControlEvery=40; let result; if(window.MesahaStorageV527&&window.MesahaStorageV527.replaceAll)result=await window.MesahaStorageV527.replaceAll(state.records,state.settings,{reason:reason||'app-transaction'});else{const pair=await Promise.all([saveRecords(reason||'app-transaction'),__flushSettings(reason||'app-transaction')]);result=pair.some(x=>x&&x.ok===false)?{ok:false,error:'Kalıcı depolama işlemi başarısız'}:{ok:true};} if(result&&result.ok!==false)__settingsSaveLast=JSON.stringify(state.settings); return result;}catch(e){try{window.dispatchEvent(new CustomEvent('mesaha:storage-error',{detail:{key:'records+settings',message:e&&e.message?e.message:String(e)}}));}catch(_){}return {ok:false,error:String(e)};} } function __checkpointStateV542(reason){try{state.settings.barcodeControlEvery=40;if(window.MesahaStorageV527&&window.MesahaStorageV527.checkpointAll){const r=window.MesahaStorageV527.checkpointAll(state.records,state.settings,{reason:reason||'lifecycle'});if(r&&r.ok!==false)__settingsSaveLast=JSON.stringify(state.settings);return r;}}catch(e){}return null;} try{window.__flushSettings=__flushSettings;window.__saveAllV527=__saveAllV527;window.__checkpointStateV542=__checkpointStateV542;}catch(e){} window.addEventListener('pagehide',function(){__checkpointStateV542('pagehide');__flushSettings('pagehide');}); document.addEventListener('visibilitychange',function(){if(document.hidden){__checkpointStateV542('hidden');__flushSettings('hidden');}});
+let __settingsSaveTimer=0,__settingsSaveLast=''; async function __flushSettings(reason){ try{ state.settings.barcodeControlEvery=40; const payload=JSON.stringify(state.settings); if(payload===__settingsSaveLast)return {ok:true,unchanged:true}; let result; if(window.MesahaStorageV527&&window.MesahaStorageV527.saveSettings) result=await window.MesahaStorageV527.saveSettings(state.settings,{reason:reason||'settings-save'}); else { localStorage.setItem(SETTINGS_KEY,payload); window.dispatchEvent(new CustomEvent('mesaha:settings-saved',{detail:{reason:reason||'settings-save'}})); result={ok:true,localStorage:true}; } if(result&&result.ok!==false)__settingsSaveLast=payload; return result; }catch(e){try{window.dispatchEvent(new CustomEvent('mesaha:storage-error',{detail:{key:SETTINGS_KEY,message:e&&e.message?e.message:String(e)}}));}catch(_){}return {ok:false,error:String(e)};} }
+function saveSettings(){ clearTimeout(__settingsSaveTimer); __settingsSaveTimer=setTimeout(function(){__flushSettings('settings-debounce');},650); }
+let __entryDraftTimerV575=0;
+function persistEntryDraftV575(){
+  clearTimeout(__entryDraftTimerV575);__entryDraftTimerV575=0;
+  try{localStorage.setItem('mesaha_entry_draft_v575',JSON.stringify({diameter:state.settings.diameter||'',length:state.settings.length||'',barcode:state.settings.barcode||'',quantity:state.settings.quantity||'1',currentTree:state.settings.currentTree||'',currentProduct:state.settings.currentProduct||'',at:Date.now()}));return true}catch(e){return false}
+}
+function scheduleEntryDraftV575(immediate){
+  clearTimeout(__entryDraftTimerV575);
+  if(immediate)return persistEntryDraftV575();
+  __entryDraftTimerV575=setTimeout(persistEntryDraftV575,700);
+}
+async function __saveAllV527(reason){ clearTimeout(__settingsSaveTimer); try{ state.settings.barcodeControlEvery=40; let result; if(window.MesahaStorageV527&&window.MesahaStorageV527.replaceAll)result=await window.MesahaStorageV527.replaceAll(state.records,state.settings,{reason:reason||'app-transaction'});else{const pair=await Promise.all([saveRecords(reason||'app-transaction'),__flushSettings(reason||'app-transaction')]);result=pair.some(x=>x&&x.ok===false)?{ok:false,error:'Kalıcı depolama işlemi başarısız'}:{ok:true};} if(result&&result.ok!==false)__settingsSaveLast=JSON.stringify(state.settings); return result;}catch(e){try{window.dispatchEvent(new CustomEvent('mesaha:storage-error',{detail:{key:'records+settings',message:e&&e.message?e.message:String(e)}}));}catch(_){}return {ok:false,error:String(e)};} } function __checkpointStateV542(reason){try{state.settings.barcodeControlEvery=40;if(window.MesahaStorageV527&&window.MesahaStorageV527.checkpointAll){const r=window.MesahaStorageV527.checkpointAll(state.records,state.settings,{reason:reason||'lifecycle'});if(r&&r.ok!==false)__settingsSaveLast=JSON.stringify(state.settings);return r;}}catch(e){}return null;} try{window.__flushSettings=__flushSettings;window.__saveAllV527=__saveAllV527;window.__checkpointStateV542=__checkpointStateV542;}catch(e){} window.addEventListener('pagehide',function(){persistEntryDraftV575();__checkpointStateV542('pagehide');__flushSettings('pagehide');}); document.addEventListener('visibilitychange',function(){if(document.hidden){persistEntryDraftV575();__checkpointStateV542('hidden');__flushSettings('hidden');}});
+function toggleEntryTreePanelV575(){
+  state.settings.treePanelOpen=!state.settings.treePanelOpen;
+  renderEntryTrees();
+}
+function bindEntryTreeToggleV575(){
+  const btn=$('treeToggleBtn');if(!btn||btn.__treeToggleV575)return;btn.__treeToggleV575=true;
+  const isIOS=/iPad|iPhone|iPod/i.test(navigator.userAgent||'')||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+  let gesture=null,lastAt=0;
+  const stop=ev=>{try{if(ev.cancelable)ev.preventDefault()}catch(e){}try{ev.stopPropagation();ev.stopImmediatePropagation()}catch(e){}};
+  if(isIOS&&window.PointerEvent){
+    btn.addEventListener('pointerdown',ev=>{if(ev.pointerType==='mouse')return;gesture={id:ev.pointerId,x:ev.clientX,y:ev.clientY,moved:false}},{capture:true,passive:true});
+    btn.addEventListener('pointermove',ev=>{if(gesture&&gesture.id===ev.pointerId&&(Math.abs(ev.clientX-gesture.x)>12||Math.abs(ev.clientY-gesture.y)>12))gesture.moved=true},{capture:true,passive:true});
+    btn.addEventListener('pointercancel',()=>{gesture=null},{capture:true,passive:true});
+    btn.addEventListener('pointerup',ev=>{const g=gesture;gesture=null;if(!g||g.id!==ev.pointerId||g.moved)return;lastAt=Date.now();stop(ev);toggleEntryTreePanelV575()},{capture:true,passive:false});
+    btn.addEventListener('click',ev=>{if(Date.now()-lastAt<900)stop(ev)},{capture:true,passive:false});
+  }else if(isIOS){
+    btn.addEventListener('touchstart',ev=>{const t=ev.touches&&ev.touches[0];gesture=t?{x:t.clientX,y:t.clientY,moved:false}:null},{capture:true,passive:true});
+    btn.addEventListener('touchmove',ev=>{const t=ev.touches&&ev.touches[0];if(gesture&&t&&(Math.abs(t.clientX-gesture.x)>12||Math.abs(t.clientY-gesture.y)>12))gesture.moved=true},{capture:true,passive:true});
+    btn.addEventListener('touchcancel',()=>{gesture=null},{capture:true,passive:true});
+    btn.addEventListener('touchend',ev=>{const g=gesture;gesture=null;if(!g||g.moved)return;lastAt=Date.now();stop(ev);toggleEntryTreePanelV575()},{capture:true,passive:false});
+    btn.addEventListener('click',ev=>{if(Date.now()-lastAt<900)stop(ev)},{capture:true,passive:false});
+  }else btn.addEventListener('click',toggleEntryTreePanelV575);
+}
 function bind(){
   $('openEntryBtn').addEventListener('click', () => openEntry());
   $('entryHomeBtn').addEventListener('click', () => showView('home'));
   /* v351: theme removed */
   $('soundBtn').addEventListener('click', () => { state.settings.soundEnabled=!state.settings.soundEnabled; saveSettings(); renderSound(); });
   const bcToggle=$('barcodeControlEnabled'); if(bcToggle) bcToggle.addEventListener('change', () => { state.settings.barcodeControlEnabled=bcToggle.checked; state.settings.barcodeControlEvery=40; saveSettings(); try{__flushSettings();}catch{} toast(bcToggle.checked ? 'Barkod kontrolü açıldı.' : 'Barkod kontrolü kapatıldı.'); });
-  $('treeToggleBtn').addEventListener('click', () => { state.settings.treePanelOpen=!state.settings.treePanelOpen; saveSettings(); renderEntryTrees(); });
+  bindEntryTreeToggleV575();
   $('addCutterBtn').addEventListener('click', addCutter);
   $('saveBtn').addEventListener('click', function(ev){if(ev&&ev.detail>1)return;return saveEntry();});
-  $('diameterInput').addEventListener('input', () => { const clean = String($('diameterInput').value||'').replace(/\D/g,'').slice(0,3); if($('diameterInput').value !== clean) $('diameterInput').value = clean; state.settings.diameter=clean; saveSettings(); });
-  $('lengthInput').addEventListener('input', () => { let clean = String($('lengthInput').value||'').replace(',', '.').replace(/[^0-9.]/g,''); const firstDot=clean.indexOf('.'); if(firstDot>=0) clean=clean.slice(0,firstDot+1)+clean.slice(firstDot+1).replace(/\./g,''); if($('lengthInput').value !== clean) $('lengthInput').value = clean; state.settings.length=clean; saveSettings(); });
-  $('barcodeInput').addEventListener('input', () => { state.settings.barcode=String($('barcodeInput').value||'').toUpperCase(); $('barcodeInput').value=state.settings.barcode; saveSettings(); });
+  $('diameterInput').addEventListener('input', () => { const clean = String($('diameterInput').value||'').replace(/\D/g,'').slice(0,3); if($('diameterInput').value !== clean) $('diameterInput').value = clean; state.settings.diameter=clean; scheduleEntryDraftV575(false); });
+  $('lengthInput').addEventListener('input', () => { let clean = String($('lengthInput').value||'').replace(',', '.').replace(/[^0-9.]/g,''); const firstDot=clean.indexOf('.'); if(firstDot>=0) clean=clean.slice(0,firstDot+1)+clean.slice(firstDot+1).replace(/\./g,''); if($('lengthInput').value !== clean) $('lengthInput').value = clean; state.settings.length=clean; scheduleEntryDraftV575(false); });
+  $('barcodeInput').addEventListener('input', () => { state.settings.barcode=String($('barcodeInput').value||'').toUpperCase(); $('barcodeInput').value=state.settings.barcode; scheduleEntryDraftV575(false); });
   $('clearBtn').addEventListener('click', clearEntry);
   $('cancelEditBtn').addEventListener('click', () => { state.editingId=null; $('cancelEditBtn').classList.add('hidden'); clearEntry(false); toast('Düzenleme iptal edildi.'); });
   $('downloadXlsBtn').addEventListener('click', exportXls);
@@ -1669,7 +1713,7 @@ function bind(){
   window.addEventListener('online', renderNetwork); window.addEventListener('offline', renderNetwork);
 }
 function settingsFromInputs(){ state.settings.bolmeNo=$('bolmeNo').value; state.settings.seflik=$('seflik').value; state.settings.ekipNot=$('ekipNot').value; state.settings.mesahaDate=$('mesahaDate').value || todayISO(); saveSettings(); renderUser(); }
-function entryInputChanged(){ state.settings.diameter=$('diameterInput').value; state.settings.length=$('lengthInput').value; state.settings.barcode=$('barcodeInput').value.toUpperCase(); if($('barcodeInput').value!==state.settings.barcode) $('barcodeInput').value=state.settings.barcode; saveSettings(); }
+function entryInputChanged(){ state.settings.diameter=$('diameterInput').value; state.settings.length=$('lengthInput').value; state.settings.barcode=$('barcodeInput').value.toUpperCase(); if($('barcodeInput').value!==state.settings.barcode) $('barcodeInput').value=state.settings.barcode; scheduleEntryDraftV575(false); }
 function showView(view){
   state.view=view; document.body.classList.toggle('entry-open', view==='entry');
   ['home','entry','records','seflikFolder','guide'].forEach(v => $(`${v}View`)?.classList.toggle('active', v===view));
@@ -1737,7 +1781,9 @@ function renderEntry(){
   renderCutters(); renderEntryTrees(); renderQuickChips(); renderProducts(); syncProductBodyClass(); ensureProductRuleHint(); renderRecent(); const t=totals(state.records); $('entryTotalCount').textContent=t.count.toLocaleString('tr-TR'); $('entryTotalM3').textContent=`${fmt(t.m3,3)} m³`;
 }
 function renderCutters(){
-  const list = [...new Set([...(state.settings.cutters||[]), state.settings.activeCutter].filter(Boolean))]; state.settings.cutters=list; saveSettings();
+  const before=(state.settings.cutters||[]).join('\u0001');
+  const list = [...new Set([...(state.settings.cutters||[]), state.settings.activeCutter].filter(Boolean))]; state.settings.cutters=list;
+  if(before!==list.join('\u0001'))saveSettings();
   $('cutterChips').innerHTML = `<button class="chip ${!state.settings.activeCutter?'active':''}" data-cutter="">Kesimci seçilmedi</button>` + list.map(c => `<button class="chip ${c===state.settings.activeCutter?'active':''}" data-cutter="${esc(c)}">${esc(c)} ✕</button>`).join('');
   $('cutterChips').querySelectorAll('[data-cutter]').forEach(b => b.addEventListener('click', () => {
     const c=b.dataset.cutter;
@@ -1758,12 +1804,55 @@ function renderCutters(){
 }
 function addCutter(){ const name=norm(prompt('Kesimci ismini yazınız:')); if(!name) return; if(!state.settings.cutters.includes(name)) state.settings.cutters.push(name); state.settings.activeCutter=name; saveSettings(); renderCutters(); }
 try{window.MesahaEntryActionsV546={addCutter:addCutter,editRecent:editRecentRecord,deleteRecent:deleteRecentRecord,openEntry:openEntry};}catch(e){}
-function renderEntryTrees(){
-  $('treeCurrent').textContent=state.settings.currentTree; $('treeToggleBtn').textContent='Ağaç Türü Seç: '+state.settings.currentTree;
-  $('treePanel').classList.toggle('open', !!state.settings.treePanelOpen);
-  $('treePanel').innerHTML = state.settings.visibleTrees.map(t => `<label class="tree-option"><input type="radio" name="entryTree" value="${esc(t)}" ${t===state.settings.currentTree?'checked':''}><span>${esc(t)}</span></label>`).join('');
-  $('treePanel').querySelectorAll('input').forEach(r => r.addEventListener('change', () => { state.settings.currentTree=r.value; state.settings.treePanelOpen=true; try{localStorage.setItem('mesaha_last_tree_stable', r.value);}catch{} saveSettings(); try{__flushSettings();}catch{} renderEntryTrees(); }));
+let __entryTreeGestureV575=null,__entryTreeLastV575={el:null,at:0};
+function updateEntryTreeVisualV575(){
+  const current=state.settings.currentTree||state.settings.visibleTrees[0]||'Karaçam';
+  const currentEl=$('treeCurrent'),toggle=$('treeToggleBtn'),panel=$('treePanel');
+  if(currentEl&&currentEl.textContent!==current)currentEl.textContent=current;
+  if(toggle){const text='Ağaç Türü Seç: '+current;if(toggle.textContent!==text)toggle.textContent=text;}
+  if(panel){panel.classList.toggle('open',!!state.settings.treePanelOpen);panel.querySelectorAll('[data-entry-tree]').forEach(btn=>{const active=btn.getAttribute('data-entry-tree')===current;btn.classList.toggle('active',active);btn.setAttribute('aria-pressed',active?'true':'false');});}
 }
+function selectEntryTreeV575(raw,source){
+  const tree=String(raw||'').trim();if(!tree||!state.settings.visibleTrees.includes(tree))return false;
+  state.settings.currentTree=tree;state.settings.treePanelOpen=true;
+  try{localStorage.setItem('mesaha_last_tree_stable',tree)}catch(e){}
+  updateEntryTreeVisualV575();scheduleEntryDraftV575(false);saveSettings();
+  try{window.dispatchEvent(new CustomEvent('mesaha:tree-selected',{detail:{tree,source:source||'tap'}}))}catch(e){}
+  return true;
+}
+function bindEntryTreePanelV575(panel){
+  if(!panel||panel.__entryTreeV575)return;panel.__entryTreeV575=true;
+  const isIOS=/iPad|iPhone|iPod/i.test(navigator.userAgent||'')||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+  const find=target=>target&&target.closest?target.closest('[data-entry-tree]'):null;
+  const stop=ev=>{try{if(ev.cancelable)ev.preventDefault()}catch(e){}try{ev.stopPropagation();ev.stopImmediatePropagation()}catch(e){}};
+  const apply=(btn,ev,source)=>{if(!btn||btn.disabled||!panel.contains(btn))return false;const now=Date.now();if(__entryTreeLastV575.el===btn&&now-__entryTreeLastV575.at<360)return true;__entryTreeLastV575={el:btn,at:now};if(ev)stop(ev);return selectEntryTreeV575(btn.getAttribute('data-entry-tree'),source)};
+  if(isIOS&&window.PointerEvent){
+    panel.addEventListener('pointerdown',ev=>{if(ev.pointerType==='mouse')return;const btn=find(ev.target);__entryTreeGestureV575=btn?{id:ev.pointerId,btn,x:ev.clientX,y:ev.clientY,moved:false}:null},{capture:true,passive:true});
+    panel.addEventListener('pointermove',ev=>{const g=__entryTreeGestureV575;if(g&&g.id===ev.pointerId&&(Math.abs(ev.clientX-g.x)>14||Math.abs(ev.clientY-g.y)>14))g.moved=true},{capture:true,passive:true});
+    panel.addEventListener('pointercancel',()=>{__entryTreeGestureV575=null},{capture:true,passive:true});
+    panel.addEventListener('pointerup',ev=>{const g=__entryTreeGestureV575;__entryTreeGestureV575=null;if(!g||g.id!==ev.pointerId||g.moved||find(ev.target)!==g.btn)return;apply(g.btn,ev,'ios-pointerup')},{capture:true,passive:false});
+    panel.addEventListener('click',ev=>{const btn=find(ev.target);if(btn&&__entryTreeLastV575.el===btn&&Date.now()-__entryTreeLastV575.at<900)stop(ev)},{capture:true,passive:false});
+  }else if(isIOS){
+    panel.addEventListener('touchstart',ev=>{const t=ev.touches&&ev.touches[0],btn=find(ev.target);__entryTreeGestureV575=t&&btn?{btn,x:t.clientX,y:t.clientY,moved:false}:null},{capture:true,passive:true});
+    panel.addEventListener('touchmove',ev=>{const t=ev.touches&&ev.touches[0],g=__entryTreeGestureV575;if(g&&t&&(Math.abs(t.clientX-g.x)>14||Math.abs(t.clientY-g.y)>14))g.moved=true},{capture:true,passive:true});
+    panel.addEventListener('touchcancel',()=>{__entryTreeGestureV575=null},{capture:true,passive:true});
+    panel.addEventListener('touchend',ev=>{const g=__entryTreeGestureV575;__entryTreeGestureV575=null;if(!g||g.moved||find(ev.target)!==g.btn)return;apply(g.btn,ev,'ios-touchend')},{capture:true,passive:false});
+    panel.addEventListener('click',ev=>{const btn=find(ev.target);if(btn&&__entryTreeLastV575.el===btn&&Date.now()-__entryTreeLastV575.at<900)stop(ev)},{capture:true,passive:false});
+  }else panel.addEventListener('click',ev=>{const btn=find(ev.target);if(btn)apply(btn,null,'click')});
+}
+function renderEntryTrees(){
+  const panel=$('treePanel');if(!panel)return;
+  const trees=(state.settings.visibleTrees||[]).filter(t=>TREES.includes(t));
+  if(!trees.length)trees.push('Karaçam');
+  if(!trees.includes(state.settings.currentTree))state.settings.currentTree=trees[0];
+  const signature=trees.join('\u0001');
+  if(panel.dataset.treeSignatureV575!==signature){
+    panel.dataset.treeSignatureV575=signature;
+    panel.innerHTML=trees.map(t=>`<button type="button" class="tree-option" data-entry-tree="${esc(t)}" aria-pressed="false"><span class="tree-option-dot" aria-hidden="true"></span><span>${esc(t)}</span></button>`).join('');
+  }
+  bindEntryTreePanelV575(panel);updateEntryTreeVisualV575();
+}
+try{window.MesahaTreeSelector={select:selectEntryTreeV575,render:renderEntryTrees}}catch(e){}
 function markQuickChipsDirty(){
   try{
     if(window.__mesahaQuickChipCacheV444) window.__mesahaQuickChipCacheV444.dirty = true;
@@ -1826,7 +1915,7 @@ function applyQuickChipV535(kind,value,button){
   else state.settings.length=value;
   try{input.dispatchEvent(new Event('input',{bubbles:true}));}catch(e){try{entryInputChanged();}catch(_){}}
   try{input.dispatchEvent(new Event('change',{bubbles:true}));}catch(e){}
-  try{saveSettings();}catch(e){}
+  try{scheduleEntryDraftV575(false);}catch(e){}
   try{vibrate('chip');}catch(e){}
   try{button&&button.classList.add('shortcut-selected-v535');setTimeout(()=>button&&button.classList.remove('shortcut-selected-v535'),180);}catch(e){}
   try{input.focus({preventScroll:true});const p=String(input.value||'').length;input.setSelectionRange&&input.setSelectionRange(p,p);}catch(e){}
@@ -1911,7 +2000,6 @@ try{
   if(!window.__mesahaQuickChipLiveBoundV536){
     window.__mesahaQuickChipLiveBoundV536=true;
     window.addEventListener('mesaha:records-saved',()=>refreshQuickChipsV536(false),{passive:true});
-    window.addEventListener('mesaha:settings-saved',()=>refreshQuickChipsV536(false),{passive:true});
   }
 }catch(e){}
 
@@ -1988,11 +2076,13 @@ async function saveEntry(){
     state.settings.quantity='1';state.settings.length=length;state.settings.diameter='';if($('lengthInput'))$('lengthInput').value=length;
     rememberChip('recentDiameters',diameter);rememberChip('recentLengths',length);
     state.settings.barcode=wasEditing?(returnBarcodeAfterEdit||nextBarcode(barcode)):(state.settings.sameBarcodeMode===true?barcode:nextBarcode(barcode));$('barcodeInput').value=state.settings.barcode;
+    persistEntryDraftV575();
     const result=await __saveAllV527(wasEditing?'record-update':'record-add');
     if(result&&result.ok===false)throw new Error(result.error||'Kayıt kalıcı depolamaya yazılamadı');
   }catch(err){
     state.records=beforeRecords;state.settings=beforeSettings;
     state.editingId=beforeEditingId;state.editingReturnBarcode=beforeEditingReturnBarcode;
+    persistEntryDraftV575();
     try{
       if(window.MesahaRenderStorageV382&&window.MesahaRenderStorageV382.renderAllSoon)window.MesahaRenderStorageV382.renderAllSoon();else renderAll();
       const cancel=$('cancelEditBtn');if(cancel)cancel.classList.toggle('hidden',beforeCancelEditHidden);
@@ -2047,8 +2137,9 @@ function clearEntry(show=true){
   if(d) d.value='';
   if(l) l.value='';
   if(b) b.value='';
+  persistEntryDraftV575();
   saveSettings();
-  try{ __flushSettings(); }catch{}
+  try{ __flushSettings('entry-clear'); }catch{}
   try{ renderQuickChips(); }catch(e){}
   try{ renderRecent(); }catch(e){}
   try{ if(d) d.focus({preventScroll:true}); }catch(e){}
