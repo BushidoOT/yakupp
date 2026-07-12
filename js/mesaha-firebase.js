@@ -1,4 +1,4 @@
-/* Mesaha İO V5.73 — Google Auth + güvenli Supabase uyumluluk motoru
+/* Mesaha İO V5.78 — Google Auth, terminal oturum doğrulama ve güvenli Supabase uyumluluk motoru
    Amaç: Eski Firebase/Supabase çağrılarını bozmadan yalnız doğrulanmış Google oturumu ile bulut işlemlerini yürütmek.
    - Yeni anonim hesap oluşturmaz; eski anonim oturumu Google kimliğine bağlamak için korur.
    - REST isteklerinde anon key değil access_token kullanır.
@@ -96,6 +96,15 @@
     throw new Error('Google ile giriş gerekli.');
   }
   function clearSession(){authSession=null;try{var old=safeJson(localStorage.getItem(SESSION_KEY)||'',null);if(old&&old.access_token)backupSession(old);localStorage.removeItem(SESSION_KEY);}catch(e){}}
+  function storedTerminalPair(){try{var t=getJsonSafe('mesaha_terminal_local_mode_v556',null)||getJsonSafe('mesaha_terminal_local_mode_v557',null);return t&&t.active===true&&clean(t.source)==='pair_code'?t:null}catch(e){return null}}
+  function terminalAccessRevoked(out,status){var msg=clean(out&&((out.error)||(out.reason)));return !!(out&&(out.terminal_required===true||out.terminal_revoked===true)||Number(status)===403&&/terminal.*(eşleştirme|güvenlik|geçersiz|kapat|revok|expired|required)|kod.*(kapat|geçersiz|süresi)/i.test(msg))}
+  function clearRevokedTerminalSession(out){
+    if(!storedTerminalPair())return false;
+    try{localStorage.removeItem('mesaha_terminal_local_mode_v556');localStorage.removeItem('mesaha_terminal_local_mode_v557')}catch(e){}
+    try{var p=getJsonSafe('mesaha_panel_user_v316',{});delete p.terminalMode;delete p.terminalPairedUserId;delete p.terminalPairedEmail;setJsonSafe('mesaha_panel_user_v316',p)}catch(e){}
+    try{window.dispatchEvent(new CustomEvent('mesaha:terminal-session-revoked',{detail:{reason:clean(out&&((out.error)||(out.reason)))}}))}catch(e){}
+    return true;
+  }
   function saveExternalSession(j){
     if(!j||!j.access_token)throw new Error('Google oturumu eksik.');
     return saveSession(j);
@@ -251,7 +260,7 @@
   }
   async function health(){var r=await ready();lastOkMs=Date.now();lastError='';return r;}
   function reset(){readyPromise=null;authSession=null;lastError='';clearSession();}
-  function status(){return{ok:!!lastOkMs,lastOkMs:lastOkMs,lastError:lastError,online:navigator.onLine!==false,provider:'supabase-google-v548',uid:uid(),google:isGoogle(),anonymous:isAnonymous(),version:VERSION};}
+  function status(){return{ok:!!lastOkMs,lastOkMs:lastOkMs,lastError:lastError,online:navigator.onLine!==false,provider:'supabase-google-v578',uid:uid(),google:isGoogle(),anonymous:isAnonymous(),version:VERSION};}
   async function getAccessToken(){var s=await session();return clean(s&&s.access_token);}
   function delay(ms){return new Promise(function(resolve){setTimeout(resolve,ms)})}
   async function edgeOnce(url,token,payload){
@@ -270,12 +279,14 @@
       try{var ns=await refreshSession(storedSession());token=clean(ns&&ns.access_token);res=await edgeOnce(url,token,payload);text=await res.text();out=safeJson(text,{})}catch(re){lastError=re}
     }
     if(!res.ok || !out || out.ok===false){
+      if(terminalMode&&terminalAccessRevoked(out,res.status))clearRevokedTerminalSession(out);
       if(!terminalMode&&out&&(out.access_required||out.google_required)){var msg=String((out&&out.error)||(out&&out.reason)||'');if(!/jwt|token|expired|invalid/i.test(msg)){try{window.dispatchEvent(new CustomEvent('mesaha:google-auth-required',{detail:out}))}catch(e){}}}
       var err=new Error((out&&out.error)||(out&&out.reason)||('Edge hata '+res.status));err.status=res.status;err.payload=out;throw err;
     }
     return out;
   }
-  var api={provider:'supabase-google-v548',version:VERSION,ready:ready,health:health,reset:reset,status:status,getAccessToken:getAccessToken,edge:edge,getStoredSession:storedSession,saveExternalSession:saveExternalSession,clearSession:clearSession,refreshSession:refreshSession,authUser:authUser,isAnonymous:isAnonymous,isGoogle:isGoogle,signOut:signOut,authFetch:authFetch,getDeviceId:getDeviceId,withTimeout:function(p,ms,label){return Promise.race([p,new Promise(function(_,rej){setTimeout(function(){rej(new Error((label||'İşlem')+' zaman aşımı'));},ms||15000);})]);}};
+  function withTimeout(p,ms,label){var timer=0;return Promise.race([Promise.resolve(p),new Promise(function(_,rej){timer=setTimeout(function(){rej(new Error((label||'İşlem')+' zaman aşımı'));},ms||15000)})]).finally(function(){if(timer)clearTimeout(timer)})}
+  var api={provider:'supabase-google-v578',version:VERSION,ready:ready,health:health,reset:reset,status:status,getAccessToken:getAccessToken,edge:edge,getStoredSession:storedSession,saveExternalSession:saveExternalSession,clearSession:clearSession,refreshSession:refreshSession,authUser:authUser,isAnonymous:isAnonymous,isGoogle:isGoogle,signOut:signOut,authFetch:authFetch,getDeviceId:getDeviceId,withTimeout:withTimeout};
   window.mesahaSupabase=api; window.mesahaSupabaseV383=api; window.mesahaSupabaseV380=api; window.mesahaCloud=api;
   window.addEventListener('online',function(){var s=storedSession();if(!s||!s.refresh_token)return;readyPromise=null;refreshSession(s).then(function(ns){try{window.dispatchEvent(new CustomEvent('mesaha:auth-session-restored',{detail:{userId:ns&&ns.user&&ns.user.id}}))}catch(e){}}).catch(function(e){if(Number(e&&e.status)===400||Number(e&&e.status)===401)clearSession();});},{passive:true});
 })();

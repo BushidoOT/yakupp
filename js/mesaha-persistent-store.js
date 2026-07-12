@@ -1,4 +1,4 @@
-/* Mesaha İO V5.76 — iOS düşük gecikmeli kalıcı depolama motoru.
+/* Mesaha İO V5.78 — iOS düşük gecikmeli, sıralı ve anlık görüntü güvenli kalıcı depolama motoru.
    - Tek kayıt ekleme/düzeltme IndexedDB'de yalnız ilgili kaydı yazar.
    - Kayıt ve ayar kuyrukları ayrıdır; ağaç/ürün seçimi kayıt düğmesini bekletmez.
    - Büyük localStorage kopyası dokunma anında değil, boş zamanda ve birleştirilerek alınır.
@@ -173,7 +173,13 @@
   }
 
   function saveRecordDelta(change,list,opts){
-    list=Array.isArray(list)?list:[];change=change||{};
+    /* Kuyruğa giren veriyi çağrı anında sabitle. Hızlı kayıtlarda state dizisi sonraki
+       kayıtla değişirse eski işin yanlış uzunluk görüp tüm veriyi yeniden yazmasını önler. */
+    list=Array.isArray(list)?list.slice():[];
+    change=Object.assign({},change||{});
+    if(change.upsert&&typeof change.upsert==='object')change.upsert=Object.assign({},change.upsert);
+    if(change.previousRecord&&typeof change.previousRecord==='object')change.previousRecord=Object.assign({},change.previousRecord);
+    opts=Object.assign({},opts||{});
     recordChain=recordChain.catch(function(){return null;}).then(async function(){
       var meta=null;
       try{
@@ -214,7 +220,8 @@
   }
 
   function saveRecords(list,opts){
-    list=Array.isArray(list)?list:[];
+    list=Array.isArray(list)?list.slice():[];
+    opts=Object.assign({},opts||{});
     recordChain=recordChain.catch(function(){return null;}).then(async function(){
       var base=null;try{base=await idbGet(META_STORE,'records');}catch(e){}
       var meta=recordMetaFrom(base||bootRecordMeta||{},list,opts&&opts.reason||'records-save');
@@ -233,7 +240,8 @@
   }
 
   function saveSettings(settings,opts){
-    settings=validSettings(settings)?settings:{};
+    settings=validSettings(settings)?shallowSettings(settings):{};
+    opts=Object.assign({},opts||{});
     settingsChain=settingsChain.catch(function(){return null;}).then(async function(){
       var base=bootSettingsMeta||null;
       var env=settingsEnvelope(settings,base||{},opts&&opts.reason||'settings-save');
@@ -250,7 +258,9 @@
   }
 
   function replaceAll(records,settings,opts){
-    records=Array.isArray(records)?records:[];settings=validSettings(settings)?settings:{};
+    records=Array.isArray(records)?records.slice():[];
+    settings=validSettings(settings)?shallowSettings(settings):{};
+    opts=Object.assign({},opts||{});
     bulkChain=bulkChain.catch(function(){return null;}).then(async function(){
       await Promise.all([recordChain.catch(function(){}),settingsChain.catch(function(){})]);
       var currentMeta=null,currentSettings=null;try{var p=await Promise.all([idbGet(META_STORE,'records').catch(function(){return null;}),idbGet(DOC_STORE,'settings').catch(function(){return null;})]);currentMeta=p[0];currentSettings=p[1];}catch(e){}

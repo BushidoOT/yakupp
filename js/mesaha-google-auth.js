@@ -1,4 +1,4 @@
-/* Mesaha İO V5.73 — Google OAuth + terminal kod eşleştirme + panel üstü modal ve misafir terminal modu.
+/* Mesaha İO V5.78 — Google OAuth + kalıcı terminal kod eşleştirme + panel üstü modal ve misafir terminal modu.
    - Google hesabı doğrulandıktan sonra kullanıcı otomatik onaylanır.
    - Kullanıcı panelinden terminal kodu üretilebilir.
    - Terminal cihaz Google hesabı açmadan kod ile kullanıcı/şeflik kimliğine eşleşir; bulut yedek özelliklerini kullanabilir. */

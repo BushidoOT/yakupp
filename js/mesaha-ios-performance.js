@@ -1,4 +1,4 @@
-/* Mesaha İO V5.76 — iOS düşük güç ve görünüm bazlı çalışma denetimi. */
+/* Mesaha İO V5.78 — iOS düşük güç ve görünüm bazlı çalışma denetimi. */
 (function(){
   'use strict';
   if(window.MesahaIOSPerformanceV576)return;

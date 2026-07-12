@@ -1,4 +1,4 @@
-/* Mesaha İO V5.27 — Uygulama stabilite bağlayıcısı */
+/* Mesaha İO V5.78 — Yaşam döngüsü ve kalıcı depolama stabilite bağlayıcısı */
 (function(){
   'use strict';
   if(window.__mesahaRuntimeV527)return;
@@ -133,9 +133,13 @@
       navigator.serviceWorker.ready.catch(function(e){log('service-worker.ready',e);});
     }
   }
+  function flushPersistence(reason){
+    try{if(typeof window.__flushSettings==='function')Promise.resolve(window.__flushSettings(reason||'lifecycle')).catch(function(){});}catch(e){}
+    try{if(window.MesahaStorageV527&&typeof window.MesahaStorageV527.flush==='function')Promise.resolve(window.MesahaStorageV527.flush()).catch(function(){});}catch(e){}
+  }
   function bindPersistence(){
-    document.addEventListener('visibilitychange',function(){if(document.hidden&&window.MesahaStorageV527)window.MesahaStorageV527.flush();},{passive:true});
-    window.addEventListener('pagehide',function(){if(window.MesahaStorageV527)window.MesahaStorageV527.flush();},{passive:true});
+    document.addEventListener('visibilitychange',function(){if(document.hidden)flushPersistence('runtime-hidden');},{passive:true});
+    window.addEventListener('pagehide',function(){flushPersistence('runtime-pagehide');},{passive:true});
   }
   async function selfTest(){
     var out={version:(window.MESAHA_VERSION&&window.MESAHA_VERSION.visibleVersion)||'',storage:false,serviceWorker:false,identity:false};

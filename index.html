@@ -1973,8 +1973,11 @@ function renderQuickChips(){
 }
 
 /* V5.36: Kayıt/ayar depolama olaylarından sonra giriş ekranındaki kısayolları canlı yenile. */
-let __quickChipRefreshTimerV536=0;
+let __quickChipRefreshTimerV536=0,__quickChipRefreshPendingV578=false;
+function quickChipEntryVisibleV578(){ const v=$('entryView'); return !!(v&&v.classList.contains('active')); }
 function refreshQuickChipsV536(immediate){
+  if(!quickChipEntryVisibleV578()){ __quickChipRefreshPendingV578=true; clearTimeout(__quickChipRefreshTimerV536); return; }
+  __quickChipRefreshPendingV578=false;
   const run=()=>{
     __quickChipRefreshTimerV536=0;
     try{renderQuickChips();}catch(e){}
@@ -2004,6 +2007,7 @@ try{
   if(!window.__mesahaQuickChipLiveBoundV536){
     window.__mesahaQuickChipLiveBoundV536=true;
     window.addEventListener('mesaha:records-saved',()=>refreshQuickChipsV536(false),{passive:true});
+    window.addEventListener('mesaha:view-changed',ev=>{if(ev&&ev.detail&&ev.detail.view==='entry'&&__quickChipRefreshPendingV578)refreshQuickChipsV536(true)},{passive:true});
   }
 }catch(e){}
 
@@ -2813,10 +2817,14 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     return {list:records(), text:`Tüm kayıtlar (${records().length})`, mode:'all'};
   }
 
+  function viewActiveV578(id){ const el=$(id); return !!(el&&el.classList.contains('active')); }
   function updateExportScopeInfo(){
-    const el = $('exportScopeInfo');
-    if(el) el.textContent = 'İndirilecek: ' + exportScope().text;
-    updateLastBarcodeCard();
+    /* Gizli ekranlarda filtre/DOM taraması yapma. Büyük kayıt listelerinde özellikle iOS ana iş parçacığını rahatlatır. */
+    if(viewActiveV578('recordsView')){
+      const el = $('exportScopeInfo');
+      if(el) el.textContent = 'İndirilecek: ' + exportScope().text;
+    }
+    if(viewActiveV578('homeView')) updateLastBarcodeCard();
   }
 
   function updateLastBarcodeCard(){
@@ -3147,6 +3155,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     document.addEventListener('click', ev => {if(ev.target&&ev.target.closest&&ev.target.closest('#recordsView,[data-tree-filter],[data-cutter-filter]'))scheduleExportScopeV542(100);}, true);
     window.addEventListener('mesaha:records-saved',()=>scheduleExportScopeV542(60),{passive:true});
     window.addEventListener('mesaha:settings-saved',()=>scheduleExportScopeV542(100),{passive:true});
+    window.addEventListener('mesaha:view-changed',ev=>{const v=ev&&ev.detail&&ev.detail.view;if(v==='records'||v==='home')scheduleExportScopeV542(35);},{passive:true});
   }
 
   function removeSameBarcodeAndQuantity(){
@@ -3165,14 +3174,11 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     startupChecks();
     window.addEventListener('online', () => { updateNetwork(); setStep('offline','ok','Online / offline çalışma hazır'); });
     window.addEventListener('offline', () => { updateNetwork(); setStep('offline','ok','Offline mod hazır'); });
-    setTimeout(updateExportScopeInfo, 400);
-    setTimeout(updateExportScopeInfo, 1200);
+    [450,1400].forEach(ms=>setTimeout(updateExportScopeInfo,ms));
   }
 
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, {once:true});
   else boot();
-
-  [600,1600,3200].forEach(ms => setTimeout(updateExportScopeInfo, ms));
   /* v381: sürekli export kapsam kontrolü kaldırıldı; input/change olayları yeterli. */
 
   window.mesahaV304 = {modal, backupZip, clearCacheFlow, forceUpdateFlow, updateExportScopeInfo};
@@ -3315,11 +3321,12 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     try{ openEntry = window.openEntry; }catch{}
   }
 
+  function recordsVisibleV578(){ const v=$('recordsView'); return !!(v&&v.classList.contains('active')); }
   function boot(){
     bindSelectOnTap();
     bindSaveKeepKeyboard();
     patchOpenEntryRuntime();
-    updateBeyanTotals();
+    if(recordsVisibleV578()) updateBeyanTotals();
   }
 
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, {once:true});
@@ -3333,7 +3340,8 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   }
   window.addEventListener('mesaha:records-saved',()=>scheduleFallbackTotalsV542(70),{passive:true});
   window.addEventListener('mesaha:settings-saved',()=>scheduleFallbackTotalsV542(110),{passive:true});
-  [100,400,1000,2200].forEach(ms => setTimeout(boot, ms));
+  window.addEventListener('mesaha:view-changed',ev=>{if(ev&&ev.detail&&ev.detail.view==='records')scheduleFallbackTotalsV542(35);},{passive:true});
+  [180,900].forEach(ms => setTimeout(boot, ms));
   /* v381: 900ms beyan toplam interval kaldırıldı; input/change/click olayları güncelliyor. */
 
   window.mesahaV305 = {focusDiameter, updateBeyanTotals};
@@ -4208,13 +4216,14 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     try{
       if(!window.MesahaStorageV527||typeof window.MesahaStorageV527.saveSettings!=='function')return;
       const work=window.MesahaStorageV527.saveSettings(settings,{reason:'first-login-v532'});
-      const timeout=new Promise(resolve=>setTimeout(()=>resolve({ok:false,timeout:true,error:'Depolama doğrulaması zaman aşımına uğradı'}),5000));
+      let durableTimer=0;
+      const timeout=new Promise(resolve=>{durableTimer=setTimeout(()=>resolve({ok:false,timeout:true,error:'Depolama doğrulaması zaman aşımına uğradı'}),5000)});
       Promise.race([Promise.resolve(work),timeout]).then(result=>{
         if(!result||result.ok===false){
           log('first-login.durable-save',new Error(result&&result.error||'Kalıcı depolama doğrulanamadı'),{name,seflik,timeout:!!(result&&result.timeout)});
           toast('Giriş tamamlandı.','Güvenli depolama arka planda tekrar doğrulanacak.','warning');
         }
-      }).catch(err=>log('first-login.durable-save',err,{name,seflik}));
+      }).catch(err=>log('first-login.durable-save',err,{name,seflik})).finally(()=>{if(durableTimer)clearTimeout(durableTimer)});
     }catch(err){log('first-login.durable-save-start',err,{name,seflik})}
   }
   function save(){
@@ -4389,7 +4398,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   function notify(t,d,type){try{if(typeof window.mesahaFloatToastV315==='function')window.mesahaFloatToastV315(t,d||'',type||'success');else if(typeof window.toast==='function')window.toast(t)}catch{}}
   function errText(e){const m=String(e&&e.message?e.message:e||'Hata');if(/permission|insufficient/i.test(m))return'Supabase RLS/policy kontrol et';if(/network|offline|internet/i.test(m))return'İnternet bağlantısı yok';if(/timeout/i.test(m))return'Bağlantı zaman aşımı';return m.slice(0,140)}
   function loadScript(src){return new Promise((res,rej)=>{if(document.querySelector('script[src="'+src+'"]'))return res();const s=document.createElement('script');s.src=src;s.async=true;s.crossOrigin='anonymous';s.onload=res;s.onerror=()=>rej(new Error('Supabase bağlantı motoru yüklenemedi'));document.head.appendChild(s)})}
-  function withTimeout(p,ms,label){return Promise.race([p,new Promise((_,rej)=>setTimeout(()=>rej(new Error((label||'İşlem')+' zaman aşımı')),ms))])}
+  function withTimeout(p,ms,label){let timer=0;return Promise.race([Promise.resolve(p),new Promise((_,rej)=>{timer=setTimeout(()=>rej(new Error((label||'İşlem')+' zaman aşımı')),ms)})]).finally(()=>{if(timer)clearTimeout(timer)})}
   async function ready(){return await window.mesahaSupabaseV380.ready();}
   const ALLOWED_REASONS={
     'mesaha-download':'mesaha-download','xls-download':'mesaha-download','xls-download-v392':'mesaha-download','xls-download-legacy':'mesaha-download',
@@ -5773,10 +5782,10 @@ a.video-link-v392,.orbis-video-link-v392{display:inline-flex;align-items:center;
   }
   function selectedFromDom(all){const ids=new Set(Array.from(document.querySelectorAll('[data-select]:checked')).map(x=>x.getAttribute('data-select')).filter(Boolean));return ids.size?all.filter(r=>ids.has(String(r.id))):[]}
   function isFilterActive(list,all){const s=settings(),q=norm(($('recordSearch')&&$('recordSearch').value)||'');return Boolean(q||(s.treeFilter&&s.treeFilter!=='Tümü')||(s.cutterFilter&&s.cutterFilter!=='Tümü')||list.length!==all.length)}
-  function exportScope(){const all=activeRecords();const selected=selectedFromDom(all);const filtered=filterList(all);if(selected.length)return{list:selected,text:`Seçili kayıtlar (${selected.length})`,mode:'selected'};if(isFilterActive(filtered,all))return{list:filtered,text:`Filtrelenen kayıtlar (${filtered.length})`,mode:'filtered'};return{list:all,text:`Tüm kayıtlar (${all.length})`,mode:'all'}}
-  function productTotalsHtml(list){const order=[['Tomruk','Tomruk','tomruk'],['Maden Direk','Maden','maden'],['Kağıtlık','Kağıtlık','kagit'],['Sanayi Odunu','Sanayi','sanayi'],['Tel Direk','Tel','tel']];return order.map(([key,label,cls])=>{const t=totals((list||[]).filter(r=>normalizeProductType(r.productType)===key));return `<div class="prod-total product-${cls}"><small>${esc(label)}</small><b>${fmt(t.m3,3)} m³</b><small>${t.count} adet</small></div>`}).join('')}
+  function exportScope(allInput,filteredInput){const all=Array.isArray(allInput)?allInput:activeRecords();const selected=selectedFromDom(all);const filtered=Array.isArray(filteredInput)?filteredInput:filterList(all);if(selected.length)return{list:selected,text:`Seçili kayıtlar (${selected.length})`,mode:'selected'};if(isFilterActive(filtered,all))return{list:filtered,text:`Filtrelenen kayıtlar (${filtered.length})`,mode:'filtered'};return{list:all,text:`Tüm kayıtlar (${all.length})`,mode:'all'}}
+  function productTotalsHtml(list){const order=[['Tomruk','Tomruk','tomruk'],['Maden Direk','Maden','maden'],['Kağıtlık','Kağıtlık','kagit'],['Sanayi Odunu','Sanayi','sanayi'],['Tel Direk','Tel','tel']],bucket=Object.create(null);order.forEach(x=>bucket[x[0]]={count:0,m3:0});(list||[]).forEach(r=>{const key=normalizeProductType(r.productType),b=bucket[key]||(bucket[key]={count:0,m3:0});b.count+=Math.max(1,Number(r.quantity||1)||1);b.m3+=rowVolume(r)});return order.map(([key,label,cls])=>{const t=bucket[key]||{count:0,m3:0};return `<div class="prod-total product-${cls}"><small>${esc(label)}</small><b>${fmt(t.m3,3)} m³</b><small>${t.count} adet</small></div>`}).join('')}
   function updateBeyan(){
-    const all=activeRecords(),filtered=filterList(all),scope=exportScope(),scopeList=scope.mode==='all'?all:scope.list,t=totals(scope.mode==='all'?all:filtered),allT=totals(all);
+    const all=activeRecords(),filtered=filterList(all),scope=exportScope(all,filtered),t=totals(scope.mode==='all'?all:filtered),allT=totals(all);
     const countPill=$('recordCountPill');if(countPill)countPill.textContent=isFilterActive(filtered,all)?`${filtered.length} / ${all.length} kayıt`:`${all.length} kayıt`;
     const m3=$('recTotalM3');if(m3)m3.textContent=`${fmt(t.m3,3)} m³`;
     const cnt=$('recTotalCount');if(cnt)cnt.textContent=t.count.toLocaleString('tr-TR');
@@ -5825,11 +5834,12 @@ a.video-link-v392,.orbis-video-link-v392{display:inline-flex;align-items:center;
     };
     window.OrbisXls.__v392Wrapped=true;return true;
   }
+  function recordsVisibleV578(){const v=$('recordsView');return !!(v&&v.classList.contains('active'))}
   function boot(){
     try{window.MesahaOrbisV392={volume:rowVolume,totals,records:activeRecords,exportScope,updateBeyan,download:downloadFile}}catch(e){}
     try{window.volume=rowVolume}catch(e){}
     try{if(window.mesahaV305)window.mesahaV305.updateBeyanTotals=updateBeyan}catch(e){}
-    wrapOrbisDownload();updateBeyan();
+    wrapOrbisDownload();if(recordsVisibleV578())updateBeyan();
   }
   document.addEventListener('click',intercept,true);
   let beyanTimerV542=0;
@@ -5841,10 +5851,11 @@ a.video-link-v392,.orbis-video-link-v392{display:inline-flex;align-items:center;
   }
   window.addEventListener('mesaha:records-saved',()=>scheduleBeyanV542(60),{passive:true});
   window.addEventListener('mesaha:settings-saved',()=>scheduleBeyanV542(100),{passive:true});
+  window.addEventListener('mesaha:view-changed',ev=>{if(ev&&ev.detail&&ev.detail.view==='records')scheduleBeyanV542(30);},{passive:true});
   document.addEventListener('input',ev=>{if(relevantBeyanTargetV542(ev))scheduleBeyanV542(90)},true);
   document.addEventListener('change',ev=>{if(relevantBeyanTargetV542(ev))scheduleBeyanV542(90)},true);
   document.addEventListener('click',ev=>{if(relevantBeyanTargetV542(ev))scheduleBeyanV542(110)},true);
-  [80,350,900,1800,3200].forEach(ms=>setTimeout(boot,ms));
+  [150,850].forEach(ms=>setTimeout(boot,ms));
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
 </script>
@@ -6909,7 +6920,7 @@ body.mesaha-entry-scrolling-v408 #entryView label{
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',sync,{once:true});else sync();
   window.addEventListener('resize',sync,{passive:true});
-  ['mesaha:records-saved','mesaha:settings-saved'].forEach(function(ev){window.addEventListener(ev,function(){if(window.MesahaIOSPerformanceV576&&window.MesahaIOSPerformanceV576.entryActive())return;setTimeout(sync,80);},false);});
+  window.addEventListener('mesaha:view-changed',function(ev){if(ev&&ev.detail&&ev.detail.view==='entry')setTimeout(sync,40)},{passive:true});
   setTimeout(sync,500);setTimeout(sync,1600);
 })();
 </script>
@@ -7064,7 +7075,7 @@ body.mesaha-entry-scrolling-v408 #entryView label{
  'use strict';if(window.__mesahaV543AccessibilityGuard)return;window.__mesahaV543AccessibilityGuard=true;
  function run(){var p=document.getElementById('productButtons');if(p)p.querySelectorAll('[data-product]').forEach(function(b){b.setAttribute('aria-pressed',b.classList.contains('active')?'true':'false');if(!b.title)b.title=(b.textContent||'').trim()})}
  document.addEventListener('click',function(ev){var row=ev.target&&ev.target.closest&&ev.target.closest('[data-recent-row]');if(!row||ev.target.closest('[data-recent-delete],[data-edit]'))return;var b=row.querySelector('[data-edit]');if(b)b.click()},false);
- window.addEventListener('mesaha:records-saved',function(){setTimeout(run,40)},{passive:true});window.addEventListener('mesaha:settings-saved',function(){setTimeout(run,40)},{passive:true});if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run,{once:true});else run();
+ function entryActive(){var v=document.getElementById('entryView');return !!(v&&v.classList.contains('active'))} window.addEventListener('mesaha:records-saved',function(){if(entryActive())setTimeout(run,40)},{passive:true});window.addEventListener('mesaha:settings-saved',function(){if(entryActive())setTimeout(run,40)},{passive:true});window.addEventListener('mesaha:view-changed',function(ev){if(ev&&ev.detail&&ev.detail.view==='entry')setTimeout(run,30)},{passive:true});if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run,{once:true});else run();
 })();
 </script>
 <script src="./js/mesaha-records-performance.js"></script>

@@ -1,4 +1,4 @@
-/* Mesaha İO V5.77 — Terminal kodlu bulut + Şeflik Klasörü erişimi ve sonradan kod eşleştirme
+/* Mesaha İO V5.78 — Kalıcı terminal oturumu, güvenli çıkış ve hafif arayüz yenileme
    Elle terminal modunda uygulama cihaz içi çalışır; kodla eşleşmiş terminalde Bulut ve Şeflik Klasörü açıktır. */
 (function(){
   'use strict';
@@ -27,7 +27,7 @@
   function user(){var u=jsonGet(PANEL_KEY,{}),s=jsonGet(SETTINGS_KEY,{}),t=terminalData();return{name:clean(t.name||u.name||s.ekipNot),seflik:clean(t.seflik||u.seflik||s.seflik),bolmeNo:clean(t.bolmeNo||u.bolmeNo||s.bolmeNo)}}
   function toast(title,sub,kind){try{if(typeof window.mesahaFloatToastV315==='function')return window.mesahaFloatToastV315(title,sub||'',kind||'warning')}catch(e){}try{if(typeof window.toast==='function')return window.toast(title,sub||'',kind||'warning')}catch(e){}try{alert(title+(sub?'\n'+sub:''))}catch(e){}}
   function log(event,detail,level){try{if(window.MesahaLoginLog&&typeof window.MesahaLoginLog.log==='function')window.MesahaLoginLog.log(event,detail||{},level||'info')}catch(e){}}
-  function clearTerminal(){try{localStorage.removeItem(TERMINAL_KEY);localStorage.removeItem(OLD_TERMINAL_KEY)}catch(e){}try{document.documentElement.removeAttribute('data-mesaha-terminal-mode');document.documentElement.removeAttribute('data-mesaha-terminal-cloud')}catch(e){}log('terminal_mode_disabled_for_google',{},'info')}
+  function clearTerminal(){try{localStorage.removeItem(TERMINAL_KEY);localStorage.removeItem(OLD_TERMINAL_KEY)}catch(e){}try{document.documentElement.removeAttribute('data-mesaha-terminal-mode');document.documentElement.removeAttribute('data-mesaha-terminal-cloud');['terminalLocalHomeV556','terminalLocalPanelV556','terminalPairPanelV561'].forEach(function(id){var el=$(id);if(el&&el.parentNode)el.parentNode.removeChild(el)})}catch(e){}log('terminal_mode_disabled_for_google',{},'info')}
   function goGoogle(){clearTerminal();try{if(window.mesahaSupabase&&window.mesahaSupabase.clearSession)window.mesahaSupabase.clearSession()}catch(e){}try{window.dispatchEvent(new CustomEvent('mesaha:google-auth-required',{detail:{reason:'terminal_cloud_feature'}}))}catch(e){}setTimeout(function(){try{if(window.MesahaGoogleAuthV548&&typeof window.MesahaGoogleAuthV548.boot==='function')window.MesahaGoogleAuthV548.boot(true)}catch(e){}},80)}
   function askGoogle(){
     log('terminal_cloud_feature_blocked',{url:location.href},'warning');
@@ -51,20 +51,21 @@
       'html[data-mesaha-terminal-cloud="1"] [data-nav="seflikFolder"],html[data-mesaha-terminal-cloud="1"] #seflikFolderHomeShortcutV528{opacity:1!important;filter:none!important}'
     ].join('');document.head.appendChild(st);
   }
-  function terminalCardHtml(){var u=user(),ok=terminalCloudAllowed();return '<div class="terminal-card-v557" id="terminalLocalCardV556"><b>🖥 Terminal modu aktif</b><small>'+esc(u.name||'Kullanıcı')+' • '+esc(u.seflik||'Şeflik')+'<br>'+(ok?'Terminal kodu eşleşti. Bulut ve Şeflik Klasörü açık.':'Bu cihaz yerel çalışır. Bulut ve Şeflik Klasörü için terminal kodu veya Google gerekir.')+'</small><button type="button" id="terminalGoogleBtnV556">Google ile giriş yap</button></div>'}
+  function terminalCardHtml(){var u=user(),ok=terminalCloudAllowed();return '<div class="terminal-card-v557"><b>🖥 Terminal modu aktif</b><small>'+esc(u.name||'Kullanıcı')+' • '+esc(u.seflik||'Şeflik')+'<br>'+(ok?'Terminal kodu eşleşti. Bulut ve Şeflik Klasörü açık. Çıkış için kullanıcı panelindeki Çıkış Yap düğmesini kullanın.':'Bu cihaz yerel çalışır. Bulut ve Şeflik Klasörü için terminal kodu veya Google gerekir.')+'</small>'+(ok?'':'<button type="button" data-terminal-google-v578>Google ile giriş yap</button>')+'</div>'}
   function terminalPairPanelHtml(){return '<div class="terminal-card-v557" id="terminalPairPanelV561"><b>Terminal kodu gir</b><small>Telefondan kullanıcı panelinde oluşturulan terminal kodunu sonradan buradan eşleştirebilirsin. Kod eşleşince Bulut ve Şeflik Klasörü açılır.</small><input id="terminalPairCodePanelV561" maxlength="20" inputmode="text" autocomplete="one-time-code" placeholder="Örn: A1B2-C3D4"><button type="button" id="terminalPairApplyPanelV561">Terminal kodunu eşleştir</button></div>'}
   function bindTerminalPairPanel(){var b=$('terminalPairApplyPanelV561');if(!b||b.__terminalPairV561)return;b.__terminalPairV561=true;b.addEventListener('click',function(ev){ev.preventDefault();ev.stopPropagation();var inp=$('terminalPairCodePanelV561'),code=clean(inp&&inp.value).toUpperCase();if(code.length<6){toast('Terminal kodu gerekli','Telefondan oluşturulan kodu girin.','warning');return}if(window.MesahaGoogleAuthV548&&typeof window.MesahaGoogleAuthV548.claimTerminalCode==='function'){var oldText=b.textContent;b.disabled=true;b.textContent='Kod kontrol ediliyor…';window.MesahaGoogleAuthV548.claimTerminalCode(code).then(function(){boot();}).catch(function(e){toast('Kod eşleşmedi',clean(e&&e.message||e),'error')}).finally(function(){b.disabled=false;b.textContent=oldText||'Terminal kodunu eşleştir'});return}toast('Giriş modülü hazır değil','Sayfayı yenileyip tekrar deneyin.','warning')},true)}
   function ensureCards(){
     if(!terminal())return;
-    var status=document.querySelector('.status-card');
-    if(status&&!$('terminalLocalHomeV556')){var div=document.createElement('section');div.id='terminalLocalHomeV556';div.innerHTML=terminalCardHtml();status.parentNode.insertBefore(div,status.nextSibling)}
-    var panel=document.querySelector('#userPanelOverlayV316 .panel-stats-v316');
-    if(panel&&!$('terminalLocalPanelV556')){var p=document.createElement('div');p.id='terminalLocalPanelV556';p.innerHTML=terminalCardHtml();panel.parentNode.insertBefore(p,panel)}
+    var cardHtml=terminalCardHtml(),cardState=terminalCloudAllowed()?'paired':'local';
+    var status=document.querySelector('.status-card'),home=$('terminalLocalHomeV556');
+    if(status&&!home){home=document.createElement('section');home.id='terminalLocalHomeV556';home.dataset.terminalStateV578=cardState;home.innerHTML=cardHtml;status.parentNode.insertBefore(home,status.nextSibling)}else if(home&&home.dataset.terminalStateV578!==cardState){home.dataset.terminalStateV578=cardState;home.innerHTML=cardHtml}
+    var panel=document.querySelector('#userPanelOverlayV316 .panel-stats-v316'),panelCard=$('terminalLocalPanelV556');
+    if(panel&&!panelCard){panelCard=document.createElement('div');panelCard.id='terminalLocalPanelV556';panelCard.dataset.terminalStateV578=cardState;panelCard.innerHTML=cardHtml;panel.parentNode.insertBefore(panelCard,panel)}else if(panelCard&&panelCard.dataset.terminalStateV578!==cardState){panelCard.dataset.terminalStateV578=cardState;panelCard.innerHTML=cardHtml}
     var card=document.querySelector('#userPanelOverlayV316 .panel-card-v316'), before=$('panelTelegramSectionV515'), pair=$('terminalPairPanelV561');
     if(card&&terminalCloudAllowed()&&pair){try{pair.remove()}catch(e){}}
     if(card&&!terminalCloudAllowed()&&!pair){var q=document.createElement('div');q.innerHTML=terminalPairPanelHtml();if(before&&before.parentNode)before.parentNode.insertBefore(q.firstChild,before);else card.appendChild(q.firstChild)}
     bindTerminalPairPanel();
-    document.querySelectorAll('#terminalGoogleBtnV556,#terminalLocalPanelV556 button').forEach(function(btn){if(!btn.__terminalGoogleV556){btn.__terminalGoogleV556=true;btn.addEventListener('click',function(ev){ev.preventDefault();ev.stopPropagation();goGoogle()},true)}});
+    document.querySelectorAll('[data-terminal-google-v578]').forEach(function(btn){if(!btn.__terminalGoogleV556){btn.__terminalGoogleV556=true;btn.addEventListener('click',function(ev){ev.preventDefault();ev.stopPropagation();goGoogle()},true)}});
   }
   function applyBadge(){
     if(!terminal())return;
@@ -112,8 +113,9 @@
   }
   function boot(){style();if(terminal()){applyBadge();ensureCards();labelBlockedButtons();patchGlobals()}bindGate()}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
-  [100,350,800,1600,3200,6500].forEach(function(ms){setTimeout(boot,ms)});
+  [120,700,1800].forEach(function(ms){setTimeout(boot,ms)});
   window.addEventListener('mesaha:terminal-mode-enabled',boot);
+  window.addEventListener('mesaha:terminal-session-revoked',function(){clearTerminal();toast('Terminal oturumu kapatıldı','Bu cihazın kodlu erişimi ana cihazdan kapatıldı. Yeniden giriş için yeni terminal kodu kullanın.','warning')});
   window.addEventListener('mesaha:settings-saved',boot);
   window.MesahaTerminalLocalV556={isActive:terminal,canUseCloud:terminalCloudAllowed,data:terminalData,disable:clearTerminal,google:goGoogle,boot:boot};
 })();
