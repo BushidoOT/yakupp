@@ -450,7 +450,7 @@ body.keyboard-open-v311 .entry-form{
 body.cloud-busy-v326 #cloudBackupBtnV316::after{animation:mesahaLoaderSpinV545 .8s linear infinite!important;animation-play-state:running!important}
 
 
-/* V5.75 — iPhone ağaç seçimi ve düşük ısı giriş görünümü. */
+/* V5.76 — iPhone hızlı kayıt, tek dokunma ve düşük ısı giriş görünümü. */
 #entryView .tree-panel{contain:layout style paint;}
 #entryView .tree-option{
   width:100%;min-height:44px;margin:0;text-align:left;cursor:pointer;color:var(--text);

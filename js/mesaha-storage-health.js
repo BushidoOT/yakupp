@@ -22,7 +22,12 @@
     var count=Number(detail&&detail.count||0),t=Date.now();
     if(t-lastAutoAt<AUTO_MS&&Math.abs(count-lastAutoCount)<AUTO_STEP)return;
     lastAutoAt=t;lastAutoCount=count;clearTimeout(autoTimer);
-    autoTimer=setTimeout(function(){if(!document.hidden)check(false);},700);
+    autoTimer=setTimeout(function(){
+      if(document.hidden)return;
+      try{if(window.MesahaIOSPerformanceV576&&window.MesahaIOSPerformanceV576.entryActive()){autoTimer=setTimeout(function(){if(!document.hidden&&!(window.MesahaIOSPerformanceV576&&window.MesahaIOSPerformanceV576.entryActive()))check(false);},5000);return;}}catch(e){}
+      var run=function(){if(!document.hidden)check(false);};
+      if(typeof requestIdleCallback==='function')requestIdleCallback(run,{timeout:2500});else setTimeout(run,300);
+    },900);
   }
   function bind(){var b=document.getElementById('storageHealthBtn'), d=document.getElementById('downloadStorageHealthBtn'); if(b&&!b.__sh){b.__sh=true;b.addEventListener('click',function(){check(true);});} if(d&&!d.__sh){d.__sh=true;d.addEventListener('click',function(){download();toast('Depolama raporu indirildi.');});}}
   window.addEventListener('mesaha:records-saved',function(ev){autoCheck(ev&&ev.detail||{});},{passive:true});

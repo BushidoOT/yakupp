@@ -20,6 +20,7 @@
 <script src="./js/version.js"></script>
 <script>try{ if(window.MesahaVersion&&window.MesahaVersion.applyToDocument) window.MesahaVersion.applyToDocument(document); }catch(e){}</script>
 <script src="./js/mesaha-early-optimizer.js"></script>
+<script src="./js/mesaha-ios-performance.js"></script>
 <script src="./js/mesaha-utils.js"></script>
 <script src="./js/mesaha-data-guard.js"></script>
 <script src="./js/mesaha-persistent-store.js"></script>
@@ -1675,13 +1676,13 @@ function bindEntryTreeToggleV575(){
     btn.addEventListener('pointermove',ev=>{if(gesture&&gesture.id===ev.pointerId&&(Math.abs(ev.clientX-gesture.x)>12||Math.abs(ev.clientY-gesture.y)>12))gesture.moved=true},{capture:true,passive:true});
     btn.addEventListener('pointercancel',()=>{gesture=null},{capture:true,passive:true});
     btn.addEventListener('pointerup',ev=>{const g=gesture;gesture=null;if(!g||g.id!==ev.pointerId||g.moved)return;lastAt=Date.now();stop(ev);toggleEntryTreePanelV575()},{capture:true,passive:false});
-    btn.addEventListener('click',ev=>{if(Date.now()-lastAt<900)stop(ev)},{capture:true,passive:false});
+    btn.addEventListener('click',ev=>{if(Date.now()-lastAt<900)return stop(ev);lastAt=Date.now();stop(ev);toggleEntryTreePanelV575()},{capture:true,passive:false});
   }else if(isIOS){
     btn.addEventListener('touchstart',ev=>{const t=ev.touches&&ev.touches[0];gesture=t?{x:t.clientX,y:t.clientY,moved:false}:null},{capture:true,passive:true});
     btn.addEventListener('touchmove',ev=>{const t=ev.touches&&ev.touches[0];if(gesture&&t&&(Math.abs(t.clientX-gesture.x)>12||Math.abs(t.clientY-gesture.y)>12))gesture.moved=true},{capture:true,passive:true});
     btn.addEventListener('touchcancel',()=>{gesture=null},{capture:true,passive:true});
     btn.addEventListener('touchend',ev=>{const g=gesture;gesture=null;if(!g||g.moved)return;lastAt=Date.now();stop(ev);toggleEntryTreePanelV575()},{capture:true,passive:false});
-    btn.addEventListener('click',ev=>{if(Date.now()-lastAt<900)stop(ev)},{capture:true,passive:false});
+    btn.addEventListener('click',ev=>{if(Date.now()-lastAt<900)return stop(ev);lastAt=Date.now();stop(ev);toggleEntryTreePanelV575()},{capture:true,passive:false});
   }else btn.addEventListener('click',toggleEntryTreePanelV575);
 }
 function bind(){
@@ -1831,13 +1832,13 @@ function bindEntryTreePanelV575(panel){
     panel.addEventListener('pointermove',ev=>{const g=__entryTreeGestureV575;if(g&&g.id===ev.pointerId&&(Math.abs(ev.clientX-g.x)>14||Math.abs(ev.clientY-g.y)>14))g.moved=true},{capture:true,passive:true});
     panel.addEventListener('pointercancel',()=>{__entryTreeGestureV575=null},{capture:true,passive:true});
     panel.addEventListener('pointerup',ev=>{const g=__entryTreeGestureV575;__entryTreeGestureV575=null;if(!g||g.id!==ev.pointerId||g.moved||find(ev.target)!==g.btn)return;apply(g.btn,ev,'ios-pointerup')},{capture:true,passive:false});
-    panel.addEventListener('click',ev=>{const btn=find(ev.target);if(btn&&__entryTreeLastV575.el===btn&&Date.now()-__entryTreeLastV575.at<900)stop(ev)},{capture:true,passive:false});
+    panel.addEventListener('click',ev=>{const btn=find(ev.target);if(!btn)return;if(__entryTreeLastV575.el===btn&&Date.now()-__entryTreeLastV575.at<900)return stop(ev);apply(btn,ev,'ios-click-fallback')},{capture:true,passive:false});
   }else if(isIOS){
     panel.addEventListener('touchstart',ev=>{const t=ev.touches&&ev.touches[0],btn=find(ev.target);__entryTreeGestureV575=t&&btn?{btn,x:t.clientX,y:t.clientY,moved:false}:null},{capture:true,passive:true});
     panel.addEventListener('touchmove',ev=>{const t=ev.touches&&ev.touches[0],g=__entryTreeGestureV575;if(g&&t&&(Math.abs(t.clientX-g.x)>14||Math.abs(t.clientY-g.y)>14))g.moved=true},{capture:true,passive:true});
     panel.addEventListener('touchcancel',()=>{__entryTreeGestureV575=null},{capture:true,passive:true});
     panel.addEventListener('touchend',ev=>{const g=__entryTreeGestureV575;__entryTreeGestureV575=null;if(!g||g.moved||find(ev.target)!==g.btn)return;apply(g.btn,ev,'ios-touchend')},{capture:true,passive:false});
-    panel.addEventListener('click',ev=>{const btn=find(ev.target);if(btn&&__entryTreeLastV575.el===btn&&Date.now()-__entryTreeLastV575.at<900)stop(ev)},{capture:true,passive:false});
+    panel.addEventListener('click',ev=>{const btn=find(ev.target);if(!btn)return;if(__entryTreeLastV575.el===btn&&Date.now()-__entryTreeLastV575.at<900)return stop(ev);apply(btn,ev,'ios-click-fallback')},{capture:true,passive:false});
   }else panel.addEventListener('click',ev=>{const btn=find(ev.target);if(btn)apply(btn,null,'click')});
 }
 function renderEntryTrees(){
@@ -1979,10 +1980,13 @@ function refreshQuickChipsV536(immediate){
     try{renderQuickChips();}catch(e){}
     try{renderRecent();}catch(e){}
     try{
-      const t=recordStatsV447().total;
-      const countEl=$('entryTotalCount'),m3El=$('entryTotalM3');
-      if(countEl)countEl.textContent=t.count.toLocaleString('tr-TR');
-      if(m3El)m3El.textContent=`${fmt(t.m3,3)} m³`;
+      if(window.MesahaEntryStatsV576&&typeof window.MesahaEntryStatsV576.refresh==='function')window.MesahaEntryStatsV576.refresh(false);
+      else{
+        const t=recordStatsV447().total;
+        const countEl=$('entryTotalCount'),m3El=$('entryTotalM3');
+        if(countEl)countEl.textContent=t.count.toLocaleString('tr-TR');
+        if(m3El)m3El.textContent=`${fmt(t.m3,3)} m³`;
+      }
     }catch(e){}
   };
   if(immediate){clearTimeout(__quickChipRefreshTimerV536);run();return;}
@@ -2035,7 +2039,10 @@ async function deleteRecentRecord(id){
   const last=state.records[state.records.length-1];
   state.settings.barcode=last&&last.barcode?nextBarcode(last.barcode):'';
   const bi=$('barcodeInput');if(bi)bi.value=state.settings.barcode;
-  const result=await __saveAllV527('recent-delete');
+  let result;
+  if(window.MesahaStorageV527&&typeof window.MesahaStorageV527.saveRecordDelta==='function')result=await window.MesahaStorageV527.saveRecordDelta({type:'delete',deleteId:id,previousRecord:r},state.records,{reason:'recent-delete'});
+  else result=await saveRecords('recent-delete');
+  saveSettings();
   if(result&&result.ok===false){state.records=before;state.settings=beforeSettings;toast('Silme kaydedilemedi.');return false;}
   renderRecent();renderQuickChips();renderSummary();if(state.view==='records')renderRecords();toast('Barkod silindi.');
   return true;
@@ -2067,9 +2074,9 @@ async function saveEntry(){
   const beforeCancelEditHidden=Boolean($('cancelEditBtn')&&$('cancelEditBtn').classList.contains('hidden'));
   let beforeSettings;try{beforeSettings=typeof structuredClone==='function'?structuredClone(state.settings):JSON.parse(JSON.stringify(state.settings));}catch(e){beforeSettings={...state.settings};}
   beforeSettings.diameter=diameter;beforeSettings.length=length;beforeSettings.barcode=barcode;beforeSettings.quantity=String(Math.max(1,num($('quantityInput')&&$('quantityInput').value||1)));
-  let rec=null;
+  let rec=null,previousRecord=null;
   try{
-    const oldRec=state.editingId?state.records.find(r=>r.id===state.editingId):null;
+    const oldRec=state.editingId?state.records.find(r=>r.id===state.editingId):null;previousRecord=oldRec?{...oldRec}:null;
     rec=Object.assign({},oldRec||{},{id:state.editingId||uid(),barcode,diameter,length,quantity:Math.max(1,num($('quantityInput')&&$('quantityInput').value||1)),productType:normalizeProductType(state.settings.currentProduct),treeType:state.settings.currentTree,cutter:state.settings.activeCutter||'',productionDate:state.settings.mesahaDate||todayISO(),bolmeNo:(oldRec&&oldRec.bolmeNo)||state.settings.bolmeNo||'',seflik:(oldRec&&oldRec.seflik)||state.settings.seflik||'',createdAt:(oldRec&&oldRec.createdAt)||new Date().toISOString(),updatedAt:state.editingId?new Date().toISOString():''});
     if(state.editingId){const i=state.records.findIndex(r=>r.id===state.editingId);if(i>=0)state.records[i]=rec;state.editingId=null;state.editingReturnBarcode='';$('cancelEditBtn').classList.add('hidden');markQuickChipsDirty();}
     else state.records.push(rec);
@@ -2077,8 +2084,13 @@ async function saveEntry(){
     rememberChip('recentDiameters',diameter);rememberChip('recentLengths',length);
     state.settings.barcode=wasEditing?(returnBarcodeAfterEdit||nextBarcode(barcode)):(state.settings.sameBarcodeMode===true?barcode:nextBarcode(barcode));$('barcodeInput').value=state.settings.barcode;
     persistEntryDraftV575();
-    const result=await __saveAllV527(wasEditing?'record-update':'record-add');
+    let result;
+    if(window.MesahaStorageV527&&typeof window.MesahaStorageV527.saveRecordDelta==='function'){
+      result=await window.MesahaStorageV527.saveRecordDelta({type:'upsert',upsert:rec,previousRecord:previousRecord},state.records,{reason:wasEditing?'record-update':'record-add'});
+    }else result=await saveRecords(wasEditing?'record-update':'record-add');
     if(result&&result.ok===false)throw new Error(result.error||'Kayıt kalıcı depolamaya yazılamadı');
+    /* Giriş alanı tercihleri küçük taslakta zaten güvende. Büyük ayar kopyasını kayıt dokunuşunu bekletmeden arka planda yaz. */
+    saveSettings();
   }catch(err){
     state.records=beforeRecords;state.settings=beforeSettings;
     state.editingId=beforeEditingId;state.editingReturnBarcode=beforeEditingReturnBarcode;
@@ -2176,7 +2188,7 @@ function renderRecords(){
   renderProductTotals(); renderFilters();
   $('recordList').innerHTML = list.length ? list.slice().reverse().map(r => recordCard(r)).join('') : '<p class="hint">Kayıt bulunamadı.</p>';
   $('recordList').querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click',()=>{ const r=state.records.find(x=>x.id===b.dataset.edit); if(r) openEntry(r); }));
-  $('recordList').querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',async()=>{if(!confirm('Kayıt silinsin mi?'))return;const before=state.records.slice();state.records=state.records.filter(x=>x.id!==b.dataset.del);markQuickChipsDirty();try{invalidateRecordStatsV447&&invalidateRecordStatsV447();}catch(e){}const result=await saveRecords('record-delete');if(result&&result.ok===false){state.records=before;toast('Silme kaydedilemedi.');return;}if(window.MesahaRenderStorageV382&&window.MesahaRenderStorageV382.renderAllSoon)window.MesahaRenderStorageV382.renderAllSoon();else renderAll();}));
+  $('recordList').querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',async()=>{if(!confirm('Kayıt silinsin mi?'))return;const before=state.records.slice();state.records=state.records.filter(x=>x.id!==b.dataset.del);markQuickChipsDirty();try{invalidateRecordStatsV447&&invalidateRecordStatsV447();}catch(e){}const removed=before.find(x=>x.id===b.dataset.del);const result=(window.MesahaStorageV527&&typeof window.MesahaStorageV527.saveRecordDelta==='function')?await window.MesahaStorageV527.saveRecordDelta({type:'delete',deleteId:b.dataset.del,previousRecord:removed},state.records,{reason:'record-delete'}):await saveRecords('record-delete');if(result&&result.ok===false){state.records=before;toast('Silme kaydedilemedi.');return;}if(window.MesahaRenderStorageV382&&window.MesahaRenderStorageV382.renderAllSoon)window.MesahaRenderStorageV382.renderAllSoon();else renderAll();}));
 }
 function renderProductTotals(){ const stats=recordStatsV447(); const html=PRODUCTS.map(p=>{ const t=stats.product[p.key]||{count:0,m3:0}; return `<div class="prod-total product-${p.cls}"><small>${esc(p.label)}</small><b>${fmt(t.m3,3)} m³</b><small>${t.count} adet</small></div>`; }).join(''); $('productTotals').innerHTML=html; }
 function renderFilters(){
@@ -3107,7 +3119,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
         if(!ok) return;
         lastDeletedV304 = [rec];
         const s = appState(); s.records = records().filter(r => r.id !== id); window.state = s;
-        const saved=await saveRecords('single-delete'); if(saved&&saved.ok===false){s.records=records().concat(lastDeletedV304);window.state=s;renderAfterChange();toast('Silme kaydedilemedi. Depolamayı kontrol edin.');return;} renderAfterChange(); toast('Kayıt silindi.');
+        const saved=(window.MesahaStorageV527&&typeof window.MesahaStorageV527.saveRecordDelta==='function')?await window.MesahaStorageV527.saveRecordDelta({type:'delete',deleteId:id,previousRecord:rec},s.records,{reason:'single-delete'}):await saveRecords('single-delete'); if(saved&&saved.ok===false){s.records=records().concat(lastDeletedV304);window.state=s;renderAfterChange();toast('Silme kaydedilemedi. Depolamayı kontrol edin.');return;} renderAfterChange(); toast('Kayıt silindi.');
         return;
       }
     }, true);
@@ -3129,7 +3141,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     }, true);
 
     let exportScopeTimerV542=0;
-    function scheduleExportScopeV542(delay=90){clearTimeout(exportScopeTimerV542);exportScopeTimerV542=setTimeout(updateExportScopeInfo,delay);}
+    function scheduleExportScopeV542(delay=90){if(window.MesahaIOSPerformanceV576&&!window.MesahaIOSPerformanceV576.shouldRunHeavy('records')&&!window.MesahaIOSPerformanceV576.shouldRunHeavy('home'))return;clearTimeout(exportScopeTimerV542);exportScopeTimerV542=setTimeout(updateExportScopeInfo,delay);}
     document.addEventListener('input', ev => {if(ev.target&&ev.target.id==='recordSearch')scheduleExportScopeV542(90);}, true);
     document.addEventListener('change', ev => {const t=ev.target;if(t&&(t.id==='recordSearch'||t.matches&&t.matches('#recordsView input,#recordsView select')))scheduleExportScopeV542(90);}, true);
     document.addEventListener('click', ev => {if(ev.target&&ev.target.closest&&ev.target.closest('#recordsView,[data-tree-filter],[data-cutter-filter]'))scheduleExportScopeV542(100);}, true);
@@ -3315,6 +3327,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 
   let beyanFallbackTimerV542=0;
   function scheduleFallbackTotalsV542(delay=90){
+    if(window.MesahaIOSPerformanceV576&&!window.MesahaIOSPerformanceV576.shouldRunHeavy('records'))return;
     if(window.mesahaV305&&window.mesahaV305.updateBeyanTotals!==updateBeyanTotals)return;
     clearTimeout(beyanFallbackTimerV542);beyanFallbackTimerV542=setTimeout(updateBeyanTotals,delay);
   }
@@ -3347,6 +3360,11 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 /* v311: iOS klavyede Kaydet butonunu klavye üstünde tut */
 (function(){
   'use strict';
+  /* V5.76: V5.37 yüzen Kaydet yöneticisi bu eski klavye izleyicisinin tamamını devraldı. */
+  if(document.getElementById('floatingSaveBtnV531')){
+    window.mesahaV307={updateKeyboardState:function(){}};
+    return;
+  }
 
   function isEntryOpen(){
     const entry = document.getElementById('entryView');
@@ -5815,7 +5833,7 @@ a.video-link-v392,.orbis-video-link-v392{display:inline-flex;align-items:center;
   }
   document.addEventListener('click',intercept,true);
   let beyanTimerV542=0;
-  function scheduleBeyanV542(delay=100){clearTimeout(beyanTimerV542);beyanTimerV542=setTimeout(updateBeyan,delay);}
+  function scheduleBeyanV542(delay=100){if(window.MesahaIOSPerformanceV576&&!window.MesahaIOSPerformanceV576.shouldRunHeavy('records'))return;clearTimeout(beyanTimerV542);beyanTimerV542=setTimeout(updateBeyan,delay);}
   function relevantBeyanTargetV542(ev){
     const t=ev&&ev.target;if(!t)return false;
     if(t.id==='recordSearch'||t.id==='treeFilter'||t.id==='cutterFilter'||t.id==='bulkCutterSelectV406')return true;
@@ -6011,7 +6029,7 @@ input[type="text"],input[type="number"],input[type="search"],textarea,select{
   'use strict';
   if(window.__mesahaV395MobilePanelScrollZoomHotfix) return;
   window.__mesahaV395MobilePanelScrollZoomHotfix = true;
-  var savedY=0, locked=false, startY=0;
+  var savedY=0, locked=false, startY=0,touchBound=false;
   function $(id){return document.getElementById(id);}
   function isOpen(el){return !!(el && !el.classList.contains('hidden'));}
   function userOpen(){return isOpen($('userPanelOverlayV316'));}
@@ -6039,12 +6057,17 @@ input[type="text"],input[type="number"],input[type="search"],textarea,select{
     document.body.style.top='';
     window.scrollTo(0,savedY||0);
   }
+  function setTouchWatch(on){
+    if(on&&!touchBound){touchBound=true;document.addEventListener('touchstart',onTouchStart,{passive:true,capture:true});document.addEventListener('touchmove',onTouchMove,{passive:false,capture:true});}
+    else if(!on&&touchBound){touchBound=false;document.removeEventListener('touchstart',onTouchStart,true);document.removeEventListener('touchmove',onTouchMove,true);}
+  }
   function sync(){
     ensureViewport();
-    var u=userOpen(), c=cloudOpen();
+    var u=userOpen(), c=cloudOpen(),open=u||c;
     document.body.classList.toggle('mesaha-user-panel-open-v395',u);
     document.body.classList.toggle('mesaha-cloud-panel-open-v395',c);
-    if(u||c) lockBody(); else unlockBody();
+    setTouchWatch(open);
+    if(open) lockBody(); else unlockBody();
   }
   function panelCardForTarget(target){
     if(!target || !target.closest) return null;
@@ -6083,13 +6106,11 @@ input[type="text"],input[type="number"],input[type="search"],textarea,select{
       }
     });
   }
-  document.addEventListener('touchstart',onTouchStart,{passive:true,capture:true});
-  document.addEventListener('touchmove',onTouchMove,{passive:false,capture:true});
   document.addEventListener('focusin',function(ev){
-    if(ev.target && ev.target.matches && ev.target.matches('input,textarea,select')) ensureViewport();
+    if(anyPanelOpen()&&ev.target&&ev.target.matches&&ev.target.matches('input,textarea,select'))ensureViewport();
   },true);
   document.addEventListener('focusout',function(ev){
-    if(ev.target && ev.target.matches && ev.target.matches('input,textarea,select')) resetZoomSoon();
+    if(anyPanelOpen()&&ev.target&&ev.target.matches&&ev.target.matches('input,textarea,select'))resetZoomSoon();
   },true);
   window.addEventListener('resize',function(){if(anyPanelOpen()) setTimeout(sync,30);},{passive:true});
   document.addEventListener('visibilitychange',function(){if(!document.hidden) setTimeout(sync,50);});
@@ -6123,12 +6144,13 @@ body.mesaha-cloud-panel-open-v395 #cloudRestoreOverlayV316:not(.hidden){touch-ac
 <script id="mesaha-v406-cutter-manager">
 (function(){
   'use strict';
-  var rendering=false, timer=0;
+  var rendering=false, timer=0,recordCutterCache=null;
   var REMOVED_KEY='mesaha_removed_cutters_v407';
   function $(id){return document.getElementById(id)}
   function clean(v){return String(v==null?'':v).trim().replace(/\s+/g,' ')}
   function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]})}
   function state(){return window.state||null}
+  function entryActive(){var e=$('entryView');return !!(e&&e.classList.contains('active'));}
   function settings(){var s=state(); if(!s) return null; if(!s.settings) s.settings={}; if(!Array.isArray(s.settings.cutters)) s.settings.cutters=[]; return s.settings}
   function records(){var s=state(); return s&&Array.isArray(s.records)?s.records:[]}
   function toast(msg){try{if(window.toast)return window.toast(msg)}catch(e){} try{alert(msg)}catch(e){}}
@@ -6152,7 +6174,7 @@ body.mesaha-cloud-panel-open-v395 #cloudRestoreOverlayV316:not(.hidden){touch-ac
   function isRemoved(name){name=clean(name); return !!name && readRemoved().indexOf(name)>-1;}
   function markRemoved(name){name=clean(name); if(!name)return; var list=readRemoved(); if(list.indexOf(name)<0)list.push(name); writeRemoved(list);}
   function unmarkRemoved(name){name=clean(name); if(!name)return; writeRemoved(readRemoved().filter(function(x){return clean(x)!==name;}));}
-  function activeRecordCutters(){return unique(records().map(function(r){return r&&r.cutter;}));}
+  function activeRecordCutters(){if(recordCutterCache)return recordCutterCache.slice();recordCutterCache=unique(records().map(function(r){return r&&r.cutter;}));return recordCutterCache.slice();}
   function cutterList(){
     var st=settings(); if(!st)return[];
     var active=activeRecordCutters();
@@ -6165,6 +6187,7 @@ body.mesaha-cloud-panel-open-v395 #cloudRestoreOverlayV316:not(.hidden){touch-ac
   }
   function countByCutter(name){return records().filter(function(r){return clean(r&&r.cutter)===name}).length}
   function render(){
+    if(!entryActive())return;
     var chips=$('cutterChips'), st=settings(); if(!chips||!st)return;
     if(rendering)return; rendering=true;
     var list=cutterList();
@@ -6179,10 +6202,9 @@ body.mesaha-cloud-panel-open-v395 #cloudRestoreOverlayV316:not(.hidden){touch-ac
         +'</span>';
     }).join('');
     if(chips.innerHTML!==html) chips.innerHTML=html;
-    saveSettings();
     rendering=false;
   }
-  function schedule(){clearTimeout(timer); timer=setTimeout(render,60)}
+  function schedule(){clearTimeout(timer);if(!entryActive())return;timer=setTimeout(render,70)}
   function selectCutter(name){var st=settings(); if(!st)return; st.activeCutter=clean(name); saveSettings(); render();}
   async function editCutter(oldName){
     oldName=clean(oldName); if(!oldName)return;
@@ -6237,9 +6259,11 @@ body.mesaha-cloud-panel-open-v395 #cloudRestoreOverlayV316:not(.hidden){touch-ac
     schedule();
     var chips=$('cutterChips');
     if(chips&&window.MutationObserver&&!chips.__v406CutterWatch){chips.__v406CutterWatch=true; new MutationObserver(function(){if(!rendering)schedule();}).observe(chips,{childList:true,subtree:false});}
-    ['mesaha:records-saved','mesaha:settings-saved'].forEach(function(evt){window.addEventListener(evt,schedule)});
-    // v433: global click/input/change watcher kaldırıldı; MutationObserver ve kayıt/ayar olayları yeterli.
-    [200,700,1400,2600].forEach(function(ms){setTimeout(schedule,ms)});
+    window.addEventListener('mesaha:records-saved',function(ev){var d=ev&&ev.detail||{};if(d.delta&&d.delta.record){var c=clean(d.delta.record.cutter);if(c&&recordCutterCache&&recordCutterCache.indexOf(c)<0)recordCutterCache.push(c);}else if(d.full||d.transaction)recordCutterCache=null;},{passive:true});
+    window.addEventListener('mesaha:settings-saved',schedule,{passive:true});
+    window.addEventListener('mesaha:view-changed',function(ev){if(ev&&ev.detail&&ev.detail.view==='entry')schedule();},{passive:true});
+    // Görünmeyen giriş ekranı için arka planda kesimci taraması yapılmaz.
+    [220,900].forEach(function(ms){setTimeout(schedule,ms)});
     try{window.MesahaCutterManagerV406={render:render,edit:editCutter,remove:deleteCutter,select:selectCutter}}catch(e){}
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
@@ -6259,6 +6283,7 @@ body.mesaha-cloud-panel-open-v395 #cloudRestoreOverlayV316:not(.hidden){touch-ac
   function clean(v){return String(v==null?'':v).trim().replace(/\s+/g,' ')}
   function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]})}
   function state(){return window.state||null}
+  function recordsActive(){var e=$('recordsView');return !!(e&&e.classList.contains('active'));}
   function settings(){var s=state(); if(s){ if(!s.settings)s.settings={}; return s.settings; } try{return JSON.parse(localStorage.getItem(SETTINGS_KEY)||'{}')||{}}catch(e){return {}}}
   function records(){var s=state(); if(s&&Array.isArray(s.records))return s.records; try{var r=JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]'); return Array.isArray(r)?r:[]}catch(e){return []}}
   function toast(msg){try{if(window.toast)return window.toast(msg)}catch(e){} try{alert(msg)}catch(e){}}
@@ -6383,10 +6408,10 @@ body.mesaha-cloud-panel-open-v395 #cloudRestoreOverlayV316:not(.hidden){touch-ac
       setTimeout(function(){populateCutterSelect();updateHint();},120);
     },true);
     document.addEventListener('input',function(ev){if(ev.target&&ev.target.id==='recordSearch')setTimeout(updateHint,120)},true);
-    ['mesaha:records-saved','mesaha:settings-saved'].forEach(function(evt){window.addEventListener(evt,function(){setTimeout(function(){populateCutterSelect();updateHint();},150)})});
-    window.addEventListener('mesaha:view-changed',function(){setTimeout(function(){ensureUi();populateCutterSelect();updateHint();},80)},{passive:true});
+    ['mesaha:records-saved','mesaha:settings-saved'].forEach(function(evt){window.addEventListener(evt,function(){if(!recordsActive())return;setTimeout(function(){populateCutterSelect();updateHint();},150)},{passive:true})});
+    window.addEventListener('mesaha:view-changed',function(ev){if(!(ev&&ev.detail&&ev.detail.view==='records'))return;setTimeout(function(){ensureUi();populateCutterSelect();updateHint();},80)},{passive:true});
   }
-  function boot(){bind(); [120,500,1200,2400].forEach(function(ms){setTimeout(function(){ensureUi();populateCutterSelect();updateHint();},ms)})}
+  function boot(){bind(); [160,800].forEach(function(ms){setTimeout(function(){if(recordsActive()){ensureUi();populateCutterSelect();updateHint();}},ms)})}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
   try{window.MesahaBulkCutterTransferV406={render:ensureUi,transfer:transferSelected,populate:populateCutterSelect}}catch(e){}
 })();
@@ -6412,31 +6437,40 @@ body.mesaha-cloud-panel-open-v395 #cloudRestoreOverlayV316:not(.hidden){touch-ac
   function removed(){var st=settings(); return unique([].concat(readJson(REMOVED_KEY,[])||[], Array.isArray(st.removedCuttersV407)?st.removedCuttersV407:[]));}
   function activeRecordCutters(){return unique(records().map(function(r){return r&&r.cutter;}));}
   function saveSettingsNow(st){try{if(window.state&&window.state.settings)Object.assign(window.state.settings,st||{});if(window.MesahaStorageV527)return window.MesahaStorageV527.saveSettings(settings(),{reason:'cutter-guard'});if(window.__flushSettings)return window.__flushSettings('cutter-guard');if(window.saveSettings)return window.saveSettings()}catch(e){} }
+  var cleaning=false,lastRecordCount=-1;
+  function same(a,b){try{return JSON.stringify(a)===JSON.stringify(b)}catch(e){return false}}
   function cleanDeletedCutters(){
-    var st=settings(); if(!st)return;
-    var rem=removed(), active=activeRecordCutters();
-    if(!rem.length){return;}
-    st.removedCuttersV407=rem;
-    if(Array.isArray(st.cutters)) st.cutters=unique(st.cutters).filter(function(c){return rem.indexOf(c)<0 || active.indexOf(c)>-1;});
-    if(st.activeCutter && rem.indexOf(clean(st.activeCutter))>-1 && active.indexOf(clean(st.activeCutter))<0) st.activeCutter='';
-    if(st.cutterFilter && st.cutterFilter!=='Tümü' && rem.indexOf(clean(st.cutterFilter))>-1 && active.indexOf(clean(st.cutterFilter))<0) st.cutterFilter='Tümü';
+    if(cleaning)return;
+    var st=settings();if(!st)return;
+    var rem=removed();if(!rem.length)return;
+    cleaning=true;
     try{
-      var mem=readJson(MEM_KEY,{});
-      if(mem.activeCutter && rem.indexOf(clean(mem.activeCutter))>-1) mem.activeCutter='';
-      if(Array.isArray(mem.cutters)) mem.cutters=unique(mem.cutters).filter(function(c){return rem.indexOf(c)<0 || active.indexOf(c)>-1;});
-      writeJson(MEM_KEY,mem);
-    }catch(e){}
-    saveSettingsNow(st);
+      var active=activeRecordCutters(),before={removedCuttersV407:Array.isArray(st.removedCuttersV407)?st.removedCuttersV407.slice():[],cutters:Array.isArray(st.cutters)?st.cutters.slice():[],activeCutter:st.activeCutter||'',cutterFilter:st.cutterFilter||''};
+      st.removedCuttersV407=rem;
+      if(Array.isArray(st.cutters))st.cutters=unique(st.cutters).filter(function(c){return rem.indexOf(c)<0||active.indexOf(c)>-1;});
+      if(st.activeCutter&&rem.indexOf(clean(st.activeCutter))>-1&&active.indexOf(clean(st.activeCutter))<0)st.activeCutter='';
+      if(st.cutterFilter&&st.cutterFilter!=='Tümü'&&rem.indexOf(clean(st.cutterFilter))>-1&&active.indexOf(clean(st.cutterFilter))<0)st.cutterFilter='Tümü';
+      var after={removedCuttersV407:st.removedCuttersV407||[],cutters:st.cutters||[],activeCutter:st.activeCutter||'',cutterFilter:st.cutterFilter||''};
+      try{
+        var mem=readJson(MEM_KEY,{}),memBefore=JSON.stringify(mem||{});
+        if(mem.activeCutter&&rem.indexOf(clean(mem.activeCutter))>-1)mem.activeCutter='';
+        if(Array.isArray(mem.cutters))mem.cutters=unique(mem.cutters).filter(function(c){return rem.indexOf(c)<0||active.indexOf(c)>-1;});
+        if(JSON.stringify(mem||{})!==memBefore)writeJson(MEM_KEY,mem);
+      }catch(e){}
+      if(!same(before,after))saveSettingsNow(st);
+      lastRecordCount=records().length;
+    }finally{cleaning=false;}
   }
   function renderNotes(){
     var box=$('panelUpdateNotesV392'); if(box&&box.parentNode) box.parentNode.removeChild(box);
   }
   function versionSync(){try{if(window.MESAHA_VERSION){/* central version locked */}}catch(e){} }
-  function boot(){versionSync();cleanDeletedCutters();renderNotes();[200,700,1400,2600].forEach(function(ms){setTimeout(function(){versionSync();cleanDeletedCutters();renderNotes();},ms)});}
+  function boot(){versionSync();cleanDeletedCutters();renderNotes();setTimeout(function(){versionSync();cleanDeletedCutters();renderNotes();},700);}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
-  ['mesaha:settings-saved','mesaha:records-saved'].forEach(function(evt){window.addEventListener(evt,function(){setTimeout(function(){cleanDeletedCutters();renderNotes();},80)})});
+  window.addEventListener('mesaha:records-saved',function(ev){var d=ev&&ev.detail||{};if(!removed().length)return;if(d.delta&&records().length===lastRecordCount)return;setTimeout(cleanDeletedCutters,140)},{passive:true});
+  window.addEventListener('mesaha:settings-saved',function(){if(!cleaning&&removed().length)setTimeout(cleanDeletedCutters,180)},{passive:true});
   var p=$('userPanelOverlayV316'); if(p&&window.MutationObserver&&!p.__v407NotesWatch){p.__v407NotesWatch=true; new MutationObserver(function(){setTimeout(renderNotes,60);}).observe(p,{attributes:true,attributeFilter:['class'],childList:true,subtree:true});}
-  ['mesaha:records-saved','mesaha:settings-saved','pageshow'].forEach(function(evt){window.addEventListener(evt,function(){setTimeout(cleanDeletedCutters,120)},{passive:true})});
+  window.addEventListener('pageshow',function(){if(removed().length)setTimeout(cleanDeletedCutters,180)},{passive:true});
 })();
 </script>
 <style id="mesaha-v408-entry-save-scroll-tap-guard-style">
@@ -6875,7 +6909,7 @@ body.mesaha-entry-scrolling-v408 #entryView label{
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',sync,{once:true});else sync();
   window.addEventListener('resize',sync,{passive:true});
-  ['mesaha:records-saved','mesaha:settings-saved'].forEach(function(ev){window.addEventListener(ev,function(){setTimeout(sync,40);},false);});
+  ['mesaha:records-saved','mesaha:settings-saved'].forEach(function(ev){window.addEventListener(ev,function(){if(window.MesahaIOSPerformanceV576&&window.MesahaIOSPerformanceV576.entryActive())return;setTimeout(sync,80);},false);});
   setTimeout(sync,500);setTimeout(sync,1600);
 })();
 </script>
@@ -7281,7 +7315,7 @@ body.mesaha-floating-save-open-v537 .bottom-nav{display:none!important;visibilit
   if(window.__mesahaV537FloatingSave)return;
   window.__mesahaV537FloatingSave=true;
 
-  var lastFire=0,busy=false,hideTimer=0,keyboardTimer=0;
+  var lastFire=0,lastTouchFire=0,busy=false,hideTimer=0,keyboardTimer=0;
   function byId(id){return document.getElementById(id)}
   function entryOpen(){var entry=byId('entryView');return !!(entry&&entry.classList.contains('active'));}
   function validInput(el){return !!(el&&['diameterInput','lengthInput','barcodeInput','quantityInput'].indexOf(el.id)>=0);}
@@ -7306,14 +7340,19 @@ body.mesaha-floating-save-open-v537 .bottom-nav{display:none!important;visibilit
     floating.setAttribute('aria-busy',original.getAttribute('aria-busy')==='true'?'true':'false');
     floating.textContent=(original.textContent||'Kaydet').trim()||'Kaydet';
   }
-  function scheduleSync(delay){clearTimeout(keyboardTimer);syncFloating();keyboardTimer=setTimeout(syncFloating,Number(delay||120));}
-  function fireSave(ev){
+  function scheduleSync(delay){clearTimeout(keyboardTimer);keyboardTimer=setTimeout(syncFloating,Number(delay==null?90:delay));}
+  function fireSave(ev,source){
     if(ev){try{ev.preventDefault();ev.stopPropagation();ev.stopImmediatePropagation();}catch(e){}}
-    var now=Date.now();if(busy||now-lastFire<600)return false;
+    var now=Date.now();
+    source=source||'direct';
+    // Aynı fiziksel dokunuştan oluşan sentetik click'i engelle; yeni dokunmayı uzun süre kilitleme.
+    if(source==='click'&&now-lastTouchFire<800)return false;
+    if(busy||now-lastFire<220)return false;
     var original=byId('saveBtn');if(!original||original.disabled)return false;
-    lastFire=now;busy=true;syncFloating();
+    lastFire=now;if(source==='touch')lastTouchFire=now;
+    busy=true;syncFloating();
     try{original.click();}catch(e){try{if(typeof window.saveEntry==='function')window.saveEntry();}catch(_e){}}
-    setTimeout(function(){busy=false;syncFloating();},750);
+    setTimeout(function(){busy=false;syncFloating();},140);
     return false;
   }
   function bindFloating(){
@@ -7328,20 +7367,19 @@ body.mesaha-floating-save-open-v537 .bottom-nav{display:none!important;visibilit
         if(ev.pointerType!=='mouse'){try{ev.preventDefault();ev.stopPropagation();}catch(e){}}
       },{passive:false,capture:true});
       floating.addEventListener('pointerup',function(ev){
-        if(ev.pointerType!=='mouse')return fireSave(ev);
+        if(ev.pointerType!=='mouse')return fireSave(ev,'touch');
       },{passive:false,capture:true});
-      floating.addEventListener('click',function(ev){
-        if(Date.now()-lastFire<900){ev.preventDefault();ev.stopPropagation();ev.stopImmediatePropagation();return false;}
-      },{passive:false,capture:true});
+      floating.addEventListener('click',function(ev){return fireSave(ev,'click');},{passive:false,capture:true});
     }else if(touchLike){
       floating.addEventListener('touchstart',function(ev){try{ev.preventDefault();ev.stopPropagation();}catch(e){}},{passive:false,capture:true});
-      floating.addEventListener('touchend',fireSave,{passive:false,capture:true});
-      floating.addEventListener('click',function(ev){if(Date.now()-lastFire<900){ev.preventDefault();ev.stopPropagation();ev.stopImmediatePropagation();return false;}},{passive:false,capture:true});
-    }else floating.addEventListener('click',fireSave,{passive:false,capture:true});
+      floating.addEventListener('touchend',function(ev){return fireSave(ev,'touch');},{passive:false,capture:true});
+      floating.addEventListener('click',function(ev){return fireSave(ev,'click');},{passive:false,capture:true});
+    }else floating.addEventListener('click',function(ev){return fireSave(ev,'click');},{passive:false,capture:true});
     if(window.MutationObserver)new MutationObserver(syncFloating).observe(original,{attributes:true,childList:true,subtree:true});
   }
+  function modalOpen(){var ov=byId('seflikSendOverlayV529');return !!(ov&&!ov.classList.contains('hidden')&&ov.getAttribute('aria-hidden')!=='true');}
   function syncModalViewport(){
-    var ov=byId('seflikSendOverlayV529');if(!ov)return;
+    var ov=byId('seflikSendOverlayV529');if(!ov||!modalOpen())return;
     var vv=window.visualViewport;
     var h=Math.max(280,Math.round(vv?vv.height:window.innerHeight));
     var top=Math.max(0,Math.round(vv?vv.offsetTop:0));
@@ -7355,22 +7393,21 @@ body.mesaha-floating-save-open-v537 .bottom-nav{display:none!important;visibilit
     if(window.MutationObserver)new MutationObserver(apply).observe(ov,{attributes:true,attributeFilter:['class','aria-hidden']});
     apply();
   }
-  function boot(){bindFloating();watchModal();scheduleSync(80);syncModalViewport();}
+  function boot(){bindFloating();watchModal();scheduleSync(40);if(modalOpen())syncModalViewport();}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 
   document.addEventListener('focusin',function(ev){
-    if(validInput(ev.target)){clearTimeout(hideTimer);scheduleSync(40);setTimeout(syncFloating,180);setTimeout(syncFloating,420);}
+    if(validInput(ev.target)){clearTimeout(hideTimer);scheduleSync(30);}
   },true);
-  document.addEventListener('focusout',function(){clearTimeout(hideTimer);hideTimer=setTimeout(syncFloating,260);},true);
-  document.addEventListener('click',function(){setTimeout(syncFloating,70);},true);
-  window.addEventListener('resize',function(){scheduleSync(80);syncModalViewport();},{passive:true});
-  window.addEventListener('orientationchange',function(){setTimeout(function(){scheduleSync(100);syncModalViewport();},220);},{passive:true});
+  document.addEventListener('focusout',function(){clearTimeout(hideTimer);hideTimer=setTimeout(syncFloating,220);},true);
+  window.addEventListener('resize',function(){scheduleSync(90);if(modalOpen())syncModalViewport();},{passive:true});
+  window.addEventListener('orientationchange',function(){setTimeout(function(){scheduleSync(80);if(modalOpen())syncModalViewport();},220);},{passive:true});
   if(window.visualViewport){
-    window.visualViewport.addEventListener('resize',function(){scheduleSync(50);syncModalViewport();},{passive:true});
-    window.visualViewport.addEventListener('scroll',function(){scheduleSync(30);syncModalViewport();},{passive:true});
+    window.visualViewport.addEventListener('resize',function(){scheduleSync(55);if(modalOpen())syncModalViewport();},{passive:true});
+    window.visualViewport.addEventListener('scroll',function(){scheduleSync(90);if(modalOpen())syncModalViewport();},{passive:true});
   }
-  var entry=byId('entryView');if(entry&&window.MutationObserver)new MutationObserver(function(){scheduleSync(40);}).observe(entry,{attributes:true,attributeFilter:['class']});
-  [80,350,900,1800].forEach(function(ms){setTimeout(boot,ms)});
+  var entry=byId('entryView');if(entry&&window.MutationObserver)new MutationObserver(function(){scheduleSync(35);}).observe(entry,{attributes:true,attributeFilter:['class']});
+  [120,700].forEach(function(ms){setTimeout(boot,ms)});
   window.MesahaV537={fireFloatingSave:fireSave,syncFloatingSave:syncFloating,syncModalViewport:syncModalViewport};
 })();
 </script>
@@ -7379,6 +7416,8 @@ body.mesaha-floating-save-open-v537 .bottom-nav{display:none!important;visibilit
 (function(){
   'use strict';
   if(window.__mesahaV558AndroidSaveFix)return;window.__mesahaV558AndroidSaveFix=true;
+  var ua=navigator.userAgent||'',isIOS=/iPad|iPhone|iPod/i.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1),isAndroid=/Android/i.test(ua);
+  if(isIOS||!isAndroid)return;
   var last=0;
   function byId(id){return document.getElementById(id)}
   function activeMeasure(){var a=document.activeElement;return a&&['diameterInput','lengthInput','barcodeInput','quantityInput'].indexOf(a.id)>=0?a:null;}

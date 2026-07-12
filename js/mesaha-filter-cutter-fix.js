@@ -136,7 +136,8 @@
     setTimeout(renderFilters,80);
   }
 
-  function schedule(delay){clearTimeout(timer); timer=setTimeout(function(){renderCuttersAndSelects();}, delay==null?60:delay)}
+  function recordsViewActive(){var e=$('recordsView');return !!(e&&e.classList.contains('active'));}
+  function schedule(delay){clearTimeout(timer);if(!recordsViewActive())return;timer=setTimeout(function(){if(recordsViewActive())renderCuttersAndSelects();},delay==null?60:delay)}
 
   document.addEventListener('click',function(ev){
     var filter=ev.target && ev.target.closest && ev.target.closest('[data-tree-filter],[data-cutter-filter]');
@@ -172,14 +173,14 @@
   window.addEventListener('pageshow',function(){schedule(120)});
 
   function boot(){
-    renderCuttersAndSelects();
-    [180,700,1800].forEach(function(ms){setTimeout(renderCuttersAndSelects,ms)});
+    if(recordsViewActive())renderCuttersAndSelects();
+    [180,700,1800].forEach(function(ms){setTimeout(function(){if(recordsViewActive())renderCuttersAndSelects();},ms)});
     var rec=$('recordsView');
     if(rec && window.MutationObserver && !rec.__filterWatch){
       rec.__filterWatch=true;
       new MutationObserver(function(){schedule(80)}).observe(rec,{childList:true,subtree:true});
     }
-    document.addEventListener('mesaha:view-changed',function(){schedule(80)},{passive:true});
+    window.addEventListener('mesaha:view-changed',function(ev){if(ev&&ev.detail&&ev.detail.view==='records')schedule(40)},{passive:true});
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true}); else boot();
   var api={render:renderCuttersAndSelects,filters:renderFilters,syncCutters:syncCutterStore,stats:buildStats,clearStats:invalidateStats};
