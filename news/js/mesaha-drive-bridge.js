@@ -1,4 +1,4 @@
-/* Mesaha İO V5.48 — Secret içermeyen Edge Drive yedek köprüsü */
+/* Mesaha İO V5.70 — Drive yedek silme aktif ve güvenli köprü */
 (function(){
   'use strict';
   var STORAGE_KEY = 'cam_mesaha_kayitlari_v1';
@@ -134,6 +134,28 @@
     }catch(e){ toast('Drive yedeği yüklenemedi.', errText(e), 'error'); }
   }
 
+  async function deleteBackup(fileId){
+    fileId=clean(fileId);
+    if(!fileId) return;
+    if(!confirm('Bu Drive yedeği kalıcı olarak silinsin mi?\n\nBu işlem Google Drive yedeğini kaldırır.')) return;
+    setBusy(true);
+    try{
+      var out=await post('delete',{fileId:fileId});
+      var deleted=(out&&out.deleted)||[];
+      if(out&&out.ok===false) throw new Error(out.error||'Drive yedeği silinemedi');
+      toast('Drive yedeği silindi.', deleted.length ? 'Google Drive ve bulut kayıt referansı temizlendi.' : 'Yedek silme isteği tamamlandı.', 'success');
+      try{
+        var last=jsonGet('mesaha_last_drive_backup_v463',{});
+        if(last&&clean(last.id)===fileId)localStorage.removeItem('mesaha_last_drive_backup_v463');
+      }catch(e){}
+      await openRestore();
+      return out;
+    }catch(e){
+      toast('Drive yedeği silinemedi.', errText(e), 'error');
+      throw e;
+    }finally{setBusy(false);}
+  }
+
   async function openRestore(){
     var ov=$('cloudRestoreOverlayV316'), box=$('cloudRestoreListV316'), info=$('cloudRestoreInfoV316');
     if(ov) ov.classList.remove('hidden');
@@ -144,9 +166,18 @@
       if(info) info.textContent = arr.length+' Drive yedeği bulundu';
       if(!arr.length){ if(box) box.innerHTML='<div class="cloud-item-v316">Drive’da bu kullanıcıya ait yedek bulunamadı.</div>'; return; }
       if(box) box.innerHTML = arr.slice(0,60).map(function(b){
-        return '<div class="cloud-item-v316 cloud-item-v463"><div><b>'+esc(b.name||'Mesaha yedeği')+'</b><small>'+esc(b.createdAt||'-')+' • '+Number(b.count||0).toLocaleString('tr-TR')+' kayıt • '+Number(b.totalVolume||0).toLocaleString('tr-TR',{minimumFractionDigits:3,maximumFractionDigits:3})+' m³</small></div><button class="btn primary" data-drive-restore-v463="'+esc(b.id)+'" type="button">Bu Yedeği Yükle</button></div>';
+        return '<div class="cloud-item-v316 cloud-item-v463"><div><b>'+esc(b.name||'Mesaha yedeği')+'</b><small>'+esc(b.createdAt||'-')+' • '+Number(b.count||0).toLocaleString('tr-TR')+' kayıt • '+Number(b.totalVolume||0).toLocaleString('tr-TR',{minimumFractionDigits:3,maximumFractionDigits:3})+' m³</small></div><div class="cloud-actions-v570"><button class="btn primary" data-drive-restore-v463="'+esc(b.id)+'" type="button">Bu Yedeği Yükle</button><button class="btn danger drive-delete-v570" data-drive-delete-v570="'+esc(b.id)+'" type="button">Sil</button></div></div>';
       }).join('');
     }catch(e){ if(info) info.textContent='Drive yedekleri alınamadı'; if(box) box.innerHTML='<div class="cloud-item-v316">'+esc(errText(e))+'</div>'; }
+  }
+
+
+  function ensureDriveDeleteStyle(){
+    if(document.getElementById('mesaha-drive-delete-v570-style'))return;
+    var st=document.createElement('style');
+    st.id='mesaha-drive-delete-v570-style';
+    st.textContent='.cloud-actions-v570{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end}.cloud-item-v463{gap:10px}.drive-delete-v570,.btn.danger.drive-delete-v570{background:linear-gradient(180deg,#ef4444,#b91c1c)!important;color:#fff!important;border-color:#991b1b!important;box-shadow:0 10px 22px rgba(185,28,28,.22)!important}';
+    document.head.appendChild(st);
   }
 
   function replaceButton(id,label,handler){
@@ -166,12 +197,17 @@
     var box=$('cloudRestoreListV316');
     if(box && !box.__driveV463){
       box.__driveV463=true;
-      box.addEventListener('click',function(ev){ var b=ev.target&&ev.target.closest&&ev.target.closest('[data-drive-restore-v463]'); if(b){ ev.preventDefault(); ev.stopPropagation(); ev.stopImmediatePropagation(); restore(b.getAttribute('data-drive-restore-v463')); } },true);
+      box.addEventListener('click',function(ev){
+        var d=ev.target&&ev.target.closest&&ev.target.closest('[data-drive-delete-v570]');
+        if(d){ ev.preventDefault(); ev.stopPropagation(); ev.stopImmediatePropagation(); deleteBackup(d.getAttribute('data-drive-delete-v570')); return; }
+        var b=ev.target&&ev.target.closest&&ev.target.closest('[data-drive-restore-v463]');
+        if(b){ ev.preventDefault(); ev.stopPropagation(); ev.stopImmediatePropagation(); restore(b.getAttribute('data-drive-restore-v463')); }
+      },true);
     }
   }
 
   function expose(){
-    window.MESAHA_DRIVE_BRIDGE_V463 = {secure:true, backup:backup, backupCustom:backupCustom, list:list, openRestore:openRestore, restore:restore, post:post};
+    window.MESAHA_DRIVE_BRIDGE_V463 = {secure:true, backup:backup, backupCustom:backupCustom, list:list, openRestore:openRestore, restore:restore, deleteBackup:deleteBackup, post:post};
     window.mesahaDriveBridgeV463 = window.MESAHA_DRIVE_BRIDGE_V463;
     window.mesahaPanelV316 = window.mesahaPanelV316 || {};
     window.mesahaPanelV316.cloudBackup = backup;
@@ -181,10 +217,10 @@
     if(window.mesahaUserBackupsV318){
       window.mesahaUserBackupsV318.open=openRestore;
       window.mesahaUserBackupsV318.list=list;
-      window.mesahaUserBackupsV318.deleteBackup=function(){ toast('Silme kapalı.','Yedekler Google Drive’da korunuyor.','warning'); };
+      window.mesahaUserBackupsV318.deleteBackup=deleteBackup;
     }
   }
 
-  function boot(){ expose(); hardenUi(); [250,800,1600,3200].forEach(function(ms){ setTimeout(function(){ expose(); hardenUi(); },ms); }); }
+  function boot(){ ensureDriveDeleteStyle(); expose(); hardenUi(); [250,800,1600,3200].forEach(function(ms){ setTimeout(function(){ expose(); hardenUi(); },ms); }); }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true}); else boot();
 })();
