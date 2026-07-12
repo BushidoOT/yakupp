@@ -1,4 +1,4 @@
-/* Mesaha İO V5.53 — mevcut cihaz geçişi, user_id tabanlı kesin engel ve güvenli Edge/anti-spam bulut motoru
+/* Mesaha İO V5.54 — mevcut cihaz geçişi, user_id tabanlı kesin engel ve güvenli Edge/anti-spam bulut motoru
    Buluta Yedekle: Edge Function guard + güvenli Supabase V2 + Google Drive.
    Buluttan Getir: Edge Function guard + iki kaynak birlikte listelenir.
    Kullanıcı yedek silme: gerçek silme yok; kullanıcı listesinden gizlenir.
@@ -79,6 +79,7 @@
     }catch(e){}
   }
   function showBlockedScreen(reason){
+    try{if(window.MesahaLoginLog&&typeof window.MesahaLoginLog.log==='function')window.MesahaLoginLog.log('blocked_screen_shown',{reason:reason,source:'hybrid-cloud'},'error')}catch(_log){}
     try{
       if(document.getElementById('mesahaAccessBlockedV508')) return;
       var st=document.createElement('style');
@@ -127,7 +128,7 @@
     var api=window.mesahaSupabaseV380||window.mesahaSupabaseV383||window.mesahaSupabase;
     if(!api||typeof api.edge!=='function') throw new Error('Güvenli sunucu bağlantısı hazır değil');
     try{
-      return await api.edge(action||'profile_ping',Object.assign({userKey:userKey(user.name,user.seflik),name:user.name,seflik:user.seflik,bolmeNo:user.bolmeNo,deviceId:getDeviceId(),appVersion:versionText(),source:'mesaha-web-v553'},extra||{}));
+      return await api.edge(action||'profile_ping',Object.assign({userKey:userKey(user.name,user.seflik),name:user.name,seflik:user.seflik,bolmeNo:user.bolmeNo,deviceId:getDeviceId(),appVersion:versionText(),source:'mesaha-web-v554'},extra||{}));
     }catch(e){
       if(isBlockedError(e)){
         e.blocked=true;
