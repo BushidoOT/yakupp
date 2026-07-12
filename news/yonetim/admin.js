@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const ADMIN_VERSION = 'V5.61 •Yakupp•';
+  const ADMIN_VERSION = 'V5.63 •Yakupp•';
   const EDGE_URL = 'https://swrbpdpotmirnmtqnuba.supabase.co/functions/v1/smooth-function';
   const SESSION_KEY = 'mesaha_admin_auth_v548_session';
   const LAST_ACTIVITY_KEY = 'mesaha_admin_auth_v548_activity';
@@ -357,6 +357,14 @@
     if (raw.includes('google') || raw.includes('gmail.com')) return {email:first(path(user.raw||{}, 'email'), 'Google hesabı'), status:'approved'};
     return null;
   }
+  function terminalInfoForUser(user) {
+    const raw = lower(JSON.stringify(user && user.raw || {}));
+    const key = identityKey(user);
+    const fromRaw = /terminal-cloud|terminal[_-]?cloud|terminal[_-]?kod|terminal[_-]?code|pair[_-]?code|paireduserid|terminal_token|terminaltoken/.test(raw);
+    const fromBackup = state.backups.some((b) => identityKey(b) === key && /terminal-cloud|terminal[_-]?cloud|pair[_-]?code|terminal/.test(lower(JSON.stringify(b.raw || {}))));
+    const fromEvent = state.events.some((e) => { const p=obj(first(e.payload,e.metadata,e.detail)); return identityKey({name:first(e.name,p.name),seflik:first(e.seflik,p.seflik),userKey:first(e.user_key,p.userKey,p.user_key)})===key && /terminal/.test(lower(JSON.stringify(e))); });
+    return (fromRaw || fromBackup || fromEvent) ? {status:'paired', title:'Terminal kodu ile eşleşmiş cihaz/kullanıcı'} : null;
+  }
   function onlineNow(user) { return user.lastSeenMs && Date.now() - user.lastSeenMs <= 15 * 60 * 1000; }
   function seenToday(user) { return dateKey(user.lastSeen) === todayKey(); }
 
@@ -428,15 +436,17 @@
     $('userList').innerHTML = users.length ? users.map((user, index) => {
       const globalIndex = state.users.indexOf(user), blocked = isBlockedUser(user), backups = relatedBackups(user).length, google = googleInfoForUser(user);
       const googleBadge = google ? `<span class="google-user-badge" title="${escapeHtml(google.email)}" aria-label="Google ile doğrulandı"><span class="google-g">G</span><b>Google</b></span>` : '';
-      return `<article class="user-card ${google ? 'is-google-user' : ''}">
-        <div class="user-head"><div class="avatar">${escapeHtml(initials(user.name))}</div><div class="user-title"><h3>${escapeHtml(user.name)} ${googleBadge}</h3><p>${escapeHtml(user.seflik)} • son giriş ${escapeHtml(fmtDate(user.lastSeen))}</p></div><span class="status-pill">${blocked ? 'Engelli' : onlineNow(user) ? 'Online' : 'Aktif'}</span></div>
+      const terminal = terminalInfoForUser(user);
+      const terminalBadge = terminal ? `<span class="terminal-user-badge" title="${escapeHtml(terminal.title)}" aria-label="Terminal kodu ile eşleşti"><span class="terminal-g">T</span><b>Terminal kodlu</b></span>` : '';
+      return `<article class="user-card ${google ? 'is-google-user' : ''} ${terminal ? 'is-terminal-user' : ''}">
+        <div class="user-head"><div class="avatar">${escapeHtml(initials(user.name))}</div><div class="user-title"><h3>${escapeHtml(user.name)} ${googleBadge} ${terminalBadge}</h3><p>${escapeHtml(user.seflik)} • son giriş ${escapeHtml(fmtDate(user.lastSeen))}</p></div><span class="status-pill">${blocked ? 'Engelli' : onlineNow(user) ? 'Online' : 'Aktif'}</span></div>
         <div class="user-data">
           <div class="data-cell"><small>IP adresi</small><b class="ip">${escapeHtml(user.ip || '-')}</b></div>
           <div class="data-cell"><small>Cihaz</small><b>${escapeHtml(user.deviceId || '-')}</b></div>
           <div class="data-cell"><small>Platform</small><b>${escapeHtml(user.platform || '-')}</b></div>
           <div class="data-cell"><small>Tarayıcı</small><b>${escapeHtml(user.browser || '-')}</b></div>
           <div class="data-cell"><small>Kullandığı sürüm</small><b>${escapeHtml(user.version || 'Sürüm bekleniyor')}</b></div>
-          <div class="data-cell"><small>Drive yedek</small><b>${fmtInt(backups)}</b></div>
+          <div class="data-cell"><small>Drive yedek</small><b>${fmtInt(backups)}</b></div><div class="data-cell"><small>Giriş tipi</small><b>${terminal ? 'Terminal kodlu' : google ? 'Google' : 'Yerel'}</b></div>
         </div>
         <div class="user-actions"><button class="button info" data-action="detail" data-user-index="${globalIndex}" type="button">Detay</button><button class="button warning" data-action="block" data-user-index="${globalIndex}" type="button">Engelle</button><button class="button danger" data-action="delete-user" data-user-index="${globalIndex}" type="button">Kullanıcıyı sil</button></div>
       </article>`;
@@ -585,7 +595,7 @@
   async function addIp(){const ip=prompt('Engellenecek IP adresi:');if(!clean(ip))return;if(!isLikelyIp(ip)&&!confirm('Girilen değer standart IP biçiminde görünmüyor. Yine de engellensin mi?'))return;await edge('admin_add_block',{block_type:'ip',block_value:clean(ip),reason:'Manuel IP engeli'});toast('IP engeli eklendi');await loadAll()}
 
   function userDetail(user){
-    openModal('Kullanıcı detayı',`<div class="detail-grid"><div><small>Kullanıcı</small><b>${escapeHtml(user.name)}</b></div><div><small>Şeflik</small><b>${escapeHtml(user.seflik)}</b></div><div><small>IP</small><b class="ip">${escapeHtml(user.ip||'-')}</b></div><div><small>Cihaz</small><b>${escapeHtml(user.deviceId||'-')}</b></div><div><small>Platform</small><b>${escapeHtml(user.platform||'-')}</b></div><div><small>Tarayıcı</small><b>${escapeHtml(user.browser||'-')}</b></div><div><small>Kullandığı sürüm</small><b>${escapeHtml(user.version||'-')}</b></div><div><small>Son giriş</small><b>${escapeHtml(fmtDate(user.lastSeen))}</b></div></div><pre class="raw-data">${escapeHtml(JSON.stringify(user.raw||user,null,2))}</pre>`)
+    openModal('Kullanıcı detayı',`<div class="detail-grid"><div><small>Kullanıcı</small><b>${escapeHtml(user.name)}</b></div><div><small>Şeflik</small><b>${escapeHtml(user.seflik)}</b></div><div><small>IP</small><b class="ip">${escapeHtml(user.ip||'-')}</b></div><div><small>Cihaz</small><b>${escapeHtml(user.deviceId||'-')}</b></div><div><small>Platform</small><b>${escapeHtml(user.platform||'-')}</b></div><div><small>Tarayıcı</small><b>${escapeHtml(user.browser||'-')}</b></div><div><small>Kullandığı sürüm</small><b>${escapeHtml(user.version||'-')}</b></div><div><small>Giriş tipi</small><b>${terminalInfoForUser(user)?'Terminal kodlu':googleInfoForUser(user)?'Google':'Yerel'}</b></div><div><small>Son giriş</small><b>${escapeHtml(fmtDate(user.lastSeen))}</b></div></div><pre class="raw-data">${escapeHtml(JSON.stringify(user.raw||user,null,2))}</pre>`)
   }
 
   async function login(){
