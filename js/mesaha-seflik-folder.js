@@ -1,4 +1,4 @@
-/* Mesaha İO V5.80 — Şeflik giriş yükleniyor, aktif şeflik ve üyelik senkronizasyonu */
+/* Mesaha İO V5.81 — Şeflik giriş yükleniyor, aktif şeflik ve üyelik senkronizasyonu */
 (function(){
   'use strict';
   if(window.MesahaSeflikFolderV529) return;
@@ -76,7 +76,7 @@
   }
   async function edge(action,payload){
     var u=user(),info=deviceInfo();
-    var body=Object.assign({name:u.name,seflik:u.seflik,seflikKey:u.seflikKey,folderSeflik:u.seflik,bolmeNo:u.bolmeNo,deviceId:info.deviceId,deviceInfo:info,appVersion:info.appVersion,fileVersion:info.fileVersion,source:'mesaha-seflik-folder-v578'},terminalAuth(),payload||{});
+    var body=Object.assign({name:u.name,seflik:u.seflik,seflikKey:u.seflikKey,folderSeflik:u.seflik,bolmeNo:u.bolmeNo,deviceId:info.deviceId,deviceInfo:info,appVersion:info.appVersion,fileVersion:info.fileVersion,source:'mesaha-seflik-folder-v581'},terminalAuth(),payload||{});
     var api=window.mesahaSupabaseV380||window.mesahaSupabaseV383||window.mesahaSupabase;
     if(!api||typeof api.edge!=='function')throw new Error('Güvenli sunucu bağlantısı hazır değil');
     return await withTimeout(api.edge(action,body),35000,'Sunucu isteği zaman aşımı');
@@ -174,6 +174,17 @@
         return true;
       }catch(e){
         var msg=String(e&&e.message?e.message:e);
+        if(/oluşturulmamış|sadece içindeki kullanıcılar|şeflik klasörü bulunamadı|404|403/i.test(msg)){
+          try{
+            setStatus('Şeflik yetkisi onarılıyor…','busy');
+            await edge('seflik_folder_ensure_active',{});
+            var outFix=await edge('seflik_folder_list',{}),remoteFix=Array.isArray(outFix.divisions)?outFix.divisions:(Array.isArray(outFix.summaries)?outFix.summaries:[]);
+            divisions=mergeRemoteDivisions(remoteFix);cacheAndRender();markNeedsOnlineRefresh(false);lastSyncAt=Date.now();
+            setStatus('Senkronizasyon tamamlandı • '+new Date().toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'}),'success');
+            if(syncToastRequested)notify('Şeflik klasörü güncellendi',openDivisions().length+' açık bölme bulundu.','success');
+            return true;
+          }catch(_fixError){}
+        }
         if(/Google ile giriş|oturum|jwt|token|auth|401|403/i.test(msg)&&hasApprovedIdentity()){
           setStatus('Oturum yenileniyor…','busy');await recoverAuthForFolder();
           var out2=await edge('seflik_folder_list',{}),remote2=Array.isArray(out2.divisions)?out2.divisions:(Array.isArray(out2.summaries)?out2.summaries:[]);
