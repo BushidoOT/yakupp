@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const ADMIN_VERSION = 'V5.65 •Yakupp•';
+  const ADMIN_VERSION = 'V5.66 •Yakupp•';
   const EDGE_URL = 'https://swrbpdpotmirnmtqnuba.supabase.co/functions/v1/smooth-function';
   const SESSION_KEY = 'mesaha_admin_auth_v548_session';
   const LAST_ACTIVITY_KEY = 'mesaha_admin_auth_v548_activity';
@@ -12,7 +12,7 @@
   const $ = (id) => document.getElementById(id);
   const state = {
     page: 'users', range: 'day', blockView: 'user_key', accessStatus: 'pending',
-    profiles: [], usage: [], daily: [], events: [], logs: [], audit: [], blocks: [], backups: [], users: [], userAccess: [], userAuthEvents: [],
+    profiles: [], usage: [], daily: [], events: [], logs: [], audit: [], blocks: [], backups: [], users: [], userAccess: [], userAuthEvents: [], seflikFolders: [], seflikMembers: [],
     summary: {}, hiddenBackupIds: new Set(), loading: false, errors: {}
   };
   window.MESAHA_ADMIN_LIGHT_STATE = state;
@@ -325,6 +325,7 @@
       state.daily = arr(first(data.daily_usage, data.dailyUsage));
       state.events = arr(data.events); state.logs = arr(data.logs); state.audit = arr(first(data.admin_audit_logs,data.adminAuditLogs));
       state.userAccess = arr(first(data.user_access,data.userAccess)); state.userAuthEvents = arr(first(data.user_auth_events,data.userAuthEvents));
+      state.seflikFolders = arr(first(data.seflik_folders,data.seflikFolders)); state.seflikMembers = arr(first(data.seflik_members,data.seflikMembers));
       state.blocks = [...arr(data.blocks), ...arr(data.security_blocks)].map(mapBlock).filter((b, i, all) => b.type && b.value && all.findIndex((x) => x.type === b.type && x.value === b.value) === i);
       state.summary = obj(data.summary); collectHiddenFromLogs();
       const driveBackups = await loadDriveBackups();
@@ -559,8 +560,19 @@
     if(action.endsWith('revoke')&&!confirm(`${first(row.canonical_name,row.requested_name,row.email)} kullanıcısının sunucu erişimi kapatılsın mı?`))return;
     await edge(action,{user_id:row.user_id,reason:clean(reason)});toast(action.endsWith('reopen')?'Talep yeniden incelemeye alındı':action.endsWith('revoke')?'Erişim kapatıldı':'Talep reddedildi');await loadAll();
   }
-  function renderAll(){renderUsers();renderStats();renderBackups();renderBlocks();renderSecurityLogs();renderGoogleAccess();renderSummary()}
-  function switchPage(page){state.page=page;document.querySelectorAll('.page').forEach((el)=>el.classList.toggle('is-active',el.dataset.page===page));document.querySelectorAll('.nav-item').forEach((el)=>el.classList.toggle('is-active',el.dataset.pageTarget===page));if(page==='stats')renderStats();if(page==='backups')renderBackups();if(page==='manage'){renderBlocks();renderSecurityLogs();renderGoogleAccess();}window.scrollTo({top:0,behavior:'smooth'})}
+  function memberAvatar(m){const url=first(m.avatar_url,obj(m.metadata).avatar_url);const nm=first(m.name,m.email,'?');return url?`<img class="seflik-admin-avatar" src="${escapeHtml(url)}" alt="" referrerpolicy="no-referrer">`:`<span class="seflik-admin-avatar fallback">${escapeHtml(initials(nm))}</span>`}
+  function renderSeflikAdmin(){
+    const host=$('adminSeflikList'), badge=$('adminSeflikCount'); if(!host)return;
+    const folders=state.seflikFolders.map(obj).filter((f)=>clean(f.status||'active')==='active').sort((a,b)=>clean(a.seflik).localeCompare(clean(b.seflik),'tr'));
+    if(badge)badge.textContent=`${fmtInt(folders.length)} şeflik`;
+    if(!folders.length){host.innerHTML='<div class="empty-state">Kurulu şeflik yok.</div>';return}
+    host.innerHTML=folders.map((f)=>{
+      const key=clean(f.seflik_key), members=state.seflikMembers.map(obj).filter((m)=>clean(m.seflik_key)===key&&clean(m.status||'active')==='active').sort((a,b)=>clean(a.role)==='owner'?-1:clean(b.role)==='owner'?1:clean(a.name).localeCompare(clean(b.name),'tr'));
+      return `<article class="seflik-admin-card"><div class="seflik-admin-head"><div><h4>${escapeHtml(f.seflik||'-')}</h4><p>Kurucu: ${escapeHtml(first(f.created_by_name,'-'))} • ${escapeHtml(fmtDate(f.created_at))}</p></div><span class="counter-badge">${fmtInt(members.length)} üye</span></div><div class="seflik-admin-members">${members.length?members.map((m)=>`<div class="seflik-admin-member">${memberAvatar(m)}<div><b>${escapeHtml(first(m.name,'-'))}</b><small>${escapeHtml((clean(m.role)==='owner'?'Kurucu':'Ormancı')+(m.email?' • '+m.email:''))}</small></div></div>`).join(''):'<div class="empty-state small">Üye yok</div>'}</div></article>`;
+    }).join('');
+  }
+  function renderAll(){renderUsers();renderStats();renderBackups();renderBlocks();renderSecurityLogs();renderGoogleAccess();renderSeflikAdmin();renderSummary()}
+  function switchPage(page){state.page=page;document.querySelectorAll('.page').forEach((el)=>el.classList.toggle('is-active',el.dataset.page===page));document.querySelectorAll('.nav-item').forEach((el)=>el.classList.toggle('is-active',el.dataset.pageTarget===page));if(page==='stats')renderStats();if(page==='backups')renderBackups();if(page==='manage'){renderBlocks();renderSecurityLogs();renderGoogleAccess();renderSeflikAdmin();}window.scrollTo({top:0,behavior:'smooth'})}
   function openModal(title,html){$('modalTitle').textContent=title;$('modalBody').innerHTML=html;$('modal').classList.add('is-open');$('modal').setAttribute('aria-hidden','false')}
   function closeModal(){$('modal').classList.remove('is-open');$('modal').setAttribute('aria-hidden','true')}
 
