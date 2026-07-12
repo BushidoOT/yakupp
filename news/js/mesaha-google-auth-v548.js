@@ -1,13 +1,14 @@
-/* Mesaha İO V5.55 — Google OAuth doğrudan yönlendirme ve email_exists otomatik toparlama.
+/* Mesaha İO V5.56 — Google OAuth + Terminal yerel giriş modu.
    - Yeni anonim kullanıcı üretmez.
    - Anonim/linkleme hatasına düşmeden mevcut Google hesabıyla doğrudan OAuth açar.
    - Google hesabı doğrulansa dahi admin onayı olmadan sunucu işlemleri açılmaz.
-   - Daha önce onaylanmış cihaz offline açılışta yerel çalışmaya devam eder. */
+   - Terminal modu Google istemeden yalnız yerel kullanım sağlar; bulut işlemleri Google girişine yönlendirilir. */
 (function(){
   'use strict';
   var ACCESS_KEY='mesaha_google_access_v548';
+  var TERMINAL_MODE_KEY='mesaha_terminal_local_mode_v556';
   var PLAIN_OAUTH_KEY='mesaha_google_plain_oauth_v553';
-  var EMAIL_EXISTS_RETRY_KEY='mesaha_google_email_exists_retry_v555';
+  var EMAIL_EXISTS_RETRY_KEY='mesaha_google_email_exists_retry_v556';
   var PANEL_KEY='mesaha_panel_user_v316';
   var SETTINGS_KEY='cam_mesaha_ayarlar_v1';
   var BUSY=false, overlay=null, currentAccess=null, statusPromise=null, bootPromise=null, lastStatusAt=0, identityBusy=false;
@@ -67,6 +68,14 @@
     return{name:clean(panel.name||st.ekipNot),seflik:clean(panel.seflik||st.seflik),bolmeNo:clean(panel.bolmeNo||st.bolmeNo)}
   }
   function validIdentity(name,seflik){name=clean(name);seflik=clean(seflik);if(name.length<2||seflik.length<2)return false;var n=name.toLocaleLowerCase('tr-TR'),s=seflik.toLocaleLowerCase('tr-TR');return !/^(kullanıcı|kullanici|user|guest|misafir|boş|bos|-)$/.test(n)&&!/^(şeflik|seflik|unknown|bilinmiyor|boş|bos|-)$/.test(s)}
+  function isTerminalMode(){try{var x=getJson(TERMINAL_MODE_KEY,null);return !!(x&&x.active===true)}catch(e){return false}}
+  function hasAuthCallback(){try{var q=mergedAuthParams();return !!(q.get('access_token')||q.get('code')||q.get('error')||q.get('error_code')||(location.hash&&/access_token=|error=|code=/.test(location.hash)))}catch(e){return false}}
+  function terminalData(){var x=getJson(TERMINAL_MODE_KEY,{}),li=localIdentity();return{name:clean(x.name||li.name),seflik:clean(x.seflik||li.seflik),bolmeNo:clean(x.bolmeNo||li.bolmeNo),active:x.active===true,createdAt:x.createdAt||''}}
+  function writeTerminalIdentity(data){data=data||{};var name=clean(data.name),seflik=clean(data.seflik),bolme=clean(data.bolmeNo);if(!validIdentity(name,seflik))throw new Error('Terminal için kullanıcı adı ve şeflik gerekli.');var panel=getJson(PANEL_KEY,{});panel=Object.assign({},panel,{name:name,seflik:seflik,bolmeNo:bolme,terminalMode:true,googleApproved:false,updatedAt:new Date().toISOString()});setJson(PANEL_KEY,panel);var st=getJson(SETTINGS_KEY,{});st=Object.assign({},st,{ekipNot:name,seflik:seflik});if(bolme)st.bolmeNo=bolme;setJson(SETTINGS_KEY,st);try{if(window.state&&window.state.settings){window.state.settings.ekipNot=name;window.state.settings.seflik=seflik;if(bolme)window.state.settings.bolmeNo=bolme;if(typeof window.saveSettings==='function')window.saveSettings();}}catch(e){}setJson(TERMINAL_MODE_KEY,{active:true,name:name,seflik:seflik,bolmeNo:bolme,createdAt:new Date().toISOString(),version:'v556'});try{localStorage.setItem('mesaha_user_confirmed_v319','1')}catch(e){}['ekipNot','panelNameV316'].forEach(function(id){var el=document.getElementById(id);if(el){el.value=name;el.readOnly=false;el.removeAttribute('aria-readonly')}});['seflik','panelSeflikV316'].forEach(function(id){var el=document.getElementById(id);if(el){el.value=seflik;el.readOnly=false;el.removeAttribute('aria-readonly')}});var be=document.getElementById('bolmeNo'),bp=document.getElementById('panelBolmeV316');if(be&&bolme)be.value=bolme;if(bp&&bolme)bp.value=bolme;var badge=document.getElementById('userBadge');if(badge){badge.textContent='Terminal • '+name+' • '+seflik;badge.classList.remove('login-needed')}try{document.documentElement.setAttribute('data-mesaha-terminal-mode','1');window.dispatchEvent(new CustomEvent('mesaha:terminal-mode-enabled',{detail:{name:name,seflik:seflik,bolmeNo:bolme}}));window.dispatchEvent(new Event('mesaha:settings-saved'));window.dispatchEvent(new Event('mesaha:user-login'))}catch(e){}loginLog('terminal_mode_enabled',{name:name,seflik:seflik,bolmeNo:bolme},'info');return true}
+  function terminalForm(){var li=terminalData();show('<div class="google-auth-status-v548 pending"><b>Terminal giriş modu</b><br>Bu cihaz Google hesabı kullanmadan yerel çalışır. Bulut, Drive ve Şeflik Klasörü kapalı olur.</div><div class="google-auth-fields-v548"><label>Kullanıcı adı<input id="terminalNameV556" maxlength="120" value="'+esc(li.name)+'" autocomplete="name"></label><label>Şeflik<input id="terminalSeflikV556" maxlength="120" value="'+esc(li.seflik)+'" autocomplete="organization"></label><label>Bölme No <input id="terminalBolmeV556" maxlength="80" value="'+esc(li.bolmeNo)+'"></label></div>'+button('terminal-save','Terminal modunda devam et','green')+button('google','Google ile giriş yap','primary')+'<p class="google-auth-note-v548">Terminal modunda kayıtlar cihazda kalır. Bulut özelliği gerekirse Google ile giriş yapmanız istenir.</p>')}
+  function saveTerminalFromForm(){var n=document.getElementById('terminalNameV556'),s=document.getElementById('terminalSeflikV556'),b=document.getElementById('terminalBolmeV556');writeTerminalIdentity({name:n&&n.value,seflik:s&&s.value,bolmeNo:b&&b.value});hide();try{if(typeof window.mesahaFloatToastV315==='function')window.mesahaFloatToastV315('Terminal modu açıldı','Bulut özellikleri Google girişi isteyecek','success');else if(typeof window.toast==='function')window.toast('Terminal modu açıldı','Bulut özellikleri Google girişi isteyecek','success')}catch(e){}return true}
+  function clearTerminalMode(){try{localStorage.removeItem(TERMINAL_MODE_KEY)}catch(e){}try{document.documentElement.removeAttribute('data-mesaha-terminal-mode');window.dispatchEvent(new Event('mesaha:terminal-mode-disabled'))}catch(e){}}
+
   function cached(){var x=getJson(ACCESS_KEY,null);if(!x||clean(x.user_id)!==uid())return null;return x}
   function cacheAccess(x){if(!x)return;currentAccess=x;lastStatusAt=Date.now();setJson(ACCESS_KEY,Object.assign({},x,{cached_at:lastStatusAt}))}
   function clearAccess(){currentAccess=null;try{localStorage.removeItem(ACCESS_KEY)}catch(e){}}
@@ -147,7 +156,7 @@
     var e=new Error(raw||'Google hesap bağlantısı başlatılamadı.');e.status=status||0;e.payload=j||{};return e;
   }
   async function oauthStartUrl(path,token){
-    // V5.55: /auth/v1/authorize uç noktası tarayıcıdan fetch edilince bazı cihazlarda CORS/Failed to fetch veriyor.
+    // V5.56: /auth/v1/authorize uç noktası tarayıcıdan fetch edilince bazı cihazlarda CORS/Failed to fetch veriyor.
     // Bu endpoint zaten tarayıcı yönlendirmesi içindir; bu yüzden fetch yapmadan doğrudan açıyoruz.
     var c=cfg(),url=c.url+String(path||'').replace(/&?skip_http_redirect=true/g,'');
     loginLog('oauth_start_direct',{path:String(path||''),hadToken:!!token,redirectUrl:redirectUrl()},'info');
@@ -157,7 +166,7 @@
     loginLog('begin_google_click',{hasSession:!!session(),isAnon:isAnon(),plainNeeded:plainOauthNeeded(),redirectUrl:redirectUrl()},'info');
     if(BUSY)return;BUSY=true;var a=api(),redir=redirectUrl(),path,plain=plainOauthNeeded();
     if(session()&&isAnon()&&!plain){
-      loginLog('anon_session_plain_google_fallback',{reason:'identity_link_fetch_removed_v555',redirectUrl:redir},'info');
+      loginLog('anon_session_plain_google_fallback',{reason:'identity_link_fetch_removed_v556',redirectUrl:redir},'info');
       try{if(a&&a.clearSession)a.clearSession()}catch(e){}
       markPlainOauth(true);plain=true;
     }
@@ -172,7 +181,7 @@
     if(!force&&known&&lastStatusAt&&Date.now()-lastStatusAt<STATUS_TTL)return known;
     if(!force&&navigator.onLine===false){if(known&&known.status==='approved')return known;throw new Error('İlk Google doğrulaması için internet gerekli.')}
     if(statusPromise)return statusPromise;
-    statusPromise=(async function(){try{var out=await rpc('mesaha_google_access_status_v552',{p_device_info:deviceInfo(),p_app_version:(window.MESAHA_VERSION||{}).visibleVersion||'V5.55'});var x=out.access||out;x.user_id=x.user_id||uid();x.email=x.email||clean(user().email);clearEmailExistsRetry();cacheAccess(x);loginLog('access_status_ok',{status:x.status,email:x.email,user_id:x.user_id},'info');return x}catch(e){loginLog('access_status_error',{error:e,message:e&&e.message},'error');var c=currentAccess||cached();if(c&&c.status==='approved')return c;throw e}finally{statusPromise=null}})();
+    statusPromise=(async function(){try{var out=await rpc('mesaha_google_access_status_v552',{p_device_info:deviceInfo(),p_app_version:(window.MESAHA_VERSION||{}).visibleVersion||'V5.56'});var x=out.access||out;x.user_id=x.user_id||uid();x.email=x.email||clean(user().email);clearEmailExistsRetry();cacheAccess(x);loginLog('access_status_ok',{status:x.status,email:x.email,user_id:x.user_id},'info');return x}catch(e){loginLog('access_status_error',{error:e,message:e&&e.message},'error');var c=currentAccess||cached();if(c&&c.status==='approved')return c;throw e}finally{statusPromise=null}})();
     return statusPromise;
   }
   function deviceInfo(){var nav=navigator||{};return{deviceId:(api()&&api().getDeviceId?api().getDeviceId():''),platform:clean(nav.userAgentData&&nav.userAgentData.platform||nav.platform),userAgent:clean(nav.userAgent).slice(0,500),standalone:!!(window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||nav.standalone===true}}
@@ -185,13 +194,14 @@
     if(status==='rejected'||status==='revoked')return show('<div class="google-auth-status-v548 denied"><b>Erişim '+(status==='revoked'?'kapatıldı':'reddedildi')+'</b><br>'+esc(x.reason||'Yönetici ile iletişime geçin.')+'</div><div class="google-auth-email-v548">'+esc(email)+'</div>'+button('request-form','Yeniden erişim talep et','primary')+button('logout','Başka Google hesabı kullan','subtle'));
     var li=localIdentity();show('<div class="google-auth-status-v548"><b>Google hesabın doğrulandı.</b><br>Mevcut kullanıcı adı ve şefliğin için yönetici onayı iste.</div><div class="google-auth-email-v548">'+esc(email)+'</div><div class="google-auth-fields-v548"><label>Kullanıcı adı<input id="googleRequestNameV548" maxlength="120" value="'+esc(li.name)+'" autocomplete="name"></label><label>Şeflik<input id="googleRequestSeflikV548" maxlength="120" value="'+esc(li.seflik)+'" autocomplete="organization"></label></div>'+button('request','Yönetici onayı iste','green')+button('logout','Başka Google hesabı kullan','subtle')+'<p class="google-auth-note-v548">Kullanıcı adı ve şeflik artık tek başına giriş sağlamaz. Bu bilgiler yalnız doğrulanmış Google hesabına bağlanır.</p>')
   }
-  async function requestAccess(){loginLog('request_access_click',{},'info');var n=document.getElementById('googleRequestNameV548'),s=document.getElementById('googleRequestSeflikV548'),name=clean(n&&n.value),seflik=clean(s&&s.value);if(!validIdentity(name,seflik))throw new Error('Geçerli kullanıcı adı ve şeflik girin.');loading('Erişim talebi gönderiliyor…');loginLog('request_access_send',{name:name,seflik:seflik},'info');var out=await rpc('mesaha_google_access_request_v552',{p_name:name,p_seflik:seflik,p_device_info:deviceInfo(),p_app_version:(window.MESAHA_VERSION||{}).visibleVersion||'V5.55'});renderAccess(out.access||out)}
+  async function requestAccess(){loginLog('request_access_click',{},'info');var n=document.getElementById('googleRequestNameV548'),s=document.getElementById('googleRequestSeflikV548'),name=clean(n&&n.value),seflik=clean(s&&s.value);if(!validIdentity(name,seflik))throw new Error('Geçerli kullanıcı adı ve şeflik girin.');loading('Erişim talebi gönderiliyor…');loginLog('request_access_send',{name:name,seflik:seflik},'info');var out=await rpc('mesaha_google_access_request_v552',{p_name:name,p_seflik:seflik,p_device_info:deviceInfo(),p_app_version:(window.MESAHA_VERSION||{}).visibleVersion||'V5.56'});renderAccess(out.access||out)}
   async function logout(){loginLog('logout_start',{},'info');loading('Oturum kapatılıyor…');try{await api().signOut('global')}catch(e){try{api().clearSession()}catch(_e){}}clearAccess();location.replace(redirectUrl())}
-  async function handle(action){if(action==='google')return beginGoogle();if(action==='refresh')return boot(true);if(action==='request')return requestAccess();if(action==='request-form')return renderAccess({status:'unregistered',email:user().email});if(action==='logout')return logout()}
+  async function handle(action){if(action==='google'){clearTerminalMode();return beginGoogle()}if(action==='terminal')return terminalForm();if(action==='terminal-save')return saveTerminalFromForm();if(action==='refresh')return boot(true);if(action==='request')return requestAccess();if(action==='request-form')return renderAccess({status:'unregistered',email:user().email});if(action==='logout')return logout()}
   async function bootCore(force){
-    loginLog('boot_core_start',{force:!!force,hasSession:!!session(),isGoogle:isGoogle(),url:location.href},'info');
+    loginLog('boot_core_start',{force:!!force,hasSession:!!session(),isGoogle:isGoogle(),terminalMode:isTerminalMode(),url:location.href},'info');
+    if(isTerminalMode()&&!hasAuthCallback()){ensure();hide();try{var td=terminalData();writeTerminalIdentity(td)}catch(_te){}loginLog('terminal_mode_boot_skip_google',{},'info');return false}
     ensure();loading('Güvenli oturum kontrol ediliyor…');await consumeCallback();var a=api();if(!a)throw new Error('Supabase oturum motoru yüklenemedi.');await a.ready();
-    if(!session()){loginLog('boot_no_session',{},'info');return show('<div class="google-auth-status-v548"><b>Google ile giriş gerekli</b><br>Kullanıcı adı ve şeflik artık giriş anahtarı değildir.</div>'+button('google','Google ile giriş yap','primary')+'<p class="google-auth-note-v548">İlk girişte yöneticinin hesabını mevcut kullanıcı/şeflik kaydınla eşleştirmesi gerekir.</p>');}
+    if(!session()){loginLog('boot_no_session',{terminalAvailable:true},'info');return show('<div class="google-auth-status-v548"><b>Google ile giriş gerekli</b><br>Bulut ve ortak şeflik özellikleri için Google hesabı gerekir.</div>'+button('google','Google ile giriş yap','primary')+button('terminal','Terminal giriş modu','subtle')+'<p class="google-auth-note-v548">Terminal modunda uygulama yalnız cihaz içinde çalışır; Bulut, Drive ve Şeflik Klasörü kapalı olur.</p>');}
     if(!isGoogle()){loginLog('boot_non_google_session',{providers:providers()},'info');return show('<div class="google-auth-status-v548 pending"><b>Eski oturumunu güvene al</b><br>Google hesabını bağladığında mevcut kullanıcı kimliğin ve bulut yedeklerin korunur.</div>'+button('google','Google hesabımı bağla','primary')+button('logout','Eski oturumu sil','subtle'));}
     var x=await accessStatus(force===true);renderAccess(x||{status:'unregistered',email:user().email})
   }

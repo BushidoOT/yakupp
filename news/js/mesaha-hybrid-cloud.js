@@ -1,4 +1,4 @@
-/* Mesaha İO V5.55 — mevcut cihaz geçişi, user_id tabanlı kesin engel ve güvenli Edge/anti-spam bulut motoru
+/* Mesaha İO V5.56 — Terminal modunda bulut kapalı; Google girişli bulut motoru
    Buluta Yedekle: Edge Function guard + güvenli Supabase V2 + Google Drive.
    Buluttan Getir: Edge Function guard + iki kaynak birlikte listelenir.
    Kullanıcı yedek silme: gerçek silme yok; kullanıcı listesinden gizlenir.
@@ -39,6 +39,8 @@
   function versionRaw(){ return (window.MESAHA_VERSION&&window.MESAHA_VERSION.version) || window.FILE_VERSION || 'local'; }
   function toast(t,s,k){ try{ if(typeof window.mesahaFloatToastV315==='function') return window.mesahaFloatToastV315(t,s||'',k||'success'); }catch(e){} try{ if(typeof window.toast==='function') return window.toast(t,s||'',k||'success'); }catch(e){} try{ alert(t+(s?'\n'+s:'')); }catch(e){} }
   function errText(e){ var m=String(e&&e.message?e.message:e||'Hata'); if(/Failed to fetch|Network|Load failed|internet|offline/i.test(m)) return 'İnternet bağlantısını kontrol et.'; if(/permission|rls|policy|yetkisiz|403|401/i.test(m)) return 'Yetki/RLS kontrolü gerekli.'; if(/payload|column_size|too large|413/i.test(m)) return 'Yedek boyutu fazla; parça sistemi kontrol edilmeli.'; return m.slice(0,180); }
+  function terminalMode(){try{var x=jsonGet('mesaha_terminal_local_mode_v556',null);return !!(x&&x.active===true)}catch(e){return false}}
+  function terminalCloudError(){var e=new Error('Bu özellik için Google ile giriş yap. Terminal modunda bulut kapalıdır.');e.googleRequired=true;return e}
   function volume(r){ var d=Number(String(r.diameter||r.cap||0).replace(',','.')); var l=Number(String(r.length||r.boy||0).replace(',','.')); var q=Number(r.quantity||r.adet||1); if(!d||!l) return 0; return Math.PI*Math.pow(d/100,2)/4*l*q; }
   function totalM3(list){ return (list||[]).reduce(function(a,r){ return a+volume(r); },0); }
   function trText(){ try{ return new Date().toLocaleString('tr-TR'); }catch(e){ return new Date().toISOString(); } }
@@ -111,6 +113,7 @@
   var startupGuardDone=false;
   async function startupGuardCheck(){
     if(startupGuardDone) return;
+    if(terminalMode()){ startupGuardDone=true; clearBlockedScreen(); return; }
     var user=readUser();
     /* Boş/genel profil Edge Function tarafında sahte kullanıcı oluşturmasın. Güvenlik kontrolü gerçek kimlik kaydedilince başlar. */
     if(!validIdentity(user)) return;
@@ -123,12 +126,13 @@
     }
   }
   async function guardCheck(action,user,extra){
+    if(terminalMode()) throw terminalCloudError();
     user=user||readUser();
     if(!validIdentity(user)) throw new Error('Geçerli kullanıcı adı ve şeflik gerekli');
     var api=window.mesahaSupabaseV380||window.mesahaSupabaseV383||window.mesahaSupabase;
     if(!api||typeof api.edge!=='function') throw new Error('Güvenli sunucu bağlantısı hazır değil');
     try{
-      return await api.edge(action||'profile_ping',Object.assign({userKey:userKey(user.name,user.seflik),name:user.name,seflik:user.seflik,bolmeNo:user.bolmeNo,deviceId:getDeviceId(),appVersion:versionText(),source:'mesaha-web-v555'},extra||{}));
+      return await api.edge(action||'profile_ping',Object.assign({userKey:userKey(user.name,user.seflik),name:user.name,seflik:user.seflik,bolmeNo:user.bolmeNo,deviceId:getDeviceId(),appVersion:versionText(),source:'mesaha-web-v556'},extra||{}));
     }catch(e){
       if(isBlockedError(e)){
         e.blocked=true;
