@@ -1,10 +1,10 @@
-/* Mesaha İO V5.56 — Terminal yerel giriş modu
+/* Mesaha İO V5.57 — Terminal yerel giriş modu
    Terminal modunda uygulama cihaz içi çalışır; bulut/Drive/Şeflik Klasörü Google girişine yönlendirilir. */
 (function(){
   'use strict';
   if(window.__mesahaTerminalLocalV556) return;
   window.__mesahaTerminalLocalV556 = true;
-  var TERMINAL_KEY='mesaha_terminal_local_mode_v556';
+  var TERMINAL_KEY='mesaha_terminal_local_mode_v557';
   var SETTINGS_KEY='cam_mesaha_ayarlar_v1';
   var PANEL_KEY='mesaha_panel_user_v316';
   var BLOCK_SELECTORS=[
@@ -33,18 +33,18 @@
     },80);
   }
   function style(){
-    if($('mesaha-terminal-local-v556-style')) return;
-    var st=document.createElement('style');st.id='mesaha-terminal-local-v556-style';st.textContent=[
+    if($('mesaha-terminal-local-v557-style')) return;
+    var st=document.createElement('style');st.id='mesaha-terminal-local-v557-style';st.textContent=[
       'html[data-mesaha-terminal-mode="1"] #userBadge{background:#eef2ff!important;color:#3730a3!important;border-color:#c7d2fe!important}',
-      '.terminal-card-v556{border:1px solid #c7d2fe;background:linear-gradient(180deg,#eef2ff,#f8fafc);color:#1e1b4b;border-radius:20px;padding:13px 14px;margin:10px 0;font-weight:850;box-shadow:0 8px 20px rgba(79,70,229,.08)}',
-      '.terminal-card-v556 b{display:block;font-size:15px;margin-bottom:4px}.terminal-card-v556 small{display:block;color:#475569;line-height:1.35;font-weight:750}',
-      '.terminal-card-v556 button{margin-top:10px;width:100%;min-height:42px;border:0;border-radius:14px;background:#fff;color:#1d4ed8;font-weight:950;box-shadow:inset 0 0 0 1px #bfdbfe}',
+      '.terminal-card-v557{border:1px solid #c7d2fe;background:linear-gradient(180deg,#eef2ff,#f8fafc);color:#1e1b4b;border-radius:20px;padding:13px 14px;margin:10px 0;font-weight:850;box-shadow:0 8px 20px rgba(79,70,229,.08)}',
+      '.terminal-card-v557 b{display:block;font-size:15px;margin-bottom:4px}.terminal-card-v557 small{display:block;color:#475569;line-height:1.35;font-weight:750}',
+      '.terminal-card-v557 button{margin-top:10px;width:100%;min-height:42px;border:0;border-radius:14px;background:#fff;color:#1d4ed8;font-weight:950;box-shadow:inset 0 0 0 1px #bfdbfe}',
       'html[data-mesaha-terminal-mode="1"] #cloudBackupBtnV316,html[data-mesaha-terminal-mode="1"] #cloudRestoreBtnV316,html[data-mesaha-terminal-mode="1"] #seflikSendFromRecordsV529,html[data-mesaha-terminal-mode="1"] #seflikFolderSendV528,html[data-mesaha-terminal-mode="1"] #seflikFolderSyncV528,html[data-mesaha-terminal-mode="1"] #seflikFolderCreateV529{background:#f1f5f9!important;color:#64748b!important;border-color:#cbd5e1!important;box-shadow:none!important}',
       'html[data-mesaha-terminal-mode="1"] [data-nav="seflikFolder"]{opacity:.55!important}',
       'html[data-mesaha-terminal-mode="1"] #seflikFolderHomeShortcutV528{opacity:.72!important;filter:grayscale(.25)!important}'
     ].join('');document.head.appendChild(st);
   }
-  function terminalCardHtml(){var u=user();return '<div class="terminal-card-v556" id="terminalLocalCardV556"><b>🖥 Terminal modu aktif</b><small>'+esc(u.name||'Kullanıcı')+' • '+esc(u.seflik||'Şeflik')+'<br>Bu cihaz yerel çalışır. Bulut, Drive ve Şeflik Klasörü için Google ile giriş gerekir.</small><button type="button" id="terminalGoogleBtnV556">Google ile giriş yap</button></div>'}
+  function terminalCardHtml(){var u=user();return '<div class="terminal-card-v557" id="terminalLocalCardV556"><b>🖥 Terminal modu aktif</b><small>'+esc(u.name||'Kullanıcı')+' • '+esc(u.seflik||'Şeflik')+'<br>Bu cihaz yerel çalışır. Bulut, Drive ve Şeflik Klasörü için Google ile giriş gerekir.</small><button type="button" id="terminalGoogleBtnV556">Google ile giriş yap</button></div>'}
   function ensureCards(){
     if(!terminal())return;
     var status=document.querySelector('.status-card');

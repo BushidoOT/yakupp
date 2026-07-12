@@ -1,9 +1,9 @@
-/* Mesaha İO V5.56 — giriş teşhis/log tutucu.
+/* Mesaha İO V5.57 — giriş teşhis/log tutucu.
    Amaç: Google/Supabase giriş akışındaki gerçek kırılma noktasını güvenli şekilde kaydetmek. */
 (function(){
   'use strict';
-  if(window.MesahaLoginLog&&window.MesahaLoginLog.version==='v556')return;
-  var VERSION='v556', KEY='mesaha_login_debug_v556', QKEY='mesaha_login_debug_queue_v556', SID_KEY='mesaha_login_debug_session_v556';
+  if(window.MesahaLoginLog&&window.MesahaLoginLog.version==='v557')return;
+  var VERSION='v557', KEY='mesaha_login_debug_v557', QKEY='mesaha_login_debug_queue_v557', SID_KEY='mesaha_login_debug_session_v557';
   var MAX_LOCAL=320, MAX_QUEUE=120, installedFetch=false, flushing=false, remoteDisabledUntil=0;
   function now(){return Date.now()}
   function clean(v){return String(v==null?'':v).trim()}
@@ -42,7 +42,7 @@
   function deviceId(){try{return clean(localStorage.getItem('mesaha_supabase_v500_device')||localStorage.getItem('mesaha_cihaz_kodu_v1')||'')}catch(e){return ''}}
   function osName(){var ua=navigator.userAgent||'';if(/Android/i.test(ua))return'Android';if(/iPhone|iPad|iPod/i.test(ua))return'iOS';if(/Windows/i.test(ua))return'Windows';if(/Mac OS/i.test(ua))return'macOS';if(/Linux/i.test(ua))return'Linux';return'Bilinmiyor'}
   function browser(){var ua=navigator.userAgent||'',m;if((m=ua.match(/SamsungBrowser\/([\d.]+)/i)))return'Samsung '+m[1];if((m=ua.match(/Edg\/([\d.]+)/i)))return'Edge '+m[1];if((m=ua.match(/CriOS\/([\d.]+)/i)))return'Chrome iOS '+m[1];if((m=ua.match(/Chrome\/([\d.]+)/i)))return'Chrome '+m[1];if((m=ua.match(/Version\/([\d.]+).*Safari/i)))return'Safari '+m[1];return clean(navigator.appName||'Tarayıcı')}
-  function base(){var v=window.MESAHA_VERSION||{}, ss=readSession(), u=(ss.user||{}), lu=localUser();return{version:'v556',sessionId:sessionId(),ts:now(),iso:new Date().toISOString(),appVersion:v.visibleVersion||v.shortVersion||'',build:Number(v.build||0)||0,page:safeUrl(location.href),path:location.pathname,online:navigator.onLine!==false,visibility:document.visibilityState||'',deviceId:deviceId(),os:osName(),browser:browser(),screen:((screen&&screen.width)||'')+'x'+((screen&&screen.height)||''),viewport:(innerWidth||'')+'x'+(innerHeight||''),standalone:!!(matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true,userId:clean(u.id),email:clean(u.email),name:lu.name,seflik:lu.seflik}}
+  function base(){var v=window.MESAHA_VERSION||{}, ss=readSession(), u=(ss.user||{}), lu=localUser();return{version:'v557',sessionId:sessionId(),ts:now(),iso:new Date().toISOString(),appVersion:v.visibleVersion||v.shortVersion||'',build:Number(v.build||0)||0,page:safeUrl(location.href),path:location.pathname,online:navigator.onLine!==false,visibility:document.visibilityState||'',deviceId:deviceId(),os:osName(),browser:browser(),screen:((screen&&screen.width)||'')+'x'+((screen&&screen.height)||''),viewport:(innerWidth||'')+'x'+(innerHeight||''),standalone:!!(matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true,userId:clean(u.id),email:clean(u.email),name:lu.name,seflik:lu.seflik}}
   function save(row){var a=get(KEY,[])||[];a.push(row);if(a.length>MAX_LOCAL)a=a.slice(-MAX_LOCAL);set(KEY,a);try{var b=sessionStorage.getItem(KEY+'_mirror');b=b?JSON.parse(b):[];b.push(row);if(b.length>80)b=b.slice(-80);sessionStorage.setItem(KEY+'_mirror',JSON.stringify(b))}catch(e){}}
   function queue(row){var a=get(QKEY,[])||[];a.push(row);if(a.length>MAX_QUEUE)a=a.slice(-MAX_QUEUE);set(QKEY,a)}
   function row(event,detail,level){var b=base();b.id='log_'+b.ts.toString(36)+'_'+Math.random().toString(36).slice(2,8);b.event=clean(event||'event');b.level=level||(/error|fail|blocked|denied/i.test(b.event)?'error':'info');b.detail=sanitize(detail||{});return b}
