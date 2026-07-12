@@ -23,8 +23,8 @@
 <script src="./js/mesaha-utils.js"></script>
 <script src="./js/mesaha-data-guard.js"></script>
 <script src="./js/mesaha-persistent-store.js"></script>
-<script src="./js/mesaha-update-manager-v527.js"></script>
-<script src="./js/mesaha-ios-actions-v546.js?v=551"></script>
+<script src="./js/mesaha-update-manager.js"></script>
+<script src="./js/mesaha-ios-actions.js"></script>
 <script src="./js/mesaha-stability-core.js"></script>
 <script src="./js/mesaha-error-log.js"></script>
 <script src="./js/mesaha-url-cleanup.js"></script>
@@ -3721,8 +3721,8 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   </script>
 <script id="mesaha-supabase-config-v427" src="./js/mesaha-supabase-config.js"></script>
 <script id="mesaha-firebase-engine-v378" src="./js/mesaha-firebase.js"></script>
-<script id="mesaha-login-debug-v556" src="./js/mesaha-login-debug-v556.js"></script>
-<script id="mesaha-google-auth-v548" src="./js/mesaha-google-auth-v548.js"></script>
+<script id="mesaha-login-debug" src="./js/mesaha-login-debug.js"></script>
+<script id="mesaha-google-auth" src="./js/mesaha-google-auth.js"></script>
 <script id="mesaha-v427-supabase-guard">
 (function(){
   'use strict';
@@ -3978,7 +3978,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     const n=$('panelNameV316'), sf=$('panelSeflikV316'), b=$('panelBolmeV316');
     if(!hasUser()){
       if(badge){badge.textContent='Giriş Yap'; badge.classList.add('login-needed'); badge.title='İlk giriş için kullanıcı bilgisi gir';}
-      if(btn) btn.textContent='👤 Giriş Yap';
+      if(btn&&window.MesahaSeflikGovernanceApi) window.MesahaSeflikGovernanceApi.renderTopProfile();
       if(title) title.textContent='İlk Giriş';
       if(sync) sync.textContent='Kullanıcı adı ve şeflik girilmeden bulut eşitleme başlamaz';
       if(n && !n.__v319Touched){n.value=''}
@@ -3987,7 +3987,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     }else{
       const u=savedUser();
       if(badge){badge.textContent=clean(u.name)+' • '+clean(u.seflik); badge.classList.remove('login-needed');}
-      if(btn) btn.textContent='👤 Kullanıcı Paneli';
+      if(btn&&window.MesahaSeflikGovernanceApi) window.MesahaSeflikGovernanceApi.renderTopProfile();
       if(title) title.textContent='Kullanıcı Paneli';
     }
   }
@@ -4063,7 +4063,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     setField('panelNameV316',name);setField('panelSeflikV316',seflik);
     if(settings&&settings.bolmeNo)setField('panelBolmeV316',settings.bolmeNo);
     const badge=$('userBadge');if(badge){badge.textContent=name+' • '+seflik;badge.classList.remove('login-needed');badge.title='Kullanıcı panelini aç'}
-    const btn=$('userPanelBtnV316');if(btn){btn.textContent='👤 '+name+' • '+seflik;btn.classList.remove('login-needed')}
+    const btn=$('userPanelBtnV316');if(btn&&window.MesahaSeflikGovernanceApi) window.MesahaSeflikGovernanceApi.renderTopProfile();
     const title=$('userPanelTitleV316');if(title)title.textContent='Kullanıcı Paneli';
     closeBigPanel();close();
     try{sessionStorage.removeItem('mesaha_v319_login_prompted')}catch(e){}
@@ -4124,7 +4124,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     if(!hasUser()){
       closeBigPanel();
       const badge=$('userBadge');if(badge){badge.textContent='Giriş Yap';badge.classList.add('login-needed')}
-      const btn=$('userPanelBtnV316');if(btn)btn.textContent='👤 Giriş Yap';
+      const btn=$('userPanelBtnV316');if(btn&&window.MesahaSeflikGovernanceApi) window.MesahaSeflikGovernanceApi.renderTopProfile();
       setTimeout(open,350);
     }else close();
   }
@@ -6966,7 +6966,7 @@ body.mesaha-entry-scrolling-v408 #entryView label{
 </script>
 <script src="./js/mesaha-fast-tap-nav.js"></script>
 
-<script src="./js/mesaha-drive-bridge.js?v=551"></script>
+<script src="./js/mesaha-drive-bridge.js"></script>
 <script src="./js/mesaha-hybrid-cloud.js"></script>
 <script id="mesaha-v504-user-panel-cleanup">
 (function(){
@@ -7041,9 +7041,9 @@ body.mesaha-entry-scrolling-v408 #entryView label{
   window.MesahaIpV518={ping:ping,render:renderIp};
 })();
 </script>
-<script src="./js/mesaha-terminal-local-v556.js"></script>
-<script src="./js/mesaha-runtime-v527.js"></script>
-<script src="./js/mesaha-seflik-folder-v529.js"></script>
+<script src="./js/mesaha-terminal-local.js"></script>
+<script src="./js/mesaha-runtime.js"></script>
+<script src="./js/mesaha-seflik-folder.js"></script>
 <style id="mesaha-v530-seflik-ui-fix">
 /* V5.30 — Ölçümler buton sırası ve Şeflik Klasörü okunabilirlik düzeltmesi */
 #recordsView .records-action-grid-v530{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;gap:8px!important;margin:10px 0 8px!important;}
@@ -7289,8 +7289,8 @@ body.mesaha-floating-save-open-v537 .bottom-nav{display:none!important;visibilit
   #entryHomeBtn{position:relative!important;z-index:30!important;pointer-events:auto!important;touch-action:manipulation!important;}
 }
 </style>
-<script src="./js/mesaha-ios-touch-v538.js?v=551"></script>
-<script src="./js/mesaha-product-touch-v540.js?v=551"></script>
+<script src="./js/mesaha-ios-touch.js"></script>
+<script src="./js/mesaha-product-touch.js"></script>
 
 
 
@@ -7324,6 +7324,6 @@ body.mesaha-floating-save-open-v537 .bottom-nav{display:none!important;visibilit
 })();
 </script>
 
-<script src="./js/mesaha-seflik-governance-v567.js?v=567"></script>
+<script src="./js/mesaha-seflik-governance.js"></script>
 </body>
 </html>

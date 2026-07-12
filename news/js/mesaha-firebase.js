@@ -1,4 +1,4 @@
-/* Mesaha İO V548 — Google Auth + güvenli Supabase uyumluluk motoru
+/* Mesaha İO V5.69 — Google Auth + güvenli Supabase uyumluluk motoru
    Amaç: Eski Firebase/Supabase çağrılarını bozmadan yalnız doğrulanmış Google oturumu ile bulut işlemlerini yürütmek.
    - Yeni anonim hesap oluşturmaz; eski anonim oturumu Google kimliğine bağlamak için korur.
    - REST isteklerinde anon key değil access_token kullanır.
@@ -9,6 +9,7 @@
   var VERSION=(window.MESAHA_VERSION&&window.MESAHA_VERSION.version)||'local';
   var readyPromise=null, lastOkMs=0, lastError='', authSession=null, supabaseApi=null;
   var SESSION_KEY='mesaha_supabase_v500_session';
+  var SESSION_BACKUP_KEY='mesaha_supabase_v569_session_backup';
   var DEVICE_KEY='mesaha_supabase_v500_device';
   var ALLOWED_SLOTS={latest:1,slot_0:1,slot_1:1,slot_2:1,slot_3:1,slot_4:1};
 
@@ -25,6 +26,9 @@
   function enc(v){return encodeURIComponent(String(v==null?'':v));}
   function clean(v){return String(v==null?'':v).trim();}
   function getJsonSafe(k,f){try{var v=localStorage.getItem(k);return v?JSON.parse(v):f}catch(e){return f}}
+  function setJsonSafe(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}}
+  function backupSession(s){try{if(s&&s.access_token)localStorage.setItem(SESSION_BACKUP_KEY,JSON.stringify(Object.assign({},s,{backup_at:Date.now()})))}catch(e){}}
+  function restoreSessionBackup(){try{var s=safeJson(localStorage.getItem(SESSION_KEY)||'',null);if(s&&s.access_token)return s;var b=safeJson(localStorage.getItem(SESSION_BACKUP_KEY)||'',null);if(b&&b.access_token){localStorage.setItem(SESSION_KEY,JSON.stringify(b));return b}}catch(e){}return null}
   function googlePanelNameV560(){var u=getJsonSafe('mesaha_panel_user_v316',{});return clean(u&&u.googleApproved&&u.googleFullName)}
   function safeJson(x,f){try{return JSON.parse(x);}catch(e){return f;}}
   function deepClone(x){try{return JSON.parse(JSON.stringify(x||{}));}catch(e){return Object.assign({},x||{});}}
@@ -69,20 +73,29 @@
   function saveSession(j){
     var s={access_token:j.access_token,refresh_token:j.refresh_token,expires_at:j.expires_at,user:j.user||{}};
     if(!s.expires_at && j.expires_in) s.expires_at=Math.floor(Date.now()/1000)+Number(j.expires_in||3600);
-    authSession=s; try{localStorage.setItem(SESSION_KEY,JSON.stringify(s));}catch(e){} return s;
+    authSession=s; try{localStorage.setItem(SESSION_KEY,JSON.stringify(s));backupSession(s);}catch(e){} return s;
   }
   function storedSession(){
     if(authSession&&authSession.access_token)return authSession;
-    try{var s=safeJson(localStorage.getItem(SESSION_KEY)||'',null);if(s&&s.access_token){authSession=s;return s;}}catch(e){}
+    try{var s=safeJson(localStorage.getItem(SESSION_KEY)||'',null);if(!s||!s.access_token)s=restoreSessionBackup();if(s&&s.access_token){authSession=s;backupSession(s);return s;}}catch(e){}
     return null;
   }
   async function session(){
     var s=activeSession();if(s)return s;
     var old=storedSession();
-    if(old&&old.refresh_token){try{return await refreshSession(old);}catch(e){if(Number(e&&e.status)===400||Number(e&&e.status)===401)clearSession();throw e;}}
+    if(old&&old.refresh_token){
+      if(navigator.onLine===false&&old.access_token)return old;
+      try{return await refreshSession(old)}catch(e){
+        var status=Number(e&&e.status)||0, msg=String(e&&e.message||e||'');
+        if(status===400||status===401){clearSession();throw e}
+        if(old.access_token){backupSession(old);return old}
+        throw e;
+      }
+    }
+    if(old&&old.access_token)return old;
     throw new Error('Google ile giriş gerekli.');
   }
-  function clearSession(){authSession=null;try{localStorage.removeItem(SESSION_KEY);}catch(e){}}
+  function clearSession(){authSession=null;try{var old=safeJson(localStorage.getItem(SESSION_KEY)||'',null);if(old&&old.access_token)backupSession(old);localStorage.removeItem(SESSION_KEY);}catch(e){}}
   function saveExternalSession(j){
     if(!j||!j.access_token)throw new Error('Google oturumu eksik.');
     return saveSession(j);
@@ -233,7 +246,7 @@
     var fs=function(){return db;}; fs.FieldValue={increment:function(n){return {__mesahaIncrement:true,n:Number(n||0)};}}; window.firebase.firestore=fs;
   }
   async function ready(){
-    if(!readyPromise){readyPromise=(async function(){var c=cfg(); supabaseApi={url:c.url, anonKey:c.anonKey}; var existing=storedSession();if(existing&&existing.refresh_token&&Number(existing.expires_at||0)*1000<=Date.now()+60000&&navigator.onLine!==false){try{await refreshSession(existing);}catch(e){if(Number(e&&e.status)===400||Number(e&&e.status)===401)clearSession();}} var db=new Db(); installCompat(db); lastOkMs=Date.now(); lastError=''; return {db:db,auth:{currentUser:{uid:uid()}},supabase:supabaseApi};})();}
+    if(!readyPromise){readyPromise=(async function(){var c=cfg(); supabaseApi={url:c.url, anonKey:c.anonKey}; var existing=storedSession();if(existing&&existing.refresh_token&&Number(existing.expires_at||0)*1000<=Date.now()+60000&&navigator.onLine!==false){try{await refreshSession(existing);}catch(e){if(Number(e&&e.status)===400||Number(e&&e.status)===401)clearSession();else backupSession(existing);}} var db=new Db(); installCompat(db); lastOkMs=Date.now(); lastError=''; return {db:db,auth:{currentUser:{uid:uid()}},supabase:supabaseApi};})();}
     try{return await readyPromise;}catch(e){readyPromise=null;lastError=e&&e.message?e.message:String(e||'Supabase hata');throw e;}
   }
   async function health(){var r=await ready();lastOkMs=Date.now();lastError='';return r;}
@@ -251,12 +264,16 @@
     for(var attempt=0;attempt<2;attempt++){try{res=await edgeOnce(url,token,payload);break}catch(e){lastError=e;if(attempt===0&&navigator.onLine!==false){await delay(650);continue}throw new Error(/abort/i.test(String(e&&e.name||''))?'Sunucu bağlantısı zaman aşımına uğradı.':'Sunucuya bağlanılamadı. İnternet bağlantısını kontrol edip tekrar deneyin.')}}
     if(!res)throw lastError||new Error('Sunucuya bağlanılamadı.');
     var text=await res.text(), out=safeJson(text,{});
+    if((res.status===401||res.status===403) && storedSession()&&storedSession().refresh_token&&navigator.onLine!==false){
+      try{var ns=await refreshSession(storedSession());token=clean(ns&&ns.access_token);res=await edgeOnce(url,token,payload);text=await res.text();out=safeJson(text,{})}catch(re){lastError=re}
+    }
     if(!res.ok || !out || out.ok===false){
-      if(out&&(out.access_required||out.google_required)){try{window.dispatchEvent(new CustomEvent('mesaha:google-auth-required',{detail:out}))}catch(e){}}
+      if(out&&(out.access_required||out.google_required)){var msg=String((out&&out.error)||(out&&out.reason)||'');if(!/jwt|token|expired|invalid/i.test(msg)){try{window.dispatchEvent(new CustomEvent('mesaha:google-auth-required',{detail:out}))}catch(e){}}}
       var err=new Error((out&&out.error)||(out&&out.reason)||('Edge hata '+res.status));err.status=res.status;err.payload=out;throw err;
     }
     return out;
   }
   var api={provider:'supabase-google-v548',version:VERSION,ready:ready,health:health,reset:reset,status:status,getAccessToken:getAccessToken,edge:edge,getStoredSession:storedSession,saveExternalSession:saveExternalSession,clearSession:clearSession,refreshSession:refreshSession,authUser:authUser,isAnonymous:isAnonymous,isGoogle:isGoogle,signOut:signOut,authFetch:authFetch,getDeviceId:getDeviceId,withTimeout:function(p,ms,label){return Promise.race([p,new Promise(function(_,rej){setTimeout(function(){rej(new Error((label||'İşlem')+' zaman aşımı'));},ms||15000);})]);}};
   window.mesahaSupabase=api; window.mesahaSupabaseV383=api; window.mesahaSupabaseV380=api; window.mesahaCloud=api;
+  window.addEventListener('online',function(){var s=storedSession();if(!s||!s.refresh_token)return;readyPromise=null;refreshSession(s).then(function(ns){try{window.dispatchEvent(new CustomEvent('mesaha:auth-session-restored',{detail:{userId:ns&&ns.user&&ns.user.id}}))}catch(e){}}).catch(function(e){if(Number(e&&e.status)===400||Number(e&&e.status)===401)clearSession();});},{passive:true});
 })();
