@@ -39,3 +39,6 @@
 .avatar.user-photo-avatar{object-fit:cover;display:block;background:#fff;border-color:#dbeafe;box-shadow:0 8px 22px rgba(37,99,235,.12)}
 .google-avatar{object-fit:cover;overflow:hidden}
 .google-access-main img.google-avatar{display:block;background:#fff;border-color:#dbeafe;box-shadow:0 4px 12px rgba(37,99,235,.10)}
+
+/* Suite V5 */
+.app-user-badge{display:inline-flex;align-items:center;padding:3px 7px;border-radius:999px;font-size:10px;font-weight:900;vertical-align:middle}.app-user-badge.mesaha{background:#e7f5eb;color:#17633d}.app-user-badge.istif{background:#fff0d7;color:#865615}.app-user-badge.suite{background:#e8eefc;color:#304d94}.suite-admin-home{position:fixed;right:14px;bottom:84px;z-index:30;text-decoration:none;background:#174d35;color:#fff;padding:11px 14px;border-radius:15px;font-weight:850;box-shadow:0 12px 28px rgba(15,55,37,.24)}

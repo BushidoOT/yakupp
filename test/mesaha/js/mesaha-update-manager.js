@@ -1,7 +1,13 @@
 /* Mesaha İO — merkezi sürüm kimlikli atomik PWA güncelleme yöneticisi */
 (function(){
   'use strict';
-  var previous=window.MesahaUpdateV527;
+  if(window.MESAHA_SUITE_MODE){
+    function suiteWorker(){return navigator.serviceWorker&&navigator.serviceWorker.getRegistration('../')}
+    async function suiteRepair(){var reg=await navigator.serviceWorker.register('../service-worker.js?v=6',{scope:'../',updateViaCache:'none'});await navigator.serviceWorker.ready;try{(reg.active||navigator.serviceWorker.controller).postMessage({type:'CACHE_ALL'})}catch(e){}return{ok:true,repaired:true,preserved:true,ready:true,build:6,integrity:'suite'}}
+    var suiteApi={apiVersion:547,repair:suiteRepair,clearOldCaches:async function(){return[]},updateAndReload:async function(){location.href='../';return{ok:true,redirecting:true}},executeUpdatePage:suiteRepair,installLatest:suiteRepair,check:async function(){return{remote:{version:'suite-v6',build:6},newer:false,unavailable:!navigator.onLine}},fetchRemote:async function(){return{version:'suite-v6',build:6}},flushData:async function(){},workerStatus:async function(){return{ready:true,build:6,integrity:'suite',criticalCount:99}},verifiedStatus:function(st){return!!(st&&st.ready)}};
+    window.MesahaUpdateV627=suiteApi;window.MesahaUpdateV637=suiteApi;return;
+  }
+  var previous=window.MesahaUpdateV627;
   if(previous&&Number(previous.apiVersion||0)>=546)return;
   var API_VERSION=546;
   var localInfo=window.MESAHA_VERSION||{};
@@ -18,7 +24,7 @@
   function buildOf(r){return Number(r&&((r.build||r.latestBuild))||localBuild)||localBuild}
   function expectedCache(r){return String(r&&r.cacheName||localInfo.cacheName||'')}
 
-  async function flushData(){try{if(window.MesahaStorageV527&&window.MesahaStorageV527.flush)await window.MesahaStorageV527.flush()}catch(e){}}
+  async function flushData(){try{if(window.MesahaStorageV627&&window.MesahaStorageV627.flush)await window.MesahaStorageV627.flush()}catch(e){}}
   async function fetchRemote(o){
     o=o||{};
     if(window.MesahaVersion&&window.MesahaVersion.fetchRemote)return await window.MesahaVersion.fetchRemote(o);
@@ -84,6 +90,6 @@
   async function check(){var r=await fetchRemote(),unavailable=!!(r&&r._localFallback),identityMismatch=!unavailable&&!!integrityOf(r)&&integrityOf(r)!==localIntegrity,newer=!unavailable&&((window.MesahaVersion&&window.MesahaVersion.isNewer?window.MesahaVersion.isNewer(r):buildOf(r)>localBuild)||identityMismatch);return{remote:r,newer:!!newer,identityMismatch:!!identityMismatch,unavailable:unavailable,error:r&&r._remoteError||''}}
 
   var api={apiVersion:API_VERSION,repair:repair,clearOldCaches:clearOldCaches,updateAndReload:updateAndReload,executeUpdatePage:executeUpdatePage,installLatest:installLatest,check:check,fetchRemote:fetchRemote,flushData:flushData,workerStatus:workerStatus,verifiedStatus:verifiedStatus};
-  window.MesahaUpdateV527=api;window.MesahaUpdateV537=api;
+  window.MesahaUpdateV627=api;window.MesahaUpdateV637=api;
   if(window.__mesahaSafeResetRequested)setTimeout(function(){repair().then(function(){location.replace('./index.html?repaired='+Date.now())}).catch(function(){location.replace('./index.html?repaired='+Date.now())})},40);
 })();

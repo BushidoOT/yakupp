@@ -12,7 +12,7 @@
   const $ = (id) => document.getElementById(id);
   const state = {
     page: 'users', range: 'day', blockView: 'user_key', accessStatus: 'pending',
-    profiles: [], usage: [], daily: [], events: [], logs: [], audit: [], blocks: [], backups: [], users: [], userAccess: [], userAuthEvents: [], seflikFolders: [], seflikMembers: [],
+    profiles: [], usage: [], daily: [], events: [], logs: [], audit: [], blocks: [], backups: [], users: [], userAccess: [], userAuthEvents: [], seflikFolders: [], seflikMembers: [], seflikDivisions: [],
     summary: {}, hiddenBackupIds: new Set(), loading: false, errors: {}
   };
   window.MESAHA_ADMIN_LIGHT_STATE = state;
@@ -327,7 +327,7 @@
       state.daily = arr(first(data.daily_usage, data.dailyUsage));
       state.events = arr(data.events); state.logs = arr(data.logs); state.audit = arr(first(data.admin_audit_logs,data.adminAuditLogs));
       state.userAccess = arr(first(data.user_access,data.userAccess)); state.userAuthEvents = arr(first(data.user_auth_events,data.userAuthEvents));
-      state.seflikFolders = arr(first(data.seflik_folders,data.seflikFolders)); state.seflikMembers = arr(first(data.seflik_members,data.seflikMembers));
+      state.seflikFolders = arr(first(data.seflik_folders,data.seflikFolders)); state.seflikMembers = arr(first(data.seflik_members,data.seflikMembers)); state.seflikDivisions = arr(first(data.seflik_divisions,data.seflikDivisions));
       state.blocks = [...arr(data.blocks), ...arr(data.security_blocks)].map(mapBlock).filter((b, i, all) => b.type && b.value && all.findIndex((x) => x.type === b.type && x.value === b.value) === i);
       state.summary = obj(data.summary); collectHiddenFromLogs();
       const driveBackups = await loadDriveBackups();
@@ -429,10 +429,16 @@
     $('metricUsers').textContent = fmtInt(state.users.length);
     $('metricToday').textContent = fmtInt(state.users.filter(seenToday).length);
     $('metricBackups').textContent = fmtInt(state.backups.length);
+    if($('metricMesaha')) $('metricMesaha').textContent=fmtInt(state.users.filter((u)=>appKind(u)==='mesaha').length);
+    if($('metricIstif')) $('metricIstif').textContent=fmtInt(state.users.filter((u)=>appKind(u)==='istif').length);
+    if($('metricSuite')) $('metricSuite').textContent=fmtInt(state.users.filter((u)=>appKind(u)==='suite').length);
     $('metricCount').textContent = fmtInt(totalCount);
     $('metricVolume').textContent = fmtM3(totalVolume);
     $('userCountBadge').textContent = `${fmtInt(state.users.length)} kullanıcı`;
   }
+
+  function appKind(user){const raw=obj(user&&user.raw),v=lower(first(user&&user.version,raw.app_version,obj(raw.payload).appVersion));let hay='';try{hay=lower(JSON.stringify(raw))}catch{}if(v.includes('istif')||hay.includes('\"appid\":\"istif\"')||hay.includes('istif io'))return'istif';if(v.includes('suite')||hay.includes('\"appid\":\"suite\"')||hay.includes('mesaha suite'))return'suite';return'mesaha'}
+function appLabel(user){return appKind(user)==='istif'?'İstif İO':appKind(user)==='suite'?'Suite':'Mesaha İO'}
 
   function filteredUsers() {
     const q = lower($('userSearch').value), filter = $('userFilter').value;
@@ -440,7 +446,8 @@
       if (filter === 'today' && !seenToday(user)) return false;
       if (filter === 'online' && !onlineNow(user)) return false;
       if (filter === 'blocked' && !isBlockedUser(user)) return false;
-      return !q || [user.name,user.seflik,user.ip,user.deviceId,user.platform,user.browser,user.version].join(' ').toLocaleLowerCase('tr-TR').includes(q);
+      if (['mesaha','istif','suite'].includes(filter) && appKind(user) !== filter) return false;
+      return !q || [user.name,user.seflik,user.ip,user.deviceId,user.platform,user.browser,user.version,appLabel(user)].join(' ').toLocaleLowerCase('tr-TR').includes(q);
     });
   }
   function renderUsers() {
@@ -449,15 +456,16 @@
       const globalIndex = state.users.indexOf(user), blocked = isBlockedUser(user), backups = relatedBackups(user).length, google = googleInfoForUser(user);
       const googleBadge = google ? `<span class="google-user-badge" title="${escapeHtml(google.email)}" aria-label="Google ile doğrulandı"><span class="google-g">G</span><b>Google</b></span>` : '';
       const terminal = terminalInfoForUser(user);
+      const appBadge = `<span class="app-user-badge ${appKind(user)}">${appLabel(user)}</span>`;
       const terminalBadge = terminal ? `<span class="terminal-user-badge" title="${escapeHtml(terminal.title)}" aria-label="Terminal kodu ile eşleşti"><span class="terminal-g">T</span><b>Terminal kodlu</b></span>` : '';
       return `<article class="user-card ${google ? 'is-google-user' : ''} ${terminal ? 'is-terminal-user' : ''}">
-        <div class="user-head">${avatarHtml(user)}<div class="user-title"><h3>${escapeHtml(user.name)} ${googleBadge} ${terminalBadge}</h3><p>${escapeHtml(user.seflik)} • son giriş ${escapeHtml(fmtDate(user.lastSeen))}</p></div><span class="status-pill">${blocked ? 'Engelli' : onlineNow(user) ? 'Online' : 'Aktif'}</span></div>
+        <div class="user-head">${avatarHtml(user)}<div class="user-title"><h3>${escapeHtml(user.name)} ${googleBadge} ${terminalBadge} ${appBadge}</h3><p>${escapeHtml(user.seflik)} • son giriş ${escapeHtml(fmtDate(user.lastSeen))}</p></div><span class="status-pill">${blocked ? 'Engelli' : onlineNow(user) ? 'Online' : 'Aktif'}</span></div>
         <div class="user-data">
           <div class="data-cell"><small>IP adresi</small><b class="ip">${escapeHtml(user.ip || '-')}</b></div>
           <div class="data-cell"><small>Cihaz</small><b>${escapeHtml(user.deviceId || '-')}</b></div>
           <div class="data-cell"><small>Platform</small><b>${escapeHtml(user.platform || '-')}</b></div>
           <div class="data-cell"><small>Tarayıcı</small><b>${escapeHtml(user.browser || '-')}</b></div>
-          <div class="data-cell"><small>Kullandığı sürüm</small><b>${escapeHtml(user.version || 'Sürüm bekleniyor')}</b></div>
+          <div class="data-cell"><small>Uygulama</small><b>${escapeHtml(appLabel(user))}</b></div><div class="data-cell"><small>Kullandığı sürüm</small><b>${escapeHtml(user.version || 'Sürüm bekleniyor')}</b></div>
           <div class="data-cell"><small>Drive yedek</small><b>${fmtInt(backups)}</b></div><div class="data-cell"><small>Giriş tipi</small><b>${terminal ? 'Terminal kodlu' : google ? 'Google' : 'Yerel'}</b></div>
         </div>
         <div class="user-actions"><button class="button info" data-action="detail" data-user-index="${globalIndex}" type="button">Detay</button><button class="button warning" data-action="block" data-user-index="${globalIndex}" type="button">Engelle</button><button class="button danger" data-action="delete-user" data-user-index="${globalIndex}" type="button">Kullanıcıyı sil</button></div>
@@ -580,8 +588,8 @@
     if(badge)badge.textContent=`${fmtInt(folders.length)} şeflik`;
     if(!folders.length){host.innerHTML='<div class="empty-state">Kurulu şeflik yok.</div>';return}
     host.innerHTML=folders.map((f)=>{
-      const key=clean(f.seflik_key), members=state.seflikMembers.map(obj).filter((m)=>clean(m.seflik_key)===key&&clean(m.status||'active')==='active').sort((a,b)=>clean(a.role)==='owner'?-1:clean(b.role)==='owner'?1:clean(a.name).localeCompare(clean(b.name),'tr'));
-      return `<article class="seflik-admin-card"><div class="seflik-admin-head"><div><h4>${escapeHtml(f.seflik||'-')}</h4><p>Kurucu: ${escapeHtml(first(f.created_by_name,'-'))} • ${escapeHtml(fmtDate(f.created_at))}</p></div><span class="counter-badge">${fmtInt(members.length)} üye</span></div><div class="seflik-admin-members">${members.length?members.map((m)=>`<div class="seflik-admin-member">${memberAvatar(m)}<div><b>${escapeHtml(first(m.name,'-'))}</b><small>${escapeHtml((clean(m.role)==='owner'?'Kurucu':'Ormancı')+(m.email?' • '+m.email:''))}</small></div></div>`).join(''):'<div class="empty-state small">Üye yok</div>'}</div></article>`;
+      const key=clean(f.seflik_key), members=state.seflikMembers.map(obj).filter((m)=>clean(m.seflik_key)===key&&clean(m.status||'active')==='active').sort((a,b)=>clean(a.role)==='owner'?-1:clean(b.role)==='owner'?1:clean(a.name).localeCompare(clean(b.name),'tr')), divisions=state.seflikDivisions.map(obj).filter((d)=>clean(d.seflik_key)===key&&clean(d.status||'open')!=='deleted');
+      return `<article class="seflik-admin-card"><div class="seflik-admin-head"><div><h4>${escapeHtml(f.seflik||'-')}</h4><p>Kurucu: ${escapeHtml(first(f.created_by_name,'-'))} • ${escapeHtml(fmtDate(f.created_at))}</p></div><span class="counter-badge">${fmtInt(members.length)} üye • ${fmtInt(divisions.length)} bölme</span></div><div class="seflik-admin-members">${members.length?members.map((m)=>`<div class="seflik-admin-member">${memberAvatar(m)}<div><b>${escapeHtml(first(m.name,'-'))}</b><small>${escapeHtml((clean(m.role)==='owner'?'Kurucu':'Ormancı')+(m.email?' • '+m.email:''))}</small></div></div>`).join(''):'<div class="empty-state small">Üye yok</div>'}</div></article>`;
     }).join('');
   }
   function renderAll(){renderUsers();renderStats();renderBackups();renderBlocks();renderSecurityLogs();renderGoogleAccess();renderSeflikAdmin();renderSummary()}

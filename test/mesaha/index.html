@@ -17,6 +17,7 @@
   try{var q=new URLSearchParams(location.search);window.__mesahaSafeResetRequested=(q.get('reset')==='1'||q.get('clear')==='1');}catch(e){window.__mesahaSafeResetRequested=false;}
 })();
 </script>
+<script>window.MESAHA_SUITE_MODE=true;document.documentElement.setAttribute('data-suite-managed','1');</script>
 <script src="./js/version.js"></script>
 <script>try{ if(window.MesahaVersion&&window.MesahaVersion.applyToDocument) window.MesahaVersion.applyToDocument(document); }catch(e){}</script>
 <script src="./js/mesaha-early-optimizer.js"></script>
@@ -412,7 +413,10 @@ body.mesaha-keyboard-open #saveBtn, body.mesaha-keyboard-open .save-btn{position
 .seflik-folder-mesahalar-v574{order:2}
 @media(max-width:720px){.seflik-folder-hero-head{align-items:flex-start!important}.seflik-folder-hero-actions-v574{width:100%;justify-content:stretch}.seflik-folder-hero-actions-v574 .seflik-folder-badge{flex:0 0 auto}.seflik-folder-sync-primary-v574{flex:1;min-width:190px}}
 </style>
-</head>
+<style id="mesaha-suite-managed-v5">
+html[data-suite-managed="1"] #seflikFolderView .seflik-create-row-v529,html[data-suite-managed="1"] #seflikFolderView .seflik-folder-hint-v529,html[data-suite-managed="1"] [data-seflik-delete],html[data-suite-managed="1"] #seflikCreateNameV564,html[data-suite-managed="1"] #seflikCreateBtnV564,html[data-suite-managed="1"] #seflikDeleteBtnV564,html[data-suite-managed="1"] #seflikUserSearchV564,html[data-suite-managed="1"] #seflikUserSearchBtnV564,html[data-suite-managed="1"] .seflik-suggest-hint-v565,html[data-suite-managed="1"] #seflikSearchResultsV564{display:none!important}
+html[data-suite-managed="1"] .suite-managed-select-v5{width:100%;min-height:46px;border:1px solid #cbdad1;border-radius:13px;background:#fff;padding:0 12px;font:inherit;font-weight:750;color:#173e2b}html[data-suite-managed="1"] .suite-managed-note-v5{padding:11px 13px;border-radius:13px;background:#eef7f1;color:#23543b;font-size:13px;margin:8px 0}html[data-suite-managed="1"] .suite-home-button{z-index:99998}
+</style></head>
 <body>
 <div class="startup" id="startup">
 <div class="startup-card startup-card-v311">
@@ -562,14 +566,12 @@ body.mesaha-keyboard-open #saveBtn, body.mesaha-keyboard-open .save-btn{position
 </section>
 <section class="card seflik-folder-mesahalar-v574"><div class="seflik-folder-list-head"><h2>Şeflik Mesahaları</h2><small id="seflikFolderRemoteMetaV528">Henüz ortak kayıt yok</small></div><div class="seflik-folder-list" id="seflikFolderListV528"></div></section>
 <section class="card seflik-folder-control">
-<div class="section-head"><h2>Bölme Yönetimi</h2><span id="seflikFolderIdentityV528">Şeflik seçilmedi</span></div>
-<div class="seflik-create-row-v529"><label>Yeni Bölme Numarası<input autocomplete="off" id="seflikFolderNewBolmeV529" inputmode="text" placeholder="Örn. 43"/></label><button class="btn primary" id="seflikFolderCreateV529" type="button">＋ Bölme Oluştur</button></div>
-<p class="seflik-folder-hint-v529">Yalnızca burada oluşturulan açık bölmelere senkronizasyon ve gönderim yapılabilir.</p>
-<div class="seflik-folder-divider-v529"></div>
-<div class="section-head"><h2>Seçili Bölmeye Gönder</h2><span>Açık bölmeler</span></div>
+<div class="section-head"><h2>Bölme Seçimi</h2><span id="seflikFolderIdentityV528">Şeflik seçilmedi</span></div>
+<p class="suite-managed-note-v5">Bölme oluşturma ve silme işlemleri yalnızca Mesaha Suite ana menüsünden yapılır. Burada Suite’ten offline indirilen bölmeyi seçip mesaha gönderebilirsiniz.</p>
+<div class="section-head"><h2>Seçili Bölmeye Gönder</h2><span>Suite bölmeleri</span></div>
 <div class="seflik-folder-control-grid"><label>Bölme Seç<select id="seflikFolderBolmeV528"><option value="">Açık bölme seçin</option></select></label><div class="seflik-folder-status" id="seflikFolderLocalPreviewV528">Önce açık bir bölme seçin</div></div>
 <div class="seflik-folder-actions"><button class="btn seflik-folder-send" id="seflikFolderSendV528" type="button">Şefliğe Gönder + Drive Yedekle</button></div>
-<div class="seflik-folder-progress" id="seflikFolderProgressV528"><span></span></div><div class="seflik-folder-status" id="seflikFolderStatusV528">Önce bölme oluşturun veya açık bir bölme seçin.</div>
+<div class="seflik-folder-progress" id="seflikFolderProgressV528"><span></span></div><div class="seflik-folder-status" id="seflikFolderStatusV528">Suite ana menüsünden offline indirilen bir bölme seçin.</div>
 </section>
 <section class="card seflik-folder-detail" id="seflikFolderDetailV528"><div class="seflik-folder-detail-head"><h2 id="seflikFolderDetailTitleV528">Bölme Kayıtları</h2><button class="btn soft" id="seflikFolderDetailCloseV528" type="button">Kapat</button></div><div class="seflik-folder-records" id="seflikFolderRecordsV528"></div></section>
 </div>
@@ -653,11 +655,11 @@ body.mesaha-keyboard-open #saveBtn, body.mesaha-keyboard-open .save-btn{position
 <h3>6. Şeflik Klasörü</h3>
 <ol>
 <li>Google hesabınızla giriş yapıp ana menüden <b>Şeflik Klasörü</b> bölümünü açınız.</li>
-<li>Şeflik daha önce kurulmadıysa <b>Şeflik Oluştur</b> ile kurunuz. Aynı şeflik yalnızca bir kez kurulabilir ve sadece kurucu şefliği silebilir.</li>
-<li>Kurucu, <b>Ormancı Ekle</b> alanına kullanıcının ad-soyadının en az 3 harfini yazarak önerilerden seçip şefliğe ekleyebilir. Ekli ormancıları yalnızca kurucu çıkarabilir.</li>
+<li>Şeflik oluşturma, silme, isim düzenleme ve ormancı yönetimi yalnızca <b>Mesaha Suite</b> ana menüsünden yapılır.</li>
+<li>Mesaha İO içinde yalnızca Suite’te tanımlanan şeflik, ormancı ve offline hazırlanmış bölmeler seçilir.</li>
 <li>Üstteki <b>Kayıtları Senkronize Et</b> düğmesi ortak klasördeki güncel bölme ve kayıtları getirir.</li>
 <li><b>Şeflik Mesahaları</b> bölümünde ortak bölmeler, kayıt adetleri ve toplam hacimler görüntülenir.</li>
-<li><b>Bölme Yönetimi</b> bölümünden ortak çalışılacak açık bölmeyi oluşturunuz. Yalnızca açık bölmelere veri gönderilebilir.</li>
+<li>Suite ana menüsünde bölmeyi oluşturup <b>Offline İndir</b> yaptıktan sonra bu ekrandaki seçim listesinden kullanınız.</li>
 <li>Ölçümler ekranındaki <b>Şefliğe Gönder</b> düğmesinden açık bölmeyi seçerek kayıtları ortak klasöre gönderiniz; gönderim sırasında Drive yedeği de alınır.</li>
 <li><b>Mesahaya Devam Et</b> seçilen bölmenin ortak kayıtlarını cihaza yükler. İşlemden önce mevcut yerel kayıtların değiştirileceği uyarısı gösterilir.</li>
 </ol>

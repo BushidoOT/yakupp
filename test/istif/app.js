@@ -1,6 +1,6 @@
 'use strict';
 
-const APP_VERSION = '0.3.4-suite-v4';
+const APP_VERSION = '0.3.4-suite-v6';
 const MAX_PHOTO_BYTES = 1024 * 1024;
 const DB_NAME = 'mesaha-istif-prototype';
 const DB_VERSION = 1;
@@ -15,7 +15,7 @@ const SUPABASE_URL = 'https://swrbpdpotmirnmtqnuba.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_G_ZFeUouDxg57Nne5pflfQ_cVGpdMbR';
 const EDGE_URL = `${SUPABASE_URL}/functions/v1/smooth-function`;
 const DRIVE_BRIDGE_URL = `${SUPABASE_URL}/functions/v1/istif-drive`;
-const DRIVE_REDIRECT_URI = 'https://bushidoot.github.io/yakupp/istif/';
+const DRIVE_REDIRECT_URI = new URL('./', location.href).href;
 const SHARED_SESSION_KEY = 'mesaha_supabase_v500_session';
 const SHARED_SESSION_BACKUP_KEY = 'mesaha_supabase_v569_session_backup';
 const SHARED_PANEL_KEY = 'mesaha_panel_user_v316';
@@ -203,7 +203,7 @@ function icon(name, size = 24, extraClass = '') {
     drive: '<path d="M7.7 3h8.6l4.3 7.5-4.3 7.5H7.7L3.4 10.5z"/><path d="m7.7 3 4.3 7.5h8.6M3.4 10.5H12L7.7 18"/>',
     link: '<path d="M10 13a5 5 0 0 0 7.07.07l2-2a5 5 0 0 0-7.07-7.07l-1.15 1.15"/><path d="M14 11a5 5 0 0 0-7.07-.07l-2 2A5 5 0 0 0 12 20l1.15-1.15"/>',
     userPlus: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M16 11h6"/>',
-    external: '<path d="M14 3h7v7M10 14 21 3"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5"/>',
+    external: '<path d="M14 3h7v7M10 14 21 3"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5"/>',
     wifiOff: '<path d="m2 2 20 20M8.5 8.5A10 10 0 0 1 19 10M5 10a10 10 0 0 0-2 2M8 15a6 6 0 0 1 7.5-.8M12 20h.01"/>',
   };
   return `<svg class="svg-icon ${extraClass}" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[name] || paths.info}</svg>`;
@@ -872,7 +872,7 @@ function renderHome() {
     <section class="foresters-card card">
       <div class="foresters-head"><span class="round-icon">${icon('users', 23)}</span><div><small>Ormancılar</small><strong>${state.ormancilar.length} kayıtlı ormancı</strong><span>Seçili: ${esc(displayOrmanci())}</span></div></div>
       ${foresterSummaryHtml()}
-      <div class="forester-actions"><button class="btn" data-action="pick-ormanci">${icon('check', 18)} Ormancı Seç</button><button class="btn primary" data-action="add-ormanci">${icon('userPlus', 18)} Ormancı Yönet</button></div>
+      <div class="forester-actions"><button class="btn" data-action="pick-ormanci">${icon('check', 18)} Ormancı Seç</button></div>
     </section>
     <div class="section-title"><h2>İşlemler</h2></div>
     <section class="actions-grid">
@@ -1157,7 +1157,7 @@ function renderSettings() {
       <div class="shared-card-title"><span>${icon('doc', 22)}</span><div><b>Kurum ve Evrak Bilgileri</b><small>Bu bilgiler örnek olarak gelmez; kullanıcı tarafından bir kez kaydedilir.</small></div></div>
       <label>Bölge Müdürlüğü<input name="bolgeMudurlugu" value="${esc(state.settings.bolgeMudurlugu || '')}" placeholder="Bölge Müdürlüğü gir" autocomplete="organization"></label>
       <label>İşletme Müdürlüğü<input name="isletmeMudurlugu" value="${esc(state.settings.isletmeMudurlugu || '')}" placeholder="İşletme Müdürlüğü gir"></label>
-      <label>Şeflik<input name="seflik" value="${esc(state.settings.seflik || '')}" placeholder="Şeflik gir veya listeden seç" list="sharedSeflikOptions"><datalist id="sharedSeflikOptions">${state.seflikler.map((item) => `<option value="${esc(item.name)}"></option>`).join('')}</datalist></label>
+      <label>Şeflik<select name="seflik">${state.seflikler.map((item) => `<option value="${esc(item.name)}" ${item.name === state.settings.seflik ? 'selected' : ''}>${esc(item.name)}${item.role === 'owner' ? ' • kurucu' : ' • üye'}</option>`).join('')}</select></label><p class="settings-hint">Şeflik, ormancı ve bölme düzenlemeleri yalnızca Mesaha Suite ana menüsünden yapılır.</p>
       <label>Rampa / Satış İstif Yeri<input name="satisIstifYeri" value="${esc(state.settings.satisIstifYeri || '')}" placeholder="Rampa veya depo adı gir"></label>
       <p class="settings-hint">Orijinal boş evrak şablonu esas alınır. Doldurulmuş dosya yalnızca alanların nereye yazılacağını gösteren örnektir.</p>
       <button class="btn primary wide" type="submit">${icon('save', 20)} Bilgileri Kaydet</button>
@@ -1182,7 +1182,7 @@ function bindDynamic() {
   app.querySelector('[data-action="account"]')?.addEventListener('click', showAccountDialog);
   app.querySelector('[data-action="pick-seflik"]')?.addEventListener('click', showSeflikPicker);
   app.querySelector('[data-action="pick-ormanci"]')?.addEventListener('click', showOrmanciPicker);
-  app.querySelector('[data-action="add-ormanci"]')?.addEventListener('click', showAddOrmanciDialog);
+  // Ormancı yönetimi yalnızca Suite ana menüsündedir.
   app.querySelector('[data-action="connect-drive"]')?.addEventListener('click', beginDriveConnection);
   app.querySelector('[data-action="disconnect-drive"]')?.addEventListener('click', disconnectDrive);
   app.querySelector('[data-action="refresh-shared"]')?.addEventListener('click', () => syncSharedContext({ manual: true }));
@@ -1249,12 +1249,13 @@ async function saveInstitutionSettings(event) {
     return;
   }
   const folder = state.seflikler.find((item) => sameSeflikLabel(item.name, seflik));
+  if (!folder) { toast('Şeflik yalnızca Mesaha Suite listesinden seçilebilir.', 'bad'); return; }
   state.settings = {
     ...state.settings,
     bolgeMudurlugu,
     isletmeMudurlugu,
-    seflik: folder?.name || seflik,
-    seflikKey: folder?.key || stableKey(seflik),
+    seflik: folder.name,
+    seflikKey: folder.key,
     satisIstifYeri,
     setupComplete: true,
   };
@@ -1604,7 +1605,7 @@ function showSeflikPicker() {
 function showOrmanciPicker() {
   refreshCurrentMembers();
   if (!state.ormancilar.length) {
-    showDialog(`<h3>Ormancı bulunamadı</h3><p>Bu şefliğe eklenen ormancılar Mesaha İO Şeflik Klasörü’nden otomatik gelir.</p><div class="dialog-actions"><button class="btn" data-dialog-close>Kapat</button><button class="btn primary" id="refreshMembersDialog">Güncelle</button></div>`);
+    showDialog(`<h3>Ormancı bulunamadı</h3><p>Bu şefliğe Suite ana menüsünden eklenen ormancılar otomatik gelir.</p><div class="dialog-actions"><button class="btn" data-dialog-close>Kapat</button><button class="btn primary" id="refreshMembersDialog">Güncelle</button></div>`);
     document.getElementById('refreshMembersDialog').onclick = () => { closeDialog(); syncSharedContext({ manual: true }); };
     return;
   }
@@ -1621,28 +1622,7 @@ function showOrmanciPicker() {
   });
 }
 
-function showAddOrmanciDialog() {
-  if (!state.settings.seflik) {
-    toast('Önce şeflik seçin.', 'bad');
-    return;
-  }
-  if (!hasSharedCloudIdentity()) {
-    showDialog('<h3>Google girişi gerekli</h3><p>Ormancı eklemek için kişinin Mesaha İO’da Google ile giriş yapmış ve onaylı kullanıcı olması gerekir.</p><div class="dialog-actions"><button class="btn" data-dialog-close>Kapat</button><a class="btn primary" href="../">Mesaha İO’da Giriş Yap</a></div>');
-    return;
-  }
-  refreshCurrentMembers();
-  const existingHtml = state.ormancilar.length ? `<div class="existing-foresters"><b>Ekli Ormancılar</b>${state.ormancilar.map((item, index) => { const role = clean(item.role).toLocaleLowerCase('tr-TR'); const removable = currentFolderIsOwner() && !item.isSelf && !['owner','creator','kurucu'].includes(role); return `<div class="existing-forester-row"><span class="picker-avatar">${item.avatarUrl ? `<img src="${esc(item.avatarUrl)}" alt="">` : icon('user', 18)}</span><span class="existing-forester-copy"><strong>${esc(item.name)}</strong><small>${esc(item.email || (item.isSelf ? 'Kendi hesabınız' : item.role === 'owner' ? 'Şeflik kurucusu' : item.custom ? 'Ekli ormancı' : 'Mesaha İO kullanıcısı'))}</small></span>${removable ? `<button class="btn danger-soft small forester-remove-btn" type="button" data-remove-forester="${index}">Çıkar</button>` : ''}</div>`; }).join('')}</div>` : `<div class="existing-foresters"><b>Ekli Ormancılar</b><span>Henüz ortak ormancı görünmüyor. Kullanıcıları yenile deyin.</span></div>`;
-  showDialog(`<h3>Ormancı Ekle / Çıkar</h3><p>Yalnızca Mesaha İO’da Google ile giriş yapmış ve onaylı kullanıcılar eklenebilir. En az 3 harf yazınca öneriler çıkar.</p><label class="dialog-label">Kullanıcı Ara</label><input id="foresterSearchInput" class="dialog-input" autocomplete="off" placeholder="Ad, soyad veya e-posta"><div id="foresterSuggestBox" class="suggest-box"><span>En az 3 harf yazın.</span></div>${existingHtml}<div class="dialog-actions"><button class="btn" data-dialog-close>Kapat</button><button class="btn" id="refreshUserSuggestions">Kullanıcıları Yenile</button></div>`);
-  const input = document.getElementById('foresterSearchInput');
-  const box = document.getElementById('foresterSuggestBox');
-  const run = () => searchForesterSuggestions(input?.value || '', box);
-  input?.addEventListener('input', debounce(run, 280));
-  document.getElementById('refreshUserSuggestions').onclick = run;
-  dialogContent.querySelectorAll('[data-remove-forester]').forEach((button) => {
-    button.onclick = () => removeForesterUser(state.ormancilar[Number(button.dataset.removeForester)]);
-  });
-  input?.focus();
-}
+function showAddOrmanciDialog(){showDialog('<h3>Suite üzerinden yönetin</h3><p>Ormancı ekleme ve çıkarma işlemleri İstif İO içinden kaldırıldı. Mesaha Suite ana menüsündeki Ormancı Yönetimi bölümünü kullanın.</p><div class="dialog-actions"><button class="btn" data-dialog-close>Kapat</button><a class="btn primary" href="../">Suite Ana Menüsü</a></div>')}
 
 function debounce(fn, ms = 250) {
   let timer = 0;
@@ -1652,109 +1632,11 @@ function debounce(fn, ms = 250) {
   };
 }
 
-async function searchForesterSuggestions(query, box) {
-  const q = clean(query);
-  if (!box) return;
-  if (q.length < 3) {
-    box.innerHTML = '<span>En az 3 harf yazın.</span>';
-    return;
-  }
-  const seq = ++state.foresterSearchSeq;
-  box.innerHTML = '<span>Kullanıcılar aranıyor…</span>';
-  try {
-    const out = await bridgeCall('user_search', { q, seflikKey: state.settings.seflikKey, seflik: state.settings.seflik });
-    if (seq !== state.foresterSearchSeq) return;
-    const rawUsers = Array.isArray(out.users) ? out.users : [];
-    const seen = new Set();
-    const users = [];
-    for (const user of rawUsers) {
-      const key = clean(user.userId || user.user_id || user.email || stableKey(user.name));
-      if (!key || seen.has(key)) continue;
-      seen.add(key);
-      users.push(user);
-      if (users.length >= 10) break;
-    }
-    if (!users.length) {
-      box.innerHTML = '<span>Bu aramada Google onaylı kullanıcı bulunamadı.</span>';
-      return;
-    }
-    box.innerHTML = users.map((user, index) => {
-      const existing = state.ormancilar.some((item) =>
-        (clean(user.userId || user.user_id) && clean(item.userId || item.user_id) && clean(user.userId || user.user_id) === clean(item.userId || item.user_id)) ||
-        (clean(user.email) && clean(item.email) && clean(user.email).toLocaleLowerCase('tr-TR') === clean(item.email).toLocaleLowerCase('tr-TR'))
-      );
-      return `<button class="suggest-row ${existing ? 'already-added' : ''}" type="button" data-user-index="${index}"><span class="picker-avatar">${user.avatarUrl ? `<img src="${esc(user.avatarUrl)}" alt="">` : icon('user', 19)}</span><span><b>${esc(user.name)}</b><small>${esc(user.email || 'Google kullanıcısı')}</small></span><em class="suggest-add">${existing ? 'Ekli' : 'Ekle'}</em></button>`;
-    }).join('');
-    box.querySelectorAll('[data-user-index]').forEach((button) => {
-      button.onclick = () => addForesterUser(users[Number(button.dataset.userIndex)]);
-    });
-  } catch (error) {
-    box.innerHTML = `<span>Arama yapılamadı: ${esc(clean(error?.message || error))}</span>`;
-  }
-}
+async function searchForesterSuggestions(){return}
 
-async function addForesterUser(user) {
-  const key = state.settings.seflikKey || stableKey(state.settings.seflik);
-  const name = clean(user?.name);
-  user.userId = clean(user.userId || user.user_id);
-  if (!name) return toast('Kullanıcı adı bulunamadı.', 'bad');
-  refreshCurrentMembers();
-  const userKey = user.userId ? `uid:${user.userId}` : (user.email ? `email:${clean(user.email).toLocaleLowerCase('tr-TR')}` : `name:${stableKey(name)}`);
-  const existing = state.ormancilar.find((item) => foresterKey(item) === userKey || stableKey(item.name) === stableKey(name));
-  forgetRemovedForester(user);
-  try {
-    const out = await bridgeCall('forester_add', { seflikKey: key, seflik: state.settings.seflik, userId: user.userId, email: user.email, name });
-    const saved = normalizeForester(out.forester || user);
-    const savedKey = foresterKey(saved || user);
-    const list = Array.isArray(state.customForestersBySeflik[key]) ? state.customForestersBySeflik[key].filter((item) => foresterKey(normalizeForester(item)) !== savedKey && stableKey(item.name) !== stableKey(name)) : [];
-    if (saved) list.push({ ...saved, custom: true, pending: false });
-    state.customForestersBySeflik[key] = list;
-    state.settings.ormanci = saved?.name || name;
-    refreshCurrentMembers();
-    await saveSettings();
-    await saveSharedCache();
-    closeDialog();
-    render();
-    toast('Ormancı ortak listeye eklendi.', 'good');
-  } catch (error) {
-    toast(clean(error?.message || error), 'bad');
-  }
-}
+async function addForesterUser(){throw new Error('Ormancı yönetimi yalnızca Mesaha Suite üzerinden yapılır.')}
 
-async function removeForesterUser(member) {
-  if (!member) return;
-  const role = clean(member.role).toLocaleLowerCase('tr-TR');
-  if (!currentFolderIsOwner()) return toast('Ormancı çıkarmayı yalnızca şeflik kurucusu yapabilir.', 'bad');
-  if (member.isSelf || ['owner', 'creator', 'kurucu'].includes(role)) return toast('Kurucu kullanıcı çıkarılamaz.', 'bad');
-  const userId = clean(member.userId || member.user_id || member.member_user_id || member.forester_user_id);
-  const email = clean(member.email || member.user_email || member.member_email);
-  const name = clean(member.name);
-  if (!confirm(`${name || 'Bu ormancı'} listeden çıkarılsın mı?`)) return;
-  try {
-    await bridgeCall('forester_remove', {
-      seflikKey: state.settings.seflikKey,
-      seflik: state.settings.seflik,
-      id: member.id,
-      userId,
-      email,
-      name,
-      custom: member.custom === true,
-    });
-    rememberRemovedForester(member);
-    removeForesterLocally(member);
-    try { await syncSharedContext({ manual: false }); } catch {}
-    removeForesterLocally(member);
-    if (state.settings.ormanci === member.name) state.settings.ormanci = '';
-    if (state.draft?.ormanci === member.name) state.draft.ormanci = '';
-    await saveSettings();
-    await saveSharedCache();
-    closeDialog();
-    render();
-    toast('Ormancı listeden çıkarıldı.', 'good');
-  } catch (error) {
-    toast(`Ormancı çıkarılamadı: ${clean(error?.message || error)}`, 'bad');
-  }
-}
+async function removeForesterUser(){throw new Error('Ormancı yönetimi yalnızca Mesaha Suite üzerinden yapılır.')}
 
 async function beginDriveConnection() {
   if (!(state.drive.isOwner || currentFolderIsOwner())) {
@@ -1977,6 +1859,7 @@ async function supabaseUpsertRecord(record) {
 }
 
 async function syncAll() {
+  setTimeout(pingAdminProfile, 2500);
   if (state.syncing) return;
   const pending = state.records.filter((record) => !record.isDemo && record.syncStatus !== 'synced');
   if (!pending.length) {
@@ -2290,13 +2173,15 @@ window.addEventListener('afterprint', () => {
   }
 });
 
+function istifDeviceId(){let id=localStorage.getItem('mesaha_istif_device_v5');if(!id){id='istif_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,10);localStorage.setItem('mesaha_istif_device_v5',id)}return id}
+async function pingAdminProfile(){if(!navigator.onLine||!hasSharedCloudIdentity()||!state.settings.seflik)return;try{await edgeCall('profile_ping_istif',{name:state.auth.name||displayOrmanci(),seflik:state.settings.seflik,bolmeNo:state.draft?.bolme||'',appVersion:'İstif İO '+APP_VERSION,avatarUrl:state.auth.avatarUrl,deviceId:istifDeviceId(),deviceInfo:{appId:'istif',appName:'İstif İO',platform:navigator.platform||'',browser:navigator.userAgent||'',suiteVersion:'V6'}})}catch{}}
 (async function init() {
   try {
     showBoot('Yükleniyor…', 'Şeflikler, ormancılar, istifler ve offline kayıtlar hazırlanıyor.');
     await loadData();
     await handleDriveOAuthCallback();
     render();
-    if ('serviceWorker' in navigator) navigator.serviceWorker.register('./service-worker.js').catch(() => {});
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('../service-worker.js?v=6',{scope:'../',updateViaCache:'none'}).catch(() => {});
     if (navigator.onLine && hasSharedCloudIdentity()) {
       showBoot('Yükleniyor…', 'Mesaha İO hesabı, şeflikler, ormancılar ve Drive durumu kontrol ediliyor.');
       const startupSync = Promise.allSettled([
@@ -2312,6 +2197,7 @@ window.addEventListener('afterprint', () => {
     if (!state.settings.setupComplete) state.view = 'settings';
     hideBoot();
     render();
+    pingAdminProfile();
   } catch (error) {
     hideBoot();
     app.innerHTML = `<div class="empty"><h2>Uygulama açılamadı</h2><p>${esc(error.message)}</p></div>`;

@@ -1291,6 +1291,23 @@ async function seflikFolderCreateSeflik(req: Request, body: JsonObj) {
   await insertEvent({ user_id: ctx.userId, ip_address: clean(ctx.ipInfo.ip) || null, user_key: ctx.userKey || null, name: clean(ctx.profile.name), seflik, event_type: 'seflik_folder_create_seflik', blocked: false, metadata: row });
   return json({ ok: true, folder: folderView(folder, mem, ctx) });
 }
+async function seflikFolderRenameSeflik(req: Request, body: JsonObj) {
+  const ctx: any = await approvedAccessContext(req, body);
+  if (ctx.response) return ctx.response;
+  const oldName = first(body.oldSeflik, body.old_seflik, body.seflik, body.folderSeflik).slice(0, 120);
+  const newName = first(body.newSeflik, body.new_seflik, body.newName, body.name).slice(0, 120);
+  const oldKey = stableFolderKey(oldName, 160), newKey = stableFolderKey(newName, 160);
+  if (!oldKey || !newKey || newName.length < 2) return json({ ok: false, error: 'Geçerli eski ve yeni şeflik adı gerekli' }, 400);
+  const folder = obj(await selectFirst(TABLES.seflikFolders, { seflik_key: oldKey }));
+  if (!folder.id || clean(folder.status || 'active') !== 'active') return json({ ok: false, error: 'Düzenlenecek şeflik bulunamadı' }, 404);
+  if (clean(folder.created_by_user_id) !== ctx.userId) return json({ ok: false, error: 'Şeflik ismini yalnızca kurucu değiştirebilir' }, 403);
+  const { data, error } = await admin.rpc('mesaha_suite_rename_seflik_v600', { p_old_key: oldKey, p_new_key: newKey, p_new_name: newName, p_user_id: ctx.userId });
+  if (error) return json({ ok: false, error: error.message }, 409);
+  const renamed = obj(await selectFirst(TABLES.seflikFolders, { seflik_key: newKey }));
+  const member = obj(await selectFirst(TABLES.seflikMembers, { seflik_key: newKey, user_id: ctx.userId }));
+  await insertEvent({ user_id: ctx.userId, ip_address: clean(ctx.ipInfo.ip) || null, user_key: ctx.userKey || null, name: clean(ctx.profile.name), seflik: newName, event_type: 'seflik_folder_rename_seflik', blocked: false, metadata: { old_name: oldName, old_key: oldKey, new_name: newName, new_key: newKey, rpc: data } });
+  return json({ ok: true, old_seflik: oldName, old_seflik_key: oldKey, seflik: newName, seflik_key: newKey, folder: folderView(renamed, member, ctx) });
+}
 async function seflikFolderDeleteSeflik(req: Request, body: JsonObj) {
   const ctx: any = await approvedAccessContext(req, body);
   if (ctx.response) return ctx.response;
@@ -1959,7 +1976,7 @@ async function adminUserAccessDecision(req: Request, body: JsonObj, status: "rej
 }
 async function adminListAll(body: JsonObj) {
   const limit = Math.min(Math.max(Number(body.limit || 2500) || 2500, 100), 5000);
-  const [profiles0, usage, backups, logs, daily, events, blocks, adminAuditRows, userAccessRows, userAuthEvents, seflikFoldersRows, seflikMembersRows] = await Promise.all([
+  const [profiles0, usage, backups, logs, daily, events, blocks, adminAuditRows, userAccessRows, userAuthEvents, seflikFoldersRows, seflikMembersRows, seflikDivisionsRows] = await Promise.all([
     selectRows(TABLES.profiles, { order: "last_seen_at", limit }),
     selectRows(TABLES.usageCurrent, { order: "last_seen_at", limit }),
     selectRows(TABLES.backupSlots, { order: "updated_at", limit }),
@@ -1972,6 +1989,7 @@ async function adminListAll(body: JsonObj) {
     selectRows(TABLES.userAuthEvents, { order: "created_at", limit: 1000 }),
     selectRows(TABLES.seflikFolders, { order: "updated_at", limit: 1000 }),
     selectRows(TABLES.seflikMembers, { order: "updated_at", limit: 5000 }),
+    selectRows(TABLES.seflikDivisions, { order: "updated_at", limit: 5000 }),
   ]);
 
   const profiles = enrichProfiles(
@@ -2005,6 +2023,8 @@ async function adminListAll(body: JsonObj) {
     seflikFolders: seflikFoldersRows.items,
     seflik_members: seflikMembersRows.items,
     seflikMembers: seflikMembersRows.items,
+    seflik_divisions: seflikDivisionsRows.items,
+    seflikDivisions: seflikDivisionsRows.items,
     summary: { ...summary, generatedAt: nowIso(), today: trDate() },
     errors: {
       profiles: profiles0.error || null,
@@ -2019,6 +2039,7 @@ async function adminListAll(body: JsonObj) {
       user_auth_events: userAuthEvents.error || null,
       seflik_folders: seflikFoldersRows.error || null,
       seflik_members: seflikMembersRows.error || null,
+      seflik_divisions: seflikDivisionsRows.error || null,
     },
   });
 }
@@ -2317,6 +2338,7 @@ serve(async (req: Request) => {
       if (action === "seflik_folder_list_my_sefliks") return await seflikFolderListMySefliks(req, body);
       if (action === "seflik_folder_ensure_active") return await seflikFolderEnsureActive(req, body);
       if (action === "seflik_folder_create_seflik") return await seflikFolderCreateSeflik(req, body);
+      if (action === "seflik_folder_rename_seflik") return await seflikFolderRenameSeflik(req, body);
       if (action === "seflik_folder_delete_seflik") return await seflikFolderDeleteSeflik(req, body);
       if (action === "seflik_folder_search_users") return await seflikFolderSearchUsers(req, body);
       if (action === "seflik_folder_add_member") return await seflikFolderAddMember(req, body);
