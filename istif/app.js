@@ -1,6 +1,6 @@
 'use strict';
 
-const APP_VERSION = '0.1.9';
+const APP_VERSION = '0.2.0';
 const MAX_PHOTO_BYTES = 1024 * 1024;
 const DB_NAME = 'mesaha-istif-prototype';
 const DB_VERSION = 1;
@@ -333,7 +333,7 @@ async function edgeCall(action, payload = {}, retried = false) {
       Authorization: `Bearer ${session.access_token}`,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ action, source: 'mesaha-istif-v019', ...payload }),
+    body: JSON.stringify({ action, source: 'mesaha-istif-v020', ...payload }),
   });
   const body = await response.json().catch(() => ({}));
   if ((response.status === 401 || response.status === 403) && !retried && readSharedSession()?.refresh_token) {
@@ -354,7 +354,7 @@ async function bridgeCall(action, payload = {}, retried = false) {
       Authorization: `Bearer ${session.access_token}`,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ action, source: 'mesaha-istif-v019', ...payload }),
+    body: JSON.stringify({ action, source: 'mesaha-istif-v020', ...payload }),
   });
   const body = await response.json().catch(() => ({}));
   if ((response.status === 401 || response.status === 403) && !retried && readSharedSession()?.refresh_token) {
@@ -1613,11 +1613,59 @@ async function previewDocuments() {
   document.getElementById('dialogPrint').onclick = () => { closeDialog(); printDocuments(); };
 }
 
+function printDocumentCss() {
+  return `@page{size:A4;margin:0}*{box-sizing:border-box}body{margin:0;background:#fff;color:#111;font-family:Arial,Helvetica,sans-serif}.print-toolbar{position:sticky;top:0;z-index:10;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 14px;background:#0f5f39;color:#fff}.print-toolbar button{border:0;border-radius:10px;background:#fff;color:#0f5f39;font-weight:800;padding:10px 14px}.print-page{width:210mm;min-height:297mm;margin:0 auto;background:#fff;page-break-after:always;padding:14mm;color:#111}.print-page:last-child{page-break-after:auto}.print-page h1{text-align:center;font-size:18pt;margin:0 0 5mm;color:#111}.print-page h2{font-size:14pt;margin:0 0 4mm;color:#111}.print-table{width:100%;border-collapse:collapse;font-size:10pt;color:#111}.print-table th,.print-table td{border:1px solid #333;padding:2.5mm;text-align:left;vertical-align:top}.photo-document-page{padding:10mm 12mm;display:flex;flex-direction:column}.photo-print-header{display:flex;justify-content:flex-start;align-items:flex-start;margin:0 0 5mm}.photo-print-meta{font-size:12pt;line-height:1.45;border:1px solid #111;padding:4mm 6mm;min-width:92mm;text-align:left;color:#111}.photo-print-meta div{margin:1mm 0}.photo-print-collage{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:3mm;flex:1;min-height:235mm}.photo-print-collage figure{margin:0;border:1px solid #111;position:relative;overflow:hidden;background:#f8f8f8;display:block}.photo-print-collage img{width:100%;height:100%;object-fit:cover;display:block}.photo-print-collage figcaption{position:absolute;left:2mm;bottom:2mm;background:rgba(255,255,255,.88);font-size:9pt;padding:1mm 2mm;color:#111}.photo-print-collage .print-placeholder{height:auto;width:auto;display:grid;place-items:center;color:#777;font-size:12pt}.print-placeholder{display:grid;place-items:center;color:#666;border:1px solid #333}.print-footer{margin-top:4mm;font-size:9pt;color:#555;text-align:right}.empty-print{padding:24px;font-size:16px}@media print{.print-toolbar{display:none!important}.print-page{margin:0;box-shadow:none}body{background:#fff}}`;
+}
+
+function buildPrintDocument(innerHtml) {
+  const content = clean(innerHtml) ? innerHtml : '<div class="empty-print">Yazdırılacak kayıt bulunamadı.</div>';
+  return `<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>İstif Alma Evrakı</title><style>${printDocumentCss()}</style></head><body><div class="print-toolbar"><strong>İstif Alma Evrakı</strong><button onclick="window.print()">PDF olarak kaydet / Yazdır</button></div>${content}<script>function waitImages(){return Promise.all(Array.from(document.images).map(function(img){if(img.complete)return Promise.resolve();return new Promise(function(resolve){img.onload=img.onerror=resolve;setTimeout(resolve,2200);});}));}window.addEventListener('load',function(){setTimeout(function(){waitImages().then(function(){setTimeout(function(){window.print();},300);});},450);});<\/script></body></html>`;
+}
+
+function waitFrame() {
+  return new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+}
+
+async function waitForPrintAssets(root) {
+  const images = Array.from(root.querySelectorAll('img'));
+  await Promise.all(images.map((img) => {
+    if (img.complete && img.naturalWidth !== 0) return Promise.resolve();
+    return new Promise((resolve) => {
+      const done = () => resolve();
+      img.onload = done;
+      img.onerror = done;
+      setTimeout(done, 2200);
+    });
+  }));
+  await waitFrame();
+}
+
 async function printDocuments() {
+  const rows = selectedForDocs();
+  if (!rows.length) {
+    toast('Yazdırılacak istif bulunamadı.', 'bad');
+    return;
+  }
+  const printWin = window.open('', '_blank');
+  if (printWin) {
+    printWin.document.open();
+    printWin.document.write('<!doctype html><html lang="tr"><head><meta charset="utf-8"><title>İstif Alma Evrakı</title><style>body{font-family:Arial,sans-serif;padding:24px;color:#0f5f39}b{display:block;margin-bottom:10px}</style></head><body><b>PDF hazırlanıyor…</b><span>Lütfen bekleyin.</span></body></html>');
+    printWin.document.close();
+  }
+  const html = await buildPrintHtml();
+  const fullDoc = buildPrintDocument(html);
+  if (printWin) {
+    printWin.document.open();
+    printWin.document.write(fullDoc);
+    printWin.document.close();
+    return;
+  }
   const area = document.getElementById('printArea');
-  area.innerHTML = await buildPrintHtml();
+  area.innerHTML = html || '<div class="print-page"><h1>Yazdırılacak kayıt yok</h1><p>Önce evraka eklenecek istifleri seçin.</p></div>';
   area.setAttribute('aria-hidden', 'false');
-  setTimeout(() => window.print(), 100);
+  document.body.classList.add('is-printing');
+  await waitForPrintAssets(area);
+  setTimeout(() => window.print(), 650);
 }
 
 document.querySelectorAll('[data-close-camera]').forEach((element) => { element.onclick = stopCamera; });
@@ -1640,7 +1688,14 @@ window.addEventListener('storage', (event) => {
     if (navigator.onLine) syncSharedContext();
   }
 });
-window.addEventListener('afterprint', () => { document.getElementById('printArea').innerHTML = ''; });
+window.addEventListener('afterprint', () => {
+  const area = document.getElementById('printArea');
+  document.body.classList.remove('is-printing');
+  if (area) {
+    area.innerHTML = '';
+    area.setAttribute('aria-hidden', 'true');
+  }
+});
 
 (async function init() {
   try {

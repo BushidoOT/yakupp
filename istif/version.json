@@ -1,6 +1,8 @@
 {
-  "version": "0.1.9",
+  "version": "0.2.0",
   "name": "Mesaha İO İstif Alma",
-  "updatedAt": "2026-07-13T15:10:00+03:00",
-  "notes": "Ekli ormancılar görünümü güçlendirildi; fotoğraf ve belge PDF çıktıları ayrıldı; fotoğraflı istif evrağı 4 fotoğraf tek sayfa formatına alındı."
+  "updatedAt": "2026-07-13T15:45:00+03:00",
+  "notes": "PDF yazdırma boş sayfa düzeltmesi",
+  "visibleVersion": "İstif Alma v0.2.0",
+  "build": "20260713-v020"
 }
