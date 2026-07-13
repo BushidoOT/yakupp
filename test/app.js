@@ -1,350 +1,42 @@
-(() => {
-  'use strict';
-
-  const VERSION = '1.0.0';
-  const BUILD = '1';
-  const STORAGE = {
-    profile: 'mesahaSuite.profile.v1',
-    seflikler: 'mesahaSuite.seflikler.v1',
-    ormancilar: 'mesahaSuite.ormancilar.v1',
-    bolmeler: 'mesahaSuite.bolmeler.v1',
-    lastSync: 'mesahaSuite.lastSync.v1',
-    settings: 'mesahaSuite.settings.v1'
-  };
-
-  const APP_URLS = {
-    mesaha: './stable/',
-    istif: './istif/'
-  };
-
-  const $ = (selector, root = document) => root.querySelector(selector);
-  const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
-
-  const safeParse = (value, fallback) => {
-    try { return value ? JSON.parse(value) : fallback; } catch (_) { return fallback; }
-  };
-
-  const read = (key, fallback) => safeParse(localStorage.getItem(key), fallback);
-  const write = (key, value) => localStorage.setItem(key, JSON.stringify(value));
-  const makeId = (prefix) => `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 7)}`;
-  const tidy = (value) => String(value ?? '').trim().replace(/\s+/g, ' ');
-  const formatDate = (date) => new Intl.DateTimeFormat('tr-TR', { dateStyle: 'short', timeStyle: 'short' }).format(date);
-  const initials = (name) => tidy(name).split(' ').filter(Boolean).slice(0, 2).map(part => part[0]?.toLocaleUpperCase('tr-TR')).join('') || 'MS';
-
-  const state = {
-    profile: read(STORAGE.profile, null),
-    seflikler: read(STORAGE.seflikler, []),
-    ormancilar: read(STORAGE.ormancilar, []),
-    bolmeler: read(STORAGE.bolmeler, []),
-    lastSync: localStorage.getItem(STORAGE.lastSync) || ''
-  };
-
-  const modalMap = {
-    login: $('#loginModal'),
-    seflik: $('#seflikModal'),
-    ormanci: $('#ormanciModal'),
-    bolme: $('#bolmeModal'),
-    info: $('#infoModal')
-  };
-
-  let activeModal = null;
-  let toastTimer = null;
-
-  function setLogoFallback() {
-    const logo = $('#brandLogo');
-    if (!logo) return;
-    logo.addEventListener('error', () => {
-      if (!logo.src.endsWith('suite-fallback-logo.svg')) logo.src = './assets/suite-fallback-logo.svg';
-    }, { once: true });
-  }
-
-  function showToast(message) {
-    const toast = $('#toast');
-    toast.textContent = message;
-    toast.classList.add('show');
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => toast.classList.remove('show'), 2600);
-  }
-
-  function openModal(name) {
-    const modal = modalMap[name];
-    if (!modal) return;
-    if ((name === 'ormanci' || name === 'bolme' || name === 'login') && !state.seflikler.length) {
-      if (name !== 'login') {
-        showToast('Önce bir şeflik oluşturmalısınız.');
-        return openModal('seflik');
-      }
-    }
-    refreshSelects();
-    if (name === 'login' && state.profile) {
-      $('#loginName').value = state.profile.name || '';
-      $('#loginSeflik').value = state.profile.seflikId || '';
-    }
-    $('#modalBackdrop').hidden = false;
-    modal.hidden = false;
-    document.body.classList.add('modal-open');
-    activeModal = modal;
-    requestAnimationFrame(() => modal.querySelector('input,select,textarea,button')?.focus());
-  }
-
-  function closeModal() {
-    if (!activeModal) return;
-    activeModal.hidden = true;
-    $('#modalBackdrop').hidden = true;
-    document.body.classList.remove('modal-open');
-    activeModal = null;
-  }
-
-  function showInfo(title, html, kicker = 'BİLGİ') {
-    $('#infoModalTitle').textContent = title;
-    $('#infoKicker').textContent = kicker;
-    $('#infoContent').innerHTML = html;
-    openModal('info');
-  }
-
-  function normalizeSeflikName(name) {
-    const cleaned = tidy(name);
-    return /şefliği$/i.test(cleaned) ? cleaned : `${cleaned} Şefliği`;
-  }
-
-  function refreshSelects() {
-    const options = state.seflikler.length
-      ? '<option value="">Şeflik seçin</option>' + state.seflikler.map(item => `<option value="${escapeHtml(item.id)}">${escapeHtml(item.name)}</option>`).join('')
-      : '<option value="">Önce şeflik oluşturun</option>';
-    ['#loginSeflik', '#ormanciSeflik', '#bolmeSeflik'].forEach(selector => {
-      const select = $(selector);
-      const old = select.value;
-      select.innerHTML = options;
-      if ([...select.options].some(option => option.value === old)) select.value = old;
-      else if (state.profile?.seflikId && [...select.options].some(option => option.value === state.profile.seflikId)) select.value = state.profile.seflikId;
-    });
-  }
-
-  function escapeHtml(value) {
-    return String(value ?? '').replace(/[&<>'"]/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[char]));
-  }
-
-  function renderProfile() {
-    const profile = state.profile;
-    const office = profile ? state.seflikler.find(item => item.id === profile.seflikId) : null;
-    $('#profileName').textContent = profile?.name || 'Giriş yapılmadı';
-    $('#profileOffice').lastChild.textContent = office ? ` ${office.name}` : ' Şeflik seçilmedi';
-    $('#avatar').textContent = initials(profile?.name || 'Mesaha Suite');
-    $('#loginButtonTitle').textContent = profile ? 'Oturumu Düzenle' : 'Giriş Yap';
-    $('#welcomeLabel').textContent = profile ? 'Hoş geldiniz,' : 'Ortak kullanıcı hesabı';
-  }
-
-  function renderStatus() {
-    const online = navigator.onLine;
-    $('#connectionPill').classList.toggle('offline', !online);
-    $('#connectionText').textContent = online ? 'Çevrimiçi' : 'Çevrimdışı';
-    $('#lastSync').textContent = state.lastSync ? formatDate(new Date(state.lastSync)) : 'Henüz yapılmadı';
-    $('#versionText').textContent = `${VERSION} (Build ${BUILD})`;
-  }
-
-  function persistSharedContext() {
-    const office = state.seflikler.find(item => item.id === state.profile?.seflikId) || null;
-    const context = {
-      version: 1,
-      updatedAt: new Date().toISOString(),
-      profile: state.profile,
-      seflik: office,
-      seflikler: state.seflikler,
-      ormancilar: state.ormancilar,
-      bolmeler: state.bolmeler
-    };
-    write('mesahaSuite.sharedContext.v1', context);
-    window.dispatchEvent(new CustomEvent('mesaha-suite-context-updated', { detail: context }));
-  }
-
-  function saveSeflik(event) {
-    event.preventDefault();
-    const name = normalizeSeflikName($('#seflikName').value);
-    if (!name || name === 'Şefliği') return;
-    const exists = state.seflikler.some(item => item.name.toLocaleLowerCase('tr-TR') === name.toLocaleLowerCase('tr-TR'));
-    if (exists) return showToast('Bu şeflik zaten kayıtlı.');
-    const item = {
-      id: makeId('seflik'),
-      name,
-      directorate: tidy($('#seflikDirectorate').value),
-      code: tidy($('#seflikCode').value),
-      createdAt: new Date().toISOString()
-    };
-    state.seflikler.push(item);
-    write(STORAGE.seflikler, state.seflikler);
-    event.currentTarget.reset();
-    closeModal();
-    refreshSelects();
-    persistSharedContext();
-    showToast(`${name} oluşturuldu.`);
-  }
-
-  function saveLogin(event) {
-    event.preventDefault();
-    const name = tidy($('#loginName').value);
-    const seflikId = $('#loginSeflik').value;
-    if (!name || !seflikId) return showToast('Ad soyad ve şeflik seçimi gereklidir.');
-    state.profile = {
-      id: state.profile?.id || makeId('user'),
-      name,
-      seflikId,
-      remember: $('#rememberLogin').checked,
-      updatedAt: new Date().toISOString()
-    };
-    write(STORAGE.profile, state.profile);
-    persistSharedContext();
-    renderProfile();
-    closeModal();
-    showToast('Ortak oturum açıldı.');
-  }
-
-  function saveOrmanci(event) {
-    event.preventDefault();
-    const name = tidy($('#ormanciName').value);
-    const seflikId = $('#ormanciSeflik').value;
-    if (!name || !seflikId) return;
-    const exists = state.ormancilar.some(item => item.seflikId === seflikId && item.name.toLocaleLowerCase('tr-TR') === name.toLocaleLowerCase('tr-TR'));
-    if (exists) return showToast('Bu ormancı seçilen şeflikte zaten kayıtlı.');
-    state.ormancilar.push({
-      id: makeId('ormanci'),
-      name,
-      seflikId,
-      phone: tidy($('#ormanciPhone').value),
-      createdAt: new Date().toISOString()
-    });
-    write(STORAGE.ormancilar, state.ormancilar);
-    event.currentTarget.reset();
-    closeModal();
-    persistSharedContext();
-    showToast(`${name} eklendi.`);
-  }
-
-  function saveBolme(event) {
-    event.preventDefault();
-    const number = tidy($('#bolmeNo').value);
-    const seflikId = $('#bolmeSeflik').value;
-    if (!number || !seflikId) return;
-    const exists = state.bolmeler.some(item => item.seflikId === seflikId && item.number.toLocaleLowerCase('tr-TR') === number.toLocaleLowerCase('tr-TR'));
-    if (exists) return showToast('Bu bölme seçilen şeflikte zaten kayıtlı.');
-    state.bolmeler.push({
-      id: makeId('bolme'),
-      number,
-      seflikId,
-      location: tidy($('#bolmeLocation').value),
-      createdAt: new Date().toISOString()
-    });
-    write(STORAGE.bolmeler, state.bolmeler);
-    event.currentTarget.reset();
-    closeModal();
-    persistSharedContext();
-    showToast(`${number} numaralı bölme eklendi.`);
-  }
-
-  function openApp(appName) {
-    if (!state.profile) {
-      showToast('Uygulamayı açmadan önce giriş yapın.');
-      return openModal('login');
-    }
-    const url = APP_URLS[appName];
-    if (!url) return;
-    persistSharedContext();
-    const office = state.seflikler.find(item => item.id === state.profile.seflikId);
-    const params = new URLSearchParams({
-      suite: '1',
-      user: state.profile.name,
-      seflik: office?.name || ''
-    });
-    window.location.href = `${url}?${params.toString()}`;
-  }
-
-  async function synchronize() {
-    if (!state.profile) {
-      showToast('Senkronizasyon için önce giriş yapın.');
-      return openModal('login');
-    }
-    if (!navigator.onLine) return showToast('Bağlantı yok. Yerel bilgiler korunuyor.');
-    persistSharedContext();
-    state.lastSync = new Date().toISOString();
-    localStorage.setItem(STORAGE.lastSync, state.lastSync);
-    renderStatus();
-    showToast('Ortak bilgiler hazırlandı ve senkronize edildi.');
-  }
-
-  async function checkUpdates() {
-    if (!navigator.onLine) return showToast('Güncelleme kontrolü için internet bağlantısı gerekli.');
-    try {
-      const response = await fetch(`./version.json?ts=${Date.now()}`, { cache: 'no-store' });
-      if (!response.ok) throw new Error('Sürüm bilgisi alınamadı');
-      const data = await response.json();
-      if (String(data.version) !== VERSION || String(data.build) !== BUILD) {
-        showInfo('Yeni Güncelleme Var', `<p><strong>${escapeHtml(data.version || '')}</strong> sürümü kullanıma hazır.</p><p>Sayfayı yenileyerek yeni dosyaları alabilirsiniz.</p>`, 'GÜNCELLEME');
-      } else {
-        showToast('Mesaha Suite güncel.');
-      }
-    } catch (_) {
-      showToast('Güncelleme bilgisi alınamadı.');
-    }
-  }
-
-  function openTool(name) {
-    const officeCount = state.seflikler.length;
-    const ormanciCount = state.ormancilar.length;
-    const bolmeCount = state.bolmeler.length;
-    if (name === 'sync') return synchronize();
-    if (name === 'updates') return checkUpdates();
-    if (name === 'settings') {
-      return showInfo('Ortak Ayarlar', `
-        <div class="info-stat"><span>Kayıtlı şeflik</span><strong>${officeCount}</strong></div>
-        <div class="info-stat"><span>Kayıtlı ormancı</span><strong>${ormanciCount}</strong></div>
-        <div class="info-stat"><span>Kayıtlı bölme</span><strong>${bolmeCount}</strong></div>
-        <p style="margin-top:16px">Bu bilgiler Mesaha İO ve İstif İO tarafından ortak kullanılmak üzere aynı alan adında saklanır.</p>
-      `, 'AYARLAR');
-    }
-    return showInfo('Mesaha Suite', `
-      <p>Mesaha İO ve İstif İO için ortak başlangıç ve kullanıcı yönetim ekranı.</p>
-      <ul><li>Tek ortak giriş</li><li>Şeflik, ormancı ve bölme yönetimi</li><li>Çevrimiçi/çevrimdışı durum takibi</li></ul>
-      <div class="info-stat"><span>Versiyon</span><strong>${VERSION}</strong></div>
-      <div class="info-stat"><span>Build</span><strong>${BUILD}</strong></div>
-    `, 'HAKKINDA');
-  }
-
-  function bindEvents() {
-    $$('[data-modal]').forEach(button => button.addEventListener('click', () => openModal(button.dataset.modal)));
-    $$('.modal-close,.modal-cancel').forEach(button => button.addEventListener('click', closeModal));
-    $('#modalBackdrop').addEventListener('click', closeModal);
-    document.addEventListener('keydown', event => { if (event.key === 'Escape') closeModal(); });
-    $('#profileAction').addEventListener('click', () => openModal('login'));
-    $('#profileCard').addEventListener('dblclick', () => openModal('login'));
-    $$('.app-card').forEach(button => button.addEventListener('click', () => openApp(button.dataset.app)));
-    $$('[data-tool]').forEach(button => button.addEventListener('click', () => openTool(button.dataset.tool)));
-    $('#footerUpdate').addEventListener('click', checkUpdates);
-    $('#notificationButton').addEventListener('click', () => {
-      $('#notificationDot').hidden = true;
-      showInfo('Bildirimler', '<p>Şu anda yeni bir bildiriminiz bulunmuyor.</p>', 'BİLDİRİMLER');
-    });
-    $('#loginForm').addEventListener('submit', saveLogin);
-    $('#seflikForm').addEventListener('submit', saveSeflik);
-    $('#ormanciForm').addEventListener('submit', saveOrmanci);
-    $('#bolmeForm').addEventListener('submit', saveBolme);
-    window.addEventListener('online', renderStatus);
-    window.addEventListener('offline', renderStatus);
-  }
-
-  async function registerServiceWorker() {
-    if (!('serviceWorker' in navigator) || location.protocol === 'file:') return;
-    try { await navigator.serviceWorker.register('./service-worker.js'); } catch (_) {}
-  }
-
-  function bootstrap() {
-    setLogoFallback();
-    refreshSelects();
-    renderProfile();
-    renderStatus();
-    persistSharedContext();
-    bindEvents();
-    registerServiceWorker();
-  }
-
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bootstrap, { once: true });
-  else bootstrap();
+(function(){'use strict';
+const K={session:'mesaha_supabase_v500_session',backup:'mesaha_supabase_v569_session_backup',access:'mesaha_google_access_v548',panel:'mesaha_panel_user_v316',settings:'cam_mesaha_ayarlar_v1',terminal:'mesaha_terminal_local_mode_v556',terminalOld:'mesaha_terminal_local_mode_v557',active:'mesaha_active_seflik_folder_v564',folderCache:'mesaha_suite_folder_cache_v2',pendingFolder:'mesaha_suite_pending_folder_v2',pendingBolme:'mesaha_suite_pending_bolme_v2',localForesters:'mesaha_suite_local_ormancilar_v2'};
+const $=id=>document.getElementById(id), clean=v=>String(v==null?'':v).trim().replace(/\s+/g,' '), read=(k,f={})=>{try{return JSON.parse(localStorage.getItem(k)||'null')??f}catch{return f}}, write=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));return true}catch{return false}}, esc=v=>clean(v).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+let folders=[],busy=false,cacheReady=false;
+function session(){return read(K.session,null)||read(K.backup,null)||{}}
+function terminal(){const t=read(K.terminal,null)||read(K.terminalOld,null)||{};return t&&t.active?t:{}}
+function access(){return read(K.access,{})}
+function panel(){return read(K.panel,{})}
+function settings(){return read(K.settings,{})}
+function pairedTerminal(){const t=terminal();return !!(t.active&&t.source==='pair_code'&&(t.terminalCode||t.terminalToken||t.pairedUserId))}
+function authType(){if(session().access_token||access().status==='approved')return'google';if(pairedTerminal())return'terminal';if(terminal().active)return'guest';return'none'}
+function signedIn(){return authType()!=='none'}
+function cloudIdentity(){return authType()==='google'||authType()==='terminal'}
+function terminalAuth(){const t=terminal();return pairedTerminal()?{terminalCode:clean(t.terminalCode),terminalToken:clean(t.terminalToken),terminalPairedUserId:clean(t.pairedUserId),terminalPairedEmail:clean(t.pairedEmail)}:{}}
+function identity(){const s=session(),a=access(),p=panel(),t=terminal(),st=settings(),u=s.user||{},m=u.user_metadata||{};return{type:authType(),name:clean(p.googleFullName||p.name||a.name||a.canonical_name||t.name||m.full_name||m.name||u.email),email:clean(a.email||p.googleEmail||t.pairedEmail||u.email),avatar:clean(p.googleAvatarUrl||p.avatarUrl||a.avatar_url||t.avatarUrl||m.avatar_url||m.picture),seflik:clean((read(K.active,{})||{}).seflik||p.activeSeflik||p.seflik||t.seflik||st.seflik),bolme:clean(p.bolmeNo||t.bolmeNo||st.bolmeNo)}}
+function toast(msg,bad=false){const el=$('toast');el.textContent=msg;el.classList.toggle('bad',bad);el.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>el.classList.remove('show'),3400)}
+function openModal(id){$('modalBackdrop').hidden=false;$(id).hidden=false;document.body.classList.add('modal-open')}
+function closeModals(){document.querySelectorAll('.modal').forEach(x=>x.hidden=true);$('modalBackdrop').hidden=true;document.body.classList.remove('modal-open')}
+function creatorFolder(){return folders.find(f=>f.is_creator===true||['owner','creator','kurucu'].includes(clean(f.role).toLocaleLowerCase('tr-TR')))}
+function activeFolder(){const a=read(K.active,{}),id=identity();return folders.find(f=>clean(f.seflik_key||f.seflikKey)===clean(a.seflik_key||a.seflikKey)||clean(f.seflik).toLocaleLowerCase('tr-TR')===clean(id.seflik).toLocaleLowerCase('tr-TR'))||null}
+function setActive(f){if(!f||!clean(f.seflik))return;const sf=clean(f.seflik),key=clean(f.seflik_key||f.seflikKey);write(K.active,{seflik:sf,seflik_key:key,role:f.role||'',creator:!!f.is_creator,updatedAt:new Date().toISOString()});const p=panel();p.seflik=sf;p.activeSeflik=sf;p.updatedAt=new Date().toISOString();write(K.panel,p);const st=settings();st.seflik=sf;write(K.settings,st);window.dispatchEvent(new Event('mesaha:seflik-folder-active-changed'))}
+async function edge(action,data={}){const api=window.mesahaSupabase;if(!api||typeof api.edge!=='function')throw new Error('Sunucu bağlantısı hazır değil.');return api.edge(action,{source:'mesaha-suite-test-v2',...terminalAuth(),...data})}
+function localFolder(){const id=identity();if(!id.seflik||/^(Dosya|Şeflik seçilmedi)$/i.test(id.seflik))return null;return{seflik:id.seflik,seflik_key:clean((read(K.active,{})||{}).seflik_key),role:'local',is_creator:authType()==='guest',is_local:true}}
+async function loadFolders(force=false){if(!signedIn()){folders=[];render();return folders}const cached=read(K.folderCache,[]);if(Array.isArray(cached)&&cached.length)folders=cached;if(!cloudIdentity()||navigator.onLine===false){const lf=localFolder();if(lf&&!folders.some(f=>clean(f.seflik)===lf.seflik))folders.unshift(lf);render();return folders}try{const out=await edge('seflik_folder_list_my_sefliks',{seflik:identity().seflik,folderSeflik:identity().seflik});folders=Array.isArray(out.folders)?out.folders:[];const lf=localFolder();if(lf&&!folders.some(f=>clean(f.seflik).toLocaleLowerCase('tr-TR')===lf.seflik.toLocaleLowerCase('tr-TR')))folders.unshift(lf);write(K.folderCache,folders);if(!activeFolder()&&folders[0])setActive(creatorFolder()||folders[0]);await syncPending();render();return folders}catch(e){const lf=localFolder();if(lf&&!folders.some(f=>clean(f.seflik)===lf.seflik))folders.unshift(lf);render();if(force)toast('Şeflikler alınamadı: '+e.message,true);return folders}}
+async function syncPending(){if(!cloudIdentity()||navigator.onLine===false)return;const pf=read(K.pendingFolder,null);if(pf&&pf.name){try{const out=await edge('seflik_folder_create_seflik',{seflik:pf.name});setActive(out.folder||{seflik:pf.name,seflik_key:out.seflik_key,is_creator:true});localStorage.removeItem(K.pendingFolder)}catch{}}const pending=read(K.pendingBolme,[]);if(Array.isArray(pending)&&pending.length){const remain=[];for(const item of pending){try{await edge('seflik_folder_create_division',{bolmeNo:item.bolmeNo,seflik:item.seflik,location:item.location||''})}catch{remain.push(item)}}write(K.pendingBolme,remain)}}
+function render(){const id=identity(),has=signedIn(),t=id.type;const initials=(id.name||'M').split(/\s+/).slice(0,2).map(x=>x[0]).join('').toUpperCase();$('avatar').textContent=initials||'M';$('profileName').textContent=has?(id.name||'Kullanıcı'):'Giriş yapılmadı';$('profileOffice').lastChild.textContent=' '+(id.seflik||'Şeflik seçilmedi');$('loginButtonTitle').textContent=has?'Oturum Bilgileri':'Giriş Yap';$('loginButtonSub').textContent=t==='google'?'Google hesabı bağlı':t==='terminal'?'Terminal kodu ile bağlı':t==='guest'?'Yerel misafir modu':'Google veya misafir modu';const cr=creatorFolder();$('seflikCardSub').textContent=cr?cr.seflik+' • kurucu':'Her kullanıcı yalnızca 1 şeflik';document.querySelectorAll('[data-app]').forEach(b=>b.disabled=!has);document.querySelectorAll('[data-modal="seflik"],[data-modal="ormanci"],[data-modal="bolme"]').forEach(b=>b.disabled=!has);$('connectionText').textContent=navigator.onLine?'Çevrimiçi':'Çevrimdışı';$('connectionPill').classList.toggle('offline',!navigator.onLine);renderAuthBox()}
+function renderAuthBox(){const id=identity(),box=$('authSessionBox'),wrap=$('logoutWrap');if(!signedIn()){box.innerHTML='<div class="modal-note">Bir kez giriş yaptığınızda aynı oturum Mesaha İO ve İstif İO tarafından ortak kullanılır.</div>';wrap.innerHTML='';return}const label=id.type==='google'?'Google hesabı':id.type==='terminal'?'Kodla eşleşmiş terminal':'Yerel misafir';box.innerHTML=`<div class="auth-session-box"><b>${esc(id.name||label)}</b><span>${esc(label)}${id.email?' • '+esc(id.email):''}${id.seflik?' • '+esc(id.seflik):''}</span></div>`;wrap.innerHTML='<button class="danger-button" id="logoutBtn">Oturumu Kapat</button>';$('logoutBtn').onclick=logout}
+async function logout(){if(!confirm('Oturum kapatılsın mı? Yerel kayıtlar silinmez.'))return;try{if(authType()==='google'&&window.MesahaGoogleAuthV548)await window.MesahaGoogleAuthV548.logout()}catch{}[K.session,K.backup,K.access,K.terminal,K.terminalOld,K.folderCache].forEach(k=>localStorage.removeItem(k));folders=[];closeModals();render();toast('Oturum kapatıldı')}
+async function openGoogle(){closeModals();try{await window.MesahaGoogleAuthV548.openGoogle()}catch(e){toast(e.message,true)}}
+function openGuest(){closeModals();try{window.MesahaGoogleAuthV548.openTerminal()}catch(e){toast(e.message,true)}}
+async function createSeflik(e){e.preventDefault();if(busy)return;const name=clean($('seflikName').value);if(name.length<2)return toast('Şeflik adını yazın.',true);const existing=creatorFolder();if(existing)return toast('Bu kullanıcı zaten '+existing.seflik+' şefliğini oluşturmuş.',true);busy=true;$('seflikSubmit').disabled=true;try{if(authType()==='guest'){const f={seflik:name,seflik_key:name.toLocaleLowerCase('tr-TR').replace(/\s+/g,'-'),role:'owner',is_creator:true,is_local:true};folders=[f];write(K.folderCache,folders);setActive(f);toast('Yerel şeflik oluşturuldu.');closeModals();render();return}if(navigator.onLine===false){write(K.pendingFolder,{name,createdAt:new Date().toISOString()});const f={seflik:name,seflik_key:'pending-'+Date.now(),role:'owner',is_creator:true,is_local:true,pending:true};folders.unshift(f);write(K.folderCache,folders);setActive(f);toast('Şeflik çevrimdışı kaydedildi; internet gelince oluşturulacak.');closeModals();render();return}const out=await edge('seflik_folder_create_seflik',{seflik:name});const f=out.folder||{seflik:name,seflik_key:out.seflik_key,is_creator:true,role:'owner'};setActive(f);toast(out.duplicate?'Şeflik zaten vardı.':'Şeflik oluşturuldu.');closeModals();await loadFolders(true)}catch(err){toast('Şeflik oluşturulamadı: '+err.message,true)}finally{busy=false;$('seflikSubmit').disabled=false}}
+async function searchOrmanci(e){e.preventDefault();const q=clean($('ormanciSearch').value),box=$('ormanciResults');if(q.length<3)return toast('En az 3 harf yazın.',true);if(!cloudIdentity()||navigator.onLine===false){box.innerHTML='<div class="modal-note warn">Ormancı araması için Google hesabı veya terminal kodu ve internet gerekir.</div>';return}const af=activeFolder();if(!af)return toast('Önce şeflik oluşturun veya seçin.',true);box.innerHTML='<div class="modal-note">Kullanıcılar aranıyor…</div>';try{const out=await edge('seflik_folder_search_users',{query:q,seflik:af.seflik});const users=Array.isArray(out.users)?out.users:[];box.innerHTML=users.length?users.map(u=>`<div class="result-row"><div class="grow"><b>${esc(u.name||'-')}</b><small>${esc(u.email||'Google kullanıcısı')}</small></div><button class="mini-button" data-add-user="${esc(u.user_id)}">Ekle</button></div>`).join(''):'<div class="modal-note">Kullanıcı bulunamadı.</div>';box.querySelectorAll('[data-add-user]').forEach(b=>b.onclick=()=>addOrmanci(b.dataset.addUser,b))}catch(err){box.innerHTML='<div class="modal-note warn">'+esc(err.message)+'</div>'}}
+async function addOrmanci(uid,btn){const af=activeFolder();if(!af)return;btn.disabled=true;try{await edge('seflik_folder_add_member',{seflik:af.seflik,member_user_id:uid});btn.textContent='Eklendi';toast('Ormancı şefliğe eklendi.')}catch(e){btn.disabled=false;toast(e.message,true)}}
+async function createBolme(e){e.preventDefault();const no=clean($('bolmeNo').value),loc=clean($('bolmeLocation').value),af=activeFolder();if(!no)return toast('Bölme numarasını yazın.',true);if(!af)return toast('Önce şeflik oluşturun.',true);const st=settings();st.bolmeNo=no;write(K.settings,st);const p=panel();p.bolmeNo=no;write(K.panel,p);if(!cloudIdentity()||navigator.onLine===false){const pend=read(K.pendingBolme,[]);pend.push({bolmeNo:no,location:loc,seflik:af.seflik,createdAt:new Date().toISOString()});write(K.pendingBolme,pend);toast('Bölme yerelde kaydedildi.');closeModals();render();return}try{await edge('seflik_folder_create_division',{bolmeNo:no,seflik:af.seflik,location:loc});toast('Bölme oluşturuldu.');closeModals()}catch(err){toast('Bölme oluşturulamadı: '+err.message,true)}}
+function showInfo(title,html,k='BİLGİ'){$('infoModalTitle').textContent=title;$('infoKicker').textContent=k;$('infoContent').innerHTML=html;openModal('infoModal')}
+async function prepareOffline(){if(!('serviceWorker'in navigator)){setCacheStatus('Tarayıcı desteklemiyor',0);return}try{const reg=await navigator.serviceWorker.register('./service-worker.js?v=2',{scope:'./',updateViaCache:'none'});await navigator.serviceWorker.ready;cacheReady=true;setCacheStatus('Mesaha İO ve İstif İO çevrimdışı kullanıma hazır',100);if(reg.active)reg.active.postMessage({type:'CACHE_ALL'})}catch(e){setCacheStatus('Offline hazırlık tamamlanamadı',20)}}
+function setCacheStatus(text,pct){$('lastSync').textContent=text;$('cacheToolText').textContent=pct>=100?'İki uygulama hazır':'Dosyalar hazırlanıyor';$('cacheProgressBar').style.width=Math.max(0,Math.min(100,pct))+'%';$('lastSync').classList.toggle('offline-ready',pct>=100)}
+async function syncNow(){if(!signedIn())return toast('Önce giriş yapın.',true);if(!navigator.onLine)return toast('İnternet bağlantısı yok.',true);toast('Şeflik bilgileri güncelleniyor…');await loadFolders(true);toast('Şeflik bilgileri güncellendi.')}
+function bind(){document.querySelectorAll('.modal-close,.modal-cancel').forEach(b=>b.onclick=closeModals);$('modalBackdrop').onclick=closeModals;$('profileAction').onclick=()=>openModal('loginModal');document.querySelector('[data-modal="login"]').onclick=()=>openModal('loginModal');document.querySelector('[data-modal="seflik"]').onclick=()=>{const cr=creatorFolder();$('seflikName').disabled=!!cr;$('seflikSubmit').disabled=!!cr;$('seflikLimitNote').classList.toggle('warn',!!cr);$('seflikLimitNote').textContent=cr?'Bu kullanıcı zaten '+cr.seflik+' şefliğinin kurucusu. İkinci şeflik oluşturamaz.':'Her kullanıcı yalnızca bir şefliğin kurucusu olabilir.';openModal('seflikModal')};document.querySelector('[data-modal="ormanci"]').onclick=()=>openModal('ormanciModal');document.querySelector('[data-modal="bolme"]').onclick=()=>openModal('bolmeModal');$('googleLoginBtn').onclick=openGoogle;$('guestLoginBtn').onclick=openGuest;$('seflikForm').onsubmit=createSeflik;$('ormanciForm').onsubmit=searchOrmanci;$('bolmeForm').onsubmit=createBolme;document.querySelectorAll('[data-app]').forEach(b=>b.onclick=()=>{if(!signedIn())return openModal('loginModal');location.href=b.dataset.app==='mesaha'?'./mesaha/':'./istif/'});document.querySelector('[data-tool="settings"]').onclick=()=>openModal('loginModal');document.querySelector('[data-tool="sync"]').onclick=syncNow;document.querySelector('[data-tool="updates"]').onclick=prepareOffline;document.querySelector('[data-tool="about"]').onclick=()=>showInfo('Mesaha Suite','<p>Google veya terminal/misafir oturumu iki uygulamada ortak kullanılır.</p><p>İlk açılışta Mesaha İO ve İstif İO dosyaları çevrimdışı kullanım için önbelleğe alınır.</p>');$('notificationButton').onclick=()=>showInfo('Sistem Durumu','<p>Oturum: '+esc(authType())+'</p><p>Offline: '+(cacheReady?'hazır':'hazırlanıyor')+'</p>');$('footerUpdate').onclick=prepareOffline;window.addEventListener('online',()=>{render();loadFolders(true);syncPending()});window.addEventListener('offline',render);window.addEventListener('storage',()=>{render();loadFolders()});['mesaha:google-access-approved','mesaha:user-login','mesaha:terminal-mode-enabled'].forEach(n=>window.addEventListener(n,()=>{setTimeout(()=>{render();loadFolders(true)},80)}));navigator.serviceWorker?.addEventListener('message',e=>{if(e.data?.type==='CACHE_PROGRESS')setCacheStatus(e.data.text||'Dosyalar hazırlanıyor',e.data.percent||0);if(e.data?.type==='CACHE_READY'){cacheReady=true;setCacheStatus('Mesaha İO ve İstif İO çevrimdışı kullanıma hazır',100)}})}
+async function init(){bind();render();setCacheStatus('Dosyalar hazırlanıyor…',8);prepareOffline();if(location.hash&&/access_token=|error=/.test(location.hash)){try{await window.MesahaGoogleAuthV548.boot(true)}catch(e){toast(e.message,true)}}await loadFolders();render()}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
