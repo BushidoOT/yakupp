@@ -1,6 +1,6 @@
 'use strict';
 
-const APP_VERSION = '0.3.4';
+const APP_VERSION = '0.3.4-suite-v4';
 const MAX_PHOTO_BYTES = 1024 * 1024;
 const DB_NAME = 'mesaha-istif-prototype';
 const DB_VERSION = 1;
@@ -24,6 +24,24 @@ const SHARED_ACTIVE_SEFLIK_KEY = 'mesaha_active_seflik_folder_v564';
 const SHARED_TERMINAL_KEY = 'mesaha_terminal_local_mode_v556';
 const SHARED_TERMINAL_OLD_KEY = 'mesaha_terminal_local_mode_v557';
 const SHARED_CACHE_SETTING_KEY = 'shared-context-v034';
+const SHARED_SUITE_DIVISIONS_KEY = 'mesaha_suite_divisions_v4';
+const SHARED_SUITE_DIVISION_READY_KEY = 'mesaha_suite_division_ready_v4';
+function readSuiteJson(key, fallback = {}) { try { return JSON.parse(localStorage.getItem(key) || 'null') ?? fallback; } catch { return fallback; } }
+function suiteStableKey(value) { return clean(value).toLocaleLowerCase('tr-TR').replace(/ç/g,'c').replace(/ğ/g,'g').replace(/ı/g,'i').replace(/ö/g,'o').replace(/ş/g,'s').replace(/ü/g,'u').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,''); }
+function currentSuiteDivisions() {
+  const map = readSuiteJson(SHARED_SUITE_DIVISIONS_KEY, {});
+  const ready = readSuiteJson(SHARED_SUITE_DIVISION_READY_KEY, {});
+  const key = state?.settings?.seflikKey || suiteStableKey(state?.settings?.seflik || '');
+  const aliases = [key, suiteStableKey(state?.settings?.seflik || '')].filter(Boolean);
+  let list = [];
+  for (const alias of aliases) if (Array.isArray(map[alias])) { list = map[alias]; break; }
+  return list.map((d) => {
+    const no = clean(d.bolme_no || d.bolmeNo || d.bolme);
+    const k = clean(d.seflik_key || key);
+    return { ...d, bolme_no: no, bolmeNo: no, offline_ready: !!(d.offline_ready || ready[`${k}::${no}`]) };
+  }).filter((d) => d.bolme_no && !d.deleted);
+}
+function currentSuiteReadyBolmeler() { return currentSuiteDivisions().filter((d) => d.offline_ready).map((d) => d.bolme_no).sort((a,b)=>a.localeCompare(b,'tr',{numeric:true})); }
 
 const DEFAULT_SETTINGS = {
   seflik: '',
@@ -919,7 +937,8 @@ function renderNew() {
       ${fieldRow('forest', 'Şeflik', 'seflik', draft.seflik, 'select', seflikOptions)}
       ${fieldRow('user', 'Ormancı', 'ormanci', draft.ormanci, 'select', ormanciOptions)}
       ${fieldRow('calendar', 'Tarih', 'date', draft.date, 'date')}
-      ${fieldRow('layers', 'Bölme', 'bolme', draft.bolme)}
+      ${fieldRow('layers', 'Bölme', 'bolme', draft.bolme, 'select', currentSuiteReadyBolmeler())}
+      ${currentSuiteReadyBolmeler().length ? '' : '<div class="info-note"><b>'+icon('info',21)+'</b><span>Suite ana menüsünde oluşturulan bölmeyi önce Offline İndir yapın. Bölme hazır olmadan ster kaydı eklenemez.</span></div>'}
       ${fieldRow('logs', 'İstif No', 'istifNo', draft.istifNo)}
       ${fieldRow('forest', 'Odun Türü', 'type', draft.type, 'select', ['İbreli Kabuklu Kağıtlık Odun', 'İbreli Lif Yonga Odun', 'İbreli Yakacak Odun', 'İbreli Sırık 2 Boy', 'İbreli Sırık 3 Boy', 'İbreli Sırık 4 Boy', 'İbreli Sırık 5 Boy'])}
       ${fieldRow('cube', 'Ster Sayısı', 'ster', draft.ster, 'number')}
@@ -1383,6 +1402,15 @@ async function saveRecord(event, draftOnly = false) {
   }
   if (!draftOnly && (!draft.bolme.trim() || !draft.istifNo.trim() || !draft.ster)) {
     toast('Bölme, istif numarası ve ster sayısı zorunludur.', 'bad');
+    return;
+  }
+  const suiteReadyBolmeler = currentSuiteReadyBolmeler();
+  if (!draftOnly && suiteReadyBolmeler.length && !suiteReadyBolmeler.includes(draft.bolme)) {
+    toast('Bu bölme Suite ana menüsünde offline indirilmeden ster kaydı eklenemez.', 'bad');
+    return;
+  }
+  if (!draftOnly && !suiteReadyBolmeler.length) {
+    toast('Önce Suite ana menüsünde en az bir bölmeyi oluşturup Offline İndir yapın.', 'bad');
     return;
   }
   draft.photos = state.selectedPhotos.map((photo) => ({ name: photo.name, type: photo.type, size: photo.size, blob: photo.blob }));
