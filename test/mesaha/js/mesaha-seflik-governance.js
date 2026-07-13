@@ -1,6 +1,9 @@
 /* Mesaha İO V5.82 — Misafir modu Şeflik Yönetimi kilitlenme düzeltmesi */
 (function(){
   'use strict';
+  if(window.MESAHA_SUITE_MODE){
+    window.MesahaSeflikGovernanceApi={suiteManaged:true,loadFolders:async function(){return[]},loadMembers:async function(){return[]},refreshVisible:async function(){return true},refreshAll:async function(){return true},renderTopProfile:function(){},lockTopProfile:function(){},unlockFileSeflikFields:function(){}};return;
+  }
   if(window.MesahaSeflikGovernance)return; window.MesahaSeflikGovernance=true;
   var ACTIVE_KEY='mesaha_active_seflik_folder_v564', PANEL_KEY='mesaha_panel_user_v316', SESSION_KEY='mesaha_supabase_v500_session', ACCESS_KEY='mesaha_google_access_v548', SETTINGS_KEY='cam_mesaha_ayarlar_v1', PROFILE_CACHE_KEY='mesaha_google_profile_cache_v568';
   var TERMINAL_KEY='mesaha_terminal_local_mode_v556', TERMINAL_OLD='mesaha_terminal_local_mode_v557';

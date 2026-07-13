@@ -1,6 +1,6 @@
 'use strict';
 
-const APP_VERSION = '0.3.4-suite-v6';
+const APP_VERSION = '0.3.4-suite-v7';
 const MAX_PHOTO_BYTES = 1024 * 1024;
 const DB_NAME = 'mesaha-istif-prototype';
 const DB_VERSION = 1;
@@ -289,7 +289,7 @@ async function idbPut(store, value) {
   return new Promise((resolve, reject) => {
     const tx = db.transaction(store, 'readwrite');
     tx.objectStore(store).put(value);
-    tx.oncomplete = () => resolve();
+    tx.oncomplete = () => { if(store==='records' && !(value&&value.isDemo)){ try{window.dispatchEvent(new CustomEvent('mesaha-istif:changed',{detail:{type:'put',id:value&&value.id}}));window.MesahaSuiteSyncV7&&window.MesahaSuiteSyncV7.markDirty('istif',{id:value&&value.id});}catch{} } resolve(); };
     tx.onerror = () => reject(tx.error);
   });
 }
@@ -299,7 +299,7 @@ async function idbDelete(store, key) {
   return new Promise((resolve, reject) => {
     const tx = db.transaction(store, 'readwrite');
     tx.objectStore(store).delete(key);
-    tx.oncomplete = () => resolve();
+    tx.oncomplete = () => { if(store==='records'){ try{window.dispatchEvent(new CustomEvent('mesaha-istif:changed',{detail:{type:'delete',id:key}}));window.MesahaSuiteSyncV7&&window.MesahaSuiteSyncV7.markDirty('istif',{id:key});}catch{} } resolve(); };
     tx.onerror = () => reject(tx.error);
   });
 }
@@ -1398,7 +1398,7 @@ async function saveRecord(event, draftOnly = false) {
     return;
   }
   if (!draft.seflik || !draft.ormanci) {
-    toast('Şeflik ve ormancı Mesaha İO Şeflik Klasörü’nden seçilmelidir.', 'bad');
+    toast('Şeflik ve ormancı Mesaha Suite ana menüsünden seçilmelidir.', 'bad');
     return;
   }
   if (!draftOnly && (!draft.bolme.trim() || !draft.istifNo.trim() || !draft.ster)) {
@@ -1859,80 +1859,12 @@ async function supabaseUpsertRecord(record) {
 }
 
 async function syncAll() {
-  setTimeout(pingAdminProfile, 2500);
-  if (state.syncing) return;
-  const pending = state.records.filter((record) => !record.isDemo && record.syncStatus !== 'synced');
-  if (!pending.length) {
-    const pulled = await loadRemoteRecords({ silent: true });
-    render();
-    toast(pulled ? `${pulled} ortak kayıt güncellendi.` : 'Tüm kayıtlar senkronize.', 'good');
+  if (window.MesahaSuiteSyncV7) {
+    try { await window.MesahaSuiteSyncV7.syncAll({ source: 'istif' }); state.records = await idbGetAll('records'); render(); }
+    catch (error) { toast(clean(error?.message || error), 'bad'); }
     return;
   }
-  if (!navigator.onLine) {
-    toast('İnternet yok. Kayıtlar cihazda güvende.', 'bad');
-    return;
-  }
-  try {
-    await ensureSharedSession();
-    if (!state.settings.seflikKey || !state.seflikler.length) await syncSharedContext({ manual: false });
-  } catch {
-    showDialog('<h3>Google girişi gerekli</h3><p>İstif kayıtlarının aynı Supabase hesabına yüklenebilmesi için Mesaha İO’da Google ile giriş yapın.</p><div class="dialog-actions"><button class="btn" data-dialog-close>Kapat</button><a class="btn primary" href="../">Giriş Yap</a></div>');
-    return;
-  }
-  if (pending.some((record) => (record.photos || []).length)) {
-    await refreshDriveStatus({ silent: true });
-    if (!state.drive.connected) {
-      const message = state.drive.isOwner || currentFolderIsOwner() ? 'Ayarlar bölümünden Google hesabınızla Şeflik Drive alanını bağlayın.' : 'Şeflik kurucusunun ortak Drive alanını bağlaması gerekiyor.';
-      showDialog(`<h3>Şeflik Drive bağlantısı gerekli</h3><p>${message} Kayıtlar ve fotoğraflar cihazdan silinmez.</p><div class="dialog-actions"><button class="btn" data-dialog-close>Kapat</button><button class="btn primary" id="goSettings">Ayarlara Git</button></div>`);
-      document.getElementById('goSettings').onclick = () => { closeDialog(); setView('settings'); };
-      return;
-    }
-  }
-  state.syncing = true;
-  showDialog('<h3>Senkronizasyon</h3><p id="syncText">Google hesabı ve Drive bağlantısı hazırlanıyor…</p><div class="progress"><span id="syncBar"></span></div><div class="dialog-actions"><button class="btn" disabled>İptal</button><button class="btn primary" disabled>Devam Ediyor</button></div>');
-  try {
-    const recordsWithPhotos = pending.filter((record) => (record.photos || []).length);
-    let completed = 0;
-    for (const record of pending) {
-      record.syncStatus = 'syncing';
-      await idbPut('records', record);
-      if ((record.photos || []).length && (record.driveFiles?.length || 0) < record.photos.length) {
-        record.driveFiles = Array.isArray(record.driveFiles) ? record.driveFiles : [];
-        for (let index = record.driveFiles.length; index < record.photos.length; index += 1) {
-          const photo = record.photos[index];
-          document.getElementById('syncText').textContent = `${record.istifNo} • Fotoğraf ${index + 1}/${record.photos.length} Drive’a yükleniyor…`;
-          const uploaded = await uploadPhotoToDrive(record, photo, index);
-          record.driveFiles.push(uploaded);
-          record.driveFolderId = uploaded.folderId || record.driveFolderId;
-          await idbPut('records', record);
-        }
-      }
-      record.syncStatus = 'drive_synced';
-      await idbPut('records', record);
-      try {
-        await supabaseUpsertRecord(record);
-        record.syncStatus = 'synced';
-      } catch (error) {
-        record.syncStatus = 'drive_synced';
-        await idbPut('records', record);
-        throw error;
-      }
-      await idbPut('records', record);
-      completed += 1;
-      document.getElementById('syncText').textContent = `${record.istifNo} tamamlandı • ${completed}/${pending.length}`;
-      document.getElementById('syncBar').style.width = `${(completed / pending.length) * 100}%`;
-    }
-    state.records = await idbGetAll('records');
-    await loadRemoteRecords({ silent: true });
-    document.getElementById('syncText').textContent = 'Fotoğraflar Drive’a, kayıt bilgileri Supabase’e yüklendi ve ortak kayıtlar güncellendi.';
-    document.getElementById('syncBar').style.width = '100%';
-    setTimeout(() => { closeDialog(); render(); toast('Senkronizasyon tamamlandı.', 'good'); }, 1100);
-  } catch (error) {
-    document.getElementById('syncText').textContent = `Bağlantı başarısız: ${clean(error?.message || error)}. Yerel kayıtlar silinmedi.`;
-    toast('Senkronizasyon tamamlanamadı.', 'bad');
-  } finally {
-    state.syncing = false;
-  }
+  toast('Senkronizasyon Mesaha Suite ana menüsünden yönetilir.', 'bad');
 }
 
 function selectedForDocs() {
@@ -2154,14 +2086,14 @@ document.getElementById('switchCameraBtn').onclick = async () => {
   try { await openCamera(); } catch { toast('Kamera değiştirilemedi.', 'bad'); }
 };
 picker.addEventListener('change', pickerChanged);
-window.addEventListener('online', () => { toast('İnternet bağlantısı geldi.', 'good'); syncSharedContext(); refreshDriveStatus({ silent: true }).then(render); });
+window.addEventListener('online', () => { state.auth.status = hasSharedIdentity() ? 'cached' : 'signed_out'; render(); toast('İnternet geldi. Değişiklikleri sol alttaki Senkronize Et ile gönderebilirsiniz.', 'good'); });
 window.addEventListener('offline', () => { state.auth.status = hasSharedIdentity() ? 'cached' : 'signed_out'; render(); toast('Offline mod: kayıtlar cihazda tutuluyor.'); });
 window.addEventListener('storage', (event) => {
   if ([SHARED_SESSION_KEY, SHARED_PANEL_KEY, SHARED_ACCESS_KEY, SHARED_ACTIVE_SEFLIK_KEY, SHARED_TERMINAL_KEY, SHARED_TERMINAL_OLD_KEY].includes(event.key)) {
     hydrateLocalSharedIdentity();
     refreshCurrentMembers();
     render();
-    if (navigator.onLine) syncSharedContext();
+    /* Suite V7: ağ yenilemesi yalnızca Suite veya ortak Senkronize Et tarafından yapılır. */
   }
 });
 window.addEventListener('afterprint', () => {
@@ -2174,32 +2106,18 @@ window.addEventListener('afterprint', () => {
 });
 
 function istifDeviceId(){let id=localStorage.getItem('mesaha_istif_device_v5');if(!id){id='istif_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,10);localStorage.setItem('mesaha_istif_device_v5',id)}return id}
-async function pingAdminProfile(){if(!navigator.onLine||!hasSharedCloudIdentity()||!state.settings.seflik)return;try{await edgeCall('profile_ping_istif',{name:state.auth.name||displayOrmanci(),seflik:state.settings.seflik,bolmeNo:state.draft?.bolme||'',appVersion:'İstif İO '+APP_VERSION,avatarUrl:state.auth.avatarUrl,deviceId:istifDeviceId(),deviceInfo:{appId:'istif',appName:'İstif İO',platform:navigator.platform||'',browser:navigator.userAgent||'',suiteVersion:'V6'}})}catch{}}
+async function pingAdminProfile(){if(!navigator.onLine||!hasSharedCloudIdentity()||!state.settings.seflik)return;try{await edgeCall('profile_ping_istif',{name:state.auth.name||displayOrmanci(),seflik:state.settings.seflik,bolmeNo:state.draft?.bolme||'',appVersion:'İstif İO '+APP_VERSION,avatarUrl:state.auth.avatarUrl,deviceId:istifDeviceId(),deviceInfo:{appId:'istif',appName:'İstif İO',platform:navigator.platform||'',browser:navigator.userAgent||'',suiteVersion:'V7'}})}catch{}}
 (async function init() {
   try {
-    showBoot('Yükleniyor…', 'Şeflikler, ormancılar, istifler ve offline kayıtlar hazırlanıyor.');
+    if (bootOverlay) { bootOverlay.hidden = true; bootOverlay.classList.remove('show'); }
     await loadData();
-    await handleDriveOAuthCallback();
-    render();
-    if ('serviceWorker' in navigator) navigator.serviceWorker.register('../service-worker.js?v=6',{scope:'../',updateViaCache:'none'}).catch(() => {});
-    if (navigator.onLine && hasSharedCloudIdentity()) {
-      showBoot('Yükleniyor…', 'Mesaha İO hesabı, şeflikler, ormancılar ve Drive durumu kontrol ediliyor.');
-      const startupSync = Promise.allSettled([
-        syncSharedContext({ manual: false }),
-        refreshDriveStatus({ silent: true }),
-      ]);
-      await Promise.race([startupSync, wait(5000)]);
-    } else {
-      hydrateLocalSharedIdentity();
-      refreshCurrentMembers();
-      if (!navigator.onLine) await wait(650);
-    }
+    hydrateLocalSharedIdentity();
+    refreshCurrentMembers();
     if (!state.settings.setupComplete) state.view = 'settings';
-    hideBoot();
     render();
-    pingAdminProfile();
+    /* Suite V7: profil ve sunucu kontrolleri ana menüden yürütülür. */
   } catch (error) {
-    hideBoot();
+    if (bootOverlay) bootOverlay.hidden = true;
     app.innerHTML = `<div class="empty"><h2>Uygulama açılamadı</h2><p>${esc(error.message)}</p></div>`;
   }
 }());

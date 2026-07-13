@@ -1,6 +1,10 @@
 /* Mesaha İO V5.82 — Misafir modunda Şeflik Klasörü takılma önleyici güvenli çıkış */
 (function(){
   'use strict';
+  if(window.MESAHA_SUITE_MODE){
+    var suiteFolderStub={suiteManaged:true,sync:async function(){return{ok:true,suiteManaged:true}},autoSync:async function(){return{ok:true,suiteManaged:true}}};
+    window.MesahaSeflikFolderV529=suiteFolderStub;window.MesahaSeflikFolderV530=suiteFolderStub;return;
+  }
   if(window.MesahaSeflikFolderV529) return;
 
   var SETTINGS_KEY='cam_mesaha_ayarlar_v1';

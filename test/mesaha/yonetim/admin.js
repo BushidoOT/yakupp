@@ -239,6 +239,8 @@
       tree: readTotals(raw, ['tree_totals','treeTotals','agacTotals','agac_totals']),
       wood: readTotals(raw, ['product_totals','productTotals','woodTotals','wood_totals','odunTotals','odun_totals']),
       driveLink: first(raw.webViewLink, raw.web_view_link, raw.alternateLink, raw.url, payload.webViewLink, driveFileId ? `https://drive.google.com/file/d/${encodeURIComponent(driveFileId)}/view` : ''),
+      readonlyAdmin: raw.readonly_admin === true || clean(raw.provider) === 'user-drive-v7',
+      provider: first(raw.provider, payload.provider, 'legacy-drive'),
       raw
     };
   }
@@ -332,7 +334,9 @@
       state.summary = obj(data.summary); collectHiddenFromLogs();
       const driveBackups = await loadDriveBackups();
       const edgeBackups = arr(data.backups).map(mapBackup).filter((b) => b.driveFileId && !state.hiddenBackupIds.has(clean(b.driveFileId)));
-      state.backups = (driveBackups.length ? driveBackups : edgeBackups).sort((a,b) => b.createdAtMs - a.createdAtMs);
+      const backupMap = new Map();
+      [...driveBackups, ...edgeBackups].forEach((item) => { const key=clean(item.driveFileId||item.id); if(key && !backupMap.has(key)) backupMap.set(key,item); });
+      state.backups = [...backupMap.values()].sort((a,b) => b.createdAtMs - a.createdAtMs);
       mergeUsers(); renderAll();
       setStatus(`Canlı veri yüklendi • ${new Date().toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'})}`);
     } catch (error) {
@@ -528,7 +532,13 @@ function appLabel(user){return appKind(user)==='istif'?'İstif İO':appKind(user
   }
   function renderBackups() {
     const rows=filteredBackups(); $('backupCountBadge').textContent=`${fmtInt(rows.length)} yedek`;
-    $('backupList').innerHTML=rows.length?rows.map((b)=>`<article class="backup-card" data-backup-id="${escapeHtml(b.driveFileId)}"><div class="backup-main"><div class="file-badge">JSON</div><div><h3>${escapeHtml(b.fileName)}</h3><p>${escapeHtml(b.name)} • ${escapeHtml(b.seflik)}</p><p>${escapeHtml(fmtDate(b.createdAt))}${b.version&&b.version!=='-'?` • ${escapeHtml(b.version)}`:''}</p></div></div><div class="backup-stats"><div><small>Kayıt</small><b>${fmtInt(b.count)}</b></div><div><small>m³</small><b>${fmtM3(b.volume)}</b></div></div><div class="backup-actions"><a class="button info small" href="${escapeHtml(b.driveLink||'#')}" target="_blank" rel="noopener">Drive aç</a><button class="button danger small" data-action="hide-backup" data-backup-id="${escapeHtml(b.driveFileId)}" type="button">Kalıcı Sil</button></div></article>`).join(''):'<div class="empty-state">Görünen Drive yedeği yok.</div>';
+    $('backupList').innerHTML=rows.length?rows.map((b)=>{
+      const metaOnly=b.readonlyAdmin===true;
+      const actions=metaOnly
+        ? `<span class="status-pill">Kullanıcının kişisel Drive hesabında</span>`
+        : `<a class="button info small" href="${escapeHtml(b.driveLink||'#')}" target="_blank" rel="noopener">Drive aç</a><button class="button danger small" data-action="hide-backup" data-backup-id="${escapeHtml(b.driveFileId)}" type="button">Kalıcı Sil</button>`;
+      return `<article class="backup-card" data-backup-id="${escapeHtml(b.driveFileId)}"><div class="backup-main"><div class="file-badge">JSON</div><div><h3>${escapeHtml(b.fileName)}</h3><p>${escapeHtml(b.name)} • ${escapeHtml(b.seflik)}</p><p>${escapeHtml(fmtDate(b.createdAt))}${b.version&&b.version!=='-'?` • ${escapeHtml(b.version)}`:''}${metaOnly?' • Kişisel Drive':''}</p></div></div><div class="backup-stats"><div><small>Kayıt</small><b>${fmtInt(b.count)}</b></div><div><small>m³</small><b>${fmtM3(b.volume)}</b></div></div><div class="backup-actions">${actions}</div></article>`;
+    }).join(''):'<div class="empty-state">Görünen Drive yedeği yok.</div>';
   }
 
   function activeBlocks(type=state.blockView) { return state.blocks.filter((b)=>b.active&&(type==='user_key' ? (b.type==='user_key'||b.type==='user_id') : b.type===type)).sort((a,b)=>ms(b.createdAt)-ms(a.createdAt)); }

@@ -1,6 +1,10 @@
 /* Mesaha İO V5.82 — Misafir modunda Şeflik Klasörü yüklenme kilidi önleme. */
 (function(){
   'use strict';
+  if(window.MESAHA_SUITE_MODE){
+    var suiteRepairStub={suiteManaged:true,refresh:async function(){return true},showLoading:function(){},updateLoading:function(){},hideLoading:function(){},showLocalMemberFallback:function(){}};
+    window.MesahaSeflikEntryRepairV581=suiteRepairStub;window.MesahaSeflikEntryRepairV582=suiteRepairStub;return;
+  }
   if(window.__mesahaSeflikEntryRepairV582) return;
   window.__mesahaSeflikEntryRepairV582 = true;
 

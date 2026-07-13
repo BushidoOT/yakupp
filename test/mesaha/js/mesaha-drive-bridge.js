@@ -1,6 +1,10 @@
 /* Mesaha İO V5.73 — Drive yedek silme aktif ve güvenli köprü */
 (function(){
   'use strict';
+  if(window.MESAHA_SUITE_MODE){
+    var suiteDriveStub={secure:true,suiteManaged:true,backup:async function(){throw new Error('Drive yedekleri Mesaha Suite üzerinden yönetilir')},backupCustom:async function(){throw new Error('Drive yedekleri Mesaha Suite üzerinden yönetilir')},list:async function(){return[]},openRestore:function(){location.href='../'},restore:async function(){return false},deleteBackup:async function(){return false}};
+    window.MESAHA_DRIVE_BRIDGE_V463=suiteDriveStub;window.mesahaDriveBridgeV463=suiteDriveStub;return;
+  }
   var STORAGE_KEY = 'cam_mesaha_kayitlari_v1';
   var SETTINGS_KEY = 'cam_mesaha_ayarlar_v1';
   var PANEL_USER_KEY = 'mesaha_panel_user_v316';

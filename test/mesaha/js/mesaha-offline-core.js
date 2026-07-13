@@ -59,6 +59,7 @@
   ];
 
   function warmCache(){
+    if(window.MESAHA_SUITE_MODE)return;
     if(!('serviceWorker' in navigator)||!navigator.onLine||connectionSaveData())return;
     var last=0,key='mesaha_cache_warm_'+String(META.build||META.integrityId||'current');
     try{last=Number(localStorage.getItem(key)||0);}catch(e){}
@@ -70,8 +71,9 @@
   }
 
   function registerServiceWorker(){
+    if(window.MESAHA_SUITE_MODE)return;
     if (!('serviceWorker' in navigator)) return;
-    navigator.serviceWorker.register('../service-worker.js?v=6', {scope:'../', updateViaCache:'none'}).then(function(reg){
+    navigator.serviceWorker.register('../service-worker.js?v=7', {scope:'../', updateViaCache:'none'}).then(function(reg){
       try {
         var last = Number(localStorage.getItem('mesaha_sw_update_check_current') || 0);
         if (navigator.onLine && Date.now() - last > 15 * 60 * 1000) {
