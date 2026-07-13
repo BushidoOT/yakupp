@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#123d2d">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Mesaha Suite">
+  <title>Mesaha Suite</title>
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" type="image/png" href="./assets/icon-192.png">
+  <link rel="apple-touch-icon" href="./assets/icon-192.png">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="hero" aria-label="Mesaha Suite üst alanı">
+      <div class="forest-layer forest-back" aria-hidden="true"></div>
+      <div class="forest-layer forest-front" aria-hidden="true"></div>
+
+      <div class="hero-actions">
+        <div class="connection-pill" id="connectionPill" role="status" aria-live="polite">
+          <span class="status-dot"></span>
+          <span id="connectionText">Çevrimiçi</span>
+        </div>
+        <button class="icon-button" id="notificationButton" type="button" aria-label="Bildirimler">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg>
+          <span class="notification-dot" id="notificationDot"></span>
+        </button>
+      </div>
+
+      <div class="brand-wrap">
+        <div class="brand-logo-wrap">
+          <img id="brandLogo" class="brand-logo" src="./assets/icon-512.png" alt="Mesaha İO logosu">
+        </div>
+        <h1>Mesaha <span>Suite</span></h1>
+        <p>Orman İşleri Dijital Çözümler</p>
+      </div>
+    </header>
+
+    <main class="content">
+      <section class="profile-card glass-card" id="profileCard" aria-label="Kullanıcı bilgisi">
+        <div class="avatar" id="avatar">MD</div>
+        <div class="profile-copy">
+          <span class="eyebrow" id="welcomeLabel">Hoş geldiniz,</span>
+          <strong id="profileName">Giriş yapılmadı</strong>
+          <span class="profile-office" id="profileOffice">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 21V9l8-5 8 5v12M9 21v-6h6v6M8 10h.01M12 10h.01M16 10h.01"/></svg>
+            Şeflik seçilmedi
+          </span>
+        </div>
+        <button class="profile-action" id="profileAction" type="button" aria-label="Giriş bilgilerini düzenle">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+        </button>
+      </section>
+
+      <section class="app-grid" aria-label="Uygulamalar">
+        <button class="app-card mesaha-card" data-app="mesaha" type="button">
+          <div class="app-icon app-icon-green">
+            <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M32 5 16 25h9L12 42h13v17h14V42h13L39 25h9z"/></svg>
+          </div>
+          <div class="app-copy">
+            <h2>Mesaha İO</h2>
+            <p>Orman ölçüm ve<br>beyan sistemi</p>
+          </div>
+          <span class="app-arrow" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </span>
+        </button>
+
+        <button class="app-card istif-card" data-app="istif" type="button">
+          <div class="app-icon app-icon-gold">
+            <svg viewBox="0 0 64 64" aria-hidden="true"><path d="m32 7 22 11-22 11L10 18 32 7Zm-22 17 19 10v22L10 46V24Zm44 0L35 34v22l19-10V24Z"/></svg>
+          </div>
+          <div class="app-copy">
+            <h2>İstif İO</h2>
+            <p>İstif takip ve<br>fotoğraf sistemi</p>
+          </div>
+          <span class="app-arrow" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </span>
+        </button>
+      </section>
+
+      <section class="quick-grid" aria-label="Hızlı yönetim işlemleri">
+        <button class="quick-card" data-modal="login" type="button">
+          <span class="quick-icon"><svg viewBox="0 0 24 24"><path d="M10 17l5-5-5-5M15 12H3M14 4h5a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-5"/></svg></span>
+          <span><strong id="loginButtonTitle">Giriş Yap</strong><small>Hesabınıza giriş yapın</small></span>
+          <svg class="chevron" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+        </button>
+
+        <button class="quick-card" data-modal="seflik" type="button">
+          <span class="quick-icon"><svg viewBox="0 0 24 24"><path d="M4 21V7l8-4 8 4v14M8 10h2M14 10h2M8 14h2M14 14h2M10 21v-4h4v4"/></svg></span>
+          <span><strong>Şeflik Oluştur</strong><small>Yeni şeflik kaydı oluşturun</small></span>
+          <svg class="chevron" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+        </button>
+
+        <button class="quick-card" data-modal="ormanci" type="button">
+          <span class="quick-icon"><svg viewBox="0 0 24 24"><path d="M15 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M8.5 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM19 8v6M16 11h6"/></svg></span>
+          <span><strong>Ormancı Ekle</strong><small>Sisteme yeni ormancı ekleyin</small></span>
+          <svg class="chevron" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+        </button>
+
+        <button class="quick-card" data-modal="bolme" type="button">
+          <span class="quick-icon"><svg viewBox="0 0 24 24"><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6ZM9 3v15M15 6v15"/></svg></span>
+          <span><strong>Bölme Ekle</strong><small>Yeni orman bölmesi ekleyin</small></span>
+          <svg class="chevron" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+        </button>
+      </section>
+
+      <section class="tool-strip" aria-label="Sistem araçları">
+        <button type="button" data-tool="settings">
+          <svg viewBox="0 0 24 24"><path d="M12 15.5A3.5 3.5 0 1 0 12 8a3.5 3.5 0 0 0 0 7.5ZM19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.12 2.12-.06-.06a1.7 1.7 0 0 0-1.88-.34 1.7 1.7 0 0 0-1.03 1.55V20.3h-3v-.09a1.7 1.7 0 0 0-1.03-1.55 1.7 1.7 0 0 0-1.88.34l-.06.06-2.12-2.12.06-.06A1.7 1.7 0 0 0 7 15a1.7 1.7 0 0 0-1.55-1.03H5.3v-3h.15A1.7 1.7 0 0 0 7 9.94a1.7 1.7 0 0 0-.34-1.88L6.6 8l2.12-2.12.06.06a1.7 1.7 0 0 0 1.88.34A1.7 1.7 0 0 0 11.7 4.7v-.1h3v.1a1.7 1.7 0 0 0 1.03 1.56 1.7 1.7 0 0 0 1.88-.34l.06-.06L19.8 8l-.06.06a1.7 1.7 0 0 0-.34 1.88 1.7 1.7 0 0 0 1.55 1.03h.15v3h-.15A1.7 1.7 0 0 0 19.4 15Z"/></svg>
+          <strong>Ayarlar</strong><small>Uygulama ayarları</small>
+        </button>
+        <button type="button" data-tool="sync">
+          <svg viewBox="0 0 24 24"><path d="M7 18a4.6 4.6 0 0 1-.8-9.13A6 6 0 0 1 17.5 7.5 4 4 0 1 1 18 18M9 15l3 3 3-3M12 12v6"/></svg>
+          <strong>Senkronizasyon</strong><small>Veri senkronize et</small>
+        </button>
+        <button type="button" data-tool="updates">
+          <svg viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>
+          <strong>Güncellemeler</strong><small>Uygulamayı güncelle</small>
+        </button>
+        <button type="button" data-tool="about">
+          <svg viewBox="0 0 24 24"><path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20ZM12 10v6M12 7h.01"/></svg>
+          <strong>Hakkında</strong><small>Versiyon ve bilgiler</small>
+        </button>
+      </section>
+
+      <footer class="status-footer">
+        <div class="sync-info">
+          <svg viewBox="0 0 24 24"><path d="M7 18a4.6 4.6 0 0 1-.8-9.13A6 6 0 0 1 17.5 7.5 4 4 0 1 1 18 18"/></svg>
+          <span><small>Son Senkronizasyon</small><strong id="lastSync">Henüz yapılmadı</strong></span>
+          <span class="sync-check"><svg viewBox="0 0 24 24"><path d="m6 12 4 4 8-8"/></svg></span>
+        </div>
+        <div class="version-info">
+          <span><small>Versiyon</small><strong id="versionText">1.0.0 (Build 1)</strong></span>
+          <button id="footerUpdate" type="button" aria-label="Güncellemeleri kontrol et"><svg viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg></button>
+        </div>
+      </footer>
+    </main>
+  </div>
+
+  <div class="modal-backdrop" id="modalBackdrop" hidden></div>
+
+  <section class="modal" id="loginModal" role="dialog" aria-modal="true" aria-labelledby="loginModalTitle" hidden>
+    <div class="modal-head"><div><span class="modal-kicker">ORTAK OTURUM</span><h3 id="loginModalTitle">Giriş Yap</h3></div><button class="modal-close" type="button" aria-label="Kapat">×</button></div>
+    <form id="loginForm" class="modal-form">
+      <label>Ad Soyad<input id="loginName" name="name" autocomplete="name" placeholder="Adınızı ve soyadınızı girin" required></label>
+      <label>Şeflik<select id="loginSeflik" name="seflik" required></select></label>
+      <label class="remember-row"><input id="rememberLogin" type="checkbox" checked><span>Bu cihazda oturumu açık tut</span></label>
+      <div class="form-actions"><button class="secondary-button modal-cancel" type="button">Vazgeç</button><button class="primary-button" type="submit">Giriş Yap</button></div>
+    </form>
+  </section>
+
+  <section class="modal" id="seflikModal" role="dialog" aria-modal="true" aria-labelledby="seflikModalTitle" hidden>
+    <div class="modal-head"><div><span class="modal-kicker">YÖNETİM</span><h3 id="seflikModalTitle">Şeflik Oluştur</h3></div><button class="modal-close" type="button" aria-label="Kapat">×</button></div>
+    <form id="seflikForm" class="modal-form">
+      <label>Şeflik Adı<input id="seflikName" name="name" placeholder="Örn. Yaylacık Şefliği" required></label>
+      <label>İşletme Müdürlüğü<input id="seflikDirectorate" name="directorate" placeholder="İsteğe bağlı"></label>
+      <label>Şeflik Kodu<input id="seflikCode" name="code" inputmode="numeric" placeholder="İsteğe bağlı"></label>
+      <div class="form-actions"><button class="secondary-button modal-cancel" type="button">Vazgeç</button><button class="primary-button" type="submit">Şefliği Kaydet</button></div>
+    </form>
+  </section>
+
+  <section class="modal" id="ormanciModal" role="dialog" aria-modal="true" aria-labelledby="ormanciModalTitle" hidden>
+    <div class="modal-head"><div><span class="modal-kicker">PERSONEL</span><h3 id="ormanciModalTitle">Ormancı Ekle</h3></div><button class="modal-close" type="button" aria-label="Kapat">×</button></div>
+    <form id="ormanciForm" class="modal-form">
+      <label>Ad Soyad<input id="ormanciName" name="name" placeholder="Ormancı adı soyadı" required></label>
+      <label>Bağlı Şeflik<select id="ormanciSeflik" name="seflik" required></select></label>
+      <label>Telefon<input id="ormanciPhone" name="phone" inputmode="tel" placeholder="İsteğe bağlı"></label>
+      <div class="form-actions"><button class="secondary-button modal-cancel" type="button">Vazgeç</button><button class="primary-button" type="submit">Ormancıyı Kaydet</button></div>
+    </form>
+  </section>
+
+  <section class="modal" id="bolmeModal" role="dialog" aria-modal="true" aria-labelledby="bolmeModalTitle" hidden>
+    <div class="modal-head"><div><span class="modal-kicker">SAHA</span><h3 id="bolmeModalTitle">Bölme Ekle</h3></div><button class="modal-close" type="button" aria-label="Kapat">×</button></div>
+    <form id="bolmeForm" class="modal-form">
+      <label>Bölme Numarası<input id="bolmeNo" name="number" placeholder="Örn. 124" required></label>
+      <label>Bağlı Şeflik<select id="bolmeSeflik" name="seflik" required></select></label>
+      <label>Mevki / Açıklama<textarea id="bolmeLocation" name="location" rows="3" placeholder="İsteğe bağlı"></textarea></label>
+      <div class="form-actions"><button class="secondary-button modal-cancel" type="button">Vazgeç</button><button class="primary-button" type="submit">Bölmeyi Kaydet</button></div>
+    </form>
+  </section>
+
+  <section class="modal modal-compact" id="infoModal" role="dialog" aria-modal="true" aria-labelledby="infoModalTitle" hidden>
+    <div class="modal-head"><div><span class="modal-kicker" id="infoKicker">BİLGİ</span><h3 id="infoModalTitle">Mesaha Suite</h3></div><button class="modal-close" type="button" aria-label="Kapat">×</button></div>
+    <div class="info-content" id="infoContent"></div>
+    <div class="form-actions single"><button class="primary-button modal-cancel" type="button">Tamam</button></div>
+  </section>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
+
+  <script src="./app.js" defer></script>
+</body>
+</html>
