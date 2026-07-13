@@ -1,6 +1,6 @@
 'use strict';
 
-const APP_VERSION = '0.2.9';
+const APP_VERSION = '0.3.0';
 const MAX_PHOTO_BYTES = 1024 * 1024;
 const DB_NAME = 'mesaha-istif-prototype';
 const DB_VERSION = 1;
@@ -21,7 +21,7 @@ const SHARED_SESSION_BACKUP_KEY = 'mesaha_supabase_v569_session_backup';
 const SHARED_PANEL_KEY = 'mesaha_panel_user_v316';
 const SHARED_ACCESS_KEY = 'mesaha_google_access_v548';
 const SHARED_ACTIVE_SEFLIK_KEY = 'mesaha_active_seflik_folder_v564';
-const SHARED_CACHE_SETTING_KEY = 'shared-context-v029';
+const SHARED_CACHE_SETTING_KEY = 'shared-context-v030';
 
 const DEFAULT_SETTINGS = {
   seflik: '',
@@ -947,7 +947,7 @@ function recordCards(rows) {
       ${sent ? `<div class="sent-badge">${icon('check', 15)} Gönderilen İstif</div>` : ''}
       <div class="record-actions">
         <button class="btn small" type="button" data-edit-record="${record.id}">${icon('doc', 16)} Düzenle</button>
-        <button class="btn ${sent ? 'undo-sent' : 'mark-sent'} small" type="button" ${sent ? `data-undo-sent="${record.id}"` : `data-mark-sent="${record.id}"`}>${icon(sent ? 'refresh' : 'check', 16)} ${sent ? 'Geri Al' : 'İstif Gönderildi'}</button>
+        <button class="btn ${sent ? 'undo-sent' : 'mark-sent'} small" type="button" ${sent ? `data-undo-sent="${record.id}"` : `data-mark-sent="${record.id}"`}>${icon(sent ? 'refresh' : 'check', 16)} ${sent ? 'Geri Al' : 'İstifi Gönder'}</button>
         <button class="btn danger-soft small" type="button" data-delete-record="${record.id}">${icon('trash', 16)} Sil</button>
       </div>
     </article>`;
@@ -1525,7 +1525,13 @@ async function searchForesterSuggestions(query, box) {
       box.innerHTML = '<span>Bu aramada Google onaylı kullanıcı bulunamadı.</span>';
       return;
     }
-    box.innerHTML = users.map((user, index) => `<button class="suggest-row" type="button" data-user-index="${index}"><span class="picker-avatar">${user.avatarUrl ? `<img src="${esc(user.avatarUrl)}" alt="">` : icon('user', 19)}</span><span><b>${esc(user.name)}</b><small>${esc(user.email || 'Google kullanıcısı')}</small></span><em class="suggest-add">Ekle</em></button>`).join('');
+    box.innerHTML = users.map((user, index) => {
+      const existing = state.ormancilar.some((item) =>
+        (clean(user.userId || user.user_id) && clean(item.userId || item.user_id) && clean(user.userId || user.user_id) === clean(item.userId || item.user_id)) ||
+        (clean(user.email) && clean(item.email) && clean(user.email).toLocaleLowerCase('tr-TR') === clean(item.email).toLocaleLowerCase('tr-TR'))
+      );
+      return `<button class="suggest-row ${existing ? 'already-added' : ''}" type="button" data-user-index="${index}"><span class="picker-avatar">${user.avatarUrl ? `<img src="${esc(user.avatarUrl)}" alt="">` : icon('user', 19)}</span><span><b>${esc(user.name)}</b><small>${esc(user.email || 'Google kullanıcısı')}</small></span><em class="suggest-add">${existing ? 'Ekli' : 'Ekle'}</em></button>`;
+    }).join('');
     box.querySelectorAll('[data-user-index]').forEach((button) => {
       button.onclick = () => addForesterUser(users[Number(button.dataset.userIndex)]);
     });

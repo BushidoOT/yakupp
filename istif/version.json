@@ -1,8 +1,8 @@
 {
-  "version": "0.2.9",
-  "name": "Mesaha İO İstif Alma",
+  "version": "0.3.0",
+  "name": "Mesaha İO İstif Alma v0.3.0",
   "updatedAt": "2026-07-13T19:05:00+03:00",
   "notes": "Koordinat tutanağı başlığı ve tarihi düzeltildi; evraklar bölme bazında sınırlandı; odun türü renkleri ve gönderildi/geri al durumu eklendi",
-  "visibleVersion": "İstif Alma v0.2.9",
-  "build": "20260713-v029"
+  "visibleVersion": "İstif Alma v0.3.0",
+  "build": "v030"
 }

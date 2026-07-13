@@ -1,4 +1,4 @@
-const CACHE = 'mesaha-istif-v029';
+const CACHE = 'mesaha-istif-v030';
 const PREFIX = 'mesaha-istif-';
 const CORE = [
   './',
