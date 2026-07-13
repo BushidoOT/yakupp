@@ -1,6 +1,6 @@
 'use strict';
 
-const APP_VERSION = '0.2.6';
+const APP_VERSION = '0.2.7';
 const MAX_PHOTO_BYTES = 1024 * 1024;
 const DB_NAME = 'mesaha-istif-prototype';
 const DB_VERSION = 1;
@@ -21,21 +21,22 @@ const SHARED_SESSION_BACKUP_KEY = 'mesaha_supabase_v569_session_backup';
 const SHARED_PANEL_KEY = 'mesaha_panel_user_v316';
 const SHARED_ACCESS_KEY = 'mesaha_google_access_v548';
 const SHARED_ACTIVE_SEFLIK_KEY = 'mesaha_active_seflik_folder_v564';
-const SHARED_CACHE_SETTING_KEY = 'shared-context-v026';
+const SHARED_CACHE_SETTING_KEY = 'shared-context-v027';
 
 const DEFAULT_SETTINGS = {
   seflik: '',
   seflikKey: '',
   ormanci: '',
-  bolgeMudurlugu: 'KÜTAHYA',
-  isletmeMudurlugu: 'TAVŞANLI',
-  agacTuru: 'İBRELİ',
-  satisIstifYeri: 'Rampa',
+  bolgeMudurlugu: '',
+  isletmeMudurlugu: '',
+  satisIstifYeri: '',
+  setupComplete: false,
   driveClientId: '', // eski sürüm uyumluluğu; arayüzde kullanılmaz
   driveFolderId: '', // eski sürüm uyumluluğu
   driveCreatedFolderId: '', // eski sürüm uyumluluğu
   photoMaxBytes: MAX_PHOTO_BYTES,
 };
+const GENERIC_SETTINGS_MIGRATION_KEY = 'mesaha-istif-generic-settings-v027';
 
 const state = {
   view: 'home',
@@ -135,6 +136,8 @@ const stableKey = (v) => clean(v).toLocaleLowerCase('tr-TR')
   .replace(/ç/g, 'c').replace(/ğ/g, 'g').replace(/ı/g, 'i')
   .replace(/ö/g, 'o').replace(/ş/g, 's').replace(/ü/g, 'u')
   .replace(/[^a-z0-9_-]+/g, '_').replace(/^_+|_+$/g, '').slice(0, 160);
+const sameSeflikLabel = (a, b) => stableKey(clean(a).replace(/\s*(Şefliği|Sefliği|Şeflik|Seflik)\s*$/i, '')) === stableKey(clean(b).replace(/\s*(Şefliği|Sefliği|Şeflik|Seflik)\s*$/i, ''));
+const recordBolme = (record) => clean(record?.bolme || record?.bolmeNo || record?.bolme_no);
 
 function jsonRead(key, fallback = null) {
   try {
@@ -244,31 +247,28 @@ async function loadData() {
     state.drive = { ...state.drive, ...(shared.drive || {}), status: shared.drive?.connected ? 'cached' : 'idle' };
     state.auth = { ...state.auth, ...(shared.auth || {}), status: 'cached' };
   }
-  hydrateLocalSharedIdentity();
-  if (!state.records.length) {
-    for (const record of demoRecords()) await idbPut('records', record);
-    state.records = await idbGetAll('records');
-  }
-  refreshCurrentMembers();
-}
 
-function demoRecords() {
-  const base = {
-    seflik: state.settings.seflik || 'Yaylacık Şefliği',
-    ormanci: state.settings.ormanci || 'Mehmet Yılmaz',
-    coordinates: '41.3892, 33.7834',
-    mevki: 'Çamlık Mevkii',
-    description: 'Örnek prototip kaydı',
-    barcode: '',
-    photos: [],
-    createdAt: new Date().toISOString(),
-  };
-  return [
-    { ...base, id: uid(), date: '2026-07-12', bolme: '124', istifNo: 'İ-03', type: 'İbreli Kabuklu Kağıtlık Odun', ster: '45,60', syncStatus: 'demo', photoCount: 4, isDemo: true },
-    { ...base, id: uid(), date: '2026-07-12', bolme: '124', istifNo: 'İ-08', type: 'İbreli Lif Yonga Odun', ster: '78,40', syncStatus: 'demo', photoCount: 4, isDemo: true },
-    { ...base, id: uid(), date: '2026-07-12', bolme: '124', istifNo: 'İ-09', type: 'İbreli Yakacak Odun', ster: '32,15', syncStatus: 'demo', photoCount: 4, isDemo: true },
-    { ...base, id: uid(), date: '2026-07-10', bolme: '125', istifNo: 'İ-02', type: 'İbreli Sırık 4 Boy', ster: '60,00', coordinates: '', syncStatus: 'demo', photoCount: 2, isDemo: true },
-  ];
+  // Eski prototip/demo istifleri cihazdan kalıcı olarak temizle.
+  const demoRows = state.records.filter((record) => record?.isDemo === true || record?.syncStatus === 'demo' || clean(record?.description) === 'Örnek prototip kaydı');
+  for (const record of demoRows) {
+    try { await idbDelete('records', record.id); } catch {}
+  }
+  state.records = state.records.filter((record) => !demoRows.some((demo) => demo.id === record.id));
+
+  // Önceki sürümlerde cihaza otomatik yazılmış kişisel kurum/şeflik örneklerini bir kez sıfırla.
+  if (!localStorage.getItem(GENERIC_SETTINGS_MIGRATION_KEY)) {
+    state.settings = {
+      ...state.settings,
+      seflik: '', seflikKey: '', ormanci: '',
+      bolgeMudurlugu: '', isletmeMudurlugu: '', satisIstifYeri: '',
+      setupComplete: false,
+    };
+    localStorage.setItem(GENERIC_SETTINGS_MIGRATION_KEY, new Date().toISOString());
+    await saveSettings();
+  }
+
+  hydrateLocalSharedIdentity();
+  refreshCurrentMembers();
 }
 
 function readSharedSession() {
@@ -339,14 +339,10 @@ function hydrateLocalSharedIdentity() {
   } else if (state.auth.status !== 'cached') {
     state.auth.status = 'signed_out';
   }
-  if (localSeflik) {
-    if (!state.seflikler.some((item) => item.name === localSeflik)) {
-      state.seflikler.unshift({ name: localSeflik, key: localKey, role: 'cached' });
-    }
-    state.settings.seflik = localSeflik;
-    state.settings.seflikKey = localKey;
+  if (localSeflik && !state.seflikler.some((item) => item.name === localSeflik)) {
+    // Mesaha İO şefliği yalnızca seçenek olarak alınır; kullanıcı açıkça kaydetmeden varsayılan seçilmez.
+    state.seflikler.unshift({ name: localSeflik, key: localKey, role: 'cached' });
   }
-  if (!state.settings.ormanci && localName) state.settings.ormanci = localName;
 }
 
 async function edgeCall(action, payload = {}, retried = false) {
@@ -359,7 +355,7 @@ async function edgeCall(action, payload = {}, retried = false) {
       Authorization: `Bearer ${session.access_token}`,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ action, source: 'mesaha-istif-v025', ...payload }),
+    body: JSON.stringify({ action, source: 'mesaha-istif-v027', ...payload }),
   });
   const body = await response.json().catch(() => ({}));
   if ((response.status === 401 || response.status === 403) && !retried && readSharedSession()?.refresh_token) {
@@ -380,7 +376,7 @@ async function bridgeCall(action, payload = {}, retried = false) {
       Authorization: `Bearer ${session.access_token}`,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ action, source: 'mesaha-istif-v025', ...payload }),
+    body: JSON.stringify({ action, source: 'mesaha-istif-v027', ...payload }),
   });
   const body = await response.json().catch(() => ({}));
   if ((response.status === 401 || response.status === 403) && !retried && readSharedSession()?.refresh_token) {
@@ -391,46 +387,12 @@ async function bridgeCall(action, payload = {}, retried = false) {
 }
 
 function currentFolder() {
-  const aliases = new Set(seflikAliasKeys(state.settings.seflik, state.settings.seflikKey));
-  const direct = state.seflikler.find((item) => item.key === state.settings.seflikKey || item.name === state.settings.seflik);
-  if (direct) return direct;
-  return state.seflikler.find((item) => seflikAliasKeys(item.name, item.key).some((key) => aliases.has(key))) || null;
-}
-
-function currentUserLocalIdentity() {
-  const session = readSharedSession() || {};
-  const panel = jsonRead(SHARED_PANEL_KEY, {}) || {};
-  const access = jsonRead(SHARED_ACCESS_KEY, {}) || {};
-  return {
-    userId: clean(state.auth.userId || session.user?.id || access.user_id || panel.user_id),
-    email: clean(state.auth.email || session.user?.email || access.email || panel.googleEmail).toLocaleLowerCase('tr-TR'),
-    name: clean(state.auth.name || access.name || access.canonical_name || panel.googleFullName || panel.name),
-  };
-}
-
-function sameCurrentUser(item) {
-  const me = currentUserLocalIdentity();
-  const uid = clean(item?.userId || item?.user_id || item?.member_user_id || item?.forester_user_id);
-  const email = clean(item?.email || item?.user_email || item?.member_email).toLocaleLowerCase('tr-TR');
-  if (me.userId && uid && me.userId === uid) return true;
-  if (me.email && email && me.email === email) return true;
-  return false;
-}
-
-function localSeflikOwnerFlag() {
-  const active = jsonRead(SHARED_ACTIVE_SEFLIK_KEY, {}) || {};
-  const access = jsonRead(SHARED_ACCESS_KEY, {}) || {};
-  const aliases = new Set(currentSeflikAliasKeys());
-  const activeAliases = seflikAliasKeys(active.seflik || active.name || state.settings.seflik, active.seflik_key || active.seflikKey || state.settings.seflikKey);
-  const sameActive = !activeAliases.length || activeAliases.some((key) => aliases.has(key));
-  const role = clean(active.role || access.role || access.member_role).toLocaleLowerCase('tr-TR');
-  return !!((sameActive && (active.creator === true || active.is_creator === true)) || ['owner', 'creator', 'kurucu'].includes(role));
+  return state.seflikler.find((item) => item.key === state.settings.seflikKey || item.name === state.settings.seflik) || null;
 }
 
 function currentFolderIsOwner() {
   const folder = currentFolder();
-  const folderOwner = !!(folder && (folder.isCreator || folder.is_creator || ['owner', 'creator', 'kurucu'].includes(String(folder.role || folder.member_role || '').toLocaleLowerCase('tr-TR'))));
-  return !!(folderOwner || localSeflikOwnerFlag() || state.drive.isOwner === true);
+  return !!(folder && (folder.isCreator || ['owner', 'creator', 'kurucu'].includes(String(folder.role || '').toLocaleLowerCase('tr-TR'))));
 }
 
 function normalizeForester(raw) {
@@ -550,79 +512,7 @@ function valuesByAlias(map, aliases) {
 }
 
 function foresterKey(item) {
-  const email = clean(item?.email).toLocaleLowerCase('tr-TR');
-  if (email) return `email:${email}`;
-  if (item?.userId) return `uid:${item.userId}`;
-  return `name:${stableKey(item?.name)}`;
-}
-
-function foresterIdentityKeys(item) {
-  const keys = [];
-  const email = clean(item?.email || item?.user_email || item?.member_email).toLocaleLowerCase('tr-TR');
-  const userId = clean(item?.userId || item?.user_id || item?.member_user_id || item?.forester_user_id);
-  const name = stableKey(item?.name || item?.canonical_name || item?.member_name);
-  if (userId) keys.push(`uid:${userId}`);
-  if (email) keys.push(`email:${email}`);
-  // Aynı ad-soyada sahip farklı Google hesapları kaybolmasın diye isim yalnızca kimlik/e-posta yoksa kullanılır.
-  if (!userId && !email && name) keys.push(`name:${name}`);
-  return Array.from(new Set(keys));
-}
-
-function sameForesterIdentity(a, b) {
-  const ak = foresterIdentityKeys(a);
-  const bk = foresterIdentityKeys(b);
-  if (ak.length && bk.length) return ak.some((key) => bk.includes(key));
-  return stableKey(a?.name) && stableKey(a?.name) === stableKey(b?.name);
-}
-
-function mergeForesterData(oldItem = {}, nextItem = {}) {
-  const roleRank = { owner: 4, creator: 4, kurucu: 4, forester: 3, member: 2, cached: 1 };
-  const oldRole = clean(oldItem.role || '').toLocaleLowerCase('tr-TR');
-  const nextRole = clean(nextItem.role || '').toLocaleLowerCase('tr-TR');
-  const role = (roleRank[nextRole] || 0) >= (roleRank[oldRole] || 0) ? (nextItem.role || oldItem.role) : (oldItem.role || nextItem.role);
-  return {
-    ...oldItem,
-    ...nextItem,
-    id: clean(oldItem.id || nextItem.id || oldItem.userId || nextItem.userId || oldItem.email || nextItem.email || oldItem.name || nextItem.name),
-    userId: clean(oldItem.userId || nextItem.userId || oldItem.user_id || nextItem.user_id || oldItem.member_user_id || nextItem.member_user_id || oldItem.forester_user_id || nextItem.forester_user_id),
-    email: clean(oldItem.email || nextItem.email || oldItem.user_email || nextItem.user_email || oldItem.member_email || nextItem.member_email).toLocaleLowerCase('tr-TR'),
-    name: clean(oldItem.name || nextItem.name || oldItem.email || nextItem.email),
-    avatarUrl: clean(oldItem.avatarUrl || nextItem.avatarUrl || oldItem.avatar_url || nextItem.avatar_url),
-    role,
-    isSelf: oldItem.isSelf === true || nextItem.isSelf === true,
-    custom: oldItem.custom === true || nextItem.custom === true,
-    pending: oldItem.pending === true || nextItem.pending === true,
-  };
-}
-
-function addForesterToMap(map, item) {
-  if (!item?.name) return null;
-  const keys = foresterIdentityKeys(item);
-  if (!keys.length) return null;
-  let existing = null;
-  for (const key of keys) {
-    if (map.has(key)) { existing = map.get(key); break; }
-  }
-  const merged = mergeForesterData(existing || {}, item);
-  const allKeys = Array.from(new Set([...keys, ...foresterIdentityKeys(existing || {})]));
-  allKeys.forEach((key) => map.set(key, merged));
-  return merged;
-}
-
-function uniqueForestersFromMap(map) {
-  const out = [];
-  const seen = new Set();
-  for (const item of map.values()) {
-    const key = foresterKey(item);
-    if (!key || seen.has(key)) continue;
-    seen.add(key);
-    out.push(item);
-  }
-  return out;
-}
-
-function recordBolme(record) {
-  return clean(record?.bolme || record?.bolmeNo || record?.bolme_no || record?.division || record?.division_no);
+  return item?.userId ? `uid:${item.userId}` : item?.email ? `email:${clean(item.email).toLocaleLowerCase('tr-TR')}` : `name:${stableKey(item?.name)}`;
 }
 
 function mirrorMembersByAliases(target, folder, list) {
@@ -632,6 +522,11 @@ function mirrorMembersByAliases(target, folder, list) {
 }
 
 function refreshCurrentMembers() {
+  if (!state.settings.setupComplete || !clean(state.settings.seflik)) {
+    state.ormancilar = [];
+    state.settings.ormanci = '';
+    return;
+  }
   const aliases = currentSeflikAliasKeys();
   const members = valuesByAlias(state.membersBySeflik, aliases);
   const custom = valuesByAlias(state.customForestersBySeflik, aliases);
@@ -639,26 +534,14 @@ function refreshCurrentMembers() {
   [...members, ...custom].forEach((item) => {
     const normalized = item?.custom ? normalizeForester(item) : normalizeMember(item);
     if (!normalized?.name) return;
-    addForesterToMap(map, normalized);
+    const k = foresterKey(normalized);
+    if (!map.has(k) || normalized.custom) map.set(k, normalized);
   });
   if (state.auth.name) {
-    addForesterToMap(map, {
-      id: state.auth.userId || state.auth.email || state.auth.name,
-      userId: state.auth.userId,
-      email: state.auth.email,
-      name: state.auth.name,
-      avatarUrl: state.auth.avatarUrl,
-      role: currentFolderIsOwner() ? 'owner' : 'member',
-      isSelf: true,
-      custom: false,
-    });
+    const selfKey = state.auth.userId ? `uid:${state.auth.userId}` : (state.auth.email ? `email:${state.auth.email}` : `name:${stableKey(state.auth.name)}`);
+    if (!map.has(selfKey)) map.set(selfKey, { id: state.auth.userId || state.auth.name, userId: state.auth.userId, email: state.auth.email, name: state.auth.name, avatarUrl: state.auth.avatarUrl, role: currentFolderIsOwner() ? 'owner' : 'member', isSelf: true, custom: false });
   }
-  state.ormancilar = uniqueForestersFromMap(map).sort((a, b) => {
-    const ar = clean(a.role).toLocaleLowerCase('tr-TR');
-    const br = clean(b.role).toLocaleLowerCase('tr-TR');
-    const ao = ['owner', 'creator', 'kurucu'].includes(ar) ? 0 : 1;
-    const bo = ['owner', 'creator', 'kurucu'].includes(br) ? 0 : 1;
-    if (ao !== bo) return ao - bo;
+  state.ormancilar = [...map.values()].sort((a, b) => {
     if (a.isSelf && !b.isSelf) return -1;
     if (!a.isSelf && b.isSelf) return 1;
     return clean(a.name).localeCompare(clean(b.name), 'tr');
@@ -682,54 +565,43 @@ async function syncSharedContext({ manual = false } = {}) {
   render();
   try {
     const session = await ensureSharedSession();
-    const activeLocal = jsonRead(SHARED_ACTIVE_SEFLIK_KEY, {}) || {};
-    const panel = jsonRead(SHARED_PANEL_KEY, {}) || {};
-    const localSeflik = clean(activeLocal.seflik || activeLocal.name || state.settings.seflik || panel.activeSeflik || panel.seflik);
-    let foldersResponse = { folders: [] };
-    if (localSeflik) {
-      try {
-        await edgeCall('seflik_folder_ensure_active', { seflik: localSeflik, folderSeflik: localSeflik, seflikKey: clean(activeLocal.seflik_key || activeLocal.seflikKey || state.settings.seflikKey) });
-      } catch (_) {}
-    }
-    try {
-      foldersResponse = await edgeCall('seflik_folder_list_my_sefliks', { seflik: localSeflik, folderSeflik: localSeflik });
-    } catch (error) {
-      console.warn('[istif] Mesaha İO şeflik listesi alınamadı', error);
-    }
-    let folders = (foldersResponse.folders || foldersResponse.items || []).map(normalizeFolder).filter(Boolean);
-    if (!folders.length && localSeflik) {
-      folders = [{ name: localSeflik, key: clean(activeLocal.seflik_key || activeLocal.seflikKey || state.settings.seflikKey || stableKey(localSeflik)), role: activeLocal.creator ? 'owner' : 'member', isCreator: !!activeLocal.creator }];
-    }
+    const out = await bridgeCall('shared_context', {
+      seflik: state.settings.seflik,
+      seflikKey: state.settings.seflikKey,
+    });
+    const folders = (out.folders || []).map(normalizeFolder).filter(Boolean);
     if (!folders.length) throw new Error('Mesaha İO Şeflik Klasörü bulunamadı.');
-    const activeName = clean(activeLocal.seflik || activeLocal.name || state.settings.seflik || localSeflik);
-    const selected = folders.find((x) => x.name === activeName || seflikAliasKeys(x.name, x.key).some((k) => seflikAliasKeys(activeName, state.settings.seflikKey).includes(k))) || folders[0];
-    if (selected) {
-      state.settings.seflik = selected.name;
-      state.settings.seflikKey = selected.key;
-    }
     state.seflikler = folders;
     const nextMembers = {};
-    const nextCustom = {};
-    for (const folder of folders) {
-      let memberResponse = { members: [] };
-      try {
-        memberResponse = await edgeCall('seflik_folder_list_members', { seflik: folder.name, folderSeflik: folder.name, seflikKey: folder.key });
-      } catch (error) {
-        console.warn('[istif] Mesaha İO ormancı listesi alınamadı', folder.name, error);
-      }
-      const members = (memberResponse.members || []).map(normalizeMember).filter(Boolean);
-      mirrorMembersByAliases(nextMembers, folder, members);
-      mirrorMembersByAliases(nextCustom, folder, []);
-      if (memberResponse.is_creator === true || memberResponse.isCreator === true) folder.isCreator = true;
-    }
+    Object.entries(out.membersBySeflik || {}).forEach(([key, members]) => {
+      nextMembers[key] = (Array.isArray(members) ? members : []).map(normalizeMember).filter(Boolean);
+    });
+    folders.forEach((folder) => {
+      const aliases = seflikAliasKeys(folder.name, folder.key);
+      const source = aliases.map((alias) => nextMembers[alias]).find((list) => Array.isArray(list) && list.length) || nextMembers[folder.key] || [];
+      mirrorMembersByAliases(nextMembers, folder, source);
+    });
     state.membersBySeflik = nextMembers;
+    const nextCustom = { ...state.customForestersBySeflik };
+    Object.entries(out.customForestersBySeflik || {}).forEach(([key, members]) => {
+      nextCustom[key] = (Array.isArray(members) ? members : []).map(normalizeForester).filter(Boolean);
+    });
+    folders.forEach((folder) => {
+      const aliases = seflikAliasKeys(folder.name, folder.key);
+      const source = aliases.map((alias) => nextCustom[alias]).find((list) => Array.isArray(list) && list.length) || nextCustom[folder.key] || [];
+      mirrorMembersByAliases(nextCustom, folder, source);
+    });
     state.customForestersBySeflik = nextCustom;
+    if (state.settings.setupComplete && state.settings.seflik) {
+      const selected = folders.find((x) => sameSeflikLabel(x.name, state.settings.seflik) || x.key === state.settings.seflikKey);
+      if (selected) state.settings.seflikKey = selected.key;
+    }
     state.auth = {
       status: 'connected',
-      userId: clean(session.user?.id || state.auth.userId),
-      email: clean(session.user?.email || state.auth.email),
-      name: clean(panel.googleFullName || panel.name || session.user?.user_metadata?.full_name || session.user?.user_metadata?.name || state.auth.name || session.user?.email),
-      avatarUrl: clean(panel.googleAvatarUrl || session.user?.user_metadata?.avatar_url || session.user?.user_metadata?.picture || state.auth.avatarUrl),
+      userId: clean(out.access?.user_id || out.access?.userId || session.user?.id),
+      email: clean(out.access?.email || session.user?.email),
+      name: clean(out.access?.name || out.access?.canonical_name || session.user?.user_metadata?.full_name || state.auth.name),
+      avatarUrl: clean(out.access?.avatar_url || session.user?.user_metadata?.avatar_url || session.user?.user_metadata?.picture || state.auth.avatarUrl),
       error: '',
       updatedAt: new Date().toISOString(),
     };
@@ -737,7 +609,7 @@ async function syncSharedContext({ manual = false } = {}) {
     await saveSettings();
     await refreshDriveStatus({ silent: true });
     await saveSharedCache();
-    if (manual) toast('Şeflikler ve Mesaha İO ormancıları güncellendi.', 'good');
+    if (manual) toast('Şeflikler ve Mesaha İO kullanıcıları güncellendi.', 'good');
   } catch (error) {
     state.auth.status = readSharedSession() ? 'cached' : 'signed_out';
     state.auth.error = clean(error?.message || error);
@@ -794,6 +666,12 @@ function metric(iconName, number, label) {
 
 function setView(view) {
   stopCamera();
+  if (view === 'new' && !state.settings.setupComplete) {
+    state.view = 'settings';
+    render();
+    toast('Önce kurum, işletme, şeflik ve rampa bilgilerini kaydedin.', 'bad');
+    return;
+  }
   state.view = view;
   render();
   if (view === 'settings' && navigator.onLine && readSharedSession()) refreshDriveStatus({ silent: true }).then(render);
@@ -845,12 +723,13 @@ function visibleForesters() {
 function foresterSummaryHtml() {
   const list = visibleForesters();
   if (!list.length) return '<span class="forester-empty">Henüz ormancı eklenmedi</span>';
-  return `<div class="forester-list-compact">${list.map((item) => `<span class="forester-chip ${item.name === state.settings.ormanci ? 'selected' : ''}">${item.avatarUrl ? `<img src="${esc(item.avatarUrl)}" alt="">` : icon('user', 15)}<span><b>${esc(item.name)}</b><small>${esc(item.email || (item.role === 'owner' ? 'Şeflik kurucusu' : 'E-posta yok'))}</small></span>${item.pending ? '<i>Bekliyor</i>' : ''}</span>`).join('')}${state.ormancilar.length > list.length ? `<span class="forester-more">+${state.ormancilar.length - list.length}</span>` : ''}</div>`;
+  return `<div class="forester-chips">${list.map((item) => `<span class="forester-chip ${item.name === state.settings.ormanci ? 'selected' : ''}">${item.avatarUrl ? `<img src="${esc(item.avatarUrl)}" alt="">` : icon('user', 15)}<b>${esc(item.name)}</b>${item.pending ? '<i>Bekliyor</i>' : ''}</span>`).join('')}${state.ormancilar.length > list.length ? `<span class="forester-more">+${state.ormancilar.length - list.length}</span>` : ''}</div>`;
 }
 
 function renderHome() {
   const c = counts();
   return `${head('İstif Alma', '', { action: profileButton() })}
+    ${state.settings.setupComplete ? '' : `<button class="setup-warning card" data-view="settings"><span>${icon('info', 22)}</span><div><b>İşletme ve evrak bilgilerini girin</b><small>Bölge, işletme, şeflik ve rampa bilgilerini kaydedin.</small></div>${icon('chevron', 21)}</button>`}
     <section class="sync-banner card">
       <span class="round-icon compact-icon">${icon(state.auth.status === 'signed_out' ? 'wifiOff' : 'sync', 21)}</span>
       <div class="sync-copy"><strong>Offline kullanılabilir</strong><span>${authSummary()} • ${c.pending} kayıt bekliyor</span></div>
@@ -872,7 +751,7 @@ function renderHome() {
     <section class="foresters-card card">
       <div class="foresters-head"><span class="round-icon">${icon('users', 23)}</span><div><small>Ormancılar</small><strong>${state.ormancilar.length} kayıtlı ormancı</strong><span>Seçili: ${esc(displayOrmanci())}</span></div></div>
       ${foresterSummaryHtml()}
-      <div class="forester-actions"><button class="btn" data-action="pick-ormanci">${icon('check', 18)} Ormancı Seç</button><button class="btn primary" data-action="add-ormanci">${icon('userPlus', 18)} Ormancı Ekle</button></div>
+      <div class="forester-actions"><button class="btn" data-action="pick-ormanci">${icon('check', 18)} Ormancı Seç</button><button class="btn primary" data-action="add-ormanci">${icon('userPlus', 18)} Ormancı Yönet</button></div>
     </section>
     <div class="section-title"><h2>İşlemler</h2></div>
     <section class="actions-grid">
@@ -1001,7 +880,7 @@ function recordCards(rows) {
     ${recordThumbHtml(record)}
     <div class="record-info">
       <span>Şeflik</span><b>${esc(String(record.seflik || '').replace(' Şefliği', ''))}</b>
-      <span>Bölme</span><b>${esc(recordBolme(record))}</b>
+      <span>Bölme</span><b>${esc(record.bolme)}</b>
       <span>İstif</span><b>${esc(record.istifNo)}</b>
       <span>Tür</span><b>${esc(record.type)}</b>
       <span>Ster</span><b>${esc(record.ster)} Ster</b>
@@ -1020,51 +899,25 @@ function recordCards(rows) {
 }
 
 function renderDocuments() {
-  const bolmes = [...new Set(state.records.map((row) => recordBolme(row)).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'tr', { numeric: true }));
-  if (state.builderBolme && !bolmes.includes(state.builderBolme)) state.builderBolme = '';
-  const chosen = sortedRecords(state.records.filter((row) => !state.builderBolme || recordBolme(row) === state.builderBolme));
-  const bolmeLabel = state.builderBolme ? `Bölme ${state.builderBolme}` : (bolmes.length ? 'Tüm Bölmeler' : 'Kayıtlı bölme yok');
+  const bolmes = [...new Set(state.records.map((row) => row.bolme).filter(Boolean))];
+  const chosen = sortedRecords(state.records.filter((row) => !state.builderBolme || row.bolme === state.builderBolme));
   return `${head('Evrak Oluştur', 'İstif seçerek evrak hazırlayın', { action: profileButton() })}
     <div class="segment"><button class="${state.documentTab === 'photos' ? 'active' : ''}" data-doc-tab="photos">İstif Fotoğrafları</button><button class="${state.documentTab === 'documents' ? 'active' : ''}" data-doc-tab="documents">Belgeler</button></div>
     <div class="info-note"><b>${icon('info', 21)}</b><span>Aynı bölmedeki ve yakın tarihli istifleri seçin. Sıralama kabuklu, lif, yakacak ve sırık şeklinde otomatik yapılır.</span></div>
-    <section class="builder-controls"><button class="select-panel card builder-bolme-btn" type="button" data-action="pick-builder-bolme"><span class="select-row"><span class="round-icon">${icon('layers', 23)}</span><span class="row-copy"><small>Bölme Seç</small><strong>${esc(bolmeLabel)}</strong></span><span class="chev">${icon('chevron', 22)}</span></span></button></section>
+    <section class="builder-controls"><div class="select-panel card"><label class="select-row"><span class="round-icon">${icon('layers', 23)}</span><span class="row-copy"><small>Bölme Seç</small><select id="builderBolme" class="embedded-select"><option value="">Tüm Bölmeler</option>${bolmes.map((value) => `<option ${state.builderBolme === value ? 'selected' : ''}>${esc(value)}</option>`).join('')}</select></span><span class="chev">${icon('chevron', 22)}</span></label></div></section>
     <div class="section-title"><h2>İstifler</h2><span>${state.selectedRecordIds.size} / ${chosen.length} seçildi</span></div>
-    <section class="builder-list card">${chosen.length ? chosen.map((record) => `<label class="check-row"><input type="checkbox" data-record-check="${record.id}" ${state.selectedRecordIds.has(record.id) ? 'checked' : ''}><span>${icon('logs', 22)}</span><b>${esc(record.istifNo)} • ${esc(record.type)} <small>• Bölme ${esc(recordBolme(record))}</small></b></label>`).join('') : '<div class="empty-inline">Bu bölmede evraka eklenecek istif yok.</div>'}</section>
+    <section class="builder-list card">${chosen.map((record) => `<label class="check-row"><input type="checkbox" data-record-check="${record.id}" ${state.selectedRecordIds.has(record.id) ? 'checked' : ''}><span>${icon('logs', 22)}</span><b>${esc(record.istifNo)} • ${esc(record.type)}</b></label>`).join('')}</section>
     <div class="dual-actions"><button class="btn" data-action="select-all">${icon('check', 20)} Tümünü Seç</button><button class="btn" data-action="clear-selection">${icon('trash', 20)} Seçimi Temizle</button></div>
     <div class="dual-actions"><button class="btn" data-action="preview-doc">${icon('eye', 20)} Önizle</button><button class="btn primary" data-action="print-doc">${icon('doc', 20)} PDF Oluştur</button></div>
-    <button class="btn wide template-link" data-view="templates">Örnek Şablonları Gör</button>`;
-}
-
-
-function showBuilderBolmePicker() {
-  const bolmes = [...new Set(state.records.map((row) => recordBolme(row)).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'tr', { numeric: true }));
-  if (!bolmes.length) {
-    showDialog('<h3>Bölme bulunamadı</h3><p>Önce en az bir istif kaydı oluşturun. Bölme seçenekleri kayıtlardan otomatik oluşur.</p><div class="dialog-actions single"><button class="btn" data-dialog-close>Kapat</button></div>');
-    return;
-  }
-  const rows = [''].concat(bolmes).map((bolme) => {
-    const label = bolme ? `Bölme ${esc(bolme)}` : 'Tüm Bölmeler';
-    const count = bolme ? state.records.filter((record) => recordBolme(record) === bolme).length : state.records.length;
-    const selected = (state.builderBolme || '') === bolme;
-    return `<button class="picker-row ${selected ? 'selected' : ''}" data-builder-bolme="${esc(bolme)}"><span class="picker-avatar">${icon('layers', 20)}</span><span><b>${label}</b><small>${count} istif</small></span>${selected ? icon('check', 21) : icon('chevron', 20)}</button>`;
-  }).join('');
-  showDialog(`<h3>Bölme Seç</h3><p>Evraka eklenecek istiflerin bölmesini seçin.</p><div class="picker-list">${rows}</div><div class="dialog-actions single"><button class="btn" data-dialog-close>Kapat</button></div>`);
-  dialogContent.querySelectorAll('[data-builder-bolme]').forEach((button) => {
-    button.onclick = () => {
-      state.builderBolme = button.dataset.builderBolme || '';
-      state.selectedRecordIds.clear();
-      closeDialog();
-      render();
-    };
-  });
+    <button class="btn wide template-link" data-view="templates">Evrak Şablonlarını Gör</button>`;
 }
 
 function renderTemplates() {
   const sample = sortedRecords(state.records).slice(0, 3);
   return `${head('Evraklar', 'Örnek şablonlar', { back: true, action: profileButton() })}
-    <section class="template-card card"><div class="template-title"><span class="round-icon">${icon('pin', 23)}</span><div><h3>Koordinat Evrakı</h3><p>Örnek koordinat tablosu</p></div></div>${miniCoordTable(sample)}</section>
-    <section class="template-card card"><div class="template-title"><span class="round-icon">${icon('camera', 23)}</span><div><h3>Fotoğraflı İstif Evrakı</h3><p>Örnek fotoğraf şablonu</p></div></div><div class="template-photo"><div class="mini-collage">${[1, 2, 3, 4].map(() => '<div class="ph"></div>').join('')}</div><div class="meta-list"><div><span>Şeflik</span><b>${esc(displaySeflik())}</b></div><div><span>İstif</span><b>İ-08</b></div><div><span>Tür</span><b>İbreli Kabuklu Kağıtlık Odun</b></div></div></div></section>
-    <section class="template-card card"><div class="template-title"><span class="round-icon">${icon('doc', 23)}</span><div><h3>İstif Cins Listesi</h3><p>Örnek istif listesi</p></div></div>${miniTypeTable(sample)}</section>
+    <section class="template-card card"><div class="template-title"><span class="round-icon">${icon('pin', 23)}</span><div><h3>Koordinat Evrakı</h3><p>Seçili istiflerden oluşturulan koordinat tablosu</p></div></div>${miniCoordTable(sample)}</section>
+    <section class="template-card card"><div class="template-title"><span class="round-icon">${icon('camera', 23)}</span><div><h3>Fotoğraflı İstif Evrakı</h3><p>Her istif için dört fotoğraf tek sayfada</p></div></div><div class="template-photo"><div class="mini-collage">${[1, 2, 3, 4].map(() => '<div class="ph"></div>').join('')}</div><div class="meta-list"><div><span>Şeflik</span><b>${esc(displaySeflik())}</b></div><div><span>İstif</span><b>${esc(sample[0]?.istifNo || 'Kayıt seçilmedi')}</b></div><div><span>Tür</span><b>${esc(sample[0]?.type || 'Kayıt seçilmedi')}</b></div></div></div></section>
+    <section class="template-card card"><div class="template-title"><span class="round-icon">${icon('doc', 23)}</span><div><h3>İstif Cins Listesi</h3><p>Seçili istiflerin cins ve miktar listesi</p></div></div>${miniTypeTable(sample)}</section>
     <div class="dual-actions"><button class="btn" data-action="preview-doc">${icon('eye', 20)} Önizle</button><button class="btn primary" data-action="print-doc">${icon('doc', 20)} PDF Oluştur</button></div>`;
 }
 
@@ -1078,7 +931,7 @@ function miniTypeTable(rows) {
 
 function renderPhotos() {
   const rows = sortedRecords(state.records);
-  return `${head('Fotoğraflar', 'İstif fotoğraflarını yönetin', { back: true })}<section class="records">${rows.map((record) => `<article class="photo-record card"><div class="round-icon">${icon('camera', 23)}</div><div><b>${esc(record.istifNo)} • ${esc(record.type)}</b><span>${esc(recordBolme(record))} Bölme • ${record.photos?.length || record.photoCount || 0}/4 fotoğraf</span></div><button class="btn small" data-view="records">Aç</button></article>`).join('')}</section>`;
+  return `${head('Fotoğraflar', 'İstif fotoğraflarını yönetin', { back: true })}<section class="records">${rows.map((record) => `<article class="photo-record card"><div class="round-icon">${icon('camera', 23)}</div><div><b>${esc(record.istifNo)} • ${esc(record.type)}</b><span>${esc(record.bolme)} Bölme • ${record.photos?.length || record.photoCount || 0}/4 fotoğraf</span></div><button class="btn small" data-view="records">Aç</button></article>`).join('')}</section>`;
 }
 
 function driveStatusCopy() {
@@ -1112,6 +965,15 @@ function renderSettings() {
       <div class="account-copy"><small>${loggedIn ? 'Google hesabı bağlı' : 'Google girişi gerekli'}</small><strong>${esc(state.auth.name || state.auth.email || 'Mesaha İO hesabı')}</strong><span>${esc(state.auth.email || authSummary())}</span></div>
       <span class="status-dot ${state.auth.status === 'connected' ? 'online' : ''}"></span>
     </section>
+    <form id="institutionSettingsForm" class="settings-card card">
+      <div class="shared-card-title"><span>${icon('doc', 22)}</span><div><b>Kurum ve Evrak Bilgileri</b><small>Bu bilgiler örnek olarak gelmez; kullanıcı tarafından bir kez kaydedilir.</small></div></div>
+      <label>Bölge Müdürlüğü<input name="bolgeMudurlugu" value="${esc(state.settings.bolgeMudurlugu || '')}" placeholder="Bölge Müdürlüğü gir" autocomplete="organization"></label>
+      <label>İşletme Müdürlüğü<input name="isletmeMudurlugu" value="${esc(state.settings.isletmeMudurlugu || '')}" placeholder="İşletme Müdürlüğü gir"></label>
+      <label>Şeflik<input name="seflik" value="${esc(state.settings.seflik || '')}" placeholder="Şeflik gir veya listeden seç" list="sharedSeflikOptions"><datalist id="sharedSeflikOptions">${state.seflikler.map((item) => `<option value="${esc(item.name)}"></option>`).join('')}</datalist></label>
+      <label>Rampa / Satış İstif Yeri<input name="satisIstifYeri" value="${esc(state.settings.satisIstifYeri || '')}" placeholder="Rampa veya depo adı gir"></label>
+      <p class="settings-hint">Orijinal boş evrak şablonu esas alınır. Doldurulmuş dosya yalnızca alanların nereye yazılacağını gösteren örnektir.</p>
+      <button class="btn primary wide" type="submit">${icon('save', 20)} Bilgileri Kaydet</button>
+    </form>
     <section class="shared-card card">
       <div class="shared-card-title"><span>${icon('folder', 22)}</span><div><b>Şeflik Klasörü Bağlantısı</b><small>Şeflik adı ve ormancılar Mesaha İO ile ortaktır.</small></div></div>
       <div class="shared-current"><span>Şeflik</span><b>${esc(displaySeflik())}</b></div>
@@ -1119,19 +981,13 @@ function renderSettings() {
       <button class="btn wide" data-action="refresh-shared">${icon('refresh', 20)} Ortak Bilgileri Güncelle</button>
       ${loggedIn ? '' : '<a class="btn primary wide login-link" href="../">Mesaha İO’da Google ile Giriş Yap</a>'}
     </section>
-    <section class="document-settings card">
-      <div class="shared-card-title"><span>${icon('doc', 22)}</span><div><b>Evrak Bilgileri</b><small>Bu alanlar koordinat ve rampa tespit evraklarına otomatik yazılır.</small></div></div>
-      <label>Bölge Müdürlüğü<input data-setting-input name="bolgeMudurlugu" value="${esc(state.settings.bolgeMudurlugu || '')}" placeholder="Örn. KÜTAHYA"></label>
-      <label>İşletme Müdürlüğü<input data-setting-input name="isletmeMudurlugu" value="${esc(state.settings.isletmeMudurlugu || '')}" placeholder="Örn. TAVŞANLI"></label>
-      <label>Ağaç Türü<input data-setting-input name="agacTuru" value="${esc(state.settings.agacTuru || 'İBRELİ')}" placeholder="İBRELİ"></label>
-      <label>Satış İstif Yeri<input data-setting-input name="satisIstifYeri" value="${esc(state.settings.satisIstifYeri || 'Rampa')}" placeholder="Rampa / Depo"></label>
-    </section>
     ${renderDriveCard()}
     <div class="info-note"><b>${icon('info', 21)}</b><span>Sürüm ${APP_VERSION} • Kayıtlar offline saklanır. İstif, fotoğraf ve evrak verileri bu uygulamaya özeldir.</span></div>`;
 }
 
 function bindDynamic() {
   app.querySelectorAll('[data-view]').forEach((button) => { button.onclick = () => setView(button.dataset.view); });
+  app.querySelector('#institutionSettingsForm')?.addEventListener('submit', saveInstitutionSettings);
   app.querySelectorAll('[data-action="back"]').forEach((button) => { button.onclick = () => setView('home'); });
   app.querySelector('[data-action="sync"]')?.addEventListener('click', syncAll);
   app.querySelector('[data-action="geo"]')?.addEventListener('click', getLocation);
@@ -1142,14 +998,6 @@ function bindDynamic() {
   app.querySelector('[data-action="connect-drive"]')?.addEventListener('click', beginDriveConnection);
   app.querySelector('[data-action="disconnect-drive"]')?.addEventListener('click', disconnectDrive);
   app.querySelector('[data-action="refresh-shared"]')?.addEventListener('click', () => syncSharedContext({ manual: true }));
-  app.querySelectorAll('[data-setting-input]').forEach((input) => {
-    const saveSettingValue = async () => {
-      state.settings[input.name] = input.value;
-      await saveSettings();
-    };
-    input.addEventListener('change', saveSettingValue);
-    input.addEventListener('blur', saveSettingValue);
-  });
   app.querySelectorAll('[data-add-photo]').forEach((button) => { button.onclick = openCameraChooser; });
   app.querySelectorAll('[data-remove-photo]').forEach((button) => { button.onclick = () => removePhoto(Number(button.dataset.removePhoto)); });
   app.querySelector('#stackForm')?.addEventListener('input', (event) => {
@@ -1174,15 +1022,49 @@ function bindDynamic() {
   app.querySelector('[data-action="save-draft"]')?.addEventListener('click', (event) => saveRecord(event, true));
   ['filterDate', 'filterBolme', 'filterType'].forEach((id) => app.querySelector(`#${id}`)?.addEventListener('change', applyRecordFilters));
   app.querySelectorAll('[data-doc-tab]').forEach((button) => { button.onclick = () => { state.documentTab = button.dataset.docTab; render(); }; });
-  app.querySelector('[data-action="pick-builder-bolme"]')?.addEventListener('click', showBuilderBolmePicker);
+  app.querySelector('#builderBolme')?.addEventListener('change', (event) => { state.builderBolme = event.target.value; state.selectedRecordIds.clear(); render(); });
   app.querySelectorAll('[data-record-check]').forEach((checkbox) => { checkbox.onchange = () => { checkbox.checked ? state.selectedRecordIds.add(checkbox.dataset.recordCheck) : state.selectedRecordIds.delete(checkbox.dataset.recordCheck); render(); }; });
-  app.querySelector('[data-action="select-all"]')?.addEventListener('click', () => { state.records.filter((row) => !state.builderBolme || recordBolme(row) === state.builderBolme).forEach((row) => state.selectedRecordIds.add(row.id)); render(); });
+  app.querySelector('[data-action="select-all"]')?.addEventListener('click', () => { state.records.filter((row) => !state.builderBolme || row.bolme === state.builderBolme).forEach((row) => state.selectedRecordIds.add(row.id)); render(); });
   app.querySelector('[data-action="clear-selection"]')?.addEventListener('click', () => { state.selectedRecordIds.clear(); render(); });
   app.querySelectorAll('[data-action="preview-doc"]').forEach((button) => { button.onclick = previewDocuments; });
   app.querySelectorAll('[data-action="print-doc"]').forEach((button) => { button.onclick = printDocuments; });
   app.querySelectorAll('[data-edit-record]').forEach((button) => { button.onclick = () => editRecord(button.dataset.editRecord); });
   app.querySelectorAll('[data-delete-record]').forEach((button) => { button.onclick = () => deleteRecord(button.dataset.deleteRecord); });
 
+}
+
+async function saveInstitutionSettings(event) {
+  event.preventDefault();
+  const form = event.currentTarget;
+  const data = new FormData(form);
+  const bolgeMudurlugu = clean(data.get('bolgeMudurlugu'));
+  const isletmeMudurlugu = clean(data.get('isletmeMudurlugu'));
+  const seflik = clean(data.get('seflik'));
+  const satisIstifYeri = clean(data.get('satisIstifYeri'));
+  if (!bolgeMudurlugu || !isletmeMudurlugu || !seflik || !satisIstifYeri) {
+    toast('Bölge, işletme, şeflik ve rampa alanlarının tamamını doldurun.', 'bad');
+    return;
+  }
+  const folder = state.seflikler.find((item) => sameSeflikLabel(item.name, seflik));
+  state.settings = {
+    ...state.settings,
+    bolgeMudurlugu,
+    isletmeMudurlugu,
+    seflik: folder?.name || seflik,
+    seflikKey: folder?.key || stableKey(seflik),
+    satisIstifYeri,
+    setupComplete: true,
+  };
+  if (state.draft) {
+    state.draft.seflik = state.settings.seflik;
+    state.draft.seflikKey = state.settings.seflikKey;
+  }
+  refreshCurrentMembers();
+  await saveSettings();
+  await saveSharedCache();
+  toast('Kurum ve evrak bilgileri kaydedildi.', 'good');
+  if (navigator.onLine && readSharedSession()) syncSharedContext({ manual: false });
+  render();
 }
 
 async function editRecord(recordId) {
@@ -1291,6 +1173,11 @@ function applyRecordFilters() {
 async function saveRecord(event, draftOnly = false) {
   event?.preventDefault?.();
   const draft = ensureDraft();
+  if (!state.settings.setupComplete) {
+    toast('Önce Ayarlar bölümünden kurum ve evrak bilgilerini kaydedin.', 'bad');
+    setView('settings');
+    return;
+  }
   if (!draft.seflik || !draft.ormanci) {
     toast('Şeflik ve ormancı Mesaha İO Şeflik Klasörü’nden seçilmelidir.', 'bad');
     return;
@@ -1493,7 +1380,7 @@ function showOrmanciPicker() {
     document.getElementById('refreshMembersDialog').onclick = () => { closeDialog(); syncSharedContext({ manual: true }); };
     return;
   }
-  showDialog(`<h3>Ormancı Seç</h3><p>${esc(displaySeflik())} için kayıtlı ormancılar.</p><div class="picker-list">${state.ormancilar.map((member, index) => `<button class="picker-row ${member.name === state.settings.ormanci ? 'selected' : ''}" data-member-index="${index}"><span class="picker-avatar">${member.avatarUrl ? `<img src="${esc(member.avatarUrl)}" alt="">` : icon('user', 20)}</span><span><b>${esc(member.name)}</b><small>${esc((member.role === 'owner' ? 'Şeflik kurucusu' : member.custom ? (member.pending ? 'Yeni ormancı • senkron bekliyor' : 'Ekli ormancı') : 'Şeflik üyesi') + (member.email ? ' • ' + member.email : ''))}</small></span>${member.name === state.settings.ormanci ? icon('check', 21) : icon('chevron', 20)}</button>`).join('')}</div><div class="dialog-actions single"><button class="btn" data-dialog-close>Kapat</button></div>`);
+  showDialog(`<h3>Ormancı Seç</h3><p>${esc(displaySeflik())} için kayıtlı ormancılar.</p><div class="picker-list">${state.ormancilar.map((member, index) => `<button class="picker-row ${member.name === state.settings.ormanci ? 'selected' : ''}" data-member-index="${index}"><span class="picker-avatar">${member.avatarUrl ? `<img src="${esc(member.avatarUrl)}" alt="">` : icon('user', 20)}</span><span><b>${esc(member.name)}</b><small>${member.role === 'owner' ? 'Şeflik kurucusu' : member.custom ? (member.pending ? 'Yeni ormancı • senkron bekliyor' : 'Ekli ormancı') : 'Şeflik üyesi'}</small></span>${member.name === state.settings.ormanci ? icon('check', 21) : icon('chevron', 20)}</button>`).join('')}</div><div class="dialog-actions single"><button class="btn" data-dialog-close>Kapat</button></div>`);
   dialogContent.querySelectorAll('[data-member-index]').forEach((button) => {
     button.onclick = async () => {
       const member = state.ormancilar[Number(button.dataset.memberIndex)];
@@ -1503,25 +1390,6 @@ function showOrmanciPicker() {
       closeDialog();
       render();
     };
-  });
-}
-
-function canRemoveForester(item) {
-  const role = clean(item?.role || item?.member_role).toLocaleLowerCase('tr-TR');
-  const uid = clean(item?.userId || item?.user_id || item?.member_user_id || item?.forester_user_id);
-  const ownerRole = ['owner', 'creator', 'kurucu'].includes(role);
-  return currentFolderIsOwner() && !item?.isSelf && !sameCurrentUser(item) && !ownerRole && !!uid;
-}
-
-function foresterExistingRowsHtml() {
-  if (!state.ormancilar.length) return '<div class="existing-foresters"><b>Ekli Ormancılar</b><span>Henüz ortak ormancı görünmüyor. Kullanıcıları yenile deyin.</span></div>';
-  const owner = currentFolderIsOwner();
-  return `<div class="existing-foresters"><div class="existing-title"><b>Ekli Ormancılar</b><small>${owner ? 'Kurucu olarak çıkarılabilir ormancıları yönetebilirsiniz.' : 'Çıkarma yetkisi şeflik kurucusundadır.'}</small></div>${state.ormancilar.map((item, index) => { const roleText = item.isSelf ? 'Kendi hesabınız' : ['owner','creator','kurucu'].includes(clean(item.role).toLocaleLowerCase('tr-TR')) ? 'Şeflik kurucusu' : 'Ormancı'; return `<div class="existing-forester-row"><span class="picker-avatar">${item.avatarUrl ? `<img src="${esc(item.avatarUrl)}" alt="">` : icon('user', 18)}</span><span><strong>${esc(item.name)}</strong><small>${esc(roleText + (item.email ? ' • ' + item.email : ' • E-posta yok'))}</small></span>${canRemoveForester(item) ? `<button class="btn danger-soft mini-remove" type="button" data-remove-forester="${index}">Çıkar</button>` : ''}</div>`; }).join('')}</div>`;
-}
-
-function bindForesterRemoveButtons() {
-  dialogContent.querySelectorAll('[data-remove-forester]').forEach((button) => {
-    button.onclick = () => removeForesterUser(state.ormancilar[Number(button.dataset.removeForester)]);
   });
 }
 
@@ -1535,13 +1403,16 @@ function showAddOrmanciDialog() {
     return;
   }
   refreshCurrentMembers();
-  showDialog(`<h3>Ormancı Ekle / Çıkar</h3><p>Mesaha İO Şeflik Yönetimi ile aynı sistem kullanılır. Ekleme ve çıkarma gerçek şeflik üyeliğine işlenir.</p><label class="dialog-label">Kullanıcı Ara</label><input id="foresterSearchInput" class="dialog-input" autocomplete="off" placeholder="Ad, soyad veya e-posta"><div id="foresterSuggestBox" class="suggest-box"><span>En az 3 harf yazın.</span></div>${foresterExistingRowsHtml()}<div class="dialog-actions"><button class="btn" data-dialog-close>Kapat</button><button class="btn" id="refreshUserSuggestions">Kullanıcıları Yenile</button></div>`);
-  bindForesterRemoveButtons();
+  const existingHtml = state.ormancilar.length ? `<div class="existing-foresters"><b>Ekli Ormancılar</b>${state.ormancilar.map((item, index) => { const role = clean(item.role).toLocaleLowerCase('tr-TR'); const removable = currentFolderIsOwner() && !item.isSelf && !['owner','creator','kurucu'].includes(role); return `<div class="existing-forester-row"><span class="picker-avatar">${item.avatarUrl ? `<img src="${esc(item.avatarUrl)}" alt="">` : icon('user', 18)}</span><span><strong>${esc(item.name)}</strong><small>${esc(item.email || (item.isSelf ? 'Kendi hesabınız' : item.role === 'owner' ? 'Şeflik kurucusu' : item.custom ? 'Ekli ormancı' : 'Mesaha İO kullanıcısı'))}</small></span>${removable ? `<button class="btn danger-soft small forester-remove-btn" type="button" data-remove-forester="${index}">Çıkar</button>` : ''}</div>`; }).join('')}</div>` : `<div class="existing-foresters"><b>Ekli Ormancılar</b><span>Henüz ortak ormancı görünmüyor. Kullanıcıları yenile deyin.</span></div>`;
+  showDialog(`<h3>Ormancı Ekle / Çıkar</h3><p>Yalnızca Mesaha İO’da Google ile giriş yapmış ve onaylı kullanıcılar eklenebilir. En az 3 harf yazınca öneriler çıkar.</p><label class="dialog-label">Kullanıcı Ara</label><input id="foresterSearchInput" class="dialog-input" autocomplete="off" placeholder="Ad, soyad veya e-posta"><div id="foresterSuggestBox" class="suggest-box"><span>En az 3 harf yazın.</span></div>${existingHtml}<div class="dialog-actions"><button class="btn" data-dialog-close>Kapat</button><button class="btn" id="refreshUserSuggestions">Kullanıcıları Yenile</button></div>`);
   const input = document.getElementById('foresterSearchInput');
   const box = document.getElementById('foresterSuggestBox');
   const run = () => searchForesterSuggestions(input?.value || '', box);
   input?.addEventListener('input', debounce(run, 280));
-  document.getElementById('refreshUserSuggestions').onclick = async () => { await syncSharedContext({ manual: false }); showAddOrmanciDialog(); };
+  document.getElementById('refreshUserSuggestions').onclick = run;
+  dialogContent.querySelectorAll('[data-remove-forester]').forEach((button) => {
+    button.onclick = () => removeForesterUser(state.ormancilar[Number(button.dataset.removeForester)]);
+  });
   input?.focus();
 }
 
@@ -1563,35 +1434,23 @@ async function searchForesterSuggestions(query, box) {
   const seq = ++state.foresterSearchSeq;
   box.innerHTML = '<span>Kullanıcılar aranıyor…</span>';
   try {
-    const out = await edgeCall('seflik_folder_search_users', { query: q, seflik: state.settings.seflik, folderSeflik: state.settings.seflik });
+    const out = await bridgeCall('user_search', { q, seflikKey: state.settings.seflikKey, seflik: state.settings.seflik });
     if (seq !== state.foresterSearchSeq) return;
     const rawUsers = Array.isArray(out.users) ? out.users : [];
-    const existingKeys = new Set(state.ormancilar.flatMap((item) => foresterIdentityKeys(item)));
     const seen = new Set();
     const users = [];
-    for (const raw of rawUsers) {
-      const status = clean(raw.status || raw.access_status || raw.google_status || raw.approval_status || 'approved').toLocaleLowerCase('tr-TR');
-      if (status && !['approved', 'onaylı', 'onayli', 'active', 'aktif'].includes(status)) continue;
-      const user = {
-        userId: clean(raw.userId || raw.user_id || raw.id),
-        name: clean(raw.name || raw.canonical_name || raw.display_name || raw.email),
-        email: clean(raw.email || raw.user_email).toLocaleLowerCase('tr-TR'),
-        avatarUrl: clean(raw.avatarUrl || raw.avatar_url || raw.google_avatar_url || raw.picture),
-      };
-      if (!user.userId && !user.email) continue;
-      const keys = foresterIdentityKeys(user);
-      const key = keys.find((x) => x.startsWith('uid:')) || keys.find((x) => x.startsWith('email:')) || `name:${stableKey(user.name)}`;
+    for (const user of rawUsers) {
+      const key = clean(user.userId || user.user_id || user.email || stableKey(user.name));
       if (!key || seen.has(key)) continue;
       seen.add(key);
-      const already = keys.some((k) => existingKeys.has(k));
-      users.push({ ...user, already });
+      users.push(user);
       if (users.length >= 10) break;
     }
     if (!users.length) {
-      box.innerHTML = '<span>Bu aramada Google ile giriş yapmış kullanıcı bulunamadı.</span>';
+      box.innerHTML = '<span>Bu aramada Google onaylı kullanıcı bulunamadı.</span>';
       return;
     }
-    box.innerHTML = users.map((user, index) => `<button class="suggest-row ${user.already ? 'already' : ''}" type="button" data-user-index="${index}"><span class="picker-avatar">${user.avatarUrl ? `<img src="${esc(user.avatarUrl)}" alt="">` : icon('user', 19)}</span><span><b>${esc(user.name)}</b><small>${esc(user.email || 'Google kullanıcısı')}</small></span><em class="suggest-add">${user.already ? 'Ekli' : 'Ekle'}</em></button>`).join('');
+    box.innerHTML = users.map((user, index) => `<button class="suggest-row" type="button" data-user-index="${index}"><span class="picker-avatar">${user.avatarUrl ? `<img src="${esc(user.avatarUrl)}" alt="">` : icon('user', 19)}</span><span><b>${esc(user.name)}</b><small>${esc(user.email || 'Google kullanıcısı')}</small></span><em class="suggest-add">Ekle</em></button>`).join('');
     box.querySelectorAll('[data-user-index]').forEach((button) => {
       button.onclick = () => addForesterUser(users[Number(button.dataset.userIndex)]);
     });
@@ -1601,12 +1460,13 @@ async function searchForesterSuggestions(query, box) {
 }
 
 async function addForesterUser(user) {
+  const key = state.settings.seflikKey || stableKey(state.settings.seflik);
   const name = clean(user?.name);
   user.userId = clean(user.userId || user.user_id);
   if (!name) return toast('Kullanıcı adı bulunamadı.', 'bad');
   refreshCurrentMembers();
-  const normalizedUser = { ...user, name, userId: user.userId, email: user.email };
-  const existing = state.ormancilar.find((item) => sameForesterIdentity(item, normalizedUser));
+  const userKey = user.userId ? `uid:${user.userId}` : (user.email ? `email:${clean(user.email).toLocaleLowerCase('tr-TR')}` : `name:${stableKey(name)}`);
+  const existing = state.ormancilar.find((item) => foresterKey(item) === userKey || stableKey(item.name) === stableKey(name));
   if (existing) {
     state.settings.ormanci = existing.name;
     if (state.draft) state.draft.ormanci = existing.name;
@@ -1617,42 +1477,46 @@ async function addForesterUser(user) {
     toast('Bu kullanıcı zaten ekliydi; seçili ormancı yapıldı.', 'good');
     return;
   }
-  if (!user.userId) return toast('Bu kullanıcının Google kullanıcı kimliği bulunamadı.', 'bad');
   try {
-    await edgeCall('seflik_folder_add_member', { seflik: state.settings.seflik, folderSeflik: state.settings.seflik, seflikKey: state.settings.seflikKey, member_user_id: user.userId, memberUserId: user.userId, member_email: user.email || '' });
-    await syncSharedContext({ manual: false });
-    const saved = state.ormancilar.find((item) => clean(item.userId) === user.userId || (clean(item.email) && clean(item.email) === clean(user.email).toLocaleLowerCase('tr-TR'))) || { name };
-    state.settings.ormanci = saved.name || name;
-    if (state.draft) state.draft.ormanci = state.settings.ormanci;
+    const out = await bridgeCall('forester_add', { seflikKey: key, seflik: state.settings.seflik, userId: user.userId, email: user.email, name });
+    const saved = normalizeForester(out.forester || user);
+    const list = Array.isArray(state.customForestersBySeflik[key]) ? state.customForestersBySeflik[key].filter((item) => stableKey(item.name) !== stableKey(name)) : [];
+    if (saved) list.push({ ...saved, custom: true, pending: false });
+    state.customForestersBySeflik[key] = list;
+    state.settings.ormanci = saved?.name || name;
+    refreshCurrentMembers();
     await saveSettings();
     await saveSharedCache();
     closeDialog();
     render();
-    toast('Ormancı Mesaha İO şeflik listesine eklendi.', 'good');
+    toast('Ormancı ortak listeye eklendi.', 'good');
   } catch (error) {
-    toast(`Ormancı eklenemedi: ${clean(error?.message || error)}`, 'bad');
+    toast(clean(error?.message || error), 'bad');
   }
 }
-
 
 async function removeForesterUser(member) {
   if (!member) return;
   const role = clean(member.role).toLocaleLowerCase('tr-TR');
   if (!currentFolderIsOwner()) return toast('Ormancı çıkarmayı yalnızca şeflik kurucusu yapabilir.', 'bad');
   if (member.isSelf || ['owner', 'creator', 'kurucu'].includes(role)) return toast('Kurucu kullanıcı çıkarılamaz.', 'bad');
-  const uid = clean(member.userId || member.user_id || member.member_user_id || member.forester_user_id);
-  if (!uid) return toast('Bu ormancı için kullanıcı kimliği bulunamadı.', 'bad');
-  if (!confirm(`${member.name} şeflik ormancı listesinden çıkarılsın mı?`)) return;
+  const userId = clean(member.userId || member.user_id || member.member_user_id || member.forester_user_id);
+  if (!confirm(`${member.name} ormancı listesinden çıkarılsın mı?`)) return;
   try {
-    await edgeCall('seflik_folder_remove_member', { seflik: state.settings.seflik, folderSeflik: state.settings.seflik, seflikKey: state.settings.seflikKey, member_user_id: uid, memberUserId: uid });
+    if (member.custom) {
+      await bridgeCall('forester_remove', { seflikKey: state.settings.seflikKey, seflik: state.settings.seflik, id: member.id, userId, email: member.email, name: member.name });
+    } else {
+      if (!userId) throw new Error('Bu ormancının Google kullanıcı kimliği bulunamadı.');
+      await edgeCall('seflik_folder_remove_member', { seflik: state.settings.seflik, folderSeflik: state.settings.seflik, seflikKey: state.settings.seflikKey, member_user_id: userId, memberUserId: userId });
+    }
     await syncSharedContext({ manual: false });
-    if (state.settings.ormanci === member.name) state.settings.ormanci = state.ormancilar[0]?.name || '';
-    if (state.draft && state.draft.ormanci === member.name) state.draft.ormanci = state.settings.ormanci;
+    if (state.settings.ormanci === member.name) state.settings.ormanci = '';
+    if (state.draft?.ormanci === member.name) state.draft.ormanci = '';
     await saveSettings();
     await saveSharedCache();
     closeDialog();
     render();
-    toast('Ormancı Mesaha İO şeflik listesinden çıkarıldı.', 'good');
+    toast('Ormancı listeden çıkarıldı.', 'good');
   } catch (error) {
     toast(`Ormancı çıkarılamadı: ${clean(error?.message || error)}`, 'bad');
   }
@@ -1729,7 +1593,7 @@ async function createDriveUploadSession(record, photo, index) {
   const folder = effectiveRecordSeflik(record);
   return bridgeCall('upload_session', {
     seflikKey: folder.seflikKey, seflik: folder.seflik,
-    recordDate: record.date, bolmeNo: recordBolme(record), istifNo: record.istifNo,
+    recordDate: record.date, bolmeNo: record.bolme, istifNo: record.istifNo,
     fileName: `${record.istifNo}_foto_${index + 1}.jpg`, mimeType: photo.blob.type || 'image/jpeg', size: photo.blob.size,
   });
 }
@@ -1890,31 +1754,34 @@ async function photoDataUrl(photo) {
   });
 }
 
-
-function evrakTodayText() {
-  const d = new Date();
-  return d.toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' });
-}
-
-function documentSeflikName() {
-  return String(displaySeflik() || '').replace(/\s*Şefliği\s*$/i, '').replace(/\s*Sefliği\s*$/i, '');
-}
-
-function documentProduct(record) {
-  return clean(record?.type).replace(/^İbreli\s+/i, '').replace(/^Ibreli\s+/i, '');
-}
-
-function documentTreeType() {
-  return clean(state.settings.agacTuru || 'İBRELİ').toLocaleUpperCase('tr-TR');
+function documentTypeForForm(record) {
+  return clean(record?.type).replace(/\s+Odun$/i, '');
 }
 
 function selectedSterTotal(rows) {
-  return rows.reduce((sum, r) => sum + (Number(String(r.ster || 0).replace(',', '.')) || 0), 0);
+  return rows.reduce((sum, row) => sum + (Number(String(row.ster || 0).replace(',', '.')) || 0), 0);
 }
 
-function fmtSterValue(value) {
-  const n = Number(String(value || 0).replace(',', '.')) || 0;
-  return n.toLocaleString('tr-TR', { maximumFractionDigits: 2 });
+function formatSterTotal(rows) {
+  return selectedSterTotal(rows).toLocaleString('tr-TR', { maximumFractionDigits: 2 });
+}
+
+function repeatedDocumentValue(value, previous) {
+  return previous && stableKey(value) === stableKey(previous) ? '&quot;' : esc(value);
+}
+
+function documentRowsHtml(rows, withCoordinates = false) {
+  let previousBolme = '';
+  let previousType = '';
+  const body = rows.map((record, index) => {
+    const bolme = recordBolme(record);
+    const type = documentTypeForForm(record);
+    const row = `<tr><td>${index + 1}</td><td>${repeatedDocumentValue(bolme, previousBolme)}</td><td>${esc(record.istifNo)}</td><td>${repeatedDocumentValue(type, previousType)}</td><td>${esc(record.ster)}</td>${withCoordinates ? `<td>${esc(record.coordinates || '')}</td><td>${index + 1}</td>` : `<td>${esc(record.ormanci || '')}</td>`}</tr>`;
+    previousBolme = bolme;
+    previousType = type;
+    return row;
+  }).join('');
+  return `${body}<tr class="total-row"><td colspan="4">GENEL TOPLAM</td><td>${esc(formatSterTotal(rows))}</td><td${withCoordinates ? ' colspan="2"' : ''}></td></tr>`;
 }
 
 async function buildPrintHtml() {
@@ -1923,18 +1790,18 @@ async function buildPrintHtml() {
   if (state.documentTab === 'documents') {
     const bolge = esc(state.settings.bolgeMudurlugu || '');
     const isletme = esc(state.settings.isletmeMudurlugu || '');
-    const seflik = esc(documentSeflikName());
-    const tree = esc(documentTreeType());
-    const date = esc(evrakTodayText());
-    const totalSter = esc(fmtSterValue(selectedSterTotal(rows)));
-    html += `<div class="print-page official-document coordinate-document"><h1>1-STERLİ EMVALE AİT SATIŞ İSTİF YERİ TESPİT TUTANAĞI</h1><p class="official-desc">Satışa ve teslimata hazır olan emval ile ilişkili bilgiler aşağıda belirtilmiştir.</p><div class="official-fields"><div><b>Orman Bölge Müdürlüğü :</b><span>${bolge}</span></div><div><b>Orman İşletme Müdürlüğü :</b><span>${isletme}</span></div><div><b>Orman İşletme Şefliği :</b><span>${seflik}</span></div><div><b>Yer (köy/belde/mahalle) :</b><span></span></div><div><b>Mevkii :</b><span>${esc(rows[0]?.mevki || '')}</span></div><div><b>Satış İstif Yeri (Rampa/Depo) :</b><span>${esc(state.settings.satisIstifYeri || 'Rampa')}</span></div></div><table class="print-table official-table"><thead><tr><th>Bölme No</th><th>İstif No</th><th>Ağaç Türü</th><th>Ürün Çeşidi</th><th>Miktarı<br>(Ster)</th><th>Konum Koordinatları</th><th>Resim No</th></tr></thead><tbody>${rows.map((record, index) => `<tr><td>${esc(recordBolme(record))}</td><td>${esc(record.istifNo)}</td><td>${tree}</td><td>${esc(documentProduct(record))}</td><td>${esc(record.ster)}</td><td>${esc(record.coordinates || '')}</td><td>${index + 1}</td></tr>`).join('')}<tr class="total-row"><td colspan="4">TOPLAM</td><td>${totalSter}</td><td colspan="2"></td></tr></tbody></table><p class="official-paragraph">Şefliğimizde üretilen satışa ve teslimata hazır vaziyette olan toplam <b>${totalSter} Ster</b> emval ile ilgili belgeler (istif ebat listeleri, koordinat bilgileri, resimler vb.) ilişikte sunulmuştur.</p><p class="official-paragraph">Emvalin bilgilere uygun olarak arazide bulunduğu, en kısa zamanda satışının yapılması için İşletme Müdürlüğüne bildirmek üzere iş bu tutanak tarafımızdan düzenlenmiştir.</p><div class="official-date">${date}</div></div>`;
-    html += `<div class="print-page official-document rampa-document"><h1>STERLİ EMVAL KONTROL TUTANAĞI</h1><div class="official-fields compact"><div><b>Orman Bölge Müdürlüğü :</b><span>${bolge}</span></div><div><b>Orman İşletme Müdürlüğü :</b><span>${isletme}</span></div><div><b>Orman İşletme Şefliği :</b><span>${seflik}</span></div><div><b>Tarih :</b><span>${date}</span></div></div><table class="print-table official-table"><thead><tr><th>Sıra No</th><th>Bölme No</th><th>İstif No</th><th>Ağaç Türü</th><th>Ürün Çeşidi</th><th>Miktarı (Ster)</th></tr></thead><tbody>${rows.map((record, index) => `<tr><td>${index + 1}</td><td>${esc(recordBolme(record))}</td><td>${esc(record.istifNo)}</td><td>${tree}</td><td>${esc(documentProduct(record))}</td><td>${esc(record.ster)}</td></tr>`).join('')}<tr class="total-row"><td colspan="5">TOPLAM</td><td>${totalSter}</td></tr></tbody></table><p class="official-paragraph">Yukarıda dökümü yapılan sterli emvallerin yerinde standardizasyona uygun bir şekilde istifi yapılmış olup tarafımızdan tespit edilmiştir.</p><div class="official-date">${date}</div></div>`;
+    const seflik = esc(String(state.settings.seflik || '').replace(/\s*Şefliği\s*$/i, ''));
+    const bolme = esc(rows[0] ? recordBolme(rows[0]) : '');
+    const rampa = esc(state.settings.satisIstifYeri || '');
+    const todayText = new Date().toLocaleDateString('tr-TR');
+    html += `<div class="print-page workbook-document"><h1>STERLİ EMVAL KONTROL TUTANAĞI</h1><div class="workbook-fields"><div><b>Şefliği :</b><span>${seflik}</span></div><div><b>Bölme No :</b><span>${bolme}</span></div><div><b>Rampa :</b><span>${rampa}</span></div></div><h2>KONTROL EDİLEN ÜRÜNLER</h2><table class="print-table workbook-table"><thead><tr><th>Sıra No</th><th>Bölme No</th><th>İstif No</th><th>Emvalin Cinsi</th><th>Miktarı (Ster)</th><th>Ürün Sahibinin Adı Soyadı</th></tr></thead><tbody>${documentRowsHtml(rows, false)}</tbody></table><p class="workbook-note">Yukarıda dökümü yapılan sterli emvallerin, yerinde standardizasyona uygun bir şekilde istifi yapıldığı tarafımızdan tespit edilerek müştereken imza altına alınmıştır.</p><div class="workbook-date">${todayText}</div><div class="workbook-signatures"><span>Or. Muh. Mem.</span><span>İşletme Şefi</span></div></div>`;
+    html += `<div class="print-page workbook-document"><h1>STERLİ EMVAL KONTROL TUTANAĞI</h1><div class="workbook-fields"><div><b>Bölge Müdürlüğü :</b><span>${bolge}</span></div><div><b>İşletme Müdürlüğü :</b><span>${isletme}</span></div><div><b>Şefliği :</b><span>${seflik}</span></div><div><b>Bölme No :</b><span>${bolme}</span></div><div><b>Rampa :</b><span>${rampa}</span></div></div><h2>KONTROL EDİLEN ÜRÜNLER</h2><table class="print-table workbook-table coordinate-workbook-table"><thead><tr><th>Sıra No</th><th>Bölme No</th><th>İstif No</th><th>Emvalin Cinsi</th><th>Miktarı (Ster)</th><th>Koordinat</th><th>Resim No</th></tr></thead><tbody>${documentRowsHtml(rows, true)}</tbody></table><p class="workbook-note">Yukarıda dökümü yapılan sterli emvallerin, yerinde standardizasyona uygun bir şekilde istifi yapıldığı tarafımızdan tespit edilerek müştereken imza altına alınmıştır.</p><div class="workbook-signatures"><span>Or. Muh. Mem.</span><span>İşletme Şefi</span></div></div>`;
   }
   if (state.documentTab === 'photos') {
     for (const record of rows) {
       const urls = await Promise.all((record.photos || []).slice(0, 4).map(photoDataUrl));
       const seflikName = esc(String(record.seflik || displaySeflik()).replace(/ Şefliği$/i, ''));
-      html += `<div class="print-page photo-document-page"><div class="photo-print-header"><div class="photo-print-meta"><div><b>Şeflik Adı:</b> ${seflikName}</div><div><b>İstif No:</b> ${esc(record.istifNo)} ${esc(documentProduct(record))}</div><div><b>Ster:</b> ${esc(record.ster)}</div></div></div><div class="photo-print-collage">${[0, 1, 2, 3].map((index) => urls[index] ? `<figure><img src="${urls[index]}" alt="İstif fotoğrafı ${index + 1}"></figure>` : `<figure class="print-placeholder"></figure>`).join('')}</div><div class="print-footer">İstif Alma • ${trDate(record.date)} • Bölme ${esc(recordBolme(record))}</div></div>`;
+      html += `<div class="print-page photo-document-page"><div class="photo-print-header"><div class="photo-print-meta"><div><b>Şeflik Adı:</b> ${seflikName}</div><div><b>İstif No:</b> ${esc(record.istifNo)} ${esc(documentTypeForForm(record))}</div><div><b>Ster:</b> ${esc(record.ster)}</div></div></div><div class="photo-print-collage">${[0, 1, 2, 3].map((index) => urls[index] ? `<figure><img src="${urls[index]}" alt="İstif fotoğrafı ${index + 1}"></figure>` : `<figure class="print-placeholder"></figure>`).join('')}</div><div class="print-footer">İstif Alma • ${trDate(record.date)} • Bölme ${esc(recordBolme(record))}</div></div>`;
     }
   }
   return html;
@@ -1947,7 +1814,7 @@ async function previewDocuments() {
 }
 
 function printDocumentCss() {
-  return `@page{size:A4;margin:0}*{box-sizing:border-box}html,body{margin:0;background:#fff;color:#111;font-family:Arial,Helvetica,sans-serif}.print-toolbar{position:sticky;top:0;z-index:10;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 14px;background:#0f5f39;color:#fff}.print-toolbar button{border:0;border-radius:10px;background:#fff;color:#0f5f39;font-weight:800;padding:10px 14px}.print-page{width:210mm;min-height:297mm;margin:0 auto;background:#fff;page-break-after:always;break-after:page;padding:14mm;color:#111;overflow:hidden}.print-page:last-child{page-break-after:auto;break-after:auto}.print-page h1{text-align:center;font-size:15pt;margin:0 0 5mm;color:#111}.print-page h2{font-size:13pt;margin:0 0 4mm;color:#111}.print-table{width:100%;border-collapse:collapse;font-size:9.5pt;color:#111}.print-table th,.print-table td{border:1px solid #333;padding:2.2mm;text-align:left;vertical-align:middle}.print-table th{text-align:center;font-weight:800}.official-document{padding:13mm 12mm;font-size:10pt}.official-desc{margin:0 0 5mm}.official-fields{display:grid;grid-template-columns:1fr;gap:1.5mm;margin:0 0 5mm;font-size:10pt}.official-fields div{display:grid;grid-template-columns:58mm 1fr;gap:4mm;align-items:center}.official-fields b{font-weight:800}.official-fields span{min-height:5mm}.official-fields.compact{margin-bottom:7mm}.official-table tbody tr{height:8mm}.official-table .total-row td{font-weight:800;text-align:center}.official-paragraph{margin:6mm 0 0;line-height:1.45;text-align:left}.official-date{margin-top:10mm;text-align:right;font-weight:700}.photo-document-page{height:297mm;min-height:0;padding:9mm 12mm 9mm;display:block;position:relative;overflow:hidden}.photo-print-header{display:block;margin:0 0 4mm}.photo-print-meta{font-size:11pt;line-height:1.38;padding:0;text-align:left;color:#111}.photo-print-meta div{margin:1mm 0}.photo-print-collage{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:3mm;height:250mm}.photo-print-collage figure{margin:0;border:1px solid #111;position:relative;overflow:hidden;background:#f8f8f8;display:block}.photo-print-collage img{width:100%;height:100%;object-fit:cover;display:block}.photo-print-collage .print-placeholder{height:auto;width:auto;display:block;background:#fff}.print-placeholder{display:block;color:#666;border:1px solid #333}.print-footer{margin-top:4mm;font-size:9pt;color:#555;text-align:right}.photo-document-page .print-footer{position:absolute;right:12mm;bottom:4mm;margin:0;font-size:8pt;color:#666}.empty-print{padding:24px;font-size:16px}@media print{.print-toolbar{display:none!important}.print-page{margin:0;box-shadow:none}body{background:#fff}}`;
+  return `@page{size:A4;margin:0}*{box-sizing:border-box}html,body{margin:0;background:#fff;color:#111;font-family:Arial,Helvetica,sans-serif}.print-toolbar{position:sticky;top:0;z-index:10;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 14px;background:#0f5f39;color:#fff}.print-toolbar button{border:0;border-radius:10px;background:#fff;color:#0f5f39;font-weight:800;padding:10px 14px}.print-page{width:210mm;min-height:297mm;margin:0 auto;background:#fff;page-break-after:always;break-after:page;padding:14mm;color:#111;overflow:hidden}.print-page:last-child{page-break-after:auto;break-after:auto}.print-page h1{text-align:center;font-size:18pt;margin:0 0 5mm;color:#111}.print-page h2{font-size:14pt;margin:0 0 4mm;color:#111}.print-table{width:100%;border-collapse:collapse;font-size:10pt;color:#111}.print-table th,.print-table td{border:1px solid #333;padding:2.5mm;text-align:left;vertical-align:top}.photo-document-page{height:297mm;min-height:0;padding:9mm 12mm 9mm;display:block;position:relative;overflow:hidden}.photo-print-header{display:block;margin:0 0 4mm}.photo-print-meta{font-size:11pt;line-height:1.38;padding:0;text-align:left;color:#111}.photo-print-meta div{margin:1mm 0}.photo-print-collage{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:3mm;height:250mm}.photo-print-collage figure{margin:0;border:1px solid #111;position:relative;overflow:hidden;background:#f8f8f8;display:block}.photo-print-collage img{width:100%;height:100%;object-fit:cover;display:block}.photo-print-collage .print-placeholder{height:auto;width:auto;display:block;background:#fff}.print-placeholder{display:block;color:#666;border:1px solid #333}.workbook-document{padding:10mm 10mm;font-size:9pt}.workbook-document h1{font-size:15pt;margin-bottom:4mm}.workbook-document h2{text-align:center;font-size:12pt;margin:5mm 0 0;border:1px solid #222;border-bottom:0;padding:2.5mm}.workbook-fields{display:grid;gap:1mm;margin-bottom:3mm}.workbook-fields div{display:grid;grid-template-columns:48mm 1fr;align-items:center;min-height:6mm}.workbook-fields b{text-align:right;padding-right:4mm}.workbook-fields span{border-bottom:1px solid transparent;min-height:5mm}.workbook-table{font-size:8.6pt;table-layout:fixed}.workbook-table th,.workbook-table td{text-align:center;padding:1.5mm;height:7mm}.workbook-table th:nth-child(1){width:13mm}.workbook-table th:nth-child(2){width:18mm}.workbook-table th:nth-child(3){width:22mm}.workbook-table th:nth-child(4){width:46mm}.workbook-table th:nth-child(5){width:25mm}.coordinate-workbook-table th:nth-child(6){width:42mm}.coordinate-workbook-table th:nth-child(7){width:20mm}.workbook-note{margin:7mm 8mm 0;line-height:1.45;text-align:center}.workbook-date{text-align:right;margin:5mm 15mm 0}.workbook-signatures{display:flex;justify-content:space-around;margin-top:18mm;font-weight:700}.print-footer{margin-top:4mm;font-size:9pt;color:#555;text-align:right}.photo-document-page .print-footer{position:absolute;right:12mm;bottom:4mm;margin:0;font-size:8pt;color:#666}.empty-print{padding:24px;font-size:16px}@media print{.print-toolbar{display:none!important}.print-page{margin:0;box-shadow:none}body{background:#fff}}`;
 }
 
 function buildPrintDocument(innerHtml) {
@@ -2049,6 +1916,7 @@ window.addEventListener('afterprint', () => {
       refreshCurrentMembers();
       if (!navigator.onLine) await wait(650);
     }
+    if (!state.settings.setupComplete) state.view = 'settings';
     hideBoot();
     render();
   } catch (error) {
