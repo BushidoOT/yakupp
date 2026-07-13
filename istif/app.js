@@ -1,6 +1,6 @@
 'use strict';
 
-const APP_VERSION = '0.2.4';
+const APP_VERSION = '0.2.5';
 const MAX_PHOTO_BYTES = 1024 * 1024;
 const DB_NAME = 'mesaha-istif-prototype';
 const DB_VERSION = 1;
@@ -355,7 +355,7 @@ async function edgeCall(action, payload = {}, retried = false) {
       Authorization: `Bearer ${session.access_token}`,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ action, source: 'mesaha-istif-v024', ...payload }),
+    body: JSON.stringify({ action, source: 'mesaha-istif-v025', ...payload }),
   });
   const body = await response.json().catch(() => ({}));
   if ((response.status === 401 || response.status === 403) && !retried && readSharedSession()?.refresh_token) {
@@ -376,7 +376,7 @@ async function bridgeCall(action, payload = {}, retried = false) {
       Authorization: `Bearer ${session.access_token}`,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ action, source: 'mesaha-istif-v024', ...payload }),
+    body: JSON.stringify({ action, source: 'mesaha-istif-v025', ...payload }),
   });
   const body = await response.json().catch(() => ({}));
   if ((response.status === 401 || response.status === 403) && !retried && readSharedSession()?.refresh_token) {
@@ -387,7 +387,10 @@ async function bridgeCall(action, payload = {}, retried = false) {
 }
 
 function currentFolder() {
-  return state.seflikler.find((item) => item.key === state.settings.seflikKey || item.name === state.settings.seflik) || null;
+  const aliases = new Set(seflikAliasKeys(state.settings.seflik, state.settings.seflikKey));
+  const direct = state.seflikler.find((item) => item.key === state.settings.seflikKey || item.name === state.settings.seflik);
+  if (direct) return direct;
+  return state.seflikler.find((item) => seflikAliasKeys(item.name, item.key).some((key) => aliases.has(key))) || null;
 }
 
 function currentFolderIsOwner() {
@@ -520,13 +523,21 @@ function foresterKey(item) {
 
 function foresterIdentityKeys(item) {
   const keys = [];
-  const email = clean(item?.email).toLocaleLowerCase('tr-TR');
-  const userId = clean(item?.userId || item?.user_id);
-  const name = stableKey(item?.name);
-  if (email) keys.push(`email:${email}`);
+  const email = clean(item?.email || item?.user_email || item?.member_email).toLocaleLowerCase('tr-TR');
+  const userId = clean(item?.userId || item?.user_id || item?.member_user_id || item?.forester_user_id);
+  const name = stableKey(item?.name || item?.canonical_name || item?.member_name);
   if (userId) keys.push(`uid:${userId}`);
-  if (name) keys.push(`name:${name}`);
+  if (email) keys.push(`email:${email}`);
+  // Aynı ad-soyada sahip farklı Google hesapları kaybolmasın diye isim yalnızca kimlik/e-posta yoksa kullanılır.
+  if (!userId && !email && name) keys.push(`name:${name}`);
   return Array.from(new Set(keys));
+}
+
+function sameForesterIdentity(a, b) {
+  const ak = foresterIdentityKeys(a);
+  const bk = foresterIdentityKeys(b);
+  if (ak.length && bk.length) return ak.some((key) => bk.includes(key));
+  return stableKey(a?.name) && stableKey(a?.name) === stableKey(b?.name);
 }
 
 function mergeForesterData(oldItem = {}, nextItem = {}) {
@@ -538,8 +549,8 @@ function mergeForesterData(oldItem = {}, nextItem = {}) {
     ...oldItem,
     ...nextItem,
     id: clean(oldItem.id || nextItem.id || oldItem.userId || nextItem.userId || oldItem.email || nextItem.email || oldItem.name || nextItem.name),
-    userId: clean(oldItem.userId || nextItem.userId || oldItem.user_id || nextItem.user_id),
-    email: clean(oldItem.email || nextItem.email).toLocaleLowerCase('tr-TR'),
+    userId: clean(oldItem.userId || nextItem.userId || oldItem.user_id || nextItem.user_id || oldItem.member_user_id || nextItem.member_user_id || oldItem.forester_user_id || nextItem.forester_user_id),
+    email: clean(oldItem.email || nextItem.email || oldItem.user_email || nextItem.user_email || oldItem.member_email || nextItem.member_email).toLocaleLowerCase('tr-TR'),
     name: clean(oldItem.name || nextItem.name || oldItem.email || nextItem.email),
     avatarUrl: clean(oldItem.avatarUrl || nextItem.avatarUrl || oldItem.avatar_url || nextItem.avatar_url),
     role,
@@ -1447,7 +1458,8 @@ function showOrmanciPicker() {
 
 function canRemoveForester(item) {
   const role = clean(item?.role).toLocaleLowerCase('tr-TR');
-  return currentFolderIsOwner() && !item?.isSelf && !['owner', 'creator', 'kurucu'].includes(role) && !!clean(item?.userId || item?.user_id);
+  const uid = clean(item?.userId || item?.user_id || item?.member_user_id || item?.forester_user_id);
+  return currentFolderIsOwner() && !item?.isSelf && !['owner', 'creator', 'kurucu'].includes(role) && !!uid;
 }
 
 function foresterExistingRowsHtml() {
@@ -1513,7 +1525,7 @@ async function searchForesterSuggestions(query, box) {
         avatarUrl: clean(raw.avatarUrl || raw.avatar_url || raw.google_avatar_url || raw.picture),
       };
       const keys = foresterIdentityKeys(user);
-      const key = keys[0] || stableKey(user.name);
+      const key = keys[0] || `name:${stableKey(user.name)}`;
       if (!key || seen.has(key)) continue;
       seen.add(key);
       const already = keys.some((k) => existingKeys.has(k));
@@ -1538,8 +1550,8 @@ async function addForesterUser(user) {
   user.userId = clean(user.userId || user.user_id);
   if (!name) return toast('Kullanıcı adı bulunamadı.', 'bad');
   refreshCurrentMembers();
-  const userKeys = foresterIdentityKeys({ ...user, name, userId: user.userId, email: user.email });
-  const existing = state.ormancilar.find((item) => foresterIdentityKeys(item).some((key) => userKeys.includes(key)) || (clean(item.email) && clean(item.email).toLocaleLowerCase('tr-TR') === clean(user.email).toLocaleLowerCase('tr-TR')) || stableKey(item.name) === stableKey(name));
+  const normalizedUser = { ...user, name, userId: user.userId, email: user.email };
+  const existing = state.ormancilar.find((item) => sameForesterIdentity(item, normalizedUser));
   if (existing) {
     state.settings.ormanci = existing.name;
     if (state.draft) state.draft.ormanci = existing.name;
@@ -1573,7 +1585,7 @@ async function removeForesterUser(member) {
   const role = clean(member.role).toLocaleLowerCase('tr-TR');
   if (!currentFolderIsOwner()) return toast('Ormancı çıkarmayı yalnızca şeflik kurucusu yapabilir.', 'bad');
   if (member.isSelf || ['owner', 'creator', 'kurucu'].includes(role)) return toast('Kurucu kullanıcı çıkarılamaz.', 'bad');
-  const uid = clean(member.userId || member.user_id);
+  const uid = clean(member.userId || member.user_id || member.member_user_id || member.forester_user_id);
   if (!uid) return toast('Bu ormancı için kullanıcı kimliği bulunamadı.', 'bad');
   if (!confirm(`${member.name} şeflik ormancı listesinden çıkarılsın mı?`)) return;
   try {

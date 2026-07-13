@@ -1,8 +1,8 @@
 {
-  "version": "0.2.4",
+  "version": "0.2.5",
   "name": "Mesaha İO İstif Alma",
   "updatedAt": "2026-07-13T16:25:00+03:00",
-  "notes": "Ormancı tekilleştirme, Mesaha İO ortak ormancı görünümü ve evrak bölme seçimi düzeltmeleri",
-  "visibleVersion": "İstif Alma v0.2.3",
-  "build": "20260713-v023"
+  "notes": "Aynı ad soyadlı Google hesaplarında ormancı ekleme, gerçek üyelikten çıkarma butonu ve tekilleştirme düzeltmeleri",
+  "visibleVersion": "İstif Alma v0.2.5",
+  "build": "20260713-v025"
 }

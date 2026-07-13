@@ -352,7 +352,7 @@ body.is-printing .print-area{display:block!important;position:relative;z-index:9
 .existing-forester-row small{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
 
-/* v0.2.4 — Mesaha İO tarzı gerçek ormancı ekle/çıkar */
+/* v0.2.5 — Mesaha İO tarzı gerçek ormancı ekle/çıkar */
 .existing-forester-row{display:grid;grid-template-columns:42px minmax(0,1fr) auto;align-items:center}
 .existing-forester-row .mini-remove{min-height:34px;border-radius:12px;padding:0 11px;font-size:12px;white-space:nowrap}
 .suggest-row.already{opacity:.72;background:#f6f7f6}
