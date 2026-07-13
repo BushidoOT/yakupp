@@ -278,3 +278,15 @@ img{max-width:100%;display:block}
   .foresters-card{padding:13px}.forester-actions{grid-template-columns:1fr 1fr}.forester-actions .btn{font-size:12px;gap:6px}
   .drive-actions{grid-template-columns:1fr}.drive-actions>.wide{grid-column:auto}
 }
+
+/* v0.1.6 — istif düzenleme/silme ve Google kullanıcı önerileri */
+.record-actions{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px;padding-top:9px;border-top:1px solid var(--line)}
+.record-actions .btn{min-height:39px;font-size:12.5px;border-radius:13px}
+.suggest-box{display:grid;gap:8px;margin-top:10px;min-height:48px}
+.suggest-box>span{display:block;color:var(--muted);font-size:12.5px;background:#f7faf8;border:1px dashed var(--line-strong);border-radius:15px;padding:13px;text-align:center}
+.suggest-row{width:100%;display:grid;grid-template-columns:42px minmax(0,1fr) 24px;gap:10px;align-items:center;border:1px solid var(--line);border-radius:16px;background:#fff;color:var(--text);padding:9px;text-align:left;box-shadow:0 4px 12px rgba(13,69,41,.035)}
+.suggest-row:active{transform:scale(.985);background:var(--green-pale)}
+.suggest-row>span:nth-child(2){display:grid;gap:2px;min-width:0}
+.suggest-row b{font-size:13.5px;line-height:1.2;overflow-wrap:anywhere}
+.suggest-row small{font-size:11px;color:var(--muted);overflow-wrap:anywhere}
+.suggest-row>svg{color:var(--green);justify-self:end}

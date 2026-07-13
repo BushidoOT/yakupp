@@ -1,6 +1,6 @@
 'use strict';
 
-const APP_VERSION = '0.1.5';
+const APP_VERSION = '0.1.6';
 const MAX_PHOTO_BYTES = 1024 * 1024;
 const DB_NAME = 'mesaha-istif-prototype';
 const DB_VERSION = 1;
@@ -49,6 +49,7 @@ const state = {
   ormancilar: [],
   membersBySeflik: {},
   customForestersBySeflik: {},
+  foresterSearchSeq: 0,
   drive: {
     status: 'idle', connected: false, isOwner: false, ownerEmail: '', ownerName: '',
     folderId: '', folderName: '', folderUrl: '', updatedAt: '', error: '',
@@ -483,34 +484,25 @@ async function syncSharedContext({ manual = false } = {}) {
   render();
   try {
     const session = await ensureSharedSession();
-    const accessResponse = await edgeCall('user_access_status');
-    const access = accessResponse.access || {};
-    if (clean(access.status) !== 'approved') throw new Error('Google hesabının Mesaha İO erişimi onaylı değil.');
-    const canonicalSeflik = clean(access.seflik || access.canonical_seflik || state.settings.seflik);
-    const foldersResponse = await edgeCall('seflik_folder_list_my_sefliks', {
-      seflik: canonicalSeflik,
-      folderSeflik: canonicalSeflik,
+    const out = await bridgeCall('shared_context', {
+      seflik: state.settings.seflik,
+      seflikKey: state.settings.seflikKey,
     });
-    const folders = (foldersResponse.folders || []).map(normalizeFolder).filter(Boolean);
-    if (!folders.length && canonicalSeflik) folders.push({ name: canonicalSeflik, key: stableKey(canonicalSeflik), role: 'owner' });
-    const membersMap = { ...state.membersBySeflik };
-    for (const folder of folders) {
-      try {
-        const memberResponse = await edgeCall('seflik_folder_list_members', {
-          seflik: folder.name,
-          folderSeflik: folder.name,
-          seflikKey: folder.key,
-        });
-        membersMap[folder.key] = (memberResponse.members || []).map(normalizeMember).filter(Boolean);
-      } catch {
-        if (!Array.isArray(membersMap[folder.key])) membersMap[folder.key] = [];
-      }
-      await syncCustomForestersForFolder(folder);
-    }
+    const folders = (out.folders || []).map(normalizeFolder).filter(Boolean);
+    if (!folders.length) throw new Error('Mesaha İO Şeflik Klasörü bulunamadı.');
     state.seflikler = folders;
-    state.membersBySeflik = membersMap;
+    const nextMembers = {};
+    Object.entries(out.membersBySeflik || {}).forEach(([key, members]) => {
+      nextMembers[key] = (Array.isArray(members) ? members : []).map(normalizeMember).filter(Boolean);
+    });
+    state.membersBySeflik = nextMembers;
+    const nextCustom = { ...state.customForestersBySeflik };
+    Object.entries(out.customForestersBySeflik || {}).forEach(([key, members]) => {
+      nextCustom[key] = (Array.isArray(members) ? members : []).map(normalizeForester).filter(Boolean);
+    });
+    state.customForestersBySeflik = nextCustom;
     const activeLocal = jsonRead(SHARED_ACTIVE_SEFLIK_KEY, {}) || {};
-    const activeName = clean(activeLocal.seflik || activeLocal.name || state.settings.seflik || canonicalSeflik);
+    const activeName = clean(activeLocal.seflik || activeLocal.name || state.settings.seflik || out.access?.seflik || out.access?.canonical_seflik);
     const selected = folders.find((x) => x.name === activeName) || folders[0];
     if (selected) {
       state.settings.seflik = selected.name;
@@ -518,10 +510,10 @@ async function syncSharedContext({ manual = false } = {}) {
     }
     state.auth = {
       status: 'connected',
-      userId: clean(access.user_id || session.user?.id),
-      email: clean(access.email || session.user?.email),
-      name: clean(access.name || access.canonical_name || session.user?.user_metadata?.full_name || state.auth.name),
-      avatarUrl: clean(access.avatar_url || session.user?.user_metadata?.avatar_url || session.user?.user_metadata?.picture || state.auth.avatarUrl),
+      userId: clean(out.access?.user_id || out.access?.userId || session.user?.id),
+      email: clean(out.access?.email || session.user?.email),
+      name: clean(out.access?.name || out.access?.canonical_name || session.user?.user_metadata?.full_name || state.auth.name),
+      avatarUrl: clean(out.access?.avatar_url || session.user?.user_metadata?.avatar_url || session.user?.user_metadata?.picture || state.auth.avatarUrl),
       error: '',
       updatedAt: new Date().toISOString(),
     };
@@ -529,7 +521,7 @@ async function syncSharedContext({ manual = false } = {}) {
     await saveSettings();
     await refreshDriveStatus({ silent: true });
     await saveSharedCache();
-    if (manual) toast('Şeflikler, ormancılar ve Drive durumu güncellendi.', 'good');
+    if (manual) toast('Şeflikler ve Mesaha İO kullanıcıları güncellendi.', 'good');
   } catch (error) {
     state.auth.status = readSharedSession() ? 'cached' : 'signed_out';
     state.auth.error = clean(error?.message || error);
@@ -718,7 +710,7 @@ function renderNew() {
   const draft = ensureDraft();
   const seflikOptions = state.seflikler.map((item) => item.name);
   const ormanciOptions = state.ormancilar.map((item) => item.name);
-  return `${head('Yeni İstif', 'İstif bilgilerini girin', { back: true })}<form id="stackForm">
+  return `${head(draft.createdAt && state.records.some((r) => r.id === draft.id) ? 'İstif Düzenle' : 'Yeni İstif', 'İstif bilgilerini girin', { back: true })}<form id="stackForm">
     <section class="form-card card">
       ${fieldRow('forest', 'Şeflik', 'seflik', draft.seflik, 'select', seflikOptions)}
       ${fieldRow('user', 'Ormancı', 'ormanci', draft.ormanci, 'select', ormanciOptions)}
@@ -786,6 +778,10 @@ function recordCards(rows) {
       <div>${icon('pin', 17)}<span>${record.coordinates ? 'Koordinat Var' : 'Koordinat Bekliyor'}</span></div>
       <div>${icon('camera', 17)}<span>${record.photos?.length || record.photoCount || 0} Fotoğraf</span></div>
       <div>${icon('cloud', 17)}<span>${record.isDemo ? 'Örnek Kayıt' : record.syncStatus === 'synced' ? 'Senkronize' : record.syncStatus === 'drive_synced' ? 'Supabase Bekliyor' : record.syncStatus === 'syncing' ? 'Yükleniyor' : 'Yerelde Kayıtlı'}</span></div>
+    </div>
+    <div class="record-actions">
+      <button class="btn small" type="button" data-edit-record="${record.id}">${icon('doc', 16)} Düzenle</button>
+      <button class="btn danger-soft small" type="button" data-delete-record="${record.id}">${icon('trash', 16)} Sil</button>
     </div>
   </article>`).join('');
 }
@@ -910,7 +906,56 @@ function bindDynamic() {
   app.querySelector('[data-action="clear-selection"]')?.addEventListener('click', () => { state.selectedRecordIds.clear(); render(); });
   app.querySelectorAll('[data-action="preview-doc"]').forEach((button) => { button.onclick = previewDocuments; });
   app.querySelectorAll('[data-action="print-doc"]').forEach((button) => { button.onclick = printDocuments; });
+  app.querySelectorAll('[data-edit-record]').forEach((button) => { button.onclick = () => editRecord(button.dataset.editRecord); });
+  app.querySelectorAll('[data-delete-record]').forEach((button) => { button.onclick = () => deleteRecord(button.dataset.deleteRecord); });
 
+}
+
+async function editRecord(recordId) {
+  const record = state.records.find((item) => item.id === recordId);
+  if (!record) return toast('Düzenlenecek istif bulunamadı.', 'bad');
+  state.draft = structuredClone(record);
+  state.draft.syncStatus = 'local';
+  state.draft.updatedAt = new Date().toISOString();
+  state.selectedPhotos = Array.isArray(record.photos) ? record.photos.map((photo) => ({
+    blob: photo.blob,
+    name: photo.name || `foto_${Date.now()}.jpg`,
+    type: photo.type || (photo.blob && photo.blob.type) || 'image/jpeg',
+    size: photo.size || (photo.blob && photo.blob.size) || 0,
+  })).filter((photo) => photo.blob) : [];
+  setView('new');
+}
+
+async function deleteRecord(recordId) {
+  const record = state.records.find((item) => item.id === recordId);
+  if (!record) return toast('Silinecek istif bulunamadı.', 'bad');
+  const ok = confirm(`${record.istifNo || 'Bu istif'} silinsin mi?\n\nYerel kayıt silinir. Drive'a yüklenmiş fotoğraflar otomatik silinmez.`);
+  if (!ok) return;
+  await idbDelete('records', record.id);
+  state.records = state.records.filter((item) => item.id !== record.id);
+  state.selectedRecordIds.delete(record.id);
+  if (navigator.onLine && readSharedSession() && !record.isDemo) {
+    try { await supabaseDeleteRecord(record); } catch { /* çevrimiçi silme başarısızsa yerel silme bozulmasın */ }
+  }
+  toast('İstif silindi.', 'good');
+  render();
+}
+
+async function supabaseDeleteRecord(record) {
+  const session = await ensureSharedSession();
+  const response = await fetch(`${SUPABASE_URL}/rest/v1/mesaha_istif_records?id=eq.${encodeURIComponent(record.id)}`, {
+    method: 'DELETE',
+    cache: 'no-store',
+    headers: {
+      apikey: SUPABASE_ANON_KEY,
+      Authorization: `Bearer ${session.access_token}`,
+      Prefer: 'return=minimal',
+    },
+  });
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+    throw new Error(error.message || `Supabase silme hatası ${response.status}`);
+  }
 }
 
 function applyRecordFilters() {
@@ -1144,47 +1189,76 @@ function showAddOrmanciDialog() {
     toast('Önce şeflik seçin.', 'bad');
     return;
   }
-  showDialog(`<h3>Ormancı Ekle</h3><p>Eklenen ormancı ${esc(displaySeflik())} içindeki tüm İstif Alma kullanıcılarında görüntülenir.</p><label class="dialog-label">Ad Soyad</label><input id="newForesterName" class="dialog-input" autocomplete="name" placeholder="Örn. Ahmet Yılmaz"><div class="dialog-actions"><button class="btn" data-dialog-close>Vazgeç</button><button class="btn primary" id="saveForesterBtn">Ormancıyı Ekle</button></div>`);
-  const input = document.getElementById('newForesterName');
-  input?.focus();
-  document.getElementById('saveForesterBtn').onclick = async () => {
-    const name = clean(input?.value);
-    if (name.length < 3) return toast('Ormancının ad ve soyadını yazın.', 'bad');
-    await addForester(name);
-  };
-  input?.addEventListener('keydown', (event) => { if (event.key === 'Enter') { event.preventDefault(); document.getElementById('saveForesterBtn')?.click(); } });
-}
-
-async function addForester(name) {
-  const key = state.settings.seflikKey || stableKey(state.settings.seflik);
-  const list = Array.isArray(state.customForestersBySeflik[key]) ? [...state.customForestersBySeflik[key]] : [];
-  if (state.ormancilar.some((item) => stableKey(item.name) === stableKey(name))) {
-    toast('Bu ormancı zaten listede.', 'bad');
+  if (!readSharedSession()) {
+    showDialog('<h3>Google girişi gerekli</h3><p>Ormancı eklemek için kişinin Mesaha İO’da Google ile giriş yapmış ve onaylı kullanıcı olması gerekir.</p><div class="dialog-actions"><button class="btn" data-dialog-close>Kapat</button><a class="btn primary" href="../">Mesaha İO’da Giriş Yap</a></div>');
     return;
   }
-  const localItem = { id: `local_${uid()}`, name, role: 'forester', custom: true, pending: true, createdBy: state.auth.userId };
-  list.push(localItem);
-  state.customForestersBySeflik[key] = list;
-  state.settings.ormanci = name;
-  refreshCurrentMembers();
-  await saveSettings();
-  await saveSharedCache();
-  closeDialog();
-  render();
-  if (navigator.onLine && readSharedSession()) {
-    try {
-      const out = await bridgeCall('forester_add', { seflikKey: key, seflik: state.settings.seflik, name });
-      const saved = normalizeForester(out.forester || { name });
-      state.customForestersBySeflik[key] = list.filter((item) => item.id !== localItem.id).concat(saved ? [{ ...saved, pending: false }] : []);
-      refreshCurrentMembers();
-      await saveSharedCache();
-      render();
-      toast('Ormancı ortak listeye eklendi.', 'good');
-    } catch (error) {
-      toast(`Ormancı yerelde eklendi; senkron bekliyor. ${clean(error?.message || '')}`, 'bad');
+  showDialog(`<h3>Ormancı Ekle</h3><p>Yalnızca Mesaha İO’da Google ile giriş yapmış kullanıcılar eklenebilir. En az 3 harf yazınca öneriler çıkar.</p><label class="dialog-label">Kullanıcı Ara</label><input id="foresterSearchInput" class="dialog-input" autocomplete="off" placeholder="Ad, soyad veya e-posta"><div id="foresterSuggestBox" class="suggest-box"><span>En az 3 harf yazın.</span></div><div class="dialog-actions"><button class="btn" data-dialog-close>Kapat</button><button class="btn" id="refreshUserSuggestions">Kullanıcıları Yenile</button></div>`);
+  const input = document.getElementById('foresterSearchInput');
+  const box = document.getElementById('foresterSuggestBox');
+  const run = () => searchForesterSuggestions(input?.value || '', box);
+  input?.addEventListener('input', debounce(run, 280));
+  document.getElementById('refreshUserSuggestions').onclick = run;
+  input?.focus();
+}
+
+function debounce(fn, ms = 250) {
+  let timer = 0;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn(...args), ms);
+  };
+}
+
+async function searchForesterSuggestions(query, box) {
+  const q = clean(query);
+  if (!box) return;
+  if (q.length < 3) {
+    box.innerHTML = '<span>En az 3 harf yazın.</span>';
+    return;
+  }
+  const seq = ++state.foresterSearchSeq;
+  box.innerHTML = '<span>Kullanıcılar aranıyor…</span>';
+  try {
+    const out = await bridgeCall('user_search', { q, seflikKey: state.settings.seflikKey, seflik: state.settings.seflik });
+    if (seq !== state.foresterSearchSeq) return;
+    const users = Array.isArray(out.users) ? out.users : [];
+    if (!users.length) {
+      box.innerHTML = '<span>Bu aramada Google onaylı kullanıcı bulunamadı.</span>';
+      return;
     }
-  } else {
-    toast('Ormancı yerelde eklendi; internet gelince senkronize edilecek.', 'good');
+    box.innerHTML = users.map((user, index) => `<button class="suggest-row" type="button" data-user-index="${index}"><span class="picker-avatar">${user.avatarUrl ? `<img src="${esc(user.avatarUrl)}" alt="">` : icon('user', 19)}</span><span><b>${esc(user.name)}</b><small>${esc(user.email || 'Google kullanıcısı')}</small></span>${icon('chevron', 19)}</button>`).join('');
+    box.querySelectorAll('[data-user-index]').forEach((button) => {
+      button.onclick = () => addForesterUser(users[Number(button.dataset.userIndex)]);
+    });
+  } catch (error) {
+    box.innerHTML = `<span>Arama yapılamadı: ${esc(clean(error?.message || error))}</span>`;
+  }
+}
+
+async function addForesterUser(user) {
+  const key = state.settings.seflikKey || stableKey(state.settings.seflik);
+  const name = clean(user?.name);
+  if (!name) return toast('Kullanıcı adı bulunamadı.', 'bad');
+  if (state.ormancilar.some((item) => stableKey(item.name) === stableKey(name) || (user.userId && item.userId === user.userId))) {
+    toast('Bu kullanıcı zaten ormancı listesinde.', 'bad');
+    return;
+  }
+  try {
+    const out = await bridgeCall('forester_add', { seflikKey: key, seflik: state.settings.seflik, userId: user.userId, email: user.email, name });
+    const saved = normalizeForester(out.forester || user);
+    const list = Array.isArray(state.customForestersBySeflik[key]) ? state.customForestersBySeflik[key].filter((item) => stableKey(item.name) !== stableKey(name)) : [];
+    if (saved) list.push({ ...saved, custom: true, pending: false });
+    state.customForestersBySeflik[key] = list;
+    state.settings.ormanci = saved?.name || name;
+    refreshCurrentMembers();
+    await saveSettings();
+    await saveSharedCache();
+    closeDialog();
+    render();
+    toast('Ormancı ortak listeye eklendi.', 'good');
+  } catch (error) {
+    toast(clean(error?.message || error), 'bad');
   }
 }
 

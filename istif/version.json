@@ -1,10 +1,6 @@
 {
-  "version": "0.1.5",
-  "name": "İstif Alma",
-  "build": "2026.07.13.5",
-  "sharedAuth": true,
-  "sharedSeflikFolder": true,
-  "sharedDrive": true,
-  "sharedForesters": true,
-  "driveRedirectUri": "https://bushidoot.github.io/yakupp/istif/"
+  "version": "0.1.6",
+  "name": "Mesaha İO İstif Alma",
+  "updatedAt": "2026-07-13T14:10:00+03:00",
+  "notes": "İstif düzenleme/silme ve Google onaylı kullanıcıdan ormancı ekleme"
 }
