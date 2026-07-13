@@ -1,6 +1,6 @@
 'use strict';
 
-const APP_VERSION = '0.2.2';
+const APP_VERSION = '0.2.3';
 const MAX_PHOTO_BYTES = 1024 * 1024;
 const DB_NAME = 'mesaha-istif-prototype';
 const DB_VERSION = 1;
@@ -41,6 +41,7 @@ const state = {
   selectedPhotos: [],
   selectedRecordIds: new Set(),
   documentTab: 'documents',
+  builderBolme: '',
   cameraStream: null,
   facingMode: 'environment',
   syncing: false,
@@ -511,7 +512,71 @@ function valuesByAlias(map, aliases) {
 }
 
 function foresterKey(item) {
-  return item?.userId ? `uid:${item.userId}` : item?.email ? `email:${clean(item.email).toLocaleLowerCase('tr-TR')}` : `name:${stableKey(item?.name)}`;
+  const email = clean(item?.email).toLocaleLowerCase('tr-TR');
+  if (email) return `email:${email}`;
+  if (item?.userId) return `uid:${item.userId}`;
+  return `name:${stableKey(item?.name)}`;
+}
+
+function foresterIdentityKeys(item) {
+  const keys = [];
+  const email = clean(item?.email).toLocaleLowerCase('tr-TR');
+  const userId = clean(item?.userId || item?.user_id);
+  const name = stableKey(item?.name);
+  if (email) keys.push(`email:${email}`);
+  if (userId) keys.push(`uid:${userId}`);
+  if (name) keys.push(`name:${name}`);
+  return Array.from(new Set(keys));
+}
+
+function mergeForesterData(oldItem = {}, nextItem = {}) {
+  const roleRank = { owner: 4, creator: 4, kurucu: 4, forester: 3, member: 2, cached: 1 };
+  const oldRole = clean(oldItem.role || '').toLocaleLowerCase('tr-TR');
+  const nextRole = clean(nextItem.role || '').toLocaleLowerCase('tr-TR');
+  const role = (roleRank[nextRole] || 0) >= (roleRank[oldRole] || 0) ? (nextItem.role || oldItem.role) : (oldItem.role || nextItem.role);
+  return {
+    ...oldItem,
+    ...nextItem,
+    id: clean(oldItem.id || nextItem.id || oldItem.userId || nextItem.userId || oldItem.email || nextItem.email || oldItem.name || nextItem.name),
+    userId: clean(oldItem.userId || nextItem.userId || oldItem.user_id || nextItem.user_id),
+    email: clean(oldItem.email || nextItem.email).toLocaleLowerCase('tr-TR'),
+    name: clean(oldItem.name || nextItem.name || oldItem.email || nextItem.email),
+    avatarUrl: clean(oldItem.avatarUrl || nextItem.avatarUrl || oldItem.avatar_url || nextItem.avatar_url),
+    role,
+    isSelf: oldItem.isSelf === true || nextItem.isSelf === true,
+    custom: oldItem.custom === true || nextItem.custom === true,
+    pending: oldItem.pending === true || nextItem.pending === true,
+  };
+}
+
+function addForesterToMap(map, item) {
+  if (!item?.name) return null;
+  const keys = foresterIdentityKeys(item);
+  if (!keys.length) return null;
+  let existing = null;
+  for (const key of keys) {
+    if (map.has(key)) { existing = map.get(key); break; }
+  }
+  const merged = mergeForesterData(existing || {}, item);
+  const allKeys = Array.from(new Set([...keys, ...foresterIdentityKeys(existing || {})]));
+  allKeys.forEach((key) => map.set(key, merged));
+  return merged;
+}
+
+function uniqueForestersFromMap(map) {
+  const out = [];
+  const seen = new Set();
+  for (const item of map.values()) {
+    const key = foresterKey(item);
+    if (!key || seen.has(key)) continue;
+    seen.add(key);
+    out.push(item);
+  }
+  return out;
+}
+
+function recordBolme(record) {
+  return clean(record?.bolme || record?.bolmeNo || record?.bolme_no || record?.division || record?.division_no);
 }
 
 function mirrorMembersByAliases(target, folder, list) {
@@ -528,14 +593,26 @@ function refreshCurrentMembers() {
   [...members, ...custom].forEach((item) => {
     const normalized = item?.custom ? normalizeForester(item) : normalizeMember(item);
     if (!normalized?.name) return;
-    const k = foresterKey(normalized);
-    if (!map.has(k) || normalized.custom) map.set(k, normalized);
+    addForesterToMap(map, normalized);
   });
   if (state.auth.name) {
-    const selfKey = state.auth.userId ? `uid:${state.auth.userId}` : (state.auth.email ? `email:${state.auth.email}` : `name:${stableKey(state.auth.name)}`);
-    if (!map.has(selfKey)) map.set(selfKey, { id: state.auth.userId || state.auth.name, userId: state.auth.userId, email: state.auth.email, name: state.auth.name, avatarUrl: state.auth.avatarUrl, role: currentFolderIsOwner() ? 'owner' : 'member', isSelf: true, custom: false });
+    addForesterToMap(map, {
+      id: state.auth.userId || state.auth.email || state.auth.name,
+      userId: state.auth.userId,
+      email: state.auth.email,
+      name: state.auth.name,
+      avatarUrl: state.auth.avatarUrl,
+      role: currentFolderIsOwner() ? 'owner' : 'member',
+      isSelf: true,
+      custom: false,
+    });
   }
-  state.ormancilar = [...map.values()].sort((a, b) => {
+  state.ormancilar = uniqueForestersFromMap(map).sort((a, b) => {
+    const ar = clean(a.role).toLocaleLowerCase('tr-TR');
+    const br = clean(b.role).toLocaleLowerCase('tr-TR');
+    const ao = ['owner', 'creator', 'kurucu'].includes(ar) ? 0 : 1;
+    const bo = ['owner', 'creator', 'kurucu'].includes(br) ? 0 : 1;
+    if (ao !== bo) return ao - bo;
     if (a.isSelf && !b.isSelf) return -1;
     if (!a.isSelf && b.isSelf) return 1;
     return clean(a.name).localeCompare(clean(b.name), 'tr');
@@ -870,7 +947,7 @@ function recordCards(rows) {
     ${recordThumbHtml(record)}
     <div class="record-info">
       <span>Şeflik</span><b>${esc(String(record.seflik || '').replace(' Şefliği', ''))}</b>
-      <span>Bölme</span><b>${esc(record.bolme)}</b>
+      <span>Bölme</span><b>${esc(recordBolme(record))}</b>
       <span>İstif</span><b>${esc(record.istifNo)}</b>
       <span>Tür</span><b>${esc(record.type)}</b>
       <span>Ster</span><b>${esc(record.ster)} Ster</b>
@@ -889,17 +966,43 @@ function recordCards(rows) {
 }
 
 function renderDocuments() {
-  const bolmes = [...new Set(state.records.map((row) => row.bolme).filter(Boolean))];
-  const chosen = sortedRecords(state.records.filter((row) => !state.builderBolme || row.bolme === state.builderBolme));
+  const bolmes = [...new Set(state.records.map((row) => recordBolme(row)).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'tr', { numeric: true }));
+  if (state.builderBolme && !bolmes.includes(state.builderBolme)) state.builderBolme = '';
+  const chosen = sortedRecords(state.records.filter((row) => !state.builderBolme || recordBolme(row) === state.builderBolme));
+  const bolmeLabel = state.builderBolme ? `Bölme ${state.builderBolme}` : (bolmes.length ? 'Tüm Bölmeler' : 'Kayıtlı bölme yok');
   return `${head('Evrak Oluştur', 'İstif seçerek evrak hazırlayın', { action: profileButton() })}
     <div class="segment"><button class="${state.documentTab === 'photos' ? 'active' : ''}" data-doc-tab="photos">İstif Fotoğrafları</button><button class="${state.documentTab === 'documents' ? 'active' : ''}" data-doc-tab="documents">Belgeler</button></div>
     <div class="info-note"><b>${icon('info', 21)}</b><span>Aynı bölmedeki ve yakın tarihli istifleri seçin. Sıralama kabuklu, lif, yakacak ve sırık şeklinde otomatik yapılır.</span></div>
-    <section class="builder-controls"><div class="select-panel card"><label class="select-row"><span class="round-icon">${icon('layers', 23)}</span><span class="row-copy"><small>Bölme Seç</small><select id="builderBolme" class="embedded-select"><option value="">Tüm Bölmeler</option>${bolmes.map((value) => `<option ${state.builderBolme === value ? 'selected' : ''}>${esc(value)}</option>`).join('')}</select></span><span class="chev">${icon('chevron', 22)}</span></label></div></section>
+    <section class="builder-controls"><button class="select-panel card builder-bolme-btn" type="button" data-action="pick-builder-bolme"><span class="select-row"><span class="round-icon">${icon('layers', 23)}</span><span class="row-copy"><small>Bölme Seç</small><strong>${esc(bolmeLabel)}</strong></span><span class="chev">${icon('chevron', 22)}</span></span></button></section>
     <div class="section-title"><h2>İstifler</h2><span>${state.selectedRecordIds.size} / ${chosen.length} seçildi</span></div>
-    <section class="builder-list card">${chosen.map((record) => `<label class="check-row"><input type="checkbox" data-record-check="${record.id}" ${state.selectedRecordIds.has(record.id) ? 'checked' : ''}><span>${icon('logs', 22)}</span><b>${esc(record.istifNo)} • ${esc(record.type)}</b></label>`).join('')}</section>
+    <section class="builder-list card">${chosen.length ? chosen.map((record) => `<label class="check-row"><input type="checkbox" data-record-check="${record.id}" ${state.selectedRecordIds.has(record.id) ? 'checked' : ''}><span>${icon('logs', 22)}</span><b>${esc(record.istifNo)} • ${esc(record.type)} <small>• Bölme ${esc(recordBolme(record))}</small></b></label>`).join('') : '<div class="empty-inline">Bu bölmede evraka eklenecek istif yok.</div>'}</section>
     <div class="dual-actions"><button class="btn" data-action="select-all">${icon('check', 20)} Tümünü Seç</button><button class="btn" data-action="clear-selection">${icon('trash', 20)} Seçimi Temizle</button></div>
     <div class="dual-actions"><button class="btn" data-action="preview-doc">${icon('eye', 20)} Önizle</button><button class="btn primary" data-action="print-doc">${icon('doc', 20)} PDF Oluştur</button></div>
     <button class="btn wide template-link" data-view="templates">Örnek Şablonları Gör</button>`;
+}
+
+
+function showBuilderBolmePicker() {
+  const bolmes = [...new Set(state.records.map((row) => recordBolme(row)).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'tr', { numeric: true }));
+  if (!bolmes.length) {
+    showDialog('<h3>Bölme bulunamadı</h3><p>Önce en az bir istif kaydı oluşturun. Bölme seçenekleri kayıtlardan otomatik oluşur.</p><div class="dialog-actions single"><button class="btn" data-dialog-close>Kapat</button></div>');
+    return;
+  }
+  const rows = [''].concat(bolmes).map((bolme) => {
+    const label = bolme ? `Bölme ${esc(bolme)}` : 'Tüm Bölmeler';
+    const count = bolme ? state.records.filter((record) => recordBolme(record) === bolme).length : state.records.length;
+    const selected = (state.builderBolme || '') === bolme;
+    return `<button class="picker-row ${selected ? 'selected' : ''}" data-builder-bolme="${esc(bolme)}"><span class="picker-avatar">${icon('layers', 20)}</span><span><b>${label}</b><small>${count} istif</small></span>${selected ? icon('check', 21) : icon('chevron', 20)}</button>`;
+  }).join('');
+  showDialog(`<h3>Bölme Seç</h3><p>Evraka eklenecek istiflerin bölmesini seçin.</p><div class="picker-list">${rows}</div><div class="dialog-actions single"><button class="btn" data-dialog-close>Kapat</button></div>`);
+  dialogContent.querySelectorAll('[data-builder-bolme]').forEach((button) => {
+    button.onclick = () => {
+      state.builderBolme = button.dataset.builderBolme || '';
+      state.selectedRecordIds.clear();
+      closeDialog();
+      render();
+    };
+  });
 }
 
 function renderTemplates() {
@@ -921,7 +1024,7 @@ function miniTypeTable(rows) {
 
 function renderPhotos() {
   const rows = sortedRecords(state.records);
-  return `${head('Fotoğraflar', 'İstif fotoğraflarını yönetin', { back: true })}<section class="records">${rows.map((record) => `<article class="photo-record card"><div class="round-icon">${icon('camera', 23)}</div><div><b>${esc(record.istifNo)} • ${esc(record.type)}</b><span>${esc(record.bolme)} Bölme • ${record.photos?.length || record.photoCount || 0}/4 fotoğraf</span></div><button class="btn small" data-view="records">Aç</button></article>`).join('')}</section>`;
+  return `${head('Fotoğraflar', 'İstif fotoğraflarını yönetin', { back: true })}<section class="records">${rows.map((record) => `<article class="photo-record card"><div class="round-icon">${icon('camera', 23)}</div><div><b>${esc(record.istifNo)} • ${esc(record.type)}</b><span>${esc(recordBolme(record))} Bölme • ${record.photos?.length || record.photoCount || 0}/4 fotoğraf</span></div><button class="btn small" data-view="records">Aç</button></article>`).join('')}</section>`;
 }
 
 function driveStatusCopy() {
@@ -1002,9 +1105,9 @@ function bindDynamic() {
   app.querySelector('[data-action="save-draft"]')?.addEventListener('click', (event) => saveRecord(event, true));
   ['filterDate', 'filterBolme', 'filterType'].forEach((id) => app.querySelector(`#${id}`)?.addEventListener('change', applyRecordFilters));
   app.querySelectorAll('[data-doc-tab]').forEach((button) => { button.onclick = () => { state.documentTab = button.dataset.docTab; render(); }; });
-  app.querySelector('#builderBolme')?.addEventListener('change', (event) => { state.builderBolme = event.target.value; state.selectedRecordIds.clear(); render(); });
+  app.querySelector('[data-action="pick-builder-bolme"]')?.addEventListener('click', showBuilderBolmePicker);
   app.querySelectorAll('[data-record-check]').forEach((checkbox) => { checkbox.onchange = () => { checkbox.checked ? state.selectedRecordIds.add(checkbox.dataset.recordCheck) : state.selectedRecordIds.delete(checkbox.dataset.recordCheck); render(); }; });
-  app.querySelector('[data-action="select-all"]')?.addEventListener('click', () => { state.records.filter((row) => !state.builderBolme || row.bolme === state.builderBolme).forEach((row) => state.selectedRecordIds.add(row.id)); render(); });
+  app.querySelector('[data-action="select-all"]')?.addEventListener('click', () => { state.records.filter((row) => !state.builderBolme || recordBolme(row) === state.builderBolme).forEach((row) => state.selectedRecordIds.add(row.id)); render(); });
   app.querySelector('[data-action="clear-selection"]')?.addEventListener('click', () => { state.selectedRecordIds.clear(); render(); });
   app.querySelectorAll('[data-action="preview-doc"]').forEach((button) => { button.onclick = previewDocuments; });
   app.querySelectorAll('[data-action="print-doc"]').forEach((button) => { button.onclick = printDocuments; });
@@ -1403,8 +1506,8 @@ async function addForesterUser(user) {
   user.userId = clean(user.userId || user.user_id);
   if (!name) return toast('Kullanıcı adı bulunamadı.', 'bad');
   refreshCurrentMembers();
-  const userKey = user.userId ? `uid:${user.userId}` : (user.email ? `email:${clean(user.email).toLocaleLowerCase('tr-TR')}` : `name:${stableKey(name)}`);
-  const existing = state.ormancilar.find((item) => foresterKey(item) === userKey || stableKey(item.name) === stableKey(name));
+  const userKeys = foresterIdentityKeys({ ...user, name, userId: user.userId, email: user.email });
+  const existing = state.ormancilar.find((item) => foresterIdentityKeys(item).some((key) => userKeys.includes(key)) || (clean(item.email) && clean(item.email).toLocaleLowerCase('tr-TR') === clean(user.email).toLocaleLowerCase('tr-TR')) || stableKey(item.name) === stableKey(name));
   if (existing) {
     state.settings.ormanci = existing.name;
     if (state.draft) state.draft.ormanci = existing.name;
@@ -1504,7 +1607,7 @@ async function createDriveUploadSession(record, photo, index) {
   const folder = effectiveRecordSeflik(record);
   return bridgeCall('upload_session', {
     seflikKey: folder.seflikKey, seflik: folder.seflik,
-    recordDate: record.date, bolmeNo: record.bolme, istifNo: record.istifNo,
+    recordDate: record.date, bolmeNo: recordBolme(record), istifNo: record.istifNo,
     fileName: `${record.istifNo}_foto_${index + 1}.jpg`, mimeType: photo.blob.type || 'image/jpeg', size: photo.blob.size,
   });
 }
@@ -1669,14 +1772,14 @@ async function buildPrintHtml() {
   const rows = selectedForDocs();
   let html = '';
   if (state.documentTab === 'documents') {
-    html += `<div class="print-page"><h1>İSTİF KOORDİNAT LİSTESİ</h1><h2>Bölme: ${esc(rows[0]?.bolme || '')}</h2><table class="print-table"><thead><tr><th>Sıra</th><th>İstif No</th><th>İstif Cinsi</th><th>Ster</th><th>Koordinat</th></tr></thead><tbody>${rows.map((record, index) => `<tr><td>${index + 1}</td><td>${esc(record.istifNo)}</td><td>${esc(record.type)}</td><td>${esc(record.ster)}</td><td>${esc(record.coordinates || 'Bekleniyor')}</td></tr>`).join('')}</tbody></table><div class="print-footer">İstif Alma • Örnek şablon</div></div>`;
-    html += `<div class="print-page"><h1>İSTİF CİNS LİSTESİ</h1><h2>Bölme: ${esc(rows[0]?.bolme || '')}</h2><table class="print-table"><thead><tr><th>Sıra</th><th>İstif No</th><th>Cinsi</th><th>Ster</th><th>Mevki</th><th>Barkod</th></tr></thead><tbody>${rows.map((record, index) => `<tr><td>${index + 1}</td><td>${esc(record.istifNo)}</td><td>${esc(record.type)}</td><td>${esc(record.ster)}</td><td>${esc(record.mevki || '')}</td><td>${esc(record.barcode || '')}</td></tr>`).join('')}</tbody></table><div class="print-footer">İstif Alma • Örnek şablon</div></div>`;
+    html += `<div class="print-page"><h1>İSTİF KOORDİNAT LİSTESİ</h1><h2>Bölme: ${esc(recordBolme(rows[0]) || '')}</h2><table class="print-table"><thead><tr><th>Sıra</th><th>İstif No</th><th>İstif Cinsi</th><th>Ster</th><th>Koordinat</th></tr></thead><tbody>${rows.map((record, index) => `<tr><td>${index + 1}</td><td>${esc(record.istifNo)}</td><td>${esc(record.type)}</td><td>${esc(record.ster)}</td><td>${esc(record.coordinates || 'Bekleniyor')}</td></tr>`).join('')}</tbody></table><div class="print-footer">İstif Alma • Örnek şablon</div></div>`;
+    html += `<div class="print-page"><h1>İSTİF CİNS LİSTESİ</h1><h2>Bölme: ${esc(recordBolme(rows[0]) || '')}</h2><table class="print-table"><thead><tr><th>Sıra</th><th>İstif No</th><th>Cinsi</th><th>Ster</th><th>Mevki</th><th>Barkod</th></tr></thead><tbody>${rows.map((record, index) => `<tr><td>${index + 1}</td><td>${esc(record.istifNo)}</td><td>${esc(record.type)}</td><td>${esc(record.ster)}</td><td>${esc(record.mevki || '')}</td><td>${esc(record.barcode || '')}</td></tr>`).join('')}</tbody></table><div class="print-footer">İstif Alma • Örnek şablon</div></div>`;
   }
   if (state.documentTab === 'photos') {
     for (const record of rows) {
       const urls = await Promise.all((record.photos || []).slice(0, 4).map(photoDataUrl));
       const seflikName = esc(String(record.seflik || displaySeflik()).replace(/ Şefliği$/i, ''));
-      html += `<div class="print-page photo-document-page"><div class="photo-print-header"><div class="photo-print-meta"><div><b>Şeflik Adı:</b> ${seflikName}</div><div><b>İstif No:</b> ${esc(record.istifNo)} ${esc(record.type)}</div><div><b>Ster:</b> ${esc(record.ster)}</div></div></div><div class="photo-print-collage">${[0, 1, 2, 3].map((index) => urls[index] ? `<figure><img src="${urls[index]}" alt="İstif fotoğrafı ${index + 1}"></figure>` : `<figure class="print-placeholder"></figure>`).join('')}</div><div class="print-footer">İstif Alma • ${trDate(record.date)} • Bölme ${esc(record.bolme)}</div></div>`;
+      html += `<div class="print-page photo-document-page"><div class="photo-print-header"><div class="photo-print-meta"><div><b>Şeflik Adı:</b> ${seflikName}</div><div><b>İstif No:</b> ${esc(record.istifNo)} ${esc(record.type)}</div><div><b>Ster:</b> ${esc(record.ster)}</div></div></div><div class="photo-print-collage">${[0, 1, 2, 3].map((index) => urls[index] ? `<figure><img src="${urls[index]}" alt="İstif fotoğrafı ${index + 1}"></figure>` : `<figure class="print-placeholder"></figure>`).join('')}</div><div class="print-footer">İstif Alma • ${trDate(record.date)} • Bölme ${esc(recordBolme(record))}</div></div>`;
     }
   }
   return html;
