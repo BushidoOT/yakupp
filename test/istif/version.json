@@ -1,8 +1,0 @@
-{
-  "version": "0.3.4",
-  "name": "Mesaha İO İstif Alma v0.3.4",
-  "updatedAt": "2026-07-13T21:05:00+03:00",
-  "notes": "Kayıt, senkron, Drive bağlantısı ve benzeri onay işlemlerinde ana Mesaha İO assets klasöründeki onay sesi kullanılır.",
-  "visibleVersion": "İstif Alma v0.3.4",
-  "build": "v034"
-}
