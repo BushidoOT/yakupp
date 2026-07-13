@@ -1,6 +1,6 @@
 'use strict';
 
-const APP_VERSION = '0.2.0';
+const APP_VERSION = '0.2.1';
 const MAX_PHOTO_BYTES = 1024 * 1024;
 const DB_NAME = 'mesaha-istif-prototype';
 const DB_VERSION = 1;
@@ -1001,20 +1001,68 @@ async function editRecord(recordId) {
   setView('new');
 }
 
+function driveFileIdsFromRecord(record) {
+  const ids = [];
+  const add = (value) => {
+    const id = clean(value);
+    if (id && !ids.includes(id)) ids.push(id);
+  };
+  (Array.isArray(record?.driveFiles) ? record.driveFiles : []).forEach((file) => {
+    if (typeof file === 'string') add(file);
+    else add(file?.id || file?.fileId || file?.file_id);
+  });
+  return ids;
+}
+
+function recordHasDriveAssets(record) {
+  return !!(clean(record?.driveFolderId) || driveFileIdsFromRecord(record).length);
+}
+
+async function deleteDriveFilesForRecord(record) {
+  const fileIds = driveFileIdsFromRecord(record);
+  const driveFolderId = clean(record.driveFolderId);
+  if (!fileIds.length && !driveFolderId) return { ok: true, skipped: true };
+  return bridgeCall('delete_drive_files', {
+    seflikKey: record.seflikKey || stableKey(record.seflik),
+    seflik: record.seflik,
+    recordId: record.id,
+    istifNo: record.istifNo,
+    bolmeNo: record.bolme,
+    fileIds,
+    driveFolderId,
+  });
+}
+
 async function deleteRecord(recordId) {
   const record = state.records.find((item) => item.id === recordId);
   if (!record) return toast('Silinecek istif bulunamadı.', 'bad');
-  const ok = confirm(`${record.istifNo || 'Bu istif'} silinsin mi?\n\nYerel kayıt silinir. Drive'a yüklenmiş fotoğraflar otomatik silinmez.`);
+  const hasDriveAssets = recordHasDriveAssets(record);
+  const ok = confirm(`${record.istifNo || 'Bu istif'} silinsin mi?
+
+Yerel kayıt, Supabase kaydı ve varsa Drive fotoğrafları silinir.`);
   if (!ok) return;
-  await idbDelete('records', record.id);
-  state.records = state.records.filter((item) => item.id !== record.id);
-  state.selectedRecordIds.delete(record.id);
-  if (navigator.onLine && readSharedSession() && !record.isDemo) {
-    try { await supabaseDeleteRecord(record); } catch { /* çevrimiçi silme başarısızsa yerel silme bozulmasın */ }
+  if (hasDriveAssets && (!navigator.onLine || !readSharedSession())) {
+    toast('Drive fotoğrafı olan istifi silmek için internet ve Google girişi gerekli. Yerel kayıt silinmedi.', 'bad');
+    return;
   }
-  toast('İstif silindi.', 'good');
-  render();
+  showDialog('<h3>İstif Siliniyor</h3><p>Drive fotoğrafları ve kayıt bilgileri temizleniyor. Lütfen bekleyin.</p><div class="progress"><span style="width:55%"></span></div>');
+  try {
+    if (hasDriveAssets) await deleteDriveFilesForRecord(record);
+    if (navigator.onLine && readSharedSession() && !record.isDemo) {
+      try { await supabaseDeleteRecord(record); } catch (error) { console.warn('Supabase istif silme uyarısı', error); }
+    }
+    await idbDelete('records', record.id);
+    state.records = state.records.filter((item) => item.id !== record.id);
+    state.selectedRecordIds.delete(record.id);
+    closeDialog();
+    toast(hasDriveAssets ? 'İstif ve Drive fotoğrafları silindi.' : 'İstif silindi.', 'good');
+    render();
+  } catch (error) {
+    closeDialog();
+    toast(`İstif silinemedi: ${clean(error?.message || error)}. Yerel kayıt silinmedi.`, 'bad');
+  }
 }
+
 
 async function supabaseDeleteRecord(record) {
   const session = await ensureSharedSession();
@@ -1601,7 +1649,7 @@ async function buildPrintHtml() {
     for (const record of rows) {
       const urls = await Promise.all((record.photos || []).slice(0, 4).map(photoDataUrl));
       const seflikName = esc(String(record.seflik || displaySeflik()).replace(/ Şefliği$/i, ''));
-      html += `<div class="print-page photo-document-page"><div class="photo-print-header"><div class="photo-print-meta"><div><b>Şeflik Adı:</b> ${seflikName}</div><div><b>İstif No:</b> ${esc(record.istifNo)} ${esc(record.type)}</div><div><b>Ster:</b> ${esc(record.ster)}</div></div></div><div class="photo-print-collage">${[0, 1, 2, 3].map((index) => urls[index] ? `<figure><img src="${urls[index]}" alt="Fotoğraf ${index + 1}"><figcaption>Fotoğraf ${index + 1}</figcaption></figure>` : `<figure class="print-placeholder"><span>Fotoğraf ${index + 1}</span></figure>`).join('')}</div><div class="print-footer">İstif Alma • ${trDate(record.date)} • Bölme ${esc(record.bolme)}</div></div>`;
+      html += `<div class="print-page photo-document-page"><div class="photo-print-header"><div class="photo-print-meta"><div><b>Şeflik Adı:</b> ${seflikName}</div><div><b>İstif No:</b> ${esc(record.istifNo)} ${esc(record.type)}</div><div><b>Ster:</b> ${esc(record.ster)}</div></div></div><div class="photo-print-collage">${[0, 1, 2, 3].map((index) => urls[index] ? `<figure><img src="${urls[index]}" alt="İstif fotoğrafı ${index + 1}"></figure>` : `<figure class="print-placeholder"></figure>`).join('')}</div><div class="print-footer">İstif Alma • ${trDate(record.date)} • Bölme ${esc(record.bolme)}</div></div>`;
     }
   }
   return html;
@@ -1614,7 +1662,7 @@ async function previewDocuments() {
 }
 
 function printDocumentCss() {
-  return `@page{size:A4;margin:0}*{box-sizing:border-box}body{margin:0;background:#fff;color:#111;font-family:Arial,Helvetica,sans-serif}.print-toolbar{position:sticky;top:0;z-index:10;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 14px;background:#0f5f39;color:#fff}.print-toolbar button{border:0;border-radius:10px;background:#fff;color:#0f5f39;font-weight:800;padding:10px 14px}.print-page{width:210mm;min-height:297mm;margin:0 auto;background:#fff;page-break-after:always;padding:14mm;color:#111}.print-page:last-child{page-break-after:auto}.print-page h1{text-align:center;font-size:18pt;margin:0 0 5mm;color:#111}.print-page h2{font-size:14pt;margin:0 0 4mm;color:#111}.print-table{width:100%;border-collapse:collapse;font-size:10pt;color:#111}.print-table th,.print-table td{border:1px solid #333;padding:2.5mm;text-align:left;vertical-align:top}.photo-document-page{padding:10mm 12mm;display:flex;flex-direction:column}.photo-print-header{display:flex;justify-content:flex-start;align-items:flex-start;margin:0 0 5mm}.photo-print-meta{font-size:12pt;line-height:1.45;border:1px solid #111;padding:4mm 6mm;min-width:92mm;text-align:left;color:#111}.photo-print-meta div{margin:1mm 0}.photo-print-collage{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:3mm;flex:1;min-height:235mm}.photo-print-collage figure{margin:0;border:1px solid #111;position:relative;overflow:hidden;background:#f8f8f8;display:block}.photo-print-collage img{width:100%;height:100%;object-fit:cover;display:block}.photo-print-collage figcaption{position:absolute;left:2mm;bottom:2mm;background:rgba(255,255,255,.88);font-size:9pt;padding:1mm 2mm;color:#111}.photo-print-collage .print-placeholder{height:auto;width:auto;display:grid;place-items:center;color:#777;font-size:12pt}.print-placeholder{display:grid;place-items:center;color:#666;border:1px solid #333}.print-footer{margin-top:4mm;font-size:9pt;color:#555;text-align:right}.empty-print{padding:24px;font-size:16px}@media print{.print-toolbar{display:none!important}.print-page{margin:0;box-shadow:none}body{background:#fff}}`;
+  return `@page{size:A4;margin:0}*{box-sizing:border-box}body{margin:0;background:#fff;color:#111;font-family:Arial,Helvetica,sans-serif}.print-toolbar{position:sticky;top:0;z-index:10;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 14px;background:#0f5f39;color:#fff}.print-toolbar button{border:0;border-radius:10px;background:#fff;color:#0f5f39;font-weight:800;padding:10px 14px}.print-page{width:210mm;min-height:297mm;margin:0 auto;background:#fff;page-break-after:always;padding:14mm;color:#111}.print-page:last-child{page-break-after:auto}.print-page h1{text-align:center;font-size:18pt;margin:0 0 5mm;color:#111}.print-page h2{font-size:14pt;margin:0 0 4mm;color:#111}.print-table{width:100%;border-collapse:collapse;font-size:10pt;color:#111}.print-table th,.print-table td{border:1px solid #333;padding:2.5mm;text-align:left;vertical-align:top}.photo-document-page{padding:10mm 12mm;display:flex;flex-direction:column}.photo-print-header{display:flex;justify-content:flex-start;align-items:flex-start;margin:0 0 5mm}.photo-print-meta{font-size:12pt;line-height:1.45;padding:0;min-width:92mm;text-align:left;color:#111}.photo-print-meta div{margin:1mm 0}.photo-print-collage{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:3mm;flex:1;min-height:235mm}.photo-print-collage figure{margin:0;border:1px solid #111;position:relative;overflow:hidden;background:#f8f8f8;display:block}.photo-print-collage img{width:100%;height:100%;object-fit:cover;display:block}.photo-print-collage .print-placeholder{height:auto;width:auto;display:block;background:#fff}.print-placeholder{display:block;color:#666;border:1px solid #333}.print-footer{margin-top:4mm;font-size:9pt;color:#555;text-align:right}.empty-print{padding:24px;font-size:16px}@media print{.print-toolbar{display:none!important}.print-page{margin:0;box-shadow:none}body{background:#fff}}`;
 }
 
 function buildPrintDocument(innerHtml) {
