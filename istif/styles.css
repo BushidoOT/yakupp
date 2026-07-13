@@ -299,3 +299,11 @@ img{max-width:100%;display:block}
 .suggest-row{grid-template-columns:42px minmax(0,1fr) 62px}
 @media(max-width:440px){.record-thumb{width:42px;height:42px;border-radius:14px}}
 @media(max-width:360px){.record-thumb{display:none}}
+
+
+.existing-foresters{margin-top:14px;border-top:1px solid rgba(16,93,58,.12);padding-top:12px;display:grid;gap:8px;color:var(--muted)}
+.existing-foresters>b{font-size:14px;color:var(--text)}
+.existing-forester-row{display:flex;align-items:center;gap:10px;padding:9px 10px;border:1px solid rgba(16,93,58,.12);border-radius:16px;background:#f7fbf8}
+.existing-forester-row span:last-child{display:grid;gap:2px;min-width:0}
+.existing-forester-row strong{font-size:14px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.existing-forester-row small{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}

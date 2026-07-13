@@ -1,6 +1,6 @@
 'use strict';
 
-const APP_VERSION = '0.1.7';
+const APP_VERSION = '0.1.8';
 const MAX_PHOTO_BYTES = 1024 * 1024;
 const DB_NAME = 'mesaha-istif-prototype';
 const DB_VERSION = 1;
@@ -333,7 +333,7 @@ async function edgeCall(action, payload = {}, retried = false) {
       Authorization: `Bearer ${session.access_token}`,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ action, source: 'mesaha-istif-v015', ...payload }),
+    body: JSON.stringify({ action, source: 'mesaha-istif-v018', ...payload }),
   });
   const body = await response.json().catch(() => ({}));
   if ((response.status === 401 || response.status === 403) && !retried && readSharedSession()?.refresh_token) {
@@ -354,7 +354,7 @@ async function bridgeCall(action, payload = {}, retried = false) {
       Authorization: `Bearer ${session.access_token}`,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ action, source: 'mesaha-istif-v015', ...payload }),
+    body: JSON.stringify({ action, source: 'mesaha-istif-v018', ...payload }),
   });
   const body = await response.json().catch(() => ({}));
   if ((response.status === 401 || response.status === 403) && !retried && readSharedSession()?.refresh_token) {
@@ -617,7 +617,7 @@ function displayOrmanci() {
 
 
 function visibleForesters() {
-  return state.ormancilar.slice(0, 5);
+  return state.ormancilar.slice(0, 8);
 }
 
 function foresterSummaryHtml() {
@@ -1204,7 +1204,8 @@ function showAddOrmanciDialog() {
     showDialog('<h3>Google girişi gerekli</h3><p>Ormancı eklemek için kişinin Mesaha İO’da Google ile giriş yapmış ve onaylı kullanıcı olması gerekir.</p><div class="dialog-actions"><button class="btn" data-dialog-close>Kapat</button><a class="btn primary" href="../">Mesaha İO’da Giriş Yap</a></div>');
     return;
   }
-  showDialog(`<h3>Ormancı Ekle</h3><p>Yalnızca Mesaha İO’da Google ile giriş yapmış kullanıcılar eklenebilir. En az 3 harf yazınca öneriler çıkar.</p><label class="dialog-label">Kullanıcı Ara</label><input id="foresterSearchInput" class="dialog-input" autocomplete="off" placeholder="Ad, soyad veya e-posta"><div id="foresterSuggestBox" class="suggest-box"><span>En az 3 harf yazın.</span></div><div class="dialog-actions"><button class="btn" data-dialog-close>Kapat</button><button class="btn" id="refreshUserSuggestions">Kullanıcıları Yenile</button></div>`);
+  const existingHtml = state.ormancilar.length ? `<div class="existing-foresters"><b>Ekli Ormancılar</b>${state.ormancilar.map((item) => `<div class="existing-forester-row"><span class="picker-avatar">${item.avatarUrl ? `<img src="${esc(item.avatarUrl)}" alt="">` : icon('user', 18)}</span><span><strong>${esc(item.name)}</strong><small>${esc(item.email || (item.role === 'owner' ? 'Şeflik kurucusu' : 'Ekli ormancı'))}</small></span></div>`).join('')}</div>` : `<div class="existing-foresters"><b>Ekli Ormancılar</b><span>Henüz ortak ormancı görünmüyor. Kullanıcıları yenile deyin.</span></div>`;
+  showDialog(`<h3>Ormancı Ekle</h3><p>Yalnızca Mesaha İO’da Google ile giriş yapmış ve onaylı kullanıcılar eklenebilir. En az 3 harf yazınca öneriler çıkar.</p><label class="dialog-label">Kullanıcı Ara</label><input id="foresterSearchInput" class="dialog-input" autocomplete="off" placeholder="Ad, soyad veya e-posta"><div id="foresterSuggestBox" class="suggest-box"><span>En az 3 harf yazın.</span></div>${existingHtml}<div class="dialog-actions"><button class="btn" data-dialog-close>Kapat</button><button class="btn" id="refreshUserSuggestions">Kullanıcıları Yenile</button></div>`);
   const input = document.getElementById('foresterSearchInput');
   const box = document.getElementById('foresterSuggestBox');
   const run = () => searchForesterSuggestions(input?.value || '', box);
@@ -1261,8 +1262,15 @@ async function addForesterUser(user) {
   const name = clean(user?.name);
   user.userId = clean(user.userId || user.user_id);
   if (!name) return toast('Kullanıcı adı bulunamadı.', 'bad');
-  if (state.ormancilar.some((item) => stableKey(item.name) === stableKey(name) || (user.userId && item.userId === user.userId))) {
-    toast('Bu kullanıcı zaten ormancı listesinde.', 'bad');
+  const existing = state.ormancilar.find((item) => stableKey(item.name) === stableKey(name) || (user.userId && item.userId === user.userId) || (user.email && item.email === user.email));
+  if (existing) {
+    state.settings.ormanci = existing.name;
+    if (state.draft) state.draft.ormanci = existing.name;
+    await saveSettings();
+    await saveSharedCache();
+    closeDialog();
+    render();
+    toast('Bu kullanıcı zaten ekliydi; seçili ormancı yapıldı.', 'good');
     return;
   }
   try {
@@ -1359,15 +1367,30 @@ async function createDriveUploadSession(record, photo, index) {
   });
 }
 
-async function uploadPhotoDirectToDrive(record, photo, index) {
-  const session = await createDriveUploadSession(record, photo, index);
-  if (!session.uploadUrl) throw new Error('Drive yükleme oturumu alınamadı.');
-  const response = await fetch(session.uploadUrl, {
-    method: 'PUT', headers: { 'Content-Type': photo.blob.type || 'image/jpeg' }, body: photo.blob,
+function blobToDataUrl(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result || ''));
+    reader.onerror = () => reject(reader.error || new Error('Fotoğraf okunamadı'));
+    reader.readAsDataURL(blob);
   });
-  const result = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(result.error?.message || `Drive fotoğraf yükleme ${response.status}`);
-  return { ...result, folderId: session.folderId, folderName: session.folderName };
+}
+
+async function uploadPhotoToDrive(record, photo, index) {
+  if (!photo?.blob) throw new Error('Yüklenecek fotoğraf bulunamadı.');
+  const folder = effectiveRecordSeflik(record);
+  const dataUrl = await blobToDataUrl(photo.blob);
+  return bridgeCall('upload_photo', {
+    seflikKey: folder.seflikKey,
+    seflik: folder.seflik,
+    recordDate: record.date,
+    bolmeNo: record.bolme,
+    istifNo: record.istifNo,
+    fileName: `${record.istifNo}_foto_${index + 1}.jpg`,
+    mimeType: photo.blob.type || 'image/jpeg',
+    size: photo.blob.size,
+    dataUrl,
+  });
 }
 
 async function supabaseUpsertRecord(record) {
@@ -1451,8 +1474,8 @@ async function syncAll() {
         record.driveFiles = Array.isArray(record.driveFiles) ? record.driveFiles : [];
         for (let index = record.driveFiles.length; index < record.photos.length; index += 1) {
           const photo = record.photos[index];
-          document.getElementById('syncText').textContent = `${record.istifNo} • Fotoğraf ${index + 1}/${record.photos.length} doğrudan Drive’a yükleniyor…`;
-          const uploaded = await uploadPhotoDirectToDrive(record, photo, index);
+          document.getElementById('syncText').textContent = `${record.istifNo} • Fotoğraf ${index + 1}/${record.photos.length} Drive’a yükleniyor…`;
+          const uploaded = await uploadPhotoToDrive(record, photo, index);
           record.driveFiles.push(uploaded);
           record.driveFolderId = uploaded.folderId || record.driveFolderId;
           await idbPut('records', record);
