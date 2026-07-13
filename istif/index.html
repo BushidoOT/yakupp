@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-  <meta name="theme-color" content="#174a32">
+  <meta name="theme-color" content="#12683f">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="İstif Alma">
-  <title>İstif Alma • Mesaha İO</title>
+  <title>İstif Alma</title>
   <link rel="manifest" href="./manifest.json">
   <link rel="icon" href="../assets/icon-192.png" type="image/png">
   <link rel="apple-touch-icon" href="../assets/icon-192.png">
@@ -23,7 +23,9 @@
     <section class="camera-sheet" role="dialog" aria-modal="true" aria-label="Uygulama kamerası">
       <header class="sheet-head">
         <div><strong>Uygulama Kamerası</strong><small>Fotoğraf galeriye kaydedilmez</small></div>
-        <button class="icon-btn" data-close-camera aria-label="Kapat">✕</button>
+        <button class="icon-btn" data-close-camera aria-label="Kapat">
+          <svg class="svg-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+        </button>
       </header>
       <div class="camera-stage">
         <video id="cameraVideo" playsinline autoplay muted></video>
