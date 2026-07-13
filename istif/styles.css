@@ -358,3 +358,17 @@ body.is-printing .print-area{display:block!important;position:relative;z-index:9
 .suggest-row.already{opacity:.72;background:#f6f7f6}
 .suggest-row.already .suggest-add{background:#f1f5f9;color:#64748b;border-color:#e2e8f0}
 @media(max-width:420px){.existing-forester-row{grid-template-columns:40px minmax(0,1fr);}.existing-forester-row .mini-remove{grid-column:2;margin-top:6px;width:max-content}}
+
+
+/* v0.2.6 — Evrak ayarları ve ormancı yönetimi */
+.document-settings{display:grid;gap:11px}
+.document-settings label{display:grid;gap:6px;color:var(--muted);font-size:12px;font-weight:750}
+.document-settings input{width:100%;min-height:44px;border:1px solid var(--line);border-radius:14px;background:#fff;padding:10px 12px;font:inherit;font-weight:800;color:var(--text)}
+.forester-list-compact{display:flex;flex-wrap:wrap;gap:8px}
+.forester-chip{align-items:center;gap:7px;max-width:100%;padding:7px 10px}
+.forester-chip>span{display:grid;gap:1px;min-width:0}
+.forester-chip small{font-size:10.8px;color:#5f6f68;max-width:185px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:700}
+.existing-title{display:flex;align-items:flex-end;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.existing-title small{font-size:11px;color:var(--muted);font-weight:700}
+.existing-forester-row small{font-size:12px;color:var(--muted);white-space:normal;overflow-wrap:anywhere;line-height:1.25}
+.existing-forester-row .mini-remove{display:inline-flex!important;align-items:center;justify-content:center}

@@ -1,6 +1,6 @@
 'use strict';
 
-const APP_VERSION = '0.2.5';
+const APP_VERSION = '0.2.6';
 const MAX_PHOTO_BYTES = 1024 * 1024;
 const DB_NAME = 'mesaha-istif-prototype';
 const DB_VERSION = 1;
@@ -21,12 +21,16 @@ const SHARED_SESSION_BACKUP_KEY = 'mesaha_supabase_v569_session_backup';
 const SHARED_PANEL_KEY = 'mesaha_panel_user_v316';
 const SHARED_ACCESS_KEY = 'mesaha_google_access_v548';
 const SHARED_ACTIVE_SEFLIK_KEY = 'mesaha_active_seflik_folder_v564';
-const SHARED_CACHE_SETTING_KEY = 'shared-context-v015';
+const SHARED_CACHE_SETTING_KEY = 'shared-context-v026';
 
 const DEFAULT_SETTINGS = {
   seflik: '',
   seflikKey: '',
   ormanci: '',
+  bolgeMudurlugu: 'KÜTAHYA',
+  isletmeMudurlugu: 'TAVŞANLI',
+  agacTuru: 'İBRELİ',
+  satisIstifYeri: 'Rampa',
   driveClientId: '', // eski sürüm uyumluluğu; arayüzde kullanılmaz
   driveFolderId: '', // eski sürüm uyumluluğu
   driveCreatedFolderId: '', // eski sürüm uyumluluğu
@@ -393,9 +397,40 @@ function currentFolder() {
   return state.seflikler.find((item) => seflikAliasKeys(item.name, item.key).some((key) => aliases.has(key))) || null;
 }
 
+function currentUserLocalIdentity() {
+  const session = readSharedSession() || {};
+  const panel = jsonRead(SHARED_PANEL_KEY, {}) || {};
+  const access = jsonRead(SHARED_ACCESS_KEY, {}) || {};
+  return {
+    userId: clean(state.auth.userId || session.user?.id || access.user_id || panel.user_id),
+    email: clean(state.auth.email || session.user?.email || access.email || panel.googleEmail).toLocaleLowerCase('tr-TR'),
+    name: clean(state.auth.name || access.name || access.canonical_name || panel.googleFullName || panel.name),
+  };
+}
+
+function sameCurrentUser(item) {
+  const me = currentUserLocalIdentity();
+  const uid = clean(item?.userId || item?.user_id || item?.member_user_id || item?.forester_user_id);
+  const email = clean(item?.email || item?.user_email || item?.member_email).toLocaleLowerCase('tr-TR');
+  if (me.userId && uid && me.userId === uid) return true;
+  if (me.email && email && me.email === email) return true;
+  return false;
+}
+
+function localSeflikOwnerFlag() {
+  const active = jsonRead(SHARED_ACTIVE_SEFLIK_KEY, {}) || {};
+  const access = jsonRead(SHARED_ACCESS_KEY, {}) || {};
+  const aliases = new Set(currentSeflikAliasKeys());
+  const activeAliases = seflikAliasKeys(active.seflik || active.name || state.settings.seflik, active.seflik_key || active.seflikKey || state.settings.seflikKey);
+  const sameActive = !activeAliases.length || activeAliases.some((key) => aliases.has(key));
+  const role = clean(active.role || access.role || access.member_role).toLocaleLowerCase('tr-TR');
+  return !!((sameActive && (active.creator === true || active.is_creator === true)) || ['owner', 'creator', 'kurucu'].includes(role));
+}
+
 function currentFolderIsOwner() {
   const folder = currentFolder();
-  return !!(folder && (folder.isCreator || ['owner', 'creator', 'kurucu'].includes(String(folder.role || '').toLocaleLowerCase('tr-TR'))));
+  const folderOwner = !!(folder && (folder.isCreator || folder.is_creator || ['owner', 'creator', 'kurucu'].includes(String(folder.role || folder.member_role || '').toLocaleLowerCase('tr-TR'))));
+  return !!(folderOwner || localSeflikOwnerFlag() || state.drive.isOwner === true);
 }
 
 function normalizeForester(raw) {
@@ -810,7 +845,7 @@ function visibleForesters() {
 function foresterSummaryHtml() {
   const list = visibleForesters();
   if (!list.length) return '<span class="forester-empty">Henüz ormancı eklenmedi</span>';
-  return `<div class="forester-chips">${list.map((item) => `<span class="forester-chip ${item.name === state.settings.ormanci ? 'selected' : ''}">${item.avatarUrl ? `<img src="${esc(item.avatarUrl)}" alt="">` : icon('user', 15)}<b>${esc(item.name)}</b>${item.pending ? '<i>Bekliyor</i>' : ''}</span>`).join('')}${state.ormancilar.length > list.length ? `<span class="forester-more">+${state.ormancilar.length - list.length}</span>` : ''}</div>`;
+  return `<div class="forester-list-compact">${list.map((item) => `<span class="forester-chip ${item.name === state.settings.ormanci ? 'selected' : ''}">${item.avatarUrl ? `<img src="${esc(item.avatarUrl)}" alt="">` : icon('user', 15)}<span><b>${esc(item.name)}</b><small>${esc(item.email || (item.role === 'owner' ? 'Şeflik kurucusu' : 'E-posta yok'))}</small></span>${item.pending ? '<i>Bekliyor</i>' : ''}</span>`).join('')}${state.ormancilar.length > list.length ? `<span class="forester-more">+${state.ormancilar.length - list.length}</span>` : ''}</div>`;
 }
 
 function renderHome() {
@@ -1084,6 +1119,13 @@ function renderSettings() {
       <button class="btn wide" data-action="refresh-shared">${icon('refresh', 20)} Ortak Bilgileri Güncelle</button>
       ${loggedIn ? '' : '<a class="btn primary wide login-link" href="../">Mesaha İO’da Google ile Giriş Yap</a>'}
     </section>
+    <section class="document-settings card">
+      <div class="shared-card-title"><span>${icon('doc', 22)}</span><div><b>Evrak Bilgileri</b><small>Bu alanlar koordinat ve rampa tespit evraklarına otomatik yazılır.</small></div></div>
+      <label>Bölge Müdürlüğü<input data-setting-input name="bolgeMudurlugu" value="${esc(state.settings.bolgeMudurlugu || '')}" placeholder="Örn. KÜTAHYA"></label>
+      <label>İşletme Müdürlüğü<input data-setting-input name="isletmeMudurlugu" value="${esc(state.settings.isletmeMudurlugu || '')}" placeholder="Örn. TAVŞANLI"></label>
+      <label>Ağaç Türü<input data-setting-input name="agacTuru" value="${esc(state.settings.agacTuru || 'İBRELİ')}" placeholder="İBRELİ"></label>
+      <label>Satış İstif Yeri<input data-setting-input name="satisIstifYeri" value="${esc(state.settings.satisIstifYeri || 'Rampa')}" placeholder="Rampa / Depo"></label>
+    </section>
     ${renderDriveCard()}
     <div class="info-note"><b>${icon('info', 21)}</b><span>Sürüm ${APP_VERSION} • Kayıtlar offline saklanır. İstif, fotoğraf ve evrak verileri bu uygulamaya özeldir.</span></div>`;
 }
@@ -1100,6 +1142,14 @@ function bindDynamic() {
   app.querySelector('[data-action="connect-drive"]')?.addEventListener('click', beginDriveConnection);
   app.querySelector('[data-action="disconnect-drive"]')?.addEventListener('click', disconnectDrive);
   app.querySelector('[data-action="refresh-shared"]')?.addEventListener('click', () => syncSharedContext({ manual: true }));
+  app.querySelectorAll('[data-setting-input]').forEach((input) => {
+    const saveSettingValue = async () => {
+      state.settings[input.name] = input.value;
+      await saveSettings();
+    };
+    input.addEventListener('change', saveSettingValue);
+    input.addEventListener('blur', saveSettingValue);
+  });
   app.querySelectorAll('[data-add-photo]').forEach((button) => { button.onclick = openCameraChooser; });
   app.querySelectorAll('[data-remove-photo]').forEach((button) => { button.onclick = () => removePhoto(Number(button.dataset.removePhoto)); });
   app.querySelector('#stackForm')?.addEventListener('input', (event) => {
@@ -1443,7 +1493,7 @@ function showOrmanciPicker() {
     document.getElementById('refreshMembersDialog').onclick = () => { closeDialog(); syncSharedContext({ manual: true }); };
     return;
   }
-  showDialog(`<h3>Ormancı Seç</h3><p>${esc(displaySeflik())} için kayıtlı ormancılar.</p><div class="picker-list">${state.ormancilar.map((member, index) => `<button class="picker-row ${member.name === state.settings.ormanci ? 'selected' : ''}" data-member-index="${index}"><span class="picker-avatar">${member.avatarUrl ? `<img src="${esc(member.avatarUrl)}" alt="">` : icon('user', 20)}</span><span><b>${esc(member.name)}</b><small>${member.role === 'owner' ? 'Şeflik kurucusu' : member.custom ? (member.pending ? 'Yeni ormancı • senkron bekliyor' : 'Ekli ormancı') : 'Şeflik üyesi'}</small></span>${member.name === state.settings.ormanci ? icon('check', 21) : icon('chevron', 20)}</button>`).join('')}</div><div class="dialog-actions single"><button class="btn" data-dialog-close>Kapat</button></div>`);
+  showDialog(`<h3>Ormancı Seç</h3><p>${esc(displaySeflik())} için kayıtlı ormancılar.</p><div class="picker-list">${state.ormancilar.map((member, index) => `<button class="picker-row ${member.name === state.settings.ormanci ? 'selected' : ''}" data-member-index="${index}"><span class="picker-avatar">${member.avatarUrl ? `<img src="${esc(member.avatarUrl)}" alt="">` : icon('user', 20)}</span><span><b>${esc(member.name)}</b><small>${esc((member.role === 'owner' ? 'Şeflik kurucusu' : member.custom ? (member.pending ? 'Yeni ormancı • senkron bekliyor' : 'Ekli ormancı') : 'Şeflik üyesi') + (member.email ? ' • ' + member.email : ''))}</small></span>${member.name === state.settings.ormanci ? icon('check', 21) : icon('chevron', 20)}</button>`).join('')}</div><div class="dialog-actions single"><button class="btn" data-dialog-close>Kapat</button></div>`);
   dialogContent.querySelectorAll('[data-member-index]').forEach((button) => {
     button.onclick = async () => {
       const member = state.ormancilar[Number(button.dataset.memberIndex)];
@@ -1457,14 +1507,16 @@ function showOrmanciPicker() {
 }
 
 function canRemoveForester(item) {
-  const role = clean(item?.role).toLocaleLowerCase('tr-TR');
+  const role = clean(item?.role || item?.member_role).toLocaleLowerCase('tr-TR');
   const uid = clean(item?.userId || item?.user_id || item?.member_user_id || item?.forester_user_id);
-  return currentFolderIsOwner() && !item?.isSelf && !['owner', 'creator', 'kurucu'].includes(role) && !!uid;
+  const ownerRole = ['owner', 'creator', 'kurucu'].includes(role);
+  return currentFolderIsOwner() && !item?.isSelf && !sameCurrentUser(item) && !ownerRole && !!uid;
 }
 
 function foresterExistingRowsHtml() {
   if (!state.ormancilar.length) return '<div class="existing-foresters"><b>Ekli Ormancılar</b><span>Henüz ortak ormancı görünmüyor. Kullanıcıları yenile deyin.</span></div>';
-  return `<div class="existing-foresters"><b>Ekli Ormancılar</b>${state.ormancilar.map((item, index) => `<div class="existing-forester-row"><span class="picker-avatar">${item.avatarUrl ? `<img src="${esc(item.avatarUrl)}" alt="">` : icon('user', 18)}</span><span><strong>${esc(item.name)}</strong><small>${esc(item.email || (item.isSelf ? 'Kendi hesabınız' : clean(item.role) === 'owner' ? 'Şeflik kurucusu' : 'Ormancı'))}</small></span>${canRemoveForester(item) ? `<button class="btn danger-soft mini-remove" type="button" data-remove-forester="${index}">Çıkar</button>` : ''}</div>`).join('')}</div>`;
+  const owner = currentFolderIsOwner();
+  return `<div class="existing-foresters"><div class="existing-title"><b>Ekli Ormancılar</b><small>${owner ? 'Kurucu olarak çıkarılabilir ormancıları yönetebilirsiniz.' : 'Çıkarma yetkisi şeflik kurucusundadır.'}</small></div>${state.ormancilar.map((item, index) => { const roleText = item.isSelf ? 'Kendi hesabınız' : ['owner','creator','kurucu'].includes(clean(item.role).toLocaleLowerCase('tr-TR')) ? 'Şeflik kurucusu' : 'Ormancı'; return `<div class="existing-forester-row"><span class="picker-avatar">${item.avatarUrl ? `<img src="${esc(item.avatarUrl)}" alt="">` : icon('user', 18)}</span><span><strong>${esc(item.name)}</strong><small>${esc(roleText + (item.email ? ' • ' + item.email : ' • E-posta yok'))}</small></span>${canRemoveForester(item) ? `<button class="btn danger-soft mini-remove" type="button" data-remove-forester="${index}">Çıkar</button>` : ''}</div>`; }).join('')}</div>`;
 }
 
 function bindForesterRemoveButtons() {
@@ -1518,14 +1570,17 @@ async function searchForesterSuggestions(query, box) {
     const seen = new Set();
     const users = [];
     for (const raw of rawUsers) {
+      const status = clean(raw.status || raw.access_status || raw.google_status || raw.approval_status || 'approved').toLocaleLowerCase('tr-TR');
+      if (status && !['approved', 'onaylı', 'onayli', 'active', 'aktif'].includes(status)) continue;
       const user = {
-        userId: clean(raw.userId || raw.user_id),
-        name: clean(raw.name || raw.canonical_name || raw.email),
-        email: clean(raw.email).toLocaleLowerCase('tr-TR'),
+        userId: clean(raw.userId || raw.user_id || raw.id),
+        name: clean(raw.name || raw.canonical_name || raw.display_name || raw.email),
+        email: clean(raw.email || raw.user_email).toLocaleLowerCase('tr-TR'),
         avatarUrl: clean(raw.avatarUrl || raw.avatar_url || raw.google_avatar_url || raw.picture),
       };
+      if (!user.userId && !user.email) continue;
       const keys = foresterIdentityKeys(user);
-      const key = keys[0] || `name:${stableKey(user.name)}`;
+      const key = keys.find((x) => x.startsWith('uid:')) || keys.find((x) => x.startsWith('email:')) || `name:${stableKey(user.name)}`;
       if (!key || seen.has(key)) continue;
       seen.add(key);
       const already = keys.some((k) => existingKeys.has(k));
@@ -1564,7 +1619,7 @@ async function addForesterUser(user) {
   }
   if (!user.userId) return toast('Bu kullanıcının Google kullanıcı kimliği bulunamadı.', 'bad');
   try {
-    await edgeCall('seflik_folder_add_member', { seflik: state.settings.seflik, folderSeflik: state.settings.seflik, member_user_id: user.userId });
+    await edgeCall('seflik_folder_add_member', { seflik: state.settings.seflik, folderSeflik: state.settings.seflik, seflikKey: state.settings.seflikKey, member_user_id: user.userId, memberUserId: user.userId, member_email: user.email || '' });
     await syncSharedContext({ manual: false });
     const saved = state.ormancilar.find((item) => clean(item.userId) === user.userId || (clean(item.email) && clean(item.email) === clean(user.email).toLocaleLowerCase('tr-TR'))) || { name };
     state.settings.ormanci = saved.name || name;
@@ -1589,7 +1644,7 @@ async function removeForesterUser(member) {
   if (!uid) return toast('Bu ormancı için kullanıcı kimliği bulunamadı.', 'bad');
   if (!confirm(`${member.name} şeflik ormancı listesinden çıkarılsın mı?`)) return;
   try {
-    await edgeCall('seflik_folder_remove_member', { seflik: state.settings.seflik, folderSeflik: state.settings.seflik, member_user_id: uid });
+    await edgeCall('seflik_folder_remove_member', { seflik: state.settings.seflik, folderSeflik: state.settings.seflik, seflikKey: state.settings.seflikKey, member_user_id: uid, memberUserId: uid });
     await syncSharedContext({ manual: false });
     if (state.settings.ormanci === member.name) state.settings.ormanci = state.ormancilar[0]?.name || '';
     if (state.draft && state.draft.ormanci === member.name) state.draft.ormanci = state.settings.ormanci;
@@ -1835,18 +1890,51 @@ async function photoDataUrl(photo) {
   });
 }
 
+
+function evrakTodayText() {
+  const d = new Date();
+  return d.toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+}
+
+function documentSeflikName() {
+  return String(displaySeflik() || '').replace(/\s*Şefliği\s*$/i, '').replace(/\s*Sefliği\s*$/i, '');
+}
+
+function documentProduct(record) {
+  return clean(record?.type).replace(/^İbreli\s+/i, '').replace(/^Ibreli\s+/i, '');
+}
+
+function documentTreeType() {
+  return clean(state.settings.agacTuru || 'İBRELİ').toLocaleUpperCase('tr-TR');
+}
+
+function selectedSterTotal(rows) {
+  return rows.reduce((sum, r) => sum + (Number(String(r.ster || 0).replace(',', '.')) || 0), 0);
+}
+
+function fmtSterValue(value) {
+  const n = Number(String(value || 0).replace(',', '.')) || 0;
+  return n.toLocaleString('tr-TR', { maximumFractionDigits: 2 });
+}
+
 async function buildPrintHtml() {
   const rows = selectedForDocs();
   let html = '';
   if (state.documentTab === 'documents') {
-    html += `<div class="print-page"><h1>İSTİF KOORDİNAT LİSTESİ</h1><h2>Bölme: ${esc(recordBolme(rows[0]) || '')}</h2><table class="print-table"><thead><tr><th>Sıra</th><th>İstif No</th><th>İstif Cinsi</th><th>Ster</th><th>Koordinat</th></tr></thead><tbody>${rows.map((record, index) => `<tr><td>${index + 1}</td><td>${esc(record.istifNo)}</td><td>${esc(record.type)}</td><td>${esc(record.ster)}</td><td>${esc(record.coordinates || 'Bekleniyor')}</td></tr>`).join('')}</tbody></table><div class="print-footer">İstif Alma • Örnek şablon</div></div>`;
-    html += `<div class="print-page"><h1>İSTİF CİNS LİSTESİ</h1><h2>Bölme: ${esc(recordBolme(rows[0]) || '')}</h2><table class="print-table"><thead><tr><th>Sıra</th><th>İstif No</th><th>Cinsi</th><th>Ster</th><th>Mevki</th><th>Barkod</th></tr></thead><tbody>${rows.map((record, index) => `<tr><td>${index + 1}</td><td>${esc(record.istifNo)}</td><td>${esc(record.type)}</td><td>${esc(record.ster)}</td><td>${esc(record.mevki || '')}</td><td>${esc(record.barcode || '')}</td></tr>`).join('')}</tbody></table><div class="print-footer">İstif Alma • Örnek şablon</div></div>`;
+    const bolge = esc(state.settings.bolgeMudurlugu || '');
+    const isletme = esc(state.settings.isletmeMudurlugu || '');
+    const seflik = esc(documentSeflikName());
+    const tree = esc(documentTreeType());
+    const date = esc(evrakTodayText());
+    const totalSter = esc(fmtSterValue(selectedSterTotal(rows)));
+    html += `<div class="print-page official-document coordinate-document"><h1>1-STERLİ EMVALE AİT SATIŞ İSTİF YERİ TESPİT TUTANAĞI</h1><p class="official-desc">Satışa ve teslimata hazır olan emval ile ilişkili bilgiler aşağıda belirtilmiştir.</p><div class="official-fields"><div><b>Orman Bölge Müdürlüğü :</b><span>${bolge}</span></div><div><b>Orman İşletme Müdürlüğü :</b><span>${isletme}</span></div><div><b>Orman İşletme Şefliği :</b><span>${seflik}</span></div><div><b>Yer (köy/belde/mahalle) :</b><span></span></div><div><b>Mevkii :</b><span>${esc(rows[0]?.mevki || '')}</span></div><div><b>Satış İstif Yeri (Rampa/Depo) :</b><span>${esc(state.settings.satisIstifYeri || 'Rampa')}</span></div></div><table class="print-table official-table"><thead><tr><th>Bölme No</th><th>İstif No</th><th>Ağaç Türü</th><th>Ürün Çeşidi</th><th>Miktarı<br>(Ster)</th><th>Konum Koordinatları</th><th>Resim No</th></tr></thead><tbody>${rows.map((record, index) => `<tr><td>${esc(recordBolme(record))}</td><td>${esc(record.istifNo)}</td><td>${tree}</td><td>${esc(documentProduct(record))}</td><td>${esc(record.ster)}</td><td>${esc(record.coordinates || '')}</td><td>${index + 1}</td></tr>`).join('')}<tr class="total-row"><td colspan="4">TOPLAM</td><td>${totalSter}</td><td colspan="2"></td></tr></tbody></table><p class="official-paragraph">Şefliğimizde üretilen satışa ve teslimata hazır vaziyette olan toplam <b>${totalSter} Ster</b> emval ile ilgili belgeler (istif ebat listeleri, koordinat bilgileri, resimler vb.) ilişikte sunulmuştur.</p><p class="official-paragraph">Emvalin bilgilere uygun olarak arazide bulunduğu, en kısa zamanda satışının yapılması için İşletme Müdürlüğüne bildirmek üzere iş bu tutanak tarafımızdan düzenlenmiştir.</p><div class="official-date">${date}</div></div>`;
+    html += `<div class="print-page official-document rampa-document"><h1>STERLİ EMVAL KONTROL TUTANAĞI</h1><div class="official-fields compact"><div><b>Orman Bölge Müdürlüğü :</b><span>${bolge}</span></div><div><b>Orman İşletme Müdürlüğü :</b><span>${isletme}</span></div><div><b>Orman İşletme Şefliği :</b><span>${seflik}</span></div><div><b>Tarih :</b><span>${date}</span></div></div><table class="print-table official-table"><thead><tr><th>Sıra No</th><th>Bölme No</th><th>İstif No</th><th>Ağaç Türü</th><th>Ürün Çeşidi</th><th>Miktarı (Ster)</th></tr></thead><tbody>${rows.map((record, index) => `<tr><td>${index + 1}</td><td>${esc(recordBolme(record))}</td><td>${esc(record.istifNo)}</td><td>${tree}</td><td>${esc(documentProduct(record))}</td><td>${esc(record.ster)}</td></tr>`).join('')}<tr class="total-row"><td colspan="5">TOPLAM</td><td>${totalSter}</td></tr></tbody></table><p class="official-paragraph">Yukarıda dökümü yapılan sterli emvallerin yerinde standardizasyona uygun bir şekilde istifi yapılmış olup tarafımızdan tespit edilmiştir.</p><div class="official-date">${date}</div></div>`;
   }
   if (state.documentTab === 'photos') {
     for (const record of rows) {
       const urls = await Promise.all((record.photos || []).slice(0, 4).map(photoDataUrl));
       const seflikName = esc(String(record.seflik || displaySeflik()).replace(/ Şefliği$/i, ''));
-      html += `<div class="print-page photo-document-page"><div class="photo-print-header"><div class="photo-print-meta"><div><b>Şeflik Adı:</b> ${seflikName}</div><div><b>İstif No:</b> ${esc(record.istifNo)} ${esc(record.type)}</div><div><b>Ster:</b> ${esc(record.ster)}</div></div></div><div class="photo-print-collage">${[0, 1, 2, 3].map((index) => urls[index] ? `<figure><img src="${urls[index]}" alt="İstif fotoğrafı ${index + 1}"></figure>` : `<figure class="print-placeholder"></figure>`).join('')}</div><div class="print-footer">İstif Alma • ${trDate(record.date)} • Bölme ${esc(recordBolme(record))}</div></div>`;
+      html += `<div class="print-page photo-document-page"><div class="photo-print-header"><div class="photo-print-meta"><div><b>Şeflik Adı:</b> ${seflikName}</div><div><b>İstif No:</b> ${esc(record.istifNo)} ${esc(documentProduct(record))}</div><div><b>Ster:</b> ${esc(record.ster)}</div></div></div><div class="photo-print-collage">${[0, 1, 2, 3].map((index) => urls[index] ? `<figure><img src="${urls[index]}" alt="İstif fotoğrafı ${index + 1}"></figure>` : `<figure class="print-placeholder"></figure>`).join('')}</div><div class="print-footer">İstif Alma • ${trDate(record.date)} • Bölme ${esc(recordBolme(record))}</div></div>`;
     }
   }
   return html;
@@ -1859,7 +1947,7 @@ async function previewDocuments() {
 }
 
 function printDocumentCss() {
-  return `@page{size:A4;margin:0}*{box-sizing:border-box}html,body{margin:0;background:#fff;color:#111;font-family:Arial,Helvetica,sans-serif}.print-toolbar{position:sticky;top:0;z-index:10;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 14px;background:#0f5f39;color:#fff}.print-toolbar button{border:0;border-radius:10px;background:#fff;color:#0f5f39;font-weight:800;padding:10px 14px}.print-page{width:210mm;min-height:297mm;margin:0 auto;background:#fff;page-break-after:always;break-after:page;padding:14mm;color:#111;overflow:hidden}.print-page:last-child{page-break-after:auto;break-after:auto}.print-page h1{text-align:center;font-size:18pt;margin:0 0 5mm;color:#111}.print-page h2{font-size:14pt;margin:0 0 4mm;color:#111}.print-table{width:100%;border-collapse:collapse;font-size:10pt;color:#111}.print-table th,.print-table td{border:1px solid #333;padding:2.5mm;text-align:left;vertical-align:top}.photo-document-page{height:297mm;min-height:0;padding:9mm 12mm 9mm;display:block;position:relative;overflow:hidden}.photo-print-header{display:block;margin:0 0 4mm}.photo-print-meta{font-size:11pt;line-height:1.38;padding:0;text-align:left;color:#111}.photo-print-meta div{margin:1mm 0}.photo-print-collage{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:3mm;height:250mm}.photo-print-collage figure{margin:0;border:1px solid #111;position:relative;overflow:hidden;background:#f8f8f8;display:block}.photo-print-collage img{width:100%;height:100%;object-fit:cover;display:block}.photo-print-collage .print-placeholder{height:auto;width:auto;display:block;background:#fff}.print-placeholder{display:block;color:#666;border:1px solid #333}.print-footer{margin-top:4mm;font-size:9pt;color:#555;text-align:right}.photo-document-page .print-footer{position:absolute;right:12mm;bottom:4mm;margin:0;font-size:8pt;color:#666}.empty-print{padding:24px;font-size:16px}@media print{.print-toolbar{display:none!important}.print-page{margin:0;box-shadow:none}body{background:#fff}}`;
+  return `@page{size:A4;margin:0}*{box-sizing:border-box}html,body{margin:0;background:#fff;color:#111;font-family:Arial,Helvetica,sans-serif}.print-toolbar{position:sticky;top:0;z-index:10;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 14px;background:#0f5f39;color:#fff}.print-toolbar button{border:0;border-radius:10px;background:#fff;color:#0f5f39;font-weight:800;padding:10px 14px}.print-page{width:210mm;min-height:297mm;margin:0 auto;background:#fff;page-break-after:always;break-after:page;padding:14mm;color:#111;overflow:hidden}.print-page:last-child{page-break-after:auto;break-after:auto}.print-page h1{text-align:center;font-size:15pt;margin:0 0 5mm;color:#111}.print-page h2{font-size:13pt;margin:0 0 4mm;color:#111}.print-table{width:100%;border-collapse:collapse;font-size:9.5pt;color:#111}.print-table th,.print-table td{border:1px solid #333;padding:2.2mm;text-align:left;vertical-align:middle}.print-table th{text-align:center;font-weight:800}.official-document{padding:13mm 12mm;font-size:10pt}.official-desc{margin:0 0 5mm}.official-fields{display:grid;grid-template-columns:1fr;gap:1.5mm;margin:0 0 5mm;font-size:10pt}.official-fields div{display:grid;grid-template-columns:58mm 1fr;gap:4mm;align-items:center}.official-fields b{font-weight:800}.official-fields span{min-height:5mm}.official-fields.compact{margin-bottom:7mm}.official-table tbody tr{height:8mm}.official-table .total-row td{font-weight:800;text-align:center}.official-paragraph{margin:6mm 0 0;line-height:1.45;text-align:left}.official-date{margin-top:10mm;text-align:right;font-weight:700}.photo-document-page{height:297mm;min-height:0;padding:9mm 12mm 9mm;display:block;position:relative;overflow:hidden}.photo-print-header{display:block;margin:0 0 4mm}.photo-print-meta{font-size:11pt;line-height:1.38;padding:0;text-align:left;color:#111}.photo-print-meta div{margin:1mm 0}.photo-print-collage{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:3mm;height:250mm}.photo-print-collage figure{margin:0;border:1px solid #111;position:relative;overflow:hidden;background:#f8f8f8;display:block}.photo-print-collage img{width:100%;height:100%;object-fit:cover;display:block}.photo-print-collage .print-placeholder{height:auto;width:auto;display:block;background:#fff}.print-placeholder{display:block;color:#666;border:1px solid #333}.print-footer{margin-top:4mm;font-size:9pt;color:#555;text-align:right}.photo-document-page .print-footer{position:absolute;right:12mm;bottom:4mm;margin:0;font-size:8pt;color:#666}.empty-print{padding:24px;font-size:16px}@media print{.print-toolbar{display:none!important}.print-page{margin:0;box-shadow:none}body{background:#fff}}`;
 }
 
 function buildPrintDocument(innerHtml) {
