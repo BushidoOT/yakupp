@@ -1,6 +1,6 @@
 {
-  "version": "0.1.8",
+  "version": "0.1.9",
   "name": "Mesaha İO İstif Alma",
-  "updatedAt": "2026-07-13T14:45:00+03:00",
-  "notes": "Şeflik eşleşme düzeltmesi, yalnızca Google onaylı kullanıcı önerisi, istif kartı fotoğraf önizleme"
+  "updatedAt": "2026-07-13T15:10:00+03:00",
+  "notes": "Ekli ormancılar görünümü güçlendirildi; fotoğraf ve belge PDF çıktıları ayrıldı; fotoğraflı istif evrağı 4 fotoğraf tek sayfa formatına alındı."
 }

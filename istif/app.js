@@ -1,6 +1,6 @@
 'use strict';
 
-const APP_VERSION = '0.1.8';
+const APP_VERSION = '0.1.9';
 const MAX_PHOTO_BYTES = 1024 * 1024;
 const DB_NAME = 'mesaha-istif-prototype';
 const DB_VERSION = 1;
@@ -333,7 +333,7 @@ async function edgeCall(action, payload = {}, retried = false) {
       Authorization: `Bearer ${session.access_token}`,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ action, source: 'mesaha-istif-v018', ...payload }),
+    body: JSON.stringify({ action, source: 'mesaha-istif-v019', ...payload }),
   });
   const body = await response.json().catch(() => ({}));
   if ((response.status === 401 || response.status === 403) && !retried && readSharedSession()?.refresh_token) {
@@ -354,7 +354,7 @@ async function bridgeCall(action, payload = {}, retried = false) {
       Authorization: `Bearer ${session.access_token}`,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ action, source: 'mesaha-istif-v018', ...payload }),
+    body: JSON.stringify({ action, source: 'mesaha-istif-v019', ...payload }),
   });
   const body = await response.json().catch(() => ({}));
   if ((response.status === 401 || response.status === 403) && !retried && readSharedSession()?.refresh_token) {
@@ -374,13 +374,18 @@ function currentFolderIsOwner() {
 }
 
 function normalizeForester(raw) {
-  const name = clean(raw?.name || raw?.ormanci || raw?.forester_name);
+  const name = clean(raw?.name || raw?.ormanci || raw?.forester_name || raw?.canonical_name || raw?.member_name);
   if (!name) return null;
   return {
-    id: clean(raw.id || `custom_${stableKey(name)}`),
-    userId: clean(raw.user_id), name, email: clean(raw.email), avatarUrl: clean(raw.avatar_url),
-    role: clean(raw.role || 'forester'), isSelf: raw.is_self === true,
-    custom: raw.custom !== false, pending: raw.pending === true,
+    id: clean(raw.id || raw.userId || raw.user_id || raw.forester_user_id || `custom_${stableKey(name)}`),
+    userId: clean(raw.userId || raw.user_id || raw.forester_user_id || raw.member_user_id),
+    name,
+    email: clean(raw.email || raw.user_email || raw.member_email),
+    avatarUrl: clean(raw.avatarUrl || raw.avatar_url || raw.googleAvatarUrl || raw.google_avatar_url || raw.picture),
+    role: clean(raw.role || raw.member_role || 'forester'),
+    isSelf: raw.is_self === true || raw.isSelf === true,
+    custom: raw.custom !== false,
+    pending: raw.pending === true,
   };
 }
 
@@ -451,22 +456,71 @@ function normalizeMember(raw) {
   };
 }
 
+function seflikAliasKeys(name, key = '') {
+  const out = new Set();
+  const add = (v) => { const k = stableKey(v); if (k) out.add(k); };
+  add(key);
+  add(name);
+  add(clean(name).replace(/\s*Şefliği\s*$/i, ''));
+  add(clean(name).replace(/\s*Sefliği\s*$/i, ''));
+  add(clean(name).replace(/\s*Şeflik\s*$/i, ''));
+  add(clean(name).replace(/\s*Seflik\s*$/i, ''));
+  return [...out];
+}
+
+function currentSeflikAliasKeys() {
+  const aliases = new Set(seflikAliasKeys(state.settings.seflik, state.settings.seflikKey));
+  const currentNameKey = stableKey(state.settings.seflik);
+  state.seflikler.forEach((folder) => {
+    const folderAliases = seflikAliasKeys(folder.name, folder.key);
+    if (folderAliases.some((k) => aliases.has(k)) || folderAliases.includes(currentNameKey)) {
+      folderAliases.forEach((k) => aliases.add(k));
+    }
+  });
+  return [...aliases];
+}
+
+function valuesByAlias(map, aliases) {
+  const values = [];
+  aliases.forEach((key) => {
+    const list = map && Array.isArray(map[key]) ? map[key] : [];
+    values.push(...list);
+  });
+  return values;
+}
+
+function foresterKey(item) {
+  return item?.userId ? `uid:${item.userId}` : item?.email ? `email:${clean(item.email).toLocaleLowerCase('tr-TR')}` : `name:${stableKey(item?.name)}`;
+}
+
+function mirrorMembersByAliases(target, folder, list) {
+  seflikAliasKeys(folder.name, folder.key).forEach((alias) => {
+    if (!Array.isArray(target[alias]) || !target[alias].length) target[alias] = list;
+  });
+}
+
 function refreshCurrentMembers() {
-  const key = state.settings.seflikKey || stableKey(state.settings.seflik);
-  const members = Array.isArray(state.membersBySeflik[key]) ? state.membersBySeflik[key] : [];
-  const custom = Array.isArray(state.customForestersBySeflik[key]) ? state.customForestersBySeflik[key] : [];
+  const aliases = currentSeflikAliasKeys();
+  const members = valuesByAlias(state.membersBySeflik, aliases);
+  const custom = valuesByAlias(state.customForestersBySeflik, aliases);
   const map = new Map();
   [...members, ...custom].forEach((item) => {
-    if (!item?.name) return;
-    const k = stableKey(item.name);
-    if (!map.has(k) || item.custom) map.set(k, item);
+    const normalized = item?.custom ? normalizeForester(item) : normalizeMember(item);
+    if (!normalized?.name) return;
+    const k = foresterKey(normalized);
+    if (!map.has(k) || normalized.custom) map.set(k, normalized);
   });
-  state.ormancilar = [...map.values()];
-  if (!state.ormancilar.length && state.auth.name) {
-    state.ormancilar = [{ id: state.auth.userId || state.auth.name, name: state.auth.name, avatarUrl: state.auth.avatarUrl, role: 'owner', isSelf: true }];
+  if (state.auth.name) {
+    const selfKey = state.auth.userId ? `uid:${state.auth.userId}` : (state.auth.email ? `email:${state.auth.email}` : `name:${stableKey(state.auth.name)}`);
+    if (!map.has(selfKey)) map.set(selfKey, { id: state.auth.userId || state.auth.name, userId: state.auth.userId, email: state.auth.email, name: state.auth.name, avatarUrl: state.auth.avatarUrl, role: currentFolderIsOwner() ? 'owner' : 'member', isSelf: true, custom: false });
   }
+  state.ormancilar = [...map.values()].sort((a, b) => {
+    if (a.isSelf && !b.isSelf) return -1;
+    if (!a.isSelf && b.isSelf) return 1;
+    return clean(a.name).localeCompare(clean(b.name), 'tr');
+  });
   if (!state.ormancilar.some((x) => x.name === state.settings.ormanci)) {
-    const preferred = state.ormancilar.find((x) => x.role === 'member' || x.role === 'forester') || state.ormancilar.find((x) => x.isSelf) || state.ormancilar[0];
+    const preferred = state.ormancilar.find((x) => x.role === 'forester') || state.ormancilar.find((x) => x.role === 'member') || state.ormancilar.find((x) => x.isSelf) || state.ormancilar[0];
     state.settings.ormanci = preferred?.name || state.auth.name || '';
   }
 }
@@ -495,10 +549,20 @@ async function syncSharedContext({ manual = false } = {}) {
     Object.entries(out.membersBySeflik || {}).forEach(([key, members]) => {
       nextMembers[key] = (Array.isArray(members) ? members : []).map(normalizeMember).filter(Boolean);
     });
+    folders.forEach((folder) => {
+      const aliases = seflikAliasKeys(folder.name, folder.key);
+      const source = aliases.map((alias) => nextMembers[alias]).find((list) => Array.isArray(list) && list.length) || nextMembers[folder.key] || [];
+      mirrorMembersByAliases(nextMembers, folder, source);
+    });
     state.membersBySeflik = nextMembers;
     const nextCustom = { ...state.customForestersBySeflik };
     Object.entries(out.customForestersBySeflik || {}).forEach(([key, members]) => {
       nextCustom[key] = (Array.isArray(members) ? members : []).map(normalizeForester).filter(Boolean);
+    });
+    folders.forEach((folder) => {
+      const aliases = seflikAliasKeys(folder.name, folder.key);
+      const source = aliases.map((alias) => nextCustom[alias]).find((list) => Array.isArray(list) && list.length) || nextCustom[folder.key] || [];
+      mirrorMembersByAliases(nextCustom, folder, source);
     });
     state.customForestersBySeflik = nextCustom;
     const activeLocal = jsonRead(SHARED_ACTIVE_SEFLIK_KEY, {}) || {};
@@ -1204,7 +1268,8 @@ function showAddOrmanciDialog() {
     showDialog('<h3>Google girişi gerekli</h3><p>Ormancı eklemek için kişinin Mesaha İO’da Google ile giriş yapmış ve onaylı kullanıcı olması gerekir.</p><div class="dialog-actions"><button class="btn" data-dialog-close>Kapat</button><a class="btn primary" href="../">Mesaha İO’da Giriş Yap</a></div>');
     return;
   }
-  const existingHtml = state.ormancilar.length ? `<div class="existing-foresters"><b>Ekli Ormancılar</b>${state.ormancilar.map((item) => `<div class="existing-forester-row"><span class="picker-avatar">${item.avatarUrl ? `<img src="${esc(item.avatarUrl)}" alt="">` : icon('user', 18)}</span><span><strong>${esc(item.name)}</strong><small>${esc(item.email || (item.role === 'owner' ? 'Şeflik kurucusu' : 'Ekli ormancı'))}</small></span></div>`).join('')}</div>` : `<div class="existing-foresters"><b>Ekli Ormancılar</b><span>Henüz ortak ormancı görünmüyor. Kullanıcıları yenile deyin.</span></div>`;
+  refreshCurrentMembers();
+  const existingHtml = state.ormancilar.length ? `<div class="existing-foresters"><b>Ekli Ormancılar</b>${state.ormancilar.map((item) => `<div class="existing-forester-row"><span class="picker-avatar">${item.avatarUrl ? `<img src="${esc(item.avatarUrl)}" alt="">` : icon('user', 18)}</span><span><strong>${esc(item.name)}</strong><small>${esc(item.email || (item.isSelf ? 'Kendi hesabınız' : item.role === 'owner' ? 'Şeflik kurucusu' : item.custom ? 'Ekli ormancı' : 'Mesaha İO kullanıcısı'))}</small></span></div>`).join('')}</div>` : `<div class="existing-foresters"><b>Ekli Ormancılar</b><span>Henüz ortak ormancı görünmüyor. Kullanıcıları yenile deyin.</span></div>`;
   showDialog(`<h3>Ormancı Ekle</h3><p>Yalnızca Mesaha İO’da Google ile giriş yapmış ve onaylı kullanıcılar eklenebilir. En az 3 harf yazınca öneriler çıkar.</p><label class="dialog-label">Kullanıcı Ara</label><input id="foresterSearchInput" class="dialog-input" autocomplete="off" placeholder="Ad, soyad veya e-posta"><div id="foresterSuggestBox" class="suggest-box"><span>En az 3 harf yazın.</span></div>${existingHtml}<div class="dialog-actions"><button class="btn" data-dialog-close>Kapat</button><button class="btn" id="refreshUserSuggestions">Kullanıcıları Yenile</button></div>`);
   const input = document.getElementById('foresterSearchInput');
   const box = document.getElementById('foresterSuggestBox');
@@ -1262,7 +1327,9 @@ async function addForesterUser(user) {
   const name = clean(user?.name);
   user.userId = clean(user.userId || user.user_id);
   if (!name) return toast('Kullanıcı adı bulunamadı.', 'bad');
-  const existing = state.ormancilar.find((item) => stableKey(item.name) === stableKey(name) || (user.userId && item.userId === user.userId) || (user.email && item.email === user.email));
+  refreshCurrentMembers();
+  const userKey = user.userId ? `uid:${user.userId}` : (user.email ? `email:${clean(user.email).toLocaleLowerCase('tr-TR')}` : `name:${stableKey(name)}`);
+  const existing = state.ormancilar.find((item) => foresterKey(item) === userKey || stableKey(item.name) === stableKey(name));
   if (existing) {
     state.settings.ormanci = existing.name;
     if (state.draft) state.draft.ormanci = existing.name;
@@ -1533,7 +1600,8 @@ async function buildPrintHtml() {
   if (state.documentTab === 'photos') {
     for (const record of rows) {
       const urls = await Promise.all((record.photos || []).slice(0, 4).map(photoDataUrl));
-      html += `<div class="print-page"><h1>FOTOĞRAFLI İSTİF EVRAKI</h1><div class="print-meta"><b>Şeflik</b><span>${esc(record.seflik)}</span><b>Bölme</b><span>${esc(record.bolme)}</span><b>İstif</b><span>${esc(record.istifNo)}</span><b>Tür</b><span>${esc(record.type)}</span><b>Ster</b><span>${esc(record.ster)}</span><b>Koordinat</b><span>${esc(record.coordinates || 'Bekleniyor')}</span></div><div class="print-collage">${[0, 1, 2, 3].map((index) => urls[index] ? `<img src="${urls[index]}">` : `<div class="print-placeholder">Fotoğraf ${index + 1}</div>`).join('')}</div><div class="print-footer">İstif Alma • Örnek şablon</div></div>`;
+      const seflikName = esc(String(record.seflik || displaySeflik()).replace(/ Şefliği$/i, ''));
+      html += `<div class="print-page photo-document-page"><div class="photo-print-header"><div class="photo-print-meta"><div><b>Şeflik Adı:</b> ${seflikName}</div><div><b>İstif No:</b> ${esc(record.istifNo)} ${esc(record.type)}</div><div><b>Ster:</b> ${esc(record.ster)}</div></div></div><div class="photo-print-collage">${[0, 1, 2, 3].map((index) => urls[index] ? `<figure><img src="${urls[index]}" alt="Fotoğraf ${index + 1}"><figcaption>Fotoğraf ${index + 1}</figcaption></figure>` : `<figure class="print-placeholder"><span>Fotoğraf ${index + 1}</span></figure>`).join('')}</div><div class="print-footer">İstif Alma • ${trDate(record.date)} • Bölme ${esc(record.bolme)}</div></div>`;
     }
   }
   return html;
