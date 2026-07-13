@@ -1,0 +1,7 @@
+(function(){'use strict';
+function r(k,f){try{return JSON.parse(localStorage.getItem(k)||'null')||f}catch(e){return f}}
+function valid(){var s=r('mesaha_supabase_v500_session',{}),b=r('mesaha_supabase_v569_session_backup',{}),a=r('mesaha_google_access_v548',{}),t=r('mesaha_terminal_local_mode_v556',{})||r('mesaha_terminal_local_mode_v557',{});return !!(s.access_token||b.access_token||a.status==='approved'||t&&t.active)}
+function add(){if(document.getElementById('suiteHomeButtonV2'))return;var b=document.createElement('button');b.id='suiteHomeButtonV2';b.className='suite-home-button';b.type='button';b.textContent='⌂ Suite';b.onclick=function(){location.href='../'};document.body.appendChild(b)}
+function syncActive(){try{var f=r('mesaha_active_seflik_folder_v564',{}),p=r('mesaha_panel_user_v316',{}),s=r('cam_mesaha_ayarlar_v1',{});if(f&&f.seflik){p.seflik=f.seflik;p.activeSeflik=f.seflik;s.seflik=f.seflik;localStorage.setItem('mesaha_panel_user_v316',JSON.stringify(p));localStorage.setItem('cam_mesaha_ayarlar_v1',JSON.stringify(s));}}catch(e){}}
+if(!valid()){location.replace('../');return}syncActive();if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',add,{once:true});else add();window.addEventListener('mesaha-suite:shared-data-updated',syncActive);
+})();

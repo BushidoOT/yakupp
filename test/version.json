@@ -1,0 +1,10 @@
+{
+  "version": "test-v4",
+  "build": 2,
+  "date": "2026-07-13",
+  "name": "Mesaha Suite",
+  "short_name": "Suite Test",
+  "description": "",
+  "id": "./?suite=3",
+  "start_url": "./?suite=3"
+}
