@@ -1,7 +1,7 @@
 {
   "name": "Mesaha İO • İstif Alma",
   "short_name": "İstif Alma",
-  "start_url": "./?v=012",
+  "start_url": "./?v=015",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f7faf8",
@@ -19,7 +19,7 @@
       "type": "image/png"
     }
   ],
-  "id": "./?v=012",
+  "id": "./?v=015",
   "description": "Mesaha İO ile ortak Google hesabı ve şeflik bilgilerini kullanan; ortak Şeflik Drive alanına doğrudan fotoğraf yükleyen İstif Alma uygulaması",
-  "version": "v0.1.3"
+  "version": "v0.1.5"
 }
