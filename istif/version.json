@@ -1,8 +1,8 @@
 {
-  "version": "0.2.8",
+  "version": "0.2.9",
   "name": "Mesaha İO İstif Alma",
-  "updatedAt": "2026-07-13T18:45:00+03:00",
-  "notes": "Ürün sahibi alanı boş bırakıldı; imza alanı genişletildi; ormancı çıkarma istif-drive üzerinden düzeltildi; ormancı liste tekrarları temizlendi",
-  "visibleVersion": "İstif Alma v0.2.8",
-  "build": "20260713-v028"
+  "updatedAt": "2026-07-13T19:05:00+03:00",
+  "notes": "Koordinat tutanağı başlığı ve tarihi düzeltildi; evraklar bölme bazında sınırlandı; odun türü renkleri ve gönderildi/geri al durumu eklendi",
+  "visibleVersion": "İstif Alma v0.2.9",
+  "build": "20260713-v029"
 }

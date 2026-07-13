@@ -1,6 +1,6 @@
 'use strict';
 
-const APP_VERSION = '0.2.8';
+const APP_VERSION = '0.2.9';
 const MAX_PHOTO_BYTES = 1024 * 1024;
 const DB_NAME = 'mesaha-istif-prototype';
 const DB_VERSION = 1;
@@ -21,7 +21,7 @@ const SHARED_SESSION_BACKUP_KEY = 'mesaha_supabase_v569_session_backup';
 const SHARED_PANEL_KEY = 'mesaha_panel_user_v316';
 const SHARED_ACCESS_KEY = 'mesaha_google_access_v548';
 const SHARED_ACTIVE_SEFLIK_KEY = 'mesaha_active_seflik_folder_v564';
-const SHARED_CACHE_SETTING_KEY = 'shared-context-v028';
+const SHARED_CACHE_SETTING_KEY = 'shared-context-v029';
 
 const DEFAULT_SETTINGS = {
   seflik: '',
@@ -355,7 +355,7 @@ async function edgeCall(action, payload = {}, retried = false) {
       Authorization: `Bearer ${session.access_token}`,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ action, source: 'mesaha-istif-v027', ...payload }),
+    body: JSON.stringify({ action, source: 'mesaha-istif-v029', ...payload }),
   });
   const body = await response.json().catch(() => ({}));
   if ((response.status === 401 || response.status === 403) && !retried && readSharedSession()?.refresh_token) {
@@ -376,7 +376,7 @@ async function bridgeCall(action, payload = {}, retried = false) {
       Authorization: `Bearer ${session.access_token}`,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ action, source: 'mesaha-istif-v027', ...payload }),
+    body: JSON.stringify({ action, source: 'mesaha-istif-v029', ...payload }),
   });
   const body = await response.json().catch(() => ({}));
   if ((response.status === 401 || response.status === 403) && !retried && readSharedSession()?.refresh_token) {
@@ -874,6 +874,34 @@ function sortedRecords(list = state.records) {
   });
 }
 
+function recordTypeClass(type) {
+  const value = clean(type).toLocaleLowerCase('tr-TR');
+  if (value.includes('kabuklu') && value.includes('kağıtlık')) return 'type-kabuklu';
+  if (value.includes('lif') || value.includes('yonga')) return 'type-lif';
+  if (value.includes('yakacak')) return 'type-yakacak';
+  if (value.includes('sırık') || value.includes('sirık') || value.includes('sirik')) return 'type-sirik';
+  return 'type-diger';
+}
+
+function recordSent(record) {
+  return record?.isSent === true || record?.is_sent === true;
+}
+
+async function setRecordSent(recordId, sent) {
+  const record = state.records.find((item) => item.id === recordId);
+  if (!record) return toast('İstif bulunamadı.', 'bad');
+  const actionText = sent ? 'gönderildi olarak işaretlensin' : 'gönderildi işareti geri alınsın';
+  if (!confirm(`${record.istifNo || 'Bu istif'} ${actionText} mı?`)) return;
+  record.isSent = !!sent;
+  record.sentAt = sent ? new Date().toISOString() : '';
+  record.sentBy = sent ? (state.auth.name || state.auth.email || '') : '';
+  if (!record.isDemo && record.syncStatus === 'synced') record.syncStatus = 'local';
+  record.updatedAt = new Date().toISOString();
+  await idbPut('records', structuredClone(record));
+  toast(sent ? 'İstif gönderildi olarak işaretlendi.' : 'Gönderildi işareti geri alındı.', 'good');
+  render();
+}
+
 function renderRecords() {
   const bolmes = [...new Set(state.records.map((row) => row.bolme).filter(Boolean))];
   return `${head('İstifler', 'Tarih, bölme ve türe göre filtreleyin', { back: true, action: `<button class="icon-btn" aria-label="Filtre">${icon('filter', 22)}</button>` })}
@@ -898,39 +926,50 @@ function recordThumbHtml(record) {
 
 function recordCards(rows) {
   if (!rows.length) return '<div class="empty card">Filtreye uygun istif bulunamadı.</div>';
-  return rows.map((record) => `<article class="record-card card" data-record="${record.id}">
-    ${recordThumbHtml(record)}
-    <div class="record-info">
-      <span>Şeflik</span><b>${esc(String(record.seflik || '').replace(' Şefliği', ''))}</b>
-      <span>Bölme</span><b>${esc(record.bolme)}</b>
-      <span>İstif</span><b>${esc(record.istifNo)}</b>
-      <span>Tür</span><b>${esc(record.type)}</b>
-      <span>Ster</span><b>${esc(record.ster)} Ster</b>
-      <span>Tarih</span><b>${trDate(record.date)}</b>
-    </div>
-    <div class="record-status ${record.coordinates ? '' : 'warn'}">
-      <div>${icon('pin', 17)}<span>${record.coordinates ? 'Koordinat Var' : 'Koordinat Bekliyor'}</span></div>
-      <div>${icon('camera', 17)}<span>${record.photos?.length || record.photoCount || 0} Fotoğraf</span></div>
-      <div>${icon('cloud', 17)}<span>${record.isDemo ? 'Örnek Kayıt' : record.syncStatus === 'synced' ? 'Senkronize' : record.syncStatus === 'drive_synced' ? 'Supabase Bekliyor' : record.syncStatus === 'syncing' ? 'Yükleniyor' : 'Yerelde Kayıtlı'}</span></div>
-    </div>
-    <div class="record-actions">
-      <button class="btn small" type="button" data-edit-record="${record.id}">${icon('doc', 16)} Düzenle</button>
-      <button class="btn danger-soft small" type="button" data-delete-record="${record.id}">${icon('trash', 16)} Sil</button>
-    </div>
-  </article>`).join('');
+  return rows.map((record) => {
+    const sent = recordSent(record);
+    const sentDate = sent && record.sentAt ? trDate(String(record.sentAt).slice(0, 10)) : '';
+    return `<article class="record-card card ${recordTypeClass(record.type)} ${sent ? 'sent-record' : ''}" data-record="${record.id}">
+      ${recordThumbHtml(record)}
+      <div class="record-info">
+        <span>Şeflik</span><b>${esc(String(record.seflik || '').replace(' Şefliği', ''))}</b>
+        <span>Bölme</span><b>${esc(record.bolme)}</b>
+        <span>İstif</span><b>${esc(record.istifNo)}</b>
+        <span>Tür</span><b>${esc(record.type)}</b>
+        <span>Ster</span><b>${esc(record.ster)} Ster</b>
+        <span>Tarih</span><b>${trDate(record.date)}</b>
+      </div>
+      <div class="record-status ${record.coordinates ? '' : 'warn'}">
+        <div>${icon('pin', 17)}<span>${record.coordinates ? 'Koordinat Var' : 'Koordinat Bekliyor'}</span></div>
+        <div>${icon('camera', 17)}<span>${record.photos?.length || record.photoCount || 0} Fotoğraf</span></div>
+        <div>${icon(sent ? 'check' : 'cloud', 17)}<span>${sent ? `Gönderildi${sentDate ? ` • ${sentDate}` : ''}` : record.isDemo ? 'Örnek Kayıt' : record.syncStatus === 'synced' ? 'Senkronize' : record.syncStatus === 'drive_synced' ? 'Supabase Bekliyor' : record.syncStatus === 'syncing' ? 'Yükleniyor' : 'Yerelde Kayıtlı'}</span></div>
+      </div>
+      ${sent ? `<div class="sent-badge">${icon('check', 15)} Gönderilen İstif</div>` : ''}
+      <div class="record-actions">
+        <button class="btn small" type="button" data-edit-record="${record.id}">${icon('doc', 16)} Düzenle</button>
+        <button class="btn ${sent ? 'undo-sent' : 'mark-sent'} small" type="button" ${sent ? `data-undo-sent="${record.id}"` : `data-mark-sent="${record.id}"`}>${icon(sent ? 'refresh' : 'check', 16)} ${sent ? 'Geri Al' : 'İstif Gönderildi'}</button>
+        <button class="btn danger-soft small" type="button" data-delete-record="${record.id}">${icon('trash', 16)} Sil</button>
+      </div>
+    </article>`;
+  }).join('');
 }
 
 function renderDocuments() {
-  const bolmes = [...new Set(state.records.map((row) => row.bolme).filter(Boolean))];
-  const chosen = sortedRecords(state.records.filter((row) => !state.builderBolme || row.bolme === state.builderBolme));
-  return `${head('Evrak Oluştur', 'İstif seçerek evrak hazırlayın', { action: profileButton() })}
+  const bolmes = [...new Set(state.records.map((row) => row.bolme).filter(Boolean))].sort((a, b) => String(a).localeCompare(String(b), 'tr', { numeric: true }));
+  if (state.builderBolme && !bolmes.includes(state.builderBolme)) {
+    state.builderBolme = '';
+    state.selectedRecordIds.clear();
+  }
+  const chosen = state.builderBolme ? sortedRecords(state.records.filter((row) => row.bolme === state.builderBolme)) : [];
+  const selectedCount = chosen.filter((record) => state.selectedRecordIds.has(record.id)).length;
+  return `${head('Evrak Oluştur', 'Her bölme için ayrı evrak hazırlayın', { action: profileButton() })}
     <div class="segment"><button class="${state.documentTab === 'photos' ? 'active' : ''}" data-doc-tab="photos">İstif Fotoğrafları</button><button class="${state.documentTab === 'documents' ? 'active' : ''}" data-doc-tab="documents">Belgeler</button></div>
-    <div class="info-note"><b>${icon('info', 21)}</b><span>Aynı bölmedeki ve yakın tarihli istifleri seçin. Sıralama kabuklu, lif, yakacak ve sırık şeklinde otomatik yapılır.</span></div>
-    <section class="builder-controls"><div class="select-panel card"><label class="select-row"><span class="round-icon">${icon('layers', 23)}</span><span class="row-copy"><small>Bölme Seç</small><select id="builderBolme" class="embedded-select"><option value="">Tüm Bölmeler</option>${bolmes.map((value) => `<option ${state.builderBolme === value ? 'selected' : ''}>${esc(value)}</option>`).join('')}</select></span><span class="chev">${icon('chevron', 22)}</span></label></div></section>
-    <div class="section-title"><h2>İstifler</h2><span>${state.selectedRecordIds.size} / ${chosen.length} seçildi</span></div>
-    <section class="builder-list card">${chosen.map((record) => `<label class="check-row"><input type="checkbox" data-record-check="${record.id}" ${state.selectedRecordIds.has(record.id) ? 'checked' : ''}><span>${icon('logs', 22)}</span><b>${esc(record.istifNo)} • ${esc(record.type)}</b></label>`).join('')}</section>
-    <div class="dual-actions"><button class="btn" data-action="select-all">${icon('check', 20)} Tümünü Seç</button><button class="btn" data-action="clear-selection">${icon('trash', 20)} Seçimi Temizle</button></div>
-    <div class="dual-actions"><button class="btn" data-action="preview-doc">${icon('eye', 20)} Önizle</button><button class="btn primary" data-action="print-doc">${icon('doc', 20)} PDF Oluştur</button></div>
+    <div class="info-note"><b>${icon('info', 21)}</b><span>Önce bölme seçin. Farklı bölmelere ait istifler aynı evraka eklenemez. Sıralama kabuklu, lif, yakacak ve sırık şeklinde otomatik yapılır.</span></div>
+    <section class="builder-controls"><div class="select-panel card"><label class="select-row"><span class="round-icon">${icon('layers', 23)}</span><span class="row-copy"><small>Bölme Seç</small><select id="builderBolme" class="embedded-select"><option value="">Bölme seçin</option>${bolmes.map((value) => `<option ${state.builderBolme === value ? 'selected' : ''}>${esc(value)}</option>`).join('')}</select></span><span class="chev">${icon('chevron', 22)}</span></label></div></section>
+    <div class="section-title"><h2>İstifler</h2><span>${selectedCount} / ${chosen.length} seçildi</span></div>
+    <section class="builder-list card">${!state.builderBolme ? '<div class="empty-inline">Evrak oluşturmak için önce bir bölme seçin.</div>' : chosen.length ? chosen.map((record) => `<label class="check-row ${recordTypeClass(record.type)}"><input type="checkbox" data-record-check="${record.id}" ${state.selectedRecordIds.has(record.id) ? 'checked' : ''}><span>${icon('logs', 22)}</span><b>${esc(record.istifNo)} • ${esc(record.type)}</b></label>`).join('') : '<div class="empty-inline">Bu bölmede kayıtlı istif bulunamadı.</div>'}</section>
+    <div class="dual-actions"><button class="btn" data-action="select-all" ${state.builderBolme ? '' : 'disabled'}>${icon('check', 20)} Tümünü Seç</button><button class="btn" data-action="clear-selection">${icon('trash', 20)} Seçimi Temizle</button></div>
+    <div class="dual-actions"><button class="btn" data-action="preview-doc" ${state.builderBolme ? '' : 'disabled'}>${icon('eye', 20)} Önizle</button><button class="btn primary" data-action="print-doc" ${state.builderBolme ? '' : 'disabled'}>${icon('doc', 20)} PDF Oluştur</button></div>
     <button class="btn wide template-link" data-view="templates">Evrak Şablonlarını Gör</button>`;
 }
 
@@ -1045,13 +1084,27 @@ function bindDynamic() {
   ['filterDate', 'filterBolme', 'filterType'].forEach((id) => app.querySelector(`#${id}`)?.addEventListener('change', applyRecordFilters));
   app.querySelectorAll('[data-doc-tab]').forEach((button) => { button.onclick = () => { state.documentTab = button.dataset.docTab; render(); }; });
   app.querySelector('#builderBolme')?.addEventListener('change', (event) => { state.builderBolme = event.target.value; state.selectedRecordIds.clear(); render(); });
-  app.querySelectorAll('[data-record-check]').forEach((checkbox) => { checkbox.onchange = () => { checkbox.checked ? state.selectedRecordIds.add(checkbox.dataset.recordCheck) : state.selectedRecordIds.delete(checkbox.dataset.recordCheck); render(); }; });
-  app.querySelector('[data-action="select-all"]')?.addEventListener('click', () => { state.records.filter((row) => !state.builderBolme || row.bolme === state.builderBolme).forEach((row) => state.selectedRecordIds.add(row.id)); render(); });
+  app.querySelectorAll('[data-record-check]').forEach((checkbox) => { checkbox.onchange = () => {
+    const record = state.records.find((item) => item.id === checkbox.dataset.recordCheck);
+    if (!record || !state.builderBolme || record.bolme !== state.builderBolme) {
+      checkbox.checked = false;
+      return toast('Farklı bölmedeki istif aynı evraka eklenemez.', 'bad');
+    }
+    checkbox.checked ? state.selectedRecordIds.add(checkbox.dataset.recordCheck) : state.selectedRecordIds.delete(checkbox.dataset.recordCheck);
+    render();
+  }; });
+  app.querySelector('[data-action="select-all"]')?.addEventListener('click', () => {
+    if (!state.builderBolme) return toast('Önce bölme seçin.', 'bad');
+    state.records.filter((row) => row.bolme === state.builderBolme).forEach((row) => state.selectedRecordIds.add(row.id));
+    render();
+  });
   app.querySelector('[data-action="clear-selection"]')?.addEventListener('click', () => { state.selectedRecordIds.clear(); render(); });
   app.querySelectorAll('[data-action="preview-doc"]').forEach((button) => { button.onclick = previewDocuments; });
   app.querySelectorAll('[data-action="print-doc"]').forEach((button) => { button.onclick = printDocuments; });
   app.querySelectorAll('[data-edit-record]').forEach((button) => { button.onclick = () => editRecord(button.dataset.editRecord); });
   app.querySelectorAll('[data-delete-record]').forEach((button) => { button.onclick = () => deleteRecord(button.dataset.deleteRecord); });
+  app.querySelectorAll('[data-mark-sent]').forEach((button) => { button.onclick = () => setRecordSent(button.dataset.markSent, true); });
+  app.querySelectorAll('[data-undo-sent]').forEach((button) => { button.onclick = () => setRecordSent(button.dataset.undoSent, false); });
 
 }
 
@@ -1672,6 +1725,8 @@ async function supabaseUpsertRecord(record) {
     drive_folder_id: record.driveFolderId || null,
     drive_files: record.driveFiles || [],
     sync_status: 'synced',
+    is_sent: recordSent(record),
+    sent_at: recordSent(record) && record.sentAt ? record.sentAt : null,
     created_at: record.createdAt || new Date().toISOString(),
     updated_at: new Date().toISOString(),
   };
@@ -1767,8 +1822,8 @@ async function syncAll() {
 }
 
 function selectedForDocs() {
-  let rows = state.records.filter((record) => state.selectedRecordIds.has(record.id));
-  if (!rows.length) rows = sortedRecords(state.records).slice(0, 4);
+  if (!state.builderBolme) return [];
+  const rows = state.records.filter((record) => state.selectedRecordIds.has(record.id) && record.bolme === state.builderBolme);
   return sortedRecords(rows);
 }
 
@@ -1822,7 +1877,7 @@ async function buildPrintHtml() {
     const rampa = esc(state.settings.satisIstifYeri || '');
     const todayText = new Date().toLocaleDateString('tr-TR');
     html += `<div class="print-page workbook-document"><h1>STERLİ EMVAL KONTROL TUTANAĞI</h1><div class="workbook-fields"><div><b>Şefliği :</b><span>${seflik}</span></div><div><b>Bölme No :</b><span>${bolme}</span></div><div><b>Rampa :</b><span>${rampa}</span></div></div><h2>KONTROL EDİLEN ÜRÜNLER</h2><table class="print-table workbook-table"><thead><tr><th>Sıra No</th><th>Bölme No</th><th>İstif No</th><th>Emvalin Cinsi</th><th>Miktarı (Ster)</th><th>Ürün Sahibinin Adı Soyadı</th></tr></thead><tbody>${documentRowsHtml(rows, false)}</tbody></table><p class="workbook-note">Yukarıda dökümü yapılan sterli emvallerin, yerinde standardizasyona uygun bir şekilde istifi yapıldığı tarafımızdan tespit edilerek müştereken imza altına alınmıştır.</p><div class="workbook-date">${todayText}</div><div class="workbook-signatures"><span>Or. Muh. Mem.</span><span>İşletme Şefi</span></div></div>`;
-    html += `<div class="print-page workbook-document"><h1>STERLİ EMVAL KONTROL TUTANAĞI</h1><div class="workbook-fields"><div><b>Bölge Müdürlüğü :</b><span>${bolge}</span></div><div><b>İşletme Müdürlüğü :</b><span>${isletme}</span></div><div><b>Şefliği :</b><span>${seflik}</span></div><div><b>Bölme No :</b><span>${bolme}</span></div><div><b>Rampa :</b><span>${rampa}</span></div></div><h2>KONTROL EDİLEN ÜRÜNLER</h2><table class="print-table workbook-table coordinate-workbook-table"><thead><tr><th>Sıra No</th><th>Bölme No</th><th>İstif No</th><th>Emvalin Cinsi</th><th>Miktarı (Ster)</th><th>Koordinat</th><th>Resim No</th></tr></thead><tbody>${documentRowsHtml(rows, true)}</tbody></table><p class="workbook-note">Yukarıda dökümü yapılan sterli emvallerin, yerinde standardizasyona uygun bir şekilde istifi yapıldığı tarafımızdan tespit edilerek müştereken imza altına alınmıştır.</p><div class="workbook-signatures"><span>Or. Muh. Mem.</span><span>İşletme Şefi</span></div></div>`;
+    html += `<div class="print-page workbook-document"><h1>STERLİ EMVALE AİT SATIŞ İSTİF YERİ TESPİT TUTANAĞI</h1><div class="workbook-fields"><div><b>Bölge Müdürlüğü :</b><span>${bolge}</span></div><div><b>İşletme Müdürlüğü :</b><span>${isletme}</span></div><div><b>Şefliği :</b><span>${seflik}</span></div><div><b>Bölme No :</b><span>${bolme}</span></div><div><b>Rampa :</b><span>${rampa}</span></div></div><h2>KONTROL EDİLEN ÜRÜNLER</h2><table class="print-table workbook-table coordinate-workbook-table"><thead><tr><th>Sıra No</th><th>Bölme No</th><th>İstif No</th><th>Emvalin Cinsi</th><th>Miktarı (Ster)</th><th>Koordinat</th><th>Resim No</th></tr></thead><tbody>${documentRowsHtml(rows, true)}</tbody></table><p class="workbook-note">Yukarıda dökümü yapılan sterli emvallerin, yerinde standardizasyona uygun bir şekilde istifi yapıldığı tarafımızdan tespit edilerek müştereken imza altına alınmıştır.</p><div class="workbook-date">${todayText}</div><div class="workbook-signatures"><span>Or. Muh. Mem.</span><span>İşletme Şefi</span></div></div>`;
   }
   if (state.documentTab === 'photos') {
     for (const record of rows) {
