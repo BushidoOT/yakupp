@@ -1,7 +1,7 @@
 {
-  "name": "Mesaha Suite V7",
+  "name": "Mesaha Suite V8",
   "short_name": "Mesaha Suite",
-  "start_url": "./?v=7",
+  "start_url": "./?v=8",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f5f8f6",
@@ -19,7 +19,7 @@
       "type": "image/png"
     }
   ],
-  "id": "./?v=7",
+  "id": "./?v=8",
   "description": "Mesaha İO ve İstif İO ortak giriş, kişisel Drive, merkezi senkronizasyon ve kalıcı offline başlangıç ekranı",
-  "version": "suite_v7"
+  "version": "suite_v8"
 }

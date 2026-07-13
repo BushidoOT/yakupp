@@ -1,1 +1,58 @@
-<!doctype html><html lang="tr"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Suite Offline Onarımı</title><body style="font-family:system-ui;padding:24px;background:#eef5f0;color:#153d2b"><h2>Suite offline sistemi onarılıyor…</h2><p id="s">Eski alt uygulama worker’ları kaldırılıyor.</p><script>(async()=>{try{const root=new URL('./',location.href).href,regs=await navigator.serviceWorker.getRegistrations();for(const r of regs){if(r.scope!==root&&(r.scope.includes('/test/mesaha/')||r.scope.includes('/test/istif/')))await r.unregister()}const keys=await caches.keys();await Promise.all(keys.filter(k=>k.startsWith('yakupp-suite-shell-')||k.startsWith('mesaha-suite-test-')||k.startsWith('mesaha-istif-')).map(k=>caches.delete(k)));const reg=await navigator.serviceWorker.register('./service-worker.js?v=7',{scope:'./',updateViaCache:'none'});await navigator.serviceWorker.ready;const w=reg.active||navigator.serviceWorker.controller;if(w)w.postMessage({type:'CACHE_ALL'});document.getElementById('s').textContent='Suite V7 hızlı önbelleği kuruluyor. Suite açılıyor…';setTimeout(()=>location.replace('./?offline_repaired=1'),1200)}catch(e){document.getElementById('s').textContent='Onarım tamamlanamadı: '+e.message}})()</script></body></html>
+<!doctype html>
+<html lang="tr">
+  <meta charset="utf-8" /><meta
+    name="viewport"
+    content="width=device-width,initial-scale=1"
+  /><title>Suite Offline Onarımı</title>
+  <body
+    style="
+      font-family: system-ui;
+      padding: 24px;
+      background: #eef5f0;
+      color: #153d2b;
+    "
+  >
+    <h2>Suite offline sistemi onarılıyor…</h2>
+    <p id="s">Eski alt uygulama worker’ları kaldırılıyor.</p>
+    <script>
+      (async () => {
+        try {
+          const root = new URL("./", location.href).href,
+            regs = await navigator.serviceWorker.getRegistrations();
+          for (const r of regs) {
+            if (
+              r.scope !== root &&
+              (r.scope === new URL("./mesaha/", root).href ||
+                r.scope === new URL("./istif/", root).href)
+            )
+              await r.unregister();
+          }
+          const keys = await caches.keys();
+          await Promise.all(
+            keys
+              .filter(
+                (k) =>
+                  k.startsWith("yakupp-suite-shell-") ||
+                  k.startsWith("mesaha-suite-old-") ||
+                  k.startsWith("mesaha-istif-"),
+              )
+              .map((k) => caches.delete(k)),
+          );
+          const reg = await navigator.serviceWorker.register(
+            "./service-worker.js?v=8",
+            { scope: "./", updateViaCache: "none" },
+          );
+          await navigator.serviceWorker.ready;
+          const w = reg.active || navigator.serviceWorker.controller;
+          if (w) w.postMessage({ type: "CACHE_ALL" });
+          document.getElementById("s").textContent =
+            "Suite V8 hızlı önbelleği kuruluyor. Suite açılıyor…";
+          setTimeout(() => location.replace("./?offline_repaired=1"), 1200);
+        } catch (e) {
+          document.getElementById("s").textContent =
+            "Onarım tamamlanamadı: " + e.message;
+        }
+      })();
+    </script>
+  </body>
+</html>

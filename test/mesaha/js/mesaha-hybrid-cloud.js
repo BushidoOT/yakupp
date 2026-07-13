@@ -6,7 +6,7 @@
 (function(){
   'use strict';
   if(window.MESAHA_SUITE_MODE){
-    var suiteCloudStub={version:'suite-v7',suiteManaged:true,backup:async function(){throw new Error('Yedekler Mesaha Suite üzerinden yönetilir')},list:async function(){return[]},openCloudRestore:function(){location.href='../'},restore:async function(){return false},deleteBackup:async function(){return false}};
+    var suiteCloudStub={version:'suite-v8',suiteManaged:true,backup:async function(){throw new Error('Yedekler Mesaha Suite üzerinden yönetilir')},list:async function(){return[]},openCloudRestore:function(){location.href='../'},restore:async function(){return false},deleteBackup:async function(){return false}};
     window.MESAHA_HYBRID_CLOUD_V501=suiteCloudStub;window.MESAHA_HYBRID_CLOUD_V505=suiteCloudStub;window.MESAHA_HYBRID_CLOUD_V506=suiteCloudStub;window.MESAHA_HYBRID_CLOUD_V508=suiteCloudStub;window.mesahaHybridCloudV501=suiteCloudStub;window.mesahaHybridCloudV505=suiteCloudStub;window.mesahaHybridCloudV506=suiteCloudStub;window.mesahaHybridCloudV508=suiteCloudStub;return;
   }
   if(window.__mesahaHybridCloudV508) return;

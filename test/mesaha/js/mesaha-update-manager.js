@@ -3,8 +3,8 @@
   'use strict';
   if(window.MESAHA_SUITE_MODE){
     function suiteWorker(){return navigator.serviceWorker&&navigator.serviceWorker.getRegistration('../')}
-    async function suiteRepair(){var reg=await navigator.serviceWorker.register('../service-worker.js?v=7',{scope:'../',updateViaCache:'none'});await navigator.serviceWorker.ready;try{(reg.active||navigator.serviceWorker.controller).postMessage({type:'CACHE_ALL'})}catch(e){}return{ok:true,repaired:true,preserved:true,ready:true,build:7,integrity:'suite'}}
-    var suiteApi={apiVersion:547,repair:suiteRepair,clearOldCaches:async function(){return[]},updateAndReload:async function(){location.href='../';return{ok:true,redirecting:true}},executeUpdatePage:suiteRepair,installLatest:suiteRepair,check:async function(){return{remote:{version:'suite-v7',build:7},newer:false,unavailable:!navigator.onLine}},fetchRemote:async function(){return{version:'suite-v7',build:7}},flushData:async function(){},workerStatus:async function(){return{ready:true,build:7,integrity:'suite',criticalCount:99}},verifiedStatus:function(st){return!!(st&&st.ready)}};
+    async function suiteRepair(){var reg=await navigator.serviceWorker.register('../service-worker.js?v=7',{scope:'../',updateViaCache:'none'});await navigator.serviceWorker.ready;try{(reg.active||navigator.serviceWorker.controller).postMessage({type:'CACHE_ALL'})}catch(e){}return{ok:true,repaired:true,preserved:true,ready:true,build:8,integrity:'suite'}}
+    var suiteApi={apiVersion:547,repair:suiteRepair,clearOldCaches:async function(){return[]},updateAndReload:async function(){location.href='../';return{ok:true,redirecting:true}},executeUpdatePage:suiteRepair,installLatest:suiteRepair,check:async function(){return{remote:{version:'suite-v8',build:8},newer:false,unavailable:!navigator.onLine}},fetchRemote:async function(){return{version:'suite-v8',build:8}},flushData:async function(){},workerStatus:async function(){return{ready:true,build:8,integrity:'suite',criticalCount:99}},verifiedStatus:function(st){return!!(st&&st.ready)}};
     window.MesahaUpdateV627=suiteApi;window.MesahaUpdateV637=suiteApi;return;
   }
   var previous=window.MesahaUpdateV627;
