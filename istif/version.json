@@ -1,8 +1,8 @@
 {
-  "version": "0.3.1",
-  "name": "Mesaha İO İstif Alma v0.3.1",
-  "updatedAt": "2026-07-13T19:55:00+03:00",
-  "notes": "Ormancı ekle/çıkar önbellek sorunu düzeltildi; ortak istif kayıtları diğer cihaz ve kullanıcılara senkronize edilir; İstifi Gönder yazısı korundu.",
-  "visibleVersion": "İstif Alma v0.3.1",
-  "build": "v031"
+  "version": "0.3.2",
+  "name": "Mesaha İO İstif Alma v0.3.2",
+  "updatedAt": "2026-07-13T20:05:00+03:00",
+  "notes": "Başka cihazdan gelen istiflerde Drive fotoğrafları uygulama içinden okunur; fotoğraf PDF ve kart önizlemesi uzak Drive dosyalarını da gösterebilir.",
+  "visibleVersion": "İstif Alma v0.3.2",
+  "build": "v032"
 }

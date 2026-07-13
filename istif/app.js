@@ -1,6 +1,6 @@
 'use strict';
 
-const APP_VERSION = '0.3.1';
+const APP_VERSION = '0.3.2';
 const MAX_PHOTO_BYTES = 1024 * 1024;
 const DB_NAME = 'mesaha-istif-prototype';
 const DB_VERSION = 1;
@@ -21,7 +21,7 @@ const SHARED_SESSION_BACKUP_KEY = 'mesaha_supabase_v569_session_backup';
 const SHARED_PANEL_KEY = 'mesaha_panel_user_v316';
 const SHARED_ACCESS_KEY = 'mesaha_google_access_v548';
 const SHARED_ACTIVE_SEFLIK_KEY = 'mesaha_active_seflik_folder_v564';
-const SHARED_CACHE_SETTING_KEY = 'shared-context-v031';
+const SHARED_CACHE_SETTING_KEY = 'shared-context-v032';
 
 const DEFAULT_SETTINGS = {
   seflik: '',
@@ -36,7 +36,7 @@ const DEFAULT_SETTINGS = {
   driveCreatedFolderId: '', // eski sürüm uyumluluğu
   photoMaxBytes: MAX_PHOTO_BYTES,
 };
-const GENERIC_SETTINGS_MIGRATION_KEY = 'mesaha-istif-generic-settings-v031';
+const GENERIC_SETTINGS_MIGRATION_KEY = 'mesaha-istif-generic-settings-v032';
 
 const state = {
   view: 'home',
@@ -57,6 +57,8 @@ const state = {
   customForestersBySeflik: {},
   removedForestersBySeflik: {},
   foresterSearchSeq: 0,
+  remotePhotoCache: {},
+  remotePhotoLoading: new Set(),
   drive: {
     status: 'idle', connected: false, isOwner: false, ownerEmail: '', ownerName: '',
     folderId: '', folderName: '', folderUrl: '', updatedAt: '', error: '',
@@ -971,6 +973,21 @@ function renderRecords() {
     <section id="recordList" class="records">${recordCards(sortedRecords())}</section>`;
 }
 
+function driveFileId(file) {
+  if (typeof file === 'string') return clean(file);
+  return clean(file?.id || file?.fileId || file?.file_id);
+}
+
+function driveFileForRecord(record, index = 0) {
+  const files = Array.isArray(record?.driveFiles) ? record.driveFiles : [];
+  return files[index] || null;
+}
+
+function driveFileCacheKey(file) {
+  const id = driveFileId(file);
+  return id ? `drive:${id}` : '';
+}
+
 function recordThumbHtml(record) {
   const photo = Array.isArray(record.photos) ? record.photos.find((item) => item && item.blob) : null;
   if (photo?.blob) {
@@ -979,6 +996,11 @@ function recordThumbHtml(record) {
       return `<span class="record-thumb"><img src="${src}" alt="${esc(record.istifNo || 'İstif fotoğrafı')}"></span>`;
     } catch {}
   }
+  const firstDrive = driveFileForRecord(record, 0);
+  const cacheKey = driveFileCacheKey(firstDrive);
+  const cached = cacheKey ? state.remotePhotoCache[cacheKey] : '';
+  if (cached) return `<span class="record-thumb"><img src="${cached}" alt="${esc(record.istifNo || 'İstif fotoğrafı')}"></span>`;
+  if (firstDrive) return `<span class="record-thumb default-thumb remote-thumb" data-record-thumb="${esc(record.id)}"><img src="./assets/istif-default.svg" alt="İstif fotoğrafı yükleniyor"></span>`;
   return `<span class="record-thumb default-thumb"><img src="./assets/istif-default.svg" alt="İstif"></span>`;
 }
 
@@ -1163,6 +1185,7 @@ function bindDynamic() {
   app.querySelectorAll('[data-delete-record]').forEach((button) => { button.onclick = () => deleteRecord(button.dataset.deleteRecord); });
   app.querySelectorAll('[data-mark-sent]').forEach((button) => { button.onclick = () => setRecordSent(button.dataset.markSent, true); });
   app.querySelectorAll('[data-undo-sent]').forEach((button) => { button.onclick = () => setRecordSent(button.dataset.undoSent, false); });
+  loadRemoteThumbnails();
 
 }
 
@@ -1972,6 +1995,45 @@ async function photoDataUrl(photo) {
   });
 }
 
+async function drivePhotoDataUrl(record, index = 0) {
+  const localPhoto = Array.isArray(record.photos) ? record.photos[index] : null;
+  if (localPhoto?.blob) return photoDataUrl(localPhoto);
+  const file = driveFileForRecord(record, index);
+  const fileId = driveFileId(file);
+  if (!fileId) return '';
+  const cacheKey = driveFileCacheKey(file);
+  if (cacheKey && state.remotePhotoCache[cacheKey]) return state.remotePhotoCache[cacheKey];
+  const folder = effectiveRecordSeflik(record);
+  const out = await bridgeCall('photo_data', {
+    seflikKey: folder.seflikKey,
+    seflik: folder.seflik,
+    fileId,
+    mimeType: file?.mimeType || file?.mime_type || 'image/jpeg',
+  });
+  const dataUrl = clean(out.dataUrl || out.data_url);
+  if (dataUrl && cacheKey) state.remotePhotoCache[cacheKey] = dataUrl;
+  return dataUrl;
+}
+
+async function loadRemoteThumbnails() {
+  const nodes = Array.from(app.querySelectorAll('[data-record-thumb]'));
+  if (!nodes.length || navigator.onLine === false || !readSharedSession()) return;
+  for (const node of nodes.slice(0, 12)) {
+    const record = state.records.find((item) => item.id === node.dataset.recordThumb);
+    if (!record) continue;
+    const file = driveFileForRecord(record, 0);
+    const key = driveFileCacheKey(file);
+    if (!key || state.remotePhotoCache[key] || state.remotePhotoLoading.has(key)) continue;
+    state.remotePhotoLoading.add(key);
+    drivePhotoDataUrl(record, 0).then((dataUrl) => {
+      if (dataUrl) {
+        const img = node.querySelector('img');
+        if (img) img.src = dataUrl;
+      }
+    }).catch(() => {}).finally(() => state.remotePhotoLoading.delete(key));
+  }
+}
+
 function documentTypeForForm(record) {
   return clean(record?.type).replace(/\s+Odun$/i, '');
 }
@@ -2017,7 +2079,7 @@ async function buildPrintHtml() {
   }
   if (state.documentTab === 'photos') {
     for (const record of rows) {
-      const urls = await Promise.all((record.photos || []).slice(0, 4).map(photoDataUrl));
+      const urls = await Promise.all([0, 1, 2, 3].map((index) => drivePhotoDataUrl(record, index).catch(() => '')));
       const seflikName = esc(String(record.seflik || displaySeflik()).replace(/ Şefliği$/i, ''));
       html += `<div class="print-page photo-document-page"><div class="photo-print-header"><div class="photo-print-meta"><div><b>Şeflik Adı:</b> ${seflikName}</div><div><b>İstif No:</b> ${esc(record.istifNo)} ${esc(documentTypeForForm(record))}</div><div><b>Ster:</b> ${esc(record.ster)}</div></div></div><div class="photo-print-collage">${[0, 1, 2, 3].map((index) => urls[index] ? `<figure><img src="${urls[index]}" alt="İstif fotoğrafı ${index + 1}"></figure>` : `<figure class="print-placeholder"></figure>`).join('')}</div><div class="print-footer">İstif Alma • ${trDate(record.date)} • Bölme ${esc(recordBolme(record))}</div></div>`;
     }
