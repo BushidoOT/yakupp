@@ -15,6 +15,15 @@
   <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
+  <div id="bootOverlay" class="boot-overlay show" role="status" aria-live="polite">
+    <section class="boot-card">
+      <img src="../assets/icon-192.png" onerror="this.onerror=null;this.src='./assets/mesaha-fallback.svg'" alt="">
+      <div class="boot-spinner" aria-hidden="true"></div>
+      <h1 id="bootTitle">Yükleniyor…</h1>
+      <p id="bootText">Şeflikler, ormancılar, istifler ve offline kayıtlar hazırlanıyor.</p>
+      <small>Bağlantı sağlanamazsa offline devam edilir.</small>
+    </section>
+  </div>
   <div id="app" class="app-shell" aria-live="polite"></div>
   <input id="photoPicker" type="file" accept="image/*" multiple hidden>
 

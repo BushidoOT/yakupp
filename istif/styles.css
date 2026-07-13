@@ -172,6 +172,16 @@ img{max-width:100%;display:block}
 .photo-record{display:grid;grid-template-columns:48px minmax(0,1fr) auto;align-items:center;gap:11px;padding:13px}
 .photo-record>div:nth-child(2){min-width:0;display:grid;gap:4px}.photo-record b{font-size:13.5px;overflow-wrap:anywhere}.photo-record span{font-size:12px;color:var(--muted)}
 
+.boot-overlay{position:fixed;z-index:300;inset:0;display:grid;place-items:center;background:linear-gradient(180deg,#f5faf6,#eaf3ec);padding:22px;opacity:0;pointer-events:none;transition:opacity .18s ease}
+.boot-overlay.show{opacity:1;pointer-events:auto}
+.boot-card{width:min(420px,100%);border:1px solid var(--line);border-radius:28px;background:rgba(255,255,255,.96);box-shadow:0 22px 70px rgba(14,67,40,.16);padding:28px 22px;text-align:center;color:var(--green-dark)}
+.boot-card img{width:76px;height:76px;border-radius:24px;object-fit:cover;margin-bottom:12px}
+.boot-card h1{font-size:24px;margin:8px 0 7px;color:var(--green-dark)}
+.boot-card p{margin:0 auto;color:var(--muted);font-size:14px;line-height:1.5;max-width:300px}
+.boot-card small{display:block;margin-top:12px;color:#789083;font-size:12px}
+.boot-spinner{width:34px;height:34px;border-radius:50%;border:3px solid #dcece2;border-top-color:var(--green);margin:0 auto;animation:bootSpin .8s linear infinite}
+@keyframes bootSpin{to{transform:rotate(360deg)}}
+
 .account-card{display:grid;grid-template-columns:54px minmax(0,1fr) 12px;gap:12px;align-items:center;padding:14px;margin-bottom:11px}
 .account-avatar{width:52px;height:52px;border-radius:50%;background:var(--green-soft);color:var(--green);display:grid;place-items:center;overflow:hidden;border:1px solid #d9e9de}
 .account-avatar.large{width:68px;height:68px;margin:0 auto 10px}.account-avatar img{width:100%;height:100%;object-fit:cover}
@@ -187,11 +197,15 @@ img{max-width:100%;display:block}
 .settings-card input,.settings-card select{width:100%;height:49px;border:1px solid var(--line);border-radius:14px;padding:0 13px;background:#fff;color:var(--text);outline:0}.settings-card input:focus{border-color:#80b596;box-shadow:0 0 0 3px rgba(18,104,63,.08)}
 .settings-hint{font-size:12px;color:var(--muted);line-height:1.5;margin:10px 0 14px}
 
-.bottom-nav{position:fixed;z-index:60;left:50%;bottom:0;transform:translateX(-50%);width:min(100%,560px);height:calc(77px + var(--safe-bottom));padding:7px 13px var(--safe-bottom);background:rgba(255,255,255,.96);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(4,1fr);box-shadow:0 -10px 32px rgba(9,46,28,.08);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
-.nav-btn{position:relative;border:0;background:transparent;color:#7a8680;border-radius:15px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:11.5px;font-weight:610;min-width:0;padding:2px}
+.bottom-nav{position:fixed;z-index:60;left:50%;bottom:0;transform:translateX(-50%);width:min(100%,560px);height:calc(82px + var(--safe-bottom));padding:7px 10px var(--safe-bottom);background:rgba(255,255,255,.96);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,1fr);align-items:center;box-shadow:0 -10px 32px rgba(9,46,28,.08);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+.nav-btn{position:relative;border:0;background:transparent;color:#7a8680;border-radius:15px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:11.2px;font-weight:610;min-width:0;padding:2px}
 .nav-btn .nicon{display:grid;place-items:center}
 .nav-btn.active{color:var(--green);font-weight:760}
-.nav-btn.active:before{content:"";position:absolute;top:-7px;width:43px;height:4px;border-radius:0 0 6px 6px;background:var(--green)}
+.nav-btn.active:before{content:"";position:absolute;top:-7px;width:40px;height:4px;border-radius:0 0 6px 6px;background:var(--green)}
+.nav-create{gap:3px;color:var(--green);font-weight:780}
+.nav-create:before{display:none!important}
+.create-circle{width:58px;height:58px;border-radius:22px;background:linear-gradient(180deg,var(--green),#0a5a35);color:#fff;display:grid;place-items:center;margin-top:-24px;box-shadow:0 14px 30px rgba(18,104,63,.28);border:4px solid rgba(255,255,255,.96)}
+.nav-create.active .create-circle{box-shadow:0 0 0 5px rgba(18,104,63,.12),0 14px 30px rgba(18,104,63,.32)}
 
 .empty{padding:30px 18px;text-align:center;color:var(--muted)}.empty h2{color:var(--green);font-size:22px}
 .modal{position:fixed;z-index:100;inset:0}.modal-backdrop{position:absolute;inset:0;background:rgba(7,20,12,.58);backdrop-filter:blur(3px)}
@@ -212,18 +226,19 @@ img{max-width:100%;display:block}
 body.is-printing{background:#fff!important;padding:0!important}
 body.is-printing .app-shell,body.is-printing .bottom-nav,body.is-printing .modal,body.is-printing .toast{display:none!important}
 body.is-printing .print-area{display:block!important;position:relative;z-index:99999;width:100%;min-height:100dvh;background:#fff;color:#111;font-family:Arial,sans-serif;padding:0}
-.print-area .print-page{width:210mm;min-height:297mm;margin:0 auto;background:#fff;box-sizing:border-box;page-break-after:always;padding:14mm;color:#111;font-family:Arial,sans-serif}
+.print-area .print-page{width:210mm;min-height:297mm;margin:0 auto;background:#fff;box-sizing:border-box;page-break-after:always;break-after:page;padding:14mm;color:#111;font-family:Arial,sans-serif;overflow:hidden}
 .print-area .print-page:last-child{page-break-after:auto}
 .print-area .print-page h1{text-align:center;font-size:18pt;margin:0 0 5mm;color:#111;line-height:1.2}
 .print-area .print-page h2{font-size:14pt;margin:0 0 4mm;color:#111}
 .print-area .print-table{width:100%;border-collapse:collapse;font-size:10pt;color:#111}
 .print-area .print-table th,.print-area .print-table td{border:1px solid #333;padding:2.5mm;text-align:left;vertical-align:top}
 .print-area .print-footer{margin-top:4mm;font-size:9pt;color:#555;text-align:right}
-.print-area .photo-document-page{padding:10mm 12mm}
-.print-area .photo-print-header{display:flex;justify-content:flex-start;align-items:flex-start;margin:0 0 5mm}
-.print-area .photo-print-meta{font-size:12pt;line-height:1.45;border:1px solid #111;padding:4mm 6mm;min-width:92mm;text-align:left;color:#111}
+.print-area .photo-document-page .print-footer{position:absolute;right:12mm;bottom:4mm;margin:0;font-size:8pt;color:#666}
+.print-area .photo-document-page{height:297mm;min-height:0;padding:9mm 12mm 9mm;display:block;position:relative;overflow:hidden}
+.print-area .photo-print-header{display:block;margin:0 0 4mm}
+.print-area .photo-print-meta{font-size:11pt;line-height:1.38;padding:0;text-align:left;color:#111}
 .print-area .photo-print-meta div{margin:1mm 0}
-.print-area .photo-print-collage{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:3mm;height:235mm}
+.print-area .photo-print-collage{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:3mm;height:250mm}
 .print-area .photo-print-collage figure{margin:0;border:1px solid #111;position:relative;overflow:hidden;background:#f8f8f8;display:block}
 .print-area .photo-print-collage img{width:100%;height:100%;object-fit:cover;display:block}
 .print-area .photo-print-collage figcaption{position:absolute;left:2mm;bottom:2mm;background:rgba(255,255,255,.88);font-size:9pt;padding:1mm 2mm;color:#111}
@@ -255,10 +270,11 @@ body.is-printing .print-area{display:block!important;position:relative;z-index:9
   html,body{width:210mm;min-height:297mm;background:#fff!important;padding:0!important;margin:0!important;overflow:visible!important}
   body.is-printing .app-shell,body.is-printing .bottom-nav,body.is-printing .modal,body.is-printing .toast,.app-shell,.bottom-nav,.modal,.toast{display:none!important}
   .print-area{display:block!important;position:static!important;width:210mm!important;min-height:297mm!important;background:#fff!important;padding:0!important;color:#111!important;font-family:Arial,sans-serif!important}
-  .print-area .print-page{width:210mm!important;min-height:297mm!important;margin:0!important;box-shadow:none!important;page-break-after:always;break-after:page;padding:14mm!important}
+  .print-area .print-page{width:210mm!important;min-height:297mm!important;margin:0!important;box-shadow:none!important;page-break-after:always;break-after:page;padding:14mm!important;overflow:hidden!important}
   .print-area .print-page:last-child{page-break-after:auto;break-after:auto}
-  .print-area .photo-document-page{padding:10mm 12mm!important}
-  .print-area .photo-print-collage{height:235mm!important}
+  .print-area .photo-document-page{height:297mm!important;min-height:0!important;padding:9mm 12mm 9mm!important;overflow:hidden!important;position:relative!important}
+  .print-area .photo-print-collage{height:250mm!important}
+  .print-area .photo-document-page .print-footer{position:absolute!important;right:12mm!important;bottom:4mm!important;margin:0!important}
 }
 
 /* v0.1.3 — Ormancılar ve ortak Şeflik Drive alanı */

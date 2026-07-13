@@ -1,6 +1,6 @@
 'use strict';
 
-const APP_VERSION = '0.2.1';
+const APP_VERSION = '0.2.2';
 const MAX_PHOTO_BYTES = 1024 * 1024;
 const DB_NAME = 'mesaha-istif-prototype';
 const DB_VERSION = 1;
@@ -71,6 +71,9 @@ const cameraModal = document.getElementById('cameraModal');
 const cameraVideo = document.getElementById('cameraVideo');
 const dialogModal = document.getElementById('dialogModal');
 const dialogContent = document.getElementById('dialogContent');
+const bootOverlay = document.getElementById('bootOverlay');
+const bootTitle = document.getElementById('bootTitle');
+const bootText = document.getElementById('bootText');
 let dbPromise = null;
 
 function icon(name, size = 24, extraClass = '') {
@@ -141,6 +144,24 @@ function jsonWrite(key, value) {
   try {
     localStorage.setItem(key, JSON.stringify(value));
   } catch {}
+}
+
+function wait(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function showBoot(title = 'Yükleniyor…', text = 'Şeflik, ormancılar, istifler ve offline kayıtlar hazırlanıyor.') {
+  if (!bootOverlay) return;
+  if (bootTitle) bootTitle.textContent = title;
+  if (bootText) bootText.textContent = text;
+  bootOverlay.hidden = false;
+  bootOverlay.classList.add('show');
+}
+
+function hideBoot() {
+  if (!bootOverlay) return;
+  bootOverlay.classList.remove('show');
+  setTimeout(() => { bootOverlay.hidden = true; }, 180);
 }
 
 function openDB() {
@@ -618,16 +639,22 @@ function head(title, subtitle = '', { back = false, action = '' } = {}) {
 }
 
 function nav(active) {
-  const items = [
+  const leftItems = [
     ['home', 'home', 'Ana Sayfa'],
     ['records', 'logs', 'İstifler'],
+  ];
+  const rightItems = [
     ['documents', 'doc', 'Evraklar'],
     ['settings', 'gear', 'Ayarlar'],
   ];
-  return `<nav class="bottom-nav">${items.map(([view, iconName, label]) => `
+  const normalButton = ([view, iconName, label]) => `
     <button class="nav-btn ${active === view ? 'active' : ''}" data-view="${view}">
       <span class="nicon">${icon(iconName, 25)}</span><span>${label}</span>
-    </button>`).join('')}</nav>`;
+    </button>`;
+  return `<nav class="bottom-nav has-create">${leftItems.map(normalButton).join('')}
+    <button class="nav-btn nav-create ${active === 'new' ? 'active' : ''}" data-view="new" aria-label="Yeni İstif">
+      <span class="create-circle">${icon('plus', 30)}</span><span>Yeni</span>
+    </button>${rightItems.map(normalButton).join('')}</nav>`;
 }
 
 function metric(iconName, number, label) {
@@ -652,7 +679,7 @@ function render() {
     settings: renderSettings,
     photos: renderPhotos,
   };
-  app.innerHTML = `<main class="view">${(views[state.view] || renderHome)()}</main>${nav(state.view === 'new' ? 'records' : state.view === 'templates' ? 'documents' : state.view)}`;
+  app.innerHTML = `<main class="view">${(views[state.view] || renderHome)()}</main>${nav(state.view === 'templates' ? 'documents' : state.view)}`;
   bindDynamic();
 }
 
@@ -1662,7 +1689,7 @@ async function previewDocuments() {
 }
 
 function printDocumentCss() {
-  return `@page{size:A4;margin:0}*{box-sizing:border-box}body{margin:0;background:#fff;color:#111;font-family:Arial,Helvetica,sans-serif}.print-toolbar{position:sticky;top:0;z-index:10;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 14px;background:#0f5f39;color:#fff}.print-toolbar button{border:0;border-radius:10px;background:#fff;color:#0f5f39;font-weight:800;padding:10px 14px}.print-page{width:210mm;min-height:297mm;margin:0 auto;background:#fff;page-break-after:always;padding:14mm;color:#111}.print-page:last-child{page-break-after:auto}.print-page h1{text-align:center;font-size:18pt;margin:0 0 5mm;color:#111}.print-page h2{font-size:14pt;margin:0 0 4mm;color:#111}.print-table{width:100%;border-collapse:collapse;font-size:10pt;color:#111}.print-table th,.print-table td{border:1px solid #333;padding:2.5mm;text-align:left;vertical-align:top}.photo-document-page{padding:10mm 12mm;display:flex;flex-direction:column}.photo-print-header{display:flex;justify-content:flex-start;align-items:flex-start;margin:0 0 5mm}.photo-print-meta{font-size:12pt;line-height:1.45;padding:0;min-width:92mm;text-align:left;color:#111}.photo-print-meta div{margin:1mm 0}.photo-print-collage{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:3mm;flex:1;min-height:235mm}.photo-print-collage figure{margin:0;border:1px solid #111;position:relative;overflow:hidden;background:#f8f8f8;display:block}.photo-print-collage img{width:100%;height:100%;object-fit:cover;display:block}.photo-print-collage .print-placeholder{height:auto;width:auto;display:block;background:#fff}.print-placeholder{display:block;color:#666;border:1px solid #333}.print-footer{margin-top:4mm;font-size:9pt;color:#555;text-align:right}.empty-print{padding:24px;font-size:16px}@media print{.print-toolbar{display:none!important}.print-page{margin:0;box-shadow:none}body{background:#fff}}`;
+  return `@page{size:A4;margin:0}*{box-sizing:border-box}html,body{margin:0;background:#fff;color:#111;font-family:Arial,Helvetica,sans-serif}.print-toolbar{position:sticky;top:0;z-index:10;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 14px;background:#0f5f39;color:#fff}.print-toolbar button{border:0;border-radius:10px;background:#fff;color:#0f5f39;font-weight:800;padding:10px 14px}.print-page{width:210mm;min-height:297mm;margin:0 auto;background:#fff;page-break-after:always;break-after:page;padding:14mm;color:#111;overflow:hidden}.print-page:last-child{page-break-after:auto;break-after:auto}.print-page h1{text-align:center;font-size:18pt;margin:0 0 5mm;color:#111}.print-page h2{font-size:14pt;margin:0 0 4mm;color:#111}.print-table{width:100%;border-collapse:collapse;font-size:10pt;color:#111}.print-table th,.print-table td{border:1px solid #333;padding:2.5mm;text-align:left;vertical-align:top}.photo-document-page{height:297mm;min-height:0;padding:9mm 12mm 9mm;display:block;position:relative;overflow:hidden}.photo-print-header{display:block;margin:0 0 4mm}.photo-print-meta{font-size:11pt;line-height:1.38;padding:0;text-align:left;color:#111}.photo-print-meta div{margin:1mm 0}.photo-print-collage{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:3mm;height:250mm}.photo-print-collage figure{margin:0;border:1px solid #111;position:relative;overflow:hidden;background:#f8f8f8;display:block}.photo-print-collage img{width:100%;height:100%;object-fit:cover;display:block}.photo-print-collage .print-placeholder{height:auto;width:auto;display:block;background:#fff}.print-placeholder{display:block;color:#666;border:1px solid #333}.print-footer{margin-top:4mm;font-size:9pt;color:#555;text-align:right}.photo-document-page .print-footer{position:absolute;right:12mm;bottom:4mm;margin:0;font-size:8pt;color:#666}.empty-print{padding:24px;font-size:16px}@media print{.print-toolbar{display:none!important}.print-page{margin:0;box-shadow:none}body{background:#fff}}`;
 }
 
 function buildPrintDocument(innerHtml) {
@@ -1747,12 +1774,27 @@ window.addEventListener('afterprint', () => {
 
 (async function init() {
   try {
+    showBoot('Yükleniyor…', 'Şeflikler, ormancılar, istifler ve offline kayıtlar hazırlanıyor.');
     await loadData();
     await handleDriveOAuthCallback();
     render();
     if ('serviceWorker' in navigator) navigator.serviceWorker.register('./service-worker.js').catch(() => {});
-    if (navigator.onLine) syncSharedContext();
+    if (navigator.onLine && readSharedSession()) {
+      showBoot('Yükleniyor…', 'Mesaha İO hesabı, şeflikler, ormancılar ve Drive durumu kontrol ediliyor.');
+      const startupSync = Promise.allSettled([
+        syncSharedContext({ manual: false }),
+        refreshDriveStatus({ silent: true }),
+      ]);
+      await Promise.race([startupSync, wait(5000)]);
+    } else {
+      hydrateLocalSharedIdentity();
+      refreshCurrentMembers();
+      if (!navigator.onLine) await wait(650);
+    }
+    hideBoot();
+    render();
   } catch (error) {
+    hideBoot();
     app.innerHTML = `<div class="empty"><h2>Uygulama açılamadı</h2><p>${esc(error.message)}</p></div>`;
   }
 }());
