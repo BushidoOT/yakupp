@@ -1,6 +1,6 @@
 'use strict';
 
-const APP_VERSION = '0.3.0';
+const APP_VERSION = '0.3.1';
 const MAX_PHOTO_BYTES = 1024 * 1024;
 const DB_NAME = 'mesaha-istif-prototype';
 const DB_VERSION = 1;
@@ -21,7 +21,7 @@ const SHARED_SESSION_BACKUP_KEY = 'mesaha_supabase_v569_session_backup';
 const SHARED_PANEL_KEY = 'mesaha_panel_user_v316';
 const SHARED_ACCESS_KEY = 'mesaha_google_access_v548';
 const SHARED_ACTIVE_SEFLIK_KEY = 'mesaha_active_seflik_folder_v564';
-const SHARED_CACHE_SETTING_KEY = 'shared-context-v030';
+const SHARED_CACHE_SETTING_KEY = 'shared-context-v031';
 
 const DEFAULT_SETTINGS = {
   seflik: '',
@@ -36,7 +36,7 @@ const DEFAULT_SETTINGS = {
   driveCreatedFolderId: '', // eski sürüm uyumluluğu
   photoMaxBytes: MAX_PHOTO_BYTES,
 };
-const GENERIC_SETTINGS_MIGRATION_KEY = 'mesaha-istif-generic-settings-v028';
+const GENERIC_SETTINGS_MIGRATION_KEY = 'mesaha-istif-generic-settings-v031';
 
 const state = {
   view: 'home',
@@ -55,6 +55,7 @@ const state = {
   ormancilar: [],
   membersBySeflik: {},
   customForestersBySeflik: {},
+  removedForestersBySeflik: {},
   foresterSearchSeq: 0,
   drive: {
     status: 'idle', connected: false, isOwner: false, ownerEmail: '', ownerName: '',
@@ -227,6 +228,7 @@ async function saveSharedCache() {
       seflikler: state.seflikler,
       membersBySeflik: state.membersBySeflik,
       customForestersBySeflik: state.customForestersBySeflik,
+      removedForestersBySeflik: state.removedForestersBySeflik,
       drive: state.drive,
       auth: state.auth,
       updatedAt: new Date().toISOString(),
@@ -244,6 +246,7 @@ async function loadData() {
     state.seflikler = Array.isArray(shared.seflikler) ? shared.seflikler : [];
     state.membersBySeflik = shared.membersBySeflik && typeof shared.membersBySeflik === 'object' ? shared.membersBySeflik : {};
     state.customForestersBySeflik = shared.customForestersBySeflik && typeof shared.customForestersBySeflik === 'object' ? shared.customForestersBySeflik : {};
+    state.removedForestersBySeflik = shared.removedForestersBySeflik && typeof shared.removedForestersBySeflik === 'object' ? shared.removedForestersBySeflik : {};
     state.drive = { ...state.drive, ...(shared.drive || {}), status: shared.drive?.connected ? 'cached' : 'idle' };
     state.auth = { ...state.auth, ...(shared.auth || {}), status: 'cached' };
   }
@@ -515,6 +518,52 @@ function foresterKey(item) {
   return item?.userId ? `uid:${item.userId}` : item?.email ? `email:${clean(item.email).toLocaleLowerCase('tr-TR')}` : `name:${stableKey(item?.name)}`;
 }
 
+function removedForesterKeysForAliases(aliases = currentSeflikAliasKeys()) {
+  const keys = new Set();
+  aliases.forEach((alias) => {
+    const list = state.removedForestersBySeflik && Array.isArray(state.removedForestersBySeflik[alias]) ? state.removedForestersBySeflik[alias] : [];
+    list.forEach((key) => { if (key) keys.add(key); });
+  });
+  return keys;
+}
+
+function rememberRemovedForester(member) {
+  const key = foresterKey(member);
+  if (!key) return;
+  currentSeflikAliasKeys().forEach((alias) => {
+    const list = Array.isArray(state.removedForestersBySeflik[alias]) ? state.removedForestersBySeflik[alias] : [];
+    if (!list.includes(key)) list.push(key);
+    state.removedForestersBySeflik[alias] = list.slice(-100);
+  });
+}
+
+function forgetRemovedForester(user) {
+  const key = foresterKey({
+    userId: clean(user?.userId || user?.user_id),
+    email: clean(user?.email),
+    name: clean(user?.name),
+  });
+  if (!key) return;
+  Object.keys(state.removedForestersBySeflik || {}).forEach((alias) => {
+    const list = Array.isArray(state.removedForestersBySeflik[alias]) ? state.removedForestersBySeflik[alias] : [];
+    state.removedForestersBySeflik[alias] = list.filter((item) => item !== key);
+  });
+}
+
+function removeForesterLocally(member) {
+  const key = foresterKey(member);
+  if (!key) return;
+  const removeFromMap = (map) => {
+    Object.keys(map || {}).forEach((alias) => {
+      if (!Array.isArray(map[alias])) return;
+      map[alias] = map[alias].filter((item) => foresterKey(item?.custom ? normalizeForester(item) : normalizeMember(item)) !== key);
+    });
+  };
+  removeFromMap(state.membersBySeflik);
+  removeFromMap(state.customForestersBySeflik);
+  state.ormancilar = state.ormancilar.filter((item) => foresterKey(item) !== key);
+}
+
 function mirrorMembersByAliases(target, folder, list) {
   seflikAliasKeys(folder.name, folder.key).forEach((alias) => {
     if (!Array.isArray(target[alias]) || !target[alias].length) target[alias] = list;
@@ -535,6 +584,7 @@ function refreshCurrentMembers() {
     const normalized = item?.custom ? normalizeForester(item) : normalizeMember(item);
     if (!normalized?.name) return;
     const k = foresterKey(normalized);
+    if (removedForesterKeysForAliases(aliases).has(k) && !normalized.isSelf) return;
     if (!map.has(k) || normalized.custom) map.set(k, normalized);
   });
   if (state.auth.name) {
@@ -630,6 +680,7 @@ async function syncSharedContext({ manual = false } = {}) {
     refreshCurrentMembers();
     await saveSettings();
     await refreshDriveStatus({ silent: true });
+    await loadRemoteRecords({ silent: true });
     await saveSharedCache();
     if (manual) toast('Şeflikler ve Mesaha İO kullanıcıları güncellendi.', 'good');
   } catch (error) {
@@ -895,9 +946,16 @@ async function setRecordSent(recordId, sent) {
   record.isSent = !!sent;
   record.sentAt = sent ? new Date().toISOString() : '';
   record.sentBy = sent ? (state.auth.name || state.auth.email || '') : '';
-  if (!record.isDemo && record.syncStatus === 'synced') record.syncStatus = 'local';
+  if (!record.isDemo) record.syncStatus = record.driveFiles?.length ? 'drive_synced' : 'local';
   record.updatedAt = new Date().toISOString();
   await idbPut('records', structuredClone(record));
+  if (navigator.onLine && readSharedSession()) {
+    try {
+      await supabaseUpsertRecord(record);
+      record.syncStatus = 'synced';
+      await idbPut('records', structuredClone(record));
+    } catch {}
+  }
   toast(sent ? 'İstif gönderildi olarak işaretlendi.' : 'Gönderildi işareti geri alındı.', 'good');
   render();
 }
@@ -1548,20 +1606,12 @@ async function addForesterUser(user) {
   refreshCurrentMembers();
   const userKey = user.userId ? `uid:${user.userId}` : (user.email ? `email:${clean(user.email).toLocaleLowerCase('tr-TR')}` : `name:${stableKey(name)}`);
   const existing = state.ormancilar.find((item) => foresterKey(item) === userKey || stableKey(item.name) === stableKey(name));
-  if (existing) {
-    state.settings.ormanci = existing.name;
-    if (state.draft) state.draft.ormanci = existing.name;
-    await saveSettings();
-    await saveSharedCache();
-    closeDialog();
-    render();
-    toast('Bu kullanıcı zaten ekliydi; seçili ormancı yapıldı.', 'good');
-    return;
-  }
+  forgetRemovedForester(user);
   try {
     const out = await bridgeCall('forester_add', { seflikKey: key, seflik: state.settings.seflik, userId: user.userId, email: user.email, name });
     const saved = normalizeForester(out.forester || user);
-    const list = Array.isArray(state.customForestersBySeflik[key]) ? state.customForestersBySeflik[key].filter((item) => stableKey(item.name) !== stableKey(name)) : [];
+    const savedKey = foresterKey(saved || user);
+    const list = Array.isArray(state.customForestersBySeflik[key]) ? state.customForestersBySeflik[key].filter((item) => foresterKey(normalizeForester(item)) !== savedKey && stableKey(item.name) !== stableKey(name)) : [];
     if (saved) list.push({ ...saved, custom: true, pending: false });
     state.customForestersBySeflik[key] = list;
     state.settings.ormanci = saved?.name || name;
@@ -1595,7 +1645,10 @@ async function removeForesterUser(member) {
       name,
       custom: member.custom === true,
     });
-    await syncSharedContext({ manual: false });
+    rememberRemovedForester(member);
+    removeForesterLocally(member);
+    try { await syncSharedContext({ manual: false }); } catch {}
+    removeForesterLocally(member);
     if (state.settings.ormanci === member.name) state.settings.ormanci = '';
     if (state.draft?.ormanci === member.name) state.draft.ormanci = '';
     await saveSettings();
@@ -1710,6 +1763,80 @@ async function uploadPhotoToDrive(record, photo, index) {
   });
 }
 
+
+function normalizeRemoteRecord(row) {
+  const id = clean(row.id || row.record_id);
+  if (!id) return null;
+  const driveFiles = Array.isArray(row.drive_files) ? row.drive_files : (Array.isArray(row.driveFiles) ? row.driveFiles : []);
+  return {
+    id,
+    userId: clean(row.user_id || row.userId),
+    seflikKey: clean(row.seflik_key || row.seflikKey),
+    seflik: clean(row.seflik || row.folder_seflik || state.settings.seflik),
+    ormanci: clean(row.ormanci || row.forester || row.forester_name),
+    date: clean(row.record_date || row.date || today()),
+    bolme: clean(row.bolme_no || row.bolme || row.bolmeNo),
+    istifNo: clean(row.istif_no || row.istifNo),
+    type: clean(row.wood_type || row.type || 'İbreli Kabuklu Kağıtlık Odun'),
+    ster: clean(row.ster || row.miktar || row.quantity),
+    coordinates: clean(row.coordinates || row.coordinate || row.kordinat),
+    mevki: clean(row.mevki || row.location_note),
+    description: clean(row.description || row.aciklama),
+    barcode: clean(row.barcode_no || row.barcode),
+    photos: [],
+    photoCount: Number(row.photo_count || driveFiles.length || 0) || 0,
+    driveFolderId: clean(row.drive_folder_id || row.driveFolderId),
+    driveFiles,
+    syncStatus: 'synced',
+    isSent: row.is_sent === true || row.isSent === true,
+    sentAt: clean(row.sent_at || row.sentAt),
+    sentBy: clean(row.sent_by || row.sentBy),
+    createdAt: clean(row.created_at || row.createdAt || new Date().toISOString()),
+    updatedAt: clean(row.updated_at || row.updatedAt || ''),
+    remoteOnly: true,
+  };
+}
+
+async function mergeRemoteRecords(remoteRows = []) {
+  const remote = remoteRows.map(normalizeRemoteRecord).filter(Boolean);
+  if (!remote.length) return 0;
+  const local = await idbGetAll('records');
+  const localById = new Map(local.map((record) => [record.id, record]));
+  let changed = 0;
+  for (const remoteRecord of remote) {
+    const localRecord = localById.get(remoteRecord.id);
+    const localPending = localRecord && !localRecord.isDemo && localRecord.syncStatus && localRecord.syncStatus !== 'synced';
+    if (localPending) continue;
+    const merged = {
+      ...(localRecord || {}),
+      ...remoteRecord,
+      photos: Array.isArray(localRecord?.photos) && localRecord.photos.length ? localRecord.photos : [],
+      photoCount: Math.max(Number(remoteRecord.photoCount || 0), Number(localRecord?.photoCount || 0), Array.isArray(localRecord?.photos) ? localRecord.photos.length : 0),
+      driveFiles: Array.isArray(remoteRecord.driveFiles) && remoteRecord.driveFiles.length ? remoteRecord.driveFiles : (localRecord?.driveFiles || []),
+      syncStatus: 'synced',
+      remoteOnly: !localRecord || !(Array.isArray(localRecord.photos) && localRecord.photos.length),
+    };
+    await idbPut('records', merged);
+    localById.set(merged.id, merged);
+    changed += 1;
+  }
+  state.records = await idbGetAll('records');
+  return changed;
+}
+
+async function loadRemoteRecords({ silent = true } = {}) {
+  if (navigator.onLine === false || !readSharedSession() || !state.settings.seflik) return 0;
+  try {
+    const out = await bridgeCall('record_list', { seflikKey: state.settings.seflikKey, seflik: state.settings.seflik });
+    const count = await mergeRemoteRecords(Array.isArray(out.records) ? out.records : []);
+    if (!silent && count) toast(`${count} ortak istif kaydı güncellendi.`, 'good');
+    return count;
+  } catch (error) {
+    if (!silent) toast(`Ortak istifler alınamadı: ${clean(error?.message || error)}`, 'bad');
+    return 0;
+  }
+}
+
 async function supabaseUpsertRecord(record) {
   const session = await ensureSharedSession();
   const body = {
@@ -1758,7 +1885,9 @@ async function syncAll() {
   if (state.syncing) return;
   const pending = state.records.filter((record) => !record.isDemo && record.syncStatus !== 'synced');
   if (!pending.length) {
-    toast('Tüm kayıtlar senkronize.', 'good');
+    const pulled = await loadRemoteRecords({ silent: true });
+    render();
+    toast(pulled ? `${pulled} ortak kayıt güncellendi.` : 'Tüm kayıtlar senkronize.', 'good');
     return;
   }
   if (!navigator.onLine) {
@@ -1816,7 +1945,8 @@ async function syncAll() {
       document.getElementById('syncBar').style.width = `${(completed / pending.length) * 100}%`;
     }
     state.records = await idbGetAll('records');
-    document.getElementById('syncText').textContent = 'Fotoğraflar Drive’a, kayıt bilgileri Supabase’e yüklendi.';
+    await loadRemoteRecords({ silent: true });
+    document.getElementById('syncText').textContent = 'Fotoğraflar Drive’a, kayıt bilgileri Supabase’e yüklendi ve ortak kayıtlar güncellendi.';
     document.getElementById('syncBar').style.width = '100%';
     setTimeout(() => { closeDialog(); render(); toast('Senkronizasyon tamamlandı.', 'good'); }, 1100);
   } catch (error) {

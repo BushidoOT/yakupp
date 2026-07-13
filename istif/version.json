@@ -1,8 +1,8 @@
 {
-  "version": "0.3.0",
-  "name": "Mesaha İO İstif Alma v0.3.0",
-  "updatedAt": "2026-07-13T19:05:00+03:00",
-  "notes": "Koordinat tutanağı başlığı ve tarihi düzeltildi; evraklar bölme bazında sınırlandı; odun türü renkleri ve gönderildi/geri al durumu eklendi",
-  "visibleVersion": "İstif Alma v0.3.0",
-  "build": "v030"
+  "version": "0.3.1",
+  "name": "Mesaha İO İstif Alma v0.3.1",
+  "updatedAt": "2026-07-13T19:55:00+03:00",
+  "notes": "Ormancı ekle/çıkar önbellek sorunu düzeltildi; ortak istif kayıtları diğer cihaz ve kullanıcılara senkronize edilir; İstifi Gönder yazısı korundu.",
+  "visibleVersion": "İstif Alma v0.3.1",
+  "build": "v031"
 }
