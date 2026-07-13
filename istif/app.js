@@ -1,6 +1,6 @@
 'use strict';
 
-const APP_VERSION = '0.1.6';
+const APP_VERSION = '0.1.7';
 const MAX_PHOTO_BYTES = 1024 * 1024;
 const DB_NAME = 'mesaha-istif-prototype';
 const DB_VERSION = 1;
@@ -762,10 +762,21 @@ function renderRecords() {
     <section id="recordList" class="records">${recordCards(sortedRecords())}</section>`;
 }
 
+function recordThumbHtml(record) {
+  const photo = Array.isArray(record.photos) ? record.photos.find((item) => item && item.blob) : null;
+  if (photo?.blob) {
+    try {
+      const src = URL.createObjectURL(photo.blob);
+      return `<span class="record-thumb"><img src="${src}" alt="${esc(record.istifNo || 'İstif fotoğrafı')}"></span>`;
+    } catch {}
+  }
+  return `<span class="record-thumb default-thumb"><img src="./assets/istif-default.svg" alt="İstif"></span>`;
+}
+
 function recordCards(rows) {
   if (!rows.length) return '<div class="empty card">Filtreye uygun istif bulunamadı.</div>';
   return rows.map((record) => `<article class="record-card card" data-record="${record.id}">
-    <span class="round-icon record-log-icon">${icon('logs', 25)}</span>
+    ${recordThumbHtml(record)}
     <div class="record-info">
       <span>Şeflik</span><b>${esc(String(record.seflik || '').replace(' Şefliği', ''))}</b>
       <span>Bölme</span><b>${esc(record.bolme)}</b>
@@ -979,7 +990,7 @@ async function saveRecord(event, draftOnly = false) {
   }
   draft.photos = state.selectedPhotos.map((photo) => ({ name: photo.name, type: photo.type, size: photo.size, blob: photo.blob }));
   draft.photoCount = draft.photos.length;
-  draft.seflikKey = draft.seflikKey || stableKey(draft.seflik);
+  draft.seflikKey = (state.settings.seflik && draft.seflik === state.settings.seflik ? state.settings.seflikKey : '') || draft.seflikKey || stableKey(draft.seflik);
   draft.syncStatus = 'local';
   draft.updatedAt = new Date().toISOString();
   const demoRows = state.records.filter((record) => record.isDemo);
@@ -1222,12 +1233,21 @@ async function searchForesterSuggestions(query, box) {
   try {
     const out = await bridgeCall('user_search', { q, seflikKey: state.settings.seflikKey, seflik: state.settings.seflik });
     if (seq !== state.foresterSearchSeq) return;
-    const users = Array.isArray(out.users) ? out.users : [];
+    const rawUsers = Array.isArray(out.users) ? out.users : [];
+    const seen = new Set();
+    const users = [];
+    for (const user of rawUsers) {
+      const key = clean(user.userId || user.user_id || user.email || stableKey(user.name));
+      if (!key || seen.has(key)) continue;
+      seen.add(key);
+      users.push(user);
+      if (users.length >= 10) break;
+    }
     if (!users.length) {
       box.innerHTML = '<span>Bu aramada Google onaylı kullanıcı bulunamadı.</span>';
       return;
     }
-    box.innerHTML = users.map((user, index) => `<button class="suggest-row" type="button" data-user-index="${index}"><span class="picker-avatar">${user.avatarUrl ? `<img src="${esc(user.avatarUrl)}" alt="">` : icon('user', 19)}</span><span><b>${esc(user.name)}</b><small>${esc(user.email || 'Google kullanıcısı')}</small></span>${icon('chevron', 19)}</button>`).join('');
+    box.innerHTML = users.map((user, index) => `<button class="suggest-row" type="button" data-user-index="${index}"><span class="picker-avatar">${user.avatarUrl ? `<img src="${esc(user.avatarUrl)}" alt="">` : icon('user', 19)}</span><span><b>${esc(user.name)}</b><small>${esc(user.email || 'Google kullanıcısı')}</small></span><em class="suggest-add">Ekle</em></button>`).join('');
     box.querySelectorAll('[data-user-index]').forEach((button) => {
       button.onclick = () => addForesterUser(users[Number(button.dataset.userIndex)]);
     });
@@ -1239,6 +1259,7 @@ async function searchForesterSuggestions(query, box) {
 async function addForesterUser(user) {
   const key = state.settings.seflikKey || stableKey(state.settings.seflik);
   const name = clean(user?.name);
+  user.userId = clean(user.userId || user.user_id);
   if (!name) return toast('Kullanıcı adı bulunamadı.', 'bad');
   if (state.ormancilar.some((item) => stableKey(item.name) === stableKey(name) || (user.userId && item.userId === user.userId))) {
     toast('Bu kullanıcı zaten ormancı listesinde.', 'bad');
@@ -1318,9 +1339,21 @@ async function disconnectDrive() {
   }
 }
 
+function effectiveRecordSeflik(record) {
+  const currentName = clean(state.settings.seflik);
+  const currentKey = clean(state.settings.seflikKey);
+  const recordName = clean(record.seflik);
+  const same = currentName && recordName && stableKey(currentName.replace(/\s*Şefliği$/i, '')) === stableKey(recordName.replace(/\s*Şefliği$/i, ''));
+  return {
+    seflik: same ? currentName : (recordName || currentName),
+    seflikKey: same ? (currentKey || record.seflikKey || stableKey(currentName)) : (record.seflikKey || currentKey || stableKey(recordName || currentName)),
+  };
+}
+
 async function createDriveUploadSession(record, photo, index) {
+  const folder = effectiveRecordSeflik(record);
   return bridgeCall('upload_session', {
-    seflikKey: record.seflikKey || stableKey(record.seflik), seflik: record.seflik,
+    seflikKey: folder.seflikKey, seflik: folder.seflik,
     recordDate: record.date, bolmeNo: record.bolme, istifNo: record.istifNo,
     fileName: `${record.istifNo}_foto_${index + 1}.jpg`, mimeType: photo.blob.type || 'image/jpeg', size: photo.blob.size,
   });
@@ -1342,8 +1375,8 @@ async function supabaseUpsertRecord(record) {
   const body = {
     id: String(record.id),
     user_id: String(session.user?.id || state.auth.userId),
-    seflik_key: record.seflikKey || stableKey(record.seflik),
-    seflik: record.seflik,
+    seflik_key: effectiveRecordSeflik(record).seflikKey,
+    seflik: effectiveRecordSeflik(record).seflik,
     ormanci: record.ormanci,
     record_date: record.date,
     bolme_no: record.bolme,
@@ -1392,6 +1425,7 @@ async function syncAll() {
   }
   try {
     await ensureSharedSession();
+    if (!state.settings.seflikKey || !state.seflikler.length) await syncSharedContext({ manual: false });
   } catch {
     showDialog('<h3>Google girişi gerekli</h3><p>İstif kayıtlarının aynı Supabase hesabına yüklenebilmesi için Mesaha İO’da Google ile giriş yapın.</p><div class="dialog-actions"><button class="btn" data-dialog-close>Kapat</button><a class="btn primary" href="../">Giriş Yap</a></div>');
     return;

@@ -290,3 +290,12 @@ img{max-width:100%;display:block}
 .suggest-row b{font-size:13.5px;line-height:1.2;overflow-wrap:anywhere}
 .suggest-row small{font-size:11px;color:var(--muted);overflow-wrap:anywhere}
 .suggest-row>svg{color:var(--green);justify-self:end}
+
+/* v017 istif kartı fotoğraf önizleme ve öneri düzeni */
+.record-thumb{width:46px;height:46px;border-radius:16px;overflow:hidden;display:block;background:#edf4f0;border:1px solid #d7e8de;box-shadow:0 4px 12px rgba(13,69,41,.07)}
+.record-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.record-thumb.default-thumb{display:grid;place-items:center;background:#eef7f2}
+.suggest-add{justify-self:end;display:inline-flex;align-items:center;justify-content:center;min-width:56px;height:34px;border-radius:13px;background:#edf7f1;color:var(--green);font-style:normal;font-weight:800;font-size:12px;border:1px solid #d7e8de}
+.suggest-row{grid-template-columns:42px minmax(0,1fr) 62px}
+@media(max-width:440px){.record-thumb{width:42px;height:42px;border-radius:14px}}
+@media(max-width:360px){.record-thumb{display:none}}

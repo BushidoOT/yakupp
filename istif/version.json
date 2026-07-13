@@ -1,6 +1,6 @@
 {
-  "version": "0.1.6",
+  "version": "0.1.7",
   "name": "Mesaha İO İstif Alma",
-  "updatedAt": "2026-07-13T14:10:00+03:00",
-  "notes": "İstif düzenleme/silme ve Google onaylı kullanıcıdan ormancı ekleme"
+  "updatedAt": "2026-07-13T14:45:00+03:00",
+  "notes": "Şeflik eşleşme düzeltmesi, yalnızca Google onaylı kullanıcı önerisi, istif kartı fotoğraf önizleme"
 }

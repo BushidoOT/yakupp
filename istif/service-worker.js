@@ -1,4 +1,4 @@
-const CACHE = 'mesaha-istif-v016';
+const CACHE = 'mesaha-istif-v017';
 const PREFIX = 'mesaha-istif-';
 const CORE = [
   './',
@@ -8,6 +8,7 @@ const CORE = [
   './manifest.json',
   './version.json',
   './assets/mesaha-fallback.svg',
+  './assets/istif-default.svg',
   '../assets/icon-192.png',
   '../assets/icon-512.png'
 ];
