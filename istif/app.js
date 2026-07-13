@@ -1,6 +1,6 @@
 'use strict';
 
-const APP_VERSION = '0.1.1';
+const APP_VERSION = '0.1.2';
 const MAX_PHOTO_BYTES = 1024 * 1024;
 const DB_NAME = 'mesaha-istif-prototype';
 const DB_VERSION = 1;
@@ -14,20 +14,21 @@ const TYPE_ORDER = [
 const SUPABASE_URL = 'https://swrbpdpotmirnmtqnuba.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_G_ZFeUouDxg57Nne5pflfQ_cVGpdMbR';
 const EDGE_URL = `${SUPABASE_URL}/functions/v1/smooth-function`;
+const DRIVE_BRIDGE_URL = `${SUPABASE_URL}/functions/v1/istif-drive-bridge`;
 const SHARED_SESSION_KEY = 'mesaha_supabase_v500_session';
 const SHARED_SESSION_BACKUP_KEY = 'mesaha_supabase_v569_session_backup';
 const SHARED_PANEL_KEY = 'mesaha_panel_user_v316';
 const SHARED_ACCESS_KEY = 'mesaha_google_access_v548';
 const SHARED_ACTIVE_SEFLIK_KEY = 'mesaha_active_seflik_folder_v564';
-const SHARED_CACHE_SETTING_KEY = 'shared-context-v011';
+const SHARED_CACHE_SETTING_KEY = 'shared-context-v012';
 
 const DEFAULT_SETTINGS = {
   seflik: '',
   seflikKey: '',
   ormanci: '',
-  driveClientId: '',
-  driveFolderId: '',
-  driveCreatedFolderId: '',
+  driveClientId: '', // eski sürüm uyumluluğu; arayüzde kullanılmaz
+  driveFolderId: '', // eski sürüm uyumluluğu
+  driveCreatedFolderId: '', // eski sürüm uyumluluğu
   photoMaxBytes: MAX_PHOTO_BYTES,
 };
 
@@ -46,6 +47,11 @@ const state = {
   seflikler: [],
   ormancilar: [],
   membersBySeflik: {},
+  customForestersBySeflik: {},
+  drive: {
+    status: 'idle', connected: false, isOwner: false, ownerEmail: '', ownerName: '',
+    folderId: '', folderName: '', folderUrl: '', updatedAt: '', error: '',
+  },
   auth: {
     status: 'checking',
     userId: '',
@@ -94,6 +100,11 @@ function icon(name, size = 24, extraClass = '') {
     refresh: '<path d="M20 6v5h-5M4 18v-5h5"/><path d="M6.1 9A7 7 0 0 1 18 6l2 5M18 15a7 7 0 0 1-12 3l-2-5"/>',
     folder: '<path d="M3 6h7l2 2h9v11H3z"/>',
     layers: '<path d="m12 2 9 5-9 5-9-5zM3 12l9 5 9-5M3 17l9 5 9-5"/>',
+    users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>',
+    drive: '<path d="M7.7 3h8.6l4.3 7.5-4.3 7.5H7.7L3.4 10.5z"/><path d="m7.7 3 4.3 7.5h8.6M3.4 10.5H12L7.7 18"/>',
+    link: '<path d="M10 13a5 5 0 0 0 7.07.07l2-2a5 5 0 0 0-7.07-7.07l-1.15 1.15"/><path d="M14 11a5 5 0 0 0-7.07-.07l-2 2A5 5 0 0 0 12 20l1.15-1.15"/>',
+    userPlus: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M16 11h6"/>',
+    external: '<path d="M14 3h7v7M10 14 21 3"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5"/>',
     wifiOff: '<path d="m2 2 20 20M8.5 8.5A10 10 0 0 1 19 10M5 10a10 10 0 0 0-2 2M8 15a6 6 0 0 1 7.5-.8M12 20h.01"/>',
   };
   return `<svg class="svg-icon ${extraClass}" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[name] || paths.info}</svg>`;
@@ -184,6 +195,8 @@ async function saveSharedCache() {
     value: {
       seflikler: state.seflikler,
       membersBySeflik: state.membersBySeflik,
+      customForestersBySeflik: state.customForestersBySeflik,
+      drive: state.drive,
       auth: state.auth,
       updatedAt: new Date().toISOString(),
     },
@@ -199,6 +212,8 @@ async function loadData() {
   if (shared) {
     state.seflikler = Array.isArray(shared.seflikler) ? shared.seflikler : [];
     state.membersBySeflik = shared.membersBySeflik && typeof shared.membersBySeflik === 'object' ? shared.membersBySeflik : {};
+    state.customForestersBySeflik = shared.customForestersBySeflik && typeof shared.customForestersBySeflik === 'object' ? shared.customForestersBySeflik : {};
+    state.drive = { ...state.drive, ...(shared.drive || {}), status: shared.drive?.connected ? 'cached' : 'idle' };
     state.auth = { ...state.auth, ...(shared.auth || {}), status: 'cached' };
   }
   hydrateLocalSharedIdentity();
@@ -316,7 +331,7 @@ async function edgeCall(action, payload = {}, retried = false) {
       Authorization: `Bearer ${session.access_token}`,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ action, source: 'mesaha-istif-v011', ...payload }),
+    body: JSON.stringify({ action, source: 'mesaha-istif-v012', ...payload }),
   });
   const body = await response.json().catch(() => ({}));
   if ((response.status === 401 || response.status === 403) && !retried && readSharedSession()?.refresh_token) {
@@ -326,6 +341,89 @@ async function edgeCall(action, payload = {}, retried = false) {
   return body;
 }
 
+
+async function bridgeCall(action, payload = {}, retried = false) {
+  const session = await ensureSharedSession(retried);
+  const response = await fetch(DRIVE_BRIDGE_URL, {
+    method: 'POST',
+    cache: 'no-store',
+    headers: {
+      apikey: SUPABASE_ANON_KEY,
+      Authorization: `Bearer ${session.access_token}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ action, source: 'mesaha-istif-v012', ...payload }),
+  });
+  const body = await response.json().catch(() => ({}));
+  if ((response.status === 401 || response.status === 403) && !retried && readSharedSession()?.refresh_token) {
+    return bridgeCall(action, payload, true);
+  }
+  if (!response.ok || body?.ok === false) throw new Error(body.error || body.reason || `İstif bağlantı hatası ${response.status}`);
+  return body;
+}
+
+function currentFolder() {
+  return state.seflikler.find((item) => item.key === state.settings.seflikKey || item.name === state.settings.seflik) || null;
+}
+
+function currentFolderIsOwner() {
+  const folder = currentFolder();
+  return !!(folder && (folder.isCreator || ['owner', 'creator', 'kurucu'].includes(String(folder.role || '').toLocaleLowerCase('tr-TR'))));
+}
+
+function normalizeForester(raw) {
+  const name = clean(raw?.name || raw?.ormanci || raw?.forester_name);
+  if (!name) return null;
+  return {
+    id: clean(raw.id || `custom_${stableKey(name)}`),
+    userId: clean(raw.user_id), name, email: clean(raw.email), avatarUrl: clean(raw.avatar_url),
+    role: clean(raw.role || 'forester'), isSelf: raw.is_self === true,
+    custom: raw.custom !== false, pending: raw.pending === true,
+  };
+}
+
+async function refreshDriveStatus({ silent = true } = {}) {
+  const key = state.settings.seflikKey || stableKey(state.settings.seflik);
+  if (!key || !readSharedSession()) {
+    state.drive = { ...state.drive, status: 'idle', connected: false, isOwner: currentFolderIsOwner(), error: '' };
+    return state.drive;
+  }
+  if (navigator.onLine === false) {
+    state.drive = { ...state.drive, status: state.drive.connected ? 'cached' : 'offline', isOwner: currentFolderIsOwner() };
+    return state.drive;
+  }
+  state.drive.status = 'checking';
+  try {
+    const out = await bridgeCall('status', { seflikKey: key, seflik: state.settings.seflik });
+    state.drive = {
+      status: 'ready', connected: !!out.connected, isOwner: !!out.isOwner,
+      ownerEmail: clean(out.ownerEmail), ownerName: clean(out.ownerName),
+      folderId: clean(out.folderId), folderName: clean(out.folderName), folderUrl: clean(out.folderUrl),
+      updatedAt: clean(out.updatedAt), error: '',
+    };
+  } catch (error) {
+    state.drive = { ...state.drive, status: state.drive.connected ? 'cached' : 'error', isOwner: currentFolderIsOwner(), error: clean(error?.message || error) };
+    if (!silent) toast(`Drive durumu alınamadı: ${state.drive.error}`, 'bad');
+  }
+  await saveSharedCache();
+  return state.drive;
+}
+
+async function syncCustomForestersForFolder(folder) {
+  const local = Array.isArray(state.customForestersBySeflik[folder.key]) ? [...state.customForestersBySeflik[folder.key]] : [];
+  try {
+    for (const item of local.filter((x) => x.pending && x.name)) {
+      try { await bridgeCall('forester_add', { seflikKey: folder.key, seflik: folder.name, name: item.name }); } catch {}
+    }
+    const out = await bridgeCall('forester_list', { seflikKey: folder.key, seflik: folder.name });
+    const remote = (out.foresters || []).map(normalizeForester).filter(Boolean);
+    const pending = local.filter((item) => item.pending && !remote.some((x) => stableKey(x.name) === stableKey(item.name)));
+    state.customForestersBySeflik[folder.key] = [...remote, ...pending];
+  } catch {
+    if (!Array.isArray(state.customForestersBySeflik[folder.key])) state.customForestersBySeflik[folder.key] = local;
+  }
+}
+
 function normalizeFolder(raw) {
   const name = clean(raw?.seflik || raw?.name || raw?.folderSeflik || raw?.title);
   if (!name) return null;
@@ -333,7 +431,7 @@ function normalizeFolder(raw) {
     name,
     key: clean(raw.seflik_key || raw.seflikKey || stableKey(name)),
     role: clean(raw.role || raw.member_role || 'member'),
-    isCreator: raw.is_creator === true || raw.isCreator === true,
+    isCreator: raw.is_creator === true || raw.isCreator === true || ['owner','creator','kurucu'].includes(clean(raw.role || raw.member_role).toLocaleLowerCase('tr-TR')),
   };
 }
 
@@ -353,12 +451,20 @@ function normalizeMember(raw) {
 
 function refreshCurrentMembers() {
   const key = state.settings.seflikKey || stableKey(state.settings.seflik);
-  state.ormancilar = Array.isArray(state.membersBySeflik[key]) ? state.membersBySeflik[key] : [];
+  const members = Array.isArray(state.membersBySeflik[key]) ? state.membersBySeflik[key] : [];
+  const custom = Array.isArray(state.customForestersBySeflik[key]) ? state.customForestersBySeflik[key] : [];
+  const map = new Map();
+  [...members, ...custom].forEach((item) => {
+    if (!item?.name) return;
+    const k = stableKey(item.name);
+    if (!map.has(k) || item.custom) map.set(k, item);
+  });
+  state.ormancilar = [...map.values()];
   if (!state.ormancilar.length && state.auth.name) {
     state.ormancilar = [{ id: state.auth.userId || state.auth.name, name: state.auth.name, avatarUrl: state.auth.avatarUrl, role: 'owner', isSelf: true }];
   }
   if (!state.ormancilar.some((x) => x.name === state.settings.ormanci)) {
-    const preferred = state.ormancilar.find((x) => x.role === 'member') || state.ormancilar.find((x) => x.isSelf) || state.ormancilar[0];
+    const preferred = state.ormancilar.find((x) => x.role === 'member' || x.role === 'forester') || state.ormancilar.find((x) => x.isSelf) || state.ormancilar[0];
     state.settings.ormanci = preferred?.name || state.auth.name || '';
   }
 }
@@ -398,6 +504,7 @@ async function syncSharedContext({ manual = false } = {}) {
       } catch {
         if (!Array.isArray(membersMap[folder.key])) membersMap[folder.key] = [];
       }
+      await syncCustomForestersForFolder(folder);
     }
     state.seflikler = folders;
     state.membersBySeflik = membersMap;
@@ -419,8 +526,9 @@ async function syncSharedContext({ manual = false } = {}) {
     };
     refreshCurrentMembers();
     await saveSettings();
+    await refreshDriveStatus({ silent: true });
     await saveSharedCache();
-    if (manual) toast('Şeflikler ve ormancılar Mesaha İO ile senkronize edildi.', 'good');
+    if (manual) toast('Şeflikler, ormancılar ve Drive durumu güncellendi.', 'good');
   } catch (error) {
     state.auth.status = readSharedSession() ? 'cached' : 'signed_out';
     state.auth.error = clean(error?.message || error);
@@ -473,6 +581,7 @@ function setView(view) {
   stopCamera();
   state.view = view;
   render();
+  if (view === 'settings' && navigator.onLine && readSharedSession()) refreshDriveStatus({ silent: true }).then(render);
   scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -513,6 +622,17 @@ function displayOrmanci() {
   return state.settings.ormanci || 'Ormancı seçilmedi';
 }
 
+
+function visibleForesters() {
+  return state.ormancilar.slice(0, 5);
+}
+
+function foresterSummaryHtml() {
+  const list = visibleForesters();
+  if (!list.length) return '<span class="forester-empty">Henüz ormancı eklenmedi</span>';
+  return `<div class="forester-chips">${list.map((item) => `<span class="forester-chip ${item.name === state.settings.ormanci ? 'selected' : ''}">${item.avatarUrl ? `<img src="${esc(item.avatarUrl)}" alt="">` : icon('user', 15)}<b>${esc(item.name)}</b>${item.pending ? '<i>Bekliyor</i>' : ''}</span>`).join('')}${state.ormancilar.length > list.length ? `<span class="forester-more">+${state.ormancilar.length - list.length}</span>` : ''}</div>`;
+}
+
 function renderHome() {
   const c = counts();
   return `${head('İstif Alma', '', { action: profileButton() })}
@@ -533,11 +653,11 @@ function renderHome() {
         <span class="row-copy"><small>Şeflik</small><strong>${esc(displaySeflik())}</strong></span>
         <span class="chev">${icon('chevron', 23)}</span>
       </button>
-      <button class="select-row" data-action="pick-ormanci">
-        <span class="round-icon">${icon('user', 23)}</span>
-        <span class="row-copy"><small>Ormancı</small><strong>${esc(displayOrmanci())}</strong></span>
-        <span class="chev">${icon('chevron', 23)}</span>
-      </button>
+    </section>
+    <section class="foresters-card card">
+      <div class="foresters-head"><span class="round-icon">${icon('users', 23)}</span><div><small>Ormancılar</small><strong>${state.ormancilar.length} kayıtlı ormancı</strong><span>Seçili: ${esc(displayOrmanci())}</span></div></div>
+      ${foresterSummaryHtml()}
+      <div class="forester-actions"><button class="btn" data-action="pick-ormanci">${icon('check', 18)} Ormancı Seç</button><button class="btn primary" data-action="add-ormanci">${icon('userPlus', 18)} Ormancı Ekle</button></div>
     </section>
     <div class="section-title"><h2>İşlemler</h2></div>
     <section class="actions-grid">
@@ -705,28 +825,46 @@ function renderPhotos() {
   return `${head('Fotoğraflar', 'İstif fotoğraflarını yönetin', { back: true })}<section class="records">${rows.map((record) => `<article class="photo-record card"><div class="round-icon">${icon('camera', 23)}</div><div><b>${esc(record.istifNo)} • ${esc(record.type)}</b><span>${esc(record.bolme)} Bölme • ${record.photos?.length || record.photoCount || 0}/4 fotoğraf</span></div><button class="btn small" data-view="records">Aç</button></article>`).join('')}</section>`;
 }
 
+function driveStatusCopy() {
+  if (state.drive.status === 'checking') return 'Drive bağlantısı kontrol ediliyor…';
+  if (state.drive.connected) return state.drive.isOwner ? 'Şeflik Drive alanı bağlı ve yönetiminizde.' : 'Şeflik Drive alanı kurucu tarafından bağlandı.';
+  if (state.drive.isOwner || currentFolderIsOwner()) return 'Bu şefliğin Drive alanını yalnızca siz bağlayabilirsiniz.';
+  return 'Şeflik kurucusunun Drive alanını bağlaması bekleniyor.';
+}
+
+function renderDriveCard() {
+  const isOwner = state.drive.isOwner || currentFolderIsOwner();
+  const connected = state.drive.connected;
+  return `<section class="drive-card card">
+    <div class="drive-card-title"><span>${icon('drive', 24)}</span><div><b>Şeflik Google Drive</b><small>Fotoğraflar ücretsiz sunucuya uğramadan doğrudan ortak Drive alanına yüklenir.</small></div><i class="drive-state ${connected ? 'connected' : ''}"></i></div>
+    <div class="drive-status-copy">${esc(driveStatusCopy())}</div>
+    ${connected ? `<div class="drive-details"><div><span>Şeflik</span><b>${esc(displaySeflik())}</b></div><div><span>Bağlı hesap</span><b>${esc(state.drive.ownerEmail || state.drive.ownerName || 'Kurucu hesabı')}</b></div><div><span>Klasör</span><b>${esc(state.drive.folderName || 'Mesaha İO - İstif Alma')}</b></div></div>` : ''}
+    <div class="drive-actions">
+      ${isOwner && !connected ? `<button class="btn primary wide" data-action="connect-drive">${icon('link', 20)} Google Hesabı ile Bağla</button>` : ''}
+      ${isOwner && connected ? `<button class="btn primary" data-action="connect-drive">${icon('refresh', 19)} Bağlantıyı Yenile</button><button class="btn danger-soft" data-action="disconnect-drive">Bağlantıyı Kaldır</button>` : ''}
+      ${!isOwner && connected ? `<div class="managed-pill">${icon('check', 17)} Kurucu tarafından yönetiliyor</div>` : ''}
+    </div>
+    <p class="drive-security">Kurucunun Google erişim anahtarı üyelerin telefonlarında tutulmaz. Üyeler yalnızca kendi fotoğrafları için güvenli, tek kullanımlık Drive yükleme oturumu alır.</p>
+  </section>`;
+}
+
 function renderSettings() {
   const loggedIn = state.auth.status !== 'signed_out';
-  return `${head('Ayarlar', 'Hesap ve senkronizasyon', { back: true })}
+  return `${head('Ayarlar', 'Hesap, şeflik ve Drive', { back: true })}
     <section class="account-card card">
       <div class="account-avatar">${state.auth.avatarUrl ? `<img src="${esc(state.auth.avatarUrl)}" alt="">` : icon('user', 27)}</div>
       <div class="account-copy"><small>${loggedIn ? 'Google hesabı bağlı' : 'Google girişi gerekli'}</small><strong>${esc(state.auth.name || state.auth.email || 'Mesaha İO hesabı')}</strong><span>${esc(state.auth.email || authSummary())}</span></div>
       <span class="status-dot ${state.auth.status === 'connected' ? 'online' : ''}"></span>
     </section>
     <section class="shared-card card">
-      <div class="shared-card-title"><span>${icon('folder', 22)}</span><div><b>Şeflik Klasörü Bağlantısı</b><small>Şeflik adları ve ormancılar Mesaha İO’dan alınır.</small></div></div>
+      <div class="shared-card-title"><span>${icon('folder', 22)}</span><div><b>Şeflik Klasörü Bağlantısı</b><small>Şeflik adı ve ormancılar Mesaha İO ile ortaktır.</small></div></div>
       <div class="shared-current"><span>Şeflik</span><b>${esc(displaySeflik())}</b></div>
-      <div class="shared-current"><span>Ormancı</span><b>${esc(displayOrmanci())}</b></div>
-      <button class="btn wide" data-action="refresh-shared">${icon('refresh', 20)} Şeflikleri ve Ormancıları Güncelle</button>
+      <div class="shared-current"><span>Ormancılar</span><b>${state.ormancilar.length} kişi • Seçili: ${esc(displayOrmanci())}</b></div>
+      <button class="btn wide" data-action="refresh-shared">${icon('refresh', 20)} Ortak Bilgileri Güncelle</button>
       ${loggedIn ? '' : '<a class="btn primary wide login-link" href="../">Mesaha İO’da Google ile Giriş Yap</a>'}
     </section>
-    <section class="settings-card card">
-      <label>Google Drive OAuth Client ID</label><input id="setClientId" value="${esc(state.settings.driveClientId)}" placeholder="...apps.googleusercontent.com">
-      <label>Drive klasör ID <small>(boşsa uygulama oluşturur)</small></label><input id="setFolderId" value="${esc(state.settings.driveFolderId)}" placeholder="İsteğe bağlı">
-      <p class="settings-hint">Fotoğraflar ücretsiz sunucuya gönderilmez. Drive’a doğrudan yüklenir; kayıt bilgileri aynı Supabase hesabında tutulur.</p>
-      <button class="btn primary wide" data-action="save-settings">Ayarları Kaydet</button>
-    </section>
-    <div class="info-note"><b>${icon('info', 21)}</b><span>Sürüm ${APP_VERSION} • Kayıtlar IndexedDB içinde offline saklanır. Şeflik ve ormancı verisi Mesaha İO ile ortaktır.</span></div>`;
+    ${renderDriveCard()}
+    <div class="info-note"><b>${icon('info', 21)}</b><span>Sürüm ${APP_VERSION} • Kayıtlar offline saklanır. İstif, fotoğraf ve evrak verileri bu uygulamaya özeldir.</span></div>`;
 }
 
 function bindDynamic() {
@@ -737,6 +875,9 @@ function bindDynamic() {
   app.querySelector('[data-action="account"]')?.addEventListener('click', showAccountDialog);
   app.querySelector('[data-action="pick-seflik"]')?.addEventListener('click', showSeflikPicker);
   app.querySelector('[data-action="pick-ormanci"]')?.addEventListener('click', showOrmanciPicker);
+  app.querySelector('[data-action="add-ormanci"]')?.addEventListener('click', showAddOrmanciDialog);
+  app.querySelector('[data-action="connect-drive"]')?.addEventListener('click', beginDriveConnection);
+  app.querySelector('[data-action="disconnect-drive"]')?.addEventListener('click', disconnectDrive);
   app.querySelector('[data-action="refresh-shared"]')?.addEventListener('click', () => syncSharedContext({ manual: true }));
   app.querySelectorAll('[data-add-photo]').forEach((button) => { button.onclick = openCameraChooser; });
   app.querySelectorAll('[data-remove-photo]').forEach((button) => { button.onclick = () => removePhoto(Number(button.dataset.removePhoto)); });
@@ -768,7 +909,7 @@ function bindDynamic() {
   app.querySelector('[data-action="clear-selection"]')?.addEventListener('click', () => { state.selectedRecordIds.clear(); render(); });
   app.querySelectorAll('[data-action="preview-doc"]').forEach((button) => { button.onclick = previewDocuments; });
   app.querySelectorAll('[data-action="print-doc"]').forEach((button) => { button.onclick = printDocuments; });
-  app.querySelector('[data-action="save-settings"]')?.addEventListener('click', saveSettingsUI);
+
 }
 
 function applyRecordFilters() {
@@ -970,6 +1111,7 @@ function showSeflikPicker() {
       }
       jsonWrite(SHARED_ACTIVE_SEFLIK_KEY, { seflik: folder.name, seflik_key: folder.key, updatedAt: new Date().toISOString() });
       await saveSettings();
+      await refreshDriveStatus({ silent: true });
       closeDialog();
       render();
     };
@@ -983,7 +1125,7 @@ function showOrmanciPicker() {
     document.getElementById('refreshMembersDialog').onclick = () => { closeDialog(); syncSharedContext({ manual: true }); };
     return;
   }
-  showDialog(`<h3>Ormancı Seç</h3><p>${esc(displaySeflik())} ormancıları.</p><div class="picker-list">${state.ormancilar.map((member, index) => `<button class="picker-row ${member.name === state.settings.ormanci ? 'selected' : ''}" data-member-index="${index}"><span class="picker-avatar">${member.avatarUrl ? `<img src="${esc(member.avatarUrl)}" alt="">` : icon('user', 20)}</span><span><b>${esc(member.name)}</b><small>${member.role === 'owner' ? 'Şeflik kurucusu' : 'Ormancı'}</small></span>${member.name === state.settings.ormanci ? icon('check', 21) : icon('chevron', 20)}</button>`).join('')}</div><div class="dialog-actions single"><button class="btn" data-dialog-close>Kapat</button></div>`);
+  showDialog(`<h3>Ormancı Seç</h3><p>${esc(displaySeflik())} için kayıtlı ormancılar.</p><div class="picker-list">${state.ormancilar.map((member, index) => `<button class="picker-row ${member.name === state.settings.ormanci ? 'selected' : ''}" data-member-index="${index}"><span class="picker-avatar">${member.avatarUrl ? `<img src="${esc(member.avatarUrl)}" alt="">` : icon('user', 20)}</span><span><b>${esc(member.name)}</b><small>${member.role === 'owner' ? 'Şeflik kurucusu' : member.custom ? (member.pending ? 'Yeni ormancı • senkron bekliyor' : 'Ekli ormancı') : 'Şeflik üyesi'}</small></span>${member.name === state.settings.ormanci ? icon('check', 21) : icon('chevron', 20)}</button>`).join('')}</div><div class="dialog-actions single"><button class="btn" data-dialog-close>Kapat</button></div>`);
   dialogContent.querySelectorAll('[data-member-index]').forEach((button) => {
     button.onclick = async () => {
       const member = state.ormancilar[Number(button.dataset.memberIndex)];
@@ -996,86 +1138,128 @@ function showOrmanciPicker() {
   });
 }
 
-async function saveSettingsUI() {
-  state.settings = {
-    ...state.settings,
-    driveClientId: document.getElementById('setClientId').value.trim(),
-    driveFolderId: document.getElementById('setFolderId').value.trim(),
+function showAddOrmanciDialog() {
+  if (!state.settings.seflik) {
+    toast('Önce şeflik seçin.', 'bad');
+    return;
+  }
+  showDialog(`<h3>Ormancı Ekle</h3><p>Eklenen ormancı ${esc(displaySeflik())} içindeki tüm İstif Alma kullanıcılarında görüntülenir.</p><label class="dialog-label">Ad Soyad</label><input id="newForesterName" class="dialog-input" autocomplete="name" placeholder="Örn. Ahmet Yılmaz"><div class="dialog-actions"><button class="btn" data-dialog-close>Vazgeç</button><button class="btn primary" id="saveForesterBtn">Ormancıyı Ekle</button></div>`);
+  const input = document.getElementById('newForesterName');
+  input?.focus();
+  document.getElementById('saveForesterBtn').onclick = async () => {
+    const name = clean(input?.value);
+    if (name.length < 3) return toast('Ormancının ad ve soyadını yazın.', 'bad');
+    await addForester(name);
   };
+  input?.addEventListener('keydown', (event) => { if (event.key === 'Enter') { event.preventDefault(); document.getElementById('saveForesterBtn')?.click(); } });
+}
+
+async function addForester(name) {
+  const key = state.settings.seflikKey || stableKey(state.settings.seflik);
+  const list = Array.isArray(state.customForestersBySeflik[key]) ? [...state.customForestersBySeflik[key]] : [];
+  if (state.ormancilar.some((item) => stableKey(item.name) === stableKey(name))) {
+    toast('Bu ormancı zaten listede.', 'bad');
+    return;
+  }
+  const localItem = { id: `local_${uid()}`, name, role: 'forester', custom: true, pending: true, createdBy: state.auth.userId };
+  list.push(localItem);
+  state.customForestersBySeflik[key] = list;
+  state.settings.ormanci = name;
+  refreshCurrentMembers();
   await saveSettings();
-  toast('Ayarlar kaydedildi.', 'good');
-  setView('home');
+  await saveSharedCache();
+  closeDialog();
+  render();
+  if (navigator.onLine && readSharedSession()) {
+    try {
+      const out = await bridgeCall('forester_add', { seflikKey: key, seflik: state.settings.seflik, name });
+      const saved = normalizeForester(out.forester || { name });
+      state.customForestersBySeflik[key] = list.filter((item) => item.id !== localItem.id).concat(saved ? [{ ...saved, pending: false }] : []);
+      refreshCurrentMembers();
+      await saveSharedCache();
+      render();
+      toast('Ormancı ortak listeye eklendi.', 'good');
+    } catch (error) {
+      toast(`Ormancı yerelde eklendi; senkron bekliyor. ${clean(error?.message || '')}`, 'bad');
+    }
+  } else {
+    toast('Ormancı yerelde eklendi; internet gelince senkronize edilecek.', 'good');
+  }
 }
 
-async function loadGoogleIdentity() {
-  if (window.google?.accounts?.oauth2) return;
-  await new Promise((resolve, reject) => {
-    const script = document.createElement('script');
-    script.src = 'https://accounts.google.com/gsi/client';
-    script.async = true;
-    script.onload = resolve;
-    script.onerror = reject;
-    document.head.appendChild(script);
+async function beginDriveConnection() {
+  if (!(state.drive.isOwner || currentFolderIsOwner())) {
+    toast('Drive bağlantısını yalnızca şeflik kurucusu yapabilir.', 'bad');
+    return;
+  }
+  if (!navigator.onLine) return toast('Drive bağlantısı için internet gerekli.', 'bad');
+  try {
+    const redirectUri = `${location.origin}${location.pathname}`;
+    const out = await bridgeCall('oauth_start', { seflikKey: state.settings.seflikKey, seflik: state.settings.seflik, redirectUri });
+    if (!out.authorizationUrl) throw new Error('Google bağlantı adresi hazırlanamadı.');
+    location.assign(out.authorizationUrl);
+  } catch (error) {
+    toast(clean(error?.message || error), 'bad');
+  }
+}
+
+async function handleDriveOAuthCallback() {
+  const params = new URLSearchParams(location.search);
+  const code = params.get('code');
+  const oauthState = params.get('state');
+  const oauthError = params.get('error');
+  if (!code && !oauthError) return false;
+  state.view = 'settings';
+  const cleanUrl = `${location.origin}${location.pathname}`;
+  history.replaceState({}, '', cleanUrl);
+  if (oauthError) {
+    toast(`Google Drive bağlantısı iptal edildi: ${oauthError}`, 'bad');
+    return true;
+  }
+  try {
+    showDialog('<h3>Google Drive Bağlanıyor</h3><p>Şeflik klasörü hazırlanıyor. Bu ekranı kapatmayın.</p><div class="progress"><span style="width:65%"></span></div>');
+    await bridgeCall('oauth_finish', { code, state: oauthState, redirectUri: cleanUrl });
+    await refreshDriveStatus({ silent: false });
+    closeDialog();
+    render();
+    toast('Şeflik Google Drive alanı bağlandı.', 'good');
+  } catch (error) {
+    closeDialog();
+    toast(`Drive bağlanamadı: ${clean(error?.message || error)}`, 'bad');
+  }
+  return true;
+}
+
+async function disconnectDrive() {
+  if (!confirm('Şeflik Drive bağlantısı kaldırılacak. Mevcut Drive dosyaları silinmez; yeni fotoğraf yüklemeleri durur. Devam edilsin mi?')) return;
+  try {
+    await bridgeCall('disconnect', { seflikKey: state.settings.seflikKey, seflik: state.settings.seflik });
+    state.drive = { ...state.drive, connected: false, status: 'ready', folderId: '', folderName: '', folderUrl: '', ownerEmail: '', error: '' };
+    await saveSharedCache();
+    render();
+    toast('Drive bağlantısı kaldırıldı.', 'good');
+  } catch (error) {
+    toast(clean(error?.message || error), 'bad');
+  }
+}
+
+async function createDriveUploadSession(record, photo, index) {
+  return bridgeCall('upload_session', {
+    seflikKey: record.seflikKey || stableKey(record.seflik), seflik: record.seflik,
+    recordDate: record.date, bolmeNo: record.bolme, istifNo: record.istifNo,
+    fileName: `${record.istifNo}_foto_${index + 1}.jpg`, mimeType: photo.blob.type || 'image/jpeg', size: photo.blob.size,
   });
 }
 
-async function getDriveToken() {
-  await loadGoogleIdentity();
-  return new Promise((resolve, reject) => {
-    const client = google.accounts.oauth2.initTokenClient({
-      client_id: state.settings.driveClientId,
-      scope: 'https://www.googleapis.com/auth/drive.file',
-      callback: (response) => response.error ? reject(new Error(response.error)) : resolve(response.access_token),
-      error_callback: reject,
-    });
-    client.requestAccessToken({ prompt: '' });
+async function uploadPhotoDirectToDrive(record, photo, index) {
+  const session = await createDriveUploadSession(record, photo, index);
+  if (!session.uploadUrl) throw new Error('Drive yükleme oturumu alınamadı.');
+  const response = await fetch(session.uploadUrl, {
+    method: 'PUT', headers: { 'Content-Type': photo.blob.type || 'image/jpeg' }, body: photo.blob,
   });
-}
-
-async function driveJson(url, token, body) {
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
-  });
-  if (!response.ok) throw new Error(`Drive ${response.status}`);
-  return response.json();
-}
-
-async function ensureRootFolder(token) {
-  if (state.settings.driveFolderId) return state.settings.driveFolderId;
-  if (state.settings.driveCreatedFolderId) return state.settings.driveCreatedFolderId;
-  const folder = await driveJson('https://www.googleapis.com/drive/v3/files?fields=id,name,webViewLink', token, {
-    name: 'Mesaha IO - İstif Alma',
-    mimeType: 'application/vnd.google-apps.folder',
-  });
-  state.settings.driveCreatedFolderId = folder.id;
-  await saveSettings();
-  return folder.id;
-}
-
-async function createFolder(token, name, parent) {
-  const folder = await driveJson('https://www.googleapis.com/drive/v3/files?fields=id,name', token, {
-    name,
-    mimeType: 'application/vnd.google-apps.folder',
-    parents: parent ? [parent] : undefined,
-  });
-  return folder.id;
-}
-
-async function uploadBlob(token, blob, name, parentId) {
-  const meta = { name, parents: [parentId] };
-  const boundary = `mesaha_${Math.random().toString(36).slice(2)}`;
-  const headPart = `--${boundary}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n${JSON.stringify(meta)}\r\n--${boundary}\r\nContent-Type: ${blob.type || 'image/jpeg'}\r\n\r\n`;
-  const tailPart = `\r\n--${boundary}--`;
-  const body = new Blob([headPart, blob, tailPart], { type: `multipart/related; boundary=${boundary}` });
-  const response = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,webViewLink', {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${token}`, 'Content-Type': `multipart/related; boundary=${boundary}` },
-    body,
-  });
-  if (!response.ok) throw new Error(`Fotoğraf yükleme ${response.status}`);
-  return response.json();
+  const result = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(result.error?.message || `Drive fotoğraf yükleme ${response.status}`);
+  return { ...result, folderId: session.folderId, folderName: session.folderName };
 }
 
 async function supabaseUpsertRecord(record) {
@@ -1137,30 +1321,33 @@ async function syncAll() {
     showDialog('<h3>Google girişi gerekli</h3><p>İstif kayıtlarının aynı Supabase hesabına yüklenebilmesi için Mesaha İO’da Google ile giriş yapın.</p><div class="dialog-actions"><button class="btn" data-dialog-close>Kapat</button><a class="btn primary" href="../">Giriş Yap</a></div>');
     return;
   }
-  if (!state.settings.driveClientId && pending.some((record) => (record.photos || []).length)) {
-    showDialog('<h3>Drive bağlantısı gerekli</h3><p>Fotoğrafları doğrudan Drive’a yüklemek için Ayarlar bölümüne Google OAuth Client ID girilmelidir. Kayıtlar cihazdan silinmez.</p><div class="dialog-actions"><button class="btn" data-dialog-close>Kapat</button><button class="btn primary" id="goSettings">Ayarlara Git</button></div>');
-    document.getElementById('goSettings').onclick = () => { closeDialog(); setView('settings'); };
-    return;
+  if (pending.some((record) => (record.photos || []).length)) {
+    await refreshDriveStatus({ silent: true });
+    if (!state.drive.connected) {
+      const message = state.drive.isOwner || currentFolderIsOwner() ? 'Ayarlar bölümünden Google hesabınızla Şeflik Drive alanını bağlayın.' : 'Şeflik kurucusunun ortak Drive alanını bağlaması gerekiyor.';
+      showDialog(`<h3>Şeflik Drive bağlantısı gerekli</h3><p>${message} Kayıtlar ve fotoğraflar cihazdan silinmez.</p><div class="dialog-actions"><button class="btn" data-dialog-close>Kapat</button><button class="btn primary" id="goSettings">Ayarlara Git</button></div>`);
+      document.getElementById('goSettings').onclick = () => { closeDialog(); setView('settings'); };
+      return;
+    }
   }
   state.syncing = true;
   showDialog('<h3>Senkronizasyon</h3><p id="syncText">Google hesabı ve Drive bağlantısı hazırlanıyor…</p><div class="progress"><span id="syncBar"></span></div><div class="dialog-actions"><button class="btn" disabled>İptal</button><button class="btn primary" disabled>Devam Ediyor</button></div>');
   try {
     const recordsWithPhotos = pending.filter((record) => (record.photos || []).length);
-    const driveToken = recordsWithPhotos.length ? await getDriveToken() : '';
-    const rootFolder = driveToken ? await ensureRootFolder(driveToken) : '';
     let completed = 0;
     for (const record of pending) {
       record.syncStatus = 'syncing';
       await idbPut('records', record);
-      if ((record.photos || []).length && !record.driveFolderId) {
-        const folder = await createFolder(driveToken, `${record.date}_${record.bolme}_${record.istifNo}`, rootFolder);
-        record.driveFiles = [];
-        for (let index = 0; index < record.photos.length; index += 1) {
+      if ((record.photos || []).length && (record.driveFiles?.length || 0) < record.photos.length) {
+        record.driveFiles = Array.isArray(record.driveFiles) ? record.driveFiles : [];
+        for (let index = record.driveFiles.length; index < record.photos.length; index += 1) {
           const photo = record.photos[index];
-          const uploaded = await uploadBlob(driveToken, photo.blob, `${record.istifNo}_foto_${index + 1}.jpg`, folder);
+          document.getElementById('syncText').textContent = `${record.istifNo} • Fotoğraf ${index + 1}/${record.photos.length} doğrudan Drive’a yükleniyor…`;
+          const uploaded = await uploadPhotoDirectToDrive(record, photo, index);
           record.driveFiles.push(uploaded);
+          record.driveFolderId = uploaded.folderId || record.driveFolderId;
+          await idbPut('records', record);
         }
-        record.driveFolderId = folder;
       }
       record.syncStatus = 'drive_synced';
       await idbPut('records', record);
@@ -1243,7 +1430,7 @@ document.getElementById('switchCameraBtn').onclick = async () => {
   try { await openCamera(); } catch { toast('Kamera değiştirilemedi.', 'bad'); }
 };
 picker.addEventListener('change', pickerChanged);
-window.addEventListener('online', () => { toast('İnternet bağlantısı geldi.', 'good'); syncSharedContext(); });
+window.addEventListener('online', () => { toast('İnternet bağlantısı geldi.', 'good'); syncSharedContext(); refreshDriveStatus({ silent: true }).then(render); });
 window.addEventListener('offline', () => { state.auth.status = readSharedSession() ? 'cached' : 'signed_out'; render(); toast('Offline mod: kayıtlar cihazda tutuluyor.'); });
 window.addEventListener('storage', (event) => {
   if ([SHARED_SESSION_KEY, SHARED_PANEL_KEY, SHARED_ACCESS_KEY, SHARED_ACTIVE_SEFLIK_KEY].includes(event.key)) {
@@ -1258,6 +1445,7 @@ window.addEventListener('afterprint', () => { document.getElementById('printArea
 (async function init() {
   try {
     await loadData();
+    await handleDriveOAuthCallback();
     render();
     if ('serviceWorker' in navigator) navigator.serviceWorker.register('./service-worker.js').catch(() => {});
     if (navigator.onLine) syncSharedContext();

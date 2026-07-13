@@ -1,7 +1,9 @@
 {
-  "version": "0.1.1",
+  "version": "0.1.2",
   "name": "İstif Alma",
-  "build": "2026.07.13.2",
+  "build": "2026.07.13.3",
   "sharedAuth": true,
-  "sharedSeflikFolder": true
+  "sharedSeflikFolder": true,
+  "sharedDrive": true,
+  "sharedForesters": true
 }

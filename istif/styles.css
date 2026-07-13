@@ -233,3 +233,48 @@ img{max-width:100%;display:block}
 @media print{
   body{background:#fff!important;padding:0!important}.app-shell,.bottom-nav,.modal,.toast{display:none!important}.print-area{display:block!important;padding:0;color:#111;font-family:Arial,sans-serif}.print-page{page-break-after:always;padding:14mm}.print-page:last-child{page-break-after:auto}.print-page h1{text-align:center;font-size:18pt;margin:0 0 5mm}.print-page h2{font-size:14pt;margin:0 0 4mm}.print-meta{display:grid;grid-template-columns:1fr 1fr;gap:2mm 8mm;border:1px solid #333;padding:4mm;margin-bottom:5mm}.print-table{width:100%;border-collapse:collapse;font-size:10pt}.print-table th,.print-table td{border:1px solid #333;padding:2.5mm;text-align:left}.print-collage{display:grid;grid-template-columns:1fr 1fr;gap:2mm}.print-collage img,.print-placeholder{width:100%;height:75mm;object-fit:cover;border:1px solid #333}.print-placeholder{display:grid;place-items:center;color:#666}.print-footer{margin-top:5mm;font-size:9pt;color:#555;text-align:right}
 }
+
+/* v0.1.2 — Ormancılar ve ortak Şeflik Drive alanı */
+.foresters-card{padding:15px;margin:-7px 0 18px;border-color:#d8e7dc;background:linear-gradient(145deg,#fff,#fbfefc)}
+.foresters-head{display:grid;grid-template-columns:50px minmax(0,1fr);gap:12px;align-items:center}
+.foresters-head .round-icon{width:46px;height:46px;border-radius:16px}
+.foresters-head>div{min-width:0;display:grid;gap:2px}
+.foresters-head small{font-size:12px;color:var(--muted);font-weight:650}
+.foresters-head strong{font-size:17px;line-height:1.2;color:var(--text);font-weight:760}
+.foresters-head span{font-size:12px;color:var(--green);font-weight:650;overflow-wrap:anywhere}
+.forester-chips{display:flex;flex-wrap:wrap;gap:7px;margin:13px 0 12px;padding-top:12px;border-top:1px solid var(--line)}
+.forester-chip{min-height:34px;max-width:100%;display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid var(--line);border-radius:999px;background:#fff;color:var(--text);font-size:11.5px;box-shadow:0 3px 9px rgba(13,69,41,.035)}
+.forester-chip.selected{border-color:#7cb492;background:var(--green-soft);color:var(--green-dark)}
+.forester-chip img{width:20px;height:20px;border-radius:50%;object-fit:cover}
+.forester-chip b{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:170px}
+.forester-chip i{font-style:normal;font-size:9px;color:var(--amber);font-weight:760}
+.forester-more{display:grid;place-items:center;min-width:34px;height:34px;border-radius:999px;background:var(--green);color:#fff;font-size:11px;font-weight:760}
+.forester-empty{display:block;margin:13px 0;color:var(--muted);font-size:12.5px}
+.forester-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.forester-actions .btn{min-height:45px;padding:9px 8px;font-size:13px}
+
+.drive-card{padding:15px;margin-bottom:11px;border-color:#d6e8dc;background:linear-gradient(145deg,#fff 0%,#f8fcf9 100%)}
+.drive-card-title{display:grid;grid-template-columns:43px minmax(0,1fr) 12px;gap:11px;align-items:start;color:var(--green)}
+.drive-card-title>span{width:43px;height:43px;border-radius:15px;background:var(--green-soft);display:grid;place-items:center}
+.drive-card-title b{display:block;color:var(--green-dark);font-size:16px;line-height:1.2;font-weight:780}
+.drive-card-title small{display:block;color:var(--muted);font-size:11.5px;line-height:1.4;margin-top:3px}
+.drive-state{width:10px;height:10px;border-radius:50%;background:#c0c9c3;margin-top:5px}
+.drive-state.connected{background:#2dab68;box-shadow:0 0 0 4px rgba(45,171,104,.12)}
+.drive-status-copy{margin:13px 0 0;padding:10px 12px;border-radius:14px;background:var(--green-soft);color:var(--green-dark);font-size:12.5px;line-height:1.4;font-weight:650}
+.drive-details{margin-top:11px;border:1px solid var(--line);border-radius:15px;overflow:hidden;background:#fff}
+.drive-details>div{display:grid;grid-template-columns:92px minmax(0,1fr);gap:9px;padding:9px 11px;border-bottom:1px solid var(--line);font-size:12px}
+.drive-details>div:last-child{border-bottom:0}.drive-details span{color:var(--muted)}.drive-details b{font-weight:690;overflow-wrap:anywhere}
+.drive-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:11px}.drive-actions>.wide{grid-column:1/-1}
+.btn.danger-soft{color:#9d3030;border-color:#edcaca;background:#fff7f7}
+.managed-pill{grid-column:1/-1;min-height:44px;border:1px solid #bcdcc8;border-radius:14px;background:#eff9f2;color:var(--green);display:flex;align-items:center;justify-content:center;gap:8px;font-size:12.5px;font-weight:730}
+.drive-security{margin:11px 1px 0;color:var(--muted);font-size:10.8px;line-height:1.45}
+.dialog-label{display:block;margin:14px 0 6px;color:var(--muted);font-size:12px;font-weight:650}
+.dialog-input{width:100%;height:50px;border:1px solid var(--line-strong);border-radius:15px;background:#fff;padding:0 13px;outline:0;color:var(--text)}
+.dialog-input:focus{border-color:#7eb393;box-shadow:0 0 0 4px rgba(18,104,63,.09)}
+
+@media(max-width:440px){
+  .title-wrap h1{font-size:31px;letter-spacing:-.55px}.title-wrap p{font-size:13.5px}
+  .metric b{font-size:25px}.metric span{font-size:11px;font-weight:560}
+  .foresters-card{padding:13px}.forester-actions{grid-template-columns:1fr 1fr}.forester-actions .btn{font-size:12px;gap:6px}
+  .drive-actions{grid-template-columns:1fr}.drive-actions>.wide{grid-column:auto}
+}
