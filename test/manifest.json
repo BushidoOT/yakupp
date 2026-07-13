@@ -1,7 +1,7 @@
 {
   "name": "Mesaha Suite Test",
   "short_name": "Mesaha Suite",
-  "start_url": "./",
+  "start_url": "./?suite=3",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f5f8f6",
@@ -19,7 +19,7 @@
       "type": "image/png"
     }
   ],
-  "id": "./?suite=test-v2",
+  "id": "./?suite=3",
   "description": "Mesaha İO ve İstif İO ortak giriş ve offline başlangıç ekranı",
-  "version": "test-v2"
+  "version": "test-v3"
 }
