@@ -1,6 +1,6 @@
 'use strict';
 
-const APP_VERSION = '0.2.7';
+const APP_VERSION = '0.2.8';
 const MAX_PHOTO_BYTES = 1024 * 1024;
 const DB_NAME = 'mesaha-istif-prototype';
 const DB_VERSION = 1;
@@ -21,7 +21,7 @@ const SHARED_SESSION_BACKUP_KEY = 'mesaha_supabase_v569_session_backup';
 const SHARED_PANEL_KEY = 'mesaha_panel_user_v316';
 const SHARED_ACCESS_KEY = 'mesaha_google_access_v548';
 const SHARED_ACTIVE_SEFLIK_KEY = 'mesaha_active_seflik_folder_v564';
-const SHARED_CACHE_SETTING_KEY = 'shared-context-v027';
+const SHARED_CACHE_SETTING_KEY = 'shared-context-v028';
 
 const DEFAULT_SETTINGS = {
   seflik: '',
@@ -36,7 +36,7 @@ const DEFAULT_SETTINGS = {
   driveCreatedFolderId: '', // eski sürüm uyumluluğu
   photoMaxBytes: MAX_PHOTO_BYTES,
 };
-const GENERIC_SETTINGS_MIGRATION_KEY = 'mesaha-istif-generic-settings-v027';
+const GENERIC_SETTINGS_MIGRATION_KEY = 'mesaha-istif-generic-settings-v028';
 
 const state = {
   view: 'home',
@@ -541,7 +541,29 @@ function refreshCurrentMembers() {
     const selfKey = state.auth.userId ? `uid:${state.auth.userId}` : (state.auth.email ? `email:${state.auth.email}` : `name:${stableKey(state.auth.name)}`);
     if (!map.has(selfKey)) map.set(selfKey, { id: state.auth.userId || state.auth.name, userId: state.auth.userId, email: state.auth.email, name: state.auth.name, avatarUrl: state.auth.avatarUrl, role: currentFolderIsOwner() ? 'owner' : 'member', isSelf: true, custom: false });
   }
-  state.ormancilar = [...map.values()].sort((a, b) => {
+  const mergedList = [];
+  [...map.values()].forEach((item) => {
+    const same = mergedList.find((existing) =>
+      (item.userId && existing.userId && item.userId === existing.userId) ||
+      (item.email && existing.email && clean(item.email).toLocaleLowerCase('tr-TR') === clean(existing.email).toLocaleLowerCase('tr-TR')) ||
+      (item.name && existing.name && stableKey(item.name) === stableKey(existing.name))
+    );
+    if (same) {
+      Object.assign(same, {
+        ...same,
+        ...item,
+        userId: same.userId || item.userId,
+        email: same.email || item.email,
+        avatarUrl: same.avatarUrl || item.avatarUrl,
+        isSelf: same.isSelf || item.isSelf,
+        custom: same.custom || item.custom,
+        role: same.role === 'owner' ? same.role : (item.role || same.role),
+      });
+    } else {
+      mergedList.push({ ...item });
+    }
+  });
+  state.ormancilar = mergedList.sort((a, b) => {
     if (a.isSelf && !b.isSelf) return -1;
     if (!a.isSelf && b.isSelf) return 1;
     return clean(a.name).localeCompare(clean(b.name), 'tr');
@@ -1403,7 +1425,7 @@ function showAddOrmanciDialog() {
     return;
   }
   refreshCurrentMembers();
-  const existingHtml = state.ormancilar.length ? `<div class="existing-foresters"><b>Ekli Ormancılar</b>${state.ormancilar.map((item, index) => { const role = clean(item.role).toLocaleLowerCase('tr-TR'); const removable = currentFolderIsOwner() && !item.isSelf && !['owner','creator','kurucu'].includes(role); return `<div class="existing-forester-row"><span class="picker-avatar">${item.avatarUrl ? `<img src="${esc(item.avatarUrl)}" alt="">` : icon('user', 18)}</span><span><strong>${esc(item.name)}</strong><small>${esc(item.email || (item.isSelf ? 'Kendi hesabınız' : item.role === 'owner' ? 'Şeflik kurucusu' : item.custom ? 'Ekli ormancı' : 'Mesaha İO kullanıcısı'))}</small></span>${removable ? `<button class="btn danger-soft small forester-remove-btn" type="button" data-remove-forester="${index}">Çıkar</button>` : ''}</div>`; }).join('')}</div>` : `<div class="existing-foresters"><b>Ekli Ormancılar</b><span>Henüz ortak ormancı görünmüyor. Kullanıcıları yenile deyin.</span></div>`;
+  const existingHtml = state.ormancilar.length ? `<div class="existing-foresters"><b>Ekli Ormancılar</b>${state.ormancilar.map((item, index) => { const role = clean(item.role).toLocaleLowerCase('tr-TR'); const removable = currentFolderIsOwner() && !item.isSelf && !['owner','creator','kurucu'].includes(role); return `<div class="existing-forester-row"><span class="picker-avatar">${item.avatarUrl ? `<img src="${esc(item.avatarUrl)}" alt="">` : icon('user', 18)}</span><span class="existing-forester-copy"><strong>${esc(item.name)}</strong><small>${esc(item.email || (item.isSelf ? 'Kendi hesabınız' : item.role === 'owner' ? 'Şeflik kurucusu' : item.custom ? 'Ekli ormancı' : 'Mesaha İO kullanıcısı'))}</small></span>${removable ? `<button class="btn danger-soft small forester-remove-btn" type="button" data-remove-forester="${index}">Çıkar</button>` : ''}</div>`; }).join('')}</div>` : `<div class="existing-foresters"><b>Ekli Ormancılar</b><span>Henüz ortak ormancı görünmüyor. Kullanıcıları yenile deyin.</span></div>`;
   showDialog(`<h3>Ormancı Ekle / Çıkar</h3><p>Yalnızca Mesaha İO’da Google ile giriş yapmış ve onaylı kullanıcılar eklenebilir. En az 3 harf yazınca öneriler çıkar.</p><label class="dialog-label">Kullanıcı Ara</label><input id="foresterSearchInput" class="dialog-input" autocomplete="off" placeholder="Ad, soyad veya e-posta"><div id="foresterSuggestBox" class="suggest-box"><span>En az 3 harf yazın.</span></div>${existingHtml}<div class="dialog-actions"><button class="btn" data-dialog-close>Kapat</button><button class="btn" id="refreshUserSuggestions">Kullanıcıları Yenile</button></div>`);
   const input = document.getElementById('foresterSearchInput');
   const box = document.getElementById('foresterSuggestBox');
@@ -1501,14 +1523,19 @@ async function removeForesterUser(member) {
   if (!currentFolderIsOwner()) return toast('Ormancı çıkarmayı yalnızca şeflik kurucusu yapabilir.', 'bad');
   if (member.isSelf || ['owner', 'creator', 'kurucu'].includes(role)) return toast('Kurucu kullanıcı çıkarılamaz.', 'bad');
   const userId = clean(member.userId || member.user_id || member.member_user_id || member.forester_user_id);
-  if (!confirm(`${member.name} ormancı listesinden çıkarılsın mı?`)) return;
+  const email = clean(member.email || member.user_email || member.member_email);
+  const name = clean(member.name);
+  if (!confirm(`${name || 'Bu ormancı'} listeden çıkarılsın mı?`)) return;
   try {
-    if (member.custom) {
-      await bridgeCall('forester_remove', { seflikKey: state.settings.seflikKey, seflik: state.settings.seflik, id: member.id, userId, email: member.email, name: member.name });
-    } else {
-      if (!userId) throw new Error('Bu ormancının Google kullanıcı kimliği bulunamadı.');
-      await edgeCall('seflik_folder_remove_member', { seflik: state.settings.seflik, folderSeflik: state.settings.seflik, seflikKey: state.settings.seflikKey, member_user_id: userId, memberUserId: userId });
-    }
+    await bridgeCall('forester_remove', {
+      seflikKey: state.settings.seflikKey,
+      seflik: state.settings.seflik,
+      id: member.id,
+      userId,
+      email,
+      name,
+      custom: member.custom === true,
+    });
     await syncSharedContext({ manual: false });
     if (state.settings.ormanci === member.name) state.settings.ormanci = '';
     if (state.draft?.ormanci === member.name) state.draft.ormanci = '';
@@ -1776,7 +1803,7 @@ function documentRowsHtml(rows, withCoordinates = false) {
   const body = rows.map((record, index) => {
     const bolme = recordBolme(record);
     const type = documentTypeForForm(record);
-    const row = `<tr><td>${index + 1}</td><td>${repeatedDocumentValue(bolme, previousBolme)}</td><td>${esc(record.istifNo)}</td><td>${repeatedDocumentValue(type, previousType)}</td><td>${esc(record.ster)}</td>${withCoordinates ? `<td>${esc(record.coordinates || '')}</td><td>${index + 1}</td>` : `<td>${esc(record.ormanci || '')}</td>`}</tr>`;
+    const row = `<tr><td>${index + 1}</td><td>${repeatedDocumentValue(bolme, previousBolme)}</td><td>${esc(record.istifNo)}</td><td>${repeatedDocumentValue(type, previousType)}</td><td>${esc(record.ster)}</td>${withCoordinates ? `<td>${esc(record.coordinates || '')}</td><td>${index + 1}</td>` : `<td></td>`}</tr>`;
     previousBolme = bolme;
     previousType = type;
     return row;
@@ -1814,7 +1841,7 @@ async function previewDocuments() {
 }
 
 function printDocumentCss() {
-  return `@page{size:A4;margin:0}*{box-sizing:border-box}html,body{margin:0;background:#fff;color:#111;font-family:Arial,Helvetica,sans-serif}.print-toolbar{position:sticky;top:0;z-index:10;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 14px;background:#0f5f39;color:#fff}.print-toolbar button{border:0;border-radius:10px;background:#fff;color:#0f5f39;font-weight:800;padding:10px 14px}.print-page{width:210mm;min-height:297mm;margin:0 auto;background:#fff;page-break-after:always;break-after:page;padding:14mm;color:#111;overflow:hidden}.print-page:last-child{page-break-after:auto;break-after:auto}.print-page h1{text-align:center;font-size:18pt;margin:0 0 5mm;color:#111}.print-page h2{font-size:14pt;margin:0 0 4mm;color:#111}.print-table{width:100%;border-collapse:collapse;font-size:10pt;color:#111}.print-table th,.print-table td{border:1px solid #333;padding:2.5mm;text-align:left;vertical-align:top}.photo-document-page{height:297mm;min-height:0;padding:9mm 12mm 9mm;display:block;position:relative;overflow:hidden}.photo-print-header{display:block;margin:0 0 4mm}.photo-print-meta{font-size:11pt;line-height:1.38;padding:0;text-align:left;color:#111}.photo-print-meta div{margin:1mm 0}.photo-print-collage{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:3mm;height:250mm}.photo-print-collage figure{margin:0;border:1px solid #111;position:relative;overflow:hidden;background:#f8f8f8;display:block}.photo-print-collage img{width:100%;height:100%;object-fit:cover;display:block}.photo-print-collage .print-placeholder{height:auto;width:auto;display:block;background:#fff}.print-placeholder{display:block;color:#666;border:1px solid #333}.workbook-document{padding:10mm 10mm;font-size:9pt}.workbook-document h1{font-size:15pt;margin-bottom:4mm}.workbook-document h2{text-align:center;font-size:12pt;margin:5mm 0 0;border:1px solid #222;border-bottom:0;padding:2.5mm}.workbook-fields{display:grid;gap:1mm;margin-bottom:3mm}.workbook-fields div{display:grid;grid-template-columns:48mm 1fr;align-items:center;min-height:6mm}.workbook-fields b{text-align:right;padding-right:4mm}.workbook-fields span{border-bottom:1px solid transparent;min-height:5mm}.workbook-table{font-size:8.6pt;table-layout:fixed}.workbook-table th,.workbook-table td{text-align:center;padding:1.5mm;height:7mm}.workbook-table th:nth-child(1){width:13mm}.workbook-table th:nth-child(2){width:18mm}.workbook-table th:nth-child(3){width:22mm}.workbook-table th:nth-child(4){width:46mm}.workbook-table th:nth-child(5){width:25mm}.coordinate-workbook-table th:nth-child(6){width:42mm}.coordinate-workbook-table th:nth-child(7){width:20mm}.workbook-note{margin:7mm 8mm 0;line-height:1.45;text-align:center}.workbook-date{text-align:right;margin:5mm 15mm 0}.workbook-signatures{display:flex;justify-content:space-around;margin-top:18mm;font-weight:700}.print-footer{margin-top:4mm;font-size:9pt;color:#555;text-align:right}.photo-document-page .print-footer{position:absolute;right:12mm;bottom:4mm;margin:0;font-size:8pt;color:#666}.empty-print{padding:24px;font-size:16px}@media print{.print-toolbar{display:none!important}.print-page{margin:0;box-shadow:none}body{background:#fff}}`;
+  return `@page{size:A4;margin:0}*{box-sizing:border-box}html,body{margin:0;background:#fff;color:#111;font-family:Arial,Helvetica,sans-serif}.print-toolbar{position:sticky;top:0;z-index:10;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 14px;background:#0f5f39;color:#fff}.print-toolbar button{border:0;border-radius:10px;background:#fff;color:#0f5f39;font-weight:800;padding:10px 14px}.print-page{width:210mm;min-height:297mm;margin:0 auto;background:#fff;page-break-after:always;break-after:page;padding:14mm;color:#111;overflow:hidden}.print-page:last-child{page-break-after:auto;break-after:auto}.print-page h1{text-align:center;font-size:18pt;margin:0 0 5mm;color:#111}.print-page h2{font-size:14pt;margin:0 0 4mm;color:#111}.print-table{width:100%;border-collapse:collapse;font-size:10pt;color:#111}.print-table th,.print-table td{border:1px solid #333;padding:2.5mm;text-align:left;vertical-align:top}.photo-document-page{height:297mm;min-height:0;padding:9mm 12mm 9mm;display:block;position:relative;overflow:hidden}.photo-print-header{display:block;margin:0 0 4mm}.photo-print-meta{font-size:11pt;line-height:1.38;padding:0;text-align:left;color:#111}.photo-print-meta div{margin:1mm 0}.photo-print-collage{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:3mm;height:250mm}.photo-print-collage figure{margin:0;border:1px solid #111;position:relative;overflow:hidden;background:#f8f8f8;display:block}.photo-print-collage img{width:100%;height:100%;object-fit:cover;display:block}.photo-print-collage .print-placeholder{height:auto;width:auto;display:block;background:#fff}.print-placeholder{display:block;color:#666;border:1px solid #333}.workbook-document{padding:10mm 10mm;font-size:9pt}.workbook-document h1{font-size:15pt;margin-bottom:4mm}.workbook-document h2{text-align:center;font-size:12pt;margin:5mm 0 0;border:1px solid #222;border-bottom:0;padding:2.5mm}.workbook-fields{display:grid;gap:1mm;margin-bottom:3mm}.workbook-fields div{display:grid;grid-template-columns:48mm 1fr;align-items:center;min-height:6mm}.workbook-fields b{text-align:right;padding-right:4mm}.workbook-fields span{border-bottom:1px solid transparent;min-height:5mm}.workbook-table{font-size:8.6pt;table-layout:fixed}.workbook-table th,.workbook-table td{text-align:center;padding:1.5mm;height:7mm}.workbook-table th:nth-child(1){width:13mm}.workbook-table th:nth-child(2){width:18mm}.workbook-table th:nth-child(3){width:22mm}.workbook-table th:nth-child(4){width:46mm}.workbook-table th:nth-child(5){width:25mm}.coordinate-workbook-table th:nth-child(6){width:42mm}.coordinate-workbook-table th:nth-child(7){width:20mm}.workbook-note{margin:7mm 8mm 0;line-height:1.45;text-align:center}.workbook-date{text-align:right;margin:5mm 15mm 0}.workbook-signatures{display:flex;justify-content:space-around;margin-top:34mm;padding-top:8mm;font-weight:700}.print-footer{margin-top:4mm;font-size:9pt;color:#555;text-align:right}.photo-document-page .print-footer{position:absolute;right:12mm;bottom:4mm;margin:0;font-size:8pt;color:#666}.empty-print{padding:24px;font-size:16px}@media print{.print-toolbar{display:none!important}.print-page{margin:0;box-shadow:none}body{background:#fff}}`;
 }
 
 function buildPrintDocument(innerHtml) {

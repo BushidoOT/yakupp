@@ -1,8 +1,8 @@
 {
-  "version": "0.2.7",
+  "version": "0.2.8",
   "name": "Mesaha İO İstif Alma",
-  "updatedAt": "2026-07-13T17:30:00+03:00",
-  "notes": "Kişisel varsayılanlar kaldırıldı; kurum bilgileri kullanıcı kaydına bağlandı; demo istifler temizlendi; ormancı çıkarma eklendi; orijinal evrak şablonu esas alındı",
-  "visibleVersion": "İstif Alma v0.2.7",
-  "build": "20260713-v027"
+  "updatedAt": "2026-07-13T18:45:00+03:00",
+  "notes": "Ürün sahibi alanı boş bırakıldı; imza alanı genişletildi; ormancı çıkarma istif-drive üzerinden düzeltildi; ormancı liste tekrarları temizlendi",
+  "visibleVersion": "İstif Alma v0.2.8",
+  "build": "20260713-v028"
 }
