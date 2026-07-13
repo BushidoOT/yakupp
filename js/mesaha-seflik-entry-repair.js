@@ -1,8 +1,8 @@
-/* Mesaha İO V5.81 — Şeflik Klasörü giriş onarımı, yükleniyor ekranı ve zayıf bağlantı fallback. */
+/* Mesaha İO V5.82 — Misafir modunda Şeflik Klasörü yüklenme kilidi önleme. */
 (function(){
   'use strict';
-  if(window.__mesahaSeflikEntryRepairV581) return;
-  window.__mesahaSeflikEntryRepairV581 = true;
+  if(window.__mesahaSeflikEntryRepairV582) return;
+  window.__mesahaSeflikEntryRepairV582 = true;
 
   var ACTIVE_KEY='mesaha_active_seflik_folder_v564';
   var PANEL_KEY='mesaha_panel_user_v316';
@@ -33,7 +33,10 @@
   function avatar(){var p=panel(),a=access(),s=session(),u=s.user||{},m=u.user_metadata||{},t=terminal();var vals=[p.googleAvatarUrl,p.avatarUrl,a.avatar_url,a.google_avatar_url,t.avatarUrl,t.avatar_url,m.avatar_url,m.picture];for(var i=0;i<vals.length;i++){var v=clean(vals[i]);if(/^https?:\/\//i.test(v))return v}return ''}
   function api(){return window.mesahaSupabaseV380||window.mesahaSupabaseV383||window.mesahaSupabase||null}
   function terminalAuth(){var t=terminal();if(t.active&&clean(t.source)==='pair_code'&&(t.terminalCode||t.terminalToken))return{terminalCode:clean(t.terminalCode),terminalToken:clean(t.terminalToken),terminalPairedUserId:clean(t.pairedUserId),terminalPairedEmail:clean(t.pairedEmail)};return {}}
-  function edge(action,data){var a=api();if(!a||typeof a.edge!=='function')return Promise.reject(new Error('Güvenli sunucu bağlantısı hazır değil.'));return a.edge(action,Object.assign({source:'seflik-entry-repair-v581',seflik:activeSeflik(),folderSeflik:activeSeflik()},terminalAuth(),data||{}))}
+  function pairedTerminal(){var t=terminal();return !!(t.active&&clean(t.source)==='pair_code'&&(t.pairedUserId||t.terminalToken||t.terminalCode))}
+  function cloudAccess(){var p=panel(),a=access(),s=session();return !!(s.access_token||clean(a.status)==='approved'||p.googleApproved===true||p.terminalPairedUserId||pairedTerminal())}
+  function blockedMessage(){var t=terminal();return t.active&&!pairedTerminal()?'Misafir modunda Şeflik Klasörü buluta bağlanmaz. Terminal kodu eşleştirin veya Google ile giriş yapın.':'Şeflik Klasörü için Google girişi veya kodla eşleşmiş terminal gerekir.'}
+  function edge(action,data){var a=api();if(!a||typeof a.edge!=='function')return Promise.reject(new Error('Güvenli sunucu bağlantısı hazır değil.'));return a.edge(action,Object.assign({source:'seflik-entry-repair-v582',seflik:activeSeflik(),folderSeflik:activeSeflik()},terminalAuth(),data||{}))}
   function withTimeout(promise,ms,msg){var timer=0;return Promise.race([Promise.resolve(promise),new Promise(function(_,reject){timer=setTimeout(function(){reject(new Error(msg||'10 saniyede cevap gelmedi.'))},ms||10000)})]).finally(function(){if(timer)clearTimeout(timer)})}
   function toast(t,s,k){try{var f=window.mesahaFloatToastV315||window.mesahaFloatToastV314;if(typeof f==='function')return f(t,s||'',k||'success')}catch(e){}try{if(window.toast)return window.toast(t+(s?' — '+s:''))}catch(e){} }
   function setStatus(text,kind){var st=$('seflikFolderStatusV528');if(st){st.textContent=text;st.dataset.kind=kind||''}var meta=$('seflikFolderRemoteMetaV528');if(meta)meta.textContent=text}
@@ -78,6 +81,16 @@
     if(box&&!box.querySelector('.seflik-division-card'))box.innerHTML='<div class="seflik-folder-empty">Şeflik klasörü getiriliyor…<br><small>Şeflikler, üyeler, bölmeler ve senkron kayıtları kontrol ediliyor.</small></div>';
     showLocalMemberFallback('Üyeler yükleniyor…');
   }
+  function renderAccessBlocked(){
+    var msg=blockedMessage();
+    setStatus(msg,'error');
+    var box=$('seflikFolderListV528');
+    if(box&&!box.querySelector('.seflik-division-card'))box.innerHTML='<div class="seflik-folder-empty">Şeflik Klasörü kapalı<br><small>'+esc(msg)+' En son mevcut bilgiler gösteriliyor.</small></div>';
+    var members=$('seflikMemberListV566');if(members)members.innerHTML='<div class="seflik-v564-note">'+esc(msg)+'</div>';
+    update('Şeflik Klasörü kapalı',msg,100);hide(700);
+    if(Date.now()-lastWarnAt>6000){lastWarnAt=Date.now();toast('Şeflik Klasörü kapalı',msg,'warning')}
+    return false;
+  }
 
   async function ensureServerFolder(){
     var sf=activeSeflik();
@@ -91,6 +104,7 @@
     if(refreshPromise)return refreshPromise;
     var sf=activeSeflik();
     lastStartedAt=Date.now();
+    if(!cloudAccess())return Promise.resolve(renderAccessBlocked());
     show('Şeflik klasörü getiriliyor…','Cihazdaki son bilgiler hazırlanıyor.',8);
     renderInitialLoading();
     refreshPromise=(async function(){
@@ -132,17 +146,17 @@
 
   function onSeflikEntry(){setTimeout(function(){refresh('entry').catch(function(){})},20)}
   function wrapShowView(){
-    if(typeof window.showView==='function'&&!window.showView.__seflikEntryRepairV581){
+    if(typeof window.showView==='function'&&!window.showView.__seflikEntryRepairV582){
       var original=window.showView;
       var wrapped=function(view){var r=original.apply(this,arguments);try{if(clean(view)==='seflikFolder')onSeflikEntry()}catch(e){}return r};
-      wrapped.__seflikEntryRepairV581=true;
+      wrapped.__seflikEntryRepairV582=true;
       window.showView=wrapped;
     }
   }
   function boot(){wrapShowView();if($('seflikFolderView')&&$('seflikFolderView').classList.contains('active')&&Date.now()-lastStartedAt>2500)onSeflikEntry()}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
   [200,800,1600,3000].forEach(function(ms){setTimeout(boot,ms)});
-  document.addEventListener('click',function(ev){var n=ev.target&&ev.target.closest&&ev.target.closest('[data-nav="seflikFolder"]');if(n){show('Şeflik klasörü getiriliyor…','Şeflikler, üyeler, bölmeler ve senkron kayıtları kontrol ediliyor.',7);renderInitialLoading();onSeflikEntry()}},true);
+  document.addEventListener('click',function(ev){var n=ev.target&&ev.target.closest&&ev.target.closest('[data-nav="seflikFolder"]');if(n){if(!cloudAccess()){ev.preventDefault();ev.stopPropagation();ev.stopImmediatePropagation();renderAccessBlocked();return false}show('Şeflik klasörü getiriliyor…','Şeflikler, üyeler, bölmeler ve senkron kayıtları kontrol ediliyor.',7);renderInitialLoading();onSeflikEntry()}},true);
   window.addEventListener('online',function(){var v=$('seflikFolderView');if(v&&v.classList.contains('active'))setTimeout(function(){refresh('online').catch(function(){})},600)});
-  window.MesahaSeflikEntryRepairV581={refresh:refresh,showLoading:show,updateLoading:update,hideLoading:hide,showLocalMemberFallback:showLocalMemberFallback};
+  window.MesahaSeflikEntryRepairV581={refresh:refresh,showLoading:show,updateLoading:update,hideLoading:hide,showLocalMemberFallback:showLocalMemberFallback};window.MesahaSeflikEntryRepairV582=window.MesahaSeflikEntryRepairV581;
 })();
