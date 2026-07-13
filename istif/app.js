@@ -1,6 +1,6 @@
 'use strict';
 
-const APP_VERSION = '0.1.2';
+const APP_VERSION = '0.1.3';
 const MAX_PHOTO_BYTES = 1024 * 1024;
 const DB_NAME = 'mesaha-istif-prototype';
 const DB_VERSION = 1;
@@ -14,13 +14,13 @@ const TYPE_ORDER = [
 const SUPABASE_URL = 'https://swrbpdpotmirnmtqnuba.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_G_ZFeUouDxg57Nne5pflfQ_cVGpdMbR';
 const EDGE_URL = `${SUPABASE_URL}/functions/v1/smooth-function`;
-const DRIVE_BRIDGE_URL = `${SUPABASE_URL}/functions/v1/istif-drive-bridge`;
+const DRIVE_BRIDGE_URL = `${SUPABASE_URL}/functions/v1/istif-drive`;
 const SHARED_SESSION_KEY = 'mesaha_supabase_v500_session';
 const SHARED_SESSION_BACKUP_KEY = 'mesaha_supabase_v569_session_backup';
 const SHARED_PANEL_KEY = 'mesaha_panel_user_v316';
 const SHARED_ACCESS_KEY = 'mesaha_google_access_v548';
 const SHARED_ACTIVE_SEFLIK_KEY = 'mesaha_active_seflik_folder_v564';
-const SHARED_CACHE_SETTING_KEY = 'shared-context-v012';
+const SHARED_CACHE_SETTING_KEY = 'shared-context-v013';
 
 const DEFAULT_SETTINGS = {
   seflik: '',
@@ -331,7 +331,7 @@ async function edgeCall(action, payload = {}, retried = false) {
       Authorization: `Bearer ${session.access_token}`,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ action, source: 'mesaha-istif-v012', ...payload }),
+    body: JSON.stringify({ action, source: 'mesaha-istif-v013', ...payload }),
   });
   const body = await response.json().catch(() => ({}));
   if ((response.status === 401 || response.status === 403) && !retried && readSharedSession()?.refresh_token) {
@@ -352,7 +352,7 @@ async function bridgeCall(action, payload = {}, retried = false) {
       Authorization: `Bearer ${session.access_token}`,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ action, source: 'mesaha-istif-v012', ...payload }),
+    body: JSON.stringify({ action, source: 'mesaha-istif-v013', ...payload }),
   });
   const body = await response.json().catch(() => ({}));
   if ((response.status === 401 || response.status === 403) && !retried && readSharedSession()?.refresh_token) {
