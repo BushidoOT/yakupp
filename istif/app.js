@@ -1,6 +1,6 @@
 'use strict';
 
-const APP_VERSION = '0.3.2';
+const APP_VERSION = '0.3.3';
 const MAX_PHOTO_BYTES = 1024 * 1024;
 const DB_NAME = 'mesaha-istif-prototype';
 const DB_VERSION = 1;
@@ -21,7 +21,7 @@ const SHARED_SESSION_BACKUP_KEY = 'mesaha_supabase_v569_session_backup';
 const SHARED_PANEL_KEY = 'mesaha_panel_user_v316';
 const SHARED_ACCESS_KEY = 'mesaha_google_access_v548';
 const SHARED_ACTIVE_SEFLIK_KEY = 'mesaha_active_seflik_folder_v564';
-const SHARED_CACHE_SETTING_KEY = 'shared-context-v032';
+const SHARED_CACHE_SETTING_KEY = 'shared-context-v033';
 
 const DEFAULT_SETTINGS = {
   seflik: '',
@@ -36,7 +36,7 @@ const DEFAULT_SETTINGS = {
   driveCreatedFolderId: '', // eski sürüm uyumluluğu
   photoMaxBytes: MAX_PHOTO_BYTES,
 };
-const GENERIC_SETTINGS_MIGRATION_KEY = 'mesaha-istif-generic-settings-v032';
+const GENERIC_SETTINGS_MIGRATION_KEY = 'mesaha-istif-generic-settings-v033';
 
 const state = {
   view: 'home',
@@ -360,7 +360,7 @@ async function edgeCall(action, payload = {}, retried = false) {
       Authorization: `Bearer ${session.access_token}`,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ action, source: 'mesaha-istif-v029', ...payload }),
+    body: JSON.stringify({ action, source: 'mesaha-istif-v033', ...payload }),
   });
   const body = await response.json().catch(() => ({}));
   if ((response.status === 401 || response.status === 403) && !retried && readSharedSession()?.refresh_token) {
@@ -381,7 +381,7 @@ async function bridgeCall(action, payload = {}, retried = false) {
       Authorization: `Bearer ${session.access_token}`,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ action, source: 'mesaha-istif-v029', ...payload }),
+    body: JSON.stringify({ action, source: 'mesaha-istif-v033', ...payload }),
   });
   const body = await response.json().catch(() => ({}));
   if ((response.status === 401 || response.status === 403) && !retried && readSharedSession()?.refresh_token) {
@@ -1236,6 +1236,21 @@ async function editRecord(recordId) {
     size: photo.size || (photo.blob && photo.blob.size) || 0,
   })).filter((photo) => photo.blob) : [];
   setView('new');
+  const remoteFiles = Array.isArray(record.driveFiles) ? record.driveFiles : [];
+  const expectedCount = Math.min(4, Math.max(Number(record.photoCount || 0), remoteFiles.length));
+  if (expectedCount > state.selectedPhotos.length && remoteFiles.length && navigator.onLine !== false && readSharedSession()) {
+    toast('Drive fotoğrafları düzenleme ekranına getiriliyor…');
+    try {
+      const loaded = await hydrateDrivePhotosForEdit(record);
+      if (loaded) {
+        if (state.draft?.id === record.id) state.draft.photos = state.selectedPhotos.map((photo) => ({ ...photo }));
+        render();
+        toast(`${loaded} fotoğraf Drive’dan getirildi.`, 'good');
+      }
+    } catch (error) {
+      toast(`Drive fotoğrafları getirilemedi: ${clean(error?.message || error)}`, 'bad');
+    }
+  }
 }
 
 function driveFileIdsFromRecord(record) {
@@ -2013,6 +2028,47 @@ async function drivePhotoDataUrl(record, index = 0) {
   const dataUrl = clean(out.dataUrl || out.data_url);
   if (dataUrl && cacheKey) state.remotePhotoCache[cacheKey] = dataUrl;
   return dataUrl;
+}
+
+function dataUrlToBlob(dataUrl, fallbackType = 'image/jpeg') {
+  const value = clean(dataUrl);
+  if (!value || !value.includes(',')) throw new Error('Drive fotoğraf verisi okunamadı.');
+  const [meta, b64] = value.split(',', 2);
+  const mime = clean((meta.match(/data:([^;]+)/) || [])[1]) || fallbackType;
+  const binary = atob(b64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i += 1) bytes[i] = binary.charCodeAt(i);
+  return new Blob([bytes], { type: mime });
+}
+
+async function hydrateDrivePhotosForEdit(record) {
+  const files = Array.isArray(record?.driveFiles) ? record.driveFiles.slice(0, 4) : [];
+  if (!files.length) return 0;
+  let loaded = 0;
+  const nextPhotos = [...state.selectedPhotos];
+  for (let index = 0; index < files.length && index < 4; index += 1) {
+    if (nextPhotos[index]?.blob) continue;
+    try {
+      const file = files[index];
+      const dataUrl = await drivePhotoDataUrl(record, index);
+      if (!dataUrl) continue;
+      const mimeType = file?.mimeType || file?.mime_type || 'image/jpeg';
+      const blob = dataUrlToBlob(dataUrl, mimeType);
+      nextPhotos[index] = {
+        blob,
+        name: file?.name || file?.fileName || `${record.istifNo || 'istif'}_foto_${index + 1}.jpg`,
+        type: blob.type || mimeType,
+        size: blob.size,
+        fromDrive: true,
+        driveFileId: driveFileId(file),
+      };
+      loaded += 1;
+    } catch (error) {
+      console.warn('Drive fotoğrafı düzenleme için alınamadı', index + 1, error);
+    }
+  }
+  state.selectedPhotos = nextPhotos.filter((photo) => photo?.blob).slice(0, 4);
+  return loaded;
 }
 
 async function loadRemoteThumbnails() {
