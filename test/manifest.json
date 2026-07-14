@@ -1,7 +1,7 @@
 {
-  "name": "Mesaha Suite V16",
+  "name": "Mesaha Suite V17",
   "short_name": "Mesaha Suite",
-  "start_url": "./?v=16",
+  "start_url": "./?v=17",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f5f8f6",
@@ -19,7 +19,7 @@
       "type": "image/png"
     }
   ],
-  "id": "./?v=16",
-  "description": "Sol üst sürüm göstergesi, otomatik yeni sürüm algılama ve güvenilir uygulama güncelleme akışı",
-  "version": "suite_v16"
+  "id": "./?v=17",
+  "description": "Barkoda göre ortak Mesaha birleştirme, tek merkez assets ve otomatik silme senkronizasyonu",
+  "version": "suite_v17"
 }

@@ -6,8 +6,8 @@
   window.__mesahaSingleSoundEngineV377 = true;
 
   var SRC = {
-    success: './assets/mesaha_onay.wav',
-    warning: './assets/mesaha_uyari.wav'
+    success: '../assets/mesaha_onay.wav',
+    warning: '../assets/mesaha_uyari.wav'
   };
 
   var pool = { success:null, warning:null };

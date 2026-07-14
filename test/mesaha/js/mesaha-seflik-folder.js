@@ -294,42 +294,44 @@
   }
   function sendFolder(){return sendToDivision(selectedBolme(),currentLocalList(),'folder')}
 
-  async function openDivision(bolme){
-    if(!bolme)return;var detail=$('seflikFolderDetailV528'),box=$('seflikFolderRecordsV528'),title=$('seflikFolderDetailTitleV528');if(title)title.textContent='Bölme '+bolme;if(detail)detail.classList.add('open');if(box)box.innerHTML='<div class="seflik-folder-empty">Kayıtlar hazırlanıyor…</div>';
-    try{var out=await edge('seflik_folder_read',{bolmeNo:bolme});var list=Array.isArray(out.records)?out.records:[];if(!list.length){box.innerHTML='<div class="seflik-folder-empty">Bu bölmede henüz kayıt bulunmuyor.</div>';return}box.innerHTML=list.map(function(r){var d=r.record_data||r,m3=num(r.volume||volume(d));return '<article class="seflik-folder-record"><div><b>'+esc(d.barcode||'Barkodsuz')+' • '+esc(d.treeType||d.tree_type||'-')+'</b><small>'+esc(d.diameter||d.cap||'-')+' çap / '+esc(d.length||d.boy||'-')+' boy • '+esc(d.productType||d.product_type||'-')+' • '+esc(r.uploaded_by_name||'Kullanıcı')+'</small></div><div class="seflik-folder-record-m3">'+fmt(m3,3)+' m³</div></article>'}).join('');detail.scrollIntoView({behavior:'smooth',block:'start'})}catch(e){if(box)box.innerHTML='<div class="seflik-folder-empty">'+esc(String(e&&e.message?e.message:e))+'</div>'}
-  }
-
   function normalizeRemoteRecord(row,bolme,index){
     var d=Object.assign({},row&&row.record_data?row.record_data:row||{});
     var id=clean(d.id||d.barcode||row.record_key||('seflik_'+bolme+'_'+index));
     d.id=id;d.bolmeNo=bolme;d.seflik=user().seflik;d.sharedFolderSource=true;d.sharedFolderLoadedAt=new Date().toISOString();d.sharedUploadedByName=clean(row&&row.uploaded_by_name)||clean(d.sharedUploadedByName);
     return d;
   }
+  function mergeByBarcodeV17(base,incoming){
+    var map=new Map();
+    function key(r,i){r=r||{};var b=clean(r.barcode||r.barkodNo||r.barkod_no);if(b)return 'b::'+b.toLocaleUpperCase('tr-TR');var id=clean(r.id);return id?'i::'+id:'r::'+i}
+    (Array.isArray(base)?base:[]).forEach(function(r,i){map.set(key(r,'b'+i),r)});
+    (Array.isArray(incoming)?incoming:[]).forEach(function(r,i){map.set(key(r,'i'+i),r)});
+    return Array.from(map.values())
+  }
   async function continueDivision(bolme){
     bolme=clean(bolme);if(!bolme)return;
-    var localCount=records().length;
-    var warning='Bölme '+bolme+' kayıtları cihaza yüklenecek. Mevcut '+localCount+' kayıt silinecektir. Bu işlem geri alınamaz. Devam edilsin mi?';
-    if(!confirm(warning))return;
+    var localRecords=records(),localCount=localRecords.length;
     if(!navigator.onLine){notify('İnternet bağlantısı yok','Mesahaya devam etmek için bölme kayıtları sunucudan alınmalı.','warning');return}
     setStatus('Bölme '+bolme+' kayıtları indiriliyor…','busy');
     try{
       var out=await edge('seflik_folder_read',{bolmeNo:bolme}),rows=Array.isArray(out.records)?out.records:[];
-      var nextRecords=rows.map(function(r,i){return normalizeRemoteRecord(r,bolme,i)});
+      var remoteRecords=rows.map(function(r,i){return normalizeRemoteRecord(r,bolme,i)}),nextRecords=mergeByBarcodeV17(remoteRecords,localRecords);
+      var duplicateCount=Math.max(0,remoteRecords.length+localRecords.length-nextRecords.length);
+      if(!confirm('Bölme '+bolme+' içindeki '+remoteRecords.length+' ortak kayıt, cihazdaki '+localCount+' kayıtla barkoda göre birleştirilsin mi?'+(duplicateCount?' '+duplicateCount+' aynı barkod tek kayıt tutulacak.':'')))return;
       var nextSettings=Object.assign({},settings(),{bolmeNo:bolme,seflik:user().seflik});
       var result;
-      if(window.MesahaStorageV527&&window.MesahaStorageV527.replaceAll)result=await window.MesahaStorageV527.replaceAll(nextRecords,nextSettings,{reason:'seflik-continue-'+bolme});
+      window.__suiteRemoteHydrating=true;
+      if(window.MesahaStorageV527&&window.MesahaStorageV527.replaceAll)result=await window.MesahaStorageV527.replaceAll(nextRecords,nextSettings,{reason:'seflik-continue-merge-v17-'+bolme});
       else{localStorage.setItem(RECORDS_KEY,JSON.stringify(nextRecords));localStorage.setItem(SETTINGS_KEY,JSON.stringify(nextSettings));result={ok:true}}
       if(result&&result.ok===false)throw new Error(result.error||'Kayıtlar cihaza yazılamadı');
       if(window.state){window.state.records=nextRecords;window.state.settings=Object.assign(window.state.settings||{},nextSettings)}
       var p=readJson(PANEL_KEY,{});p.bolmeNo=bolme;p.seflik=user().seflik;writeJson(PANEL_KEY,p);localStorage.setItem(LAST_BOLME_KEY,bolme);
       var b=$('bolmeNo');if(b)b.value=bolme;var sf=$('seflik');if(sf)sf.value=user().seflik;
       try{if(typeof window.renderAll==='function')window.renderAll();else if(window.MesahaRenderStorageV382&&window.MesahaRenderStorageV382.renderAllSoon)window.MesahaRenderStorageV382.renderAllSoon()}catch(e){}
-      try{window.dispatchEvent(new CustomEvent('mesaha:records-saved',{detail:{count:nextRecords.length,source:'seflik-continue'}}))}catch(e){}
-      setStatus('Bölme '+bolme+' cihaza yüklendi. Mesahaya devam edebilirsiniz.','success');
-      notify('Mesahaya devam ediliyor','Bölme '+bolme+' • '+nextRecords.length+' kayıt cihaza yüklendi.','success');
+      setStatus('Bölme '+bolme+' barkoda göre birleştirildi. Mesahaya devam edebilirsiniz.','success');
+      notify('Mesahaya devam ediliyor','Bölme '+bolme+' • toplam '+nextRecords.length+' benzersiz kayıt hazır.','success');
       if(typeof window.showView==='function')window.showView('entry');else{var open=$('openEntryBtn');if(open)open.click()}
-      setTimeout(function(){var input=$('barcodeInput');if(input)input.focus()},250);
-    }catch(e){setStatus('Bölme yüklenemedi: '+String(e&&e.message?e.message:e),'error');notify('Mesahaya devam edilemedi',String(e&&e.message?e.message:e),'error')}
+      setTimeout(function(){window.__suiteRemoteHydrating=false;var input=$('barcodeInput');if(input)input.focus()},250);
+    }catch(e){window.__suiteRemoteHydrating=false;setStatus('Bölme yüklenemedi: '+String(e&&e.message?e.message:e),'error');notify('Mesahaya devam edilemedi',String(e&&e.message?e.message:e),'error')}
   }
 
 
@@ -348,7 +350,6 @@
       var pending=pendingDivisions().filter(function(x){return clean(x.bolme_no)!==bolme});savePending(pending);
       try{if(clean(localStorage.getItem(LAST_BOLME_KEY))===bolme)localStorage.removeItem(LAST_BOLME_KEY)}catch(e){}
       cacheAndRender();
-      var detail=$('seflikFolderDetailV528');if(detail)detail.classList.remove('open');
       setStatus('Bölme '+bolme+' kalıcı olarak silindi.','success');
       var driveWarn=Array.isArray(out&&out.drive_delete_failed)&&out.drive_delete_failed.length?(' • '+out.drive_delete_failed.length+' Drive dosyası silinemedi'):' ';
       notify('Bölme silindi','Bölme '+bolme+' ve bağlı sunucu kayıtları tamamen kaldırıldı.'+driveWarn,driveWarn.trim()?'warning':'success');
@@ -411,7 +412,6 @@
     var send=$('seflikFolderSendV528');if(send)send.addEventListener('click',sendFolder);
     var sync=$('seflikFolderSyncV528');if(sync)sync.addEventListener('click',function(){syncFolder(true).catch(function(e){setStatus(String(e&&e.message?e.message:e),'error');notify('Senkronizasyon başarısız',String(e&&e.message?e.message:e),'error')})});
     var list=$('seflikFolderListV528');if(list)list.addEventListener('click',function(ev){var cont=ev.target.closest('[data-seflik-continue]');if(cont)continueDivision(cont.getAttribute('data-seflik-continue'))});
-    var close=$('seflikFolderDetailCloseV528');if(close)close.addEventListener('click',function(){var d=$('seflikFolderDetailV528');if(d)d.classList.remove('open')});
     var shortcut=$('seflikFolderHomeShortcutV528');if(shortcut){var openShortcut=function(){try{if(typeof window.showView==='function')window.showView('seflikFolder');else{var n=document.querySelector('[data-nav="seflikFolder"]');if(n)n.click()}}catch(e){var n=document.querySelector('[data-nav="seflikFolder"]');if(n)n.click()}};shortcut.addEventListener('click',openShortcut);shortcut.addEventListener('keydown',function(ev){if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();openShortcut()}})}
     var recordsBtn=$('seflikSendFromRecordsV529');if(recordsBtn)recordsBtn.addEventListener('click',recordsSendClick);
     var modalClose=$('seflikSendCloseV529');if(modalClose)modalClose.addEventListener('click',closeSendModal);
@@ -424,5 +424,5 @@
     fillIdentity();var cache=readJson(CACHE_KEY,null);if(cache&&cache.seflik===user().seflik&&Array.isArray(cache.divisions))divisions=cache.divisions;divisions=mergeRemoteDivisions(divisions);renderList();setTimeout(function(){var v=document.getElementById('seflikFolderView');if(v&&v.classList.contains('active'))autoSyncOnEntryV577().catch(function(){})},180);
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
-  window.MesahaSeflikFolderV529={sync:syncFolder,autoSync:autoSyncOnEntryV577,refreshPreview:function(){updatePreview(true)},send:sendFolder,sendToDivision:sendToDivision,openDivision:openDivision,continueDivision:continueDivision,getDivisions:function(){return divisions.slice()},managedBySuite:true};
+  window.MesahaSeflikFolderV529={sync:syncFolder,autoSync:autoSyncOnEntryV577,refreshPreview:function(){updatePreview(true)},send:sendFolder,sendToDivision:sendToDivision,continueDivision:continueDivision,getDivisions:function(){return divisions.slice()},managedBySuite:true};
 })();

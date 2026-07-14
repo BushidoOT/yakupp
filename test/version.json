@@ -1,12 +1,12 @@
 {
-  "version": "16.0.0",
-  "build": 16,
+  "version": "17.0.0",
+  "build": 17,
   "date": "2026-07-14",
   "name": "Mesaha Suite",
   "short_name": "Mesaha Suite",
-  "description": "Sol üst sürüm bilgisi, güncelleme bildirimi ve kayıtları koruyan güvenilir uygulama güncelleme sistemi.",
-  "id": "./?suite=16",
-  "start_url": "./?suite=16",
-  "visibleVersion": "Mesaha Suite V16",
-  "cacheName": "yakupp-suite-shell-v16"
+  "description": "Şeflik Mesahası kayıtlarını barkoda göre devamına ekleyen ortak kayıt birleştirme, merkezi assets ve otomatik silme senkronizasyonu.",
+  "id": "./?suite=17",
+  "start_url": "./?suite=17",
+  "visibleVersion": "Mesaha Suite V17",
+  "cacheName": "yakupp-suite-shell-v17"
 }

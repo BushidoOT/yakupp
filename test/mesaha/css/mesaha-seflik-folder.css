@@ -43,10 +43,6 @@
 .seflik-division-actions{display:grid;grid-template-columns:1fr auto;gap:8px}
 .seflik-division-actions .btn{min-height:41px}
 .seflik-drive-ok{display:inline-flex;align-items:center;gap:5px;color:#166534;font-size:11px;font-weight:900;padding:0 4px}
-.seflik-folder-detail{display:none}
-.seflik-folder-detail.open{display:block}
-.seflik-folder-detail-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
-.seflik-folder-detail-head h2{margin:0;font-size:19px}
 .seflik-folder-records{display:grid;gap:8px;max-height:62vh;overflow:auto;-webkit-overflow-scrolling:touch;padding-right:2px}
 .seflik-folder-record{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:9px;border:1px solid #dce9e1;background:#fff;border-radius:14px;padding:11px}
 .seflik-folder-record b{display:block;color:#173d2b;font-size:14px}

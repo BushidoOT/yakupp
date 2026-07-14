@@ -1,4 +1,4 @@
-const CACHE = "yakupp-suite-shell-v16";
+const CACHE = "yakupp-suite-shell-v17";
 const PREFIX = "yakupp-suite-shell-";
 const CORE = [
   "./app.js",
@@ -24,12 +24,6 @@ const CORE = [
   "./js/mesaha-supabase-config.js",
   "./manifest.json",
   "./mesaha/admin.html",
-  "./mesaha/assets/hero_forest_cover.webp",
-  "./mesaha/assets/icon-192.png",
-  "./mesaha/assets/icon-512.png",
-  "./mesaha/assets/mesaha_logo.png",
-  "./mesaha/assets/mesaha_onay.wav",
-  "./mesaha/assets/mesaha_uyari.wav",
   "./mesaha/css/app.css",
   "./mesaha/css/mesaha-seflik-folder.css",
   "./mesaha/giris-log.html",
@@ -172,8 +166,8 @@ async function cacheAll() {
     missingCount: missing.length,
     criticalMissing,
     at: new Date().toISOString(),
-    build: 16,
-    integrity: "suite-v16",
+    build: 17,
+    integrity: "suite-v17",
     criticalCount: CRITICAL.length,
     totalCount: CORE.length,
   };
@@ -201,8 +195,8 @@ async function status() {
     missingCount: missing.length,
     criticalMissing,
     cache: CACHE,
-    build: 16,
-    integrity: "suite-v16",
+    build: 17,
+    integrity: "suite-v17",
     criticalCount: CRITICAL.length,
     totalCount: CORE.length,
   };

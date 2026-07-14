@@ -83,8 +83,8 @@
 
   const TELEGRAM_URL = "https://telegram.me/+LpsvthN4BM5kYWI0";
   const TELEGRAM_DAY_KEY = "mesaha_suite_telegram_daily_v12";
-  const CURRENT_SUITE_BUILD = Number(window.MESAHA_VERSION?.build || 16);
-  const CURRENT_SUITE_LABEL = clean(window.MESAHA_VERSION?.visibleVersion || "Mesaha Suite V16");
+  const CURRENT_SUITE_BUILD = Number(window.MESAHA_VERSION?.build || 17);
+  const CURRENT_SUITE_LABEL = clean(window.MESAHA_VERSION?.visibleVersion || "Mesaha Suite V17");
   let latestSuiteVersion = null, updateApplying = false;
 
   function updateVersionCorner(remote) {
@@ -156,7 +156,7 @@
     try {
       setUpdateProgress(12, "Yeni sürüm denetleniyor…");
       let reg = await navigator.serviceWorker?.getRegistration("./");
-      if (!reg && "serviceWorker" in navigator) reg = await navigator.serviceWorker.register("./service-worker.js?v=16", { scope: "./", updateViaCache: "none" });
+      if (!reg && "serviceWorker" in navigator) reg = await navigator.serviceWorker.register("./service-worker.js?v=17", { scope: "./", updateViaCache: "none" });
       if (reg) {
         setUpdateProgress(28, "Yeni uygulama dosyaları alınıyor…");
         await reg.update();
@@ -315,7 +315,7 @@
     try {
       const out = await supabaseRpc("mesaha_create_terminal_code_v557", {
         p_label: "terminal",
-        p_app_version: "Mesaha Suite V16",
+        p_app_version: "Mesaha Suite V17",
       });
       const t = out.terminal || out || {},
         code = clean(t.code),
@@ -718,6 +718,24 @@
     } catch {}
     updatePendingBadge();
   }
+  let destructiveSyncTimer = 0;
+  function autoSyncDestructive(label) {
+    clearTimeout(destructiveSyncTimer);
+    if (!navigator.onLine || !cloudIdentity()) {
+      toast(`${label} cihazda uygulandı. İnternet geldiğinde otomatik senkronize edilecek.`);
+      return;
+    }
+    destructiveSyncTimer = setTimeout(async () => {
+      try {
+        const api = window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8;
+        if (api && typeof api.syncAll === "function") await api.syncAll({ source: "delete-auto" });
+        else await sendPendingToServer();
+        toast(`${label} sunucuya da anında işlendi.`);
+      } catch (e) {
+        toast(`${label} cihazda uygulandı; sunucu işlemi bağlantı düzelince yeniden denenecek.`, true);
+      }
+    }, 120);
+  }
   function updatePendingBadge() {
     const dot = $("notificationDot");
     if (dot) dot.style.display = pendingOps.length ? "block" : "none";
@@ -838,7 +856,7 @@
     if (!api || typeof api.edge !== "function")
       throw new Error("Sunucu bağlantısı hazır değil.");
     return api.edge(action, {
-      source: "mesaha-suite-v16",
+      source: "mesaha-suite-v17",
       ...terminalAuth(),
       ...data,
     });
@@ -1492,9 +1510,10 @@
       localStorage.removeItem(K.active);
     } catch {}
     saveLocal();
-    toast("Şeflik silindi. Sunucuya Gönder ile buluttan da silinir.");
+    toast("Şeflik silindi. Sunucu bağlantısı varsa otomatik olarak buluttan da siliniyor.");
     render();
     renderSeflikModal();
+    autoSyncDestructive("Şeflik silme işlemi");
   }
   async function searchOrmanci(e) {
     e.preventDefault();
@@ -1610,6 +1629,7 @@
     toast("Ormancı çıkarıldı.");
     render();
     renderOrmanciModal();
+    autoSyncDestructive("Ormancı çıkarma işlemi");
   }
   async function createBolme(e) {
     if (!canManageFolder())
@@ -1741,6 +1761,7 @@
     toast("Bölme silindi.");
     render();
     renderBolmeModal();
+    autoSyncDestructive("Bölme silme işlemi");
   }
   async function sendPendingToServer() {
     if (!signedIn()) return toast("Önce giriş yapın.", true);
@@ -1829,7 +1850,7 @@
         name: id.name || id.email || "Kullanıcı",
         seflik: af?.seflik || id.seflik || "",
         bolmeNo: id.bolme || "",
-        appVersion: "Mesaha Suite V16",
+        appVersion: "Mesaha Suite V17",
         avatarUrl: id.avatar || "",
         deviceId:
           localStorage.getItem("mesaha_suite_device_v7") ||
@@ -1846,7 +1867,7 @@
           appName: "Mesaha Suite",
           platform: navigator.platform || "",
           browser: navigator.userAgent || "",
-          suiteVersion: "V16",
+          suiteVersion: "V17",
         },
       });
     } catch {}
@@ -1914,7 +1935,7 @@
     try {
       await cleanupNestedWorkers();
       try { if (navigator.storage && navigator.storage.persist) await navigator.storage.persist(); } catch {}
-      const reg = await navigator.serviceWorker.register("./service-worker.js?v=16", { scope: "./", updateViaCache: "none" });
+      const reg = await navigator.serviceWorker.register("./service-worker.js?v=17", { scope: "./", updateViaCache: "none" });
       await navigator.serviceWorker.ready;
       const worker = await waitForActiveWorker(reg, navigator.onLine===false?7000:18000);
       setCacheStatus("Mesaha İO ve İstif İO dosyaları doğrulanıyor…", 18);
@@ -2074,7 +2095,7 @@
     }
     if (tool === "about") {
       showInfo(
-        "Mesaha Suite V16",
+        "Mesaha Suite V17",
         `<p>Google veya terminal/misafir oturumu iki uygulamada ortak kullanılır.</p><p><b>Bekleyen işlem:</b> ${pendingOps.length}</p><p>Bölmeler offline indirildikten sonra Mesaha İO ve İstif İO’da kayıt eklemeye hazır olur.</p>`,
       );
       return true;
@@ -2280,4 +2301,8 @@
   if (document.readyState === "loading")
     document.addEventListener("DOMContentLoaded", init, { once: true });
   else init();
+  window.addEventListener("online", () => {
+    const destructive = pendingOps.some((item) => ["delete_seflik", "delete_division", "remove_member"].includes(item && item.type));
+    if (destructive) autoSyncDestructive("Bekleyen silme işlemleri");
+  });
 })();

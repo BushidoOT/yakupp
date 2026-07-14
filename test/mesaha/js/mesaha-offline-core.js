@@ -54,8 +54,8 @@
     './index.html', './manifest.json', './version.json', './service-worker.js', './temizle.html',
     './js/version.js', './js/mesaha-sound.js', './js/mesaha-firebase.js',
     './js/mesaha-early-optimizer.js', './js/mesaha-offline-core.js',
-    './assets/icon-192.png', './assets/icon-512.png', './assets/mesaha_logo.png', './assets/hero_forest_cover.webp',
-    './assets/mesaha_onay.wav', './assets/mesaha_uyari.wav'
+    '../assets/icon-192.png', '../assets/icon-512.png', '../assets/mesaha_logo.png', '../assets/hero_forest_cover.webp',
+    '../assets/mesaha_onay.wav', '../assets/mesaha_uyari.wav'
   ];
 
   function warmCache(){

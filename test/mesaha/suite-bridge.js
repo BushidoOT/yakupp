@@ -141,6 +141,24 @@
       q = Math.max(1, num(r.quantity || r.adet || 1));
     return d && l ? ((Math.PI * Math.pow(d / 100, 2)) / 4) * l * q : 0;
   }
+  function mesahaRecordKey(row, index) {
+    const r = row && row.record_data && typeof row.record_data === "object" ? row.record_data : (row || {});
+    const barcode = clean(r.barcode || r.barkodNo || r.barkod_no || (row && row.barcode));
+    if (barcode) return "barcode::" + barcode.toLocaleUpperCase("tr-TR");
+    const id = clean(r.id || r.recordId || (row && (row.record_key || row.id)));
+    return id ? "id::" + id : "row::" + String(index == null ? Math.random() : index);
+  }
+  function mergeMesahaRecords(baseRows, incomingRows, f, bolme) {
+    const map = new Map();
+    const put = (raw, index, sourceOrder) => {
+      const normalized = f ? recordData(raw, f, bolme, index) : { ...(raw && raw.record_data ? raw.record_data : (raw || {})) };
+      const key = mesahaRecordKey(normalized, `${sourceOrder}_${index}`);
+      map.set(key, normalized);
+    };
+    (Array.isArray(baseRows) ? baseRows : []).forEach((row, i) => put(row, i, "base"));
+    (Array.isArray(incomingRows) ? incomingRows : []).forEach((row, i) => put(row, i, "incoming"));
+    return Array.from(map.values());
+  }
   function setActive(f) {
     if (!f) return;
     const sf = clean(f.seflik),
@@ -187,8 +205,7 @@
       .suite-folder-refresh-v8{display:inline-flex;align-items:center;gap:6px;color:#17683f;font-weight:850}
       .suite-folder-loading-v8{opacity:.72}
       .suite-folder-load-v10{background:#17683f!important;color:#fff!important;border-color:#17683f!important}
-      .suite-folder-view-v8{background:#eef7f1!important;color:#174a32!important;border-color:#cfe3d6!important}
-      .suite-central-hidden-v10{display:none!important}
+            .suite-central-hidden-v10{display:none!important}
       #seflikMemberListV566,#seflikUserSearchV564,#seflikSearchResultsV564,[data-add-user-v564],[data-remove-member-v566],.seflik-v566-member-title,.seflik-v566-member-list{display:none!important}
       #mesahaDriveBackupOverlayV10[hidden]{display:none!important}
       #mesahaDriveBackupOverlayV10{position:fixed;inset:0;z-index:2147483000;background:rgba(9,32,22,.48);backdrop-filter:blur(5px);display:grid;place-items:center;padding:14px}
@@ -397,30 +414,47 @@
   window.__suiteOpenFolderViewV9 = forceFolderView;
   if (window.__suiteOpenFolderPendingV10 || window.__suiteOpenFolderPendingV9) { window.__suiteOpenFolderPendingV10 = false; window.__suiteOpenFolderPendingV9 = false; setTimeout(forceFolderView, 0); }
   async function sendCurrentToDivision() {
-    const f=activeFolder(), sel=$("seflikFolderBolmeV528"), no=clean(sel&&sel.value), api=(window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8);
-    if(!f) return notify("Önce Suite ana menüsünden şeflik seçin.",true);
-    if(!no) return notify("Gönderilecek bölmeyi seçin.",true);
-    const raw=read(K.records,[]), records=Array.isArray(raw)?raw:[];
-    if(!records.length) return notify("Gönderilecek Mesaha kaydı bulunamadı.",true);
-    if(navigator.onLine && api && api.ensureDriveConnected){
-      try{ await api.ensureDriveConnected({redirect:true}); }catch(e){ if(!(e&&e.code)) notify(clean(e&&e.message||e),true); return; }
+    const f = activeFolder(), sel = $("seflikFolderBolmeV528"), no = clean(sel && sel.value),
+      api = window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8;
+    if (!f) return notify("Önce Suite ana menüsünden şeflik seçin.", true);
+    if (!no) return notify("Gönderilecek bölmeyi seçin.", true);
+    const raw = read(K.records, []), localRecords = Array.isArray(raw) ? raw : [];
+    if (!localRecords.length) return notify("Gönderilecek Mesaha kaydı bulunamadı.", true);
+    if (navigator.onLine && api && api.ensureDriveConnected) {
+      try { await api.ensureDriveConnected({ redirect: true }); }
+      catch (e) { if (!(e && e.code)) notify(clean(e && e.message || e), true); return; }
     }
-    if(!confirm(`${records.length} Mesaha kaydı Bölme ${no} üzerine yazılsın, sunucuya gönderilsin ve kişisel Drive yedeği alınsın mı?`)) return;
+    let existingRows = cachedRows(f, no);
+    if (navigator.onLine) {
+      try { existingRows = await getRows(no, true); }
+      catch (_) { existingRows = cachedRows(f, no); }
+    }
+    const existingNormalized = (Array.isArray(existingRows) ? existingRows : []).map((r, i) => recordData(r, f, no, i));
+    const merged = mergeMesahaRecords(existingNormalized, localRecords, f, no);
+    const duplicateCount = Math.max(0, existingNormalized.length + localRecords.length - merged.length);
+    const newCount = Math.max(0, merged.length - existingNormalized.length);
+    if (!confirm(
+      `${localRecords.length} cihaz kaydı Bölme ${no} içindeki mevcut ${existingNormalized.length} kaydın devamına eklensin mi? Barkodlar birleştirilecek; ${newCount} yeni kayıt eklenecek${duplicateCount ? `, ${duplicateCount} aynı barkod tek kayıt kalacak` : ""}.`,
+    )) return;
     try {
-      api&&api.createOfflineDivision&&api.createOfflineDivision(no,"",{source:"mesaha"});
-      const mapped=records.map((r)=>({...r,seflik:f.seflik,bolmeNo:no,bolme_no:no,updatedAt:new Date().toISOString()}));
-      const settings={...read(K.settings,{}),seflik:f.seflik,bolmeNo:no};
-      window.__suiteRemoteHydrating=true;
-      if(window.MesahaStorageV527&&typeof window.MesahaStorageV527.replaceAll==="function"){
-        const result=await window.MesahaStorageV527.replaceAll(mapped,settings,{reason:"suite-send-drive-v10"});
-        if(result&&result.ok===false) throw new Error(result.error||"Kayıtlar kaydedilemedi");
-      } else { write(K.records,mapped); write(K.settings,settings); }
-      if(window.state){window.state.records=mapped;window.state.settings=settings;}
-      setBolme(no); api&&api.markDirty&&api.markDirty("mesaha",{bolmeNo:no,drive:true});
-      if(navigator.onLine&&api&&api.syncAll){ await api.syncAll({source:"manual"}); await refreshFolder(true); notify(`Bölme ${no} sunucuya gönderildi ve Drive yedeği alındı.`); }
-      else notify(`Bölme ${no} offline kaydedildi. İnternet gelince Senkronize Et butonuna basın.`);
-    } catch(e){ notify(clean(e&&e.message||e),true); }
-    finally{setTimeout(()=>{window.__suiteRemoteHydrating=false;},350);}
+      api && api.createOfflineDivision && api.createOfflineDivision(no, "", { source: "mesaha" });
+      const mapped = merged.map((r) => ({ ...r, seflik: f.seflik, bolmeNo: no, bolme_no: no, updatedAt: new Date().toISOString() }));
+      const settings = { ...read(K.settings, {}), seflik: f.seflik, bolmeNo: no };
+      window.__suiteRemoteHydrating = true;
+      if (window.MesahaStorageV527 && typeof window.MesahaStorageV527.replaceAll === "function") {
+        const result = await window.MesahaStorageV527.replaceAll(mapped, settings, { reason: "suite-send-merge-drive-v17" });
+        if (result && result.ok === false) throw new Error(result.error || "Kayıtlar kaydedilemedi");
+      } else { write(K.records, mapped); write(K.settings, settings); }
+      if (window.state) { window.state.records = mapped; window.state.settings = settings; }
+      setBolme(no);
+      api && api.markDirty && api.markDirty("mesaha", { bolmeNo: no, drive: true, merge: true });
+      if (navigator.onLine && api && api.syncAll) {
+        await api.syncAll({ source: "manual" });
+        await refreshFolder(true);
+        notify(`Bölme ${no} mevcut kayıtların devamına eklendi. Toplam ${mapped.length} benzersiz barkod senkronize edildi.`);
+      } else notify(`Bölme ${no} kayıtları offline birleştirildi. İnternet gelince Senkronize Et butonuna basın.`);
+    } catch (e) { notify(clean(e && e.message || e), true); }
+    finally { setTimeout(() => { window.__suiteRemoteHydrating = false; }, 350); }
   }
   let backupItemsV10=[];
   function ensureDriveModalV10(){
@@ -481,7 +515,7 @@
         return `<article class="seflik-division-card" data-suite-division="${esc(no)}">
         <div class="seflik-division-top"><div class="seflik-division-title"><span class="seflik-division-icon">▦</span><div><b>Bölme ${esc(no)}${local ? '<span class="seflik-local-pending-v530">Yerel</span>' : ""}</b><small>${esc(creator || f.seflik)}</small></div></div><span class="seflik-division-date">${esc(date ? new Date(date).toLocaleDateString("tr-TR") : "")}</span></div>
         <div class="seflik-division-stats"><div class="seflik-division-stat"><small>KAYIT</small><b>${count}</b></div><div class="seflik-division-stat"><small>HACİM</small><b>${fmt(volume)} m³</b></div><div class="seflik-division-stat"><small>DURUM</small><b>${rows.length || !navigator.onLine ? "Hazır" : "Bulutta"}</b></div></div>
-        <div class="seflik-division-actions seflik-division-actions-v529"><button type="button" class="btn suite-folder-view-v8" data-suite-folder-view="${esc(no)}">Kayıtları Gör</button><button type="button" class="btn suite-folder-load-v10" data-suite-folder-load="${esc(no)}">Mesahaya Yükle</button></div>
+        <div class="seflik-division-actions seflik-division-actions-v529"><button type="button" class="btn suite-folder-load-v10" data-suite-folder-load="${esc(no)}">Mesahaya Devam Et</button></div>
       </article>`;
       })
       .join("");
@@ -508,35 +542,6 @@
     if ($("seflikFolderMetricM3V528"))
       $("seflikFolderMetricM3V528").textContent = `${fmt(volume)} m³`;
   }
-  function showRows(bolme, rows) {
-    const f = activeFolder(),
-      detail = $("seflikFolderDetailV528"),
-      host = $("seflikFolderRecordsV528"),
-      title = $("seflikFolderDetailTitleV528");
-    if (!detail || !host) return;
-    if (title) title.textContent = `Bölme ${bolme} Kayıtları`;
-    host.innerHTML = rows.length
-      ? rows
-          .map((raw, i) => {
-            const r = recordData(raw, f, bolme, i),
-              tree = clean(
-                r.treeType ||
-                  r.tree_type ||
-                  r.agacTuru ||
-                  "Ağaç türü belirtilmedi",
-              ),
-              product = clean(
-                r.productType || r.product_type || r.urunCinsi || "",
-              ),
-              barcode = clean(r.barcode || r.id),
-              cutter = clean(r.cutter || r.kesimci || "");
-            return `<div class="seflik-folder-record"><div><b>${esc(barcode)}</b><small>${esc([tree, product, cutter].filter(Boolean).join(" • "))}</small></div><div class="seflik-folder-record-m3">${fmt(rowVolume(raw))} m³</div></div>`;
-          })
-          .join("")
-      : '<div class="seflik-folder-empty">Bu bölmede senkronize kayıt bulunamadı.</div>';
-    detail.classList.add("open");
-    detail.scrollIntoView({ behavior: "smooth", block: "start" });
-  }
   async function getRows(bolme, force) {
     const f = activeFolder();
     let rows = cachedRows(f, bolme);
@@ -553,21 +558,25 @@
   async function loadIntoMesaha(bolme) {
     const f = activeFolder();
     if (!f) return;
-    const rows = await getRows(bolme, true);
-    if (!rows.length)
+    const remoteRows = await getRows(bolme, true);
+    if (!remoteRows.length)
       return notify("Bu bölmede yüklenecek kayıt bulunamadı.", true);
+    const localRaw = read(K.records, []),
+      localRows = Array.isArray(localRaw) ? localRaw : [],
+      remoteNormalized = remoteRows.map((r, i) => recordData(r, f, bolme, i)),
+      records = mergeMesahaRecords(remoteNormalized, localRows, f, bolme),
+      duplicateCount = Math.max(0, remoteNormalized.length + localRows.length - records.length);
     if (
       !confirm(
-        `Bölme ${bolme} içindeki ${rows.length} kayıt bu cihazdaki Mesaha kayıtlarının yerine yüklensin mi?`,
+        `Bölme ${bolme} içindeki ${remoteNormalized.length} ortak kayıt, cihazdaki ${localRows.length} kayıtla barkoda göre birleştirilsin mi?${duplicateCount ? ` ${duplicateCount} aynı barkod tek kayıt olarak tutulacak.` : ""}`,
       )
     )
       return;
-    const records = rows.map((r, i) => recordData(r, f, bolme, i)),
-      settings = {
-        ...read(K.settings, {}),
-        seflik: f.seflik,
-        bolmeNo: clean(bolme),
-      };
+    const settings = {
+      ...read(K.settings, {}),
+      seflik: f.seflik,
+      bolmeNo: clean(bolme),
+    };
     window.__suiteRemoteHydrating = true;
     try {
       let result = { ok: true };
@@ -576,7 +585,7 @@
         typeof window.MesahaStorageV527.replaceAll === "function"
       )
         result = await window.MesahaStorageV527.replaceAll(records, settings, {
-          reason: "suite-folder-load-v10",
+          reason: "suite-folder-merge-v17",
         });
       else {
         write(K.records, records);
@@ -596,11 +605,9 @@
         activeSeflik: f.seflik,
         bolmeNo: clean(bolme),
       });
-      if ((window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8))
-        (window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8).clearDirty("mesaha");
       if (typeof window.renderAll === "function") window.renderAll();
       if (typeof window.showView === "function") window.showView("records");
-      notify(`Bölme ${bolme} kayıtları Mesaha İO’ya yüklendi.`);
+      notify(`Bölme ${bolme} kayıtları barkoda göre birleştirildi. Toplam ${records.length} kayıt hazır.`);
     } catch (e) {
       notify(clean((e && e.message) || e), true);
     } finally {
@@ -652,7 +659,7 @@
       n.id = "suiteManagedNoteV8";
       n.className = "suite-managed-note-v8";
       n.textContent =
-        "Şeflik, ormancı ve bölme düzenlemeleri Suite ana menüsünden yapılır. Şeflik Klasörü kayıtları burada görüntülenir ve seçilen bölme Mesaha İO’ya yüklenebilir.";
+        "Şeflik, ormancı ve bölme düzenlemeleri Suite ana menüsünden yapılır. Şeflik Klasörü kayıtları burada listelenir ve seçilen bölme barkoda göre mevcut Mesaha kayıtlarıyla birleştirilebilir.";
       host.insertBefore(n, host.firstChild);
     }
   }
@@ -695,17 +702,6 @@
       forceFolderView();
       return;
     }
-    const view =
-      e.target.closest && e.target.closest("[data-suite-folder-view]");
-    if (view) {
-      e.preventDefault();
-      e.stopPropagation();
-      const no = view.dataset.suiteFolderView;
-      getRows(no, false)
-        .then((rows) => showRows(no, rows))
-        .catch((err) => notify(clean((err && err.message) || err), true));
-      return;
-    }
     const load =
       e.target.closest && e.target.closest("[data-suite-folder-load]");
     if (load) {
@@ -713,10 +709,6 @@
       e.stopPropagation();
       loadIntoMesaha(load.dataset.suiteFolderLoad);
       return;
-    }
-    if (e.target.closest && e.target.closest("#seflikFolderDetailCloseV528")) {
-      const d = $("seflikFolderDetailV528");
-      if (d) d.classList.remove("open");
     }
     const send=e.target.closest&&e.target.closest("#seflikFolderSendV528");
     if(send){e.preventDefault();e.stopImmediatePropagation();sendCurrentToDivision();return;}
