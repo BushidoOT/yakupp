@@ -1,8 +1,0 @@
-{
-  "version": "0.3.4-suite-v14",
-  "name": "Mesaha İO İstif Alma v0.3.4",
-  "updatedAt": "2026-07-14T09:00:00+03:00",
-  "notes": "Suite V14 ile bölme seçimi kayıt sonrasında korunur; çift kayıt ve tekrar render kaynaklı kararlılık sorunları azaltılmıştır.",
-  "visibleVersion": "İstif Alma v0.3.4",
-  "build": 14
-}
