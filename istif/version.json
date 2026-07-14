@@ -1,8 +1,8 @@
 {
-  "version": "0.3.4-suite-v22",
-  "name": "Mesaha İO İstif Alma v0.3.4",
-  "updatedAt": "2026-07-14T22:30:00+03:00",
-  "notes": "Suite V22 ile tüm İstif fotoğrafları ve yedekler şeflik kurucusunun Drive hesabında tutulur.",
-  "visibleVersion": "İstif Alma v0.3.4",
-  "build": 22
+  "version": "0.3.6-suite-v24",
+  "name": "Mesaha İO İstif Alma v0.3.6",
+  "updatedAt": "2026-07-14T21:30:00+03:00",
+  "notes": "iOS PDF önizleme/yazdırma sayfasına sabit Kapat / Uygulamaya Dön düğmesi ve güvenli geri dönüş eklendi.",
+  "visibleVersion": "İstif Alma v0.3.6",
+  "build": 24
 }

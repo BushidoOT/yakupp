@@ -83,8 +83,8 @@
 
   const TELEGRAM_URL = "https://telegram.me/+LpsvthN4BM5kYWI0";
   const TELEGRAM_DAY_KEY = "mesaha_suite_telegram_daily_v12";
-  const CURRENT_SUITE_BUILD = Number(window.MESAHA_VERSION?.build || 22);
-  const CURRENT_SUITE_LABEL = clean(window.MESAHA_VERSION?.visibleVersion || "Mesaha Suite V22");
+  const CURRENT_SUITE_BUILD = Number(window.MESAHA_VERSION?.build || 23);
+  const CURRENT_SUITE_LABEL = clean(window.MESAHA_VERSION?.visibleVersion || "Mesaha Suite V24");
   let latestSuiteVersion = null, updateApplying = false, pendingDivisionDelete = null;
 
   function updateVersionCorner(remote) {
@@ -156,7 +156,7 @@
     try {
       setUpdateProgress(12, "Yeni sürüm denetleniyor…");
       let reg = await navigator.serviceWorker?.getRegistration("./");
-      if (!reg && "serviceWorker" in navigator) reg = await navigator.serviceWorker.register("./service-worker.js?v=22", { scope: "./", updateViaCache: "none" });
+      if (!reg && "serviceWorker" in navigator) reg = await navigator.serviceWorker.register("./service-worker.js?v=24", { scope: "./", updateViaCache: "none" });
       if (reg) {
         setUpdateProgress(28, "Yeni uygulama dosyaları alınıyor…");
         await reg.update();
@@ -315,7 +315,7 @@
     try {
       const out = await supabaseRpc("mesaha_create_terminal_code_v557", {
         p_label: "terminal",
-        p_app_version: "Mesaha Suite V22",
+        p_app_version: "Mesaha Suite V24",
       });
       const t = out.terminal || out || {},
         code = clean(t.code),
@@ -856,7 +856,7 @@
     if (!api || typeof api.edge !== "function")
       throw new Error("Sunucu bağlantısı hazır değil.");
     return api.edge(action, {
-      source: "mesaha-suite-v22",
+      source: "mesaha-suite-v24",
       ...terminalAuth(),
       ...data,
     });
@@ -1946,7 +1946,7 @@
         name: id.name || id.email || "Kullanıcı",
         seflik: af?.seflik || id.seflik || "",
         bolmeNo: id.bolme || "",
-        appVersion: "Mesaha Suite V22",
+        appVersion: "Mesaha Suite V24",
         avatarUrl: id.avatar || "",
         deviceId:
           localStorage.getItem("mesaha_suite_device_v7") ||
@@ -1963,7 +1963,7 @@
           appName: "Mesaha Suite",
           platform: navigator.platform || "",
           browser: navigator.userAgent || "",
-          suiteVersion: "V22",
+          suiteVersion: "V24",
         },
       });
     } catch {}
@@ -2031,7 +2031,7 @@
     try {
       await cleanupNestedWorkers();
       try { if (navigator.storage && navigator.storage.persist) await navigator.storage.persist(); } catch {}
-      const reg = await navigator.serviceWorker.register("./service-worker.js?v=22", { scope: "./", updateViaCache: "none" });
+      const reg = await navigator.serviceWorker.register("./service-worker.js?v=24", { scope: "./", updateViaCache: "none" });
       await navigator.serviceWorker.ready;
       const worker = await waitForActiveWorker(reg, navigator.onLine===false?7000:18000);
       setCacheStatus("Mesaha İO ve İstif İO dosyaları doğrulanıyor…", 18);
@@ -2271,7 +2271,7 @@
     }
     if (tool === "about") {
       showInfo(
-        "Mesaha Suite V22",
+        "Mesaha Suite V24",
         `<p>Google veya terminal/misafir oturumu iki uygulamada ortak kullanılır.</p><p><b>Bekleyen işlem:</b> ${pendingOps.length}</p><p>Bölmeler offline indirildikten sonra Mesaha İO ve İstif İO’da kayıt eklemeye hazır olur.</p>`,
       );
       return true;

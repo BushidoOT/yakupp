@@ -1834,7 +1834,7 @@ body.suite-starting{overflow:hidden!important;touch-action:none}
 @media(max-width:420px){.suite-version-corner{left:12px}.connection-pill{max-width:154px;overflow:hidden}.suite-version-corner:has(#suiteUpdateButton:not([hidden])){max-width:140px}}
 
 
-/* Suite V22 • herkese açık eski yedek arşivi */
+/* Suite V24 • herkese açık eski yedek arşivi */
 .tool-strip button[data-tool="legacy-backups"] svg{color:#865b19}
 .legacy-backups-modal{width:min(760px,calc(100vw - 24px));max-height:min(88vh,860px);overflow:auto}
 .legacy-backups-intro{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:13px 14px;border:1px solid #dce8e1;border-radius:17px;background:#f7fbf8;margin-bottom:12px}
@@ -1848,7 +1848,7 @@ body.suite-starting{overflow:hidden!important;touch-action:none}
 @media(max-width:680px){.legacy-backups-intro{align-items:flex-start;flex-direction:column}.legacy-backups-intro a{width:100%;text-align:center}.legacy-backup-row{grid-template-columns:1fr}.legacy-backup-actions{justify-content:stretch}.legacy-backup-actions a{flex:1}.legacy-filter-actions button{flex:1}}
 
 
-/* Suite V22 — zincirli bölme silme uyarısı */
+/* Suite V24 — zincirli bölme silme uyarısı */
 .division-delete-modal{border:1px solid rgba(190,31,31,.24)!important;box-shadow:0 28px 70px rgba(82,10,10,.26)!important}
 .division-delete-modal .danger-modal-head{background:linear-gradient(135deg,#fff7f7,#fff);border-bottom:1px solid #f4caca}
 .division-delete-modal .danger-modal-head .modal-kicker{color:#a71919}

@@ -1,12 +1,12 @@
 {
-  "version": "22.0.0",
-  "build": 22,
+  "version": "24.0.0",
+  "build": 24,
   "date": "2026-07-14",
   "name": "Mesaha Suite",
   "short_name": "Mesaha Suite",
-  "description": "iOS ürün kısayollarında klavyeyi açık tutan ve tüm şeflik yedek/fotoğraflarını kurucunun Drive hesabında birleştiren sürüm.",
-  "id": "./?suite=22",
-  "start_url": "./?suite=22",
-  "visibleVersion": "Mesaha Suite V22",
-  "cacheName": "yakupp-suite-shell-v22"
+  "description": "Ortak İstif senkronizasyonuna ek olarak iOS PDF ekranına güvenli Kapat / Uygulamaya Dön kontrolü ekleyen sürüm.",
+  "id": "./?suite=24",
+  "start_url": "./?suite=24",
+  "visibleVersion": "Mesaha Suite V24",
+  "cacheName": "yakupp-suite-shell-v24"
 }

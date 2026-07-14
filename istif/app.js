@@ -1,6 +1,6 @@
 "use strict";
 
-const APP_VERSION = "0.3.4-suite-v22";
+const APP_VERSION = "0.3.6-suite-v24";
 const MAX_PHOTO_BYTES = 1024 * 1024;
 const DB_NAME = "mesaha-istif-prototype";
 const DB_VERSION = 1;
@@ -1277,10 +1277,8 @@ async function syncSharedContext({ manual = false } = {}) {
     };
     refreshCurrentMembers();
     await saveSettings();
-    if (readSharedSession()) {
-      await refreshDriveStatus({ silent: true });
-      await loadRemoteRecords({ silent: true });
-    }
+    if (readSharedSession()) await refreshDriveStatus({ silent: true });
+    await loadRemoteRecords({ silent: true });
     await saveSharedCache();
     if (manual) toast("Şeflikler ve kullanıcılar güncellendi.", "good");
   } catch (error) {
@@ -1350,6 +1348,12 @@ function setView(view) {
   render();
   if (view === "settings" && navigator.onLine && hasSharedCloudIdentity())
     refreshDriveStatus({ silent: true }).then(render);
+  if (
+    ["home", "records", "documents"].includes(view) &&
+    navigator.onLine &&
+    hasSharedCloudIdentity()
+  )
+    loadRemoteRecords({ silent: true }).then(() => render());
   scrollTo({ top: 0, behavior: "smooth" });
 }
 
@@ -2783,10 +2787,20 @@ async function loadRemoteRecords({ silent = true } = {}) {
   )
     return 0;
   try {
-    const out = await bridgeCall("record_list", {
-      seflikKey: state.settings.seflikKey,
-      seflik: state.settings.seflik,
-    });
+    let out;
+    try {
+      out = await edgeCall("istif_record_list", {
+        seflikKey: state.settings.seflikKey,
+        seflik: state.settings.seflik,
+        folderSeflik: state.settings.seflik,
+      });
+    } catch (edgeError) {
+      if (!readSharedSession()) throw edgeError;
+      out = await bridgeCall("record_list", {
+        seflikKey: state.settings.seflikKey,
+        seflik: state.settings.seflik,
+      });
+    }
     const count = await mergeRemoteRecords(
       Array.isArray(out.records) ? out.records : [],
     );
@@ -3070,14 +3084,16 @@ async function previewDocuments() {
 }
 
 function printDocumentCss() {
-  return `@page{size:A4;margin:0}*{box-sizing:border-box}html,body{margin:0;background:#fff;color:#111;font-family:Arial,Helvetica,sans-serif}.print-toolbar{position:sticky;top:0;z-index:10;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 14px;background:#0f5f39;color:#fff}.print-toolbar button{border:0;border-radius:10px;background:#fff;color:#0f5f39;font-weight:800;padding:10px 14px}.print-page{width:210mm;min-height:297mm;margin:0 auto;background:#fff;page-break-after:always;break-after:page;padding:14mm;color:#111;overflow:hidden}.print-page:last-child{page-break-after:auto;break-after:auto}.print-page h1{text-align:center;font-size:18pt;margin:0 0 5mm;color:#111}.print-page h2{font-size:14pt;margin:0 0 4mm;color:#111}.print-table{width:100%;border-collapse:collapse;font-size:10pt;color:#111}.print-table th,.print-table td{border:1px solid #333;padding:2.5mm;text-align:left;vertical-align:top}.photo-document-page{height:297mm;min-height:0;padding:9mm 12mm 9mm;display:block;position:relative;overflow:hidden}.photo-print-header{display:block;margin:0 0 4mm}.photo-print-meta{font-size:11pt;line-height:1.38;padding:0;text-align:left;color:#111}.photo-print-meta div{margin:1mm 0}.photo-print-collage{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:3mm;height:250mm}.photo-print-collage figure{margin:0;border:1px solid #111;position:relative;overflow:hidden;background:#f8f8f8;display:block}.photo-print-collage img{width:100%;height:100%;object-fit:cover;display:block}.photo-print-collage .print-placeholder{height:auto;width:auto;display:block;background:#fff}.print-placeholder{display:block;color:#666;border:1px solid #333}.workbook-document{padding:10mm 10mm;font-size:9pt}.workbook-document h1{font-size:15pt;margin-bottom:4mm}.workbook-document h2{text-align:center;font-size:12pt;margin:5mm 0 0;border:1px solid #222;border-bottom:0;padding:2.5mm}.workbook-fields{display:grid;gap:1mm;margin-bottom:3mm}.workbook-fields div{display:grid;grid-template-columns:48mm 1fr;align-items:center;min-height:6mm}.workbook-fields b{text-align:right;padding-right:4mm}.workbook-fields span{border-bottom:1px solid transparent;min-height:5mm}.workbook-table{font-size:8.6pt;table-layout:fixed}.workbook-table th,.workbook-table td{text-align:center;padding:1.5mm;height:7mm}.workbook-table th:nth-child(1){width:13mm}.workbook-table th:nth-child(2){width:18mm}.workbook-table th:nth-child(3){width:22mm}.workbook-table th:nth-child(4){width:46mm}.workbook-table th:nth-child(5){width:25mm}.coordinate-workbook-table th:nth-child(6){width:42mm}.coordinate-workbook-table th:nth-child(7){width:20mm}.workbook-note{margin:7mm 8mm 0;line-height:1.45;text-align:center}.workbook-date{text-align:right;margin:5mm 15mm 0}.workbook-signatures{display:flex;justify-content:space-around;margin-top:34mm;padding-top:8mm;font-weight:700}.print-footer{margin-top:4mm;font-size:9pt;color:#555;text-align:right}.photo-document-page .print-footer{position:absolute;right:12mm;bottom:4mm;margin:0;font-size:8pt;color:#666}.empty-print{padding:24px;font-size:16px}@media print{.print-toolbar{display:none!important}.print-page{margin:0;box-shadow:none}body{background:#fff}}`;
+  return `@page{size:A4;margin:0}*{box-sizing:border-box}html,body{margin:0;background:#fff;color:#111;font-family:Arial,Helvetica,sans-serif}.print-toolbar{position:sticky;top:0;z-index:2147483647;display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:58px;padding:calc(10px + env(safe-area-inset-top,0px)) max(14px,env(safe-area-inset-right,0px)) 10px max(14px,env(safe-area-inset-left,0px));background:#0f5f39;color:#fff;box-shadow:0 3px 16px rgba(0,0,0,.22)}.print-toolbar strong{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.print-toolbar-actions{display:flex;align-items:center;gap:8px;flex:0 0 auto}.print-toolbar button{min-height:42px;border:0;border-radius:11px;background:#fff;color:#0f5f39;font-weight:800;padding:10px 14px;touch-action:manipulation;-webkit-tap-highlight-color:transparent}.print-toolbar .print-close-button{display:inline-flex;align-items:center;justify-content:center;gap:6px;background:#fff;color:#8b1f1f}.print-toolbar .print-close-button span{font-size:20px;line-height:1}.print-page{width:210mm;min-height:297mm;margin:0 auto;background:#fff;page-break-after:always;break-after:page;padding:14mm;color:#111;overflow:hidden}.print-page:last-child{page-break-after:auto;break-after:auto}.print-page h1{text-align:center;font-size:18pt;margin:0 0 5mm;color:#111}.print-page h2{font-size:14pt;margin:0 0 4mm;color:#111}.print-table{width:100%;border-collapse:collapse;font-size:10pt;color:#111}.print-table th,.print-table td{border:1px solid #333;padding:2.5mm;text-align:left;vertical-align:top}.photo-document-page{height:297mm;min-height:0;padding:9mm 12mm 9mm;display:block;position:relative;overflow:hidden}.photo-print-header{display:block;margin:0 0 4mm}.photo-print-meta{font-size:11pt;line-height:1.38;padding:0;text-align:left;color:#111}.photo-print-meta div{margin:1mm 0}.photo-print-collage{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:3mm;height:250mm}.photo-print-collage figure{margin:0;border:1px solid #111;position:relative;overflow:hidden;background:#f8f8f8;display:block}.photo-print-collage img{width:100%;height:100%;object-fit:cover;display:block}.photo-print-collage .print-placeholder{height:auto;width:auto;display:block;background:#fff}.print-placeholder{display:block;color:#666;border:1px solid #333}.workbook-document{padding:10mm 10mm;font-size:9pt}.workbook-document h1{font-size:15pt;margin-bottom:4mm}.workbook-document h2{text-align:center;font-size:12pt;margin:5mm 0 0;border:1px solid #222;border-bottom:0;padding:2.5mm}.workbook-fields{display:grid;gap:1mm;margin-bottom:3mm}.workbook-fields div{display:grid;grid-template-columns:48mm 1fr;align-items:center;min-height:6mm}.workbook-fields b{text-align:right;padding-right:4mm}.workbook-fields span{border-bottom:1px solid transparent;min-height:5mm}.workbook-table{font-size:8.6pt;table-layout:fixed}.workbook-table th,.workbook-table td{text-align:center;padding:1.5mm;height:7mm}.workbook-table th:nth-child(1){width:13mm}.workbook-table th:nth-child(2){width:18mm}.workbook-table th:nth-child(3){width:22mm}.workbook-table th:nth-child(4){width:46mm}.workbook-table th:nth-child(5){width:25mm}.coordinate-workbook-table th:nth-child(6){width:42mm}.coordinate-workbook-table th:nth-child(7){width:20mm}.workbook-note{margin:7mm 8mm 0;line-height:1.45;text-align:center}.workbook-date{text-align:right;margin:5mm 15mm 0}.workbook-signatures{display:flex;justify-content:space-around;margin-top:34mm;padding-top:8mm;font-weight:700}.print-footer{margin-top:4mm;font-size:9pt;color:#555;text-align:right}.photo-document-page .print-footer{position:absolute;right:12mm;bottom:4mm;margin:0;font-size:8pt;color:#666}.empty-print{padding:24px;font-size:16px}@media(max-width:560px){.print-toolbar{align-items:stretch;flex-direction:column}.print-toolbar-actions{display:grid;grid-template-columns:1fr 1.35fr;width:100%}.print-toolbar button{width:100%;padding:10px 9px;font-size:13px}}@media print{.print-toolbar{display:none!important}.print-page{margin:0;box-shadow:none}body{background:#fff}}`;
 }
 
 function buildPrintDocument(innerHtml) {
   const content = clean(innerHtml)
     ? innerHtml
     : '<div class="empty-print">Yazdırılacak kayıt bulunamadı.</div>';
-  return `<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>İstif Alma Evrakı</title><style>${printDocumentCss()}</style></head><body><div class="print-toolbar"><strong>İstif Alma Evrakı</strong><button onclick="window.print()">PDF olarak kaydet / Yazdır</button></div>${content}<script>function waitImages(){return Promise.all(Array.from(document.images).map(function(img){if(img.complete)return Promise.resolve();return new Promise(function(resolve){img.onload=img.onerror=resolve;setTimeout(resolve,2200);});}));}window.addEventListener('load',function(){setTimeout(function(){waitImages().then(function(){setTimeout(function(){window.print();},300);});},450);});<\/script></body></html>`;
+  const returnUrl = new URL("./", window.location.href).href;
+  const safeReturnUrl = JSON.stringify(returnUrl).replace(/</g, "\\u003c");
+  return `<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><title>İstif Alma Evrakı</title><style>${printDocumentCss()}</style></head><body><div class="print-toolbar"><strong>İstif Alma Evrakı</strong><div class="print-toolbar-actions"><button type="button" class="print-close-button" onclick="closePrintView()" aria-label="PDF sayfasını kapat"><span aria-hidden="true">×</span>Kapat</button><button type="button" onclick="window.print()">PDF olarak kaydet / Yazdır</button></div></div>${content}<script>var ISTIF_RETURN_URL=${safeReturnUrl};var closingPrintView=false;function closePrintView(){if(closingPrintView)return;closingPrintView=true;try{window.stop();}catch(e){}try{if(window.opener&&!window.opener.closed){window.opener.focus();}}catch(e){}try{window.close();}catch(e){}setTimeout(function(){try{if(history.length>1){history.back();setTimeout(function(){try{location.replace(ISTIF_RETURN_URL);}catch(e){location.href=ISTIF_RETURN_URL;}},220);}else{location.replace(ISTIF_RETURN_URL);}}catch(e){location.href=ISTIF_RETURN_URL;}},120);}function waitImages(){return Promise.all(Array.from(document.images).map(function(img){if(img.complete)return Promise.resolve();return new Promise(function(resolve){img.onload=img.onerror=resolve;setTimeout(resolve,2200);});}));}window.addEventListener('keydown',function(event){if(event.key==='Escape'){event.preventDefault();closePrintView();}});window.addEventListener('load',function(){setTimeout(function(){waitImages().then(function(){setTimeout(function(){window.print();},300);});},450);});<\/script></body></html>`;
 }
 
 function waitFrame() {
@@ -3100,6 +3116,15 @@ async function waitForPrintAssets(root) {
     }),
   );
   await waitFrame();
+}
+
+function exitInlinePrintView() {
+  const area = document.getElementById("printArea");
+  document.body.classList.remove("is-printing");
+  if (area) {
+    area.innerHTML = "";
+    area.setAttribute("aria-hidden", "true");
+  }
 }
 
 async function printDocuments() {
@@ -3126,10 +3151,13 @@ async function printDocuments() {
   }
   const area = document.getElementById("printArea");
   area.innerHTML =
-    html ||
-    '<div class="print-page"><h1>Yazdırılacak kayıt yok</h1><p>Önce evraka eklenecek istifleri seçin.</p></div>';
+    `<div class="inline-print-toolbar" data-no-print><button type="button" id="closeInlinePrint" aria-label="PDF görünümünü kapat">× Kapat / Uygulamaya Dön</button></div>` +
+    (html ||
+      '<div class="print-page"><h1>Yazdırılacak kayıt yok</h1><p>Önce evraka eklenecek istifleri seçin.</p></div>');
   area.setAttribute("aria-hidden", "false");
   document.body.classList.add("is-printing");
+  const closeInline = document.getElementById("closeInlinePrint");
+  if (closeInline) closeInline.onclick = exitInlinePrintView;
   await waitForPrintAssets(area);
   setTimeout(() => window.print(), 650);
 }
@@ -3142,6 +3170,17 @@ document.querySelectorAll("[data-dialog-close]").forEach((element) => {
 });
 dialogModal.addEventListener("click", (event) => {
   if (event.target.matches("[data-dialog-close]")) closeDialog();
+});
+window.addEventListener("afterprint", () => {
+  if (document.body.classList.contains("is-printing")) {
+    setTimeout(exitInlinePrintView, 120);
+  }
+});
+window.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && document.body.classList.contains("is-printing")) {
+    event.preventDefault();
+    exitInlinePrintView();
+  }
 });
 document.getElementById("captureBtn").onclick = capturePhoto;
 document.getElementById("pickGalleryBtn").onclick = () => {
@@ -3227,11 +3266,23 @@ async function pingAdminProfile() {
         appName: "İstif İO",
         platform: navigator.platform || "",
         browser: navigator.userAgent || "",
-        suiteVersion: "V22",
+        suiteVersion: "V24",
       },
     });
   } catch {}
 }
+window.addEventListener("mesaha-suite:sync-complete", async () => {
+  state.records = await idbGetAll("records");
+  render();
+});
+window.addEventListener("online", () => {
+  if (hasSharedCloudIdentity()) syncSharedContext({ manual: false });
+});
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden && navigator.onLine && hasSharedCloudIdentity())
+    syncSharedContext({ manual: false });
+});
+
 (async function init() {
   try {
     if (bootOverlay) {
@@ -3243,7 +3294,9 @@ async function pingAdminProfile() {
     refreshCurrentMembers();
     if (!state.settings.setupComplete) state.view = "settings";
     render();
-    /* Suite V10: profil ve sunucu kontrolleri ana menüden yürütülür. */
+    if (navigator.onLine && hasSharedCloudIdentity())
+      setTimeout(() => syncSharedContext({ manual: false }), 0);
+    /* Suite V24: İstif açılışında ortak şeflik kayıtları otomatik alınır. */
   } catch (error) {
     if (bootOverlay) bootOverlay.hidden = true;
     app.innerHTML = `<div class="empty"><h2>Uygulama açılamadı</h2><p>${esc(error.message)}</p></div>`;

@@ -223,6 +223,8 @@ img{max-width:100%;display:block}
 .progress{height:9px;background:#e8efe9;border-radius:999px;overflow:hidden}.progress span{height:100%;display:block;background:linear-gradient(90deg,var(--green),#3ca06a);width:0;transition:width .25s}
 .toast{position:fixed;z-index:150;left:50%;transform:translateX(-50%);bottom:calc(89px + var(--safe-bottom));max-width:calc(100% - 30px);padding:11px 15px;background:#17211b;color:#fff;border-radius:14px;font-size:13px;box-shadow:0 10px 28px rgba(0,0,0,.24);animation:toastIn .2s ease}.toast.bad{background:#842b2b}.toast.good{background:var(--green)}@keyframes toastIn{from{opacity:0;transform:translate(-50%,7px)}to{opacity:1;transform:translate(-50%,0)}}
 .print-area{display:none}
+.inline-print-toolbar{position:sticky;top:0;z-index:2147483647;display:flex;justify-content:flex-end;padding:calc(10px + env(safe-area-inset-top,0px)) max(12px,env(safe-area-inset-right,0px)) 10px max(12px,env(safe-area-inset-left,0px));background:#0f5f39;box-shadow:0 3px 16px rgba(0,0,0,.22)}
+.inline-print-toolbar button{min-height:44px;border:0;border-radius:12px;padding:10px 15px;background:#fff;color:#8b1f1f;font:800 14px/1.1 Arial,sans-serif;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 body.is-printing{background:#fff!important;padding:0!important}
 body.is-printing .app-shell,body.is-printing .bottom-nav,body.is-printing .modal,body.is-printing .toast{display:none!important}
 body.is-printing .print-area{display:block!important;position:relative;z-index:99999;width:100%;min-height:100dvh;background:#fff;color:#111;font-family:Arial,sans-serif;padding:0}
@@ -268,7 +270,7 @@ body.is-printing .print-area{display:block!important;position:relative;z-index:9
 @media print{
   @page{size:A4;margin:0}
   html,body{width:210mm;min-height:297mm;background:#fff!important;padding:0!important;margin:0!important;overflow:visible!important}
-  body.is-printing .app-shell,body.is-printing .bottom-nav,body.is-printing .modal,body.is-printing .toast,.app-shell,.bottom-nav,.modal,.toast{display:none!important}
+  body.is-printing .app-shell,body.is-printing .bottom-nav,body.is-printing .modal,body.is-printing .toast,.app-shell,.bottom-nav,.modal,.toast,[data-no-print]{display:none!important}
   .print-area{display:block!important;position:static!important;width:210mm!important;min-height:297mm!important;background:#fff!important;padding:0!important;color:#111!important;font-family:Arial,sans-serif!important}
   .print-area .print-page{width:210mm!important;min-height:297mm!important;margin:0!important;box-shadow:none!important;page-break-after:always;break-after:page;padding:14mm!important;overflow:hidden!important}
   .print-area .print-page:last-child{page-break-after:auto;break-after:auto}

@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  const VERSION = "19.0.0";
+  const VERSION = "20.0.0";
   const SUPABASE_URL = "https://swrbpdpotmirnmtqnuba.supabase.co";
   const ANON_KEY = "sb_publishable_G_ZFeUouDxg57Nne5pflfQ_cVGpdMbR";
   const SMOOTH = SUPABASE_URL + "/functions/v1/smooth-function";
@@ -173,7 +173,7 @@
   async function post(url, action, data) {
     const body = {
       action,
-      source: "mesaha-suite-v22",
+      source: "mesaha-suite-v24",
       ...terminalAuth(),
       ...(data || {}),
     };
@@ -796,11 +796,11 @@
       try {
         const remote = await edge("seflik_folder_read", { seflik, folderSeflik: seflik, bolmeNo: bolme });
         remoteRows = Array.isArray(remote.records) ? remote.records : [];
-      } catch (e) { console.warn("[suite-v22] Ortak kayıtlar alınamadı; yerel kayıtlarla devam ediliyor", e); }
+      } catch (e) { console.warn("[suite-v24] Ortak kayıtlar alınamadı; yerel kayıtlarla devam ediliyor", e); }
       const rows = mergeMesahaRows(remoteRows, localRows).map((r) => ({ ...r, seflik, bolmeNo: bolme, bolme_no: bolme }));
       const token = stableSyncToken(seflik, bolme, rows);
       for (let i = 0; i < rows.length; i += 150)
-        await edge("seflik_folder_push", { seflik, bolmeNo: bolme, syncToken: token, records: rows.slice(i, i + 150), appVersion: "Mesaha Suite V22", mergeMode: "barcode" });
+        await edge("seflik_folder_push", { seflik, bolmeNo: bolme, syncToken: token, records: rows.slice(i, i + 150), appVersion: "Mesaha Suite V24", mergeMode: "barcode" });
       let backup = null, driveError = "";
       try {
         if (id.google)
@@ -808,7 +808,7 @@
             seflik, appId: "mesaha",
             fileName: `Mesaha_${fold(seflik)}_${fold(bolme)}_${new Date().toISOString().slice(0, 10)}.json`,
             recordCount: rows.length, totalVolume: rows.reduce((sum, r) => sum + volume(r), 0),
-            payload: { schema: "mesaha-suite-v22", app: "mesaha", seflik, bolme, createdAt: now(), records: rows },
+            payload: { schema: "mesaha-suite-v24", app: "mesaha", seflik, bolme, createdAt: now(), records: rows },
           });
       } catch (e) { driveError = clean(e.message || e); }
       await edge("seflik_folder_finish", {
@@ -816,7 +816,7 @@
         totalVolume: rows.reduce((sum, r) => sum + volume(r), 0),
         driveFileId: (backup && backup.fileId) || "", driveFileName: (backup && backup.fileName) || "",
         driveStatus: backup ? "saved" : id.google ? "error" : "not_connected", driveError,
-        appVersion: "Mesaha Suite V22", mergeMode: "barcode",
+        appVersion: "Mesaha Suite V24", mergeMode: "barcode",
       });
       clearStableSyncToken(seflik, bolme);
       done += rows.length;
@@ -987,7 +987,7 @@
             recordCount: payloadRows.length,
             totalVolume: payloadRows.reduce((s, r) => s + num(r.ster), 0),
             payload: {
-              schema: "mesaha-suite-v22",
+              schema: "mesaha-suite-v24",
               app: "istif",
               seflik,
               createdAt: now(),
@@ -995,10 +995,112 @@
             },
           });
         } catch (e) {
-          console.warn("[suite-v22] İstif Drive yedeği oluşturulamadı", e);
+          console.warn("[suite-v24] İstif Drive yedeği oluşturulamadı", e);
         }
     clearDirty("istif");
     return { done };
+  }
+
+  function normalizeRemoteIstifRecord(row) {
+    row = row && typeof row === "object" ? row : {};
+    const id = clean(row.id || row.record_id);
+    if (!id) return null;
+    const driveFiles = Array.isArray(row.drive_files)
+      ? row.drive_files
+      : Array.isArray(row.driveFiles)
+        ? row.driveFiles
+        : [];
+    return {
+      id,
+      userId: clean(row.user_id || row.userId),
+      seflikKey: clean(row.seflik_key || row.seflikKey),
+      seflik: clean(row.seflik || row.folder_seflik),
+      ormanci: clean(row.ormanci || row.forester || row.forester_name),
+      date: clean(row.record_date || row.date),
+      bolme: clean(row.bolme_no || row.bolme || row.bolmeNo),
+      istifNo: clean(row.istif_no || row.istifNo),
+      type: clean(row.wood_type || row.type),
+      ster: clean(row.ster || row.miktar || row.quantity),
+      coordinates: clean(row.coordinates || row.coordinate || row.kordinat),
+      mevki: clean(row.mevki || row.location_note),
+      description: clean(row.description || row.aciklama),
+      barcode: clean(row.barcode_no || row.barcode),
+      photos: [],
+      photoCount: num(row.photo_count || driveFiles.length),
+      driveFolderId: clean(row.drive_folder_id || row.driveFolderId),
+      driveFiles,
+      syncStatus: "synced",
+      isSent: row.is_sent === true || row.isSent === true,
+      sentAt: clean(row.sent_at || row.sentAt),
+      sentBy: clean(row.sent_by || row.sentBy),
+      createdAt: clean(row.created_at || row.createdAt || now()),
+      updatedAt: clean(row.updated_at || row.updatedAt || now()),
+      remoteOnly: true,
+    };
+  }
+  async function pullIstifRecords() {
+    if (navigator.onLine === false) return { received: 0, changed: 0, offline: true };
+    const af = activeFolder(), id = identity();
+    const seflik = clean((af && af.seflik) || id.seflik);
+    const seflikKey = clean(af && (af.seflik_key || af.seflikKey)) || id.seflikKey || fold(seflik);
+    if (!seflik) return { received: 0, changed: 0, skipped: true };
+
+    let out;
+    try {
+      out = await edge("istif_record_list", {
+        seflik,
+        folderSeflik: seflik,
+        seflikKey,
+      });
+    } catch (edgeError) {
+      // Eski smooth-function henüz dağıtılmadıysa Google oturumlarında
+      // istif-drive record_list ile geriye uyumlu şekilde kayıtları çek.
+      if (!id.google) throw edgeError;
+      out = await drive("record_list", { seflik, seflikKey });
+    }
+
+    const remote = (Array.isArray(out && out.records) ? out.records : [])
+      .map(normalizeRemoteIstifRecord)
+      .filter(Boolean);
+    if (!remote.length) return { received: 0, changed: 0 };
+
+    const local = await idbAll("records");
+    const byId = new Map(local.map((record) => [clean(record && record.id), record]));
+    let changed = 0;
+    for (const remoteRecord of remote) {
+      const current = byId.get(remoteRecord.id);
+      const localPending =
+        current &&
+        !current.isDemo &&
+        current.syncStatus &&
+        current.syncStatus !== "synced";
+      if (localPending) continue;
+      const merged = {
+        ...(current || {}),
+        ...remoteRecord,
+        photos:
+          Array.isArray(current && current.photos) && current.photos.length
+            ? current.photos
+            : [],
+        photoCount: Math.max(
+          num(remoteRecord.photoCount),
+          num(current && current.photoCount),
+          Array.isArray(current && current.photos) ? current.photos.length : 0,
+        ),
+        driveFiles:
+          Array.isArray(remoteRecord.driveFiles) && remoteRecord.driveFiles.length
+            ? remoteRecord.driveFiles
+            : (current && current.driveFiles) || [],
+        syncStatus: "synced",
+        remoteOnly:
+          !current ||
+          !(Array.isArray(current.photos) && current.photos.length),
+      };
+      await idbPut("records", merged);
+      byId.set(merged.id, merged);
+      changed++;
+    }
+    return { received: remote.length, changed };
   }
 
   let syncing = false;
@@ -1046,22 +1148,23 @@
         force || (before.istif && before.istif.dirty)
           ? await syncIstif()
           : { done: 0, skipped: true };
+      const istifPull = await pullIstifRecords();
       const folder = await refreshFolderData({
         includeRecords: true,
         quiet: true,
         forceRecords: true,
       });
-      write(K.last, { at: now(), management, mesaha, istif, folder });
+      write(K.last, { at: now(), management, mesaha, istif, istifPull, folder });
       dispatch();
       toast("Senkronizasyon tamamlandı.");
       try {
         window.dispatchEvent(
           new CustomEvent("mesaha-suite:sync-complete", {
-            detail: { management, mesaha, istif, folder },
+            detail: { management, mesaha, istif, istifPull, folder },
           }),
         );
       } catch {}
-      return { ok: true, management, mesaha, istif, folder };
+      return { ok: true, management, mesaha, istif, istifPull, folder };
     } catch (e) {
       const code = clean(e && e.code);
       const message = clean(e && e.message || e);
@@ -1181,7 +1284,7 @@
       seflik, appId: "mesaha",
       fileName: `Mesaha_${fold(seflik)}_${selected ? fold(selected) + "_" : ""}${new Date().toISOString().replace(/[:.]/g, "-")}.json`,
       recordCount: rows.length, totalVolume: rows.reduce((sum, r) => sum + volume(r), 0),
-      payload: { schema: "mesaha-suite-v22", app: "mesaha", seflik, bolme: selected, createdAt: now(), settings: read(K.settings, {}), records: rows },
+      payload: { schema: "mesaha-suite-v24", app: "mesaha", seflik, bolme: selected, createdAt: now(), settings: read(K.settings, {}), records: rows },
     });
   }
   async function restoreMesahaBackup(id, mode) {
@@ -1336,9 +1439,10 @@
     registerHomeButton,
     positionDock,
     refreshFolderData,
+    pullIstifRecords,
     loadDivisionRecords,
   };
-  window.MesahaSuiteSyncV22 = window.MesahaSuiteSyncV21 = api;
+  window.MesahaSuiteSyncV24 = window.MesahaSuiteSyncV22 = window.MesahaSuiteSyncV21 = api;
   window.MesahaSuiteSyncV20 = api;
   window.MesahaSuiteSyncV19 = api;
   window.MesahaSuiteSyncV18 = api;
