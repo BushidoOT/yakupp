@@ -16,23 +16,24 @@
     <meta content="yes" name="mobile-web-app-capable" />
     <script>
       window.MESAHA_SUITE_MODE = true;
-      window.MESAHA_SUITE_VERSION = 9;
+      window.MESAHA_SUITE_VERSION = 10;
     </script>
-    <style id="mesaha-suite-overlay-clean-v9">
+    <style id="mesaha-suite-overlay-clean-v10">
       html[data-suite-managed="1"] #googleAuthOverlayV548,
       html[data-suite-managed="1"] #telegramSupportModalV429,
       html[data-suite-managed="1"] .google-auth-v548,
       html[data-suite-managed="1"] .app-loading-overlay,
       html[data-suite-managed="1"] .startup-loading-overlay {display:none!important;pointer-events:none!important;visibility:hidden!important;}
     </style>
-    <script id="mesaha-suite-folder-early-nav-v9">
+    <script id="mesaha-suite-folder-early-nav-v10">
       (function(){
         function targetOf(e){
           try{return e.target&&e.target.closest&&e.target.closest('[data-nav="seflikFolder"],#seflikFolderHomeShortcutV528');}catch(_){return null;}
         }
         var lastOpen=0;
         function runOpen(){
-          if(typeof window.__suiteOpenFolderViewV9==='function') window.__suiteOpenFolderViewV9();
+          if(typeof window.__suiteOpenFolderViewV10==='function') window.__suiteOpenFolderViewV10();
+          else if(typeof window.__suiteOpenFolderViewV9==='function') window.__suiteOpenFolderViewV9();
           else window.__suiteOpenFolderPendingV9=true;
         }
         function open(e){
@@ -8617,10 +8618,12 @@
                 "success",
               );
             });
-          const cb = $("cloudBackupBtnV316");
-          if (cb) cb.addEventListener("click", cloudBackup);
-          const cr = $("cloudRestoreBtnV316");
-          if (cr) cr.addEventListener("click", openCloudRestore);
+          if (!window.MESAHA_SUITE_MODE) {
+            const cb = $("cloudBackupBtnV316");
+            if (cb) cb.addEventListener("click", cloudBackup);
+            const cr = $("cloudRestoreBtnV316");
+            if (cr) cr.addEventListener("click", openCloudRestore);
+          }
           const crc = $("cloudRestoreCloseV316");
           if (crc)
             crc.addEventListener("click", () => {
@@ -9246,8 +9249,10 @@
               "success",
             );
           });
-          capture("cloudBackupBtnV316", cloudBackup);
-          capture("cloudRestoreBtnV316", openCloudRestore);
+          if (!window.MESAHA_SUITE_MODE) {
+            capture("cloudBackupBtnV316", cloudBackup);
+            capture("cloudRestoreBtnV316", openCloudRestore);
+          }
           const list = $("cloudRestoreListV316");
           if (list && !list.__mesahaV317Bound) {
             list.__mesahaV317Bound = true;
@@ -9624,8 +9629,10 @@
         }
         function bind() {
           ensurePanelButton();
-          replaceButton("cloudRestoreBtnV316", openCloudManager);
-          replaceButton("panelBackupsV318", openCloudManager);
+          if (!window.MESAHA_SUITE_MODE) {
+            replaceButton("cloudRestoreBtnV316", openCloudManager);
+            replaceButton("panelBackupsV318", openCloudManager);
+          }
           const listOld = $("cloudRestoreListV316");
           if (listOld && !listOld.__v319List) {
             const list = listOld.cloneNode(false);
@@ -12978,6 +12985,7 @@
         }
         var cloudBusy = false;
         async function handleCloudBackupClick(e) {
+          if (window.MESAHA_SUITE_MODE) return;
           var btn =
             e.target && e.target.closest
               ? e.target.closest("#cloudBackupBtnV316")
@@ -20671,7 +20679,7 @@
       })();
     </script>
 
-    <script src="../suite-sync-core.js?v=9"></script>
-    <script src="./suite-bridge.js?v=9"></script>
+    <script src="../suite-sync-core.js?v=10"></script>
+    <script src="./suite-bridge.js?v=10"></script>
   </body>
 </html>

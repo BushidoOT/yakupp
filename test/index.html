@@ -14,17 +14,28 @@
     <link rel="manifest" href="./manifest.json" />
     <link rel="icon" href="./assets/icon-192.png" />
     <link rel="apple-touch-icon" href="./assets/icon-192.png" />
-    <link rel="stylesheet" href="./styles.css?v=9" />
+    <link rel="stylesheet" href="./styles.css?v=10" />
     <script>
       window.MESAHA_SUITE_AUTH_MODE = true;
       window.MESAHA_VERSION = {
-        version: "suite-v9",
-        visibleVersion: "Mesaha Suite V9",
-        build: 8,
+        version: "suite-v10",
+        visibleVersion: "Mesaha Suite V10",
+        build: 10,
       };
     </script>
   </head>
-  <body>
+  <body class="suite-starting">
+    <div class="suite-startup-overlay" id="suiteStartupOverlay" role="status" aria-live="polite">
+      <div class="suite-startup-card">
+        <img src="./assets/icon-192.png" alt="" class="suite-startup-logo" />
+        <div class="suite-startup-spinner" aria-hidden="true"></div>
+        <h2 id="suiteStartupTitle">Mesaha Suite hazırlanıyor</h2>
+        <p id="suiteStartupText">Mesaha İO ve İstif İO çevrimdışı kullanım için kontrol ediliyor.</p>
+        <div class="suite-startup-progress"><span id="suiteStartupProgress"></span></div>
+        <small id="suiteStartupCounter">Lütfen bekleyin…</small>
+        <button type="button" id="suiteStartupRetry" hidden>Tekrar Dene</button>
+      </div>
+    </div>
     <div class="app-shell">
       <header class="hero">
         <div class="forest-layer forest-back"></div>
@@ -218,7 +229,7 @@
               <path
                 d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20ZM12 10v6M12 7h.01"
               /></svg
-            ><strong>Hakkında</strong><small>Mesaha Suite V9</small>
+            ><strong>Hakkında</strong><small>Mesaha Suite V10</small>
           </button>
         </section>
         <footer class="status-footer">
@@ -237,7 +248,7 @@
             ></span>
           </div>
           <div class="version-info">
-            <span><small>Versiyon</small><strong>V9</strong></span
+            <span><small>Versiyon</small><strong>V10</strong></span
             ><button id="footerUpdate">
               <svg viewBox="0 0 24 24">
                 <path d="M12 3v12M7 10l5 5 5-5M5 21h14" />
@@ -401,9 +412,9 @@
     <div class="toast" id="toast"></div>
     <script src="./js/mesaha-supabase-config.js"></script>
     <script src="./js/mesaha-firebase.js"></script>
-    <script src="./js/mesaha-google-auth-suite.js?v=9"></script>
-    <script src="./suite-sync-core.js?v=9"></script>
-    <script src="./app.js?v=9"></script>
-    <script src="./suite-ui.js?v=9"></script>
+    <script src="./js/mesaha-google-auth-suite.js?v=10"></script>
+    <script src="./suite-sync-core.js?v=10"></script>
+    <script src="./app.js?v=10"></script>
+    <script src="./suite-ui.js?v=10"></script>
   </body>
 </html>

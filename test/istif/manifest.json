@@ -1,7 +1,7 @@
 {
-  "name": "İstif İO • Suite V9",
+  "name": "İstif İO • Suite V10",
   "short_name": "İstif",
-  "start_url": "./?suite=9",
+  "start_url": "./?suite=10",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f7faf8",
@@ -19,7 +19,7 @@
       "type": "image/png"
     }
   ],
-  "id": "./?suite=9",
+  "id": "./?suite=10",
   "description": "Mesaha İO ile ortak Google hesabı ve şeflik bilgilerini kullanan; her kullanıcının kendi Google Drive hesabına yedek ve fotoğraf kaydeden İstif Alma uygulaması",
   "version": "0.3.4"
 }

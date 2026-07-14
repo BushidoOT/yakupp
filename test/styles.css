@@ -1492,7 +1492,7 @@ label[hidden],
     min-height: 84px;
   }
 }
-/* Suite V9 • kişisel Drive ve yedekler */
+/* Suite V10 • kişisel Drive ve yedekler */
 .drive-account-card-v7 {
   margin: 14px 0;
   padding: 14px;
@@ -1594,7 +1594,7 @@ label[hidden],
   }
 }
 
-/* Mesaha Suite V9 */
+/* Mesaha Suite V10 */
 .google-drive-logo {
   width: 34px !important;
   height: 30px !important;
@@ -1733,7 +1733,7 @@ label[hidden],
 }
 
 
-/* Suite V9 • oturum, Drive ve görünürlük düzeltmeleri */
+/* Suite V10 • oturum, Drive ve görünürlük düzeltmeleri */
 .auth-choice-grid[hidden],.auth-choice[hidden],#guestLoginBtn[hidden],#googleLoginBtn[hidden]{display:none!important}
 #loginModal .modal-head{margin-bottom:16px}
 #loginModal .modal-head h3{font-size:clamp(23px,6vw,30px)}
@@ -1752,3 +1752,17 @@ label[hidden],
 .backups-modal-v8{max-height:min(86vh,780px);overflow:auto}.backup-toolbar-v8{display:flex;gap:9px;margin-bottom:12px}.backup-list-v8{display:grid;gap:10px;margin-top:12px}
 .backup-row-v8{display:grid;gap:12px;padding:14px;border:1px solid #dce8e1;border-radius:16px;background:#fff}.backup-row-v8>div:first-child{display:grid;gap:3px}.backup-row-v8 small,.backup-row-v8 span{font-size:12px;color:#69776f}.backup-row-actions-v8{display:flex;flex-wrap:wrap;gap:7px}.backup-row-actions-v8 a{text-decoration:none}.danger-button-v8{border:1px solid #efc1c1;background:#fff4f4;color:#9b2929;border-radius:12px;padding:10px 13px;font-weight:700}
 @media(max-width:620px){#loginModal{padding:20px 18px}.drive-account-actions-v8>*{flex:1 1 calc(50% - 8px)}.backup-row-actions-v8>*{flex:1}.google-terminal-tools{padding:12px}.terminal-tools-actions{grid-template-columns:1fr 1fr}.terminal-tools-actions button{min-height:42px;font-size:12px}}
+
+
+/* Mesaha Suite V10 • merkezi açılış ve offline hazırlık */
+body.suite-starting{overflow:hidden!important;touch-action:none}
+.suite-startup-overlay{position:fixed;inset:0;z-index:2147483646;display:grid;place-items:center;padding:20px;background:linear-gradient(145deg,#0e2e22 0%,#174a32 58%,#0c241b 100%);color:#fff;transition:opacity .28s ease,visibility .28s ease}
+.suite-startup-overlay.closed{opacity:0;visibility:hidden;pointer-events:none}
+.suite-startup-card{width:min(430px,100%);display:grid;justify-items:center;text-align:center;padding:28px 24px;border:1px solid rgba(255,255,255,.18);border-radius:28px;background:rgba(255,255,255,.09);box-shadow:0 28px 80px rgba(0,0,0,.34);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.suite-startup-logo{width:82px;height:82px;border-radius:24px;object-fit:cover;background:#fff;box-shadow:0 14px 34px rgba(0,0,0,.2);margin-bottom:15px}
+.suite-startup-spinner{width:38px;height:38px;border:4px solid rgba(255,255,255,.25);border-top-color:#fff;border-radius:50%;animation:suiteSpinV10 .85s linear infinite;margin:2px 0 14px}
+.suite-startup-card h2{margin:0;font-size:23px;line-height:1.2}.suite-startup-card p{margin:9px 0 18px;color:#dbeae2;font-size:14px;line-height:1.5;max-width:340px}
+.suite-startup-progress{width:100%;height:9px;border-radius:999px;overflow:hidden;background:rgba(255,255,255,.17)}.suite-startup-progress span{display:block;width:4%;height:100%;border-radius:inherit;background:#b9efc8;transition:width .25s ease}
+.suite-startup-card small{margin-top:10px;color:#cce0d5;font-weight:700}.suite-startup-card button{margin-top:14px;min-height:42px;padding:0 18px;border:1px solid rgba(255,255,255,.35);border-radius:13px;background:#fff;color:#174a32;font-weight:850}
+@keyframes suiteSpinV10{to{transform:rotate(360deg)}}
+@media(max-width:520px){.suite-startup-card{padding:24px 18px;border-radius:23px}.suite-startup-logo{width:72px;height:72px}.suite-startup-card h2{font-size:21px}}

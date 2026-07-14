@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  const VERSION = "9.0.0";
+  const VERSION = "10.0.0";
   const SUPABASE_URL = "https://swrbpdpotmirnmtqnuba.supabase.co";
   const ANON_KEY = "sb_publishable_G_ZFeUouDxg57Nne5pflfQ_cVGpdMbR";
   const SMOOTH = SUPABASE_URL + "/functions/v1/smooth-function";
@@ -144,7 +144,7 @@
   async function post(url, action, data) {
     const body = {
       action,
-      source: "mesaha-suite-v9",
+      source: "mesaha-suite-v10",
       ...terminalAuth(),
       ...(data || {}),
     };
@@ -726,7 +726,7 @@
         if (!duplicateLike(e)) throw e;
       }
       const token =
-        "suitev9_" +
+        "suitev10_" +
         fold(seflik) +
         "_" +
         fold(bolme) +
@@ -740,7 +740,7 @@
           bolmeNo: bolme,
           syncToken: token,
           records: rows.slice(i, i + 150),
-          appVersion: "Mesaha Suite V9",
+          appVersion: "Mesaha Suite V10",
         });
       let backup = null,
         driveError = "";
@@ -753,7 +753,7 @@
             recordCount: rows.length,
             totalVolume: rows.reduce((s, r) => s + volume(r), 0),
             payload: {
-              schema: "mesaha-suite-v9",
+              schema: "mesaha-suite-v10",
               app: "mesaha",
               seflik,
               bolme,
@@ -774,7 +774,7 @@
         driveFileName: (backup && backup.fileName) || "",
         driveStatus: backup ? "saved" : id.google ? "error" : "not_connected",
         driveError,
-        appVersion: "Mesaha Suite V9",
+        appVersion: "Mesaha Suite V10",
       });
       done += rows.length;
     }
@@ -944,7 +944,7 @@
             recordCount: payloadRows.length,
             totalVolume: payloadRows.reduce((s, r) => s + num(r.ster), 0),
             payload: {
-              schema: "mesaha-suite-v9",
+              schema: "mesaha-suite-v10",
               app: "istif",
               seflik,
               createdAt: now(),
@@ -952,7 +952,7 @@
             },
           });
         } catch (e) {
-          console.warn("[suite-v9] İstif Drive yedeği oluşturulamadı", e);
+          console.warn("[suite-v10] İstif Drive yedeği oluşturulamadı", e);
         }
     clearDirty("istif");
     return { done };
@@ -1057,7 +1057,7 @@
       seflik, appId: "mesaha",
       fileName: `Mesaha_${fold(seflik)}_${selected ? fold(selected) + "_" : ""}${new Date().toISOString().replace(/[:.]/g, "-")}.json`,
       recordCount: rows.length, totalVolume: rows.reduce((sum, r) => sum + volume(r), 0),
-      payload: { schema: "mesaha-suite-v9", app: "mesaha", seflik, bolme: selected, createdAt: now(), settings: read(K.settings, {}), records: rows },
+      payload: { schema: "mesaha-suite-v10", app: "mesaha", seflik, bolme: selected, createdAt: now(), settings: read(K.settings, {}), records: rows },
     });
   }
   async function restoreMesahaBackup(id, mode) {
@@ -1088,7 +1088,7 @@
         photos: undefined,
       }));
     const payload = {
-      schema: "mesaha-suite-backup-v9",
+      schema: "mesaha-suite-backup-v10",
       createdAt: now(),
       user: { id: id.userId, name: id.name, email: id.email },
       seflik: id.seflik,
@@ -1208,6 +1208,7 @@
     refreshFolderData,
     loadDivisionRecords,
   };
+  window.MesahaSuiteSyncV10 = api;
   window.MesahaSuiteSyncV9 = api;
   window.MesahaSuiteSyncV8 = api;
   window.MesahaSuiteSyncV7 = api;

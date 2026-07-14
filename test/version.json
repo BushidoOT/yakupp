@@ -1,12 +1,12 @@
 {
-  "version": "9.0.0",
-  "build": 9,
+  "version": "10.0.0",
+  "build": 10,
   "date": "2026-07-14",
   "name": "Mesaha Suite",
   "short_name": "Mesaha Suite",
-  "description": "",
-  "id": "./?suite=9",
-  "start_url": "./?suite=9",
-  "visibleVersion": "Mesaha Suite V9",
-  "cacheName": "yakupp-suite-shell-v9"
+  "description": "Suite merkezli kalıcı offline hazırlık, ortak bölme oluşturma ve ayrılmış cihaz/Drive yedek akışları.",
+  "id": "./?suite=10",
+  "start_url": "./?suite=10",
+  "visibleVersion": "Mesaha Suite V10",
+  "cacheName": "yakupp-suite-shell-v10"
 }

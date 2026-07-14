@@ -74,7 +74,18 @@
     divisionReady = {},
     pendingOps = [],
     busy = false,
-    cacheReady = false;
+    cacheReady = false,
+    startupClosed = false;
+
+  function startupEls(){return {overlay:$("suiteStartupOverlay"),title:$("suiteStartupTitle"),text:$("suiteStartupText"),bar:$("suiteStartupProgress"),counter:$("suiteStartupCounter"),retry:$("suiteStartupRetry")};}
+  function showStartup(title,text,pct,retry){
+    const e=startupEls(); startupClosed=false; document.body.classList.add("suite-starting");
+    if(e.overlay)e.overlay.classList.remove("closed"); if(e.title&&title)e.title.textContent=title; if(e.text&&text)e.text.textContent=text;
+    if(e.bar)e.bar.style.width=Math.max(3,Math.min(100,Number(pct)||3))+"%"; if(e.counter)e.counter.textContent=(Number(pct)||0)+"%"; if(e.retry)e.retry.hidden=!retry;
+  }
+  function closeStartup(delay){
+    if(startupClosed)return; startupClosed=true; setTimeout(()=>{const e=startupEls();if(e.overlay)e.overlay.classList.add("closed");document.body.classList.remove("suite-starting");},Math.max(0,Number(delay)||0));
+  }
 
   function session() {
     return read(K.session, null) || read(K.backup, null) || {};
@@ -171,7 +182,7 @@
     try {
       const out = await supabaseRpc("mesaha_create_terminal_code_v557", {
         p_label: "terminal",
-        p_app_version: "Mesaha Suite V9",
+        p_app_version: "Mesaha Suite V10",
       });
       const t = out.terminal || out || {},
         code = clean(t.code),
@@ -396,7 +407,7 @@
     write(K.pendingOps, pendingOps);
     try {
       window.MesahaSuiteSyncV8 &&
-        (window.MesahaSuiteSyncV9||window.MesahaSuiteSyncV8).markDirty("suite", { type: type });
+        (window.MesahaSuiteSyncV10||window.MesahaSuiteSyncV9||window.MesahaSuiteSyncV8).markDirty("suite", { type: type });
     } catch {}
     updatePendingBadge();
   }
@@ -520,7 +531,7 @@
     if (!api || typeof api.edge !== "function")
       throw new Error("Sunucu bağlantısı hazır değil.");
     return api.edge(action, {
-      source: "mesaha-suite-v9",
+      source: "mesaha-suite-v10",
       ...terminalAuth(),
       ...data,
     });
@@ -1500,7 +1511,7 @@
         name: id.name || id.email || "Kullanıcı",
         seflik: af?.seflik || id.seflik || "",
         bolmeNo: id.bolme || "",
-        appVersion: "Mesaha Suite V9",
+        appVersion: "Mesaha Suite V10",
         avatarUrl: id.avatar || "",
         deviceId:
           localStorage.getItem("mesaha_suite_device_v7") ||
@@ -1517,7 +1528,7 @@
           appName: "Mesaha Suite",
           platform: navigator.platform || "",
           browser: navigator.userAgent || "",
-          suiteVersion: "V9",
+          suiteVersion: "V10",
         },
       });
     } catch {}
@@ -1567,43 +1578,54 @@
       }
     });
   }
+  async function waitForActiveWorker(reg, timeout=15000){
+    const candidate=reg.installing||reg.waiting;
+    if(candidate&&candidate.state!=="activated"){
+      await new Promise((resolve)=>{let done=false;const finish=()=>{if(done)return;done=true;resolve();};const t=setTimeout(finish,timeout);candidate.addEventListener("statechange",()=>{if(candidate.state==="activated"||candidate.state==="redundant"){clearTimeout(t);finish();}});try{if(reg.waiting)reg.waiting.postMessage({type:"SKIP_WAITING"});}catch{}});
+    }
+    return reg.active||navigator.serviceWorker.controller||reg.waiting||reg.installing;
+  }
   async function prepareOffline() {
+    const online = navigator.onLine !== false;
+    showStartup(online ? "Mesaha Suite hazırlanıyor" : "Offline sürüm açılıyor", online ? "Mesaha İO ve İstif İO dosyaları kontrol ediliyor." : "Cihaza daha önce indirilen uygulama dosyaları doğrulanıyor.", online ? 8 : 15, false);
     if (!("serviceWorker" in navigator)) {
-      setCacheStatus("Tarayıcı desteklemiyor", 0);
+      setCacheStatus("Tarayıcı çevrimdışı kullanımı desteklemiyor", 0);
+      showStartup("Offline hazırlık kullanılamıyor", "Tarayıcınız service worker desteği sunmuyor.", 0, true);
       return false;
     }
     try {
       await cleanupNestedWorkers();
-      try {
-        if (navigator.storage && navigator.storage.persist)
-          await navigator.storage.persist();
-      } catch {}
-      const reg = await navigator.serviceWorker.register(
-        "./service-worker.js?v=9",
-        { scope: "./", updateViaCache: "none" },
-      );
+      try { if (navigator.storage && navigator.storage.persist) await navigator.storage.persist(); } catch {}
+      const reg = await navigator.serviceWorker.register("./service-worker.js?v=10", { scope: "./", updateViaCache: "none" });
       await navigator.serviceWorker.ready;
-      const worker = reg.active || navigator.serviceWorker.controller;
+      const worker = await waitForActiveWorker(reg, navigator.onLine===false?7000:18000);
       setCacheStatus("Mesaha İO ve İstif İO dosyaları doğrulanıyor…", 18);
-      let st = await workerMessage(worker, "GET_STATUS", 12000);
-      if (!st.ready) {
+      let st = await workerMessage(worker, "GET_STATUS", online ? 15000 : 7000);
+      if (online && !st.ready) {
         setCacheStatus("Eksik uygulama dosyaları indiriliyor…", 35);
-        st = await workerMessage(worker, "CACHE_ALL", 90000);
+        st = await workerMessage(worker, "CACHE_ALL", 120000);
+        if (!st.ready) {
+          setCacheStatus("Eksik dosyalar yeniden deneniyor…", 72);
+          st = await workerMessage(worker, "REPAIR_CACHE", 120000);
+        }
       }
       cacheReady = !!st.ready;
-      if (cacheReady)
-        setCacheStatus(
-          "İki uygulama kalıcı olarak çevrimdışı kullanıma hazır",
-          100,
-        );
-      else
-        setCacheStatus(
-          `Offline hazırlık eksik • ${Number(st.missingCount || st.missing?.length || 0)} dosya`,
-          78,
-        );
+      if (cacheReady) {
+        setCacheStatus("İki uygulama kalıcı olarak çevrimdışı kullanıma hazır", 100);
+        showStartup(online ? "Uygulamalar hazır" : "Offline sürüm hazır", online ? "Mesaha Suite ve iki uygulama kullanıma hazır." : "İnternet olmadan kayıtlı son verilerle devam ediliyor. Ekran 5 saniye içinde açılacak.", 100, false);
+        closeStartup(online ? 300 : 5000);
+      } else if (!online) {
+        setCacheStatus("Offline sürüm eksik • internet bağlantısı gerekli", 25);
+        showStartup("Offline sürüm eksik", "Bu cihazda iki uygulamanın tamamı indirilmemiş. İnternete bağlanıp Suite'i bir kez açın.", 25, true);
+      } else {
+        const missing=Number(st.missingCount || st.missing?.length || 0);
+        setCacheStatus(`Offline hazırlık eksik • ${missing} dosya`, 78);
+        showStartup("Hazırlık tamamlanamadı", `${missing} dosya indirilemedi. Bağlantıyı kontrol edip tekrar deneyin.`, 78, true);
+      }
       return cacheReady;
     } catch (e) {
       setCacheStatus("Offline hazırlık tamamlanamadı", 20);
+      showStartup(navigator.onLine===false?"Offline sürüm açılamadı":"Bağlantı hatası", clean(e&&e.message||e)||"Uygulama dosyaları hazırlanamadı.", 20, true);
       return false;
     }
   }
@@ -1616,6 +1638,7 @@
     if (bar) bar.style.width = Math.max(0, Math.min(100, pct)) + "%";
     $("lastSync") &&
       $("lastSync").classList.toggle("offline-ready", pct >= 100);
+    if(!startupClosed){const e=startupEls();if(e.text)e.text.textContent=text;if(e.bar)e.bar.style.width=Math.max(3,Math.min(100,Number(pct)||3))+"%";if(e.counter)e.counter.textContent=Math.max(0,Math.min(100,Number(pct)||0))+"%";}
   }
   function ensureLoginThen(fn) {
     if (!signedIn()) {
@@ -1696,8 +1719,8 @@
       return true;
     }
     if (tool === "sync" || tool === "server") {
-      if (window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8)
-        (window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8).syncAll({ source: tool })
+      if (window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8)
+        (window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8).syncAll({ source: tool })
           .then(() => loadFolders(true))
           .catch(() => {});
       else sendPendingToServer();
@@ -1708,7 +1731,7 @@
       return true;
     }
     if (tool === "backups") {
-      (window.MesahaSuiteBackupsV9 || window.MesahaSuiteBackupsV8) && (window.MesahaSuiteBackupsV9 || window.MesahaSuiteBackupsV8).open();
+      (window.MesahaSuiteBackupsV10 || window.MesahaSuiteBackupsV9 || window.MesahaSuiteBackupsV8) && (window.MesahaSuiteBackupsV10 || window.MesahaSuiteBackupsV9 || window.MesahaSuiteBackupsV8).open();
       return true;
     }
     if (tool === "admin") {
@@ -1717,7 +1740,7 @@
     }
     if (tool === "about") {
       showInfo(
-        "Mesaha Suite V9",
+        "Mesaha Suite V10",
         `<p>Google veya terminal/misafir oturumu iki uygulamada ortak kullanılır.</p><p><b>Bekleyen işlem:</b> ${pendingOps.length}</p><p>Bölmeler offline indirildikten sonra Mesaha İO ve İstif İO’da kayıt eklemeye hazır olur.</p>`,
       );
       return true;
@@ -1826,6 +1849,7 @@
       { passive: true, capture: true },
     );
     $("modalBackdrop").onclick = closeModals;
+    $("suiteStartupRetry")?.addEventListener("click",()=>prepareOffline());
     $("seflikForm").onsubmit = createSeflik;
     $("ormanciForm").onsubmit = searchOrmanci;
     $("bolmeForm").onsubmit = createBolme;
@@ -1892,8 +1916,9 @@
     loadLocal();
     bind();
     render();
-    setCacheStatus("Yerel veriler hazır • Offline denetimi arka planda", 12);
-    setTimeout(() => prepareOffline(), 120);
+    showStartup(navigator.onLine===false?"Offline sürüm açılıyor":"Mesaha Suite hazırlanıyor",navigator.onLine===false?"Cihazdaki çevrimdışı uygulama dosyaları kontrol ediliyor.":"Mesaha İO ve İstif İO çevrimdışı kullanım için hazırlanıyor.",8,false);
+    setCacheStatus("Offline uygulama dosyaları kontrol ediliyor", 8);
+    setTimeout(() => prepareOffline(), 30);
     if (location.hash && /access_token=|error=/.test(location.hash)) {
       try {
         const api = googleAuthApi();

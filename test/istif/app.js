@@ -1,6 +1,6 @@
 "use strict";
 
-const APP_VERSION = "0.3.4-suite-v9";
+const APP_VERSION = "0.3.4-suite-v10";
 const MAX_PHOTO_BYTES = 1024 * 1024;
 const DB_NAME = "mesaha-istif-prototype";
 const DB_VERSION = 1;
@@ -351,7 +351,7 @@ function wait(ms) {
 
 function showBoot(
   title = "Yükleniyor…",
-  text = "Şeflik, ormancılar, istifler ve offline kayıtlar hazırlanıyor.",
+  text = "Şeflik, istifler ve offline kayıtlar hazırlanıyor.",
 ) {
   if (!bootOverlay) return;
   if (bootTitle) bootTitle.textContent = title;
@@ -408,7 +408,7 @@ async function idbPut(store, value) {
             }),
           );
           window.MesahaSuiteSyncV8 &&
-            (window.MesahaSuiteSyncV9||window.MesahaSuiteSyncV8).markDirty("istif", {
+            (window.MesahaSuiteSyncV10||window.MesahaSuiteSyncV9||window.MesahaSuiteSyncV8).markDirty("istif", {
               id: value && value.id,
             });
         } catch {}
@@ -433,7 +433,7 @@ async function idbDelete(store, key) {
             }),
           );
           window.MesahaSuiteSyncV8 &&
-            (window.MesahaSuiteSyncV9||window.MesahaSuiteSyncV8).markDirty("istif", { id: key });
+            (window.MesahaSuiteSyncV10||window.MesahaSuiteSyncV9||window.MesahaSuiteSyncV8).markDirty("istif", { id: key });
         } catch {}
       }
       resolve();
@@ -1153,7 +1153,7 @@ async function syncSharedContext({ manual = false } = {}) {
   if (navigator.onLine === false) {
     state.auth.status = hasSharedIdentity() ? "cached" : "signed_out";
     if (manual)
-      toast("İnternet yok. Son şeflik ve ormancı bilgileri kullanılıyor.");
+      toast("İnternet yok. Son Suite bilgileri kullanılıyor.");
     render();
     return;
   }
@@ -1422,11 +1422,6 @@ function renderHome() {
         <span class="chev">${icon("chevron", 23)}</span>
       </button>
     </section>
-    <section class="foresters-card card">
-      <div class="foresters-head"><span class="round-icon">${icon("users", 23)}</span><div><small>Ormancılar</small><strong>${state.ormancilar.length} kayıtlı ormancı</strong><span>Seçili: ${esc(displayOrmanci())}</span></div></div>
-      ${foresterSummaryHtml()}
-      <div class="forester-actions"><button class="btn" data-action="pick-ormanci">${icon("check", 18)} Ormancı Seç</button></div>
-    </section>
     <div class="section-title"><h2>İşlemler</h2></div>
     <section class="actions-grid">
       <button class="action-card" data-view="new"><span class="aicon">${icon("plus", 31)}</span><span>Yeni İstif</span></button>
@@ -1492,11 +1487,9 @@ function fieldRow(
 function renderNew() {
   const draft = ensureDraft();
   const seflikOptions = state.seflikler.map((item) => item.name);
-  const ormanciOptions = state.ormancilar.map((item) => item.name);
   return `${head(draft.createdAt && state.records.some((r) => r.id === draft.id) ? "İstif Düzenle" : "Yeni İstif", "İstif bilgilerini girin", { back: true })}<form id="stackForm">
     <section class="form-card card">
       ${fieldRow("forest", "Şeflik", "seflik", draft.seflik, "select", seflikOptions)}
-      ${fieldRow("user", "Ormancı", "ormanci", draft.ormanci, "select", ormanciOptions)}
       ${fieldRow("calendar", "Tarih", "date", draft.date, "date")}
       ${fieldRow("layers", "Bölme", "bolme", draft.bolme, "select", currentSuiteReadyBolmeler())}
       ${currentSuiteReadyBolmeler().length ? "" : '<div class="info-note"><b>' + icon("info", 21) + "</b><span>Suite ana menüsünde oluşturulan bölmeyi önce Offline İndir yapın. Bölme hazır olmadan ster kaydı eklenemez.</span></div>"}
@@ -1758,15 +1751,14 @@ function renderSettings() {
       <div class="shared-card-title"><span>${icon("doc", 22)}</span><div><b>Kurum ve Evrak Bilgileri</b><small>Bu bilgiler örnek olarak gelmez; kullanıcı tarafından bir kez kaydedilir.</small></div></div>
       <label>Bölge Müdürlüğü<input name="bolgeMudurlugu" value="${esc(state.settings.bolgeMudurlugu || "")}" placeholder="Bölge Müdürlüğü gir" autocomplete="organization"></label>
       <label>İşletme Müdürlüğü<input name="isletmeMudurlugu" value="${esc(state.settings.isletmeMudurlugu || "")}" placeholder="İşletme Müdürlüğü gir"></label>
-      <label>Şeflik<select name="seflik">${state.seflikler.map((item) => `<option value="${esc(item.name)}" ${item.name === state.settings.seflik ? "selected" : ""}>${esc(item.name)}${item.role === "owner" ? " • kurucu" : " • üye"}</option>`).join("")}</select></label><p class="settings-hint">Şeflik, ormancı ve bölme düzenlemeleri yalnızca Mesaha Suite ana menüsünden yapılır.</p>
+      <label>Şeflik<select name="seflik">${state.seflikler.map((item) => `<option value="${esc(item.name)}" ${item.name === state.settings.seflik ? "selected" : ""}>${esc(item.name)}${item.role === "owner" ? " • kurucu" : " • üye"}</option>`).join("")}</select></label><p class="settings-hint">Şeflik, personel ve bölme düzenlemeleri yalnızca Mesaha Suite ana menüsünden yapılır.</p>
       <label>Rampa / Satış İstif Yeri<input name="satisIstifYeri" value="${esc(state.settings.satisIstifYeri || "")}" placeholder="Rampa veya depo adı gir"></label>
       <p class="settings-hint">Orijinal boş evrak şablonu esas alınır. Doldurulmuş dosya yalnızca alanların nereye yazılacağını gösteren örnektir.</p>
       <button class="btn primary wide" type="submit">${icon("save", 20)} Bilgileri Kaydet</button>
     </form>
     <section class="shared-card card">
-      <div class="shared-card-title"><span>${icon("folder", 22)}</span><div><b>Şeflik Klasörü Bağlantısı</b><small>Şeflik adı ve ormancılar Mesaha İO ile ortaktır.</small></div></div>
+      <div class="shared-card-title"><span>${icon("folder", 22)}</span><div><b>Suite Ortak Veri Bağlantısı</b><small>Şeflik, bölmeler ve kayıt durumu Mesaha Suite tarafından yönetilir.</small></div></div>
       <div class="shared-current"><span>Şeflik</span><b>${esc(displaySeflik())}</b></div>
-      <div class="shared-current"><span>Ormancılar</span><b>${state.ormancilar.length} kişi • Seçili: ${esc(displayOrmanci())}</b></div>
       <button class="btn wide" data-action="refresh-shared">${icon("refresh", 20)} Ortak Bilgileri Güncelle</button>
       ${loggedIn ? "" : '<a class="btn primary wide login-link" href="../">Mesaha İO’da Google ile Giriş Yap</a>'}
     </section>
@@ -1797,7 +1789,7 @@ function bindDynamic() {
   app
     .querySelector('[data-action="pick-ormanci"]')
     ?.addEventListener("click", showOrmanciPicker);
-  // Ormancı yönetimi yalnızca Suite ana menüsündedir.
+  // Personel kimliği Suite ana menüsünden otomatik uygulanır.
   app
     .querySelector('[data-action="connect-drive"]')
     ?.addEventListener("click", beginDriveConnection);
@@ -2132,7 +2124,7 @@ async function saveRecord(event, draftOnly = false) {
     return;
   }
   if (!draft.seflik || !draft.ormanci) {
-    toast("Şeflik ve ormancı Mesaha Suite ana menüsünden seçilmelidir.", "bad");
+    toast("Şeflik ve kullanıcı kimliği Mesaha Suite ana menüsünden alınamadı.", "bad");
     return;
   }
   if (
@@ -3095,7 +3087,7 @@ window.addEventListener("storage", (event) => {
     hydrateLocalSharedIdentity();
     refreshCurrentMembers();
     render();
-    /* Suite V9: ağ yenilemesi yalnızca Suite veya ortak Senkronize Et tarafından yapılır. */
+    /* Suite V10: ağ yenilemesi yalnızca Suite veya ortak Senkronize Et tarafından yapılır. */
   }
 });
 window.addEventListener("afterprint", () => {
@@ -3135,7 +3127,7 @@ async function pingAdminProfile() {
         appName: "İstif İO",
         platform: navigator.platform || "",
         browser: navigator.userAgent || "",
-        suiteVersion: "V9",
+        suiteVersion: "V10",
       },
     });
   } catch {}
@@ -3151,7 +3143,7 @@ async function pingAdminProfile() {
     refreshCurrentMembers();
     if (!state.settings.setupComplete) state.view = "settings";
     render();
-    /* Suite V9: profil ve sunucu kontrolleri ana menüden yürütülür. */
+    /* Suite V10: profil ve sunucu kontrolleri ana menüden yürütülür. */
   } catch (error) {
     if (bootOverlay) bootOverlay.hidden = true;
     app.innerHTML = `<div class="empty"><h2>Uygulama açılamadı</h2><p>${esc(error.message)}</p></div>`;
