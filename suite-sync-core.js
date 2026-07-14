@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  const VERSION = "20.0.0";
+  const VERSION = "27.0.0";
   const SUPABASE_URL = "https://swrbpdpotmirnmtqnuba.supabase.co";
   const ANON_KEY = "sb_publishable_G_ZFeUouDxg57Nne5pflfQ_cVGpdMbR";
   const SMOOTH = SUPABASE_URL + "/functions/v1/smooth-function";
@@ -173,7 +173,7 @@
   async function post(url, action, data) {
     const body = {
       action,
-      source: "mesaha-suite-v26",
+      source: "mesaha-suite-v27",
       ...terminalAuth(),
       ...(data || {}),
     };
@@ -188,6 +188,10 @@
       if (j && j.blocked === true) { try { window.dispatchEvent(new CustomEvent("mesaha:security-blocked", { detail: j })); } catch (_) {} }
       const error = new Error(clean(j.error || j.message) || "Sunucu hatası " + r.status);
       error.status = r.status;
+      error.code = clean(j.code || j.errorCode || "");
+      error.retryable = j.retryable === true;
+      error.detail = clean(j.detail || "");
+      error.requestId = clean(j.requestId || "");
       error.retryAfter = num(j.retry_after || j.retryAfter);
       throw error;
     }
@@ -674,6 +678,7 @@
       return { done: 0, left: 0 };
     }
     const remain = [];
+    const cleanupResults = [];
     let done = 0;
     for (const item of list) {
       try {
@@ -714,7 +719,7 @@
           }
         }
         else if (item.type === "delete_division") {
-          await drive("division_delete_all", {
+          const cleanup = await drive("division_delete_all", {
             seflik: p.seflik,
             bolmeNo: p.bolmeNo,
             confirmBolme: p.bolmeNo,
@@ -727,6 +732,7 @@
             permanent: true,
             personalDriveAssetsDeleted: true,
           });
+          cleanupResults.push({ result: cleanup, bolmeNo: p.bolmeNo, seflik: p.seflik });
         }
         done++;
       } catch (e) {
@@ -736,7 +742,7 @@
     }
     write(K.pending, remain);
     if (!remain.length) clearDirty("suite");
-    return { done, left: remain.length };
+    return { done, left: remain.length, cleanupResults };
   }
   function mesahaRecordKey(row, index) {
     const r = row && row.record_data && typeof row.record_data === "object" ? row.record_data : (row || {});
@@ -797,11 +803,11 @@
       try {
         const remote = await edge("seflik_folder_read", { seflik, folderSeflik: seflik, bolmeNo: bolme });
         remoteRows = Array.isArray(remote.records) ? remote.records : [];
-      } catch (e) { console.warn("[suite-v26] Ortak kayıtlar alınamadı; yerel kayıtlarla devam ediliyor", e); }
+      } catch (e) { console.warn("[suite-v27] Ortak kayıtlar alınamadı; yerel kayıtlarla devam ediliyor", e); }
       const rows = mergeMesahaRows(remoteRows, localRows).map((r) => ({ ...r, seflik, bolmeNo: bolme, bolme_no: bolme }));
       const token = stableSyncToken(seflik, bolme, rows);
       for (let i = 0; i < rows.length; i += 150)
-        await edge("seflik_folder_push", { seflik, bolmeNo: bolme, syncToken: token, records: rows.slice(i, i + 150), appVersion: "Mesaha Suite V26", mergeMode: "barcode" });
+        await edge("seflik_folder_push", { seflik, bolmeNo: bolme, syncToken: token, records: rows.slice(i, i + 150), appVersion: "Mesaha Suite V27", mergeMode: "barcode" });
       let backup = null, driveError = "";
       try {
         if (id.google)
@@ -809,7 +815,7 @@
             seflik, appId: "mesaha",
             fileName: `Mesaha_${fold(seflik)}_${fold(bolme)}_${new Date().toISOString().slice(0, 10)}.json`,
             recordCount: rows.length, totalVolume: rows.reduce((sum, r) => sum + volume(r), 0),
-            payload: { schema: "mesaha-suite-v26", app: "mesaha", seflik, bolme, createdAt: now(), records: rows },
+            payload: { schema: "mesaha-suite-v27", app: "mesaha", seflik, bolme, createdAt: now(), records: rows },
           });
       } catch (e) { driveError = clean(e.message || e); }
       await edge("seflik_folder_finish", {
@@ -817,7 +823,7 @@
         totalVolume: rows.reduce((sum, r) => sum + volume(r), 0),
         driveFileId: (backup && backup.fileId) || "", driveFileName: (backup && backup.fileName) || "",
         driveStatus: backup ? "saved" : id.google ? "error" : "not_connected", driveError,
-        appVersion: "Mesaha Suite V26", mergeMode: "barcode",
+        appVersion: "Mesaha Suite V27", mergeMode: "barcode",
       });
       clearStableSyncToken(seflik, bolme);
       done += rows.length;
@@ -898,21 +904,60 @@
       fr.readAsDataURL(blob);
     });
   }
+  function photoUploadStateList(record, photoCount) {
+    const states = Array.isArray(record.photoUploadStates) ? record.photoUploadStates.map((item) => ({ ...(item || {}) })) : [];
+    const files = Array.isArray(record.driveFiles) ? record.driveFiles : [];
+    const count = Math.max(0, photoCount || 0, files.length);
+    for (let index = 0; index < count; index += 1) {
+      const existing = states[index] || {};
+      states[index] = {
+        index,
+        status: files[index] ? "uploaded" : clean(existing.status || "pending"),
+        attempts: num(existing.attempts),
+        fileId: clean((files[index] && (files[index].id || files[index].fileId || files[index].file_id)) || existing.fileId),
+        error: clean(existing.error),
+        code: clean(existing.code),
+        retryable: existing.retryable === true,
+        updatedAt: clean(existing.updatedAt || now()),
+      };
+    }
+    return states;
+  }
+  function setPhotoUploadState(record, index, patch) {
+    const count = Math.max(Array.isArray(record.photos) ? record.photos.length : 0, Array.isArray(record.driveFiles) ? record.driveFiles.length : 0, index + 1);
+    const states = photoUploadStateList(record, count);
+    states[index] = { ...(states[index] || { index }), ...(patch || {}), index, updatedAt: now() };
+    record.photoUploadStates = states;
+  }
+  function syncErrorMeta(error) {
+    const message = clean(error && error.message || error) || "Senkronizasyon tamamlanamadı";
+    const code = clean(error && error.code);
+    const retryable = !!(error && error.retryable) || ["NETWORK_TIMEOUT", "NETWORK_WEAK", "DRIVE_RATE_LIMIT", "DRIVE_TEMPORARY", "DRIVE_NETWORK"].includes(code);
+    return { message, code, retryable };
+  }
+
   async function syncIstif() {
     const all = (await idbAll("records")).filter((r) => r && !r.isDemo),
       rows = all.filter((r) => r.syncStatus !== "synced");
     if (!rows.length) {
       clearDirty("istif");
-      return { done: 0 };
+      return { done: 0, failed: 0, retryable: 0, pending: 0 };
     }
     const id = identity(),
       syncedBySeflik = {};
-    let done = 0;
+    let done = 0, failed = 0, retryableFailures = 0;
     for (const r of rows) {
       const seflik = clean(r.seflik || r.seflikName || id.seflik),
         bolme = clean(r.bolme || r.bolmeNo);
-      if (!seflik || !bolme)
-        throw new Error("İstif kaydında şeflik veya bölme eksik");
+      if (!seflik || !bolme) {
+        r.syncStatus = "sync_failed";
+        r.syncError = "İstif kaydında şeflik veya bölme eksik";
+        r.syncErrorCode = "RECORD_CONTEXT_MISSING";
+        r.syncRetryable = false;
+        await idbPut("records", r);
+        failed += 1;
+        continue;
+      }
       try {
         await edge("seflik_folder_create_division", {
           seflik,
@@ -920,55 +965,117 @@
           location: r.mevki || "",
         });
       } catch (e) {
-        if (!duplicateLike(e)) throw e;
+        if (!duplicateLike(e)) {
+          const meta = syncErrorMeta(e);
+          r.syncStatus = "sync_failed";
+          r.syncError = meta.message;
+          r.syncErrorCode = meta.code;
+          r.syncRetryable = meta.retryable;
+          r.updatedAt = now();
+          await idbPut("records", r);
+          failed += 1;
+          if (meta.retryable) retryableFailures += 1;
+          continue;
+        }
       }
       r.driveFiles = Array.isArray(r.driveFiles) ? r.driveFiles : [];
       const photos = Array.isArray(r.photos) ? r.photos : [];
-      for (let i = r.driveFiles.length; i < photos.length; i++) {
-        if (!id.google)
-          throw new Error(
-            "Fotoğraflı istifleri göndermek için şeflik kurucusu Drive hesabını bağlamalıdır.",
-          );
-        const dataUrl = await dataUrlFromPhoto(photos[i]);
-        if (!dataUrl) continue;
-        const up = await drive("upload_photo", {
-          seflik,
-          recordDate: r.date || r.recordDate,
-          bolmeNo: bolme,
-          istifNo: r.istifNo,
-          fileName: `${r.istifNo || "istif"}_${i + 1}.jpg`,
-          dataUrl,
-          mimeType: (photos[i] && photos[i].type) || "image/jpeg",
-        });
-        r.driveFiles.push(up);
-        r.driveFolderId = up.folderId || r.driveFolderId;
+      r.photoUploadStates = photoUploadStateList(r, photos.length);
+      r.syncStatus = "syncing";
+      r.syncError = "";
+      r.syncErrorCode = "";
+      r.syncRetryable = false;
+      await idbPut("records", r);
+      let uploadFailed = false;
+      for (let i = 0; i < photos.length; i++) {
+        if (r.driveFiles[i]) {
+          setPhotoUploadState(r, i, { status: "uploaded", fileId: clean(r.driveFiles[i].id || r.driveFiles[i].fileId || r.driveFiles[i].file_id), error: "", code: "", retryable: false });
+          continue;
+        }
+        const currentState = r.photoUploadStates[i] || {};
+        setPhotoUploadState(r, i, { status: "uploading", attempts: num(currentState.attempts) + 1, error: "", code: "", retryable: false });
+        r.syncStatus = "syncing";
         await idbPut("records", r);
+        try {
+          const dataUrl = await dataUrlFromPhoto(photos[i]);
+          if (!dataUrl) throw new Error("Fotoğraf verisi okunamadı");
+          const up = await drive("upload_photo", {
+            seflik,
+            recordDate: r.date || r.recordDate,
+            bolmeNo: bolme,
+            istifNo: r.istifNo,
+            fileName: `${r.istifNo || "istif"}_${i + 1}.jpg`,
+            dataUrl,
+            mimeType: (photos[i] && photos[i].type) || "image/jpeg",
+            size: (photos[i] && (photos[i].size || photos[i].blob && photos[i].blob.size)) || 0,
+          });
+          r.driveFiles[i] = up;
+          r.driveFolderId = up.folderId || r.driveFolderId;
+          setPhotoUploadState(r, i, { status: "uploaded", fileId: clean(up.id || up.fileId || up.file_id), error: "", code: "", retryable: false });
+          await idbPut("records", r);
+        } catch (error) {
+          const meta = syncErrorMeta(error);
+          setPhotoUploadState(r, i, { status: "failed", error: meta.message, code: meta.code, retryable: meta.retryable });
+          r.syncStatus = "upload_failed";
+          r.syncError = meta.message;
+          r.syncErrorCode = meta.code;
+          r.syncRetryable = meta.retryable;
+          r.updatedAt = now();
+          await idbPut("records", r);
+          failed += 1;
+          if (meta.retryable) retryableFailures += 1;
+          uploadFailed = true;
+          break;
+        }
       }
-      await edge("istif_record_upsert", {
-        seflik,
-        record: {
-          id: String(r.id),
-          ormanci: r.ormanci || "",
-          record_date: r.date || "",
-          bolme_no: bolme,
-          istif_no: r.istifNo || "",
-          wood_type: r.type || "",
-          ster: num(r.ster),
-          coordinates: r.coordinates || null,
-          mevki: r.mevki || null,
-          description: r.description || null,
-          barcode_no: r.barcode || null,
-          photo_count: photos.length || r.photoCount || 0,
-          drive_folder_id: r.driveFolderId || null,
-          drive_files: r.driveFiles || [],
-          is_sent: !!(r.isSent || r.is_sent),
-          sent_at: r.sentAt || null,
-          created_at: r.createdAt || now(),
-          updated_at: now(),
-        },
-      });
+      if (uploadFailed) continue;
+      r.syncStatus = "drive_synced";
+      r.syncError = "";
+      r.syncErrorCode = "";
+      r.syncRetryable = false;
+      await idbPut("records", r);
+      try {
+        await edge("istif_record_upsert", {
+          seflik,
+          record: {
+            id: String(r.id),
+            ormanci: r.ormanci || "",
+            record_date: r.date || "",
+            bolme_no: bolme,
+            istif_no: r.istifNo || "",
+            wood_type: r.type || "",
+            ster: num(r.ster),
+            coordinates: r.coordinates || null,
+            mevki: r.mevki || null,
+            description: r.description || null,
+            barcode_no: r.barcode || null,
+            photo_count: photos.length || r.photoCount || 0,
+            drive_folder_id: r.driveFolderId || null,
+            drive_files: r.driveFiles || [],
+            is_sent: !!(r.isSent || r.is_sent),
+            sent_at: r.sentAt || null,
+            created_at: r.createdAt || now(),
+            updated_at: now(),
+          },
+        });
+      } catch (error) {
+        const meta = syncErrorMeta(error);
+        r.syncStatus = "drive_synced";
+        r.syncError = `Fotoğraflar Drive'a yüklendi; Supabase kaydı bekliyor: ${meta.message}`;
+        r.syncErrorCode = meta.code || "SUPABASE_PENDING";
+        r.syncRetryable = meta.retryable !== false;
+        r.updatedAt = now();
+        await idbPut("records", r);
+        failed += 1;
+        if (r.syncRetryable) retryableFailures += 1;
+        continue;
+      }
       r.syncStatus = "synced";
+      r.syncError = "";
+      r.syncErrorCode = "";
+      r.syncRetryable = false;
       r.updatedAt = now();
+      r.photoUploadStates = photoUploadStateList(r, photos.length).map((state) => ({ ...state, status: "uploaded", error: "", code: "", retryable: false, updatedAt: now() }));
       await idbPut("records", r);
       (syncedBySeflik[seflik] || (syncedBySeflik[seflik] = [])).push(r);
       done++;
@@ -976,19 +1083,18 @@
     if (id.google)
       for (const seflik of Object.keys(syncedBySeflik))
         try {
-          const payloadRows = all
-            .filter(
-              (r) => clean(r.seflik || r.seflikName || id.seflik) === seflik,
-            )
+          const latest = (await idbAll("records")).filter((r) => r && !r.isDemo);
+          const payloadRows = latest
+            .filter((r) => clean(r.seflik || r.seflikName || id.seflik) === seflik)
             .map((r) => ({ ...r, photos: undefined }));
           await drive("backup_json", {
             seflik,
             appId: "istif",
             fileName: `Istif_${fold(seflik)}_${new Date().toISOString().slice(0, 10)}.json`,
             recordCount: payloadRows.length,
-            totalVolume: payloadRows.reduce((s, r) => s + num(r.ster), 0),
+            totalVolume: payloadRows.reduce((sum, r) => sum + num(r.ster), 0),
             payload: {
-              schema: "mesaha-suite-v26",
+              schema: "mesaha-suite-v27",
               app: "istif",
               seflik,
               createdAt: now(),
@@ -996,10 +1102,12 @@
             },
           });
         } catch (e) {
-          console.warn("[suite-v26] İstif Drive yedeği oluşturulamadı", e);
+          console.warn("[suite-v27] İstif Drive yedeği oluşturulamadı", e);
         }
-    clearDirty("istif");
-    return { done };
+    const pending = (await idbAll("records")).filter((r) => r && !r.isDemo && r.syncStatus !== "synced").length;
+    if (pending) markDirty("istif", { pending, failed, retryable: retryableFailures });
+    else clearDirty("istif");
+    return { done, failed, retryable: retryableFailures, pending };
   }
 
   function normalizeRemoteIstifRecord(row) {
@@ -1030,7 +1138,11 @@
       photoCount: num(row.photo_count || driveFiles.length),
       driveFolderId: clean(row.drive_folder_id || row.driveFolderId),
       driveFiles,
+      photoUploadStates: driveFiles.map((file, index) => ({ index, status: "uploaded", fileId: clean(file && (file.id || file.fileId || file.file_id)), attempts: 0, error: "", code: "", retryable: false, updatedAt: clean(row.updated_at || row.updatedAt || now()) })),
       syncStatus: "synced",
+      syncError: "",
+      syncErrorCode: "",
+      syncRetryable: false,
       isSent: row.is_sent === true || row.isSent === true,
       sentAt: clean(row.sent_at || row.sentAt),
       sentBy: clean(row.sent_by || row.sentBy),
@@ -1105,6 +1217,22 @@
   }
 
   let syncing = false;
+  let autoRetryTimer = 0;
+  let autoRetryAttempt = 0;
+  function scheduleAutoRetry(delayMs = 15000, reset = false) {
+    if (navigator.onLine === false) return;
+    if (reset) autoRetryAttempt = 0;
+    clearTimeout(autoRetryTimer);
+    const delay = Math.max(1200, Math.min(5 * 60 * 1000, delayMs || 15000));
+    autoRetryTimer = setTimeout(() => {
+      if (syncing || navigator.onLine === false || !isDirty()) return;
+      autoRetryAttempt += 1;
+      syncAll({ source: "auto-retry" }).catch(() => {});
+    }, delay);
+  }
+  function nextAutoRetryDelay() {
+    return Math.min(5 * 60 * 1000, 15000 * (2 ** Math.min(autoRetryAttempt, 4)));
+  }
   function setSyncButtonBusy(active, label) {
     const button = document.getElementById("suiteSyncFabV8");
     if (!button) return;
@@ -1157,7 +1285,14 @@
       });
       write(K.last, { at: now(), management, mesaha, istif, istifPull, folder });
       dispatch();
-      toast("Senkronizasyon tamamlandı.");
+      if (istif && istif.failed) {
+        toast(`${istif.failed} İstif kaydı veya fotoğrafı cihazda bekliyor. Ayrıntıyı İstif İO'da görebilirsiniz.`, true);
+        if (istif.retryable) scheduleAutoRetry(nextAutoRetryDelay());
+      } else {
+        autoRetryAttempt = 0;
+        clearTimeout(autoRetryTimer);
+        toast("Senkronizasyon tamamlandı.");
+      }
       try {
         window.dispatchEvent(
           new CustomEvent("mesaha-suite:sync-complete", {
@@ -1175,8 +1310,10 @@
       }
       if (code === "NETWORK_TIMEOUT" || code === "NETWORK_WEAK") {
         toast("Senkronizasyon başarısız. Bağlantı zayıf.", true);
+        scheduleAutoRetry(nextAutoRetryDelay());
         return { ok: false, weakConnection: true };
       }
+      if (e && e.retryable) scheduleAutoRetry(nextAutoRetryDelay());
       toast("Senkronizasyon tamamlanamadı: " + message, true);
       throw e;
     } finally {
@@ -1285,7 +1422,7 @@
       seflik, appId: "mesaha",
       fileName: `Mesaha_${fold(seflik)}_${selected ? fold(selected) + "_" : ""}${new Date().toISOString().replace(/[:.]/g, "-")}.json`,
       recordCount: rows.length, totalVolume: rows.reduce((sum, r) => sum + volume(r), 0),
-      payload: { schema: "mesaha-suite-v26", app: "mesaha", seflik, bolme: selected, createdAt: now(), settings: read(K.settings, {}), records: rows },
+      payload: { schema: "mesaha-suite-v27", app: "mesaha", seflik, bolme: selected, createdAt: now(), settings: read(K.settings, {}), records: rows },
     });
   }
   async function restoreMesahaBackup(id, mode) {
@@ -1398,8 +1535,11 @@
         positionDock();
       }, 450),
     );
-    window.addEventListener("online", updateButton);
-    window.addEventListener("offline", updateButton);
+    window.addEventListener("online", () => { updateButton(); scheduleAutoRetry(1800, true); });
+    window.addEventListener("offline", () => { updateButton(); clearTimeout(autoRetryTimer); });
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible" && navigator.onLine !== false && isDirty()) scheduleAutoRetry(2500, true);
+    });
     const mo = new MutationObserver((mutations) => {
       if (mutations.some((mutation) => mutation.type === "childList"))
         queueDockPosition();
@@ -1443,7 +1583,7 @@
     pullIstifRecords,
     loadDivisionRecords,
   };
-  window.MesahaSuiteSyncV26 = window.MesahaSuiteSyncV25 = window.MesahaSuiteSyncV24 = window.MesahaSuiteSyncV22 = window.MesahaSuiteSyncV21 = api;
+  window.MesahaSuiteSyncV27 = window.MesahaSuiteSyncV26 = window.MesahaSuiteSyncV25 = window.MesahaSuiteSyncV24 = window.MesahaSuiteSyncV22 = window.MesahaSuiteSyncV21 = api;
   window.MesahaSuiteSyncV20 = api;
   window.MesahaSuiteSyncV19 = api;
   window.MesahaSuiteSyncV18 = api;
@@ -1461,6 +1601,7 @@
     watchStorage();
     dispatch();
     updateButton();
+    if (navigator.onLine !== false && isDirty()) scheduleAutoRetry(4200, true);
   }
   if (document.readyState === "loading")
     document.addEventListener("DOMContentLoaded", boot, { once: true });

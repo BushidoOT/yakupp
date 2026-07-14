@@ -1,7 +1,8 @@
 "use strict";
 
-const APP_VERSION = "0.3.8-suite-v26";
-const MAX_PHOTO_BYTES = 1024 * 1024;
+const APP_VERSION = "0.3.9-suite-v27";
+const PHOTO_TARGET_BYTES = 600 * 1024;
+const MAX_PHOTO_BYTES = 700 * 1024;
 const DB_NAME = "mesaha-istif-prototype";
 const DB_VERSION = 1;
 const TYPE_ORDER = [
@@ -311,6 +312,9 @@ const state = {
     folderUrl: "",
     updatedAt: "",
     error: "",
+    quota: null,
+    quotaError: "",
+    quotaErrorCode: "",
   },
   auth: {
     status: "checking",
@@ -547,6 +551,10 @@ function wait(ms) {
 
 function suiteSyncApi() {
   return (
+    window.MesahaSuiteSyncV27 ||
+    window.MesahaSuiteSyncV26 ||
+    window.MesahaSuiteSyncV25 ||
+    window.MesahaSuiteSyncV24 ||
     window.MesahaSuiteSyncV14 ||
     window.MesahaSuiteSyncV13 ||
     window.MesahaSuiteSyncV12 ||
@@ -1055,6 +1063,9 @@ async function refreshDriveStatus({ silent = true } = {}) {
       connected: false,
       isOwner: currentFolderIsOwner(),
       error: "",
+      quota: null,
+      quotaError: "",
+      quotaErrorCode: "",
     };
     return state.drive;
   }
@@ -1083,6 +1094,9 @@ async function refreshDriveStatus({ silent = true } = {}) {
       folderUrl: clean(out.folderUrl),
       updatedAt: clean(out.updatedAt),
       error: "",
+      quota: out.quota && typeof out.quota === "object" ? out.quota : null,
+      quotaError: clean(out.quotaError),
+      quotaErrorCode: clean(out.quotaErrorCode),
     };
   } catch (error) {
     state.drive = {
@@ -1616,10 +1630,25 @@ function foresterSummaryHtml() {
   return `<div class="forester-chips">${list.map((item) => `<span class="forester-chip ${item.name === state.settings.ormanci ? "selected" : ""}">${item.avatarUrl ? `<img src="${esc(item.avatarUrl)}" alt="">` : icon("user", 15)}<b>${esc(item.name)}</b>${item.pending ? "<i>Bekliyor</i>" : ""}</span>`).join("")}${state.ormancilar.length > list.length ? `<span class="forester-more">+${state.ormancilar.length - list.length}</span>` : ""}</div>`;
 }
 
+function pendingUploadCounts() {
+  return state.records.reduce((result, record) => {
+    if (!record || record.isDemo || record.syncStatus === "synced") return result;
+    const photo = recordPhotoUploadSummary(record);
+    result.records += 1;
+    result.photos += Math.max(0, photo.total - photo.uploaded);
+    result.failedPhotos += photo.failed;
+    if (record.syncStatus === "drive_synced") result.supabase += 1;
+    if (clean(record.syncError)) result.errors += 1;
+    return result;
+  }, { records: 0, photos: 0, failedPhotos: 0, supabase: 0, errors: 0 });
+}
+
 function renderHome() {
   const c = counts();
+  const pending = pendingUploadCounts();
   return `${head("İstif Alma", "", { action: profileButton() })}
     ${state.settings.setupComplete ? "" : `<button class="setup-warning card" data-view="settings"><span>${icon("info", 22)}</span><div><b>İşletme ve evrak bilgilerini girin</b><small>Bölge, işletme, şeflik ve rampa bilgilerini kaydedin.</small></div>${icon("chevron", 21)}</button>`}
+    ${state.drive.connected && state.drive.quota && ["warning", "critical", "full"].includes(state.drive.quota.level) ? `<button class="drive-home-warning ${esc(state.drive.quota.level)}" data-view="settings"><span>${icon("drive", 22)}</span><div><b>${esc(driveQuotaLevelText(state.drive.quota))}</b><small>${state.drive.quota.remainingBytes == null ? "Drive alanını kontrol edin" : `${formatStorageBytes(state.drive.quota.remainingBytes)} boş alan kaldı`}</small></div>${icon("chevron", 20)}</button>` : ""}
     <section class="sync-banner card">
       <span class="round-icon compact-icon">${icon(state.auth.status === "signed_out" ? "wifiOff" : "sync", 21)}</span>
       <div class="sync-copy"><strong>Offline kullanılabilir</strong><span>${authSummary()} • ${c.pending} kayıt bekliyor</span></div>
@@ -1647,9 +1676,10 @@ function renderHome() {
     </section>
     <div class="section-title"><h2>Bekleyenler</h2></div>
     <section class="pending-card card">
-      <div class="pending-row"><i class="dot"></i>Yerelde kayıtlı<b>${state.records.filter((row) => !row.isDemo && row.syncStatus === "local").length}</b></div>
-      <div class="pending-row"><i class="dot wait"></i>Drive yükleme bekliyor<b>${state.records.reduce((sum, row) => sum + (!row.isDemo && row.syncStatus !== "synced" ? row.photos?.length || row.photoCount || 0 : 0), 0)} fotoğraf</b></div>
-      <div class="pending-row"><i class="dot bad"></i>Supabase kaydı bekliyor<b>${state.records.filter((row) => !row.isDemo && row.syncStatus !== "synced").length}</b></div>
+      <div class="pending-row"><i class="dot"></i>Senkronizasyon bekleyen kayıt<b>${pending.records}</b></div>
+      <div class="pending-row"><i class="dot wait"></i>Drive yükleme bekleyen<b>${pending.photos} fotoğraf</b></div>
+      <div class="pending-row"><i class="dot bad"></i>Hatalı / tekrar denenecek<b>${pending.errors}${pending.failedPhotos ? ` • ${pending.failedPhotos} foto` : ""}</b></div>
+      <div class="pending-row"><i class="dot wait"></i>Supabase kaydı bekleyen<b>${pending.supabase}</b></div>
     </section>`;
 }
 
@@ -1669,8 +1699,15 @@ function freshDraft() {
     description: "",
     barcode: "",
     photos: [],
+    photoCount: 0,
+    driveFiles: [],
+    driveFolderId: "",
+    photoUploadStates: [],
     createdAt: new Date().toISOString(),
     syncStatus: "local",
+    syncError: "",
+    syncErrorCode: "",
+    syncRetryable: false,
   };
 }
 
@@ -1778,7 +1815,7 @@ function renderNew() {
       ${fieldRow("doc", "Açıklama", "description", draft.description, "textarea")}
       ${fieldRow("barcode", "Barkod No", "barcode", draft.barcode)}
     </section>
-    <div class="info-note"><b>${icon("info", 21)}</b><span>Uygulama kamerasıyla çekilen fotoğraflar galeride görünmez. Her fotoğraf yaklaşık 1 MB altında saklanır.</span></div>
+    <div class="info-note"><b>${icon("info", 21)}</b><span>Uygulama kamerasıyla çekilen fotoğraflar galeride görünmez. Her fotoğraf kalite korunarak yaklaşık 400–700 KB aralığına küçültülür.</span></div>
     <div class="stack-actions"><button class="btn primary wide" type="submit">${icon("save", 21)} Kaydet</button><button class="btn wide" type="button" data-action="save-draft">${icon("doc", 21)} Taslağa Ekle</button></div>
   </form>`;
 }
@@ -1908,6 +1945,8 @@ function recordCards(rows) {
       const sent = recordSent(record);
       const sentDate =
         sent && record.sentAt ? trDate(String(record.sentAt).slice(0, 10)) : "";
+      const upload = recordPhotoUploadSummary(record);
+      const hasSyncError = !!clean(record.syncError) || ["upload_failed", "sync_failed"].includes(record.syncStatus);
       return `<article class="record-card card ${recordTypeClass(record.type)} ${sent ? "sent-record" : ""}" data-record="${record.id}">
       ${recordThumbHtml(record)}
       <div class="record-info">
@@ -1918,11 +1957,13 @@ function recordCards(rows) {
         <span>Ster</span><b>${esc(record.ster)} Ster</b>
         <span>Tarih</span><b>${trDate(record.date)}</b>
       </div>
-      <div class="record-status ${record.coordinates ? "" : "warn"}">
+      <div class="record-status ${hasSyncError ? "error" : record.coordinates ? "" : "warn"}">
         <div>${icon("pin", 17)}<span>${record.coordinates ? "Koordinat Var" : "Koordinat Bekliyor"}</span></div>
-        <div>${icon("camera", 17)}<span>${record.photos?.length || record.photoCount || 0} Fotoğraf</span></div>
-        <div>${icon(sent ? "check" : "cloud", 17)}<span>${sent ? `Gönderildi${sentDate ? ` • ${sentDate}` : ""}` : record.isDemo ? "Örnek Kayıt" : record.syncStatus === "synced" ? "Senkronize" : record.syncStatus === "drive_synced" ? "Supabase Bekliyor" : record.syncStatus === "syncing" ? "Yükleniyor" : "Yerelde Kayıtlı"}</span></div>
+        <div>${icon("camera", 17)}<span>${upload.total} Fotoğraf${upload.total ? ` • ${upload.uploaded}/${upload.total} Drive` : ""}</span></div>
+        <div>${icon(sent ? "check" : "cloud", 17)}<span>${sent ? `Gönderildi${sentDate ? ` • ${sentDate}` : ""}` : recordSyncText(record)}</span></div>
+        ${hasSyncError ? `<div class="record-sync-error" title="${esc(record.syncError || "Senkronizasyon hatası")}">${icon("info", 17)}<span>${esc(record.syncError || "Tekrar senkronize edin")}</span></div>` : ""}
       </div>
+      ${recordPhotoStateBadges(record)}
       ${sent ? `<div class="sent-badge">${icon("check", 15)} Gönderilen İstif</div>` : ""}
       <div class="record-actions">
         <button class="btn small" type="button" data-edit-record="${record.id}">${icon("doc", 16)} Düzenle</button>
@@ -1983,6 +2024,78 @@ function renderPhotos() {
   return `${head("Fotoğraflar", "İstif fotoğraflarını yönetin", { back: true })}<section class="records">${rows.map((record) => `<article class="photo-record card"><div class="round-icon">${icon("camera", 23)}</div><div><b>${esc(record.istifNo)} • ${esc(record.type)}</b><span>${esc(record.bolme)} Bölme • ${record.photos?.length || record.photoCount || 0}/4 fotoğraf</span></div><button class="btn small" data-view="records">Aç</button></article>`).join("")}</section>`;
 }
 
+function formatStorageBytes(value) {
+  const bytes = Number(value || 0);
+  if (!Number.isFinite(bytes) || bytes < 0) return "—";
+  if (bytes < 1024) return `${Math.round(bytes)} B`;
+  const units = ["KB", "MB", "GB", "TB"];
+  let size = bytes / 1024;
+  let unit = units[0];
+  for (let index = 1; index < units.length && size >= 1024; index += 1) {
+    size /= 1024;
+    unit = units[index];
+  }
+  return `${size.toLocaleString("tr-TR", { maximumFractionDigits: size >= 100 ? 0 : size >= 10 ? 1 : 2 })} ${unit}`;
+}
+
+function driveQuotaLevelText(quota) {
+  if (!quota) return "Alan bilgisi alınamadı";
+  if (quota.unlimited) return "Sınırsız veya ortak havuz";
+  if (quota.level === "full") return "Drive alanı dolu";
+  if (quota.level === "critical") return "Drive alanı kritik";
+  if (quota.level === "warning") return "Drive alanı azalıyor";
+  return "Drive alanı normal";
+}
+
+function renderDriveQuota() {
+  const quota = state.drive.quota;
+  if (!state.drive.connected) return "";
+  if (!quota) {
+    return `<div class="drive-quota unavailable"><div><b>Drive Alanı</b><span>${esc(state.drive.quotaError || "Alan bilgisi şu an alınamadı.")}</span></div></div>`;
+  }
+  const percent = quota.percent == null ? 0 : Math.max(0, Math.min(100, Number(quota.percent) || 0));
+  const level = clean(quota.level || "normal");
+  return `<section class="drive-quota ${esc(level)}">
+    <div class="drive-quota-head"><div><b>${esc(driveQuotaLevelText(quota))}</b><span>${quota.unlimited ? "Google Workspace ortak depolama" : `%${percent.toLocaleString("tr-TR", { maximumFractionDigits: 1 })} dolu`}</span></div><strong>${quota.remainingBytes == null ? "Sınırsız" : `${formatStorageBytes(quota.remainingBytes)} boş`}</strong></div>
+    ${quota.unlimited ? "" : `<div class="drive-quota-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${percent}"><i style="width:${percent}%"></i></div>`}
+    <div class="drive-quota-grid"><div><span>Kullanılan toplam</span><b>${formatStorageBytes(quota.usageBytes)}</b></div><div><span>Toplam alan</span><b>${quota.limitBytes == null ? "Sınırsız" : formatStorageBytes(quota.limitBytes)}</b></div><div><span>Drive dosyaları</span><b>${formatStorageBytes(quota.usageInDriveBytes)}</b></div><div><span>Çöp kutusu</span><b>${formatStorageBytes(quota.trashBytes)}</b></div></div>
+    ${["warning", "critical", "full"].includes(level) ? `<p class="drive-quota-warning">${level === "full" ? "Yeni fotoğraf yüklemeleri durur. Kurucu Drive’da yer açmalı." : level === "critical" ? "Yeni fotoğraf yüklemeleri yakında durabilir. Kurucu Drive alanını temizlemeli." : "Drive alanı azalmaya başladı. Eski dosyaları kontrol edin."}</p>` : ""}
+  </section>`;
+}
+
+function recordPhotoUploadSummary(record) {
+  const total = Math.max(Number(record.photoCount || 0), Array.isArray(record.photos) ? record.photos.length : 0, Array.isArray(record.driveFiles) ? record.driveFiles.length : 0);
+  const uploaded = Math.min(total, Array.isArray(record.driveFiles) ? record.driveFiles.filter(Boolean).length : 0);
+  const states = Array.isArray(record.photoUploadStates) ? record.photoUploadStates : [];
+  const failed = states.filter((item) => item && item.status === "failed").length;
+  const uploading = states.filter((item) => item && item.status === "uploading").length;
+  return { total, uploaded, failed, uploading, pending: Math.max(0, total - uploaded - uploading) };
+}
+
+function recordPhotoStateBadges(record) {
+  const summary = recordPhotoUploadSummary(record);
+  if (!summary.total) return "";
+  const files = Array.isArray(record.driveFiles) ? record.driveFiles : [];
+  const states = Array.isArray(record.photoUploadStates) ? record.photoUploadStates : [];
+  const labels = { uploaded: "Drive’da", uploading: "Yükleniyor", failed: "Başarısız", pending: "Cihazda" };
+  return `<div class="photo-upload-states">${Array.from({ length: summary.total }, (_, index) => {
+    const status = files[index] ? "uploaded" : clean(states[index]?.status || "pending");
+    const safeStatus = ["uploaded", "uploading", "failed", "pending"].includes(status) ? status : "pending";
+    const error = clean(states[index]?.error);
+    return `<span class="${safeStatus}"${error ? ` title="${esc(error)}"` : ""}>${index + 1}. foto • ${labels[safeStatus]}</span>`;
+  }).join("")}</div>`;
+}
+
+function recordSyncText(record) {
+  if (record.isDemo) return "Örnek Kayıt";
+  if (record.syncStatus === "synced") return "Senkronize";
+  if (record.syncStatus === "upload_failed") return "Fotoğraf tekrar denenecek";
+  if (record.syncStatus === "sync_failed") return "Senkronizasyon hatası";
+  if (record.syncStatus === "drive_synced") return "Supabase kaydı bekliyor";
+  if (record.syncStatus === "syncing") return "Yükleniyor";
+  return "Yerelde Kayıtlı";
+}
+
 function driveStatusCopy() {
   if (state.drive.status === "checking")
     return "Drive bağlantısı kontrol ediliyor…";
@@ -2001,7 +2114,8 @@ function renderDriveCard() {
   return `<section class="drive-card card">
     <div class="drive-card-title"><span>${icon("drive", 24)}</span><div><b>Şeflik Google Drive</b><small>Fotoğraflar ücretsiz sunucuya uğramadan doğrudan ortak Drive alanına yüklenir.</small></div><i class="drive-state ${connected ? "connected" : ""}"></i></div>
     <div class="drive-status-copy">${esc(driveStatusCopy())}</div>
-    ${connected ? `<div class="drive-details"><div><span>Şeflik</span><b>${esc(displaySeflik())}</b></div><div><span>Bağlı hesap</span><b>${esc(state.drive.ownerEmail || state.drive.ownerName || "Kurucu hesabı")}</b></div><div><span>Klasör</span><b>${esc(state.drive.folderName || "Mesaha İO - İstif Alma")}</b></div></div>` : ""}
+    ${connected ? `<div class="drive-details"><div><span>Şeflik</span><b>${esc(displaySeflik())}</b></div><div><span>Bağlı hesap</span><b>${esc(state.drive.ownerEmail || state.drive.ownerName || "Kurucu hesabı")}</b></div><div><span>Klasör</span><b>${esc(state.drive.folderName || "Mesaha Suite")}</b></div></div>` : ""}
+    ${renderDriveQuota()}
     <div class="drive-actions">
       ${isOwner && !connected ? `<button class="btn primary wide" data-action="connect-drive">${icon("link", 20)} Google Hesabı ile Bağla</button>` : ""}
       ${isOwner && connected ? `<button class="btn primary" data-action="connect-drive">${icon("refresh", 19)} Bağlantıyı Yenile</button><button class="btn danger-soft" data-action="disconnect-drive">Bağlantıyı Kaldır</button>` : ""}
@@ -2231,14 +2345,20 @@ async function editRecord(recordId) {
   state.draft = cloneValue(record);
   state.draft.syncStatus = "local";
   state.draft.updatedAt = new Date().toISOString();
+  const recordDriveFiles = Array.isArray(record.driveFiles) ? record.driveFiles : [];
   state.selectedPhotos = Array.isArray(record.photos)
     ? record.photos
-        .map((photo) => ({
-          blob: photo.blob,
-          name: photo.name || `foto_${Date.now()}.jpg`,
-          type: photo.type || (photo.blob && photo.blob.type) || "image/jpeg",
-          size: photo.size || (photo.blob && photo.blob.size) || 0,
-        }))
+        .map((photo, index) => {
+          const driveFile = recordDriveFiles[index];
+          return {
+            blob: photo.blob,
+            name: photo.name || `foto_${Date.now()}.jpg`,
+            type: photo.type || (photo.blob && photo.blob.type) || "image/jpeg",
+            size: photo.size || (photo.blob && photo.blob.size) || 0,
+            fromDrive: photo.fromDrive === true || !!driveFile,
+            driveFileId: clean(photo.driveFileId) || driveFileId(driveFile),
+          };
+        })
         .filter((photo) => photo.blob)
     : [];
   setView("new");
@@ -2447,20 +2567,42 @@ async function saveRecord(event, draftOnly = false) {
   draft.istifNo = clean(draft.istifNo);
   draft.ster = clean(draft.ster);
   rememberLastBolme(draft.bolme);
+  const previousDriveFiles = Array.isArray(draft.driveFiles) ? [...draft.driveFiles] : [];
   draft.photos = state.selectedPhotos.map((photo) => ({
     name: photo.name,
     type: photo.type,
     size: photo.size,
     blob: photo.blob,
+    fromDrive: photo.fromDrive === true,
+    driveFileId: clean(photo.driveFileId),
   }));
   draft.photoCount = draft.photos.length;
+  draft.driveFiles = draft.photos.map((photo, index) => {
+    const wantedId = clean(photo.driveFileId);
+    if (!wantedId) return null;
+    return previousDriveFiles.find((file) => driveFileId(file) === wantedId) || {
+      id: wantedId,
+      fileId: wantedId,
+      name: photo.name,
+      mimeType: photo.type || "image/jpeg",
+      size: photo.size || 0,
+    };
+  });
   draft.seflikKey =
     (state.settings.seflik && draft.seflik === state.settings.seflik
       ? state.settings.seflikKey
       : "") ||
     draft.seflikKey ||
     stableKey(draft.seflik);
+  draft.photoUploadStates = draft.photos.map((photo, index) => {
+    const file = draft.driveFiles[index];
+    return { index, status: file ? "uploaded" : "pending", fileId: driveFileId(file), attempts: 0, error: "", code: "", retryable: false, updatedAt: new Date().toISOString() };
+  });
+  if (!draft.driveFiles.some(Boolean)) draft.driveFolderId = "";
   draft.syncStatus = "local";
+  draft.syncError = "";
+  draft.syncErrorCode = "";
+  draft.syncRetryable = false;
   draft.updatedAt = new Date().toISOString();
   const demoRows = state.records.filter((record) => record.isDemo);
   if (demoRows.length && demoRows.length === state.records.length) {
@@ -2568,12 +2710,14 @@ async function compressCanvas(canvas, maxBytes) {
   const firstContext = work.getContext("2d", { alpha: false });
   if (!firstContext) throw new Error("Fotoğraf işleme alanı açılamadı.");
   firstContext.drawImage(canvas, 0, 0, work.width, work.height);
-  let quality = 0.84;
+  const targetBytes = Math.min(maxBytes, PHOTO_TARGET_BYTES);
+  let quality = 0.86;
   let blob = null;
-  for (let attempt = 0; attempt < 10; attempt += 1) {
+  for (let attempt = 0; attempt < 14; attempt += 1) {
     blob = await canvasToJpegBlob(work, quality);
-    if (blob && blob.size <= maxBytes) return blob;
-    if (quality > 0.48) quality -= 0.08;
+    if (blob && blob.size <= targetBytes) return blob;
+    if (blob && blob.size <= maxBytes && attempt >= 9) return blob;
+    if (quality > 0.46) quality -= 0.07;
     else {
       const next = document.createElement("canvas");
       next.width = Math.max(1, Math.round(work.width * 0.84));
@@ -2584,10 +2728,11 @@ async function compressCanvas(canvas, maxBytes) {
       work.width = 1;
       work.height = 1;
       work = next;
-      quality = 0.72;
+      quality = 0.74;
     }
   }
   if (!blob) throw new Error("Fotoğraf JPEG biçimine çevrilemedi.");
+  if (blob.size > maxBytes) throw new Error("Fotoğraf hedef boyuta küçültülemedi.");
   return blob;
 }
 
@@ -2908,6 +3053,9 @@ async function disconnectDrive() {
       folderUrl: "",
       ownerEmail: "",
       error: "",
+      quota: null,
+      quotaError: "",
+      quotaErrorCode: "",
     };
     await saveSharedCache();
     render();
@@ -3002,7 +3150,11 @@ function normalizeRemoteRecord(row) {
     photoCount: Number(row.photo_count || driveFiles.length || 0) || 0,
     driveFolderId: clean(row.drive_folder_id || row.driveFolderId),
     driveFiles,
+    photoUploadStates: driveFiles.map((file, index) => ({ index, status: "uploaded", fileId: driveFileId(file), attempts: 0, error: "", code: "", retryable: false, updatedAt: clean(row.updated_at || row.updatedAt || new Date().toISOString()) })),
     syncStatus: "synced",
+    syncError: "",
+    syncErrorCode: "",
+    syncRetryable: false,
     isSent: row.is_sent === true || row.isSent === true,
     sentAt: clean(row.sent_at || row.sentAt),
     sentBy: clean(row.sent_by || row.sentBy),
@@ -3544,7 +3696,7 @@ async function pingAdminProfile() {
         appName: "İstif İO",
         platform: navigator.platform || "",
         browser: navigator.userAgent || "",
-        suiteVersion: "V26",
+        suiteVersion: "V27",
       },
     });
   } catch {}
@@ -3586,7 +3738,7 @@ window.addEventListener(
     render();
     if (navigator.onLine && hasSharedCloudIdentity())
       setTimeout(() => syncSharedContext({ manual: false }), 0);
-    /* Suite V26: İstif açılışında ortak şeflik kayıtları otomatik alınır. */
+    /* Suite V27: İstif açılışında ortak şeflik kayıtları otomatik alınır. */
   } catch (error) {
     if (bootOverlay) bootOverlay.hidden = true;
     app.innerHTML = `<div class="empty"><h2>Uygulama açılamadı</h2><p>${esc(error.message)}</p></div>`;

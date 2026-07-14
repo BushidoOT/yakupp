@@ -1,12 +1,12 @@
 {
-  "version": "26.0.0",
-  "build": 26,
+  "version": "27.0.0",
+  "build": 27,
   "date": "2026-07-14",
   "name": "Mesaha Suite",
   "short_name": "Mesaha Suite",
-  "description": "Yönetim engelleme sistemi tüm uygulamalarda anlık güvenlik kontrolüyle onarıldı; şeflik üyeleri için güvenli Şeflikten Çık akışı eklendi.",
-  "id": "./?suite=26",
-  "start_url": "./?suite=26",
-  "visibleVersion": "Mesaha Suite V26",
-  "cacheName": "yakupp-suite-shell-v26"
+  "description": "Drive kullanılan/kalan alan göstergesi, 400–700 KB fotoğraf sıkıştırma, ayrıntılı yükleme kuyruğu, otomatik tekrar deneme ve Drive temizleme sonuç ekranı eklendi.",
+  "id": "./?suite=27",
+  "start_url": "./?suite=27",
+  "visibleVersion": "Mesaha Suite V27",
+  "cacheName": "yakupp-suite-shell-v27"
 }

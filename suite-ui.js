@@ -32,7 +32,7 @@
     if (account)
       account.insertAdjacentHTML(
         "afterend",
-        `<section class="drive-account-card-v8" id="driveAccountCardV8"><div class="drive-account-head-v8"><span class="choice-icon drive-choice-icon"><svg class="google-drive-logo" viewBox="0 0 64 56" aria-hidden="true"><path fill="#0F9D58" d="M22 2h20l20 34H42z"/><path fill="#F4B400" d="M22 2 2 36l10 18 20-34z"/><path fill="#4285F4" d="M12 54 2 36h40l20 0-10 18z"/></svg></span><div><strong>Şeflik Google Drive</strong><small id="driveAccountTextV8">Bağlantı kontrol edilmedi</small></div></div><div class="drive-account-actions-v8"><button class="secondary-button" id="driveRefreshV8" type="button">Durumu Yenile</button><button class="primary-button" id="driveConnectV8" type="button">Drive Bağla</button><button class="secondary-button" id="driveDisconnectV8" type="button" hidden>Bağlantıyı Kes</button><a class="secondary-button" id="driveOpenV8" target="_blank" rel="noopener" hidden>Drive Aç</a></div><p>Tüm Mesaha ve İstif yedekleri ile İstif fotoğrafları şeflik kurucusunun Drive hesabında tutulur. Şefliğe eklenen ormancılar kendi Drive hesaplarını bağlayamaz.</p></section>`,
+        `<section class="drive-account-card-v8" id="driveAccountCardV8"><div class="drive-account-head-v8"><span class="choice-icon drive-choice-icon"><svg class="google-drive-logo" viewBox="0 0 64 56" aria-hidden="true"><path fill="#0F9D58" d="M22 2h20l20 34H42z"/><path fill="#F4B400" d="M22 2 2 36l10 18 20-34z"/><path fill="#4285F4" d="M12 54 2 36h40l20 0-10 18z"/></svg></span><div><strong>Şeflik Google Drive</strong><small id="driveAccountTextV8">Bağlantı kontrol edilmedi</small></div></div><div class="drive-quota-v27" id="driveQuotaV27" hidden></div><div class="drive-account-actions-v8"><button class="secondary-button" id="driveRefreshV8" type="button">Durumu Yenile</button><button class="primary-button" id="driveConnectV8" type="button">Drive Bağla</button><button class="secondary-button" id="driveDisconnectV8" type="button" hidden>Bağlantıyı Kes</button><a class="secondary-button" id="driveOpenV8" target="_blank" rel="noopener" hidden>Drive Aç</a></div><p>Tüm Mesaha ve İstif yedekleri ile İstif fotoğrafları şeflik kurucusunun Drive hesabında tutulur. Şefliğe eklenen ormancılar kendi Drive hesaplarını bağlayamaz.</p></section>`,
       );
     document.body.insertAdjacentHTML(
       "beforeend",
@@ -80,6 +80,39 @@
       true,
     );
   }
+  function formatBytes(value) {
+    const bytes = Number(value || 0);
+    if (!Number.isFinite(bytes) || bytes < 0) return "—";
+    if (bytes < 1024) return `${Math.round(bytes)} B`;
+    const units = ["KB", "MB", "GB", "TB"];
+    let size = bytes / 1024, unit = units[0];
+    for (let index = 1; index < units.length && size >= 1024; index += 1) { size /= 1024; unit = units[index]; }
+    return `${size.toLocaleString("tr-TR", { maximumFractionDigits: size >= 100 ? 0 : size >= 10 ? 1 : 2 })} ${unit}`;
+  }
+  function quotaTitle(quota) {
+    if (!quota) return "Drive alanı alınamadı";
+    if (quota.unlimited) return "Sınırsız veya ortak havuz";
+    if (quota.level === "full") return "Drive alanı dolu";
+    if (quota.level === "critical") return "Drive alanı kritik";
+    if (quota.level === "warning") return "Drive alanı azalıyor";
+    return "Drive alanı normal";
+  }
+  function paintQuota(status) {
+    const box = $("driveQuotaV27");
+    if (!box) return;
+    if (!status || !status.connected) { box.hidden = true; box.innerHTML = ""; return; }
+    box.hidden = false;
+    const quota = status.quota;
+    if (!quota) {
+      box.className = "drive-quota-v27 unavailable";
+      box.innerHTML = `<b>Drive Alanı</b><span>${esc(status.quotaError || "Alan bilgisi şu an alınamadı.")}</span>`;
+      return;
+    }
+    const percent = quota.percent == null ? 0 : Math.max(0, Math.min(100, Number(quota.percent) || 0));
+    const level = clean(quota.level || "normal");
+    box.className = `drive-quota-v27 ${esc(level)}`;
+    box.innerHTML = `<div class="drive-quota-head-v27"><div><b>${esc(quotaTitle(quota))}</b><small>${quota.unlimited ? "Google Workspace depolaması" : `%${percent.toLocaleString("tr-TR", { maximumFractionDigits: 1 })} dolu`}</small></div><strong>${quota.remainingBytes == null ? "Sınırsız" : `${formatBytes(quota.remainingBytes)} boş`}</strong></div>${quota.unlimited ? "" : `<div class="drive-quota-track-v27"><i style="width:${percent}%"></i></div>`}<div class="drive-quota-grid-v27"><div><span>Kullanılan</span><b>${formatBytes(quota.usageBytes)}</b></div><div><span>Toplam</span><b>${quota.limitBytes == null ? "Sınırsız" : formatBytes(quota.limitBytes)}</b></div><div><span>Drive dosyaları</span><b>${formatBytes(quota.usageInDriveBytes)}</b></div><div><span>Çöp kutusu</span><b>${formatBytes(quota.trashBytes)}</b></div></div>${["warning", "critical", "full"].includes(level) ? `<p>${level === "full" ? "Yeni fotoğraf yüklemeleri durur. Drive’da yer açın." : level === "critical" ? "Fotoğraf yüklemeleri yakında durabilir. Drive alanını temizleyin." : "Drive alanı azalmaya başladı."}</p>` : ""}`;
+  }
   async function refreshDrive(silent) {
     const text = $("driveAccountTextV8"),
       connect = $("driveConnectV8"),
@@ -90,6 +123,7 @@
       if (text) text.textContent = "Drive bağlantısı kontrol ediliyor…";
       const s = await api().driveStatus();
       lastDriveStatus = s || null;
+      paintQuota(s);
       if (s.googleRequired) {
         text.textContent = "Drive için Google ile giriş yapın";
         connect.hidden = false;
@@ -122,6 +156,7 @@
       return s;
     } catch (e) {
       lastDriveStatus = null;
+      paintQuota(null);
       if (text) text.textContent = "Drive durumu alınamadı";
       if (!silent) toast(e.message, true);
       throw e;

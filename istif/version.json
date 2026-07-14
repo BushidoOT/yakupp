@@ -1,8 +1,8 @@
 {
-  "version": "0.3.8-suite-v26",
-  "name": "Mesaha İO İstif Alma v0.3.8",
-  "updatedAt": "2026-07-14T23:30:00+03:00",
-  "notes": "Ortak güvenlik engeli kontrolü ve şeflik üyeliğinden çıkış sonrası yerel kayıt erişimi temizliği eklendi.",
-  "visibleVersion": "İstif Alma v0.3.8",
-  "build": 26
+  "version": "0.3.9-suite-v27",
+  "name": "Mesaha İO İstif Alma v0.3.9",
+  "updatedAt": "2026-07-14T23:55:00+03:00",
+  "notes": "Drive alan göstergesi, 400–700 KB fotoğraf sıkıştırma, fotoğraf bazlı yükleme durumu ve otomatik tekrar deneme eklendi.",
+  "visibleVersion": "İstif Alma v0.3.9",
+  "build": 27
 }
