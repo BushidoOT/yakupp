@@ -205,6 +205,8 @@
       .suite-folder-refresh-v8{display:inline-flex;align-items:center;gap:6px;color:#17683f;font-weight:850}
       .suite-folder-loading-v8{opacity:.72}
       .suite-folder-load-v10{background:#17683f!important;color:#fff!important;border-color:#17683f!important}
+      .suite-folder-delete-mesaha-v28{background:#fff2f2!important;color:#a92828!important;border:1px solid #efb4b4!important;font-weight:850!important}
+      .suite-folder-delete-mesaha-v28:disabled{opacity:.55!important}
             .suite-central-hidden-v10{display:none!important}
       #seflikMemberListV566,#seflikUserSearchV564,#seflikSearchResultsV564,[data-add-user-v564],[data-remove-member-v566],.seflik-v566-member-title,.seflik-v566-member-list{display:none!important}
       #suiteMesahaSendOverlayV19[hidden]{display:none!important}
@@ -343,7 +345,7 @@
   }
   const CREATE_DIVISION_VALUE = "__suite_create_division__";
   async function createDivisionFromMesahaFolder(selectEl) {
-    const api = window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8;
+    const api = window.MesahaSuiteSyncV28 || window.MesahaSuiteSyncV27 || window.MesahaSuiteSyncV26 || window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8;
     if (!api || typeof api.createOfflineDivision !== "function") {
       notify("Suite bölme sistemi hazır değil.", true);
       return;
@@ -446,7 +448,7 @@
   async function sendCurrentToDivision() {
     if (suiteSendingV19) return notify("Şefliğe gönderme işlemi devam ediyor.");
     const f = activeFolder(), sel = $("seflikFolderBolmeV528"), no = clean((sel && sel.value) || read(K.settings, {}).bolmeNo),
-      api = window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8;
+      api = window.MesahaSuiteSyncV28 || window.MesahaSuiteSyncV27 || window.MesahaSuiteSyncV26 || window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8;
     if (!f) return notify("Önce Suite ana menüsünden şeflik seçin.", true);
     if (!no) return notify("Gönderilecek bölmeyi seçin.", true);
     const raw = read(K.records, []), localRecords = Array.isArray(raw) ? raw : [];
@@ -484,7 +486,8 @@
       } else { write(K.records, mapped); write(K.settings, settings); }
       if (window.state) { window.state.records = mapped; window.state.settings = settings; }
       setBolme(no);
-      api && api.markDirty && api.markDirty("mesaha", { bolmeNo: no, drive: true, merge: true });
+      api && api.allowMesahaDivisionResubmit && api.allowMesahaDivisionResubmit(no);
+      api && api.markDirty && api.markDirty("mesaha", { bolmeNo: no, drive: true, merge: true, resubmit: true });
       if (navigator.onLine && api && api.syncAll) {
         updateSendOverlayV19("Sunucuya gönderiliyor", `${mapped.length} benzersiz kayıt senkronize ediliyor…`);
         const syncResult = await api.syncAll({ source: "manual" });
@@ -516,7 +519,7 @@
   }
   function closeDriveModalV10(){const ov=$("mesahaDriveBackupOverlayV10");if(ov)ov.hidden=true;document.body.classList.remove("mesaha-drive-modal-open-v10");}
   async function loadDriveBackupsV10(){
-    const host=$("mesahaDriveBackupListV10"),api=(window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8);if(!host||!api)return;
+    const host=$("mesahaDriveBackupListV10"),api=(window.MesahaSuiteSyncV28 || window.MesahaSuiteSyncV27 || window.MesahaSuiteSyncV26 || window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8);if(!host||!api)return;
     host.innerHTML='<div class="mesaha-drive-empty-v10">Drive yedekleri yükleniyor…</div>';
     try{
       const status=api.driveStatus?await api.driveStatus():{connected:true};
@@ -527,8 +530,8 @@
     }catch(e){host.innerHTML=`<div class="mesaha-drive-empty-v10">${esc(clean(e&&e.message||e))}<br><small>Kurucuysanız Suite → Oturum Bilgileri bölümünden Drive bağlayın.</small></div>`;}
   }
   function openDriveModalV10(){const ov=ensureDriveModalV10();ov.hidden=false;document.body.classList.add("mesaha-drive-modal-open-v10");loadDriveBackupsV10();}
-  async function createDriveBackupV10(){const api=(window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8);try{await api.createMesahaBackup({bolmeNo:clean($("seflikFolderBolmeV528")?.value||"")});notify("Mesaha yedeği şeflik kurucusunun Drive hesabına kaydedildi.");await loadDriveBackupsV10();}catch(e){if(e&&(e.code==="DRIVE_NOT_CONNECTED"||e.code==="GOOGLE_REQUIRED")){api.openDriveSetup&&api.openDriveSetup();return;}notify(clean(e&&e.message||e),true);}}
-  async function restoreDriveBackupV10(id,mode){const api=(window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8);if(!confirm(mode==="replace"?"Cihazdaki mevcut Mesaha kayıtları silinip bu yedek yüklensin mi?":"Yedek mevcut Mesaha kayıtlarıyla birleştirilsin mi?"))return;try{const out=await api.restoreMesahaBackup(id,mode);notify(`${out.imported} kayıt yedekten alındı.`);closeDriveModalV10();setTimeout(()=>location.reload(),450);}catch(e){notify(clean(e&&e.message||e),true);}}
+  async function createDriveBackupV10(){const api=(window.MesahaSuiteSyncV28 || window.MesahaSuiteSyncV27 || window.MesahaSuiteSyncV26 || window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8);try{await api.createMesahaBackup({bolmeNo:clean($("seflikFolderBolmeV528")?.value||"")});notify("Mesaha yedeği şeflik kurucusunun Drive hesabına kaydedildi.");await loadDriveBackupsV10();}catch(e){if(e&&(e.code==="DRIVE_NOT_CONNECTED"||e.code==="GOOGLE_REQUIRED")){api.openDriveSetup&&api.openDriveSetup();return;}notify(clean(e&&e.message||e),true);}}
+  async function restoreDriveBackupV10(id,mode){const api=(window.MesahaSuiteSyncV28 || window.MesahaSuiteSyncV27 || window.MesahaSuiteSyncV26 || window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8);if(!confirm(mode==="replace"?"Cihazdaki mevcut Mesaha kayıtları silinip bu yedek yüklensin mi?":"Yedek mevcut Mesaha kayıtlarıyla birleştirilsin mi?"))return;try{const out=await api.restoreMesahaBackup(id,mode);notify(`${out.imported} kayıt yedekten alındı.`);closeDriveModalV10();setTimeout(()=>location.reload(),450);}catch(e){notify(clean(e&&e.message||e),true);}}
 
   function renderFolderList() {
     const f = activeFolder(),
@@ -566,7 +569,7 @@
         return `<article class="seflik-division-card" data-suite-division="${esc(no)}">
         <div class="seflik-division-top"><div class="seflik-division-title"><span class="seflik-division-icon">▦</span><div><b>Bölme ${esc(no)}${local ? '<span class="seflik-local-pending-v530">Yerel</span>' : ""}</b><small>${esc(creator || f.seflik)}</small></div></div><span class="seflik-division-date">${esc(date ? new Date(date).toLocaleDateString("tr-TR") : "")}</span></div>
         <div class="seflik-division-stats"><div class="seflik-division-stat"><small>KAYIT</small><b>${count}</b></div><div class="seflik-division-stat"><small>HACİM</small><b>${fmt(volume)} m³</b></div><div class="seflik-division-stat"><small>DURUM</small><b>${rows.length || !navigator.onLine ? "Hazır" : "Bulutta"}</b></div></div>
-        <div class="seflik-division-actions seflik-division-actions-v529"><button type="button" class="btn suite-folder-load-v10" data-suite-folder-load="${esc(no)}">Mesahaya Devam Et</button></div>
+        <div class="seflik-division-actions seflik-division-actions-v529${count ? " has-delete-v28" : ""}"><button type="button" class="btn suite-folder-load-v10" data-suite-folder-load="${esc(no)}">${count ? "Mesahaya Devam Et" : "Mesahaya Başla"}</button>${count ? `<button type="button" class="btn suite-folder-delete-mesaha-v28" data-suite-folder-delete-mesaha="${esc(no)}">Sunucudaki Mesahayı Sil</button>` : ""}</div>
       </article>`;
       })
       .join("");
@@ -599,9 +602,9 @@
     if (
       (force || !rows.length) &&
       navigator.onLine &&
-      (window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8)
+      (window.MesahaSuiteSyncV28 || window.MesahaSuiteSyncV27 || window.MesahaSuiteSyncV26 || window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8)
     ) {
-      rows = await (window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8).loadDivisionRecords(bolme, !!force);
+      rows = await (window.MesahaSuiteSyncV28 || window.MesahaSuiteSyncV27 || window.MesahaSuiteSyncV26 || window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8).loadDivisionRecords(bolme, !!force);
       renderFolderList();
     }
     return Array.isArray(rows) ? rows : [];
@@ -667,6 +670,30 @@
       }, 400);
     }
   }
+  async function deleteServerMesaha(bolme) {
+    const f = activeFolder(), no = clean(bolme);
+    if (!f || !no) return;
+    if (!navigator.onLine) return notify("Sunucudaki mesahayı silmek için internet bağlantısı gerekli.", true);
+    const row = divisions(f).find((d) => clean(d.bolme_no || d.bolmeNo) === no) || {};
+    const count = num(row.record_count || row.recordCount);
+    const typed = prompt(`Bölme ${no} içindeki sunucu mesahası silinecek. Bölme ve İstif kayıtları korunur. Onaylamak için bölme numarasını yazın:`, no);
+    if (typed === null) return;
+    if (clean(typed) !== no) return notify("Girilen bölme numarası eşleşmedi. Mesaha silinmedi.", true);
+    if (!confirm(`SON UYARI: Bölme ${no} içindeki ${count} sunucu mesaha kaydı silinecek. Cihazdaki ölçümler ve İstif kayıtları korunur. Devam edilsin mi?`)) return;
+    const api = window.MesahaSuiteSyncV28 || window.MesahaSuiteSyncV27 || window.MesahaSuiteSyncV26 || window.MesahaSuiteSyncV22;
+    if (!api || typeof api.deleteMesahaDivisionRecords !== "function") return notify("Mesaha silme servisi hazır değil. Uygulamayı güncelleyip tekrar deneyin.", true);
+    const buttons = Array.from(document.querySelectorAll("[data-suite-folder-delete-mesaha]")).filter((button) => clean(button.dataset.suiteFolderDeleteMesaha) === no);
+    buttons.forEach((button) => { button.disabled = true; button.textContent = "Siliniyor…"; });
+    try {
+      const out = await api.deleteMesahaDivisionRecords(no);
+      await refreshFolder(true);
+      notify(`Bölme ${no} sunucu mesahası silindi. ${Number(out.records_deleted || 0).toLocaleString("tr-TR")} kayıt kaldırıldı; bölme ve İstifler korundu.`);
+    } catch (e) {
+      notify(clean(e && e.message || e), true);
+    } finally {
+      renderFolderList();
+    }
+  }
   function notify(message, bad) {
     try {
       if (window.mesahaFloatToastV315)
@@ -683,14 +710,14 @@
   }
   async function refreshFolder(force) {
     renderFolderList();
-    if (!navigator.onLine || !(window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8)) return;
+    if (!navigator.onLine || !(window.MesahaSuiteSyncV28 || window.MesahaSuiteSyncV27 || window.MesahaSuiteSyncV26 || window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8)) return;
     const meta = $("seflikFolderRemoteMetaV528");
     if (meta) {
       meta.textContent = "Sunucudan yenileniyor…";
       meta.classList.add("suite-folder-loading-v8");
     }
     try {
-      await (window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8).refreshFolderData({
+      await (window.MesahaSuiteSyncV28 || window.MesahaSuiteSyncV27 || window.MesahaSuiteSyncV26 || window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8).refreshFolderData({
         includeRecords: true,
         quiet: true,
         force: !!force,
@@ -733,7 +760,7 @@
     if(cloudBackup) cloudBackup.textContent="Drive’a Yedekle";
     note();
     renderFolderList();
-    (window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8) && (window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8).updateButton();
+    (window.MesahaSuiteSyncV28 || window.MesahaSuiteSyncV27 || window.MesahaSuiteSyncV26 || window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8) && (window.MesahaSuiteSyncV28 || window.MesahaSuiteSyncV27 || window.MesahaSuiteSyncV26 || window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8).updateButton();
   }
   let timer = 0;
   function schedule() {
@@ -759,6 +786,14 @@
       e.preventDefault();
       e.stopPropagation();
       loadIntoMesaha(load.dataset.suiteFolderLoad);
+      return;
+    }
+    const deleteMesaha = e.target.closest && e.target.closest("[data-suite-folder-delete-mesaha]");
+    if (deleteMesaha) {
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      deleteServerMesaha(deleteMesaha.dataset.suiteFolderDeleteMesaha);
       return;
     }
     const send=e.target.closest&&e.target.closest("#seflikFolderSendV528,#seflikSendFromRecordsV529");
@@ -790,8 +825,8 @@
   injectCss();
   const boot = () => {
     document.body.dataset.suiteSubapp = "mesaha";
-    (window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8) &&
-      (window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8).registerHomeButton(() => {
+    (window.MesahaSuiteSyncV28 || window.MesahaSuiteSyncV27 || window.MesahaSuiteSyncV26 || window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8) &&
+      (window.MesahaSuiteSyncV28 || window.MesahaSuiteSyncV27 || window.MesahaSuiteSyncV26 || window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8).registerHomeButton(() => {
         location.href = "../";
       });
     renderAllBridge();

@@ -151,3 +151,6 @@ body.seflik-transfer-busy-v534 #bottomNav{visibility:hidden!important;pointer-ev
 #seflikFolderSendV528:active{background:linear-gradient(180deg,#f4b823,#e99a00)!important}
 #seflikFolderSyncV528{background:linear-gradient(180deg,#218653,#17683f)!important;color:#fff!important;border-color:#17683f!important;box-shadow:0 9px 20px rgba(23,104,63,.16)!important}
 #seflikFolderSyncV528:active{background:linear-gradient(180deg,#17683f,#115331)!important}
+
+/* V5.84 — Sunucudaki Mesaha kayıtlarını silme butonu */
+.suite-folder-delete-mesaha-v28{min-height:43px}.seflik-division-actions-v529.has-delete-v28{grid-template-columns:minmax(0,1fr) minmax(150px,.72fr)!important}@media(max-width:560px){.seflik-division-actions-v529.has-delete-v28{grid-template-columns:1fr!important}}

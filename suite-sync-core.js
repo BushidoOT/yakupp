@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  const VERSION = "27.0.0";
+  const VERSION = "28.0.0";
   const SUPABASE_URL = "https://swrbpdpotmirnmtqnuba.supabase.co";
   const ANON_KEY = "sb_publishable_G_ZFeUouDxg57Nne5pflfQ_cVGpdMbR";
   const SMOOTH = SUPABASE_URL + "/functions/v1/smooth-function";
@@ -28,6 +28,7 @@
     yieldTargets: "mesaha_suite_yield_targets_v12",
     folderCache: "mesaha_seflik_folder_cache_v529",
     syncTokens: "mesaha_suite_sync_tokens_v19",
+    serverDeletedMesaha: "mesaha_suite_server_deleted_v28",
   };
 
   const clean = (v) =>
@@ -173,7 +174,7 @@
   async function post(url, action, data) {
     const body = {
       action,
-      source: "mesaha-suite-v27",
+      source: "mesaha-suite-v28",
       ...terminalAuth(),
       ...(data || {}),
     };
@@ -217,6 +218,41 @@
     else Object.keys(d).forEach((k) => delete d[k]);
     write(K.dirty, d);
     dispatch();
+  }
+  function mesahaDeleteKey(seflik, bolmeNo) {
+    const af = activeFolder();
+    const key = clean(af && (af.seflik_key || af.seflikKey)) || fold(seflik);
+    return `${key}::${clean(bolmeNo)}`;
+  }
+  function suppressMesahaDivision(bolmeNo) {
+    const af = activeFolder(), no = clean(bolmeNo);
+    if (!af || !no) return false;
+    const state = read(K.serverDeletedMesaha, {});
+    state[mesahaDeleteKey(af.seflik, no)] = { at: now(), seflik: af.seflik, bolmeNo: no };
+    write(K.serverDeletedMesaha, state);
+    return true;
+  }
+  function allowMesahaDivisionResubmit(bolmeNo) {
+    const af = activeFolder(), no = clean(bolmeNo);
+    if (!af || !no) return false;
+    const state = read(K.serverDeletedMesaha, {}), key = mesahaDeleteKey(af.seflik, no);
+    if (state[key]) { delete state[key]; write(K.serverDeletedMesaha, state); }
+    return true;
+  }
+  function mesahaDivisionSuppressed(seflik, bolmeNo) {
+    const state = read(K.serverDeletedMesaha, {});
+    return !!state[mesahaDeleteKey(seflik, bolmeNo)];
+  }
+  function reconcileMesahaSuppressions(seflik, list) {
+    const state = read(K.serverDeletedMesaha, {});
+    let changed = false;
+    for (const row of Array.isArray(list) ? list : []) {
+      if (num(row && (row.record_count || row.recordCount)) <= 0) continue;
+      const key = mesahaDeleteKey(seflik, row.bolme_no || row.bolmeNo);
+      if (state[key]) { delete state[key]; changed = true; }
+    }
+    if (changed) write(K.serverDeletedMesaha, state);
+    return changed;
   }
   function pendingOps() {
     const x = read(K.pending, []);
@@ -532,6 +568,7 @@
             !remote.some((r) => clean(r.bolme_no) === clean(d.bolme_no)),
         );
         list = [...remote, ...localPending];
+        reconcileMesahaSuppressions(af.seflik, remote);
         divisionsStore[key] = list;
         write(K.divisions, divisionsStore);
       }
@@ -625,6 +662,40 @@
       );
     } catch {}
     return store[key][no];
+  }
+
+  function clearDivisionRecordCache(bolmeNo) {
+    const af = activeFolder();
+    if (!af) return false;
+    const key = clean(af.seflik_key || af.seflikKey) || fold(af.seflik), no = clean(bolmeNo);
+    const recordsStore = read(K.divisionRecords, {}), divisionsStore = read(K.divisions, {});
+    if (recordsStore[key] && typeof recordsStore[key] === "object") delete recordsStore[key][no];
+    write(K.divisionRecords, recordsStore);
+    if (Array.isArray(divisionsStore[key])) {
+      divisionsStore[key] = divisionsStore[key].map((d) => clean(d && (d.bolme_no || d.bolmeNo)) === no ? { ...d, record_count: 0, recordCount: 0, total_volume: 0, totalVolume: 0, contributors: [], drive_backed_up: false, updated_at: now() } : d);
+      write(K.divisions, divisionsStore);
+      syncFolderCache(af, divisionsStore[key]);
+    }
+    return true;
+  }
+  async function deleteMesahaDivisionRecords(bolmeNo) {
+    const af = activeFolder();
+    if (!af) throw new Error("Aktif şeflik bulunamadı");
+    const no = clean(bolmeNo);
+    if (!no) throw new Error("Bölme numarası gerekli");
+    const out = await edge("seflik_folder_delete_records", {
+      seflik: af.seflik,
+      folderSeflik: af.seflik,
+      seflikKey: clean(af.seflik_key || af.seflikKey),
+      bolmeNo: no,
+      confirmBolme: no,
+    });
+    clearDivisionRecordCache(no);
+    suppressMesahaDivision(no);
+    const localSettings = read(K.settings, {});
+    if (clean(localSettings.bolmeNo || localSettings.bolme_no) === no) clearDirty("mesaha");
+    try { window.dispatchEvent(new CustomEvent("mesaha-suite:mesaha-deleted", { detail: { seflik: af.seflik, bolmeNo: no, result: out } })); } catch {}
+    return out;
   }
 
   function duplicateLike(error) {
@@ -795,19 +866,24 @@
       if (!b) continue;
       (groups[b] || (groups[b] = [])).push(r);
     }
-    let done = 0;
+    let done = 0, suppressed = 0, suppressedBolmeler = [];
     for (const [bolme, localRows] of Object.entries(groups)) {
+      if (mesahaDivisionSuppressed(seflik, bolme)) {
+        suppressed += localRows.length;
+        suppressedBolmeler.push(bolme);
+        continue;
+      }
       try { await edge("seflik_folder_create_division", { seflik, bolmeNo: bolme, location: "" }); }
       catch (e) { if (!duplicateLike(e)) throw e; }
       let remoteRows = [];
       try {
         const remote = await edge("seflik_folder_read", { seflik, folderSeflik: seflik, bolmeNo: bolme });
         remoteRows = Array.isArray(remote.records) ? remote.records : [];
-      } catch (e) { console.warn("[suite-v27] Ortak kayıtlar alınamadı; yerel kayıtlarla devam ediliyor", e); }
+      } catch (e) { console.warn("[suite-v28] Ortak kayıtlar alınamadı; yerel kayıtlarla devam ediliyor", e); }
       const rows = mergeMesahaRows(remoteRows, localRows).map((r) => ({ ...r, seflik, bolmeNo: bolme, bolme_no: bolme }));
       const token = stableSyncToken(seflik, bolme, rows);
       for (let i = 0; i < rows.length; i += 150)
-        await edge("seflik_folder_push", { seflik, bolmeNo: bolme, syncToken: token, records: rows.slice(i, i + 150), appVersion: "Mesaha Suite V27", mergeMode: "barcode" });
+        await edge("seflik_folder_push", { seflik, bolmeNo: bolme, syncToken: token, records: rows.slice(i, i + 150), appVersion: "Mesaha Suite V28", mergeMode: "barcode" });
       let backup = null, driveError = "";
       try {
         if (id.google)
@@ -815,7 +891,7 @@
             seflik, appId: "mesaha",
             fileName: `Mesaha_${fold(seflik)}_${fold(bolme)}_${new Date().toISOString().slice(0, 10)}.json`,
             recordCount: rows.length, totalVolume: rows.reduce((sum, r) => sum + volume(r), 0),
-            payload: { schema: "mesaha-suite-v27", app: "mesaha", seflik, bolme, createdAt: now(), records: rows },
+            payload: { schema: "mesaha-suite-v28", app: "mesaha", seflik, bolme, createdAt: now(), records: rows },
           });
       } catch (e) { driveError = clean(e.message || e); }
       await edge("seflik_folder_finish", {
@@ -823,13 +899,14 @@
         totalVolume: rows.reduce((sum, r) => sum + volume(r), 0),
         driveFileId: (backup && backup.fileId) || "", driveFileName: (backup && backup.fileName) || "",
         driveStatus: backup ? "saved" : id.google ? "error" : "not_connected", driveError,
-        appVersion: "Mesaha Suite V27", mergeMode: "barcode",
+        appVersion: "Mesaha Suite V28", mergeMode: "barcode",
       });
       clearStableSyncToken(seflik, bolme);
       done += rows.length;
     }
     clearDirty("mesaha");
-    return { done };
+    if (suppressedBolmeler.length) toast(`Sunucudan silinen Bölme ${suppressedBolmeler.join(", ")} kayıtları otomatik yeniden gönderilmedi. Yeniden yüklemek için Şefliğe Gönder düğmesini kullanın.`);
+    return { done, suppressed, suppressedBolmeler };
   }
   function openDb() {
     return new Promise((resolve, reject) => {
@@ -882,6 +959,16 @@
         db.close();
         rej(tx.error);
       };
+    });
+  }
+  async function idbDelete(store, key) {
+    const db = await openDb();
+    return new Promise((res, rej) => {
+      if (!db.objectStoreNames.contains(store)) { db.close(); return res(false); }
+      const tx = db.transaction(store, "readwrite");
+      tx.objectStore(store).delete(key);
+      tx.oncomplete = () => { db.close(); res(true); };
+      tx.onerror = () => { db.close(); rej(tx.error); };
     });
   }
   function dataUrlFromPhoto(photo) {
@@ -1094,7 +1181,7 @@
             recordCount: payloadRows.length,
             totalVolume: payloadRows.reduce((sum, r) => sum + num(r.ster), 0),
             payload: {
-              schema: "mesaha-suite-v27",
+              schema: "mesaha-suite-v28",
               app: "istif",
               seflik,
               createdAt: now(),
@@ -1102,7 +1189,7 @@
             },
           });
         } catch (e) {
-          console.warn("[suite-v27] İstif Drive yedeği oluşturulamadı", e);
+          console.warn("[suite-v28] İstif Drive yedeği oluşturulamadı", e);
         }
     const pending = (await idbAll("records")).filter((r) => r && !r.isDemo && r.syncStatus !== "synced").length;
     if (pending) markDirty("istif", { pending, failed, retryable: retryableFailures });
@@ -1175,11 +1262,23 @@
     const remote = (Array.isArray(out && out.records) ? out.records : [])
       .map(normalizeRemoteIstifRecord)
       .filter(Boolean);
-    if (!remote.length) return { received: 0, changed: 0 };
+    const authoritative = out && out.complete !== false && out.truncated !== true;
 
     const local = await idbAll("records");
     const byId = new Map(local.map((record) => [clean(record && record.id), record]));
+    const remoteIds = new Set(remote.map((record) => clean(record.id)));
     let changed = 0;
+    for (const localRecord of local) {
+      if (!authoritative || !localRecord || localRecord.isDemo || remoteIds.has(clean(localRecord.id))) continue;
+      const localKey = clean(localRecord.seflikKey || localRecord.seflik_key) || fold(localRecord.seflik);
+      const sameFolder = (seflikKey && localKey === seflikKey) || (seflik && fold(localRecord.seflik) === fold(seflik));
+      const pending = clean(localRecord.syncStatus) && clean(localRecord.syncStatus) !== "synced";
+      if (sameFolder && !pending) {
+        await idbDelete("records", localRecord.id);
+        byId.delete(clean(localRecord.id));
+        changed++;
+      }
+    }
     for (const remoteRecord of remote) {
       const current = byId.get(remoteRecord.id);
       const localPending =
@@ -1213,7 +1312,7 @@
       byId.set(merged.id, merged);
       changed++;
     }
-    return { received: remote.length, changed };
+    return { received: remote.length, changed, authoritative, truncated: !authoritative };
   }
 
   let syncing = false;
@@ -1422,7 +1521,7 @@
       seflik, appId: "mesaha",
       fileName: `Mesaha_${fold(seflik)}_${selected ? fold(selected) + "_" : ""}${new Date().toISOString().replace(/[:.]/g, "-")}.json`,
       recordCount: rows.length, totalVolume: rows.reduce((sum, r) => sum + volume(r), 0),
-      payload: { schema: "mesaha-suite-v27", app: "mesaha", seflik, bolme: selected, createdAt: now(), settings: read(K.settings, {}), records: rows },
+      payload: { schema: "mesaha-suite-v28", app: "mesaha", seflik, bolme: selected, createdAt: now(), settings: read(K.settings, {}), records: rows },
     });
   }
   async function restoreMesahaBackup(id, mode) {
@@ -1582,8 +1681,11 @@
     refreshFolderData,
     pullIstifRecords,
     loadDivisionRecords,
+    clearDivisionRecordCache,
+    deleteMesahaDivisionRecords,
+    allowMesahaDivisionResubmit,
   };
-  window.MesahaSuiteSyncV27 = window.MesahaSuiteSyncV26 = window.MesahaSuiteSyncV25 = window.MesahaSuiteSyncV24 = window.MesahaSuiteSyncV22 = window.MesahaSuiteSyncV21 = api;
+  window.MesahaSuiteSyncV28 = window.MesahaSuiteSyncV27 = window.MesahaSuiteSyncV26 = window.MesahaSuiteSyncV25 = window.MesahaSuiteSyncV24 = window.MesahaSuiteSyncV22 = window.MesahaSuiteSyncV21 = api;
   window.MesahaSuiteSyncV20 = api;
   window.MesahaSuiteSyncV19 = api;
   window.MesahaSuiteSyncV18 = api;

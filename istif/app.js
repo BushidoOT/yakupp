@@ -1,6 +1,6 @@
 "use strict";
 
-const APP_VERSION = "0.3.9-suite-v27";
+const APP_VERSION = "0.3.10-suite-v28";
 const PHOTO_TARGET_BYTES = 600 * 1024;
 const MAX_PHOTO_BYTES = 700 * 1024;
 const DB_NAME = "mesaha-istif-prototype";
@@ -551,7 +551,7 @@ function wait(ms) {
 
 function suiteSyncApi() {
   return (
-    window.MesahaSuiteSyncV27 ||
+    window.MesahaSuiteSyncV28 || window.MesahaSuiteSyncV27 ||
     window.MesahaSuiteSyncV26 ||
     window.MesahaSuiteSyncV25 ||
     window.MesahaSuiteSyncV24 ||
@@ -2448,13 +2448,19 @@ Yerel kayıt, Supabase kaydı ve varsa Drive fotoğrafları silinir.`);
     '<h3>İstif Siliniyor</h3><p>Drive fotoğrafları ve kayıt bilgileri temizleniyor. Lütfen bekleyin.</p><div class="progress"><span style="width:55%"></span></div>',
   );
   try {
-    if (hasDriveAssets) await deleteDriveFilesForRecord(record);
-    if (navigator.onLine && hasSharedCloudIdentity() && !record.isDemo) {
-      try {
-        await supabaseDeleteRecord(record);
-      } catch (error) {
-        console.warn("Supabase istif silme uyarısı", error);
-      }
+    const remoteBacked = !record.isDemo && (clean(record.syncStatus) === "synced" || record.remoteOnly === true);
+    if (remoteBacked) {
+      if (!navigator.onLine || !hasSharedCloudIdentity())
+        throw new Error("Sunucudaki İstif kaydını silmek için internet ve şeflik oturumu gerekli.");
+      await bridgeCall("record_delete", {
+        seflikKey: record.seflikKey || state.settings.seflikKey || stableKey(record.seflik || state.settings.seflik),
+        seflik: record.seflik || state.settings.seflik,
+        recordId: record.id,
+      });
+    } else if (hasDriveAssets) {
+      if (!navigator.onLine || !hasSharedCloudIdentity())
+        throw new Error("Drive fotoğraflarını silmek için internet ve şeflik oturumu gerekli.");
+      await deleteDriveFilesForRecord(record);
     }
     await idbDelete("records", record.id);
     releaseRecordBlobUrls(record);
@@ -2478,25 +2484,11 @@ Yerel kayıt, Supabase kaydı ve varsa Drive fotoğrafları silinir.`);
 }
 
 async function supabaseDeleteRecord(record) {
-  const session = await ensureSharedSession();
-  const response = await fetch(
-    `${SUPABASE_URL}/rest/v1/mesaha_istif_records?id=eq.${encodeURIComponent(record.id)}`,
-    {
-      method: "DELETE",
-      cache: "no-store",
-      headers: {
-        apikey: SUPABASE_ANON_KEY,
-        Authorization: `Bearer ${session.access_token}`,
-        Prefer: "return=minimal",
-      },
-    },
-  );
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    throw new Error(
-      error.message || `Supabase silme hatası ${response.status}`,
-    );
-  }
+  return bridgeCall("record_delete", {
+    seflikKey: record.seflikKey || state.settings.seflikKey || stableKey(record.seflik || state.settings.seflik),
+    seflik: record.seflik || state.settings.seflik,
+    recordId: record.id,
+  });
 }
 
 function applyRecordFilters() {
@@ -3166,12 +3158,27 @@ function normalizeRemoteRecord(row) {
   };
 }
 
-async function mergeRemoteRecords(remoteRows = []) {
+async function mergeRemoteRecords(remoteRows = [], { authoritative = false } = {}) {
   const remote = remoteRows.map(normalizeRemoteRecord).filter(Boolean);
-  if (!remote.length) return 0;
   const local = await idbGetAll("records");
   const localById = new Map(local.map((record) => [record.id, record]));
+  const remoteIds = new Set(remote.map((record) => record.id));
   let changed = 0;
+  if (authoritative) {
+    const activeKey = clean(state.settings.seflikKey || stableKey(state.settings.seflik));
+    const activeName = clean(state.settings.seflik);
+    for (const localRecord of local) {
+      if (!localRecord || localRecord.isDemo || remoteIds.has(clean(localRecord.id))) continue;
+      const sameFolder = (activeKey && clean(localRecord.seflikKey || stableKey(localRecord.seflik)) === activeKey) || (activeName && sameSeflikLabel(localRecord.seflik, activeName));
+      const pending = clean(localRecord.syncStatus) && clean(localRecord.syncStatus) !== "synced";
+      if (sameFolder && !pending) {
+        releaseRecordBlobUrls(localRecord);
+        await idbDelete("records", localRecord.id);
+        localById.delete(localRecord.id);
+        changed += 1;
+      }
+    }
+  }
   for (const remoteRecord of remote) {
     const localRecord = localById.get(remoteRecord.id);
     const localPending =
@@ -3233,6 +3240,7 @@ async function loadRemoteRecords({ silent = true } = {}) {
     }
     const count = await mergeRemoteRecords(
       Array.isArray(out.records) ? out.records : [],
+      { authoritative: out.complete !== false && out.truncated !== true },
     );
     if (!silent && count)
       toast(`${count} ortak istif kaydı güncellendi.`, "good");
@@ -3696,7 +3704,7 @@ async function pingAdminProfile() {
         appName: "İstif İO",
         platform: navigator.platform || "",
         browser: navigator.userAgent || "",
-        suiteVersion: "V27",
+        suiteVersion: "V28",
       },
     });
   } catch {}
@@ -3738,7 +3746,7 @@ window.addEventListener(
     render();
     if (navigator.onLine && hasSharedCloudIdentity())
       setTimeout(() => syncSharedContext({ manual: false }), 0);
-    /* Suite V27: İstif açılışında ortak şeflik kayıtları otomatik alınır. */
+    /* Suite V28: ortak kayıt listesi sunucu için otoritatiftir; silinen kayıtlar tüm cihazlardan temizlenir. */
   } catch (error) {
     if (bootOverlay) bootOverlay.hidden = true;
     app.innerHTML = `<div class="empty"><h2>Uygulama açılamadı</h2><p>${esc(error.message)}</p></div>`;

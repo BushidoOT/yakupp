@@ -1,7 +1,7 @@
 {
-  "name": "Mesaha Suite V27",
+  "name": "Mesaha Suite V28",
   "short_name": "Mesaha Suite",
-  "start_url": "./?suite=27",
+  "start_url": "./?suite=28",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f5f8f6",
@@ -19,7 +19,7 @@
       "type": "image/png"
     }
   ],
-  "id": "./?suite=27",
-  "description": "Merkezi Mesaha ve İstif yönetimi; Drive alan takibi, güvenli fotoğraf kuyruğu ve otomatik tekrar deneme",
-  "version": "suite_v27"
+  "id": "./?suite=28",
+  "description": "Merkezi Mesaha ve İstif yönetimi; güvenli ortak kayıt silme ve verim hesabı tutarlılığı",
+  "version": "suite_v28"
 }

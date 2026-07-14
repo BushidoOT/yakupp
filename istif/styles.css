@@ -410,7 +410,7 @@ body.is-printing .print-area{display:block!important;position:relative;z-index:9
 }
 
 
-/* V27 • Drive alanı, fotoğraf kuyruğu ve ayrıntılı senkron durumları */
+/* V28 • Drive alanı, fotoğraf kuyruğu ve ayrıntılı senkron durumları */
 .record-status.error{background:#fff4f2;border-color:#efc4bd;color:#a13f34}
 .record-status.error>div+div{border-color:rgba(161,63,52,.28)}
 .record-sync-error{grid-column:1/-1;max-height:64px;overflow:hidden}

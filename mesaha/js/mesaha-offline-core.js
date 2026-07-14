@@ -73,7 +73,7 @@
   function registerServiceWorker(){
     if(window.MESAHA_SUITE_MODE)return;
     if (!('serviceWorker' in navigator)) return;
-    navigator.serviceWorker.register('../service-worker.js?v=27', {scope:'../', updateViaCache:'none'}).then(function(reg){
+    navigator.serviceWorker.register('../service-worker.js?v=28', {scope:'../', updateViaCache:'none'}).then(function(reg){
       try {
         var last = Number(localStorage.getItem('mesaha_sw_update_check_current') || 0);
         if (navigator.onLine && Date.now() - last > 15 * 60 * 1000) {

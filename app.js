@@ -23,6 +23,7 @@
     istifShared: "shared-context-v034",
     yieldTargets: "mesaha_suite_yield_targets_v12",
     mesahaRecords: "cam_mesaha_kayitlari_v1",
+    serverDeletedMesaha: "mesaha_suite_server_deleted_v28",
   };
   const $ = (id) => document.getElementById(id);
   const clean = (v) =>
@@ -83,8 +84,8 @@
 
   const TELEGRAM_URL = "https://telegram.me/+LpsvthN4BM5kYWI0";
   const TELEGRAM_DAY_KEY = "mesaha_suite_telegram_daily_v12";
-  const CURRENT_SUITE_BUILD = Number(window.MESAHA_VERSION?.build || 23);
-  const CURRENT_SUITE_LABEL = clean(window.MESAHA_VERSION?.visibleVersion || "Mesaha Suite V27");
+  const CURRENT_SUITE_BUILD = Number(window.MESAHA_VERSION?.build || 28);
+  const CURRENT_SUITE_LABEL = clean(window.MESAHA_VERSION?.visibleVersion || "Mesaha Suite V28");
   let latestSuiteVersion = null, updateApplying = false, pendingDivisionDelete = null;
 
   function updateVersionCorner(remote) {
@@ -156,7 +157,7 @@
     try {
       setUpdateProgress(12, "Yeni sürüm denetleniyor…");
       let reg = await navigator.serviceWorker?.getRegistration("./");
-      if (!reg && "serviceWorker" in navigator) reg = await navigator.serviceWorker.register("./service-worker.js?v=27", { scope: "./", updateViaCache: "none" });
+      if (!reg && "serviceWorker" in navigator) reg = await navigator.serviceWorker.register("./service-worker.js?v=28", { scope: "./", updateViaCache: "none" });
       if (reg) {
         setUpdateProgress(28, "Yeni uygulama dosyaları alınıyor…");
         await reg.update();
@@ -315,7 +316,7 @@
     try {
       const out = await supabaseRpc("mesaha_create_terminal_code_v557", {
         p_label: "terminal",
-        p_app_version: "Mesaha Suite V27",
+        p_app_version: "Mesaha Suite V28",
       });
       const t = out.terminal || out || {},
         code = clean(t.code),
@@ -547,13 +548,32 @@
       const rs = clean(r && (r.seflik || r.seflikName || r.folderSeflik));
       return rb === no && (!rs || !seflik || rs.toLocaleLowerCase("tr-TR") === seflik.toLocaleLowerCase("tr-TR"));
     });
-    let adet = mesahaRows.reduce((sum, r) => sum + Math.max(1, localeNumber(r.quantity || r.adet || 1)), 0);
-    let mesahaM3 = mesahaRows.reduce((sum, r) => sum + mesahaRowVolume(r), 0);
+    const folderKey = clean(af && (af.seflik_key || af.seflikKey)) || stableKey(seflik);
+    const deletedMap = read(K.serverDeletedMesaha, {});
+    const serverDeleteKey = `${folderKey}::${no}`;
+    const serverDeleted = !!deletedMap[serverDeleteKey];
+    const localAdet = serverDeleted ? 0 : mesahaRows.reduce((sum, r) => sum + Math.max(1, localeNumber(r.quantity || r.adet || 1)), 0);
+    const localM3 = serverDeleted ? 0 : mesahaRows.reduce((sum, r) => sum + mesahaRowVolume(r), 0);
+    let adet = localAdet, mesahaM3 = localM3;
     const division = currentDivisions().find((d) => clean(d.bolme_no) === no);
     if (division) {
-      // Sunucudaki şeflik klasörü özeti, birden fazla terminal/kullanıcının senkronize kayıtlarını içerir.
-      adet = Math.max(adet, localeNumber(division.record_count || division.recordCount));
-      mesahaM3 = Math.max(mesahaM3, localeNumber(division.total_volume || division.totalVolume));
+      // Bağlantı varken sunucudaki ortak klasör özeti esas alınır. Yalnız henüz
+      // gönderilmemiş cihaz kayıtları varsa yerel yüksek değer geçici olarak korunur.
+      const serverAdet = localeNumber(division.record_count || division.recordCount);
+      const serverM3 = localeNumber(division.total_volume || division.totalVolume);
+      const dirtyMesaha = read("mesaha_suite_dirty_v8", {}).mesaha || {};
+      const dirtyBolme = clean(dirtyMesaha.meta && (dirtyMesaha.meta.bolmeNo || dirtyMesaha.meta.bolme_no));
+      const localPending = !serverDeleted && !!dirtyMesaha.dirty && (!dirtyBolme || dirtyBolme === no);
+      if (navigator.onLine !== false) {
+        adet = localPending ? Math.max(serverAdet, localAdet) : serverAdet;
+        mesahaM3 = localPending ? Math.max(serverM3, localM3) : serverM3;
+      } else {
+        adet = serverDeleted ? serverAdet : Math.max(serverAdet, localAdet);
+        mesahaM3 = serverDeleted ? serverM3 : Math.max(serverM3, localM3);
+      }
+    } else if (serverDeleted) {
+      adet = 0;
+      mesahaM3 = 0;
     }
     const localIstif = (await readIstifRecords()).filter((r) => {
       if (!r || r.isDemo) return false;
@@ -561,15 +581,17 @@
       const rs = clean(r.seflik || r.seflikName);
       return rb === no && (!rs || !seflik || rs.toLocaleLowerCase("tr-TR") === seflik.toLocaleLowerCase("tr-TR"));
     });
-    let remoteIstif = [];
+    let remoteIstif = [], remoteIstifAuthoritative = false;
     if (navigator.onLine !== false) {
       try {
-        const api = window.MesahaSuiteSyncV27 || window.MesahaSuiteSyncV26 || window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10;
+        const api = window.MesahaSuiteSyncV28 || window.MesahaSuiteSyncV27 || window.MesahaSuiteSyncV26 || window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10;
         if (api && typeof api.drive === "function" && af) {
           const out = await api.drive("record_list", {
             seflik,
             seflikKey: clean(af.seflik_key || af.seflikKey) || stableKey(seflik),
+            bolmeNo: no,
           });
+          remoteIstifAuthoritative = out.complete !== false && out.truncated !== true;
           remoteIstif = (Array.isArray(out && out.records) ? out.records : []).filter((r) =>
             clean(r.bolme_no || r.bolme || r.bolmeNo) === no,
           );
@@ -577,9 +599,15 @@
       } catch (_) {}
     }
     const mergedIstif = new Map();
-    [...remoteIstif, ...localIstif].forEach((r, index) => {
+    remoteIstif.forEach((r, index) => {
       const key = clean(r.id || r.record_id) || [clean(r.istif_no || r.istifNo), clean(r.record_date || r.date), index].join("::");
       mergedIstif.set(key, r);
+    });
+    localIstif.forEach((r, index) => {
+      const pending = clean(r.syncStatus || r.sync_status) && clean(r.syncStatus || r.sync_status) !== "synced";
+      if (remoteIstifAuthoritative && !pending) return;
+      const key = clean(r.id || r.record_id) || [clean(r.istif_no || r.istifNo), clean(r.record_date || r.date), "local", index].join("::");
+      if (!mergedIstif.has(key) || pending) mergedIstif.set(key, r);
     });
     const ster = [...mergedIstif.values()].reduce((sum, r) => sum + localeNumber(r.ster), 0);
     const sterM3 = ster * 0.75;
@@ -727,7 +755,7 @@
     }
     destructiveSyncTimer = setTimeout(async () => {
       try {
-        const api = window.MesahaSuiteSyncV27 || window.MesahaSuiteSyncV26 || window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8;
+        const api = window.MesahaSuiteSyncV28 || window.MesahaSuiteSyncV27 || window.MesahaSuiteSyncV26 || window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8;
         if (api && typeof api.syncAll === "function") await api.syncAll({ source: "delete-auto" });
         else await sendPendingToServer();
         toast(`${label} sunucuya da anında işlendi.`);
@@ -856,7 +884,7 @@
     if (!api || typeof api.edge !== "function")
       throw new Error("Sunucu bağlantısı hazır değil.");
     return api.edge(action, {
-      source: "mesaha-suite-v27",
+      source: "mesaha-suite-v28",
       ...terminalAuth(),
       ...data,
     });
@@ -1804,7 +1832,7 @@
   }
 
   function suiteSyncApi() {
-    return window.MesahaSuiteSyncV27 || window.MesahaSuiteSyncV26 || window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || null;
+    return window.MesahaSuiteSyncV28 || window.MesahaSuiteSyncV27 || window.MesahaSuiteSyncV26 || window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || null;
   }
   async function driveAction(action, data = {}) {
     const api = suiteSyncApi();
@@ -2043,7 +2071,7 @@
         name: id.name || id.email || "Kullanıcı",
         seflik: af?.seflik || id.seflik || "",
         bolmeNo: id.bolme || "",
-        appVersion: "Mesaha Suite V27",
+        appVersion: "Mesaha Suite V28",
         avatarUrl: id.avatar || "",
         deviceId:
           localStorage.getItem("mesaha_suite_device_v7") ||
@@ -2060,7 +2088,7 @@
           appName: "Mesaha Suite",
           platform: navigator.platform || "",
           browser: navigator.userAgent || "",
-          suiteVersion: "V27",
+          suiteVersion: "V28",
         },
       });
     } catch {}
@@ -2128,7 +2156,7 @@
     try {
       await cleanupNestedWorkers();
       try { if (navigator.storage && navigator.storage.persist) await navigator.storage.persist(); } catch {}
-      const reg = await navigator.serviceWorker.register("./service-worker.js?v=27", { scope: "./", updateViaCache: "none" });
+      const reg = await navigator.serviceWorker.register("./service-worker.js?v=28", { scope: "./", updateViaCache: "none" });
       await navigator.serviceWorker.ready;
       const worker = await waitForActiveWorker(reg, navigator.onLine===false?7000:18000);
       setCacheStatus("Mesaha İO ve İstif İO dosyaları doğrulanıyor…", 18);
@@ -2320,8 +2348,8 @@
       return true;
     }
     if (tool === "sync" || tool === "server") {
-      if (window.MesahaSuiteSyncV27 || window.MesahaSuiteSyncV26 || window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8)
-        (window.MesahaSuiteSyncV27 || window.MesahaSuiteSyncV26 || window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8).syncAll({ source: tool })
+      if (window.MesahaSuiteSyncV28 || window.MesahaSuiteSyncV27 || window.MesahaSuiteSyncV26 || window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8)
+        (window.MesahaSuiteSyncV28 || window.MesahaSuiteSyncV27 || window.MesahaSuiteSyncV26 || window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8).syncAll({ source: tool })
           .then(() => loadFolders(true))
           .catch(() => {});
       else sendPendingToServer();
@@ -2368,7 +2396,7 @@
     }
     if (tool === "about") {
       showInfo(
-        "Mesaha Suite V27",
+        "Mesaha Suite V28",
         `<p>Google veya terminal/misafir oturumu iki uygulamada ortak kullanılır.</p><p><b>Bekleyen işlem:</b> ${pendingOps.length}</p><p>Bölmeler offline indirildikten sonra Mesaha İO ve İstif İO’da kayıt eklemeye hazır olur.</p>`,
       );
       return true;

@@ -1,4 +1,4 @@
-const CACHE = "yakupp-suite-shell-v27";
+const CACHE = "yakupp-suite-shell-v28";
 const PREFIX = "yakupp-suite-shell-";
 const CORE = [
   "./app.js",
@@ -175,8 +175,8 @@ async function cacheAll() {
     missingCount: missing.length,
     criticalMissing,
     at: new Date().toISOString(),
-    build: 26,
-    integrity: "suite-v27",
+    build: 28,
+    integrity: "suite-v28",
     criticalCount: CRITICAL.length,
     totalCount: CORE.length,
   };
@@ -204,8 +204,8 @@ async function status() {
     missingCount: missing.length,
     criticalMissing,
     cache: CACHE,
-    build: 26,
-    integrity: "suite-v27",
+    build: 28,
+    integrity: "suite-v28",
     criticalCount: CRITICAL.length,
     totalCount: CORE.length,
   };

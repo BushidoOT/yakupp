@@ -1,4 +1,4 @@
-/* Mesaha İO V5.83 — iOS/Android kayıt sonrası klavye ve ölçü alanı odak koruması. */
+/* Mesaha İO V5.84 — iOS/Android kayıt sonrası klavye ve ölçü alanı odak koruması. */
 (function () {
   "use strict";
   if (window.__mesahaSaveFocusV583) return;

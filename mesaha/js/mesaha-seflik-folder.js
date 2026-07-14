@@ -1,4 +1,4 @@
-/* Mesaha İO V5.82 — Misafir modunda Şeflik Klasörü takılma önleyici güvenli çıkış */
+/* Mesaha İO V5.84 — Misafir modunda Şeflik Klasörü takılma önleyici güvenli çıkış */
 (function(){
   'use strict';
   if(window.MESAHA_SUITE_MODE){
@@ -16,6 +16,7 @@
   var PENDING_DIVISIONS_KEY='mesaha_seflik_folder_pending_divisions_v530';
   var ACTIVE_SEFLIK_KEY='mesaha_active_seflik_folder_v564';
   var OFFLINE_REFRESH_KEY='mesaha_seflik_folder_needs_online_refresh_v569';
+  var SERVER_DELETED_MESAHA_KEY='mesaha_suite_server_deleted_v28';
   var ACCESS_KEY='mesaha_google_access_v548';
   var TERMINAL_KEY='mesaha_terminal_local_mode_v556';
   var CHUNK_SIZE=180;
@@ -158,7 +159,7 @@
       '<div class="seflik-division-top"><div class="seflik-division-title"><span class="seflik-division-icon">📁</span><div><b>Bölme '+esc(x.bolme_no||'-')+(x.local_pending?' <span class="seflik-local-pending-v530">Sunucu doğrulanıyor</span>':'')+'</b><small>'+esc(contributors.length?contributors.join(', '):(x.created_by_name?('Oluşturan: '+x.created_by_name):'Henüz mesaha gönderilmedi'))+'</small></div></div><span class="seflik-open-pill">Açık</span></div>'+
       '<div class="seflik-division-stats"><div class="seflik-division-stat"><small>MESaha ADEDİ</small><b>'+num(x.record_count).toLocaleString('tr-TR')+'</b></div><div class="seflik-division-stat"><small>TOPLAM m³</small><b>'+fmt(x.total_volume,3)+'</b></div><div class="seflik-division-stat"><small>KULLANICI</small><b>'+contributors.length+'</b></div></div>'+
       '<div class="seflik-division-meta"><span>Son işlem: '+esc(dateText(x.updated_at||x.created_at))+'</span><span>'+(drive?'✓ Drive yedekli':'Drive yedeği bekleniyor')+'</span></div>'+
-      '<div class="seflik-division-actions seflik-division-actions-v529"><button class="btn primary" type="button" data-seflik-continue="'+esc(x.bolme_no)+'">'+(empty?'Mesahaya Başla':'Mesahaya Devam Et')+'</button></div></article>'}).join('');
+      '<div class="seflik-division-actions seflik-division-actions-v529'+(!empty?' has-delete-v28':'')+'"><button class="btn primary" type="button" data-seflik-continue="'+esc(x.bolme_no)+'">'+(empty?'Mesahaya Başla':'Mesahaya Devam Et')+'</button>'+(!empty?'<button class="btn seflik-delete-btn-v533" type="button" data-seflik-delete-records="'+esc(x.bolme_no)+'">Sunucudaki Mesahayı Sil</button>':'')+'</div></article>'}).join('');
   }
 
   function syncFolder(showToast,options){
@@ -335,6 +336,17 @@
   }
 
 
+  async function deleteServerRecords(bolme){
+    bolme=clean(bolme);if(!bolme||busy)return false;
+    if(!navigator.onLine){notify('İnternet bağlantısı yok','Sunucudaki mesahayı silmek için internet gerekli.','warning');return false}
+    var row=divisions.find(function(x){return clean(x.bolme_no)===bolme})||{},count=num(row.record_count);
+    var typed=prompt('Bölme '+bolme+' içindeki sunucu mesahası silinecek. Bölme, İstifler ve cihazdaki ölçümler korunur. Onaylamak için bölme numarasını yazın:',bolme);
+    if(typed===null)return false;if(clean(typed)!==bolme){notify('Mesaha silinmedi','Girilen bölme numarası eşleşmiyor.','warning');return false}
+    if(!confirm('SON UYARI: Bölme '+bolme+' içindeki '+count+' sunucu mesaha kaydı silinecek. Devam edilsin mi?'))return false;
+    busy=true;setStatus('Bölme '+bolme+' sunucu mesahası siliniyor…','busy');renderList();
+    try{var out=await edge('seflik_folder_delete_records',{bolmeNo:bolme,confirmBolme:bolme});var deleted=readJson(SERVER_DELETED_MESAHA_KEY,{}),u=user(),folderKey=clean(u.seflikKey)||fold(u.seflik).replace(/[^a-z0-9]+/g,'-');deleted[folderKey+'::'+bolme]={at:new Date().toISOString(),seflik:u.seflik,bolmeNo:bolme};writeJson(SERVER_DELETED_MESAHA_KEY,deleted);divisions=divisions.map(function(x){return clean(x.bolme_no)===bolme?Object.assign({},x,{record_count:0,total_volume:0,contributors:[],drive_backed_up:false,updated_at:new Date().toISOString()}):x});cacheAndRender();notify('Sunucu mesahası silindi','Bölme '+bolme+' • '+num(out.records_deleted)+' kayıt kaldırıldı. Bölme ve İstifler korundu.','success');return true}catch(e){notify('Mesaha silinemedi',String(e&&e.message?e.message:e),'error');return false}finally{busy=false;renderList()}
+  }
+
   async function deleteDivision(bolme){
     bolme=clean(bolme);if(!bolme||busy)return false;
     var row=divisions.find(function(x){return clean(x.bolme_no)===bolme})||{};
@@ -411,7 +423,7 @@
     /* Bölme oluşturma Mesaha Suite ana menüsünde yönetilir. */
     var send=$('seflikFolderSendV528');if(send)send.addEventListener('click',sendFolder);
     var sync=$('seflikFolderSyncV528');if(sync)sync.addEventListener('click',function(){syncFolder(true).catch(function(e){setStatus(String(e&&e.message?e.message:e),'error');notify('Senkronizasyon başarısız',String(e&&e.message?e.message:e),'error')})});
-    var list=$('seflikFolderListV528');if(list)list.addEventListener('click',function(ev){var cont=ev.target.closest('[data-seflik-continue]');if(cont)continueDivision(cont.getAttribute('data-seflik-continue'))});
+    var list=$('seflikFolderListV528');if(list)list.addEventListener('click',function(ev){var del=ev.target.closest('[data-seflik-delete-records]');if(del){deleteServerRecords(del.getAttribute('data-seflik-delete-records'));return}var cont=ev.target.closest('[data-seflik-continue]');if(cont)continueDivision(cont.getAttribute('data-seflik-continue'))});
     var shortcut=$('seflikFolderHomeShortcutV528');if(shortcut){var openShortcut=function(){try{if(typeof window.showView==='function')window.showView('seflikFolder');else{var n=document.querySelector('[data-nav="seflikFolder"]');if(n)n.click()}}catch(e){var n=document.querySelector('[data-nav="seflikFolder"]');if(n)n.click()}};shortcut.addEventListener('click',openShortcut);shortcut.addEventListener('keydown',function(ev){if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();openShortcut()}})}
     var recordsBtn=$('seflikSendFromRecordsV529');if(recordsBtn)recordsBtn.addEventListener('click',recordsSendClick);
     var modalClose=$('seflikSendCloseV529');if(modalClose)modalClose.addEventListener('click',closeSendModal);

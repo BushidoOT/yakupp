@@ -1,4 +1,4 @@
-/* Mesaha İO V5.83 — iOS/Android tek ve gerçek WAV ses motoru.
+/* Mesaha İO V5.84 — iOS/Android tek ve gerçek WAV ses motoru.
    Sentetik bip üretmez; yalnız paket içindeki onay/uyarı dosyalarını çalar. */
 (function () {
   "use strict";
