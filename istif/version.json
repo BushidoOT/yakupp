@@ -1,0 +1,8 @@
+{
+  "version": "0.3.4-suite-v18",
+  "name": "Mesaha İO İstif Alma v0.3.4",
+  "updatedAt": "2026-07-14T09:00:00+03:00",
+  "notes": "Suite V18 ile merkezi bölme seçimi, kalıcı offline çalışma ve senkronizasyon kararlılığı doğrulanmıştır.",
+  "visibleVersion": "İstif Alma v0.3.4",
+  "build": 18
+}
