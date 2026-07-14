@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  const VERSION = "18.0.0";
+  const VERSION = "19.0.0";
   const SUPABASE_URL = "https://swrbpdpotmirnmtqnuba.supabase.co";
   const ANON_KEY = "sb_publishable_G_ZFeUouDxg57Nne5pflfQ_cVGpdMbR";
   const SMOOTH = SUPABASE_URL + "/functions/v1/smooth-function";
@@ -27,6 +27,7 @@
     records: "cam_mesaha_kayitlari_v1",
     yieldTargets: "mesaha_suite_yield_targets_v12",
     folderCache: "mesaha_seflik_folder_cache_v529",
+    syncTokens: "mesaha_suite_sync_tokens_v19",
   };
 
   const clean = (v) =>
@@ -142,24 +143,53 @@
         }
       : {};
   }
+  function networkError(message, code) {
+    const error = new Error(message);
+    error.code = code || "NETWORK_ERROR";
+    return error;
+  }
+  async function fetchWithTimeout(url, options, timeoutMs) {
+    const controller = typeof AbortController !== "undefined" ? new AbortController() : null;
+    const timer = controller ? setTimeout(() => controller.abort(), Math.max(1000, timeoutMs || 20000)) : null;
+    try {
+      return await fetch(url, { ...(options || {}), ...(controller ? { signal: controller.signal } : {}) });
+    } catch (error) {
+      if (error && error.name === "AbortError") throw networkError("Bağlantı zaman aşımına uğradı", "NETWORK_TIMEOUT");
+      if (navigator.onLine === false) throw networkError("İnternet bağlantısı yok", "OFFLINE");
+      throw networkError("Sunucuya ulaşılamadı", "NETWORK_WEAK");
+    } finally {
+      if (timer) clearTimeout(timer);
+    }
+  }
+  async function checkSyncConnection(timeoutMs) {
+    if (navigator.onLine === false) throw networkError("İnternet yok", "OFFLINE");
+    const response = await fetchWithTimeout(SMOOTH, {
+      method: "OPTIONS",
+      cache: "no-store",
+    }, timeoutMs || 5000);
+    if (!response || !response.ok) throw networkError("Bağlantı zayıf", "NETWORK_WEAK");
+    return true;
+  }
   async function post(url, action, data) {
     const body = {
       action,
-      source: "mesaha-suite-v18",
+      source: "mesaha-suite-v19",
       ...terminalAuth(),
       ...(data || {}),
     };
-    const r = await fetch(url, {
+    const r = await fetchWithTimeout(url, {
       method: "POST",
       cache: "no-store",
       headers: authHeaders(),
       body: JSON.stringify(body),
-    });
+    }, 30000);
     const j = await r.json().catch(() => ({}));
-    if (!r.ok || j.ok === false)
-      throw new Error(
-        clean(j.error || j.message) || "Sunucu hatası " + r.status,
-      );
+    if (!r.ok || j.ok === false) {
+      const error = new Error(clean(j.error || j.message) || "Sunucu hatası " + r.status);
+      error.status = r.status;
+      error.retryAfter = num(j.retry_after || j.retryAfter);
+      throw error;
+    }
     return j;
   }
   const edge = (action, data) => post(SMOOTH, action, data);
@@ -713,6 +743,32 @@
     (Array.isArray(incomingRows) ? incomingRows : []).forEach((row, i) => put(row, i, "local"));
     return Array.from(map.values());
   }
+  function syncTokenFingerprint(rows) {
+    const list = Array.isArray(rows) ? rows : [];
+    const first = list[0] || {}, last = list[list.length - 1] || {};
+    return [
+      list.length,
+      clean(first.barcode || first.barkodNo || first.barkod_no || first.id),
+      clean(last.barcode || last.barkodNo || last.barkod_no || last.id),
+      clean(last.updatedAt || last.updated_at || first.updatedAt || first.updated_at),
+    ].join("|");
+  }
+  function stableSyncToken(seflik, bolme, rows) {
+    const key = fold(seflik) + "::" + fold(bolme);
+    const fingerprint = syncTokenFingerprint(rows);
+    const store = read(K.syncTokens, {});
+    const existing = store[key];
+    if (existing && existing.fingerprint === fingerprint && existing.token) return existing.token;
+    const token = "suitev19_" + fold(seflik) + "_" + fold(bolme) + "_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2, 8);
+    store[key] = { token, fingerprint, at: now() };
+    write(K.syncTokens, store);
+    return token;
+  }
+  function clearStableSyncToken(seflik, bolme) {
+    const key = fold(seflik) + "::" + fold(bolme);
+    const store = read(K.syncTokens, {});
+    if (store[key]) { delete store[key]; write(K.syncTokens, store); }
+  }
   async function syncMesaha() {
     const records = read(K.records, []);
     if (!Array.isArray(records)) return { done: 0 };
@@ -732,11 +788,11 @@
       try {
         const remote = await edge("seflik_folder_read", { seflik, folderSeflik: seflik, bolmeNo: bolme });
         remoteRows = Array.isArray(remote.records) ? remote.records : [];
-      } catch (e) { console.warn("[suite-v18] Ortak kayıtlar alınamadı; yerel kayıtlarla devam ediliyor", e); }
+      } catch (e) { console.warn("[suite-v19] Ortak kayıtlar alınamadı; yerel kayıtlarla devam ediliyor", e); }
       const rows = mergeMesahaRows(remoteRows, localRows).map((r) => ({ ...r, seflik, bolmeNo: bolme, bolme_no: bolme }));
-      const token = "suitev18_" + fold(seflik) + "_" + fold(bolme) + "_" + Date.now().toString(36) + "_" + rows.length;
+      const token = stableSyncToken(seflik, bolme, rows);
       for (let i = 0; i < rows.length; i += 150)
-        await edge("seflik_folder_push", { seflik, bolmeNo: bolme, syncToken: token, records: rows.slice(i, i + 150), appVersion: "Mesaha Suite V18", mergeMode: "barcode" });
+        await edge("seflik_folder_push", { seflik, bolmeNo: bolme, syncToken: token, records: rows.slice(i, i + 150), appVersion: "Mesaha Suite V19", mergeMode: "barcode" });
       let backup = null, driveError = "";
       try {
         if (id.google)
@@ -744,7 +800,7 @@
             seflik, appId: "mesaha",
             fileName: `Mesaha_${fold(seflik)}_${fold(bolme)}_${new Date().toISOString().slice(0, 10)}.json`,
             recordCount: rows.length, totalVolume: rows.reduce((sum, r) => sum + volume(r), 0),
-            payload: { schema: "mesaha-suite-v18", app: "mesaha", seflik, bolme, createdAt: now(), records: rows },
+            payload: { schema: "mesaha-suite-v19", app: "mesaha", seflik, bolme, createdAt: now(), records: rows },
           });
       } catch (e) { driveError = clean(e.message || e); }
       await edge("seflik_folder_finish", {
@@ -752,8 +808,9 @@
         totalVolume: rows.reduce((sum, r) => sum + volume(r), 0),
         driveFileId: (backup && backup.fileId) || "", driveFileName: (backup && backup.fileName) || "",
         driveStatus: backup ? "saved" : id.google ? "error" : "not_connected", driveError,
-        appVersion: "Mesaha Suite V18", mergeMode: "barcode",
+        appVersion: "Mesaha Suite V19", mergeMode: "barcode",
       });
+      clearStableSyncToken(seflik, bolme);
       done += rows.length;
     }
     clearDirty("mesaha");
@@ -922,7 +979,7 @@
             recordCount: payloadRows.length,
             totalVolume: payloadRows.reduce((s, r) => s + num(r.ster), 0),
             payload: {
-              schema: "mesaha-suite-v18",
+              schema: "mesaha-suite-v19",
               app: "istif",
               seflik,
               createdAt: now(),
@@ -930,29 +987,48 @@
             },
           });
         } catch (e) {
-          console.warn("[suite-v18] İstif Drive yedeği oluşturulamadı", e);
+          console.warn("[suite-v19] İstif Drive yedeği oluşturulamadı", e);
         }
     clearDirty("istif");
     return { done };
   }
 
   let syncing = false;
+  function setSyncButtonBusy(active, label) {
+    const button = document.getElementById("suiteSyncFabV8");
+    if (!button) return;
+    button.disabled = !!active;
+    button.setAttribute("aria-busy", active ? "true" : "false");
+    const text = button.querySelector("b");
+    if (text) text.textContent = label || (active ? "Senkronize ediliyor" : "Senkronize Et");
+  }
   async function syncAll(opts) {
-    if (syncing) return { ok: false, busy: true };
-    if (!navigator.onLine) {
-      toast("İnternet yok. Değişiklikler cihazda güvende.", true);
+    if (syncing) {
+      toast("Senkronizasyon zaten devam ediyor.");
+      return { ok: false, busy: true };
+    }
+    if (navigator.onLine === false) {
+      toast("İnternet yok. Senkronizasyon yapılamadı.", true);
       return { ok: false, offline: true };
     }
     syncing = true;
+    setSyncButtonBusy(true, "Bağlantı kontrolü");
     updateButton();
-    toast("Tüm uygulamalar senkronize ediliyor…");
     try {
-      const before = dirtyState(),
-        force =
-          opts &&
-          ["sync", "server", "manual", "suite", "floating-button"].includes(
-            opts.source,
-          );
+      try {
+        await checkSyncConnection(5000);
+      } catch (connectionError) {
+        if (connectionError && connectionError.code === "OFFLINE") {
+          toast("İnternet yok. Senkronizasyon yapılamadı.", true);
+          return { ok: false, offline: true };
+        }
+        toast("Senkronizasyon başarısız. Bağlantı zayıf.", true);
+        return { ok: false, weakConnection: true };
+      }
+      setSyncButtonBusy(true, "Senkronize ediliyor");
+      toast("Değişiklikler sunucuya senkronize ediliyor…");
+      const before = dirtyState();
+      const force = !!(opts && opts.force === true);
       const management = await syncManagement();
       const mesaha =
         force || (before.mesaha && before.mesaha.dirty)
@@ -969,7 +1045,7 @@
       });
       write(K.last, { at: now(), management, mesaha, istif, folder });
       dispatch();
-      toast("Suite, Mesaha İO ve İstif İO senkronize edildi.");
+      toast("Senkronizasyon tamamlandı.");
       try {
         window.dispatchEvent(
           new CustomEvent("mesaha-suite:sync-complete", {
@@ -979,10 +1055,21 @@
       } catch {}
       return { ok: true, management, mesaha, istif, folder };
     } catch (e) {
-      toast("Senkronizasyon tamamlanamadı: " + clean(e.message || e), true);
+      const code = clean(e && e.code);
+      const message = clean(e && e.message || e);
+      if (navigator.onLine === false || code === "OFFLINE") {
+        toast("İnternet yok. Senkronizasyon yapılamadı.", true);
+        return { ok: false, offline: true };
+      }
+      if (code === "NETWORK_TIMEOUT" || code === "NETWORK_WEAK") {
+        toast("Senkronizasyon başarısız. Bağlantı zayıf.", true);
+        return { ok: false, weakConnection: true };
+      }
+      toast("Senkronizasyon tamamlanamadı: " + message, true);
       throw e;
     } finally {
       syncing = false;
+      setSyncButtonBusy(false, "Senkronize Et");
       updateButton();
     }
   }
@@ -1074,7 +1161,7 @@
       seflik, appId: "mesaha",
       fileName: `Mesaha_${fold(seflik)}_${selected ? fold(selected) + "_" : ""}${new Date().toISOString().replace(/[:.]/g, "-")}.json`,
       recordCount: rows.length, totalVolume: rows.reduce((sum, r) => sum + volume(r), 0),
-      payload: { schema: "mesaha-suite-v18", app: "mesaha", seflik, bolme: selected, createdAt: now(), settings: read(K.settings, {}), records: rows },
+      payload: { schema: "mesaha-suite-v19", app: "mesaha", seflik, bolme: selected, createdAt: now(), settings: read(K.settings, {}), records: rows },
     });
   }
   async function restoreMesahaBackup(id, mode) {
@@ -1106,7 +1193,7 @@
         photos: undefined,
       }));
     const payload = {
-      schema: "mesaha-suite-backup-v18",
+      schema: "mesaha-suite-backup-v19",
       createdAt: now(),
       user: { id: id.userId, name: id.name, email: id.email },
       seflik: id.seflik,
@@ -1231,6 +1318,7 @@
     refreshFolderData,
     loadDivisionRecords,
   };
+  window.MesahaSuiteSyncV19 = api;
   window.MesahaSuiteSyncV18 = api;
   window.MesahaSuiteSyncV17 = api;
   window.MesahaSuiteSyncV14 = api;

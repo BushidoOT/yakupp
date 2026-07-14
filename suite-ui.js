@@ -17,7 +17,7 @@
   let loaded = false,
     items = [];
   function api() {
-    return window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8;
+    return window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8;
   }
   function toast(m, b) {
     window.MesahaSuiteUI && window.MesahaSuiteUI.toast
@@ -355,7 +355,7 @@
       toast("Yedek geri yüklenemedi: " + e.message, true);
     }
   }
-  window.MesahaSuiteBackupsV18 = window.MesahaSuiteBackupsV17 = window.MesahaSuiteBackupsV14 = window.MesahaSuiteBackupsV13 = window.MesahaSuiteBackupsV12 = window.MesahaSuiteBackupsV11 = window.MesahaSuiteBackupsV10 = window.MesahaSuiteBackupsV9 = window.MesahaSuiteBackupsV8 = { open, close, load, refreshDrive };
+  window.MesahaSuiteBackupsV19 = window.MesahaSuiteBackupsV18 = window.MesahaSuiteBackupsV17 = window.MesahaSuiteBackupsV14 = window.MesahaSuiteBackupsV13 = window.MesahaSuiteBackupsV12 = window.MesahaSuiteBackupsV11 = window.MesahaSuiteBackupsV10 = window.MesahaSuiteBackupsV9 = window.MesahaSuiteBackupsV8 = { open, close, load, refreshDrive };
   if (document.readyState === "loading")
     document.addEventListener("DOMContentLoaded", inject, { once: true });
   else inject();

@@ -1,12 +1,12 @@
 {
-  "version": "18.0.0",
-  "build": 18,
+  "version": "19.0.0",
+  "build": 19,
   "date": "2026-07-14",
   "name": "Mesaha Suite",
   "short_name": "Mesaha Suite",
-  "description": "Yayın öncesi doğrulanan merkezi Suite yapısı; barkod tekilleştirme, kişisel Drive, kalıcı offline çalışma ve güvenli otomatik senkronizasyon.",
-  "id": "./?suite=18",
-  "start_url": "./?suite=18",
-  "visibleVersion": "Mesaha Suite V18",
-  "cacheName": "yakupp-suite-shell-v18"
+  "description": "Şefliğe gönderimde yükleniyor ekranı ve çift tıklama kilidi; bağlantı kontrolü, zayıf bağlantı zaman aşımı ve 60/saat güvenli gönderim sınırı.",
+  "id": "./?suite=19",
+  "start_url": "./?suite=19",
+  "visibleVersion": "Mesaha Suite V19",
+  "cacheName": "yakupp-suite-shell-v19"
 }

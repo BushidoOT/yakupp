@@ -1,7 +1,7 @@
 {
-  "name": "Mesaha Suite V18",
+  "name": "Mesaha Suite V19",
   "short_name": "Mesaha Suite",
-  "start_url": "./?v=18",
+  "start_url": "./?v=19",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f5f8f6",
@@ -19,7 +19,7 @@
       "type": "image/png"
     }
   ],
-  "id": "./?v=18",
-  "description": "Merkezi Mesaha ve İstif yönetimi, kalıcı offline çalışma, kişisel Drive ve barkod tekilleştirme",
-  "version": "suite_v18"
+  "id": "./?v=19",
+  "description": "Merkezi Mesaha ve İstif yönetimi, bağlantı kontrollü senkronizasyon ve güvenli şeflik gönderimi",
+  "version": "suite_v19"
 }
