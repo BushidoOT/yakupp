@@ -84,7 +84,7 @@
   const TELEGRAM_URL = "https://telegram.me/+LpsvthN4BM5kYWI0";
   const TELEGRAM_DAY_KEY = "mesaha_suite_telegram_daily_v12";
   const CURRENT_SUITE_BUILD = Number(window.MESAHA_VERSION?.build || 17);
-  const CURRENT_SUITE_LABEL = clean(window.MESAHA_VERSION?.visibleVersion || "Mesaha Suite V19");
+  const CURRENT_SUITE_LABEL = clean(window.MESAHA_VERSION?.visibleVersion || "Mesaha Suite V20");
   let latestSuiteVersion = null, updateApplying = false;
 
   function updateVersionCorner(remote) {
@@ -156,7 +156,7 @@
     try {
       setUpdateProgress(12, "Yeni sürüm denetleniyor…");
       let reg = await navigator.serviceWorker?.getRegistration("./");
-      if (!reg && "serviceWorker" in navigator) reg = await navigator.serviceWorker.register("./service-worker.js?v=19", { scope: "./", updateViaCache: "none" });
+      if (!reg && "serviceWorker" in navigator) reg = await navigator.serviceWorker.register("./service-worker.js?v=20", { scope: "./", updateViaCache: "none" });
       if (reg) {
         setUpdateProgress(28, "Yeni uygulama dosyaları alınıyor…");
         await reg.update();
@@ -315,7 +315,7 @@
     try {
       const out = await supabaseRpc("mesaha_create_terminal_code_v557", {
         p_label: "terminal",
-        p_app_version: "Mesaha Suite V19",
+        p_app_version: "Mesaha Suite V20",
       });
       const t = out.terminal || out || {},
         code = clean(t.code),
@@ -564,7 +564,7 @@
     let remoteIstif = [];
     if (navigator.onLine !== false) {
       try {
-        const api = window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10;
+        const api = window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10;
         if (api && typeof api.drive === "function" && af) {
           const out = await api.drive("record_list", {
             seflik,
@@ -727,7 +727,7 @@
     }
     destructiveSyncTimer = setTimeout(async () => {
       try {
-        const api = window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8;
+        const api = window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8;
         if (api && typeof api.syncAll === "function") await api.syncAll({ source: "delete-auto" });
         else await sendPendingToServer();
         toast(`${label} sunucuya da anında işlendi.`);
@@ -856,7 +856,7 @@
     if (!api || typeof api.edge !== "function")
       throw new Error("Sunucu bağlantısı hazır değil.");
     return api.edge(action, {
-      source: "mesaha-suite-v19",
+      source: "mesaha-suite-v20",
       ...terminalAuth(),
       ...data,
     });
@@ -1850,7 +1850,7 @@
         name: id.name || id.email || "Kullanıcı",
         seflik: af?.seflik || id.seflik || "",
         bolmeNo: id.bolme || "",
-        appVersion: "Mesaha Suite V19",
+        appVersion: "Mesaha Suite V20",
         avatarUrl: id.avatar || "",
         deviceId:
           localStorage.getItem("mesaha_suite_device_v7") ||
@@ -1867,7 +1867,7 @@
           appName: "Mesaha Suite",
           platform: navigator.platform || "",
           browser: navigator.userAgent || "",
-          suiteVersion: "V19",
+          suiteVersion: "V20",
         },
       });
     } catch {}
@@ -1935,7 +1935,7 @@
     try {
       await cleanupNestedWorkers();
       try { if (navigator.storage && navigator.storage.persist) await navigator.storage.persist(); } catch {}
-      const reg = await navigator.serviceWorker.register("./service-worker.js?v=19", { scope: "./", updateViaCache: "none" });
+      const reg = await navigator.serviceWorker.register("./service-worker.js?v=20", { scope: "./", updateViaCache: "none" });
       await navigator.serviceWorker.ready;
       const worker = await waitForActiveWorker(reg, navigator.onLine===false?7000:18000);
       setCacheStatus("Mesaha İO ve İstif İO dosyaları doğrulanıyor…", 18);
@@ -2010,6 +2010,72 @@
     syncAppCaches();
     location.href = app === "mesaha" ? "./mesaha/" : "./istif/";
   }
+
+  let legacyBackupsCache = [];
+  function legacyDateText(item) {
+    const raw = clean(item && item.created_at);
+    if (!raw) return "-";
+    try {
+      return new Date(raw).toLocaleString("tr-TR", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" });
+    } catch (_) { return raw; }
+  }
+  function legacySizeText(bytes) {
+    const n = Number(bytes || 0);
+    if (!n) return "-";
+    if (n < 1024) return n + " B";
+    if (n < 1024 * 1024) return (n / 1024).toLocaleString("tr-TR", { maximumFractionDigits: 1 }) + " KB";
+    return (n / (1024 * 1024)).toLocaleString("tr-TR", { maximumFractionDigits: 1 }) + " MB";
+  }
+  function legacySearchText(item) {
+    return fold([item.username, item.seflik, item.bolme, item.file_name].filter(Boolean).join(" "));
+  }
+  function renderLegacyBackups() {
+    const list = $("legacyBackupList"), summary = $("legacyBackupSummary"), input = $("legacyBackupSearch");
+    if (!list) return;
+    const q = fold(input && input.value || "");
+    const rows = legacyBackupsCache.filter((item) => !q || legacySearchText(item).includes(q));
+    if (summary) summary.textContent = rows.length + " yedek gösteriliyor • Toplam " + legacyBackupsCache.length;
+    if (!rows.length) {
+      list.innerHTML = '<div class="modal-note warn">Aramanıza uygun eski yedek bulunamadı.</div>';
+      return;
+    }
+    list.innerHTML = rows.map((item) => {
+      const user = clean(item.username) || "Kullanıcı adı yok";
+      const office = clean(item.seflik) || "Şeflik yok";
+      const bolme = clean(item.bolme) || "-";
+      return `<article class="legacy-backup-row"><div class="legacy-backup-main"><div class="legacy-backup-icon">↶</div><div><strong>${esc(user)}</strong><small>${esc(office)} • Bölme ${esc(bolme)} • ${esc(legacyDateText(item))}</small><span>${esc(item.file_name || "Mesaha yedeği")} • ${esc(legacySizeText(item.size_bytes))}</span></div></div><div class="legacy-backup-actions"><a class="secondary-button" href="${esc(item.view_url)}" target="_blank" rel="noopener">Drive'da Aç</a><a class="primary-button" href="${esc(item.download_url)}" target="_blank" rel="noopener" download>İndir</a></div></article>`;
+    }).join("");
+  }
+  async function loadLegacyBackups(force = false) {
+    const list = $("legacyBackupList");
+    if (list && (!legacyBackupsCache.length || force)) list.innerHTML = '<div class="modal-note">Herkese açık yedek arşivi yükleniyor…</div>';
+    try {
+      const res = await fetch("./legacy-backups.json?archive=20" + (force ? "&t=" + Date.now() : ""), { cache: force ? "no-store" : "default" });
+      if (!res.ok) throw new Error("Eski yedek listesi alınamadı.");
+      const data = await res.json();
+      legacyBackupsCache = Array.isArray(data) ? data : Array.isArray(data.files) ? data.files : [];
+      legacyBackupsCache.sort((a,b) => String(b.created_at || "").localeCompare(String(a.created_at || "")));
+      renderLegacyBackups();
+      return legacyBackupsCache;
+    } catch (error) {
+      if (list) list.innerHTML = `<div class="modal-note warn">${esc(error && error.message || "Eski yedekler yüklenemedi.")}</div>`;
+      return [];
+    }
+  }
+  function openLegacyBackups() {
+    openModal("legacyBackupsModal");
+    const input = $("legacyBackupSearch");
+    if (input) input.value = "";
+    loadLegacyBackups(false);
+  }
+  function showMyLegacyBackups() {
+    const id = identity(), input = $("legacyBackupSearch");
+    if (!input) return;
+    input.value = clean(id.name || id.seflik || "");
+    renderLegacyBackups();
+    input.focus();
+  }
+
   function handleAction(target, ev) {
     if (!target) return false;
     const modal = target.getAttribute("data-modal"),
@@ -2061,8 +2127,8 @@
       return true;
     }
     if (tool === "sync" || tool === "server") {
-      if (window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8)
-        (window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8).syncAll({ source: tool })
+      if (window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8)
+        (window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8).syncAll({ source: tool })
           .then(() => loadFolders(true))
           .catch(() => {});
       else sendPendingToServer();
@@ -2082,7 +2148,21 @@
       return true;
     }
     if (tool === "backups") {
-      (window.MesahaSuiteBackupsV19 || window.MesahaSuiteBackupsV18 || window.MesahaSuiteBackupsV17 || window.MesahaSuiteBackupsV14 || window.MesahaSuiteBackupsV13 || window.MesahaSuiteBackupsV12 || window.MesahaSuiteBackupsV11 || window.MesahaSuiteBackupsV10 || window.MesahaSuiteBackupsV9 || window.MesahaSuiteBackupsV8) && (window.MesahaSuiteBackupsV19 || window.MesahaSuiteBackupsV18 || window.MesahaSuiteBackupsV17 || window.MesahaSuiteBackupsV14 || window.MesahaSuiteBackupsV13 || window.MesahaSuiteBackupsV12 || window.MesahaSuiteBackupsV11 || window.MesahaSuiteBackupsV10 || window.MesahaSuiteBackupsV9 || window.MesahaSuiteBackupsV8).open();
+      (window.MesahaSuiteBackupsV20 || window.MesahaSuiteBackupsV19 || window.MesahaSuiteBackupsV18 || window.MesahaSuiteBackupsV17 || window.MesahaSuiteBackupsV14 || window.MesahaSuiteBackupsV13 || window.MesahaSuiteBackupsV12 || window.MesahaSuiteBackupsV11 || window.MesahaSuiteBackupsV10 || window.MesahaSuiteBackupsV9 || window.MesahaSuiteBackupsV8) && (window.MesahaSuiteBackupsV20 || window.MesahaSuiteBackupsV19 || window.MesahaSuiteBackupsV18 || window.MesahaSuiteBackupsV17 || window.MesahaSuiteBackupsV14 || window.MesahaSuiteBackupsV13 || window.MesahaSuiteBackupsV12 || window.MesahaSuiteBackupsV11 || window.MesahaSuiteBackupsV10 || window.MesahaSuiteBackupsV9 || window.MesahaSuiteBackupsV8).open();
+      return true;
+    }
+    if (tool === "legacy-backups") {
+      openLegacyBackups();
+      return true;
+    }
+    if (id === "legacyBackupMine") {
+      showMyLegacyBackups();
+      return true;
+    }
+    if (id === "legacyBackupAll") {
+      const input = $("legacyBackupSearch");
+      if (input) input.value = "";
+      renderLegacyBackups();
       return true;
     }
     if (tool === "telegram") {
@@ -2095,7 +2175,7 @@
     }
     if (tool === "about") {
       showInfo(
-        "Mesaha Suite V19",
+        "Mesaha Suite V20",
         `<p>Google veya terminal/misafir oturumu iki uygulamada ortak kullanılır.</p><p><b>Bekleyen işlem:</b> ${pendingOps.length}</p><p>Bölmeler offline indirildikten sonra Mesaha İO ve İstif İO’da kayıt eklemeye hazır olur.</p>`,
       );
       return true;
@@ -2216,6 +2296,7 @@
     );
     $("modalBackdrop").onclick = closeModals;
     $("suiteStartupRetry")?.addEventListener("click",()=>prepareOffline());
+    $("legacyBackupSearch")?.addEventListener("input", renderLegacyBackups);
     $("seflikForm").onsubmit = createSeflik;
     $("ormanciForm").onsubmit = searchOrmanci;
     $("bolmeForm").onsubmit = createBolme;

@@ -1,4 +1,4 @@
-const CACHE = "yakupp-suite-shell-v19";
+const CACHE = "yakupp-suite-shell-v20";
 const PREFIX = "yakupp-suite-shell-";
 const CORE = [
   "./app.js",
@@ -9,6 +9,7 @@ const CORE = [
   "./assets/mesaha_onay.wav",
   "./assets/mesaha_uyari.wav",
   "./index.html",
+  "./legacy-backups.json",
   "./istif/app.js",
   "./istif/assets/istif-default.svg",
   "./istif/assets/mesaha-fallback.svg",
@@ -169,8 +170,8 @@ async function cacheAll() {
     missingCount: missing.length,
     criticalMissing,
     at: new Date().toISOString(),
-    build: 18,
-    integrity: "suite-v19",
+    build: 20,
+    integrity: "suite-v20",
     criticalCount: CRITICAL.length,
     totalCount: CORE.length,
   };
@@ -198,8 +199,8 @@ async function status() {
     missingCount: missing.length,
     criticalMissing,
     cache: CACHE,
-    build: 18,
-    integrity: "suite-v19",
+    build: 20,
+    integrity: "suite-v20",
     criticalCount: CRITICAL.length,
     totalCount: CORE.length,
   };
@@ -293,7 +294,12 @@ self.addEventListener("fetch", (e) => {
     e.respondWith(networkFirst(e.request));
     return;
   }
-  if (e.request.mode === "navigate")
-    e.respondWith(stale(e.request, appFallback(u)));
-  else e.respondWith(stale(e.request));
+  if (e.request.mode === "navigate") {
+    e.respondWith((async () => {
+      const fresh = await networkFirst(e.request);
+      if (fresh && fresh.ok) return fresh;
+      const cache = await caches.open(CACHE);
+      return (await cache.match(appFallback(u), { ignoreSearch: true })) || Response.error();
+    })());
+  } else e.respondWith(stale(e.request));
 });

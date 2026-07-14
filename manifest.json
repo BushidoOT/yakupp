@@ -1,7 +1,7 @@
 {
-  "name": "Mesaha Suite V19",
+  "name": "Mesaha Suite V20",
   "short_name": "Mesaha Suite",
-  "start_url": "./?v=19",
+  "start_url": "./?suite=20",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f5f8f6",
@@ -19,7 +19,7 @@
       "type": "image/png"
     }
   ],
-  "id": "./?v=19",
+  "id": "./?suite=20",
   "description": "Merkezi Mesaha ve İstif yönetimi, bağlantı kontrollü senkronizasyon ve güvenli şeflik gönderimi",
-  "version": "suite_v19"
+  "version": "suite_v20"
 }

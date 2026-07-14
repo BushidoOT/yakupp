@@ -14,13 +14,13 @@
     <link rel="manifest" href="./manifest.json" />
     <link rel="icon" href="./assets/icon-192.png" />
     <link rel="apple-touch-icon" href="./assets/icon-192.png" />
-    <link rel="stylesheet" href="./styles.css?v=19" />
+    <link rel="stylesheet" href="./styles.css?v=20" />
     <script>
       window.MESAHA_SUITE_AUTH_MODE = true;
       window.MESAHA_VERSION = {
-        version: "suite-v19",
-        visibleVersion: "Mesaha Suite V19",
-        build: 18,
+        version: "suite-v20",
+        visibleVersion: "Mesaha Suite V20",
+        build: 20,
       };
     </script>
   </head>
@@ -40,7 +40,7 @@
       <header class="hero">
         <div class="suite-version-corner" id="suiteVersionCorner" aria-live="polite">
           <span class="suite-version-caption">Sürüm</span>
-          <strong id="suiteVersionLabel">V19</strong>
+          <strong id="suiteVersionLabel">V20</strong>
           <button type="button" id="suiteUpdateButton" hidden>Uygulamayı Güncelle</button>
         </div>
         <div class="forest-layer forest-back"></div>
@@ -223,6 +223,9 @@
               <path fill="#4285F4" d="M12 54 2 36h40l20 0-10 18z" />
             </svg>
             <strong>Yedekler</strong><small>Kişisel Google Drive</small></button
+          ><button data-tool="legacy-backups" class="legacy-backups-tool-button">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16v13H4zM3 4h18v3H3zM9 11h6M12 11v5" /></svg>
+            <strong>Eski Yedekler</strong><small>Herkese açık Drive arşivi</small></button
           ><button data-tool="telegram" class="telegram-tool-button">
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="M21.5 3.2 3.4 10.3c-1.2.5-1.2 1.2-.2 1.5l4.6 1.4 1.8 5.5c.2.7.1 1 .9 1 .6 0 .9-.3 1.2-.6l2.3-2.2 4.8 3.5c.9.5 1.5.2 1.8-.8l3.1-14.8c.4-1.3-.5-1.9-1.7-1.4ZM9.6 12.8l9-5.7c.5-.3.9-.1.5.2l-7.4 6.7-.3 3.1-1.8-4.3Z"/>
@@ -239,7 +242,7 @@
               <path
                 d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20ZM12 10v6M12 7h.01"
               /></svg
-            ><strong>Hakkında</strong><small>Mesaha Suite V19</small>
+            ><strong>Hakkında</strong><small>Mesaha Suite V20</small>
           </button>
         </section>
         <footer class="status-footer">
@@ -432,6 +435,23 @@
         <button class="primary-button" id="yieldSaveButton" type="button">Kaydet ve Hesapla</button>
       </div>
     </section>
+    <section class="modal legacy-backups-modal" id="legacyBackupsModal" hidden>
+      <div class="modal-head">
+        <div><span class="modal-kicker">HERKESE AÇIK ARŞİV</span><h3>Eski Yedekler</h3></div>
+        <button class="modal-close" type="button" aria-label="Kapat">×</button>
+      </div>
+      <div class="legacy-backups-intro">
+        <div><strong>Eski Mesaha İO yedekleri</strong><small>Kullanıcı adı, şeflik, bölme veya dosya adına göre arayın.</small></div>
+        <a href="https://drive.google.com/drive/folders/1-zpEVeLMzW_DnH44_DuJrNfuAXnXK5vk?usp=drive_link" target="_blank" rel="noopener">Drive klasörünü aç</a>
+      </div>
+      <div class="legacy-backups-toolbar">
+        <input id="legacyBackupSearch" type="search" autocomplete="off" placeholder="Kullanıcı, şeflik, bölme veya dosya adı ara" />
+        <div class="legacy-filter-actions"><button class="secondary-button" id="legacyBackupMine" type="button">Bana Ait</button><button class="secondary-button" id="legacyBackupAll" type="button">Tümünü Göster</button></div>
+      </div>
+      <div class="legacy-backups-summary" id="legacyBackupSummary">Arşiv hazırlanıyor…</div>
+      <div class="legacy-backups-list" id="legacyBackupList"><div class="modal-note">Yedekler yükleniyor…</div></div>
+      <div class="modal-note">İndirilen JSON dosyasını Mesaha İO → Yedek Yükle bölümünden cihazdan seçebilirsiniz.</div>
+    </section>
     <section class="modal modal-compact suite-update-modal" id="suiteUpdateModal" hidden>
       <div class="modal-head">
         <div>
@@ -490,9 +510,9 @@
     <div class="toast" id="toast"></div>
     <script src="./js/mesaha-supabase-config.js"></script>
     <script src="./js/mesaha-firebase.js"></script>
-    <script src="./js/mesaha-google-auth-suite.js?v=19"></script>
-    <script src="./suite-sync-core.js?v=19"></script>
-    <script src="./app.js?v=19"></script>
-    <script src="./suite-ui.js?v=19"></script>
+    <script src="./js/mesaha-google-auth-suite.js?v=20"></script>
+    <script src="./suite-sync-core.js?v=20"></script>
+    <script src="./app.js?v=20"></script>
+    <script src="./suite-ui.js?v=20"></script>
   </body>
 </html>

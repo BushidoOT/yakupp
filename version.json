@@ -1,12 +1,12 @@
 {
-  "version": "19.0.0",
-  "build": 19,
+  "version": "20.0.0",
+  "build": 20,
   "date": "2026-07-14",
   "name": "Mesaha Suite",
   "short_name": "Mesaha Suite",
-  "description": "Şefliğe gönderimde yükleniyor ekranı ve çift tıklama kilidi; bağlantı kontrolü, zayıf bağlantı zaman aşımı ve 60/saat güvenli gönderim sınırı.",
-  "id": "./?suite=19",
-  "start_url": "./?suite=19",
-  "visibleVersion": "Mesaha Suite V19",
-  "cacheName": "yakupp-suite-shell-v19"
+  "description": "Herkese açık Eski Yedekler arşivi; kullanıcı, şeflik, bölme ve dosya adına göre arama. Sürüm kaynağı ve güncelleme döngüsü V20 ile düzeltildi.",
+  "id": "./?suite=20",
+  "start_url": "./?suite=20",
+  "visibleVersion": "Mesaha Suite V20",
+  "cacheName": "yakupp-suite-shell-v20"
 }
