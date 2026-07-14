@@ -17,7 +17,7 @@
   let loaded = false,
     items = [];
   function api() {
-    return window.MesahaSuiteSyncV8;
+    return window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8;
   }
   function toast(m, b) {
     window.MesahaSuiteUI && window.MesahaSuiteUI.toast
@@ -323,7 +323,7 @@
       toast("Yedek geri yüklenemedi: " + e.message, true);
     }
   }
-  window.MesahaSuiteBackupsV8 = { open, close, load, refreshDrive };
+  window.MesahaSuiteBackupsV9 = window.MesahaSuiteBackupsV8 = { open, close, load, refreshDrive };
   if (document.readyState === "loading")
     document.addEventListener("DOMContentLoaded", inject, { once: true });
   else inject();

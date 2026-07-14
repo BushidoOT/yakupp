@@ -1,6 +1,6 @@
 "use strict";
 
-const APP_VERSION = "0.3.4-suite-v8";
+const APP_VERSION = "0.3.4-suite-v9";
 const MAX_PHOTO_BYTES = 1024 * 1024;
 const DB_NAME = "mesaha-istif-prototype";
 const DB_VERSION = 1;
@@ -408,7 +408,7 @@ async function idbPut(store, value) {
             }),
           );
           window.MesahaSuiteSyncV8 &&
-            window.MesahaSuiteSyncV8.markDirty("istif", {
+            (window.MesahaSuiteSyncV9||window.MesahaSuiteSyncV8).markDirty("istif", {
               id: value && value.id,
             });
         } catch {}
@@ -433,7 +433,7 @@ async function idbDelete(store, key) {
             }),
           );
           window.MesahaSuiteSyncV8 &&
-            window.MesahaSuiteSyncV8.markDirty("istif", { id: key });
+            (window.MesahaSuiteSyncV9||window.MesahaSuiteSyncV8).markDirty("istif", { id: key });
         } catch {}
       }
       resolve();
@@ -686,12 +686,20 @@ function hydrateLocalSharedIdentity() {
     localSeflik &&
     !state.seflikler.some((item) => item.name === localSeflik)
   ) {
-    // Mesaha İO şefliği yalnızca seçenek olarak alınır; kullanıcı açıkça kaydetmeden varsayılan seçilmez.
     state.seflikler.unshift({
       name: localSeflik,
       key: localKey,
       role: "cached",
     });
+  }
+  // Suite merkezli kullanım: aktif şeflik İstif İO'nun doğrudan çalışma bağlamıdır.
+  // Ayrı bir kurulum ekranı istemeden yeni istif ve offline bölme akışı açılır.
+  if (localSeflik) {
+    state.settings.seflik = localSeflik;
+    state.settings.seflikKey = localKey;
+    state.settings.setupComplete = true;
+    if (!clean(state.settings.ormanci) && localName)
+      state.settings.ormanci = localName;
   }
 }
 
@@ -3087,7 +3095,7 @@ window.addEventListener("storage", (event) => {
     hydrateLocalSharedIdentity();
     refreshCurrentMembers();
     render();
-    /* Suite V8: ağ yenilemesi yalnızca Suite veya ortak Senkronize Et tarafından yapılır. */
+    /* Suite V9: ağ yenilemesi yalnızca Suite veya ortak Senkronize Et tarafından yapılır. */
   }
 });
 window.addEventListener("afterprint", () => {
@@ -3127,7 +3135,7 @@ async function pingAdminProfile() {
         appName: "İstif İO",
         platform: navigator.platform || "",
         browser: navigator.userAgent || "",
-        suiteVersion: "V8",
+        suiteVersion: "V9",
       },
     });
   } catch {}
@@ -3143,7 +3151,7 @@ async function pingAdminProfile() {
     refreshCurrentMembers();
     if (!state.settings.setupComplete) state.view = "settings";
     render();
-    /* Suite V8: profil ve sunucu kontrolleri ana menüden yürütülür. */
+    /* Suite V9: profil ve sunucu kontrolleri ana menüden yürütülür. */
   } catch (error) {
     if (bootOverlay) bootOverlay.hidden = true;
     app.innerHTML = `<div class="empty"><h2>Uygulama açılamadı</h2><p>${esc(error.message)}</p></div>`;

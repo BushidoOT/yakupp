@@ -39,14 +39,14 @@
               .map((k) => caches.delete(k)),
           );
           const reg = await navigator.serviceWorker.register(
-            "./service-worker.js?v=8",
+            "./service-worker.js?v=9",
             { scope: "./", updateViaCache: "none" },
           );
           await navigator.serviceWorker.ready;
           const w = reg.active || navigator.serviceWorker.controller;
           if (w) w.postMessage({ type: "CACHE_ALL" });
           document.getElementById("s").textContent =
-            "Suite V8 hızlı önbelleği kuruluyor. Suite açılıyor…";
+            "Suite V9 hızlı önbelleği kuruluyor. Suite açılıyor…";
           setTimeout(() => location.replace("./?offline_repaired=1"), 1200);
         } catch (e) {
           document.getElementById("s").textContent =

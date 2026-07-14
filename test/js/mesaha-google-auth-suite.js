@@ -206,7 +206,7 @@
       return new Error('Google girişi Supabase projesinde henüz etkin değil. Supabase → Authentication → Providers → Google bölümünde Client ID ve Client Secret girilip Google sağlayıcısı açılmalıdır.');
     }
     if(/redirect|not allowed|unauthorized redirect/i.test(raw)){
-      return new Error('Bu test adresi Supabase Redirect URLs listesinde değil: '+redirectUrl());
+      return new Error('Bu site adresi Supabase Redirect URLs listesinde değil: '+redirectUrl());
     }
     var e=new Error(raw||'Google hesap bağlantısı başlatılamadı.');e.status=status||0;e.payload=j||{};return e;
   }

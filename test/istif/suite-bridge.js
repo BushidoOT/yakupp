@@ -28,12 +28,31 @@
     return !!(s.access_token || a.status === "approved" || (t && t.active));
   }
   function css() {
-    if (document.getElementById("suiteIstifCssV8")) return;
+    if (document.getElementById("suiteIstifCssV9")) return;
     const s = document.createElement("style");
-    s.id = "suiteIstifCssV8";
-    s.textContent = `#bootOverlay,.boot-overlay,[data-action="refresh-shared"],[data-action="connect-drive"],[data-action="disconnect-drive"],[data-action="sync"],.drive-card,.drive-security{display:none!important}.suite-istif-note-v8{margin:10px 0;padding:11px 13px;border-radius:13px;background:#edf7f0;color:#28543d;font:700 12px/1.45 system-ui}`;
+    s.id = "suiteIstifCssV9";
+    s.textContent = `#bootOverlay,.boot-overlay,[data-action="refresh-shared"],[data-action="connect-drive"],[data-action="disconnect-drive"],[data-action="sync"],.drive-card,.drive-security{display:none!important}.suite-istif-note-v9{margin:10px 0;padding:11px 13px;border-radius:13px;background:#edf7f0;color:#28543d;font:700 12px/1.45 system-ui}.suite-add-division-v9{margin:7px 0 0;width:100%;min-height:40px;border:1px solid #cfe0d6;border-radius:12px;background:#eef8f1;color:#17633d;font:850 12px system-ui}.suite-istif-toast-v9{position:fixed;left:50%;bottom:100px;transform:translateX(-50%);z-index:2147483600;max-width:calc(100vw - 28px);padding:10px 13px;border-radius:13px;background:#174a32;color:#fff;font:750 12px/1.35 system-ui;box-shadow:0 12px 30px #0003}.suite-istif-toast-v9.bad{background:#8e2d2d}`;
     document.head.appendChild(s);
   }
+  const fold = (v) => clean(v).toLocaleLowerCase("tr-TR").replace(/ç/g,"c").replace(/ğ/g,"g").replace(/ı/g,"i").replace(/ö/g,"o").replace(/ş/g,"s").replace(/ü/g,"u").replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"");
+  function notify(message,bad){let el=document.getElementById("suiteIstifToastV9");if(!el){el=document.createElement("div");el.id="suiteIstifToastV9";document.body.appendChild(el);}el.className="suite-istif-toast-v9"+(bad?" bad":"");el.textContent=message;el.hidden=false;clearTimeout(notify.t);notify.t=setTimeout(()=>{el.hidden=true;},3200);}
+  function currentBolmeSelect(){return document.querySelector('#stackForm select[name="bolme"]');}
+  function selectBolme(no){const sel=currentBolmeSelect();if(!sel)return;let opt=Array.from(sel.options).find((x)=>fold(x.value)===fold(no));if(!opt){opt=document.createElement("option");opt.value=no;opt.textContent=no;sel.insertBefore(opt,sel.querySelector('option[value="__suite_create_division__"]')||null);}sel.value=opt.value;sel.dispatchEvent(new Event("input",{bubbles:true}));sel.dispatchEvent(new Event("change",{bubbles:true}));}
+  async function createDivisionFromIstif(){
+    const api=window.MesahaSuiteSyncV9||window.MesahaSuiteSyncV8;
+    if(!api||typeof api.createOfflineDivision!=="function")return notify("Suite bölme sistemi hazır değil.",true);
+    const no=clean(prompt("Yeni bölme numarasını yazın:"));if(!no)return;
+    const loc=clean(prompt("Mevki / açıklama (isteğe bağlı):")||"");
+    try{const out=api.createOfflineDivision(no,loc,{source:"istif-new"});patchBolmeSelector();selectBolme(out.division.bolme_no||no);notify(out.created?`Bölme ${no} offline oluşturuldu.`:`Bölme ${no} zaten vardı; aynı bölme seçildi.`);}
+    catch(e){notify(clean(e&&e.message||e),true);}
+  }
+  function patchBolmeSelector(){
+    const sel=currentBolmeSelect();if(!sel)return;
+    let add=sel.querySelector('option[value="__suite_create_division__"]');if(!add){add=document.createElement("option");add.value="__suite_create_division__";add.textContent="＋ Yeni bölme oluştur";sel.appendChild(add);}
+    if(!sel.__suiteCreateBoundV9){sel.__suiteCreateBoundV9=true;sel.addEventListener("change",(e)=>{if(sel.value!=="__suite_create_division__")return;e.preventDefault();e.stopImmediatePropagation();const first=Array.from(sel.options).find((x)=>x.value&&x.value!=="__suite_create_division__");sel.value=first?first.value:"";createDivisionFromIstif();},true);}
+    const row=sel.closest(".field-row");if(row&&!row.querySelector(".suite-add-division-v9")){const btn=document.createElement("button");btn.type="button";btn.className="suite-add-division-v9";btn.textContent="＋ Offline Bölme Ekle";btn.addEventListener("click",createDivisionFromIstif);const main=row.querySelector(".field-main")||row;main.appendChild(btn);}
+  }
+
   function syncLocal() {
     const f = read("mesaha_active_seflik_folder_v564", {}),
       p = read("mesaha_panel_user_v316", {}),
@@ -65,7 +84,7 @@
     if (settings && !document.getElementById("suiteIstifNoteV8")) {
       const n = document.createElement("div");
       n.id = "suiteIstifNoteV8";
-      n.className = "suite-istif-note-v8";
+      n.className = "suite-istif-note-v9";
       n.textContent =
         "Şeflik, ormancı, bölme, Drive, yedek ve senkronizasyon işlemleri Suite ana menüsünden yönetilir. İstif İO içinde yalnızca Suite’ten gelen seçenekler kullanılır.";
       settings.insertBefore(n, settings.firstChild);
@@ -73,11 +92,15 @@
   }
   let timer = 0;
   function schedule() {
+    // Bölme alanı render edilir edilmez ekleme seçeneğini koy; arka plan storage
+    // olaylarının debounce süresini sürekli uzatması bu kritik kontrolü engellemesin.
+    patchBolmeSelector();
     clearTimeout(timer);
     timer = setTimeout(() => {
       syncLocal();
       hide();
-      window.MesahaSuiteSyncV8 && window.MesahaSuiteSyncV8.updateButton();
+      patchBolmeSelector();
+      (window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8) && (window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8).updateButton();
     }, 80);
   }
   function block(e) {
@@ -90,8 +113,8 @@
     e.preventDefault();
     e.stopImmediatePropagation();
     if (t.matches('[data-action="sync"]'))
-      window.MesahaSuiteSyncV8 &&
-        window.MesahaSuiteSyncV8.syncAll({ source: "istif" });
+      (window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8) &&
+        (window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8).syncAll({ source: "istif" });
     else location.href = "../";
   }
   if (!valid()) {
@@ -104,8 +127,8 @@
   syncLocal();
   const boot = () => {
     document.body.dataset.suiteSubapp = "istif";
-    window.MesahaSuiteSyncV8 &&
-      window.MesahaSuiteSyncV8.registerHomeButton(() => {
+    (window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8) &&
+      (window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8).registerHomeButton(() => {
         location.href = "../";
       });
     schedule();
@@ -118,15 +141,22 @@
   window.addEventListener("mesaha-suite:shared-data-updated", schedule);
   window.addEventListener("mesaha-suite:sync-complete", schedule);
   const mo = new MutationObserver(schedule);
-  document.addEventListener(
-    "DOMContentLoaded",
-    () =>
+  function observeAppV9() {
+    try {
+      mo.disconnect();
       mo.observe(document.getElementById("app") || document.body, {
         childList: true,
         subtree: true,
-      }),
-    { once: true },
-  );
+      });
+    } catch (_) {}
+  }
+  if (document.readyState === "loading")
+    document.addEventListener("DOMContentLoaded", observeAppV9, { once: true });
+  else observeAppV9();
+  document.addEventListener("click", (e) => {
+    if (e.target && e.target.closest && e.target.closest('[data-view="new"]'))
+      setTimeout(schedule, 0);
+  }, true);
   setTimeout(schedule, 350);
   setTimeout(schedule, 1200);
 })();

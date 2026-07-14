@@ -16,7 +16,34 @@
     <meta content="yes" name="mobile-web-app-capable" />
     <script>
       window.MESAHA_SUITE_MODE = true;
-      window.MESAHA_SUITE_VERSION = 8;
+      window.MESAHA_SUITE_VERSION = 9;
+    </script>
+    <style id="mesaha-suite-overlay-clean-v9">
+      html[data-suite-managed="1"] #googleAuthOverlayV548,
+      html[data-suite-managed="1"] #telegramSupportModalV429,
+      html[data-suite-managed="1"] .google-auth-v548,
+      html[data-suite-managed="1"] .app-loading-overlay,
+      html[data-suite-managed="1"] .startup-loading-overlay {display:none!important;pointer-events:none!important;visibility:hidden!important;}
+    </style>
+    <script id="mesaha-suite-folder-early-nav-v9">
+      (function(){
+        function targetOf(e){
+          try{return e.target&&e.target.closest&&e.target.closest('[data-nav="seflikFolder"],#seflikFolderHomeShortcutV528');}catch(_){return null;}
+        }
+        var lastOpen=0;
+        function runOpen(){
+          if(typeof window.__suiteOpenFolderViewV9==='function') window.__suiteOpenFolderViewV9();
+          else window.__suiteOpenFolderPendingV9=true;
+        }
+        function open(e){
+          var t=targetOf(e); if(!t)return;
+          try{e.preventDefault();e.stopPropagation();if(e.stopImmediatePropagation)e.stopImmediatePropagation();}catch(_){}
+          var stamp=Date.now(); lastOpen=stamp; runOpen();
+          [40,140,360,700].forEach(function(ms){setTimeout(function(){if(lastOpen===stamp)runOpen();},ms);});
+        }
+        ['pointerdown','pointerup','touchstart','touchend','click'].forEach(function(type){window.addEventListener(type,open,true);document.addEventListener(type,open,true);});
+        window.addEventListener('keydown',function(e){if((e.key==='Enter'||e.key===' ')&&targetOf(e))open(e);},true);
+      })();
     </script>
     <meta content="Mesaha İO" name="apple-mobile-web-app-title" />
     <script>
@@ -678,6 +705,7 @@
             aria-label="Şeflik Klasörünü aç"
             class="seflik-folder-home-shortcut"
             id="seflikFolderHomeShortcutV528"
+            data-nav="seflikFolder"
             role="button"
             tabindex="0"
           >
@@ -20643,7 +20671,7 @@
       })();
     </script>
 
-    <script src="../suite-sync-core.js?v=8"></script>
-    <script src="./suite-bridge.js?v=8"></script>
+    <script src="../suite-sync-core.js?v=9"></script>
+    <script src="./suite-bridge.js?v=9"></script>
   </body>
 </html>

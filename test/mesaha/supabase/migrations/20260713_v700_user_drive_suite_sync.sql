@@ -1,4 +1,4 @@
--- Mesaha Suite V8 • kullanıcıya özel Drive, yedek metadata ve ortak İstif senkronu
+-- Mesaha Suite V9 • kullanıcıya özel Drive, yedek metadata ve ortak İstif senkronu
 create extension if not exists pgcrypto;
 
 create table if not exists public.mesaha_user_drive_connections (

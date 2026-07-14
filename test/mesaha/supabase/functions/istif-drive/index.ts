@@ -1119,7 +1119,7 @@ async function backupJson(req: Request, body: JsonObj) {
     web_view_link: uploaded.webViewLink || `https://drive.google.com/file/d/${uploaded.id}/view`,
     record_count: Math.max(0, Number(body.recordCount || body.record_count || 0) || 0),
     total_volume: Number(body.totalVolume || body.total_volume || 0) || 0,
-    version: clean(body.version || "Mesaha Suite V8"), metadata: { folder_id: backupFolder.id, size: uploaded.size || null },
+    version: clean(body.version || "Mesaha Suite V9"), metadata: { folder_id: backupFolder.id, size: uploaded.size || null },
     created_at: new Date().toISOString(), updated_at: new Date().toISOString(),
   };
   const { data, error } = await admin.from("mesaha_user_drive_backups").insert(row).select("*").single();

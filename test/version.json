@@ -1,12 +1,12 @@
 {
-  "version": "8.0.0",
-  "build": 8,
+  "version": "9.0.0",
+  "build": 9,
   "date": "2026-07-14",
   "name": "Mesaha Suite",
   "short_name": "Mesaha Suite",
   "description": "",
-  "id": "./?suite=8",
-  "start_url": "./?suite=8",
-  "visibleVersion": "Mesaha Suite V8",
-  "cacheName": "yakupp-suite-shell-v8"
+  "id": "./?suite=9",
+  "start_url": "./?suite=9",
+  "visibleVersion": "Mesaha Suite V9",
+  "cacheName": "yakupp-suite-shell-v9"
 }

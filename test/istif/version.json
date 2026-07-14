@@ -1,8 +1,8 @@
 {
-  "version": "0.3.4-suite-v8",
+  "version": "0.3.4-suite-v9",
   "name": "Mesaha İO İstif Alma v0.3.4",
-  "updatedAt": "2026-07-13T22:30:00+03:00",
-  "notes": "Kayıt, senkron, Drive bağlantısı ve benzeri onay işlemlerinde ana Mesaha İO assets klasöründeki onay sesi kullanılır.",
+  "updatedAt": "2026-07-14T00:30:00+03:00",
+  "notes": "Suite V9 merkezi şeflik, offline bölme birleştirme, kişisel Drive yedekleri ve kompakt senkron butonlarıyla uyumludur.",
   "visibleVersion": "İstif Alma v0.3.4",
-  "build": 8
+  "build": 9
 }

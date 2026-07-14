@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  const VERSION = "8.0.0";
+  const VERSION = "9.0.0";
   const SUPABASE_URL = "https://swrbpdpotmirnmtqnuba.supabase.co";
   const ANON_KEY = "sb_publishable_G_ZFeUouDxg57Nne5pflfQ_cVGpdMbR";
   const SMOOTH = SUPABASE_URL + "/functions/v1/smooth-function";
@@ -144,7 +144,7 @@
   async function post(url, action, data) {
     const body = {
       action,
-      source: "mesaha-suite-v8",
+      source: "mesaha-suite-v9",
       ...terminalAuth(),
       ...(data || {}),
     };
@@ -256,15 +256,15 @@
     const s = document.createElement("style");
     s.id = "suiteFloatCssV8";
     s.textContent = `
-      #suiteFloatDockV8{position:fixed;left:max(10px,env(safe-area-inset-left));right:max(10px,env(safe-area-inset-right));bottom:var(--suite-float-bottom-v8,max(12px,env(safe-area-inset-bottom)));z-index:2147482500;display:none;align-items:stretch;justify-content:space-between;gap:8px;pointer-events:none;transition:bottom .16s ease,opacity .16s ease,transform .16s ease}
+      #suiteFloatDockV8{position:fixed;left:max(8px,env(safe-area-inset-left));right:max(8px,env(safe-area-inset-right));bottom:var(--suite-float-bottom-v8,max(10px,env(safe-area-inset-bottom)));z-index:2147482500;display:none;align-items:center;justify-content:space-between;gap:6px;pointer-events:none;transition:bottom .14s ease,opacity .14s ease,transform .14s ease}
       #suiteFloatDockV8.is-visible{display:flex;opacity:1;transform:translateY(0)}
-      #suiteFloatDockV8>button{pointer-events:auto;min-height:50px;max-width:230px;flex:1;border:1px solid rgba(255,255,255,.68);border-radius:16px;padding:10px 14px;display:none;align-items:center;justify-content:center;gap:8px;font:800 13px/1.1 system-ui;box-shadow:0 12px 30px rgba(9,45,29,.25);touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+      #suiteFloatDockV8>button{pointer-events:auto;height:42px!important;min-height:42px!important;max-height:42px!important;max-width:168px;flex:0 1 168px;border:1px solid rgba(255,255,255,.72);border-radius:12px;padding:0 10px!important;display:none;align-items:center;justify-content:center;gap:5px;font:850 11px/1 system-ui!important;box-shadow:0 7px 18px rgba(9,45,29,.18);touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
       #suiteFloatDockV8>button.is-visible{display:flex}
       #suiteSyncFabV8{background:#174a32;color:#fff}
-      #suiteHomeButtonV8{margin-left:auto;background:rgba(255,255,255,.97);color:#174a32}
-      #suiteSyncFabV8 .suite-sync-icon{font-size:20px;line-height:1}
-      #suiteSyncFabCountV8{min-width:18px;height:18px;padding:0 5px;display:none;place-items:center;border-radius:99px;background:#fff;color:#174a32;font-size:10px}
-      @media(max-width:430px){#suiteFloatDockV8>button{min-width:0;max-width:none;padding:10px 11px;font-size:12px}#suiteFloatDockV8{gap:6px}}
+      #suiteHomeButtonV8{margin-left:auto;background:rgba(255,255,255,.98);color:#174a32}
+      #suiteSyncFabV8 .suite-sync-icon{font-size:16px;line-height:1}
+      #suiteSyncFabCountV8{min-width:17px;height:17px;padding:0 4px;display:none;place-items:center;border-radius:99px;background:#fff;color:#174a32;font-size:9px}
+      @media(max-width:430px){#suiteFloatDockV8>button{min-width:0;max-width:142px;flex-basis:142px;height:40px!important;min-height:40px!important;max-height:40px!important;padding:0 8px!important;font-size:10.5px!important}#suiteFloatDockV8{gap:5px}}
     `;
     document.head.appendChild(s);
   }
@@ -320,7 +320,7 @@
     let bottom = 12;
     if (nav) {
       const r = nav.getBoundingClientRect();
-      bottom = Math.max(10, Math.round(window.innerHeight - r.top + 8));
+      bottom = Math.max(8, Math.round(window.innerHeight - r.top + 6));
     }
     if (bottom !== lastDockBottom) {
       lastDockBottom = bottom;
@@ -591,6 +591,50 @@
     return store[key][no];
   }
 
+  function duplicateLike(error) {
+    const text = clean(error && (error.message || error.error || error));
+    return /already|exists|duplicate|unique|23505|mevcut|zaten|aynı bölme/i.test(text);
+  }
+  function pendingKey(item) {
+    const p = (item && item.payload) || {};
+    return [item && item.type, fold(p.seflik || p.oldName || ""), fold(p.bolmeNo || p.newName || p.member_user_id || "")].join("::");
+  }
+  function enqueuePending(type, payload) {
+    const list = pendingOps(), item = { id: "suite_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2, 8), type, payload: payload || {}, createdAt: now() };
+    const key = pendingKey(item), index = list.findIndex((x) => pendingKey(x) === key);
+    if (index >= 0) list[index] = { ...list[index], payload: { ...(list[index].payload || {}), ...(payload || {}) }, updatedAt: now() };
+    else list.push(item);
+    write(K.pending, list);
+    markDirty("suite", { type, ...(payload || {}) });
+    return index >= 0 ? list[index] : item;
+  }
+  function createOfflineDivision(bolmeNo, location, options) {
+    const af = activeFolder();
+    if (!af) throw new Error("Önce Suite ana menüsünden şeflik seçin");
+    const no = clean(bolmeNo), loc = clean(location), key = clean(af.seflik_key || af.seflikKey) || fold(af.seflik);
+    if (!no) throw new Error("Bölme numarasını yazın");
+    const store = read(K.divisions, {}), ready = read(K.ready, {}), list = Array.isArray(store[key]) ? store[key] : [];
+    const match = list.findIndex((d) => d && !d.deleted && fold(d.bolme_no || d.bolmeNo) === fold(no));
+    const existing = match >= 0 ? list[match] : null;
+    const serverKnown = !!(existing && !existing.pending && !existing.local_pending);
+    const row = {
+      ...(existing || {}), bolme_no: clean(existing && (existing.bolme_no || existing.bolmeNo)) || no,
+      bolmeNo: clean(existing && (existing.bolme_no || existing.bolmeNo)) || no,
+      seflik: af.seflik, seflik_key: key, location: loc || clean(existing && existing.location), status: "open", deleted: false,
+      offline_ready: true, pending: serverKnown ? !!existing.pending : true, local_pending: serverKnown ? !!existing.local_pending : true,
+      updated_at: now(), created_at: (existing && (existing.created_at || existing.createdAt)) || now(),
+      created_by_name: clean(existing && (existing.created_by_name || existing.createdByName)) || identity().name,
+    };
+    if (match >= 0) list[match] = row; else list.unshift(row);
+    store[key] = list; ready[`${key}::${row.bolme_no}`] = { ready: true, at: now(), recordCount: num(row.record_count) };
+    write(K.divisions, store); write(K.ready, ready);
+    const st = read(K.settings, {}), pn = read(K.panel, {}); st.bolmeNo = row.bolme_no; pn.bolmeNo = row.bolme_no; write(K.settings, st); write(K.panel, pn);
+    if (!serverKnown) enqueuePending("create_division", { seflik: af.seflik, seflik_key: key, bolmeNo: row.bolme_no, location: row.location || "" });
+    syncFolderCache(af, list);
+    try { window.dispatchEvent(new CustomEvent("mesaha-suite:shared-data-updated", { detail: { seflik: af.seflik, bolmeNo: row.bolme_no, created: match < 0, merged: match >= 0 } })); } catch {}
+    return { ok: true, created: match < 0, merged: match >= 0, serverKnown, division: row };
+  }
+
   async function syncManagement() {
     const list = pendingOps();
     if (!list.length) {
@@ -626,12 +670,17 @@
             seflik: p.seflik,
             member_user_id: p.member_user_id,
           });
-        else if (item.type === "create_division")
-          await edge("seflik_folder_create_division", {
-            seflik: p.seflik,
-            bolmeNo: p.bolmeNo,
-            location: p.location || "",
-          });
+        else if (item.type === "create_division") {
+          try {
+            await edge("seflik_folder_create_division", {
+              seflik: p.seflik,
+              bolmeNo: p.bolmeNo,
+              location: p.location || "",
+            });
+          } catch (e) {
+            if (!duplicateLike(e)) throw e;
+          }
+        }
         else if (item.type === "delete_division")
           await edge("seflik_folder_delete_division", {
             seflik: p.seflik,
@@ -667,13 +716,17 @@
     }
     let done = 0;
     for (const [bolme, rows] of Object.entries(groups)) {
-      await edge("seflik_folder_create_division", {
-        seflik,
-        bolmeNo: bolme,
-        location: "",
-      });
+      try {
+        await edge("seflik_folder_create_division", {
+          seflik,
+          bolmeNo: bolme,
+          location: "",
+        });
+      } catch (e) {
+        if (!duplicateLike(e)) throw e;
+      }
       const token =
-        "suitev8_" +
+        "suitev9_" +
         fold(seflik) +
         "_" +
         fold(bolme) +
@@ -687,7 +740,7 @@
           bolmeNo: bolme,
           syncToken: token,
           records: rows.slice(i, i + 150),
-          appVersion: "Mesaha Suite V8",
+          appVersion: "Mesaha Suite V9",
         });
       let backup = null,
         driveError = "";
@@ -700,7 +753,7 @@
             recordCount: rows.length,
             totalVolume: rows.reduce((s, r) => s + volume(r), 0),
             payload: {
-              schema: "mesaha-suite-v8",
+              schema: "mesaha-suite-v9",
               app: "mesaha",
               seflik,
               bolme,
@@ -721,7 +774,7 @@
         driveFileName: (backup && backup.fileName) || "",
         driveStatus: backup ? "saved" : id.google ? "error" : "not_connected",
         driveError,
-        appVersion: "Mesaha Suite V8",
+        appVersion: "Mesaha Suite V9",
       });
       done += rows.length;
     }
@@ -816,11 +869,15 @@
         bolme = clean(r.bolme || r.bolmeNo);
       if (!seflik || !bolme)
         throw new Error("İstif kaydında şeflik veya bölme eksik");
-      await edge("seflik_folder_create_division", {
-        seflik,
-        bolmeNo: bolme,
-        location: r.mevki || "",
-      });
+      try {
+        await edge("seflik_folder_create_division", {
+          seflik,
+          bolmeNo: bolme,
+          location: r.mevki || "",
+        });
+      } catch (e) {
+        if (!duplicateLike(e)) throw e;
+      }
       r.driveFiles = Array.isArray(r.driveFiles) ? r.driveFiles : [];
       const photos = Array.isArray(r.photos) ? r.photos : [];
       for (let i = r.driveFiles.length; i < photos.length; i++) {
@@ -887,7 +944,7 @@
             recordCount: payloadRows.length,
             totalVolume: payloadRows.reduce((s, r) => s + num(r.ster), 0),
             payload: {
-              schema: "mesaha-suite-v8",
+              schema: "mesaha-suite-v9",
               app: "istif",
               seflik,
               createdAt: now(),
@@ -895,7 +952,7 @@
             },
           });
         } catch (e) {
-          console.warn("[suite-v8] İstif Drive yedeği oluşturulamadı", e);
+          console.warn("[suite-v9] İstif Drive yedeği oluşturulamadı", e);
         }
     clearDirty("istif");
     return { done };
@@ -988,6 +1045,40 @@
     write(K.drive, { connected: false });
     return x;
   }
+  async function createMesahaBackup(options) {
+    options = options || {};
+    const id = identity(), af = activeFolder();
+    if (!id.google) throw new Error("Drive yedeği için Google ile giriş yapın");
+    const seflik = clean((af && af.seflik) || id.seflik), selected = clean(options.bolmeNo || "");
+    if (!seflik) throw new Error("Önce şeflik seçin");
+    const all = read(K.records, []), rows = (Array.isArray(all) ? all : []).filter((r) => !selected || clean(r.bolmeNo || r.bolme_no || id.bolme) === selected);
+    if (!rows.length) throw new Error(selected ? `Bölme ${selected} için yedeklenecek Mesaha kaydı yok` : "Yedeklenecek Mesaha kaydı yok");
+    return drive("backup_json", {
+      seflik, appId: "mesaha",
+      fileName: `Mesaha_${fold(seflik)}_${selected ? fold(selected) + "_" : ""}${new Date().toISOString().replace(/[:.]/g, "-")}.json`,
+      recordCount: rows.length, totalVolume: rows.reduce((sum, r) => sum + volume(r), 0),
+      payload: { schema: "mesaha-suite-v9", app: "mesaha", seflik, bolme: selected, createdAt: now(), settings: read(K.settings, {}), records: rows },
+    });
+  }
+  async function restoreMesahaBackup(id, mode) {
+    const out = await readBackup(id), p = out.payload || out.data || out || {};
+    const incoming = Array.isArray(p.mesahaRecords) ? p.mesahaRecords : Array.isArray(p.records) ? p.records : [];
+    if (!incoming.length) throw new Error("Bu yedekte Mesaha kaydı bulunamadı");
+    const current = read(K.records, []), result = mode === "replace" ? incoming : (() => {
+      const map = new Map((Array.isArray(current) ? current : []).map((r) => [String(r.id || r.barcode || Math.random()), r]));
+      incoming.forEach((r) => map.set(String(r.id || r.barcode || Math.random()), r));
+      return [...map.values()];
+    })();
+    window.__suiteRemoteHydrating = true;
+    try {
+      write(K.records, result);
+      if (p.settings && typeof p.settings === "object") write(K.settings, { ...read(K.settings, {}), ...p.settings });
+      if (window.state) { window.state.records = result; if (p.settings) window.state.settings = { ...(window.state.settings || {}), ...p.settings }; }
+    } finally { setTimeout(() => { window.__suiteRemoteHydrating = false; }, 300); }
+    markDirty("mesaha", { restore: true, backupId: id, mode: mode || "merge" });
+    return { ok: true, count: result.length, imported: incoming.length };
+  }
+
   async function createSuiteBackup() {
     const id = identity();
     if (!id.google) throw new Error("Drive yedeği için Google ile giriş yapın");
@@ -997,7 +1088,7 @@
         photos: undefined,
       }));
     const payload = {
-      schema: "mesaha-suite-backup-v8",
+      schema: "mesaha-suite-backup-v9",
       createdAt: now(),
       user: { id: id.userId, name: id.name, email: id.email },
       seflik: id.seflik,
@@ -1100,6 +1191,10 @@
     driveFinish,
     driveDisconnect,
     createSuiteBackup,
+    createMesahaBackup,
+    restoreMesahaBackup,
+    createOfflineDivision,
+    enqueuePending,
     listBackups,
     readBackup,
     deleteBackup,
@@ -1113,6 +1208,7 @@
     refreshFolderData,
     loadDivisionRecords,
   };
+  window.MesahaSuiteSyncV9 = api;
   window.MesahaSuiteSyncV8 = api;
   window.MesahaSuiteSyncV7 = api;
   function boot() {

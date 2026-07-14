@@ -171,7 +171,7 @@
     try {
       const out = await supabaseRpc("mesaha_create_terminal_code_v557", {
         p_label: "terminal",
-        p_app_version: "Mesaha Suite V8",
+        p_app_version: "Mesaha Suite V9",
       });
       const t = out.terminal || out || {},
         code = clean(t.code),
@@ -396,7 +396,7 @@
     write(K.pendingOps, pendingOps);
     try {
       window.MesahaSuiteSyncV8 &&
-        window.MesahaSuiteSyncV8.markDirty("suite", { type: type });
+        (window.MesahaSuiteSyncV9||window.MesahaSuiteSyncV8).markDirty("suite", { type: type });
     } catch {}
     updatePendingBadge();
   }
@@ -520,7 +520,7 @@
     if (!api || typeof api.edge !== "function")
       throw new Error("Sunucu bağlantısı hazır değil.");
     return api.edge(action, {
-      source: "mesaha-suite-v8",
+      source: "mesaha-suite-v9",
       ...terminalAuth(),
       ...data,
     });
@@ -677,7 +677,7 @@
       try {
         window.dispatchEvent(
           new CustomEvent("mesaha-suite:shared-data-updated", {
-            detail: { seflik: "", divisions: [] },
+            detail: { seflik: "", divisions: [], source: "suite-root" },
           }),
         );
       } catch {}
@@ -727,7 +727,7 @@
     try {
       window.dispatchEvent(
         new CustomEvent("mesaha-suite:shared-data-updated", {
-          detail: { seflik: af.seflik, divisions: dvs },
+          detail: { seflik: af.seflik, divisions: dvs, source: "suite-root" },
         }),
       );
     } catch {}
@@ -866,6 +866,9 @@
       tools = $("googleTerminalTools");
     if (!box || !wrap) return;
     const type = authType();
+    const loginModal = $("loginModal"), loginTitle = loginModal && loginModal.querySelector(".modal-head h3"), loginKicker = loginModal && loginModal.querySelector(".modal-kicker");
+    if (loginTitle) loginTitle.textContent = type === "google" ? "Oturum Bilgileri" : type === "terminal" ? "Terminal Oturumu" : type === "guest" ? "Misafir Oturumu" : "Giriş Seçimi";
+    if (loginKicker) loginKicker.textContent = type === "google" ? "GOOGLE HESABI" : type === "terminal" ? "KODLA EŞLEŞMİŞ CİHAZ" : type === "guest" ? "YEREL TERMİNAL" : "ORTAK OTURUM";
     if (googleBtn) googleBtn.hidden = type === "google";
     if (guestBtn)
       guestBtn.hidden =
@@ -885,7 +888,7 @@
         : type === "terminal"
           ? "Kodla eşleşmiş terminal"
           : "Yerel misafir";
-    box.innerHTML = `<div class="auth-session-box profile-line">${avatarHTML(id.avatar, id.name)}<span><b>${esc(id.name || label)}</b><small>${esc(label)}${id.email ? " • " + esc(id.email) : ""}${activeFolder() ? " • " + esc(activeFolder().seflik) : ""}</small></span></div>`;
+    box.innerHTML = `<div class="auth-session-box profile-line"><div class="auth-session-avatar">${avatarHTML(id.avatar, id.name)}</div><div class="auth-session-copy"><span class="auth-session-kicker">AKTİF OTURUM</span><b>${esc(id.name || label)}</b><small>${esc(label)}</small>${id.email ? `<em>${esc(id.email)}</em>` : ""}${activeFolder() ? `<strong>${esc(activeFolder().seflik)}</strong>` : `<strong>Şeflik seçilmedi</strong>`}</div></div>`;
     wrap.innerHTML =
       '<button class="danger-button" id="logoutBtn">Oturumu Kapat</button>';
     $("logoutBtn").onclick = logout;
@@ -1497,7 +1500,7 @@
         name: id.name || id.email || "Kullanıcı",
         seflik: af?.seflik || id.seflik || "",
         bolmeNo: id.bolme || "",
-        appVersion: "Mesaha Suite V8",
+        appVersion: "Mesaha Suite V9",
         avatarUrl: id.avatar || "",
         deviceId:
           localStorage.getItem("mesaha_suite_device_v7") ||
@@ -1514,7 +1517,7 @@
           appName: "Mesaha Suite",
           platform: navigator.platform || "",
           browser: navigator.userAgent || "",
-          suiteVersion: "V8",
+          suiteVersion: "V9",
         },
       });
     } catch {}
@@ -1576,7 +1579,7 @@
           await navigator.storage.persist();
       } catch {}
       const reg = await navigator.serviceWorker.register(
-        "./service-worker.js?v=8",
+        "./service-worker.js?v=9",
         { scope: "./", updateViaCache: "none" },
       );
       await navigator.serviceWorker.ready;
@@ -1693,8 +1696,8 @@
       return true;
     }
     if (tool === "sync" || tool === "server") {
-      if (window.MesahaSuiteSyncV8)
-        window.MesahaSuiteSyncV8.syncAll({ source: tool })
+      if (window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8)
+        (window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8).syncAll({ source: tool })
           .then(() => loadFolders(true))
           .catch(() => {});
       else sendPendingToServer();
@@ -1705,7 +1708,7 @@
       return true;
     }
     if (tool === "backups") {
-      window.MesahaSuiteBackupsV8 && window.MesahaSuiteBackupsV8.open();
+      (window.MesahaSuiteBackupsV9 || window.MesahaSuiteBackupsV8) && (window.MesahaSuiteBackupsV9 || window.MesahaSuiteBackupsV8).open();
       return true;
     }
     if (tool === "admin") {
@@ -1714,7 +1717,7 @@
     }
     if (tool === "about") {
       showInfo(
-        "Mesaha Suite V8",
+        "Mesaha Suite V9",
         `<p>Google veya terminal/misafir oturumu iki uygulamada ortak kullanılır.</p><p><b>Bekleyen işlem:</b> ${pendingOps.length}</p><p>Bölmeler offline indirildikten sonra Mesaha İO ve İstif İO’da kayıt eklemeye hazır olur.</p>`,
       );
       return true;
@@ -1850,7 +1853,8 @@
       loadLocal();
       render();
     });
-    window.addEventListener("mesaha-suite:shared-data-updated", () => {
+    window.addEventListener("mesaha-suite:shared-data-updated", (event) => {
+      if (event && event.detail && event.detail.source === "suite-root") return;
       loadLocal();
       render();
     });
