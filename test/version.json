@@ -1,12 +1,12 @@
 {
-  "version": "14.0.0",
-  "build": 14,
+  "version": "15.0.0",
+  "build": 15,
   "date": "2026-07-14",
   "name": "Mesaha Suite",
   "short_name": "Mesaha Suite",
-  "description": "İstif bölme seçiminin kayıt sonrasında korunması, form doğrulama düzeltmesi ve stabilite iyileştirmeleri.",
-  "id": "./?suite=14",
-  "start_url": "./?suite=14",
-  "visibleVersion": "Mesaha Suite V14",
-  "cacheName": "yakupp-suite-shell-v14"
+  "description": "ORBİS XLS aktarımında SST kayıt sınırı uyumluluğu ve güvenli BIFF8 dışa aktarma düzeltmesi.",
+  "id": "./?suite=15",
+  "start_url": "./?suite=15",
+  "visibleVersion": "Mesaha Suite V15",
+  "cacheName": "yakupp-suite-shell-v15"
 }

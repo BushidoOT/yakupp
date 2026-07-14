@@ -206,7 +206,7 @@
     try {
       const out = await supabaseRpc("mesaha_create_terminal_code_v557", {
         p_label: "terminal",
-        p_app_version: "Mesaha Suite V14",
+        p_app_version: "Mesaha Suite V15",
       });
       const t = out.terminal || out || {},
         code = clean(t.code),
@@ -729,7 +729,7 @@
     if (!api || typeof api.edge !== "function")
       throw new Error("Sunucu bağlantısı hazır değil.");
     return api.edge(action, {
-      source: "mesaha-suite-v14",
+      source: "mesaha-suite-v15",
       ...terminalAuth(),
       ...data,
     });
@@ -1720,7 +1720,7 @@
         name: id.name || id.email || "Kullanıcı",
         seflik: af?.seflik || id.seflik || "",
         bolmeNo: id.bolme || "",
-        appVersion: "Mesaha Suite V14",
+        appVersion: "Mesaha Suite V15",
         avatarUrl: id.avatar || "",
         deviceId:
           localStorage.getItem("mesaha_suite_device_v7") ||
@@ -1955,7 +1955,7 @@
     }
     if (tool === "about") {
       showInfo(
-        "Mesaha Suite V14",
+        "Mesaha Suite V15",
         `<p>Google veya terminal/misafir oturumu iki uygulamada ortak kullanılır.</p><p><b>Bekleyen işlem:</b> ${pendingOps.length}</p><p>Bölmeler offline indirildikten sonra Mesaha İO ve İstif İO’da kayıt eklemeye hazır olur.</p>`,
       );
       return true;

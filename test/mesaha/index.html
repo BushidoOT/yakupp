@@ -1850,9 +1850,9 @@
           }
 
           // ORBİS/Excel BIFF8 güvenliği:
-          // SST kaydı 8224 byte üstüne çıkarsa bazı terminal Chrome + ORBİS aktarımında dosya bozuk görülüyor.
-          // Stringleri bölmeden, kayıt sınırlarında CONTINUE (0x003C) kayıtlarına ayırıyoruz.
-          const MAX_BIFF_PAYLOAD = 8224;
+          // Bazı ORBİS kurulumları BIFF8'in teorik 8224 bayt sınırına tam ulaşan SST kaydını reddediyor.
+          // Güvenli pay bırakıp stringleri bölmeden CONTINUE (0x003C) kayıtlarına ayırıyoruz.
+          const MAX_BIFF_PAYLOAD = 8000;
           const chunks = [];
           let current = [];
 
