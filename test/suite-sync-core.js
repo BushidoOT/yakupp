@@ -144,7 +144,7 @@
   async function post(url, action, data) {
     const body = {
       action,
-      source: "mesaha-suite-v10",
+      source: "mesaha-suite-v11",
       ...terminalAuth(),
       ...(data || {}),
     };
@@ -258,13 +258,13 @@
     s.textContent = `
       #suiteFloatDockV8{position:fixed;left:max(8px,env(safe-area-inset-left));right:max(8px,env(safe-area-inset-right));bottom:var(--suite-float-bottom-v8,max(10px,env(safe-area-inset-bottom)));z-index:2147482500;display:none;align-items:center;justify-content:space-between;gap:6px;pointer-events:none;transition:bottom .14s ease,opacity .14s ease,transform .14s ease}
       #suiteFloatDockV8.is-visible{display:flex;opacity:1;transform:translateY(0)}
-      #suiteFloatDockV8>button{pointer-events:auto;height:42px!important;min-height:42px!important;max-height:42px!important;max-width:168px;flex:0 1 168px;border:1px solid rgba(255,255,255,.72);border-radius:12px;padding:0 10px!important;display:none;align-items:center;justify-content:center;gap:5px;font:850 11px/1 system-ui!important;box-shadow:0 7px 18px rgba(9,45,29,.18);touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+      #suiteFloatDockV8>button{pointer-events:auto;height:36px!important;min-height:36px!important;max-height:36px!important;flex:none;border:1px solid rgba(255,255,255,.72);border-radius:10px;padding:0 8px!important;display:none;align-items:center;justify-content:center;gap:4px;font:850 9.5px/1 system-ui!important;box-shadow:0 6px 15px rgba(9,45,29,.16);touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
       #suiteFloatDockV8>button.is-visible{display:flex}
-      #suiteSyncFabV8{background:#174a32;color:#fff}
-      #suiteHomeButtonV8{margin-left:auto;background:rgba(255,255,255,.98);color:#174a32}
-      #suiteSyncFabV8 .suite-sync-icon{font-size:16px;line-height:1}
+      #suiteSyncFabV8{width:126px;background:#174a32;color:#fff}
+      #suiteHomeButtonV8{width:86px;margin-left:auto;background:rgba(255,255,255,.98);color:#174a32}
+      #suiteSyncFabV8 .suite-sync-icon{font-size:13px;line-height:1}
       #suiteSyncFabCountV8{min-width:17px;height:17px;padding:0 4px;display:none;place-items:center;border-radius:99px;background:#fff;color:#174a32;font-size:9px}
-      @media(max-width:430px){#suiteFloatDockV8>button{min-width:0;max-width:142px;flex-basis:142px;height:40px!important;min-height:40px!important;max-height:40px!important;padding:0 8px!important;font-size:10.5px!important}#suiteFloatDockV8{gap:5px}}
+      @media(max-width:430px){#suiteFloatDockV8>button{height:34px!important;min-height:34px!important;max-height:34px!important;padding:0 7px!important;font-size:9px!important}#suiteSyncFabV8{width:118px}#suiteHomeButtonV8{width:80px}#suiteFloatDockV8{gap:5px}}
     `;
     document.head.appendChild(s);
   }
@@ -740,7 +740,7 @@
           bolmeNo: bolme,
           syncToken: token,
           records: rows.slice(i, i + 150),
-          appVersion: "Mesaha Suite V10",
+          appVersion: "Mesaha Suite V11",
         });
       let backup = null,
         driveError = "";
@@ -753,7 +753,7 @@
             recordCount: rows.length,
             totalVolume: rows.reduce((s, r) => s + volume(r), 0),
             payload: {
-              schema: "mesaha-suite-v10",
+              schema: "mesaha-suite-v11",
               app: "mesaha",
               seflik,
               bolme,
@@ -774,7 +774,7 @@
         driveFileName: (backup && backup.fileName) || "",
         driveStatus: backup ? "saved" : id.google ? "error" : "not_connected",
         driveError,
-        appVersion: "Mesaha Suite V10",
+        appVersion: "Mesaha Suite V11",
       });
       done += rows.length;
     }
@@ -944,7 +944,7 @@
             recordCount: payloadRows.length,
             totalVolume: payloadRows.reduce((s, r) => s + num(r.ster), 0),
             payload: {
-              schema: "mesaha-suite-v10",
+              schema: "mesaha-suite-v11",
               app: "istif",
               seflik,
               createdAt: now(),
@@ -952,7 +952,7 @@
             },
           });
         } catch (e) {
-          console.warn("[suite-v10] İstif Drive yedeği oluşturulamadı", e);
+          console.warn("[suite-v11] İstif Drive yedeği oluşturulamadı", e);
         }
     clearDirty("istif");
     return { done };
@@ -1057,7 +1057,7 @@
       seflik, appId: "mesaha",
       fileName: `Mesaha_${fold(seflik)}_${selected ? fold(selected) + "_" : ""}${new Date().toISOString().replace(/[:.]/g, "-")}.json`,
       recordCount: rows.length, totalVolume: rows.reduce((sum, r) => sum + volume(r), 0),
-      payload: { schema: "mesaha-suite-v10", app: "mesaha", seflik, bolme: selected, createdAt: now(), settings: read(K.settings, {}), records: rows },
+      payload: { schema: "mesaha-suite-v11", app: "mesaha", seflik, bolme: selected, createdAt: now(), settings: read(K.settings, {}), records: rows },
     });
   }
   async function restoreMesahaBackup(id, mode) {

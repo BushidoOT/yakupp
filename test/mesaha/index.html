@@ -16,7 +16,7 @@
     <meta content="yes" name="mobile-web-app-capable" />
     <script>
       window.MESAHA_SUITE_MODE = true;
-      window.MESAHA_SUITE_VERSION = 10;
+      window.MESAHA_SUITE_VERSION = 11;
     </script>
     <style id="mesaha-suite-overlay-clean-v10">
       html[data-suite-managed="1"] #googleAuthOverlayV548,
@@ -25,25 +25,15 @@
       html[data-suite-managed="1"] .app-loading-overlay,
       html[data-suite-managed="1"] .startup-loading-overlay {display:none!important;pointer-events:none!important;visibility:hidden!important;}
     </style>
-    <script id="mesaha-suite-folder-early-nav-v10">
+    <script id="mesaha-suite-folder-early-nav-v11">
       (function(){
-        function targetOf(e){
-          try{return e.target&&e.target.closest&&e.target.closest('[data-nav="seflikFolder"],#seflikFolderHomeShortcutV528');}catch(_){return null;}
-        }
-        var lastOpen=0;
-        function runOpen(){
-          if(typeof window.__suiteOpenFolderViewV10==='function') window.__suiteOpenFolderViewV10();
-          else if(typeof window.__suiteOpenFolderViewV9==='function') window.__suiteOpenFolderViewV9();
-          else window.__suiteOpenFolderPendingV9=true;
-        }
-        function open(e){
-          var t=targetOf(e); if(!t)return;
+        function targetOf(e){try{return e.target&&e.target.closest&&e.target.closest('[data-nav="seflikFolder"],#seflikFolderHomeShortcutV528');}catch(_){return null;}}
+        document.addEventListener('click',function(e){
+          if(!targetOf(e))return;
           try{e.preventDefault();e.stopPropagation();if(e.stopImmediatePropagation)e.stopImmediatePropagation();}catch(_){}
-          var stamp=Date.now(); lastOpen=stamp; runOpen();
-          [40,140,360,700].forEach(function(ms){setTimeout(function(){if(lastOpen===stamp)runOpen();},ms);});
-        }
-        ['pointerdown','pointerup','touchstart','touchend','click'].forEach(function(type){window.addEventListener(type,open,true);document.addEventListener(type,open,true);});
-        window.addEventListener('keydown',function(e){if((e.key==='Enter'||e.key===' ')&&targetOf(e))open(e);},true);
+          if(typeof window.__suiteOpenFolderViewV10==='function')window.__suiteOpenFolderViewV10();
+          else window.__suiteOpenFolderPendingV10=true;
+        },true);
       })();
     </script>
     <meta content="Mesaha İO" name="apple-mobile-web-app-title" />
@@ -628,7 +618,35 @@
         z-index: 99998;
       }
     </style>
-  </head>
+  
+    <style id="mesaha-suite-basic-panel-v11">
+      html[data-suite-managed="1"] #userPanelOverlayV316 .panel-title-v316 h2{font-size:0!important}
+      html[data-suite-managed="1"] #userPanelOverlayV316 .panel-title-v316 h2::after{content:"Temel Bilgiler";font-size:22px}
+      html[data-suite-managed="1"] #userPanelOverlayV316 #panelSyncTextV316{font-size:0!important}
+      html[data-suite-managed="1"] #userPanelOverlayV316 #panelSyncTextV316::after{content:"Suite tarafından yönetilir";font-size:12px}
+      html[data-suite-managed="1"] #userPanelOverlayV316 .panel-field-v316:has(#panelDeviceV316),
+      html[data-suite-managed="1"] #userPanelOverlayV316 #panelStatsV316,
+      html[data-suite-managed="1"] #userPanelOverlayV316 #panelSaveV316,
+      html[data-suite-managed="1"] #userPanelOverlayV316 #panelSyncV316,
+      html[data-suite-managed="1"] #userPanelOverlayV316 #panelTelegramSectionV515,
+      html[data-suite-managed="1"] #userPanelOverlayV316 #terminalCodePanelV557,
+      html[data-suite-managed="1"] #userPanelOverlayV316 #terminalLocalPanelV556,
+      html[data-suite-managed="1"] #userPanelOverlayV316 #terminalPairPanelV561,
+      html[data-suite-managed="1"] #userPanelOverlayV316 #mesahaProfileV564,
+      html[data-suite-managed="1"] #userPanelOverlayV316 #mesahaProfileV565,
+      html[data-suite-managed="1"] #userPanelOverlayV316 #panelSessionV563,
+      html[data-suite-managed="1"] #userPanelOverlayV316 .google-auth-status-v548,
+      html[data-suite-managed="1"] #userPanelOverlayV316 .google-auth-email-v548,
+      html[data-suite-managed="1"] #userPanelOverlayV316 [id*="connection" i],
+      html[data-suite-managed="1"] #userPanelOverlayV316 [class*="connection" i]{display:none!important}
+      html[data-suite-managed="1"] #userPanelOverlayV316 .panel-actions-v316{grid-template-columns:1fr!important}
+      html[data-suite-managed="1"] #userPanelOverlayV316 #panelClose2V316{display:flex!important;width:100%!important}
+      html[data-suite-managed="1"] #userPanelOverlayV316 #panelNameV316,
+      html[data-suite-managed="1"] #userPanelOverlayV316 #panelSeflikV316,
+      html[data-suite-managed="1"] #userPanelOverlayV316 #panelBolmeV316{pointer-events:none!important;background:#f3f7f4!important;color:#274b38!important}
+      html[data-suite-managed="1"] .maintenance-card{display:none!important}
+    </style>
+</head>
   <body>
     <div
       class="startup hide"
@@ -787,36 +805,6 @@
             <button class="btn soft" id="soundBtn" type="button">
               Ses: Açık
             </button>
-          </section>
-          <section class="card maintenance-card">
-            <h2>Bakım / Güncelleme</h2>
-            <div class="action-grid">
-              <button class="btn soft" id="forceUpdateBtn" type="button">
-                Yeni Sürümü Güncelle
-              </button>
-              <button class="btn warning" id="clearCacheBtn" type="button">
-                Ön Bellek Temizle
-              </button>
-              <button class="btn soft" id="downloadErrorLogBtn" type="button">
-                Hata Günlüğü İndir
-              </button>
-              <button class="btn warning" id="clearErrorLogBtn" type="button">
-                Hata Günlüğünü Sil
-              </button>
-              <button class="btn soft" id="storageHealthBtn" type="button">
-                Depolama Durumunu Kontrol Et
-              </button>
-              <button
-                class="btn soft"
-                id="downloadStorageHealthBtn"
-                type="button"
-              >
-                Depolama Raporu İndir
-              </button>
-            </div>
-            <div class="update-status-box" id="updateStatusBox">
-              Sürüm kontrol ediliyor…
-            </div>
           </section>
           <section class="card detail-summary-card">
             <div class="section-head">
@@ -1048,13 +1036,7 @@
                 </div>
                 <div class="seflik-folder-hero-actions-v574">
                   <span class="seflik-folder-badge">☁ Ortak klasör</span
-                  ><button
-                    class="btn seflik-folder-sync-primary-v574"
-                    id="seflikFolderSyncV528"
-                    type="button"
                   >
-                    ↻ Kayıtları Senkronize Et
-                  </button>
                 </div>
               </div>
               <div class="seflik-folder-metrics">
@@ -20679,7 +20661,7 @@
       })();
     </script>
 
-    <script src="../suite-sync-core.js?v=10"></script>
-    <script src="./suite-bridge.js?v=10"></script>
+    <script src="../suite-sync-core.js?v=11"></script>
+    <script src="./suite-bridge.js?v=11"></script>
   </body>
 </html>

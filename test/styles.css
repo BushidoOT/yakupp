@@ -1594,7 +1594,7 @@ label[hidden],
   }
 }
 
-/* Mesaha Suite V10 */
+/* Mesaha Suite V11 */
 .google-drive-logo {
   width: 34px !important;
   height: 30px !important;
@@ -1754,7 +1754,7 @@ label[hidden],
 @media(max-width:620px){#loginModal{padding:20px 18px}.drive-account-actions-v8>*{flex:1 1 calc(50% - 8px)}.backup-row-actions-v8>*{flex:1}.google-terminal-tools{padding:12px}.terminal-tools-actions{grid-template-columns:1fr 1fr}.terminal-tools-actions button{min-height:42px;font-size:12px}}
 
 
-/* Mesaha Suite V10 • merkezi açılış ve offline hazırlık */
+/* Mesaha Suite V11 • merkezi açılış ve offline hazırlık */
 body.suite-starting{overflow:hidden!important;touch-action:none}
 .suite-startup-overlay{position:fixed;inset:0;z-index:2147483646;display:grid;place-items:center;padding:20px;background:linear-gradient(145deg,#0e2e22 0%,#174a32 58%,#0c241b 100%);color:#fff;transition:opacity .28s ease,visibility .28s ease}
 .suite-startup-overlay.closed{opacity:0;visibility:hidden;pointer-events:none}
@@ -1766,3 +1766,12 @@ body.suite-starting{overflow:hidden!important;touch-action:none}
 .suite-startup-card small{margin-top:10px;color:#cce0d5;font-weight:700}.suite-startup-card button{margin-top:14px;min-height:42px;padding:0 18px;border:1px solid rgba(255,255,255,.35);border-radius:13px;background:#fff;color:#174a32;font-weight:850}
 @keyframes suiteSpinV10{to{transform:rotate(360deg)}}
 @media(max-width:520px){.suite-startup-card{padding:24px 18px;border-radius:23px}.suite-startup-logo{width:72px;height:72px}.suite-startup-card h2{font-size:21px}}
+
+
+/* Suite V11: Telegram ve kompakt ortak işlemler */
+.telegram-tool-button svg{fill:#229ED9!important;stroke:none!important}
+.suite-telegram-content{display:grid;justify-items:center;gap:13px;text-align:center;padding:4px 4px 8px}
+.suite-telegram-icon{width:68px;height:68px;border-radius:22px;display:grid;place-items:center;background:linear-gradient(145deg,#33afe6,#168ac5);color:#fff;font-size:34px;box-shadow:0 14px 30px rgba(34,158,217,.25)}
+.suite-telegram-content p{margin:0;color:#42564b;line-height:1.55;font-weight:650}
+.suite-telegram-content small{color:#718077;font-weight:650}
+.suite-telegram-link{width:100%;min-height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:#229ED9;color:#fff;text-decoration:none;font-weight:900;box-shadow:0 10px 22px rgba(34,158,217,.2)}

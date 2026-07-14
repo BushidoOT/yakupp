@@ -1,12 +1,12 @@
 {
-  "version": "10.0.0",
-  "build": 10,
+  "version": "11.0.0",
+  "build": 11,
   "date": "2026-07-14",
   "name": "Mesaha Suite",
   "short_name": "Mesaha Suite",
-  "description": "Suite merkezli kalıcı offline hazırlık, ortak bölme oluşturma ve ayrılmış cihaz/Drive yedek akışları.",
-  "id": "./?suite=10",
-  "start_url": "./?suite=10",
-  "visibleVersion": "Mesaha Suite V10",
-  "cacheName": "yakupp-suite-shell-v10"
+  "description": "Suite merkezli Telegram desteği, kararlı Şeflik Klasörü seçimi, sade Mesaha paneli ve kompakt ortak işlem düğmeleri.",
+  "id": "./?suite=11",
+  "start_url": "./?suite=11",
+  "visibleVersion": "Mesaha Suite V11",
+  "cacheName": "yakupp-suite-shell-v11"
 }

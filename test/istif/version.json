@@ -1,8 +1,8 @@
 {
-  "version": "0.3.4-suite-v10",
+  "version": "0.3.4-suite-v11",
   "name": "Mesaha İO İstif Alma v0.3.4",
   "updatedAt": "2026-07-14T00:30:00+03:00",
-  "notes": "Suite V10 merkezi şeflik, offline bölme birleştirme, kişisel Drive yedekleri ve kompakt senkron butonlarıyla uyumludur.",
+  "notes": "Suite V11 merkezi yönetim, kararlı bölme seçimi, Telegram desteği ve kompakt ortak işlem düğmeleriyle uyumludur.",
   "visibleVersion": "İstif Alma v0.3.4",
-  "build": 10
+  "build": 11
 }

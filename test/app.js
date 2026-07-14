@@ -77,6 +77,21 @@
     cacheReady = false,
     startupClosed = false;
 
+  const TELEGRAM_URL = "https://t.me/+LpsvthN4BM5kYWI0";
+  const TELEGRAM_DAY_KEY = "mesaha_suite_telegram_daily_v11";
+  function localDayKey() {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+  }
+  function maybeShowDailyTelegram() {
+    try {
+      if (localStorage.getItem(TELEGRAM_DAY_KEY) === localDayKey()) return;
+      if (document.body.classList.contains("modal-open")) return setTimeout(maybeShowDailyTelegram, 1200);
+      localStorage.setItem(TELEGRAM_DAY_KEY, localDayKey());
+      openModal("suiteTelegramModal");
+    } catch (_) {}
+  }
+
   function startupEls(){return {overlay:$("suiteStartupOverlay"),title:$("suiteStartupTitle"),text:$("suiteStartupText"),bar:$("suiteStartupProgress"),counter:$("suiteStartupCounter"),retry:$("suiteStartupRetry")};}
   function showStartup(title,text,pct,retry){
     const e=startupEls(); startupClosed=false; document.body.classList.add("suite-starting");
@@ -84,7 +99,12 @@
     if(e.bar)e.bar.style.width=Math.max(3,Math.min(100,Number(pct)||3))+"%"; if(e.counter)e.counter.textContent=(Number(pct)||0)+"%"; if(e.retry)e.retry.hidden=!retry;
   }
   function closeStartup(delay){
-    if(startupClosed)return; startupClosed=true; setTimeout(()=>{const e=startupEls();if(e.overlay)e.overlay.classList.add("closed");document.body.classList.remove("suite-starting");},Math.max(0,Number(delay)||0));
+    if(startupClosed)return; startupClosed=true; setTimeout(()=>{
+      const e=startupEls();
+      if(e.overlay)e.overlay.classList.add("closed");
+      document.body.classList.remove("suite-starting");
+      setTimeout(maybeShowDailyTelegram, 420);
+    },Math.max(0,Number(delay)||0));
   }
 
   function session() {
@@ -182,7 +202,7 @@
     try {
       const out = await supabaseRpc("mesaha_create_terminal_code_v557", {
         p_label: "terminal",
-        p_app_version: "Mesaha Suite V10",
+        p_app_version: "Mesaha Suite V11",
       });
       const t = out.terminal || out || {},
         code = clean(t.code),
@@ -531,7 +551,7 @@
     if (!api || typeof api.edge !== "function")
       throw new Error("Sunucu bağlantısı hazır değil.");
     return api.edge(action, {
-      source: "mesaha-suite-v10",
+      source: "mesaha-suite-v11",
       ...terminalAuth(),
       ...data,
     });
@@ -1511,7 +1531,7 @@
         name: id.name || id.email || "Kullanıcı",
         seflik: af?.seflik || id.seflik || "",
         bolmeNo: id.bolme || "",
-        appVersion: "Mesaha Suite V10",
+        appVersion: "Mesaha Suite V11",
         avatarUrl: id.avatar || "",
         deviceId:
           localStorage.getItem("mesaha_suite_device_v7") ||
@@ -1528,7 +1548,7 @@
           appName: "Mesaha Suite",
           platform: navigator.platform || "",
           browser: navigator.userAgent || "",
-          suiteVersion: "V10",
+          suiteVersion: "V11",
         },
       });
     } catch {}
@@ -1596,7 +1616,7 @@
     try {
       await cleanupNestedWorkers();
       try { if (navigator.storage && navigator.storage.persist) await navigator.storage.persist(); } catch {}
-      const reg = await navigator.serviceWorker.register("./service-worker.js?v=10", { scope: "./", updateViaCache: "none" });
+      const reg = await navigator.serviceWorker.register("./service-worker.js?v=11", { scope: "./", updateViaCache: "none" });
       await navigator.serviceWorker.ready;
       const worker = await waitForActiveWorker(reg, navigator.onLine===false?7000:18000);
       setCacheStatus("Mesaha İO ve İstif İO dosyaları doğrulanıyor…", 18);
@@ -1734,13 +1754,17 @@
       (window.MesahaSuiteBackupsV10 || window.MesahaSuiteBackupsV9 || window.MesahaSuiteBackupsV8) && (window.MesahaSuiteBackupsV10 || window.MesahaSuiteBackupsV9 || window.MesahaSuiteBackupsV8).open();
       return true;
     }
+    if (tool === "telegram") {
+      window.open(TELEGRAM_URL, "_blank", "noopener");
+      return true;
+    }
     if (tool === "admin") {
       location.href = "./mesaha/yonetim/";
       return true;
     }
     if (tool === "about") {
       showInfo(
-        "Mesaha Suite V10",
+        "Mesaha Suite V11",
         `<p>Google veya terminal/misafir oturumu iki uygulamada ortak kullanılır.</p><p><b>Bekleyen işlem:</b> ${pendingOps.length}</p><p>Bölmeler offline indirildikten sonra Mesaha İO ve İstif İO’da kayıt eklemeye hazır olur.</p>`,
       );
       return true;

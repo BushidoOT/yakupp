@@ -210,8 +210,11 @@
     "[data-add-user-v564]",
     "[data-remove-member-v566]",
     "#panelSyncV316",
-    "#panelSeflikV316",
-    "#panelBolmeV316",
+    "#panelDeviceV316",
+    "#panelStatsV316",
+    "#panelSaveV316",
+    "#panelTelegramSectionV515",
+    "#terminalCodePanelV557",
     "#seflikFolderSyncV528",
     "#seflikSendFromRecordsV529",
     "#seflikSendOverlayV529",
@@ -342,26 +345,40 @@
     const f = activeFolder(), sel = $("seflikFolderBolmeV528"), identity = $("seflikFolderIdentityV528"), preview = $("seflikFolderLocalPreviewV528"), status = $("seflikFolderStatusV528");
     if (identity) identity.textContent = f ? f.seflik : "Şeflik seçilmedi";
     if (!sel) return;
-    const rows = folderSelectRows(), current = clean(sel.value && sel.value !== CREATE_DIVISION_VALUE ? sel.value : (read(K.settings, {}).bolmeNo || read(K.panel, {}).bolmeNo));
-    sel.innerHTML = '<option value="">Bölme seçin</option>' + rows.map((no) => `<option value="${esc(no)}" ${no === current ? "selected" : ""}>${esc(no)}</option>`).join("") + `<option value="${CREATE_DIVISION_VALUE}">＋ Yeni bölme oluştur</option>`;
+    const rows = folderSelectRows();
+    const stored = clean(read(K.settings, {}).bolmeNo || read(K.panel, {}).bolmeNo);
+    const current = clean(sel.value && sel.value !== CREATE_DIVISION_VALUE ? sel.value : stored);
+    const signature = JSON.stringify(rows);
+    const isInteracting = document.activeElement === sel || sel.matches(":focus");
+    if (sel.dataset.suiteRowsV11 !== signature && !isInteracting) {
+      const target = rows.includes(current) ? current : (rows[0] || "");
+      sel.innerHTML = '<option value="">Bölme seçin</option>' + rows.map((no) => `<option value="${esc(no)}">${esc(no)}</option>`).join("") + `<option value="${CREATE_DIVISION_VALUE}">＋ Yeni bölme oluştur</option>`;
+      sel.dataset.suiteRowsV11 = signature;
+      sel.value = target;
+    }
     sel.disabled = false;
-    if (!sel.__suiteV10Bound) {
-      sel.__suiteV10Bound = true;
+    if (!sel.__suiteV11Bound) {
+      sel.__suiteV11Bound = true;
       sel.addEventListener("change", () => {
+        const rowsNow = folderSelectRows();
         if (sel.value === CREATE_DIVISION_VALUE) {
-          const fallback = rows.includes(current) ? current : (rows[0] || "");
+          const fallback = rowsNow.includes(stored) ? stored : (rowsNow[0] || "");
           sel.value = fallback;
           createDivisionFromMesahaFolder(sel);
           return;
         }
-        const no = clean(sel.value); if (no) setBolme(no);
-        const count = no ? cachedRows(activeFolder(), no).length : 0;
-        if (preview) preview.textContent = no ? `Bölme ${no} seçildi • cihazda ${count} ortak kayıt` : "Önce açık bir bölme seçin";
-        if (status) status.textContent = no ? `Bölme ${no} için Mesaha kayıtları gönderilmeye hazır.` : "Önce bir bölme seçin.";
+        const no = clean(sel.value);
+        if (no) setBolme(no);
+        updateFolderSelectionText(no, preview, status);
       });
     }
     if (!sel.value || sel.value === CREATE_DIVISION_VALUE) sel.value = rows.includes(current) ? current : (rows[0] || "");
-    sel.dispatchEvent(new Event("change", { bubbles: false }));
+    updateFolderSelectionText(clean(sel.value), preview, status);
+  }
+  function updateFolderSelectionText(no, preview, status) {
+    const count = no ? cachedRows(activeFolder(), no).length : 0;
+    if (preview) preview.textContent = no ? `Bölme ${no} seçildi • cihazda ${count} ortak kayıt` : "Önce açık bir bölme seçin";
+    if (status) status.textContent = no ? `Bölme ${no} için Mesaha kayıtları gönderilmeye hazır.` : "Önce bir bölme seçin.";
   }
   function hideOrmanciSections() {
     ["seflikMemberListV566","seflikUserSearchV564","seflikSearchResultsV564"].forEach((id) => { const el=$(id); if(el) el.style.display="none"; });
@@ -633,8 +650,16 @@
       host.insertBefore(n, host.firstChild);
     }
   }
+  function simplifyUserPanelV11() {
+    const title=$("userPanelTitleV316"), sub=$("panelSyncTextV316");
+    if(title) title.textContent="Temel Bilgiler";
+    if(sub) sub.textContent="Suite tarafından yönetilir";
+    ["panelNameV316","panelSeflikV316","panelBolmeV316"].forEach((id)=>{const el=$(id);if(el){el.readOnly=true;el.setAttribute("aria-readonly","true");}});
+    ["panelDeviceV316","panelStatsV316","panelSaveV316","panelSyncV316","panelTelegramSectionV515","terminalCodePanelV557","terminalLocalPanelV556","terminalPairPanelV561","mesahaProfileV564","mesahaProfileV565","panelSessionV563"].forEach((id)=>{const el=$(id);if(el)el.style.display="none";});
+  }
   function renderAllBridge() {
     hideManagement();
+    simplifyUserPanelV11();
     renderSelectors();
     renderFolderSendSelector();
     hideOrmanciSections();
@@ -748,12 +773,6 @@
     )
       refreshFolder(false);
   });
-  const mo = new MutationObserver(schedule);
-  document.addEventListener(
-    "DOMContentLoaded",
-    () => mo.observe(document.body, { childList: true, subtree: true }),
-    { once: true },
-  );
   setTimeout(schedule, 350);
   setTimeout(schedule, 1200);
 })();
