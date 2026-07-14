@@ -14,13 +14,13 @@
     <link rel="manifest" href="./manifest.json" />
     <link rel="icon" href="./assets/icon-192.png" />
     <link rel="apple-touch-icon" href="./assets/icon-192.png" />
-    <link rel="stylesheet" href="./styles.css?v=15" />
+    <link rel="stylesheet" href="./styles.css?v=16" />
     <script>
       window.MESAHA_SUITE_AUTH_MODE = true;
       window.MESAHA_VERSION = {
-        version: "suite-v15",
-        visibleVersion: "Mesaha Suite V15",
-        build: 15,
+        version: "suite-v16",
+        visibleVersion: "Mesaha Suite V16",
+        build: 16,
       };
     </script>
   </head>
@@ -38,6 +38,11 @@
     </div>
     <div class="app-shell">
       <header class="hero">
+        <div class="suite-version-corner" id="suiteVersionCorner" aria-live="polite">
+          <span class="suite-version-caption">Sürüm</span>
+          <strong id="suiteVersionLabel">V16</strong>
+          <button type="button" id="suiteUpdateButton" hidden>Uygulamayı Güncelle</button>
+        </div>
         <div class="forest-layer forest-back"></div>
         <div class="forest-layer forest-front"></div>
         <div class="hero-actions">
@@ -234,7 +239,7 @@
               <path
                 d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20ZM12 10v6M12 7h.01"
               /></svg
-            ><strong>Hakkında</strong><small>Mesaha Suite V15</small>
+            ><strong>Hakkında</strong><small>Mesaha Suite V16</small>
           </button>
         </section>
         <footer class="status-footer">
@@ -251,14 +256,6 @@
             ><span class="sync-check"
               ><svg viewBox="0 0 24 24"><path d="m6 12 4 4 8-8" /></svg
             ></span>
-          </div>
-          <div class="version-info">
-            <span><small>Versiyon</small><strong>V12</strong></span
-            ><button id="footerUpdate">
-              <svg viewBox="0 0 24 24">
-                <path d="M12 3v12M7 10l5 5 5-5M5 21h14" />
-              </svg>
-            </button>
           </div>
         </footer>
       </main>
@@ -435,6 +432,30 @@
         <button class="primary-button" id="yieldSaveButton" type="button">Kaydet ve Hesapla</button>
       </div>
     </section>
+    <section class="modal modal-compact suite-update-modal" id="suiteUpdateModal" hidden>
+      <div class="modal-head">
+        <div>
+          <span class="modal-kicker">YENİ SÜRÜM HAZIR</span>
+          <h3>Uygulamayı Güncelle</h3>
+        </div>
+        <button class="modal-close" type="button" aria-label="Kapat">×</button>
+      </div>
+      <div class="suite-update-content">
+        <div class="suite-update-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M5 21h14" /></svg>
+        </div>
+        <div class="suite-update-copy">
+          <strong id="suiteUpdateVersionText">Yeni Mesaha Suite sürümü hazır.</strong>
+          <p id="suiteUpdateDescription">Güncelleme uygulama dosyalarını yeniler; cihazdaki kayıtlarınız ve oturum bilgileriniz korunur.</p>
+        </div>
+        <div class="suite-update-progress" id="suiteUpdateProgress" hidden><span id="suiteUpdateProgressBar"></span></div>
+        <small id="suiteUpdateStatus">Güncelleme sırasında internet bağlantısını kapatmayın.</small>
+      </div>
+      <div class="form-actions">
+        <button class="secondary-button modal-cancel" id="suiteUpdateLater" type="button">Daha Sonra</button>
+        <button class="primary-button" id="suiteApplyUpdate" type="button">Şimdi Güncelle</button>
+      </div>
+    </section>
     <section class="modal modal-compact suite-telegram-modal" id="suiteTelegramModal" hidden>
       <div class="modal-head">
         <div>
@@ -469,9 +490,9 @@
     <div class="toast" id="toast"></div>
     <script src="./js/mesaha-supabase-config.js"></script>
     <script src="./js/mesaha-firebase.js"></script>
-    <script src="./js/mesaha-google-auth-suite.js?v=14"></script>
-    <script src="./suite-sync-core.js?v=14"></script>
-    <script src="./app.js?v=14"></script>
-    <script src="./suite-ui.js?v=14"></script>
+    <script src="./js/mesaha-google-auth-suite.js?v=16"></script>
+    <script src="./suite-sync-core.js?v=16"></script>
+    <script src="./app.js?v=16"></script>
+    <script src="./suite-ui.js?v=16"></script>
   </body>
 </html>

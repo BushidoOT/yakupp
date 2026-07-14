@@ -1,4 +1,4 @@
-const CACHE = "yakupp-suite-shell-v15";
+const CACHE = "yakupp-suite-shell-v16";
 const PREFIX = "yakupp-suite-shell-";
 const CORE = [
   "./app.js",
@@ -172,8 +172,8 @@ async function cacheAll() {
     missingCount: missing.length,
     criticalMissing,
     at: new Date().toISOString(),
-    build: 15,
-    integrity: "suite-v15",
+    build: 16,
+    integrity: "suite-v16",
     criticalCount: CRITICAL.length,
     totalCount: CORE.length,
   };
@@ -201,8 +201,8 @@ async function status() {
     missingCount: missing.length,
     criticalMissing,
     cache: CACHE,
-    build: 15,
-    integrity: "suite-v15",
+    build: 16,
+    integrity: "suite-v16",
     criticalCount: CRITICAL.length,
     totalCount: CORE.length,
   };
@@ -275,11 +275,25 @@ async function stale(req, fallback) {
     Response.error()
   );
 }
+async function networkFirst(req) {
+  const cache = await caches.open(CACHE);
+  try {
+    const fresh = await fetch(new Request(req, { cache: "no-store" }));
+    if (fresh && fresh.ok) await cache.put(req, fresh.clone());
+    return fresh;
+  } catch (_) {
+    return (await cache.match(req, { ignoreSearch: true })) || Response.error();
+  }
+}
 self.addEventListener("fetch", (e) => {
   if (e.request.method !== "GET") return;
   const u = new URL(e.request.url);
   if (u.origin !== self.location.origin) {
     if (EXTERNAL.includes(u.href)) e.respondWith(stale(e.request));
+    return;
+  }
+  if (/\/version\.json$/.test(u.pathname)) {
+    e.respondWith(networkFirst(e.request));
     return;
   }
   if (e.request.mode === "navigate")

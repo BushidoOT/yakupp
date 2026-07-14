@@ -83,6 +83,112 @@
 
   const TELEGRAM_URL = "https://telegram.me/+LpsvthN4BM5kYWI0";
   const TELEGRAM_DAY_KEY = "mesaha_suite_telegram_daily_v12";
+  const CURRENT_SUITE_BUILD = Number(window.MESAHA_VERSION?.build || 16);
+  const CURRENT_SUITE_LABEL = clean(window.MESAHA_VERSION?.visibleVersion || "Mesaha Suite V16");
+  let latestSuiteVersion = null, updateApplying = false;
+
+  function updateVersionCorner(remote) {
+    const label = $("suiteVersionLabel");
+    if (label) label.textContent = "V" + CURRENT_SUITE_BUILD;
+    const button = $("suiteUpdateButton");
+    const newer = !!(remote && Number(remote.build) > CURRENT_SUITE_BUILD);
+    if (button) {
+      button.hidden = !newer;
+      button.setAttribute("aria-hidden", newer ? "false" : "true");
+    }
+    document.body.classList.toggle("suite-update-available", newer);
+  }
+  function paintUpdateModal(remote) {
+    if (!remote) return;
+    const version = clean(remote.visibleVersion || remote.version || ("Mesaha Suite V" + remote.build));
+    const description = clean(remote.description || "Yeni uygulama sürümü ve iyileştirmeler hazır.");
+    if ($("suiteUpdateVersionText")) $("suiteUpdateVersionText").textContent = version + " kullanıma hazır";
+    if ($("suiteUpdateDescription")) $("suiteUpdateDescription").textContent = description + " Cihazdaki kayıtlarınız korunacaktır.";
+    if ($("suiteUpdateStatus")) $("suiteUpdateStatus").textContent = "Güncelleme sırasında internet bağlantısını kapatmayın.";
+  }
+  function showUpdatePromptWhenFree(remote) {
+    if (!remote || Number(remote.build) <= CURRENT_SUITE_BUILD) return;
+    const key = "mesaha_suite_update_prompted_" + Number(remote.build);
+    try { if (sessionStorage.getItem(key)) return; } catch (_) {}
+    if (!startupClosed || document.body.classList.contains("modal-open")) {
+      setTimeout(() => showUpdatePromptWhenFree(remote), 900);
+      return;
+    }
+    try { sessionStorage.setItem(key, "1"); } catch (_) {}
+    paintUpdateModal(remote);
+    openModal("suiteUpdateModal");
+  }
+  async function checkSuiteUpdate(prompt = false) {
+    updateVersionCorner(latestSuiteVersion);
+    if (navigator.onLine === false) return false;
+    try {
+      const response = await fetch("./version.json?update_check=" + Date.now(), { cache: "no-store", headers: { "Cache-Control": "no-cache" } });
+      if (!response.ok) throw new Error("Sürüm bilgisi alınamadı");
+      const remote = await response.json();
+      const build = Number(remote && remote.build || 0);
+      latestSuiteVersion = build > CURRENT_SUITE_BUILD ? remote : null;
+      updateVersionCorner(latestSuiteVersion);
+      if (latestSuiteVersion && prompt) showUpdatePromptWhenFree(latestSuiteVersion);
+      return !!latestSuiteVersion;
+    } catch (_) {
+      return false;
+    }
+  }
+  function setUpdateProgress(percent, text) {
+    const wrap = $("suiteUpdateProgress"), bar = $("suiteUpdateProgressBar"), status = $("suiteUpdateStatus");
+    if (wrap) wrap.hidden = false;
+    if (bar) bar.style.width = Math.max(5, Math.min(100, Number(percent) || 5)) + "%";
+    if (status && text) status.textContent = text;
+  }
+  async function applySuiteUpdate() {
+    if (updateApplying) return;
+    if (navigator.onLine === false) return toast("Güncelleme için internet bağlantısı gerekli.", true);
+    if (!latestSuiteVersion) {
+      const found = await checkSuiteUpdate(false);
+      if (!found) return toast("Yeni güncelleme bulunamadı.");
+    }
+    updateApplying = true;
+    paintUpdateModal(latestSuiteVersion);
+    openModal("suiteUpdateModal");
+    const modal = $("suiteUpdateModal"), apply = $("suiteApplyUpdate");
+    if (modal) modal.classList.add("is-updating");
+    if (apply) { apply.disabled = true; apply.textContent = "Güncelleniyor…"; }
+    try {
+      setUpdateProgress(12, "Yeni sürüm denetleniyor…");
+      let reg = await navigator.serviceWorker?.getRegistration("./");
+      if (!reg && "serviceWorker" in navigator) reg = await navigator.serviceWorker.register("./service-worker.js?v=16", { scope: "./", updateViaCache: "none" });
+      if (reg) {
+        setUpdateProgress(28, "Yeni uygulama dosyaları alınıyor…");
+        await reg.update();
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        let worker = reg.waiting || reg.installing || reg.active || navigator.serviceWorker.controller;
+        if (worker && worker.state !== "activated") worker = await waitForActiveWorker(reg, 20000);
+        if (reg.waiting) {
+          try { reg.waiting.postMessage({ type: "SKIP_WAITING" }); } catch (_) {}
+          await new Promise((resolve) => {
+            let finished = false;
+            const done = () => { if (finished) return; finished = true; resolve(); };
+            const timer = setTimeout(done, 8000);
+            navigator.serviceWorker.addEventListener("controllerchange", () => { clearTimeout(timer); done(); }, { once: true });
+          });
+        }
+        worker = navigator.serviceWorker.controller || reg.active || reg.waiting || worker;
+        setUpdateProgress(58, "Offline uygulama dosyaları yenileniyor…");
+        if (worker) {
+          try { await workerMessage(worker, "CACHE_ALL", 120000); } catch (_) {}
+        }
+      }
+      setUpdateProgress(100, "Güncelleme tamamlandı. Uygulama yeniden açılıyor…");
+      try { localStorage.setItem("mesaha_suite_last_update_build", String(latestSuiteVersion?.build || "")); } catch (_) {}
+      setTimeout(() => location.replace("./?updated=" + encodeURIComponent(latestSuiteVersion?.build || Date.now()) + "&t=" + Date.now()), 700);
+    } catch (error) {
+      updateApplying = false;
+      if (modal) modal.classList.remove("is-updating");
+      if (apply) { apply.disabled = false; apply.textContent = "Tekrar Dene"; }
+      setUpdateProgress(18, clean(error && error.message || error) || "Güncelleme tamamlanamadı.");
+      toast("Güncelleme tamamlanamadı. Bağlantıyı kontrol edip tekrar deneyin.", true);
+    }
+  }
   function localDayKey() {
     const d = new Date();
     return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
@@ -107,7 +213,10 @@
       const e=startupEls();
       if(e.overlay)e.overlay.classList.add("closed");
       document.body.classList.remove("suite-starting");
-      setTimeout(maybeShowDailyTelegram, 420);
+      setTimeout(async () => {
+        const updateFound = await checkSuiteUpdate(true);
+        setTimeout(maybeShowDailyTelegram, updateFound ? 900 : 180);
+      }, 420);
     },Math.max(0,Number(delay)||0));
   }
 
@@ -206,7 +315,7 @@
     try {
       const out = await supabaseRpc("mesaha_create_terminal_code_v557", {
         p_label: "terminal",
-        p_app_version: "Mesaha Suite V15",
+        p_app_version: "Mesaha Suite V16",
       });
       const t = out.terminal || out || {},
         code = clean(t.code),
@@ -729,7 +838,7 @@
     if (!api || typeof api.edge !== "function")
       throw new Error("Sunucu bağlantısı hazır değil.");
     return api.edge(action, {
-      source: "mesaha-suite-v15",
+      source: "mesaha-suite-v16",
       ...terminalAuth(),
       ...data,
     });
@@ -1720,7 +1829,7 @@
         name: id.name || id.email || "Kullanıcı",
         seflik: af?.seflik || id.seflik || "",
         bolmeNo: id.bolme || "",
-        appVersion: "Mesaha Suite V15",
+        appVersion: "Mesaha Suite V16",
         avatarUrl: id.avatar || "",
         deviceId:
           localStorage.getItem("mesaha_suite_device_v7") ||
@@ -1737,7 +1846,7 @@
           appName: "Mesaha Suite",
           platform: navigator.platform || "",
           browser: navigator.userAgent || "",
-          suiteVersion: "V12",
+          suiteVersion: "V16",
         },
       });
     } catch {}
@@ -1805,7 +1914,7 @@
     try {
       await cleanupNestedWorkers();
       try { if (navigator.storage && navigator.storage.persist) await navigator.storage.persist(); } catch {}
-      const reg = await navigator.serviceWorker.register("./service-worker.js?v=14", { scope: "./", updateViaCache: "none" });
+      const reg = await navigator.serviceWorker.register("./service-worker.js?v=16", { scope: "./", updateViaCache: "none" });
       await navigator.serviceWorker.ready;
       const worker = await waitForActiveWorker(reg, navigator.onLine===false?7000:18000);
       setCacheStatus("Mesaha İO ve İstif İO dosyaları doğrulanıyor…", 18);
@@ -1893,7 +2002,8 @@
       tool ||
       action ||
       id === "profileAction" ||
-      id === "footerUpdate" ||
+      id === "suiteUpdateButton" ||
+      id === "suiteApplyUpdate" ||
       id === "notificationButton" ||
       id === "googleLoginBtn" ||
       id === "guestLoginBtn" ||
@@ -1937,8 +2047,17 @@
       else sendPendingToServer();
       return true;
     }
-    if (tool === "updates" || id === "footerUpdate") {
+    if (tool === "updates") {
       prepareOffline();
+      return true;
+    }
+    if (id === "suiteUpdateButton") {
+      if (latestSuiteVersion) { paintUpdateModal(latestSuiteVersion); openModal("suiteUpdateModal"); }
+      else checkSuiteUpdate(true);
+      return true;
+    }
+    if (id === "suiteApplyUpdate") {
+      applySuiteUpdate();
       return true;
     }
     if (tool === "backups") {
@@ -1955,7 +2074,7 @@
     }
     if (tool === "about") {
       showInfo(
-        "Mesaha Suite V15",
+        "Mesaha Suite V16",
         `<p>Google veya terminal/misafir oturumu iki uygulamada ortak kullanılır.</p><p><b>Bekleyen işlem:</b> ${pendingOps.length}</p><p>Bölmeler offline indirildikten sonra Mesaha İO ve İstif İO’da kayıt eklemeye hazır olur.</p>`,
       );
       return true;
@@ -2079,6 +2198,8 @@
     $("seflikForm").onsubmit = createSeflik;
     $("ormanciForm").onsubmit = searchOrmanci;
     $("bolmeForm").onsubmit = createBolme;
+    window.addEventListener("online", () => setTimeout(() => checkSuiteUpdate(true), 600));
+    updateVersionCorner(null);
     window.MesahaSuiteUI = {
       openLogin: () => openModal("loginModal"),
       openSeflik: openSeflikModal,
