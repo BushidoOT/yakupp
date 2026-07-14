@@ -310,6 +310,11 @@
             "mesaha_suite_division_ready_v4",
             JSON.stringify(p.suite.divisionReady),
           );
+        if (p.suite.yieldTargets)
+          localStorage.setItem(
+            "mesaha_suite_yield_targets_v12",
+            JSON.stringify(p.suite.yieldTargets),
+          );
       }
       await putIstif(p.istifRecords || []);
       api().markDirty("mesaha", { restore: true });
@@ -323,7 +328,7 @@
       toast("Yedek geri yüklenemedi: " + e.message, true);
     }
   }
-  window.MesahaSuiteBackupsV10 = window.MesahaSuiteBackupsV9 = window.MesahaSuiteBackupsV8 = { open, close, load, refreshDrive };
+  window.MesahaSuiteBackupsV12 = window.MesahaSuiteBackupsV11 = window.MesahaSuiteBackupsV10 = window.MesahaSuiteBackupsV9 = window.MesahaSuiteBackupsV8 = { open, close, load, refreshDrive };
   if (document.readyState === "loading")
     document.addEventListener("DOMContentLoaded", inject, { once: true });
   else inject();

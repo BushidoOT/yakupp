@@ -1,6 +1,6 @@
 "use strict";
 
-const APP_VERSION = "0.3.4-suite-v11";
+const APP_VERSION = "0.3.4-suite-v12";
 const MAX_PHOTO_BYTES = 1024 * 1024;
 const DB_NAME = "mesaha-istif-prototype";
 const DB_VERSION = 1;
@@ -3127,7 +3127,7 @@ async function pingAdminProfile() {
         appName: "İstif İO",
         platform: navigator.platform || "",
         browser: navigator.userAgent || "",
-        suiteVersion: "V11",
+        suiteVersion: "V12",
       },
     });
   } catch {}

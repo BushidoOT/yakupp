@@ -25,6 +25,7 @@
     last: "mesaha_suite_last_full_sync_v8",
     drive: "mesaha_suite_drive_status_v8",
     records: "cam_mesaha_kayitlari_v1",
+    yieldTargets: "mesaha_suite_yield_targets_v12",
     folderCache: "mesaha_seflik_folder_cache_v529",
   };
 
@@ -144,7 +145,7 @@
   async function post(url, action, data) {
     const body = {
       action,
-      source: "mesaha-suite-v11",
+      source: "mesaha-suite-v12",
       ...terminalAuth(),
       ...(data || {}),
     };
@@ -740,7 +741,7 @@
           bolmeNo: bolme,
           syncToken: token,
           records: rows.slice(i, i + 150),
-          appVersion: "Mesaha Suite V11",
+          appVersion: "Mesaha Suite V12",
         });
       let backup = null,
         driveError = "";
@@ -753,7 +754,7 @@
             recordCount: rows.length,
             totalVolume: rows.reduce((s, r) => s + volume(r), 0),
             payload: {
-              schema: "mesaha-suite-v11",
+              schema: "mesaha-suite-v12",
               app: "mesaha",
               seflik,
               bolme,
@@ -774,7 +775,7 @@
         driveFileName: (backup && backup.fileName) || "",
         driveStatus: backup ? "saved" : id.google ? "error" : "not_connected",
         driveError,
-        appVersion: "Mesaha Suite V11",
+        appVersion: "Mesaha Suite V12",
       });
       done += rows.length;
     }
@@ -944,7 +945,7 @@
             recordCount: payloadRows.length,
             totalVolume: payloadRows.reduce((s, r) => s + num(r.ster), 0),
             payload: {
-              schema: "mesaha-suite-v11",
+              schema: "mesaha-suite-v12",
               app: "istif",
               seflik,
               createdAt: now(),
@@ -952,7 +953,7 @@
             },
           });
         } catch (e) {
-          console.warn("[suite-v11] İstif Drive yedeği oluşturulamadı", e);
+          console.warn("[suite-v12] İstif Drive yedeği oluşturulamadı", e);
         }
     clearDirty("istif");
     return { done };
@@ -1057,7 +1058,7 @@
       seflik, appId: "mesaha",
       fileName: `Mesaha_${fold(seflik)}_${selected ? fold(selected) + "_" : ""}${new Date().toISOString().replace(/[:.]/g, "-")}.json`,
       recordCount: rows.length, totalVolume: rows.reduce((sum, r) => sum + volume(r), 0),
-      payload: { schema: "mesaha-suite-v11", app: "mesaha", seflik, bolme: selected, createdAt: now(), settings: read(K.settings, {}), records: rows },
+      payload: { schema: "mesaha-suite-v12", app: "mesaha", seflik, bolme: selected, createdAt: now(), settings: read(K.settings, {}), records: rows },
     });
   }
   async function restoreMesahaBackup(id, mode) {
@@ -1099,6 +1100,7 @@
         divisions: read(K.divisions, {}),
         divisionReady: read(K.ready, {}),
         divisionRecords: read(K.divisionRecords, {}),
+        yieldTargets: read(K.yieldTargets, {}),
       },
     };
     const total = payload.mesahaRecords.reduce((s, r) => s + volume(r), 0);
@@ -1208,6 +1210,8 @@
     refreshFolderData,
     loadDivisionRecords,
   };
+  window.MesahaSuiteSyncV12 = api;
+  window.MesahaSuiteSyncV11 = api;
   window.MesahaSuiteSyncV10 = api;
   window.MesahaSuiteSyncV9 = api;
   window.MesahaSuiteSyncV8 = api;

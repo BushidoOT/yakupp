@@ -1594,7 +1594,7 @@ label[hidden],
   }
 }
 
-/* Mesaha Suite V11 */
+/* Mesaha Suite V12 */
 .google-drive-logo {
   width: 34px !important;
   height: 30px !important;
@@ -1754,7 +1754,7 @@ label[hidden],
 @media(max-width:620px){#loginModal{padding:20px 18px}.drive-account-actions-v8>*{flex:1 1 calc(50% - 8px)}.backup-row-actions-v8>*{flex:1}.google-terminal-tools{padding:12px}.terminal-tools-actions{grid-template-columns:1fr 1fr}.terminal-tools-actions button{min-height:42px;font-size:12px}}
 
 
-/* Mesaha Suite V11 • merkezi açılış ve offline hazırlık */
+/* Mesaha Suite V12 • merkezi açılış ve offline hazırlık */
 body.suite-starting{overflow:hidden!important;touch-action:none}
 .suite-startup-overlay{position:fixed;inset:0;z-index:2147483646;display:grid;place-items:center;padding:20px;background:linear-gradient(145deg,#0e2e22 0%,#174a32 58%,#0c241b 100%);color:#fff;transition:opacity .28s ease,visibility .28s ease}
 .suite-startup-overlay.closed{opacity:0;visibility:hidden;pointer-events:none}
@@ -1768,10 +1768,43 @@ body.suite-starting{overflow:hidden!important;touch-action:none}
 @media(max-width:520px){.suite-startup-card{padding:24px 18px;border-radius:23px}.suite-startup-logo{width:72px;height:72px}.suite-startup-card h2{font-size:21px}}
 
 
-/* Suite V11: Telegram ve kompakt ortak işlemler */
+/* Suite V12: Telegram ve kompakt ortak işlemler */
 .telegram-tool-button svg{fill:#229ED9!important;stroke:none!important}
 .suite-telegram-content{display:grid;justify-items:center;gap:13px;text-align:center;padding:4px 4px 8px}
 .suite-telegram-icon{width:68px;height:68px;border-radius:22px;display:grid;place-items:center;background:linear-gradient(145deg,#33afe6,#168ac5);color:#fff;font-size:34px;box-shadow:0 14px 30px rgba(34,158,217,.25)}
 .suite-telegram-content p{margin:0;color:#42564b;line-height:1.55;font-weight:650}
 .suite-telegram-content small{color:#718077;font-weight:650}
 .suite-telegram-link{width:100%;min-height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:#229ED9;color:#fff;text-decoration:none;font-weight:900;box-shadow:0 10px 22px rgba(34,158,217,.2)}
+
+
+/* V12: Bölme verim yüzdesi */
+.division-actions{display:flex;align-items:center;justify-content:flex-end;gap:7px;flex-wrap:wrap}
+.yield-mini{background:#9a6a14;color:#fff}
+.yield-modal{max-width:720px}
+.yield-content{display:grid;gap:15px}
+.yield-standing-label{display:grid;gap:8px;font-size:14px;font-weight:900;color:#233f31}
+.yield-input-wrap{display:grid;grid-template-columns:1fr auto;align-items:center;border:1px solid #d6e3db;background:#fbfdfc;border-radius:16px;overflow:hidden;box-shadow:0 8px 24px rgba(20,67,45,.06)}
+.yield-input-wrap:focus-within{border-color:#39825a;box-shadow:0 0 0 4px rgba(57,130,90,.12)}
+.yield-input-wrap input{border:0!important;box-shadow:none!important;background:transparent!important;border-radius:0!important;font-size:22px;font-weight:900;padding:15px 16px!important}
+.yield-input-wrap span{padding:0 16px;color:#1c6241;font-weight:1000;font-size:18px}
+.yield-loading{border-radius:13px;background:#f0f7f3;border:1px solid #dce9e1;padding:11px 13px;color:#4a6255;font-size:13px;font-weight:700}
+.yield-stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.yield-stat{min-width:0;border:1px solid #dfe9e3;border-radius:16px;padding:13px;background:#fff;box-shadow:0 8px 22px rgba(18,61,45,.05)}
+.yield-stat small,.yield-stat strong,.yield-stat em{display:block}
+.yield-stat small{color:#6c7b73;font-size:12px;font-weight:800}
+.yield-stat strong{color:#155d3b;font-size:20px;margin-top:6px;white-space:nowrap}
+.yield-stat em{font-style:normal;color:#829088;font-size:11px;margin-top:4px}
+.yield-equation{display:grid;grid-template-columns:1fr auto 1fr;align-items:stretch;gap:9px}
+.yield-equation>div{border-radius:16px;padding:13px;background:#eef7f1;border:1px solid #d7e9dc}
+.yield-equation span,.yield-equation b,.yield-equation small{display:block}
+.yield-equation span{font-size:12px;color:#607269;font-weight:800}
+.yield-equation b{font-size:20px;color:#174c33;margin-top:5px}
+.yield-equation small{font-size:11px;color:#7a8981;margin-top:4px}
+.yield-equation .yield-plus{display:grid;place-items:center;color:#1b7047;font-size:25px;font-weight:1000}
+.yield-result-card{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:16px;border-radius:18px;padding:16px;background:linear-gradient(135deg,#123e2d,#1f7049);color:#fff;box-shadow:0 14px 35px rgba(18,62,45,.2)}
+.yield-result-card small{display:block;letter-spacing:.12em;font-size:11px;font-weight:900;opacity:.78}
+.yield-percent{display:block;font-size:36px;line-height:1;margin-top:7px}
+.yield-percent.good{color:#baf5ca}.yield-percent.medium{color:#ffe49a}.yield-percent.low{color:#ffc1b8}.yield-percent.neutral{color:#fff}
+.yield-result-card p{margin:0;font-size:13px;line-height:1.45;opacity:.92}
+.yield-formula-note{border-radius:14px;background:#fff8e7;border:1px solid #f0dba4;padding:11px 13px;color:#6d561c;font-size:12px;line-height:1.5}
+@media(max-width:680px){.division-row{flex-wrap:wrap}.division-row .grow{min-width:150px}.division-actions{width:100%;padding-left:48px;justify-content:stretch}.division-actions .mini-button{flex:1;min-width:90px}.yield-stat-grid{grid-template-columns:1fr}.yield-equation{grid-template-columns:1fr}.yield-equation .yield-plus{height:20px}.yield-result-card{grid-template-columns:1fr}.yield-modal .modal-head h3{font-size:24px}}

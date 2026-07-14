@@ -21,6 +21,8 @@
     mesahaPendingDivisions: "mesaha_seflik_folder_pending_divisions_v530",
     mesahaLastBolme: "mesaha_seflik_folder_last_bolme_v529",
     istifShared: "shared-context-v034",
+    yieldTargets: "mesaha_suite_yield_targets_v12",
+    mesahaRecords: "cam_mesaha_kayitlari_v1",
   };
   const $ = (id) => document.getElementById(id);
   const clean = (v) =>
@@ -75,10 +77,12 @@
     pendingOps = [],
     busy = false,
     cacheReady = false,
-    startupClosed = false;
+    startupClosed = false,
+    selectedYieldBolme = "",
+    selectedYieldStats = null;
 
-  const TELEGRAM_URL = "https://t.me/+LpsvthN4BM5kYWI0";
-  const TELEGRAM_DAY_KEY = "mesaha_suite_telegram_daily_v11";
+  const TELEGRAM_URL = "https://telegram.me/+LpsvthN4BM5kYWI0";
+  const TELEGRAM_DAY_KEY = "mesaha_suite_telegram_daily_v12";
   function localDayKey() {
     const d = new Date();
     return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
@@ -202,7 +206,7 @@
     try {
       const out = await supabaseRpc("mesaha_create_terminal_code_v557", {
         p_label: "terminal",
-        p_app_version: "Mesaha Suite V11",
+        p_app_version: "Mesaha Suite V12",
       });
       const t = out.terminal || out || {},
         code = clean(t.code),
@@ -341,6 +345,179 @@
       bolme: clean(p.bolmeNo || t.bolmeNo || st.bolmeNo),
     };
   }
+  function localeNumber(value) {
+    let text = String(value == null ? "" : value)
+      .trim()
+      .replace(/\s+/g, "")
+      .replace(/[mM]³|m3/gi, "")
+      .replace(/[’'`´]/g, ",")
+      .replace(/[^0-9,.-]/g, "");
+    if (!text) return 0;
+    const comma = text.lastIndexOf(","), dot = text.lastIndexOf(".");
+    if (comma >= 0 && dot >= 0) {
+      const decimal = comma > dot ? "," : ".";
+      text = text.replace(decimal === "," ? /\./g : /,/g, "");
+      text = text.replace(decimal, ".");
+    } else if (comma >= 0) {
+      text = text.replace(/\./g, "").replace(",", ".");
+    } else {
+      const parts = text.split(".");
+      if (parts.length > 2) text = parts.slice(0, -1).join("") + "." + parts.at(-1);
+    }
+    const n = Number(text);
+    return Number.isFinite(n) ? n : 0;
+  }
+  function formatNumber(value, digits = 3) {
+    return Number(value || 0).toLocaleString("tr-TR", {
+      minimumFractionDigits: digits,
+      maximumFractionDigits: digits,
+    });
+  }
+  function mesahaRowVolume(row) {
+    const d = localeNumber(row && (row.diameter || row.cap)),
+      l = localeNumber(row && (row.length || row.boy)),
+      q = Math.max(1, localeNumber(row && (row.quantity || row.adet || 1)));
+    return d && l ? ((Math.PI * Math.pow(d / 100, 2)) / 4) * l * q : 0;
+  }
+  function divisionYieldKey(bolme) {
+    return (activeKey() || "yerel") + "::" + clean(bolme);
+  }
+  function readYieldTarget(bolme) {
+    const all = read(K.yieldTargets, {});
+    const item = all[divisionYieldKey(bolme)];
+    return item && typeof item === "object" ? localeNumber(item.dikili) : localeNumber(item);
+  }
+  function writeYieldTarget(bolme, dikili) {
+    const all = read(K.yieldTargets, {});
+    all[divisionYieldKey(bolme)] = {
+      dikili: Number(dikili || 0),
+      updatedAt: now(),
+      seflik: activeFolder() ? activeFolder().seflik : "",
+      bolme: clean(bolme),
+    };
+    write(K.yieldTargets, all);
+  }
+  function readIstifRecords() {
+    return new Promise((resolve) => {
+      try {
+        const request = indexedDB.open("mesaha-istif-prototype", 1);
+        request.onerror = () => resolve([]);
+        request.onupgradeneeded = () => {
+          const db = request.result;
+          if (!db.objectStoreNames.contains("records"))
+            db.createObjectStore("records", { keyPath: "id" });
+        };
+        request.onsuccess = () => {
+          const db = request.result;
+          if (!db.objectStoreNames.contains("records")) {
+            db.close();
+            return resolve([]);
+          }
+          const tx = db.transaction("records", "readonly");
+          const q = tx.objectStore("records").getAll();
+          q.onsuccess = () => {
+            const rows = Array.isArray(q.result) ? q.result : [];
+            db.close();
+            resolve(rows);
+          };
+          q.onerror = () => {
+            db.close();
+            resolve([]);
+          };
+        };
+      } catch (_) {
+        resolve([]);
+      }
+    });
+  }
+  async function divisionYieldStats(bolme) {
+    const no = clean(bolme), af = activeFolder(), seflik = clean(af && af.seflik);
+    const localMesaha = read(K.mesahaRecords, []);
+    const mesahaRows = (Array.isArray(localMesaha) ? localMesaha : []).filter((r) => {
+      const rb = clean(r && (r.bolmeNo || r.bolme_no || r.bolme));
+      const rs = clean(r && (r.seflik || r.seflikName || r.folderSeflik));
+      return rb === no && (!rs || !seflik || rs.toLocaleLowerCase("tr-TR") === seflik.toLocaleLowerCase("tr-TR"));
+    });
+    let adet = mesahaRows.reduce((sum, r) => sum + Math.max(1, localeNumber(r.quantity || r.adet || 1)), 0);
+    let mesahaM3 = mesahaRows.reduce((sum, r) => sum + mesahaRowVolume(r), 0);
+    const division = currentDivisions().find((d) => clean(d.bolme_no) === no);
+    if (division) {
+      // Sunucudaki şeflik klasörü özeti, birden fazla terminal/kullanıcının senkronize kayıtlarını içerir.
+      adet = Math.max(adet, localeNumber(division.record_count || division.recordCount));
+      mesahaM3 = Math.max(mesahaM3, localeNumber(division.total_volume || division.totalVolume));
+    }
+    const localIstif = (await readIstifRecords()).filter((r) => {
+      if (!r || r.isDemo) return false;
+      const rb = clean(r.bolme || r.bolmeNo || r.bolme_no);
+      const rs = clean(r.seflik || r.seflikName);
+      return rb === no && (!rs || !seflik || rs.toLocaleLowerCase("tr-TR") === seflik.toLocaleLowerCase("tr-TR"));
+    });
+    let remoteIstif = [];
+    if (navigator.onLine !== false) {
+      try {
+        const api = window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10;
+        if (api && typeof api.drive === "function" && af) {
+          const out = await api.drive("record_list", {
+            seflik,
+            seflikKey: clean(af.seflik_key || af.seflikKey) || stableKey(seflik),
+          });
+          remoteIstif = (Array.isArray(out && out.records) ? out.records : []).filter((r) =>
+            clean(r.bolme_no || r.bolme || r.bolmeNo) === no,
+          );
+        }
+      } catch (_) {}
+    }
+    const mergedIstif = new Map();
+    [...remoteIstif, ...localIstif].forEach((r, index) => {
+      const key = clean(r.id || r.record_id) || [clean(r.istif_no || r.istifNo), clean(r.record_date || r.date), index].join("::");
+      mergedIstif.set(key, r);
+    });
+    const ster = [...mergedIstif.values()].reduce((sum, r) => sum + localeNumber(r.ster), 0);
+    const sterM3 = ster * 0.75;
+    return { bolme: no, adet, mesahaM3, ster, sterM3, toplamM3: mesahaM3 + sterM3 };
+  }
+  function paintYieldResult(stats, dikili) {
+    if (!stats) return;
+    const set = (id, value) => { const el = $(id); if (el) el.textContent = value; };
+    set("yieldTotalAdet", Math.round(stats.adet).toLocaleString("tr-TR") + " adet");
+    set("yieldMesahaM3", formatNumber(stats.mesahaM3) + " m³");
+    set("yieldTotalSter", formatNumber(stats.ster, 2) + " ster");
+    set("yieldSterM3", formatNumber(stats.sterM3) + " m³");
+    set("yieldProducedM3", formatNumber(stats.toplamM3) + " m³");
+    const result = $("yieldPercent"), note = $("yieldResultNote");
+    if (!result || !note) return;
+    if (!(dikili > 0)) {
+      result.textContent = "%—";
+      result.className = "yield-percent neutral";
+      note.textContent = "Verim yüzdesini görmek için dikili damga miktarını girin.";
+      return;
+    }
+    const pct = (stats.toplamM3 / dikili) * 100;
+    result.textContent = "%" + pct.toLocaleString("tr-TR", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+    result.className = "yield-percent " + (pct >= 90 ? "good" : pct >= 75 ? "medium" : "low");
+    note.textContent = `${formatNumber(stats.toplamM3)} m³ ÷ ${formatNumber(dikili, 2)} m³ × 100`;
+  }
+  async function renderYieldModal() {
+    const no = clean(selectedYieldBolme);
+    if (!no) return;
+    const title = $("yieldModalTitle");
+    if (title) title.textContent = "Bölme " + no + " Verim Yüzdesi";
+    const input = $("yieldStandingVolume");
+    if (input) input.value = readYieldTarget(no) > 0 ? String(readYieldTarget(no)).replace(".", ",") : "";
+    const loading = $("yieldLoading");
+    if (loading) loading.hidden = false;
+    selectedYieldStats = await divisionYieldStats(no);
+    if (loading) loading.hidden = true;
+    paintYieldResult(selectedYieldStats, localeNumber(input && input.value));
+    if (input) input.oninput = () => paintYieldResult(selectedYieldStats, localeNumber(input.value));
+  }
+  function saveYieldCalculation() {
+    const input = $("yieldStandingVolume"), dikili = localeNumber(input && input.value);
+    if (!(dikili > 0)) return toast("Dikili damga miktarını m³ olarak girin.", true);
+    writeYieldTarget(selectedYieldBolme, dikili);
+    paintYieldResult(selectedYieldStats, dikili);
+    toast("Bölme " + clean(selectedYieldBolme) + " dikili damga bilgisi kaydedildi.");
+  }
   function toast(msg, bad = false) {
     const el = $("toast");
     if (!el) return;
@@ -363,6 +540,7 @@
     if (id === "seflikModal") renderSeflikModal();
     if (id === "ormanciModal") renderOrmanciModal();
     if (id === "bolmeModal") renderBolmeModal();
+    if (id === "yieldModal") renderYieldModal();
     setTimeout(() => {
       try {
         const f = m.querySelector("input,button,textarea,select");
@@ -551,7 +729,7 @@
     if (!api || typeof api.edge !== "function")
       throw new Error("Sunucu bağlantısı hazır değil.");
     return api.edge(action, {
-      source: "mesaha-suite-v11",
+      source: "mesaha-suite-v12",
       ...terminalAuth(),
       ...data,
     });
@@ -1047,7 +1225,7 @@
         ? rows
             .map(
               (d, i) =>
-                `<div class="result-row division-row"><span class="folder-dot ${isDivisionReady(d) ? "ready" : "wait"}">${isDivisionReady(d) ? "✓" : "↓"}</span><div class="grow"><b>Bölme ${esc(d.bolme_no)}</b><small>${isDivisionReady(d) ? "Offline hazır" : "Offline indirme gerekli"}${d.pending ? " • sunucu bekliyor" : ""}${d.location ? " • " + esc(d.location) : ""}</small></div><button class="mini-button" type="button" data-download-division="${i}">Offline İndir</button>${manage ? `<button class="mini-button danger-mini" type="button" data-delete-division="${i}">Sil</button>` : ""}</div>`,
+                `<div class="result-row division-row"><span class="folder-dot ${isDivisionReady(d) ? "ready" : "wait"}">${isDivisionReady(d) ? "✓" : "↓"}</span><div class="grow"><b>Bölme ${esc(d.bolme_no)}</b><small>${isDivisionReady(d) ? "Offline hazır" : "Offline indirme gerekli"}${d.pending ? " • sunucu bekliyor" : ""}${d.location ? " • " + esc(d.location) : ""}</small></div><div class="division-actions"><button class="mini-button" type="button" data-download-division="${i}">Offline İndir</button><button class="mini-button yield-mini" type="button" data-yield-division="${i}">Verim Yüzdesi</button>${manage ? `<button class="mini-button danger-mini" type="button" data-delete-division="${i}">Sil</button>` : ""}</div></div>`,
             )
             .join("")
         : '<div class="modal-note">Henüz bölme oluşturulmadı.</div>') +
@@ -1172,6 +1350,14 @@
         delete divisionRecords[k];
       }
     });
+    const yieldTargets = read(K.yieldTargets, {});
+    Object.keys(yieldTargets).forEach((k) => {
+      if (k.startsWith(oldKey + "::")) {
+        yieldTargets[newKey + k.slice(oldKey.length)] = yieldTargets[k];
+        delete yieldTargets[k];
+      }
+    });
+    write(K.yieldTargets, yieldTargets);
     setActive(f);
     op("rename_seflik", { oldName, oldKey, newName: next, newKey });
     saveLocal();
@@ -1434,6 +1620,9 @@
     divisions[k] = list.filter((x) => clean(x.bolme_no) !== clean(d.bolme_no));
     delete divisionReady[readyKey(k, d.bolme_no)];
     delete divisionRecords[readyKey(k, d.bolme_no)];
+    const yieldTargets = read(K.yieldTargets, {});
+    delete yieldTargets[readyKey(k, d.bolme_no)];
+    write(K.yieldTargets, yieldTargets);
     op("delete_division", {
       seflik: af.seflik,
       seflik_key: k,
@@ -1531,7 +1720,7 @@
         name: id.name || id.email || "Kullanıcı",
         seflik: af?.seflik || id.seflik || "",
         bolmeNo: id.bolme || "",
-        appVersion: "Mesaha Suite V11",
+        appVersion: "Mesaha Suite V12",
         avatarUrl: id.avatar || "",
         deviceId:
           localStorage.getItem("mesaha_suite_device_v7") ||
@@ -1548,7 +1737,7 @@
           appName: "Mesaha Suite",
           platform: navigator.platform || "",
           browser: navigator.userAgent || "",
-          suiteVersion: "V11",
+          suiteVersion: "V12",
         },
       });
     } catch {}
@@ -1616,7 +1805,7 @@
     try {
       await cleanupNestedWorkers();
       try { if (navigator.storage && navigator.storage.persist) await navigator.storage.persist(); } catch {}
-      const reg = await navigator.serviceWorker.register("./service-worker.js?v=11", { scope: "./", updateViaCache: "none" });
+      const reg = await navigator.serviceWorker.register("./service-worker.js?v=12", { scope: "./", updateViaCache: "none" });
       await navigator.serviceWorker.ready;
       const worker = await waitForActiveWorker(reg, navigator.onLine===false?7000:18000);
       setCacheStatus("Mesaha İO ve İstif İO dosyaları doğrulanıyor…", 18);
@@ -1710,8 +1899,10 @@
       id === "guestLoginBtn" ||
       id === "createTerminalCodeSuite" ||
       id === "refreshTerminalDevicesSuite" ||
+      id === "yieldSaveButton" ||
       target.dataset.revokeTerminalCode != null ||
       target.dataset.copyTerminalCode != null ||
+      target.dataset.yieldDivision != null ||
       target.classList.contains("modal-close") ||
       target.classList.contains("modal-cancel")
     ) {
@@ -1739,8 +1930,8 @@
       return true;
     }
     if (tool === "sync" || tool === "server") {
-      if (window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8)
-        (window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8).syncAll({ source: tool })
+      if (window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8)
+        (window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8).syncAll({ source: tool })
           .then(() => loadFolders(true))
           .catch(() => {});
       else sendPendingToServer();
@@ -1751,7 +1942,7 @@
       return true;
     }
     if (tool === "backups") {
-      (window.MesahaSuiteBackupsV10 || window.MesahaSuiteBackupsV9 || window.MesahaSuiteBackupsV8) && (window.MesahaSuiteBackupsV10 || window.MesahaSuiteBackupsV9 || window.MesahaSuiteBackupsV8).open();
+      (window.MesahaSuiteBackupsV12 || window.MesahaSuiteBackupsV11 || window.MesahaSuiteBackupsV10 || window.MesahaSuiteBackupsV9 || window.MesahaSuiteBackupsV8) && (window.MesahaSuiteBackupsV12 || window.MesahaSuiteBackupsV11 || window.MesahaSuiteBackupsV10 || window.MesahaSuiteBackupsV9 || window.MesahaSuiteBackupsV8).open();
       return true;
     }
     if (tool === "telegram") {
@@ -1764,7 +1955,7 @@
     }
     if (tool === "about") {
       showInfo(
-        "Mesaha Suite V11",
+        "Mesaha Suite V12",
         `<p>Google veya terminal/misafir oturumu iki uygulamada ortak kullanılır.</p><p><b>Bekleyen işlem:</b> ${pendingOps.length}</p><p>Bölmeler offline indirildikten sonra Mesaha İO ve İstif İO’da kayıt eklemeye hazır olur.</p>`,
       );
       return true;
@@ -1829,6 +2020,17 @@
     }
     if (target.dataset.removeForester != null) {
       removeOrmanci(Number(target.dataset.removeForester));
+      return true;
+    }
+    if (target.dataset.yieldDivision != null) {
+      const row = currentDivisions()[Number(target.dataset.yieldDivision)];
+      if (!row) return true;
+      selectedYieldBolme = clean(row.bolme_no);
+      openModal("yieldModal");
+      return true;
+    }
+    if (id === "yieldSaveButton") {
+      saveYieldCalculation();
       return true;
     }
     if (target.dataset.downloadDivision != null) {

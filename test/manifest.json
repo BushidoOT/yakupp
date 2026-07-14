@@ -1,7 +1,7 @@
 {
-  "name": "Mesaha Suite V11",
+  "name": "Mesaha Suite V12",
   "short_name": "Mesaha Suite",
-  "start_url": "./?v=11",
+  "start_url": "./?v=12",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f5f8f6",
@@ -19,7 +19,7 @@
       "type": "image/png"
     }
   ],
-  "id": "./?v=11",
-  "description": "Mesaha İO ve İstif İO ortak giriş, kişisel Drive, merkezi senkronizasyon ve kalıcı offline başlangıç ekranı",
-  "version": "suite_v11"
+  "id": "./?v=12",
+  "description": "Merkezi Suite yönetimi, kişisel Drive, kalıcı offline kullanım ve bölme bazlı verim yüzdesi hesabı",
+  "version": "suite_v12"
 }

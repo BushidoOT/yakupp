@@ -14,13 +14,13 @@
     <link rel="manifest" href="./manifest.json" />
     <link rel="icon" href="./assets/icon-192.png" />
     <link rel="apple-touch-icon" href="./assets/icon-192.png" />
-    <link rel="stylesheet" href="./styles.css?v=11" />
+    <link rel="stylesheet" href="./styles.css?v=12" />
     <script>
       window.MESAHA_SUITE_AUTH_MODE = true;
       window.MESAHA_VERSION = {
-        version: "suite-v11",
-        visibleVersion: "Mesaha Suite V11",
-        build: 11,
+        version: "suite-v12",
+        visibleVersion: "Mesaha Suite V12",
+        build: 12,
       };
     </script>
   </head>
@@ -234,7 +234,7 @@
               <path
                 d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20ZM12 10v6M12 7h.01"
               /></svg
-            ><strong>Hakkında</strong><small>Mesaha Suite V11</small>
+            ><strong>Hakkında</strong><small>Mesaha Suite V12</small>
           </button>
         </section>
         <footer class="status-footer">
@@ -253,7 +253,7 @@
             ></span>
           </div>
           <div class="version-info">
-            <span><small>Versiyon</small><strong>V11</strong></span
+            <span><small>Versiyon</small><strong>V12</strong></span
             ><button id="footerUpdate">
               <svg viewBox="0 0 24 24">
                 <path d="M12 3v12M7 10l5 5 5-5M5 21h14" />
@@ -401,6 +401,40 @@
         </div>
       </form>
     </section>
+    <section class="modal yield-modal" id="yieldModal" hidden>
+      <div class="modal-head">
+        <div>
+          <span class="modal-kicker">BÖLME ANALİZİ</span>
+          <h3 id="yieldModalTitle">Verim Yüzdesi</h3>
+        </div>
+        <button class="modal-close" type="button" aria-label="Kapat">×</button>
+      </div>
+      <div class="yield-content">
+        <label class="yield-standing-label">Dikili Damga
+          <div class="yield-input-wrap"><input id="yieldStandingVolume" inputmode="decimal" autocomplete="off" placeholder="Örn. 289,90" /><span>m³</span></div>
+        </label>
+        <div class="yield-loading" id="yieldLoading">Bölmeye ait Mesaha ve İstif kayıtları hesaplanıyor…</div>
+        <div class="yield-stat-grid">
+          <div class="yield-stat"><small>Toplam Adet</small><strong id="yieldTotalAdet">0 adet</strong><em>Mesaha kayıtları</em></div>
+          <div class="yield-stat"><small>Toplam m³</small><strong id="yieldMesahaM3">0,000 m³</strong><em>Mesaha hacmi</em></div>
+          <div class="yield-stat"><small>Toplam Ster</small><strong id="yieldTotalSter">0,00 ster</strong><em>İstif kayıtları</em></div>
+        </div>
+        <div class="yield-equation">
+          <div><span>Ster karşılığı</span><b id="yieldSterM3">0,000 m³</b><small>Ster × 0,75</small></div>
+          <span class="yield-plus">＋</span>
+          <div><span>Üretilen toplam</span><b id="yieldProducedM3">0,000 m³</b><small>Mesaha m³ + ster karşılığı</small></div>
+        </div>
+        <div class="yield-result-card">
+          <div><small>VERİM YÜZDESİ</small><strong class="yield-percent neutral" id="yieldPercent">%—</strong></div>
+          <p id="yieldResultNote">Verim yüzdesini görmek için dikili damga miktarını girin.</p>
+        </div>
+        <div class="yield-formula-note">Hesap: <b>(Toplam Mesaha m³ + Toplam Ster × 0,75) ÷ Dikili Damga m³ × 100</b>. Toplam adet bilgi amaçlıdır, yüzde hesabına katılmaz.</div>
+      </div>
+      <div class="form-actions">
+        <button class="secondary-button modal-cancel" type="button">Kapat</button>
+        <button class="primary-button" id="yieldSaveButton" type="button">Kaydet ve Hesapla</button>
+      </div>
+    </section>
     <section class="modal modal-compact suite-telegram-modal" id="suiteTelegramModal" hidden>
       <div class="modal-head">
         <div>
@@ -412,7 +446,7 @@
       <div class="suite-telegram-content">
         <div class="suite-telegram-icon" aria-hidden="true">✈</div>
         <p>Mesaha Suite, Mesaha İO ve İstif İO güncellemeleri, kullanım yardımı ve duyurular için Telegram grubuna katılabilirsiniz.</p>
-        <a class="suite-telegram-link" href="https://t.me/+LpsvthN4BM5kYWI0" target="_blank" rel="noopener">Telegram Grubuna Katıl</a>
+        <a class="suite-telegram-link" href="https://telegram.me/+LpsvthN4BM5kYWI0" target="_blank" rel="noopener">Telegram Grubuna Katıl</a>
         <small>Bu bilgilendirme her cihazda günde yalnızca bir kez gösterilir.</small>
       </div>
       <div class="form-actions single">
@@ -435,9 +469,9 @@
     <div class="toast" id="toast"></div>
     <script src="./js/mesaha-supabase-config.js"></script>
     <script src="./js/mesaha-firebase.js"></script>
-    <script src="./js/mesaha-google-auth-suite.js?v=11"></script>
-    <script src="./suite-sync-core.js?v=11"></script>
-    <script src="./app.js?v=11"></script>
-    <script src="./suite-ui.js?v=11"></script>
+    <script src="./js/mesaha-google-auth-suite.js?v=12"></script>
+    <script src="./suite-sync-core.js?v=12"></script>
+    <script src="./app.js?v=12"></script>
+    <script src="./suite-ui.js?v=12"></script>
   </body>
 </html>
