@@ -4,10 +4,10 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.4";
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL") || "";
 const SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
 const ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY") || "";
-const GOOGLE_CLIENT_ID = Deno.env.get("ISTIF_GOOGLE_CLIENT_ID") || "";
-const GOOGLE_CLIENT_SECRET = Deno.env.get("ISTIF_GOOGLE_CLIENT_SECRET") || "";
-const TOKEN_KEY = Deno.env.get("ISTIF_DRIVE_TOKEN_KEY") || "";
-const FIXED_REDIRECT_URI = Deno.env.get("ISTIF_DRIVE_REDIRECT_URI") || "";
+const GOOGLE_CLIENT_ID = Deno.env.get("MESAHA_SUITE_GOOGLE_CLIENT_ID") || Deno.env.get("ISTIF_GOOGLE_CLIENT_ID") || "";
+const GOOGLE_CLIENT_SECRET = Deno.env.get("MESAHA_SUITE_GOOGLE_CLIENT_SECRET") || Deno.env.get("ISTIF_GOOGLE_CLIENT_SECRET") || "";
+const TOKEN_KEY = Deno.env.get("MESAHA_SUITE_DRIVE_TOKEN_KEY") || Deno.env.get("ISTIF_DRIVE_TOKEN_KEY") || "";
+const FIXED_REDIRECT_URI = Deno.env.get("MESAHA_SUITE_DRIVE_REDIRECT_URI") || Deno.env.get("ISTIF_DRIVE_REDIRECT_URI") || "";
 const DEFAULT_APP_REDIRECT_URI = "https://bushidoot.github.io/yakupp/";
 
 const corsHeaders = {
@@ -106,7 +106,7 @@ async function sha256(value: string): Promise<string> {
 }
 
 async function aesKey(): Promise<CryptoKey> {
-  if (!TOKEN_KEY) throw new Error("ISTIF_DRIVE_TOKEN_KEY tanımlı değil");
+  if (!TOKEN_KEY) throw new Error("MESAHA_SUITE_DRIVE_TOKEN_KEY tanımlı değil");
   const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(TOKEN_KEY));
   return crypto.subtle.importKey("raw", digest, { name: "AES-GCM" }, false, ["encrypt", "decrypt"]);
 }
@@ -300,7 +300,7 @@ function validateRedirectUri(value: unknown): string {
   const parsed = new URL(selected);
   const local = parsed.hostname === "localhost" || parsed.hostname === "127.0.0.1";
   const allowedGithub = parsed.hostname === "bushidoot.github.io" && parsed.pathname.startsWith("/yakupp/");
-  if (!(local || allowedGithub)) throw new Error("Drive dönüş adresi yalnızca Suite test adresi olabilir");
+  if (!(local || allowedGithub)) throw new Error("Drive dönüş adresi yalnızca Mesaha Suite adresi olabilir");
   if (!local && parsed.protocol !== "https:") throw new Error("Drive dönüş adresi güvenli değil");
   return parsed.toString();
 }
@@ -361,9 +361,39 @@ async function connectionFor(userId: string) {
   return data;
 }
 
+function suiteRootName(access: FolderAccess): string {
+  return `Mesaha Suite - ${access.name || access.email || access.userId}`;
+}
+function isLegacyDriveRoot(connection: any): boolean {
+  const name = clean(connection?.folder_name || connection?.folderName);
+  return !name || !/^Mesaha Suite(?:\s*-|$)/i.test(name);
+}
+async function ensureSuiteRootConnection(accessToken: string, access: FolderAccess, connection: any) {
+  if (!connection) return connection;
+  if (!isLegacyDriveRoot(connection) && clean(connection.folder_id)) return connection;
+  const root = await findOrCreateFolder(accessToken, suiteRootName(access));
+  const folderUrl = `https://drive.google.com/drive/folders/${root.id}`;
+  const patch = {
+    folder_id: root.id, folder_name: root.name, folder_url: folderUrl,
+    last_seflik_key: access.seflikKey || null, last_seflik: access.seflik || null,
+    updated_at: new Date().toISOString(),
+  };
+  const { error } = await admin.from("mesaha_user_drive_connections").update(patch).eq("user_id", access.userId);
+  if (error) throw new Error(error.message);
+  console.log("[suite-drive] eski İstif Drive kökü Mesaha Suite köküne taşındı", { userId: access.userId, oldFolder: connection.folder_name || "", newFolder: root.name });
+  return { ...connection, ...patch };
+}
+
 async function driveStatus(req: Request, body: JsonObj) {
   const access = await userAccountContext(req, body);
-  const connection = await connectionFor(access.userId);
+  let connection = await connectionFor(access.userId);
+  if (connection?.refresh_token_cipher && isLegacyDriveRoot(connection)) {
+    try {
+      const refreshToken = await decryptToken(connection.refresh_token_cipher, connection.refresh_token_iv);
+      const accessToken = await refreshGoogleToken(refreshToken);
+      connection = await ensureSuiteRootConnection(accessToken, access, connection);
+    } catch (error) { console.warn("[suite-drive] Drive kökü otomatik düzeltilemedi", String((error as Error)?.message || error)); }
+  }
   return json({
     ok: true,
     connected: !!connection?.refresh_token_cipher,
@@ -429,7 +459,7 @@ async function oauthFinish(req: Request, body: JsonObj) {
   const refreshToken = clean(tokens.refresh_token);
   if (!refreshToken) throw new Error("Google yenileme anahtarı vermedi. Bağlantıyı yeniden deneyin");
   const accessToken = clean(tokens.access_token);
-  const root = await findOrCreateFolder(accessToken, `Mesaha Suite - ${access.name || access.email || access.userId}`);
+  const root = await findOrCreateFolder(accessToken, suiteRootName(access));
   const encrypted = await encryptToken(refreshToken);
   const folderUrl = `https://drive.google.com/drive/folders/${root.id}`;
   const { error: upsertError } = await admin.from("mesaha_user_drive_connections").upsert({
@@ -1072,10 +1102,11 @@ async function recordList(req: Request, body: JsonObj) {
 
 async function userDriveContext(req: Request, body: JsonObj) {
   const access = await verifyFolderAccess(req, body);
-  const connection = await connectionFor(access.userId);
+  let connection = await connectionFor(access.userId);
   if (!connection?.refresh_token_cipher) throw new Error("Kişisel Google Drive hesabı bağlı değil");
   const refreshToken = await decryptToken(connection.refresh_token_cipher, connection.refresh_token_iv);
   const accessToken = await refreshGoogleToken(refreshToken);
+  connection = await ensureSuiteRootConnection(accessToken, access, connection);
   return { access, connection, accessToken };
 }
 function safeFileName(value: unknown, fallback = "Mesaha_Suite_Yedek.json"): string {
@@ -1119,7 +1150,7 @@ async function backupJson(req: Request, body: JsonObj) {
     web_view_link: uploaded.webViewLink || `https://drive.google.com/file/d/${uploaded.id}/view`,
     record_count: Math.max(0, Number(body.recordCount || body.record_count || 0) || 0),
     total_volume: Number(body.totalVolume || body.total_volume || 0) || 0,
-    version: clean(body.version || "Mesaha Suite V10"), metadata: { folder_id: backupFolder.id, size: uploaded.size || null },
+    version: clean(body.version || "Mesaha Suite V14"), metadata: { folder_id: backupFolder.id, size: uploaded.size || null },
     created_at: new Date().toISOString(), updated_at: new Date().toISOString(),
   };
   const { data, error } = await admin.from("mesaha_user_drive_backups").insert(row).select("*").single();

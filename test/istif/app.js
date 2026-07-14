@@ -1,6 +1,6 @@
 "use strict";
 
-const APP_VERSION = "0.3.4-suite-v12";
+const APP_VERSION = "0.3.4-suite-v14";
 const MAX_PHOTO_BYTES = 1024 * 1024;
 const DB_NAME = "mesaha-istif-prototype";
 const DB_VERSION = 1;
@@ -26,6 +26,7 @@ const SHARED_TERMINAL_OLD_KEY = "mesaha_terminal_local_mode_v557";
 const SHARED_CACHE_SETTING_KEY = "shared-context-v034";
 const SHARED_SUITE_DIVISIONS_KEY = "mesaha_suite_divisions_v4";
 const SHARED_SUITE_DIVISION_READY_KEY = "mesaha_suite_division_ready_v4";
+const LAST_BOLME_KEY_PREFIX = "mesaha_istif_last_bolme_v14::";
 function readSuiteJson(key, fallback = {}) {
   try {
     return JSON.parse(localStorage.getItem(key) || "null") ?? fallback;
@@ -197,6 +198,7 @@ const state = {
   facingMode: "environment",
   syncing: false,
   sharedSyncing: false,
+  savingRecord: false,
   seflikler: [],
   ormancilar: [],
   membersBySeflik: {},
@@ -349,6 +351,19 @@ function wait(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+function suiteSyncApi() {
+  return (
+    window.MesahaSuiteSyncV14 ||
+    window.MesahaSuiteSyncV13 ||
+    window.MesahaSuiteSyncV12 ||
+    window.MesahaSuiteSyncV11 ||
+    window.MesahaSuiteSyncV10 ||
+    window.MesahaSuiteSyncV9 ||
+    window.MesahaSuiteSyncV8 ||
+    null
+  );
+}
+
 function showBoot(
   title = "Yükleniyor…",
   text = "Şeflik, istifler ve offline kayıtlar hazırlanıyor.",
@@ -407,8 +422,7 @@ async function idbPut(store, value) {
               detail: { type: "put", id: value && value.id },
             }),
           );
-          window.MesahaSuiteSyncV8 &&
-            (window.MesahaSuiteSyncV10||window.MesahaSuiteSyncV9||window.MesahaSuiteSyncV8).markDirty("istif", {
+          suiteSyncApi()?.markDirty("istif", {
               id: value && value.id,
             });
         } catch {}
@@ -432,8 +446,7 @@ async function idbDelete(store, key) {
               detail: { type: "delete", id: key },
             }),
           );
-          window.MesahaSuiteSyncV8 &&
-            (window.MesahaSuiteSyncV10||window.MesahaSuiteSyncV9||window.MesahaSuiteSyncV8).markDirty("istif", { id: key });
+          suiteSyncApi()?.markDirty("istif", { id: key });
         } catch {}
       }
       resolve();
@@ -1444,7 +1457,7 @@ function freshDraft() {
     seflikKey: state.settings.seflikKey,
     ormanci: state.settings.ormanci,
     date: today(),
-    bolme: "",
+    bolme: preferredBolme(),
     istifNo: "",
     type: "İbreli Kabuklu Kağıtlık Odun",
     ster: "",
@@ -1458,9 +1471,62 @@ function freshDraft() {
   };
 }
 
+function lastBolmeStorageKey() {
+  const key = clean(state.settings.seflikKey) || stableKey(state.settings.seflik);
+  return `${LAST_BOLME_KEY_PREFIX}${key || "default"}`;
+}
+
+function rememberLastBolme(value) {
+  const bolme = clean(value);
+  if (!bolme) return;
+  try {
+    localStorage.setItem(lastBolmeStorageKey(), bolme);
+  } catch {}
+}
+
+function preferredBolme() {
+  const ready = currentSuiteReadyBolmeler();
+  if (!ready.length) return "";
+  let remembered = "";
+  try {
+    remembered = clean(localStorage.getItem(lastBolmeStorageKey()));
+  } catch {}
+  if (remembered && ready.includes(remembered)) return remembered;
+  const recent = [...state.records]
+    .filter((row) => !row.isDemo && sameSeflikLabel(row.seflik, state.settings.seflik))
+    .sort((a, b) => String(b.updatedAt || b.createdAt || "").localeCompare(String(a.updatedAt || a.createdAt || "")))
+    .map(recordBolme)
+    .find((bolme) => ready.includes(bolme));
+  return recent || ready[0] || "";
+}
+
 function ensureDraft() {
   if (!state.draft) state.draft = freshDraft();
+  if (!clean(state.draft.bolme)) state.draft.bolme = preferredBolme();
   return state.draft;
+}
+
+function syncDraftFromForm(form) {
+  const draft = ensureDraft();
+  if (!(form instanceof HTMLFormElement)) return draft;
+  const values = new FormData(form);
+  [
+    "seflik",
+    "date",
+    "bolme",
+    "istifNo",
+    "type",
+    "ster",
+    "coordinates",
+    "mevki",
+    "description",
+    "barcode",
+  ].forEach((name) => {
+    if (values.has(name)) draft[name] = clean(values.get(name));
+  });
+  const folder = state.seflikler.find((item) => item.name === draft.seflik);
+  draft.seflikKey = folder?.key || draft.seflikKey || stableKey(draft.seflik);
+  return draft;
 }
 
 function fieldRow(
@@ -1474,8 +1540,9 @@ function fieldRow(
 ) {
   let control = "";
   if (type === "select") {
-    const safeOptions = options.length ? options : [value || ""];
-    control = `<select name="${name}" ${readonly ? "disabled" : ""}>${safeOptions.map((option) => `<option ${option === value ? "selected" : ""}>${esc(option)}</option>`).join("")}</select>`;
+    const safeOptions = [...new Set((options.length ? options : [value || ""]).map(clean).filter(Boolean))];
+    const selectedValue = clean(value) || safeOptions[0] || "";
+    control = `<select name="${name}" ${readonly ? "disabled" : ""}>${safeOptions.map((option) => `<option value="${esc(option)}" ${option === selectedValue ? "selected" : ""}>${esc(option)}</option>`).join("")}</select>`;
   } else if (type === "textarea") {
     control = `<textarea name="${name}" placeholder="İsteğe bağlı" ${readonly ? "readonly" : ""}>${esc(value)}</textarea>`;
   } else {
@@ -1487,12 +1554,14 @@ function fieldRow(
 function renderNew() {
   const draft = ensureDraft();
   const seflikOptions = state.seflikler.map((item) => item.name);
+  const bolmeOptions = currentSuiteReadyBolmeler();
+  if (!clean(draft.bolme) && bolmeOptions.length) draft.bolme = preferredBolme();
   return `${head(draft.createdAt && state.records.some((r) => r.id === draft.id) ? "İstif Düzenle" : "Yeni İstif", "İstif bilgilerini girin", { back: true })}<form id="stackForm">
     <section class="form-card card">
       ${fieldRow("forest", "Şeflik", "seflik", draft.seflik, "select", seflikOptions)}
       ${fieldRow("calendar", "Tarih", "date", draft.date, "date")}
-      ${fieldRow("layers", "Bölme", "bolme", draft.bolme, "select", currentSuiteReadyBolmeler())}
-      ${currentSuiteReadyBolmeler().length ? "" : '<div class="info-note"><b>' + icon("info", 21) + "</b><span>Suite ana menüsünde oluşturulan bölmeyi önce Offline İndir yapın. Bölme hazır olmadan ster kaydı eklenemez.</span></div>"}
+      ${fieldRow("layers", "Bölme", "bolme", draft.bolme, "select", bolmeOptions)}
+      ${bolmeOptions.length ? "" : '<div class="info-note"><b>' + icon("info", 21) + "</b><span>Suite ana menüsünde oluşturulan bölmeyi önce Offline İndir yapın. Bölme hazır olmadan ster kaydı eklenemez.</span></div>"}
       ${fieldRow("logs", "İstif No", "istifNo", draft.istifNo)}
       ${fieldRow("forest", "Odun Türü", "type", draft.type, "select", ["İbreli Kabuklu Kağıtlık Odun", "İbreli Lif Yonga Odun", "İbreli Yakacak Odun", "İbreli Sırık 2 Boy", "İbreli Sırık 3 Boy", "İbreli Sırık 4 Boy", "İbreli Sırık 5 Boy"])}
       ${fieldRow("cube", "Ster Sayısı", "ster", draft.ster, "number")}
@@ -1808,7 +1877,8 @@ function bindDynamic() {
   app.querySelector("#stackForm")?.addEventListener("input", (event) => {
     if (!event.target.name) return;
     const draft = ensureDraft();
-    draft[event.target.name] = event.target.value;
+    draft[event.target.name] = clean(event.target.value);
+    if (event.target.name === "bolme") rememberLastBolme(draft.bolme);
     if (event.target.name === "seflik") {
       const folder = state.seflikler.find(
         (item) => item.name === event.target.value,
@@ -1817,13 +1887,21 @@ function bindDynamic() {
     }
   });
   app.querySelector("#stackForm")?.addEventListener("change", (event) => {
+    if (!event.target.name) return;
+    const draft = ensureDraft();
+    draft[event.target.name] = clean(event.target.value);
+    if (event.target.name === "bolme") {
+      rememberLastBolme(draft.bolme);
+      return;
+    }
     if (event.target.name === "seflik") {
       state.settings.seflik = event.target.value;
       state.settings.seflikKey =
         state.seflikler.find((item) => item.name === event.target.value)?.key ||
         stableKey(event.target.value);
       refreshCurrentMembers();
-      ensureDraft().ormanci = state.settings.ormanci;
+      draft.ormanci = state.settings.ormanci;
+      draft.bolme = preferredBolme();
       render();
     }
   });
@@ -2114,7 +2192,15 @@ function applyRecordFilters() {
 
 async function saveRecord(event, draftOnly = false) {
   event?.preventDefault?.();
-  const draft = ensureDraft();
+  if (state.savingRecord) return;
+  state.savingRecord = true;
+  const form = event?.currentTarget instanceof HTMLFormElement
+    ? event.currentTarget
+    : app.querySelector("#stackForm");
+  const submitButtons = form ? Array.from(form.querySelectorAll('button[type="submit"], [data-action="save-draft"]')) : [];
+  submitButtons.forEach((button) => (button.disabled = true));
+  const draft = syncDraftFromForm(form);
+  try {
   if (!state.settings.setupComplete) {
     toast(
       "Önce Ayarlar bölümünden kurum ve evrak bilgilerini kaydedin.",
@@ -2129,7 +2215,7 @@ async function saveRecord(event, draftOnly = false) {
   }
   if (
     !draftOnly &&
-    (!draft.bolme.trim() || !draft.istifNo.trim() || !draft.ster)
+    (!clean(draft.bolme) || !clean(draft.istifNo) || !clean(draft.ster))
   ) {
     toast("Bölme, istif numarası ve ster sayısı zorunludur.", "bad");
     return;
@@ -2153,6 +2239,10 @@ async function saveRecord(event, draftOnly = false) {
     );
     return;
   }
+  draft.bolme = clean(draft.bolme);
+  draft.istifNo = clean(draft.istifNo);
+  draft.ster = clean(draft.ster);
+  rememberLastBolme(draft.bolme);
   draft.photos = state.selectedPhotos.map((photo) => ({
     name: photo.name,
     type: photo.type,
@@ -2186,6 +2276,13 @@ async function saveRecord(event, draftOnly = false) {
   state.draft = null;
   state.selectedPhotos = [];
   setView("records");
+  } catch (error) {
+    console.error("İstif kayıt hatası", error);
+    toast(`Kayıt tamamlanamadı: ${clean(error?.message || error)}`, "bad");
+  } finally {
+    state.savingRecord = false;
+    submitButtons.forEach((button) => (button.disabled = false));
+  }
 }
 
 function removePhoto(index) {
@@ -2756,9 +2853,10 @@ async function supabaseUpsertRecord(record) {
 }
 
 async function syncAll() {
-  if (window.MesahaSuiteSyncV8) {
+  const suiteApi = suiteSyncApi();
+  if (suiteApi) {
     try {
-      await window.MesahaSuiteSyncV8.syncAll({ source: "istif" });
+      await suiteApi.syncAll({ source: "istif" });
       state.records = await idbGetAll("records");
       render();
     } catch (error) {
@@ -3082,6 +3180,8 @@ window.addEventListener("storage", (event) => {
       SHARED_ACTIVE_SEFLIK_KEY,
       SHARED_TERMINAL_KEY,
       SHARED_TERMINAL_OLD_KEY,
+      SHARED_SUITE_DIVISIONS_KEY,
+      SHARED_SUITE_DIVISION_READY_KEY,
     ].includes(event.key)
   ) {
     hydrateLocalSharedIdentity();
@@ -3127,7 +3227,7 @@ async function pingAdminProfile() {
         appName: "İstif İO",
         platform: navigator.platform || "",
         browser: navigator.userAgent || "",
-        suiteVersion: "V12",
+        suiteVersion: "V14",
       },
     });
   } catch {}

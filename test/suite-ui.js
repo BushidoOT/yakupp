@@ -17,7 +17,7 @@
   let loaded = false,
     items = [];
   function api() {
-    return window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8;
+    return window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8;
   }
   function toast(m, b) {
     window.MesahaSuiteUI && window.MesahaSuiteUI.toast
@@ -39,6 +39,7 @@
     bind();
     handleCallback();
     refreshDrive(true).catch(() => {});
+    handleDriveOpenRequest();
   }
   function bind() {
     $("driveRefreshV8")?.addEventListener("click", () => refreshDrive(false));
@@ -113,6 +114,30 @@
       if (!silent) toast(e.message, true);
       throw e;
     }
+  }
+  function openDriveAccountCard() {
+    if (window.MesahaSuiteUI && typeof window.MesahaSuiteUI.openLogin === "function")
+      window.MesahaSuiteUI.openLogin();
+    setTimeout(() => {
+      const card = $("driveAccountCardV8");
+      if (card) card.scrollIntoView({ behavior: "smooth", block: "center" });
+      const connect = $("driveConnectV8");
+      if (connect && !connect.hidden) connect.focus({ preventScroll: true });
+    }, 160);
+  }
+  function handleDriveOpenRequest() {
+    const q = new URLSearchParams(location.search);
+    let requested = q.get("open") === "drive";
+    try {
+      requested = requested || (localStorage.getItem("mesaha_suite_open_drive_v14") === "1" || localStorage.getItem("mesaha_suite_open_drive_v13") === "1");
+      localStorage.removeItem("mesaha_suite_open_drive_v14");
+      localStorage.removeItem("mesaha_suite_open_drive_v13");
+    } catch {}
+    if (!requested) return;
+    q.delete("open");
+    history.replaceState({}, "", location.pathname + (q.toString() ? "?" + q : "") + location.hash);
+    openDriveAccountCard();
+    refreshDrive(true).catch(() => {});
   }
   async function handleCallback() {
     const q = new URLSearchParams(location.search),
@@ -209,7 +234,9 @@
       toast("Suite yedeği kişisel Drive hesabına kaydedildi.");
       await load();
     } catch (e) {
-      toast(e.message, true);
+      if (e && (e.code === "DRIVE_NOT_CONNECTED" || e.code === "GOOGLE_REQUIRED")) {
+        api().openDriveSetup && api().openDriveSetup();
+      } else toast(e.message, true);
     } finally {
       if (b) b.disabled = false;
     }
@@ -328,7 +355,7 @@
       toast("Yedek geri yüklenemedi: " + e.message, true);
     }
   }
-  window.MesahaSuiteBackupsV12 = window.MesahaSuiteBackupsV11 = window.MesahaSuiteBackupsV10 = window.MesahaSuiteBackupsV9 = window.MesahaSuiteBackupsV8 = { open, close, load, refreshDrive };
+  window.MesahaSuiteBackupsV14 = window.MesahaSuiteBackupsV13 = window.MesahaSuiteBackupsV12 = window.MesahaSuiteBackupsV11 = window.MesahaSuiteBackupsV10 = window.MesahaSuiteBackupsV9 = window.MesahaSuiteBackupsV8 = { open, close, load, refreshDrive };
   if (document.readyState === "loading")
     document.addEventListener("DOMContentLoaded", inject, { once: true });
   else inject();

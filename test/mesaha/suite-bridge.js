@@ -321,7 +321,7 @@
   }
   const CREATE_DIVISION_VALUE = "__suite_create_division__";
   async function createDivisionFromMesahaFolder(selectEl) {
-    const api = window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8;
+    const api = window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8;
     if (!api || typeof api.createOfflineDivision !== "function") {
       notify("Suite bölme sistemi hazır değil.", true);
       return;
@@ -397,11 +397,14 @@
   window.__suiteOpenFolderViewV9 = forceFolderView;
   if (window.__suiteOpenFolderPendingV10 || window.__suiteOpenFolderPendingV9) { window.__suiteOpenFolderPendingV10 = false; window.__suiteOpenFolderPendingV9 = false; setTimeout(forceFolderView, 0); }
   async function sendCurrentToDivision() {
-    const f=activeFolder(), sel=$("seflikFolderBolmeV528"), no=clean(sel&&sel.value), api=(window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8);
+    const f=activeFolder(), sel=$("seflikFolderBolmeV528"), no=clean(sel&&sel.value), api=(window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8);
     if(!f) return notify("Önce Suite ana menüsünden şeflik seçin.",true);
     if(!no) return notify("Gönderilecek bölmeyi seçin.",true);
     const raw=read(K.records,[]), records=Array.isArray(raw)?raw:[];
     if(!records.length) return notify("Gönderilecek Mesaha kaydı bulunamadı.",true);
+    if(navigator.onLine && api && api.ensureDriveConnected){
+      try{ await api.ensureDriveConnected({redirect:true}); }catch(e){ if(!(e&&e.code)) notify(clean(e&&e.message||e),true); return; }
+    }
     if(!confirm(`${records.length} Mesaha kaydı Bölme ${no} üzerine yazılsın, sunucuya gönderilsin ve kişisel Drive yedeği alınsın mı?`)) return;
     try {
       api&&api.createOfflineDivision&&api.createOfflineDivision(no,"",{source:"mesaha"});
@@ -428,16 +431,19 @@
   }
   function closeDriveModalV10(){const ov=$("mesahaDriveBackupOverlayV10");if(ov)ov.hidden=true;document.body.classList.remove("mesaha-drive-modal-open-v10");}
   async function loadDriveBackupsV10(){
-    const host=$("mesahaDriveBackupListV10"),api=(window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8);if(!host||!api)return;
+    const host=$("mesahaDriveBackupListV10"),api=(window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8);if(!host||!api)return;
     host.innerHTML='<div class="mesaha-drive-empty-v10">Drive yedekleri yükleniyor…</div>';
-    try{const out=await api.listBackups();const all=Array.isArray(out.items)?out.items:Array.isArray(out.backups)?out.backups:[];backupItemsV10=all.filter((x)=>{const app=clean(x.app_id||x.appId||"").toLowerCase();return !app||app==="mesaha"||app==="suite";});
+    try{
+      const status=api.driveStatus?await api.driveStatus():{connected:true};
+      if(!status.connected){host.innerHTML='<div class="mesaha-drive-empty-v10">Kişisel Google Drive bağlı değil.<br><button class="primary" type="button" data-mesaha-drive-connect-v13>Suite’te Drive Bağla</button></div>';return;}
+      const out=await api.listBackups();const all=Array.isArray(out.items)?out.items:Array.isArray(out.backups)?out.backups:[];backupItemsV10=all.filter((x)=>{const app=clean(x.app_id||x.appId||"").toLowerCase();return !app||app==="mesaha"||app==="suite";});
       if(!backupItemsV10.length){host.innerHTML='<div class="mesaha-drive-empty-v10">Bu Google Drive hesabında Mesaha yedeği bulunamadı.</div>';return;}
       host.innerHTML=backupItemsV10.map((x)=>{const id=esc(x.id||x.backup_id),date=new Date(x.created_at||x.createdAt||Date.now()).toLocaleString("tr-TR"),app=clean(x.app_id||x.appId||"mesaha");return `<article class="mesaha-drive-row-v10"><div><strong>${esc(x.file_name||x.fileName||"Mesaha yedeği")}</strong><small>${esc(date)} • ${Number(x.record_count||x.recordCount||0).toLocaleString("tr-TR")} kayıt</small><span>${esc(app)} • ${esc(x.seflik||"")}</span></div><div class="mesaha-drive-row-actions-v10"><button class="primary" type="button" data-mesaha-drive-restore-v10="${id}">Yerel Kayıtlarla Birleştir</button><button type="button" data-mesaha-drive-replace-v10="${id}">Yerine Yükle</button></div></article>`;}).join("");
     }catch(e){host.innerHTML=`<div class="mesaha-drive-empty-v10">${esc(clean(e&&e.message||e))}<br><small>Drive bağlı değilse Suite → Oturum Bilgileri bölümünden bağlayın.</small></div>`;}
   }
   function openDriveModalV10(){const ov=ensureDriveModalV10();ov.hidden=false;document.body.classList.add("mesaha-drive-modal-open-v10");loadDriveBackupsV10();}
-  async function createDriveBackupV10(){const api=(window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8);try{await api.createMesahaBackup({bolmeNo:clean($("seflikFolderBolmeV528")?.value||"")});notify("Mesaha yedeği kişisel Drive hesabına kaydedildi.");await loadDriveBackupsV10();}catch(e){notify(clean(e&&e.message||e),true);}}
-  async function restoreDriveBackupV10(id,mode){const api=(window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8);if(!confirm(mode==="replace"?"Cihazdaki mevcut Mesaha kayıtları silinip bu yedek yüklensin mi?":"Yedek mevcut Mesaha kayıtlarıyla birleştirilsin mi?"))return;try{const out=await api.restoreMesahaBackup(id,mode);notify(`${out.imported} kayıt yedekten alındı.`);closeDriveModalV10();setTimeout(()=>location.reload(),450);}catch(e){notify(clean(e&&e.message||e),true);}}
+  async function createDriveBackupV10(){const api=(window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8);try{await api.createMesahaBackup({bolmeNo:clean($("seflikFolderBolmeV528")?.value||"")});notify("Mesaha yedeği kişisel Drive hesabına kaydedildi.");await loadDriveBackupsV10();}catch(e){if(e&&(e.code==="DRIVE_NOT_CONNECTED"||e.code==="GOOGLE_REQUIRED")){api.openDriveSetup&&api.openDriveSetup();return;}notify(clean(e&&e.message||e),true);}}
+  async function restoreDriveBackupV10(id,mode){const api=(window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8);if(!confirm(mode==="replace"?"Cihazdaki mevcut Mesaha kayıtları silinip bu yedek yüklensin mi?":"Yedek mevcut Mesaha kayıtlarıyla birleştirilsin mi?"))return;try{const out=await api.restoreMesahaBackup(id,mode);notify(`${out.imported} kayıt yedekten alındı.`);closeDriveModalV10();setTimeout(()=>location.reload(),450);}catch(e){notify(clean(e&&e.message||e),true);}}
 
   function renderFolderList() {
     const f = activeFolder(),
@@ -537,9 +543,9 @@
     if (
       (force || !rows.length) &&
       navigator.onLine &&
-      (window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8)
+      (window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8)
     ) {
-      rows = await (window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8).loadDivisionRecords(bolme, !!force);
+      rows = await (window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8).loadDivisionRecords(bolme, !!force);
       renderFolderList();
     }
     return Array.isArray(rows) ? rows : [];
@@ -590,8 +596,8 @@
         activeSeflik: f.seflik,
         bolmeNo: clean(bolme),
       });
-      if ((window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8))
-        (window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8).clearDirty("mesaha");
+      if ((window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8))
+        (window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8).clearDirty("mesaha");
       if (typeof window.renderAll === "function") window.renderAll();
       if (typeof window.showView === "function") window.showView("records");
       notify(`Bölme ${bolme} kayıtları Mesaha İO’ya yüklendi.`);
@@ -619,14 +625,14 @@
   }
   async function refreshFolder(force) {
     renderFolderList();
-    if (!navigator.onLine || !(window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8)) return;
+    if (!navigator.onLine || !(window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8)) return;
     const meta = $("seflikFolderRemoteMetaV528");
     if (meta) {
       meta.textContent = "Sunucudan yenileniyor…";
       meta.classList.add("suite-folder-loading-v8");
     }
     try {
-      await (window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8).refreshFolderData({
+      await (window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8).refreshFolderData({
         includeRecords: true,
         quiet: true,
         force: !!force,
@@ -669,7 +675,7 @@
     if(cloudBackup) cloudBackup.textContent="Drive’a Yedekle";
     note();
     renderFolderList();
-    (window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8) && (window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8).updateButton();
+    (window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8) && (window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8).updateButton();
   }
   let timer = 0;
   function schedule() {
@@ -719,6 +725,7 @@
     if(e.target.closest&&e.target.closest("#cloudBackupBtnV316")){e.preventDefault();e.stopImmediatePropagation();createDriveBackupV10();return;}
     if(e.target.closest&&e.target.closest("[data-mesaha-drive-close-v10]")){e.preventDefault();closeDriveModalV10();return;}
     if(e.target.closest&&e.target.closest("[data-mesaha-drive-refresh-v10]")){e.preventDefault();loadDriveBackupsV10();return;}
+    if(e.target.closest&&e.target.closest("[data-mesaha-drive-connect-v13]")){e.preventDefault();const api=(window.MesahaSuiteSyncV14||window.MesahaSuiteSyncV13||window.MesahaSuiteSyncV12||window.MesahaSuiteSyncV11||window.MesahaSuiteSyncV10);api&&api.openDriveSetup&&api.openDriveSetup();return;}
     if(e.target.closest&&e.target.closest("[data-mesaha-drive-backup-v10]")){e.preventDefault();createDriveBackupV10();return;}
     const merge=e.target.closest&&e.target.closest("[data-mesaha-drive-restore-v10]");if(merge){e.preventDefault();restoreDriveBackupV10(merge.dataset.mesahaDriveRestoreV10,"merge");return;}
     const replace=e.target.closest&&e.target.closest("[data-mesaha-drive-replace-v10]");if(replace){e.preventDefault();restoreDriveBackupV10(replace.dataset.mesahaDriveReplaceV10,"replace");return;}
@@ -740,8 +747,8 @@
   injectCss();
   const boot = () => {
     document.body.dataset.suiteSubapp = "mesaha";
-    (window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8) &&
-      (window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8).registerHomeButton(() => {
+    (window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8) &&
+      (window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8).registerHomeButton(() => {
         location.href = "../";
       });
     renderAllBridge();

@@ -37,9 +37,9 @@
   const fold = (v) => clean(v).toLocaleLowerCase("tr-TR").replace(/ç/g,"c").replace(/ğ/g,"g").replace(/ı/g,"i").replace(/ö/g,"o").replace(/ş/g,"s").replace(/ü/g,"u").replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"");
   function notify(message,bad){let el=document.getElementById("suiteIstifToastV10");if(!el){el=document.createElement("div");el.id="suiteIstifToastV10";document.body.appendChild(el);}el.className="suite-istif-toast-v10"+(bad?" bad":"");el.textContent=message;el.hidden=false;clearTimeout(notify.t);notify.t=setTimeout(()=>{el.hidden=true;},3200);}
   function currentBolmeSelect(){return document.querySelector('#stackForm select[name="bolme"]');}
-  function selectBolme(no){const sel=currentBolmeSelect();if(!sel)return;let opt=Array.from(sel.options).find((x)=>fold(x.value)===fold(no));if(!opt){opt=document.createElement("option");opt.value=no;opt.textContent=no;sel.insertBefore(opt,sel.querySelector('option[value="__suite_create_division__"]')||null);}sel.value=opt.value;sel.dispatchEvent(new Event("input",{bubbles:true}));sel.dispatchEvent(new Event("change",{bubbles:true}));}
+  function selectBolme(no){const sel=currentBolmeSelect();if(!sel)return;let opt=Array.from(sel.options).find((x)=>fold(x.value)===fold(no));if(!opt){opt=document.createElement("option");opt.value=no;opt.textContent=no;sel.insertBefore(opt,sel.querySelector('option[value="__suite_create_division__"]')||null);}sel.value=opt.value;sel.__suiteLastRealValue=opt.value;sel.dispatchEvent(new Event("input",{bubbles:true}));sel.dispatchEvent(new Event("change",{bubbles:true}));}
   async function createDivisionFromIstif(){
-    const api=window.MesahaSuiteSyncV10||window.MesahaSuiteSyncV9||window.MesahaSuiteSyncV8;
+    const api=window.MesahaSuiteSyncV14||window.MesahaSuiteSyncV13||window.MesahaSuiteSyncV12||window.MesahaSuiteSyncV11||window.MesahaSuiteSyncV10||window.MesahaSuiteSyncV9||window.MesahaSuiteSyncV8;
     if(!api||typeof api.createOfflineDivision!=="function")return notify("Suite bölme sistemi hazır değil.",true);
     const no=clean(prompt("Yeni bölme numarasını yazın:"));if(!no)return;
     const loc=clean(prompt("Mevki / açıklama (isteğe bağlı):")||"");
@@ -48,8 +48,30 @@
   }
   function patchBolmeSelector(){
     const sel=currentBolmeSelect();if(!sel)return;
-    let add=sel.querySelector('option[value="__suite_create_division__"]');if(!add){add=document.createElement("option");add.value="__suite_create_division__";add.textContent="＋ Yeni bölme oluştur";sel.appendChild(add);}
-    if(!sel.__suiteCreateBoundV10){sel.__suiteCreateBoundV10=true;sel.addEventListener("change",(e)=>{if(sel.value!=="__suite_create_division__")return;e.preventDefault();e.stopImmediatePropagation();const first=Array.from(sel.options).find((x)=>x.value&&x.value!=="__suite_create_division__");sel.value=first?first.value:"";createDivisionFromIstif();},true);}
+    let add=sel.querySelector('option[value="__suite_create_division__"]');
+    if(!add){
+      const selected=sel.value;
+      add=document.createElement("option");
+      add.value="__suite_create_division__";
+      add.textContent="＋ Yeni bölme oluştur";
+      sel.appendChild(add);
+      if(selected) sel.value=selected;
+    }
+    if(sel.value&&sel.value!=="__suite_create_division__") sel.__suiteLastRealValue=sel.value;
+    if(!sel.__suiteCreateBoundV10){
+      sel.__suiteCreateBoundV10=true;
+      sel.addEventListener("change",(e)=>{
+        if(sel.value!=="__suite_create_division__"){
+          sel.__suiteLastRealValue=sel.value;
+          return;
+        }
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        const fallback=sel.__suiteLastRealValue||Array.from(sel.options).find((x)=>x.value&&x.value!=="__suite_create_division__")?.value||"";
+        sel.value=fallback;
+        createDivisionFromIstif();
+      },true);
+    }
   }
 
   function syncLocal() {
@@ -102,19 +124,24 @@
       settings.insertBefore(n, settings.firstChild);
     }
   }
-  let timer = 0;
+  let timer = 0, applying = false;
   function schedule() {
-    // Bölme alanı render edilir edilmez ekleme seçeneğini koy; arka plan storage
-    // olaylarının debounce süresini sürekli uzatması bu kritik kontrolü engellemesin.
-    patchBolmeSelector();
+    if (applying) return;
+    applying = true;
+    try { patchBolmeSelector(); } finally { applying = false; }
     clearTimeout(timer);
     timer = setTimeout(() => {
-      syncLocal();
-      hide();
-      hideForesterUi();
-      patchBolmeSelector();
-      (window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8) && (window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8).updateButton();
-    }, 80);
+      if (applying) return;
+      applying = true;
+      try {
+        syncLocal();
+        hide();
+        hideForesterUi();
+        patchBolmeSelector();
+        const api = window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8;
+        if (api) api.updateButton();
+      } finally { applying = false; }
+    }, 60);
   }
   function block(e) {
     const t =
@@ -126,8 +153,8 @@
     e.preventDefault();
     e.stopImmediatePropagation();
     if (t.matches('[data-action="sync"]'))
-      (window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8) &&
-        (window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8).syncAll({ source: "istif" });
+      (window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8) &&
+        (window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8).syncAll({ source: "istif" });
     else location.href = "../";
   }
   if (!valid()) {
@@ -140,8 +167,8 @@
   syncLocal();
   const boot = () => {
     document.body.dataset.suiteSubapp = "istif";
-    (window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8) &&
-      (window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8).registerHomeButton(() => {
+    (window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8) &&
+      (window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8).registerHomeButton(() => {
         location.href = "../";
       });
     schedule();
@@ -153,7 +180,7 @@
   window.addEventListener("storage", schedule);
   window.addEventListener("mesaha-suite:shared-data-updated", schedule);
   window.addEventListener("mesaha-suite:sync-complete", schedule);
-  const mo = new MutationObserver(schedule);
+  const mo = new MutationObserver(() => { if (!applying) schedule(); });
   function observeAppV10() {
     try {
       mo.disconnect();

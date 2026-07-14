@@ -1,12 +1,12 @@
 {
-  "version": "12.0.0",
-  "build": 12,
+  "version": "14.0.0",
+  "build": 14,
   "date": "2026-07-14",
   "name": "Mesaha Suite",
   "short_name": "Mesaha Suite",
-  "description": "Doğru Telegram bağlantısı ve bölme bazlı Mesaha m³ + Ster × 0,75 verim yüzdesi hesabı.",
-  "id": "./?suite=12",
-  "start_url": "./?suite=12",
-  "visibleVersion": "Mesaha Suite V12",
-  "cacheName": "yakupp-suite-shell-v12"
+  "description": "İstif bölme seçiminin kayıt sonrasında korunması, form doğrulama düzeltmesi ve stabilite iyileştirmeleri.",
+  "id": "./?suite=14",
+  "start_url": "./?suite=14",
+  "visibleVersion": "Mesaha Suite V14",
+  "cacheName": "yakupp-suite-shell-v14"
 }

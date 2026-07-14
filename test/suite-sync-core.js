@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  const VERSION = "10.0.0";
+  const VERSION = "14.0.0";
   const SUPABASE_URL = "https://swrbpdpotmirnmtqnuba.supabase.co";
   const ANON_KEY = "sb_publishable_G_ZFeUouDxg57Nne5pflfQ_cVGpdMbR";
   const SMOOTH = SUPABASE_URL + "/functions/v1/smooth-function";
@@ -145,7 +145,7 @@
   async function post(url, action, data) {
     const body = {
       action,
-      source: "mesaha-suite-v12",
+      source: "mesaha-suite-v14",
       ...terminalAuth(),
       ...(data || {}),
     };
@@ -741,7 +741,7 @@
           bolmeNo: bolme,
           syncToken: token,
           records: rows.slice(i, i + 150),
-          appVersion: "Mesaha Suite V12",
+          appVersion: "Mesaha Suite V14",
         });
       let backup = null,
         driveError = "";
@@ -754,7 +754,7 @@
             recordCount: rows.length,
             totalVolume: rows.reduce((s, r) => s + volume(r), 0),
             payload: {
-              schema: "mesaha-suite-v12",
+              schema: "mesaha-suite-v14",
               app: "mesaha",
               seflik,
               bolme,
@@ -775,7 +775,7 @@
         driveFileName: (backup && backup.fileName) || "",
         driveStatus: backup ? "saved" : id.google ? "error" : "not_connected",
         driveError,
-        appVersion: "Mesaha Suite V12",
+        appVersion: "Mesaha Suite V14",
       });
       done += rows.length;
     }
@@ -945,7 +945,7 @@
             recordCount: payloadRows.length,
             totalVolume: payloadRows.reduce((s, r) => s + num(r.ster), 0),
             payload: {
-              schema: "mesaha-suite-v12",
+              schema: "mesaha-suite-v14",
               app: "istif",
               seflik,
               createdAt: now(),
@@ -953,7 +953,7 @@
             },
           });
         } catch (e) {
-          console.warn("[suite-v12] İstif Drive yedeği oluşturulamadı", e);
+          console.warn("[suite-v14] İstif Drive yedeği oluşturulamadı", e);
         }
     clearDirty("istif");
     return { done };
@@ -1010,12 +1010,50 @@
     }
   }
 
+  function suiteRootUrlForDrive() {
+    const u = new URL(location.href);
+    u.hash = "";
+    u.search = "";
+    u.pathname = u.pathname
+      .replace(/\/(?:mesaha|istif)(?:\/.*)?$/i, "/")
+      .replace(/[^/]*$/, "");
+    if (!u.pathname.endsWith("/")) u.pathname += "/";
+    u.searchParams.set("open", "drive");
+    return u.href;
+  }
+  function openDriveSetup() {
+    try { localStorage.setItem("mesaha_suite_open_drive_v14", "1"); } catch {}
+    const nested = /\/(?:mesaha|istif)\//i.test(location.pathname);
+    if (!nested && window.MesahaSuiteUI && typeof window.MesahaSuiteUI.openLogin === "function") {
+      window.MesahaSuiteUI.openLogin();
+      setTimeout(() => {
+        const card = document.getElementById("driveAccountCardV8");
+        if (card) card.scrollIntoView({ behavior: "smooth", block: "center" });
+        const button = document.getElementById("driveConnectV8");
+        if (button && !button.hidden) button.focus({ preventScroll: true });
+      }, 140);
+      return true;
+    }
+    location.href = suiteRootUrlForDrive();
+    return true;
+  }
   async function driveStatus() {
     const id = identity();
     if (!id.google) return { ok: true, connected: false, googleRequired: true };
     const x = await drive("status", { seflik: id.seflik });
     write(K.drive, x);
     return x;
+  }
+  async function ensureDriveConnected(options) {
+    const opts = options || {};
+    const status = await driveStatus();
+    if (status && status.connected) return status;
+    const error = new Error(status && status.googleRequired
+      ? "Drive bağlantısı için önce Google ile giriş yapın"
+      : "Kişisel Google Drive bağlı değil");
+    error.code = status && status.googleRequired ? "GOOGLE_REQUIRED" : "DRIVE_NOT_CONNECTED";
+    if (opts.redirect !== false) openDriveSetup();
+    throw error;
   }
   async function driveConnect() {
     const id = identity();
@@ -1049,7 +1087,8 @@
   async function createMesahaBackup(options) {
     options = options || {};
     const id = identity(), af = activeFolder();
-    if (!id.google) throw new Error("Drive yedeği için Google ile giriş yapın");
+    if (!id.google) { openDriveSetup(); throw new Error("Drive yedeği için Google ile giriş yapın"); }
+    await ensureDriveConnected({ redirect: true });
     const seflik = clean((af && af.seflik) || id.seflik), selected = clean(options.bolmeNo || "");
     if (!seflik) throw new Error("Önce şeflik seçin");
     const all = read(K.records, []), rows = (Array.isArray(all) ? all : []).filter((r) => !selected || clean(r.bolmeNo || r.bolme_no || id.bolme) === selected);
@@ -1058,7 +1097,7 @@
       seflik, appId: "mesaha",
       fileName: `Mesaha_${fold(seflik)}_${selected ? fold(selected) + "_" : ""}${new Date().toISOString().replace(/[:.]/g, "-")}.json`,
       recordCount: rows.length, totalVolume: rows.reduce((sum, r) => sum + volume(r), 0),
-      payload: { schema: "mesaha-suite-v12", app: "mesaha", seflik, bolme: selected, createdAt: now(), settings: read(K.settings, {}), records: rows },
+      payload: { schema: "mesaha-suite-v14", app: "mesaha", seflik, bolme: selected, createdAt: now(), settings: read(K.settings, {}), records: rows },
     });
   }
   async function restoreMesahaBackup(id, mode) {
@@ -1082,14 +1121,15 @@
 
   async function createSuiteBackup() {
     const id = identity();
-    if (!id.google) throw new Error("Drive yedeği için Google ile giriş yapın");
+    if (!id.google) { openDriveSetup(); throw new Error("Drive yedeği için Google ile giriş yapın"); }
+    await ensureDriveConnected({ redirect: true });
     const mesaha = read(K.records, []),
       istif = (await idbAll("records")).map((r) => ({
         ...r,
         photos: undefined,
       }));
     const payload = {
-      schema: "mesaha-suite-backup-v10",
+      schema: "mesaha-suite-backup-v14",
       createdAt: now(),
       user: { id: id.userId, name: id.name, email: id.email },
       seflik: id.seflik,
@@ -1172,14 +1212,16 @@
     );
     window.addEventListener("online", updateButton);
     window.addEventListener("offline", updateButton);
-    const mo = new MutationObserver(queueDockPosition);
-    mo.observe(document.documentElement, {
-      attributes: true,
-      childList: true,
-      subtree: true,
-      attributeFilter: ["class", "style", "hidden"],
+    const mo = new MutationObserver((mutations) => {
+      if (mutations.some((mutation) => mutation.type === "childList"))
+        queueDockPosition();
     });
-    setInterval(queueDockPosition, 700);
+    const dockRoot = document.getElementById("app") || document.body;
+    if (dockRoot)
+      mo.observe(dockRoot, { childList: true, subtree: true });
+    // Kaydırma, klavye ve görünüm olayları zaten anlık konumlandırır.
+    // Seyrek kontrol yalnızca tarayıcıların kaçırdığı alt menü değişiklikleri içindir.
+    setInterval(queueDockPosition, 2500);
   }
 
   const api = {
@@ -1189,6 +1231,8 @@
     isDirty,
     syncAll,
     driveStatus,
+    ensureDriveConnected,
+    openDriveSetup,
     driveConnect,
     driveFinish,
     driveDisconnect,
@@ -1210,6 +1254,8 @@
     refreshFolderData,
     loadDivisionRecords,
   };
+  window.MesahaSuiteSyncV14 = api;
+  window.MesahaSuiteSyncV13 = api;
   window.MesahaSuiteSyncV12 = api;
   window.MesahaSuiteSyncV11 = api;
   window.MesahaSuiteSyncV10 = api;

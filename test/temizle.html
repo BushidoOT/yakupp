@@ -46,7 +46,7 @@
           const w = reg.active || navigator.serviceWorker.controller;
           if (w) w.postMessage({ type: "CACHE_ALL" });
           document.getElementById("s").textContent =
-            "Suite V12 çevrimdışı paketi kuruluyor. Suite açılıyor…";
+            "Suite V14 çevrimdışı paketi kuruluyor. Suite açılıyor…";
           setTimeout(() => location.replace("./?offline_repaired=1"), 1200);
         } catch (e) {
           document.getElementById("s").textContent =
