@@ -1,8 +1,8 @@
 {
-  "version": "0.3.4-suite-v20",
+  "version": "0.3.4-suite-v21",
   "name": "Mesaha İO İstif Alma v0.3.4",
   "updatedAt": "2026-07-14T20:30:00+03:00",
-  "notes": "Suite V20 ile bağlantı kontrollü ortak senkronizasyon ve güvenli gönderim sınırları uygulanmıştır.",
+  "notes": "Suite V21 ile bölme silindiğinde bağlı İstif kayıtları, fotoğraflar ve yedekler güvenli biçimde birlikte temizlenir.",
   "visibleVersion": "İstif Alma v0.3.4",
-  "build": 20
+  "build": 21
 }

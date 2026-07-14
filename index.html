@@ -18,9 +18,9 @@
     <script>
       window.MESAHA_SUITE_AUTH_MODE = true;
       window.MESAHA_VERSION = {
-        version: "suite-v20",
-        visibleVersion: "Mesaha Suite V20",
-        build: 20,
+        version: "suite-v21",
+        visibleVersion: "Mesaha Suite V21",
+        build: 21,
       };
     </script>
   </head>
@@ -40,7 +40,7 @@
       <header class="hero">
         <div class="suite-version-corner" id="suiteVersionCorner" aria-live="polite">
           <span class="suite-version-caption">Sürüm</span>
-          <strong id="suiteVersionLabel">V20</strong>
+          <strong id="suiteVersionLabel">V21</strong>
           <button type="button" id="suiteUpdateButton" hidden>Uygulamayı Güncelle</button>
         </div>
         <div class="forest-layer forest-back"></div>
@@ -242,7 +242,7 @@
               <path
                 d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20ZM12 10v6M12 7h.01"
               /></svg
-            ><strong>Hakkında</strong><small>Mesaha Suite V20</small>
+            ><strong>Hakkında</strong><small>Mesaha Suite V21</small>
           </button>
         </section>
         <footer class="status-footer">
@@ -400,6 +400,37 @@
           ><button class="primary-button" type="submit">Bölmeyi Oluştur</button>
         </div>
       </form>
+    </section>
+
+    <section class="modal division-delete-modal" id="divisionDeleteModal" hidden>
+      <div class="modal-head danger-modal-head">
+        <div>
+          <span class="modal-kicker">KALICI SİLME UYARISI</span>
+          <h3 id="divisionDeleteTitle">Bölme Silinecek</h3>
+        </div>
+        <button class="modal-close" type="button" aria-label="Kapat">×</button>
+      </div>
+      <div class="division-delete-warning">
+        <div class="division-delete-icon" aria-hidden="true">!</div>
+        <div>
+          <strong>Bu işlem geri alınamaz.</strong>
+          <p id="divisionDeleteLead">Bölmeye bağlı bütün kayıtlar ve dosyalar kalıcı olarak silinecek.</p>
+        </div>
+      </div>
+      <div class="division-delete-list" id="divisionDeleteList">
+        <div><span>Mesaha kayıtları</span><b id="divisionDeleteMesahaCount">0</b></div>
+        <div><span>İstif kayıtları</span><b id="divisionDeleteIstifCount">0</b></div>
+        <div><span>İstif fotoğrafları</span><b id="divisionDeletePhotoCount">0</b></div>
+        <div><span>Bölmeye ait Drive yedekleri</span><b id="divisionDeleteBackupCount">0</b></div>
+      </div>
+      <div class="division-delete-status" id="divisionDeleteStatus">Silinecekler hesaplanıyor…</div>
+      <label class="division-delete-confirm-label">Onaylamak için bölme numarasını yazın
+        <input id="divisionDeleteConfirmInput" autocomplete="off" inputmode="text" />
+      </label>
+      <div class="form-actions">
+        <button class="secondary-button modal-cancel" type="button">Vazgeç</button>
+        <button class="danger-confirm-button" id="divisionDeleteConfirmButton" type="button">Bölmeyi ve Bağlı Verileri Sil</button>
+      </div>
     </section>
     <section class="modal yield-modal" id="yieldModal" hidden>
       <div class="modal-head">

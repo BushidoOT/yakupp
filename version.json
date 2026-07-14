@@ -1,12 +1,12 @@
 {
-  "version": "20.0.0",
-  "build": 20,
+  "version": "21.0.0",
+  "build": 21,
   "date": "2026-07-14",
   "name": "Mesaha Suite",
   "short_name": "Mesaha Suite",
-  "description": "Herkese açık Eski Yedekler arşivi; kullanıcı, şeflik, bölme ve dosya adına göre arama. Sürüm kaynağı ve güncelleme döngüsü V20 ile düzeltildi.",
-  "id": "./?suite=20",
-  "start_url": "./?suite=20",
-  "visibleVersion": "Mesaha Suite V20",
-  "cacheName": "yakupp-suite-shell-v20"
+  "description": "Bölme silme öncesi kırmızı kapsam özeti; bölmeye bağlı İstifler, fotoğraflar ve Drive yedeklerinin zincirli ve güvenli silinmesi.",
+  "id": "./?suite=21",
+  "start_url": "./?suite=21",
+  "visibleVersion": "Mesaha Suite V21",
+  "cacheName": "yakupp-suite-shell-v21"
 }

@@ -83,9 +83,9 @@
 
   const TELEGRAM_URL = "https://telegram.me/+LpsvthN4BM5kYWI0";
   const TELEGRAM_DAY_KEY = "mesaha_suite_telegram_daily_v12";
-  const CURRENT_SUITE_BUILD = Number(window.MESAHA_VERSION?.build || 17);
-  const CURRENT_SUITE_LABEL = clean(window.MESAHA_VERSION?.visibleVersion || "Mesaha Suite V20");
-  let latestSuiteVersion = null, updateApplying = false;
+  const CURRENT_SUITE_BUILD = Number(window.MESAHA_VERSION?.build || 21);
+  const CURRENT_SUITE_LABEL = clean(window.MESAHA_VERSION?.visibleVersion || "Mesaha Suite V21");
+  let latestSuiteVersion = null, updateApplying = false, pendingDivisionDelete = null;
 
   function updateVersionCorner(remote) {
     const label = $("suiteVersionLabel");
@@ -156,7 +156,7 @@
     try {
       setUpdateProgress(12, "Yeni sürüm denetleniyor…");
       let reg = await navigator.serviceWorker?.getRegistration("./");
-      if (!reg && "serviceWorker" in navigator) reg = await navigator.serviceWorker.register("./service-worker.js?v=20", { scope: "./", updateViaCache: "none" });
+      if (!reg && "serviceWorker" in navigator) reg = await navigator.serviceWorker.register("./service-worker.js?v=21", { scope: "./", updateViaCache: "none" });
       if (reg) {
         setUpdateProgress(28, "Yeni uygulama dosyaları alınıyor…");
         await reg.update();
@@ -315,7 +315,7 @@
     try {
       const out = await supabaseRpc("mesaha_create_terminal_code_v557", {
         p_label: "terminal",
-        p_app_version: "Mesaha Suite V20",
+        p_app_version: "Mesaha Suite V21",
       });
       const t = out.terminal || out || {},
         code = clean(t.code),
@@ -564,7 +564,7 @@
     let remoteIstif = [];
     if (navigator.onLine !== false) {
       try {
-        const api = window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10;
+        const api = window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10;
         if (api && typeof api.drive === "function" && af) {
           const out = await api.drive("record_list", {
             seflik,
@@ -727,7 +727,7 @@
     }
     destructiveSyncTimer = setTimeout(async () => {
       try {
-        const api = window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8;
+        const api = window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8;
         if (api && typeof api.syncAll === "function") await api.syncAll({ source: "delete-auto" });
         else await sendPendingToServer();
         toast(`${label} sunucuya da anında işlendi.`);
@@ -856,7 +856,7 @@
     if (!api || typeof api.edge !== "function")
       throw new Error("Sunucu bağlantısı hazır değil.");
     return api.edge(action, {
-      source: "mesaha-suite-v20",
+      source: "mesaha-suite-v21",
       ...terminalAuth(),
       ...data,
     });
@@ -952,6 +952,7 @@
         seflik: af.seflik,
         folderSeflik: af.seflik,
       });
+      const deleting = new Set((pendingOps || []).filter((item) => item && item.type === "delete_division" && clean(item.payload && item.payload.seflik) === clean(af.seflik)).map((item) => clean(item.payload && item.payload.bolmeNo)));
       const list = (
         Array.isArray(out.divisions)
           ? out.divisions
@@ -960,9 +961,9 @@
             : []
       )
         .map((d) => normalizeDivision(d, af))
-        .filter(Boolean);
-      if (list.length) {
-        const old = currentDivisions();
+        .filter((d) => d && !deleting.has(clean(d.bolme_no)));
+      if (list.length || deleting.size) {
+        const old = currentDivisions().filter((d) => !deleting.has(clean(d.bolme_no)));
         const merged = new Map();
         old.forEach((x) => merged.set(clean(x.bolme_no), x));
         list.forEach((x) =>
@@ -1728,40 +1729,128 @@
     toast(rows.length + " bölme offline kullanıma hazır.");
     render();
   }
-  function deleteDivision(index) {
-    if (!canManageFolder())
-      return toast(
-        "Bu işlemi yalnızca şeflik kurucusu Suite üzerinden yapabilir.",
-        true,
-      );
-    const af = activeFolder();
-    if (!af) return;
-    const k = af.seflik_key,
-      list = divisions[k] || [],
-      d = currentDivisions()[index];
-    if (!d) return;
-    if (
-      prompt(
-        `Bölme ${d.bolme_no} silinecek. Onay için bölme numarasını yazın:`,
-      ) !== d.bolme_no
-    )
-      return toast("Bölme silinmedi.", true);
-    divisions[k] = list.filter((x) => clean(x.bolme_no) !== clean(d.bolme_no));
-    delete divisionReady[readyKey(k, d.bolme_no)];
-    delete divisionRecords[readyKey(k, d.bolme_no)];
-    const yieldTargets = read(K.yieldTargets, {});
-    delete yieldTargets[readyKey(k, d.bolme_no)];
-    write(K.yieldTargets, yieldTargets);
-    op("delete_division", {
-      seflik: af.seflik,
-      seflik_key: k,
-      bolmeNo: d.bolme_no,
+
+  function suiteSyncApi() {
+    return window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || null;
+  }
+  async function driveAction(action, data = {}) {
+    const api = suiteSyncApi();
+    if (!api || typeof api.drive !== "function") throw new Error("Drive sunucu bağlantısı hazır değil.");
+    return api.drive(action, data);
+  }
+  async function readLocalIstifDivision(bolmeNo) {
+    const no = clean(bolmeNo), out = { records: [], istifCount: 0, photoCount: 0 };
+    if (!no || !("indexedDB" in window)) return out;
+    try {
+      const req = indexedDB.open("mesaha-istif-prototype", 1);
+      const db = await new Promise((resolve, reject) => {
+        req.onupgradeneeded = () => {
+          const x = req.result;
+          if (!x.objectStoreNames.contains("records")) x.createObjectStore("records", { keyPath: "id" });
+          if (!x.objectStoreNames.contains("settings")) x.createObjectStore("settings", { keyPath: "key" });
+        };
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error);
+      });
+      const rows = await new Promise((resolve, reject) => {
+        const r = db.transaction("records").objectStore("records").getAll();
+        r.onsuccess = () => resolve(Array.isArray(r.result) ? r.result : []);
+        r.onerror = () => reject(r.error);
+      });
+      try { db.close(); } catch {}
+      out.records = rows.filter((r) => r && !r.isDemo && clean(r.bolme || r.bolmeNo || r.bolme_no) === no);
+      out.istifCount = out.records.length;
+      out.photoCount = out.records.reduce((sum, r) => sum + Math.max(Number(r.photoCount || 0) || 0, Array.isArray(r.photos) ? r.photos.length : 0, Array.isArray(r.driveFiles) ? r.driveFiles.length : 0), 0);
+    } catch {}
+    return out;
+  }
+  async function deleteLocalIstifDivision(bolmeNo) {
+    const local = await readLocalIstifDivision(bolmeNo);
+    if (!local.records.length || !("indexedDB" in window)) return local;
+    const req = indexedDB.open("mesaha-istif-prototype", 1);
+    const db = await new Promise((resolve, reject) => { req.onsuccess = () => resolve(req.result); req.onerror = () => reject(req.error); });
+    await new Promise((resolve, reject) => {
+      const tx = db.transaction("records", "readwrite"), store = tx.objectStore("records");
+      local.records.forEach((r) => r && r.id != null && store.delete(r.id));
+      tx.oncomplete = resolve; tx.onerror = () => reject(tx.error); tx.onabort = () => reject(tx.error || new Error("Yerel İstif silme tamamlanamadı"));
     });
-    saveLocal();
-    toast("Bölme silindi.");
-    render();
-    renderBolmeModal();
-    autoSyncDestructive("Bölme silme işlemi");
+    try { db.close(); } catch {}
+    try { window.dispatchEvent(new CustomEvent("mesaha-istif:division-deleted", { detail: { bolmeNo: clean(bolmeNo), count: local.istifCount } })); } catch {}
+    return local;
+  }
+  async function divisionDeletePreview(row) {
+    const local = await readLocalIstifDivision(row && row.bolme_no);
+    const base = {
+      mesahaCount: Number(row && row.record_count || 0) || 0,
+      istifCount: local.istifCount,
+      photoCount: local.photoCount,
+      backupCount: 0,
+      online: false,
+      error: ""
+    };
+    if (!navigator.onLine || !cloudIdentity()) return base;
+    try {
+      const remote = await driveAction("division_delete_preview", { seflik: activeFolder()?.seflik || identity().seflik, bolmeNo: row.bolme_no });
+      base.istifCount = Math.max(base.istifCount, Number(remote.istif_count || remote.istifCount || 0) || 0);
+      base.photoCount = Math.max(base.photoCount, Number(remote.photo_count || remote.photoCount || 0) || 0);
+      base.backupCount = Number(remote.backup_count || remote.backupCount || 0) || 0;
+      base.online = true;
+    } catch (e) { base.error = clean(e && e.message || e); }
+    return base;
+  }
+  function paintDivisionDeleteModal() {
+    const state = pendingDivisionDelete;
+    if (!state) return;
+    const d = state.row || {}, p = state.preview || {};
+    if ($("divisionDeleteTitle")) $("divisionDeleteTitle").textContent = "Bölme " + clean(d.bolme_no) + " Silinecek";
+    if ($("divisionDeleteLead")) $("divisionDeleteLead").textContent = "Bölme " + clean(d.bolme_no) + " ile birlikte aşağıdaki Mesaha, İstif, fotoğraf ve yedek verileri kalıcı olarak kaldırılacak.";
+    if ($("divisionDeleteMesahaCount")) $("divisionDeleteMesahaCount").textContent = Number(p.mesahaCount || 0).toLocaleString("tr-TR") + " kayıt";
+    if ($("divisionDeleteIstifCount")) $("divisionDeleteIstifCount").textContent = Number(p.istifCount || 0).toLocaleString("tr-TR") + " istif";
+    if ($("divisionDeletePhotoCount")) $("divisionDeletePhotoCount").textContent = Number(p.photoCount || 0).toLocaleString("tr-TR") + " fotoğraf";
+    if ($("divisionDeleteBackupCount")) $("divisionDeleteBackupCount").textContent = Number(p.backupCount || 0).toLocaleString("tr-TR") + " yedek";
+    const status = $("divisionDeleteStatus");
+    if (status) {
+      status.classList.toggle("bad", !!p.error);
+      status.textContent = p.loading ? "Sunucudaki İstif, fotoğraf ve yedekler hesaplanıyor…" : p.error ? "Sunucu özeti alınamadı. Yerel veriler gösteriliyor; bağlantı gelince sunucu silme işlemi yeniden denenecek." : p.online ? "Sunucu ve cihaz verileri birlikte hesaplandı." : "Çevrimdışı: cihazdaki kayıtlar hemen silinir; sunucu ve Drive verileri bağlantı gelince kalıcı olarak temizlenir.";
+    }
+    const input = $("divisionDeleteConfirmInput"); if (input && input.value !== state.typed) input.value = state.typed || "";
+    const btn = $("divisionDeleteConfirmButton"); if (btn) btn.disabled = state.working || clean(state.typed) !== clean(d.bolme_no);
+  }
+  async function openDivisionDeleteModal(row, index) {
+    pendingDivisionDelete = { row, index, typed: "", working: false, preview: { mesahaCount: Number(row.record_count || 0) || 0, istifCount: 0, photoCount: 0, backupCount: 0, loading: true } };
+    openModal("divisionDeleteModal"); paintDivisionDeleteModal();
+    const input = $("divisionDeleteConfirmInput");
+    if (input) input.oninput = () => { if (!pendingDivisionDelete) return; pendingDivisionDelete.typed = input.value; paintDivisionDeleteModal(); };
+    pendingDivisionDelete.preview = await divisionDeletePreview(row);
+    paintDivisionDeleteModal();
+  }
+  async function confirmDivisionDelete() {
+    const state = pendingDivisionDelete;
+    if (!state || state.working) return;
+    const af = activeFolder(), d = state.row, k = af && af.seflik_key;
+    if (!af || !d || clean(state.typed) !== clean(d.bolme_no)) return toast("Onay için bölme numarasını doğru yazın.", true);
+    state.working = true; paintDivisionDeleteModal();
+    const btn = $("divisionDeleteConfirmButton"); if (btn) btn.textContent = "Kalıcı Olarak Siliniyor…";
+    try {
+      await deleteLocalIstifDivision(d.bolme_no);
+      const list = divisions[k] || [];
+      divisions[k] = list.filter((x) => clean(x.bolme_no) !== clean(d.bolme_no));
+      delete divisionReady[readyKey(k, d.bolme_no)]; delete divisionRecords[readyKey(k, d.bolme_no)];
+      const yieldTargets = read(K.yieldTargets, {}); delete yieldTargets[readyKey(k, d.bolme_no)]; write(K.yieldTargets, yieldTargets);
+      op("delete_division", { seflik: af.seflik, seflik_key: k, bolmeNo: d.bolme_no, cascadeAssets: true });
+      saveLocal(); closeModals(); pendingDivisionDelete = null; render(); renderBolmeModal();
+      toast(navigator.onLine ? "Bölme ve bağlı veriler siliniyor…" : "Bölme cihazdan silindi. Sunucu ve Drive temizliği bağlantı gelince tamamlanacak.");
+      autoSyncDestructive("Bölme ve bağlı verileri silme işlemi");
+    } catch (e) {
+      state.working = false; paintDivisionDeleteModal(); toast(clean(e && e.message || e) || "Bölme silinemedi.", true);
+    } finally { if (btn) btn.textContent = "Bölmeyi ve Bağlı Verileri Sil"; }
+  }
+
+  function deleteDivision(index) {
+    if (!canManageFolder()) return toast("Bu işlemi yalnızca şeflik kurucusu Suite üzerinden yapabilir.", true);
+    const d = currentDivisions()[index];
+    if (!d) return;
+    openDivisionDeleteModal(d, index);
   }
   async function sendPendingToServer() {
     if (!signedIn()) return toast("Önce giriş yapın.", true);
@@ -1816,11 +1905,18 @@
             location: p.location || "",
           });
         } else if (item.type === "delete_division") {
+          await driveAction("division_delete_all", {
+            seflik: p.seflik,
+            bolmeNo: p.bolmeNo,
+            confirmBolme: p.bolmeNo,
+            permanent: true,
+          });
           await edge("seflik_folder_delete_division", {
             seflik: p.seflik,
             bolmeNo: p.bolmeNo,
             confirmBolme: p.bolmeNo,
             permanent: true,
+            personalDriveAssetsDeleted: true,
           });
         }
       } catch (e) {
@@ -1850,7 +1946,7 @@
         name: id.name || id.email || "Kullanıcı",
         seflik: af?.seflik || id.seflik || "",
         bolmeNo: id.bolme || "",
-        appVersion: "Mesaha Suite V20",
+        appVersion: "Mesaha Suite V21",
         avatarUrl: id.avatar || "",
         deviceId:
           localStorage.getItem("mesaha_suite_device_v7") ||
@@ -1867,7 +1963,7 @@
           appName: "Mesaha Suite",
           platform: navigator.platform || "",
           browser: navigator.userAgent || "",
-          suiteVersion: "V20",
+          suiteVersion: "V21",
         },
       });
     } catch {}
@@ -1935,7 +2031,7 @@
     try {
       await cleanupNestedWorkers();
       try { if (navigator.storage && navigator.storage.persist) await navigator.storage.persist(); } catch {}
-      const reg = await navigator.serviceWorker.register("./service-worker.js?v=20", { scope: "./", updateViaCache: "none" });
+      const reg = await navigator.serviceWorker.register("./service-worker.js?v=21", { scope: "./", updateViaCache: "none" });
       await navigator.serviceWorker.ready;
       const worker = await waitForActiveWorker(reg, navigator.onLine===false?7000:18000);
       setCacheStatus("Mesaha İO ve İstif İO dosyaları doğrulanıyor…", 18);
@@ -2127,8 +2223,8 @@
       return true;
     }
     if (tool === "sync" || tool === "server") {
-      if (window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8)
-        (window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8).syncAll({ source: tool })
+      if (window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8)
+        (window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8).syncAll({ source: tool })
           .then(() => loadFolders(true))
           .catch(() => {});
       else sendPendingToServer();
@@ -2148,7 +2244,7 @@
       return true;
     }
     if (tool === "backups") {
-      (window.MesahaSuiteBackupsV20 || window.MesahaSuiteBackupsV19 || window.MesahaSuiteBackupsV18 || window.MesahaSuiteBackupsV17 || window.MesahaSuiteBackupsV14 || window.MesahaSuiteBackupsV13 || window.MesahaSuiteBackupsV12 || window.MesahaSuiteBackupsV11 || window.MesahaSuiteBackupsV10 || window.MesahaSuiteBackupsV9 || window.MesahaSuiteBackupsV8) && (window.MesahaSuiteBackupsV20 || window.MesahaSuiteBackupsV19 || window.MesahaSuiteBackupsV18 || window.MesahaSuiteBackupsV17 || window.MesahaSuiteBackupsV14 || window.MesahaSuiteBackupsV13 || window.MesahaSuiteBackupsV12 || window.MesahaSuiteBackupsV11 || window.MesahaSuiteBackupsV10 || window.MesahaSuiteBackupsV9 || window.MesahaSuiteBackupsV8).open();
+      (window.MesahaSuiteBackupsV21 || window.MesahaSuiteBackupsV20 || window.MesahaSuiteBackupsV19 || window.MesahaSuiteBackupsV18 || window.MesahaSuiteBackupsV17 || window.MesahaSuiteBackupsV14 || window.MesahaSuiteBackupsV13 || window.MesahaSuiteBackupsV12 || window.MesahaSuiteBackupsV11 || window.MesahaSuiteBackupsV10 || window.MesahaSuiteBackupsV9 || window.MesahaSuiteBackupsV8) && (window.MesahaSuiteBackupsV21 || window.MesahaSuiteBackupsV20 || window.MesahaSuiteBackupsV19 || window.MesahaSuiteBackupsV18 || window.MesahaSuiteBackupsV17 || window.MesahaSuiteBackupsV14 || window.MesahaSuiteBackupsV13 || window.MesahaSuiteBackupsV12 || window.MesahaSuiteBackupsV11 || window.MesahaSuiteBackupsV10 || window.MesahaSuiteBackupsV9 || window.MesahaSuiteBackupsV8).open();
       return true;
     }
     if (tool === "legacy-backups") {
@@ -2175,7 +2271,7 @@
     }
     if (tool === "about") {
       showInfo(
-        "Mesaha Suite V20",
+        "Mesaha Suite V21",
         `<p>Google veya terminal/misafir oturumu iki uygulamada ortak kullanılır.</p><p><b>Bekleyen işlem:</b> ${pendingOps.length}</p><p>Bölmeler offline indirildikten sonra Mesaha İO ve İstif İO’da kayıt eklemeye hazır olur.</p>`,
       );
       return true;
@@ -2251,6 +2347,10 @@
     }
     if (id === "yieldSaveButton") {
       saveYieldCalculation();
+      return true;
+    }
+    if (id === "divisionDeleteConfirmButton") {
+      confirmDivisionDelete();
       return true;
     }
     if (target.dataset.downloadDivision != null) {
