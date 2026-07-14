@@ -279,6 +279,7 @@
       try{var ns=await refreshSession(storedSession());token=clean(ns&&ns.access_token);res=await edgeOnce(url,token,payload);text=await res.text();out=safeJson(text,{})}catch(re){lastError=re}
     }
     if(!res.ok || !out || out.ok===false){
+      if(out&&out.blocked===true){try{window.dispatchEvent(new CustomEvent('mesaha:security-blocked',{detail:out}))}catch(_){}}
       if(terminalMode&&terminalAccessRevoked(out,res.status))clearRevokedTerminalSession(out);
       if(!terminalMode&&out&&(out.access_required||out.google_required)){var msg=String((out&&out.error)||(out&&out.reason)||'');if(!/jwt|token|expired|invalid/i.test(msg)){try{window.dispatchEvent(new CustomEvent('mesaha:google-auth-required',{detail:out}))}catch(e){}}}
       var err=new Error((out&&out.error)||(out&&out.reason)||('Edge hata '+res.status));err.status=res.status;err.payload=out;throw err;

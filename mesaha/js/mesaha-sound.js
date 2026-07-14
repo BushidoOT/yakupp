@@ -1,223 +1,310 @@
-/* Mesaha İO v377 - tek ses motoru
-   Onay ve uyarı ayrı WAV dosyalarıdır; çalışan motor tek global kaynaktır. */
-(function(){
-  'use strict';
-  if (window.__mesahaSingleSoundEngineV377) return;
-  window.__mesahaSingleSoundEngineV377 = true;
+/* Mesaha İO V5.83 — iOS/Android tek ve gerçek WAV ses motoru.
+   Sentetik bip üretmez; yalnız paket içindeki onay/uyarı dosyalarını çalar. */
+(function () {
+  "use strict";
+  if (window.__mesahaExactSoundEngineV583) return;
+  window.__mesahaExactSoundEngineV583 = true;
 
   var SRC = {
-    success: '../assets/mesaha_onay.wav',
-    warning: '../assets/mesaha_uyari.wav'
+    success: "../assets/mesaha_onay.wav",
+    warning: "../assets/mesaha_uyari.wav",
   };
+  var htmlAudio = { success: null, warning: null };
+  var buffers = { success: null, warning: null };
+  var loading = { success: null, warning: null };
+  var context = null;
+  var gestureSeen = false;
+  var htmlPrimed = false;
+  var lastPrimeAttempt = 0;
+  var lastAny = 0;
+  var lastKind = { success: 0, warning: 0 };
 
-  var pool = { success:null, warning:null };
-  var last = { success:0, warning:0, any:0 };
-  var unlocked = false;
-  var userGesture = false;
-  var original = {};
-  var wrapped = {};
-  var installed = {};
-
-  function enabled(){
-    try { return !(window.state && window.state.settings && window.state.settings.soundEnabled === false); }
-    catch(e){ return true; }
+  function normalizeKind(kind) {
+    return /warn|warning|uyarı|uyari|error|hata|danger|delete|sil/i.test(
+      String(kind || ""),
+    )
+      ? "warning"
+      : "success";
   }
 
-  function makeAudio(kind){
-    try{
-      var a = new Audio(SRC[kind] || SRC.success);
-      a.preload = 'auto';
-      a.volume = 1;
-      try { a.load(); } catch(e) {}
-      return a;
-    }catch(e){ return null; }
+  function enabled() {
+    try {
+      return !(
+        window.state &&
+        window.state.settings &&
+        window.state.settings.soundEnabled === false
+      );
+    } catch (_error) {
+      return true;
+    }
   }
 
-  function ensure(){
-    if(!pool.success) pool.success = makeAudio('success');
-    if(!pool.warning) pool.warning = makeAudio('warning');
-  }
-
-  function unlock(ev){
-    if(ev && ev.isTrusted === false) return;
-    if(ev && ev.isTrusted === true) userGesture = true;
-    if(!userGesture || unlocked) return;
-    unlocked = true;
-    ensure();
-    ['success','warning'].forEach(function(kind){
-      try{
-        var a = pool[kind];
-        if(!a) return;
-        a.muted = true;
-        var p = a.play();
-        if(p && p.then){
-          p.then(function(){ try{ a.pause(); a.currentTime = 0; a.muted = false; }catch(e){} })
-           .catch(function(){ try{ a.muted = false; }catch(e){} });
-        }else{
-          try{ a.pause(); a.currentTime = 0; a.muted = false; }catch(e){}
-        }
-      }catch(e){}
-    });
-  }
-
-  function fallback(kind){
-    try{
-      var AC = window.AudioContext || window.webkitAudioContext;
-      if(!AC) return;
-      var ctx = window.__mesahaSoundContextV377;
-      if(!ctx || ctx.state === 'closed') ctx = window.__mesahaSoundContextV377 = new AC();
-      if(ctx.state === 'suspended') ctx.resume().catch(function(){});
-      var now = ctx.currentTime + 0.004;
-      var freqs = kind === 'warning' ? [520,390] : [1046,1318];
-      freqs.forEach(function(freq, i){
-        var osc = ctx.createOscillator();
-        var gain = ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.value = freq;
-        var t = now + i * 0.052;
-        gain.gain.setValueAtTime(0.0001, t);
-        gain.gain.exponentialRampToValueAtTime(kind === 'warning' ? 0.22 : 0.24, t + 0.012);
-        gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.085);
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start(t);
-        osc.stop(t + 0.095);
-      });
-    }catch(e){}
-  }
-
-  function normalizeKind(kind){
-    kind = String(kind || '').toLowerCase();
-    return /warn|warning|uyarı|uyari|error|hata|danger|delete|sil/.test(kind) ? 'warning' : 'success';
-  }
-
-  function argsText(args){
-    var out = [];
-    Array.prototype.slice.call(args || []).forEach(function(x){
-      if(x == null) return;
-      if(typeof x === 'string' || typeof x === 'number' || typeof x === 'boolean') out.push(String(x));
-      else if(typeof x === 'object'){
-        ['type','kind','icon','title','message','msg','text','html','detail','sub','className'].forEach(function(k){
-          try{ if(x[k] != null) out.push(String(x[k])); }catch(e){}
-        });
-      }
-    });
-    return out.join(' ').toLocaleLowerCase('tr-TR');
-  }
-
-  function kindFromArgs(args, defaultKind){
-    var text = argsText(args);
-    if(/hata|uyarı|uyari|dikkat|giriniz|seçiniz|seciniz|küçük|kucuk|büyük|buyuk|arasında|aralig|okunamadı|okunamadi|yüklenmedi|yuklenmedi|başarısız|basarisiz|boş|bos|silinsin|silindi|silinemedi|geçersiz|gecersiz|eksik|kayıtlı|kayitli|aynı barkod|ayni barkod|iptal|başarısız|basarisiz/.test(text)) return 'warning';
-    if(/success|başarılı|basarili|eklendi|güncellendi|guncellendi|kaydedildi|alındı|alindi|yüklendi|yuklendi|tamamlandı|tamamlandi/.test(text)) return 'success';
-    return normalizeKind(defaultKind || 'success');
-  }
-
-  function play(kind, force){
+  function ensureAudio(kind) {
     kind = normalizeKind(kind);
-    if(!force && !enabled()) return;
-    if(!userGesture) return;
-    var now = Date.now();
-    if(!force){
-      if(now - last.any < 170) return;          // toast + float toast çift sarmasını susturur
-      if(now - (last[kind] || 0) < 220) return;
+    if (htmlAudio[kind]) return htmlAudio[kind];
+    try {
+      var audio = new Audio(SRC[kind]);
+      audio.preload = "auto";
+      audio.volume = 1;
+      audio.setAttribute("playsinline", "");
+      try {
+        audio.load();
+      } catch (_error) {}
+      htmlAudio[kind] = audio;
+      return audio;
+    } catch (_error) {
+      return null;
     }
-    last.any = now;
-    last[kind] = now;
-    unlock();
-    ensure();
-    try{
-      var a = pool[kind];
-      if(!a){ fallback(kind); return; }
-      var failed = false;
-      try{ a.pause(); a.currentTime = 0; a.muted = false; a.volume = 1; }catch(e){}
-      var p = a.play();
-      if(p && p.catch){
-        p.catch(function(){ if(!failed){ failed = true; fallback(kind); } });
+  }
+
+  function ensureContext() {
+    if (context && context.state !== "closed") return context;
+    try {
+      var AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextClass) return null;
+      context = new AudioContextClass();
+      window.__mesahaExactSoundContextV583 = context;
+      return context;
+    } catch (_error) {
+      context = null;
+      return null;
+    }
+  }
+
+  function decodeAudio(ctx, arrayBuffer) {
+    return new Promise(function (resolve, reject) {
+      try {
+        var copy = arrayBuffer.slice(0);
+        var result = ctx.decodeAudioData(copy, resolve, reject);
+        if (result && typeof result.then === "function") result.then(resolve, reject);
+      } catch (error) {
+        reject(error);
       }
-      setTimeout(function(){
-        try{ if(a.paused && !failed){ failed = true; fallback(kind); } }catch(e){}
-      }, 120);
-    }catch(e){ fallback(kind); }
+    });
   }
 
-  function callWithSound(fn, ctx, args, defaultKind){
-    try{ play(kindFromArgs(args, defaultKind), false); }catch(e){}
-    return fn.apply(ctx, args);
-  }
-
-  function wrapFn(name, fn, defaultKind){
-    if(typeof fn !== 'function') return fn;
-    if(fn.__mesahaSoundWrappedV377) return fn;
-    var w = function(){ return callWithSound(fn, this, arguments, defaultKind); };
-    try{ Object.defineProperty(w, 'name', {value:name + 'SoundWrapped'}); }catch(e){}
-    w.__mesahaSoundWrappedV377 = true;
-    w.__mesahaSoundRawV377 = fn;
-    return w;
-  }
-
-  function installHook(name, defaultKind){
-    if(installed[name]) return;
-    installed[name] = true;
-    var current;
-    try{ current = window[name]; }catch(e){ current = undefined; }
-    original[name] = (typeof current === 'function' && current.__mesahaSoundRawV377) ? current.__mesahaSoundRawV377 : current;
-    wrapped[name] = wrapFn(name, original[name], defaultKind);
-    try{
-      Object.defineProperty(window, name, {
-        configurable: true,
-        enumerable: true,
-        get: function(){ return wrapped[name]; },
-        set: function(fn){
-          original[name] = (typeof fn === 'function' && fn.__mesahaSoundRawV377) ? fn.__mesahaSoundRawV377 : fn;
-          wrapped[name] = wrapFn(name, original[name], defaultKind);
-        }
+  function preload(kind) {
+    kind = normalizeKind(kind);
+    if (buffers[kind]) return Promise.resolve(buffers[kind]);
+    if (loading[kind]) return loading[kind];
+    var ctx = ensureContext();
+    if (!ctx || typeof fetch !== "function") return Promise.resolve(null);
+    loading[kind] = fetch(SRC[kind], { cache: "force-cache" })
+      .then(function (response) {
+        if (!response || !response.ok) throw new Error("Ses dosyası alınamadı");
+        return response.arrayBuffer();
+      })
+      .then(function (arrayBuffer) {
+        return decodeAudio(ctx, arrayBuffer);
+      })
+      .then(function (buffer) {
+        buffers[kind] = buffer || null;
+        return buffers[kind];
+      })
+      .catch(function () {
+        return null;
+      })
+      .finally(function () {
+        loading[kind] = null;
       });
-    }catch(e){
-      try{ if(typeof current === 'function') window[name] = wrapped[name]; }catch(_e){}
+    return loading[kind];
+  }
+
+  function resumeContext() {
+    var ctx = ensureContext();
+    if (!ctx) return Promise.resolve(false);
+    try {
+      if (ctx.state === "suspended") {
+        var result = ctx.resume();
+        if (result && typeof result.then === "function")
+          return result.then(
+            function () {
+              return ctx.state === "running";
+            },
+            function () {
+              return false;
+            },
+          );
+      }
+      return Promise.resolve(ctx.state === "running");
+    } catch (_error) {
+      return Promise.resolve(false);
     }
   }
 
-  function install(){
-    ensure();
-    installHook('toast', 'warning');
-    installHook('mesahaFloatToastV315', 'success');
-    installHook('mesahaFloatToastV314', 'success');
-    installHook('modal', 'success');
-    installHook('alert', 'warning');
+  function primeHtmlAudio(kind) {
+    if (htmlPrimed) return;
+    var now = Date.now();
+    if (now - lastPrimeAttempt < 900) return;
+    lastPrimeAttempt = now;
+    var audio = ensureAudio(kind);
+    if (!audio) return;
+    try {
+      audio.muted = true;
+      audio.currentTime = 0;
+      var promise = audio.play();
+      if (promise && typeof promise.then === "function") {
+        promise.then(
+          function () {
+            htmlPrimed = true;
+            try {
+              audio.pause();
+              audio.currentTime = 0;
+              audio.muted = false;
+            } catch (_error) {}
+          },
+          function () {
+            htmlPrimed = false;
+            try {
+              audio.muted = false;
+            } catch (_error) {}
+          },
+        );
+      } else {
+        htmlPrimed = true;
+        audio.pause();
+        audio.currentTime = 0;
+        audio.muted = false;
+      }
+    } catch (_error) {
+      htmlPrimed = false;
+      try {
+        audio.muted = false;
+      } catch (_innerError) {}
+    }
+  }
 
-    window.beep = function(){ play('success', false); };
+  function warm(event) {
+    if (event && event.isTrusted === false) return false;
+    if (event && event.isTrusted === true) gestureSeen = true;
+    if (!gestureSeen) return false;
+    resumeContext();
+    preload("success");
+    preload("warning");
+    /* İlk gerçek dokunuşta HTMLAudio da yetkilendirilir. Başarısız olursa
+       kilit kalıcı sayılmaz; sonraki gerçek dokunuşlarda yeniden denenir. */
+    primeHtmlAudio("success");
+    return true;
+  }
 
+  function playBuffer(kind) {
+    var ctx = ensureContext();
+    var buffer = buffers[kind];
+    if (!ctx || ctx.state !== "running" || !buffer) return false;
+    try {
+      var source = ctx.createBufferSource();
+      var gain = ctx.createGain();
+      source.buffer = buffer;
+      gain.gain.value = 1;
+      source.connect(gain);
+      gain.connect(ctx.destination);
+      source.start(0);
+      return true;
+    } catch (_error) {
+      return false;
+    }
+  }
+
+  function playHtml(kind) {
+    var audio = ensureAudio(kind);
+    if (!audio) return false;
+    try {
+      audio.pause();
+      audio.currentTime = 0;
+      audio.muted = false;
+      audio.volume = 1;
+      var promise = audio.play();
+      if (promise && typeof promise.catch === "function")
+        promise.catch(function () {});
+      return true;
+    } catch (_error) {
+      return false;
+    }
+  }
+
+  function play(kind, force) {
+    kind = normalizeKind(kind);
+    if (!force && !enabled()) return false;
+    if (!gestureSeen) return false;
+    var now = Date.now();
+    if (!force && (now - lastAny < 170 || now - lastKind[kind] < 220))
+      return false;
+    lastAny = now;
+    lastKind[kind] = now;
+    resumeContext();
+    preload(kind);
+    if (playBuffer(kind)) return true;
+    return playHtml(kind);
+  }
+
+  function pauseAll() {
+    Object.keys(htmlAudio).forEach(function (kind) {
+      try {
+        if (htmlAudio[kind]) htmlAudio[kind].pause();
+      } catch (_error) {}
+    });
+  }
+
+  function install() {
+    ensureAudio("success");
+    ensureAudio("warning");
+    preload("success");
+    preload("warning");
     var api = {
-      play:function(k){ play(k, false); },
-      success:function(){ play('success', false); },
-      warning:function(){ play('warning', false); },
-      forceSuccess:function(){ play('success', true); },
-      forceWarning:function(){ play('warning', true); },
-      unlock:unlock,
-      warm:unlock,
-      test:function(){ play('success', true); setTimeout(function(){ play('warning', true); }, 360); },
-      sources:SRC,
-      singleEngine:true
+      play: function (kind) {
+        return play(kind, false);
+      },
+      success: function () {
+        return play("success", false);
+      },
+      warning: function () {
+        return play("warning", false);
+      },
+      forceSuccess: function () {
+        return play("success", true);
+      },
+      forceWarning: function () {
+        return play("warning", true);
+      },
+      warm: warm,
+      unlock: warm,
+      prime: warm,
+      test: function () {
+        play("success", true);
+      },
+      sources: SRC,
+      exactWavOnly: true,
+      syntheticFallback: false,
     };
-
+    window.beep = api.success;
     window.mesahaSound = api;
+    window.mesahaSoundFixV583 = api;
     window.mesahaSoundFixV377 = api;
     window.mesahaSoundFixV376 = api;
     window.mesahaSoundFixV374 = api;
     window.mesahaFastSoundV373 = api;
-    window.mesahaSoundFeedbackV333 = { play:function(k){ play(k, false); }, beepDisabled:true };
-    window.mesahaSoundFeedbackV335 = window.mesahaSoundFeedbackV333;
-    window.mesahaSoundFeedbackV339 = {
-      playSuccess:function(){ play('success', false); },
-      playWarning:function(){ play('warning', false); },
-      beepDisabled:true
-    };
   }
 
-  ['touchstart','pointerdown','mousedown','keydown','click'].forEach(function(evt){
-    try{ document.addEventListener(evt, unlock, {capture:true, passive:true}); }catch(e){}
-  });
+  ["pointerdown", "touchstart", "mousedown", "keydown", "click"].forEach(
+    function (eventName) {
+      try {
+        document.addEventListener(eventName, warm, {
+          capture: true,
+          passive: true,
+        });
+      } catch (_error) {}
+    },
+  );
+  document.addEventListener(
+    "visibilitychange",
+    function () {
+      if (document.hidden) pauseAll();
+    },
+    { passive: true },
+  );
+  window.addEventListener("pagehide", pauseAll, { passive: true });
 
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', install, {once:true});
+  if (document.readyState === "loading")
+    document.addEventListener("DOMContentLoaded", install, { once: true });
   else install();
 })();

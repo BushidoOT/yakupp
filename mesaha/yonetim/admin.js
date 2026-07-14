@@ -351,7 +351,9 @@
     const accessRevoked = state.userAccess.some((x) => clean(x.user_id) === id && clean(x.status) === 'revoked');
     const idBlocked = state.blocks.some((b) => b.active && b.type === 'user_id' && clean(b.value) === id);
     const keyBlocked = state.blocks.some((b) => b.active && b.type === 'user_key' && lower(b.value) === lower(user.userKey));
-    return accessRevoked || idBlocked || keyBlocked;
+    const ipBlocked = clean(user.ip) && user.ip !== '-' && state.blocks.some((b) => b.active && b.type === 'ip' && clean(b.value) === clean(user.ip));
+    const deviceBlocked = clean(user.deviceId) && user.deviceId !== '-' && state.blocks.some((b) => b.active && b.type === 'device_id' && clean(b.value) === clean(user.deviceId));
+    return idBlocked || keyBlocked || ipBlocked || deviceBlocked;
   }
   function googleInfoForUser(user) {
     const id = clean(user && user.id);
@@ -472,7 +474,7 @@ function appLabel(user){return appKind(user)==='istif'?'İstif İO':appKind(user
           <div class="data-cell"><small>Uygulama</small><b>${escapeHtml(appLabel(user))}</b></div><div class="data-cell"><small>Kullandığı sürüm</small><b>${escapeHtml(user.version || 'Sürüm bekleniyor')}</b></div>
           <div class="data-cell"><small>Drive yedek</small><b>${fmtInt(backups)}</b></div><div class="data-cell"><small>Giriş tipi</small><b>${terminal ? 'Terminal kodlu' : google ? 'Google' : 'Yerel'}</b></div>
         </div>
-        <div class="user-actions"><button class="button info" data-action="detail" data-user-index="${globalIndex}" type="button">Detay</button><button class="button warning" data-action="block" data-user-index="${globalIndex}" type="button">Engelle</button><button class="button danger" data-action="delete-user" data-user-index="${globalIndex}" type="button">Kullanıcıyı sil</button></div>
+        <div class="user-actions"><button class="button info" data-action="detail" data-user-index="${globalIndex}" type="button">Detay</button><button class="button ${blocked ? 'success' : 'warning'}" data-action="${blocked ? 'unblock-user' : 'block'}" data-user-index="${globalIndex}" type="button">${blocked ? 'Engeli kaldır' : 'Engelle'}</button><button class="button danger" data-action="delete-user" data-user-index="${globalIndex}" type="button">Kullanıcıyı sil</button></div>
       </article>`;
     }).join('') : '<div class="empty-state">Filtreye uygun gerçek kullanıcı bulunamadı.</div>';
   }
@@ -607,13 +609,29 @@ function appLabel(user){return appKind(user)==='istif'?'İstif İO':appKind(user
   function openModal(title,html){$('modalTitle').textContent=title;$('modalBody').innerHTML=html;$('modal').classList.add('is-open');$('modal').setAttribute('aria-hidden','false')}
   function closeModal(){$('modal').classList.remove('is-open');$('modal').setAttribute('aria-hidden','true')}
 
+  function userBlocks(user){
+    const id=clean(user&&user.id),key=lower(user&&user.userKey),ip=clean(user&&user.ip),device=clean(user&&user.deviceId);
+    return state.blocks.filter((b)=>b.active&&((b.type==='user_id'&&id&&clean(b.value)===id)||(b.type==='user_key'&&key&&lower(b.value)===key)||(b.type==='ip'&&ip&&ip!=='-'&&clean(b.value)===ip)||(b.type==='device_id'&&device&&device!=='-'&&clean(b.value)===device)));
+  }
   async function blockUser(user){
     const hasId=clean(user.id)&&user.id!=='-';
-    const options=[hasId?`1 - Doğrulanmış hesap (${user.name})`:`1 - Eski kullanıcı anahtarı (${user.name})`,user.ip&&user.ip!=='-'?`2 - IP (${user.ip})`:'',user.deviceId&&user.deviceId!=='-'?`3 - Cihaz (${user.deviceId})`:''].filter(Boolean).join('\n');
+    const options=[`1 - Kullanıcı hesabı (${user.name})`,user.ip&&user.ip!=='-'?`2 - Yalnız IP (${user.ip})`:'',user.deviceId&&user.deviceId!=='-'?`3 - Yalnız cihaz (${user.deviceId})`:''].filter(Boolean).join('\n');
     const choice=prompt(`Engel türünü seç:\n${options}`,'1'); if(!choice)return;
-    let type=hasId?'user_id':'user_key',value=hasId?user.id:user.userKey;if(choice==='2'){type='ip';value=user.ip}else if(choice==='3'){type='device_id';value=user.deviceId}
+    let type=hasId?'user_id':'user_key',value=hasId?user.id:user.userKey,label='kullanıcı hesabı';
+    if(choice==='2'){type='ip';value=user.ip;label='IP adresi'}else if(choice==='3'){type='device_id';value=user.deviceId;label='cihaz'}
     if(!clean(value)||value==='-')throw new Error('Engellenecek değer bulunamadı');
-    await edge('admin_add_block',{block_type:type,block_value:value,reason:'Admin panel engeli'});toast(type==='user_id'?'Doğrulanmış hesap engellendi':'Engel eklendi');await loadAll();
+    if(!confirm(`${user.name} için ${label} engellensin mi? Açık uygulamalar en geç 20 saniye içinde kilitlenir.`))return;
+    const out=await edge('admin_add_block',{block_type:type,block_value:value,reason:`Admin paneli • ${user.name}`});
+    const item=out&&out.item?mapBlock(out.item):mapBlock({block_type:type,block_value:value,reason:`Admin paneli • ${user.name}`,active:true,created_at:new Date().toISOString()});
+    state.blocks=state.blocks.filter((b)=>!(b.type===item.type&&b.value===item.value));state.blocks.push(item);renderAll();
+    toast(`${label} engellendi`);await loadAll();
+  }
+  async function unblockUser(user){
+    const rows=userBlocks(user);
+    if(!rows.length){toast('Aktif engel bulunamadı');return}
+    if(!confirm(`${user.name} için bulunan ${rows.length} engel kaldırılsın mı?`))return;
+    for(const row of rows)await edge('admin_remove_block',{id:row.id,block_type:row.type,block_value:row.value});
+    toast('Kullanıcı engelleri kaldırıldı');await loadAll();
   }
   async function deleteUser(user){
     const typed=prompt(`${user.name} kullanıcısı, tüm Supabase yedekleri ve kullanıcının oluşturduğu Şeflik bölmeleri kalıcı olarak silinecek. İşlem geri alınamaz. Onaylamak için kullanıcı adını yazın:`,user.name);
@@ -638,7 +656,7 @@ function appLabel(user){return appKind(user)==='istif'?'İstif İO':appKind(user
   async function addIp(){const ip=prompt('Engellenecek IP adresi:');if(!clean(ip))return;if(!isLikelyIp(ip)&&!confirm('Girilen değer standart IP biçiminde görünmüyor. Yine de engellensin mi?'))return;await edge('admin_add_block',{block_type:'ip',block_value:clean(ip),reason:'Manuel IP engeli'});toast('IP engeli eklendi');await loadAll()}
 
   function userDetail(user){
-    openModal('Kullanıcı detayı',`<div class="detail-grid"><div><small>Kullanıcı</small><b>${escapeHtml(user.name)}</b></div><div><small>Şeflik</small><b>${escapeHtml(user.seflik)}</b></div><div><small>IP</small><b class="ip">${escapeHtml(user.ip||'-')}</b></div><div><small>Cihaz</small><b>${escapeHtml(user.deviceId||'-')}</b></div><div><small>Platform</small><b>${escapeHtml(user.platform||'-')}</b></div><div><small>Tarayıcı</small><b>${escapeHtml(user.browser||'-')}</b></div><div><small>Kullandığı sürüm</small><b>${escapeHtml(user.version||'-')}</b></div><div><small>Giriş tipi</small><b>${terminalInfoForUser(user)?'Terminal kodlu':googleInfoForUser(user)?'Google':'Yerel'}</b></div><div><small>Son giriş</small><b>${escapeHtml(fmtDate(user.lastSeen))}</b></div></div><pre class="raw-data">${escapeHtml(JSON.stringify(user.raw||user,null,2))}</pre>`)
+    openModal('Kullanıcı detayı',`<div class="detail-grid"><div><small>Kullanıcı</small><b>${escapeHtml(user.name)}</b></div><div><small>Şeflik</small><b>${escapeHtml(user.seflik)}</b></div><div><small>IP</small><b class="ip">${escapeHtml(user.ip||'-')}</b></div><div><small>Cihaz</small><b>${escapeHtml(user.deviceId||'-')}</b></div><div><small>Platform</small><b>${escapeHtml(user.platform||'-')}</b></div><div><small>Tarayıcı</small><b>${escapeHtml(user.browser||'-')}</b></div><div><small>Kullandığı sürüm</small><b>${escapeHtml(user.version||'-')}</b></div><div><small>Giriş tipi</small><b>${terminalInfoForUser(user)?'Terminal kodlu':googleInfoForUser(user)?'Google':'Yerel'}</b></div><div><small>Son giriş</small><b>${escapeHtml(fmtDate(user.lastSeen))}</b></div></div><div class="user-actions detail-actions"><button class="button warning" data-action="block" data-user-index="${state.users.indexOf(user)}" type="button">Engel seçenekleri</button>${isBlockedUser(user)?`<button class="button success" data-action="unblock-user" data-user-index="${state.users.indexOf(user)}" type="button">Tüm engelleri kaldır</button>`:''}</div><pre class="raw-data">${escapeHtml(JSON.stringify(user.raw||user,null,2))}</pre>`)
   }
 
   async function login(){
@@ -668,7 +686,7 @@ function appLabel(user){return appKind(user)==='istif'?'İstif İO':appKind(user
     ['userSearch','userFilter'].forEach((id)=>$(id).addEventListener('input',renderUsers));['backupSearch','backupSort'].forEach((id)=>$(id).addEventListener('input',renderBackups));$('blockSearch').addEventListener('input',renderBlocks);
     $('clearUserFilter').addEventListener('click',()=>{$('userSearch').value='';$('userFilter').value='all';renderUsers()});$('clearBackupFilter').addEventListener('click',()=>{$('backupSearch').value='';$('backupSort').value='new';renderBackups()});$('addIpBtn').addEventListener('click',()=>addIp().catch((e)=>toast(errorText(e))));
     $('modalClose').addEventListener('click',closeModal);$('modal').addEventListener('click',(e)=>{if(e.target===$('modal'))closeModal()});
-    document.addEventListener('click',(e)=>{touchActivity();const button=e.target.closest('[data-action]');if(!button)return;const action=button.dataset.action;const user=state.users[Number(button.dataset.userIndex)];if(action==='detail'&&user)userDetail(user);if(action==='block'&&user)blockUser(user).catch((x)=>toast(errorText(x)));if(action==='delete-user'&&user)deleteUser(user).catch((x)=>toast(errorText(x)));if(action==='hide-backup')hideBackup(button.dataset.backupId).catch((x)=>toast(errorText(x)));if(action==='unblock')unblock(button).catch((x)=>toast(errorText(x)));const access=state.userAccess[Number(button.dataset.accessIndex)];if(action==='access-approve'&&access)accessApprove(access).catch((x)=>toast(errorText(x)));if(action==='access-reject'&&access)accessDecision(access,'admin_user_access_reject').catch((x)=>toast(errorText(x)));if(action==='access-revoke'&&access)accessDecision(access,'admin_user_access_revoke').catch((x)=>toast(errorText(x)));if(action==='access-reopen'&&access)accessDecision(access,'admin_user_access_reopen').catch((x)=>toast(errorText(x))) });
+    document.addEventListener('click',(e)=>{touchActivity();const button=e.target.closest('[data-action]');if(!button)return;const action=button.dataset.action;const user=state.users[Number(button.dataset.userIndex)];if(action==='detail'&&user)userDetail(user);if(action==='block'&&user)blockUser(user).catch((x)=>toast(errorText(x)));if(action==='unblock-user'&&user)unblockUser(user).catch((x)=>toast(errorText(x)));if(action==='delete-user'&&user)deleteUser(user).catch((x)=>toast(errorText(x)));if(action==='hide-backup')hideBackup(button.dataset.backupId).catch((x)=>toast(errorText(x)));if(action==='unblock')unblock(button).catch((x)=>toast(errorText(x)));const access=state.userAccess[Number(button.dataset.accessIndex)];if(action==='access-approve'&&access)accessApprove(access).catch((x)=>toast(errorText(x)));if(action==='access-reject'&&access)accessDecision(access,'admin_user_access_reject').catch((x)=>toast(errorText(x)));if(action==='access-revoke'&&access)accessDecision(access,'admin_user_access_revoke').catch((x)=>toast(errorText(x)));if(action==='access-reopen'&&access)accessDecision(access,'admin_user_access_reopen').catch((x)=>toast(errorText(x))) });
     ['keydown','pointerdown','touchstart'].forEach((name)=>document.addEventListener(name,touchActivity,{passive:true}));
     setInterval(()=>{const last=Number(sessionStorage.getItem(LAST_ACTIVITY_KEY)||0);if(readSession().access_token&&last&&Date.now()-last>IDLE_MS)logout(false,true)},60000);
   }

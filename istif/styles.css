@@ -385,3 +385,26 @@ body.is-printing .print-area{display:block!important;position:relative;z-index:9
 .suggest-row.already-added{opacity:.78;background:#f6fbf8}.suggest-row.already-added .suggest-add{color:#0f6b3d;background:#e7f5ed;border-color:#bee7cf}
 
 .suite-home-button{position:fixed;z-index:2147483000;right:14px;bottom:calc(82px + env(safe-area-inset-bottom));border:1px solid rgba(255,255,255,.7);background:rgba(19,67,47,.94);color:#fff;border-radius:999px;padding:10px 13px;font:800 13px system-ui;box-shadow:0 12px 30px rgba(0,0,0,.22)}
+
+/* Suite V26 — iOS/Android form ve dokunma uyumluluğu */
+@media (hover: none) and (pointer: coarse) {
+  button,
+  a,
+  [role="button"] {
+    touch-action: manipulation;
+  }
+  input,
+  select,
+  textarea,
+  .field-main input,
+  .field-main select,
+  .field-main textarea,
+  .filter-box input,
+  .filter-box select {
+    font-size: 16px !important;
+  }
+  .filter-box input,
+  .filter-box select {
+    min-height: 32px;
+  }
+}

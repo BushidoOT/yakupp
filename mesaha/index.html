@@ -16,7 +16,7 @@
     <meta content="yes" name="mobile-web-app-capable" />
     <script>
       window.MESAHA_SUITE_MODE = true;
-      window.MESAHA_SUITE_VERSION = 23;
+      window.MESAHA_SUITE_VERSION = 26;
     </script>
     <style id="mesaha-suite-overlay-clean-v10">
       html[data-suite-managed="1"] #googleAuthOverlayV548,
@@ -3307,10 +3307,18 @@
           $("openEntryBtn").addEventListener("click", () => openEntry());
           $("entryHomeBtn").addEventListener("click", () => showView("home"));
           /* v351: theme removed */
-          $("soundBtn").addEventListener("click", () => {
+          $("soundBtn").addEventListener("click", (event) => {
             state.settings.soundEnabled = !state.settings.soundEnabled;
             saveSettings();
             renderSound();
+            if (state.settings.soundEnabled !== false) {
+              try {
+                if (window.mesahaSound && window.mesahaSound.warm)
+                  window.mesahaSound.warm(event);
+                if (window.mesahaSound && window.mesahaSound.forceSuccess)
+                  window.mesahaSound.forceSuccess();
+              } catch (_error) {}
+            }
           });
           const bcToggle = $("barcodeControlEnabled");
           if (bcToggle)
@@ -4659,23 +4667,47 @@
               ? window.mesahaV310SavedToast(rec, wasEditing)
               : toast(wasEditing ? "Kayıt güncellendi." : "Kayıt alındı."),
           );
-          post("focus", () =>
-            setTimeout(() => {
+          post("focus", () => {
+            /* V5.83 odak köprüsü kayıt tamamlandı olayıyla tek kez çalışır.
+               Modül yüklenemezse eski güvenli odak yedeği kullanılır. */
+            if (
+              window.MesahaSaveFocusV583 &&
+              typeof window.MesahaSaveFocusV583.restore === "function"
+            )
+              return true;
+            return setTimeout(() => {
               const d = $("diameterInput");
               if (!d) return;
               d.value = "";
-              d.focus({ preventScroll: true });
+              try {
+                d.focus({ preventScroll: true });
+              } catch (_error) {
+                try {
+                  d.focus();
+                } catch (_innerError) {}
+              }
               try {
                 d.setSelectionRange(0, 0);
               } catch {}
-            }, 20),
-          );
+            }, 20);
+          });
           post("vibrate", () => vibrate("save"));
           if (state.settings.soundEnabled !== false)
             post("sound", () => beep());
           window.__mesahaSaveBusyV527 = false;
           if (entry) entry.classList.remove("mesaha-save-single-gate-v418");
           if (saveBtn) saveBtn.removeAttribute("aria-busy");
+          try {
+            window.dispatchEvent(
+              new CustomEvent("mesaha:entry-save-complete", {
+                detail: {
+                  ok: true,
+                  id: rec && rec.id,
+                  editing: wasEditing,
+                },
+              }),
+            );
+          } catch (_error) {}
           return true;
         }
 
@@ -4772,10 +4804,14 @@
         }
         function beep() {
           try {
-            if (window.mesahaSoundFixV376) window.mesahaSoundFixV376.success();
-            else if (window.mesahaSoundFixV374)
-              window.mesahaSoundFixV374.success();
+            if (window.mesahaSound && window.mesahaSound.success)
+              return window.mesahaSound.success();
+            if (window.mesahaSoundFixV583)
+              return window.mesahaSoundFixV583.success();
+            if (window.mesahaSoundFixV376)
+              return window.mesahaSoundFixV376.success();
           } catch (e) {}
+          return false;
         }
 
         let __recordStatsCacheV447 = { records: null, sig: "", data: null };
@@ -15172,7 +15208,8 @@
       })();
     </script>
     <script src="./js/mesaha-render-storage.js"></script>
-    <script id="mesaha-sound-engine-v377" src="./js/mesaha-sound.js"></script>
+    <script id="mesaha-sound-engine-v583" src="./js/mesaha-sound.js?v=583"></script>
+    <script id="mesaha-save-focus-v583" src="./js/mesaha-save-focus.js?v=583"></script>
     <style id="mesaha-v389-xls-button-strong-hotfix">
       /* v389: Sadece Mesaha Dosyasını İndir butonu belirginleştirildi. Diğer akışlara dokunmaz. */
       #downloadXlsBtn {
@@ -20664,7 +20701,8 @@
       })();
     </script>
 
-    <script src="../suite-sync-core.js?v=24"></script>
-    <script src="./suite-bridge.js?v=24"></script>
+    <script src="../suite-security.js?v=26"></script>
+    <script src="../suite-sync-core.js?v=26"></script>
+    <script src="./suite-bridge.js?v=26"></script>
   </body>
 </html>

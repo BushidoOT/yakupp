@@ -1,8 +1,8 @@
 {
-  "version": "0.3.6-suite-v24",
-  "name": "Mesaha İO İstif Alma v0.3.6",
-  "updatedAt": "2026-07-14T21:30:00+03:00",
-  "notes": "iOS PDF önizleme/yazdırma sayfasına sabit Kapat / Uygulamaya Dön düğmesi ve güvenli geri dönüş eklendi.",
-  "visibleVersion": "İstif Alma v0.3.6",
-  "build": 24
+  "version": "0.3.8-suite-v26",
+  "name": "Mesaha İO İstif Alma v0.3.8",
+  "updatedAt": "2026-07-14T23:30:00+03:00",
+  "notes": "Ortak güvenlik engeli kontrolü ve şeflik üyeliğinden çıkış sonrası yerel kayıt erişimi temizliği eklendi.",
+  "visibleVersion": "İstif Alma v0.3.8",
+  "build": 26
 }

@@ -173,7 +173,7 @@
   async function post(url, action, data) {
     const body = {
       action,
-      source: "mesaha-suite-v24",
+      source: "mesaha-suite-v26",
       ...terminalAuth(),
       ...(data || {}),
     };
@@ -185,6 +185,7 @@
     }, 30000);
     const j = await r.json().catch(() => ({}));
     if (!r.ok || j.ok === false) {
+      if (j && j.blocked === true) { try { window.dispatchEvent(new CustomEvent("mesaha:security-blocked", { detail: j })); } catch (_) {} }
       const error = new Error(clean(j.error || j.message) || "Sunucu hatası " + r.status);
       error.status = r.status;
       error.retryAfter = num(j.retry_after || j.retryAfter);
@@ -796,11 +797,11 @@
       try {
         const remote = await edge("seflik_folder_read", { seflik, folderSeflik: seflik, bolmeNo: bolme });
         remoteRows = Array.isArray(remote.records) ? remote.records : [];
-      } catch (e) { console.warn("[suite-v24] Ortak kayıtlar alınamadı; yerel kayıtlarla devam ediliyor", e); }
+      } catch (e) { console.warn("[suite-v26] Ortak kayıtlar alınamadı; yerel kayıtlarla devam ediliyor", e); }
       const rows = mergeMesahaRows(remoteRows, localRows).map((r) => ({ ...r, seflik, bolmeNo: bolme, bolme_no: bolme }));
       const token = stableSyncToken(seflik, bolme, rows);
       for (let i = 0; i < rows.length; i += 150)
-        await edge("seflik_folder_push", { seflik, bolmeNo: bolme, syncToken: token, records: rows.slice(i, i + 150), appVersion: "Mesaha Suite V24", mergeMode: "barcode" });
+        await edge("seflik_folder_push", { seflik, bolmeNo: bolme, syncToken: token, records: rows.slice(i, i + 150), appVersion: "Mesaha Suite V26", mergeMode: "barcode" });
       let backup = null, driveError = "";
       try {
         if (id.google)
@@ -808,7 +809,7 @@
             seflik, appId: "mesaha",
             fileName: `Mesaha_${fold(seflik)}_${fold(bolme)}_${new Date().toISOString().slice(0, 10)}.json`,
             recordCount: rows.length, totalVolume: rows.reduce((sum, r) => sum + volume(r), 0),
-            payload: { schema: "mesaha-suite-v24", app: "mesaha", seflik, bolme, createdAt: now(), records: rows },
+            payload: { schema: "mesaha-suite-v26", app: "mesaha", seflik, bolme, createdAt: now(), records: rows },
           });
       } catch (e) { driveError = clean(e.message || e); }
       await edge("seflik_folder_finish", {
@@ -816,7 +817,7 @@
         totalVolume: rows.reduce((sum, r) => sum + volume(r), 0),
         driveFileId: (backup && backup.fileId) || "", driveFileName: (backup && backup.fileName) || "",
         driveStatus: backup ? "saved" : id.google ? "error" : "not_connected", driveError,
-        appVersion: "Mesaha Suite V24", mergeMode: "barcode",
+        appVersion: "Mesaha Suite V26", mergeMode: "barcode",
       });
       clearStableSyncToken(seflik, bolme);
       done += rows.length;
@@ -987,7 +988,7 @@
             recordCount: payloadRows.length,
             totalVolume: payloadRows.reduce((s, r) => s + num(r.ster), 0),
             payload: {
-              schema: "mesaha-suite-v24",
+              schema: "mesaha-suite-v26",
               app: "istif",
               seflik,
               createdAt: now(),
@@ -995,7 +996,7 @@
             },
           });
         } catch (e) {
-          console.warn("[suite-v24] İstif Drive yedeği oluşturulamadı", e);
+          console.warn("[suite-v26] İstif Drive yedeği oluşturulamadı", e);
         }
     clearDirty("istif");
     return { done };
@@ -1284,7 +1285,7 @@
       seflik, appId: "mesaha",
       fileName: `Mesaha_${fold(seflik)}_${selected ? fold(selected) + "_" : ""}${new Date().toISOString().replace(/[:.]/g, "-")}.json`,
       recordCount: rows.length, totalVolume: rows.reduce((sum, r) => sum + volume(r), 0),
-      payload: { schema: "mesaha-suite-v24", app: "mesaha", seflik, bolme: selected, createdAt: now(), settings: read(K.settings, {}), records: rows },
+      payload: { schema: "mesaha-suite-v26", app: "mesaha", seflik, bolme: selected, createdAt: now(), settings: read(K.settings, {}), records: rows },
     });
   }
   async function restoreMesahaBackup(id, mode) {
@@ -1442,7 +1443,7 @@
     pullIstifRecords,
     loadDivisionRecords,
   };
-  window.MesahaSuiteSyncV24 = window.MesahaSuiteSyncV22 = window.MesahaSuiteSyncV21 = api;
+  window.MesahaSuiteSyncV26 = window.MesahaSuiteSyncV25 = window.MesahaSuiteSyncV24 = window.MesahaSuiteSyncV22 = window.MesahaSuiteSyncV21 = api;
   window.MesahaSuiteSyncV20 = api;
   window.MesahaSuiteSyncV19 = api;
   window.MesahaSuiteSyncV18 = api;

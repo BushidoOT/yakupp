@@ -1834,7 +1834,7 @@ body.suite-starting{overflow:hidden!important;touch-action:none}
 @media(max-width:420px){.suite-version-corner{left:12px}.connection-pill{max-width:154px;overflow:hidden}.suite-version-corner:has(#suiteUpdateButton:not([hidden])){max-width:140px}}
 
 
-/* Suite V24 • herkese açık eski yedek arşivi */
+/* Suite V26 • herkese açık eski yedek arşivi */
 .tool-strip button[data-tool="legacy-backups"] svg{color:#865b19}
 .legacy-backups-modal{width:min(760px,calc(100vw - 24px));max-height:min(88vh,860px);overflow:auto}
 .legacy-backups-intro{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:13px 14px;border:1px solid #dce8e1;border-radius:17px;background:#f7fbf8;margin-bottom:12px}
@@ -1848,7 +1848,7 @@ body.suite-starting{overflow:hidden!important;touch-action:none}
 @media(max-width:680px){.legacy-backups-intro{align-items:flex-start;flex-direction:column}.legacy-backups-intro a{width:100%;text-align:center}.legacy-backup-row{grid-template-columns:1fr}.legacy-backup-actions{justify-content:stretch}.legacy-backup-actions a{flex:1}.legacy-filter-actions button{flex:1}}
 
 
-/* Suite V24 — zincirli bölme silme uyarısı */
+/* Suite V26 — zincirli bölme silme uyarısı */
 .division-delete-modal{border:1px solid rgba(190,31,31,.24)!important;box-shadow:0 28px 70px rgba(82,10,10,.26)!important}
 .division-delete-modal .danger-modal-head{background:linear-gradient(135deg,#fff7f7,#fff);border-bottom:1px solid #f4caca}
 .division-delete-modal .danger-modal-head .modal-kicker{color:#a71919}
@@ -1859,3 +1859,24 @@ body.suite-starting{overflow:hidden!important;touch-action:none}
 .division-delete-status{min-height:18px;margin:2px 0 12px;font-size:11px;line-height:1.45;color:#7c4a4a}.division-delete-status.bad{color:#a71919;font-weight:750}
 .division-delete-confirm-label{display:grid;gap:7px;color:#691b1b!important;font-weight:750!important}.division-delete-confirm-label input{border-color:#e3a5a5!important;background:#fffafa!important}.division-delete-confirm-label input:focus{box-shadow:0 0 0 4px rgba(185,28,28,.12)!important;border-color:#b91c1c!important}
 .danger-confirm-button{min-height:46px;border:0;border-radius:14px;padding:0 16px;background:#b91c1c;color:#fff;font:800 13px/1 system-ui;box-shadow:0 9px 22px rgba(185,28,28,.22)}.danger-confirm-button:disabled{opacity:.48;box-shadow:none}
+
+/* Suite V26 — mobil tarayıcılarda odak yakınlaştırması ve gecikmeli dokunma önleme */
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+@media (hover: none) and (pointer: coarse) {
+  button,
+  a,
+  [role="button"] {
+    touch-action: manipulation;
+  }
+  .modal-form input,
+  .modal-form select,
+  .modal-form textarea,
+  #divisionDeleteConfirmInput,
+  #legacyBackupSearch,
+  #yieldStandingVolume {
+    font-size: 16px !important;
+  }
+}

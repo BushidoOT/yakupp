@@ -1,6 +1,6 @@
 "use strict";
 
-const APP_VERSION = "0.3.6-suite-v24";
+const APP_VERSION = "0.3.8-suite-v26";
 const MAX_PHOTO_BYTES = 1024 * 1024;
 const DB_NAME = "mesaha-istif-prototype";
 const DB_VERSION = 1;
@@ -97,7 +97,12 @@ const GENERIC_SETTINGS_MIGRATION_KEY = "mesaha-istif-generic-settings-v034";
 
 const CONFIRM_SOUND_SRC = "../assets/mesaha_onay.wav";
 let confirmSoundAudio = null;
-let confirmSoundUnlocked = false;
+let confirmSoundContext = null;
+let confirmSoundBuffer = null;
+let confirmSoundLoading = null;
+let confirmSoundGestureSeen = false;
+let confirmSoundHtmlPrimed = false;
+let confirmSoundPrimeAttemptAt = 0;
 let confirmSoundLastAt = 0;
 
 function ensureConfirmSound() {
@@ -106,6 +111,7 @@ function ensureConfirmSound() {
     confirmSoundAudio = new Audio(CONFIRM_SOUND_SRC);
     confirmSoundAudio.preload = "auto";
     confirmSoundAudio.volume = 1;
+    confirmSoundAudio.setAttribute("playsinline", "");
     try {
       confirmSoundAudio.load();
     } catch {}
@@ -115,35 +121,105 @@ function ensureConfirmSound() {
   return confirmSoundAudio;
 }
 
+function ensureConfirmSoundContext() {
+  if (confirmSoundContext && confirmSoundContext.state !== "closed")
+    return confirmSoundContext;
+  try {
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContextClass) return null;
+    confirmSoundContext = new AudioContextClass();
+    return confirmSoundContext;
+  } catch {
+    confirmSoundContext = null;
+    return null;
+  }
+}
+
+function decodeConfirmSound(context, arrayBuffer) {
+  return new Promise((resolve, reject) => {
+    try {
+      const result = context.decodeAudioData(arrayBuffer.slice(0), resolve, reject);
+      if (result && typeof result.then === "function") result.then(resolve, reject);
+    } catch (error) {
+      reject(error);
+    }
+  });
+}
+
+function preloadConfirmSound() {
+  if (confirmSoundBuffer) return Promise.resolve(confirmSoundBuffer);
+  if (confirmSoundLoading) return confirmSoundLoading;
+  const context = ensureConfirmSoundContext();
+  if (!context || typeof fetch !== "function") return Promise.resolve(null);
+  confirmSoundLoading = fetch(CONFIRM_SOUND_SRC, { cache: "force-cache" })
+    .then((response) => {
+      if (!response || !response.ok) throw new Error("Onay sesi alınamadı");
+      return response.arrayBuffer();
+    })
+    .then((arrayBuffer) => decodeConfirmSound(context, arrayBuffer))
+    .then((buffer) => {
+      confirmSoundBuffer = buffer || null;
+      return confirmSoundBuffer;
+    })
+    .catch(() => null)
+    .finally(() => {
+      confirmSoundLoading = null;
+    });
+  return confirmSoundLoading;
+}
+
+function resumeConfirmSoundContext() {
+  const context = ensureConfirmSoundContext();
+  if (!context) return;
+  try {
+    if (context.state === "suspended") {
+      const result = context.resume();
+      if (result && typeof result.catch === "function") result.catch(() => {});
+    }
+  } catch {}
+}
+
 function warmConfirmSound(event) {
   if (event && event.isTrusted === false) return;
-  if (confirmSoundUnlocked) return;
+  if (event && event.isTrusted === true) confirmSoundGestureSeen = true;
+  if (!confirmSoundGestureSeen) return;
+  resumeConfirmSoundContext();
+  preloadConfirmSound();
+  if (confirmSoundHtmlPrimed) return;
+  const now = Date.now();
+  if (now - confirmSoundPrimeAttemptAt < 900) return;
+  confirmSoundPrimeAttemptAt = now;
   const audio = ensureConfirmSound();
   if (!audio) return;
-  confirmSoundUnlocked = true;
   try {
     audio.muted = true;
-    const p = audio.play();
-    if (p && typeof p.then === "function") {
-      p.then(() => {
-        try {
-          audio.pause();
-          audio.currentTime = 0;
-          audio.muted = false;
-        } catch {}
-      }).catch(() => {
-        try {
-          audio.muted = false;
-        } catch {}
-      });
+    audio.currentTime = 0;
+    const promise = audio.play();
+    if (promise && typeof promise.then === "function") {
+      promise.then(
+        () => {
+          confirmSoundHtmlPrimed = true;
+          try {
+            audio.pause();
+            audio.currentTime = 0;
+            audio.muted = false;
+          } catch {}
+        },
+        () => {
+          confirmSoundHtmlPrimed = false;
+          try {
+            audio.muted = false;
+          } catch {}
+        },
+      );
     } else {
-      try {
-        audio.pause();
-        audio.currentTime = 0;
-        audio.muted = false;
-      } catch {}
+      confirmSoundHtmlPrimed = true;
+      audio.pause();
+      audio.currentTime = 0;
+      audio.muted = false;
     }
   } catch {
+    confirmSoundHtmlPrimed = false;
     try {
       audio.muted = false;
     } catch {}
@@ -159,31 +235,48 @@ function shouldPlayConfirmSound(message, type) {
 }
 
 function playConfirmSound(force = false) {
+  if (!confirmSoundGestureSeen) return false;
   const now = Date.now();
-  if (!force && now - confirmSoundLastAt < 220) return;
+  if (!force && now - confirmSoundLastAt < 220) return false;
   confirmSoundLastAt = now;
+  resumeConfirmSoundContext();
+  preloadConfirmSound();
+  const context = ensureConfirmSoundContext();
+  if (context && context.state === "running" && confirmSoundBuffer) {
+    try {
+      const source = context.createBufferSource();
+      source.buffer = confirmSoundBuffer;
+      source.connect(context.destination);
+      source.start(0);
+      return true;
+    } catch {}
+  }
   const audio = ensureConfirmSound();
-  if (!audio) return;
+  if (!audio) return false;
   try {
     audio.muted = false;
     audio.volume = 1;
     audio.pause();
     audio.currentTime = 0;
-    const p = audio.play();
-    if (p && typeof p.catch === "function") p.catch(() => {});
-  } catch {}
+    const promise = audio.play();
+    if (promise && typeof promise.catch === "function") promise.catch(() => {});
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 ["touchstart", "pointerdown", "mousedown", "keydown", "click"].forEach(
-  (evt) => {
+  (eventName) => {
     try {
-      document.addEventListener(evt, warmConfirmSound, {
+      document.addEventListener(eventName, warmConfirmSound, {
         capture: true,
         passive: true,
       });
     } catch {}
   },
 );
+preloadConfirmSound();
 
 const state = {
   view: "home",
@@ -229,6 +322,100 @@ const state = {
     updatedAt: "",
   },
 };
+
+function cloneFallback(value, seen = new WeakMap()) {
+  if (value == null || typeof value !== "object") return value;
+  if (typeof Blob !== "undefined" && value instanceof Blob) return value;
+  if (typeof File !== "undefined" && value instanceof File) return value;
+  if (value instanceof Date) return new Date(value.getTime());
+  if (seen.has(value)) return seen.get(value);
+  if (Array.isArray(value)) {
+    const output = [];
+    seen.set(value, output);
+    value.forEach((item) => output.push(cloneFallback(item, seen)));
+    return output;
+  }
+  if (value instanceof Set) {
+    const output = new Set();
+    seen.set(value, output);
+    value.forEach((item) => output.add(cloneFallback(item, seen)));
+    return output;
+  }
+  if (value instanceof Map) {
+    const output = new Map();
+    seen.set(value, output);
+    value.forEach((item, key) =>
+      output.set(cloneFallback(key, seen), cloneFallback(item, seen)),
+    );
+    return output;
+  }
+  const output = {};
+  seen.set(value, output);
+  Object.keys(value).forEach((key) => {
+    output[key] = cloneFallback(value[key], seen);
+  });
+  return output;
+}
+
+function cloneValue(value) {
+  if (typeof structuredClone === "function") {
+    try {
+      return structuredClone(value);
+    } catch {}
+  }
+  return cloneFallback(value);
+}
+
+const localBlobUrlCache = new Map();
+const REMOTE_PHOTO_CACHE_LIMIT = 24;
+
+function blobPreviewUrl(blob) {
+  if (!blob) return "";
+  if (localBlobUrlCache.has(blob)) return localBlobUrlCache.get(blob);
+  try {
+    const url = URL.createObjectURL(blob);
+    localBlobUrlCache.set(blob, url);
+    return url;
+  } catch {
+    return "";
+  }
+}
+
+function releaseBlobUrl(blob) {
+  if (!blob || !localBlobUrlCache.has(blob)) return;
+  const url = localBlobUrlCache.get(blob);
+  localBlobUrlCache.delete(blob);
+  try {
+    URL.revokeObjectURL(url);
+  } catch {}
+}
+
+function releaseRecordBlobUrls(record) {
+  (Array.isArray(record?.photos) ? record.photos : []).forEach((photo) =>
+    releaseBlobUrl(photo?.blob),
+  );
+}
+
+function releaseAllBlobUrls() {
+  localBlobUrlCache.forEach((url) => {
+    try {
+      URL.revokeObjectURL(url);
+    } catch {}
+  });
+  localBlobUrlCache.clear();
+}
+
+function cacheRemotePhoto(key, dataUrl) {
+  if (!key || !dataUrl) return;
+  if (Object.prototype.hasOwnProperty.call(state.remotePhotoCache, key))
+    delete state.remotePhotoCache[key];
+  state.remotePhotoCache[key] = dataUrl;
+  const keys = Object.keys(state.remotePhotoCache);
+  while (keys.length > REMOTE_PHOTO_CACHE_LIMIT) {
+    const oldest = keys.shift();
+    if (oldest) delete state.remotePhotoCache[oldest];
+  }
+}
 
 const app = document.getElementById("app");
 const picker = document.getElementById("photoPicker");
@@ -304,16 +491,23 @@ const esc = (s) =>
       })[c],
   );
 const clean = (v) => String(v ?? "").trim();
-const today = () => new Date().toISOString().slice(0, 10);
+const today = () => {
+  const date = new Date();
+  date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+  return date.toISOString().slice(0, 10);
+};
 const trDate = (s) => {
   if (!s) return "";
   const [y, m, d] = String(s).split("-");
   return `${d}.${m}.${y}`;
 };
-const uid = () =>
-  crypto.randomUUID
-    ? crypto.randomUUID()
-    : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+const uid = () => {
+  try {
+    if (window.crypto && typeof window.crypto.randomUUID === "function")
+      return window.crypto.randomUUID();
+  } catch {}
+  return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+};
 const stableKey = (v) =>
   clean(v)
     .toLocaleLowerCase("tr-TR")
@@ -732,7 +926,7 @@ async function edgeCall(action, payload = {}, retried = false) {
     },
     body: JSON.stringify({
       action,
-      source: "mesaha-istif-v034-suite",
+      source: "mesaha-istif-v038-suite",
       ...terminalPayload,
       ...payload,
     }),
@@ -746,10 +940,15 @@ async function edgeCall(action, payload = {}, retried = false) {
     await ensureSharedSession(true);
     return edgeCall(action, payload, true);
   }
-  if (!response.ok || body?.ok === false)
-    throw new Error(
-      body.error || body.reason || `Sunucu hatası ${response.status}`,
-    );
+  if (!response.ok || body?.ok === false) {
+    if (body?.blocked === true) {
+      try { window.dispatchEvent(new CustomEvent("mesaha:security-blocked", { detail: body })); } catch {}
+    }
+    const error = new Error(body.error || body.reason || `Sunucu hatası ${response.status}`);
+    error.status = response.status;
+    error.payload = body;
+    throw error;
+  }
   return body;
 }
 
@@ -769,7 +968,7 @@ async function bridgeCall(action, payload = {}, retried = false) {
     },
     body: JSON.stringify({
       action,
-      source: "mesaha-istif-v034-suite",
+      source: "mesaha-istif-v038-suite",
       ...terminalPayload,
       ...payload,
     }),
@@ -1587,7 +1786,7 @@ function renderNew() {
 function photoSlot(index) {
   const photo = state.selectedPhotos[index];
   if (photo) {
-    const url = URL.createObjectURL(photo.blob);
+    const url = blobPreviewUrl(photo.blob);
     return `<div class="photo-slot"><img src="${url}" alt="Fotoğraf ${index + 1}"><button class="remove-photo" type="button" data-remove-photo="${index}" aria-label="Fotoğrafı sil">${icon("trash", 18)}</button></div>`;
   }
   return `<button class="photo-slot addable" type="button" data-add-photo><span class="photo-placeholder"><b>${icon("camera", 27)}</b>Fotoğraf ${index + 1}</span></button>`;
@@ -1636,12 +1835,12 @@ async function setRecordSent(recordId, sent) {
   if (!record.isDemo)
     record.syncStatus = record.driveFiles?.length ? "drive_synced" : "local";
   record.updatedAt = new Date().toISOString();
-  await idbPut("records", structuredClone(record));
+  await idbPut("records", cloneValue(record));
   if (navigator.onLine && hasSharedCloudIdentity()) {
     try {
       await supabaseUpsertRecord(record);
       record.syncStatus = "synced";
-      await idbPut("records", structuredClone(record));
+      await idbPut("records", cloneValue(record));
     } catch {}
   }
   toast(
@@ -1687,7 +1886,7 @@ function recordThumbHtml(record) {
     : null;
   if (photo?.blob) {
     try {
-      const src = URL.createObjectURL(photo.blob);
+      const src = blobPreviewUrl(photo.blob);
       return `<span class="record-thumb"><img src="${src}" alt="${esc(record.istifNo || "İstif fotoğrafı")}"></span>`;
     } catch {}
   }
@@ -2029,7 +2228,7 @@ async function saveInstitutionSettings(event) {
 async function editRecord(recordId) {
   const record = state.records.find((item) => item.id === recordId);
   if (!record) return toast("Düzenlenecek istif bulunamadı.", "bad");
-  state.draft = structuredClone(record);
+  state.draft = cloneValue(record);
   state.draft.syncStatus = "local";
   state.draft.updatedAt = new Date().toISOString();
   state.selectedPhotos = Array.isArray(record.photos)
@@ -2138,6 +2337,7 @@ Yerel kayıt, Supabase kaydı ve varsa Drive fotoğrafları silinir.`);
       }
     }
     await idbDelete("records", record.id);
+    releaseRecordBlobUrls(record);
     state.records = state.records.filter((item) => item.id !== record.id);
     state.selectedRecordIds.delete(record.id);
     closeDialog();
@@ -2267,10 +2467,10 @@ async function saveRecord(event, draftOnly = false) {
     for (const demo of demoRows) await idbDelete("records", demo.id);
     state.records = [];
   }
-  await idbPut("records", structuredClone(draft));
+  await idbPut("records", cloneValue(draft));
   const index = state.records.findIndex((record) => record.id === draft.id);
-  if (index >= 0) state.records[index] = structuredClone(draft);
-  else state.records.push(structuredClone(draft));
+  if (index >= 0) state.records[index] = cloneValue(draft);
+  else state.records.push(cloneValue(draft));
   toast(
     draftOnly
       ? "Taslak yerelde kaydedildi."
@@ -2290,6 +2490,8 @@ async function saveRecord(event, draftOnly = false) {
 }
 
 function removePhoto(index) {
+  const removed = state.selectedPhotos[index];
+  if (removed?.blob) releaseBlobUrl(removed.blob);
   state.selectedPhotos.splice(index, 1);
   render();
 }
@@ -2338,48 +2540,124 @@ async function capturePhoto() {
   toast("Fotoğraf sıkıştırıldı ve uygulamaya eklendi.", "good");
 }
 
+async function canvasToJpegBlob(canvas, quality) {
+  if (typeof canvas.toBlob === "function") {
+    const blob = await new Promise((resolve) =>
+      canvas.toBlob(resolve, "image/jpeg", quality),
+    );
+    if (blob) return blob;
+  }
+  try {
+    return dataUrlToBlob(canvas.toDataURL("image/jpeg", quality), "image/jpeg");
+  } catch {
+    return null;
+  }
+}
+
 async function compressCanvas(canvas, maxBytes) {
+  if (!canvas || !canvas.width || !canvas.height)
+    throw new Error("Fotoğraf boyutu okunamadı.");
   const maxDimension = 1600;
   const scale = Math.min(
     1,
     maxDimension / Math.max(canvas.width, canvas.height),
   );
   let work = document.createElement("canvas");
-  work.width = Math.round(canvas.width * scale);
-  work.height = Math.round(canvas.height * scale);
-  work
-    .getContext("2d", { alpha: false })
-    .drawImage(canvas, 0, 0, work.width, work.height);
+  work.width = Math.max(1, Math.round(canvas.width * scale));
+  work.height = Math.max(1, Math.round(canvas.height * scale));
+  const firstContext = work.getContext("2d", { alpha: false });
+  if (!firstContext) throw new Error("Fotoğraf işleme alanı açılamadı.");
+  firstContext.drawImage(canvas, 0, 0, work.width, work.height);
   let quality = 0.84;
-  let blob;
+  let blob = null;
   for (let attempt = 0; attempt < 10; attempt += 1) {
-    blob = await new Promise((resolve) =>
-      work.toBlob(resolve, "image/jpeg", quality),
-    );
+    blob = await canvasToJpegBlob(work, quality);
     if (blob && blob.size <= maxBytes) return blob;
     if (quality > 0.48) quality -= 0.08;
     else {
       const next = document.createElement("canvas");
-      next.width = Math.round(work.width * 0.84);
-      next.height = Math.round(work.height * 0.84);
-      next
-        .getContext("2d", { alpha: false })
-        .drawImage(work, 0, 0, next.width, next.height);
+      next.width = Math.max(1, Math.round(work.width * 0.84));
+      next.height = Math.max(1, Math.round(work.height * 0.84));
+      const nextContext = next.getContext("2d", { alpha: false });
+      if (!nextContext) break;
+      nextContext.drawImage(work, 0, 0, next.width, next.height);
+      work.width = 1;
+      work.height = 1;
       work = next;
       quality = 0.72;
     }
   }
+  if (!blob) throw new Error("Fotoğraf JPEG biçimine çevrilemedi.");
   return blob;
 }
 
+function imageElementFromFile(file) {
+  return new Promise((resolve, reject) => {
+    let url = "";
+    try {
+      url = URL.createObjectURL(file);
+      const image = new Image();
+      image.decoding = "async";
+      image.onload = () =>
+        resolve({
+          image,
+          width: image.naturalWidth || image.width,
+          height: image.naturalHeight || image.height,
+          close: () => {
+            try {
+              URL.revokeObjectURL(url);
+            } catch {}
+          },
+        });
+      image.onerror = () => {
+        try {
+          URL.revokeObjectURL(url);
+        } catch {}
+        reject(new Error("Fotoğraf tarayıcı tarafından açılamadı."));
+      };
+      image.src = url;
+    } catch (error) {
+      if (url) {
+        try {
+          URL.revokeObjectURL(url);
+        } catch {}
+      }
+      reject(error);
+    }
+  });
+}
+
 async function compressFile(file) {
-  const image = await createImageBitmap(file);
-  const canvas = document.createElement("canvas");
-  canvas.width = image.width;
-  canvas.height = image.height;
-  canvas.getContext("2d").drawImage(image, 0, 0);
-  image.close?.();
-  return compressCanvas(canvas, MAX_PHOTO_BYTES);
+  let source = null;
+  if (typeof createImageBitmap === "function") {
+    try {
+      const bitmap = await createImageBitmap(file, {
+        imageOrientation: "from-image",
+      });
+      source = {
+        image: bitmap,
+        width: bitmap.width,
+        height: bitmap.height,
+        close: () => bitmap.close?.(),
+      };
+    } catch {}
+  }
+  if (!source) source = await imageElementFromFile(file);
+  try {
+    if (!source.width || !source.height)
+      throw new Error("Fotoğraf ölçüleri okunamadı.");
+    const canvas = document.createElement("canvas");
+    canvas.width = source.width;
+    canvas.height = source.height;
+    const context = canvas.getContext("2d", { alpha: false });
+    if (!context) throw new Error("Fotoğraf işleme alanı açılamadı.");
+    context.drawImage(source.image, 0, 0, canvas.width, canvas.height);
+    return await compressCanvas(canvas, MAX_PHOTO_BYTES);
+  } finally {
+    try {
+      source.close?.();
+    } catch {}
+  }
 }
 
 function addPhotoBlob(blob, name) {
@@ -2917,7 +3195,7 @@ async function drivePhotoDataUrl(record, index = 0) {
     mimeType: file?.mimeType || file?.mime_type || "image/jpeg",
   });
   const dataUrl = clean(out.dataUrl || out.data_url);
-  if (dataUrl && cacheKey) state.remotePhotoCache[cacheKey] = dataUrl;
+  if (dataUrl && cacheKey) cacheRemotePhoto(cacheKey, dataUrl);
   return dataUrl;
 }
 
@@ -3266,7 +3544,7 @@ async function pingAdminProfile() {
         appName: "İstif İO",
         platform: navigator.platform || "",
         browser: navigator.userAgent || "",
-        suiteVersion: "V24",
+        suiteVersion: "V26",
       },
     });
   } catch {}
@@ -3279,9 +3557,21 @@ window.addEventListener("online", () => {
   if (hasSharedCloudIdentity()) syncSharedContext({ manual: false });
 });
 document.addEventListener("visibilitychange", () => {
-  if (!document.hidden && navigator.onLine && hasSharedCloudIdentity())
+  if (document.hidden) {
+    if (state.cameraStream) stopCamera();
+    return;
+  }
+  if (navigator.onLine && hasSharedCloudIdentity())
     syncSharedContext({ manual: false });
 });
+window.addEventListener(
+  "pagehide",
+  (event) => {
+    if (state.cameraStream) stopCamera();
+    if (!event.persisted) releaseAllBlobUrls();
+  },
+  { passive: true },
+);
 
 (async function init() {
   try {
@@ -3296,7 +3586,7 @@ document.addEventListener("visibilitychange", () => {
     render();
     if (navigator.onLine && hasSharedCloudIdentity())
       setTimeout(() => syncSharedContext({ manual: false }), 0);
-    /* Suite V24: İstif açılışında ortak şeflik kayıtları otomatik alınır. */
+    /* Suite V26: İstif açılışında ortak şeflik kayıtları otomatik alınır. */
   } catch (error) {
     if (bootOverlay) bootOverlay.hidden = true;
     app.innerHTML = `<div class="empty"><h2>Uygulama açılamadı</h2><p>${esc(error.message)}</p></div>`;

@@ -1,4 +1,4 @@
-const CACHE = "yakupp-suite-shell-v24";
+const CACHE = "yakupp-suite-shell-v26";
 const PREFIX = "yakupp-suite-shell-";
 const CORE = [
   "./app.js",
@@ -49,10 +49,11 @@ const CORE = [
   "./mesaha/js/mesaha-records-performance.js",
   "./mesaha/js/mesaha-render-storage.js",
   "./mesaha/js/mesaha-runtime.js",
+  "./mesaha/js/mesaha-sound.js",
+  "./mesaha/js/mesaha-save-focus.js",
   "./mesaha/js/mesaha-seflik-entry-repair.js",
   "./mesaha/js/mesaha-seflik-folder.js",
   "./mesaha/js/mesaha-seflik-governance.js",
-  "./mesaha/js/mesaha-sound.js",
   "./mesaha/js/mesaha-stability-core.js",
   "./mesaha/js/mesaha-storage-health.js",
   "./mesaha/js/mesaha-supabase-config.js",
@@ -69,6 +70,7 @@ const CORE = [
   "./mesaha/yonetim/admin.js",
   "./mesaha/yonetim/index.html",
   "./styles.css",
+  "./suite-security.js",
   "./suite-sync-core.js",
   "./suite-ui.js",
   "./temizle.html",
@@ -78,6 +80,7 @@ const CRITICAL = [
   "./index.html",
   "./styles.css",
   "./app.js",
+  "./suite-security.js",
   "./suite-sync-core.js",
   "./suite-ui.js",
   "./manifest.json",
@@ -85,6 +88,8 @@ const CRITICAL = [
   "./mesaha/index.html",
   "./mesaha/css/app.css",
   "./mesaha/js/mesaha-runtime.js",
+  "./mesaha/js/mesaha-sound.js",
+  "./mesaha/js/mesaha-save-focus.js",
   "./mesaha/suite-bridge.js",
   "./istif/index.html",
   "./istif/styles.css",
@@ -170,8 +175,8 @@ async function cacheAll() {
     missingCount: missing.length,
     criticalMissing,
     at: new Date().toISOString(),
-    build: 24,
-    integrity: "suite-v24",
+    build: 26,
+    integrity: "suite-v26",
     criticalCount: CRITICAL.length,
     totalCount: CORE.length,
   };
@@ -199,8 +204,8 @@ async function status() {
     missingCount: missing.length,
     criticalMissing,
     cache: CACHE,
-    build: 24,
-    integrity: "suite-v24",
+    build: 26,
+    integrity: "suite-v26",
     criticalCount: CRITICAL.length,
     totalCount: CORE.length,
   };

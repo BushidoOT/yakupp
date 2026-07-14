@@ -84,7 +84,7 @@
   const TELEGRAM_URL = "https://telegram.me/+LpsvthN4BM5kYWI0";
   const TELEGRAM_DAY_KEY = "mesaha_suite_telegram_daily_v12";
   const CURRENT_SUITE_BUILD = Number(window.MESAHA_VERSION?.build || 23);
-  const CURRENT_SUITE_LABEL = clean(window.MESAHA_VERSION?.visibleVersion || "Mesaha Suite V24");
+  const CURRENT_SUITE_LABEL = clean(window.MESAHA_VERSION?.visibleVersion || "Mesaha Suite V26");
   let latestSuiteVersion = null, updateApplying = false, pendingDivisionDelete = null;
 
   function updateVersionCorner(remote) {
@@ -156,7 +156,7 @@
     try {
       setUpdateProgress(12, "Yeni sürüm denetleniyor…");
       let reg = await navigator.serviceWorker?.getRegistration("./");
-      if (!reg && "serviceWorker" in navigator) reg = await navigator.serviceWorker.register("./service-worker.js?v=24", { scope: "./", updateViaCache: "none" });
+      if (!reg && "serviceWorker" in navigator) reg = await navigator.serviceWorker.register("./service-worker.js?v=26", { scope: "./", updateViaCache: "none" });
       if (reg) {
         setUpdateProgress(28, "Yeni uygulama dosyaları alınıyor…");
         await reg.update();
@@ -315,7 +315,7 @@
     try {
       const out = await supabaseRpc("mesaha_create_terminal_code_v557", {
         p_label: "terminal",
-        p_app_version: "Mesaha Suite V24",
+        p_app_version: "Mesaha Suite V26",
       });
       const t = out.terminal || out || {},
         code = clean(t.code),
@@ -471,7 +471,7 @@
       text = text.replace(/\./g, "").replace(",", ".");
     } else {
       const parts = text.split(".");
-      if (parts.length > 2) text = parts.slice(0, -1).join("") + "." + parts.at(-1);
+      if (parts.length > 2) text = parts.slice(0, -1).join("") + "." + parts[parts.length - 1];
     }
     const n = Number(text);
     return Number.isFinite(n) ? n : 0;
@@ -856,12 +856,13 @@
     if (!api || typeof api.edge !== "function")
       throw new Error("Sunucu bağlantısı hazır değil.");
     return api.edge(action, {
-      source: "mesaha-suite-v24",
+      source: "mesaha-suite-v26",
       ...terminalAuth(),
       ...data,
     });
   }
   function localFolder() {
+    if (authType() !== "guest") return null;
     const id = identity();
     if (!id.seflik || /^(Dosya|Şeflik seçilmedi)$/i.test(id.seflik))
       return null;
@@ -906,9 +907,9 @@
         .map(normalizeFolder)
         .filter(Boolean);
       if (remote.length) folders = remote;
-      else if (lf) folders = [lf];
-      if (!activeFolder() && folders[0])
-        setActive(creatorFolder() || folders[0]);
+      else folders = lf ? [lf] : [];
+      if (!activeFolder() && folders[0]) setActive(creatorFolder() || folders[0]);
+      if (!folders.length) clearActiveFolderContext();
       await loadMembersFromServer();
       await loadDivisionsFromServer();
       saveLocal();
@@ -1233,6 +1234,78 @@
       if (Date.now() - terminalDevicesLoadedAt > 30000)
         setTimeout(() => refreshTerminalDevicesSuite(true), 0);
   }
+  function clearActiveFolderContext(nextFolder) {
+    if (nextFolder) { setActive(nextFolder); return; }
+    try { localStorage.removeItem(K.active); } catch {}
+    const p = panel(); p.activeSeflik = ""; p.seflik = ""; p.bolmeNo = ""; p.updatedAt = now(); write(K.panel, p);
+    const st = settings(); st.seflik = ""; st.bolmeNo = ""; write(K.settings, st);
+    try { window.dispatchEvent(new Event("mesaha:seflik-folder-active-changed")); } catch {}
+  }
+  function purgeFolderLocalCaches(folder) {
+    const key = clean(folder && (folder.seflik_key || folder.seflikKey)) || stableKey(folder && folder.seflik);
+    if (!key) return;
+    delete foresters[key]; delete divisions[key];
+    Object.keys(divisionReady).forEach((k) => { if (k === key || k.startsWith(key + "::")) delete divisionReady[k]; });
+    Object.keys(divisionRecords).forEach((k) => { if (k === key || k.startsWith(key + "::")) delete divisionRecords[k]; });
+    const targets = read(K.yieldTargets, {}); Object.keys(targets).forEach((k) => { if (k === key || k.startsWith(key + "::")) delete targets[k]; }); write(K.yieldTargets, targets);
+    pendingOps = pendingOps.filter((item) => {
+      const p = item && item.payload || {};
+      return clean(p.seflik_key || p.seflikKey) !== key && clean(p.seflik).toLocaleLowerCase("tr-TR") !== clean(folder.seflik).toLocaleLowerCase("tr-TR");
+    });
+    write(K.pendingOps, pendingOps);
+    try { localStorage.removeItem("mesaha_istif_last_bolme_v14::" + key); } catch {}
+    /* Mesaha kayıt deposu şeflik bazında ayrılmadığı için ayrılan şefliğin offline kayıtlarının
+       başka şeflikte görünmemesi adına senkronizasyon doğrulandıktan sonra yerel kopya sıfırlanır. */
+    try {
+      localStorage.setItem("cam_mesaha_kayitlari_v1", "[]");
+      ["cam_mesaha_kayitlari_v1_mirror_v515","cam_mesaha_kayitlari_v1_last_ok","cam_mesaha_kayitlari_v1_snapshot_v385","cam_mesaha_kayitlari_v1_mirror_meta_v515","mesaha_v527_records_meta"].forEach((k) => localStorage.removeItem(k));
+      indexedDB.deleteDatabase("mesaha_io_storage_v527");
+    } catch {}
+    try {
+      const request = indexedDB.open("mesaha-istif-prototype", 1);
+      request.onsuccess = () => {
+        const db = request.result;
+        if (!db.objectStoreNames.contains("records")) { db.close(); return; }
+        const tx = db.transaction("records", "readwrite"), store = tx.objectStore("records"), cursor = store.openCursor();
+        cursor.onsuccess = () => {
+          const c = cursor.result; if (!c) return;
+          const row = c.value || {}, rowKey = clean(row.seflikKey || row.seflik_key) || stableKey(row.seflik);
+          if (rowKey === key) c.delete();
+          c.continue();
+        };
+        tx.oncomplete = () => db.close(); tx.onerror = () => db.close();
+      };
+    } catch {}
+  }
+  async function leaveSeflik() {
+    if (busy) return;
+    const folder = activeFolder();
+    if (!folder) return toast("Çıkılacak şeflik bulunamadı.", true);
+    if (canManageFolder(folder)) return toast("Şeflik kurucusu şeflikten çıkamaz. Gerekirse Şefliği Sil işlemini kullanın.", true);
+    if (!cloudIdentity() || navigator.onLine === false) return toast("Şeflikten çıkmak için internet bağlantısı gerekir.", true);
+    const key = clean(folder.seflik_key || folder.seflikKey) || stableKey(folder.seflik);
+    const syncApi = window.MesahaSuiteSyncV25 || window.MesahaSuiteSyncV24 || window.MesahaSuiteSyncV20;
+    if (syncApi && typeof syncApi.isDirty === "function" && syncApi.isDirty()) return toast("Cihazda henüz senkronize edilmemiş kayıt veya işlem var. Önce Senkronize Et düğmesini kullanın.", true);
+    const pendingForFolder = pendingOps.some((item) => {
+      const p = item && item.payload || {};
+      return clean(p.seflik_key || p.seflikKey) === key || clean(p.seflik).toLocaleLowerCase("tr-TR") === clean(folder.seflik).toLocaleLowerCase("tr-TR");
+    });
+    if (pendingForFolder) return toast("Bu şeflikte sunucuya gönderilmemiş işlem var. Önce Senkronize Et düğmesini kullanın.", true);
+    if (!confirm(folder.seflik + " şefliğinden çıkılsın mı? Ortak kayıtlar sunucuda korunur; bu cihazdaki offline şeflik ve İstif kopyaları temizlenir.")) return;
+    busy = true; renderSeflikModal();
+    try {
+      await edge("seflik_folder_leave", { seflik: folder.seflik, folderSeflik: folder.seflik, seflikKey: key });
+      folders = folders.filter((f) => clean(f.seflik_key || f.seflikKey) !== key);
+      purgeFolderLocalCaches(folder);
+      const next = creatorFolder() || folders.find((f) => f && !f.deleted) || null;
+      clearActiveFolderContext(next);
+      saveLocal();
+      await loadFolders(true);
+      closeModals(); render();
+      toast(folder.seflik + " şefliğinden çıkıldı.");
+    } catch (e) { toast(e.message || String(e), true); }
+    finally { busy = false; renderSeflikModal(); }
+  }
   function renderSeflikModal() {
     const form = $("seflikForm");
     if (!form) return;
@@ -1249,7 +1322,7 @@
       ? `<label class="suite-select-label">Aktif Şeflik<select id="suiteFolderSelectV6">${list.map((f, i) => `<option value="${i}" ${af && clean(f.seflik_key) === clean(af.seflik_key) ? "selected" : ""}>${esc(f.seflik)}${canManageFolder(f) ? " • kurucu" : " • üye"}</option>`).join("")}</select></label>`
       : '<div class="modal-note">Henüz seçilebilecek şeflik yok.</div>';
     const current = af
-      ? `<div class="manager-card"><div><small>Aktif Şeflik</small><b>${esc(af.seflik)}</b><span>${canManageFolder(af) ? "Bu şefliği yönetebilirsiniz." : "Bu şeflikte üyesiniz; yalnızca seçim yapabilirsiniz."}</span></div>${canManageFolder(af) ? `<div class="manager-actions"><button type="button" class="mini-button" data-action="rename-seflik">İsmini Düzenle</button><button type="button" class="mini-button danger-mini" data-action="delete-seflik">Şefliği Sil</button></div>` : ""}</div>`
+      ? `<div class="manager-card"><div><small>Aktif Şeflik</small><b>${esc(af.seflik)}</b><span>${canManageFolder(af) ? "Bu şefliği yönetebilirsiniz." : "Bu şeflikte üyesiniz; yalnızca seçim yapabilirsiniz."}</span></div>${canManageFolder(af) ? `<div class="manager-actions"><button type="button" class="mini-button" data-action="rename-seflik">İsmini Düzenle</button><button type="button" class="mini-button danger-mini" data-action="delete-seflik">Şefliği Sil</button></div>` : `<div class="manager-actions"><button type="button" class="mini-button danger-mini" data-action="leave-seflik" ${busy ? "disabled" : ""}>Şeflikten Çık</button></div>`}</div>`
       : "";
     box.innerHTML = options + current;
     const sel = $("suiteFolderSelectV6");
@@ -1946,7 +2019,7 @@
         name: id.name || id.email || "Kullanıcı",
         seflik: af?.seflik || id.seflik || "",
         bolmeNo: id.bolme || "",
-        appVersion: "Mesaha Suite V24",
+        appVersion: "Mesaha Suite V26",
         avatarUrl: id.avatar || "",
         deviceId:
           localStorage.getItem("mesaha_suite_device_v7") ||
@@ -1963,7 +2036,7 @@
           appName: "Mesaha Suite",
           platform: navigator.platform || "",
           browser: navigator.userAgent || "",
-          suiteVersion: "V24",
+          suiteVersion: "V26",
         },
       });
     } catch {}
@@ -2031,7 +2104,7 @@
     try {
       await cleanupNestedWorkers();
       try { if (navigator.storage && navigator.storage.persist) await navigator.storage.persist(); } catch {}
-      const reg = await navigator.serviceWorker.register("./service-worker.js?v=24", { scope: "./", updateViaCache: "none" });
+      const reg = await navigator.serviceWorker.register("./service-worker.js?v=26", { scope: "./", updateViaCache: "none" });
       await navigator.serviceWorker.ready;
       const worker = await waitForActiveWorker(reg, navigator.onLine===false?7000:18000);
       setCacheStatus("Mesaha İO ve İstif İO dosyaları doğrulanıyor…", 18);
@@ -2271,7 +2344,7 @@
     }
     if (tool === "about") {
       showInfo(
-        "Mesaha Suite V24",
+        "Mesaha Suite V26",
         `<p>Google veya terminal/misafir oturumu iki uygulamada ortak kullanılır.</p><p><b>Bekleyen işlem:</b> ${pendingOps.length}</p><p>Bölmeler offline indirildikten sonra Mesaha İO ve İstif İO’da kayıt eklemeye hazır olur.</p>`,
       );
       return true;
@@ -2328,6 +2401,10 @@
     }
     if (action === "delete-seflik") {
       deleteSeflik();
+      return true;
+    }
+    if (action === "leave-seflik") {
+      leaveSeflik();
       return true;
     }
     if (action === "download-all-divisions") {

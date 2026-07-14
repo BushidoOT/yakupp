@@ -42,3 +42,5 @@
 
 /* Suite V5 */
 .app-user-badge{display:inline-flex;align-items:center;padding:3px 7px;border-radius:999px;font-size:10px;font-weight:900;vertical-align:middle}.app-user-badge.mesaha{background:#e7f5eb;color:#17633d}.app-user-badge.istif{background:#fff0d7;color:#865615}.app-user-badge.suite{background:#e8eefc;color:#304d94}.suite-admin-home{position:fixed;right:14px;bottom:84px;z-index:30;text-decoration:none;background:#174d35;color:#fff;padding:11px 14px;border-radius:15px;font-weight:850;box-shadow:0 12px 28px rgba(15,55,37,.24)}
+
+.button.success{background:#e8f7ed!important;color:#166534!important;border-color:#a7d8b5!important}.detail-actions{margin-top:16px;display:flex;gap:10px;flex-wrap:wrap}

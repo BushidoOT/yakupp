@@ -1,12 +1,12 @@
 {
-  "version": "24.0.0",
-  "build": 24,
+  "version": "26.0.0",
+  "build": 26,
   "date": "2026-07-14",
   "name": "Mesaha Suite",
   "short_name": "Mesaha Suite",
-  "description": "Ortak İstif senkronizasyonuna ek olarak iOS PDF ekranına güvenli Kapat / Uygulamaya Dön kontrolü ekleyen sürüm.",
-  "id": "./?suite=24",
-  "start_url": "./?suite=24",
-  "visibleVersion": "Mesaha Suite V24",
-  "cacheName": "yakupp-suite-shell-v24"
+  "description": "Yönetim engelleme sistemi tüm uygulamalarda anlık güvenlik kontrolüyle onarıldı; şeflik üyeleri için güvenli Şeflikten Çık akışı eklendi.",
+  "id": "./?suite=26",
+  "start_url": "./?suite=26",
+  "visibleVersion": "Mesaha Suite V26",
+  "cacheName": "yakupp-suite-shell-v26"
 }

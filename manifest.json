@@ -1,7 +1,7 @@
 {
-  "name": "Mesaha Suite V24",
+  "name": "Mesaha Suite V26",
   "short_name": "Mesaha Suite",
-  "start_url": "./?suite=24",
+  "start_url": "./?suite=26",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f5f8f6",
@@ -19,7 +19,7 @@
       "type": "image/png"
     }
   ],
-  "id": "./?suite=24",
-  "description": "Merkezi Mesaha ve İstif yönetimi; ortak İstif kayıtlarının şeflik üyeleri arasında otomatik senkronizasyonu",
-  "version": "suite_v24"
+  "id": "./?suite=26",
+  "description": "Merkezi Mesaha ve İstif yönetimi; tam engelleme güvenliği ve kullanıcı kontrollü şeflik üyeliğinden çıkış",
+  "version": "suite_v26"
 }
