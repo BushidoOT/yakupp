@@ -1,8 +1,0 @@
-{
-  "version": "0.3.3",
-  "name": "Mesaha İO İstif Alma v0.3.3",
-  "updatedAt": "2026-07-13T20:45:00+03:00",
-  "notes": "Düzenleme ekranında başka cihazdan gelen istiflerin Drive fotoğrafları da geri çekilir ve resim kutularında görünür.",
-  "visibleVersion": "İstif Alma v0.3.3",
-  "build": "v033"
-}
