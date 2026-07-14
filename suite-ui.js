@@ -15,9 +15,11 @@
           })[m],
       );
   let loaded = false,
-    items = [];
+    items = [],
+    canDeleteBackups = true,
+    lastDriveStatus = null;
   function api() {
-    return window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8;
+    return window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8;
   }
   function toast(m, b) {
     window.MesahaSuiteUI && window.MesahaSuiteUI.toast
@@ -30,11 +32,11 @@
     if (account)
       account.insertAdjacentHTML(
         "afterend",
-        `<section class="drive-account-card-v8" id="driveAccountCardV8"><div class="drive-account-head-v8"><span class="choice-icon drive-choice-icon"><svg class="google-drive-logo" viewBox="0 0 64 56" aria-hidden="true"><path fill="#0F9D58" d="M22 2h20l20 34H42z"/><path fill="#F4B400" d="M22 2 2 36l10 18 20-34z"/><path fill="#4285F4" d="M12 54 2 36h40l20 0-10 18z"/></svg></span><div><strong>Kişisel Google Drive</strong><small id="driveAccountTextV8">Bağlantı kontrol edilmedi</small></div></div><div class="drive-account-actions-v8"><button class="secondary-button" id="driveRefreshV8" type="button">Durumu Yenile</button><button class="primary-button" id="driveConnectV8" type="button">Drive Bağla</button><button class="secondary-button" id="driveDisconnectV8" type="button" hidden>Bağlantıyı Kes</button><a class="secondary-button" id="driveOpenV8" target="_blank" rel="noopener" hidden>Drive Aç</a></div><p>Mesaha ve İstif yedekleri yalnızca giriş yapan kullanıcının kendi Drive hesabında tutulur. Yönetim paneli dosyanın içeriğini değil, yalnızca yedek metadatasını görür.</p></section>`,
+        `<section class="drive-account-card-v8" id="driveAccountCardV8"><div class="drive-account-head-v8"><span class="choice-icon drive-choice-icon"><svg class="google-drive-logo" viewBox="0 0 64 56" aria-hidden="true"><path fill="#0F9D58" d="M22 2h20l20 34H42z"/><path fill="#F4B400" d="M22 2 2 36l10 18 20-34z"/><path fill="#4285F4" d="M12 54 2 36h40l20 0-10 18z"/></svg></span><div><strong>Şeflik Google Drive</strong><small id="driveAccountTextV8">Bağlantı kontrol edilmedi</small></div></div><div class="drive-account-actions-v8"><button class="secondary-button" id="driveRefreshV8" type="button">Durumu Yenile</button><button class="primary-button" id="driveConnectV8" type="button">Drive Bağla</button><button class="secondary-button" id="driveDisconnectV8" type="button" hidden>Bağlantıyı Kes</button><a class="secondary-button" id="driveOpenV8" target="_blank" rel="noopener" hidden>Drive Aç</a></div><p>Tüm Mesaha ve İstif yedekleri ile İstif fotoğrafları şeflik kurucusunun Drive hesabında tutulur. Şefliğe eklenen ormancılar kendi Drive hesaplarını bağlayamaz.</p></section>`,
       );
     document.body.insertAdjacentHTML(
       "beforeend",
-      `<section class="modal backups-modal-v8" id="backupsModalV8" hidden><div class="modal-head"><div><span class="modal-kicker">KİŞİSEL DRIVE</span><h3>Yedekler</h3></div><button class="modal-close" data-close-backups-v8 type="button">×</button></div><div class="backup-toolbar-v8"><button class="primary-button" id="backupNowV8" type="button">Şimdi Yedekle</button><button class="secondary-button" id="backupRefreshV8" type="button">Listeyi Yenile</button></div><div class="modal-note">Suite yedeği; Mesaha kayıtlarını, İstif kayıtlarını, şeflik ve offline bölme bilgilerini birlikte saklar.</div><div id="backupListV8" class="backup-list-v8"><div class="modal-note">Yedekler yükleniyor…</div></div></section>`,
+      `<section class="modal backups-modal-v8" id="backupsModalV8" hidden><div class="modal-head"><div><span class="modal-kicker">ŞEFLİK DRIVE</span><h3>Yedekler</h3></div><button class="modal-close" data-close-backups-v8 type="button">×</button></div><div class="backup-toolbar-v8"><button class="primary-button" id="backupNowV8" type="button">Şimdi Yedekle</button><button class="secondary-button" id="backupRefreshV8" type="button">Listeyi Yenile</button></div><div class="modal-note">Suite yedeği; Mesaha kayıtlarını, İstif kayıtlarını, şeflik ve offline bölme bilgilerini birlikte saklar.</div><div id="backupListV8" class="backup-list-v8"><div class="modal-note">Yedekler yükleniyor…</div></div></section>`,
     );
     bind();
     handleCallback();
@@ -51,14 +53,14 @@
     $("driveDisconnectV8")?.addEventListener("click", async () => {
       if (
         !confirm(
-          "Bu cihazdaki kişisel Drive bağlantısı kaldırılsın mı? Drive dosyaları silinmez.",
+          "Şefliğin kurucu Drive bağlantısı kaldırılsın mı? Mevcut Drive dosyaları silinmez.",
         )
       )
         return;
       try {
         await api().driveDisconnect();
         await refreshDrive(true);
-        toast("Drive bağlantısı kaldırıldı.");
+        toast("Şeflik Drive bağlantısı kaldırıldı.");
       } catch (e) {
         toast(e.message, true);
       }
@@ -87,6 +89,7 @@
     try {
       if (text) text.textContent = "Drive bağlantısı kontrol ediliyor…";
       const s = await api().driveStatus();
+      lastDriveStatus = s || null;
       if (s.googleRequired) {
         text.textContent = "Drive için Google ile giriş yapın";
         connect.hidden = false;
@@ -94,22 +97,31 @@
         open.hidden = true;
         return s;
       }
+      const isOwner = s.isOwner !== false;
       if (s.connected) {
-        text.textContent = `Bağlı • ${clean(s.ownerEmail || s.email || "Google Drive")}`;
+        text.textContent = isOwner
+          ? `Kurucu Drive bağlı • ${clean(s.ownerEmail || s.email || "Google Drive")}`
+          : `Kurucunun Drive hesabı bağlı • ${clean(s.ownerEmail || s.ownerName || "Google Drive")}`;
         connect.hidden = true;
-        disc.hidden = false;
-        if (s.folderUrl) {
+        disc.hidden = !isOwner;
+        if (isOwner && s.folderUrl) {
           open.href = s.folderUrl;
           open.hidden = false;
         } else open.hidden = true;
-      } else {
-        text.textContent = "Kişisel Drive bağlı değil";
+      } else if (isOwner) {
+        text.textContent = "Şeflik Drive hesabı bağlı değil";
         connect.hidden = false;
+        disc.hidden = true;
+        open.hidden = true;
+      } else {
+        text.textContent = "Şeflik kurucusu Drive hesabını henüz bağlamadı";
+        connect.hidden = true;
         disc.hidden = true;
         open.hidden = true;
       }
       return s;
     } catch (e) {
+      lastDriveStatus = null;
       if (text) text.textContent = "Drive durumu alınamadı";
       if (!silent) toast(e.message, true);
       throw e;
@@ -158,7 +170,7 @@
         location.pathname + (q.toString() ? "?" + q : "") + location.hash,
       );
       await refreshDrive(true);
-      toast("Kişisel Drive hesabı bağlandı.");
+      toast("Şeflik kurucusunun Drive hesabı bağlandı.");
     } catch (e) {
       toast("Drive bağlantısı tamamlanamadı: " + e.message, true);
     }
@@ -202,6 +214,7 @@
         : Array.isArray(out.backups)
           ? out.backups
           : [];
+      canDeleteBackups = out.canDelete !== false;
       render();
     } catch (e) {
       box.innerHTML = `<div class="modal-note bad">${esc(e.message)}</div>`;
@@ -212,7 +225,7 @@
     if (!box) return;
     if (!items.length) {
       box.innerHTML =
-        '<div class="modal-note">Bu Google Drive hesabında henüz Suite yedeği yok.</div>';
+        '<div class="modal-note">Bu şeflik Drive hesabında henüz Suite yedeği yok.</div>';
       return;
     }
     box.innerHTML = items
@@ -222,7 +235,7 @@
             x.created_at || x.createdAt || Date.now(),
           ).toLocaleString("tr-TR"),
           link = clean(x.web_view_link || x.webViewLink || x.driveLink);
-        return `<article class="backup-row-v8"><div><strong>${esc(x.file_name || x.fileName || "Mesaha Suite yedeği")}</strong><small>${esc(date)} • ${Number(x.record_count || x.recordCount || 0).toLocaleString("tr-TR")} kayıt • ${Number(x.total_volume || x.totalVolume || 0).toLocaleString("tr-TR", { maximumFractionDigits: 3 })} m³</small><span>${esc(x.app_id || x.appId || "suite")} • ${esc(x.seflik || "")}</span></div><div class="backup-row-actions-v8">${link ? `<a class="secondary-button" href="${esc(link)}" target="_blank" rel="noopener">Drive</a>` : ""}<button class="secondary-button" data-backup-restore-v8="${esc(id)}" type="button">Geri Yükle</button><button class="danger-button-v8" data-backup-delete-v8="${esc(id)}" type="button">Sil</button></div></article>`;
+        return `<article class="backup-row-v8"><div><strong>${esc(x.file_name || x.fileName || "Mesaha Suite yedeği")}</strong><small>${esc(date)} • ${Number(x.record_count || x.recordCount || 0).toLocaleString("tr-TR")} kayıt • ${Number(x.total_volume || x.totalVolume || 0).toLocaleString("tr-TR", { maximumFractionDigits: 3 })} m³</small><span>${esc(x.app_id || x.appId || "suite")} • ${esc(x.seflik || "")}</span></div><div class="backup-row-actions-v8">${link && canDeleteBackups ? `<a class="secondary-button" href="${esc(link)}" target="_blank" rel="noopener">Drive</a>` : ""}<button class="secondary-button" data-backup-restore-v8="${esc(id)}" type="button">Geri Yükle</button>${canDeleteBackups ? `<button class="danger-button-v8" data-backup-delete-v8="${esc(id)}" type="button">Sil</button>` : ""}</div></article>`;
       })
       .join("");
   }
@@ -231,7 +244,7 @@
     if (b) b.disabled = true;
     try {
       await api().createSuiteBackup();
-      toast("Suite yedeği kişisel Drive hesabına kaydedildi.");
+      toast("Suite yedeği şeflik kurucusunun Drive hesabına kaydedildi.");
       await load();
     } catch (e) {
       if (e && (e.code === "DRIVE_NOT_CONNECTED" || e.code === "GOOGLE_REQUIRED")) {
@@ -243,7 +256,7 @@
   }
   async function remove(id) {
     if (
-      !confirm("Bu yedek kişisel Drive hesabınızdan kalıcı olarak silinsin mi?")
+      !confirm("Bu yedek şeflik kurucusunun Drive hesabından kalıcı olarak silinsin mi?")
     )
       return;
     try {
@@ -355,7 +368,7 @@
       toast("Yedek geri yüklenemedi: " + e.message, true);
     }
   }
-  window.MesahaSuiteBackupsV21 = window.MesahaSuiteBackupsV20 = window.MesahaSuiteBackupsV19 = window.MesahaSuiteBackupsV18 = window.MesahaSuiteBackupsV17 = window.MesahaSuiteBackupsV14 = window.MesahaSuiteBackupsV13 = window.MesahaSuiteBackupsV12 = window.MesahaSuiteBackupsV11 = window.MesahaSuiteBackupsV10 = window.MesahaSuiteBackupsV9 = window.MesahaSuiteBackupsV8 = { open, close, load, refreshDrive };
+  window.MesahaSuiteBackupsV22 = window.MesahaSuiteBackupsV21 = window.MesahaSuiteBackupsV20 = window.MesahaSuiteBackupsV19 = window.MesahaSuiteBackupsV18 = window.MesahaSuiteBackupsV17 = window.MesahaSuiteBackupsV14 = window.MesahaSuiteBackupsV13 = window.MesahaSuiteBackupsV12 = window.MesahaSuiteBackupsV11 = window.MesahaSuiteBackupsV10 = window.MesahaSuiteBackupsV9 = window.MesahaSuiteBackupsV8 = { open, close, load, refreshDrive };
   if (document.readyState === "loading")
     document.addEventListener("DOMContentLoaded", inject, { once: true });
   else inject();

@@ -535,9 +535,9 @@ function appLabel(user){return appKind(user)==='istif'?'İstif İO':appKind(user
     $('backupList').innerHTML=rows.length?rows.map((b)=>{
       const metaOnly=b.readonlyAdmin===true;
       const actions=metaOnly
-        ? `<span class="status-pill">Kullanıcının kişisel Drive hesabında</span>`
+        ? `<span class="status-pill">Şeflik kurucusunun Drive hesabında</span>`
         : `<a class="button info small" href="${escapeHtml(b.driveLink||'#')}" target="_blank" rel="noopener">Drive aç</a><button class="button danger small" data-action="hide-backup" data-backup-id="${escapeHtml(b.driveFileId)}" type="button">Kalıcı Sil</button>`;
-      return `<article class="backup-card" data-backup-id="${escapeHtml(b.driveFileId)}"><div class="backup-main"><div class="file-badge">JSON</div><div><h3>${escapeHtml(b.fileName)}</h3><p>${escapeHtml(b.name)} • ${escapeHtml(b.seflik)}</p><p>${escapeHtml(fmtDate(b.createdAt))}${b.version&&b.version!=='-'?` • ${escapeHtml(b.version)}`:''}${metaOnly?' • Kişisel Drive':''}</p></div></div><div class="backup-stats"><div><small>Kayıt</small><b>${fmtInt(b.count)}</b></div><div><small>m³</small><b>${fmtM3(b.volume)}</b></div></div><div class="backup-actions">${actions}</div></article>`;
+      return `<article class="backup-card" data-backup-id="${escapeHtml(b.driveFileId)}"><div class="backup-main"><div class="file-badge">JSON</div><div><h3>${escapeHtml(b.fileName)}</h3><p>${escapeHtml(b.name)} • ${escapeHtml(b.seflik)}</p><p>${escapeHtml(fmtDate(b.createdAt))}${b.version&&b.version!=='-'?` • ${escapeHtml(b.version)}`:''}${metaOnly?' • Şeflik Drive':''}</p></div></div><div class="backup-stats"><div><small>Kayıt</small><b>${fmtInt(b.count)}</b></div><div><small>m³</small><b>${fmtM3(b.volume)}</b></div></div><div class="backup-actions">${actions}</div></article>`;
     }).join(''):'<div class="empty-state">Görünen Drive yedeği yok.</div>';
   }
 

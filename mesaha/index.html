@@ -4333,13 +4333,29 @@
           $("productButtons").innerHTML = list
             .map((k) => {
               const p = productInfo(k);
-              return `<button class="product-btn product-${p.cls} ${k === state.settings.currentProduct ? "active" : ""}" data-product="${esc(k)}" type="button">${esc(p.label)}</button>`;
+              return `<button class="product-btn product-${p.cls} ${k === state.settings.currentProduct ? "active" : ""}" data-product="${esc(k)}" type="button" tabindex="-1">${esc(p.label)}</button>`;
             })
             .join("");
           $("productButtons")
             .querySelectorAll("[data-product]")
             .forEach((b) =>
               b.addEventListener("click", () => {
+                const focused = document.activeElement;
+                const keepFocus =
+                  focused &&
+                  /^(diameterInput|lengthInput|barcodeInput|quantityInput)$/.test(
+                    focused.id || "",
+                  )
+                    ? focused
+                    : $("diameterInput");
+                let selection = null;
+                try {
+                  selection = [
+                    keepFocus.selectionStart,
+                    keepFocus.selectionEnd,
+                    keepFocus.selectionDirection,
+                  ];
+                } catch {}
                 state.settings.currentProduct = normalizeProductType(
                   b.dataset.product,
                 );
@@ -4356,7 +4372,13 @@
                     l || 0,
                   );
                 try {
-                  $("diameterInput").focus({ preventScroll: true });
+                  keepFocus.focus({ preventScroll: true });
+                  if (selection && selection[0] != null)
+                    keepFocus.setSelectionRange(
+                      selection[0],
+                      selection[1],
+                      selection[2] || "none",
+                    );
                 } catch {}
               }),
             );
@@ -20642,7 +20664,7 @@
       })();
     </script>
 
-    <script src="../suite-sync-core.js?v=19"></script>
-    <script src="./suite-bridge.js?v=19"></script>
+    <script src="../suite-sync-core.js?v=22"></script>
+    <script src="./suite-bridge.js?v=22"></script>
   </body>
 </html>

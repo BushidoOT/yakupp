@@ -1,7 +1,7 @@
 {
-  "name": "Mesaha Suite V21",
+  "name": "Mesaha Suite V22",
   "short_name": "Mesaha Suite",
-  "start_url": "./?suite=21",
+  "start_url": "./?suite=22",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f5f8f6",
@@ -19,7 +19,7 @@
       "type": "image/png"
     }
   ],
-  "id": "./?suite=21",
-  "description": "Merkezi Mesaha ve İstif yönetimi; bölmeye bağlı kayıt, fotoğraf ve yedekleri güvenli zincirli silme",
-  "version": "suite_v21"
+  "id": "./?suite=22",
+  "description": "Merkezi Mesaha ve İstif yönetimi; iOS klavye kararlılığı ve şeflik kurucusu Drive alanı",
+  "version": "suite_v22"
 }

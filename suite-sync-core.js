@@ -173,7 +173,7 @@
   async function post(url, action, data) {
     const body = {
       action,
-      source: "mesaha-suite-v21",
+      source: "mesaha-suite-v22",
       ...terminalAuth(),
       ...(data || {}),
     };
@@ -767,7 +767,7 @@
     const store = read(K.syncTokens, {});
     const existing = store[key];
     if (existing && existing.fingerprint === fingerprint && existing.token) return existing.token;
-    const token = "suitev21_" + fold(seflik) + "_" + fold(bolme) + "_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2, 8);
+    const token = "suitev22_" + fold(seflik) + "_" + fold(bolme) + "_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2, 8);
     store[key] = { token, fingerprint, at: now() };
     write(K.syncTokens, store);
     return token;
@@ -796,11 +796,11 @@
       try {
         const remote = await edge("seflik_folder_read", { seflik, folderSeflik: seflik, bolmeNo: bolme });
         remoteRows = Array.isArray(remote.records) ? remote.records : [];
-      } catch (e) { console.warn("[suite-v21] Ortak kayıtlar alınamadı; yerel kayıtlarla devam ediliyor", e); }
+      } catch (e) { console.warn("[suite-v22] Ortak kayıtlar alınamadı; yerel kayıtlarla devam ediliyor", e); }
       const rows = mergeMesahaRows(remoteRows, localRows).map((r) => ({ ...r, seflik, bolmeNo: bolme, bolme_no: bolme }));
       const token = stableSyncToken(seflik, bolme, rows);
       for (let i = 0; i < rows.length; i += 150)
-        await edge("seflik_folder_push", { seflik, bolmeNo: bolme, syncToken: token, records: rows.slice(i, i + 150), appVersion: "Mesaha Suite V21", mergeMode: "barcode" });
+        await edge("seflik_folder_push", { seflik, bolmeNo: bolme, syncToken: token, records: rows.slice(i, i + 150), appVersion: "Mesaha Suite V22", mergeMode: "barcode" });
       let backup = null, driveError = "";
       try {
         if (id.google)
@@ -808,7 +808,7 @@
             seflik, appId: "mesaha",
             fileName: `Mesaha_${fold(seflik)}_${fold(bolme)}_${new Date().toISOString().slice(0, 10)}.json`,
             recordCount: rows.length, totalVolume: rows.reduce((sum, r) => sum + volume(r), 0),
-            payload: { schema: "mesaha-suite-v21", app: "mesaha", seflik, bolme, createdAt: now(), records: rows },
+            payload: { schema: "mesaha-suite-v22", app: "mesaha", seflik, bolme, createdAt: now(), records: rows },
           });
       } catch (e) { driveError = clean(e.message || e); }
       await edge("seflik_folder_finish", {
@@ -816,7 +816,7 @@
         totalVolume: rows.reduce((sum, r) => sum + volume(r), 0),
         driveFileId: (backup && backup.fileId) || "", driveFileName: (backup && backup.fileName) || "",
         driveStatus: backup ? "saved" : id.google ? "error" : "not_connected", driveError,
-        appVersion: "Mesaha Suite V21", mergeMode: "barcode",
+        appVersion: "Mesaha Suite V22", mergeMode: "barcode",
       });
       clearStableSyncToken(seflik, bolme);
       done += rows.length;
@@ -926,7 +926,7 @@
       for (let i = r.driveFiles.length; i < photos.length; i++) {
         if (!id.google)
           throw new Error(
-            "Fotoğraflı istifleri göndermek için Suite hesabından Drive bağlayın",
+            "Fotoğraflı istifleri göndermek için şeflik kurucusu Drive hesabını bağlamalıdır.",
           );
         const dataUrl = await dataUrlFromPhoto(photos[i]);
         if (!dataUrl) continue;
@@ -987,7 +987,7 @@
             recordCount: payloadRows.length,
             totalVolume: payloadRows.reduce((s, r) => s + num(r.ster), 0),
             payload: {
-              schema: "mesaha-suite-v21",
+              schema: "mesaha-suite-v22",
               app: "istif",
               seflik,
               createdAt: now(),
@@ -995,7 +995,7 @@
             },
           });
         } catch (e) {
-          console.warn("[suite-v21] İstif Drive yedeği oluşturulamadı", e);
+          console.warn("[suite-v22] İstif Drive yedeği oluşturulamadı", e);
         }
     clearDirty("istif");
     return { done };
@@ -1120,17 +1120,29 @@
     const opts = options || {};
     const status = await driveStatus();
     if (status && status.connected) return status;
-    const error = new Error(status && status.googleRequired
-      ? "Drive bağlantısı için önce Google ile giriş yapın"
-      : "Kişisel Google Drive bağlı değil");
-    error.code = status && status.googleRequired ? "GOOGLE_REQUIRED" : "DRIVE_NOT_CONNECTED";
-    if (opts.redirect !== false) openDriveSetup();
+    const memberWithoutOwnerDrive = status && status.isOwner === false;
+    const error = new Error(
+      status && status.googleRequired
+        ? "Drive bağlantısı için önce Google ile giriş yapın"
+        : memberWithoutOwnerDrive
+          ? "Şeflik kurucusu Google Drive hesabını henüz bağlamadı"
+          : "Şeflik Google Drive hesabı bağlı değil",
+    );
+    error.code = status && status.googleRequired
+      ? "GOOGLE_REQUIRED"
+      : memberWithoutOwnerDrive
+        ? "OWNER_DRIVE_NOT_CONNECTED"
+        : "DRIVE_NOT_CONNECTED";
+    if (opts.redirect !== false && !memberWithoutOwnerDrive) openDriveSetup();
     throw error;
   }
   async function driveConnect() {
     const id = identity();
     if (!id.google)
       throw new Error("Drive bağlantısı için Google ile giriş yapın");
+    const status = await driveStatus();
+    if (status && status.isOwner === false)
+      throw new Error("Drive hesabını yalnızca şeflik kurucusu bağlayabilir");
     const redirect = location.origin + location.pathname.replace(/[^/]*$/, "");
     const x = await drive("oauth_start", {
       seflik: id.seflik,
@@ -1169,7 +1181,7 @@
       seflik, appId: "mesaha",
       fileName: `Mesaha_${fold(seflik)}_${selected ? fold(selected) + "_" : ""}${new Date().toISOString().replace(/[:.]/g, "-")}.json`,
       recordCount: rows.length, totalVolume: rows.reduce((sum, r) => sum + volume(r), 0),
-      payload: { schema: "mesaha-suite-v21", app: "mesaha", seflik, bolme: selected, createdAt: now(), settings: read(K.settings, {}), records: rows },
+      payload: { schema: "mesaha-suite-v22", app: "mesaha", seflik, bolme: selected, createdAt: now(), settings: read(K.settings, {}), records: rows },
     });
   }
   async function restoreMesahaBackup(id, mode) {
@@ -1201,7 +1213,7 @@
         photos: undefined,
       }));
     const payload = {
-      schema: "mesaha-suite-backup-v21",
+      schema: "mesaha-suite-backup-v22",
       createdAt: now(),
       user: { id: id.userId, name: id.name, email: id.email },
       seflik: id.seflik,
@@ -1326,7 +1338,7 @@
     refreshFolderData,
     loadDivisionRecords,
   };
-  window.MesahaSuiteSyncV21 = api;
+  window.MesahaSuiteSyncV22 = window.MesahaSuiteSyncV21 = api;
   window.MesahaSuiteSyncV20 = api;
   window.MesahaSuiteSyncV19 = api;
   window.MesahaSuiteSyncV18 = api;

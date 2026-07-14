@@ -1,8 +1,8 @@
 {
-  "version": "0.3.4-suite-v21",
+  "version": "0.3.4-suite-v22",
   "name": "Mesaha İO İstif Alma v0.3.4",
-  "updatedAt": "2026-07-14T20:30:00+03:00",
-  "notes": "Suite V21 ile bölme silindiğinde bağlı İstif kayıtları, fotoğraflar ve yedekler güvenli biçimde birlikte temizlenir.",
+  "updatedAt": "2026-07-14T22:30:00+03:00",
+  "notes": "Suite V22 ile tüm İstif fotoğrafları ve yedekler şeflik kurucusunun Drive hesabında tutulur.",
   "visibleVersion": "İstif Alma v0.3.4",
-  "build": 21
+  "build": 22
 }

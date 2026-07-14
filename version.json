@@ -1,12 +1,12 @@
 {
-  "version": "21.0.0",
-  "build": 21,
+  "version": "22.0.0",
+  "build": 22,
   "date": "2026-07-14",
   "name": "Mesaha Suite",
   "short_name": "Mesaha Suite",
-  "description": "Bölme silme öncesi kırmızı kapsam özeti; bölmeye bağlı İstifler, fotoğraflar ve Drive yedeklerinin zincirli ve güvenli silinmesi.",
-  "id": "./?suite=21",
-  "start_url": "./?suite=21",
-  "visibleVersion": "Mesaha Suite V21",
-  "cacheName": "yakupp-suite-shell-v21"
+  "description": "iOS ürün kısayollarında klavyeyi açık tutan ve tüm şeflik yedek/fotoğraflarını kurucunun Drive hesabında birleştiren sürüm.",
+  "id": "./?suite=22",
+  "start_url": "./?suite=22",
+  "visibleVersion": "Mesaha Suite V22",
+  "cacheName": "yakupp-suite-shell-v22"
 }
