@@ -8,9 +8,10 @@
   <title>Mesaha Suite Yönetim</title>
   <link rel="manifest" href="../manifest.json">
   <link rel="apple-touch-icon" href="../../assets/icon-192.png">
-  <link rel="stylesheet" href="./admin.css?v=31">
-  <link rel="stylesheet" href="./admin-system-report-v31.css?v=31">
-  <script src="../js/version.js"></script>
+  <link rel="stylesheet" href="./admin.css">
+  <link rel="stylesheet" href="./admin-system-report.css">
+  <script src="../../release.js"></script>
+  <script>window.MesahaRelease && window.MesahaRelease.use("admin");</script>
   <script src="../js/mesaha-supabase-config.js"></script>
 </head>
 <body>
@@ -35,7 +36,7 @@
             <div class="brand-logo"><img src="../../assets/mesaha_logo.png" alt=""></div>
             <div>
               <strong>Mesaha Suite Yönetim</strong>
-              <small id="versionLabel">Mesaha İO</small>
+              
             </div>
           </div>
           <div class="top-actions">
@@ -191,6 +192,6 @@
     </div>
   </div>
   <div id="toast" class="toast" role="status"></div>
-  <a class="suite-admin-home" href="../../">⌂ Suite Ana Menüsü</a><script src="./admin.js?v=576"></script><script src="./admin-system-report-v31.js?v=31" defer></script>
+  <a class="suite-admin-home" href="../../">⌂ Suite Ana Menüsü</a><script src="./admin.js"></script><script src="./admin-system-report.js" defer></script>
 </body>
 </html>

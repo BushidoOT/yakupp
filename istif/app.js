@@ -1,6 +1,6 @@
 "use strict";
 
-const APP_VERSION = "0.3.12-suite-v31";
+const APP_VERSION = String(window.MESAHA_RELEASE?.apps?.istif?.version || "stable");
 const PHOTO_TARGET_BYTES = 600 * 1024;
 const MAX_PHOTO_BYTES = 700 * 1024;
 const DB_NAME = "mesaha-istif-prototype";
@@ -551,7 +551,7 @@ function wait(ms) {
 
 function suiteSyncApi() {
   return (
-    window.MesahaSuiteSyncV31 || window.MesahaSuiteSyncV28 || window.MesahaSuiteSyncV27 ||
+    window.MesahaSuiteSync || window.MesahaSuiteSyncV28 || window.MesahaSuiteSyncV27 ||
     window.MesahaSuiteSyncV26 ||
     window.MesahaSuiteSyncV25 ||
     window.MesahaSuiteSyncV24 ||
@@ -2149,7 +2149,7 @@ function renderSettings() {
       ${loggedIn ? "" : '<a class="btn primary wide login-link" href="../">Mesaha İO’da Google ile Giriş Yap</a>'}
     </section>
     ${renderDriveCard()}
-    <div class="info-note"><b>${icon("info", 21)}</b><span>Sürüm ${APP_VERSION} • Kayıtlar offline saklanır. İstif, fotoğraf ve evrak verileri bu uygulamaya özeldir.</span></div>`;
+    <div class="info-note"><b>${icon("info", 21)}</b><span>Kayıtlar offline saklanır. İstif, fotoğraf ve evrak verileri bu uygulamaya özeldir.</span></div>`;
 }
 
 function bindDynamic() {
@@ -3664,7 +3664,7 @@ window.addEventListener("storage", (event) => {
     hydrateLocalSharedIdentity();
     refreshCurrentMembers();
     render();
-    /* Suite V10: ağ yenilemesi yalnızca Suite veya ortak Senkronize Et tarafından yapılır. */
+    /* Ağ yenilemesi yalnızca Suite veya ortak Senkronize Et tarafından yapılır. */
   }
 });
 window.addEventListener("afterprint", () => {
@@ -3696,7 +3696,7 @@ async function pingAdminProfile() {
       name: state.auth.name || displayOrmanci(),
       seflik: state.settings.seflik,
       bolmeNo: state.draft?.bolme || "",
-      appVersion: "İstif İO " + APP_VERSION,
+      appVersion: window.MesahaRelease?.telemetry("istif") || "İstif İO",
       avatarUrl: state.auth.avatarUrl,
       deviceId: istifDeviceId(),
       deviceInfo: {
@@ -3704,7 +3704,7 @@ async function pingAdminProfile() {
         appName: "İstif İO",
         platform: navigator.platform || "",
         browser: navigator.userAgent || "",
-        suiteVersion: "V31",
+        suiteVersion: String(window.MESAHA_RELEASE?.version || "stable"),
       },
     });
   } catch {}
@@ -3746,7 +3746,7 @@ window.addEventListener(
     render();
     if (navigator.onLine && hasSharedCloudIdentity())
       setTimeout(() => syncSharedContext({ manual: false }), 0);
-    /* Suite V31: ortak kayıt listesi sunucu için otoritatiftir; silinen kayıtlar tüm cihazlardan temizlenir. */
+    /* Ortak kayıt listesi sunucu için otoritatiftir; silinen kayıtlar tüm cihazlardan temizlenir. */
   } catch (error) {
     if (bootOverlay) bootOverlay.hidden = true;
     app.innerHTML = `<div class="empty"><h2>Uygulama açılamadı</h2><p>${esc(error.message)}</p></div>`;

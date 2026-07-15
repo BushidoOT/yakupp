@@ -1,10 +1,10 @@
 (function () {
   "use strict";
 
-  const TOOL_ID = "suiteCacheResetV30";
-  const STYLE_ID = "suiteCacheResetStyleV30";
-  const OVERLAY_ID = "suiteCacheResetOverlayV30";
-  const DONE_KEY = "mesaha_suite_cache_reset_done_v30";
+  const TOOL_ID = "suiteCacheReset";
+  const STYLE_ID = "suiteCacheResetStyle";
+  const OVERLAY_ID = "suiteCacheResetOverlay";
+  const DONE_KEY = "mesaha_suite_cache_reset_done";
   const CACHE_PREFIX = "yakupp-suite-shell-";
   let busy = false;
   let lastPressAt = 0;
@@ -36,14 +36,14 @@
       #${TOOL_ID}.is-busy{opacity:.68;pointer-events:none}
       #${OVERLAY_ID}{position:fixed;inset:0;z-index:2147483647;display:grid;place-items:center;padding:max(20px,env(safe-area-inset-top)) max(18px,env(safe-area-inset-right)) max(20px,env(safe-area-inset-bottom)) max(18px,env(safe-area-inset-left));background:rgba(7,33,24,.72);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
       #${OVERLAY_ID}[hidden]{display:none!important}
-      #${OVERLAY_ID} .suite-cache-card-v30{width:min(390px,100%);border-radius:22px;background:#fff;padding:22px 20px;text-align:center;box-shadow:0 24px 70px rgba(0,0,0,.28)}
-      #${OVERLAY_ID} .suite-cache-spinner-v30{width:42px;height:42px;margin:0 auto 15px;border:4px solid #dcebe3;border-top-color:#19613f;border-radius:50%;animation:suiteCacheSpinV30 .8s linear infinite}
+      #${OVERLAY_ID} .suite-cache-card{width:min(390px,100%);border-radius:22px;background:#fff;padding:22px 20px;text-align:center;box-shadow:0 24px 70px rgba(0,0,0,.28)}
+      #${OVERLAY_ID} .suite-cache-spinner{width:42px;height:42px;margin:0 auto 15px;border:4px solid #dcebe3;border-top-color:#19613f;border-radius:50%;animation:suiteCacheSpin .8s linear infinite}
       #${OVERLAY_ID} h3{margin:0 0 8px;color:#173d2d;font:850 20px/1.2 system-ui}
       #${OVERLAY_ID} p{margin:0;color:#587064;font:650 13px/1.5 system-ui}
       #${OVERLAY_ID} small{display:block;margin-top:12px;color:#8a5a18;font:750 11px/1.35 system-ui}
-      @keyframes suiteCacheSpinV30{to{transform:rotate(360deg)}}
-      @media(max-width:430px){#${OVERLAY_ID} .suite-cache-card-v30{border-radius:19px;padding:20px 17px}#${OVERLAY_ID} h3{font-size:18px}}
-      @media(prefers-reduced-motion:reduce){#${OVERLAY_ID} .suite-cache-spinner-v30{animation-duration:1.8s}}
+      @keyframes suiteCacheSpin{to{transform:rotate(360deg)}}
+      @media(max-width:430px){#${OVERLAY_ID} .suite-cache-card{border-radius:19px;padding:20px 17px}#${OVERLAY_ID} h3{font-size:18px}}
+      @media(prefers-reduced-motion:reduce){#${OVERLAY_ID} .suite-cache-spinner{animation-duration:1.8s}}
     `;
     document.head.appendChild(style);
   }
@@ -63,10 +63,10 @@
     overlay.setAttribute("role", "status");
     overlay.setAttribute("aria-live", "assertive");
     overlay.innerHTML = `
-      <section class="suite-cache-card-v30">
-        <div class="suite-cache-spinner-v30" aria-hidden="true"></div>
-        <h3 id="suiteCacheResetTitleV30">Önbellek temizleniyor</h3>
-        <p id="suiteCacheResetTextV30">Uygulama dosyaları güvenli şekilde yenileniyor.</p>
+      <section class="suite-cache-card">
+        <div class="suite-cache-spinner" aria-hidden="true"></div>
+        <h3 id="suiteCacheResetTitle">Önbellek temizleniyor</h3>
+        <p id="suiteCacheResetText">Uygulama dosyaları güvenli şekilde yenileniyor.</p>
         <small>Kayıtlar, oturum ve bulut bilgileri korunur.</small>
       </section>`;
     document.body.appendChild(overlay);
@@ -76,8 +76,8 @@
   function setProgress(title, text) {
     const overlay = ensureOverlay();
     overlay.hidden = false;
-    const h = document.getElementById("suiteCacheResetTitleV30");
-    const p = document.getElementById("suiteCacheResetTextV30");
+    const h = document.getElementById("suiteCacheResetTitle");
+    const p = document.getElementById("suiteCacheResetText");
     if (h && title) h.textContent = title;
     if (p && text) p.textContent = text;
   }
@@ -164,7 +164,7 @@
     const sw = await refreshServiceWorker();
     let workerResult = null;
     try {
-      workerResult = await messageWorker(sw.worker, { type: "CLEAR_APP_CACHE", source: "suite-button-v30" }, 120000);
+      workerResult = await messageWorker(sw.worker, { type: "CLEAR_APP_CACHE", source: "suite-button" }, 120000);
     } catch (_) {
       await deleteWindowCaches();
       if (sw.registration) {
@@ -176,7 +176,7 @@
     if (!workerResult || workerResult.ready !== true) {
       const fresh = await refreshServiceWorker();
       try {
-        await messageWorker(fresh.worker, { type: "CACHE_ALL", source: "suite-button-v30" }, 120000);
+        await messageWorker(fresh.worker, { type: "CACHE_ALL", source: "suite-button" }, 120000);
       } catch (_) {
         // Eski Safari sürümlerinde MessageChannel yanıt vermese de sayfa yenilemesi
         // ağdan güncel dosyaları alır. Kullanıcı verileri hiçbir aşamada silinmez.
@@ -255,7 +255,7 @@
     const button = document.createElement("button");
     button.id = TOOL_ID;
     button.type = "button";
-    button.className = "suite-cache-reset-tool-v30";
+    button.className = "suite-cache-reset-tool";
     button.setAttribute("aria-label", "Uygulama önbelleğini temizle");
     button.innerHTML = `
       <svg viewBox="0 0 24 24" aria-hidden="true">

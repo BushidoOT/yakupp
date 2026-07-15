@@ -1,36 +1,35 @@
 "use strict";
 
-/* Mesaha Suite V29 — İstif isteğe bağlı bulut indirme ve terminal yetki düzeltmesi */
+/* İstif isteğe bağlı bulut indirme ve terminal yetkileri */
 (function () {
-  const HOTFIX_VERSION = "29.0.0";
-  const originalEditRecordV28 = editRecord;
-  const originalBindDynamicV28 = bindDynamic;
-  let dirtyReconcileTimerV29 = 0;
-  let cloudPullingIdV29 = "";
+    const originalEditRecordCore = editRecord;
+  const originalBindDynamicCore = bindDynamic;
+  let dirtyReconcileTimerCloud = 0;
+  let cloudPullingIdCloud = "";
 
-  function installStylesV29() {
-    if (document.getElementById("istifCloudOnDemandCssV29")) return;
+  function installStylesCloud() {
+    if (document.getElementById("istifCloudOnDemandCssCloud")) return;
     const style = document.createElement("style");
-    style.id = "istifCloudOnDemandCssV29";
+    style.id = "istifCloudOnDemandCssCloud";
     style.textContent = `
-      .istif-search-v29{margin:0 0 12px;padding:12px;border:1px solid rgba(18,104,63,.13);border-radius:17px;background:#fff;box-shadow:0 8px 24px rgba(19,74,49,.06)}
-      .istif-search-v29 label{display:block;margin:0 0 7px;color:#35604b;font-size:12px;font-weight:800;letter-spacing:.02em}
-      .istif-search-input-v29{width:100%;min-height:48px;border:1px solid #d9e8df;border-radius:13px;background:#f8fbf9;color:#173d2d;font:700 15px/1.2 system-ui;padding:0 14px;outline:none;-webkit-appearance:none;appearance:none}
-      .istif-search-input-v29:focus{border-color:#2b8a57;box-shadow:0 0 0 3px rgba(43,138,87,.12);background:#fff}
+      .istif-search-cloud{margin:0 0 12px;padding:12px;border:1px solid rgba(18,104,63,.13);border-radius:17px;background:#fff;box-shadow:0 8px 24px rgba(19,74,49,.06)}
+      .istif-search-cloud label{display:block;margin:0 0 7px;color:#35604b;font-size:12px;font-weight:800;letter-spacing:.02em}
+      .istif-search-input-cloud{width:100%;min-height:48px;border:1px solid #d9e8df;border-radius:13px;background:#f8fbf9;color:#173d2d;font:700 15px/1.2 system-ui;padding:0 14px;outline:none;-webkit-appearance:none;appearance:none}
+      .istif-search-input-cloud:focus{border-color:#2b8a57;box-shadow:0 0 0 3px rgba(43,138,87,.12);background:#fff}
       .record-actions{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px!important}
       .record-actions .btn{width:100%;min-width:0;white-space:normal;line-height:1.15}
-      .btn.cloud-pull-v29{background:#f4bd32!important;border-color:#e2a817!important;color:#3c2a00!important;font-weight:900!important;box-shadow:0 7px 16px rgba(208,151,10,.19)}
-      .btn.cloud-pull-v29:active{transform:translateY(1px)}
-      .btn.cloud-pull-v29[disabled]{opacity:.65;filter:saturate(.65)}
-      .remote-thumb-v29{position:relative;background:linear-gradient(145deg,#fff8dd,#f6e7a8)!important}
-      .remote-thumb-v29:after{content:"Bulutta";position:absolute;left:4px;right:4px;bottom:4px;padding:2px 3px;border-radius:6px;background:rgba(81,57,0,.82);color:#fff;font:800 8px/1 system-ui;text-align:center}
-      .cloud-ready-badge-v29{display:inline-flex;align-items:center;gap:5px;margin:0 0 8px;padding:5px 9px;border-radius:999px;background:#edf8f1;color:#17623b;font:800 11px/1.1 system-ui}
-      @media(max-width:390px){.record-actions{grid-template-columns:1fr}.istif-search-v29{padding:10px}.istif-search-input-v29{font-size:16px}}
+      .btn.cloud-pull-cloud{background:#f4bd32!important;border-color:#e2a817!important;color:#3c2a00!important;font-weight:900!important;box-shadow:0 7px 16px rgba(208,151,10,.19)}
+      .btn.cloud-pull-cloud:active{transform:translateY(1px)}
+      .btn.cloud-pull-cloud[disabled]{opacity:.65;filter:saturate(.65)}
+      .remote-thumb-cloud{position:relative;background:linear-gradient(145deg,#fff8dd,#f6e7a8)!important}
+      .remote-thumb-cloud:after{content:"Bulutta";position:absolute;left:4px;right:4px;bottom:4px;padding:2px 3px;border-radius:6px;background:rgba(81,57,0,.82);color:#fff;font:800 8px/1 system-ui;text-align:center}
+      .cloud-ready-badge-cloud{display:inline-flex;align-items:center;gap:5px;margin:0 0 8px;padding:5px 9px;border-radius:999px;background:#edf8f1;color:#17623b;font:800 11px/1.1 system-ui}
+      @media(max-width:390px){.record-actions{grid-template-columns:1fr}.istif-search-cloud{padding:10px}.istif-search-input-cloud{font-size:16px}}
     `;
     document.head.appendChild(style);
   }
 
-  function searchKeyV29(value) {
+  function searchKeyCloud(value) {
     return clean(value)
       .toLocaleUpperCase("tr-TR")
       .replace(/Ç/g, "C")
@@ -42,13 +41,13 @@
       .replace(/[^A-Z0-9]/g, "");
   }
 
-  function localPhotoCountV29(record) {
+  function localPhotoCountCloud(record) {
     return Array.isArray(record?.photos)
       ? record.photos.filter((photo) => photo && photo.blob).length
       : 0;
   }
 
-  function expectedPhotoCountV29(record) {
+  function expectedPhotoCountCloud(record) {
     return Math.min(
       4,
       Math.max(
@@ -58,45 +57,45 @@
     );
   }
 
-  function needsCloudPullV29(record) {
+  function needsCloudPullCloud(record) {
     if (!record || record.isDemo) return false;
     const status = clean(record.syncStatus);
     if (status && status !== "synced") return false;
-    if (record.cloudHydratedV29 === true) {
-      return localPhotoCountV29(record) < expectedPhotoCountV29(record);
+    if (record.cloudHydratedCloud === true) {
+      return localPhotoCountCloud(record) < expectedPhotoCountCloud(record);
     }
     return (
       record.remoteOnly === true ||
-      localPhotoCountV29(record) < expectedPhotoCountV29(record)
+      localPhotoCountCloud(record) < expectedPhotoCountCloud(record)
     );
   }
 
-  async function reconcileIstifDirtyV29() {
-    clearTimeout(dirtyReconcileTimerV29);
-    dirtyReconcileTimerV29 = 0;
+  async function reconcileIstifDirtyCloud() {
+    clearTimeout(dirtyReconcileTimerCloud);
+    dirtyReconcileTimerCloud = 0;
     try {
       const rows = (await idbGetAll("records")).filter((row) => row && !row.isDemo);
       const pending = rows.filter((row) => clean(row.syncStatus || "local") !== "synced");
       const api = suiteSyncApi();
       if (!api) return;
       if (!pending.length) api.clearDirty("istif");
-      else api.markDirty("istif", { pending: pending.length, source: "istif-v29" });
+      else api.markDirty("istif", { pending: pending.length, source: "istif-cloud" });
       api.updateButton?.();
     } catch (_) {}
   }
 
-  function scheduleDirtyReconcileV29(delay = 40) {
-    clearTimeout(dirtyReconcileTimerV29);
-    dirtyReconcileTimerV29 = setTimeout(reconcileIstifDirtyV29, delay);
+  function scheduleDirtyReconcileCloud(delay = 40) {
+    clearTimeout(dirtyReconcileTimerCloud);
+    dirtyReconcileTimerCloud = setTimeout(reconcileIstifDirtyCloud, delay);
   }
 
   /*
-   * V28 her IndexedDB yazımını değişiklik sayıyordu. Sunucudan alınan veya
+   * Core her IndexedDB yazımını değişiklik sayıyordu. Sunucudan alınan veya
    * zaten sunucuya kaydedilmiş kayıt tekrar yazılınca yüzen Senkronize Et
-   * düğmesi sürekli geri geliyordu. V29 yalnız gerçek yerel değişiklikleri
+   * düğmesi sürekli geri geliyordu. Cloud yalnız gerçek yerel değişiklikleri
    * kirli olarak işaretler.
    */
-  idbPut = async function idbPutV29(store, value) {
+  idbPut = async function idbPutCloud(store, value) {
     const db = await openDB();
     return new Promise((resolve, reject) => {
       const tx = db.transaction(store, "readwrite");
@@ -105,12 +104,12 @@
         if (store === "records" && !(value && value.isDemo)) {
           const synced = clean(value?.syncStatus) === "synced" && !clean(value?.syncError);
           if (synced) {
-            scheduleDirtyReconcileV29();
+            scheduleDirtyReconcileCloud();
           } else {
             try {
               window.dispatchEvent(
                 new CustomEvent("mesaha-istif:changed", {
-                  detail: { type: "put", id: value && value.id, source: "istif-v29" },
+                  detail: { type: "put", id: value && value.id, source: "istif-cloud" },
                 }),
               );
               suiteSyncApi()?.markDirty("istif", { id: value && value.id });
@@ -124,13 +123,13 @@
   };
 
   /* Silme akışı sunucuyu önce temizlediği için silinen kaydı tekrar kirli yapma. */
-  idbDelete = async function idbDeleteV29(store, key) {
+  idbDelete = async function idbDeleteCloud(store, key) {
     const db = await openDB();
     return new Promise((resolve, reject) => {
       const tx = db.transaction(store, "readwrite");
       tx.objectStore(store).delete(key);
       tx.oncomplete = () => {
-        if (store === "records") scheduleDirtyReconcileV29();
+        if (store === "records") scheduleDirtyReconcileCloud();
         resolve();
       };
       tx.onerror = () => reject(tx.error);
@@ -138,11 +137,11 @@
   };
 
   /* Liste açılırken Drive fotoğrafını otomatik indirme. */
-  loadRemoteThumbnails = async function loadRemoteThumbnailsV29() {
+  loadRemoteThumbnails = async function loadRemoteThumbnailsCloud() {
     return 0;
   };
 
-  recordThumbHtml = function recordThumbHtmlV29(record) {
+  recordThumbHtml = function recordThumbHtmlCloud(record) {
     const photo = Array.isArray(record?.photos)
       ? record.photos.find((item) => item && item.blob)
       : null;
@@ -152,17 +151,17 @@
         return `<span class="record-thumb"><img src="${src}" alt="${esc(record.istifNo || "İstif fotoğrafı")}"></span>`;
       } catch (_) {}
     }
-    const cloud = expectedPhotoCountV29(record) > 0;
-    return `<span class="record-thumb default-thumb ${cloud ? "remote-thumb-v29" : ""}"><img src="./assets/istif-default.svg" alt="${cloud ? "Fotoğraflar bulutta" : "İstif"}"></span>`;
+    const cloud = expectedPhotoCountCloud(record) > 0;
+    return `<span class="record-thumb default-thumb ${cloud ? "remote-thumb-cloud" : ""}"><img src="./assets/istif-default.svg" alt="${cloud ? "Fotoğraflar bulutta" : "İstif"}"></span>`;
   };
 
-  renderRecords = function renderRecordsV29() {
+  renderRecords = function renderRecordsCloud() {
     const bolmes = [...new Set(state.records.map((row) => row.bolme).filter(Boolean))];
-    const query = clean(state.recordSearchV29 || "");
+    const query = clean(state.recordSearchCloud || "");
     return `${head("İstifler", "İstif No veya barkoda göre arayın", { back: true, action: `<button class="icon-btn" aria-label="Filtre">${icon("filter", 22)}</button>` })}
-      <section class="istif-search-v29">
-        <label for="istifSearchV29">İstif No / Barkod</label>
-        <input id="istifSearchV29" class="istif-search-input-v29" type="search" inputmode="search" autocomplete="off" spellcheck="false" placeholder="İstif No veya barkod yazın" value="${esc(query)}">
+      <section class="istif-search-cloud">
+        <label for="istifSearchCloud">İstif No / Barkod</label>
+        <input id="istifSearchCloud" class="istif-search-input-cloud" type="search" inputmode="search" autocomplete="off" spellcheck="false" placeholder="İstif No veya barkod yazın" value="${esc(query)}">
       </section>
       <section class="filter-grid">
         <div class="filter-box"><label>Tarih</label><input id="filterDate" type="date" value=""></div>
@@ -172,10 +171,10 @@
       <section id="recordList" class="records">${recordCards(sortedRecords())}</section>`;
   };
 
-  applyRecordFilters = function applyRecordFiltersV29() {
-    const query = clean(app.querySelector("#istifSearchV29")?.value || state.recordSearchV29 || "");
-    state.recordSearchV29 = query;
-    const needle = searchKeyV29(query);
+  applyRecordFilters = function applyRecordFiltersCloud() {
+    const query = clean(app.querySelector("#istifSearchCloud")?.value || state.recordSearchCloud || "");
+    state.recordSearchCloud = query;
+    const needle = searchKeyCloud(query);
     const date = app.querySelector("#filterDate")?.value || "";
     const bolme = app.querySelector("#filterBolme")?.value || "";
     const type = app.querySelector("#filterType")?.value || "";
@@ -183,8 +182,8 @@
       state.records.filter((record) => {
         const matchesSearch =
           !needle ||
-          searchKeyV29(record.istifNo).includes(needle) ||
-          searchKeyV29(record.barcode).includes(needle);
+          searchKeyCloud(record.istifNo).includes(needle) ||
+          searchKeyCloud(record.barcode).includes(needle);
         return (
           matchesSearch &&
           (!date || record.date === date) &&
@@ -195,10 +194,10 @@
     );
     const list = app.querySelector("#recordList");
     if (list) list.innerHTML = recordCards(rows);
-    bindCloudButtonsV29();
+    bindCloudButtonsCloud();
   };
 
-  recordCards = function recordCardsV29(rows) {
+  recordCards = function recordCardsCloud(rows) {
     if (!rows.length)
       return '<div class="empty card">İstif No veya barkoda uygun kayıt bulunamadı.</div>';
     return rows
@@ -207,11 +206,11 @@
         const sentDate = sent && record.sentAt ? trDate(String(record.sentAt).slice(0, 10)) : "";
         const upload = recordPhotoUploadSummary(record);
         const hasSyncError = !!clean(record.syncError) || ["upload_failed", "sync_failed"].includes(record.syncStatus);
-        const cloudButton = needsCloudPullV29(record)
-          ? `<button class="btn cloud-pull-v29 small" type="button" data-cloud-pull-v29="${esc(record.id)}" ${cloudPullingIdV29 === record.id ? "disabled" : ""}>${icon("cloud", 16)} ${cloudPullingIdV29 === record.id ? "Getiriliyor…" : "İstifi Buluttan Getir"}</button>`
+        const cloudButton = needsCloudPullCloud(record)
+          ? `<button class="btn cloud-pull-cloud small" type="button" data-cloud-pull-cloud="${esc(record.id)}" ${cloudPullingIdCloud === record.id ? "disabled" : ""}>${icon("cloud", 16)} ${cloudPullingIdCloud === record.id ? "Getiriliyor…" : "İstifi Buluttan Getir"}</button>`
           : "";
-        const hydratedBadge = record.cloudHydratedV29 === true && !needsCloudPullV29(record)
-          ? `<div class="cloud-ready-badge-v29">${icon("check", 14)} Bilgiler ve fotoğraflar cihazda</div>`
+        const hydratedBadge = record.cloudHydratedCloud === true && !needsCloudPullCloud(record)
+          ? `<div class="cloud-ready-badge-cloud">${icon("check", 14)} Bilgiler ve fotoğraflar cihazda</div>`
           : "";
         return `<article class="record-card card ${recordTypeClass(record.type)} ${sent ? "sent-record" : ""}" data-record="${record.id}">
           ${recordThumbHtml(record)}
@@ -225,7 +224,7 @@
           </div>
           <div class="record-status ${hasSyncError ? "error" : record.coordinates ? "" : "warn"}">
             <div>${icon("pin", 17)}<span>${record.coordinates ? "Koordinat Var" : "Koordinat Bekliyor"}</span></div>
-            <div>${icon("camera", 17)}<span>${upload.total} Fotoğraf${upload.total ? ` • ${localPhotoCountV29(record)}/${upload.total} cihazda` : ""}</span></div>
+            <div>${icon("camera", 17)}<span>${upload.total} Fotoğraf${upload.total ? ` • ${localPhotoCountCloud(record)}/${upload.total} cihazda` : ""}</span></div>
             <div>${icon(sent ? "check" : "cloud", 17)}<span>${sent ? `Gönderildi${sentDate ? ` • ${sentDate}` : ""}` : recordSyncText(record)}</span></div>
             ${hasSyncError ? `<div class="record-sync-error" title="${esc(record.syncError || "Senkronizasyon hatası")}">${icon("info", 17)}<span>${esc(record.syncError || "Tekrar senkronize edin")}</span></div>` : ""}
           </div>
@@ -244,7 +243,7 @@
   };
 
   /* Terminal kodlu cihaz da kayıt güncellemelerini ana kullanıcı yetkisiyle Edge Function üzerinden yapar. */
-  supabaseUpsertRecord = async function supabaseUpsertRecordV29(record) {
+  supabaseUpsertRecord = async function supabaseUpsertRecordCloud(record) {
     const api = suiteSyncApi();
     if (!api?.edge) throw new Error("Suite bulut servisi hazır değil.");
     const folder = effectiveRecordSeflik(record);
@@ -279,7 +278,7 @@
     });
   };
 
-  async function fetchLatestRemoteRecordV29(record) {
+  async function fetchLatestRemoteRecordCloud(record) {
     const api = suiteSyncApi();
     if (!api?.edge) throw new Error("Suite bulut servisi hazır değil.");
     const folder = effectiveRecordSeflik(record);
@@ -306,8 +305,8 @@
     return normalized;
   }
 
-  async function pullRecordFromCloudV29(recordId) {
-    if (cloudPullingIdV29) return;
+  async function pullRecordFromCloudCloud(recordId) {
+    if (cloudPullingIdCloud) return;
     const current = state.records.find((item) => item.id === recordId);
     if (!current) return toast("Buluttan getirilecek istif bulunamadı.", "bad");
     if (navigator.onLine === false)
@@ -315,14 +314,14 @@
     if (!hasSharedCloudIdentity())
       return toast("Google veya terminal kodu ile bağlı kullanıcı oturumu gerekli.", "bad");
 
-    cloudPullingIdV29 = recordId;
+    cloudPullingIdCloud = recordId;
     render();
     showDialog(
       `<h3>İstif Buluttan Getiriliyor</h3><p>${esc(current.istifNo || "İstif")} bilgileri ve fotoğrafları bu cihaza indiriliyor.</p><div class="progress"><span style="width:60%"></span></div>`,
     );
     const previousSelected = state.selectedPhotos;
     try {
-      const remote = await fetchLatestRemoteRecordV29(current);
+      const remote = await fetchLatestRemoteRecordCloud(current);
       const existingPhotos = Array.isArray(current.photos)
         ? current.photos.filter((photo) => photo && photo.blob).map((photo) => ({ ...photo }))
         : [];
@@ -354,8 +353,8 @@
         syncErrorCode: "",
         syncRetryable: false,
         remoteOnly: false,
-        cloudHydratedV29: true,
-        cloudHydratedAtV29: new Date().toISOString(),
+        cloudHydratedCloud: true,
+        cloudHydratedAtCloud: new Date().toISOString(),
       };
       await idbPut("records", cloneValue(merged));
       const index = state.records.findIndex((item) => item.id === merged.id);
@@ -366,66 +365,66 @@
         `${merged.istifNo || "İstif"} buluttan getirildi${merged.photoCount ? ` • ${photos.length}/${merged.photoCount} fotoğraf` : ""}.`,
         "good",
       );
-      scheduleDirtyReconcileV29();
+      scheduleDirtyReconcileCloud();
     } catch (error) {
       closeDialog();
       toast(`İstif getirilemedi: ${clean(error?.message || error)}`, "bad");
     } finally {
       state.selectedPhotos = previousSelected;
-      cloudPullingIdV29 = "";
+      cloudPullingIdCloud = "";
       render();
     }
   }
 
-  editRecord = async function editRecordV29(recordId) {
+  editRecord = async function editRecordCloud(recordId) {
     const record = state.records.find((item) => item.id === recordId);
     if (!record) return toast("Düzenlenecek istif bulunamadı.", "bad");
-    if (needsCloudPullV29(record)) {
+    if (needsCloudPullCloud(record)) {
       toast("Bu istifin bilgileri ve fotoğrafları cihazda değil. Önce sarı ‘İstifi Buluttan Getir’ düğmesine basın.", "bad");
       return;
     }
-    return originalEditRecordV28(recordId);
+    return originalEditRecordCore(recordId);
   };
 
-  function bindCloudButtonsV29() {
-    app.querySelectorAll("[data-cloud-pull-v29]").forEach((button) => {
-      if (button.dataset.boundV29 === "1") return;
-      button.dataset.boundV29 = "1";
-      button.addEventListener("click", () => pullRecordFromCloudV29(button.dataset.cloudPullV29));
+  function bindCloudButtonsCloud() {
+    app.querySelectorAll("[data-cloud-pull-cloud]").forEach((button) => {
+      if (button.dataset.boundCloud === "1") return;
+      button.dataset.boundCloud = "1";
+      button.addEventListener("click", () => pullRecordFromCloudCloud(button.dataset.cloudPullCloud));
     });
-    const search = app.querySelector("#istifSearchV29");
-    if (search && search.dataset.boundV29 !== "1") {
-      search.dataset.boundV29 = "1";
+    const search = app.querySelector("#istifSearchCloud");
+    if (search && search.dataset.boundCloud !== "1") {
+      search.dataset.boundCloud = "1";
       search.addEventListener("input", applyRecordFilters);
       search.addEventListener("search", applyRecordFilters);
     }
   }
 
-  bindDynamic = function bindDynamicV29() {
-    originalBindDynamicV28();
-    bindCloudButtonsV29();
+  bindDynamic = function bindDynamicCloud() {
+    originalBindDynamicCore();
+    bindCloudButtonsCloud();
   };
 
-  function bootV29() {
-    installStylesV29();
+  function bootCloud() {
+    installStylesCloud();
     document.documentElement.dataset.istifCloudMode = "manual";
-    window.MESAHA_ISTIF_V29 = {
-      version: HOTFIX_VERSION,
-      pullRecord: pullRecordFromCloudV29,
-      reconcileDirty: reconcileIstifDirtyV29,
+    window.MESAHA_ISTIF_CLOUD = {
+      version: String(window.MESAHA_RELEASE?.apps?.istif?.version || "stable"),
+      pullRecord: pullRecordFromCloudCloud,
+      reconcileDirty: reconcileIstifDirtyCloud,
     };
-    setTimeout(scheduleDirtyReconcileV29, 300);
+    setTimeout(scheduleDirtyReconcileCloud, 300);
     setTimeout(() => {
       if (state.view === "records") render();
     }, 700);
   }
 
   window.addEventListener("mesaha-suite:sync-complete", () =>
-    setTimeout(scheduleDirtyReconcileV29, 80),
+    setTimeout(scheduleDirtyReconcileCloud, 80),
   );
-  window.addEventListener("online", () => setTimeout(scheduleDirtyReconcileV29, 900));
+  window.addEventListener("online", () => setTimeout(scheduleDirtyReconcileCloud, 900));
 
   if (document.readyState === "loading")
-    document.addEventListener("DOMContentLoaded", bootV29, { once: true });
-  else bootV29();
+    document.addEventListener("DOMContentLoaded", bootCloud, { once: true });
+  else bootCloud();
 })();

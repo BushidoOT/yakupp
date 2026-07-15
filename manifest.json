@@ -1,7 +1,7 @@
 {
-  "name": "Mesaha Suite V31",
+  "name": "Mesaha Suite",
   "short_name": "Mesaha Suite",
-  "start_url": "./?suite=31",
+  "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f5f8f6",
@@ -19,7 +19,6 @@
       "type": "image/png"
     }
   ],
-  "id": "./?suite=31",
-  "description": "Merkezi Mesaha ve İstif yönetimi; senkronizasyon sağlığı ve canlı sistem raporları",
-  "version": "suite_v31"
+  "id": "./",
+  "description": "Merkezi Mesaha ve İstif yönetimi"
 }

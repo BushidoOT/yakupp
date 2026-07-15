@@ -52,7 +52,8 @@
       window.MESAHA_SUITE_MODE = true;
       document.documentElement.setAttribute("data-suite-managed", "1");
     </script>
-    <script src="./js/version.js"></script>
+    <script src="../release.js"></script>
+    <script>window.MesahaRelease && window.MesahaRelease.use("mesaha");</script>
     <script>
       try {
         if (window.MesahaVersion && window.MesahaVersion.applyToDocument)
@@ -661,7 +662,7 @@
         <ul class="startup-steps" id="startupSteps">
           <li data-step="files">Dosyalar kontrol ediliyor</li>
           <li data-step="records">Kayıtlar kontrol ediliyor</li>
-          <li data-step="version">Sürüm kontrol ediliyor</li>
+          <li data-step="version">Uygulama kontrol ediliyor</li>
           <li data-step="offline">Offline çalışma hazırlanıyor</li>
         </ul>
       </div>
@@ -670,9 +671,6 @@
       <header class="topbar">
         <div class="brand">
           <img alt="Mesaha İO" src="../assets/mesaha_logo.png" />
-          <div class="version-card">
-            <b id="versionText">Mesaha İO</b><small></small>
-          </div>
         </div>
         <div class="user-badge login-needed" id="userBadge">Giriş Yap</div>
         <div class="top-actions-v316">
@@ -839,7 +837,6 @@
         </section>
         <section class="view entry-view" id="entryView">
           <header class="entry-top">
-            <div class="version-card"><b>Mesaha İO</b><small></small></div>
             <button class="btn primary" id="entryHomeBtn" type="button">
               🏠 Ana Sayfaya Dön
             </button>
@@ -5952,8 +5949,8 @@
                     "version",
                     "ok",
                     remote._localFallback
-                      ? "Sürüm yerelden doğrulandı"
-                      : "Sürüm kontrol edildi",
+                      ? "Uygulama yerelden doğrulandı"
+                      : "Uygulama kontrol edildi",
                   );
                   var remoteBuild = Number((remote && remote.build) || 0) || 0;
                   var currentBuild =
@@ -5982,7 +5979,7 @@
                             title: "Yeni sürüm var",
                             type: "success",
                             icon: "↻",
-                            html: `<p>Yeni sürüm bulundu: <b>${esc(remote.visibleVersion || remote.app || remote.version)}</b></p><p>Güncellemek için aşağıdaki butona basabilirsin.</p>`,
+                            html: `<p>Güncelleme bulundu.</p><p>Güncellemek için aşağıdaki butona basabilirsin.</p>`,
                             buttons: [
                               { text: "Sonra", value: false, cls: "ghost" },
                               { text: "Güncelle", value: true, cls: "primary" },
@@ -6001,10 +5998,10 @@
                     }
                   }
                 } else {
-                  setStep("version", "ok", "Sürüm yerelden doğrulandı");
+                  setStep("version", "ok", "Uygulama yerelden doğrulandı");
                 }
               } catch {
-                setStep("version", "ok", "Sürüm yerelden doğrulandı");
+                setStep("version", "ok", "Uygulama yerelden doğrulandı");
               }
             } else {
               setStep(
@@ -6467,7 +6464,7 @@
               check = await window.MesahaUpdateV527.check();
             if (check && !check.unavailable && !check.newer) {
               await modal({
-                title: "Sürüm güncel",
+                title: "Uygulama güncel",
                 type: "success",
                 icon: "✓",
                 html: `<p><b>${esc((window.MESAHA_VERSION && window.MESAHA_VERSION.visibleVersion) || "Mesaha İO")}</b> kullanılıyor.</p>`,
@@ -7386,7 +7383,7 @@
             typeof window.MesahaVersion.fetchRemote === "function"
           )
             return await window.MesahaVersion.fetchRemote();
-          throw new Error("Sürüm merkezi okunamadı");
+          throw new Error("Güncelleme merkezi okunamadı");
         }
 
         function versionDifferent(remote) {
@@ -7464,7 +7461,7 @@
           } catch {
             const local = window.MESAHA_VERSION || {};
             setUpdateStatus(
-              "Sürüm yerelden doğrulandı: " +
+              "Uygulama yerelden doğrulandı: " +
                 (local.visibleVersion || local.shortVersion || "Mesaha İO"),
               "update-ok",
             );
@@ -14882,7 +14879,7 @@
                 ctrl.abort();
               } catch (e) {}
             }, 3000);
-            var res = await fetch("./js/version.js?net=" + Date.now(), {
+            var res = await fetch("../release.js?net=" + Date.now(), {
               cache: "no-store",
               signal: ctrl.signal,
               headers: { "Cache-Control": "no-cache" },
@@ -15208,8 +15205,8 @@
       })();
     </script>
     <script src="./js/mesaha-render-storage.js"></script>
-    <script id="mesaha-sound-engine-v583" src="./js/mesaha-sound.js?v=584"></script>
-    <script id="mesaha-save-focus-v583" src="./js/mesaha-save-focus.js?v=584"></script>
+    <script id="mesaha-sound-engine" src="./js/mesaha-sound.js"></script>
+    <script id="mesaha-save-focus" src="./js/mesaha-save-focus.js"></script>
     <style id="mesaha-v389-xls-button-strong-hotfix">
       /* v389: Sadece Mesaha Dosyasını İndir butonu belirginleştirildi. Diğer akışlara dokunmaz. */
       #downloadXlsBtn {
@@ -20701,8 +20698,8 @@
       })();
     </script>
 
-    <script src="../suite-security.js?v=31"></script>
-    <script src="../suite-sync-core.js?v=31"></script>
-    <script src="./suite-bridge.js?v=31"></script>
+    <script src="../suite-security.js"></script>
+    <script src="../suite-sync-core.js"></script>
+    <script src="./suite-bridge.js"></script>
   </body>
 </html>

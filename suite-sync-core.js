@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  const VERSION = "31.0.0";
+  const VERSION = String(window.MESAHA_RELEASE?.version || "stable");
   const SUPABASE_URL = "https://swrbpdpotmirnmtqnuba.supabase.co";
   const ANON_KEY = "sb_publishable_G_ZFeUouDxg57Nne5pflfQ_cVGpdMbR";
   const SMOOTH = SUPABASE_URL + "/functions/v1/smooth-function";
@@ -913,7 +913,7 @@
       const rows = mergeMesahaRows(remoteRows, localRows).map((r) => ({ ...r, seflik, bolmeNo: bolme, bolme_no: bolme }));
       const token = stableSyncToken(seflik, bolme, rows);
       for (let i = 0; i < rows.length; i += 150)
-        await edge("seflik_folder_push", { seflik, bolmeNo: bolme, syncToken: token, records: rows.slice(i, i + 150), appVersion: "Mesaha Suite V31", mergeMode: "barcode" });
+        await edge("seflik_folder_push", { seflik, bolmeNo: bolme, syncToken: token, records: rows.slice(i, i + 150), appVersion: (window.MesahaRelease?.telemetry("suite") || "Mesaha Suite"), mergeMode: "barcode" });
       let backup = null, driveError = "";
       try {
         if (id.google)
@@ -929,7 +929,7 @@
         totalVolume: rows.reduce((sum, r) => sum + volume(r), 0),
         driveFileId: (backup && backup.fileId) || "", driveFileName: (backup && backup.fileName) || "",
         driveStatus: backup ? "saved" : id.google ? "error" : "not_connected", driveError,
-        appVersion: "Mesaha Suite V31", mergeMode: "barcode",
+        appVersion: (window.MesahaRelease?.telemetry("suite") || "Mesaha Suite"), mergeMode: "barcode",
       });
       clearStableSyncToken(seflik, bolme);
       done += rows.length;
@@ -1718,6 +1718,7 @@
     deleteMesahaDivisionRecords,
     allowMesahaDivisionResubmit,
   };
+  window.MesahaSuiteSync = api;
   window.MesahaSuiteSyncV31 = window.MesahaSuiteSyncV28 = window.MesahaSuiteSyncV27 = window.MesahaSuiteSyncV26 = window.MesahaSuiteSyncV25 = window.MesahaSuiteSyncV24 = window.MesahaSuiteSyncV22 = window.MesahaSuiteSyncV21 = api;
   window.MesahaSuiteSyncV20 = api;
   window.MesahaSuiteSyncV19 = api;

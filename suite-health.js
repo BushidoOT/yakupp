@@ -1,12 +1,14 @@
 "use strict";
 
-/* Mesaha Suite V31 — Senkronizasyon Sağlığı ve canlı sistem telemetrisi */
+/* Senkronizasyon sağlığı ve canlı sistem telemetrisi */
 (function () {
-  const VERSION = "31.0.0";
-  const TOOL_ID = "suiteHealthToolV31";
-  const MODAL_ID = "suiteHealthModalV31";
-  const DEVICE_KEY = "mesaha_suite_health_device_v31";
-  const LAST_PING_KEY = "mesaha_suite_health_last_ping_v31";
+  const VERSION = String(window.MESAHA_RELEASE?.version || "stable");
+  const TOOL_ID = "suiteHealthTool";
+  const MODAL_ID = "suiteHealthModal";
+  const DEVICE_KEY = "mesaha_suite_health_device";
+  const LEGACY_DEVICE_KEY = "mesaha_suite_health_device_v31";
+  const LAST_PING_KEY = "mesaha_suite_health_last_ping";
+  const LEGACY_LAST_PING_KEY = "mesaha_suite_health_last_ping_v31";
   const PING_INTERVAL = 10 * 60 * 1000;
   const K = {
     dirty: "mesaha_suite_dirty_v8",
@@ -46,7 +48,7 @@
   };
 
   function api() {
-    return window.MesahaSuiteSyncV31 || window.MesahaSuiteSyncV28 || window.MesahaSuiteSyncV27 || window.MesahaSuiteSyncV26 || window.MesahaSuiteSyncV22 || null;
+    return window.MesahaSuiteSync || window.MesahaSuiteSyncV28 || window.MesahaSuiteSyncV27 || window.MesahaSuiteSyncV26 || window.MesahaSuiteSyncV22 || null;
   }
 
   function toast(message, bad) {
@@ -58,7 +60,7 @@
   }
 
   function deviceId() {
-    let id = clean(localStorage.getItem(DEVICE_KEY));
+    let id = clean(localStorage.getItem(DEVICE_KEY) || localStorage.getItem(LEGACY_DEVICE_KEY));
     if (id) return id;
     try {
       id = crypto.randomUUID();
@@ -89,8 +91,8 @@
       userAgent: ua.slice(0, 500),
       appId: "suite",
       appName: "Mesaha Suite",
-      appVersion: clean(window.MESAHA_VERSION && window.MESAHA_VERSION.visibleVersion) || "Mesaha Suite V31",
-      suiteVersion: "V31",
+      appVersion: window.MesahaRelease?.telemetry("suite") || "Mesaha Suite",
+      suiteVersion: String(window.MESAHA_RELEASE?.version || "stable"),
     };
   }
 
@@ -267,43 +269,43 @@
   }
 
   function installStyle() {
-    if (document.getElementById("suiteHealthCssV31")) return;
+    if (document.getElementById("suiteHealthCss")) return;
     const style = document.createElement("style");
-    style.id = "suiteHealthCssV31";
+    style.id = "suiteHealthCss";
     style.textContent = `
-      #${TOOL_ID}.suite-health-tool-v31 svg{stroke:#17623b!important}
+      #${TOOL_ID}.suite-health-tool svg{stroke:#17623b!important}
       #${MODAL_ID}{position:fixed;inset:0;z-index:2147483600;display:grid;place-items:end center;padding:12px;background:rgba(15,39,28,.42);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
       #${MODAL_ID}[hidden]{display:none!important}
-      #${MODAL_ID} .suite-health-sheet-v31{width:min(780px,100%);max-height:min(92dvh,860px);overflow:auto;background:#f7faf8;border:1px solid rgba(255,255,255,.85);border-radius:28px 28px 20px 20px;box-shadow:0 28px 90px rgba(10,44,29,.28);padding:18px;padding-bottom:calc(18px + env(safe-area-inset-bottom,0px))}
-      #${MODAL_ID} .suite-health-head-v31{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;position:sticky;top:-18px;z-index:3;margin:-18px -18px 14px;padding:18px;background:rgba(247,250,248,.96);border-bottom:1px solid #dce9e1;backdrop-filter:blur(12px)}
-      #${MODAL_ID} .suite-health-head-v31 small{display:block;color:#54806b;font:850 10px/1.2 system-ui;letter-spacing:.12em}
-      #${MODAL_ID} .suite-health-head-v31 h2{margin:4px 0 0;color:#153b2b;font:900 24px/1.1 system-ui}
-      #${MODAL_ID} .suite-health-close-v31{width:42px;height:42px;border:0;border-radius:14px;background:#e9f1ec;color:#244f3b;font:900 25px/1 system-ui;touch-action:manipulation}
-      #${MODAL_ID} .suite-health-hero-v31{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:13px;padding:15px;border:1px solid #dce9e1;border-radius:19px;background:#fff;box-shadow:0 10px 28px rgba(20,68,44,.06)}
-      #${MODAL_ID} .suite-health-dot-v31{width:47px;height:47px;border-radius:16px;display:grid;place-items:center;background:#e6f5ec;color:#17623b;font:900 24px/1 system-ui}
-      #${MODAL_ID} .suite-health-hero-v31.warning .suite-health-dot-v31{background:#fff3d4;color:#8a5a00}
-      #${MODAL_ID} .suite-health-hero-v31.error .suite-health-dot-v31{background:#fee9e9;color:#a82626}
-      #${MODAL_ID} .suite-health-hero-v31.offline .suite-health-dot-v31{background:#edf0f2;color:#56636d}
-      #${MODAL_ID} .suite-health-hero-v31 h3{margin:0;color:#163d2c;font:900 17px/1.2 system-ui}
-      #${MODAL_ID} .suite-health-hero-v31 p{margin:4px 0 0;color:#617269;font:650 12px/1.45 system-ui}
-      #${MODAL_ID} .suite-health-grid-v31{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:11px}
-      #${MODAL_ID} .suite-health-card-v31{border:1px solid #dce9e1;border-radius:18px;background:#fff;padding:13px;min-width:0}
-      #${MODAL_ID} .suite-health-card-v31>small{display:block;color:#668075;font:800 10px/1.2 system-ui;text-transform:uppercase;letter-spacing:.05em}
-      #${MODAL_ID} .suite-health-card-v31>strong{display:block;margin-top:6px;color:#173d2d;font:900 22px/1.1 system-ui}
-      #${MODAL_ID} .suite-health-card-v31>span{display:block;margin-top:5px;color:#66786f;font:650 11px/1.4 system-ui}
-      #${MODAL_ID} .suite-health-section-v31{margin-top:12px;border:1px solid #dce9e1;border-radius:19px;background:#fff;padding:14px}
-      #${MODAL_ID} .suite-health-section-v31 h3{margin:0 0 10px;color:#173d2d;font:900 15px/1.2 system-ui}
-      #${MODAL_ID} .suite-health-row-v31{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid #edf3ef;color:#536b60;font:700 12px/1.35 system-ui}
-      #${MODAL_ID} .suite-health-row-v31:last-child{border-bottom:0}
-      #${MODAL_ID} .suite-health-row-v31 b{color:#173d2d;text-align:right;word-break:break-word}
-      #${MODAL_ID} .suite-health-error-v31{margin-top:8px;padding:10px;border-radius:13px;background:#fff1f1;color:#8e2828;font:700 11px/1.45 system-ui}
-      #${MODAL_ID} .suite-health-note-v31{margin-top:12px;padding:11px 13px;border-radius:15px;background:#edf7f1;color:#2f5e47;font:700 11px/1.45 system-ui}
-      #${MODAL_ID} .suite-health-actions-v31{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:13px}
-      #${MODAL_ID} .suite-health-actions-v31 button{min-height:48px;border:1px solid #cfe0d6;border-radius:14px;background:#fff;color:#214d38;font:900 13px/1.2 system-ui;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
-      #${MODAL_ID} .suite-health-actions-v31 button.primary{background:#17623b;border-color:#17623b;color:#fff}
-      #${MODAL_ID} .suite-health-actions-v31 button[disabled]{opacity:.55}
-      @media(max-width:520px){#${MODAL_ID}{padding:0;place-items:end stretch}#${MODAL_ID} .suite-health-sheet-v31{width:100%;max-height:94dvh;border-radius:25px 25px 0 0;padding:15px;padding-bottom:calc(15px + env(safe-area-inset-bottom,0px))}#${MODAL_ID} .suite-health-head-v31{top:-15px;margin:-15px -15px 12px;padding:15px}#${MODAL_ID} .suite-health-grid-v31{grid-template-columns:1fr 1fr}#${MODAL_ID} .suite-health-card-v31{padding:11px}#${MODAL_ID} .suite-health-card-v31>strong{font-size:19px}}
-      @media(max-width:360px){#${MODAL_ID} .suite-health-grid-v31,#${MODAL_ID} .suite-health-actions-v31{grid-template-columns:1fr}}
+      #${MODAL_ID} .suite-health-sheet{width:min(780px,100%);max-height:min(92dvh,860px);overflow:auto;background:#f7faf8;border:1px solid rgba(255,255,255,.85);border-radius:28px 28px 20px 20px;box-shadow:0 28px 90px rgba(10,44,29,.28);padding:18px;padding-bottom:calc(18px + env(safe-area-inset-bottom,0px))}
+      #${MODAL_ID} .suite-health-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;position:sticky;top:-18px;z-index:3;margin:-18px -18px 14px;padding:18px;background:rgba(247,250,248,.96);border-bottom:1px solid #dce9e1;backdrop-filter:blur(12px)}
+      #${MODAL_ID} .suite-health-head small{display:block;color:#54806b;font:850 10px/1.2 system-ui;letter-spacing:.12em}
+      #${MODAL_ID} .suite-health-head h2{margin:4px 0 0;color:#153b2b;font:900 24px/1.1 system-ui}
+      #${MODAL_ID} .suite-health-close{width:42px;height:42px;border:0;border-radius:14px;background:#e9f1ec;color:#244f3b;font:900 25px/1 system-ui;touch-action:manipulation}
+      #${MODAL_ID} .suite-health-hero{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:13px;padding:15px;border:1px solid #dce9e1;border-radius:19px;background:#fff;box-shadow:0 10px 28px rgba(20,68,44,.06)}
+      #${MODAL_ID} .suite-health-dot{width:47px;height:47px;border-radius:16px;display:grid;place-items:center;background:#e6f5ec;color:#17623b;font:900 24px/1 system-ui}
+      #${MODAL_ID} .suite-health-hero.warning .suite-health-dot{background:#fff3d4;color:#8a5a00}
+      #${MODAL_ID} .suite-health-hero.error .suite-health-dot{background:#fee9e9;color:#a82626}
+      #${MODAL_ID} .suite-health-hero.offline .suite-health-dot{background:#edf0f2;color:#56636d}
+      #${MODAL_ID} .suite-health-hero h3{margin:0;color:#163d2c;font:900 17px/1.2 system-ui}
+      #${MODAL_ID} .suite-health-hero p{margin:4px 0 0;color:#617269;font:650 12px/1.45 system-ui}
+      #${MODAL_ID} .suite-health-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:11px}
+      #${MODAL_ID} .suite-health-card{border:1px solid #dce9e1;border-radius:18px;background:#fff;padding:13px;min-width:0}
+      #${MODAL_ID} .suite-health-card>small{display:block;color:#668075;font:800 10px/1.2 system-ui;text-transform:uppercase;letter-spacing:.05em}
+      #${MODAL_ID} .suite-health-card>strong{display:block;margin-top:6px;color:#173d2d;font:900 22px/1.1 system-ui}
+      #${MODAL_ID} .suite-health-card>span{display:block;margin-top:5px;color:#66786f;font:650 11px/1.4 system-ui}
+      #${MODAL_ID} .suite-health-section{margin-top:12px;border:1px solid #dce9e1;border-radius:19px;background:#fff;padding:14px}
+      #${MODAL_ID} .suite-health-section h3{margin:0 0 10px;color:#173d2d;font:900 15px/1.2 system-ui}
+      #${MODAL_ID} .suite-health-row{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid #edf3ef;color:#536b60;font:700 12px/1.35 system-ui}
+      #${MODAL_ID} .suite-health-row:last-child{border-bottom:0}
+      #${MODAL_ID} .suite-health-row b{color:#173d2d;text-align:right;word-break:break-word}
+      #${MODAL_ID} .suite-health-error{margin-top:8px;padding:10px;border-radius:13px;background:#fff1f1;color:#8e2828;font:700 11px/1.45 system-ui}
+      #${MODAL_ID} .suite-health-note{margin-top:12px;padding:11px 13px;border-radius:15px;background:#edf7f1;color:#2f5e47;font:700 11px/1.45 system-ui}
+      #${MODAL_ID} .suite-health-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:13px}
+      #${MODAL_ID} .suite-health-actions button{min-height:48px;border:1px solid #cfe0d6;border-radius:14px;background:#fff;color:#214d38;font:900 13px/1.2 system-ui;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+      #${MODAL_ID} .suite-health-actions button.primary{background:#17623b;border-color:#17623b;color:#fff}
+      #${MODAL_ID} .suite-health-actions button[disabled]{opacity:.55}
+      @media(max-width:520px){#${MODAL_ID}{padding:0;place-items:end stretch}#${MODAL_ID} .suite-health-sheet{width:100%;max-height:94dvh;border-radius:25px 25px 0 0;padding:15px;padding-bottom:calc(15px + env(safe-area-inset-bottom,0px))}#${MODAL_ID} .suite-health-head{top:-15px;margin:-15px -15px 12px;padding:15px}#${MODAL_ID} .suite-health-grid{grid-template-columns:1fr 1fr}#${MODAL_ID} .suite-health-card{padding:11px}#${MODAL_ID} .suite-health-card>strong{font-size:19px}}
+      @media(max-width:360px){#${MODAL_ID} .suite-health-grid,#${MODAL_ID} .suite-health-actions{grid-template-columns:1fr}}
     `;
     document.head.appendChild(style);
   }
@@ -315,16 +317,16 @@
     modal.id = MODAL_ID;
     modal.hidden = true;
     modal.setAttribute("aria-hidden", "true");
-    modal.innerHTML = '<div class="suite-health-sheet-v31" role="dialog" aria-modal="true" aria-labelledby="suiteHealthTitleV31"><div class="suite-health-head-v31"><div><small>SENKRONİZASYON SAĞLIĞI</small><h2 id="suiteHealthTitleV31">Sistem Durumu</h2></div><button type="button" class="suite-health-close-v31" data-health-close-v31 aria-label="Kapat">×</button></div><div id="suiteHealthContentV31"><div class="suite-health-note-v31">Durum kontrol ediliyor…</div></div></div>';
+    modal.innerHTML = '<div class="suite-health-sheet" role="dialog" aria-modal="true" aria-labelledby="suiteHealthTitle"><div class="suite-health-head"><div><small>SENKRONİZASYON SAĞLIĞI</small><h2 id="suiteHealthTitle">Sistem Durumu</h2></div><button type="button" class="suite-health-close" data-health-close aria-label="Kapat">×</button></div><div id="suiteHealthContent"><div class="suite-health-note">Durum kontrol ediliyor…</div></div></div>';
     document.body.appendChild(modal);
     modal.addEventListener("click", (event) => {
-      if (event.target === modal || event.target.closest("[data-health-close-v31]")) closeModal();
+      if (event.target === modal || event.target.closest("[data-health-close]")) closeModal();
     });
     return modal;
   }
 
   function renderHealth(health) {
-    const content = document.getElementById("suiteHealthContentV31");
+    const content = document.getElementById("suiteHealthContent");
     if (!content) return;
     const levelTexts = {
       healthy: ["Sistem sağlıklı", "Bekleyen veya hatalı işlem bulunmuyor."],
@@ -341,32 +343,32 @@
         : "Alan bilgisi bekleniyor";
     const errors = health.istif.errors || [];
     content.innerHTML = `
-      <section class="suite-health-hero-v31 ${esc(health.level)}">
-        <div class="suite-health-dot-v31">${health.level === "healthy" ? "✓" : health.level === "warning" ? "!" : health.level === "error" ? "×" : "⌁"}</div>
+      <section class="suite-health-hero ${esc(health.level)}">
+        <div class="suite-health-dot">${health.level === "healthy" ? "✓" : health.level === "warning" ? "!" : health.level === "error" ? "×" : "⌁"}</div>
         <div><h3>${esc(label[0])}</h3><p>${esc(label[1])}</p></div>
       </section>
-      <div class="suite-health-grid-v31">
-        <article class="suite-health-card-v31"><small>Mesaha İO</small><strong>${Number(health.mesaha.localRecords || 0).toLocaleString("tr-TR")}</strong><span>${health.mesaha.manualPending ? "Şefliğe gönderim bekliyor" : "Yerel kayıt • otomatik gönderilmez"}</span></article>
-        <article class="suite-health-card-v31"><small>İstif bekleyen</small><strong>${Number(health.istif.pendingRecords || 0).toLocaleString("tr-TR")}</strong><span>${health.istif.failedRecords ? health.istif.failedRecords + " hatalı kayıt" : "Kayıt kuyruğu"}</span></article>
-        <article class="suite-health-card-v31"><small>Fotoğraf hatası</small><strong>${Number(health.istif.failedPhotos || 0).toLocaleString("tr-TR")}</strong><span>${health.istif.pendingPhotos + health.istif.uploadingPhotos} fotoğraf cihazda/bekliyor</span></article>
-        <article class="suite-health-card-v31"><small>Suite işlemleri</small><strong>${Number(health.suite.pendingOperations || 0).toLocaleString("tr-TR")}</strong><span>Şeflik, kullanıcı ve bölme kuyruğu</span></article>
+      <div class="suite-health-grid">
+        <article class="suite-health-card"><small>Mesaha İO</small><strong>${Number(health.mesaha.localRecords || 0).toLocaleString("tr-TR")}</strong><span>${health.mesaha.manualPending ? "Şefliğe gönderim bekliyor" : "Yerel kayıt • otomatik gönderilmez"}</span></article>
+        <article class="suite-health-card"><small>İstif bekleyen</small><strong>${Number(health.istif.pendingRecords || 0).toLocaleString("tr-TR")}</strong><span>${health.istif.failedRecords ? health.istif.failedRecords + " hatalı kayıt" : "Kayıt kuyruğu"}</span></article>
+        <article class="suite-health-card"><small>Fotoğraf hatası</small><strong>${Number(health.istif.failedPhotos || 0).toLocaleString("tr-TR")}</strong><span>${health.istif.pendingPhotos + health.istif.uploadingPhotos} fotoğraf cihazda/bekliyor</span></article>
+        <article class="suite-health-card"><small>Suite işlemleri</small><strong>${Number(health.suite.pendingOperations || 0).toLocaleString("tr-TR")}</strong><span>Şeflik, kullanıcı ve bölme kuyruğu</span></article>
       </div>
-      <section class="suite-health-section-v31">
+      <section class="suite-health-section">
         <h3>Bağlantı ve son işlem</h3>
-        <div class="suite-health-row-v31"><span>İnternet</span><b>${health.online ? "Bağlı" : "Çevrimdışı"}</b></div>
-        <div class="suite-health-row-v31"><span>Son tam senkronizasyon</span><b>${esc(formatDate(health.lastSync.at))}</b></div>
-        <div class="suite-health-row-v31"><span>Drive</span><b>${esc(driveText)}</b></div>
-        <div class="suite-health-row-v31"><span>Cihaz</span><b>${esc(health.device.platform + " • " + health.device.browser)}</b></div>
-        ${health.lastSync.error ? `<div class="suite-health-error-v31">${esc(health.lastSync.error)}</div>` : ""}
+        <div class="suite-health-row"><span>İnternet</span><b>${health.online ? "Bağlı" : "Çevrimdışı"}</b></div>
+        <div class="suite-health-row"><span>Son tam senkronizasyon</span><b>${esc(formatDate(health.lastSync.at))}</b></div>
+        <div class="suite-health-row"><span>Drive</span><b>${esc(driveText)}</b></div>
+        <div class="suite-health-row"><span>Cihaz</span><b>${esc(health.device.platform + " • " + health.device.browser)}</b></div>
+        ${health.lastSync.error ? `<div class="suite-health-error">${esc(health.lastSync.error)}</div>` : ""}
       </section>
-      ${errors.length ? `<section class="suite-health-section-v31"><h3>Son İstif hataları</h3>${errors.slice(0, 8).map((item) => `<div class="suite-health-row-v31"><span>${esc(item.istifNo || "İstif")}</span><b>${esc(item.message)}</b></div>`).join("")}</section>` : ""}
-      <div class="suite-health-note-v31">Mesaha İO kayıtları artık kayıt girildiğinde otomatik senkron kuyruğuna eklenmez. Kullanıcı özellikle <b>Şefliğe Gönder</b> dediğinde sunucuya gönderilir.</div>
-      <div class="suite-health-actions-v31">
-        <button type="button" id="suiteHealthRefreshV31">Durumu Yenile</button>
-        <button type="button" id="suiteHealthSyncV31" class="primary" ${!health.online || !health.issueCount ? "disabled" : ""}>Bekleyenleri Gönder</button>
+      ${errors.length ? `<section class="suite-health-section"><h3>Son İstif hataları</h3>${errors.slice(0, 8).map((item) => `<div class="suite-health-row"><span>${esc(item.istifNo || "İstif")}</span><b>${esc(item.message)}</b></div>`).join("")}</section>` : ""}
+      <div class="suite-health-note">Mesaha İO kayıtları artık kayıt girildiğinde otomatik senkron kuyruğuna eklenmez. Kullanıcı özellikle <b>Şefliğe Gönder</b> dediğinde sunucuya gönderilir.</div>
+      <div class="suite-health-actions">
+        <button type="button" id="suiteHealthRefresh">Durumu Yenile</button>
+        <button type="button" id="suiteHealthSync" class="primary" ${!health.online || !health.issueCount ? "disabled" : ""}>Bekleyenleri Gönder</button>
       </div>`;
-    document.getElementById("suiteHealthRefreshV31")?.addEventListener("click", () => refreshModal(true));
-    document.getElementById("suiteHealthSyncV31")?.addEventListener("click", async (event) => {
+    document.getElementById("suiteHealthRefresh")?.addEventListener("click", () => refreshModal(true));
+    document.getElementById("suiteHealthSync")?.addEventListener("click", async (event) => {
       const button = event.currentTarget;
       if (!api() || typeof api().syncAll !== "function") return toast("Senkronizasyon bağlantısı hazır değil.", true);
       button.disabled = true;
@@ -383,8 +385,8 @@
   }
 
   async function refreshModal(sendPing) {
-    const content = document.getElementById("suiteHealthContentV31");
-    if (content) content.innerHTML = '<div class="suite-health-note-v31">Mesaha, İstif, Drive ve senkronizasyon kuyruğu kontrol ediliyor…</div>';
+    const content = document.getElementById("suiteHealthContent");
+    if (content) content.innerHTML = '<div class="suite-health-note">Mesaha, İstif, Drive ve senkronizasyon kuyruğu kontrol ediliyor…</div>';
     const health = await collectHealth();
     renderHealth(health);
     if (sendPing) sendHealthPing(health, true).catch(() => {});
@@ -430,7 +432,7 @@
     const button = document.createElement("button");
     button.id = TOOL_ID;
     button.type = "button";
-    button.className = "suite-health-tool-v31";
+    button.className = "suite-health-tool";
     button.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13h3l2-6 4 12 2-6h5"/><path d="M5 4h14v16H5z"/></svg><strong>Senkron Sağlığı</strong><small>Bekleyen ve hata durumları</small>';
     const syncButton = strip.querySelector('[data-tool="sync"]');
     if (syncButton && syncButton.nextSibling) strip.insertBefore(button, syncButton.nextSibling);
@@ -441,7 +443,7 @@
 
   async function sendHealthPing(existingHealth, force) {
     if (navigator.onLine === false || !api() || typeof api().edge !== "function") return false;
-    const lastPing = Number(localStorage.getItem(LAST_PING_KEY) || 0);
+    const lastPing = Number(localStorage.getItem(LAST_PING_KEY) || localStorage.getItem(LEGACY_LAST_PING_KEY) || 0);
     if (!force && lastPing && Date.now() - lastPing < PING_INTERVAL) return false;
     const health = existingHealth || await collectHealth();
     const id = health.identity || {};
@@ -504,7 +506,7 @@
     setInterval(() => collectHealth().then((health) => sendHealthPing(health, false)).catch(() => {}), PING_INTERVAL);
   }
 
-  window.MesahaSuiteHealthV31 = { version: VERSION, collect: collectHealth, open: openModal, ping: () => collectHealth().then((health) => sendHealthPing(health, true)) };
+  window.MesahaSuiteHealth = { version: VERSION, collect: collectHealth, open: openModal, ping: () => collectHealth().then((health) => sendHealthPing(health, true)) };
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot, { once: true });
   else boot();
 })();

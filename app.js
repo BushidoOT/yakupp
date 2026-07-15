@@ -84,13 +84,11 @@
 
   const TELEGRAM_URL = "https://telegram.me/+LpsvthN4BM5kYWI0";
   const TELEGRAM_DAY_KEY = "mesaha_suite_telegram_daily_v12";
-  const CURRENT_SUITE_BUILD = Number(window.MESAHA_VERSION?.build || 31);
-  const CURRENT_SUITE_LABEL = clean(window.MESAHA_VERSION?.visibleVersion || "Mesaha Suite V31");
+  const CURRENT_SUITE_BUILD = Number(window.MESAHA_RELEASE?.build || window.MESAHA_VERSION?.build || 0);
+  const CURRENT_SUITE_LABEL = "Mesaha Suite";
   let latestSuiteVersion = null, updateApplying = false, pendingDivisionDelete = null;
 
   function updateVersionCorner(remote) {
-    const label = $("suiteVersionLabel");
-    if (label) label.textContent = "V" + CURRENT_SUITE_BUILD;
     const button = $("suiteUpdateButton");
     const newer = !!(remote && Number(remote.build) > CURRENT_SUITE_BUILD);
     if (button) {
@@ -101,9 +99,8 @@
   }
   function paintUpdateModal(remote) {
     if (!remote) return;
-    const version = clean(remote.visibleVersion || remote.version || ("Mesaha Suite V" + remote.build));
     const description = clean(remote.description || "Yeni uygulama sürümü ve iyileştirmeler hazır.");
-    if ($("suiteUpdateVersionText")) $("suiteUpdateVersionText").textContent = version + " kullanıma hazır";
+    if ($("suiteUpdateVersionText")) $("suiteUpdateVersionText").textContent = "Yeni sürüm kullanıma hazır";
     if ($("suiteUpdateDescription")) $("suiteUpdateDescription").textContent = description + " Cihazdaki kayıtlarınız korunacaktır.";
     if ($("suiteUpdateStatus")) $("suiteUpdateStatus").textContent = "Güncelleme sırasında internet bağlantısını kapatmayın.";
   }
@@ -123,9 +120,9 @@
     updateVersionCorner(latestSuiteVersion);
     if (navigator.onLine === false) return false;
     try {
-      const response = await fetch("./version.json?update_check=" + Date.now(), { cache: "no-store", headers: { "Cache-Control": "no-cache" } });
-      if (!response.ok) throw new Error("Sürüm bilgisi alınamadı");
-      const remote = await response.json();
+      const response = await fetch("./release.js?update_check=" + Date.now(), { cache: "no-store", headers: { "Cache-Control": "no-cache" } });
+      if (!response.ok) throw new Error("Güncelleme bilgisi alınamadı");
+      const remote = window.MesahaRelease.parse(await response.text());
       const build = Number(remote && remote.build || 0);
       latestSuiteVersion = build > CURRENT_SUITE_BUILD ? remote : null;
       updateVersionCorner(latestSuiteVersion);
@@ -157,7 +154,7 @@
     try {
       setUpdateProgress(12, "Yeni sürüm denetleniyor…");
       let reg = await navigator.serviceWorker?.getRegistration("./");
-      if (!reg && "serviceWorker" in navigator) reg = await navigator.serviceWorker.register("./service-worker.js?v=31", { scope: "./", updateViaCache: "none" });
+      if (!reg && "serviceWorker" in navigator) reg = await navigator.serviceWorker.register("./service-worker.js?release=" + encodeURIComponent(window.MESAHA_RELEASE?.assetToken || "stable"), { scope: "./", updateViaCache: "none" });
       if (reg) {
         setUpdateProgress(28, "Yeni uygulama dosyaları alınıyor…");
         await reg.update();
@@ -316,7 +313,7 @@
     try {
       const out = await supabaseRpc("mesaha_create_terminal_code_v557", {
         p_label: "terminal",
-        p_app_version: "Mesaha Suite V31",
+        p_app_version: window.MesahaRelease?.telemetry("suite") || "Mesaha Suite",
       });
       const t = out.terminal || out || {},
         code = clean(t.code),
@@ -584,7 +581,7 @@
     let remoteIstif = [], remoteIstifAuthoritative = false;
     if (navigator.onLine !== false) {
       try {
-        const api = window.MesahaSuiteSyncV31 || window.MesahaSuiteSyncV28 || window.MesahaSuiteSyncV27 || window.MesahaSuiteSyncV26 || window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10;
+        const api = window.MesahaSuiteSync || window.MesahaSuiteSyncV28 || window.MesahaSuiteSyncV27 || window.MesahaSuiteSyncV26 || window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10;
         if (api && typeof api.drive === "function" && af) {
           const out = await api.drive("record_list", {
             seflik,
@@ -755,7 +752,7 @@
     }
     destructiveSyncTimer = setTimeout(async () => {
       try {
-        const api = window.MesahaSuiteSyncV31 || window.MesahaSuiteSyncV28 || window.MesahaSuiteSyncV27 || window.MesahaSuiteSyncV26 || window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8;
+        const api = window.MesahaSuiteSync || window.MesahaSuiteSyncV28 || window.MesahaSuiteSyncV27 || window.MesahaSuiteSyncV26 || window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8;
         if (api && typeof api.syncAll === "function") await api.syncAll({ source: "delete-auto" });
         else await sendPendingToServer();
         toast(`${label} sunucuya da anında işlendi.`);
@@ -884,7 +881,7 @@
     if (!api || typeof api.edge !== "function")
       throw new Error("Sunucu bağlantısı hazır değil.");
     return api.edge(action, {
-      source: "mesaha-suite-v31",
+      source: "mesaha-suite",
       ...terminalAuth(),
       ...data,
     });
@@ -1832,7 +1829,7 @@
   }
 
   function suiteSyncApi() {
-    return window.MesahaSuiteSyncV31 || window.MesahaSuiteSyncV28 || window.MesahaSuiteSyncV27 || window.MesahaSuiteSyncV26 || window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || null;
+    return window.MesahaSuiteSync || window.MesahaSuiteSyncV28 || window.MesahaSuiteSyncV27 || window.MesahaSuiteSyncV26 || window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || null;
   }
   async function driveAction(action, data = {}) {
     const api = suiteSyncApi();
@@ -2071,7 +2068,7 @@
         name: id.name || id.email || "Kullanıcı",
         seflik: af?.seflik || id.seflik || "",
         bolmeNo: id.bolme || "",
-        appVersion: "Mesaha Suite V31",
+        appVersion: window.MesahaRelease?.telemetry("suite") || "Mesaha Suite",
         avatarUrl: id.avatar || "",
         deviceId:
           localStorage.getItem("mesaha_suite_device_v7") ||
@@ -2088,7 +2085,7 @@
           appName: "Mesaha Suite",
           platform: navigator.platform || "",
           browser: navigator.userAgent || "",
-          suiteVersion: "V31",
+          suiteVersion: String(window.MESAHA_RELEASE?.version || "stable"),
         },
       });
     } catch {}
@@ -2156,7 +2153,7 @@
     try {
       await cleanupNestedWorkers();
       try { if (navigator.storage && navigator.storage.persist) await navigator.storage.persist(); } catch {}
-      const reg = await navigator.serviceWorker.register("./service-worker.js?v=31", { scope: "./", updateViaCache: "none" });
+      const reg = await navigator.serviceWorker.register("./service-worker.js?release=" + encodeURIComponent(window.MESAHA_RELEASE?.assetToken || "stable"), { scope: "./", updateViaCache: "none" });
       await navigator.serviceWorker.ready;
       const worker = await waitForActiveWorker(reg, navigator.onLine===false?7000:18000);
       setCacheStatus("Mesaha İO ve İstif İO dosyaları doğrulanıyor…", 18);
@@ -2348,8 +2345,8 @@
       return true;
     }
     if (tool === "sync" || tool === "server") {
-      if (window.MesahaSuiteSyncV31 || window.MesahaSuiteSyncV28 || window.MesahaSuiteSyncV27 || window.MesahaSuiteSyncV26 || window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8)
-        (window.MesahaSuiteSyncV31 || window.MesahaSuiteSyncV28 || window.MesahaSuiteSyncV27 || window.MesahaSuiteSyncV26 || window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8).syncAll({ source: tool })
+      if (window.MesahaSuiteSync || window.MesahaSuiteSyncV28 || window.MesahaSuiteSyncV27 || window.MesahaSuiteSyncV26 || window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8)
+        (window.MesahaSuiteSync || window.MesahaSuiteSyncV28 || window.MesahaSuiteSyncV27 || window.MesahaSuiteSyncV26 || window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8).syncAll({ source: tool })
           .then(() => loadFolders(true))
           .catch(() => {});
       else sendPendingToServer();
@@ -2396,7 +2393,7 @@
     }
     if (tool === "about") {
       showInfo(
-        "Mesaha Suite V31",
+        "Mesaha Suite",
         `<p>Google veya terminal/misafir oturumu iki uygulamada ortak kullanılır.</p><p><b>Bekleyen işlem:</b> ${pendingOps.length}</p><p>Bölmeler offline indirildikten sonra Mesaha İO ve İstif İO’da kayıt eklemeye hazır olur.</p>`,
       );
       return true;

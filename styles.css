@@ -1594,7 +1594,7 @@ label[hidden],
   }
 }
 
-/* Mesaha Suite V12 */
+/* Mesaha Suite ana arayüzü */
 .google-drive-logo {
   width: 34px !important;
   height: 30px !important;
@@ -1754,7 +1754,7 @@ label[hidden],
 @media(max-width:620px){#loginModal{padding:20px 18px}.drive-account-actions-v8>*{flex:1 1 calc(50% - 8px)}.backup-row-actions-v8>*{flex:1}.google-terminal-tools{padding:12px}.terminal-tools-actions{grid-template-columns:1fr 1fr}.terminal-tools-actions button{min-height:42px;font-size:12px}}
 
 
-/* Mesaha Suite V12 • merkezi açılış ve offline hazırlık */
+/* Merkezi açılış ve offline hazırlık */
 body.suite-starting{overflow:hidden!important;touch-action:none}
 .suite-startup-overlay{position:fixed;inset:0;z-index:2147483646;display:grid;place-items:center;padding:20px;background:linear-gradient(145deg,#0e2e22 0%,#174a32 58%,#0c241b 100%);color:#fff;transition:opacity .28s ease,visibility .28s ease}
 .suite-startup-overlay.closed{opacity:0;visibility:hidden;pointer-events:none}

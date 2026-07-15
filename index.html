@@ -14,15 +14,9 @@
     <link rel="manifest" href="./manifest.json" />
     <link rel="icon" href="./assets/icon-192.png" />
     <link rel="apple-touch-icon" href="./assets/icon-192.png" />
-    <link rel="stylesheet" href="./styles.css?v=31" />
-    <script>
-      window.MESAHA_SUITE_AUTH_MODE = true;
-      window.MESAHA_VERSION = {
-        version: "suite-v31",
-        visibleVersion: "Mesaha Suite V31",
-        build: 31,
-      };
-    </script>
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="./release.js"></script>
+    <script>window.MESAHA_SUITE_AUTH_MODE = true; window.MesahaRelease && window.MesahaRelease.use("suite");</script>
   </head>
   <body class="suite-starting">
     <div class="suite-startup-overlay" id="suiteStartupOverlay" role="status" aria-live="polite">
@@ -38,11 +32,6 @@
     </div>
     <div class="app-shell">
       <header class="hero">
-        <div class="suite-version-corner" id="suiteVersionCorner" aria-live="polite">
-          <span class="suite-version-caption">Sürüm</span>
-          <strong id="suiteVersionLabel">V31</strong>
-          <button type="button" id="suiteUpdateButton" hidden>Uygulamayı Güncelle</button>
-        </div>
         <div class="forest-layer forest-back"></div>
         <div class="forest-layer forest-front"></div>
         <div class="hero-actions">
@@ -242,7 +231,7 @@
               <path
                 d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20ZM12 10v6M12 7h.01"
               /></svg
-            ><strong>Hakkında</strong><small>Mesaha Suite V31</small>
+            ><strong>Hakkında</strong><small>Uygulama bilgileri</small>
           </button>
         </section>
         <footer class="status-footer">
@@ -512,7 +501,7 @@
           <svg viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M5 21h14" /></svg>
         </div>
         <div class="suite-update-copy">
-          <strong id="suiteUpdateVersionText">Yeni Mesaha Suite sürümü hazır.</strong>
+          <strong id="suiteUpdateVersionText">Uygulama güncellemesi hazır.</strong>
           <p id="suiteUpdateDescription">Güncelleme uygulama dosyalarını yeniler; cihazdaki kayıtlarınız ve oturum bilgileriniz korunur.</p>
         </div>
         <div class="suite-update-progress" id="suiteUpdateProgress" hidden><span id="suiteUpdateProgressBar"></span></div>
@@ -555,14 +544,14 @@
       </div>
     </section>
     <div class="toast" id="toast"></div>
-    <script src="./suite-security.js?v=31"></script>
+    <script src="./suite-security.js"></script>
     <script src="./js/mesaha-supabase-config.js"></script>
     <script src="./js/mesaha-firebase.js"></script>
-    <script src="./js/mesaha-google-auth-suite.js?v=31"></script>
-    <script src="./suite-sync-core.js?v=31"></script>
-    <script src="./app.js?v=31"></script>
-    <script src="./suite-ui.js?v=31"></script>
-    <script src="./suite-health-v31.js?v=31" defer></script>
-    <script src="./suite-cache-reset-v30.js?v=31" defer></script>
+    <script src="./js/mesaha-google-auth-suite.js"></script>
+    <script src="./suite-sync-core.js"></script>
+    <script src="./app.js"></script>
+    <script src="./suite-ui.js"></script>
+    <script src="./suite-health.js" defer></script>
+    <script src="./suite-cache-reset.js" defer></script>
   </body>
 </html>

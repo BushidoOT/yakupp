@@ -386,7 +386,7 @@ body.is-printing .print-area{display:block!important;position:relative;z-index:9
 
 .suite-home-button{position:fixed;z-index:2147483000;right:14px;bottom:calc(82px + env(safe-area-inset-bottom));border:1px solid rgba(255,255,255,.7);background:rgba(19,67,47,.94);color:#fff;border-radius:999px;padding:10px 13px;font:800 13px system-ui;box-shadow:0 12px 30px rgba(0,0,0,.22)}
 
-/* Suite V26 — iOS/Android form ve dokunma uyumluluğu */
+/* iOS/Android form ve dokunma uyumluluğu */
 @media (hover: none) and (pointer: coarse) {
   button,
   a,
@@ -410,7 +410,7 @@ body.is-printing .print-area{display:block!important;position:relative;z-index:9
 }
 
 
-/* V28 • Drive alanı, fotoğraf kuyruğu ve ayrıntılı senkron durumları */
+/* Drive alanı, fotoğraf kuyruğu ve ayrıntılı senkron durumları */
 .record-status.error{background:#fff4f2;border-color:#efc4bd;color:#a13f34}
 .record-status.error>div+div{border-color:rgba(161,63,52,.28)}
 .record-sync-error{grid-column:1/-1;max-height:64px;overflow:hidden}

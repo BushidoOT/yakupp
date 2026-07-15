@@ -1,7 +1,10 @@
-const CACHE = "yakupp-suite-shell-v31";
-const CACHE_TOOL_BUILD = "31";
+importScripts("./release.js");
+const RELEASE = self.MESAHA_RELEASE || { build: 0, assetToken: "stable", cacheName: "yakupp-suite-shell-stable", version: "stable" };
+const CACHE = RELEASE.cacheName || ("yakupp-suite-shell-" + RELEASE.assetToken);
+const CACHE_TOOL_BUILD = String(RELEASE.assetToken || RELEASE.build || "stable");
 const PREFIX = "yakupp-suite-shell-";
 const CORE = [
+  "./release.js",
   "./app.js",
   "./assets/hero_forest_cover.webp",
   "./assets/icon-192.png",
@@ -18,10 +21,9 @@ const CORE = [
   "./istif/manifest.json",
   "./istif/styles.css",
   "./istif/suite-bridge.js",
-  "./istif/v29-cloud-on-demand.js",
+  "./istif/cloud-on-demand.js",
   "./istif/templates/orjinal.xlsx",
   "./istif/templates/ornek_doldurulmus.xlsx",
-  "./istif/version.json",
   "./js/mesaha-firebase.js",
   "./js/mesaha-google-auth-suite.js",
   "./js/mesaha-supabase-config.js",
@@ -63,32 +65,29 @@ const CORE = [
   "./mesaha/js/mesaha-update-manager.js",
   "./mesaha/js/mesaha-url-cleanup.js",
   "./mesaha/js/mesaha-utils.js",
-  "./mesaha/js/version.js",
   "./mesaha/manifest.json",
   "./mesaha/suite-bridge.js",
   "./mesaha/temizle.html",
-  "./mesaha/version.json",
   "./mesaha/yonetim/admin.css",
-  "./mesaha/yonetim/admin-system-report-v31.css",
-  "./mesaha/yonetim/admin-system-report-v31.js",
+  "./mesaha/yonetim/admin-system-report.css",
+  "./mesaha/yonetim/admin-system-report.js",
   "./mesaha/yonetim/admin.js",
   "./mesaha/yonetim/index.html",
   "./styles.css",
   "./suite-security.js",
-  "./suite-cache-reset-v30.js",
-  "./suite-health-v31.js",
+  "./suite-cache-reset.js",
+  "./suite-health.js",
   "./suite-sync-core.js",
   "./suite-ui.js",
   "./temizle.html",
-  "./version.json",
 ];
 const CRITICAL = [
   "./index.html",
   "./styles.css",
   "./app.js",
   "./suite-security.js",
-  "./suite-cache-reset-v30.js",
-  "./suite-health-v31.js",
+  "./suite-cache-reset.js",
+  "./suite-health.js",
   "./suite-sync-core.js",
   "./suite-ui.js",
   "./manifest.json",
@@ -103,7 +102,7 @@ const CRITICAL = [
   "./istif/styles.css",
   "./istif/app.js",
   "./istif/suite-bridge.js",
-  "./istif/v29-cloud-on-demand.js",
+  "./istif/cloud-on-demand.js",
 ];
 const EXTERNAL = [];
 async function notify(data) {
@@ -184,8 +183,8 @@ async function cacheAll() {
     missingCount: missing.length,
     criticalMissing,
     at: new Date().toISOString(),
-    build: 31,
-    integrity: "suite-v31",
+    build: Number(RELEASE.build || 0),
+    integrity: String(RELEASE.version || "stable"),
     criticalCount: CRITICAL.length,
     totalCount: CORE.length,
   };
@@ -213,8 +212,8 @@ async function status() {
     missingCount: missing.length,
     criticalMissing,
     cache: CACHE,
-    build: 31,
-    integrity: "suite-v31",
+    build: Number(RELEASE.build || 0),
+    integrity: String(RELEASE.version || "stable"),
     criticalCount: CRITICAL.length,
     totalCount: CORE.length,
   };
@@ -300,8 +299,8 @@ async function injectSuiteCacheTool(response, url) {
   if (type && !/text\/html/i.test(type)) return response;
   try {
     const text = await response.clone().text();
-    if (/suite-cache-reset-v30\.js/i.test(text)) return response;
-    const tag = '<script src="./suite-cache-reset-v30.js?v=31" defer><\/script>';
+    if (/suite-cache-reset\.js/i.test(text)) return response;
+    const tag = '<script src="./suite-cache-reset.js" defer><\/script>';
     const html = /<\/body>/i.test(text)
       ? text.replace(/<\/body>/i, tag + "</body>")
       : text + tag;

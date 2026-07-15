@@ -80,7 +80,7 @@
       return sent>0;
     }finally{flushing=false;}
   }
-  function urlKind(u){try{var x=new URL(u,location.href), p=x.pathname; if(p.indexOf('/auth/v1/')>=0)return'auth'; if(p.indexOf('/rest/v1/rpc/mesaha_google')>=0)return'google_rpc'; if(p.indexOf('/functions/v1/smooth-function')>=0)return'edge'; if(p.endsWith('/version.json'))return'version'; return''}catch(e){return''}}
+  function urlKind(u){try{var x=new URL(u,location.href), p=x.pathname; if(p.indexOf('/auth/v1/')>=0)return'auth'; if(p.indexOf('/rest/v1/rpc/mesaha_google')>=0)return'google_rpc'; if(p.indexOf('/functions/v1/smooth-function')>=0)return'edge'; if(p.endsWith('/release.js'))return'release'; return''}catch(e){return''}}
   function installFetch(){
     if(installedFetch||!window.fetch)return;installedFetch=true;var orig=window.fetch;
     window.fetch=function(input,init){
