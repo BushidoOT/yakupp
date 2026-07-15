@@ -14,8 +14,8 @@
   var loading = { success: null, warning: null };
   var context = null;
   var gestureSeen = false;
-  var htmlPrimed = false;
-  var lastPrimeAttempt = 0;
+  var htmlPrimed = { success: false, warning: false };
+  var lastPrimeAttempt = { success: 0, warning: 0 };
   var lastAny = 0;
   var lastKind = { success: 0, warning: 0 };
 
@@ -133,10 +133,11 @@
   }
 
   function primeHtmlAudio(kind) {
-    if (htmlPrimed) return;
+    kind = normalizeKind(kind);
+    if (htmlPrimed[kind]) return;
     var now = Date.now();
-    if (now - lastPrimeAttempt < 900) return;
-    lastPrimeAttempt = now;
+    if (now - lastPrimeAttempt[kind] < 650) return;
+    lastPrimeAttempt[kind] = now;
     var audio = ensureAudio(kind);
     if (!audio) return;
     try {
@@ -146,7 +147,7 @@
       if (promise && typeof promise.then === "function") {
         promise.then(
           function () {
-            htmlPrimed = true;
+            htmlPrimed[kind] = true;
             try {
               audio.pause();
               audio.currentTime = 0;
@@ -154,20 +155,20 @@
             } catch (_error) {}
           },
           function () {
-            htmlPrimed = false;
+            htmlPrimed[kind] = false;
             try {
               audio.muted = false;
             } catch (_error) {}
           },
         );
       } else {
-        htmlPrimed = true;
+        htmlPrimed[kind] = true;
         audio.pause();
         audio.currentTime = 0;
         audio.muted = false;
       }
     } catch (_error) {
-      htmlPrimed = false;
+      htmlPrimed[kind] = false;
       try {
         audio.muted = false;
       } catch (_innerError) {}
@@ -184,6 +185,7 @@
     /* İlk gerçek dokunuşta HTMLAudio da yetkilendirilir. Başarısız olursa
        kilit kalıcı sayılmaz; sonraki gerçek dokunuşlarda yeniden denenir. */
     primeHtmlAudio("success");
+    primeHtmlAudio("warning");
     return true;
   }
 
@@ -215,7 +217,12 @@
       audio.volume = 1;
       var promise = audio.play();
       if (promise && typeof promise.catch === "function")
-        promise.catch(function () {});
+        promise.catch(function () {
+          resumeContext()
+            .then(function () { return preload(kind); })
+            .then(function () { playBuffer(kind); })
+            .catch(function () {});
+        });
       return true;
     } catch (_error) {
       return false;

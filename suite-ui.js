@@ -36,7 +36,7 @@
       );
     document.body.insertAdjacentHTML(
       "beforeend",
-      `<section class="modal backups-modal-v8" id="backupsModalV8" hidden><div class="modal-head"><div><span class="modal-kicker">ŞEFLİK DRIVE</span><h3>Yedekler</h3></div><button class="modal-close" data-close-backups-v8 type="button">×</button></div><div class="backup-toolbar-v8"><button class="primary-button" id="backupNowV8" type="button">Şimdi Yedekle</button><button class="secondary-button" id="backupRefreshV8" type="button">Listeyi Yenile</button></div><div class="modal-note">Suite yedeği; Mesaha kayıtlarını, İstif kayıtlarını, şeflik ve offline bölme bilgilerini birlikte saklar.</div><div id="backupListV8" class="backup-list-v8"><div class="modal-note">Yedekler yükleniyor…</div></div></section>`,
+      `<section class="modal backups-modal-v8" id="backupsModalV8" hidden><div class="modal-head"><div><span class="modal-kicker">ŞEFLİK DRIVE</span><h3>Yedekler</h3></div><button class="modal-close" data-close-backups-v8 type="button">×</button></div><div class="backup-toolbar-v8"><button class="primary-button" id="backupNowV8" type="button">Şimdi Yedekle</button><button class="secondary-button" id="backupRefreshV8" type="button">Listeyi Yenile</button></div><div class="modal-note">Orman İO yedeği; Mesaha kayıtlarını, İstif kayıtlarını, şeflik ve offline bölme bilgilerini birlikte saklar.</div><div id="backupListV8" class="backup-list-v8"><div class="modal-note">Yedekler yükleniyor…</div></div></section>`,
     );
     bind();
     handleCallback();
@@ -123,6 +123,7 @@
       if (text) text.textContent = "Drive bağlantısı kontrol ediliyor…";
       const s = await api().driveStatus();
       lastDriveStatus = s || null;
+      try { window.dispatchEvent(new CustomEvent("mesaha-suite:drive-status", { detail: s || null })); } catch (_) {}
       paintQuota(s);
       if (s.googleRequired) {
         text.textContent = "Drive için Google ile giriş yapın";
@@ -260,7 +261,7 @@
     if (!box) return;
     if (!items.length) {
       box.innerHTML =
-        '<div class="modal-note">Bu şeflik Drive hesabında henüz Suite yedeği yok.</div>';
+        '<div class="modal-note">Bu şeflik Drive hesabında henüz Orman İO yedeği yok.</div>';
       return;
     }
     box.innerHTML = items
@@ -270,7 +271,7 @@
             x.created_at || x.createdAt || Date.now(),
           ).toLocaleString("tr-TR"),
           link = clean(x.web_view_link || x.webViewLink || x.driveLink);
-        return `<article class="backup-row-v8"><div><strong>${esc(x.file_name || x.fileName || "Mesaha Suite yedeği")}</strong><small>${esc(date)} • ${Number(x.record_count || x.recordCount || 0).toLocaleString("tr-TR")} kayıt • ${Number(x.total_volume || x.totalVolume || 0).toLocaleString("tr-TR", { maximumFractionDigits: 3 })} m³</small><span>${esc(x.app_id || x.appId || "suite")} • ${esc(x.seflik || "")}</span></div><div class="backup-row-actions-v8">${link && canDeleteBackups ? `<a class="secondary-button" href="${esc(link)}" target="_blank" rel="noopener">Drive</a>` : ""}<button class="secondary-button" data-backup-restore-v8="${esc(id)}" type="button">Geri Yükle</button>${canDeleteBackups ? `<button class="danger-button-v8" data-backup-delete-v8="${esc(id)}" type="button">Sil</button>` : ""}</div></article>`;
+        return `<article class="backup-row-v8"><div><strong>${esc(x.file_name || x.fileName || "Orman İO yedeği")}</strong><small>${esc(date)} • ${Number(x.record_count || x.recordCount || 0).toLocaleString("tr-TR")} kayıt • ${Number(x.total_volume || x.totalVolume || 0).toLocaleString("tr-TR", { maximumFractionDigits: 3 })} m³</small><span>${esc(x.app_id || x.appId || "suite")} • ${esc(x.seflik || "")}</span></div><div class="backup-row-actions-v8">${link && canDeleteBackups ? `<a class="secondary-button" href="${esc(link)}" target="_blank" rel="noopener">Drive</a>` : ""}<button class="secondary-button" data-backup-restore-v8="${esc(id)}" type="button">Geri Yükle</button>${canDeleteBackups ? `<button class="danger-button-v8" data-backup-delete-v8="${esc(id)}" type="button">Sil</button>` : ""}</div></article>`;
       })
       .join("");
   }
@@ -279,7 +280,7 @@
     if (b) b.disabled = true;
     try {
       await api().createSuiteBackup();
-      toast("Suite yedeği şeflik kurucusunun Drive hesabına kaydedildi.");
+      toast("Orman İO yedeği şeflik kurucusunun Drive hesabına kaydedildi.");
       await load();
     } catch (e) {
       if (e && (e.code === "DRIVE_NOT_CONNECTED" || e.code === "GOOGLE_REQUIRED")) {
@@ -304,7 +305,7 @@
   }
   function openDb() {
     return new Promise((res, rej) => {
-      const q = indexedDB.open("mesaha-istif-prototype", 1);
+      const q = indexedDB.open("mesaha-istif-prototype", 2);
       q.onupgradeneeded = () => {
         const db = q.result;
         if (!db.objectStoreNames.contains("records"))

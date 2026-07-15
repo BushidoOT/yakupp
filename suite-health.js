@@ -90,8 +90,8 @@
       standalone,
       userAgent: ua.slice(0, 500),
       appId: "suite",
-      appName: "Mesaha Suite",
-      appVersion: window.MesahaRelease?.telemetry("suite") || "Mesaha Suite",
+      appName: "Orman İO",
+      appVersion: window.MesahaRelease?.telemetry("suite") || "Orman İO",
       suiteVersion: String(window.MESAHA_RELEASE?.version || "stable"),
     };
   }
@@ -136,7 +136,7 @@
   function openIstifDb() {
     return new Promise((resolve, reject) => {
       if (!("indexedDB" in window)) return resolve(null);
-      const req = indexedDB.open("mesaha-istif-prototype", 1);
+      const req = indexedDB.open("mesaha-istif-prototype", 2);
       req.onupgradeneeded = () => {
         const db = req.result;
         if (!db.objectStoreNames.contains("records")) db.createObjectStore("records", { keyPath: "id" });
@@ -268,6 +268,70 @@
     };
   }
 
+
+  function dashboardTime(value) {
+    const text = clean(value);
+    if (!text) return "Henüz yok";
+    try { return new Date(text).toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" }); }
+    catch (_) { return text; }
+  }
+
+  function renderDashboard(health) {
+    const ring = document.getElementById("suiteHealthScoreRing");
+    const issues = Math.max(0, Number(health.issueCount || 0));
+    const score = health.level === "offline" ? 35 : health.level === "error" ? Math.max(45, 72 - issues * 4) : health.level === "warning" ? Math.max(70, 94 - issues * 3) : 100;
+    const setText = (id, value) => { const el = document.getElementById(id); if (el) el.textContent = value; };
+    if (ring) {
+      ring.style.setProperty("--health-score", String(score));
+      setText("suiteHealthScore", score + "%");
+      setText("healthPendingRecords", String(Number(health.istif.pendingRecords || 0) + (health.mesaha.manualPending ? 1 : 0)));
+      setText("healthPendingPhotos", String(Number(health.istif.pendingPhotos || 0) + Number(health.istif.uploadingPhotos || 0) + Number(health.istif.failedPhotos || 0)));
+      setText("healthSuiteOps", String(Number(health.suite.pendingOperations || 0)));
+      setText("healthLastSync", dashboardTime(health.lastSync.at));
+      setText("healthLastError", health.lastSync.error || health.istif.failedPhotos || health.istif.failedRecords ? (health.lastSync.error || "İstif/fotoğraf hatası") : "Hata yok");
+    }
+
+    const system = document.getElementById("heroSystemStatus");
+    if (system) {
+      system.classList.toggle("warn", health.level === "warning" || health.level === "offline");
+      system.classList.toggle("bad", health.level === "error");
+      system.lastChild.textContent = health.level === "healthy" ? "Sistem sağlıklı" : health.level === "offline" ? "Cihaz çevrimdışı" : health.level === "error" ? "Hata kontrolü gerekli" : "Bekleyen işlem var";
+    }
+    const server = document.getElementById("heroServerStatus");
+    if (server) {
+      server.classList.toggle("warn", !health.online);
+      server.lastChild.textContent = health.online ? "Sunucu online" : "Sunucu çevrimdışı";
+    }
+    const backup = document.getElementById("heroBackupStatus");
+    if (backup) {
+      backup.classList.toggle("warn", !health.drive.connected || !!health.drive.quotaError);
+      backup.lastChild.textContent = health.drive.connected ? "Yedek aktif" : "Drive bağlı değil";
+    }
+
+    const quota = health.drive.quota;
+    setText("dashboardDriveName", health.drive.ownerName || health.drive.ownerEmail || "Google Drive");
+    setText("dashboardDriveConnection", health.drive.connected ? "Bağlandı" : (health.online ? "Drive bağlantısı bulunamadı" : "Çevrimdışı"));
+    const bar = document.getElementById("dashboardDriveBar");
+    if (quota) {
+      const percent = quota.percent == null ? 0 : Math.max(0, Math.min(100, Number(quota.percent) || 0));
+      const usageText = quota.limitBytes == null ? formatBytes(quota.usageBytes) + " kullanılıyor" : formatBytes(quota.usageBytes) + " / " + formatBytes(quota.limitBytes);
+      setText("dashboardDriveUsage", usageText);
+      if (bar) bar.style.width = percent + "%";
+    } else {
+      setText("dashboardDriveUsage", health.drive.quotaError || "Alan bilgisi bekleniyor");
+      if (bar) bar.style.width = "16%";
+    }
+
+    const activity = document.getElementById("suiteActivityDashboard");
+    if (activity) {
+      const photoPending = Number(health.istif.pendingPhotos || 0) + Number(health.istif.uploadingPhotos || 0) + Number(health.istif.failedPhotos || 0);
+      activity.innerHTML = `
+        <div class="activity-row"><span class="activity-icon">↻</span><div><strong>${health.lastSync.at ? "Son senkronizasyon tamamlandı" : "Henüz tam senkronizasyon yok"}</strong><small>${health.lastSync.error ? esc(health.lastSync.error) : "Şeflik ve cihaz durumu güncel"}</small></div><time>${esc(dashboardTime(health.lastSync.at))}</time></div>
+        <div class="activity-row"><span class="activity-icon">▧</span><div><strong>${photoPending ? photoPending + " fotoğraf bekliyor" : "Fotoğraf kuyruğu temiz"}</strong><small>${health.istif.failedPhotos ? health.istif.failedPhotos + " başarısız fotoğraf yeniden denenebilir" : "İstif fotoğraflarında hata yok"}</small></div><time>${photoPending ? "Bekliyor" : "Hazır"}</time></div>
+        <div class="activity-row"><span class="activity-icon">☁</span><div><strong>${health.drive.connected ? "Drive bağlantısı aktif" : "Drive bağlantısı gerekli"}</strong><small>${esc(health.drive.ownerEmail || health.drive.ownerName || "Şeflik kurucu hesabı")}</small></div><time>${esc(dashboardTime(health.drive.updatedAt))}</time></div>`;
+    }
+  }
+
   function installStyle() {
     if (document.getElementById("suiteHealthCss")) return;
     const style = document.createElement("style");
@@ -351,7 +415,7 @@
         <article class="suite-health-card"><small>Mesaha İO</small><strong>${Number(health.mesaha.localRecords || 0).toLocaleString("tr-TR")}</strong><span>${health.mesaha.manualPending ? "Şefliğe gönderim bekliyor" : "Yerel kayıt • otomatik gönderilmez"}</span></article>
         <article class="suite-health-card"><small>İstif bekleyen</small><strong>${Number(health.istif.pendingRecords || 0).toLocaleString("tr-TR")}</strong><span>${health.istif.failedRecords ? health.istif.failedRecords + " hatalı kayıt" : "Kayıt kuyruğu"}</span></article>
         <article class="suite-health-card"><small>Fotoğraf hatası</small><strong>${Number(health.istif.failedPhotos || 0).toLocaleString("tr-TR")}</strong><span>${health.istif.pendingPhotos + health.istif.uploadingPhotos} fotoğraf cihazda/bekliyor</span></article>
-        <article class="suite-health-card"><small>Suite işlemleri</small><strong>${Number(health.suite.pendingOperations || 0).toLocaleString("tr-TR")}</strong><span>Şeflik, kullanıcı ve bölme kuyruğu</span></article>
+        <article class="suite-health-card"><small>Orman İO işlemleri</small><strong>${Number(health.suite.pendingOperations || 0).toLocaleString("tr-TR")}</strong><span>Şeflik, kullanıcı ve bölme kuyruğu</span></article>
       </div>
       <section class="suite-health-section">
         <h3>Bağlantı ve son işlem</h3>
@@ -389,6 +453,7 @@
     if (content) content.innerHTML = '<div class="suite-health-note">Mesaha, İstif, Drive ve senkronizasyon kuyruğu kontrol ediliyor…</div>';
     const health = await collectHealth();
     renderHealth(health);
+    renderDashboard(health);
     if (sendPing) sendHealthPing(health, true).catch(() => {});
     return health;
   }
@@ -426,23 +491,24 @@
   }
 
   function installButton() {
-    if (document.getElementById(TOOL_ID)) return true;
-    const strip = document.querySelector(".tool-strip");
-    if (!strip) return false;
-    const button = document.createElement("button");
-    button.id = TOOL_ID;
-    button.type = "button";
-    button.className = "suite-health-tool";
-    button.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13h3l2-6 4 12 2-6h5"/><path d="M5 4h14v16H5z"/></svg><strong>Senkron Sağlığı</strong><small>Bekleyen ve hata durumları</small>';
-    const syncButton = strip.querySelector('[data-tool="sync"]');
-    if (syncButton && syncButton.nextSibling) strip.insertBefore(button, syncButton.nextSibling);
-    else strip.appendChild(button);
-    reliablePress(button, openModal);
-    return true;
+    const oldButton = document.getElementById(TOOL_ID);
+    if (oldButton && oldButton.parentNode) oldButton.parentNode.removeChild(oldButton);
+    return false;
+  }
+
+  async function refreshDriveSnapshot() {
+    try {
+      if (!api() || typeof api().driveStatus !== "function") return false;
+      await api().driveStatus();
+      return true;
+    } catch (_) {
+      return false;
+    }
   }
 
   async function sendHealthPing(existingHealth, force) {
     if (navigator.onLine === false || !api() || typeof api().edge !== "function") return false;
+    if (typeof api().canCloudSync === "function" && !api().canCloudSync()) return false;
     const lastPing = Number(localStorage.getItem(LAST_PING_KEY) || localStorage.getItem(LEGACY_LAST_PING_KEY) || 0);
     if (!force && lastPing && Date.now() - lastPing < PING_INTERVAL) return false;
     const health = existingHealth || await collectHealth();
@@ -492,21 +558,28 @@
   async function boot() {
     installStyle();
     ensureModal();
-    if (!installButton()) {
-      const observer = new MutationObserver(() => {
-        if (installButton()) observer.disconnect();
-      });
-      observer.observe(document.documentElement, { childList: true, subtree: true });
-      setTimeout(() => observer.disconnect(), 15000);
-    }
-    setTimeout(() => collectHealth().then((health) => sendHealthPing(health, false)).catch(() => {}), 2200);
-    window.addEventListener("online", () => setTimeout(() => collectHealth().then((health) => sendHealthPing(health, true)).catch(() => {}), 1400));
-    window.addEventListener("mesaha-suite:sync-complete", () => setTimeout(() => collectHealth().then((health) => sendHealthPing(health, true)).catch(() => {}), 500));
-    window.addEventListener("mesaha-istif:changed", () => setTimeout(() => collectHealth().then((health) => sendHealthPing(health, false)).catch(() => {}), 900));
-    setInterval(() => collectHealth().then((health) => sendHealthPing(health, false)).catch(() => {}), PING_INTERVAL);
+    ["suiteHealthDetails", "suiteHealthInlineDetails"].forEach((id) => { const button = document.getElementById(id); if (button) reliablePress(button, openModal); });
+    installButton();
+    const refreshAndRender = async (forcePing) => {
+      try { await refreshDriveSnapshot(); } catch (_) {}
+      try {
+        const health = await collectHealth();
+        renderDashboard(health);
+        await sendHealthPing(health, !!forcePing);
+      } catch (_) {}
+    };
+    setTimeout(() => refreshAndRender(false), 700);
+    window.addEventListener("online", () => setTimeout(() => refreshAndRender(true), 1400));
+    window.addEventListener("mesaha-suite:sync-complete", () => setTimeout(() => refreshAndRender(true), 500));
+    window.addEventListener("mesaha-istif:changed", () => setTimeout(() => refreshAndRender(false), 900));
+    window.addEventListener("storage", (event) => {
+      if (event && event.key === K.drive) setTimeout(() => refreshAndRender(false), 120);
+    });
+    window.addEventListener("mesaha-suite:drive-status", () => setTimeout(() => refreshAndRender(false), 80));
+    setInterval(() => refreshAndRender(false), PING_INTERVAL);
   }
 
-  window.MesahaSuiteHealth = { version: VERSION, collect: collectHealth, open: openModal, ping: () => collectHealth().then((health) => sendHealthPing(health, true)) };
+  window.MesahaSuiteHealth = { version: VERSION, collect: collectHealth, open: openModal, ping: () => collectHealth().then((health) => { renderDashboard(health); return sendHealthPing(health, true); }) };
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot, { once: true });
   else boot();
 })();

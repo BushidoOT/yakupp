@@ -109,7 +109,7 @@
       overlay.id = "suiteSecurityBlockV26";
       overlay.setAttribute("role", "alertdialog");
       overlay.setAttribute("aria-modal", "true");
-      overlay.innerHTML = '<div class="suite-security-box"><div class="suite-security-icon">×</div><h1>Erişim engellendi</h1><p>Bu kullanıcı, cihaz veya bağlantı yönetici tarafından engellendi. Mesaha Suite, Mesaha İO ve İstif İO kullanılamaz.</p><small id="suiteSecurityReasonV26"></small></div>';
+      overlay.innerHTML = '<div class="suite-security-box"><div class="suite-security-icon">×</div><h1>Erişim engellendi</h1><p>Bu kullanıcı, cihaz veya bağlantı yönetici tarafından engellendi. Orman İO, Mesaha İO ve İstif İO kullanılamaz.</p><small id="suiteSecurityReasonV26"></small></div>';
       (document.body || document.documentElement).appendChild(overlay);
     }
     var reason = document.getElementById("suiteSecurityReasonV26");

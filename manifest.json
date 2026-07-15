@@ -1,6 +1,6 @@
 {
-  "name": "Mesaha Suite",
-  "short_name": "Mesaha Suite",
+  "name": "Orman İO",
+  "short_name": "Orman İO",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
@@ -20,5 +20,5 @@
     }
   ],
   "id": "./",
-  "description": "Merkezi Mesaha ve İstif yönetimi"
+  "description": "Mesaha, istif, şeflik ve saha yönetimi"
 }

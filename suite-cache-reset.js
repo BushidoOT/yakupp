@@ -5,7 +5,7 @@
   const STYLE_ID = "suiteCacheResetStyle";
   const OVERLAY_ID = "suiteCacheResetOverlay";
   const DONE_KEY = "mesaha_suite_cache_reset_done";
-  const CACHE_PREFIX = "yakupp-suite-shell-";
+  const CACHE_PREFIXES = ["yakupp-suite-shell-", "orman-io-shell-"];
   let busy = false;
   let lastPressAt = 0;
 
@@ -103,7 +103,7 @@
   async function deleteWindowCaches() {
     if (!("caches" in window)) return { deleted: 0, unsupported: true };
     const keys = await caches.keys();
-    const targets = keys.filter((key) => key.indexOf(CACHE_PREFIX) === 0);
+    const targets = keys.filter((key) => CACHE_PREFIXES.some((prefix) => key.indexOf(prefix) === 0));
     const results = await Promise.all(targets.map((key) => caches.delete(key).catch(() => false)));
     return { deleted: results.filter(Boolean).length, total: targets.length };
   }
@@ -199,7 +199,7 @@
       return;
     }
     const confirmed = confirm(
-      "Mesaha Suite uygulama önbelleği temizlenip güncel dosyalar yeniden indirilsin mi?\n\n" +
+      "Orman İO uygulama önbelleği temizlenip güncel dosyalar yeniden indirilsin mi?\n\n" +
       "Mesaha ve İstif kayıtları, Google/terminal oturumu, şeflikler ve offline bölmeler SİLİNMEZ.",
     );
     if (!confirmed) return;

@@ -2,11 +2,13 @@ importScripts("./release.js");
 const RELEASE = self.MESAHA_RELEASE || { build: 0, assetToken: "stable", cacheName: "yakupp-suite-shell-stable", version: "stable" };
 const CACHE = RELEASE.cacheName || ("yakupp-suite-shell-" + RELEASE.assetToken);
 const CACHE_TOOL_BUILD = String(RELEASE.assetToken || RELEASE.build || "stable");
-const PREFIX = "yakupp-suite-shell-";
+const PREFIXES = ["yakupp-suite-shell-", "orman-io-shell-"];
 const CORE = [
   "./release.js",
+  "./suite-audio.js",
   "./app.js",
   "./assets/hero_forest_cover.webp",
+  "./assets/orman_io_hero.webp",
   "./assets/icon-192.png",
   "./assets/icon-512.png",
   "./assets/mesaha_logo.png",
@@ -35,6 +37,7 @@ const CORE = [
   "./mesaha/guncelle.html",
   "./mesaha/index.html",
   "./mesaha/js/mesaha-data-guard.js",
+  "./mesaha/js/mesaha-backup-format.js",
   "./mesaha/js/mesaha-drive-bridge.js",
   "./mesaha/js/mesaha-early-optimizer.js",
   "./mesaha/js/mesaha-error-log.js",
@@ -54,11 +57,13 @@ const CORE = [
   "./mesaha/js/mesaha-render-storage.js",
   "./mesaha/js/mesaha-runtime.js",
   "./mesaha/js/mesaha-sound.js",
+  "./mesaha/js/mesaha-production-stabilizer.js",
   "./mesaha/js/mesaha-save-focus.js",
   "./mesaha/js/mesaha-seflik-entry-repair.js",
   "./mesaha/js/mesaha-seflik-folder.js",
   "./mesaha/js/mesaha-seflik-governance.js",
   "./mesaha/js/mesaha-stability-core.js",
+  "./mesaha/js/mesaha-ui-hub.js",
   "./mesaha/js/mesaha-storage-health.js",
   "./mesaha/js/mesaha-supabase-config.js",
   "./mesaha/js/mesaha-terminal-local.js",
@@ -68,11 +73,11 @@ const CORE = [
   "./mesaha/manifest.json",
   "./mesaha/suite-bridge.js",
   "./mesaha/temizle.html",
-  "./mesaha/yonetim/admin.css",
-  "./mesaha/yonetim/admin-system-report.css",
-  "./mesaha/yonetim/admin-system-report.js",
-  "./mesaha/yonetim/admin.js",
-  "./mesaha/yonetim/index.html",
+  "./yonetim/admin.css",
+  "./yonetim/admin-system-report.css",
+  "./yonetim/admin-system-report.js",
+  "./yonetim/admin.js",
+  "./yonetim/index.html",
   "./styles.css",
   "./suite-security.js",
   "./suite-cache-reset.js",
@@ -85,6 +90,9 @@ const CRITICAL = [
   "./index.html",
   "./styles.css",
   "./app.js",
+  "./suite-audio.js",
+  "./assets/mesaha_onay.wav",
+  "./assets/mesaha_uyari.wav",
   "./suite-security.js",
   "./suite-cache-reset.js",
   "./suite-health.js",
@@ -96,6 +104,7 @@ const CRITICAL = [
   "./mesaha/css/app.css",
   "./mesaha/js/mesaha-runtime.js",
   "./mesaha/js/mesaha-sound.js",
+  "./mesaha/js/mesaha-production-stabilizer.js",
   "./mesaha/js/mesaha-save-focus.js",
   "./mesaha/suite-bridge.js",
   "./istif/index.html",
@@ -150,7 +159,7 @@ async function cachePass(cache, paths) {
         await notify({
           type: "CACHE_PROGRESS",
           percent: Math.round((done / Math.max(1, paths.length)) * 100),
-          text: "Suite dosyaları hazırlanıyor: " + done + "/" + paths.length,
+          text: "Orman İO dosyaları hazırlanıyor: " + done + "/" + paths.length,
         });
       }
     }
@@ -227,7 +236,7 @@ self.addEventListener("activate", (e) =>
       const keys = await caches.keys();
       await Promise.all(
         keys
-          .filter((k) => k.startsWith(PREFIX) && k !== CACHE)
+          .filter((k) => PREFIXES.some((prefix) => k.startsWith(prefix)) && k !== CACHE)
           .map((k) => caches.delete(k)),
       );
       await self.clients.claim();
@@ -238,20 +247,6 @@ self.addEventListener("activate", (e) =>
         missing: st.missing,
         missingCount: st.missingCount,
       });
-      // iOS ana ekran PWA ve Android Chrome, yeni worker etkinleştiğinde açık
-      // sayfayı bir kez yenilesin. Böylece önbellek aracı ilk güncellemede gelir.
-      const openClients = await self.clients.matchAll({ includeUncontrolled: true, type: "window" });
-      for (const client of openClients) {
-        try {
-          const url = new URL(client.url);
-          const path = url.pathname.replace(/\/+$/, "");
-          const isRoot = !/\/(?:mesaha|istif)(?:\/|$)/i.test(path) && !/\/temizle\.html$/i.test(path);
-          if (isRoot && url.searchParams.get("sw_refresh") !== CACHE_TOOL_BUILD) {
-            url.searchParams.set("sw_refresh", CACHE_TOOL_BUILD);
-            await client.navigate(url.href);
-          }
-        } catch (_) {}
-      }
     })(),
   ),
 );
@@ -272,7 +267,7 @@ self.addEventListener("message", (e) => {
       (async () => {
         try {
           const keys = await caches.keys();
-          await Promise.all(keys.filter((key) => key.startsWith(PREFIX)).map((key) => caches.delete(key)));
+          await Promise.all(keys.filter((key) => PREFIXES.some((prefix) => key.startsWith(prefix))).map((key) => caches.delete(key)));
           const result = await cacheAll();
           reply(e, { ok: true, ...result, cleared: true, preserved: true });
         } catch (error) {
@@ -288,7 +283,7 @@ self.addEventListener("message", (e) => {
 function isSuiteRootNavigation(url) {
   const path = String((url && url.pathname) || "").replace(/\/+$/, "");
   return (
-    !/\/(?:mesaha|istif)(?:\/|$)/i.test(path) &&
+    !/\/(?:mesaha|istif|yonetim)(?:\/|$)/i.test(path) &&
     !/\/temizle\.html$/i.test(path) &&
     !/\/guncelle\.html$/i.test(path)
   );
@@ -316,16 +311,23 @@ async function injectSuiteCacheTool(response, url) {
 function appFallback(url) {
   const p = String((url && url.pathname) || "").replace(/\/+$/, "");
   if (/\/istif(?:\/|$)/.test(p)) return "./istif/index.html";
-  if (/\/mesaha\/yonetim(?:\/|$)/.test(p)) return "./mesaha/yonetim/index.html";
+  if (/\/(?:mesaha\/)?yonetim(?:\/|$)/.test(p)) return "./yonetim/index.html";
   if (/\/mesaha(?:\/|$)/.test(p)) return "./mesaha/index.html";
   return "./index.html";
+}
+async function fetchWithTimeout(req, timeout = 6500) {
+  if (typeof AbortController === "undefined") return fetch(req);
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeout);
+  try { return await fetch(new Request(req, { signal: controller.signal })); }
+  finally { clearTimeout(timer); }
 }
 async function stale(req, fallback) {
   const cache = await caches.open(CACHE),
     hit =
       (await cache.match(req, { ignoreSearch: true })) ||
       (fallback && (await cache.match(fallback, { ignoreSearch: true })));
-  const net = fetch(req)
+  const net = fetchWithTimeout(req, 8000)
     .then(async (r) => {
       if (r && (r.ok || r.type === "opaque")) await cache.put(req, r.clone());
       return r;
@@ -344,7 +346,7 @@ async function stale(req, fallback) {
 async function networkFirst(req) {
   const cache = await caches.open(CACHE);
   try {
-    const fresh = await fetch(new Request(req, { cache: "no-store" }));
+    const fresh = await fetchWithTimeout(new Request(req, { cache: "no-store" }), req.mode === "navigate" ? 5500 : 8000);
     if (fresh && fresh.ok) await cache.put(req, fresh.clone());
     return fresh;
   } catch (_) {

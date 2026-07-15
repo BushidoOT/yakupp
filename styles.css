@@ -643,7 +643,7 @@ svg {
 }
 .modal-backdrop {
   position: fixed;
-  z-index: 50;
+  z-index: 900;
   inset: 0;
   background: rgba(5, 19, 14, 0.52);
   backdrop-filter: blur(7px);
@@ -651,13 +651,16 @@ svg {
 }
 .modal {
   position: fixed;
-  z-index: 51;
+  z-index: 901;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
   width: min(560px, calc(100vw - 28px));
   max-height: calc(100vh - 40px);
   overflow: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
   background: #fff;
   border-radius: 28px;
   box-shadow: 0 35px 90px rgba(0, 0, 0, 0.3);
@@ -1889,3 +1892,382 @@ html {
 .drive-quota-grid-v27{display:grid;grid-template-columns:1fr 1fr;gap:7px}.drive-quota-grid-v27>div{display:grid;gap:2px;padding:8px;border:1px solid #e3ebe6;border-radius:11px;background:rgba(255,255,255,.75)}.drive-quota-grid-v27 span{font-size:10.5px;color:#69776f}.drive-quota-grid-v27 b{font-size:12px;color:#1f3b2f}.drive-quota-v27 p{margin:9px 0 0;padding:8px 9px;border-radius:10px;background:rgba(198,83,70,.09);color:#943b31;font-size:11.5px;line-height:1.4;font-weight:650}
 .cleanup-result-summary{display:grid;gap:10px}.cleanup-result-hero{display:flex;gap:12px;align-items:center;padding:12px;border-radius:16px;background:#eef8f1;color:#175d3b}.cleanup-result-icon{width:46px;height:46px;border-radius:15px;background:#d9efe1;display:grid;place-items:center;font-size:24px;font-weight:900}.cleanup-result-hero strong{display:block;font-size:16px}.cleanup-result-hero p{margin:3px 0 0;color:#65756c;font-size:12px;line-height:1.4}.cleanup-result-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.cleanup-result-grid>div{padding:10px 11px;border:1px solid #dce8e1;border-radius:13px;background:#fff}.cleanup-result-grid span,.cleanup-result-grid b{display:block}.cleanup-result-grid span{font-size:11px;color:#68776e}.cleanup-result-grid b{margin-top:4px;font-size:16px;color:#183e2d}
 @media(max-width:420px){.drive-quota-grid-v27,.cleanup-result-grid{grid-template-columns:1fr}.drive-quota-head-v27{display:grid}.drive-quota-head-v27 strong{text-align:left}}
+
+
+/* ORMAN İO — birleşik modern ana ekran */
+body.orman-io-home{background:#edf3f1;padding:0;color:#14241e;min-height:100dvh}
+.orman-shell{width:min(1180px,100%);min-height:100dvh;margin:0 auto;background:#f7faf8;border-radius:0;box-shadow:0 0 60px rgba(22,57,43,.10);overflow:visible;padding-bottom:24px}
+.orman-topbar{height:88px;padding:14px 30px;display:flex;align-items:center;justify-content:space-between;gap:20px;background:rgba(255,255,255,.96);border-bottom:1px solid #e4ece7;position:sticky;top:0;z-index:100;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+.orman-brand{display:flex;align-items:center;gap:12px;color:#10281e;text-decoration:none;min-width:0}.orman-brand img{width:54px;height:54px;object-fit:contain}.orman-brand span{display:flex;flex-direction:column;min-width:0}.orman-brand strong{font-family:"Segoe Script","Snell Roundhand","Brush Script MT",cursive;font-size:29px;font-weight:800;letter-spacing:.15px;line-height:1.05;color:#0c6f46;text-shadow:0 1px 0 #fff}.orman-brand small{font-size:11px;color:#6a7a72;font-weight:700;margin-top:4px}
+.orman-top-actions{display:flex;align-items:center;gap:10px}.orman-topbar .connection-pill{height:44px;border:1px solid #dce8e1;background:#f8fbf9;box-shadow:none;border-radius:14px;padding:0 14px;font-size:13px}.orman-topbar .icon-button{width:44px;height:44px;border:1px solid #dce8e1;background:#f8fbf9;box-shadow:none;border-radius:14px}.orman-topbar .icon-button svg{width:21px;height:21px}.top-profile{border:0;background:transparent;padding:0;cursor:pointer}.orman-topbar .avatar{width:46px;height:46px;font-size:14px;border:3px solid #e1eee6;box-shadow:none;overflow:hidden}.orman-topbar .avatar img{width:100%;height:100%;object-fit:cover}
+.orman-content{margin:0;padding:24px 30px 38px;position:relative;z-index:1}
+.orman-welcome-card{min-height:310px;border-radius:24px;padding:36px;display:flex;flex-direction:column;justify-content:space-between;color:white;position:relative;overflow:hidden;background-image:linear-gradient(90deg,rgba(4,31,20,.86),rgba(5,43,29,.58) 55%,rgba(4,31,20,.22)),url('./assets/orman_io_hero.webp');background-size:cover;background-position:center;box-shadow:0 20px 44px rgba(13,58,38,.18)}
+.orman-welcome-card:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 45%,rgba(0,25,16,.35));pointer-events:none}.orman-welcome-copy,.orman-hero-status{position:relative;z-index:2}.orman-welcome-label{font-size:16px;font-weight:800;color:#d9f1e5}.orman-welcome-copy h1{font-size:clamp(30px,4.6vw,52px);margin:6px 0 10px;line-height:1.08;max-width:760px}.orman-welcome-copy p{font-size:18px;line-height:1.5;margin:0;max-width:620px;color:#f1f8f4}.orman-office{display:inline-flex;align-items:center;gap:7px;margin-top:15px;color:#dcefe5;font-weight:800}.orman-office svg{width:18px;height:18px}
+.orman-hero-status{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 14px;background:rgba(2,61,42,.78);border:1px solid rgba(255,255,255,.18);border-radius:17px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}.orman-hero-status>span{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:850;white-space:nowrap}.orman-hero-status>span i{width:9px;height:9px;border-radius:50%;background:#52d27f;box-shadow:0 0 0 4px rgba(82,210,127,.14)}.orman-hero-status>span.warn i{background:#f2b84b}.orman-hero-status>span.bad i{background:#f06f6f}.orman-hero-status button{margin-left:auto;min-height:42px;border:0;border-radius:12px;background:#fff;color:#155a3b;padding:0 16px;display:flex;align-items:center;gap:8px;font-weight:900;cursor:pointer}.orman-hero-status button svg{width:19px;height:19px}
+.orman-section-title{margin:26px 2px 12px;display:flex;align-items:end;justify-content:space-between}.orman-section-title span,.orman-card-head span,.drive-brand>div>span{font-size:10px;letter-spacing:.11em;color:#5e756a;font-weight:900}.orman-section-title h2,.orman-card-head h2{font-size:20px;margin:3px 0 0;color:#173c2c}
+.orman-app-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:0}.orman-app-grid .app-card{min-height:176px;background:#fff;border:1px solid #e3ebe6;border-radius:20px;padding:18px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;box-shadow:0 10px 25px rgba(20,58,43,.07)}.orman-app-grid .app-card:after{display:none}.orman-app-grid .app-icon{width:62px;height:62px;border-radius:17px;flex:none}.orman-app-grid .app-icon svg{width:36px;height:36px}.app-icon-green{background:linear-gradient(145deg,#35ad62,#168542);color:white}.app-icon-gold{background:linear-gradient(145deg,#ffbe31,#e78a00);color:white}.app-icon-blue{background:linear-gradient(145deg,#5b9cf5,#2e6fda);color:white}.app-icon-purple{background:linear-gradient(145deg,#9a67dd,#6f39bb);color:white}.orman-app-grid .app-copy{padding:0}.orman-app-grid .app-copy h2{font-size:16px;margin:0 0 4px;color:#183529}.orman-app-grid .app-copy p{font-size:12px;margin:0;color:#697870;line-height:1.35}.orman-app-grid .app-arrow{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;margin-top:auto;background:#f5faf7;border:1px solid #d9e8df;color:#217c50;position:relative;z-index:2}.orman-app-grid .app-arrow svg{width:16px;height:16px}
+.orman-health-card,.orman-drive-card,.orman-activity-card{margin-top:20px;background:#fff;border:1px solid #e2ebe6;border-radius:22px;padding:20px;box-shadow:0 10px 28px rgba(20,58,43,.06)}.orman-card-head{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:16px}.orman-card-head button{border:1px solid #19a6a6;background:#fff;color:#108a8a;border-radius:12px;min-height:40px;padding:0 15px;font-weight:900;cursor:pointer}.orman-health-body{display:grid;grid-template-columns:180px 1fr;gap:20px;align-items:center}.health-score-ring{width:150px;height:150px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(#0ea5a6 calc(var(--health-score)*1%),#e7efec 0);position:relative;margin:auto}.health-score-ring:after{content:"";position:absolute;inset:14px;border-radius:50%;background:white}.health-score-ring>div{position:relative;z-index:1;text-align:center}.health-score-ring strong{display:block;font-size:35px;color:#153d2d}.health-score-ring span{font-size:11px;color:#6a7b72;font-weight:800}.health-stat-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0;border:1px solid #edf2ef;border-radius:16px;overflow:hidden}.health-stat-grid>div{min-height:66px;padding:12px;display:grid;grid-template-columns:34px 1fr auto;align-items:center;column-gap:10px;border-right:1px solid #edf2ef;border-bottom:1px solid #edf2ef}.health-stat-grid>div:nth-child(2n){border-right:0}.health-stat-grid>div.wide{grid-column:1/-1;border-bottom:0;border-right:0}.health-stat-grid small{color:#64756d;font-size:11px;font-weight:800}.health-stat-grid strong{color:#173d2d;font-size:14px;text-align:right}.health-stat-icon{grid-row:1/3;width:32px;height:32px;border-radius:10px;display:grid;place-items:center;font-weight:900}.health-stat-icon.orange{background:#fff2dd;color:#d98100}.health-stat-icon.blue{background:#e9f1ff;color:#2f6ed3}.health-stat-icon.teal{background:#e4f6f2;color:#138b74}.health-stat-icon.clock{background:#edf5f6;color:#397882}.health-stat-icon.green{background:#e7f6eb;color:#219653}
+.orman-drive-card{display:grid;grid-template-columns:minmax(210px,1fr) minmax(250px,1.4fr) auto;gap:22px;align-items:center}.drive-brand{display:flex;align-items:center;gap:12px}.drive-logo{width:54px;height:54px;border-radius:14px;background:#f4f7f5;display:grid;place-items:center}.drive-logo svg{width:36px;height:32px;stroke:none}.drive-brand>div{display:flex;flex-direction:column}.drive-brand strong{font-size:16px;margin:3px 0}.drive-brand small{font-size:11px;color:#62736b;font-weight:750}.drive-usage>div:first-child{display:flex;justify-content:space-between;gap:12px;font-size:12px;color:#65756d}.drive-usage strong{color:#173d2d}.drive-usage-track{height:7px;background:#e8efec;border-radius:999px;margin-top:10px;overflow:hidden}.drive-usage-track i{display:block;width:0;height:100%;border-radius:inherit;background:#13a6a2;transition:width .3s ease}.orman-drive-card>button{min-height:44px;border:1px solid #16a1a1;background:white;color:#128585;border-radius:12px;padding:0 15px;display:flex;align-items:center;gap:7px;font-weight:900;cursor:pointer}.orman-drive-card>button svg{width:19px;height:19px}
+.activity-list{border:1px solid #edf2ef;border-radius:15px;overflow:hidden}.activity-row{display:grid;grid-template-columns:38px 1fr auto;align-items:center;gap:11px;padding:13px;border-bottom:1px solid #edf2ef}.activity-row:last-child{border-bottom:0}.activity-icon{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:#eaf7ef;color:#16864d;font-weight:900}.activity-row div{display:flex;flex-direction:column}.activity-row strong{font-size:13px;color:#173b2b}.activity-row small{font-size:11px;color:#687970;margin-top:2px}.activity-row time{font-size:11px;color:#6b7b73;font-weight:800}
+.orman-management-tools{margin-top:20px;background:#fff;border:1px solid #e2ebe6;border-radius:20px;overflow:hidden}.orman-management-tools summary{cursor:pointer;list-style:none;padding:17px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px}.orman-management-tools summary::-webkit-details-marker{display:none}.orman-management-tools summary span{font-weight:900;color:#173d2d}.orman-management-tools summary small{color:#687970}.orman-management-tools[open] summary{border-bottom:1px solid #edf2ef}.orman-management-tools .quick-grid,.orman-management-tools .tool-strip{margin:14px;padding:0}.orman-management-tools .quick-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.orman-management-tools .tool-strip{grid-template-columns:repeat(4,minmax(0,1fr));border:0;background:transparent;box-shadow:none}.orman-management-tools .tool-strip button{background:#f8fbf9;border:1px solid #e3ebe6;border-radius:15px;min-height:112px}
+.status-footer{margin-top:20px}.orman-bottom-nav{position:fixed;left:50%;bottom:0;transform:translateX(-50%);width:min(1180px,100%);height:76px;padding:8px max(18px,env(safe-area-inset-left)) calc(8px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(5,1fr);background:rgba(255,255,255,.97);border-top:1px solid #dfe8e3;z-index:200;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}.orman-bottom-nav button{border:0;background:transparent;color:#52665c;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:10px;font-weight:850;cursor:pointer}.orman-bottom-nav button svg{width:21px;height:21px}.orman-bottom-nav button.active{color:#0d9c9d}
+@media(max-width:760px){body.orman-io-home{background:#f7faf8}.orman-shell{box-shadow:none}.orman-topbar{height:72px;padding:10px 14px}.orman-brand img{width:45px;height:45px}.orman-brand strong{font-size:24px}.orman-brand small{display:none}.orman-topbar .connection-pill{width:42px;padding:0;justify-content:center}.orman-topbar .connection-pill #connectionText{display:none}.orman-top-actions{gap:7px}.orman-content{padding:14px 14px 28px}.orman-welcome-card{min-height:260px;padding:22px;border-radius:20px;background-position:63% center}.orman-welcome-copy h1{font-size:29px}.orman-welcome-copy p{font-size:14px}.orman-hero-status{padding:10px;gap:8px}.orman-hero-status>span{font-size:10px}.orman-hero-status button{width:100%;margin:2px 0 0;justify-content:center}.orman-app-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.orman-app-grid .app-card{min-height:142px;padding:12px 7px;border-radius:16px}.orman-app-grid .app-icon{width:50px;height:50px;border-radius:14px}.orman-app-grid .app-icon svg{width:29px;height:29px}.orman-app-grid .app-copy h2{font-size:12px}.orman-app-grid .app-copy p{font-size:9px}.orman-app-grid .app-arrow{width:25px;height:25px}.orman-section-title h2{font-size:17px}.orman-health-card,.orman-drive-card,.orman-activity-card{padding:14px;border-radius:18px;margin-top:14px}.orman-health-body{grid-template-columns:110px 1fr;gap:11px}.health-score-ring{width:102px;height:102px}.health-score-ring:after{inset:10px}.health-score-ring strong{font-size:25px}.health-score-ring span{font-size:8px}.health-stat-grid>div{grid-template-columns:28px 1fr auto;min-height:56px;padding:9px;column-gap:6px}.health-stat-icon{width:27px;height:27px}.health-stat-grid small{font-size:9px}.health-stat-grid strong{font-size:11px}.orman-card-head{margin-bottom:12px}.orman-card-head h2{font-size:17px}.orman-card-head button{font-size:11px;min-height:36px;padding:0 10px}.orman-drive-card{grid-template-columns:1fr auto;gap:12px}.drive-usage{grid-column:1/-1;grid-row:2}.orman-drive-card>button{grid-column:2;grid-row:1;font-size:11px;padding:0 10px}.activity-row{grid-template-columns:34px 1fr auto;padding:10px}.activity-row strong{font-size:11px}.activity-row small,.activity-row time{font-size:9px}.orman-management-tools summary{padding:14px}.orman-management-tools summary small{display:none}.orman-management-tools .quick-grid{grid-template-columns:1fr}.orman-management-tools .tool-strip{grid-template-columns:repeat(2,minmax(0,1fr))}.orman-bottom-nav{height:72px}.status-footer{display:none}}
+@media(max-width:390px){.orman-topbar .icon-button{display:none}.orman-app-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.orman-app-grid .app-card{min-height:132px}.orman-health-body{grid-template-columns:1fr}.health-score-ring{width:116px;height:116px}.health-stat-grid{grid-template-columns:1fr}.health-stat-grid>div,.health-stat-grid>div:nth-child(2n){border-right:0}.health-stat-grid>div.wide{grid-column:auto}.orman-drive-card{grid-template-columns:1fr}.orman-drive-card>button,.drive-usage{grid-column:1;grid-row:auto}.orman-drive-card>button{justify-content:center}}
+
+
+/* Orman İO ana ekran düzeni — kalıcı yönetim araçları ve güvenli modal */
+body.modal-open{overflow:hidden!important;touch-action:none}
+.modal-backdrop{z-index:900!important;touch-action:none}
+.modal{z-index:901!important;max-height:min(calc(100dvh - 28px),860px)!important;overscroll-behavior:contain!important;-webkit-overflow-scrolling:touch!important;touch-action:pan-y!important}
+.hero-office-highlight{margin-left:auto;min-width:210px;max-width:360px;padding:9px 15px;border-radius:13px;background:rgba(255,255,255,.96);color:#154d34;display:grid;gap:2px;box-shadow:0 7px 20px rgba(0,24,15,.16)}
+.hero-office-highlight small{font-size:9px;letter-spacing:.13em;font-weight:950;color:#5a7f6b}
+.hero-office-highlight strong{font-size:16px;line-height:1.18;font-weight:950;overflow-wrap:anywhere}
+.orman-management-tools{margin-top:22px;background:#fff;border:1px solid #e2ebe6;border-radius:22px;padding:18px;overflow:visible;box-shadow:0 10px 28px rgba(20,58,43,.06)}
+.orman-management-title{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;padding:0 2px 14px;border-bottom:1px solid #edf2ef}
+.orman-management-title span{display:block;color:#168a78;font-size:10px;letter-spacing:.12em;font-weight:950}
+.orman-management-title h2{margin:4px 0 0;color:#173d2d;font-size:19px;line-height:1.15}
+.orman-management-title>small{color:#62766c;font-size:11px;font-weight:800;white-space:nowrap}
+.orman-management-tools .quick-grid,.orman-management-tools .tool-strip{margin:14px 0 0!important;padding:0!important}
+.orman-management-tools .quick-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+.orman-management-tools .tool-strip{grid-template-columns:repeat(4,minmax(0,1fr))!important;border:0!important;background:transparent!important;box-shadow:none!important}
+.orman-management-tools .tool-strip button{background:#f8fbf9!important;border:1px solid #e3ebe6!important;border-radius:15px!important;min-height:108px!important}
+@media(max-width:760px){
+  .orman-hero-status{align-items:stretch!important}
+  .hero-office-highlight{width:100%;max-width:none;min-width:0;margin:2px 0 0;padding:10px 12px}
+  .hero-office-highlight strong{font-size:15px}
+  .orman-management-tools{margin-top:14px;padding:14px;border-radius:18px}
+  .orman-management-title{align-items:flex-start}
+  .orman-management-title h2{font-size:17px}
+  .orman-management-title>small{display:none}
+  .orman-management-tools .quick-grid{grid-template-columns:1fr!important}
+  .orman-management-tools .tool-strip{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .modal{top:max(14px,env(safe-area-inset-top))!important;bottom:max(14px,env(safe-area-inset-bottom))!important;transform:translateX(-50%)!important;max-height:none!important;height:auto!important}
+  body.modal-open .modal:not([hidden]){animation:none!important}
+}
+
+
+/* Orman İO üretim cilası: hızlı, hafif ve mobil uyumlu */
+.created-by-yakupp{
+  position:fixed;left:max(12px,env(safe-area-inset-left));bottom:calc(82px + env(safe-area-inset-bottom));z-index:45;
+  padding:5px 10px;border-radius:999px;background:rgba(255,255,255,.82);border:1px solid rgba(18,104,63,.16);
+  box-shadow:0 7px 18px rgba(11,69,44,.08);color:#476259;font:600 11px/1.1 system-ui,-apple-system,"Segoe UI",sans-serif;
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);pointer-events:none
+}
+.created-by-yakupp strong{font-family:"Segoe Script","Snell Roundhand","Brush Script MT",cursive;font-size:15px;color:#0c6f46;letter-spacing:.2px}
+.orman-shell{position:relative}
+.suite-terminal-pair{display:grid;gap:10px;margin:12px 0;padding:14px;border:1px solid #d7e8df;border-radius:18px;background:#f7fcf9}
+.suite-terminal-pair>div:first-child{display:grid;gap:3px}.suite-terminal-pair strong{color:#123d2d}.suite-terminal-pair small{color:#64766e;font-weight:700;line-height:1.4}
+.suite-terminal-pair-form{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center}
+.suite-terminal-pair input{min-width:0;height:48px;border:1px solid #c9ddd2;border-radius:14px;background:#fff;padding:0 13px;font-size:16px;font-weight:900;letter-spacing:1.4px;text-transform:uppercase}
+.suite-terminal-pair button{min-height:48px;white-space:nowrap}.suite-terminal-pair p{margin:0;padding:9px 11px;border-radius:12px;background:#e9f8ef;color:#12683f;font-weight:850;font-size:12px}
+.suite-terminal-pair.is-error p{background:#fff0f0;color:#a52222}.suite-terminal-pair.is-busy{opacity:.74;pointer-events:none}
+.about-action-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}.about-action-grid a{min-height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;font-weight:950;border:1px solid #d6e3dd}.about-telegram{background:#eaf7ff;color:#087aaf}.about-youtube{background:#fff0f0;color:#c71920}
+@media(max-width:420px){.suite-terminal-pair-form{grid-template-columns:1fr}.suite-terminal-pair button{width:100%}.about-action-grid{grid-template-columns:1fr}.created-by-yakupp{left:9px;bottom:calc(76px + env(safe-area-inset-bottom));transform:scale(.92);transform-origin:left bottom}}
+@media(prefers-reduced-motion:no-preference){
+  .orman-content>*{animation:orman-soft-enter .22s ease-out both}.orman-content>*:nth-child(n+4){animation-delay:.025s}
+  .modal:not([hidden]){animation:orman-modal-enter .18s ease-out both}.app-card,.quick-card,.tool-strip button{transition:transform .16s ease,box-shadow .16s ease,background-color .16s ease}
+  .app-card:active,.quick-card:active,.tool-strip button:active{transform:scale(.985)}
+}
+@keyframes orman-soft-enter{from{opacity:.25;transform:translateY(5px)}to{opacity:1;transform:none}}
+@keyframes orman-modal-enter{from{opacity:0;transform:translateY(8px) scale(.99)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
+/* Terminal kodu yalnız ilk açılış ve yerel misafir modunda görünür. */
+.suite-terminal-pair[hidden]{display:none!important}
+
+/* Orman İO ana kartları: belirgin ve uygulamayla uyumlu yeşil vurgu. */
+.orman-app-grid .app-card.mesaha-card,
+.orman-app-grid .app-card.istif-card,
+.orman-app-grid .app-card.seflik-card,
+.orman-app-grid .app-card.admin-card {
+  background: linear-gradient(145deg, #12683f 0%, #238b55 58%, #32a867 100%) !important;
+  border-color: rgba(7, 82, 46, 0.72) !important;
+  box-shadow: 0 14px 30px rgba(18, 104, 63, 0.28) !important;
+}
+.orman-app-grid .app-card.mesaha-card:hover,
+.orman-app-grid .app-card.istif-card:hover,
+.orman-app-grid .app-card.seflik-card:hover,
+.orman-app-grid .app-card.admin-card:hover {
+  box-shadow: 0 18px 36px rgba(18, 104, 63, 0.34) !important;
+}
+.orman-app-grid .app-card.mesaha-card .app-copy h2,
+.orman-app-grid .app-card.mesaha-card .app-copy p,
+.orman-app-grid .app-card.istif-card .app-copy h2,
+.orman-app-grid .app-card.istif-card .app-copy p,
+.orman-app-grid .app-card.seflik-card .app-copy h2,
+.orman-app-grid .app-card.seflik-card .app-copy p,
+.orman-app-grid .app-card.admin-card .app-copy h2,
+.orman-app-grid .app-card.admin-card .app-copy p {
+  color: #ffffff !important;
+}
+.orman-app-grid .app-card.mesaha-card .app-copy p,
+.orman-app-grid .app-card.istif-card .app-copy p,
+.orman-app-grid .app-card.seflik-card .app-copy p,
+.orman-app-grid .app-card.admin-card .app-copy p {
+  opacity: 0.92;
+}
+.orman-app-grid .app-card.mesaha-card .app-icon-green,
+.orman-app-grid .app-card.istif-card .app-icon-gold,
+.orman-app-grid .app-card.seflik-card .app-icon-blue,
+.orman-app-grid .app-card.admin-card .app-icon-purple {
+  background: rgba(255, 255, 255, 0.94) !important;
+  color: #12683f !important;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.72), 0 8px 18px rgba(5, 65, 36, 0.18);
+}
+.orman-app-grid .app-card.mesaha-card .app-arrow,
+.orman-app-grid .app-card.istif-card .app-arrow,
+.orman-app-grid .app-card.seflik-card .app-arrow,
+.orman-app-grid .app-card.admin-card .app-arrow {
+  background: rgba(255, 255, 255, 0.18) !important;
+  border-color: rgba(255, 255, 255, 0.42) !important;
+  color: #ffffff !important;
+}
+.guide-tool-button,
+.tool-strip button[data-tool="guide"] {
+  background: linear-gradient(145deg, #12683f 0%, #238b55 58%, #32a867 100%) !important;
+  border-color: rgba(7, 82, 46, 0.72) !important;
+  color: #ffffff !important;
+  box-shadow: 0 12px 24px rgba(18, 104, 63, 0.20) !important;
+}
+.tool-strip button[data-tool="guide"] strong,
+.tool-strip button[data-tool="guide"] small,
+.tool-strip button[data-tool="guide"] svg {
+  color: #ffffff !important;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.orman-guide-card {
+  margin-top: 20px;
+  background: linear-gradient(180deg, #f3fbf6 0%, #ffffff 100%);
+  border: 1px solid #cfe6d7;
+  border-radius: 24px;
+  padding: 22px;
+  box-shadow: 0 10px 28px rgba(20,58,43,.06);
+}
+.orman-guide-head button {
+  border-color: #1e8f57;
+  color: #ffffff;
+  background: linear-gradient(145deg, #12683f, #2d9a62);
+}
+.guide-hero-note {
+  margin-bottom: 18px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: #e7f6eb;
+  color: #1b5638;
+  font-weight: 700;
+  line-height: 1.5;
+}
+.orman-guide-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+.guide-panel {
+  border: 1px solid #d8ebe0;
+  border-radius: 20px;
+  background: #ffffff;
+  padding: 18px;
+}
+.guide-panel-title {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e7efe9;
+}
+.guide-panel-title strong {
+  color: #153c2d;
+  font-size: 20px;
+}
+.guide-panel-title small {
+  color: #61816f;
+  font-weight: 700;
+}
+.guide-section-block + .guide-section-block {
+  margin-top: 16px;
+}
+.guide-section-block h3 {
+  margin: 0 0 8px;
+  color: #1c4b36;
+  font-size: 17px;
+}
+.guide-section-block ol {
+  margin: 0;
+  padding-left: 20px;
+  color: #264a38;
+}
+.guide-section-block li + li {
+  margin-top: 6px;
+}
+.guide-inline-note {
+  margin: 0 0 10px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: #f3faf5;
+  color: #3e6751;
+  font-weight: 700;
+}
+.guide-inline-link {
+  color: #147346;
+  font-weight: 800;
+  text-decoration: none;
+}
+.guide-inline-link:hover {
+  text-decoration: underline;
+}
+@media(max-width:760px){
+  .orman-guide-card{padding:16px;border-radius:18px;margin-top:14px}
+  .orman-guide-grid{grid-template-columns:1fr;gap:14px}
+  .guide-panel{padding:15px;border-radius:17px}
+  .guide-panel-title strong{font-size:17px}
+  .guide-section-block h3{font-size:15px}
+}
+
+
+.orman-app-grid .app-card.istif-card {
+  background: linear-gradient(145deg, #d59b16 0%, #edb52d 58%, #f2c94c 100%) !important;
+  border-color: rgba(161, 110, 0, 0.70) !important;
+  box-shadow: 0 14px 30px rgba(201, 145, 22, 0.26) !important;
+}
+.orman-app-grid .app-card.istif-card:hover {
+  box-shadow: 0 18px 36px rgba(201, 145, 22, 0.32) !important;
+}
+.orman-app-grid .app-card.istif-card .app-icon-gold {
+  color: #a56b00 !important;
+}
+.drive-usage-track {
+  height: 10px;
+  background: #dbe8e2;
+  border: 1px solid #c9dbd1;
+}
+.drive-usage-track i {
+  min-width: 16px;
+  background: linear-gradient(90deg, #16a085 0%, #29b7a4 100%);
+  box-shadow: 0 0 0 1px rgba(10,111,94,.08) inset;
+}
+.info-content .suite-guide-modal-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+.info-content .suite-guide-panel {
+  border-radius: 18px;
+  padding: 16px;
+  border: 1px solid rgba(0,0,0,.06);
+}
+.info-content .suite-guide-panel-mesaha {
+  background: linear-gradient(180deg, #e4f5e9 0%, #f4fbf6 100%);
+  border-color: #b7dcc0;
+}
+.info-content .suite-guide-panel-istif {
+  background: linear-gradient(180deg, #fff2c7 0%, #fff9e6 100%);
+  border-color: #eed37a;
+}
+.info-content .suite-guide-panel-head {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-bottom: 10px;
+}
+.info-content .suite-guide-panel-head strong {
+  color: #183b2d;
+  font-size: 22px;
+}
+.info-content .suite-guide-panel-head small {
+  color: #5d7368;
+  font-weight: 700;
+}
+.info-content .suite-guide-panel ol {
+  margin: 0;
+  padding-left: 20px;
+  color: #244839;
+}
+.info-content .suite-guide-panel li + li {
+  margin-top: 7px;
+}
+.info-content .suite-guide-note-box {
+  margin-top: 14px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: #f3f8f5;
+  color: #29493c;
+  border: 1px solid #dbe8e1;
+}
+.info-content .suite-guide-note-box strong {
+  display: block;
+  margin-bottom: 6px;
+}
+.info-content .suite-guide-note-box p {
+  margin: 0;
+}
+@media (min-width: 900px) {
+  .info-content .suite-guide-modal-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+
+
+.orman-app-grid .app-card.seflik-card,
+.orman-app-grid .app-card.admin-card {
+  background: #ffffff !important;
+  border-color: #e3ebe6 !important;
+  box-shadow: 0 10px 25px rgba(20,58,43,.07) !important;
+}
+.orman-app-grid .app-card.seflik-card:hover,
+.orman-app-grid .app-card.admin-card:hover {
+  box-shadow: 0 14px 28px rgba(20,58,43,.10) !important;
+}
+.orman-app-grid .app-card.seflik-card .app-copy h2,
+.orman-app-grid .app-card.seflik-card .app-copy p,
+.orman-app-grid .app-card.admin-card .app-copy h2,
+.orman-app-grid .app-card.admin-card .app-copy p {
+  color: inherit !important;
+}
+.orman-app-grid .app-card.seflik-card .app-copy p,
+.orman-app-grid .app-card.admin-card .app-copy p {
+  opacity: 1 !important;
+}
+.orman-app-grid .app-card.seflik-card .app-arrow,
+.orman-app-grid .app-card.admin-card .app-arrow {
+  background: #f5faf7 !important;
+  border-color: #d9e8df !important;
+  color: #217c50 !important;
+}
+
+
+
+/* Yayın düzeni: Orman İO alt menüsü kaldırıldı ve küçük ekranlar sıkılaştırıldı. */
+.orman-bottom-nav{display:none!important}
+.orman-shell{padding-bottom:24px!important}
+.orman-content{padding-bottom:max(28px,env(safe-area-inset-bottom))!important}
+.orman-app-grid .app-card.seflik-card .app-copy h2,
+.orman-app-grid .app-card.admin-card .app-copy h2{color:#183529!important}
+.orman-app-grid .app-card.seflik-card .app-copy p,
+.orman-app-grid .app-card.admin-card .app-copy p{color:#697870!important}
+.orman-app-grid .app-card.seflik-card .app-icon-blue{background:linear-gradient(145deg,#5b9cf5,#2e6fda)!important;color:#fff!important}
+.orman-app-grid .app-card.admin-card .app-icon-purple{background:linear-gradient(145deg,#9a67dd,#6f39bb)!important;color:#fff!important}
+@media(max-width:760px){
+  .orman-content{padding:12px 12px max(24px,env(safe-area-inset-bottom))!important}
+  .orman-welcome-card{min-height:220px!important;padding:18px!important}
+  .orman-welcome-copy h1{font-size:27px!important}
+  .orman-app-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}
+  .orman-app-grid .app-card{min-height:136px!important;padding:12px 9px!important}
+  .orman-management-tools .tool-strip button{min-height:96px!important}
+  .orman-drive-card,.orman-activity-card{margin-top:12px!important}
+  .orman-drive-card{padding:13px!important}
+  .activity-row{padding:9px!important}
+}
+@media(max-width:360px){
+  .orman-topbar{padding:8px 10px!important}
+  .orman-brand strong{font-size:21px!important}
+  .orman-app-grid{gap:8px!important}
+  .orman-app-grid .app-card{min-height:128px!important}
+  .orman-management-tools .tool-strip button{min-height:90px!important;padding:8px!important}
+}
+

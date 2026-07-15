@@ -245,7 +245,7 @@
   /* Terminal kodlu cihaz da kayıt güncellemelerini ana kullanıcı yetkisiyle Edge Function üzerinden yapar. */
   supabaseUpsertRecord = async function supabaseUpsertRecordCloud(record) {
     const api = suiteSyncApi();
-    if (!api?.edge) throw new Error("Suite bulut servisi hazır değil.");
+    if (!api?.edge) throw new Error("Orman İO bulut servisi hazır değil.");
     const folder = effectiveRecordSeflik(record);
     return api.edge("istif_record_upsert", {
       seflik: folder.seflik,
@@ -272,6 +272,7 @@
         drive_files: Array.isArray(record.driveFiles) ? record.driveFiles : [],
         is_sent: recordSent(record),
         sent_at: recordSent(record) ? record.sentAt || null : null,
+        sent_by: recordSent(record) ? record.sentBy || null : null,
         created_at: record.createdAt || new Date().toISOString(),
         updated_at: new Date().toISOString(),
       },
@@ -280,7 +281,7 @@
 
   async function fetchLatestRemoteRecordCloud(record) {
     const api = suiteSyncApi();
-    if (!api?.edge) throw new Error("Suite bulut servisi hazır değil.");
+    if (!api?.edge) throw new Error("Orman İO bulut servisi hazır değil.");
     const folder = effectiveRecordSeflik(record);
     let out;
     try {

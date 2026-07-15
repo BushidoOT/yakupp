@@ -31,7 +31,7 @@
     if (document.getElementById("suiteIstifCssV10")) return;
     const s = document.createElement("style");
     s.id = "suiteIstifCssV10";
-    s.textContent = `#bootOverlay,.boot-overlay,[data-action="refresh-shared"],[data-action="connect-drive"],[data-action="disconnect-drive"],[data-action="sync"],.drive-card,.drive-security,.foresters-card,[data-action="pick-ormanci"]{display:none!important}.suite-istif-note-v10{margin:10px 0;padding:11px 13px;border-radius:13px;background:#edf7f0;color:#28543d;font:700 12px/1.45 system-ui}.suite-istif-toast-v10{position:fixed;left:50%;bottom:100px;transform:translateX(-50%);z-index:2147483600;max-width:calc(100vw - 28px);padding:10px 13px;border-radius:13px;background:#174a32;color:#fff;font:750 12px/1.35 system-ui;box-shadow:0 12px 30px #0003}.suite-istif-toast-v10.bad{background:#8e2d2d}`;
+    s.textContent = `#bootOverlay,.boot-overlay,[data-action="refresh-shared"],[data-action="connect-drive"],[data-action="disconnect-drive"],[data-action="sync"],.drive-card,.drive-security,.foresters-card,[data-action="pick-ormanci"]{display:none!important}.suite-istif-note-v10{margin:10px 0;padding:11px 13px;border-radius:13px;background:#edf7f0;color:#28543d;font:700 12px/1.45 system-ui}.suite-istif-toast-v10{position:fixed;left:50%;bottom:100px;transform:translateX(-50%);z-index:2147483600;max-width:calc(100vw - 28px);padding:10px 13px;border-radius:13px;background:#174a32;color:#fff;font:750 12px/1.35 system-ui;box-shadow:0 12px 30px #0003}.suite-istif-toast-v10.bad{background:#8e2d2d}.suite-create-division-v10{width:100%;min-height:46px;margin:8px 0 2px;border:1px solid #d6a21d;border-radius:14px;background:#fff4cf;color:#6d4b00;font:900 13px/1 system-ui;display:flex;align-items:center;justify-content:center;gap:7px}.suite-create-division-v10:active{transform:scale(.985)}`;
     document.head.appendChild(s);
   }
   const fold = (v) => clean(v).toLocaleLowerCase("tr-TR").replace(/ç/g,"c").replace(/ğ/g,"g").replace(/ı/g,"i").replace(/ö/g,"o").replace(/ş/g,"s").replace(/ü/g,"u").replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"");
@@ -40,14 +40,27 @@
   function selectBolme(no){const sel=currentBolmeSelect();if(!sel)return;let opt=Array.from(sel.options).find((x)=>fold(x.value)===fold(no));if(!opt){opt=document.createElement("option");opt.value=no;opt.textContent=no;sel.insertBefore(opt,sel.querySelector('option[value="__suite_create_division__"]')||null);}sel.value=opt.value;sel.__suiteLastRealValue=opt.value;sel.dispatchEvent(new Event("input",{bubbles:true}));sel.dispatchEvent(new Event("change",{bubbles:true}));}
   async function createDivisionFromIstif(){
     const api=window.MesahaSuiteSyncV24||window.MesahaSuiteSyncV22||window.MesahaSuiteSyncV21||window.MesahaSuiteSyncV19||window.MesahaSuiteSyncV18||window.MesahaSuiteSyncV17||window.MesahaSuiteSyncV14||window.MesahaSuiteSyncV13||window.MesahaSuiteSyncV12||window.MesahaSuiteSyncV11||window.MesahaSuiteSyncV10||window.MesahaSuiteSyncV9||window.MesahaSuiteSyncV8;
-    if(!api||typeof api.createOfflineDivision!=="function")return notify("Suite bölme sistemi hazır değil.",true);
+    if(!api||typeof api.createOfflineDivision!=="function")return notify("Orman İO bölme sistemi hazır değil.",true);
     const no=clean(prompt("Yeni bölme numarasını yazın:"));if(!no)return;
     const loc=clean(prompt("Mevki / açıklama (isteğe bağlı):")||"");
     try{const out=api.createOfflineDivision(no,loc,{source:"istif-new"});patchBolmeSelector();selectBolme(out.division.bolme_no||no);notify(out.created?`Bölme ${no} offline oluşturuldu.`:`Bölme ${no} zaten vardı; aynı bölme seçildi.`);}
     catch(e){notify(clean(e&&e.message||e),true);}
   }
+  function ensureCreateDivisionButton(){
+    const sel=currentBolmeSelect();if(!sel)return;
+    const row=sel.closest(".field-row")||sel.parentElement;
+    if(!row||document.getElementById("suiteCreateDivisionBtnV10"))return;
+    const btn=document.createElement("button");
+    btn.id="suiteCreateDivisionBtnV10";
+    btn.className="suite-create-division-v10";
+    btn.type="button";
+    btn.innerHTML='<span aria-hidden="true">＋</span> Offline Bölme Oluştur';
+    btn.addEventListener("click",function(e){e.preventDefault();e.stopPropagation();createDivisionFromIstif();});
+    row.insertAdjacentElement("afterend",btn);
+  }
   function patchBolmeSelector(){
     const sel=currentBolmeSelect();if(!sel)return;
+    ensureCreateDivisionButton();
     let add=sel.querySelector('option[value="__suite_create_division__"]');
     if(!add){
       const selected=sel.value;
@@ -106,9 +119,10 @@
       )
       .forEach((x) => (x.style.display = "none"));
     document.querySelectorAll("button,a").forEach((el) => {
+      if (el.id === "suiteCreateDivisionBtnV10") return;
       const t = clean(el.textContent).toLocaleLowerCase("tr-TR");
       if (
-        /şeflik oluştur|şeflik sil|ormancı ekle|ormancı çıkar|bölme oluştur|bölme sil|drive bağla|bağlantıyı kaldır|şeflikleri yenile/.test(
+        /şeflik oluştur|şeflik sil|ormancı ekle|ormancı çıkar|bölme sil|drive bağla|bağlantıyı kaldır|şeflikleri yenile/.test(
           t,
         )
       )
@@ -120,7 +134,7 @@
       n.id = "suiteIstifNoteV8";
       n.className = "suite-istif-note-v10";
       n.textContent =
-        "Şeflik, personel, bölme, Drive, yedek ve senkronizasyon işlemleri Suite ana menüsünden yönetilir. İstif İO içinde yalnızca Suite’ten gelen şeflik ve bölme seçenekleri kullanılır; kullanıcı kimliği otomatik uygulanır.";
+        "Şeflik, personel, bölme, Drive, yedek ve senkronizasyon işlemleri Orman İO ana menüsünden yönetilir. İstif İO içinde yalnızca Orman İO’dan gelen şeflik ve bölme seçenekleri kullanılır; kullanıcı kimliği otomatik uygulanır.";
       settings.insertBefore(n, settings.firstChild);
     }
   }
@@ -138,6 +152,7 @@
         hide();
         hideForesterUi();
         patchBolmeSelector();
+        ensureCreateDivisionButton();
         const api = window.MesahaSuiteSyncV24 || window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8;
         if (api) api.updateButton();
       } finally { applying = false; }

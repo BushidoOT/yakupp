@@ -1,31 +1,31 @@
 (function (root) {
   "use strict";
   const DATA = /*MESAHA_RELEASE_DATA_START*/{
-  "build": 32,
-  "version": "32.0.0",
+  "build": 43,
+  "version": "43.0.0",
   "channel": "stable",
-  "releasedAt": "2026-07-15T20:30:00+03:00",
-  "assetToken": "stable-20260715-1",
-  "cacheName": "yakupp-suite-shell-stable-20260715-1",
+  "releasedAt": "2026-07-16T01:32:00+03:00",
+  "assetToken": "orman-io-stable-20260716-5",
+  "cacheName": "orman-io-shell-stable-20260716-5",
   "apps": {
     "suite": {
-      "label": "Mesaha Suite",
-      "version": "32.0.0"
+      "label": "Orman İO",
+      "version": "43.0.0"
     },
     "mesaha": {
       "label": "Mesaha İO",
-      "version": "5.84"
+      "version": "5.88"
     },
     "istif": {
       "label": "İstif İO",
-      "version": "0.3.12"
+      "version": "0.3.14"
     },
     "admin": {
-      "label": "Mesaha Suite Yönetim",
-      "version": "32.0.0"
+      "label": "Orman İO Yönetim",
+      "version": "42.0.0"
     }
   },
-  "description": "Tek merkez sürüm yönetimi, görünür sürüm etiketlerinin kaldırılması ve yönetim raporu oturum düzeltmesi."
+  "description": "iOS çap ve boy kısayolları tek touchstart akışına alınarak donma ve klavye kapanması giderildi; Mesaha uygulamasındaki yüzen Senkronize Et düğmesi kaldırıldı, Orman İO ve İstif tarafında korunmaya devam edildi."
 }/*MESAHA_RELEASE_DATA_END*/;
   const APP_NAMES = DATA.apps || {};
   const SCRIPT_URL = (() => {
@@ -37,7 +37,7 @@
   })();
 
   function appInfo(name) {
-    return APP_NAMES[name] || APP_NAMES.suite || { label: "Mesaha Suite", version: DATA.version };
+    return APP_NAMES[name] || APP_NAMES.suite || { label: "Orman İO", version: DATA.version };
   }
 
   function buildVersionObject(name) {
@@ -45,9 +45,9 @@
     return Object.freeze({
       version: String(info.version || DATA.version || "stable"),
       build: Number(DATA.build || 0),
-      visibleVersion: String(info.label || "Mesaha Suite"),
-      shortVersion: String(info.label || "Mesaha Suite"),
-      app: String(info.label || "Mesaha Suite"),
+      visibleVersion: String(info.label || "Orman İO"),
+      shortVersion: String(info.label || "Orman İO"),
+      app: String(info.label || "Orman İO"),
       cacheName: String(DATA.cacheName || "yakupp-suite-shell-stable"),
       assetToken: String(DATA.assetToken || "stable"),
       channel: String(DATA.channel || "stable")
@@ -87,11 +87,19 @@
 
   async function fetchRemote(options) {
     const settings = options && typeof options === "object" ? options : {};
-    const response = await fetch(SCRIPT_URL + (SCRIPT_URL.includes("?") ? "&" : "?") + "remote=" + Date.now(), {
-      cache: "no-store",
-      signal: settings.signal,
-      headers: { "Cache-Control": "no-cache" }
-    });
+    const ownController = !settings.signal && typeof AbortController !== "undefined" ? new AbortController() : null;
+    const signal = settings.signal || (ownController && ownController.signal) || undefined;
+    const timeout = ownController ? setTimeout(() => { try { ownController.abort(); } catch (_) {} }, 6500) : 0;
+    let response;
+    try {
+      response = await fetch(SCRIPT_URL + (SCRIPT_URL.includes("?") ? "&" : "?") + "remote=" + Date.now(), {
+        cache: "no-store",
+        signal,
+        headers: { "Cache-Control": "no-cache" }
+      });
+    } finally {
+      if (timeout) clearTimeout(timeout);
+    }
     if (!response.ok) throw new Error("Güncelleme merkezi alınamadı.");
     const remote = parse(await response.text());
     const appName = settings.app || (root.MESAHA_VERSION && root.MESAHA_VERSION.app === "İstif İO" ? "istif" : "mesaha");

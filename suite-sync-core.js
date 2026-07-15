@@ -29,6 +29,7 @@
     folderCache: "mesaha_seflik_folder_cache_v529",
     syncTokens: "mesaha_suite_sync_tokens_v19",
     serverDeletedMesaha: "mesaha_suite_server_deleted_v28",
+    istifTombstones: "deleted-records-v1",
   };
 
   const clean = (v) =>
@@ -124,6 +125,19 @@
       bolme: clean(p.bolmeNo || t.bolmeNo || st.bolmeNo),
       google: !!s.access_token,
     };
+  }
+  function cloudSyncAllowed() {
+    const t = terminal();
+    const id = identity();
+    return !!(id.google || (t && t.source === "pair_code" && (t.terminalCode || t.terminalToken || t.pairedUserId)));
+  }
+  function floatingSyncAllowed() {
+    let path = "";
+    try { path = String(location.pathname || "").toLowerCase(); } catch (_) {}
+    /* Mesaha ekranında yüzen senkron düğmesi kullanılmaz. Senkronizasyon
+       Orman İO ana ekranından veya İstif uygulamasından yönetilir. */
+    if (/\/mesaha(?:\/|$)/.test(path)) return false;
+    return cloudSyncAllowed();
   }
   function authHeaders() {
     const s = session();
@@ -360,13 +374,13 @@
     s.textContent = `
       #suiteFloatDockV8{position:fixed;left:max(8px,env(safe-area-inset-left));right:max(8px,env(safe-area-inset-right));bottom:var(--suite-float-bottom-v8,max(10px,env(safe-area-inset-bottom)));z-index:2147482500;display:none;align-items:center;justify-content:space-between;gap:6px;pointer-events:none;transition:bottom .14s ease,opacity .14s ease,transform .14s ease}
       #suiteFloatDockV8.is-visible{display:flex;opacity:1;transform:translateY(0)}
-      #suiteFloatDockV8>button{pointer-events:auto;height:36px!important;min-height:36px!important;max-height:36px!important;flex:none;border:1px solid rgba(255,255,255,.72);border-radius:10px;padding:0 8px!important;display:none;align-items:center;justify-content:center;gap:4px;font:850 9.5px/1 system-ui!important;box-shadow:0 6px 15px rgba(9,45,29,.16);touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+      #suiteFloatDockV8>button{pointer-events:auto;height:42px!important;min-height:42px!important;max-height:42px!important;flex:none;border:1px solid rgba(255,255,255,.72);border-radius:12px;padding:0 11px!important;display:none;align-items:center;justify-content:center;gap:6px;font:900 11.5px/1 system-ui!important;box-shadow:0 6px 15px rgba(9,45,29,.16);touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
       #suiteFloatDockV8>button.is-visible{display:flex}
       #suiteSyncFabV8{width:126px;background:#174a32;color:#fff}
-      #suiteHomeButtonV8{width:86px;margin-left:auto;background:rgba(255,255,255,.98);color:#174a32}
+      #suiteHomeButtonV8{width:122px;margin-left:auto;background:rgba(255,255,255,.98);color:#174a32}
       #suiteSyncFabV8 .suite-sync-icon{font-size:13px;line-height:1}
       #suiteSyncFabCountV8{min-width:17px;height:17px;padding:0 4px;display:none;place-items:center;border-radius:99px;background:#fff;color:#174a32;font-size:9px}
-      @media(max-width:430px){#suiteFloatDockV8>button{height:34px!important;min-height:34px!important;max-height:34px!important;padding:0 7px!important;font-size:9px!important}#suiteSyncFabV8{width:118px}#suiteHomeButtonV8{width:80px}#suiteFloatDockV8{gap:5px}}
+      @media(max-width:430px){#suiteFloatDockV8>button{height:40px!important;min-height:40px!important;max-height:40px!important;padding:0 9px!important;font-size:10.5px!important}#suiteSyncFabV8{width:124px}#suiteHomeButtonV8{width:112px}#suiteFloatDockV8{gap:5px}}
     `;
     document.head.appendChild(s);
   }
@@ -467,7 +481,12 @@
     btn.addEventListener("click", fire, { capture: true });
   }
   function installButton() {
-    if (document.getElementById("suiteSyncFabV8")) return;
+    const existing = document.getElementById("suiteSyncFabV8");
+    if (!floatingSyncAllowed()) {
+      if (existing && existing.parentNode) existing.parentNode.removeChild(existing);
+      return;
+    }
+    if (existing) return;
     const b = document.createElement("button");
     b.id = "suiteSyncFabV8";
     b.type = "button";
@@ -483,7 +502,7 @@
       b = document.createElement("button");
       b.id = "suiteHomeButtonV8";
       b.type = "button";
-      b.innerHTML = '<span aria-hidden="true">⌂</span><b>Suite</b>';
+      b.innerHTML = '<span aria-hidden="true">⌂</span><b>Orman İO</b>';
       getDock().appendChild(b);
       reliablePress(
         b,
@@ -498,6 +517,12 @@
     return b;
   }
   function updateButton() {
+    if (!floatingSyncAllowed()) {
+      const stale = document.getElementById("suiteSyncFabV8");
+      if (stale && stale.parentNode) stale.parentNode.removeChild(stale);
+      positionDock();
+      return;
+    }
     const b = document.getElementById("suiteSyncFabV8");
     if (!b) return;
     const count =
@@ -747,7 +772,7 @@
   }
   function createOfflineDivision(bolmeNo, location, options) {
     const af = activeFolder();
-    if (!af) throw new Error("Önce Suite ana menüsünden şeflik seçin");
+    if (!af) throw new Error("Önce Orman İO ana menüsünden şeflik seçin");
     const no = clean(bolmeNo), loc = clean(location), key = clean(af.seflik_key || af.seflikKey) || fold(af.seflik);
     if (!no) throw new Error("Bölme numarasını yazın");
     const store = read(K.divisions, {}), ready = read(K.ready, {}), list = Array.isArray(store[key]) ? store[key] : [];
@@ -913,7 +938,7 @@
       const rows = mergeMesahaRows(remoteRows, localRows).map((r) => ({ ...r, seflik, bolmeNo: bolme, bolme_no: bolme }));
       const token = stableSyncToken(seflik, bolme, rows);
       for (let i = 0; i < rows.length; i += 150)
-        await edge("seflik_folder_push", { seflik, bolmeNo: bolme, syncToken: token, records: rows.slice(i, i + 150), appVersion: (window.MesahaRelease?.telemetry("suite") || "Mesaha Suite"), mergeMode: "barcode" });
+        await edge("seflik_folder_push", { seflik, bolmeNo: bolme, syncToken: token, records: rows.slice(i, i + 150), appVersion: (window.MesahaRelease?.telemetry("suite") || "Orman İO"), mergeMode: "barcode" });
       let backup = null, driveError = "";
       try {
         if (id.google)
@@ -929,7 +954,7 @@
         totalVolume: rows.reduce((sum, r) => sum + volume(r), 0),
         driveFileId: (backup && backup.fileId) || "", driveFileName: (backup && backup.fileName) || "",
         driveStatus: backup ? "saved" : id.google ? "error" : "not_connected", driveError,
-        appVersion: (window.MesahaRelease?.telemetry("suite") || "Mesaha Suite"), mergeMode: "barcode",
+        appVersion: (window.MesahaRelease?.telemetry("suite") || "Orman İO"), mergeMode: "barcode",
       });
       clearStableSyncToken(seflik, bolme);
       done += rows.length;
@@ -940,7 +965,7 @@
   }
   function openDb() {
     return new Promise((resolve, reject) => {
-      const q = indexedDB.open("mesaha-istif-prototype", 1);
+      const q = indexedDB.open("mesaha-istif-prototype", 2);
       q.onerror = () => reject(q.error);
       q.onupgradeneeded = () => {
         const db = q.result;
@@ -1001,6 +1026,53 @@
       tx.onerror = () => { db.close(); rej(tx.error); };
     });
   }
+
+  function tombstoneItems(value) {
+    const source = value && typeof value === "object" ? value : {};
+    return source.items && typeof source.items === "object" ? source.items : source;
+  }
+  async function istifTombstoneIds() {
+    const settings = await idbAll("settings");
+    const row = settings.find((item) => item && item.key === K.istifTombstones);
+    return new Set(Object.keys(tombstoneItems(row && row.value)).map(clean).filter(Boolean));
+  }
+  async function deleteIstifWithTombstone(record, reason) {
+    const id = clean(record && record.id);
+    if (!id) return false;
+    const db = await openDb();
+    return new Promise((res, rej) => {
+      if (!db.objectStoreNames.contains("records") || !db.objectStoreNames.contains("settings")) {
+        db.close();
+        return rej(new Error("İstif silme deposu hazır değil"));
+      }
+      const tx = db.transaction(["records", "settings"], "readwrite");
+      const settingsStore = tx.objectStore("settings");
+      const get = settingsStore.get(K.istifTombstones);
+      get.onsuccess = () => {
+        const previous = get.result && get.result.value;
+        const items = { ...tombstoneItems(previous) };
+        const deletedAt = now();
+        items[id] = {
+          id,
+          deletedAt,
+          seflikKey: clean(record.seflikKey || record.seflik_key),
+          seflik: clean(record.seflik),
+          bolme: clean(record.bolme || record.bolmeNo || record.bolme_no),
+          istifNo: clean(record.istifNo || record.istif_no),
+          reason: clean(reason || "server_authoritative_missing"),
+        };
+        tx.objectStore("records").delete(id);
+        settingsStore.put({
+          key: K.istifTombstones,
+          value: { version: 1, updatedAt: deletedAt, items },
+        });
+      };
+      get.onerror = () => rej(get.error);
+      tx.oncomplete = () => { db.close(); res(true); };
+      tx.onerror = () => { db.close(); rej(tx.error); };
+      tx.onabort = () => { db.close(); rej(tx.error || new Error("İstif silme izi yazılamadı")); };
+    });
+  }
   function dataUrlFromPhoto(photo) {
     if (!photo) return Promise.resolve("");
     if (typeof photo.dataUrl === "string")
@@ -1054,7 +1126,12 @@
   }
 
   async function syncIstif() {
-    const all = (await idbAll("records")).filter((r) => r && !r.isDemo),
+    const deletedIds = await istifTombstoneIds();
+    const raw = (await idbAll("records")).filter((r) => r && !r.isDemo);
+    for (const record of raw) {
+      if (deletedIds.has(clean(record.id))) await idbDelete("records", record.id);
+    }
+    const all = raw.filter((r) => !deletedIds.has(clean(r.id))),
       rows = all.filter((r) => r.syncStatus !== "synced");
     if (!rows.length) {
       clearDirty("istif");
@@ -1171,6 +1248,7 @@
             drive_files: r.driveFiles || [],
             is_sent: !!(r.isSent || r.is_sent),
             sent_at: r.sentAt || null,
+            sent_by: r.sentBy || r.sent_by || null,
             created_at: r.createdAt || now(),
             updated_at: now(),
           },
@@ -1289,12 +1367,17 @@
       out = await drive("record_list", { seflik, seflikKey });
     }
 
+    const deletedIds = await istifTombstoneIds();
     const remote = (Array.isArray(out && out.records) ? out.records : [])
       .map(normalizeRemoteIstifRecord)
-      .filter(Boolean);
+      .filter((record) => record && !deletedIds.has(clean(record.id)));
     const authoritative = out && out.complete !== false && out.truncated !== true;
 
-    const local = await idbAll("records");
+    const rawLocal = await idbAll("records");
+    for (const record of rawLocal) {
+      if (record && deletedIds.has(clean(record.id))) await idbDelete("records", record.id);
+    }
+    const local = rawLocal.filter((record) => record && !deletedIds.has(clean(record.id)));
     const byId = new Map(local.map((record) => [clean(record && record.id), record]));
     const remoteIds = new Set(remote.map((record) => clean(record.id)));
     let changed = 0;
@@ -1304,7 +1387,8 @@
       const sameFolder = (seflikKey && localKey === seflikKey) || (seflik && fold(localRecord.seflik) === fold(seflik));
       const pending = clean(localRecord.syncStatus) && clean(localRecord.syncStatus) !== "synced";
       if (sameFolder && !pending) {
-        await idbDelete("records", localRecord.id);
+        await deleteIstifWithTombstone(localRecord, "server_authoritative_missing");
+        deletedIds.add(clean(localRecord.id));
         byId.delete(clean(localRecord.id));
         changed++;
       }
@@ -1348,7 +1432,19 @@
   let syncing = false;
   let autoRetryTimer = 0;
   let autoRetryAttempt = 0;
+  function stopGuestSync() {
+    clearTimeout(autoRetryTimer);
+    autoRetryTimer = 0;
+    autoRetryAttempt = 0;
+    const button = document.getElementById("suiteSyncFabV8");
+    if (button && button.parentNode) button.parentNode.removeChild(button);
+    positionDock();
+  }
   function scheduleAutoRetry(delayMs = 15000, reset = false) {
+    if (!cloudSyncAllowed()) {
+      stopGuestSync();
+      return;
+    }
     if (navigator.onLine === false) return;
     if (reset) autoRetryAttempt = 0;
     clearTimeout(autoRetryTimer);
@@ -1371,6 +1467,10 @@
     if (text) text.textContent = label || (active ? "Senkronize ediliyor" : "Senkronize Et");
   }
   async function syncAll(opts) {
+    if (!cloudSyncAllowed()) {
+      stopGuestSync();
+      return { ok: false, skipped: true, authRequired: true, guest: true };
+    }
     if (syncing) {
       toast("Senkronizasyon zaten devam ediyor.");
       return { ok: false, busy: true };
@@ -1647,7 +1747,15 @@
         dispatch();
       });
     });
-    window.addEventListener("mesaha-istif:changed", () => markDirty("istif"));
+    window.addEventListener("mesaha-istif:changed", (event) => {
+      // Sunucu silmesi tamamlandıktan sonra yazılan tombstone yeni bir yükleme
+      // kuyruğu değildir; yalnız ekran ve sağlık özetini yeniler.
+      if (event && event.detail && event.detail.tombstone === true) {
+        dispatch();
+        return;
+      }
+      markDirty("istif");
+    });
     window.addEventListener("focusin", queueDockPosition, true);
     window.addEventListener(
       "focusout",
@@ -1667,10 +1775,21 @@
         positionDock();
       }, 450),
     );
-    window.addEventListener("online", () => { updateButton(); scheduleAutoRetry(1800, true); });
+    window.addEventListener("online", () => {
+      updateButton();
+      if (cloudSyncAllowed()) scheduleAutoRetry(1800, true);
+      else stopGuestSync();
+    });
     window.addEventListener("offline", () => { updateButton(); clearTimeout(autoRetryTimer); });
     document.addEventListener("visibilitychange", () => {
-      if (document.visibilityState === "visible" && navigator.onLine !== false && isDirty()) scheduleAutoRetry(2500, true);
+      if (
+        document.visibilityState === "visible" &&
+        navigator.onLine !== false &&
+        isDirty() &&
+        cloudSyncAllowed()
+      )
+        scheduleAutoRetry(2500, true);
+      else if (!cloudSyncAllowed()) stopGuestSync();
     });
     const mo = new MutationObserver((mutations) => {
       if (mutations.some((mutation) => mutation.type === "childList"))
@@ -1689,6 +1808,7 @@
     markDirty,
     clearDirty,
     isDirty,
+    canCloudSync: cloudSyncAllowed,
     syncAll,
     driveStatus,
     ensureDriveConnected,
@@ -1738,7 +1858,9 @@
     watchStorage();
     dispatch();
     updateButton();
-    if (navigator.onLine !== false && isDirty()) scheduleAutoRetry(4200, true);
+    if (navigator.onLine !== false && isDirty() && cloudSyncAllowed())
+      scheduleAutoRetry(4200, true);
+    else if (!cloudSyncAllowed()) stopGuestSync();
   }
   if (document.readyState === "loading")
     document.addEventListener("DOMContentLoaded", boot, { once: true });

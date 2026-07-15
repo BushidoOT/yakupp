@@ -83,9 +83,10 @@
     selectedYieldStats = null;
 
   const TELEGRAM_URL = "https://telegram.me/+LpsvthN4BM5kYWI0";
+  const YOUTUBE_URL = "https://youtube.com/shorts/4yRRIRNptro?si=EgpHz-hQmnxFuqu2";
   const TELEGRAM_DAY_KEY = "mesaha_suite_telegram_daily_v12";
   const CURRENT_SUITE_BUILD = Number(window.MESAHA_RELEASE?.build || window.MESAHA_VERSION?.build || 0);
-  const CURRENT_SUITE_LABEL = "Mesaha Suite";
+  const CURRENT_SUITE_LABEL = "Orman İO";
   let latestSuiteVersion = null, updateApplying = false, pendingDivisionDelete = null;
 
   function updateVersionCorner(remote) {
@@ -120,7 +121,14 @@
     updateVersionCorner(latestSuiteVersion);
     if (navigator.onLine === false) return false;
     try {
-      const response = await fetch("./release.js?update_check=" + Date.now(), { cache: "no-store", headers: { "Cache-Control": "no-cache" } });
+      const controller = typeof AbortController !== "undefined" ? new AbortController() : null;
+      const timer = setTimeout(() => { try { controller && controller.abort(); } catch (_) {} }, 5500);
+      let response;
+      try {
+        response = await fetch("./release.js?update_check=" + Date.now(), { cache: "no-store", signal: controller ? controller.signal : undefined, headers: { "Cache-Control": "no-cache" } });
+      } finally {
+        clearTimeout(timer);
+      }
       if (!response.ok) throw new Error("Güncelleme bilgisi alınamadı");
       const remote = window.MesahaRelease.parse(await response.text());
       const build = Number(remote && remote.build || 0);
@@ -173,7 +181,7 @@
         worker = navigator.serviceWorker.controller || reg.active || reg.waiting || worker;
         setUpdateProgress(58, "Offline uygulama dosyaları yenileniyor…");
         if (worker) {
-          try { await workerMessage(worker, "CACHE_ALL", 120000); } catch (_) {}
+          try { workerMessage(worker, "WARM_CACHE", 45000).catch(() => {}); } catch (_) {}
         }
       }
       setUpdateProgress(100, "Güncelleme tamamlandı. Uygulama yeniden açılıyor…");
@@ -219,7 +227,18 @@
   }
 
   function session() {
-    return read(K.session, null) || read(K.backup, null) || {};
+    const cached = read(K.session, null) || read(K.backup, null) || {};
+    if (cached && cached.access_token) return cached;
+    try {
+      const api = window.mesahaSupabase || window.mesahaCloud || null;
+      const live = api && typeof api.getStoredSession === "function" ? api.getStoredSession() : null;
+      if (live && live.access_token) {
+        write(K.session, live);
+        write(K.backup, { ...live, backup_at: Date.now() });
+        return live;
+      }
+    } catch (_) {}
+    return cached || {};
   }
   function access() {
     return read(K.access, {}) || {};
@@ -313,7 +332,7 @@
     try {
       const out = await supabaseRpc("mesaha_create_terminal_code_v557", {
         p_label: "terminal",
-        p_app_version: window.MesahaRelease?.telemetry("suite") || "Mesaha Suite",
+        p_app_version: window.MesahaRelease?.telemetry("suite") || "Orman İO",
       });
       const t = out.terminal || out || {},
         code = clean(t.code),
@@ -504,15 +523,24 @@
     };
     write(K.yieldTargets, all);
   }
+  const ISTIF_TOMBSTONE_SETTING_KEY = "deleted-records-v1";
+  let istifDeletedIdsForYield = new Set();
+  function istifTombstoneIds(value) {
+    const source = value && typeof value === "object" ? value : {};
+    const items = source.items && typeof source.items === "object" ? source.items : source;
+    return new Set(Object.keys(items || {}).map(clean).filter(Boolean));
+  }
   function readIstifRecords() {
     return new Promise((resolve) => {
       try {
-        const request = indexedDB.open("mesaha-istif-prototype", 1);
+        const request = indexedDB.open("mesaha-istif-prototype", 2);
         request.onerror = () => resolve([]);
         request.onupgradeneeded = () => {
           const db = request.result;
           if (!db.objectStoreNames.contains("records"))
             db.createObjectStore("records", { keyPath: "id" });
+          if (!db.objectStoreNames.contains("settings"))
+            db.createObjectStore("settings", { keyPath: "key" });
         };
         request.onsuccess = () => {
           const db = request.result;
@@ -520,23 +548,33 @@
             db.close();
             return resolve([]);
           }
-          const tx = db.transaction("records", "readonly");
-          const q = tx.objectStore("records").getAll();
-          q.onsuccess = () => {
-            const rows = Array.isArray(q.result) ? q.result : [];
-            db.close();
-            resolve(rows);
+          const stores = db.objectStoreNames.contains("settings")
+            ? ["records", "settings"]
+            : ["records"];
+          const tx = db.transaction(stores, "readonly");
+          const rowsRequest = tx.objectStore("records").getAll();
+          const tombstoneRequest = stores.includes("settings")
+            ? tx.objectStore("settings").get(ISTIF_TOMBSTONE_SETTING_KEY)
+            : null;
+          tx.oncomplete = () => {
+            const rows = Array.isArray(rowsRequest.result) ? rowsRequest.result : [];
+            const deletedIds = istifTombstoneIds(tombstoneRequest?.result?.value);
+            istifDeletedIdsForYield = deletedIds;
+            try { db.close(); } catch {}
+            resolve(rows.filter((row) => row && !deletedIds.has(clean(row.id))));
           };
-          q.onerror = () => {
-            db.close();
+          tx.onerror = () => {
+            try { db.close(); } catch {}
             resolve([]);
           };
+          tx.onabort = tx.onerror;
         };
       } catch (_) {
         resolve([]);
       }
     });
   }
+
   async function divisionYieldStats(bolme) {
     const no = clean(bolme), af = activeFolder(), seflik = clean(af && af.seflik);
     const localMesaha = read(K.mesahaRecords, []);
@@ -590,7 +628,8 @@
           });
           remoteIstifAuthoritative = out.complete !== false && out.truncated !== true;
           remoteIstif = (Array.isArray(out && out.records) ? out.records : []).filter((r) =>
-            clean(r.bolme_no || r.bolme || r.bolmeNo) === no,
+            clean(r.bolme_no || r.bolme || r.bolmeNo) === no &&
+            !istifDeletedIdsForYield.has(clean(r.id || r.record_id)),
           );
         }
       } catch (_) {}
@@ -655,34 +694,19 @@
   function toast(msg, bad = false) {
     const el = $("toast");
     if (!el) return;
-    el.textContent = msg;
+    const message = String(msg == null ? "" : msg);
+    try {
+      if (window.OrmanIoAudio && (bad || window.OrmanIoAudio.shouldWarn(message, bad ? "bad" : "")))
+        window.OrmanIoAudio.warning();
+    } catch (_) {}
+    el.textContent = message;
     el.classList.toggle("bad", bad);
     el.classList.add("show");
     clearTimeout(toast.t);
     toast.t = setTimeout(() => el.classList.remove("show"), 3600);
   }
-  function openModal(id) {
-    closeModals(true);
-    const back = $("modalBackdrop"),
-      m = $(id);
-    if (!back || !m) return;
-    back.hidden = false;
-    m.hidden = false;
-    m.removeAttribute("hidden");
-    back.removeAttribute("hidden");
-    document.body.classList.add("modal-open");
-    if (id === "seflikModal") renderSeflikModal();
-    if (id === "ormanciModal") renderOrmanciModal();
-    if (id === "bolmeModal") renderBolmeModal();
-    if (id === "yieldModal") renderYieldModal();
-    setTimeout(() => {
-      try {
-        const f = m.querySelector("input,button,textarea,select");
-        if (f) f.focus({ preventScroll: true });
-      } catch {}
-    }, 80);
-  }
-  function closeModals(keepBody) {
+  let modalPageScrollY = 0;
+  function hideAllModals() {
     document.querySelectorAll(".modal").forEach((x) => {
       x.hidden = true;
       x.setAttribute("hidden", "");
@@ -692,7 +716,56 @@
       b.hidden = true;
       b.setAttribute("hidden", "");
     }
-    if (!keepBody) document.body.classList.remove("modal-open");
+  }
+  function lockModalPage() {
+    if (document.body.classList.contains("modal-open")) return;
+    modalPageScrollY = Math.max(0, window.scrollY || document.documentElement.scrollTop || 0);
+    document.body.classList.add("modal-open");
+    document.body.style.position = "fixed";
+    document.body.style.top = `-${modalPageScrollY}px`;
+    document.body.style.left = "0";
+    document.body.style.right = "0";
+    document.body.style.width = "100%";
+  }
+  function unlockModalPage() {
+    const wasLocked = document.body.classList.contains("modal-open") || document.body.style.position === "fixed";
+    document.body.classList.remove("modal-open");
+    document.body.style.position = "";
+    document.body.style.top = "";
+    document.body.style.left = "";
+    document.body.style.right = "";
+    document.body.style.width = "";
+    if (wasLocked) {
+      try { window.scrollTo({ top: modalPageScrollY, left: 0, behavior: "auto" }); }
+      catch (_) { window.scrollTo(0, modalPageScrollY); }
+    }
+  }
+  function openModal(id) {
+    hideAllModals();
+    const back = $("modalBackdrop"), m = $(id);
+    if (!back || !m) {
+      unlockModalPage();
+      return;
+    }
+    back.hidden = false;
+    m.hidden = false;
+    m.removeAttribute("hidden");
+    back.removeAttribute("hidden");
+    lockModalPage();
+    if (id === "seflikModal") renderSeflikModal();
+    if (id === "ormanciModal") renderOrmanciModal();
+    if (id === "bolmeModal") renderBolmeModal();
+    if (id === "yieldModal") renderYieldModal();
+    setTimeout(() => {
+      try {
+        const f = m.querySelector("input,button,textarea,select");
+        if (f && !f.disabled && f.offsetParent !== null) f.focus({ preventScroll: true });
+      } catch {}
+    }, 80);
+  }
+  function closeModals() {
+    hideAllModals();
+    unlockModalPage();
   }
   function avatarHTML(url, name, cls = "mini-avatar") {
     const initials =
@@ -747,7 +820,11 @@
   function autoSyncDestructive(label) {
     clearTimeout(destructiveSyncTimer);
     if (!navigator.onLine || !cloudIdentity()) {
-      toast(`${label} cihazda uygulandı. İnternet geldiğinde otomatik senkronize edilecek.`);
+      toast(
+        cloudIdentity()
+          ? `${label} cihazda uygulandı. İnternet geldiğinde senkronize edilecek.`
+          : `${label} cihazda uygulandı. Google veya terminal koduyla giriş yapılana kadar yalnızca cihazda kalır.`,
+      );
       return;
     }
     destructiveSyncTimer = setTimeout(async () => {
@@ -1098,7 +1175,7 @@
   async function writeIstifSharedCache(af, dvs) {
     try {
       if (!("indexedDB" in window)) return;
-      const req = indexedDB.open("mesaha-istif-prototype", 1);
+      const req = indexedDB.open("mesaha-istif-prototype", 2);
       await new Promise((res, rej) => {
         req.onupgradeneeded = () => {
           const db = req.result;
@@ -1212,6 +1289,7 @@
       $("connectionPill").classList.toggle("offline", !navigator.onLine);
     updatePendingBadge();
     renderAuthBox();
+    paintTerminalPairCard();
     renderOpenModals();
     syncAppCaches();
   }
@@ -1287,7 +1365,14 @@
       indexedDB.deleteDatabase("mesaha_io_storage_v527");
     } catch {}
     try {
-      const request = indexedDB.open("mesaha-istif-prototype", 1);
+      const request = indexedDB.open("mesaha-istif-prototype", 2);
+      request.onupgradeneeded = () => {
+        const db = request.result;
+        if (!db.objectStoreNames.contains("records"))
+          db.createObjectStore("records", { keyPath: "id" });
+        if (!db.objectStoreNames.contains("settings"))
+          db.createObjectStore("settings", { keyPath: "key" });
+      };
       request.onsuccess = () => {
         const db = request.result;
         if (!db.objectStoreNames.contains("records")) { db.close(); return; }
@@ -1428,7 +1513,7 @@
       form.insertBefore(note, search || form.firstChild);
     }
     note.textContent = manage
-      ? "Ormancı ekleme ve çıkarma yalnızca Suite üzerinden yapılır."
+      ? "Ormancı ekleme ve çıkarma yalnızca Orman İO üzerinden yapılır."
       : "Bu şeflikte üyesiniz. Ormancı listesinden yalnızca uygulama içindeki seçimlerde yararlanabilirsiniz.";
   }
   function renderBolmeModal() {
@@ -1469,7 +1554,7 @@
       form.insertBefore(note, form.firstChild);
     }
     note.textContent = manage
-      ? "Bölme oluşturma, silme ve offline indirme yalnızca Suite üzerinden yönetilir."
+      ? "Bölme oluşturma, silme ve offline indirme yalnızca Orman İO üzerinden yönetilir."
       : "Bu şeflikte üyesiniz. Bölmeleri silemez veya oluşturamazsınız; hazır bölmeleri indirebilirsiniz.";
   }
   async function logout() {
@@ -1512,6 +1597,52 @@
       toast(e.message, true);
     }
   }
+  function paintTerminalPairCard() {
+    const card = $("suiteTerminalPair"), status = $("terminalPairStatusSuite"), input = $("terminalPairCodeSuite");
+    if (!card) return;
+    const type = authType();
+    // Terminal kodu yalnız ilk açılışta veya elle açılmış yerel misafir modunda görünür.
+    // Google ve daha önce kodla eşleşmiş terminal oturumlarında tekrar gösterilmez.
+    const visible = type === "none" || type === "guest";
+    card.hidden = !visible;
+    card.setAttribute("aria-hidden", visible ? "false" : "true");
+    if (!visible) {
+      card.classList.remove("is-error", "is-busy");
+      if (input) input.value = "";
+      if (status) status.hidden = true;
+      return;
+    }
+    if (input) input.placeholder = type === "guest" ? "Google kullanıcısının terminal kodu" : "A1B2-C3D4";
+    if (status && !card.classList.contains("is-error")) status.hidden = true;
+  }
+  async function claimTerminalFromSuite() {
+    const card = $("suiteTerminalPair"), input = $("terminalPairCodeSuite"), status = $("terminalPairStatusSuite"), button = $("terminalPairSubmitSuite");
+    const code = clean(input && input.value).toUpperCase();
+    if (code.replace(/[^A-Z0-9]/g, "").length < 8) return toast("Geçerli terminal kodunu yazın.", true);
+    if (card) { card.classList.remove("is-error"); card.classList.add("is-busy"); }
+    if (button) { button.disabled = true; button.textContent = "Bağlanıyor…"; }
+    if (status) { status.hidden = false; status.textContent = "Google hesabı ve şeflik bilgileri alınıyor…"; }
+    try {
+      const api = googleAuthApi();
+      if (!api || typeof api.claimTerminalCode !== "function") throw new Error("Terminal giriş modülü hazır değil.");
+      await api.claimTerminalCode(code);
+      if (input) input.value = "";
+      loadLocal();
+      render();
+      closeModals();
+      await loadFolders(true).catch(() => []);
+      render();
+      toast("Terminal cihaz Google kullanıcısına bağlandı.");
+    } catch (error) {
+      if (card) card.classList.add("is-error");
+      if (status) { status.hidden = false; status.textContent = clean(error && error.message || error) || "Terminal kodu doğrulanamadı."; }
+      toast(clean(error && error.message || error) || "Terminal kodu doğrulanamadı.", true);
+    } finally {
+      if (card) card.classList.remove("is-busy");
+      if (button) { button.disabled = false; button.textContent = "Kodla Bağlan"; }
+      paintTerminalPairCard();
+    }
+  }
   async function createSeflik(e) {
     e.preventDefault();
     if (busy) return;
@@ -1542,7 +1673,7 @@
   function renameSeflik() {
     if (!canManageFolder())
       return toast(
-        "Bu işlemi yalnızca şeflik kurucusu Suite üzerinden yapabilir.",
+        "Bu işlemi yalnızca şeflik kurucusu Orman İO üzerinden yapabilir.",
         true,
       );
     const f = creatorFolder();
@@ -1593,7 +1724,7 @@
   function deleteSeflik() {
     if (!canManageFolder())
       return toast(
-        "Bu işlemi yalnızca şeflik kurucusu Suite üzerinden yapabilir.",
+        "Bu işlemi yalnızca şeflik kurucusu Orman İO üzerinden yapabilir.",
         true,
       );
     const f = creatorFolder();
@@ -1657,7 +1788,7 @@
   function addOrmanci(u, btn) {
     if (!canManageFolder())
       return toast(
-        "Bu işlemi yalnızca şeflik kurucusu Suite üzerinden yapabilir.",
+        "Bu işlemi yalnızca şeflik kurucusu Orman İO üzerinden yapabilir.",
         true,
       );
     const af = activeFolder();
@@ -1706,7 +1837,7 @@
   function removeOrmanci(index) {
     if (!canManageFolder())
       return toast(
-        "Bu işlemi yalnızca şeflik kurucusu Suite üzerinden yapabilir.",
+        "Bu işlemi yalnızca şeflik kurucusu Orman İO üzerinden yapabilir.",
         true,
       );
     const af = activeFolder();
@@ -1733,7 +1864,7 @@
   async function createBolme(e) {
     if (!canManageFolder())
       return toast(
-        "Bu işlemi yalnızca şeflik kurucusu Suite üzerinden yapabilir.",
+        "Bu işlemi yalnızca şeflik kurucusu Orman İO üzerinden yapabilir.",
         true,
       );
     e.preventDefault();
@@ -1840,7 +1971,7 @@
     const no = clean(bolmeNo), out = { records: [], istifCount: 0, photoCount: 0 };
     if (!no || !("indexedDB" in window)) return out;
     try {
-      const req = indexedDB.open("mesaha-istif-prototype", 1);
+      const req = indexedDB.open("mesaha-istif-prototype", 2);
       const db = await new Promise((resolve, reject) => {
         req.onupgradeneeded = () => {
           const x = req.result;
@@ -1850,32 +1981,63 @@
         req.onsuccess = () => resolve(req.result);
         req.onerror = () => reject(req.error);
       });
-      const rows = await new Promise((resolve, reject) => {
-        const r = db.transaction("records").objectStore("records").getAll();
-        r.onsuccess = () => resolve(Array.isArray(r.result) ? r.result : []);
-        r.onerror = () => reject(r.error);
+      const stores = db.objectStoreNames.contains("settings") ? ["records", "settings"] : ["records"];
+      const result = await new Promise((resolve, reject) => {
+        const tx = db.transaction(stores, "readonly");
+        const rowsReq = tx.objectStore("records").getAll();
+        const tombReq = stores.includes("settings") ? tx.objectStore("settings").get(ISTIF_TOMBSTONE_SETTING_KEY) : null;
+        tx.oncomplete = () => resolve({ rows: Array.isArray(rowsReq.result) ? rowsReq.result : [], tombstones: tombReq?.result?.value });
+        tx.onerror = () => reject(tx.error);
+        tx.onabort = () => reject(tx.error || new Error("Yerel İstif kayıtları okunamadı"));
       });
       try { db.close(); } catch {}
-      out.records = rows.filter((r) => r && !r.isDemo && clean(r.bolme || r.bolmeNo || r.bolme_no) === no);
+      const deletedIds = istifTombstoneIds(result.tombstones);
+      out.records = result.rows.filter((r) => r && !r.isDemo && !deletedIds.has(clean(r.id)) && clean(r.bolme || r.bolmeNo || r.bolme_no) === no);
       out.istifCount = out.records.length;
       out.photoCount = out.records.reduce((sum, r) => sum + Math.max(Number(r.photoCount || 0) || 0, Array.isArray(r.photos) ? r.photos.length : 0, Array.isArray(r.driveFiles) ? r.driveFiles.length : 0), 0);
     } catch {}
     return out;
   }
+
   async function deleteLocalIstifDivision(bolmeNo) {
     const local = await readLocalIstifDivision(bolmeNo);
     if (!local.records.length || !("indexedDB" in window)) return local;
-    const req = indexedDB.open("mesaha-istif-prototype", 1);
+    const req = indexedDB.open("mesaha-istif-prototype", 2);
     const db = await new Promise((resolve, reject) => { req.onsuccess = () => resolve(req.result); req.onerror = () => reject(req.error); });
     await new Promise((resolve, reject) => {
-      const tx = db.transaction("records", "readwrite"), store = tx.objectStore("records");
-      local.records.forEach((r) => r && r.id != null && store.delete(r.id));
-      tx.oncomplete = resolve; tx.onerror = () => reject(tx.error); tx.onabort = () => reject(tx.error || new Error("Yerel İstif silme tamamlanamadı"));
+      const tx = db.transaction(["records", "settings"], "readwrite");
+      const recordStore = tx.objectStore("records"), settingsStore = tx.objectStore("settings");
+      const tombReq = settingsStore.get(ISTIF_TOMBSTONE_SETTING_KEY);
+      tombReq.onsuccess = () => {
+        const oldValue = tombReq.result?.value || {};
+        const items = { ...((oldValue.items && typeof oldValue.items === "object") ? oldValue.items : oldValue) };
+        const deletedAt = now();
+        local.records.forEach((r) => {
+          if (!r || r.id == null) return;
+          const id = clean(r.id);
+          recordStore.delete(r.id);
+          if (id) items[id] = {
+            id,
+            deletedAt,
+            seflikKey: clean(r.seflikKey || r.seflik_key),
+            seflik: clean(r.seflik),
+            bolme: clean(r.bolme || r.bolmeNo || r.bolme_no),
+            istifNo: clean(r.istifNo || r.istif_no),
+            reason: "division_delete",
+          };
+        });
+        settingsStore.put({ key: ISTIF_TOMBSTONE_SETTING_KEY, value: { version: 1, updatedAt: deletedAt, items } });
+      };
+      tombReq.onerror = () => reject(tombReq.error);
+      tx.oncomplete = resolve;
+      tx.onerror = () => reject(tx.error);
+      tx.onabort = () => reject(tx.error || new Error("Yerel İstif silme tamamlanamadı"));
     });
     try { db.close(); } catch {}
     try { window.dispatchEvent(new CustomEvent("mesaha-istif:division-deleted", { detail: { bolmeNo: clean(bolmeNo), count: local.istifCount } })); } catch {}
     return local;
   }
+
   async function divisionDeletePreview(row) {
     const local = await readLocalIstifDivision(row && row.bolme_no);
     const base = {
@@ -1945,7 +2107,7 @@
   }
 
   function deleteDivision(index) {
-    if (!canManageFolder()) return toast("Bu işlemi yalnızca şeflik kurucusu Suite üzerinden yapabilir.", true);
+    if (!canManageFolder()) return toast("Bu işlemi yalnızca şeflik kurucusu Orman İO üzerinden yapabilir.", true);
     const d = currentDivisions()[index];
     if (!d) return;
     openDivisionDeleteModal(d, index);
@@ -2068,7 +2230,7 @@
         name: id.name || id.email || "Kullanıcı",
         seflik: af?.seflik || id.seflik || "",
         bolmeNo: id.bolme || "",
-        appVersion: window.MesahaRelease?.telemetry("suite") || "Mesaha Suite",
+        appVersion: window.MesahaRelease?.telemetry("suite") || "Orman İO",
         avatarUrl: id.avatar || "",
         deviceId:
           localStorage.getItem("mesaha_suite_device_v7") ||
@@ -2082,7 +2244,7 @@
           })(),
         deviceInfo: {
           appId: "suite",
-          appName: "Mesaha Suite",
+          appName: "Orman İO",
           platform: navigator.platform || "",
           browser: navigator.userAgent || "",
           suiteVersion: String(window.MESAHA_RELEASE?.version || "stable"),
@@ -2144,45 +2306,49 @@
   }
   async function prepareOffline() {
     const online = navigator.onLine !== false;
-    showStartup(online ? "Mesaha Suite hazırlanıyor" : "Offline sürüm açılıyor", online ? "Mesaha İO ve İstif İO dosyaları kontrol ediliyor." : "Cihaza daha önce indirilen uygulama dosyaları doğrulanıyor.", online ? 8 : 15, false);
+    showStartup(online ? "Orman İO hazırlanıyor" : "Offline sürüm açılıyor", online ? "Uygulama açılıyor; çevrimdışı dosyalar arka planda kontrol ediliyor." : "Cihazdaki uygulama dosyaları kontrol ediliyor.", online ? 16 : 22, false);
+    const failOpen = setTimeout(() => {
+      setCacheStatus("Uygulama açıldı • offline hazırlık arka planda sürüyor", 55);
+      closeStartup(0);
+    }, online ? 3200 : 4200);
     if (!("serviceWorker" in navigator)) {
+      clearTimeout(failOpen);
       setCacheStatus("Tarayıcı çevrimdışı kullanımı desteklemiyor", 0);
-      showStartup("Offline hazırlık kullanılamıyor", "Tarayıcınız service worker desteği sunmuyor.", 0, true);
+      closeStartup(350);
       return false;
     }
     try {
       await cleanupNestedWorkers();
-      try { if (navigator.storage && navigator.storage.persist) await navigator.storage.persist(); } catch {}
       const reg = await navigator.serviceWorker.register("./service-worker.js?release=" + encodeURIComponent(window.MESAHA_RELEASE?.assetToken || "stable"), { scope: "./", updateViaCache: "none" });
-      await navigator.serviceWorker.ready;
-      const worker = await waitForActiveWorker(reg, navigator.onLine===false?7000:18000);
-      setCacheStatus("Mesaha İO ve İstif İO dosyaları doğrulanıyor…", 18);
-      let st = await workerMessage(worker, "GET_STATUS", online ? 15000 : 7000);
-      if (online && !st.ready) {
-        setCacheStatus("Eksik uygulama dosyaları indiriliyor…", 35);
-        st = await workerMessage(worker, "CACHE_ALL", 120000);
-        if (!st.ready) {
-          setCacheStatus("Eksik dosyalar yeniden deneniyor…", 72);
-          st = await workerMessage(worker, "REPAIR_CACHE", 120000);
-        }
+      const worker = await Promise.race([
+        waitForActiveWorker(reg, online ? 5000 : 3500),
+        new Promise((resolve) => setTimeout(() => resolve(reg.active || navigator.serviceWorker.controller || null), online ? 5200 : 3700)),
+      ]);
+      let st = { ready: false, criticalMissing: [] };
+      if (worker) {
+        try { st = await workerMessage(worker, "GET_STATUS", online ? 2600 : 1800); } catch (_) {}
       }
       cacheReady = !!st.ready;
+      clearTimeout(failOpen);
       if (cacheReady) {
-        setCacheStatus("İki uygulama kalıcı olarak çevrimdışı kullanıma hazır", 100);
-        showStartup(online ? "Uygulamalar hazır" : "Offline sürüm hazır", online ? "Mesaha Suite ve iki uygulama kullanıma hazır." : "İnternet olmadan kayıtlı son verilerle devam ediliyor. Ekran 5 saniye içinde açılacak.", 100, false);
-        closeStartup(online ? 300 : 5000);
-      } else if (!online) {
-        setCacheStatus("Offline sürüm eksik • internet bağlantısı gerekli", 25);
-        showStartup("Offline sürüm eksik", "Bu cihazda iki uygulamanın tamamı indirilmemiş. İnternete bağlanıp Suite'i bir kez açın.", 25, true);
+        setCacheStatus("Mesaha İO ve İstif İO çevrimdışı kullanıma hazır", 100);
+        closeStartup(180);
       } else {
-        const missing=Number(st.missingCount || st.missing?.length || 0);
-        setCacheStatus(`Offline hazırlık eksik • ${missing} dosya`, 78);
-        showStartup("Hazırlık tamamlanamadı", `${missing} dosya indirilemedi. Bağlantıyı kontrol edip tekrar deneyin.`, 78, true);
+        const criticalMissing = Array.isArray(st.criticalMissing) ? st.criticalMissing.length : 0;
+        setCacheStatus(online ? "Uygulama açık • offline dosyalar arka planda hazırlanıyor" : criticalMissing ? "Offline dosyaların bir kısmı eksik" : "Cihazdaki son sürüm açıldı", online ? 62 : 45);
+        closeStartup(250);
+        if (online && worker) {
+          setTimeout(() => { workerMessage(worker, "WARM_CACHE", 45000).then((result) => {
+            cacheReady = !!result.ready;
+            setCacheStatus(cacheReady ? "İki uygulama çevrimdışı kullanıma hazır" : "Offline hazırlık daha sonra devam edecek", cacheReady ? 100 : 72);
+          }).catch(() => {}); }, 50);
+        }
       }
       return cacheReady;
     } catch (e) {
-      setCacheStatus("Offline hazırlık tamamlanamadı", 20);
-      showStartup(navigator.onLine===false?"Offline sürüm açılamadı":"Bağlantı hatası", clean(e&&e.message||e)||"Uygulama dosyaları hazırlanamadı.", 20, true);
+      clearTimeout(failOpen);
+      setCacheStatus("Uygulama açıldı • offline hazırlık sonra yeniden denenecek", 40);
+      closeStartup(250);
       return false;
     }
   }
@@ -2294,6 +2460,44 @@
     input.focus();
   }
 
+  function guideModalHtml() {
+    return `
+      <div class="suite-guide-modal-grid">
+        <section class="suite-guide-panel suite-guide-panel-mesaha">
+          <div class="suite-guide-panel-head">
+            <strong>Mesaha Gir</strong>
+            <small>Hızlı mesaha kullanımı</small>
+          </div>
+          <ol>
+            <li><b>Mesaha Gir</b> kartına dokunup giriş ekranını açın.</li>
+            <li>Ağaç türü, ürün türü, boy, çap ve barkod bilgilerini girin.</li>
+            <li><b>Kaydet</b> diyerek ölçüyü cihaza kaydedin.</li>
+            <li><b>Ölçümler</b> sekmesinden kayıtları görüntüleyin, düzeltin veya silin.</li>
+            <li><b>Mesaha Dosyasını İndir</b> ve <b>Beyan İndir</b> ile çıktı alın.</li>
+            <li>Şeflik için önce Orman İO’dan bölmeyi offline indirip sonra <b>Şefliğe Gönder</b> kullanın.</li>
+          </ol>
+        </section>
+        <section class="suite-guide-panel suite-guide-panel-istif">
+          <div class="suite-guide-panel-head">
+            <strong>İstif Al</strong>
+            <small>İstif ve fotoğraf kullanımı</small>
+          </div>
+          <ol>
+            <li><b>İstif Al</b> kartına dokunup uygulamayı açın.</li>
+            <li>Orman İO’dan gelen uygun şeflik ve bölmeyi seçin.</li>
+            <li>Yeni istif kaydı oluşturup fotoğrafı çekin ve bilgileri girin.</li>
+            <li>Kayıtları cihazda güvenle saklayın; internet varsa buluta da gönderilir.</li>
+            <li>Fotoğraflar otomatik inmez; gerekirse <b>İstifi Buluttan Getir</b> kullanın.</li>
+            <li>Bekleyen kayıtları topluca göndermek için Orman İO’daki <b>Senkronizasyon</b> ve <b>Sunucuya Gönder</b> düğmelerini kullanın.</li>
+          </ol>
+        </section>
+      </div>
+      <div class="suite-guide-note-box">
+        <strong>Kısa Not</strong>
+        <p>Şeflik, bölme, Drive ve genel senkron işlemleri Orman İO ana menüsünden yönetilir. Yardım gerekirse Telegram destek grubunu kullanabilirsiniz.</p>
+      </div>`;
+  }
+
   function handleAction(target, ev) {
     if (!target) return false;
     const modal = target.getAttribute("data-modal"),
@@ -2312,6 +2516,7 @@
       id === "notificationButton" ||
       id === "googleLoginBtn" ||
       id === "guestLoginBtn" ||
+      id === "terminalPairSubmitSuite" ||
       id === "createTerminalCodeSuite" ||
       id === "refreshTerminalDevicesSuite" ||
       id === "yieldSaveButton" ||
@@ -2356,6 +2561,14 @@
       prepareOffline();
       return true;
     }
+    if (tool === "guide") {
+      showInfo(
+        "Kılavuz",
+        guideModalHtml(),
+        "YARDIM"
+      );
+      return true;
+    }
     if (id === "suiteUpdateButton") {
       if (latestSuiteVersion) { paintUpdateModal(latestSuiteVersion); openModal("suiteUpdateModal"); }
       else checkSuiteUpdate(true);
@@ -2388,13 +2601,13 @@
       return true;
     }
     if (tool === "admin") {
-      location.href = "./mesaha/yonetim/";
+      location.href = "./yonetim/";
       return true;
     }
     if (tool === "about") {
       showInfo(
-        "Mesaha Suite",
-        `<p>Google veya terminal/misafir oturumu iki uygulamada ortak kullanılır.</p><p><b>Bekleyen işlem:</b> ${pendingOps.length}</p><p>Bölmeler offline indirildikten sonra Mesaha İO ve İstif İO’da kayıt eklemeye hazır olur.</p>`,
+        "Orman İO",
+        `<p>Google veya terminal/misafir oturumu Mesaha İO ve İstif İO tarafından ortak kullanılır.</p><p><b>Bekleyen işlem:</b> ${pendingOps.length}</p><p>Bölmeler offline indirildikten sonra iki uygulamada kayıt eklemeye hazır olur.</p><div class="about-action-grid"><a class="about-telegram" href="${esc(TELEGRAM_URL)}" target="_blank" rel="noopener">✈ Telegram Destek</a><a class="about-youtube" href="${esc(YOUTUBE_URL)}" target="_blank" rel="noopener">▶ YouTube Anlatım</a></div>`,
       );
       return true;
     }
@@ -2411,6 +2624,10 @@
     }
     if (id === "guestLoginBtn") {
       openGuest();
+      return true;
+    }
+    if (id === "terminalPairSubmitSuite") {
+      claimTerminalFromSuite();
       return true;
     }
     if (id === "createTerminalCodeSuite") {
@@ -2444,6 +2661,7 @@
       }
       return true;
     }
+    if (action === "home-scroll") { window.scrollTo({ top: 0, behavior: "smooth" }); return true; }
     if (action === "rename-seflik") {
       renameSeflik();
       return true;
@@ -2520,9 +2738,19 @@
       },
       { passive: true, capture: true },
     );
-    $("modalBackdrop").onclick = closeModals;
+    const modalBackdrop = $("modalBackdrop");
+    if (modalBackdrop) modalBackdrop.addEventListener("click", (event) => {
+      if (event.target === modalBackdrop) closeModals();
+    }, { passive: true });
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && document.querySelector(".modal:not([hidden])")) closeModals();
+    });
+    window.addEventListener("pageshow", () => {
+      if (!document.querySelector(".modal:not([hidden])")) unlockModalPage();
+    }, { passive: true });
     $("suiteStartupRetry")?.addEventListener("click",()=>prepareOffline());
     $("legacyBackupSearch")?.addEventListener("input", renderLegacyBackups);
+    $("terminalPairCodeSuite")?.addEventListener("keydown", (event) => { if (event.key === "Enter") { event.preventDefault(); claimTerminalFromSuite(); } });
     $("seflikForm").onsubmit = createSeflik;
     $("ormanciForm").onsubmit = searchOrmanci;
     $("bolmeForm").onsubmit = createBolme;
@@ -2596,9 +2824,10 @@
     loadLocal();
     bind();
     render();
-    showStartup(navigator.onLine===false?"Offline sürüm açılıyor":"Mesaha Suite hazırlanıyor",navigator.onLine===false?"Cihazdaki çevrimdışı uygulama dosyaları kontrol ediliyor.":"Mesaha İO ve İstif İO çevrimdışı kullanım için hazırlanıyor.",8,false);
+    showStartup(navigator.onLine===false?"Offline sürüm açılıyor":"Orman İO hazırlanıyor",navigator.onLine===false?"Cihazdaki çevrimdışı uygulama dosyaları kontrol ediliyor.":"Mesaha İO ve İstif İO çevrimdışı kullanım için hazırlanıyor.",8,false);
     setCacheStatus("Offline uygulama dosyaları kontrol ediliyor", 8);
     setTimeout(() => prepareOffline(), 30);
+    setTimeout(() => closeStartup(0), 5200);
     if (location.hash && /access_token=|error=/.test(location.hash)) {
       try {
         const api = googleAuthApi();
@@ -2609,6 +2838,14 @@
     }
     setTimeout(() => loadFolders().then(render), 40);
     setTimeout(pingAdminProfile, 700);
+    try {
+      const query = new URLSearchParams(location.search);
+      if (query.get("open") === "account") {
+        query.delete("open");
+        history.replaceState({}, "", location.pathname + (query.toString() ? "?" + query : "") + location.hash);
+        setTimeout(() => openModal("loginModal"), 180);
+      }
+    } catch (_) {}
   }
   if (document.readyState === "loading")
     document.addEventListener("DOMContentLoaded", init, { once: true });
