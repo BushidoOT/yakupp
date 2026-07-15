@@ -50,13 +50,12 @@
             <span class="orman-welcome-label" id="welcomeLabel">Hoş geldin,</span>
             <h1 id="ormanWelcomeTitle"><span id="profileName">Giriş yapılmadı</span> <span aria-hidden="true">👋</span></h1>
             <p>Mesaha ve istif çalışmalarınızı hızlı, güvenli ve ortak şekilde yönetin.</p>
-            <span class="orman-office" id="profileOffice"><svg viewBox="0 0 24 24"><path d="M4 21V9l8-5 8 5v12M9 21v-6h6v6" /></svg> Şeflik seçilmedi</span>
           </div>
           <div class="orman-hero-status">
             <span id="heroSystemStatus"><i></i>Sistem sağlıklı</span>
             <span id="heroServerStatus"><i></i>Sunucu kontrol ediliyor</span>
             <span id="heroBackupStatus"><i></i>Yedek durumu</span>
-            <button id="suiteHealthDetails" type="button"><svg viewBox="0 0 24 24"><path d="M4 13h3l2-6 4 12 2-6h5" /></svg>Durum Detayları</button>
+            <div class="hero-office-highlight"><small>AKTİF ŞEFLİK</small><strong id="profileOffice">Şeflik seçilmedi</strong></div>
           </div>
         </section>
 
@@ -66,6 +65,24 @@
           <button class="app-card istif-card" data-app="istif" type="button"><span class="app-icon app-icon-gold"><svg viewBox="0 0 64 64"><path d="m32 7 22 11-22 11L10 18 32 7Zm-22 17 19 10v22L10 46V24Zm44 0L35 34v22l19-10V24Z" /></svg></span><span class="app-copy"><h2>İstif İO</h2><p>İstif ve fotoğraf yönetimi</p></span><span class="app-arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" /></svg></span></button>
           <button class="app-card seflik-card" data-modal="seflik" type="button"><span class="app-icon app-icon-blue"><svg viewBox="0 0 64 64"><path d="M7 18h20l6 7h24v28H7z" /></svg></span><span class="app-copy"><h2>Şeflikler</h2><p id="seflikCardSub">Ortak klasör ve bölmeler</p></span><span class="app-arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" /></svg></span></button>
           <button class="app-card admin-card" data-tool="admin" type="button"><span class="app-icon app-icon-purple"><svg viewBox="0 0 64 64"><path d="M13 49V27h9v22M28 49V15h9v34M43 49V23h9v26M9 53h47" /></svg></span><span class="app-copy"><h2>Yönetim</h2><p>Admin paneli ve raporlar</p></span><span class="app-arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" /></svg></span></button>
+        </section>
+
+        <section class="orman-management-tools" aria-label="Yönetim araçları">
+          <div class="orman-management-title"><div><span>YÖNETİM ARAÇLARI</span><h2>Hesap ve saha yönetimi</h2></div><small>Her zaman kullanıma açık</small></div><section class="quick-grid">
+            <button class="quick-card" data-modal="login" data-action="open-login"><span class="quick-icon"><svg viewBox="0 0 24 24"><path d="M10 17l5-5-5-5M15 12H3M14 4h5a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-5" /></svg></span><span><strong id="loginButtonTitle">Giriş Yap</strong><small id="loginButtonSub">Google veya terminal modu</small></span><svg class="chevron" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6" /></svg></button>
+            <button class="quick-card" data-modal="ormanci"><span class="quick-icon"><svg viewBox="0 0 24 24"><path d="M15 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M8.5 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM19 8v6M16 11h6" /></svg></span><span><strong>Ormancı Yönetimi</strong><small>Aktif şefliğe kullanıcı ekleyin</small></span><svg class="chevron" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6" /></svg></button>
+            <button class="quick-card" data-modal="bolme"><span class="quick-icon"><svg viewBox="0 0 24 24"><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6ZM9 3v15M15 6v15" /></svg></span><span><strong>Bölme Yönetimi</strong><small>Aktif şefliğe bölme oluşturun</small></span><svg class="chevron" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6" /></svg></button>
+          </section>
+          <section class="tool-strip">
+            <button data-tool="settings"><svg viewBox="0 0 24 24"><path d="M12 15.5A3.5 3.5 0 1 0 12 8a3.5 3.5 0 0 0 0 7.5Z" /></svg><strong>Hesap</strong><small>Oturum bilgileri</small></button>
+            <button data-tool="sync"><svg viewBox="0 0 24 24"><path d="M7 18a4.6 4.6 0 0 1-.8-9.13A6 6 0 0 1 17.5 7.5 4 4 0 1 1 18 18M9 15l3 3 3-3M12 12v6" /></svg><strong>Senkronizasyon</strong><small>Şeflik verilerini yenile</small></button>
+            <button data-tool="updates"><svg viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M5 21h14" /></svg><strong>Offline Hazırlık</strong><small id="cacheToolText">Dosyalar hazırlanıyor</small></button>
+            <button data-tool="server"><svg viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M5 21h14" /></svg><strong>Sunucuya Gönder</strong><small>Yeni işlemleri senkronize et</small></button>
+            <button data-tool="backups" class="drive-tool-button"><svg class="google-drive-logo" viewBox="0 0 64 56"><path fill="#0F9D58" d="M22 2h20l20 34H42z"/><path fill="#F4B400" d="M22 2 2 36l10 18 20-34z"/><path fill="#4285F4" d="M12 54 2 36h40l20 0-10 18z"/></svg><strong>Yedekler</strong><small>Şeflik Kurucu Drive</small></button>
+            <button data-tool="legacy-backups"><svg viewBox="0 0 24 24"><path d="M4 7h16v13H4zM3 4h18v3H3zM9 11h6M12 11v5" /></svg><strong>Eski Yedekler</strong><small>Drive arşivi</small></button>
+            <button data-tool="telegram"><svg viewBox="0 0 24 24"><path d="M21.5 3.2 3.4 10.3c-1.2.5-1.2 1.2-.2 1.5l4.6 1.4 1.8 5.5c.2.7.1 1 .9 1 .6 0 .9-.3 1.2-.6l2.3-2.2 4.8 3.5c.9.5 1.5.2 1.8-.8l3.1-14.8c.4-1.3-.5-1.9-1.7-1.4ZM9.6 12.8l9-5.7c.5-.3.9-.1.5.2l-7.4 6.7-.3 3.1-1.8-4.3Z" /></svg><strong>Telegram</strong><small>Destek grubu</small></button>
+            <button data-tool="about"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7h.01" /></svg><strong>Hakkında</strong><small>Uygulama bilgileri</small></button>
+          </section>
         </section>
 
         <section class="orman-health-card" id="suiteHealthDashboard">
@@ -96,25 +113,6 @@
             <div class="activity-row"><span class="activity-icon">☁</span><div><strong>Drive bağlantısı kontrol ediliyor</strong><small>Şeflik kurucu hesabı</small></div><time>—</time></div>
           </div>
         </section>
-
-        <details class="orman-management-tools">
-          <summary><span>Yönetim araçları</span><small>Hesap, ormancı, bölme ve diğer işlemler</small></summary>
-          <section class="quick-grid">
-            <button class="quick-card" data-modal="login" data-action="open-login"><span class="quick-icon"><svg viewBox="0 0 24 24"><path d="M10 17l5-5-5-5M15 12H3M14 4h5a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-5" /></svg></span><span><strong id="loginButtonTitle">Giriş Yap</strong><small id="loginButtonSub">Google veya terminal modu</small></span><svg class="chevron" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6" /></svg></button>
-            <button class="quick-card" data-modal="ormanci"><span class="quick-icon"><svg viewBox="0 0 24 24"><path d="M15 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M8.5 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM19 8v6M16 11h6" /></svg></span><span><strong>Ormancı Yönetimi</strong><small>Aktif şefliğe kullanıcı ekleyin</small></span><svg class="chevron" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6" /></svg></button>
-            <button class="quick-card" data-modal="bolme"><span class="quick-icon"><svg viewBox="0 0 24 24"><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6ZM9 3v15M15 6v15" /></svg></span><span><strong>Bölme Yönetimi</strong><small>Aktif şefliğe bölme oluşturun</small></span><svg class="chevron" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6" /></svg></button>
-          </section>
-          <section class="tool-strip">
-            <button data-tool="settings"><svg viewBox="0 0 24 24"><path d="M12 15.5A3.5 3.5 0 1 0 12 8a3.5 3.5 0 0 0 0 7.5Z" /></svg><strong>Hesap</strong><small>Oturum bilgileri</small></button>
-            <button data-tool="sync"><svg viewBox="0 0 24 24"><path d="M7 18a4.6 4.6 0 0 1-.8-9.13A6 6 0 0 1 17.5 7.5 4 4 0 1 1 18 18M9 15l3 3 3-3M12 12v6" /></svg><strong>Senkronizasyon</strong><small>Şeflik verilerini yenile</small></button>
-            <button data-tool="updates"><svg viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M5 21h14" /></svg><strong>Offline Hazırlık</strong><small id="cacheToolText">Dosyalar hazırlanıyor</small></button>
-            <button data-tool="server"><svg viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M5 21h14" /></svg><strong>Sunucuya Gönder</strong><small>Yeni işlemleri senkronize et</small></button>
-            <button data-tool="backups" class="drive-tool-button"><svg class="google-drive-logo" viewBox="0 0 64 56"><path fill="#0F9D58" d="M22 2h20l20 34H42z"/><path fill="#F4B400" d="M22 2 2 36l10 18 20-34z"/><path fill="#4285F4" d="M12 54 2 36h40l20 0-10 18z"/></svg><strong>Yedekler</strong><small>Şeflik Kurucu Drive</small></button>
-            <button data-tool="legacy-backups"><svg viewBox="0 0 24 24"><path d="M4 7h16v13H4zM3 4h18v3H3zM9 11h6M12 11v5" /></svg><strong>Eski Yedekler</strong><small>Drive arşivi</small></button>
-            <button data-tool="telegram"><svg viewBox="0 0 24 24"><path d="M21.5 3.2 3.4 10.3c-1.2.5-1.2 1.2-.2 1.5l4.6 1.4 1.8 5.5c.2.7.1 1 .9 1 .6 0 .9-.3 1.2-.6l2.3-2.2 4.8 3.5c.9.5 1.5.2 1.8-.8l3.1-14.8c.4-1.3-.5-1.9-1.7-1.4ZM9.6 12.8l9-5.7c.5-.3.9-.1.5.2l-7.4 6.7-.3 3.1-1.8-4.3Z" /></svg><strong>Telegram</strong><small>Destek grubu</small></button>
-            <button data-tool="about"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7h.01" /></svg><strong>Hakkında</strong><small>Uygulama bilgileri</small></button>
-          </section>
-        </details>
 
         <footer class="status-footer"><div class="sync-info"><svg viewBox="0 0 24 24"><path d="M7 18a4.6 4.6 0 0 1-.8-9.13A6 6 0 0 1 17.5 7.5 4 4 0 1 1 18 18" /></svg><span><small>Offline Durumu</small><strong id="lastSync">Hazırlanıyor…</strong><div class="cache-progress"><span id="cacheProgressBar"></span></div></span><span class="sync-check"><svg viewBox="0 0 24 24"><path d="m6 12 4 4 8-8" /></svg></span></div></footer>
       </main>

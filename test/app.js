@@ -661,28 +661,8 @@
     clearTimeout(toast.t);
     toast.t = setTimeout(() => el.classList.remove("show"), 3600);
   }
-  function openModal(id) {
-    closeModals(true);
-    const back = $("modalBackdrop"),
-      m = $(id);
-    if (!back || !m) return;
-    back.hidden = false;
-    m.hidden = false;
-    m.removeAttribute("hidden");
-    back.removeAttribute("hidden");
-    document.body.classList.add("modal-open");
-    if (id === "seflikModal") renderSeflikModal();
-    if (id === "ormanciModal") renderOrmanciModal();
-    if (id === "bolmeModal") renderBolmeModal();
-    if (id === "yieldModal") renderYieldModal();
-    setTimeout(() => {
-      try {
-        const f = m.querySelector("input,button,textarea,select");
-        if (f) f.focus({ preventScroll: true });
-      } catch {}
-    }, 80);
-  }
-  function closeModals(keepBody) {
+  let modalPageScrollY = 0;
+  function hideAllModals() {
     document.querySelectorAll(".modal").forEach((x) => {
       x.hidden = true;
       x.setAttribute("hidden", "");
@@ -692,7 +672,56 @@
       b.hidden = true;
       b.setAttribute("hidden", "");
     }
-    if (!keepBody) document.body.classList.remove("modal-open");
+  }
+  function lockModalPage() {
+    if (document.body.classList.contains("modal-open")) return;
+    modalPageScrollY = Math.max(0, window.scrollY || document.documentElement.scrollTop || 0);
+    document.body.classList.add("modal-open");
+    document.body.style.position = "fixed";
+    document.body.style.top = `-${modalPageScrollY}px`;
+    document.body.style.left = "0";
+    document.body.style.right = "0";
+    document.body.style.width = "100%";
+  }
+  function unlockModalPage() {
+    const wasLocked = document.body.classList.contains("modal-open") || document.body.style.position === "fixed";
+    document.body.classList.remove("modal-open");
+    document.body.style.position = "";
+    document.body.style.top = "";
+    document.body.style.left = "";
+    document.body.style.right = "";
+    document.body.style.width = "";
+    if (wasLocked) {
+      try { window.scrollTo({ top: modalPageScrollY, left: 0, behavior: "auto" }); }
+      catch (_) { window.scrollTo(0, modalPageScrollY); }
+    }
+  }
+  function openModal(id) {
+    hideAllModals();
+    const back = $("modalBackdrop"), m = $(id);
+    if (!back || !m) {
+      unlockModalPage();
+      return;
+    }
+    back.hidden = false;
+    m.hidden = false;
+    m.removeAttribute("hidden");
+    back.removeAttribute("hidden");
+    lockModalPage();
+    if (id === "seflikModal") renderSeflikModal();
+    if (id === "ormanciModal") renderOrmanciModal();
+    if (id === "bolmeModal") renderBolmeModal();
+    if (id === "yieldModal") renderYieldModal();
+    setTimeout(() => {
+      try {
+        const f = m.querySelector("input,button,textarea,select");
+        if (f && !f.disabled && f.offsetParent !== null) f.focus({ preventScroll: true });
+      } catch {}
+    }, 80);
+  }
+  function closeModals() {
+    hideAllModals();
+    unlockModalPage();
   }
   function avatarHTML(url, name, cls = "mini-avatar") {
     const initials =
@@ -2388,7 +2417,7 @@
       return true;
     }
     if (tool === "admin") {
-      location.href = "./mesaha/yonetim/";
+      location.href = "./yonetim/";
       return true;
     }
     if (tool === "about") {
@@ -2521,7 +2550,16 @@
       },
       { passive: true, capture: true },
     );
-    $("modalBackdrop").onclick = closeModals;
+    const modalBackdrop = $("modalBackdrop");
+    if (modalBackdrop) modalBackdrop.addEventListener("click", (event) => {
+      if (event.target === modalBackdrop) closeModals();
+    }, { passive: true });
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && document.querySelector(".modal:not([hidden])")) closeModals();
+    });
+    window.addEventListener("pageshow", () => {
+      if (!document.querySelector(".modal:not([hidden])")) unlockModalPage();
+    }, { passive: true });
     $("suiteStartupRetry")?.addEventListener("click",()=>prepareOffline());
     $("legacyBackupSearch")?.addEventListener("input", renderLegacyBackups);
     $("seflikForm").onsubmit = createSeflik;

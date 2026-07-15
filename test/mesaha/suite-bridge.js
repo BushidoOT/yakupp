@@ -309,7 +309,7 @@
           renderAllBridge();
           refreshFolder(false);
         },
-        "Suite’ten şeflik oluşturun",
+        "Orman İO’dan şeflik oluşturun",
       );
       if (!sel.parentNode) si.parentNode.appendChild(sel);
     }
@@ -337,7 +337,7 @@
         function () {
           setBolme(this.value);
         },
-        "Suite’ten offline bölme oluşturun",
+        "Orman İO’dan offline bölme oluşturun",
       );
       if (!sel.parentNode) bi.parentNode.appendChild(sel);
       if (list.length && !list.includes(cur)) setBolme(list[0]);
@@ -347,7 +347,7 @@
   async function createDivisionFromMesahaFolder(selectEl) {
     const api = window.MesahaSuiteSyncV28 || window.MesahaSuiteSyncV27 || window.MesahaSuiteSyncV26 || window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8;
     if (!api || typeof api.createOfflineDivision !== "function") {
-      notify("Suite bölme sistemi hazır değil.", true);
+      notify("Orman İO bölme sistemi hazır değil.", true);
       return;
     }
     const no = clean(prompt("Yeni bölme numarasını yazın:"));
@@ -449,7 +449,7 @@
     if (suiteSendingV19) return notify("Şefliğe gönderme işlemi devam ediyor.");
     const f = activeFolder(), sel = $("seflikFolderBolmeV528"), no = clean((sel && sel.value) || read(K.settings, {}).bolmeNo),
       api = window.MesahaSuiteSyncV28 || window.MesahaSuiteSyncV27 || window.MesahaSuiteSyncV26 || window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8;
-    if (!f) return notify("Önce Suite ana menüsünden şeflik seçin.", true);
+    if (!f) return notify("Önce Orman İO ana menüsünden şeflik seçin.", true);
     if (!no) return notify("Gönderilecek bölmeyi seçin.", true);
     const raw = read(K.records, []), localRecords = Array.isArray(raw) ? raw : [];
     if (!localRecords.length) return notify("Gönderilecek Mesaha kaydı bulunamadı.", true);
@@ -523,11 +523,11 @@
     host.innerHTML='<div class="mesaha-drive-empty-v10">Drive yedekleri yükleniyor…</div>';
     try{
       const status=api.driveStatus?await api.driveStatus():{connected:true};
-      if(!status.connected){host.innerHTML=status.isOwner===false?'<div class="mesaha-drive-empty-v10">Şeflik kurucusu Google Drive hesabını henüz bağlamadı.</div>':'<div class="mesaha-drive-empty-v10">Şeflik Google Drive hesabı bağlı değil.<br><button class="primary" type="button" data-mesaha-drive-connect-v13>Suite’te Drive Bağla</button></div>';return;}
+      if(!status.connected){host.innerHTML=status.isOwner===false?'<div class="mesaha-drive-empty-v10">Şeflik kurucusu Google Drive hesabını henüz bağlamadı.</div>':'<div class="mesaha-drive-empty-v10">Şeflik Google Drive hesabı bağlı değil.<br><button class="primary" type="button" data-mesaha-drive-connect-v13>Orman İO’da Drive Bağla</button></div>';return;}
       const out=await api.listBackups();const all=Array.isArray(out.items)?out.items:Array.isArray(out.backups)?out.backups:[];backupItemsV10=all.filter((x)=>{const app=clean(x.app_id||x.appId||"").toLowerCase();return !app||app==="mesaha"||app==="suite";});
       if(!backupItemsV10.length){host.innerHTML='<div class="mesaha-drive-empty-v10">Bu şeflik Drive hesabında Mesaha yedeği bulunamadı.</div>';return;}
       host.innerHTML=backupItemsV10.map((x)=>{const id=esc(x.id||x.backup_id),date=new Date(x.created_at||x.createdAt||Date.now()).toLocaleString("tr-TR"),app=clean(x.app_id||x.appId||"mesaha");return `<article class="mesaha-drive-row-v10"><div><strong>${esc(x.file_name||x.fileName||"Mesaha yedeği")}</strong><small>${esc(date)} • ${Number(x.record_count||x.recordCount||0).toLocaleString("tr-TR")} kayıt</small><span>${esc(app)} • ${esc(x.seflik||"")}</span></div><div class="mesaha-drive-row-actions-v10"><button class="primary" type="button" data-mesaha-drive-restore-v10="${id}">Yerel Kayıtlarla Birleştir</button><button type="button" data-mesaha-drive-replace-v10="${id}">Yerine Yükle</button></div></article>`;}).join("");
-    }catch(e){host.innerHTML=`<div class="mesaha-drive-empty-v10">${esc(clean(e&&e.message||e))}<br><small>Kurucuysanız Suite → Oturum Bilgileri bölümünden Drive bağlayın.</small></div>`;}
+    }catch(e){host.innerHTML=`<div class="mesaha-drive-empty-v10">${esc(clean(e&&e.message||e))}<br><small>Kurucuysanız Orman İO → Oturum Bilgileri bölümünden Drive bağlayın.</small></div>`;}
   }
   function openDriveModalV10(){const ov=ensureDriveModalV10();ov.hidden=false;document.body.classList.add("mesaha-drive-modal-open-v10");loadDriveBackupsV10();}
   async function createDriveBackupV10(){const api=(window.MesahaSuiteSyncV28 || window.MesahaSuiteSyncV27 || window.MesahaSuiteSyncV26 || window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8);try{await api.createMesahaBackup({bolmeNo:clean($("seflikFolderBolmeV528")?.value||"")});notify("Mesaha yedeği şeflik kurucusunun Drive hesabına kaydedildi.");await loadDriveBackupsV10();}catch(e){if(e&&(e.code==="DRIVE_NOT_CONNECTED"||e.code==="GOOGLE_REQUIRED")){api.openDriveSetup&&api.openDriveSetup();return;}notify(clean(e&&e.message||e),true);}}
@@ -541,13 +541,13 @@
     if (!box) return;
     if (!f) {
       box.innerHTML =
-        '<div class="seflik-folder-empty">Aktif şeflik bulunamadı.<br><small>Şeflik yönetimini Suite ana menüsünden yapın.</small></div>';
+        '<div class="seflik-folder-empty">Aktif şeflik bulunamadı.<br><small>Şeflik yönetimini Orman İO ana menüsünden yapın.</small></div>';
       if (meta) meta.textContent = "Şeflik seçilmedi";
       updateMetrics([], f);
       return;
     }
     if (!list.length) {
-      box.innerHTML = `<div class="seflik-folder-empty">${navigator.onLine ? "Şeflik kayıtları kontrol ediliyor…" : "Bu şeflik için cihazda kayıtlı bölme yok."}<br><small>${navigator.onLine ? "Sunucu yenilemesi arka planda devam ediyor." : "İnternet geldiğinde Suite üzerinden senkronize edin."}</small></div>`;
+      box.innerHTML = `<div class="seflik-folder-empty">${navigator.onLine ? "Şeflik kayıtları kontrol ediliyor…" : "Bu şeflik için cihazda kayıtlı bölme yok."}<br><small>${navigator.onLine ? "Sunucu yenilemesi arka planda devam ediyor." : "İnternet geldiğinde Orman İO üzerinden senkronize edin."}</small></div>`;
       if (meta)
         meta.textContent = navigator.onLine
           ? "Sunucu kontrol ediliyor"
@@ -737,14 +737,14 @@
       n.id = "suiteManagedNoteV8";
       n.className = "suite-managed-note-v8";
       n.textContent =
-        "Şeflik, ormancı ve bölme düzenlemeleri Suite ana menüsünden yapılır. Şeflik Klasörü kayıtları burada listelenir ve seçilen bölme barkoda göre mevcut Mesaha kayıtlarıyla birleştirilebilir.";
+        "Şeflik, ormancı ve bölme düzenlemeleri Orman İO ana menüsünden yapılır. Şeflik Klasörü kayıtları burada listelenir ve seçilen bölme barkoda göre mevcut Mesaha kayıtlarıyla birleştirilebilir.";
       host.insertBefore(n, host.firstChild);
     }
   }
   function simplifyUserPanelV11() {
     const title=$("userPanelTitleV316"), sub=$("panelSyncTextV316");
     if(title) title.textContent="Temel Bilgiler";
-    if(sub) sub.textContent="Suite tarafından yönetilir";
+    if(sub) sub.textContent="Orman İO tarafından yönetilir";
     ["panelNameV316","panelSeflikV316","panelBolmeV316"].forEach((id)=>{const el=$(id);if(el){el.readOnly=true;el.setAttribute("aria-readonly","true");}});
     ["panelDeviceV316","panelStatsV316","panelSaveV316","panelSyncV316","panelTelegramSectionV515","terminalCodePanelV557","terminalLocalPanelV556","terminalPairPanelV561","mesahaProfileV564","mesahaProfileV565","panelSessionV563"].forEach((id)=>{const el=$(id);if(el)el.style.display="none";});
   }

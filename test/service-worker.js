@@ -69,11 +69,11 @@ const CORE = [
   "./mesaha/manifest.json",
   "./mesaha/suite-bridge.js",
   "./mesaha/temizle.html",
-  "./mesaha/yonetim/admin.css",
-  "./mesaha/yonetim/admin-system-report.css",
-  "./mesaha/yonetim/admin-system-report.js",
-  "./mesaha/yonetim/admin.js",
-  "./mesaha/yonetim/index.html",
+  "./yonetim/admin.css",
+  "./yonetim/admin-system-report.css",
+  "./yonetim/admin-system-report.js",
+  "./yonetim/admin.js",
+  "./yonetim/index.html",
   "./styles.css",
   "./suite-security.js",
   "./suite-cache-reset.js",
@@ -246,7 +246,7 @@ self.addEventListener("activate", (e) =>
         try {
           const url = new URL(client.url);
           const path = url.pathname.replace(/\/+$/, "");
-          const isRoot = !/\/(?:mesaha|istif)(?:\/|$)/i.test(path) && !/\/temizle\.html$/i.test(path);
+          const isRoot = !/\/(?:mesaha|istif|yonetim)(?:\/|$)/i.test(path) && !/\/temizle\.html$/i.test(path);
           if (isRoot && url.searchParams.get("sw_refresh") !== CACHE_TOOL_BUILD) {
             url.searchParams.set("sw_refresh", CACHE_TOOL_BUILD);
             await client.navigate(url.href);
@@ -289,7 +289,7 @@ self.addEventListener("message", (e) => {
 function isSuiteRootNavigation(url) {
   const path = String((url && url.pathname) || "").replace(/\/+$/, "");
   return (
-    !/\/(?:mesaha|istif)(?:\/|$)/i.test(path) &&
+    !/\/(?:mesaha|istif|yonetim)(?:\/|$)/i.test(path) &&
     !/\/temizle\.html$/i.test(path) &&
     !/\/guncelle\.html$/i.test(path)
   );
@@ -317,7 +317,7 @@ async function injectSuiteCacheTool(response, url) {
 function appFallback(url) {
   const p = String((url && url.pathname) || "").replace(/\/+$/, "");
   if (/\/istif(?:\/|$)/.test(p)) return "./istif/index.html";
-  if (/\/mesaha\/yonetim(?:\/|$)/.test(p)) return "./mesaha/yonetim/index.html";
+  if (/\/(?:mesaha\/)?yonetim(?:\/|$)/.test(p)) return "./yonetim/index.html";
   if (/\/mesaha(?:\/|$)/.test(p)) return "./mesaha/index.html";
   return "./index.html";
 }

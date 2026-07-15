@@ -643,7 +643,7 @@ svg {
 }
 .modal-backdrop {
   position: fixed;
-  z-index: 50;
+  z-index: 900;
   inset: 0;
   background: rgba(5, 19, 14, 0.52);
   backdrop-filter: blur(7px);
@@ -651,13 +651,16 @@ svg {
 }
 .modal {
   position: fixed;
-  z-index: 51;
+  z-index: 901;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
   width: min(560px, calc(100vw - 28px));
   max-height: calc(100vh - 40px);
   overflow: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
   background: #fff;
   border-radius: 28px;
   box-shadow: 0 35px 90px rgba(0, 0, 0, 0.3);
@@ -1910,3 +1913,34 @@ body.orman-io-home{background:#edf3f1;padding:0;color:#14241e;min-height:100dvh}
 .status-footer{margin-top:20px}.orman-bottom-nav{position:fixed;left:50%;bottom:0;transform:translateX(-50%);width:min(1180px,100%);height:76px;padding:8px max(18px,env(safe-area-inset-left)) calc(8px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(5,1fr);background:rgba(255,255,255,.97);border-top:1px solid #dfe8e3;z-index:200;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}.orman-bottom-nav button{border:0;background:transparent;color:#52665c;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:10px;font-weight:850;cursor:pointer}.orman-bottom-nav button svg{width:21px;height:21px}.orman-bottom-nav button.active{color:#0d9c9d}
 @media(max-width:760px){body.orman-io-home{background:#f7faf8}.orman-shell{box-shadow:none}.orman-topbar{height:72px;padding:10px 14px}.orman-brand img{width:45px;height:45px}.orman-brand strong{font-size:18px}.orman-brand small{display:none}.orman-topbar .connection-pill{width:42px;padding:0;justify-content:center}.orman-topbar .connection-pill #connectionText{display:none}.orman-top-actions{gap:7px}.orman-content{padding:14px 14px 28px}.orman-welcome-card{min-height:260px;padding:22px;border-radius:20px;background-position:63% center}.orman-welcome-copy h1{font-size:29px}.orman-welcome-copy p{font-size:14px}.orman-hero-status{padding:10px;gap:8px}.orman-hero-status>span{font-size:10px}.orman-hero-status button{width:100%;margin:2px 0 0;justify-content:center}.orman-app-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.orman-app-grid .app-card{min-height:142px;padding:12px 7px;border-radius:16px}.orman-app-grid .app-icon{width:50px;height:50px;border-radius:14px}.orman-app-grid .app-icon svg{width:29px;height:29px}.orman-app-grid .app-copy h2{font-size:12px}.orman-app-grid .app-copy p{font-size:9px}.orman-app-grid .app-arrow{width:25px;height:25px}.orman-section-title h2{font-size:17px}.orman-health-card,.orman-drive-card,.orman-activity-card{padding:14px;border-radius:18px;margin-top:14px}.orman-health-body{grid-template-columns:110px 1fr;gap:11px}.health-score-ring{width:102px;height:102px}.health-score-ring:after{inset:10px}.health-score-ring strong{font-size:25px}.health-score-ring span{font-size:8px}.health-stat-grid>div{grid-template-columns:28px 1fr auto;min-height:56px;padding:9px;column-gap:6px}.health-stat-icon{width:27px;height:27px}.health-stat-grid small{font-size:9px}.health-stat-grid strong{font-size:11px}.orman-card-head{margin-bottom:12px}.orman-card-head h2{font-size:17px}.orman-card-head button{font-size:11px;min-height:36px;padding:0 10px}.orman-drive-card{grid-template-columns:1fr auto;gap:12px}.drive-usage{grid-column:1/-1;grid-row:2}.orman-drive-card>button{grid-column:2;grid-row:1;font-size:11px;padding:0 10px}.activity-row{grid-template-columns:34px 1fr auto;padding:10px}.activity-row strong{font-size:11px}.activity-row small,.activity-row time{font-size:9px}.orman-management-tools summary{padding:14px}.orman-management-tools summary small{display:none}.orman-management-tools .quick-grid{grid-template-columns:1fr}.orman-management-tools .tool-strip{grid-template-columns:repeat(2,minmax(0,1fr))}.orman-bottom-nav{height:72px}.status-footer{display:none}}
 @media(max-width:390px){.orman-topbar .icon-button{display:none}.orman-app-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.orman-app-grid .app-card{min-height:132px}.orman-health-body{grid-template-columns:1fr}.health-score-ring{width:116px;height:116px}.health-stat-grid{grid-template-columns:1fr}.health-stat-grid>div,.health-stat-grid>div:nth-child(2n){border-right:0}.health-stat-grid>div.wide{grid-column:auto}.orman-drive-card{grid-template-columns:1fr}.orman-drive-card>button,.drive-usage{grid-column:1;grid-row:auto}.orman-drive-card>button{justify-content:center}}
+
+
+/* Orman İO ana ekran düzeni — kalıcı yönetim araçları ve güvenli modal */
+body.modal-open{overflow:hidden!important;touch-action:none}
+.modal-backdrop{z-index:900!important;touch-action:none}
+.modal{z-index:901!important;max-height:min(calc(100dvh - 28px),860px)!important;overscroll-behavior:contain!important;-webkit-overflow-scrolling:touch!important;touch-action:pan-y!important}
+.hero-office-highlight{margin-left:auto;min-width:210px;max-width:360px;padding:9px 15px;border-radius:13px;background:rgba(255,255,255,.96);color:#154d34;display:grid;gap:2px;box-shadow:0 7px 20px rgba(0,24,15,.16)}
+.hero-office-highlight small{font-size:9px;letter-spacing:.13em;font-weight:950;color:#5a7f6b}
+.hero-office-highlight strong{font-size:16px;line-height:1.18;font-weight:950;overflow-wrap:anywhere}
+.orman-management-tools{margin-top:22px;background:#fff;border:1px solid #e2ebe6;border-radius:22px;padding:18px;overflow:visible;box-shadow:0 10px 28px rgba(20,58,43,.06)}
+.orman-management-title{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;padding:0 2px 14px;border-bottom:1px solid #edf2ef}
+.orman-management-title span{display:block;color:#168a78;font-size:10px;letter-spacing:.12em;font-weight:950}
+.orman-management-title h2{margin:4px 0 0;color:#173d2d;font-size:19px;line-height:1.15}
+.orman-management-title>small{color:#62766c;font-size:11px;font-weight:800;white-space:nowrap}
+.orman-management-tools .quick-grid,.orman-management-tools .tool-strip{margin:14px 0 0!important;padding:0!important}
+.orman-management-tools .quick-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+.orman-management-tools .tool-strip{grid-template-columns:repeat(4,minmax(0,1fr))!important;border:0!important;background:transparent!important;box-shadow:none!important}
+.orman-management-tools .tool-strip button{background:#f8fbf9!important;border:1px solid #e3ebe6!important;border-radius:15px!important;min-height:108px!important}
+@media(max-width:760px){
+  .orman-hero-status{align-items:stretch!important}
+  .hero-office-highlight{width:100%;max-width:none;min-width:0;margin:2px 0 0;padding:10px 12px}
+  .hero-office-highlight strong{font-size:15px}
+  .orman-management-tools{margin-top:14px;padding:14px;border-radius:18px}
+  .orman-management-title{align-items:flex-start}
+  .orman-management-title h2{font-size:17px}
+  .orman-management-title>small{display:none}
+  .orman-management-tools .quick-grid{grid-template-columns:1fr!important}
+  .orman-management-tools .tool-strip{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .modal{top:max(14px,env(safe-area-inset-top))!important;bottom:max(14px,env(safe-area-inset-bottom))!important;transform:translateX(-50%)!important;max-height:none!important;height:auto!important}
+  body.modal-open .modal:not([hidden]){animation:none!important}
+}

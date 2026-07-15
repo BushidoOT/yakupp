@@ -40,7 +40,7 @@
   function selectBolme(no){const sel=currentBolmeSelect();if(!sel)return;let opt=Array.from(sel.options).find((x)=>fold(x.value)===fold(no));if(!opt){opt=document.createElement("option");opt.value=no;opt.textContent=no;sel.insertBefore(opt,sel.querySelector('option[value="__suite_create_division__"]')||null);}sel.value=opt.value;sel.__suiteLastRealValue=opt.value;sel.dispatchEvent(new Event("input",{bubbles:true}));sel.dispatchEvent(new Event("change",{bubbles:true}));}
   async function createDivisionFromIstif(){
     const api=window.MesahaSuiteSyncV24||window.MesahaSuiteSyncV22||window.MesahaSuiteSyncV21||window.MesahaSuiteSyncV19||window.MesahaSuiteSyncV18||window.MesahaSuiteSyncV17||window.MesahaSuiteSyncV14||window.MesahaSuiteSyncV13||window.MesahaSuiteSyncV12||window.MesahaSuiteSyncV11||window.MesahaSuiteSyncV10||window.MesahaSuiteSyncV9||window.MesahaSuiteSyncV8;
-    if(!api||typeof api.createOfflineDivision!=="function")return notify("Suite bölme sistemi hazır değil.",true);
+    if(!api||typeof api.createOfflineDivision!=="function")return notify("Orman İO bölme sistemi hazır değil.",true);
     const no=clean(prompt("Yeni bölme numarasını yazın:"));if(!no)return;
     const loc=clean(prompt("Mevki / açıklama (isteğe bağlı):")||"");
     try{const out=api.createOfflineDivision(no,loc,{source:"istif-new"});patchBolmeSelector();selectBolme(out.division.bolme_no||no);notify(out.created?`Bölme ${no} offline oluşturuldu.`:`Bölme ${no} zaten vardı; aynı bölme seçildi.`);}
@@ -120,7 +120,7 @@
       n.id = "suiteIstifNoteV8";
       n.className = "suite-istif-note-v10";
       n.textContent =
-        "Şeflik, personel, bölme, Drive, yedek ve senkronizasyon işlemleri Suite ana menüsünden yönetilir. İstif İO içinde yalnızca Suite’ten gelen şeflik ve bölme seçenekleri kullanılır; kullanıcı kimliği otomatik uygulanır.";
+        "Şeflik, personel, bölme, Drive, yedek ve senkronizasyon işlemleri Orman İO ana menüsünden yönetilir. İstif İO içinde yalnızca Orman İO’dan gelen şeflik ve bölme seçenekleri kullanılır; kullanıcı kimliği otomatik uygulanır.";
       settings.insertBefore(n, settings.firstChild);
     }
   }

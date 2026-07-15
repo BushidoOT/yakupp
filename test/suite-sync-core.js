@@ -360,13 +360,13 @@
     s.textContent = `
       #suiteFloatDockV8{position:fixed;left:max(8px,env(safe-area-inset-left));right:max(8px,env(safe-area-inset-right));bottom:var(--suite-float-bottom-v8,max(10px,env(safe-area-inset-bottom)));z-index:2147482500;display:none;align-items:center;justify-content:space-between;gap:6px;pointer-events:none;transition:bottom .14s ease,opacity .14s ease,transform .14s ease}
       #suiteFloatDockV8.is-visible{display:flex;opacity:1;transform:translateY(0)}
-      #suiteFloatDockV8>button{pointer-events:auto;height:36px!important;min-height:36px!important;max-height:36px!important;flex:none;border:1px solid rgba(255,255,255,.72);border-radius:10px;padding:0 8px!important;display:none;align-items:center;justify-content:center;gap:4px;font:850 9.5px/1 system-ui!important;box-shadow:0 6px 15px rgba(9,45,29,.16);touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+      #suiteFloatDockV8>button{pointer-events:auto;height:42px!important;min-height:42px!important;max-height:42px!important;flex:none;border:1px solid rgba(255,255,255,.72);border-radius:12px;padding:0 11px!important;display:none;align-items:center;justify-content:center;gap:6px;font:900 11.5px/1 system-ui!important;box-shadow:0 6px 15px rgba(9,45,29,.16);touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
       #suiteFloatDockV8>button.is-visible{display:flex}
       #suiteSyncFabV8{width:126px;background:#174a32;color:#fff}
-      #suiteHomeButtonV8{width:86px;margin-left:auto;background:rgba(255,255,255,.98);color:#174a32}
+      #suiteHomeButtonV8{width:122px;margin-left:auto;background:rgba(255,255,255,.98);color:#174a32}
       #suiteSyncFabV8 .suite-sync-icon{font-size:13px;line-height:1}
       #suiteSyncFabCountV8{min-width:17px;height:17px;padding:0 4px;display:none;place-items:center;border-radius:99px;background:#fff;color:#174a32;font-size:9px}
-      @media(max-width:430px){#suiteFloatDockV8>button{height:34px!important;min-height:34px!important;max-height:34px!important;padding:0 7px!important;font-size:9px!important}#suiteSyncFabV8{width:118px}#suiteHomeButtonV8{width:80px}#suiteFloatDockV8{gap:5px}}
+      @media(max-width:430px){#suiteFloatDockV8>button{height:40px!important;min-height:40px!important;max-height:40px!important;padding:0 9px!important;font-size:10.5px!important}#suiteSyncFabV8{width:124px}#suiteHomeButtonV8{width:112px}#suiteFloatDockV8{gap:5px}}
     `;
     document.head.appendChild(s);
   }
@@ -483,7 +483,7 @@
       b = document.createElement("button");
       b.id = "suiteHomeButtonV8";
       b.type = "button";
-      b.innerHTML = '<span aria-hidden="true">⌂</span><b>Suite</b>';
+      b.innerHTML = '<span aria-hidden="true">⌂</span><b>Orman İO</b>';
       getDock().appendChild(b);
       reliablePress(
         b,

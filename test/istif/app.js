@@ -1379,7 +1379,7 @@ async function syncSharedContext({ manual = false } = {}) {
   if (navigator.onLine === false) {
     state.auth.status = hasSharedIdentity() ? "cached" : "signed_out";
     if (manual)
-      toast("İnternet yok. Son Suite bilgileri kullanılıyor.");
+      toast("İnternet yok. Son Orman İO bilgileri kullanılıyor.");
     render();
     return;
   }

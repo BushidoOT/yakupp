@@ -3,7 +3,7 @@
   <meta charset="utf-8" /><meta
     name="viewport"
     content="width=device-width,initial-scale=1"
-  /><title>Suite Offline Onarımı</title>
+  /><title>Orman İO Offline Onarımı</title>
   <body
     style="
       font-family: system-ui;
@@ -12,7 +12,7 @@
       color: #153d2b;
     "
   >
-    <h2>Suite offline sistemi onarılıyor…</h2>
+    <h2>Orman İO offline sistemi onarılıyor…</h2>
     <p id="s">Eski alt uygulama worker’ları kaldırılıyor.</p>
     <script>
       (async () => {
@@ -46,7 +46,7 @@
           const w = reg.active || navigator.serviceWorker.controller;
           if (w) w.postMessage({ type: "CACHE_ALL" });
           document.getElementById("s").textContent =
-            "Suite çevrimdışı paketi kuruluyor. Uygulama açılıyor…";
+            "Orman İO çevrimdışı paketi kuruluyor. Uygulama açılıyor…";
           setTimeout(() => location.replace("./?offline_repaired=1"), 1200);
         } catch (e) {
           document.getElementById("s").textContent =
