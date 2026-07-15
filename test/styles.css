@@ -2127,3 +2127,87 @@ body.modal-open{overflow:hidden!important;touch-action:none}
   .guide-panel-title strong{font-size:17px}
   .guide-section-block h3{font-size:15px}
 }
+
+
+.orman-app-grid .app-card.istif-card {
+  background: linear-gradient(145deg, #d59b16 0%, #edb52d 58%, #f2c94c 100%) !important;
+  border-color: rgba(161, 110, 0, 0.70) !important;
+  box-shadow: 0 14px 30px rgba(201, 145, 22, 0.26) !important;
+}
+.orman-app-grid .app-card.istif-card:hover {
+  box-shadow: 0 18px 36px rgba(201, 145, 22, 0.32) !important;
+}
+.orman-app-grid .app-card.istif-card .app-icon-gold {
+  color: #a56b00 !important;
+}
+.drive-usage-track {
+  height: 10px;
+  background: #dbe8e2;
+  border: 1px solid #c9dbd1;
+}
+.drive-usage-track i {
+  min-width: 16px;
+  background: linear-gradient(90deg, #16a085 0%, #29b7a4 100%);
+  box-shadow: 0 0 0 1px rgba(10,111,94,.08) inset;
+}
+.info-content .suite-guide-modal-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+.info-content .suite-guide-panel {
+  border-radius: 18px;
+  padding: 16px;
+  border: 1px solid rgba(0,0,0,.06);
+}
+.info-content .suite-guide-panel-mesaha {
+  background: linear-gradient(180deg, #e4f5e9 0%, #f4fbf6 100%);
+  border-color: #b7dcc0;
+}
+.info-content .suite-guide-panel-istif {
+  background: linear-gradient(180deg, #fff2c7 0%, #fff9e6 100%);
+  border-color: #eed37a;
+}
+.info-content .suite-guide-panel-head {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-bottom: 10px;
+}
+.info-content .suite-guide-panel-head strong {
+  color: #183b2d;
+  font-size: 22px;
+}
+.info-content .suite-guide-panel-head small {
+  color: #5d7368;
+  font-weight: 700;
+}
+.info-content .suite-guide-panel ol {
+  margin: 0;
+  padding-left: 20px;
+  color: #244839;
+}
+.info-content .suite-guide-panel li + li {
+  margin-top: 7px;
+}
+.info-content .suite-guide-note-box {
+  margin-top: 14px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: #f3f8f5;
+  color: #29493c;
+  border: 1px solid #dbe8e1;
+}
+.info-content .suite-guide-note-box strong {
+  display: block;
+  margin-bottom: 6px;
+}
+.info-content .suite-guide-note-box p {
+  margin: 0;
+}
+@media (min-width: 900px) {
+  .info-content .suite-guide-modal-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+

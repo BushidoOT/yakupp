@@ -318,7 +318,7 @@
       if (bar) bar.style.width = percent + "%";
     } else {
       setText("dashboardDriveUsage", health.drive.quotaError || "Alan bilgisi bekleniyor");
-      if (bar) bar.style.width = "0%";
+      if (bar) bar.style.width = "16%";
     }
 
     const activity = document.getElementById("suiteActivityDashboard");
@@ -490,19 +490,9 @@
   }
 
   function installButton() {
-    if (document.getElementById(TOOL_ID)) return true;
-    const strip = document.querySelector(".tool-strip");
-    if (!strip) return false;
-    const button = document.createElement("button");
-    button.id = TOOL_ID;
-    button.type = "button";
-    button.className = "suite-health-tool";
-    button.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13h3l2-6 4 12 2-6h5"/><path d="M5 4h14v16H5z"/></svg><strong>Senkron Sağlığı</strong><small>Bekleyen ve hata durumları</small>';
-    const syncButton = strip.querySelector('[data-tool="sync"]');
-    if (syncButton && syncButton.nextSibling) strip.insertBefore(button, syncButton.nextSibling);
-    else strip.appendChild(button);
-    reliablePress(button, openModal);
-    return true;
+    const oldButton = document.getElementById(TOOL_ID);
+    if (oldButton && oldButton.parentNode) oldButton.parentNode.removeChild(oldButton);
+    return false;
   }
 
   async function sendHealthPing(existingHealth, force) {

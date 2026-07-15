@@ -2451,6 +2451,44 @@
     input.focus();
   }
 
+  function guideModalHtml() {
+    return `
+      <div class="suite-guide-modal-grid">
+        <section class="suite-guide-panel suite-guide-panel-mesaha">
+          <div class="suite-guide-panel-head">
+            <strong>Mesaha Gir</strong>
+            <small>Hızlı mesaha kullanımı</small>
+          </div>
+          <ol>
+            <li><b>Mesaha Gir</b> kartına dokunup giriş ekranını açın.</li>
+            <li>Ağaç türü, ürün türü, boy, çap ve barkod bilgilerini girin.</li>
+            <li><b>Kaydet</b> diyerek ölçüyü cihaza kaydedin.</li>
+            <li><b>Ölçümler</b> sekmesinden kayıtları görüntüleyin, düzeltin veya silin.</li>
+            <li><b>Mesaha Dosyasını İndir</b> ve <b>Beyan İndir</b> ile çıktı alın.</li>
+            <li>Şeflik için önce Orman İO’dan bölmeyi offline indirip sonra <b>Şefliğe Gönder</b> kullanın.</li>
+          </ol>
+        </section>
+        <section class="suite-guide-panel suite-guide-panel-istif">
+          <div class="suite-guide-panel-head">
+            <strong>İstif Al</strong>
+            <small>İstif ve fotoğraf kullanımı</small>
+          </div>
+          <ol>
+            <li><b>İstif Al</b> kartına dokunup uygulamayı açın.</li>
+            <li>Orman İO’dan gelen uygun şeflik ve bölmeyi seçin.</li>
+            <li>Yeni istif kaydı oluşturup fotoğrafı çekin ve bilgileri girin.</li>
+            <li>Kayıtları cihazda güvenle saklayın; internet varsa buluta da gönderilir.</li>
+            <li>Fotoğraflar otomatik inmez; gerekirse <b>İstifi Buluttan Getir</b> kullanın.</li>
+            <li>Bekleyen kayıtları topluca göndermek için Orman İO’daki <b>Senkronizasyon</b> ve <b>Sunucuya Gönder</b> düğmelerini kullanın.</li>
+          </ol>
+        </section>
+      </div>
+      <div class="suite-guide-note-box">
+        <strong>Kısa Not</strong>
+        <p>Şeflik, bölme, Drive ve genel senkron işlemleri Orman İO ana menüsünden yönetilir. Yardım gerekirse Telegram destek grubunu kullanabilirsiniz.</p>
+      </div>`;
+  }
+
   function handleAction(target, ev) {
     if (!target) return false;
     const modal = target.getAttribute("data-modal"),
@@ -2515,13 +2553,11 @@
       return true;
     }
     if (tool === "guide") {
-      const guideSection = $("suiteGuideSection");
-      if (guideSection && typeof guideSection.scrollIntoView === "function") {
-        guideSection.scrollIntoView({ behavior: "smooth", block: "start" });
-        toast("Kılavuz bölümü açıldı.");
-      } else {
-        toast("Kılavuz bölümü bulunamadı.", true);
-      }
+      showInfo(
+        "Kılavuz",
+        guideModalHtml(),
+        "YARDIM"
+      );
       return true;
     }
     if (id === "suiteUpdateButton") {

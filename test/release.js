@@ -1,16 +1,16 @@
 (function (root) {
   "use strict";
   const DATA = /*MESAHA_RELEASE_DATA_START*/{
-  "build": 38,
-  "version": "38.0.0",
+  "build": 39,
+  "version": "39.0.0",
   "channel": "stable",
-  "releasedAt": "2026-07-15T23:55:00+03:00",
-  "assetToken": "orman-io-stable-20260715-6",
-  "cacheName": "orman-io-shell-stable-20260715-6",
+  "releasedAt": "2026-07-16T00:12:00+03:00",
+  "assetToken": "orman-io-stable-20260716-1",
+  "cacheName": "orman-io-shell-stable-20260716-1",
   "apps": {
     "suite": {
       "label": "Orman İO",
-      "version": "38.0.0"
+      "version": "39.0.0"
     },
     "mesaha": {
       "label": "Mesaha İO",
@@ -25,7 +25,7 @@
       "version": "38.0.0"
     }
   },
-  "description": "Mesaha Gir kartı yeşile taşındı, Orman İO uygulama kartları yeşil yapıldı, Senkron Sağlığı kaldırılıp Mesaha Gir ve İstif Al kılavuzu eklendi, Şeflik Klasörü yazıları sadeleştirildi."
+  "description": "Senkron Sağlığı düğmesi kaldırıldı, kılavuz açılır pencereye taşındı, Mesaha Gir yeşil ve İstif Al sarı rehber/palet düzeni yapıldı, İstif Al ana kartı sarıya çevrildi ve Drive kullanım çubuğu görünür hâle getirildi."
 }/*MESAHA_RELEASE_DATA_END*/;
   const APP_NAMES = DATA.apps || {};
   const SCRIPT_URL = (() => {
