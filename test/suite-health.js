@@ -508,6 +508,7 @@
 
   async function sendHealthPing(existingHealth, force) {
     if (navigator.onLine === false || !api() || typeof api().edge !== "function") return false;
+    if (typeof api().canCloudSync === "function" && !api().canCloudSync()) return false;
     const lastPing = Number(localStorage.getItem(LAST_PING_KEY) || localStorage.getItem(LEGACY_LAST_PING_KEY) || 0);
     if (!force && lastPing && Date.now() - lastPing < PING_INTERVAL) return false;
     const health = existingHealth || await collectHealth();

@@ -820,7 +820,11 @@
   function autoSyncDestructive(label) {
     clearTimeout(destructiveSyncTimer);
     if (!navigator.onLine || !cloudIdentity()) {
-      toast(`${label} cihazda uygulandı. İnternet geldiğinde otomatik senkronize edilecek.`);
+      toast(
+        cloudIdentity()
+          ? `${label} cihazda uygulandı. İnternet geldiğinde senkronize edilecek.`
+          : `${label} cihazda uygulandı. Google veya terminal koduyla giriş yapılana kadar yalnızca cihazda kalır.`,
+      );
       return;
     }
     destructiveSyncTimer = setTimeout(async () => {

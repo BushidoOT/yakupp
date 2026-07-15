@@ -2725,6 +2725,18 @@
           const message = String(msg || "").trim();
           if (!message) return;
           try {
+            if (
+              window.MesahaProductionStabilizer &&
+              typeof window.MesahaProductionStabilizer.warning === "function"
+            )
+              window.MesahaProductionStabilizer.warning();
+            else if (
+              window.mesahaSound &&
+              typeof window.mesahaSound.warning === "function"
+            )
+              window.mesahaSound.warning();
+          } catch (_) {}
+          try {
             const fn =
               window.mesahaFloatToastV315 || window.mesahaFloatToastV314;
             if (typeof fn === "function") {
@@ -4094,18 +4106,29 @@
           if (!container || container.__quickChipBoundV542) return;
           container.__quickChipBoundV542 = true;
           container.__quickChipBoundV535 = true;
-          const isIOS =
-            /iPad|iPhone|iPod/i.test(navigator.userAgent || "") ||
-            (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
           const attr = kind === "diameter" ? "data-dia" : "data-len";
+          const targetInputId = kind === "diameter" ? "diameterInput" : "lengthInput";
           const findButton = (ev) =>
             ev.target && ev.target.closest
               ? ev.target.closest("button[" + attr + "]")
               : null;
+          const keepKeyboard = function (ev) {
+            const button = findButton(ev);
+            if (!button || button.disabled || !container.contains(button)) return;
+            /* Butonun varsayılan odak davranışı aktif sayı alanını bulanıklaştırıp
+               mobil klavyeyi kapatıyordu. Dokunma başlangıcında varsayılan odağı
+               engelleyerek iOS ve Android'de klavyeyi kesintisiz koru. */
+            ev.preventDefault();
+            const active = document.activeElement;
+            const input =
+              active && ["diameterInput", "lengthInput", "barcodeInput"].includes(active.id)
+                ? active
+                : $(targetInputId);
+            container.__quickChipFocusV587 = input || null;
+          };
           const apply = function (ev) {
             const button = findButton(ev);
-            if (!button || button.disabled || !container.contains(button))
-              return;
+            if (!button || button.disabled || !container.contains(button)) return;
             const t = Date.now();
             if (
               __quickChipTapV535.button === button &&
@@ -4115,48 +4138,62 @@
             __quickChipTapV535 = { button, at: t };
             ev.preventDefault();
             applyQuickChipV535(kind, button.getAttribute(attr), button);
+            const input = $(targetInputId) || container.__quickChipFocusV587;
+            try {
+              if (input) {
+                input.focus({ preventScroll: true });
+                const p = String(input.value || "").length;
+                if (input.setSelectionRange) input.setSelectionRange(p, p);
+              }
+            } catch (_) {}
           };
-          if (isIOS && window.PointerEvent) {
+          const suppressSyntheticClick = function (ev) {
+            const button = findButton(ev);
+            if (!button) return;
+            if (
+              __quickChipTapV535.button === button &&
+              Date.now() - __quickChipTapV535.at < 900
+            ) {
+              ev.preventDefault();
+              ev.stopPropagation();
+              return;
+            }
+            apply(ev);
+          };
+          if (window.PointerEvent) {
+            container.addEventListener("pointerdown", keepKeyboard, {
+              capture: true,
+              passive: false,
+            });
             container.addEventListener(
               "pointerup",
               function (ev) {
                 if (ev.pointerType !== "mouse") apply(ev);
               },
-              { passive: false },
-            );
-            container.addEventListener(
-              "click",
-              function (ev) {
-                const b = findButton(ev);
-                if (
-                  b &&
-                  __quickChipTapV535.button === b &&
-                  Date.now() - __quickChipTapV535.at < 900
-                ) {
-                  ev.preventDefault();
-                  ev.stopPropagation();
-                }
-              },
               { capture: true, passive: false },
             );
-          } else if (isIOS) {
-            container.addEventListener("touchend", apply, { passive: false });
-            container.addEventListener(
-              "click",
-              function (ev) {
-                const b = findButton(ev);
-                if (
-                  b &&
-                  __quickChipTapV535.button === b &&
-                  Date.now() - __quickChipTapV535.at < 900
-                ) {
-                  ev.preventDefault();
-                  ev.stopPropagation();
-                }
-              },
-              { capture: true, passive: false },
-            );
-          } else container.addEventListener("click", apply, false);
+            container.addEventListener("click", suppressSyntheticClick, {
+              capture: true,
+              passive: false,
+            });
+          } else {
+            container.addEventListener("touchstart", keepKeyboard, {
+              capture: true,
+              passive: false,
+            });
+            container.addEventListener("touchend", apply, {
+              capture: true,
+              passive: false,
+            });
+            container.addEventListener("mousedown", keepKeyboard, {
+              capture: true,
+              passive: false,
+            });
+            container.addEventListener("click", suppressSyntheticClick, {
+              capture: true,
+              passive: false,
+            });
+          }
         }
         function renderQuickChips() {
           const dc = $("diameterChips"),

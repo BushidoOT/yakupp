@@ -1,20 +1,20 @@
 (function (root) {
   "use strict";
   const DATA = /*MESAHA_RELEASE_DATA_START*/{
-  "build": 41,
-  "version": "41.0.0",
+  "build": 42,
+  "version": "42.0.0",
   "channel": "stable",
   "releasedAt": "2026-07-16T01:05:00+03:00",
-  "assetToken": "orman-io-stable-20260716-3",
-  "cacheName": "orman-io-shell-stable-20260716-3",
+  "assetToken": "orman-io-stable-20260716-4",
+  "cacheName": "orman-io-shell-stable-20260716-4",
   "apps": {
     "suite": {
       "label": "Orman İO",
-      "version": "41.0.0"
+      "version": "42.0.0"
     },
     "mesaha": {
       "label": "Mesaha İO",
-      "version": "5.86"
+      "version": "5.87"
     },
     "istif": {
       "label": "İstif İO",
@@ -22,10 +22,10 @@
     },
     "admin": {
       "label": "Orman İO Yönetim",
-      "version": "41.0.0"
+      "version": "42.0.0"
     }
   },
-  "description": "Yayın stabilizasyonu: Drive ana ekran aktarımı düzeltildi, yüzen Kaydet görünür klavye alanına sabitlendi, olumsuz ve silme işlemlerine uyarı sesi eklendi, Orman İO alt menüsü kaldırıldı ve küçük ekran düzeni sıkılaştırıldı."
+  "description": "Mesaha çap ve boy kısayollarında mobil klavye odağı korundu, ürün sınırı ve doğrulama uyarılarında gerçek uyarı WAV sesi güçlendirildi, Google veya terminal kodu olmayan misafirlerde tüm otomatik senkron denemeleri durduruldu."
 }/*MESAHA_RELEASE_DATA_END*/;
   const APP_NAMES = DATA.apps || {};
   const SCRIPT_URL = (() => {

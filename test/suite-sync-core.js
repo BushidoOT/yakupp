@@ -1424,7 +1424,19 @@
   let syncing = false;
   let autoRetryTimer = 0;
   let autoRetryAttempt = 0;
+  function stopGuestSync() {
+    clearTimeout(autoRetryTimer);
+    autoRetryTimer = 0;
+    autoRetryAttempt = 0;
+    const button = document.getElementById("suiteSyncFabV8");
+    if (button && button.parentNode) button.parentNode.removeChild(button);
+    positionDock();
+  }
   function scheduleAutoRetry(delayMs = 15000, reset = false) {
+    if (!cloudSyncAllowed()) {
+      stopGuestSync();
+      return;
+    }
     if (navigator.onLine === false) return;
     if (reset) autoRetryAttempt = 0;
     clearTimeout(autoRetryTimer);
@@ -1447,6 +1459,10 @@
     if (text) text.textContent = label || (active ? "Senkronize ediliyor" : "Senkronize Et");
   }
   async function syncAll(opts) {
+    if (!cloudSyncAllowed()) {
+      stopGuestSync();
+      return { ok: false, skipped: true, authRequired: true, guest: true };
+    }
     if (syncing) {
       toast("Senkronizasyon zaten devam ediyor.");
       return { ok: false, busy: true };
@@ -1751,10 +1767,21 @@
         positionDock();
       }, 450),
     );
-    window.addEventListener("online", () => { updateButton(); scheduleAutoRetry(1800, true); });
+    window.addEventListener("online", () => {
+      updateButton();
+      if (cloudSyncAllowed()) scheduleAutoRetry(1800, true);
+      else stopGuestSync();
+    });
     window.addEventListener("offline", () => { updateButton(); clearTimeout(autoRetryTimer); });
     document.addEventListener("visibilitychange", () => {
-      if (document.visibilityState === "visible" && navigator.onLine !== false && isDirty()) scheduleAutoRetry(2500, true);
+      if (
+        document.visibilityState === "visible" &&
+        navigator.onLine !== false &&
+        isDirty() &&
+        cloudSyncAllowed()
+      )
+        scheduleAutoRetry(2500, true);
+      else if (!cloudSyncAllowed()) stopGuestSync();
     });
     const mo = new MutationObserver((mutations) => {
       if (mutations.some((mutation) => mutation.type === "childList"))
@@ -1773,6 +1800,7 @@
     markDirty,
     clearDirty,
     isDirty,
+    canCloudSync: cloudSyncAllowed,
     syncAll,
     driveStatus,
     ensureDriveConnected,
@@ -1822,7 +1850,9 @@
     watchStorage();
     dispatch();
     updateButton();
-    if (navigator.onLine !== false && isDirty()) scheduleAutoRetry(4200, true);
+    if (navigator.onLine !== false && isDirty() && cloudSyncAllowed())
+      scheduleAutoRetry(4200, true);
+    else if (!cloudSyncAllowed()) stopGuestSync();
   }
   if (document.readyState === "loading")
     document.addEventListener("DOMContentLoaded", boot, { once: true });
