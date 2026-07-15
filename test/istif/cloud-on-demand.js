@@ -272,6 +272,7 @@
         drive_files: Array.isArray(record.driveFiles) ? record.driveFiles : [],
         is_sent: recordSent(record),
         sent_at: recordSent(record) ? record.sentAt || null : null,
+        sent_by: recordSent(record) ? record.sentBy || null : null,
         created_at: record.createdAt || new Date().toISOString(),
         updated_at: new Date().toISOString(),
       },

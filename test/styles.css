@@ -1974,3 +1974,30 @@ body.modal-open{overflow:hidden!important;touch-action:none}
 
 /* Terminal kodu yalnız ilk açılış ve yerel misafir modunda görünür. */
 .suite-terminal-pair[hidden]{display:none!important}
+
+/* Mesaha kartı: ana uygulama paletiyle uyumlu, belirgin yeşil giriş kartı. */
+.orman-app-grid .app-card.mesaha-card {
+  background: linear-gradient(145deg, #12683f 0%, #238b55 58%, #32a867 100%) !important;
+  border-color: rgba(7, 82, 46, 0.72) !important;
+  box-shadow: 0 14px 30px rgba(18, 104, 63, 0.28) !important;
+}
+.orman-app-grid .app-card.mesaha-card:hover {
+  box-shadow: 0 18px 36px rgba(18, 104, 63, 0.34) !important;
+}
+.orman-app-grid .app-card.mesaha-card .app-copy h2,
+.orman-app-grid .app-card.mesaha-card .app-copy p {
+  color: #ffffff !important;
+}
+.orman-app-grid .app-card.mesaha-card .app-copy p {
+  opacity: 0.9;
+}
+.orman-app-grid .app-card.mesaha-card .app-icon-green {
+  background: rgba(255, 255, 255, 0.94) !important;
+  color: #12683f !important;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.72), 0 8px 18px rgba(5, 65, 36, 0.18);
+}
+.orman-app-grid .app-card.mesaha-card .app-arrow {
+  background: rgba(255, 255, 255, 0.18) !important;
+  border-color: rgba(255, 255, 255, 0.42) !important;
+  color: #ffffff !important;
+}

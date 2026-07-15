@@ -29,6 +29,7 @@
     folderCache: "mesaha_seflik_folder_cache_v529",
     syncTokens: "mesaha_suite_sync_tokens_v19",
     serverDeletedMesaha: "mesaha_suite_server_deleted_v28",
+    istifTombstones: "deleted-records-v1",
   };
 
   const clean = (v) =>
@@ -940,7 +941,7 @@
   }
   function openDb() {
     return new Promise((resolve, reject) => {
-      const q = indexedDB.open("mesaha-istif-prototype", 1);
+      const q = indexedDB.open("mesaha-istif-prototype", 2);
       q.onerror = () => reject(q.error);
       q.onupgradeneeded = () => {
         const db = q.result;
@@ -1001,6 +1002,53 @@
       tx.onerror = () => { db.close(); rej(tx.error); };
     });
   }
+
+  function tombstoneItems(value) {
+    const source = value && typeof value === "object" ? value : {};
+    return source.items && typeof source.items === "object" ? source.items : source;
+  }
+  async function istifTombstoneIds() {
+    const settings = await idbAll("settings");
+    const row = settings.find((item) => item && item.key === K.istifTombstones);
+    return new Set(Object.keys(tombstoneItems(row && row.value)).map(clean).filter(Boolean));
+  }
+  async function deleteIstifWithTombstone(record, reason) {
+    const id = clean(record && record.id);
+    if (!id) return false;
+    const db = await openDb();
+    return new Promise((res, rej) => {
+      if (!db.objectStoreNames.contains("records") || !db.objectStoreNames.contains("settings")) {
+        db.close();
+        return rej(new Error("İstif silme deposu hazır değil"));
+      }
+      const tx = db.transaction(["records", "settings"], "readwrite");
+      const settingsStore = tx.objectStore("settings");
+      const get = settingsStore.get(K.istifTombstones);
+      get.onsuccess = () => {
+        const previous = get.result && get.result.value;
+        const items = { ...tombstoneItems(previous) };
+        const deletedAt = now();
+        items[id] = {
+          id,
+          deletedAt,
+          seflikKey: clean(record.seflikKey || record.seflik_key),
+          seflik: clean(record.seflik),
+          bolme: clean(record.bolme || record.bolmeNo || record.bolme_no),
+          istifNo: clean(record.istifNo || record.istif_no),
+          reason: clean(reason || "server_authoritative_missing"),
+        };
+        tx.objectStore("records").delete(id);
+        settingsStore.put({
+          key: K.istifTombstones,
+          value: { version: 1, updatedAt: deletedAt, items },
+        });
+      };
+      get.onerror = () => rej(get.error);
+      tx.oncomplete = () => { db.close(); res(true); };
+      tx.onerror = () => { db.close(); rej(tx.error); };
+      tx.onabort = () => { db.close(); rej(tx.error || new Error("İstif silme izi yazılamadı")); };
+    });
+  }
   function dataUrlFromPhoto(photo) {
     if (!photo) return Promise.resolve("");
     if (typeof photo.dataUrl === "string")
@@ -1054,7 +1102,12 @@
   }
 
   async function syncIstif() {
-    const all = (await idbAll("records")).filter((r) => r && !r.isDemo),
+    const deletedIds = await istifTombstoneIds();
+    const raw = (await idbAll("records")).filter((r) => r && !r.isDemo);
+    for (const record of raw) {
+      if (deletedIds.has(clean(record.id))) await idbDelete("records", record.id);
+    }
+    const all = raw.filter((r) => !deletedIds.has(clean(r.id))),
       rows = all.filter((r) => r.syncStatus !== "synced");
     if (!rows.length) {
       clearDirty("istif");
@@ -1171,6 +1224,7 @@
             drive_files: r.driveFiles || [],
             is_sent: !!(r.isSent || r.is_sent),
             sent_at: r.sentAt || null,
+            sent_by: r.sentBy || r.sent_by || null,
             created_at: r.createdAt || now(),
             updated_at: now(),
           },
@@ -1289,12 +1343,17 @@
       out = await drive("record_list", { seflik, seflikKey });
     }
 
+    const deletedIds = await istifTombstoneIds();
     const remote = (Array.isArray(out && out.records) ? out.records : [])
       .map(normalizeRemoteIstifRecord)
-      .filter(Boolean);
+      .filter((record) => record && !deletedIds.has(clean(record.id)));
     const authoritative = out && out.complete !== false && out.truncated !== true;
 
-    const local = await idbAll("records");
+    const rawLocal = await idbAll("records");
+    for (const record of rawLocal) {
+      if (record && deletedIds.has(clean(record.id))) await idbDelete("records", record.id);
+    }
+    const local = rawLocal.filter((record) => record && !deletedIds.has(clean(record.id)));
     const byId = new Map(local.map((record) => [clean(record && record.id), record]));
     const remoteIds = new Set(remote.map((record) => clean(record.id)));
     let changed = 0;
@@ -1304,7 +1363,8 @@
       const sameFolder = (seflikKey && localKey === seflikKey) || (seflik && fold(localRecord.seflik) === fold(seflik));
       const pending = clean(localRecord.syncStatus) && clean(localRecord.syncStatus) !== "synced";
       if (sameFolder && !pending) {
-        await idbDelete("records", localRecord.id);
+        await deleteIstifWithTombstone(localRecord, "server_authoritative_missing");
+        deletedIds.add(clean(localRecord.id));
         byId.delete(clean(localRecord.id));
         changed++;
       }
@@ -1647,7 +1707,15 @@
         dispatch();
       });
     });
-    window.addEventListener("mesaha-istif:changed", () => markDirty("istif"));
+    window.addEventListener("mesaha-istif:changed", (event) => {
+      // Sunucu silmesi tamamlandıktan sonra yazılan tombstone yeni bir yükleme
+      // kuyruğu değildir; yalnız ekran ve sağlık özetini yeniler.
+      if (event && event.detail && event.detail.tombstone === true) {
+        dispatch();
+        return;
+      }
+      markDirty("istif");
+    });
     window.addEventListener("focusin", queueDockPosition, true);
     window.addEventListener(
       "focusout",

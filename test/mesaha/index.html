@@ -64,10 +64,12 @@
     <script src="./js/mesaha-ios-performance.js"></script>
     <script src="./js/mesaha-utils.js"></script>
     <script src="./js/mesaha-data-guard.js"></script>
+    <script src="./js/mesaha-backup-format.js"></script>
     <script src="./js/mesaha-persistent-store.js"></script>
 
     <script src="./js/mesaha-ios-actions.js"></script>
     <script src="./js/mesaha-stability-core.js"></script>
+    <script src="./js/mesaha-ui-hub.js"></script>
     <script src="./js/mesaha-error-log.js"></script>
     <script src="./js/mesaha-url-cleanup.js"></script>
     <script id="mesaha-v458-user-panel-notes-removed">
@@ -5079,11 +5081,17 @@
           reader.onload = async () => {
             try {
               const data = JSON.parse(reader.result);
-              const records = Array.isArray(data) ? data : data.records;
-              if (!Array.isArray(records)) throw new Error("records yok");
-              const migrated = records.map(migrateRecord).filter(Boolean);
-              const mergedSettings = data.settings
-                ? { ...state.settings, ...data.settings }
+              const backup = window.MesahaBackupFormat
+                ? window.MesahaBackupFormat.extract(data)
+                : {
+                    records: Array.isArray(data) ? data : data.records,
+                    settings: data && data.settings,
+                  };
+              if (!Array.isArray(backup.records))
+                throw new Error("Yedek içinde kayıt listesi bulunamadı.");
+              const migrated = backup.records.map(migrateRecord).filter(Boolean);
+              const mergedSettings = backup.settings
+                ? { ...state.settings, ...backup.settings }
                 : { ...state.settings };
               const result = window.MesahaStorageV527
                 ? await window.MesahaStorageV527.replaceAll(
@@ -6348,7 +6356,13 @@
           return JSON.parse(text);
         }
         async function restoreData(data) {
-          const recs = Array.isArray(data) ? data : data.records;
+          const backup = window.MesahaBackupFormat
+            ? window.MesahaBackupFormat.extract(data)
+            : {
+                records: Array.isArray(data) ? data : data.records,
+                settings: data && data.settings,
+              };
+          const recs = backup.records;
           if (!Array.isArray(recs))
             throw new Error("Yedek içinde kayıt listesi bulunamadı.");
           const s = appState();
@@ -6386,8 +6400,8 @@
             )
             .filter((r) => r.barcode);
           const mergedSettings =
-            data.settings && typeof data.settings === "object"
-              ? Object.assign({}, s.settings || {}, data.settings, {
+            backup.settings && typeof backup.settings === "object"
+              ? Object.assign({}, s.settings || {}, backup.settings, {
                   sameBarcodeMode: false,
                   quantity: "1",
                 })
@@ -8671,1032 +8685,17 @@
       })();
     </script>
     <script id="mesaha-inline-v323-online-firebase">
-      /* v317: Supabase online bağlantı, yönetim güncelleme ve bulut yedek düzeltmesi */
+      /* Eski çevrimiçi motor emekliye ayrıldı. Güncel Hybrid Cloud/Drive köprüsü bu uyumluluk nesnesini doldurur. */
       (function () {
         "use strict";
-        const STORAGE_KEY = "cam_mesaha_kayitlari_v1";
-        const SETTINGS_KEY = "cam_mesaha_ayarlar_v1";
-        const PANEL_USER_KEY = "mesaha_panel_user_v316";
-        const USAGE_KEY = "mesaha_usage_stats_v316";
-        const DEVICE_ID_KEY = "mesaha_cihaz_kodu_v1";
-        const FIREBASE_CONFIG =
-          (window.mesahaSupabaseV380 && window.mesahaSupabaseV380.config) || {};
-        const SDK =
-          (window.mesahaSupabaseV380 && window.mesahaSupabaseV380.sdkVersion) ||
-          "9.23.0";
-        const APP_VERSION =
-          (window.MESAHA_VERSION && window.MESAHA_VERSION.visibleVersion) ||
-          "Mesaha İO";
-        const FILE_VERSION =
-          (window.MESAHA_VERSION && window.MESAHA_VERSION.version) || "local";
-        let readyPromise = null;
-        let lastTick = Date.now();
-        function $(id) {
-          return document.getElementById(id);
-        }
-        function clean(v) {
-          return String(v == null ? "" : v).trim();
-        }
-        function esc(s) {
-          return String(s == null ? "" : s).replace(
-            /[&<>"']/g,
-            (m) =>
-              ({
-                "&": "&amp;",
-                "<": "&lt;",
-                ">": "&gt;",
-                '"': "&quot;",
-                "'": "&#39;",
-              })[m],
-          );
-        }
-        const jsonGet =
-          (window.MesahaUtils && window.MesahaUtils.jsonGet) ||
-          function (k, f) {
-            try {
-              const v = localStorage.getItem(k);
-              return v ? JSON.parse(v) : f;
-            } catch {
-              return f;
-            }
-          };
-        const jsonSet =
-          (window.MesahaUtils && window.MesahaUtils.jsonSet) ||
-          function (k, v) {
-            try {
-              localStorage.setItem(k, JSON.stringify(v));
-              return true;
-            } catch {
-              return false;
-            }
-          };
-        function records() {
-          const r = jsonGet(STORAGE_KEY, []);
-          return Array.isArray(r) ? r : [];
-        }
-        function settings() {
-          return Object.assign(
-            { ekipNot: "", seflik: "", bolmeNo: "" },
-            jsonGet(SETTINGS_KEY, {}),
-          );
-        }
-        function saveSettings(s) {
-          try {
-            if (window.state && window.state.settings)
-              Object.assign(window.state.settings, s || {});
-            if (window.MesahaStorageV527)
-              return window.MesahaStorageV527.saveSettings(
-                window.state && window.state.settings
-                  ? window.state.settings
-                  : s || {},
-                { reason: "panel-settings" },
-              );
-          } catch (e) {}
-          return jsonSet(SETTINGS_KEY, s || {});
-        }
-        function fold(s) {
-          return clean(s)
-            .toLocaleLowerCase("tr-TR")
-            .replace(/[ç]/g, "c")
-            .replace(/[ğ]/g, "g")
-            .replace(/[ı]/g, "i")
-            .replace(/[ö]/g, "o")
-            .replace(/[ş]/g, "s")
-            .replace(/[ü]/g, "u");
-        }
-        function userKey(name, seflik) {
-          return (
-            (fold(name) + "__" + fold(seflik))
-              .replace(/[^a-z0-9_-]+/g, "_")
-              .slice(0, 120) || "bos"
-          );
-        }
-        function trDate() {
-          const d = new Date();
-          d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
-          return d.toISOString().slice(0, 10);
-        }
-        function trText() {
-          return new Date().toLocaleString("tr-TR");
-        }
-        function weekKey(d) {
-          const x = new Date(d);
-          const first = new Date(x.getFullYear(), 0, 1);
-          const days = Math.floor((x - first) / 86400000);
-          return (
-            x.getFullYear() +
-            "-W" +
-            String(Math.ceil((days + first.getDay() + 1) / 7)).padStart(2, "0")
-          );
-        }
-        function getDeviceId() {
-          let id = "";
-          try {
-            id = localStorage.getItem(DEVICE_ID_KEY) || "";
-          } catch {}
-          if (!id) {
-            id = [
-              "cihaz",
-              Date.now().toString(36),
-              Math.random().toString(36).slice(2, 8),
-            ].join("_");
-            try {
-              localStorage.setItem(DEVICE_ID_KEY, id);
-            } catch {}
-          }
-          return id;
-        }
-        function deviceInfo() {
-          const sw = screen && screen.width ? screen.width : "?";
-          const sh = screen && screen.height ? screen.height : "?";
-          return {
-            deviceId: getDeviceId(),
-            userAgent: navigator.userAgent || "",
-            platform: navigator.platform || "",
-            screen: sw + "x" + sh,
-            online: navigator.onLine,
-            appVersion: APP_VERSION,
-            fileVersion: FILE_VERSION,
-          };
-        }
-        function readPanelUser() {
-          const u = jsonGet(PANEL_USER_KEY, {});
-          return {
-            name: clean(u.name),
-            seflik: clean(u.seflik),
-            bolmeNo: clean(u.bolmeNo),
-          };
-        }
-        function writePanelUser(u) {
-          const current = settings();
-          const name = clean(u.name),
-            seflik = clean(u.seflik);
-          const next = Object.assign({}, current, {
-            ekipNot: name,
-            seflik: seflik,
-            bolmeNo: clean(u.bolmeNo) || "",
-          });
-          saveSettings(next);
-          jsonSet(PANEL_USER_KEY, {
-            name: next.ekipNot,
-            seflik: next.seflik,
-            bolmeNo: next.bolmeNo,
-            updatedAt: new Date().toISOString(),
-          });
-          try {
-            localStorage.setItem("mesaha_user_confirmed_v319", "1");
-          } catch {}
-          ["ekipNot", "seflik", "bolmeNo"].forEach((id) => {
-            const el = $(id);
-            if (el) {
-              el.value = next[id] || "";
-              try {
-                el.dispatchEvent(new Event("input", { bubbles: true }));
-              } catch {}
-            }
-          });
-          const badge = $("userBadge");
-          if (badge) {
-            badge.textContent =
-              next.ekipNot && next.seflik
-                ? next.ekipNot + " • " + next.seflik
-                : "Giriş Yap";
-            badge.classList.toggle(
-              "login-needed",
-              !(next.ekipNot && next.seflik),
-            );
-          }
-          return true;
-        }
-        function volume(r) {
-          const d = Number(String(r.diameter || r.cap || 0).replace(",", "."));
-          const l = Number(String(r.length || r.boy || 0).replace(",", "."));
-          const q = Number(r.quantity || r.adet || 1);
-          if (!d || !l) return 0;
-          return ((Math.PI * Math.pow(d / 100, 2)) / 4) * l * q;
-        }
-        function dateMsOf(r) {
-          const raw =
-            r.createdAt ||
-            r.updatedAt ||
-            r.productionDate ||
-            r.uretimTarihi ||
-            "";
-          const ms = Date.parse(raw);
-          return Number.isFinite(ms) ? ms : 0;
-        }
-        function summarize(resetAtMs) {
-          const list = records();
-          const today = trDate();
-          const wk = weekKey(new Date());
-          const active = resetAtMs
-            ? list.filter((r) => dateMsOf(r) > resetAtMs)
-            : list.slice();
-          const sum = {
-            recordCount: active.length,
-            adet: 0,
-            m3: 0,
-            todayRecords: 0,
-            todayM3: 0,
-            weekRecordCount: 0,
-            weekM3: 0,
-            treeTotals: {},
-            productTotals: {},
-          };
-          active.forEach((r) => {
-            const q = Number(r.quantity || r.adet || 1);
-            const m = volume(r);
-            sum.adet += q;
-            sum.m3 += m;
-            const d = (
-              r.productionDate ||
-              r.uretimTarihi ||
-              r.createdAt ||
-              ""
-            ).slice(0, 10);
-            if (d === today) {
-              sum.todayRecords++;
-              sum.todayM3 += m;
-            }
-            if (weekKey(new Date(dateMsOf(r) || Date.now())) === wk) {
-              sum.weekRecordCount++;
-              sum.weekM3 += m;
-            }
-            const tree =
-              clean(r.treeType || r.agacTuru || r.agacAdi || "Belirsiz") ||
-              "Belirsiz";
-            const prod =
-              clean(r.productType || r.odunTuru || r.odunAdi || "Belirsiz") ||
-              "Belirsiz";
-            sum.treeTotals[tree] = (sum.treeTotals[tree] || 0) + m;
-            sum.productTotals[prod] = (sum.productTotals[prod] || 0) + m;
-          });
-          sum.m3 = Number(sum.m3.toFixed(3));
-          sum.todayM3 = Number(sum.todayM3.toFixed(3));
-          sum.weekM3 = Number(sum.weekM3.toFixed(3));
-          return sum;
-        }
-        function loadUsage() {
-          const u = jsonGet(USAGE_KEY, {});
-          const today = trDate();
-          if (u.day !== today) {
-            u.day = today;
-            u.todayLoginCount = 0;
-            u.todayMs = 0;
-          }
-          if (!sessionStorage.getItem("mesaha_v319_login_counted")) {
-            u.todayLoginCount = Number(u.todayLoginCount || 0) + 1;
-            u.totalLoginCount = Number(u.totalLoginCount || 0) + 1;
-            sessionStorage.setItem("mesaha_v319_login_counted", "1");
-          }
-          u.totalMs = Number(u.totalMs || 0);
-          u.todayMs = Number(u.todayMs || 0);
-          u.lastSeen = trText();
-          jsonSet(USAGE_KEY, u);
-          return u;
-        }
-        function flushUsage() {
-          const u = loadUsage();
-          const now = Date.now();
-          const diff = Math.max(0, now - lastTick);
-          lastTick = now;
-          u.totalMs = Number(u.totalMs || 0) + diff;
-          u.todayMs = Number(u.todayMs || 0) + diff;
-          u.lastSeen = trText();
-          u.lastSeenMs = now;
-          jsonSet(USAGE_KEY, u);
-          return u;
-        }
-        function fmtM3(n) {
-          return (
-            Number(n || 0).toLocaleString("tr-TR", {
-              minimumFractionDigits: 3,
-              maximumFractionDigits: 3,
-            }) + " m³"
-          );
-        }
-        function fmtMs(ms) {
-          ms = Number(ms || 0);
-          const h = Math.floor(ms / 3600000),
-            m = Math.floor((ms % 3600000) / 60000);
-          return h ? h + " sa " + m + " dk" : Math.max(0, m) + " dk";
-        }
-        function setSyncText(t) {
-          const el = $("panelSyncTextV316");
-          if (el) el.textContent = t;
-        }
-        function toast(title, sub, kind) {
-          if (typeof window.mesahaFloatToastV315 === "function")
-            window.mesahaFloatToastV315(title, sub || "", kind || "warning");
-          else if (typeof window.toast === "function") window.toast(title);
-        }
-        function errText(e) {
-          const msg = String(e && e.message ? e.message : e || "Hata");
-          if (/permission/i.test(msg)) return "Supabase RLS/policy kontrol et";
-          if (/network|offline|internet/i.test(msg))
-            return "İnternet bağlantısını kontrol et";
-          if (/timeout|zaman/i.test(msg))
-            return "Bağlantı zaman aşımına uğradı";
-          return msg.slice(0, 120);
-        }
-        function withTimeout(p, ms, label) {
-          let t;
-          return Promise.race([
-            p,
-            new Promise((_, rej) => {
-              t = setTimeout(
-                () => rej(new Error((label || "İşlem") + " zaman aşımı")),
-                ms || 12000,
-              );
-            }),
-          ]).finally(() => clearTimeout(t));
-        }
-        function capture() {
-          /* V5.27: eski v317 buton çoğaltıcıları devre dışı; canonical runtime/hybrid handler kullanılır. */
-        }
-        function loadScript(src) {
-          return withTimeout(
-            new Promise((res, rej) => {
-              const found = document.querySelector('script[src="' + src + '"]');
-              if (found) return res();
-              const s = document.createElement("script");
-              s.src = src;
-              s.async = true;
-              s.crossOrigin = "anonymous";
-              s.onload = res;
-              s.onerror = () =>
-                rej(new Error("Supabase bağlantı motoru yüklenemedi"));
-              document.head.appendChild(s);
-            }),
-            12000,
-            "Supabase",
-          );
-        }
-        async function firebaseReady() {
-          return await window.mesahaSupabaseV380.ready();
-        }
-        async function resetAtMs() {
-          try {
-            const { db } = await firebaseReady();
-            const doc = await withTimeout(
-              db.collection("adminSettings").doc("statsReset").get(),
-              10000,
-              "Reset bilgisi",
-            );
-            const d = doc.exists ? doc.data() || {} : {};
-            return Number(d.resetAtMs || 0);
-          } catch {
-            return Number(
-              localStorage.getItem("mesaha_stats_reset_at_v316") || 0,
-            );
-          }
-        }
-        function renderPanelStats() {
-          const usage = flushUsage();
-          const stats = summarize(
-            Number(localStorage.getItem("mesaha_stats_reset_at_v316") || 0),
-          );
-          const box = $("panelStatsV316");
-          if (box)
-            box.innerHTML = [
-              ["Toplam Kayıt", stats.recordCount.toLocaleString("tr-TR")],
-              ["Toplam m³", fmtM3(stats.m3)],
-              [
-                "Bugün Giriş",
-                Number(usage.todayLoginCount || 0).toLocaleString("tr-TR"),
-              ],
-              ["Bugün Süre", fmtMs(usage.todayMs)],
-              ["Toplam Süre", fmtMs(usage.totalMs)],
-              ["Son Görülme", usage.lastSeen || "-"],
-            ]
-              .map(
-                (a) =>
-                  '<div class="panel-stat-v316"><small>' +
-                  a[0] +
-                  "</small><b>" +
-                  a[1] +
-                  "</b></div>",
-              )
-              .join("");
-          const dev = $("panelDeviceV316");
-          if (dev) {
-            const info = deviceInfo();
-            dev.value = info.platform + " • " + info.screen;
-          }
-          const u = readPanelUser();
-          ["panelNameV316", "panelSeflikV316", "panelBolmeV316"].forEach(
-            (id, i) => {
-              const el = $(id);
-              if (el && !el.value)
-                el.value = [u.name, u.seflik, u.bolmeNo][i] || "";
-            },
-          );
-        }
-        async function syncUser(reason) {
-          try {
-            if (
-              window.MesahaIpV518 &&
-              typeof window.MesahaIpV518.ping === "function"
-            )
-              return await window.MesahaIpV518.ping(
-                reason || "legacy-sync",
-                true,
-              );
-          } catch (e) {}
-          return false;
-        }
-        async function savePanelV317() {
-          const name = clean(($("panelNameV316") || {}).value),
-            seflik = clean(($("panelSeflikV316") || {}).value);
-          if (!name || !seflik) {
-            toast(
-              "Kullanıcı adı ve şeflik gerekli.",
-              "İlk giriş için doldur",
-              "warning",
-            );
-            return;
-          }
-          writePanelUser({
-            name: name,
-            seflik: seflik,
-            bolmeNo: ($("panelBolmeV316") || {}).value,
-          });
-          renderPanelStats();
-          setSyncText(
-            "Kullanıcı yerelde kaydedildi • mesaha verisi sadece Mesaha/Yedek işlemlerinde gönderilir",
-          );
-          toast(
-            "Kullanıcı bilgileri kaydedildi.",
-            "Gereksiz otomatik istatistik gönderimi kapalı",
-            "success",
-          );
-        }
-        async function cloudBackup() {
-          var h = window.MesahaHybridCloudV508;
-          if (h && typeof h.backup === "function") return h.backup();
-          throw new Error("Güvenli bulut motoru hazırlanıyor");
-        }
-        async function listBackups() {
-          const user = readPanelUser();
-          if (!user.name || !user.seflik) {
-            throw new Error("Önce kullanıcı girişi yap");
-          }
-          const key = userKey(user.name, user.seflik);
-          const { db } = await firebaseReady();
-          const snap = await withTimeout(
-            db.collection("backups").where("userKey", "==", key).get(),
-            15000,
-            "Yedek listesi",
-          );
-          const arr = [];
-          snap.forEach((doc) =>
-            arr.push(Object.assign({ docId: doc.id }, doc.data() || {})),
-          );
-          arr.sort(
-            (a, b) => Number(b.createdAtMs || 0) - Number(a.createdAtMs || 0),
-          );
-          return arr;
-        }
-        async function openCloudRestore() {
-          const ov = $("cloudRestoreOverlayV316"),
-            list = $("cloudRestoreListV316"),
-            info = $("cloudRestoreInfoV316");
-          if (ov) ov.classList.remove("hidden");
-          if (list)
-            list.innerHTML =
-              '<div class="cloud-item-v316">Yedekler yükleniyor…</div>';
-          try {
-            const arr = await listBackups();
-            if (info) info.textContent = arr.length + " yedek bulundu";
-            if (!arr.length) {
-              if (list)
-                list.innerHTML =
-                  '<div class="cloud-item-v316">Bulutta yedek bulunamadı.</div>';
-              return;
-            }
-            if (list)
-              list.innerHTML = arr
-                .slice(0, 40)
-                .map(
-                  (b) =>
-                    '<div class="cloud-item-v316"><b>' +
-                    esc(b.fileName || "Mesaha yedeği") +
-                    "</b><small>" +
-                    esc(b.createdAt || "-") +
-                    " • " +
-                    Number(b.recordCount || 0).toLocaleString("tr-TR") +
-                    ' kayıt</small><button class="btn primary" data-cloud-restore-v317="' +
-                    esc(b.docId) +
-                    '" type="button">Bu Yedeği Yükle</button></div>',
-                )
-                .join("");
-          } catch (e) {
-            if (info) info.textContent = "Yedekler alınamadı";
-            if (list)
-              list.innerHTML =
-                '<div class="cloud-item-v316">' + esc(errText(e)) + "</div>";
-          }
-        }
-        async function restoreCloud(id) {
-          if (!id) return;
-          if (
-            !confirm(
-              "Bu bulut yedeği mevcut kayıtların yerine yüklenecek. Devam edilsin mi?",
-            )
-          )
-            return;
-          try {
-            const { db } = await firebaseReady();
-            const ref = db.collection("backups").doc(id);
-            const doc = await withTimeout(ref.get(), 12000, "Yedek okuma");
-            if (!doc.exists) throw new Error("Yedek bulunamadı");
-            const d = doc.data() || {};
-            let payload =
-              d.payload || (d.payloadText ? JSON.parse(d.payloadText) : {});
-            let recs = [];
-            if (d.recordsChunked) {
-              const chunks = await withTimeout(
-                ref.collection("chunks").get(),
-                20000,
-                "Yedek parçaları",
-              );
-              const arr = [];
-              chunks.forEach((c) => {
-                const cd = c.data() || {};
-                arr.push({
-                  index: Number(cd.index || 0),
-                  records: Array.isArray(cd.records) ? cd.records : [],
-                });
-              });
-              arr.sort((a, b) => a.index - b.index);
-              recs = arr.flatMap((x) => x.records);
-            } else {
-              recs = Array.isArray(payload.records) ? payload.records : [];
-            }
-            if (!Array.isArray(recs))
-              throw new Error("Yedek kayıtları okunamadı");
-            const merged =
-              payload && payload.settings
-                ? Object.assign({}, settings(), payload.settings)
-                : Object.assign({}, settings());
-            const rr = window.MesahaStorageV527
-              ? await window.MesahaStorageV527.replaceAll(recs, merged, {
-                  reason: "legacy-cloud-restore",
-                })
-              : { ok: false };
-            if (!rr || rr.ok === false)
-              throw new Error("Yedek kalıcı depolamaya yazılamadı");
-            toast("Bulut yedeği yüklendi.", "Sayfa yenileniyor", "success");
-            setTimeout(() => location.reload(), 700);
-          } catch (e) {
-            toast("Bulut yedeği yüklenemedi.", errText(e), "error");
-          }
-        }
-        function sendSupport() {}
-        function bind() {
-          loadUsage();
-          renderPanelStats();
-          capture("panelSaveV316", savePanelV317);
-          capture("panelSyncV316", () => {
-            setSyncText(
-              "İstatistikler sadece Mesaha dosyası indirince gönderilir",
-            );
-            toast(
-              "Hazır.",
-              "Mesaha Dosyasını İndir basınca yönetim güncellenir",
-              "success",
-            );
-          });
-          if (!window.MESAHA_SUITE_MODE) {
-            capture("cloudBackupBtnV316", cloudBackup);
-            capture("cloudRestoreBtnV316", openCloudRestore);
-          }
-          const list = $("cloudRestoreListV316");
-          if (list && !list.__mesahaV317Bound) {
-            list.__mesahaV317Bound = true;
-            list.addEventListener(
-              "click",
-              (ev) => {
-                const b = ev.target.closest(
-                  "[data-cloud-restore-v317], [data-cloud-restore]",
-                );
-                if (b) {
-                  ev.preventDefault();
-                  ev.stopImmediatePropagation();
-                  restoreCloud(
-                    b.getAttribute("data-cloud-restore-v317") ||
-                      b.getAttribute("data-cloud-restore"),
-                  );
-                }
-              },
-              true,
-            );
-          }
-          window.addEventListener("online", () => {
-            setSyncText("Online: Mesaha indirince bilgiler güncellenir");
-          });
-          window.addEventListener("pagehide", flushUsage);
-          window.mesahaOnlineV317 = {
-            ready: firebaseReady,
-            sync: syncUser,
-            backup: cloudBackup,
-            restoreOpen: openCloudRestore,
-          };
-        }
-        if (document.readyState === "loading")
-          document.addEventListener("DOMContentLoaded", bind, { once: true });
-        else bind();
+        window.mesahaOnlineV317 = window.mesahaOnlineV317 || {};
       })();
     </script>
     <script id="mesaha-inline-v319-user-backup-delete">
-      /* v319: Kullanıcı kendi bulut yedeklerini yükleyebilir ve silebilir */
+      /* Eski yedek yöneticisi emekliye ayrıldı. Güncel Hybrid Cloud/Drive köprüsü aynı API'yi devralır. */
       (function () {
         "use strict";
-        const STORAGE_KEY = "cam_mesaha_kayitlari_v1";
-        const SETTINGS_KEY = "cam_mesaha_ayarlar_v1";
-        const PANEL_USER_KEY = "mesaha_panel_user_v316";
-        const FIREBASE_CONFIG =
-          (window.mesahaSupabaseV380 && window.mesahaSupabaseV380.config) || {};
-        const SDK =
-          (window.mesahaSupabaseV380 && window.mesahaSupabaseV380.sdkVersion) ||
-          "9.23.0";
-        let readyPromise = null;
-        function $(id) {
-          return document.getElementById(id);
-        }
-        function esc(s) {
-          return String(s == null ? "" : s).replace(
-            /[&<>"']/g,
-            (m) =>
-              ({
-                "&": "&amp;",
-                "<": "&lt;",
-                ">": "&gt;",
-                '"': "&quot;",
-                "'": "&#39;",
-              })[m],
-          );
-        }
-        function clean(v) {
-          return String(v == null ? "" : v).trim();
-        }
-        function fold(s) {
-          return clean(s)
-            .toLocaleLowerCase("tr-TR")
-            .replace(/[ç]/g, "c")
-            .replace(/[ğ]/g, "g")
-            .replace(/[ı]/g, "i")
-            .replace(/[ö]/g, "o")
-            .replace(/[ş]/g, "s")
-            .replace(/[ü]/g, "u");
-        }
-        function userKey(name, seflik) {
-          return (
-            (fold(name) + "__" + fold(seflik))
-              .replace(/[^a-z0-9_-]+/g, "_")
-              .slice(0, 120) || "bos"
-          );
-        }
-        const jsonGet =
-          (window.MesahaUtils && window.MesahaUtils.jsonGet) ||
-          function (k, f) {
-            try {
-              const v = localStorage.getItem(k);
-              return v ? JSON.parse(v) : f;
-            } catch {
-              return f;
-            }
-          };
-        const jsonSet =
-          (window.MesahaUtils && window.MesahaUtils.jsonSet) ||
-          function (k, v) {
-            try {
-              localStorage.setItem(k, JSON.stringify(v));
-              return true;
-            } catch {
-              return false;
-            }
-          };
-        function settings() {
-          return Object.assign(
-            { ekipNot: "", seflik: "", bolmeNo: "" },
-            jsonGet(SETTINGS_KEY, {}),
-          );
-        }
-        function readPanelUser() {
-          const u = jsonGet(PANEL_USER_KEY, {});
-          return {
-            name: clean(u.name),
-            seflik: clean(u.seflik),
-            bolmeNo: clean(u.bolmeNo),
-          };
-        }
-        function notify(title, sub, type) {
-          try {
-            if (typeof window.mesahaFloatToastV315 === "function")
-              return window.mesahaFloatToastV315(
-                title,
-                sub || "",
-                type || "success",
-              );
-            if (typeof window.mesahaFloatToastV314 === "function")
-              return window.mesahaFloatToastV314(
-                title,
-                sub || "",
-                type || "success",
-              );
-          } catch {}
-          try {
-            alert(title + (sub ? "\n" + sub : ""));
-          } catch {}
-        }
-        function errText(e) {
-          const msg = String(e && e.message ? e.message : e || "Hata");
-          if (/permission|insufficient/i.test(msg))
-            return "Supabase RLS/policy kontrol et";
-          if (/network|offline|internet/i.test(msg))
-            return "İnternet bağlantısını kontrol et";
-          if (/timeout|zaman/i.test(msg)) return "Bağlantı zaman aşımı";
-          return msg.slice(0, 150);
-        }
-        function withTimeout(p, ms, label) {
-          let t;
-          return Promise.race([
-            p,
-            new Promise((_, rej) => {
-              t = setTimeout(
-                () => rej(new Error((label || "İşlem") + " zaman aşımı")),
-                ms || 12000,
-              );
-            }),
-          ]).finally(() => clearTimeout(t));
-        }
-        function loadScript(src) {
-          return withTimeout(
-            new Promise((res, rej) => {
-              if (document.querySelector('script[src="' + src + '"]'))
-                return res();
-              const s = document.createElement("script");
-              s.src = src;
-              s.async = true;
-              s.crossOrigin = "anonymous";
-              s.onload = res;
-              s.onerror = () =>
-                rej(new Error("Supabase bağlantı motoru yüklenemedi"));
-              document.head.appendChild(s);
-            }),
-            12000,
-            "Supabase SDK",
-          );
-        }
-        async function ready() {
-          return await window.mesahaSupabaseV380.ready();
-        }
-        function ensurePanelButton() {
-          const actions = document.querySelector(".panel-actions-v316");
-          if (actions && !$("panelBackupsV318")) {
-            const btn = document.createElement("button");
-            btn.id = "panelBackupsV318";
-            btn.className = "btn soft";
-            btn.type = "button";
-            btn.textContent = "Bulut Yedeklerim";
-            const close = $("panelClose2V316");
-            actions.insertBefore(btn, close || null);
-          }
-        }
-        async function listBackups() {
-          const u = readPanelUser();
-          if (!u.name || !u.seflik) {
-            throw new Error("Önce kullanıcı girişi yap");
-          }
-          const key = userKey(u.name, u.seflik);
-          const { db } = await ready();
-          const snap = await withTimeout(
-            db.collection("backups").where("userKey", "==", key).get(),
-            16000,
-            "Yedek listesi",
-          );
-          const arr = [];
-          snap.forEach((doc) =>
-            arr.push(Object.assign({ docId: doc.id }, doc.data() || {})),
-          );
-          arr.sort(
-            (a, b) => Number(b.createdAtMs || 0) - Number(a.createdAtMs || 0),
-          );
-          return arr;
-        }
-        async function deleteBackupFull(db, id) {
-          const u = readPanelUser();
-          const key = userKey(u.name, u.seflik);
-          const ref = db.collection("backups").doc(id);
-          const doc = await withTimeout(ref.get(), 12000, "Yedek kontrol");
-          if (!doc.exists) throw new Error("Yedek bulunamadı");
-          const d = doc.data() || {};
-          if (String(d.userKey || "") !== key)
-            throw new Error("Bu yedek bu kullanıcıya ait değil");
-          const chunks = await withTimeout(
-            ref.collection("chunks").get(),
-            20000,
-            "Yedek parçaları",
-          );
-          const ops = [];
-          chunks.forEach((c) => {
-            const cd = c.data() || {};
-            let cid = String(c.id || "");
-            if (cd.index != null) cid = String(cd.index).padStart(4, "0");
-            else if (cid.indexOf(String(id) + "_") === 0)
-              cid = cid.slice(String(id).length + 1);
-            ops.push(ref.collection("chunks").doc(cid).delete());
-          });
-          if (ops.length)
-            await withTimeout(Promise.all(ops), 25000, "Yedek parçaları silme");
-          await withTimeout(ref.delete(), 12000, "Yedek silme");
-        }
-        async function restoreCloud(id) {
-          if (!id) return;
-          if (
-            !confirm(
-              "Bu bulut yedeği mevcut kayıtların yerine yüklenecek. Devam edilsin mi?",
-            )
-          )
-            return;
-          try {
-            const { db } = await ready();
-            const ref = db.collection("backups").doc(id);
-            const doc = await withTimeout(ref.get(), 12000, "Yedek okuma");
-            if (!doc.exists) throw new Error("Yedek bulunamadı");
-            const d = doc.data() || {};
-            let payload =
-              d.payload || (d.payloadText ? JSON.parse(d.payloadText) : {});
-            let recs = [];
-            if (d.recordsChunked) {
-              const chunks = await withTimeout(
-                ref.collection("chunks").get(),
-                25000,
-                "Yedek parçaları",
-              );
-              const arr = [];
-              chunks.forEach((c) => {
-                const cd = c.data() || {};
-                arr.push({
-                  index: Number(cd.index || 0),
-                  records: Array.isArray(cd.records) ? cd.records : [],
-                });
-              });
-              arr.sort((a, b) => a.index - b.index);
-              recs = arr.flatMap((x) => x.records);
-            } else {
-              recs = Array.isArray(payload.records) ? payload.records : [];
-            }
-            if (!Array.isArray(recs))
-              throw new Error("Yedek kayıtları okunamadı");
-            const merged =
-              payload && payload.settings
-                ? Object.assign({}, settings(), payload.settings)
-                : Object.assign({}, settings());
-            const rr = window.MesahaStorageV527
-              ? await window.MesahaStorageV527.replaceAll(recs, merged, {
-                  reason: "legacy-cloud-restore",
-                })
-              : { ok: false };
-            if (!rr || rr.ok === false)
-              throw new Error("Yedek kalıcı depolamaya yazılamadı");
-            notify("Bulut yedeği yüklendi.", "Sayfa yenileniyor", "success");
-            setTimeout(() => location.reload(), 700);
-          } catch (e) {
-            notify("Bulut yedeği yüklenemedi.", errText(e), "error");
-          }
-        }
-        async function deleteCloud(id) {
-          if (!id) return;
-          if (!confirm("Bu bulut yedeği kalıcı olarak silinsin mi?")) return;
-          try {
-            const { db } = await ready();
-            await deleteBackupFull(db, id);
-            notify("Bulut yedeği silindi.", "Liste yenileniyor", "success");
-            openCloudManager();
-          } catch (e) {
-            notify("Bulut yedeği silinemedi.", errText(e), "error");
-          }
-        }
-        async function openCloudManager() {
-          const ov = $("cloudRestoreOverlayV316"),
-            list = $("cloudRestoreListV316"),
-            info = $("cloudRestoreInfoV316");
-          if (ov) ov.classList.remove("hidden");
-          if (list)
-            list.innerHTML =
-              '<div class="cloud-item-v316 cloud-item-v319">Yedekler yükleniyor…</div>';
-          try {
-            const arr = await listBackups();
-            if (info)
-              info.textContent = arr.length + " yedek bulundu • silme açık";
-            if (!arr.length) {
-              if (list)
-                list.innerHTML =
-                  '<div class="cloud-item-v316 cloud-item-v319">Bulutta yedek bulunamadı.</div>';
-              return;
-            }
-            if (list)
-              list.innerHTML = arr
-                .slice(0, 50)
-                .map(
-                  (b) =>
-                    '<div class="cloud-item-v316 cloud-item-v319"><div><b>' +
-                    esc(b.fileName || "Mesaha yedeği") +
-                    "</b><small>" +
-                    esc(b.createdAt || "-") +
-                    " • " +
-                    Number(b.recordCount || 0).toLocaleString("tr-TR") +
-                    " kayıt • " +
-                    Number(b.m3 || 0).toLocaleString("tr-TR", {
-                      minimumFractionDigits: 3,
-                      maximumFractionDigits: 3,
-                    }) +
-                    ' m³</small></div><div class="cloud-actions-v319"><button class="btn primary" data-cloud-restore-v319="' +
-                    esc(b.docId) +
-                    '" type="button">Bu Yedeği Yükle</button><button class="btn red" data-cloud-delete-v319="' +
-                    esc(b.docId) +
-                    '" type="button">Sil</button></div></div>',
-                )
-                .join("");
-          } catch (e) {
-            if (info) info.textContent = "Yedekler alınamadı";
-            if (list)
-              list.innerHTML =
-                '<div class="cloud-item-v316 cloud-item-v319">' +
-                esc(errText(e)) +
-                "</div>";
-          }
-        }
-        function replaceButton(id, handler) {
-          const old = $(id);
-          if (!old || old.__v319Replaced) return;
-          const neu = old.cloneNode(true);
-          neu.__v319Replaced = true;
-          old.parentNode.replaceChild(neu, old);
-          neu.addEventListener(
-            "click",
-            function (ev) {
-              ev.preventDefault();
-              ev.stopImmediatePropagation();
-              handler(ev);
-            },
-            true,
-          );
-        }
-        function bind() {
-          ensurePanelButton();
-          if (!window.MESAHA_SUITE_MODE) {
-            replaceButton("cloudRestoreBtnV316", openCloudManager);
-            replaceButton("panelBackupsV318", openCloudManager);
-          }
-          const listOld = $("cloudRestoreListV316");
-          if (listOld && !listOld.__v319List) {
-            const list = listOld.cloneNode(false);
-            list.setAttribute("id", "cloudRestoreListV316");
-            list.__v319List = true;
-            listOld.parentNode.replaceChild(list, listOld);
-            list.addEventListener(
-              "click",
-              (ev) => {
-                const d = ev.target.closest("[data-cloud-delete-v319]");
-                if (d) {
-                  ev.preventDefault();
-                  ev.stopImmediatePropagation();
-                  deleteCloud(d.getAttribute("data-cloud-delete-v319"));
-                  return;
-                }
-                const r = ev.target.closest("[data-cloud-restore-v319]");
-                if (r) {
-                  ev.preventDefault();
-                  ev.stopImmediatePropagation();
-                  restoreCloud(r.getAttribute("data-cloud-restore-v319"));
-                  return;
-                }
-              },
-              true,
-            );
-          }
-          const styleId = "mesaha-v319-cloud-style";
-          if (!document.getElementById(styleId)) {
-            const st = document.createElement("style");
-            st.id = styleId;
-            st.textContent =
-              ".cloud-item-v319{grid-template-columns:1fr!important;gap:10px!important}.cloud-actions-v319{display:grid;grid-template-columns:1fr 92px;gap:8px}.cloud-actions-v319 .btn{width:100%;min-height:42px}.cloud-item-v319 small{display:block;margin-top:4px}.panel-actions-v316{grid-template-columns:1fr 1fr!important}@media(max-width:520px){.cloud-actions-v319,.panel-actions-v316{grid-template-columns:1fr!important}}";
-            document.head.appendChild(st);
-          }
-        }
-        if (document.readyState === "loading")
-          document.addEventListener("DOMContentLoaded", bind, { once: true });
-        else bind();
-        [300, 900, 1800, 3000].forEach((ms) => setTimeout(bind, ms));
-        window.mesahaUserBackupsV318 = {
-          open: openCloudManager,
-          list: listBackups,
-          deleteBackup: deleteCloud,
-          restore: restoreCloud,
-        };
+        window.mesahaUserBackupsV318 = window.mesahaUserBackupsV318 || {};
       })();
     </script>
     <script id="mesaha-inline-v319-first-login-gate">
@@ -13104,11 +12103,9 @@
           patchCutterNote();
           simplifyPanel();
           document.addEventListener("click", handleCloudBackupClick, true);
-          var mo = new MutationObserver(function () {
-            patchCutterNote();
-            simplifyPanel();
-          });
-          mo.observe(document.body, { childList: true, subtree: true });
+          // Panel ve kesimci alanları statik kurulur. Eski tüm-body gözlemcisi
+          // her kayıt çiziminde çalıştığı için kaldırıldı; ilk kurulum ve güvenli
+          // gecikmeli kontroller yeterlidir.
           setTimeout(function () {
             patchCutterNote();
             simplifyPanel();
@@ -15451,14 +14448,8 @@
           syncPanelState();
           ["userPanelOverlayV316", "cloudRestoreOverlayV316"].forEach(
             function (id) {
-              var el = $(id);
-              if (el && window.MutationObserver && !el.__v392PanelWatch) {
-                el.__v392PanelWatch = true;
-                new MutationObserver(syncPanelState).observe(el, {
-                  attributes: true,
-                  attributeFilter: ["class"],
-                });
-              }
+              if (window.MesahaUiHub)
+                window.MesahaUiHub.watchClass(id, syncPanelState);
             },
           );
         }
@@ -16182,13 +15173,13 @@
           syncPanelClass();
           versionText();
           var panel = $("userPanelOverlayV316");
-          if (panel && window.MutationObserver && !panel.__v393PanelWatch) {
-            panel.__v393PanelWatch = true;
-            new MutationObserver(function () {
+          if (window.MesahaUiHub && panel && !panel.__v394HubWatch) {
+            panel.__v394HubWatch = true;
+            window.MesahaUiHub.watchClass("userPanelOverlayV316", function () {
               ensureCloseButtons();
               rewriteUpdateNotes();
               syncPanelClass();
-            }).observe(panel, { attributes: true, attributeFilter: ["class"] });
+            });
           }
         }
         document.addEventListener(
@@ -16511,13 +15502,10 @@
           ["userPanelOverlayV316", "cloudRestoreOverlayV316"].forEach(
             function (id) {
               var el = $(id);
-              if (el && window.MutationObserver && !el.__v395LockWatch) {
-                el.__v395LockWatch = true;
-                new MutationObserver(function () {
+              if (window.MesahaUiHub && el && !el.__v395HubWatch) {
+                el.__v395HubWatch = true;
+                window.MesahaUiHub.watchClass(id, function () {
                   setTimeout(sync, 10);
-                }).observe(el, {
-                  attributes: true,
-                  attributeFilter: ["class"],
                 });
               }
             },
@@ -17735,18 +16723,10 @@
           },
           { passive: true },
         );
-        var p = $("userPanelOverlayV316");
-        if (p && window.MutationObserver && !p.__v407NotesWatch) {
-          p.__v407NotesWatch = true;
-          new MutationObserver(function () {
+        if (window.MesahaUiHub)
+          window.MesahaUiHub.watchClass("userPanelOverlayV316", function () {
             setTimeout(renderNotes, 60);
-          }).observe(p, {
-            attributes: true,
-            attributeFilter: ["class"],
-            childList: true,
-            subtree: true,
           });
-        }
         window.addEventListener(
           "pageshow",
           function () {
@@ -19528,15 +18508,8 @@
             },
             { passive: true },
           );
-          var ov = $("userPanelOverlayV316");
-          if (ov && window.MutationObserver && !ov.__ipV518) {
-            ov.__ipV518 = true;
-            new MutationObserver(renderIp).observe(ov, {
-              attributes: true,
-              attributeFilter: ["class"],
-              subtree: false,
-            });
-          }
+          if (window.MesahaUiHub)
+            window.MesahaUiHub.watchClass("userPanelOverlayV316", renderIp);
         }
         if (document.readyState === "loading")
           document.addEventListener("DOMContentLoaded", bind, { once: true });
@@ -20119,11 +19092,8 @@
             document.body.classList.toggle("seflik-send-open-v531", open);
             if (open) syncModalViewport();
           };
-          if (window.MutationObserver)
-            new MutationObserver(apply).observe(ov, {
-              attributes: true,
-              attributeFilter: ["class", "aria-hidden"],
-            });
+          if (window.MesahaUiHub)
+            window.MesahaUiHub.watchClass(ov, apply);
           apply();
         }
         function boot() {
@@ -20191,10 +19161,10 @@
           );
         }
         var entry = byId("entryView");
-        if (entry && window.MutationObserver)
-          new MutationObserver(function () {
+        if (entry && window.MesahaUiHub)
+          window.MesahaUiHub.watchClass(entry, function () {
             scheduleSync(35);
-          }).observe(entry, { attributes: true, attributeFilter: ["class"] });
+          });
         [120, 700].forEach(function (ms) {
           setTimeout(boot, ms);
         });
@@ -20633,17 +19603,10 @@
         window.addEventListener("pageshow", function () {
           setTimeout(boot, 80);
         });
-        var p = $("userPanelOverlayV316");
-        if (p && window.MutationObserver && !p.__v563SessionWatch) {
-          p.__v563SessionWatch = true;
-          new MutationObserver(function () {
+        if (window.MesahaUiHub)
+          window.MesahaUiHub.watchClass("userPanelOverlayV316", function () {
             setTimeout(boot, 60);
-          }).observe(p, {
-            attributes: true,
-            attributeFilter: ["class"],
-            subtree: false,
           });
-        }
       })();
     </script>
 

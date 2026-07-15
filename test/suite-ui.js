@@ -304,7 +304,7 @@
   }
   function openDb() {
     return new Promise((res, rej) => {
-      const q = indexedDB.open("mesaha-istif-prototype", 1);
+      const q = indexedDB.open("mesaha-istif-prototype", 2);
       q.onupgradeneeded = () => {
         const db = q.result;
         if (!db.objectStoreNames.contains("records"))

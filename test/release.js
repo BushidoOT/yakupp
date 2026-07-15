@@ -1,31 +1,31 @@
 (function (root) {
   "use strict";
   const DATA = /*MESAHA_RELEASE_DATA_START*/{
-  "build": 36,
-  "version": "36.0.0",
+  "build": 37,
+  "version": "37.0.0",
   "channel": "stable",
-  "releasedAt": "2026-07-15T23:55:00+03:00",
-  "assetToken": "orman-io-stable-20260715-4",
-  "cacheName": "orman-io-shell-stable-20260715-4",
+  "releasedAt": "2026-07-15T23:14:00+03:00",
+  "assetToken": "orman-io-stable-20260715-5",
+  "cacheName": "orman-io-shell-stable-20260715-5",
   "apps": {
     "suite": {
       "label": "Orman İO",
-      "version": "36.0.0"
+      "version": "37.0.0"
     },
     "mesaha": {
       "label": "Mesaha İO",
-      "version": "5.84"
+      "version": "5.85"
     },
     "istif": {
       "label": "İstif İO",
-      "version": "0.3.12"
+      "version": "0.3.13"
     },
     "admin": {
       "label": "Orman İO Yönetim",
-      "version": "36.0.0"
+      "version": "37.0.0"
     }
   },
-  "description": "Mesaha ayar seçimleri, offline İstif bölme oluşturma, terminal alan görünürlüğü ve Orman İO marka yazısı düzeltildi."
+  "description": "Eski Mesaha yedek uyumluluğu, İstif silme izleri, güvenli gönderildi senkronu, isteğe bağlı Drive fotoğrafları ve belirgin yeşil Mesaha kartı eklendi."
 }/*MESAHA_RELEASE_DATA_END*/;
   const APP_NAMES = DATA.apps || {};
   const SCRIPT_URL = (() => {

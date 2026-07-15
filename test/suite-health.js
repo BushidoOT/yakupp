@@ -136,7 +136,7 @@
   function openIstifDb() {
     return new Promise((resolve, reject) => {
       if (!("indexedDB" in window)) return resolve(null);
-      const req = indexedDB.open("mesaha-istif-prototype", 1);
+      const req = indexedDB.open("mesaha-istif-prototype", 2);
       req.onupgradeneeded = () => {
         const db = req.result;
         if (!db.objectStoreNames.contains("records")) db.createObjectStore("records", { keyPath: "id" });

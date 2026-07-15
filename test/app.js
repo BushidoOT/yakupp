@@ -523,15 +523,24 @@
     };
     write(K.yieldTargets, all);
   }
+  const ISTIF_TOMBSTONE_SETTING_KEY = "deleted-records-v1";
+  let istifDeletedIdsForYield = new Set();
+  function istifTombstoneIds(value) {
+    const source = value && typeof value === "object" ? value : {};
+    const items = source.items && typeof source.items === "object" ? source.items : source;
+    return new Set(Object.keys(items || {}).map(clean).filter(Boolean));
+  }
   function readIstifRecords() {
     return new Promise((resolve) => {
       try {
-        const request = indexedDB.open("mesaha-istif-prototype", 1);
+        const request = indexedDB.open("mesaha-istif-prototype", 2);
         request.onerror = () => resolve([]);
         request.onupgradeneeded = () => {
           const db = request.result;
           if (!db.objectStoreNames.contains("records"))
             db.createObjectStore("records", { keyPath: "id" });
+          if (!db.objectStoreNames.contains("settings"))
+            db.createObjectStore("settings", { keyPath: "key" });
         };
         request.onsuccess = () => {
           const db = request.result;
@@ -539,23 +548,33 @@
             db.close();
             return resolve([]);
           }
-          const tx = db.transaction("records", "readonly");
-          const q = tx.objectStore("records").getAll();
-          q.onsuccess = () => {
-            const rows = Array.isArray(q.result) ? q.result : [];
-            db.close();
-            resolve(rows);
+          const stores = db.objectStoreNames.contains("settings")
+            ? ["records", "settings"]
+            : ["records"];
+          const tx = db.transaction(stores, "readonly");
+          const rowsRequest = tx.objectStore("records").getAll();
+          const tombstoneRequest = stores.includes("settings")
+            ? tx.objectStore("settings").get(ISTIF_TOMBSTONE_SETTING_KEY)
+            : null;
+          tx.oncomplete = () => {
+            const rows = Array.isArray(rowsRequest.result) ? rowsRequest.result : [];
+            const deletedIds = istifTombstoneIds(tombstoneRequest?.result?.value);
+            istifDeletedIdsForYield = deletedIds;
+            try { db.close(); } catch {}
+            resolve(rows.filter((row) => row && !deletedIds.has(clean(row.id))));
           };
-          q.onerror = () => {
-            db.close();
+          tx.onerror = () => {
+            try { db.close(); } catch {}
             resolve([]);
           };
+          tx.onabort = tx.onerror;
         };
       } catch (_) {
         resolve([]);
       }
     });
   }
+
   async function divisionYieldStats(bolme) {
     const no = clean(bolme), af = activeFolder(), seflik = clean(af && af.seflik);
     const localMesaha = read(K.mesahaRecords, []);
@@ -609,7 +628,8 @@
           });
           remoteIstifAuthoritative = out.complete !== false && out.truncated !== true;
           remoteIstif = (Array.isArray(out && out.records) ? out.records : []).filter((r) =>
-            clean(r.bolme_no || r.bolme || r.bolmeNo) === no,
+            clean(r.bolme_no || r.bolme || r.bolmeNo) === no &&
+            !istifDeletedIdsForYield.has(clean(r.id || r.record_id)),
           );
         }
       } catch (_) {}
@@ -1146,7 +1166,7 @@
   async function writeIstifSharedCache(af, dvs) {
     try {
       if (!("indexedDB" in window)) return;
-      const req = indexedDB.open("mesaha-istif-prototype", 1);
+      const req = indexedDB.open("mesaha-istif-prototype", 2);
       await new Promise((res, rej) => {
         req.onupgradeneeded = () => {
           const db = req.result;
@@ -1336,7 +1356,14 @@
       indexedDB.deleteDatabase("mesaha_io_storage_v527");
     } catch {}
     try {
-      const request = indexedDB.open("mesaha-istif-prototype", 1);
+      const request = indexedDB.open("mesaha-istif-prototype", 2);
+      request.onupgradeneeded = () => {
+        const db = request.result;
+        if (!db.objectStoreNames.contains("records"))
+          db.createObjectStore("records", { keyPath: "id" });
+        if (!db.objectStoreNames.contains("settings"))
+          db.createObjectStore("settings", { keyPath: "key" });
+      };
       request.onsuccess = () => {
         const db = request.result;
         if (!db.objectStoreNames.contains("records")) { db.close(); return; }
@@ -1935,7 +1962,7 @@
     const no = clean(bolmeNo), out = { records: [], istifCount: 0, photoCount: 0 };
     if (!no || !("indexedDB" in window)) return out;
     try {
-      const req = indexedDB.open("mesaha-istif-prototype", 1);
+      const req = indexedDB.open("mesaha-istif-prototype", 2);
       const db = await new Promise((resolve, reject) => {
         req.onupgradeneeded = () => {
           const x = req.result;
@@ -1945,32 +1972,63 @@
         req.onsuccess = () => resolve(req.result);
         req.onerror = () => reject(req.error);
       });
-      const rows = await new Promise((resolve, reject) => {
-        const r = db.transaction("records").objectStore("records").getAll();
-        r.onsuccess = () => resolve(Array.isArray(r.result) ? r.result : []);
-        r.onerror = () => reject(r.error);
+      const stores = db.objectStoreNames.contains("settings") ? ["records", "settings"] : ["records"];
+      const result = await new Promise((resolve, reject) => {
+        const tx = db.transaction(stores, "readonly");
+        const rowsReq = tx.objectStore("records").getAll();
+        const tombReq = stores.includes("settings") ? tx.objectStore("settings").get(ISTIF_TOMBSTONE_SETTING_KEY) : null;
+        tx.oncomplete = () => resolve({ rows: Array.isArray(rowsReq.result) ? rowsReq.result : [], tombstones: tombReq?.result?.value });
+        tx.onerror = () => reject(tx.error);
+        tx.onabort = () => reject(tx.error || new Error("Yerel İstif kayıtları okunamadı"));
       });
       try { db.close(); } catch {}
-      out.records = rows.filter((r) => r && !r.isDemo && clean(r.bolme || r.bolmeNo || r.bolme_no) === no);
+      const deletedIds = istifTombstoneIds(result.tombstones);
+      out.records = result.rows.filter((r) => r && !r.isDemo && !deletedIds.has(clean(r.id)) && clean(r.bolme || r.bolmeNo || r.bolme_no) === no);
       out.istifCount = out.records.length;
       out.photoCount = out.records.reduce((sum, r) => sum + Math.max(Number(r.photoCount || 0) || 0, Array.isArray(r.photos) ? r.photos.length : 0, Array.isArray(r.driveFiles) ? r.driveFiles.length : 0), 0);
     } catch {}
     return out;
   }
+
   async function deleteLocalIstifDivision(bolmeNo) {
     const local = await readLocalIstifDivision(bolmeNo);
     if (!local.records.length || !("indexedDB" in window)) return local;
-    const req = indexedDB.open("mesaha-istif-prototype", 1);
+    const req = indexedDB.open("mesaha-istif-prototype", 2);
     const db = await new Promise((resolve, reject) => { req.onsuccess = () => resolve(req.result); req.onerror = () => reject(req.error); });
     await new Promise((resolve, reject) => {
-      const tx = db.transaction("records", "readwrite"), store = tx.objectStore("records");
-      local.records.forEach((r) => r && r.id != null && store.delete(r.id));
-      tx.oncomplete = resolve; tx.onerror = () => reject(tx.error); tx.onabort = () => reject(tx.error || new Error("Yerel İstif silme tamamlanamadı"));
+      const tx = db.transaction(["records", "settings"], "readwrite");
+      const recordStore = tx.objectStore("records"), settingsStore = tx.objectStore("settings");
+      const tombReq = settingsStore.get(ISTIF_TOMBSTONE_SETTING_KEY);
+      tombReq.onsuccess = () => {
+        const oldValue = tombReq.result?.value || {};
+        const items = { ...((oldValue.items && typeof oldValue.items === "object") ? oldValue.items : oldValue) };
+        const deletedAt = now();
+        local.records.forEach((r) => {
+          if (!r || r.id == null) return;
+          const id = clean(r.id);
+          recordStore.delete(r.id);
+          if (id) items[id] = {
+            id,
+            deletedAt,
+            seflikKey: clean(r.seflikKey || r.seflik_key),
+            seflik: clean(r.seflik),
+            bolme: clean(r.bolme || r.bolmeNo || r.bolme_no),
+            istifNo: clean(r.istifNo || r.istif_no),
+            reason: "division_delete",
+          };
+        });
+        settingsStore.put({ key: ISTIF_TOMBSTONE_SETTING_KEY, value: { version: 1, updatedAt: deletedAt, items } });
+      };
+      tombReq.onerror = () => reject(tombReq.error);
+      tx.oncomplete = resolve;
+      tx.onerror = () => reject(tx.error);
+      tx.onabort = () => reject(tx.error || new Error("Yerel İstif silme tamamlanamadı"));
     });
     try { db.close(); } catch {}
     try { window.dispatchEvent(new CustomEvent("mesaha-istif:division-deleted", { detail: { bolmeNo: clean(bolmeNo), count: local.istifCount } })); } catch {}
     return local;
   }
+
   async function divisionDeletePreview(row) {
     const local = await readLocalIstifDivision(row && row.bolme_no);
     const base = {
