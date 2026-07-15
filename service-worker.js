@@ -1,4 +1,5 @@
-const CACHE = "yakupp-suite-shell-v28-istif-0311";
+const CACHE = "yakupp-suite-shell-v28-istif-0312";
+const CACHE_TOOL_BUILD = "0312";
 const PREFIX = "yakupp-suite-shell-";
 const CORE = [
   "./app.js",
@@ -72,6 +73,7 @@ const CORE = [
   "./mesaha/yonetim/index.html",
   "./styles.css",
   "./suite-security.js",
+  "./suite-cache-reset-v30.js",
   "./suite-sync-core.js",
   "./suite-ui.js",
   "./temizle.html",
@@ -82,6 +84,7 @@ const CRITICAL = [
   "./styles.css",
   "./app.js",
   "./suite-security.js",
+  "./suite-cache-reset-v30.js",
   "./suite-sync-core.js",
   "./suite-ui.js",
   "./manifest.json",
@@ -232,6 +235,20 @@ self.addEventListener("activate", (e) =>
         missing: st.missing,
         missingCount: st.missingCount,
       });
+      // iOS ana ekran PWA ve Android Chrome, yeni worker etkinleştiğinde açık
+      // sayfayı bir kez yenilesin. Böylece önbellek aracı ilk güncellemede gelir.
+      const openClients = await self.clients.matchAll({ includeUncontrolled: true, type: "window" });
+      for (const client of openClients) {
+        try {
+          const url = new URL(client.url);
+          const path = url.pathname.replace(/\/+$/, "");
+          const isRoot = !/\/(?:mesaha|istif)(?:\/|$)/i.test(path) && !/\/temizle\.html$/i.test(path);
+          if (isRoot && url.searchParams.get("sw_refresh") !== CACHE_TOOL_BUILD) {
+            url.searchParams.set("sw_refresh", CACHE_TOOL_BUILD);
+            await client.navigate(url.href);
+          }
+        } catch (_) {}
+      }
     })(),
   ),
 );
@@ -247,11 +264,52 @@ self.addEventListener("message", (e) => {
         reply(e, { ok: x.ready, ...x, repaired: true, preserved: true }),
       ),
     );
+  else if (d.type === "CLEAR_APP_CACHE")
+    e.waitUntil(
+      (async () => {
+        try {
+          const keys = await caches.keys();
+          await Promise.all(keys.filter((key) => key.startsWith(PREFIX)).map((key) => caches.delete(key)));
+          const result = await cacheAll();
+          reply(e, { ok: true, ...result, cleared: true, preserved: true });
+        } catch (error) {
+          reply(e, { ok: false, error: String((error && error.message) || error) });
+        }
+      })(),
+    );
   else if (d.type === "GET_STATUS")
     e.waitUntil(status().then((x) => reply(e, x)));
   else if (d.type === "SKIP_WAITING")
     e.waitUntil(self.skipWaiting().then(() => reply(e, { ok: true })));
 });
+function isSuiteRootNavigation(url) {
+  const path = String((url && url.pathname) || "").replace(/\/+$/, "");
+  return (
+    !/\/(?:mesaha|istif)(?:\/|$)/i.test(path) &&
+    !/\/temizle\.html$/i.test(path) &&
+    !/\/guncelle\.html$/i.test(path)
+  );
+}
+async function injectSuiteCacheTool(response, url) {
+  if (!response || !response.ok || !isSuiteRootNavigation(url)) return response;
+  const type = String(response.headers.get("content-type") || "");
+  if (type && !/text\/html/i.test(type)) return response;
+  try {
+    const text = await response.clone().text();
+    if (/suite-cache-reset-v30\.js/i.test(text)) return response;
+    const tag = '<script src="./suite-cache-reset-v30.js?v=0312" defer><\/script>';
+    const html = /<\/body>/i.test(text)
+      ? text.replace(/<\/body>/i, tag + "</body>")
+      : text + tag;
+    const headers = new Headers(response.headers);
+    headers.delete("content-length");
+    headers.set("content-type", "text/html; charset=utf-8");
+    headers.set("cache-control", "no-cache");
+    return new Response(html, { status: response.status, statusText: response.statusText, headers });
+  } catch (_) {
+    return response;
+  }
+}
 function appFallback(url) {
   const p = String((url && url.pathname) || "").replace(/\/+$/, "");
   if (/\/istif(?:\/|$)/.test(p)) return "./istif/index.html";
@@ -304,9 +362,10 @@ self.addEventListener("fetch", (e) => {
   if (e.request.mode === "navigate") {
     e.respondWith((async () => {
       const fresh = await networkFirst(e.request);
-      if (fresh && fresh.ok) return fresh;
+      if (fresh && fresh.ok) return injectSuiteCacheTool(fresh, u);
       const cache = await caches.open(CACHE);
-      return (await cache.match(appFallback(u), { ignoreSearch: true })) || Response.error();
+      const fallback = (await cache.match(appFallback(u), { ignoreSearch: true })) || Response.error();
+      return injectSuiteCacheTool(fallback, u);
     })());
   } else e.respondWith(stale(e.request));
 });
