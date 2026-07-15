@@ -1,8 +1,8 @@
 {
-  "version": "0.3.10-suite-v28",
-  "name": "Mesaha İO İstif Alma v0.3.10",
-  "updatedAt": "2026-07-14T23:59:00+03:00",
-  "notes": "İstif silme işlemi Drive ve Supabase tarafında tek güvenli sunucu işlemi oldu; silinen ortak kayıtlar tüm cihazlardan ve verim hesabından düşer.",
-  "visibleVersion": "İstif Alma v0.3.10",
+  "version": "0.3.11-suite-v28",
+  "name": "Mesaha İO İstif Alma v0.3.11",
+  "updatedAt": "2026-07-15T08:00:00+03:00",
+  "notes": "Sürekli senkronize et uyarısı düzeltildi; fotoğraflar yalnız sarı İstifi Buluttan Getir düğmesiyle indirilir; arama yalnız İstif No ve barkod alanlarında çalışır.",
+  "visibleVersion": "İstif Alma v0.3.11",
   "build": 28
 }

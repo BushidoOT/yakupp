@@ -20,6 +20,6 @@
     }
   ],
   "id": "./?suite=28",
-  "description": "Mesaha İO ile ortak şeflik ve güvenli Drive fotoğraf sistemini kullanan İstif Alma uygulaması",
-  "version": "0.3.10"
+  "description": "Mesaha Suite ile ortak şeflik kayıtlarını kullanan ve fotoğrafları yalnız kullanıcı isteğiyle indiren İstif İO",
+  "version": "0.3.11"
 }

@@ -1,4 +1,4 @@
-const CACHE = "yakupp-suite-shell-v28";
+const CACHE = "yakupp-suite-shell-v28-istif-0311";
 const PREFIX = "yakupp-suite-shell-";
 const CORE = [
   "./app.js",
@@ -17,6 +17,7 @@ const CORE = [
   "./istif/manifest.json",
   "./istif/styles.css",
   "./istif/suite-bridge.js",
+  "./istif/v29-cloud-on-demand.js",
   "./istif/templates/orjinal.xlsx",
   "./istif/templates/ornek_doldurulmus.xlsx",
   "./istif/version.json",
@@ -95,6 +96,7 @@ const CRITICAL = [
   "./istif/styles.css",
   "./istif/app.js",
   "./istif/suite-bridge.js",
+  "./istif/v29-cloud-on-demand.js",
 ];
 const EXTERNAL = [];
 async function notify(data) {
@@ -176,7 +178,7 @@ async function cacheAll() {
     criticalMissing,
     at: new Date().toISOString(),
     build: 28,
-    integrity: "suite-v28",
+    integrity: "suite-v28-istif-0311",
     criticalCount: CRITICAL.length,
     totalCount: CORE.length,
   };
@@ -205,7 +207,7 @@ async function status() {
     criticalMissing,
     cache: CACHE,
     build: 28,
-    integrity: "suite-v28",
+    integrity: "suite-v28-istif-0311",
     criticalCount: CRITICAL.length,
     totalCount: CORE.length,
   };
