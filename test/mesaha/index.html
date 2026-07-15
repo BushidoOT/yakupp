@@ -12476,50 +12476,35 @@
           if (!qs(".settings-title-v325", view)) {
             var title = document.createElement("div");
             title.className = "settings-title-v325";
-            title.innerHTML =
-              '<button class="back" type="button">←</button><h2>Giriş Ayarları</h2>';
+            title.innerHTML = '<button class="back" type="button">←</button><h2>Giriş Ayarları</h2>';
             view.prepend(title);
-            title
-              .querySelector("button")
-              .addEventListener("click", function () {
-                showLocal("home");
-              });
+            title.querySelector("button").addEventListener("click", function () { showLocal("home"); });
           }
+          var options = $("settingsOptionsCardStable");
+          if (!options) {
+            options = document.createElement("section");
+            options.id = "settingsOptionsCardStable";
+            options.className = "card settings-card settings-options-card-stable";
+            options.innerHTML = "<h2>Giriş Seçenekleri</h2>";
+            view.appendChild(options);
+          }
+          ["homeProductChecks", "homeTreeChecks", "barcodeControlEnabled"].forEach(function (id) {
+            var target = $(id);
+            var block = target && target.closest ? target.closest(".setting-block") : null;
+            if (block && block.parentNode !== options) options.appendChild(block);
+          });
           var homeSettings = qs("#homeView .settings-card");
           if (homeSettings) {
-            var blocks = qsa(".setting-block", homeSettings);
-            blocks.forEach(function (bl) {
-              if (
-                bl.querySelector("#homeProductChecks") ||
-                bl.querySelector("#homeTreeChecks") ||
-                bl.querySelector("#barcodeControlEnabled")
-              ) {
-                view.appendChild(bl);
-              }
-            });
-            var h = qs("h2", homeSettings);
-            if (h) h.textContent = "Giriş Ayarları";
             homeSettings.classList.add("home-date-card-v325");
-            if (!qs(".calendar-mark", homeSettings)) {
-              var c = document.createElement("span");
-              c.className = "calendar-mark";
-              c.textContent = "▣";
-              homeSettings.appendChild(c);
-            }
+            var h = qs("h2", homeSettings); if (h) h.textContent = "Mesaha Tarihi";
           }
           ["sound-card", "maintenance-card"].forEach(function (cls) {
             var el = qs("#homeView ." + cls) || qs("#settingsView ." + cls);
             if (el) view.appendChild(el);
           });
-          qsa("#settingsView .setting-block").forEach(function (bl) {
-            if (bl.querySelector("#homeProductChecks")) {
-              var b = qs("b", bl);
-              if (b) b.textContent = "Odun Türleri";
-            }
-            if (bl.querySelector("#homeTreeChecks")) {
-              var b2 = qs("b", bl);
-              if (b2) b2.textContent = "Ağaç Türleri";
-            }
+          qsa("#settingsView .setting-block").forEach(function (block) {
+            block.hidden = false;
+            block.style.removeProperty("display");
           });
         }
         function polishHome() {
@@ -20701,5 +20686,33 @@
     <script src="../suite-security.js"></script>
     <script src="../suite-sync-core.js"></script>
     <script src="./suite-bridge.js"></script>
+  
+    <style id="mesaha-profile-avatar-stable-style">
+      #userBadge,#userPanelBtnV316{display:none!important}
+      .top-actions-v316{display:flex!important;justify-content:flex-end!important;align-items:center!important}
+      #mesahaAccountAvatar{width:46px;height:46px;min-width:46px;border:2px solid #fff;border-radius:50%;padding:0;overflow:hidden;background:#eaf5ef;color:#145b3d;box-shadow:0 7px 18px rgba(15,23,42,.13);display:grid;place-items:center;font-weight:950;font-size:14px;touch-action:manipulation}
+      #mesahaAccountAvatar img{width:100%;height:100%;object-fit:cover;display:block}
+      #settingsView .settings-options-card-stable{display:grid!important;gap:14px!important;margin-bottom:14px!important;padding:15px!important}
+      #settingsView .settings-options-card-stable>.setting-block{display:block!important;visibility:visible!important;opacity:1!important;margin:0!important;padding:13px!important;border:1px solid #dce9e2!important;border-radius:17px!important;background:#fff!important}
+      #settingsView .settings-options-card-stable .check-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important;margin-top:10px!important}
+      #settingsView .settings-options-card-stable .check-card{display:flex!important;visibility:visible!important;min-height:44px!important}
+      #settingsView #barcodeControlSettingV515{display:block!important}
+      @media(max-width:380px){#settingsView .settings-options-card-stable .check-grid{grid-template-columns:1fr!important}}
+      @media(prefers-reduced-motion:no-preference){.view.active{animation:mesaha-view-soft .18s ease-out both}.card{transition:transform .15s ease,box-shadow .15s ease}.bottom-nav button:active{transform:scale(.97)}}
+      @keyframes mesaha-view-soft{from{opacity:.35;transform:translateY(4px)}to{opacity:1;transform:none}}
+    </style>
+    <script id="mesaha-profile-avatar-stable-script">
+      (function(){
+        "use strict";
+        function read(k){try{return JSON.parse(localStorage.getItem(k)||"{}")||{}}catch(e){return {}}}
+        function clean(v){return String(v==null?"":v).trim()}
+        function profile(){var p=read("mesaha_panel_user_v316"),a=read("mesaha_google_access_v548"),t=read("mesaha_terminal_local_mode_v556"),s=read("mesaha_supabase_v500_session"),u=s.user||{},m=u.user_metadata||{};return{name:clean(p.googleFullName||p.name||a.canonical_name||a.name||t.name||m.full_name||m.name||u.email||"Kullanıcı"),avatar:clean(p.googleAvatarUrl||p.avatarUrl||a.avatar_url||a.google_avatar_url||t.avatarUrl||t.avatar_url||m.avatar_url||m.picture)}}
+        function paint(){var actions=document.querySelector(".top-actions-v316");if(!actions)return;var old=document.getElementById("userPanelBtnV316");if(old)old.hidden=true;var btn=document.getElementById("mesahaAccountAvatar");if(!btn){btn=document.createElement("button");btn.id="mesahaAccountAvatar";btn.type="button";btn.setAttribute("aria-label","Orman İO hesap bilgileri");actions.appendChild(btn);btn.addEventListener("click",function(){location.href="../?open=account"},true)}var x=profile();btn.innerHTML=x.avatar?'<img src="'+x.avatar.replace(/"/g,"&quot;")+'" alt="" referrerpolicy="no-referrer">':clean(x.name).split(/\s+/).slice(0,2).map(function(v){return v.charAt(0)}).join("").toUpperCase()}
+        function boot(){paint();setTimeout(paint,350);setTimeout(paint,1400)}
+        if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});else boot();
+        window.addEventListener("storage",paint);["mesaha:user-login","mesaha:terminal-mode-enabled","mesaha:google-access-approved","pageshow"].forEach(function(n){window.addEventListener(n,function(){setTimeout(paint,50)},{passive:true})});
+      })();
+    </script>
+
   </body>
 </html>

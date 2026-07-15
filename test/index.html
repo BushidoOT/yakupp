@@ -30,6 +30,7 @@
     </div>
 
     <div class="app-shell orman-shell">
+      <div class="created-by-yakupp" aria-label="Uygulama geliştiricisi">Created by <strong>Yakupp</strong></div>
       <header class="orman-topbar">
         <a class="orman-brand" href="./" aria-label="Orman İO ana sayfa">
           <img src="./assets/icon-192.png" alt="" />
@@ -68,13 +69,11 @@
         </section>
 
         <section class="orman-management-tools" aria-label="Yönetim araçları">
-          <div class="orman-management-title"><div><span>YÖNETİM ARAÇLARI</span><h2>Hesap ve saha yönetimi</h2></div><small>Her zaman kullanıma açık</small></div><section class="quick-grid">
-            <button class="quick-card" data-modal="login" data-action="open-login"><span class="quick-icon"><svg viewBox="0 0 24 24"><path d="M10 17l5-5-5-5M15 12H3M14 4h5a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-5" /></svg></span><span><strong id="loginButtonTitle">Giriş Yap</strong><small id="loginButtonSub">Google veya terminal modu</small></span><svg class="chevron" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6" /></svg></button>
+          <div class="orman-management-title"><div><span>YÖNETİM ARAÇLARI</span><h2>Saha yönetimi</h2></div><small>Her zaman kullanıma açık</small></div><section class="quick-grid">
             <button class="quick-card" data-modal="ormanci"><span class="quick-icon"><svg viewBox="0 0 24 24"><path d="M15 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M8.5 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM19 8v6M16 11h6" /></svg></span><span><strong>Ormancı Yönetimi</strong><small>Aktif şefliğe kullanıcı ekleyin</small></span><svg class="chevron" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6" /></svg></button>
             <button class="quick-card" data-modal="bolme"><span class="quick-icon"><svg viewBox="0 0 24 24"><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6ZM9 3v15M15 6v15" /></svg></span><span><strong>Bölme Yönetimi</strong><small>Aktif şefliğe bölme oluşturun</small></span><svg class="chevron" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6" /></svg></button>
           </section>
           <section class="tool-strip">
-            <button data-tool="settings"><svg viewBox="0 0 24 24"><path d="M12 15.5A3.5 3.5 0 1 0 12 8a3.5 3.5 0 0 0 0 7.5Z" /></svg><strong>Hesap</strong><small>Oturum bilgileri</small></button>
             <button data-tool="sync"><svg viewBox="0 0 24 24"><path d="M7 18a4.6 4.6 0 0 1-.8-9.13A6 6 0 0 1 17.5 7.5 4 4 0 1 1 18 18M9 15l3 3 3-3M12 12v6" /></svg><strong>Senkronizasyon</strong><small>Şeflik verilerini yenile</small></button>
             <button data-tool="updates"><svg viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M5 21h14" /></svg><strong>Offline Hazırlık</strong><small id="cacheToolText">Dosyalar hazırlanıyor</small></button>
             <button data-tool="server"><svg viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M5 21h14" /></svg><strong>Sunucuya Gönder</strong><small>Yeni işlemleri senkronize et</small></button>
@@ -135,6 +134,14 @@
         <button class="modal-close">×</button>
       </div>
       <div id="authSessionBox"></div>
+      <section class="suite-terminal-pair" id="suiteTerminalPair" aria-label="Terminal kodu ile eşleştirme">
+        <div><strong>Terminal Kodu</strong><small>Yerel misafir modundayken de Google kullanıcısının kodunu girerek tüm hesap ve şeflik bilgilerini alın.</small></div>
+        <div class="suite-terminal-pair-form">
+          <input id="terminalPairCodeSuite" type="text" maxlength="20" inputmode="text" autocomplete="one-time-code" placeholder="A1B2-C3D4" aria-label="Terminal kodu" />
+          <button id="terminalPairSubmitSuite" class="primary-button" type="button">Kodla Bağlan</button>
+        </div>
+        <p id="terminalPairStatusSuite" hidden></p>
+      </section>
       <div class="auth-choice-grid" id="authChoiceGrid">
         <button class="auth-choice google" id="googleLoginBtn">
           <span class="choice-icon">G</span

@@ -426,3 +426,5 @@ body.is-printing .print-area{display:block!important;position:relative;z-index:9
 @media(max-width:360px){.drive-quota-grid{grid-template-columns:1fr}.drive-quota-head{display:grid}.drive-quota-head strong{text-align:left}}
 
 .photo-upload-states{display:flex;flex-wrap:wrap;gap:6px;margin:9px 0 0;padding:0 2px}.photo-upload-states span{padding:5px 8px;border-radius:999px;background:#eef2ef;color:#5e6b64;font-size:10.5px;font-weight:750}.photo-upload-states span.uploaded{background:#e3f3e8;color:#17653f}.photo-upload-states span.uploading{background:#eef4ff;color:#2f5d9a}.photo-upload-states span.failed{background:#fff0ed;color:#a23e33}.photo-upload-states span.pending{background:#fff8e8;color:#95651c}
+
+.page-head.logo-only{grid-template-columns:auto 1fr auto}.page-head.logo-only .logo-only-title{min-width:0}.page-head.logo-only .brand-logo{width:50px;height:50px}

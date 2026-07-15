@@ -414,7 +414,7 @@
         <article class="suite-health-card"><small>Mesaha İO</small><strong>${Number(health.mesaha.localRecords || 0).toLocaleString("tr-TR")}</strong><span>${health.mesaha.manualPending ? "Şefliğe gönderim bekliyor" : "Yerel kayıt • otomatik gönderilmez"}</span></article>
         <article class="suite-health-card"><small>İstif bekleyen</small><strong>${Number(health.istif.pendingRecords || 0).toLocaleString("tr-TR")}</strong><span>${health.istif.failedRecords ? health.istif.failedRecords + " hatalı kayıt" : "Kayıt kuyruğu"}</span></article>
         <article class="suite-health-card"><small>Fotoğraf hatası</small><strong>${Number(health.istif.failedPhotos || 0).toLocaleString("tr-TR")}</strong><span>${health.istif.pendingPhotos + health.istif.uploadingPhotos} fotoğraf cihazda/bekliyor</span></article>
-        <article class="suite-health-card"><small>Suite işlemleri</small><strong>${Number(health.suite.pendingOperations || 0).toLocaleString("tr-TR")}</strong><span>Şeflik, kullanıcı ve bölme kuyruğu</span></article>
+        <article class="suite-health-card"><small>Orman İO işlemleri</small><strong>${Number(health.suite.pendingOperations || 0).toLocaleString("tr-TR")}</strong><span>Şeflik, kullanıcı ve bölme kuyruğu</span></article>
       </div>
       <section class="suite-health-section">
         <h3>Bağlantı ve son işlem</h3>

@@ -239,20 +239,6 @@ self.addEventListener("activate", (e) =>
         missing: st.missing,
         missingCount: st.missingCount,
       });
-      // iOS ana ekran PWA ve Android Chrome, yeni worker etkinleştiğinde açık
-      // sayfayı bir kez yenilesin. Böylece önbellek aracı ilk güncellemede gelir.
-      const openClients = await self.clients.matchAll({ includeUncontrolled: true, type: "window" });
-      for (const client of openClients) {
-        try {
-          const url = new URL(client.url);
-          const path = url.pathname.replace(/\/+$/, "");
-          const isRoot = !/\/(?:mesaha|istif|yonetim)(?:\/|$)/i.test(path) && !/\/temizle\.html$/i.test(path);
-          if (isRoot && url.searchParams.get("sw_refresh") !== CACHE_TOOL_BUILD) {
-            url.searchParams.set("sw_refresh", CACHE_TOOL_BUILD);
-            await client.navigate(url.href);
-          }
-        } catch (_) {}
-      }
     })(),
   ),
 );
@@ -321,12 +307,19 @@ function appFallback(url) {
   if (/\/mesaha(?:\/|$)/.test(p)) return "./mesaha/index.html";
   return "./index.html";
 }
+async function fetchWithTimeout(req, timeout = 6500) {
+  if (typeof AbortController === "undefined") return fetch(req);
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeout);
+  try { return await fetch(new Request(req, { signal: controller.signal })); }
+  finally { clearTimeout(timer); }
+}
 async function stale(req, fallback) {
   const cache = await caches.open(CACHE),
     hit =
       (await cache.match(req, { ignoreSearch: true })) ||
       (fallback && (await cache.match(fallback, { ignoreSearch: true })));
-  const net = fetch(req)
+  const net = fetchWithTimeout(req, 8000)
     .then(async (r) => {
       if (r && (r.ok || r.type === "opaque")) await cache.put(req, r.clone());
       return r;
@@ -345,7 +338,7 @@ async function stale(req, fallback) {
 async function networkFirst(req) {
   const cache = await caches.open(CACHE);
   try {
-    const fresh = await fetch(new Request(req, { cache: "no-store" }));
+    const fresh = await fetchWithTimeout(new Request(req, { cache: "no-store" }), req.mode === "navigate" ? 5500 : 8000);
     if (fresh && fresh.ok) await cache.put(req, fresh.clone());
     return fresh;
   } catch (_) {

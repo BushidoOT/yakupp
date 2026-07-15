@@ -1944,3 +1944,30 @@ body.modal-open{overflow:hidden!important;touch-action:none}
   .modal{top:max(14px,env(safe-area-inset-top))!important;bottom:max(14px,env(safe-area-inset-bottom))!important;transform:translateX(-50%)!important;max-height:none!important;height:auto!important}
   body.modal-open .modal:not([hidden]){animation:none!important}
 }
+
+
+/* Orman İO üretim cilası: hızlı, hafif ve mobil uyumlu */
+.created-by-yakupp{
+  position:fixed;left:max(12px,env(safe-area-inset-left));bottom:calc(82px + env(safe-area-inset-bottom));z-index:45;
+  padding:5px 10px;border-radius:999px;background:rgba(255,255,255,.82);border:1px solid rgba(18,104,63,.16);
+  box-shadow:0 7px 18px rgba(11,69,44,.08);color:#476259;font:600 11px/1.1 system-ui,-apple-system,"Segoe UI",sans-serif;
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);pointer-events:none
+}
+.created-by-yakupp strong{font-family:"Segoe Script","Snell Roundhand","Brush Script MT",cursive;font-size:15px;color:#0c6f46;letter-spacing:.2px}
+.orman-shell{position:relative}
+.suite-terminal-pair{display:grid;gap:10px;margin:12px 0;padding:14px;border:1px solid #d7e8df;border-radius:18px;background:#f7fcf9}
+.suite-terminal-pair>div:first-child{display:grid;gap:3px}.suite-terminal-pair strong{color:#123d2d}.suite-terminal-pair small{color:#64766e;font-weight:700;line-height:1.4}
+.suite-terminal-pair-form{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center}
+.suite-terminal-pair input{min-width:0;height:48px;border:1px solid #c9ddd2;border-radius:14px;background:#fff;padding:0 13px;font-size:16px;font-weight:900;letter-spacing:1.4px;text-transform:uppercase}
+.suite-terminal-pair button{min-height:48px;white-space:nowrap}.suite-terminal-pair p{margin:0;padding:9px 11px;border-radius:12px;background:#e9f8ef;color:#12683f;font-weight:850;font-size:12px}
+.suite-terminal-pair.is-error p{background:#fff0f0;color:#a52222}.suite-terminal-pair.is-busy{opacity:.74;pointer-events:none}
+.about-action-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}.about-action-grid a{min-height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;font-weight:950;border:1px solid #d6e3dd}.about-telegram{background:#eaf7ff;color:#087aaf}.about-youtube{background:#fff0f0;color:#c71920}
+@media(max-width:420px){.suite-terminal-pair-form{grid-template-columns:1fr}.suite-terminal-pair button{width:100%}.about-action-grid{grid-template-columns:1fr}.created-by-yakupp{left:9px;bottom:calc(76px + env(safe-area-inset-bottom));transform:scale(.92);transform-origin:left bottom}}
+@media(prefers-reduced-motion:no-preference){
+  .orman-content>*{animation:orman-soft-enter .22s ease-out both}.orman-content>*:nth-child(n+4){animation-delay:.025s}
+  .modal:not([hidden]){animation:orman-modal-enter .18s ease-out both}.app-card,.quick-card,.tool-strip button{transition:transform .16s ease,box-shadow .16s ease,background-color .16s ease}
+  .app-card:active,.quick-card:active,.tool-strip button:active{transform:scale(.985)}
+}
+@keyframes orman-soft-enter{from{opacity:.25;transform:translateY(5px)}to{opacity:1;transform:none}}
+@keyframes orman-modal-enter{from{opacity:0;transform:translateY(8px) scale(.99)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}

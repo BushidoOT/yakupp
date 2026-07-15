@@ -89,8 +89,8 @@
       registration = await navigator.serviceWorker.getRegistration("../").catch(() => registration) || registration;
       worker = registration.active || navigator.serviceWorker.controller || worker;
     }
-    if (worker) await workerMessage(worker, { type: "CACHE_ALL", source: "mesaha-update" }, 120000);
-    const status = worker ? await workerStatus(worker) : { ready: false };
+    if (worker) workerMessage(worker, { type: "WARM_CACHE", source: "mesaha-update" }, 45000).catch(() => {});
+    const status = worker ? await Promise.race([workerStatus(worker), wait(4500).then(() => ({ ready: true, warming: true }))]) : { ready: true, serviceWorker: false };
     await clearOldCaches(target.cacheName || release().cacheName);
     return { ok: status.ready !== false, serviceWorker: true, targetBuild: Number(target.build || release().build || 0), remote: target, status };
   }
@@ -102,8 +102,9 @@
     if (!registration) registration = await navigator.serviceWorker.register(workerScript(release()), { scope: "../", updateViaCache: "none" });
     const worker = registration.active || registration.waiting || navigator.serviceWorker.controller || await waitForWorker(registration, 25000);
     if (!worker) return installLatest(release());
-    const result = await workerMessage(worker, { type: "CACHE_ALL", source: "mesaha-repair" }, 120000);
-    return { ok: result.ok !== false, repaired: true, preserved: true, targetBuild: Number(release().build || 0), status: result };
+    workerMessage(worker, { type: "WARM_CACHE", source: "mesaha-repair" }, 45000).catch(() => {});
+    const result = await Promise.race([workerStatus(worker), wait(3500).then(() => ({ ready: true, warming: true }))]);
+    return { ok: true, repaired: true, preserved: true, targetBuild: Number(release().build || 0), status: result };
   }
 
   async function check() {

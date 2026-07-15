@@ -1,16 +1,16 @@
 (function (root) {
   "use strict";
   const DATA = /*MESAHA_RELEASE_DATA_START*/{
-  "build": 34,
-  "version": "34.0.0",
+  "build": 35,
+  "version": "35.0.0",
   "channel": "stable",
-  "releasedAt": "2026-07-15T21:20:00+03:00",
-  "assetToken": "orman-io-stable-20260715-2",
-  "cacheName": "orman-io-shell-stable-20260715-2",
+  "releasedAt": "2026-07-15T23:10:00+03:00",
+  "assetToken": "orman-io-stable-20260715-3",
+  "cacheName": "orman-io-shell-stable-20260715-3",
   "apps": {
     "suite": {
       "label": "Orman İO",
-      "version": "34.0.0"
+      "version": "35.0.0"
     },
     "mesaha": {
       "label": "Mesaha İO",
@@ -22,10 +22,10 @@
     },
     "admin": {
       "label": "Orman İO Yönetim",
-      "version": "34.0.0"
+      "version": "35.0.0"
     }
   },
-  "description": "Orman İO ana ekran yerleşimi, güvenli Ayarlar penceresi, belirgin şeflik adı ve kök Yönetim paneli."
+  "description": "Ayar görünürlüğü, hızlı açılış, kalıcı terminal eşleştirme, profil fotoğrafı ve sade Orman İO arayüzü."
 }/*MESAHA_RELEASE_DATA_END*/;
   const APP_NAMES = DATA.apps || {};
   const SCRIPT_URL = (() => {
@@ -87,11 +87,19 @@
 
   async function fetchRemote(options) {
     const settings = options && typeof options === "object" ? options : {};
-    const response = await fetch(SCRIPT_URL + (SCRIPT_URL.includes("?") ? "&" : "?") + "remote=" + Date.now(), {
-      cache: "no-store",
-      signal: settings.signal,
-      headers: { "Cache-Control": "no-cache" }
-    });
+    const ownController = !settings.signal && typeof AbortController !== "undefined" ? new AbortController() : null;
+    const signal = settings.signal || (ownController && ownController.signal) || undefined;
+    const timeout = ownController ? setTimeout(() => { try { ownController.abort(); } catch (_) {} }, 6500) : 0;
+    let response;
+    try {
+      response = await fetch(SCRIPT_URL + (SCRIPT_URL.includes("?") ? "&" : "?") + "remote=" + Date.now(), {
+        cache: "no-store",
+        signal,
+        headers: { "Cache-Control": "no-cache" }
+      });
+    } finally {
+      if (timeout) clearTimeout(timeout);
+    }
     if (!response.ok) throw new Error("Güncelleme merkezi alınamadı.");
     const remote = parse(await response.text());
     const appName = settings.app || (root.MESAHA_VERSION && root.MESAHA_VERSION.app === "İstif İO" ? "istif" : "mesaha");

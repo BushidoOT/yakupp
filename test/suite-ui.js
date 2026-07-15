@@ -36,7 +36,7 @@
       );
     document.body.insertAdjacentHTML(
       "beforeend",
-      `<section class="modal backups-modal-v8" id="backupsModalV8" hidden><div class="modal-head"><div><span class="modal-kicker">ŞEFLİK DRIVE</span><h3>Yedekler</h3></div><button class="modal-close" data-close-backups-v8 type="button">×</button></div><div class="backup-toolbar-v8"><button class="primary-button" id="backupNowV8" type="button">Şimdi Yedekle</button><button class="secondary-button" id="backupRefreshV8" type="button">Listeyi Yenile</button></div><div class="modal-note">Suite yedeği; Mesaha kayıtlarını, İstif kayıtlarını, şeflik ve offline bölme bilgilerini birlikte saklar.</div><div id="backupListV8" class="backup-list-v8"><div class="modal-note">Yedekler yükleniyor…</div></div></section>`,
+      `<section class="modal backups-modal-v8" id="backupsModalV8" hidden><div class="modal-head"><div><span class="modal-kicker">ŞEFLİK DRIVE</span><h3>Yedekler</h3></div><button class="modal-close" data-close-backups-v8 type="button">×</button></div><div class="backup-toolbar-v8"><button class="primary-button" id="backupNowV8" type="button">Şimdi Yedekle</button><button class="secondary-button" id="backupRefreshV8" type="button">Listeyi Yenile</button></div><div class="modal-note">Orman İO yedeği; Mesaha kayıtlarını, İstif kayıtlarını, şeflik ve offline bölme bilgilerini birlikte saklar.</div><div id="backupListV8" class="backup-list-v8"><div class="modal-note">Yedekler yükleniyor…</div></div></section>`,
     );
     bind();
     handleCallback();
@@ -260,7 +260,7 @@
     if (!box) return;
     if (!items.length) {
       box.innerHTML =
-        '<div class="modal-note">Bu şeflik Drive hesabında henüz Suite yedeği yok.</div>';
+        '<div class="modal-note">Bu şeflik Drive hesabında henüz Orman İO yedeği yok.</div>';
       return;
     }
     box.innerHTML = items
@@ -279,7 +279,7 @@
     if (b) b.disabled = true;
     try {
       await api().createSuiteBackup();
-      toast("Suite yedeği şeflik kurucusunun Drive hesabına kaydedildi.");
+      toast("Orman İO yedeği şeflik kurucusunun Drive hesabına kaydedildi.");
       await load();
     } catch (e) {
       if (e && (e.code === "DRIVE_NOT_CONNECTED" || e.code === "GOOGLE_REQUIRED")) {

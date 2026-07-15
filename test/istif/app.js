@@ -1519,9 +1519,10 @@ function profileButton() {
 }
 
 function head(title, subtitle = "", { back = false, action = "" } = {}) {
-  return `<header class="page-head ${back ? "compact" : ""}">
+  const titleBlock = title || subtitle ? `<div class="title-wrap"><h1>${esc(title)}</h1>${subtitle ? `<p>${esc(subtitle)}</p>` : ""}</div>` : '<div class="title-wrap logo-only-title" aria-hidden="true"></div>';
+  return `<header class="page-head ${back ? "compact" : ""} ${!title && !subtitle ? "logo-only" : ""}">
     ${back ? `<button class="back-btn" data-action="back" aria-label="Geri">${icon("back", 28)}</button>` : logo()}
-    <div class="title-wrap"><h1>${esc(title)}</h1>${subtitle ? `<p>${esc(subtitle)}</p>` : ""}</div>
+    ${titleBlock}
     ${action ? `<div class="head-action">${action}</div>` : ""}
   </header>`;
 }
@@ -1646,7 +1647,7 @@ function pendingUploadCounts() {
 function renderHome() {
   const c = counts();
   const pending = pendingUploadCounts();
-  return `${head("İstif İO", "", { action: profileButton() })}
+  return `${head("", "", { action: profileButton() })}
     ${state.settings.setupComplete ? "" : `<button class="setup-warning card" data-view="settings"><span>${icon("info", 22)}</span><div><b>İşletme ve evrak bilgilerini girin</b><small>Bölge, işletme, şeflik ve rampa bilgilerini kaydedin.</small></div>${icon("chevron", 21)}</button>`}
     ${state.drive.connected && state.drive.quota && ["warning", "critical", "full"].includes(state.drive.quota.level) ? `<button class="drive-home-warning ${esc(state.drive.quota.level)}" data-view="settings"><span>${icon("drive", 22)}</span><div><b>${esc(driveQuotaLevelText(state.drive.quota))}</b><small>${state.drive.quota.remainingBytes == null ? "Drive alanını kontrol edin" : `${formatStorageBytes(state.drive.quota.remainingBytes)} boş alan kaldı`}</small></div>${icon("chevron", 20)}</button>` : ""}
     <section class="sync-banner card">

@@ -83,6 +83,7 @@
     selectedYieldStats = null;
 
   const TELEGRAM_URL = "https://telegram.me/+LpsvthN4BM5kYWI0";
+  const YOUTUBE_URL = "https://youtube.com/shorts/4yRRIRNptro?si=EgpHz-hQmnxFuqu2";
   const TELEGRAM_DAY_KEY = "mesaha_suite_telegram_daily_v12";
   const CURRENT_SUITE_BUILD = Number(window.MESAHA_RELEASE?.build || window.MESAHA_VERSION?.build || 0);
   const CURRENT_SUITE_LABEL = "Orman İO";
@@ -120,7 +121,14 @@
     updateVersionCorner(latestSuiteVersion);
     if (navigator.onLine === false) return false;
     try {
-      const response = await fetch("./release.js?update_check=" + Date.now(), { cache: "no-store", headers: { "Cache-Control": "no-cache" } });
+      const controller = typeof AbortController !== "undefined" ? new AbortController() : null;
+      const timer = setTimeout(() => { try { controller && controller.abort(); } catch (_) {} }, 5500);
+      let response;
+      try {
+        response = await fetch("./release.js?update_check=" + Date.now(), { cache: "no-store", signal: controller ? controller.signal : undefined, headers: { "Cache-Control": "no-cache" } });
+      } finally {
+        clearTimeout(timer);
+      }
       if (!response.ok) throw new Error("Güncelleme bilgisi alınamadı");
       const remote = window.MesahaRelease.parse(await response.text());
       const build = Number(remote && remote.build || 0);
@@ -173,7 +181,7 @@
         worker = navigator.serviceWorker.controller || reg.active || reg.waiting || worker;
         setUpdateProgress(58, "Offline uygulama dosyaları yenileniyor…");
         if (worker) {
-          try { await workerMessage(worker, "CACHE_ALL", 120000); } catch (_) {}
+          try { workerMessage(worker, "WARM_CACHE", 45000).catch(() => {}); } catch (_) {}
         }
       }
       setUpdateProgress(100, "Güncelleme tamamlandı. Uygulama yeniden açılıyor…");
@@ -1241,6 +1249,7 @@
       $("connectionPill").classList.toggle("offline", !navigator.onLine);
     updatePendingBadge();
     renderAuthBox();
+    paintTerminalPairCard();
     renderOpenModals();
     syncAppCaches();
   }
@@ -1457,7 +1466,7 @@
       form.insertBefore(note, search || form.firstChild);
     }
     note.textContent = manage
-      ? "Ormancı ekleme ve çıkarma yalnızca Suite üzerinden yapılır."
+      ? "Ormancı ekleme ve çıkarma yalnızca Orman İO üzerinden yapılır."
       : "Bu şeflikte üyesiniz. Ormancı listesinden yalnızca uygulama içindeki seçimlerde yararlanabilirsiniz.";
   }
   function renderBolmeModal() {
@@ -1498,7 +1507,7 @@
       form.insertBefore(note, form.firstChild);
     }
     note.textContent = manage
-      ? "Bölme oluşturma, silme ve offline indirme yalnızca Suite üzerinden yönetilir."
+      ? "Bölme oluşturma, silme ve offline indirme yalnızca Orman İO üzerinden yönetilir."
       : "Bu şeflikte üyesiniz. Bölmeleri silemez veya oluşturamazsınız; hazır bölmeleri indirebilirsiniz.";
   }
   async function logout() {
@@ -1541,6 +1550,43 @@
       toast(e.message, true);
     }
   }
+  function paintTerminalPairCard() {
+    const card = $("suiteTerminalPair"), status = $("terminalPairStatusSuite"), input = $("terminalPairCodeSuite");
+    if (!card) return;
+    const type = authType();
+    card.hidden = type === "google";
+    if (input && type === "terminal") input.placeholder = "Başka terminal kodu";
+    if (status && type === "terminal") { status.hidden = false; status.textContent = "Bu cihaz Google kullanıcısına terminal koduyla bağlı."; }
+    else if (status && !card.classList.contains("is-error")) status.hidden = true;
+  }
+  async function claimTerminalFromSuite() {
+    const card = $("suiteTerminalPair"), input = $("terminalPairCodeSuite"), status = $("terminalPairStatusSuite"), button = $("terminalPairSubmitSuite");
+    const code = clean(input && input.value).toUpperCase();
+    if (code.replace(/[^A-Z0-9]/g, "").length < 8) return toast("Geçerli terminal kodunu yazın.", true);
+    if (card) { card.classList.remove("is-error"); card.classList.add("is-busy"); }
+    if (button) { button.disabled = true; button.textContent = "Bağlanıyor…"; }
+    if (status) { status.hidden = false; status.textContent = "Google hesabı ve şeflik bilgileri alınıyor…"; }
+    try {
+      const api = googleAuthApi();
+      if (!api || typeof api.claimTerminalCode !== "function") throw new Error("Terminal giriş modülü hazır değil.");
+      await api.claimTerminalCode(code);
+      if (input) input.value = "";
+      loadLocal();
+      render();
+      closeModals();
+      await loadFolders(true).catch(() => []);
+      render();
+      toast("Terminal cihaz Google kullanıcısına bağlandı.");
+    } catch (error) {
+      if (card) card.classList.add("is-error");
+      if (status) { status.hidden = false; status.textContent = clean(error && error.message || error) || "Terminal kodu doğrulanamadı."; }
+      toast(clean(error && error.message || error) || "Terminal kodu doğrulanamadı.", true);
+    } finally {
+      if (card) card.classList.remove("is-busy");
+      if (button) { button.disabled = false; button.textContent = "Kodla Bağlan"; }
+      paintTerminalPairCard();
+    }
+  }
   async function createSeflik(e) {
     e.preventDefault();
     if (busy) return;
@@ -1571,7 +1617,7 @@
   function renameSeflik() {
     if (!canManageFolder())
       return toast(
-        "Bu işlemi yalnızca şeflik kurucusu Suite üzerinden yapabilir.",
+        "Bu işlemi yalnızca şeflik kurucusu Orman İO üzerinden yapabilir.",
         true,
       );
     const f = creatorFolder();
@@ -1622,7 +1668,7 @@
   function deleteSeflik() {
     if (!canManageFolder())
       return toast(
-        "Bu işlemi yalnızca şeflik kurucusu Suite üzerinden yapabilir.",
+        "Bu işlemi yalnızca şeflik kurucusu Orman İO üzerinden yapabilir.",
         true,
       );
     const f = creatorFolder();
@@ -1686,7 +1732,7 @@
   function addOrmanci(u, btn) {
     if (!canManageFolder())
       return toast(
-        "Bu işlemi yalnızca şeflik kurucusu Suite üzerinden yapabilir.",
+        "Bu işlemi yalnızca şeflik kurucusu Orman İO üzerinden yapabilir.",
         true,
       );
     const af = activeFolder();
@@ -1735,7 +1781,7 @@
   function removeOrmanci(index) {
     if (!canManageFolder())
       return toast(
-        "Bu işlemi yalnızca şeflik kurucusu Suite üzerinden yapabilir.",
+        "Bu işlemi yalnızca şeflik kurucusu Orman İO üzerinden yapabilir.",
         true,
       );
     const af = activeFolder();
@@ -1762,7 +1808,7 @@
   async function createBolme(e) {
     if (!canManageFolder())
       return toast(
-        "Bu işlemi yalnızca şeflik kurucusu Suite üzerinden yapabilir.",
+        "Bu işlemi yalnızca şeflik kurucusu Orman İO üzerinden yapabilir.",
         true,
       );
     e.preventDefault();
@@ -1974,7 +2020,7 @@
   }
 
   function deleteDivision(index) {
-    if (!canManageFolder()) return toast("Bu işlemi yalnızca şeflik kurucusu Suite üzerinden yapabilir.", true);
+    if (!canManageFolder()) return toast("Bu işlemi yalnızca şeflik kurucusu Orman İO üzerinden yapabilir.", true);
     const d = currentDivisions()[index];
     if (!d) return;
     openDivisionDeleteModal(d, index);
@@ -2173,45 +2219,49 @@
   }
   async function prepareOffline() {
     const online = navigator.onLine !== false;
-    showStartup(online ? "Orman İO hazırlanıyor" : "Offline sürüm açılıyor", online ? "Mesaha İO ve İstif İO dosyaları kontrol ediliyor." : "Cihaza daha önce indirilen uygulama dosyaları doğrulanıyor.", online ? 8 : 15, false);
+    showStartup(online ? "Orman İO hazırlanıyor" : "Offline sürüm açılıyor", online ? "Uygulama açılıyor; çevrimdışı dosyalar arka planda kontrol ediliyor." : "Cihazdaki uygulama dosyaları kontrol ediliyor.", online ? 16 : 22, false);
+    const failOpen = setTimeout(() => {
+      setCacheStatus("Uygulama açıldı • offline hazırlık arka planda sürüyor", 55);
+      closeStartup(0);
+    }, online ? 3200 : 4200);
     if (!("serviceWorker" in navigator)) {
+      clearTimeout(failOpen);
       setCacheStatus("Tarayıcı çevrimdışı kullanımı desteklemiyor", 0);
-      showStartup("Offline hazırlık kullanılamıyor", "Tarayıcınız service worker desteği sunmuyor.", 0, true);
+      closeStartup(350);
       return false;
     }
     try {
       await cleanupNestedWorkers();
-      try { if (navigator.storage && navigator.storage.persist) await navigator.storage.persist(); } catch {}
       const reg = await navigator.serviceWorker.register("./service-worker.js?release=" + encodeURIComponent(window.MESAHA_RELEASE?.assetToken || "stable"), { scope: "./", updateViaCache: "none" });
-      await navigator.serviceWorker.ready;
-      const worker = await waitForActiveWorker(reg, navigator.onLine===false?7000:18000);
-      setCacheStatus("Mesaha İO ve İstif İO dosyaları doğrulanıyor…", 18);
-      let st = await workerMessage(worker, "GET_STATUS", online ? 15000 : 7000);
-      if (online && !st.ready) {
-        setCacheStatus("Eksik uygulama dosyaları indiriliyor…", 35);
-        st = await workerMessage(worker, "CACHE_ALL", 120000);
-        if (!st.ready) {
-          setCacheStatus("Eksik dosyalar yeniden deneniyor…", 72);
-          st = await workerMessage(worker, "REPAIR_CACHE", 120000);
-        }
+      const worker = await Promise.race([
+        waitForActiveWorker(reg, online ? 5000 : 3500),
+        new Promise((resolve) => setTimeout(() => resolve(reg.active || navigator.serviceWorker.controller || null), online ? 5200 : 3700)),
+      ]);
+      let st = { ready: false, criticalMissing: [] };
+      if (worker) {
+        try { st = await workerMessage(worker, "GET_STATUS", online ? 2600 : 1800); } catch (_) {}
       }
       cacheReady = !!st.ready;
+      clearTimeout(failOpen);
       if (cacheReady) {
-        setCacheStatus("İki uygulama kalıcı olarak çevrimdışı kullanıma hazır", 100);
-        showStartup(online ? "Uygulamalar hazır" : "Offline sürüm hazır", online ? "Orman İO ve iki uygulama kullanıma hazır." : "İnternet olmadan kayıtlı son verilerle devam ediliyor. Ekran 5 saniye içinde açılacak.", 100, false);
-        closeStartup(online ? 300 : 5000);
-      } else if (!online) {
-        setCacheStatus("Offline sürüm eksik • internet bağlantısı gerekli", 25);
-        showStartup("Offline sürüm eksik", "Bu cihazda iki uygulamanın tamamı indirilmemiş. İnternete bağlanıp Suite'i bir kez açın.", 25, true);
+        setCacheStatus("Mesaha İO ve İstif İO çevrimdışı kullanıma hazır", 100);
+        closeStartup(180);
       } else {
-        const missing=Number(st.missingCount || st.missing?.length || 0);
-        setCacheStatus(`Offline hazırlık eksik • ${missing} dosya`, 78);
-        showStartup("Hazırlık tamamlanamadı", `${missing} dosya indirilemedi. Bağlantıyı kontrol edip tekrar deneyin.`, 78, true);
+        const criticalMissing = Array.isArray(st.criticalMissing) ? st.criticalMissing.length : 0;
+        setCacheStatus(online ? "Uygulama açık • offline dosyalar arka planda hazırlanıyor" : criticalMissing ? "Offline dosyaların bir kısmı eksik" : "Cihazdaki son sürüm açıldı", online ? 62 : 45);
+        closeStartup(250);
+        if (online && worker) {
+          setTimeout(() => { workerMessage(worker, "WARM_CACHE", 45000).then((result) => {
+            cacheReady = !!result.ready;
+            setCacheStatus(cacheReady ? "İki uygulama çevrimdışı kullanıma hazır" : "Offline hazırlık daha sonra devam edecek", cacheReady ? 100 : 72);
+          }).catch(() => {}); }, 50);
+        }
       }
       return cacheReady;
     } catch (e) {
-      setCacheStatus("Offline hazırlık tamamlanamadı", 20);
-      showStartup(navigator.onLine===false?"Offline sürüm açılamadı":"Bağlantı hatası", clean(e&&e.message||e)||"Uygulama dosyaları hazırlanamadı.", 20, true);
+      clearTimeout(failOpen);
+      setCacheStatus("Uygulama açıldı • offline hazırlık sonra yeniden denenecek", 40);
+      closeStartup(250);
       return false;
     }
   }
@@ -2341,6 +2391,7 @@
       id === "notificationButton" ||
       id === "googleLoginBtn" ||
       id === "guestLoginBtn" ||
+      id === "terminalPairSubmitSuite" ||
       id === "createTerminalCodeSuite" ||
       id === "refreshTerminalDevicesSuite" ||
       id === "yieldSaveButton" ||
@@ -2423,7 +2474,7 @@
     if (tool === "about") {
       showInfo(
         "Orman İO",
-        `<p>Google veya terminal/misafir oturumu iki uygulamada ortak kullanılır.</p><p><b>Bekleyen işlem:</b> ${pendingOps.length}</p><p>Bölmeler offline indirildikten sonra Mesaha İO ve İstif İO’da kayıt eklemeye hazır olur.</p>`,
+        `<p>Google veya terminal/misafir oturumu Mesaha İO ve İstif İO tarafından ortak kullanılır.</p><p><b>Bekleyen işlem:</b> ${pendingOps.length}</p><p>Bölmeler offline indirildikten sonra iki uygulamada kayıt eklemeye hazır olur.</p><div class="about-action-grid"><a class="about-telegram" href="${esc(TELEGRAM_URL)}" target="_blank" rel="noopener">✈ Telegram Destek</a><a class="about-youtube" href="${esc(YOUTUBE_URL)}" target="_blank" rel="noopener">▶ YouTube Anlatım</a></div>`,
       );
       return true;
     }
@@ -2440,6 +2491,10 @@
     }
     if (id === "guestLoginBtn") {
       openGuest();
+      return true;
+    }
+    if (id === "terminalPairSubmitSuite") {
+      claimTerminalFromSuite();
       return true;
     }
     if (id === "createTerminalCodeSuite") {
@@ -2562,6 +2617,7 @@
     }, { passive: true });
     $("suiteStartupRetry")?.addEventListener("click",()=>prepareOffline());
     $("legacyBackupSearch")?.addEventListener("input", renderLegacyBackups);
+    $("terminalPairCodeSuite")?.addEventListener("keydown", (event) => { if (event.key === "Enter") { event.preventDefault(); claimTerminalFromSuite(); } });
     $("seflikForm").onsubmit = createSeflik;
     $("ormanciForm").onsubmit = searchOrmanci;
     $("bolmeForm").onsubmit = createBolme;
@@ -2638,6 +2694,7 @@
     showStartup(navigator.onLine===false?"Offline sürüm açılıyor":"Orman İO hazırlanıyor",navigator.onLine===false?"Cihazdaki çevrimdışı uygulama dosyaları kontrol ediliyor.":"Mesaha İO ve İstif İO çevrimdışı kullanım için hazırlanıyor.",8,false);
     setCacheStatus("Offline uygulama dosyaları kontrol ediliyor", 8);
     setTimeout(() => prepareOffline(), 30);
+    setTimeout(() => closeStartup(0), 5200);
     if (location.hash && /access_token=|error=/.test(location.hash)) {
       try {
         const api = googleAuthApi();
@@ -2648,6 +2705,14 @@
     }
     setTimeout(() => loadFolders().then(render), 40);
     setTimeout(pingAdminProfile, 700);
+    try {
+      const query = new URLSearchParams(location.search);
+      if (query.get("open") === "account") {
+        query.delete("open");
+        history.replaceState({}, "", location.pathname + (query.toString() ? "?" + query : "") + location.hash);
+        setTimeout(() => openModal("loginModal"), 180);
+      }
+    } catch (_) {}
   }
   if (document.readyState === "loading")
     document.addEventListener("DOMContentLoaded", init, { once: true });
