@@ -2514,6 +2514,16 @@
       prepareOffline();
       return true;
     }
+    if (tool === "guide") {
+      const guideSection = $("suiteGuideSection");
+      if (guideSection && typeof guideSection.scrollIntoView === "function") {
+        guideSection.scrollIntoView({ behavior: "smooth", block: "start" });
+        toast("Kılavuz bölümü açıldı.");
+      } else {
+        toast("Kılavuz bölümü bulunamadı.", true);
+      }
+      return true;
+    }
     if (id === "suiteUpdateButton") {
       if (latestSuiteVersion) { paintUpdateModal(latestSuiteVersion); openModal("suiteUpdateModal"); }
       else checkSuiteUpdate(true);

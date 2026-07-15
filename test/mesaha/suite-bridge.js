@@ -729,17 +729,8 @@
     }
   }
   function note() {
-    const host =
-      document.querySelector("#seflikFolderView .seflik-folder-control") ||
-      $("seflikFolderView");
-    if (host && !$("suiteManagedNoteV8")) {
-      const n = document.createElement("div");
-      n.id = "suiteManagedNoteV8";
-      n.className = "suite-managed-note-v8";
-      n.textContent =
-        "Şeflik, ormancı ve bölme düzenlemeleri Orman İO ana menüsünden yapılır. Şeflik Klasörü kayıtları burada listelenir ve seçilen bölme barkoda göre mevcut Mesaha kayıtlarıyla birleştirilebilir.";
-      host.insertBefore(n, host.firstChild);
-    }
+    const oldNote = $("suiteManagedNoteV8");
+    if (oldNote && oldNote.parentNode) oldNote.parentNode.removeChild(oldNote);
   }
   function simplifyUserPanelV11() {
     const title=$("userPanelTitleV316"), sub=$("panelSyncTextV316");

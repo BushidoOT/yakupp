@@ -1,16 +1,16 @@
 (function (root) {
   "use strict";
   const DATA = /*MESAHA_RELEASE_DATA_START*/{
-  "build": 37,
-  "version": "37.0.0",
+  "build": 38,
+  "version": "38.0.0",
   "channel": "stable",
-  "releasedAt": "2026-07-15T23:14:00+03:00",
-  "assetToken": "orman-io-stable-20260715-5",
-  "cacheName": "orman-io-shell-stable-20260715-5",
+  "releasedAt": "2026-07-15T23:55:00+03:00",
+  "assetToken": "orman-io-stable-20260715-6",
+  "cacheName": "orman-io-shell-stable-20260715-6",
   "apps": {
     "suite": {
       "label": "Orman İO",
-      "version": "37.0.0"
+      "version": "38.0.0"
     },
     "mesaha": {
       "label": "Mesaha İO",
@@ -22,10 +22,10 @@
     },
     "admin": {
       "label": "Orman İO Yönetim",
-      "version": "37.0.0"
+      "version": "38.0.0"
     }
   },
-  "description": "Eski Mesaha yedek uyumluluğu, İstif silme izleri, güvenli gönderildi senkronu, isteğe bağlı Drive fotoğrafları ve belirgin yeşil Mesaha kartı eklendi."
+  "description": "Mesaha Gir kartı yeşile taşındı, Orman İO uygulama kartları yeşil yapıldı, Senkron Sağlığı kaldırılıp Mesaha Gir ve İstif Al kılavuzu eklendi, Şeflik Klasörü yazıları sadeleştirildi."
 }/*MESAHA_RELEASE_DATA_END*/;
   const APP_NAMES = DATA.apps || {};
   const SCRIPT_URL = (() => {

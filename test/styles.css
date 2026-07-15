@@ -1975,29 +1975,155 @@ body.modal-open{overflow:hidden!important;touch-action:none}
 /* Terminal kodu yalnız ilk açılış ve yerel misafir modunda görünür. */
 .suite-terminal-pair[hidden]{display:none!important}
 
-/* Mesaha kartı: ana uygulama paletiyle uyumlu, belirgin yeşil giriş kartı. */
-.orman-app-grid .app-card.mesaha-card {
+/* Orman İO ana kartları: belirgin ve uygulamayla uyumlu yeşil vurgu. */
+.orman-app-grid .app-card.mesaha-card,
+.orman-app-grid .app-card.istif-card,
+.orman-app-grid .app-card.seflik-card,
+.orman-app-grid .app-card.admin-card {
   background: linear-gradient(145deg, #12683f 0%, #238b55 58%, #32a867 100%) !important;
   border-color: rgba(7, 82, 46, 0.72) !important;
   box-shadow: 0 14px 30px rgba(18, 104, 63, 0.28) !important;
 }
-.orman-app-grid .app-card.mesaha-card:hover {
+.orman-app-grid .app-card.mesaha-card:hover,
+.orman-app-grid .app-card.istif-card:hover,
+.orman-app-grid .app-card.seflik-card:hover,
+.orman-app-grid .app-card.admin-card:hover {
   box-shadow: 0 18px 36px rgba(18, 104, 63, 0.34) !important;
 }
 .orman-app-grid .app-card.mesaha-card .app-copy h2,
-.orman-app-grid .app-card.mesaha-card .app-copy p {
+.orman-app-grid .app-card.mesaha-card .app-copy p,
+.orman-app-grid .app-card.istif-card .app-copy h2,
+.orman-app-grid .app-card.istif-card .app-copy p,
+.orman-app-grid .app-card.seflik-card .app-copy h2,
+.orman-app-grid .app-card.seflik-card .app-copy p,
+.orman-app-grid .app-card.admin-card .app-copy h2,
+.orman-app-grid .app-card.admin-card .app-copy p {
   color: #ffffff !important;
 }
-.orman-app-grid .app-card.mesaha-card .app-copy p {
-  opacity: 0.9;
+.orman-app-grid .app-card.mesaha-card .app-copy p,
+.orman-app-grid .app-card.istif-card .app-copy p,
+.orman-app-grid .app-card.seflik-card .app-copy p,
+.orman-app-grid .app-card.admin-card .app-copy p {
+  opacity: 0.92;
 }
-.orman-app-grid .app-card.mesaha-card .app-icon-green {
+.orman-app-grid .app-card.mesaha-card .app-icon-green,
+.orman-app-grid .app-card.istif-card .app-icon-gold,
+.orman-app-grid .app-card.seflik-card .app-icon-blue,
+.orman-app-grid .app-card.admin-card .app-icon-purple {
   background: rgba(255, 255, 255, 0.94) !important;
   color: #12683f !important;
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.72), 0 8px 18px rgba(5, 65, 36, 0.18);
 }
-.orman-app-grid .app-card.mesaha-card .app-arrow {
+.orman-app-grid .app-card.mesaha-card .app-arrow,
+.orman-app-grid .app-card.istif-card .app-arrow,
+.orman-app-grid .app-card.seflik-card .app-arrow,
+.orman-app-grid .app-card.admin-card .app-arrow {
   background: rgba(255, 255, 255, 0.18) !important;
   border-color: rgba(255, 255, 255, 0.42) !important;
   color: #ffffff !important;
+}
+.guide-tool-button,
+.tool-strip button[data-tool="guide"] {
+  background: linear-gradient(145deg, #12683f 0%, #238b55 58%, #32a867 100%) !important;
+  border-color: rgba(7, 82, 46, 0.72) !important;
+  color: #ffffff !important;
+  box-shadow: 0 12px 24px rgba(18, 104, 63, 0.20) !important;
+}
+.tool-strip button[data-tool="guide"] strong,
+.tool-strip button[data-tool="guide"] small,
+.tool-strip button[data-tool="guide"] svg {
+  color: #ffffff !important;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.orman-guide-card {
+  margin-top: 20px;
+  background: linear-gradient(180deg, #f3fbf6 0%, #ffffff 100%);
+  border: 1px solid #cfe6d7;
+  border-radius: 24px;
+  padding: 22px;
+  box-shadow: 0 10px 28px rgba(20,58,43,.06);
+}
+.orman-guide-head button {
+  border-color: #1e8f57;
+  color: #ffffff;
+  background: linear-gradient(145deg, #12683f, #2d9a62);
+}
+.guide-hero-note {
+  margin-bottom: 18px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: #e7f6eb;
+  color: #1b5638;
+  font-weight: 700;
+  line-height: 1.5;
+}
+.orman-guide-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+.guide-panel {
+  border: 1px solid #d8ebe0;
+  border-radius: 20px;
+  background: #ffffff;
+  padding: 18px;
+}
+.guide-panel-title {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e7efe9;
+}
+.guide-panel-title strong {
+  color: #153c2d;
+  font-size: 20px;
+}
+.guide-panel-title small {
+  color: #61816f;
+  font-weight: 700;
+}
+.guide-section-block + .guide-section-block {
+  margin-top: 16px;
+}
+.guide-section-block h3 {
+  margin: 0 0 8px;
+  color: #1c4b36;
+  font-size: 17px;
+}
+.guide-section-block ol {
+  margin: 0;
+  padding-left: 20px;
+  color: #264a38;
+}
+.guide-section-block li + li {
+  margin-top: 6px;
+}
+.guide-inline-note {
+  margin: 0 0 10px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: #f3faf5;
+  color: #3e6751;
+  font-weight: 700;
+}
+.guide-inline-link {
+  color: #147346;
+  font-weight: 800;
+  text-decoration: none;
+}
+.guide-inline-link:hover {
+  text-decoration: underline;
+}
+@media(max-width:760px){
+  .orman-guide-card{padding:16px;border-radius:18px;margin-top:14px}
+  .orman-guide-grid{grid-template-columns:1fr;gap:14px}
+  .guide-panel{padding:15px;border-radius:17px}
+  .guide-panel-title strong{font-size:17px}
+  .guide-section-block h3{font-size:15px}
 }
