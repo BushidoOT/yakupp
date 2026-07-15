@@ -1,5 +1,5 @@
-const CACHE = "yakupp-suite-shell-v28-istif-0312";
-const CACHE_TOOL_BUILD = "0312";
+const CACHE = "yakupp-suite-shell-v31";
+const CACHE_TOOL_BUILD = "31";
 const PREFIX = "yakupp-suite-shell-";
 const CORE = [
   "./app.js",
@@ -69,11 +69,14 @@ const CORE = [
   "./mesaha/temizle.html",
   "./mesaha/version.json",
   "./mesaha/yonetim/admin.css",
+  "./mesaha/yonetim/admin-system-report-v31.css",
+  "./mesaha/yonetim/admin-system-report-v31.js",
   "./mesaha/yonetim/admin.js",
   "./mesaha/yonetim/index.html",
   "./styles.css",
   "./suite-security.js",
   "./suite-cache-reset-v30.js",
+  "./suite-health-v31.js",
   "./suite-sync-core.js",
   "./suite-ui.js",
   "./temizle.html",
@@ -85,6 +88,7 @@ const CRITICAL = [
   "./app.js",
   "./suite-security.js",
   "./suite-cache-reset-v30.js",
+  "./suite-health-v31.js",
   "./suite-sync-core.js",
   "./suite-ui.js",
   "./manifest.json",
@@ -180,8 +184,8 @@ async function cacheAll() {
     missingCount: missing.length,
     criticalMissing,
     at: new Date().toISOString(),
-    build: 28,
-    integrity: "suite-v28-istif-0311",
+    build: 31,
+    integrity: "suite-v31",
     criticalCount: CRITICAL.length,
     totalCount: CORE.length,
   };
@@ -209,8 +213,8 @@ async function status() {
     missingCount: missing.length,
     criticalMissing,
     cache: CACHE,
-    build: 28,
-    integrity: "suite-v28-istif-0311",
+    build: 31,
+    integrity: "suite-v31",
     criticalCount: CRITICAL.length,
     totalCount: CORE.length,
   };
@@ -297,7 +301,7 @@ async function injectSuiteCacheTool(response, url) {
   try {
     const text = await response.clone().text();
     if (/suite-cache-reset-v30\.js/i.test(text)) return response;
-    const tag = '<script src="./suite-cache-reset-v30.js?v=0312" defer><\/script>';
+    const tag = '<script src="./suite-cache-reset-v30.js?v=31" defer><\/script>';
     const html = /<\/body>/i.test(text)
       ? text.replace(/<\/body>/i, tag + "</body>")
       : text + tag;

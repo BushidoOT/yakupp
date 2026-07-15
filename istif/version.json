@@ -1,8 +1,8 @@
 {
-  "version": "0.3.11-suite-v28",
-  "name": "Mesaha İO İstif Alma v0.3.11",
-  "updatedAt": "2026-07-15T08:00:00+03:00",
-  "notes": "Sürekli senkronize et uyarısı düzeltildi; fotoğraflar yalnız sarı İstifi Buluttan Getir düğmesiyle indirilir; arama yalnız İstif No ve barkod alanlarında çalışır.",
-  "visibleVersion": "İstif Alma v0.3.11",
-  "build": 28
+  "version": "0.3.12-suite-v31",
+  "name": "Mesaha İO İstif Alma v0.3.12",
+  "updatedAt": "2026-07-15T12:00:00+03:00",
+  "notes": "İsteğe bağlı buluttan fotoğraf getirme, terminal yetkileri ve senkronizasyon sağlık raporu uyumu.",
+  "visibleVersion": "İstif Alma v0.3.12",
+  "build": 31
 }

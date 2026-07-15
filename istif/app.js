@@ -1,6 +1,6 @@
 "use strict";
 
-const APP_VERSION = "0.3.10-suite-v28";
+const APP_VERSION = "0.3.12-suite-v31";
 const PHOTO_TARGET_BYTES = 600 * 1024;
 const MAX_PHOTO_BYTES = 700 * 1024;
 const DB_NAME = "mesaha-istif-prototype";
@@ -551,7 +551,7 @@ function wait(ms) {
 
 function suiteSyncApi() {
   return (
-    window.MesahaSuiteSyncV28 || window.MesahaSuiteSyncV27 ||
+    window.MesahaSuiteSyncV31 || window.MesahaSuiteSyncV28 || window.MesahaSuiteSyncV27 ||
     window.MesahaSuiteSyncV26 ||
     window.MesahaSuiteSyncV25 ||
     window.MesahaSuiteSyncV24 ||
@@ -3704,7 +3704,7 @@ async function pingAdminProfile() {
         appName: "İstif İO",
         platform: navigator.platform || "",
         browser: navigator.userAgent || "",
-        suiteVersion: "V28",
+        suiteVersion: "V31",
       },
     });
   } catch {}
@@ -3746,7 +3746,7 @@ window.addEventListener(
     render();
     if (navigator.onLine && hasSharedCloudIdentity())
       setTimeout(() => syncSharedContext({ manual: false }), 0);
-    /* Suite V28: ortak kayıt listesi sunucu için otoritatiftir; silinen kayıtlar tüm cihazlardan temizlenir. */
+    /* Suite V31: ortak kayıt listesi sunucu için otoritatiftir; silinen kayıtlar tüm cihazlardan temizlenir. */
   } catch (error) {
     if (bootOverlay) bootOverlay.hidden = true;
     app.innerHTML = `<div class="empty"><h2>Uygulama açılamadı</h2><p>${esc(error.message)}</p></div>`;

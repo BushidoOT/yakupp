@@ -1,12 +1,12 @@
 {
-  "version": "28.0.0",
-  "build": 28,
-  "date": "2026-07-14",
+  "version": "31.0.0",
+  "build": 31,
+  "date": "2026-07-15",
   "name": "Mesaha Suite",
   "short_name": "Mesaha Suite",
-  "description": "Silinen İstiflerin tüm cihazlardan ve verim hesabından düşmesi sağlandı; Mesaha İO Şeflik Klasörüne sunucudaki Mesahayı Sil işlemi eklendi.",
-  "id": "./?suite=28",
-  "start_url": "./?suite=28",
-  "visibleVersion": "Mesaha Suite V28",
-  "cacheName": "yakupp-suite-shell-v28"
+  "description": "Senkronizasyon Sağlığı, canlı admin sistem raporları ve Mesaha İO manuel Şefliğe Gönder akışı eklendi.",
+  "id": "./?suite=31",
+  "start_url": "./?suite=31",
+  "visibleVersion": "Mesaha Suite V31",
+  "cacheName": "yakupp-suite-shell-v31"
 }

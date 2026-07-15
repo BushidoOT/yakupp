@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  const VERSION = "28.0.0";
+  const VERSION = "31.0.0";
   const SUPABASE_URL = "https://swrbpdpotmirnmtqnuba.supabase.co";
   const ANON_KEY = "sb_publishable_G_ZFeUouDxg57Nne5pflfQ_cVGpdMbR";
   const SMOOTH = SUPABASE_URL + "/functions/v1/smooth-function";
@@ -174,7 +174,7 @@
   async function post(url, action, data) {
     const body = {
       action,
-      source: "mesaha-suite-v28",
+      source: "mesaha-suite-v31",
       ...terminalAuth(),
       ...(data || {}),
     };
@@ -205,9 +205,39 @@
     const d = read(K.dirty, {});
     return d && typeof d === "object" ? d : {};
   }
-  function markDirty(app, meta) {
+  function mesahaManualDirtyMeta(meta) {
+    const m = meta && typeof meta === "object" ? meta : {};
+    return !!(
+      m.resubmit === true ||
+      m.manual === true ||
+      m.manualSend === true ||
+      m.sefligeGonder === true ||
+      m.source === "manual" ||
+      m.source === "seflige-gonder" ||
+      (m.drive === true && m.merge === true)
+    );
+  }
+  function sanitizeMesahaDirtyState() {
     const d = dirtyState();
-    d[app || "suite"] = { dirty: true, at: now(), meta: meta || {} };
+    if (d.mesaha && d.mesaha.dirty && !mesahaManualDirtyMeta(d.mesaha.meta)) {
+      delete d.mesaha;
+      write(K.dirty, d);
+      return true;
+    }
+    return false;
+  }
+  function markDirty(app, meta) {
+    const target = app || "suite";
+    const d = dirtyState();
+    /* V31: Mesaha kayıtları yerel çalışır. Kayıt ekleme/düzenleme/silme,
+       kullanıcı Şefliğe Gönder demeden yüzen senkron düğmesini açmaz. */
+    if (target === "mesaha" && !mesahaManualDirtyMeta(meta)) {
+      if (d.mesaha && !mesahaManualDirtyMeta(d.mesaha.meta)) delete d.mesaha;
+      write(K.dirty, d);
+      dispatch();
+      return d;
+    }
+    d[target] = { dirty: true, at: now(), meta: meta || {} };
     write(K.dirty, d);
     dispatch();
     return d;
@@ -879,11 +909,11 @@
       try {
         const remote = await edge("seflik_folder_read", { seflik, folderSeflik: seflik, bolmeNo: bolme });
         remoteRows = Array.isArray(remote.records) ? remote.records : [];
-      } catch (e) { console.warn("[suite-v28] Ortak kayıtlar alınamadı; yerel kayıtlarla devam ediliyor", e); }
+      } catch (e) { console.warn("[suite-v31] Ortak kayıtlar alınamadı; yerel kayıtlarla devam ediliyor", e); }
       const rows = mergeMesahaRows(remoteRows, localRows).map((r) => ({ ...r, seflik, bolmeNo: bolme, bolme_no: bolme }));
       const token = stableSyncToken(seflik, bolme, rows);
       for (let i = 0; i < rows.length; i += 150)
-        await edge("seflik_folder_push", { seflik, bolmeNo: bolme, syncToken: token, records: rows.slice(i, i + 150), appVersion: "Mesaha Suite V28", mergeMode: "barcode" });
+        await edge("seflik_folder_push", { seflik, bolmeNo: bolme, syncToken: token, records: rows.slice(i, i + 150), appVersion: "Mesaha Suite V31", mergeMode: "barcode" });
       let backup = null, driveError = "";
       try {
         if (id.google)
@@ -891,7 +921,7 @@
             seflik, appId: "mesaha",
             fileName: `Mesaha_${fold(seflik)}_${fold(bolme)}_${new Date().toISOString().slice(0, 10)}.json`,
             recordCount: rows.length, totalVolume: rows.reduce((sum, r) => sum + volume(r), 0),
-            payload: { schema: "mesaha-suite-v28", app: "mesaha", seflik, bolme, createdAt: now(), records: rows },
+            payload: { schema: "mesaha-suite-v31", app: "mesaha", seflik, bolme, createdAt: now(), records: rows },
           });
       } catch (e) { driveError = clean(e.message || e); }
       await edge("seflik_folder_finish", {
@@ -899,7 +929,7 @@
         totalVolume: rows.reduce((sum, r) => sum + volume(r), 0),
         driveFileId: (backup && backup.fileId) || "", driveFileName: (backup && backup.fileName) || "",
         driveStatus: backup ? "saved" : id.google ? "error" : "not_connected", driveError,
-        appVersion: "Mesaha Suite V28", mergeMode: "barcode",
+        appVersion: "Mesaha Suite V31", mergeMode: "barcode",
       });
       clearStableSyncToken(seflik, bolme);
       done += rows.length;
@@ -1181,7 +1211,7 @@
             recordCount: payloadRows.length,
             totalVolume: payloadRows.reduce((sum, r) => sum + num(r.ster), 0),
             payload: {
-              schema: "mesaha-suite-v28",
+              schema: "mesaha-suite-v31",
               app: "istif",
               seflik,
               createdAt: now(),
@@ -1189,7 +1219,7 @@
             },
           });
         } catch (e) {
-          console.warn("[suite-v28] İstif Drive yedeği oluşturulamadı", e);
+          console.warn("[suite-v31] İstif Drive yedeği oluşturulamadı", e);
         }
     const pending = (await idbAll("records")).filter((r) => r && !r.isDemo && r.syncStatus !== "synced").length;
     if (pending) markDirty("istif", { pending, failed, retryable: retryableFailures });
@@ -1521,7 +1551,7 @@
       seflik, appId: "mesaha",
       fileName: `Mesaha_${fold(seflik)}_${selected ? fold(selected) + "_" : ""}${new Date().toISOString().replace(/[:.]/g, "-")}.json`,
       recordCount: rows.length, totalVolume: rows.reduce((sum, r) => sum + volume(r), 0),
-      payload: { schema: "mesaha-suite-v28", app: "mesaha", seflik, bolme: selected, createdAt: now(), settings: read(K.settings, {}), records: rows },
+      payload: { schema: "mesaha-suite-v31", app: "mesaha", seflik, bolme: selected, createdAt: now(), settings: read(K.settings, {}), records: rows },
     });
   }
   async function restoreMesahaBackup(id, mode) {
@@ -1589,13 +1619,16 @@
       const wrapped = function (k, v) {
         const old = this.getItem(k),
           out = orig.call(this, k, v);
+        /* V31: Yerel Mesaha kayıt değişiklikleri otomatik bulut kuyruğu değildir.
+           Gönderim yalnız Şefliğe Gönder işlemi tarafından açıkça başlatılır. */
         if (
           this === localStorage &&
           k === K.records &&
           old !== String(v) &&
           !window.__suiteRemoteHydrating
-        )
-          markDirty("mesaha", { key: k });
+        ) {
+          try { window.dispatchEvent(new CustomEvent("mesaha-suite:local-mesaha-changed", { detail: { key: k } })); } catch {}
+        }
         return out;
       };
       wrapped.__suiteV8 = true;
@@ -1605,14 +1638,14 @@
       dispatch();
       queueDockPosition();
     });
-    window.addEventListener("mesaha:records-saved", () => {
-      if (!window.__suiteRemoteHydrating) markDirty("mesaha");
-    });
-    window.addEventListener("mesaha:record-saved", () => {
-      if (!window.__suiteRemoteHydrating) markDirty("mesaha");
-    });
-    window.addEventListener("mesaha:record-deleted", () => {
-      if (!window.__suiteRemoteHydrating) markDirty("mesaha");
+    ["mesaha:records-saved", "mesaha:record-saved", "mesaha:record-deleted"].forEach((eventName) => {
+      window.addEventListener(eventName, (event) => {
+        if (window.__suiteRemoteHydrating) return;
+        /* Sağlık ekranı yerel kayıt sayısını yeniler; senkron kuyruğu açılmaz. */
+        try { window.dispatchEvent(new CustomEvent("mesaha-suite:local-mesaha-changed", { detail: { eventName, source: event && event.detail } })); } catch {}
+        sanitizeMesahaDirtyState();
+        dispatch();
+      });
     });
     window.addEventListener("mesaha-istif:changed", () => markDirty("istif"));
     window.addEventListener("focusin", queueDockPosition, true);
@@ -1685,7 +1718,7 @@
     deleteMesahaDivisionRecords,
     allowMesahaDivisionResubmit,
   };
-  window.MesahaSuiteSyncV28 = window.MesahaSuiteSyncV27 = window.MesahaSuiteSyncV26 = window.MesahaSuiteSyncV25 = window.MesahaSuiteSyncV24 = window.MesahaSuiteSyncV22 = window.MesahaSuiteSyncV21 = api;
+  window.MesahaSuiteSyncV31 = window.MesahaSuiteSyncV28 = window.MesahaSuiteSyncV27 = window.MesahaSuiteSyncV26 = window.MesahaSuiteSyncV25 = window.MesahaSuiteSyncV24 = window.MesahaSuiteSyncV22 = window.MesahaSuiteSyncV21 = api;
   window.MesahaSuiteSyncV20 = api;
   window.MesahaSuiteSyncV19 = api;
   window.MesahaSuiteSyncV18 = api;
@@ -1699,6 +1732,7 @@
   window.MesahaSuiteSyncV8 = api;
   window.MesahaSuiteSyncV7 = api;
   function boot() {
+    sanitizeMesahaDirtyState();
     installButton();
     watchStorage();
     dispatch();
