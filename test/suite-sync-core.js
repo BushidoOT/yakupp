@@ -131,6 +131,14 @@
     const id = identity();
     return !!(id.google || (t && t.source === "pair_code" && (t.terminalCode || t.terminalToken || t.pairedUserId)));
   }
+  function floatingSyncAllowed() {
+    let path = "";
+    try { path = String(location.pathname || "").toLowerCase(); } catch (_) {}
+    /* Mesaha ekranında yüzen senkron düğmesi kullanılmaz. Senkronizasyon
+       Orman İO ana ekranından veya İstif uygulamasından yönetilir. */
+    if (/\/mesaha(?:\/|$)/.test(path)) return false;
+    return cloudSyncAllowed();
+  }
   function authHeaders() {
     const s = session();
     return {
@@ -474,7 +482,7 @@
   }
   function installButton() {
     const existing = document.getElementById("suiteSyncFabV8");
-    if (!cloudSyncAllowed()) {
+    if (!floatingSyncAllowed()) {
       if (existing && existing.parentNode) existing.parentNode.removeChild(existing);
       return;
     }
@@ -509,7 +517,7 @@
     return b;
   }
   function updateButton() {
-    if (!cloudSyncAllowed()) {
+    if (!floatingSyncAllowed()) {
       const stale = document.getElementById("suiteSyncFabV8");
       if (stale && stale.parentNode) stale.parentNode.removeChild(stale);
       positionDock();

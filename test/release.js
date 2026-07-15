@@ -1,20 +1,20 @@
 (function (root) {
   "use strict";
   const DATA = /*MESAHA_RELEASE_DATA_START*/{
-  "build": 42,
-  "version": "42.0.0",
+  "build": 43,
+  "version": "43.0.0",
   "channel": "stable",
-  "releasedAt": "2026-07-16T01:05:00+03:00",
-  "assetToken": "orman-io-stable-20260716-4",
-  "cacheName": "orman-io-shell-stable-20260716-4",
+  "releasedAt": "2026-07-16T01:32:00+03:00",
+  "assetToken": "orman-io-stable-20260716-5",
+  "cacheName": "orman-io-shell-stable-20260716-5",
   "apps": {
     "suite": {
       "label": "Orman İO",
-      "version": "42.0.0"
+      "version": "43.0.0"
     },
     "mesaha": {
       "label": "Mesaha İO",
-      "version": "5.87"
+      "version": "5.88"
     },
     "istif": {
       "label": "İstif İO",
@@ -25,7 +25,7 @@
       "version": "42.0.0"
     }
   },
-  "description": "Mesaha çap ve boy kısayollarında mobil klavye odağı korundu, ürün sınırı ve doğrulama uyarılarında gerçek uyarı WAV sesi güçlendirildi, Google veya terminal kodu olmayan misafirlerde tüm otomatik senkron denemeleri durduruldu."
+  "description": "iOS çap ve boy kısayolları tek touchstart akışına alınarak donma ve klavye kapanması giderildi; Mesaha uygulamasındaki yüzen Senkronize Et düğmesi kaldırıldı, Orman İO ve İstif tarafında korunmaya devam edildi."
 }/*MESAHA_RELEASE_DATA_END*/;
   const APP_NAMES = DATA.apps || {};
   const SCRIPT_URL = (() => {

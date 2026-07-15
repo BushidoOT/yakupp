@@ -518,10 +518,15 @@
       }
     </style>
     <style id="mesaha-v535-shortcut-fix-style">
+      /* Mesaha içinde yüzen Suite senkron düğmesi hiçbir koşulda gösterilmez. */
+      #suiteSyncFabV8 { display: none !important; }
       #entryView #diameterChips button[data-dia],
       #entryView #lengthChips button[data-len] {
         cursor: pointer;
         touch-action: manipulation;
+        -webkit-user-select: none;
+        user-select: none;
+        -webkit-touch-callout: none;
         -webkit-tap-highlight-color: transparent;
         pointer-events: auto !important;
         position: relative;
@@ -4079,9 +4084,11 @@
               entryInputChanged();
             } catch (_) {}
           }
-          try {
-            input.dispatchEvent(new Event("change", { bubbles: true }));
-          } catch (e) {}
+          if (!__quickChipIOSV588) {
+            try {
+              input.dispatchEvent(new Event("change", { bubbles: true }));
+            } catch (e) {}
+          }
           try {
             scheduleEntryDraftV575(false);
           } catch (e) {}
@@ -4095,15 +4102,20 @@
               180,
             );
           } catch (e) {}
-          try {
-            input.focus({ preventScroll: true });
-            const p = String(input.value || "").length;
-            input.setSelectionRange && input.setSelectionRange(p, p);
-          } catch (e) {}
+          if (!__quickChipIOSV588) {
+            try {
+              input.focus({ preventScroll: true });
+              const p = String(input.value || "").length;
+              input.setSelectionRange && input.setSelectionRange(p, p);
+            } catch (e) {}
+          }
           return true;
         }
+        const __quickChipIOSV588 = /iPad|iPhone|iPod/i.test(navigator.userAgent || "") ||
+          (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
         function bindQuickChipContainerV535(container, kind) {
-          if (!container || container.__quickChipBoundV542) return;
+          if (!container || container.__quickChipBoundV588) return;
+          container.__quickChipBoundV588 = true;
           container.__quickChipBoundV542 = true;
           container.__quickChipBoundV535 = true;
           const attr = kind === "diameter" ? "data-dia" : "data-len";
@@ -4112,40 +4124,90 @@
             ev.target && ev.target.closest
               ? ev.target.closest("button[" + attr + "]")
               : null;
+          const stopEvent = (ev) => {
+            try {
+              if (ev && ev.cancelable) ev.preventDefault();
+              if (ev) {
+                ev.stopPropagation();
+                if (ev.stopImmediatePropagation) ev.stopImmediatePropagation();
+              }
+            } catch (_) {}
+          };
+          const focusInputNow = (input) => {
+            if (!input || input.disabled || input.readOnly) return;
+            try {
+              if (document.activeElement !== input) input.focus({ preventScroll: true });
+              const p = String(input.value || "").length;
+              if (input.setSelectionRange) input.setSelectionRange(p, p);
+            } catch (_) {
+              try { input.focus(); } catch (_e) {}
+            }
+          };
+          const applyButton = (button, ev) => {
+            if (!button || button.disabled || !container.contains(button)) return false;
+            const t = Date.now();
+            if (__quickChipTapV535.button === button && t - __quickChipTapV535.at < 180) {
+              stopEvent(ev);
+              return true;
+            }
+            __quickChipTapV535 = { button, at: t };
+            stopEvent(ev);
+            const input = $(targetInputId);
+            /* iOS Safari'de odak değişimi yalnızca kullanıcı dokunuşunun aynı çağrı
+               zincirinde güvenilir kalır. Değeri ve odağı touchstart içinde uygula;
+               pointerup/click/RAF gibi ikinci yolları çalıştırma. */
+            if (__quickChipIOSV588) focusInputNow(input);
+            applyQuickChipV535(kind, button.getAttribute(attr), button);
+            if (!__quickChipIOSV588) focusInputNow(input);
+            return true;
+          };
+
+          container.querySelectorAll("button[" + attr + "]").forEach((button) => {
+            button.setAttribute("tabindex", "-1");
+          });
+
+          if (__quickChipIOSV588) {
+            let lastTouchAt = 0;
+            container.addEventListener(
+              "touchstart",
+              function (ev) {
+                if (ev.touches && ev.touches.length > 1) return;
+                const button = findButton(ev);
+                if (!button) return;
+                lastTouchAt = Date.now();
+                applyButton(button, ev);
+              },
+              { capture: true, passive: false },
+            );
+            /* preventDefault(touchstart) normalde sentetik click'i üretmez. VoiceOver,
+               donanım klavyesi veya eski WebKit click üretirse aynı değeri ikinci kez
+               yazmadan yalnızca olayı bastır. */
+            container.addEventListener(
+              "click",
+              function (ev) {
+                const button = findButton(ev);
+                if (!button) return;
+                if (Date.now() - lastTouchAt < 1200) {
+                  stopEvent(ev);
+                  return;
+                }
+                applyButton(button, ev);
+              },
+              { capture: true, passive: false },
+            );
+            return;
+          }
+
           const keepKeyboard = function (ev) {
             const button = findButton(ev);
             if (!button || button.disabled || !container.contains(button)) return;
-            /* Butonun varsayılan odak davranışı aktif sayı alanını bulanıklaştırıp
-               mobil klavyeyi kapatıyordu. Dokunma başlangıcında varsayılan odağı
-               engelleyerek iOS ve Android'de klavyeyi kesintisiz koru. */
             ev.preventDefault();
-            const active = document.activeElement;
-            const input =
-              active && ["diameterInput", "lengthInput", "barcodeInput"].includes(active.id)
-                ? active
-                : $(targetInputId);
-            container.__quickChipFocusV587 = input || null;
+            container.__quickChipFocusV588 = $(targetInputId) || null;
           };
           const apply = function (ev) {
             const button = findButton(ev);
-            if (!button || button.disabled || !container.contains(button)) return;
-            const t = Date.now();
-            if (
-              __quickChipTapV535.button === button &&
-              t - __quickChipTapV535.at < 420
-            )
-              return;
-            __quickChipTapV535 = { button, at: t };
-            ev.preventDefault();
-            applyQuickChipV535(kind, button.getAttribute(attr), button);
-            const input = $(targetInputId) || container.__quickChipFocusV587;
-            try {
-              if (input) {
-                input.focus({ preventScroll: true });
-                const p = String(input.value || "").length;
-                if (input.setSelectionRange) input.setSelectionRange(p, p);
-              }
-            } catch (_) {}
+            if (!button) return;
+            applyButton(button, ev);
           };
           const suppressSyntheticClick = function (ev) {
             const button = findButton(ev);
@@ -4154,11 +4216,10 @@
               __quickChipTapV535.button === button &&
               Date.now() - __quickChipTapV535.at < 900
             ) {
-              ev.preventDefault();
-              ev.stopPropagation();
+              stopEvent(ev);
               return;
             }
-            apply(ev);
+            applyButton(button, ev);
           };
           if (window.PointerEvent) {
             container.addEventListener("pointerdown", keepKeyboard, {
@@ -4172,10 +4233,6 @@
               },
               { capture: true, passive: false },
             );
-            container.addEventListener("click", suppressSyntheticClick, {
-              capture: true,
-              passive: false,
-            });
           } else {
             container.addEventListener("touchstart", keepKeyboard, {
               capture: true,
@@ -4189,11 +4246,11 @@
               capture: true,
               passive: false,
             });
-            container.addEventListener("click", suppressSyntheticClick, {
-              capture: true,
-              passive: false,
-            });
           }
+          container.addEventListener("click", suppressSyntheticClick, {
+            capture: true,
+            passive: false,
+          });
         }
         function renderQuickChips() {
           const dc = $("diameterChips"),
