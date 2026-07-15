@@ -278,17 +278,18 @@
 
   function renderDashboard(health) {
     const ring = document.getElementById("suiteHealthScoreRing");
-    if (!ring) return;
     const issues = Math.max(0, Number(health.issueCount || 0));
     const score = health.level === "offline" ? 35 : health.level === "error" ? Math.max(45, 72 - issues * 4) : health.level === "warning" ? Math.max(70, 94 - issues * 3) : 100;
-    ring.style.setProperty("--health-score", String(score));
     const setText = (id, value) => { const el = document.getElementById(id); if (el) el.textContent = value; };
-    setText("suiteHealthScore", score + "%");
-    setText("healthPendingRecords", String(Number(health.istif.pendingRecords || 0) + (health.mesaha.manualPending ? 1 : 0)));
-    setText("healthPendingPhotos", String(Number(health.istif.pendingPhotos || 0) + Number(health.istif.uploadingPhotos || 0) + Number(health.istif.failedPhotos || 0)));
-    setText("healthSuiteOps", String(Number(health.suite.pendingOperations || 0)));
-    setText("healthLastSync", dashboardTime(health.lastSync.at));
-    setText("healthLastError", health.lastSync.error || health.istif.failedPhotos || health.istif.failedRecords ? (health.lastSync.error || "İstif/fotoğraf hatası") : "Hata yok");
+    if (ring) {
+      ring.style.setProperty("--health-score", String(score));
+      setText("suiteHealthScore", score + "%");
+      setText("healthPendingRecords", String(Number(health.istif.pendingRecords || 0) + (health.mesaha.manualPending ? 1 : 0)));
+      setText("healthPendingPhotos", String(Number(health.istif.pendingPhotos || 0) + Number(health.istif.uploadingPhotos || 0) + Number(health.istif.failedPhotos || 0)));
+      setText("healthSuiteOps", String(Number(health.suite.pendingOperations || 0)));
+      setText("healthLastSync", dashboardTime(health.lastSync.at));
+      setText("healthLastError", health.lastSync.error || health.istif.failedPhotos || health.istif.failedRecords ? (health.lastSync.error || "İstif/fotoğraf hatası") : "Hata yok");
+    }
 
     const system = document.getElementById("heroSystemStatus");
     if (system) {
@@ -309,7 +310,7 @@
 
     const quota = health.drive.quota;
     setText("dashboardDriveName", health.drive.ownerName || health.drive.ownerEmail || "Google Drive");
-    setText("dashboardDriveConnection", health.drive.connected ? "Bağlandı" : "Bağlı değil");
+    setText("dashboardDriveConnection", health.drive.connected ? "Bağlandı" : (health.online ? "Drive bağlantısı bulunamadı" : "Çevrimdışı"));
     const bar = document.getElementById("dashboardDriveBar");
     if (quota) {
       const percent = quota.percent == null ? 0 : Math.max(0, Math.min(100, Number(quota.percent) || 0));
@@ -557,13 +558,7 @@
     installStyle();
     ensureModal();
     ["suiteHealthDetails", "suiteHealthInlineDetails"].forEach((id) => { const button = document.getElementById(id); if (button) reliablePress(button, openModal); });
-    if (!installButton()) {
-      const observer = new MutationObserver(() => {
-        if (installButton()) observer.disconnect();
-      });
-      observer.observe(document.documentElement, { childList: true, subtree: true });
-      setTimeout(() => observer.disconnect(), 15000);
-    }
+    installButton();
     const refreshAndRender = async (forcePing) => {
       try { await refreshDriveSnapshot(); } catch (_) {}
       try {
@@ -579,6 +574,7 @@
     window.addEventListener("storage", (event) => {
       if (event && event.key === K.drive) setTimeout(() => refreshAndRender(false), 120);
     });
+    window.addEventListener("mesaha-suite:drive-status", () => setTimeout(() => refreshAndRender(false), 80));
     setInterval(() => refreshAndRender(false), PING_INTERVAL);
   }
 

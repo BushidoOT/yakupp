@@ -123,6 +123,7 @@
       if (text) text.textContent = "Drive bağlantısı kontrol ediliyor…";
       const s = await api().driveStatus();
       lastDriveStatus = s || null;
+      try { window.dispatchEvent(new CustomEvent("mesaha-suite:drive-status", { detail: s || null })); } catch (_) {}
       paintQuota(s);
       if (s.googleRequired) {
         text.textContent = "Drive için Google ile giriş yapın";

@@ -5,6 +5,7 @@ const CACHE_TOOL_BUILD = String(RELEASE.assetToken || RELEASE.build || "stable")
 const PREFIXES = ["yakupp-suite-shell-", "orman-io-shell-"];
 const CORE = [
   "./release.js",
+  "./suite-audio.js",
   "./app.js",
   "./assets/hero_forest_cover.webp",
   "./assets/orman_io_hero.webp",
@@ -56,6 +57,7 @@ const CORE = [
   "./mesaha/js/mesaha-render-storage.js",
   "./mesaha/js/mesaha-runtime.js",
   "./mesaha/js/mesaha-sound.js",
+  "./mesaha/js/mesaha-production-stabilizer.js",
   "./mesaha/js/mesaha-save-focus.js",
   "./mesaha/js/mesaha-seflik-entry-repair.js",
   "./mesaha/js/mesaha-seflik-folder.js",
@@ -88,6 +90,9 @@ const CRITICAL = [
   "./index.html",
   "./styles.css",
   "./app.js",
+  "./suite-audio.js",
+  "./assets/mesaha_onay.wav",
+  "./assets/mesaha_uyari.wav",
   "./suite-security.js",
   "./suite-cache-reset.js",
   "./suite-health.js",
@@ -99,6 +104,7 @@ const CRITICAL = [
   "./mesaha/css/app.css",
   "./mesaha/js/mesaha-runtime.js",
   "./mesaha/js/mesaha-sound.js",
+  "./mesaha/js/mesaha-production-stabilizer.js",
   "./mesaha/js/mesaha-save-focus.js",
   "./mesaha/suite-bridge.js",
   "./istif/index.html",

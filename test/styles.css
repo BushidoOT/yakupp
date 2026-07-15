@@ -1896,7 +1896,7 @@ html {
 
 /* ORMAN İO — birleşik modern ana ekran */
 body.orman-io-home{background:#edf3f1;padding:0;color:#14241e;min-height:100dvh}
-.orman-shell{width:min(1180px,100%);min-height:100dvh;margin:0 auto;background:#f7faf8;border-radius:0;box-shadow:0 0 60px rgba(22,57,43,.10);overflow:visible;padding-bottom:92px}
+.orman-shell{width:min(1180px,100%);min-height:100dvh;margin:0 auto;background:#f7faf8;border-radius:0;box-shadow:0 0 60px rgba(22,57,43,.10);overflow:visible;padding-bottom:24px}
 .orman-topbar{height:88px;padding:14px 30px;display:flex;align-items:center;justify-content:space-between;gap:20px;background:rgba(255,255,255,.96);border-bottom:1px solid #e4ece7;position:sticky;top:0;z-index:100;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
 .orman-brand{display:flex;align-items:center;gap:12px;color:#10281e;text-decoration:none;min-width:0}.orman-brand img{width:54px;height:54px;object-fit:contain}.orman-brand span{display:flex;flex-direction:column;min-width:0}.orman-brand strong{font-family:"Segoe Script","Snell Roundhand","Brush Script MT",cursive;font-size:29px;font-weight:800;letter-spacing:.15px;line-height:1.05;color:#0c6f46;text-shadow:0 1px 0 #fff}.orman-brand small{font-size:11px;color:#6a7a72;font-weight:700;margin-top:4px}
 .orman-top-actions{display:flex;align-items:center;gap:10px}.orman-topbar .connection-pill{height:44px;border:1px solid #dce8e1;background:#f8fbf9;box-shadow:none;border-radius:14px;padding:0 14px;font-size:13px}.orman-topbar .icon-button{width:44px;height:44px;border:1px solid #dce8e1;background:#f8fbf9;box-shadow:none;border-radius:14px}.orman-topbar .icon-button svg{width:21px;height:21px}.top-profile{border:0;background:transparent;padding:0;cursor:pointer}.orman-topbar .avatar{width:46px;height:46px;font-size:14px;border:3px solid #e1eee6;box-shadow:none;overflow:hidden}.orman-topbar .avatar img{width:100%;height:100%;object-fit:cover}
@@ -2238,5 +2238,36 @@ body.modal-open{overflow:hidden!important;touch-action:none}
   background: #f5faf7 !important;
   border-color: #d9e8df !important;
   color: #217c50 !important;
+}
+
+
+
+/* Yayın düzeni: Orman İO alt menüsü kaldırıldı ve küçük ekranlar sıkılaştırıldı. */
+.orman-bottom-nav{display:none!important}
+.orman-shell{padding-bottom:24px!important}
+.orman-content{padding-bottom:max(28px,env(safe-area-inset-bottom))!important}
+.orman-app-grid .app-card.seflik-card .app-copy h2,
+.orman-app-grid .app-card.admin-card .app-copy h2{color:#183529!important}
+.orman-app-grid .app-card.seflik-card .app-copy p,
+.orman-app-grid .app-card.admin-card .app-copy p{color:#697870!important}
+.orman-app-grid .app-card.seflik-card .app-icon-blue{background:linear-gradient(145deg,#5b9cf5,#2e6fda)!important;color:#fff!important}
+.orman-app-grid .app-card.admin-card .app-icon-purple{background:linear-gradient(145deg,#9a67dd,#6f39bb)!important;color:#fff!important}
+@media(max-width:760px){
+  .orman-content{padding:12px 12px max(24px,env(safe-area-inset-bottom))!important}
+  .orman-welcome-card{min-height:220px!important;padding:18px!important}
+  .orman-welcome-copy h1{font-size:27px!important}
+  .orman-app-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}
+  .orman-app-grid .app-card{min-height:136px!important;padding:12px 9px!important}
+  .orman-management-tools .tool-strip button{min-height:96px!important}
+  .orman-drive-card,.orman-activity-card{margin-top:12px!important}
+  .orman-drive-card{padding:13px!important}
+  .activity-row{padding:9px!important}
+}
+@media(max-width:360px){
+  .orman-topbar{padding:8px 10px!important}
+  .orman-brand strong{font-size:21px!important}
+  .orman-app-grid{gap:8px!important}
+  .orman-app-grid .app-card{min-height:128px!important}
+  .orman-management-tools .tool-strip button{min-height:90px!important;padding:8px!important}
 }
 

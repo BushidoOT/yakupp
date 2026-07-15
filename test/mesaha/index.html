@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8" />
     <meta
-      content="width=device-width, initial-scale=1, viewport-fit=cover"
+      content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content"
       name="viewport"
     />
     <meta content="#f4f7f6" name="theme-color" />
@@ -15383,7 +15383,7 @@
         function ensureViewport() {
           var meta = document.querySelector('meta[name="viewport"]');
           var content =
-            "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover";
+            "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content";
           if (!meta) {
             meta = document.createElement("meta");
             meta.name = "viewport";
@@ -19713,6 +19713,7 @@
       })();
     </script>
 
+    <script src="../suite-audio.js"></script>
     <script src="../suite-security.js"></script>
     <script src="../suite-sync-core.js"></script>
     <script src="./suite-bridge.js"></script>
@@ -19744,5 +19745,6 @@
       })();
     </script>
 
+    <script src="./js/mesaha-production-stabilizer.js"></script>
   </body>
 </html>

@@ -694,7 +694,12 @@
   function toast(msg, bad = false) {
     const el = $("toast");
     if (!el) return;
-    el.textContent = msg;
+    const message = String(msg == null ? "" : msg);
+    try {
+      if (window.OrmanIoAudio && (bad || window.OrmanIoAudio.shouldWarn(message, bad ? "bad" : "")))
+        window.OrmanIoAudio.warning();
+    } catch (_) {}
+    el.textContent = message;
     el.classList.toggle("bad", bad);
     el.classList.add("show");
     clearTimeout(toast.t);

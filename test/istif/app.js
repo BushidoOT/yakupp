@@ -2991,7 +2991,10 @@ function getLocation() {
 }
 
 function toast(message, type = "") {
-  if (shouldPlayConfirmSound(message, type)) playConfirmSound(false);
+  const warning = !!(window.OrmanIoAudio && window.OrmanIoAudio.shouldWarn(message, type));
+  if (warning) {
+    try { window.OrmanIoAudio.warning(); } catch {}
+  } else if (shouldPlayConfirmSound(message, type)) playConfirmSound(false);
   document.querySelector(".toast")?.remove();
   const element = document.createElement("div");
   element.className = `toast ${type}`;
