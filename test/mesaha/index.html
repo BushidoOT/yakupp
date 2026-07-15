@@ -12463,6 +12463,60 @@
             );
           }
         }
+        function ensureSettingsControlsStable() {
+          var stateObj = window.state && window.state.settings ? window.state.settings : null;
+          var productBox = $("homeProductChecks");
+          var treeBox = $("homeTreeChecks");
+          var productsStable = [
+            ["Tomruk", "Tomruk"],
+            ["Maden Direk", "Maden"],
+            ["Kağıtlık", "Kağıtlık"],
+            ["Sanayi Odunu", "Sanayi"],
+            ["Tel Direk", "Tel"]
+          ];
+          var treesStable = ["Karaçam", "Kayın", "Sarıçam", "Sedir", "Göknar", "Kızılçam"];
+          if (stateObj) {
+            if (!Array.isArray(stateObj.visibleProducts) || !stateObj.visibleProducts.length)
+              stateObj.visibleProducts = ["Tomruk", "Maden Direk", "Kağıtlık"];
+            if (!Array.isArray(stateObj.visibleTrees) || !stateObj.visibleTrees.length)
+              stateObj.visibleTrees = treesStable.slice();
+          }
+          function card(kind, value, label, checked) {
+            return '<label class="check-card"><input type="checkbox" data-check-kind="' + kind + '" value="' + value.replace(/&/g,"&amp;").replace(/"/g,"&quot;") + '" ' + (checked ? "checked" : "") + '><span>' + label + '</span></label>';
+          }
+          // Önce ana uygulamanın kendi render fonksiyonuna fırsat verilir; eski cihazda
+          // render çalışmadıysa aşağıdaki güvenli yedek liste devreye girer.
+          try { if (typeof window.renderAll === "function") window.renderAll(); } catch (_) {}
+          if (productBox && !productBox.querySelector("input")) {
+            var activeProducts = stateObj && stateObj.visibleProducts || ["Tomruk", "Maden Direk", "Kağıtlık"];
+            productBox.innerHTML = productsStable.map(function (p) { return card("product", p[0], p[1], activeProducts.indexOf(p[0]) >= 0); }).join("");
+          }
+          if (treeBox && !treeBox.querySelector("input")) {
+            var activeTrees = stateObj && stateObj.visibleTrees || treesStable;
+            treeBox.innerHTML = treesStable.map(function (t) { return card("tree", t, t, activeTrees.indexOf(t) >= 0); }).join("");
+          }
+          [productBox, treeBox].forEach(function (box) {
+            if (!box || box.__stableSettingsBound) return;
+            box.__stableSettingsBound = true;
+            box.addEventListener("change", function (event) {
+              var input = event.target && event.target.closest && event.target.closest("input[data-check-kind]");
+              if (!input || !window.state || !window.state.settings) return;
+              var kind = input.getAttribute("data-check-kind");
+              var checked = Array.prototype.slice.call(box.querySelectorAll('input[data-check-kind="' + kind + '"]:checked')).map(function (el) { return el.value; });
+              if (!checked.length) { input.checked = true; return; }
+              if (kind === "product") {
+                window.state.settings.visibleProducts = checked;
+                if (checked.indexOf(window.state.settings.currentProduct) < 0) window.state.settings.currentProduct = checked[0];
+                try { localStorage.setItem("mesaha_last_products_stable", JSON.stringify(checked)); } catch (_) {}
+              } else {
+                window.state.settings.visibleTrees = checked;
+                if (checked.indexOf(window.state.settings.currentTree) < 0) window.state.settings.currentTree = checked[0];
+                try { localStorage.setItem("mesaha_last_trees_stable", JSON.stringify(checked)); } catch (_) {}
+              }
+              try { if (typeof window.saveSettings === "function") window.saveSettings(); } catch (_) {}
+            });
+          });
+        }
         function buildSettingsView() {
           var main = qs("#app main");
           if (!main) return;
@@ -12506,6 +12560,8 @@
             block.hidden = false;
             block.style.removeProperty("display");
           });
+          setTimeout(ensureSettingsControlsStable, 20);
+          setTimeout(ensureSettingsControlsStable, 180);
         }
         function polishHome() {
           var h = qs(".hero-card h1");
@@ -12629,6 +12685,11 @@
           if (backup) backup.textContent = "Yedek Al";
         }
         function showLocal(view) {
+          if (view === "settings") {
+            try { if (typeof window.renderAll === "function") window.renderAll(); } catch (_) {}
+            setTimeout(ensureSettingsControlsStable, 10);
+            setTimeout(ensureSettingsControlsStable, 160);
+          }
           [
             "home",
             "entry",
@@ -12698,6 +12759,7 @@
           rebuildTop();
           rebuildBottomNav();
           buildSettingsView();
+          ensureSettingsControlsStable();
           polishHome();
           polishRecords();
           patchShowView();

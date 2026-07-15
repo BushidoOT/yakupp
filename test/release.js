@@ -1,16 +1,16 @@
 (function (root) {
   "use strict";
   const DATA = /*MESAHA_RELEASE_DATA_START*/{
-  "build": 35,
-  "version": "35.0.0",
+  "build": 36,
+  "version": "36.0.0",
   "channel": "stable",
-  "releasedAt": "2026-07-15T23:10:00+03:00",
-  "assetToken": "orman-io-stable-20260715-3",
-  "cacheName": "orman-io-shell-stable-20260715-3",
+  "releasedAt": "2026-07-15T23:55:00+03:00",
+  "assetToken": "orman-io-stable-20260715-4",
+  "cacheName": "orman-io-shell-stable-20260715-4",
   "apps": {
     "suite": {
       "label": "Orman İO",
-      "version": "35.0.0"
+      "version": "36.0.0"
     },
     "mesaha": {
       "label": "Mesaha İO",
@@ -22,10 +22,10 @@
     },
     "admin": {
       "label": "Orman İO Yönetim",
-      "version": "35.0.0"
+      "version": "36.0.0"
     }
   },
-  "description": "Ayar görünürlüğü, hızlı açılış, kalıcı terminal eşleştirme, profil fotoğrafı ve sade Orman İO arayüzü."
+  "description": "Mesaha ayar seçimleri, offline İstif bölme oluşturma, terminal alan görünürlüğü ve Orman İO marka yazısı düzeltildi."
 }/*MESAHA_RELEASE_DATA_END*/;
   const APP_NAMES = DATA.apps || {};
   const SCRIPT_URL = (() => {

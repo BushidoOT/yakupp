@@ -227,7 +227,18 @@
   }
 
   function session() {
-    return read(K.session, null) || read(K.backup, null) || {};
+    const cached = read(K.session, null) || read(K.backup, null) || {};
+    if (cached && cached.access_token) return cached;
+    try {
+      const api = window.mesahaSupabase || window.mesahaCloud || null;
+      const live = api && typeof api.getStoredSession === "function" ? api.getStoredSession() : null;
+      if (live && live.access_token) {
+        write(K.session, live);
+        write(K.backup, { ...live, backup_at: Date.now() });
+        return live;
+      }
+    } catch (_) {}
+    return cached || {};
   }
   function access() {
     return read(K.access, {}) || {};
@@ -1554,10 +1565,19 @@
     const card = $("suiteTerminalPair"), status = $("terminalPairStatusSuite"), input = $("terminalPairCodeSuite");
     if (!card) return;
     const type = authType();
-    card.hidden = type === "google";
-    if (input && type === "terminal") input.placeholder = "Başka terminal kodu";
-    if (status && type === "terminal") { status.hidden = false; status.textContent = "Bu cihaz Google kullanıcısına terminal koduyla bağlı."; }
-    else if (status && !card.classList.contains("is-error")) status.hidden = true;
+    // Terminal kodu yalnız ilk açılışta veya elle açılmış yerel misafir modunda görünür.
+    // Google ve daha önce kodla eşleşmiş terminal oturumlarında tekrar gösterilmez.
+    const visible = type === "none" || type === "guest";
+    card.hidden = !visible;
+    card.setAttribute("aria-hidden", visible ? "false" : "true");
+    if (!visible) {
+      card.classList.remove("is-error", "is-busy");
+      if (input) input.value = "";
+      if (status) status.hidden = true;
+      return;
+    }
+    if (input) input.placeholder = type === "guest" ? "Google kullanıcısının terminal kodu" : "A1B2-C3D4";
+    if (status && !card.classList.contains("is-error")) status.hidden = true;
   }
   async function claimTerminalFromSuite() {
     const card = $("suiteTerminalPair"), input = $("terminalPairCodeSuite"), status = $("terminalPairStatusSuite"), button = $("terminalPairSubmitSuite");
