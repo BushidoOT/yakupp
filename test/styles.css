@@ -2211,3 +2211,32 @@ body.modal-open{overflow:hidden!important;touch-action:none}
   }
 }
 
+
+
+.orman-app-grid .app-card.seflik-card,
+.orman-app-grid .app-card.admin-card {
+  background: #ffffff !important;
+  border-color: #e3ebe6 !important;
+  box-shadow: 0 10px 25px rgba(20,58,43,.07) !important;
+}
+.orman-app-grid .app-card.seflik-card:hover,
+.orman-app-grid .app-card.admin-card:hover {
+  box-shadow: 0 14px 28px rgba(20,58,43,.10) !important;
+}
+.orman-app-grid .app-card.seflik-card .app-copy h2,
+.orman-app-grid .app-card.seflik-card .app-copy p,
+.orman-app-grid .app-card.admin-card .app-copy h2,
+.orman-app-grid .app-card.admin-card .app-copy p {
+  color: inherit !important;
+}
+.orman-app-grid .app-card.seflik-card .app-copy p,
+.orman-app-grid .app-card.admin-card .app-copy p {
+  opacity: 1 !important;
+}
+.orman-app-grid .app-card.seflik-card .app-arrow,
+.orman-app-grid .app-card.admin-card .app-arrow {
+  background: #f5faf7 !important;
+  border-color: #d9e8df !important;
+  color: #217c50 !important;
+}
+

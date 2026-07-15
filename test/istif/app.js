@@ -3761,7 +3761,9 @@ window.addEventListener("online", () => {
   state.auth.status = hasSharedIdentity() ? "cached" : "signed_out";
   render();
   toast(
-    "İnternet geldi. Değişiklikleri sol alttaki Senkronize Et ile gönderebilirsiniz.",
+    hasSharedCloudIdentity()
+      ? "İnternet geldi. Değişiklikleri sol alttaki Senkronize Et ile gönderebilirsiniz."
+      : "İnternet geldi.",
     "good",
   );
 });

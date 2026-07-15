@@ -126,6 +126,11 @@
       google: !!s.access_token,
     };
   }
+  function cloudSyncAllowed() {
+    const t = terminal();
+    const id = identity();
+    return !!(id.google || (t && t.source === "pair_code" && (t.terminalCode || t.terminalToken || t.pairedUserId)));
+  }
   function authHeaders() {
     const s = session();
     return {
@@ -468,7 +473,12 @@
     btn.addEventListener("click", fire, { capture: true });
   }
   function installButton() {
-    if (document.getElementById("suiteSyncFabV8")) return;
+    const existing = document.getElementById("suiteSyncFabV8");
+    if (!cloudSyncAllowed()) {
+      if (existing && existing.parentNode) existing.parentNode.removeChild(existing);
+      return;
+    }
+    if (existing) return;
     const b = document.createElement("button");
     b.id = "suiteSyncFabV8";
     b.type = "button";
@@ -499,6 +509,12 @@
     return b;
   }
   function updateButton() {
+    if (!cloudSyncAllowed()) {
+      const stale = document.getElementById("suiteSyncFabV8");
+      if (stale && stale.parentNode) stale.parentNode.removeChild(stale);
+      positionDock();
+      return;
+    }
     const b = document.getElementById("suiteSyncFabV8");
     if (!b) return;
     const count =

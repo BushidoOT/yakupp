@@ -1,16 +1,16 @@
 (function (root) {
   "use strict";
   const DATA = /*MESAHA_RELEASE_DATA_START*/{
-  "build": 39,
-  "version": "39.0.0",
+  "build": 40,
+  "version": "40.0.0",
   "channel": "stable",
-  "releasedAt": "2026-07-16T00:12:00+03:00",
-  "assetToken": "orman-io-stable-20260716-1",
-  "cacheName": "orman-io-shell-stable-20260716-1",
+  "releasedAt": "2026-07-16T00:34:00+03:00",
+  "assetToken": "orman-io-stable-20260716-2",
+  "cacheName": "orman-io-shell-stable-20260716-2",
   "apps": {
     "suite": {
       "label": "Orman İO",
-      "version": "39.0.0"
+      "version": "40.0.0"
     },
     "mesaha": {
       "label": "Mesaha İO",
@@ -25,7 +25,7 @@
       "version": "38.0.0"
     }
   },
-  "description": "Senkron Sağlığı düğmesi kaldırıldı, kılavuz açılır pencereye taşındı, Mesaha Gir yeşil ve İstif Al sarı rehber/palet düzeni yapıldı, İstif Al ana kartı sarıya çevrildi ve Drive kullanım çubuğu görünür hâle getirildi."
+  "description": "Drive dashboard durumu canlı Drive sorgusuyla düzeltildi, Şeflikler ve Yönetim kartları beyaza döndürüldü, misafir kullanıcılar için sol alttaki Senkronize Et düğmesi gizlendi ve istif çevrimiçi bildirimi sadeleştirildi."
 }/*MESAHA_RELEASE_DATA_END*/;
   const APP_NAMES = DATA.apps || {};
   const SCRIPT_URL = (() => {

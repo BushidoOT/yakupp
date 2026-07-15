@@ -495,6 +495,16 @@
     return false;
   }
 
+  async function refreshDriveSnapshot() {
+    try {
+      if (!api() || typeof api().driveStatus !== "function") return false;
+      await api().driveStatus();
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
   async function sendHealthPing(existingHealth, force) {
     if (navigator.onLine === false || !api() || typeof api().edge !== "function") return false;
     const lastPing = Number(localStorage.getItem(LAST_PING_KEY) || localStorage.getItem(LEGACY_LAST_PING_KEY) || 0);
@@ -554,11 +564,22 @@
       observer.observe(document.documentElement, { childList: true, subtree: true });
       setTimeout(() => observer.disconnect(), 15000);
     }
-    setTimeout(() => collectHealth().then((health) => { renderDashboard(health); return sendHealthPing(health, false); }).catch(() => {}), 700);
-    window.addEventListener("online", () => setTimeout(() => collectHealth().then((health) => { renderDashboard(health); return sendHealthPing(health, true); }).catch(() => {}), 1400));
-    window.addEventListener("mesaha-suite:sync-complete", () => setTimeout(() => collectHealth().then((health) => { renderDashboard(health); return sendHealthPing(health, true); }).catch(() => {}), 500));
-    window.addEventListener("mesaha-istif:changed", () => setTimeout(() => collectHealth().then((health) => { renderDashboard(health); return sendHealthPing(health, false); }).catch(() => {}), 900));
-    setInterval(() => collectHealth().then((health) => { renderDashboard(health); return sendHealthPing(health, false); }).catch(() => {}), PING_INTERVAL);
+    const refreshAndRender = async (forcePing) => {
+      try { await refreshDriveSnapshot(); } catch (_) {}
+      try {
+        const health = await collectHealth();
+        renderDashboard(health);
+        await sendHealthPing(health, !!forcePing);
+      } catch (_) {}
+    };
+    setTimeout(() => refreshAndRender(false), 700);
+    window.addEventListener("online", () => setTimeout(() => refreshAndRender(true), 1400));
+    window.addEventListener("mesaha-suite:sync-complete", () => setTimeout(() => refreshAndRender(true), 500));
+    window.addEventListener("mesaha-istif:changed", () => setTimeout(() => refreshAndRender(false), 900));
+    window.addEventListener("storage", (event) => {
+      if (event && event.key === K.drive) setTimeout(() => refreshAndRender(false), 120);
+    });
+    setInterval(() => refreshAndRender(false), PING_INTERVAL);
   }
 
   window.MesahaSuiteHealth = { version: VERSION, collect: collectHealth, open: openModal, ping: () => collectHealth().then((health) => { renderDashboard(health); return sendHealthPing(health, true); }) };
