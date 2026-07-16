@@ -41,6 +41,7 @@
       .replace(/ü/g, "u")
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-+|-+$/g, "");
+  const emailKey = (v) => clean(v).toLocaleLowerCase("tr-TR");
   const stableKey = (v) => fold(v) || "yerel-" + Date.now().toString(36);
   const read = (k, f = {}) => {
     try {
@@ -419,6 +420,8 @@
           terminalToken: clean(t.terminalToken),
           terminalPairedUserId: clean(t.pairedUserId),
           terminalPairedEmail: clean(t.pairedEmail),
+          terminalDeviceId: clean(t.deviceId || t.terminalDeviceId || (() => { try { return localStorage.getItem("mesaha_supabase_v500_device") || ""; } catch (_) { return ""; } })()),
+          deviceId: clean(t.deviceId || t.terminalDeviceId || (() => { try { return localStorage.getItem("mesaha_supabase_v500_device") || ""; } catch (_) { return ""; } })()),
         }
       : {};
   }
@@ -1043,10 +1046,10 @@
       });
       const list = (Array.isArray(out.members) ? out.members : [])
         .map((m) => ({
-          id: clean(m.user_id || m.id || m.member_user_id || m.email || m.name),
+          id: emailKey(m.email) || clean(m.user_id || m.id || m.member_user_id),
           userId: clean(m.user_id || m.member_user_id),
           name: clean(m.name || m.canonical_name || m.email),
-          email: clean(m.email),
+          email: emailKey(m.email),
           avatarUrl: clean(m.avatar_url || m.avatarUrl),
           role: clean(m.role || m.member_role || "member"),
           isSelf: !!m.is_self,
@@ -1831,29 +1834,30 @@
     if (!af) return;
     const k = af.seflik_key;
     const item = {
-      id:
-        clean(u.user_id || u.userId || u.email || u.name) ||
-        "local_" + Date.now(),
+      id: emailKey(u.email) || clean(u.user_id || u.userId) || "local_" + Date.now(),
       userId: clean(u.user_id || u.userId),
       name: clean(
         u.name || u.canonical_name || u.email || $("ormanciSearch")?.value,
       ),
-      email: clean(u.email),
+      email: emailKey(u.email),
       avatarUrl: clean(u.avatar_url || u.avatarUrl || u.picture),
       role: "member",
       pending: true,
       updatedAt: now(),
     };
     if (!item.name) return toast("Kullanıcı adı alınamadı.", true);
+    if (!item.email)
+      return toast("Ormancı eklemek için kullanıcının e-posta adresi gerekli.", true);
     if (!item.userId)
       return toast("Ormancının önce Google ile giriş yapması gerekir.", true);
     const list = foresters[k] || [];
     if (
-      list.some(
-        (x) => clean(x.id) === item.id || fold(x.name) === fold(item.name),
+      list.some((x) =>
+        emailKey(x.email) === item.email ||
+        (!!item.userId && clean(x.userId || x.id) === item.userId)
       )
     )
-      return toast("Bu ormancı zaten ekli.", true);
+      return toast(`Bu e-posta adresi zaten ekli: ${item.email}`, true);
 
     foresters[k] = [...list, item];
     saveLocal();
@@ -1870,6 +1874,8 @@
       seflikKey: clean(af.seflik_key || af.seflikKey),
       seflik_key: clean(af.seflik_key || af.seflikKey),
       member_user_id: item.userId,
+      member_email: item.email,
+      email: item.email,
     };
 
     if (!cloudIdentity() || navigator.onLine === false) {
@@ -1888,22 +1894,22 @@
       const serverMember = out && out.member ? out.member : {};
       const updated = {
         ...item,
-        id: clean(serverMember.user_id || serverMember.id || item.id),
+        id: emailKey(serverMember.email || item.email) || clean(serverMember.user_id || serverMember.id || item.id),
         userId: clean(serverMember.user_id || item.userId),
         name: clean(serverMember.name || item.name),
-        email: clean(serverMember.email || item.email),
+        email: emailKey(serverMember.email || item.email),
         avatarUrl: clean(serverMember.avatar_url || item.avatarUrl),
         pending: false,
         updatedAt: now(),
       };
       foresters[k] = (foresters[k] || []).map((x) =>
-        clean(x.userId || x.id) === clean(item.userId || item.id) ? updated : x,
+        emailKey(x.email) === item.email || clean(x.userId || x.id) === clean(item.userId || item.id) ? updated : x,
       );
       pendingOps = pendingOps.filter((opItem) => {
         if (!opItem || opItem.type !== "add_member") return true;
         const p = opItem.payload || {};
         return !(
-          clean(p.member_user_id) === item.userId &&
+          (emailKey(p.member_email || p.email) === item.email || clean(p.member_user_id) === item.userId) &&
           (clean(p.seflik_key || p.seflikKey) === clean(af.seflik_key || af.seflikKey) ||
             fold(p.seflik) === fold(af.seflik))
         );
@@ -1952,14 +1958,17 @@
       list = foresters[k] || [],
       m = list[index];
     if (!m) return;
-    if (!confirm(`${m.name} şeflikten çıkarılsın mı?`)) return;
+    const memberEmail = emailKey(m.email);
+    if (!memberEmail) return toast("Bu kullanıcı için e-posta bilgisi bulunamadı. Listeyi yenileyip tekrar deneyin.", true);
+    if (!confirm(`${m.name || memberEmail} (${memberEmail}) şeflikten çıkarılsın mı?`)) return;
     foresters[k] = list.filter((_, i) => i !== index);
     op("remove_member", {
       seflik: af.seflik,
       seflik_key: k,
       member_user_id: m.userId,
+      member_email: memberEmail,
       name: m.name,
-      email: m.email,
+      email: memberEmail,
     });
     saveLocal();
     toast("Ormancı çıkarıldı.");
@@ -2271,17 +2280,19 @@
             new_seflik: p.newName,
           });
         } else if (item.type === "add_member") {
-          if (!p.member_user_id)
-            throw new Error("Ormancı için Google kullanıcı id yok");
+          if (!p.member_email && !p.email)
+            throw new Error("Ormancı için e-posta adresi yok");
           await edge("seflik_folder_add_member", {
             seflik: p.seflik,
             member_user_id: p.member_user_id,
+            member_email: p.member_email || p.email,
           });
         } else if (item.type === "remove_member") {
-          if (p.member_user_id)
+          if (p.member_email || p.email || p.member_user_id)
             await edge("seflik_folder_remove_member", {
               seflik: p.seflik,
               member_user_id: p.member_user_id,
+              member_email: p.member_email || p.email,
             });
         } else if (item.type === "create_division") {
           await edge("seflik_folder_create_division", {
