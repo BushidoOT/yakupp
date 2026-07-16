@@ -1,16 +1,16 @@
 (function (root) {
   "use strict";
   const DATA = /*MESAHA_RELEASE_DATA_START*/{
-  "build": 48,
-  "version": "48.0.0",
+  "build": 49,
+  "version": "49.0.0",
   "channel": "stable",
-  "releasedAt": "2026-07-16T18:10:00+03:00",
-  "assetToken": "orman-io-stable-20260716-10",
-  "cacheName": "orman-io-shell-stable-20260716-10",
+  "releasedAt": "2026-07-16T19:55:00+03:00",
+  "assetToken": "orman-io-stable-20260716-8",
+  "cacheName": "orman-io-shell-stable-20260716-8",
   "apps": {
     "suite": {
       "label": "Orman İO",
-      "version": "48.0.0"
+      "version": "49.0.0"
     },
     "mesaha": {
       "label": "Mesaha İO",
@@ -22,10 +22,10 @@
     },
     "admin": {
       "label": "Orman İO Yönetim",
-      "version": "48.0.0"
+      "version": "49.0.0"
     }
   },
-  "description": "Eski e-postasız üyelik kuyruğu kullanıcı kimliğinden güvenli biçimde onarılır; Sunucuda Bekleyenler ekranında işlemler görüntülenebilir, yeniden denenebilir ve tek tek veya topluca iptal edilebilir."
+  "description": "Şeflik üyelerinde Drive durum yenilemesi için Google oturumu otomatik yenilenir; geçersiz JWT bir kez yenilenip tekrar denenir ve kurucunun bağlı Drive bilgisi üyelere doğru gösterilir."
 }/*MESAHA_RELEASE_DATA_END*/;
   const APP_NAMES = DATA.apps || {};
   const SCRIPT_URL = (() => {

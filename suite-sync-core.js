@@ -139,6 +139,32 @@
     if (/\/mesaha(?:\/|$)/.test(path)) return false;
     return cloudSyncAllowed();
   }
+  function authEngine() {
+    return window.mesahaSupabase || window.mesahaSupabaseV383 || window.mesahaSupabaseV380 || window.mesahaCloud || null;
+  }
+  function googleSessionNeedsRefresh(force) {
+    const s = session();
+    if (!s || !s.refresh_token || navigator.onLine === false) return false;
+    if (force) return true;
+    const expiresAt = Number(s.expires_at || 0) * 1000;
+    return !expiresAt || expiresAt <= Date.now() + 120000;
+  }
+  async function refreshGoogleSession(force) {
+    if (!googleSessionNeedsRefresh(force)) return session();
+    const engine = authEngine();
+    const current = engine && typeof engine.getStoredSession === "function" ? engine.getStoredSession() : session();
+    if (!current || !current.refresh_token || !engine || typeof engine.refreshSession !== "function") return current || session();
+    try {
+      const fresh = await engine.refreshSession(current);
+      if (fresh && fresh.access_token) {
+        try { window.dispatchEvent(new CustomEvent("mesaha:auth-session-restored", { detail: { userId: fresh.user && fresh.user.id, source: "suite-drive-refresh" } })); } catch {}
+        return fresh;
+      }
+    } catch (error) {
+      if (force) throw error;
+    }
+    return session();
+  }
   function authHeaders() {
     const s = session();
     return {
@@ -146,6 +172,13 @@
       apikey: ANON_KEY,
       Authorization: "Bearer " + clean(s.access_token || ANON_KEY),
     };
+  }
+  function isAuthSessionFailure(status, payload) {
+    const message = clean(payload && (payload.error || payload.message || payload.reason));
+    const code = clean(payload && (payload.code || payload.errorCode));
+    return Number(status) === 401 ||
+      ["AUTH_SESSION_INVALID", "JWT_EXPIRED", "INVALID_JWT"].includes(code) ||
+      /oturum doğrulanamadı|oturum gecersiz|oturum geçersiz|jwt|token.*(?:expired|invalid|geçersiz|süresi)/i.test(message);
   }
   function terminalAuth() {
     const t = terminal();
@@ -188,31 +221,50 @@
     return true;
   }
   async function post(url, action, data) {
+    const terminalPayload = terminalAuth();
     const body = {
       action,
-      source: "mesaha-suite-v31",
-      ...terminalAuth(),
+      source: "mesaha-suite-v49",
+      ...terminalPayload,
       ...(data || {}),
     };
-    const r = await fetchWithTimeout(url, {
-      method: "POST",
-      cache: "no-store",
-      headers: authHeaders(),
-      body: JSON.stringify(body),
-    }, 30000);
-    const j = await r.json().catch(() => ({}));
-    if (!r.ok || j.ok === false) {
-      if (j && j.blocked === true) { try { window.dispatchEvent(new CustomEvent("mesaha:security-blocked", { detail: j })); } catch (_) {} }
-      const error = new Error(clean(j.error || j.message) || "Sunucu hatası " + r.status);
-      error.status = r.status;
-      error.code = clean(j.code || j.errorCode || "");
-      error.retryable = j.retryable === true;
-      error.detail = clean(j.detail || "");
-      error.requestId = clean(j.requestId || "");
-      error.retryAfter = num(j.retry_after || j.retryAfter);
-      throw error;
+    const terminalRequest = !!clean(terminalPayload.terminalCode || terminalPayload.terminalToken);
+    if (!terminalRequest) {
+      try { await refreshGoogleSession(false); } catch {}
     }
-    return j;
+    let r, j;
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      r = await fetchWithTimeout(url, {
+        method: "POST",
+        cache: "no-store",
+        headers: authHeaders(),
+        body: JSON.stringify(body),
+      }, 30000);
+      j = await r.json().catch(() => ({}));
+      if (r.ok && j.ok !== false) return j;
+      if (!terminalRequest && attempt === 0 && isAuthSessionFailure(r.status, j)) {
+        try {
+          await refreshGoogleSession(true);
+          continue;
+        } catch (refreshError) {
+          const error = new Error("Google oturumu yenilenemedi. Orman İO hesabını kapatıp tekrar giriş yapın.");
+          error.status = Number(refreshError && refreshError.status) || r.status;
+          error.code = "AUTH_REFRESH_FAILED";
+          error.retryable = false;
+          throw error;
+        }
+      }
+      break;
+    }
+    if (j && j.blocked === true) { try { window.dispatchEvent(new CustomEvent("mesaha:security-blocked", { detail: j })); } catch (_) {} }
+    const error = new Error(clean(j && (j.error || j.message)) || "Sunucu hatası " + (r && r.status));
+    error.status = r && r.status;
+    error.code = clean(j && (j.code || j.errorCode) || "");
+    error.retryable = j && j.retryable === true;
+    error.detail = clean(j && j.detail || "");
+    error.requestId = clean(j && j.requestId || "");
+    error.retryAfter = num(j && (j.retry_after || j.retryAfter));
+    throw error;
   }
   const edge = (action, data) => post(SMOOTH, action, data);
   const drive = (action, data) => post(DRIVE, action, data);

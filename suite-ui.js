@@ -126,7 +126,7 @@
       try { window.dispatchEvent(new CustomEvent("mesaha-suite:drive-status", { detail: s || null })); } catch (_) {}
       paintQuota(s);
       if (s.googleRequired) {
-        text.textContent = "Drive için Google ile giriş yapın";
+        text.textContent = "Drive için Google oturumu gerekli";
         connect.hidden = false;
         disc.hidden = true;
         open.hidden = true;
@@ -158,7 +158,7 @@
     } catch (e) {
       lastDriveStatus = null;
       paintQuota(null);
-      if (text) text.textContent = "Drive durumu alınamadı";
+      if (text) text.textContent = clean(e && e.code) === "AUTH_REFRESH_FAILED" ? "Google oturumu yenilenemedi" : "Drive durumu alınamadı";
       if (!silent) toast(e.message, true);
       throw e;
     }
