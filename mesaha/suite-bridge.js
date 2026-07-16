@@ -115,6 +115,32 @@
       rows = all && all[key] && all[key][clean(bolme)];
     return Array.isArray(rows) ? rows : [];
   }
+  function currentLocalMesahaRecords() {
+    try {
+      if (window.state && Array.isArray(window.state.records) && window.state.records.length)
+        return window.state.records.slice();
+    } catch (_) {}
+    try {
+      const store = window.MesahaStorageV527;
+      if (store && typeof store.lastCommittedRecords === "function") {
+        const committed = store.lastCommittedRecords();
+        if (Array.isArray(committed) && committed.length) return committed;
+      }
+      if (store && typeof store.bootstrapRecords === "function") {
+        const boot = store.bootstrapRecords();
+        if (Array.isArray(boot) && boot.length) return boot;
+      }
+    } catch (_) {}
+    const direct = read(K.records, []);
+    return Array.isArray(direct) ? direct : [];
+  }
+  async function currentLocalMesahaRecordsReady() {
+    try {
+      const store = window.MesahaStorageV527;
+      if (store && typeof store.flush === "function") await store.flush();
+    } catch (_) {}
+    return currentLocalMesahaRecords();
+  }
   function recordData(row, f, bolme, index) {
     const r =
       row && row.record_data && typeof row.record_data === "object"
@@ -400,9 +426,11 @@
     updateFolderSelectionText(clean(sel.value), preview, status);
   }
   function updateFolderSelectionText(no, preview, status) {
-    const count = no ? cachedRows(activeFolder(), no).length : 0;
-    if (preview) preview.textContent = no ? `Bölme ${no} seçildi • cihazda ${count} ortak kayıt` : "Önce açık bir bölme seçin";
-    if (status) status.textContent = no ? `Bölme ${no} için Mesaha kayıtları gönderilmeye hazır.` : "Önce bir bölme seçin.";
+    const count = no ? currentLocalMesahaRecords().length : 0;
+    if (preview) preview.textContent = no ? `Bölme ${no} seçildi • cihazda ${count} Mesaha kaydı` : "Önce açık bir bölme seçin";
+    if (status) status.textContent = no
+      ? (count ? `Bölme ${no} için ${count} Mesaha kaydı gönderilmeye hazır.` : `Bölme ${no} seçildi; cihazda Mesaha kaydı bulunamadı.`)
+      : "Önce bir bölme seçin.";
   }
   function hideOrmanciSections() {
     ["seflikMemberListV566","seflikUserSearchV564","seflikSearchResultsV564"].forEach((id) => { const el=$(id); if(el) el.style.display="none"; });
@@ -451,8 +479,8 @@
       api = window.MesahaSuiteSyncV28 || window.MesahaSuiteSyncV27 || window.MesahaSuiteSyncV26 || window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8;
     if (!f) return notify("Önce Orman İO ana menüsünden şeflik seçin.", true);
     if (!no) return notify("Gönderilecek bölmeyi seçin.", true);
-    const raw = read(K.records, []), localRecords = Array.isArray(raw) ? raw : [];
-    if (!localRecords.length) return notify("Gönderilecek Mesaha kaydı bulunamadı.", true);
+    const localRecords = await currentLocalMesahaRecordsReady();
+    if (!localRecords.length) return notify("Gönderilecek Mesaha kaydı bulunamadı. Ölçümler ekranındaki kayıtları kontrol edin.", true);
     suiteSendingV19 = true;
     showSendOverlayV19("Şefliğe gönderiliyor", "Bağlantı ve mevcut bölme kayıtları kontrol ediliyor…");
     try {
@@ -837,6 +865,8 @@
     }
   }, true);
   window.addEventListener("storage", schedule);
+  window.addEventListener("mesaha:records-saved", schedule);
+  window.addEventListener("mesaha:records-recovered", schedule);
   window.addEventListener("mesaha-suite:shared-data-updated", schedule);
   window.addEventListener("mesaha-suite:sync-complete", () => {
     schedule();

@@ -1,20 +1,20 @@
 (function (root) {
   "use strict";
   const DATA = /*MESAHA_RELEASE_DATA_START*/{
-  "build": 43,
-  "version": "43.0.0",
+  "build": 44,
+  "version": "44.0.0",
   "channel": "stable",
-  "releasedAt": "2026-07-16T01:32:00+03:00",
-  "assetToken": "orman-io-stable-20260716-5",
-  "cacheName": "orman-io-shell-stable-20260716-5",
+  "releasedAt": "2026-07-16T08:12:00+03:00",
+  "assetToken": "orman-io-stable-20260716-6",
+  "cacheName": "orman-io-shell-stable-20260716-6",
   "apps": {
     "suite": {
       "label": "Orman İO",
-      "version": "43.0.0"
+      "version": "44.0.0"
     },
     "mesaha": {
       "label": "Mesaha İO",
-      "version": "5.88"
+      "version": "5.89"
     },
     "istif": {
       "label": "İstif İO",
@@ -25,7 +25,7 @@
       "version": "42.0.0"
     }
   },
-  "description": "iOS çap ve boy kısayolları tek touchstart akışına alınarak donma ve klavye kapanması giderildi; Mesaha uygulamasındaki yüzen Senkronize Et düğmesi kaldırıldı, Orman İO ve İstif tarafında korunmaya devam edildi."
+  "description": "Şefliğe Gönder ekranının cihaz kayıtlarını yalnız gecikmeli localStorage kopyasından okuması düzeltildi; canlı Mesaha state ve IndexedDB kalıcı depo kayıtları öncelikli okunarak cihazdaki kayıt adedi ve gönderim doğru hale getirildi."
 }/*MESAHA_RELEASE_DATA_END*/;
   const APP_NAMES = DATA.apps || {};
   const SCRIPT_URL = (() => {
