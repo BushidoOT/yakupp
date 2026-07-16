@@ -817,6 +817,22 @@
     return { ok: true, created: match < 0, merged: match >= 0, serverKnown, division: row };
   }
 
+  function enrichPendingMemberPayload(item) {
+    if (!item || !["add_member", "remove_member"].includes(clean(item.type))) return item;
+    const p = item.payload && typeof item.payload === "object" ? item.payload : (item.payload = {});
+    if (clean(p.member_email || p.email)) return item;
+    const userId = clean(p.member_user_id || p.user_id);
+    if (!userId) return item;
+    const stores = read(K.foresters, {});
+    const rows = Object.values(stores && typeof stores === "object" ? stores : {}).flatMap((list) => Array.isArray(list) ? list : []);
+    const match = rows.find((row) => row && clean(row.userId || row.user_id || row.id) === userId && clean(row.email));
+    if (match) {
+      p.member_email = lower(match.email);
+      p.email = lower(match.email);
+      item.updatedAt = now();
+    }
+    return item;
+  }
   async function syncManagement() {
     const list = pendingOps();
     if (!list.length) {
@@ -828,6 +844,7 @@
     let done = 0;
     for (const item of list) {
       try {
+        enrichPendingMemberPayload(item);
         const p = item.payload || {};
         if (item.type === "create_seflik")
           await edge("seflik_folder_create_seflik", { seflik: p.seflik });

@@ -1,16 +1,16 @@
 (function (root) {
   "use strict";
   const DATA = /*MESAHA_RELEASE_DATA_START*/{
-  "build": 47,
-  "version": "47.0.0",
+  "build": 48,
+  "version": "48.0.0",
   "channel": "stable",
-  "releasedAt": "2026-07-16T16:10:00+03:00",
+  "releasedAt": "2026-07-16T18:10:00+03:00",
   "assetToken": "orman-io-stable-20260716-10",
   "cacheName": "orman-io-shell-stable-20260716-10",
   "apps": {
     "suite": {
       "label": "Orman İO",
-      "version": "47.0.0"
+      "version": "48.0.0"
     },
     "mesaha": {
       "label": "Mesaha İO",
@@ -22,10 +22,10 @@
     },
     "admin": {
       "label": "Orman İO Yönetim",
-      "version": "47.0.0"
+      "version": "48.0.0"
     }
   },
-  "description": "Ormancı ekleme ve çıkarma işlemleri e-posta kimliğiyle kesinleştirildi; aynı isimli kullanıcılar ayrıştırıldı. Terminal koduyla eşleşmiş cihazlar, bağlı Google Drive yedeklerini eşleştikleri hesabın şeflik rolüyle görüntüleyebilir ve yönetebilir."
+  "description": "Eski e-postasız üyelik kuyruğu kullanıcı kimliğinden güvenli biçimde onarılır; Sunucuda Bekleyenler ekranında işlemler görüntülenebilir, yeniden denenebilir ve tek tek veya topluca iptal edilebilir."
 }/*MESAHA_RELEASE_DATA_END*/;
   const APP_NAMES = DATA.apps || {};
   const SCRIPT_URL = (() => {

@@ -791,6 +791,7 @@
     divisionReady = read(K.divisionReady, {});
     pendingOps = read(K.pendingOps, []);
     if (!Array.isArray(pendingOps)) pendingOps = [];
+    repairPendingMemberIdentities();
   }
   function saveLocal() {
     write(K.folderCache, folders);
@@ -844,6 +845,159 @@
   function updatePendingBadge() {
     const dot = $("notificationDot");
     if (dot) dot.style.display = pendingOps.length ? "block" : "none";
+    const count = $("pendingToolCount");
+    if (count) count.textContent = pendingOps.length ? `${pendingOps.length} işlem bekliyor` : "Bekleyen işlem yok";
+    if ($("pendingOpsModal") && !$('pendingOpsModal').hidden) renderPendingOpsModal();
+  }
+  function pendingMemberCandidates(payload) {
+    const p = payload || {}, wantedUserId = clean(p.member_user_id || p.user_id), wantedEmail = emailKey(p.member_email || p.email);
+    const rows = Object.values(foresters || {}).flatMap((list) => Array.isArray(list) ? list : []);
+    return rows.filter((row) => {
+      if (!row) return false;
+      if (wantedUserId && clean(row.userId || row.user_id || row.id) === wantedUserId) return true;
+      if (wantedEmail && emailKey(row.email) === wantedEmail) return true;
+      return false;
+    });
+  }
+  function repairPendingMemberIdentity(item) {
+    if (!item || !["add_member", "remove_member"].includes(clean(item.type))) return false;
+    const p = item.payload && typeof item.payload === "object" ? item.payload : (item.payload = {});
+    let changed = false;
+    let email = emailKey(p.member_email || p.email);
+    let userId = clean(p.member_user_id || p.user_id);
+    const candidates = pendingMemberCandidates(p);
+    if (!email) {
+      const emails = [...new Set(candidates.map((row) => emailKey(row.email)).filter(Boolean))];
+      if (emails.length === 1) { email = emails[0]; changed = true; }
+    }
+    if (!userId) {
+      const ids = [...new Set(candidates.map((row) => clean(row.userId || row.user_id || row.id)).filter(Boolean))];
+      if (ids.length === 1) { userId = ids[0]; changed = true; }
+    }
+    if (email) {
+      if (p.member_email !== email) changed = true;
+      p.member_email = email;
+      p.email = email;
+    }
+    if (userId) {
+      if (p.member_user_id !== userId) changed = true;
+      p.member_user_id = userId;
+    }
+    if (changed) item.updatedAt = now();
+    return changed;
+  }
+  function repairPendingMemberIdentities() {
+    let changed = false;
+    (pendingOps || []).forEach((item) => { if (repairPendingMemberIdentity(item)) changed = true; });
+    if (changed) write(K.pendingOps, pendingOps);
+    return changed;
+  }
+  function pendingTypeLabel(type) {
+    return ({
+      create_seflik: "Şeflik oluşturma", delete_seflik: "Şeflik silme", rename_seflik: "Şeflik adını değiştirme",
+      add_member: "Ormancı ekleme", remove_member: "Ormancı çıkarma", create_division: "Bölme oluşturma", delete_division: "Bölme silme",
+    })[clean(type)] || clean(type || "Bilinmeyen işlem");
+  }
+  function pendingTargetText(item) {
+    const p = (item && item.payload) || {};
+    const parts = [];
+    if (p.seflik || p.oldName) parts.push(clean(p.seflik || p.oldName));
+    if (p.bolmeNo) parts.push(`Bölme ${clean(p.bolmeNo)}`);
+    if (p.member_email || p.email) parts.push(emailKey(p.member_email || p.email));
+    else if (p.member_user_id) parts.push(`Kullanıcı kimliği: ${clean(p.member_user_id).slice(0, 14)}…`);
+    else if (p.name) parts.push(clean(p.name));
+    if (p.newName) parts.push(`→ ${clean(p.newName)}`);
+    return parts.filter(Boolean).join(" • ") || "İşlem ayrıntısı yok";
+  }
+  function formatPendingTime(value) {
+    try { return new Date(value || now()).toLocaleString("tr-TR", { day:"2-digit", month:"2-digit", hour:"2-digit", minute:"2-digit" }); }
+    catch (_) { return clean(value || ""); }
+  }
+  function refreshPendingOpsFromStorage() {
+    const stored = read(K.pendingOps, []);
+    pendingOps = Array.isArray(stored) ? stored : [];
+    return pendingOps;
+  }
+  function renderPendingOpsModal() {
+    refreshPendingOpsFromStorage();
+    repairPendingMemberIdentities();
+    const list = $("pendingOpsList"), summary = $("pendingOpsSummary"), retry = $("pendingRetryAll"), cancelAll = $("pendingCancelAll");
+    if (!list || !summary) return;
+    summary.innerHTML = pendingOps.length
+      ? `<strong>${pendingOps.length} işlem</strong> sunucuya gönderilmeyi bekliyor.`
+      : `<strong>Bekleyen işlem yok.</strong> Cihaz ile sunucu kuyruğu temiz.`;
+    if (retry) retry.disabled = !pendingOps.length || navigator.onLine === false || !cloudIdentity();
+    if (cancelAll) cancelAll.disabled = !pendingOps.length;
+    list.innerHTML = pendingOps.length ? pendingOps.map((item) => {
+      const p = item.payload || {}, missingIdentity = ["add_member","remove_member"].includes(clean(item.type)) && !emailKey(p.member_email || p.email) && !clean(p.member_user_id);
+      return `<article class="pending-op-card ${item.error ? "has-error" : ""}">
+        <div class="pending-op-head"><div><strong>${esc(pendingTypeLabel(item.type))}</strong><small>${esc(formatPendingTime(item.createdAt || item.updatedAt))}</small></div><span>${esc(clean(item.type))}</span></div>
+        <p>${esc(pendingTargetText(item))}</p>
+        ${missingIdentity ? '<div class="pending-op-warning">Bu eski işlemde e-posta ve kullanıcı kimliği yok. Güvenli biçimde onarılamaz; iptal edip kullanıcıyı e-posta görünen arama sonucundan yeniden ekleyin.</div>' : ''}
+        ${item.error ? `<div class="pending-op-error">${esc(item.error)}</div>` : ''}
+        <div class="pending-op-buttons"><button class="secondary-button" type="button" data-pending-cancel="${esc(item.id)}">İptal Et</button></div>
+      </article>`;
+    }).join("") : '<div class="pending-ops-empty">Sunucuya gönderilmeyi bekleyen yönetim işlemi bulunmuyor.</div>';
+  }
+  async function reconcileAfterPendingCancel() {
+    try {
+      if (navigator.onLine !== false && cloudIdentity()) await loadFolders(true);
+      else { saveLocal(); render(); }
+    } catch (_) { saveLocal(); render(); }
+  }
+  function rollbackPendingLocal(item) {
+    const p = (item && item.payload) || {}, key = clean(p.seflik_key || p.seflikKey) || stableKey(p.seflik || p.oldName || "");
+    if (item.type === "add_member" && key) {
+      const email = emailKey(p.member_email || p.email), userId = clean(p.member_user_id);
+      foresters[key] = (foresters[key] || []).filter((row) => {
+        if (!row || row.pending !== true) return true;
+        if (email && emailKey(row.email) === email) return false;
+        if (userId && clean(row.userId || row.user_id || row.id) === userId) return false;
+        return true;
+      });
+    }
+    if (item.type === "create_division" && key) {
+      const no = fold(p.bolmeNo);
+      divisions[key] = (divisions[key] || []).filter((row) => !(row && (row.pending || row.local_pending) && fold(row.bolme_no || row.bolmeNo) === no));
+    }
+    if (item.type === "create_seflik") {
+      const sk = clean(p.seflik_key) || stableKey(p.seflik || "");
+      folders = folders.filter((folder) => !(folder && clean(folder.seflik_key) === sk && (folder.is_local || folder.pending || folder.local_pending)));
+    }
+  }
+  async function cancelPendingOperation(id) {
+    const index = pendingOps.findIndex((item) => clean(item && item.id) === clean(id));
+    if (index < 0) return;
+    const item = pendingOps[index];
+    if (!confirm(`${pendingTypeLabel(item.type)} işlemi sunucu kuyruğundan iptal edilsin mi?`)) return;
+    rollbackPendingLocal(item);
+    pendingOps.splice(index, 1);
+    write(K.pendingOps, pendingOps);
+    if (!pendingOps.length) {
+      try { const api = window.MesahaSuiteSync; if (api && typeof api.clearDirty === "function") api.clearDirty("suite"); } catch (_) {}
+    }
+    updatePendingBadge();
+    renderPendingOpsModal();
+    await reconcileAfterPendingCancel();
+    toast("Bekleyen işlem iptal edildi.");
+  }
+  async function cancelAllPendingOperations() {
+    if (!pendingOps.length) return;
+    if (!confirm(`${pendingOps.length} bekleyen işlemin tamamı iptal edilsin mi?`)) return;
+    pendingOps.forEach(rollbackPendingLocal);
+    pendingOps = [];
+    write(K.pendingOps, pendingOps);
+    try { const api = window.MesahaSuiteSync; if (api && typeof api.clearDirty === "function") api.clearDirty("suite"); } catch (_) {}
+    updatePendingBadge();
+    renderPendingOpsModal();
+    await reconcileAfterPendingCancel();
+    toast("Tüm bekleyen işlemler iptal edildi.");
+  }
+  function openPendingOpsModal() {
+    refreshPendingOpsFromStorage();
+    repairPendingMemberIdentities();
+    renderPendingOpsModal();
+    openModal("pendingOpsModal");
   }
   function normalizeFolder(raw) {
     const name = clean(raw && (raw.seflik || raw.name || raw.folderSeflik));
@@ -1336,6 +1490,7 @@
     if ($("seflikModal") && !$("seflikModal").hidden) renderSeflikModal();
     if ($("ormanciModal") && !$("ormanciModal").hidden) renderOrmanciModal();
     if ($("bolmeModal") && !$("bolmeModal").hidden) renderBolmeModal();
+    if ($("pendingOpsModal") && !$("pendingOpsModal").hidden) renderPendingOpsModal();
   }
   function renderAuthBox() {
     const id = identity(),
@@ -2253,6 +2408,8 @@
         true,
       );
     if (!navigator.onLine) return toast("İnternet bağlantısı yok.", true);
+    refreshPendingOpsFromStorage();
+    repairPendingMemberIdentities();
     if (!pendingOps.length) {
       toast("Gönderilecek yeni işlem yok.");
       await loadFolders(true);
@@ -2280,20 +2437,29 @@
             new_seflik: p.newName,
           });
         } else if (item.type === "add_member") {
-          if (!p.member_email && !p.email)
-            throw new Error("Ormancı için e-posta adresi yok");
+          repairPendingMemberIdentity(item);
+          if (!p.member_email && !p.email && !p.member_user_id)
+            throw new Error("Eklenecek kullanıcı için e-posta veya kullanıcı kimliği yok");
           await edge("seflik_folder_add_member", {
             seflik: p.seflik,
+            folderSeflik: p.seflik,
+            seflikKey: p.seflikKey || p.seflik_key,
+            seflik_key: p.seflik_key || p.seflikKey,
             member_user_id: p.member_user_id,
             member_email: p.member_email || p.email,
           });
         } else if (item.type === "remove_member") {
+          repairPendingMemberIdentity(item);
           if (p.member_email || p.email || p.member_user_id)
             await edge("seflik_folder_remove_member", {
               seflik: p.seflik,
+              folderSeflik: p.seflik,
+              seflikKey: p.seflikKey || p.seflik_key,
+              seflik_key: p.seflik_key || p.seflikKey,
               member_user_id: p.member_user_id,
               member_email: p.member_email || p.email,
             });
+          else throw new Error("Çıkarılacak kullanıcı için e-posta veya kullanıcı kimliği yok");
         } else if (item.type === "create_division") {
           await edge("seflik_folder_create_division", {
             seflik: p.seflik,
@@ -2685,6 +2851,10 @@
       prepareOffline();
       return true;
     }
+    if (tool === "pending") {
+      openPendingOpsModal();
+      return true;
+    }
     if (tool === "guide") {
       showInfo(
         "Kılavuz",
@@ -2829,6 +2999,18 @@
       deleteDivision(Number(target.dataset.deleteDivision));
       return true;
     }
+    if (target.dataset.pendingCancel != null) {
+      cancelPendingOperation(target.dataset.pendingCancel);
+      return true;
+    }
+    if (id === "pendingCancelAll") {
+      cancelAllPendingOperations();
+      return true;
+    }
+    if (id === "pendingRetryAll") {
+      sendPendingToServer().then(() => { renderPendingOpsModal(); updatePendingBadge(); }).catch(() => {});
+      return true;
+    }
     return false;
   }
   function bind() {
@@ -2893,6 +3075,7 @@
       toast,
       openModal,
       closeModals,
+      openPending: openPendingOpsModal,
     };
     window.addEventListener("online", () => {
       render();
