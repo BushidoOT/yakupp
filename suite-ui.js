@@ -120,8 +120,19 @@
       open = $("driveOpenV8");
     if (!api()) return;
     try {
-      if (text) text.textContent = "Drive bağlantısı kontrol ediliyor…";
+      if (text) text.textContent = "Şeflik üyeliği ve Drive bağlantısı kontrol ediliyor…";
+      if (navigator.onLine !== false && window.MesahaSuiteUI && typeof window.MesahaSuiteUI.loadFolders === "function") {
+        try {
+          await Promise.race([
+            window.MesahaSuiteUI.loadFolders(false),
+            new Promise((resolve) => setTimeout(resolve, 4500)),
+          ]);
+        } catch (_) {}
+      }
       const s = await api().driveStatus();
+      if (s && window.MesahaSuiteUI && typeof window.MesahaSuiteUI.applyCanonicalFolderContext === "function") {
+        try { window.MesahaSuiteUI.applyCanonicalFolderContext(s); } catch (_) {}
+      }
       lastDriveStatus = s || null;
       try { window.dispatchEvent(new CustomEvent("mesaha-suite:drive-status", { detail: s || null })); } catch (_) {}
       paintQuota(s);
@@ -149,7 +160,9 @@
         disc.hidden = true;
         open.hidden = true;
       } else {
-        text.textContent = "Şeflik kurucusu Drive hesabını henüz bağlamadı";
+        text.textContent = s.resolutionSource === "not-found"
+          ? "Kurucu Drive bağlantısı bu şeflikle eşleştirilemedi"
+          : "Şeflik kurucusu Drive hesabını henüz bağlamadı";
         connect.hidden = true;
         disc.hidden = true;
         open.hidden = true;
