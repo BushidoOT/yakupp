@@ -1,31 +1,31 @@
 (function (root) {
   "use strict";
   const DATA = /*MESAHA_RELEASE_DATA_START*/{
-  "build": 48,
-  "version": "48.0.0",
+  "build": 50,
+  "version": "50.0.0",
   "channel": "stable",
-  "releasedAt": "2026-07-16T18:10:00+03:00",
-  "assetToken": "orman-io-stable-20260716-10",
-  "cacheName": "orman-io-shell-stable-20260716-10",
+  "releasedAt": "2026-07-16T21:15:00+03:00",
+  "assetToken": "orman-io-stable-20260716-9",
+  "cacheName": "orman-io-shell-stable-20260716-9",
   "apps": {
     "suite": {
       "label": "Orman İO",
-      "version": "48.0.0"
+      "version": "50.0.0"
     },
     "mesaha": {
       "label": "Mesaha İO",
-      "version": "5.91"
+      "version": "5.92"
     },
     "istif": {
       "label": "İstif İO",
-      "version": "0.3.15"
+      "version": "0.3.16"
     },
     "admin": {
       "label": "Orman İO Yönetim",
-      "version": "48.0.0"
+      "version": "50.0.0"
     }
   },
-  "description": "Eski e-postasız üyelik kuyruğu kullanıcı kimliğinden güvenli biçimde onarılır; Sunucuda Bekleyenler ekranında işlemler görüntülenebilir, yeniden denenebilir ve tek tek veya topluca iptal edilebilir."
+  "description": "Google, terminal, şeflik üyeliği, kalıcı şeflik anahtarı, kurucu Drive bağlantısı, yedek ve senkron akışları tek kanonik bağlantı zincirinde birleştirildi; eski cihaz ve yeniden adlandırma kayıtları otomatik uzlaştırılır."
 }/*MESAHA_RELEASE_DATA_END*/;
   const APP_NAMES = DATA.apps || {};
   const SCRIPT_URL = (() => {

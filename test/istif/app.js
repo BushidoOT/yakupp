@@ -1034,6 +1034,14 @@ function hydrateLocalSharedIdentity() {
   }
 }
 
+function isSharedAuthFailure(status, body) {
+  const code = clean(body?.code || body?.errorCode);
+  const message = clean(body?.error || body?.reason || body?.message);
+  return Number(status) === 401 ||
+    ["AUTH_SESSION_INVALID", "JWT_EXPIRED", "INVALID_JWT"].includes(code) ||
+    /oturum doğrulanamadı|oturum geçersiz|jwt|token.*(?:expired|invalid|geçersiz|süresi)/i.test(message);
+}
+
 async function edgeCall(action, payload = {}, retried = false) {
   const session = readSharedSession();
   const terminalPayload = terminalAuthPayload();
@@ -1050,14 +1058,14 @@ async function edgeCall(action, payload = {}, retried = false) {
     },
     body: JSON.stringify({
       action,
-      source: "mesaha-istif-v038-suite",
+      source: "mesaha-istif-v50-suite",
       ...terminalPayload,
       ...payload,
     }),
   });
   const body = await response.json().catch(() => ({}));
   if (
-    (response.status === 401 || response.status === 403) &&
+    isSharedAuthFailure(response.status, body) &&
     session?.refresh_token &&
     !retried
   ) {
@@ -1092,24 +1100,28 @@ async function bridgeCall(action, payload = {}, retried = false) {
     },
     body: JSON.stringify({
       action,
-      source: "mesaha-istif-v038-suite",
+      source: "mesaha-istif-v50-suite",
       ...terminalPayload,
       ...payload,
     }),
   });
   const body = await response.json().catch(() => ({}));
   if (
-    (response.status === 401 || response.status === 403) &&
+    isSharedAuthFailure(response.status, body) &&
     session?.refresh_token &&
     !retried
   ) {
     await ensureSharedSession(true);
     return bridgeCall(action, payload, true);
   }
-  if (!response.ok || body?.ok === false)
-    throw new Error(
-      body.error || body.reason || `İstif bağlantı hatası ${response.status}`,
-    );
+  if (!response.ok || body?.ok === false) {
+    const error = new Error(body.error || body.reason || `İstif bağlantı hatası ${response.status}`);
+    error.status = response.status;
+    error.code = clean(body.code || body.errorCode);
+    error.retryable = body.retryable === true;
+    error.payload = body;
+    throw error;
+  }
   return body;
 }
 
@@ -1195,6 +1207,25 @@ async function refreshDriveStatus({ silent = true } = {}) {
       seflikKey: key,
       seflik: state.settings.seflik,
     });
+    const canonicalKey = clean(out.seflikKey || out.seflik_key);
+    const canonicalName = clean(out.seflik);
+    const canonicalFolderId = clean(out.seflikFolderId || out.seflik_folder_id);
+    if (canonicalKey || canonicalName || canonicalFolderId) {
+      state.settings.seflikKey = canonicalKey || state.settings.seflikKey;
+      state.settings.seflik = canonicalName || state.settings.seflik;
+      const current = state.seflikler.find((folder) =>
+        (canonicalFolderId && clean(folder.id || folder.folderId) === canonicalFolderId) ||
+        (canonicalKey && clean(folder.key) === canonicalKey) ||
+        (canonicalName && stableKey(folder.name) === stableKey(canonicalName))
+      );
+      if (current) {
+        current.key = canonicalKey || current.key;
+        current.name = canonicalName || current.name;
+        current.id = canonicalFolderId || current.id;
+        current.role = clean(out.membershipRole) || current.role;
+        current.isCreator = out.isOwner === true;
+      }
+    }
     state.drive = {
       status: "ready",
       connected: !!out.connected,

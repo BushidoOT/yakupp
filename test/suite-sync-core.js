@@ -139,6 +139,32 @@
     if (/\/mesaha(?:\/|$)/.test(path)) return false;
     return cloudSyncAllowed();
   }
+  function authEngine() {
+    return window.mesahaSupabase || window.mesahaSupabaseV383 || window.mesahaSupabaseV380 || window.mesahaCloud || null;
+  }
+  function googleSessionNeedsRefresh(force) {
+    const s = session();
+    if (!s || !s.refresh_token || navigator.onLine === false) return false;
+    if (force) return true;
+    const expiresAt = Number(s.expires_at || 0) * 1000;
+    return !expiresAt || expiresAt <= Date.now() + 120000;
+  }
+  async function refreshGoogleSession(force) {
+    if (!googleSessionNeedsRefresh(force)) return session();
+    const engine = authEngine();
+    const current = engine && typeof engine.getStoredSession === "function" ? engine.getStoredSession() : session();
+    if (!current || !current.refresh_token || !engine || typeof engine.refreshSession !== "function") return current || session();
+    try {
+      const fresh = await engine.refreshSession(current);
+      if (fresh && fresh.access_token) {
+        try { window.dispatchEvent(new CustomEvent("mesaha:auth-session-restored", { detail: { userId: fresh.user && fresh.user.id, source: "suite-drive-refresh" } })); } catch {}
+        return fresh;
+      }
+    } catch (error) {
+      if (force) throw error;
+    }
+    return session();
+  }
   function authHeaders() {
     const s = session();
     return {
@@ -146,6 +172,13 @@
       apikey: ANON_KEY,
       Authorization: "Bearer " + clean(s.access_token || ANON_KEY),
     };
+  }
+  function isAuthSessionFailure(status, payload) {
+    const message = clean(payload && (payload.error || payload.message || payload.reason));
+    const code = clean(payload && (payload.code || payload.errorCode));
+    return Number(status) === 401 ||
+      ["AUTH_SESSION_INVALID", "JWT_EXPIRED", "INVALID_JWT"].includes(code) ||
+      /oturum doğrulanamadı|oturum gecersiz|oturum geçersiz|jwt|token.*(?:expired|invalid|geçersiz|süresi)/i.test(message);
   }
   function terminalAuth() {
     const t = terminal();
@@ -188,34 +221,56 @@
     return true;
   }
   async function post(url, action, data) {
+    const terminalPayload = terminalAuth();
     const body = {
       action,
-      source: "mesaha-suite-v31",
-      ...terminalAuth(),
+      source: "mesaha-suite-v50",
+      ...terminalPayload,
       ...(data || {}),
     };
-    const r = await fetchWithTimeout(url, {
-      method: "POST",
-      cache: "no-store",
-      headers: authHeaders(),
-      body: JSON.stringify(body),
-    }, 30000);
-    const j = await r.json().catch(() => ({}));
-    if (!r.ok || j.ok === false) {
-      if (j && j.blocked === true) { try { window.dispatchEvent(new CustomEvent("mesaha:security-blocked", { detail: j })); } catch (_) {} }
-      const error = new Error(clean(j.error || j.message) || "Sunucu hatası " + r.status);
-      error.status = r.status;
-      error.code = clean(j.code || j.errorCode || "");
-      error.retryable = j.retryable === true;
-      error.detail = clean(j.detail || "");
-      error.requestId = clean(j.requestId || "");
-      error.retryAfter = num(j.retry_after || j.retryAfter);
-      throw error;
+    const terminalRequest = !!clean(terminalPayload.terminalCode || terminalPayload.terminalToken);
+    if (!terminalRequest) {
+      try { await refreshGoogleSession(false); } catch {}
     }
-    return j;
+    let r, j;
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      r = await fetchWithTimeout(url, {
+        method: "POST",
+        cache: "no-store",
+        headers: authHeaders(),
+        body: JSON.stringify(body),
+      }, 30000);
+      j = await r.json().catch(() => ({}));
+      if (r.ok && j.ok !== false) {
+        try { applyCanonicalServerContext(j); } catch (_) {}
+        return j;
+      }
+      if (!terminalRequest && attempt === 0 && isAuthSessionFailure(r.status, j)) {
+        try {
+          await refreshGoogleSession(true);
+          continue;
+        } catch (refreshError) {
+          const error = new Error("Google oturumu yenilenemedi. Orman İO hesabını kapatıp tekrar giriş yapın.");
+          error.status = Number(refreshError && refreshError.status) || r.status;
+          error.code = "AUTH_REFRESH_FAILED";
+          error.retryable = false;
+          throw error;
+        }
+      }
+      break;
+    }
+    if (j && j.blocked === true) { try { window.dispatchEvent(new CustomEvent("mesaha:security-blocked", { detail: j })); } catch (_) {} }
+    const error = new Error(clean(j && (j.error || j.message)) || "Sunucu hatası " + (r && r.status));
+    error.status = r && r.status;
+    error.code = clean(j && (j.code || j.errorCode) || "");
+    error.retryable = j && j.retryable === true;
+    error.detail = clean(j && j.detail || "");
+    error.requestId = clean(j && j.requestId || "");
+    error.retryAfter = num(j && (j.retry_after || j.retryAfter));
+    throw error;
   }
-  const edge = (action, data) => post(SMOOTH, action, data);
-  const drive = (action, data) => post(DRIVE, action, data);
+  const edge = (action, data) => post(SMOOTH, action, contextualize(action, data, false));
+  const drive = (action, data) => post(DRIVE, action, contextualize(action, data, true));
 
   function dirtyState() {
     const d = read(K.dirty, {});
@@ -558,6 +613,100 @@
             clean(f.seflik) === clean(a.seflik)),
       ) || (clean(a.seflik) ? a : null)
     );
+  }
+  function folderContext() {
+    const af = activeFolder(), id = identity();
+    const seflik = clean((af && af.seflik) || id.seflik);
+    return {
+      seflik,
+      seflikKey:
+        clean(af && (af.seflik_key || af.seflikKey)) ||
+        clean(id.seflikKey) ||
+        fold(seflik),
+      folderId: clean(af && (af.id || af.folder_id || af.folderId)),
+    };
+  }
+  function applyCanonicalServerContext(payload) {
+    const data = payload && typeof payload === "object" ? payload : {};
+    const access = data.access && typeof data.access === "object" ? data.access : {};
+    const folder = data.folder && typeof data.folder === "object"
+      ? data.folder
+      : (Array.isArray(data.folders) && data.folders[0] && typeof data.folders[0] === "object" ? data.folders[0] : {});
+    const seflik = clean(data.seflik || access.seflik || access.canonical_seflik || folder.seflik || folder.name);
+    const seflikKey = clean(data.seflikKey || data.seflik_key || access.seflikKey || access.seflik_key || folder.seflik_key || folder.seflikKey || folder.key);
+    const folderId = clean(data.seflikFolderId || data.seflik_folder_id || access.seflikFolderId || access.seflik_folder_id || folder.id || folder.folder_id || folder.folderId);
+    if (!seflik && !seflikKey && !folderId) return false;
+    const currentActive = read(K.active, {}) || {};
+    const next = {
+      ...currentActive,
+      seflik: seflik || clean(currentActive.seflik),
+      seflik_key: seflikKey || clean(currentActive.seflik_key || currentActive.seflikKey) || fold(seflik),
+      folder_id: folderId || clean(currentActive.folder_id || currentActive.folderId),
+      role: clean(data.membershipRole || access.role || folder.role || currentActive.role),
+      creator: Object.prototype.hasOwnProperty.call(data, "isOwner") ? data.isOwner === true : (folder.is_creator === true || folder.isCreator === true || currentActive.creator === true),
+      owner_user_id: clean(data.ownerUserId || access.owner_user_id || folder.owner_user_id || folder.created_by_user_id || currentActive.owner_user_id),
+      owner_email: clean(data.ownerEmail || access.owner_email || folder.owner_email || folder.created_by_email || currentActive.owner_email),
+      owner_name: clean(data.ownerName || access.owner_name || folder.owner_name || folder.created_by_name || currentActive.owner_name),
+      updatedAt: Date.now(),
+    };
+    write(K.active, next);
+    const folders = read(K.folders, []);
+    if (Array.isArray(folders)) {
+      let found = folders.find((item) => item && (
+        (next.folder_id && clean(item.id || item.folder_id || item.folderId) === next.folder_id) ||
+        (next.seflik_key && clean(item.seflik_key || item.seflikKey) === next.seflik_key) ||
+        (next.seflik && fold(item.seflik) === fold(next.seflik))
+      ));
+      const merged = {
+        ...(found || {}),
+        id: next.folder_id || clean(found && (found.id || found.folder_id || found.folderId)),
+        seflik: next.seflik,
+        seflik_key: next.seflik_key,
+        role: next.role || clean(found && found.role),
+        is_creator: next.creator,
+        owner_user_id: next.owner_user_id,
+        owner_email: next.owner_email,
+        owner_name: next.owner_name,
+        updatedAt: Date.now(),
+      };
+      if (found) Object.assign(found, merged); else folders.unshift(merged);
+      write(K.folders, folders);
+    }
+    const panel = read(K.panel, {}) || {};
+    panel.seflik = next.seflik; panel.activeSeflik = next.seflik;
+    panel.seflikKey = next.seflik_key; panel.activeSeflikKey = next.seflik_key;
+    panel.updatedAt = Date.now(); write(K.panel, panel);
+    const settings = read(K.settings, {}) || {};
+    settings.seflik = next.seflik; settings.seflikKey = next.seflik_key; settings.seflik_key = next.seflik_key;
+    write(K.settings, settings);
+    try { window.dispatchEvent(new CustomEvent("mesaha-suite:folder-context", { detail: next })); } catch {}
+    return true;
+  }
+
+  function contextualize(action, data, isDrive) {
+    const out = { ...(data || {}) };
+    const ctx = folderContext();
+    const explicitName = clean(out.seflik || out.folderSeflik || out.seflikFolder);
+    const sameContext = !explicitName || !ctx.seflik || fold(explicitName) === fold(ctx.seflik);
+    const needsFolder = !!isDrive || /^seflik_folder_/.test(clean(action)) || /^istif_record_/.test(clean(action));
+    if (!needsFolder) return out;
+    if (!out.seflik && ctx.seflik) out.seflik = ctx.seflik;
+    if (!out.folderSeflik && clean(out.seflik)) out.folderSeflik = clean(out.seflik);
+    if (!out.seflikKey && !out.seflik_key) {
+      const key = sameContext ? ctx.seflikKey : fold(explicitName);
+      if (key) {
+        out.seflikKey = key;
+        out.seflik_key = key;
+      }
+    } else {
+      const key = clean(out.seflikKey || out.seflik_key);
+      if (key) {
+        out.seflikKey = key;
+        out.seflik_key = key;
+      }
+    }
+    if (!out.folderId && sameContext && ctx.folderId) out.folderId = ctx.folderId;
+    return out;
   }
   function normalizeDivision(raw, af) {
     const no = clean(raw && (raw.bolme_no || raw.bolmeNo || raw.bolme));
@@ -1645,9 +1794,14 @@
     return true;
   }
   async function driveStatus() {
-    const id = identity();
+    const id = identity(), ctx = folderContext();
     if (!cloudSyncAllowed()) return { ok: true, connected: false, googleRequired: true };
-    const x = await drive("status", { seflik: id.seflik });
+    const x = await drive("status", {
+      seflik: ctx.seflik || id.seflik,
+      seflikKey: ctx.seflikKey || id.seflikKey,
+      seflik_key: ctx.seflikKey || id.seflikKey,
+      folderId: ctx.folderId,
+    });
     write(K.drive, x);
     return x;
   }
@@ -1679,8 +1833,11 @@
     if (status && status.isOwner === false)
       throw new Error("Drive hesabını yalnızca şeflik kurucusu bağlayabilir");
     const redirect = location.origin + location.pathname.replace(/[^/]*$/, "");
+    const ctx = folderContext();
     const x = await drive("oauth_start", {
-      seflik: id.seflik,
+      seflik: ctx.seflik || id.seflik,
+      seflikKey: ctx.seflikKey || id.seflikKey,
+      folderId: ctx.folderId,
       redirectUri: redirect,
     });
     if (!x.authorizationUrl)
@@ -1689,17 +1846,21 @@
   }
   async function driveFinish(code, state) {
     const redirect = location.origin + location.pathname.replace(/[^/]*$/, "");
+    const ctx = folderContext();
     const x = await drive("oauth_finish", {
       code,
       state,
       redirectUri: redirect,
-      seflik: identity().seflik,
+      seflik: ctx.seflik || identity().seflik,
+      seflikKey: ctx.seflikKey || identity().seflikKey,
+      folderId: ctx.folderId,
     });
     write(K.drive, x);
     return x;
   }
   async function driveDisconnect() {
-    const x = await drive("disconnect", { seflik: identity().seflik });
+    const ctx = folderContext();
+    const x = await drive("disconnect", { seflik: ctx.seflik || identity().seflik, seflikKey: ctx.seflikKey || identity().seflikKey, folderId: ctx.folderId });
     write(K.drive, { connected: false });
     return x;
   }
@@ -1890,6 +2051,7 @@
     readBackup,
     deleteBackup,
     identity,
+    applyCanonicalServerContext,
     edge,
     drive,
     updateButton,

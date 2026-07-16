@@ -263,10 +263,10 @@
     );
   }
   function authType() {
-    if (session().access_token || access().status === "approved")
-      return "google";
+    if (session().access_token) return "google";
     if (pairedTerminal()) return "terminal";
     if (terminal().active) return "guest";
+    if (access().status === "approved") return "cached";
     return "none";
   }
   function signedIn() {
@@ -282,32 +282,44 @@
     const cfg = window.MESAHA_SUPABASE_CONFIG || {};
     const base = clean(cfg.url).replace(/\/+$/, "");
     const anon = clean(cfg.anonKey || cfg.anon_key);
-    const token = clean(session().access_token);
-    if (!base || !anon || !token)
-      throw new Error("Google oturumu hazır değil.");
-    const res = await fetch(base + "/rest/v1/rpc/" + encodeURIComponent(name), {
-      method: "POST",
-      cache: "no-store",
-      headers: {
-        "Content-Type": "application/json",
-        apikey: anon,
-        Authorization: "Bearer " + token,
-      },
-      body: JSON.stringify(params || {}),
-    });
-    const text = await res.text();
-    let out = {};
-    try {
-      out = text ? JSON.parse(text) : {};
-    } catch {
-      out = {};
+    const authApi = window.mesahaSupabase || window.mesahaCloud || null;
+    let current = session();
+    const expiresAt = Number(current && current.expires_at || 0) * 1000;
+    if (current && current.refresh_token && navigator.onLine !== false && (!expiresAt || expiresAt <= Date.now() + 120000) && authApi && typeof authApi.refreshSession === "function") {
+      try { current = await authApi.refreshSession(current); } catch (_) {}
     }
-    if (!res.ok)
-      throw new Error(
-        clean(out.message || out.error || text) || "Terminal işlemi başarısız.",
-      );
-    return out;
+    if (!base || !anon || !clean(current && current.access_token))
+      throw new Error("Google oturumu hazır değil. Hesabı yenileyip tekrar deneyin.");
+
+    let lastResponse = null, lastOut = {};
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      const token = clean(current && current.access_token);
+      const res = await fetch(base + "/rest/v1/rpc/" + encodeURIComponent(name), {
+        method: "POST",
+        cache: "no-store",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: anon,
+          Authorization: "Bearer " + token,
+        },
+        body: JSON.stringify(params || {}),
+      });
+      const raw = await res.text();
+      let out = {};
+      try { out = raw ? JSON.parse(raw) : {}; } catch { out = {}; }
+      if (res.ok) return out;
+      lastResponse = res; lastOut = out;
+      if (attempt === 0 && [401, 403].includes(res.status) && current && current.refresh_token && authApi && typeof authApi.refreshSession === "function") {
+        try { current = await authApi.refreshSession(current); continue; } catch (_) {}
+      }
+      break;
+    }
+    throw new Error(
+      clean(lastOut && (lastOut.message || lastOut.error)) ||
+      (lastResponse ? "Google oturumu doğrulanamadı." : "Terminal işlemi başarısız."),
+    );
   }
+
   function dateText(v) {
     try {
       return v
@@ -431,8 +443,12 @@
       p = panel(),
       t = terminal(),
       st = settings(),
+      active = read(K.active, {}) || {},
       u = s.user || {},
       m = u.user_metadata || {};
+    const seflik = clean(
+      active.seflik || p.activeSeflik || p.seflik || t.seflik || st.seflik,
+    );
     return {
       type: authType(),
       userId: clean(
@@ -464,13 +480,12 @@
           m.avatar_url ||
           m.picture,
       ),
-      seflik: clean(
-        (read(K.active, {}) || {}).seflik ||
-          p.activeSeflik ||
-          p.seflik ||
-          t.seflik ||
-          st.seflik,
-      ),
+      seflik,
+      seflikKey:
+        clean(active.seflik_key || active.seflikKey || p.activeSeflikKey || p.seflikKey || st.seflikKey || st.seflik_key) ||
+        stableKey(seflik),
+      folderId: clean(active.folder_id || active.folderId || active.id),
+      role: clean(active.role),
       bolme: clean(p.bolmeNo || t.bolmeNo || st.bolmeNo),
     };
   }
@@ -1006,11 +1021,12 @@
       ...raw,
       seflik: name,
       seflik_key: clean(raw.seflik_key || raw.seflikKey) || stableKey(name),
-      role: clean(raw.role || raw.member_role || "owner"),
+      role: clean(raw.role || raw.member_role || (raw.is_creator === true ? "owner" : "member")),
       is_creator:
-        raw.is_creator !== false &&
-        ["owner", "creator", "kurucu", ""].includes(
-          clean(raw.role || "owner").toLocaleLowerCase("tr-TR"),
+        raw.is_creator === true ||
+        raw.isCreator === true ||
+        ["owner", "creator", "kurucu"].includes(
+          clean(raw.role || raw.member_role).toLocaleLowerCase("tr-TR"),
         ),
       updatedAt: raw.updatedAt || raw.updated_at || now(),
     };
@@ -1067,17 +1083,24 @@
     write(K.active, {
       seflik: sf,
       seflik_key: key,
+      folder_id: clean(f.id || f.folder_id || f.folderId),
       role: f.role || "",
       creator: !!f.is_creator,
+      owner_user_id: clean(f.owner_user_id || f.created_by_user_id),
+      owner_name: clean(f.owner_name || f.created_by_name),
       updatedAt: now(),
     });
     const p = panel();
     p.seflik = sf;
     p.activeSeflik = sf;
+    p.seflikKey = key;
+    p.activeSeflikKey = key;
     p.updatedAt = now();
     write(K.panel, p);
     const st = settings();
     st.seflik = sf;
+    st.seflikKey = key;
+    st.seflik_key = key;
     write(K.settings, st);
     try {
       window.dispatchEvent(new Event("mesaha:seflik-folder-active-changed"));
@@ -1114,12 +1137,63 @@
     const api = window.mesahaSupabase;
     if (!api || typeof api.edge !== "function")
       throw new Error("Sunucu bağlantısı hazır değil.");
-    return api.edge(action, {
-      source: "mesaha-suite",
+    const payload = { ...(data || {}) };
+    if (/^seflik_folder_/.test(clean(action)) && action !== "seflik_folder_create_seflik") {
+      const af = activeFolder(), explicitName = clean(payload.seflik || payload.folderSeflik || payload.oldSeflik);
+      const sameActive = !!(af && (!explicitName || fold(explicitName) === fold(af.seflik)));
+      const key = clean(payload.seflikKey || payload.seflik_key) ||
+        (sameActive ? clean(af.seflik_key || af.seflikKey) : stableKey(explicitName));
+      if (key) {
+        payload.seflikKey = key;
+        payload.seflik_key = key;
+      }
+      if (!payload.folderSeflik && clean(payload.seflik)) payload.folderSeflik = clean(payload.seflik);
+      if (!payload.folderId && sameActive) payload.folderId = clean(af && (af.id || af.folder_id || af.folderId));
+    }
+    const result = await api.edge(action, {
+      source: "mesaha-suite-v50",
       ...terminalAuth(),
-      ...data,
+      ...payload,
     });
+    try { applyCanonicalFolderContext(result); } catch (_) {}
+    return result;
   }
+  function applyCanonicalFolderContext(raw) {
+    const source = raw && typeof raw === "object" ? raw : {};
+    const access = source.access && typeof source.access === "object" ? source.access : {};
+    const folder = source.folder && typeof source.folder === "object"
+      ? source.folder
+      : (Array.isArray(source.folders) && source.folders[0] && typeof source.folders[0] === "object" ? source.folders[0] : {});
+    const seflik = clean(source.seflik || source.folderSeflik || access.seflik || access.canonical_seflik || folder.seflik || folder.name);
+    const seflikKey = clean(source.seflikKey || source.seflik_key || access.seflikKey || access.seflik_key || folder.seflik_key || folder.seflikKey || folder.key);
+    const folderId = clean(source.seflikFolderId || source.seflik_folder_id || access.seflikFolderId || access.seflik_folder_id || folder.id || folder.folder_id || folder.folderId);
+    if (!seflik && !seflikKey && !folderId) return null;
+    let current = folders.find((f) =>
+      (folderId && clean(f.id || f.folder_id || f.folderId) === folderId) ||
+      (seflikKey && clean(f.seflik_key || f.seflikKey) === seflikKey) ||
+      (seflik && fold(f.seflik) === fold(seflik))
+    );
+    const merged = normalizeFolder({
+      ...(current || {}),
+      seflik: seflik || (current && current.seflik),
+      seflik_key: seflikKey || (current && (current.seflik_key || current.seflikKey)),
+      id: folderId || (current && (current.id || current.folder_id || current.folderId)),
+      role: clean(source.membershipRole || access.role || folder.role) || (current && current.role) || "member",
+      is_creator: Object.prototype.hasOwnProperty.call(source, "isOwner") ? source.isOwner === true : (folder.is_creator === true || folder.isCreator === true || !!(current && current.is_creator)),
+      owner_user_id: clean(source.ownerUserId || access.owner_user_id || folder.owner_user_id || folder.created_by_user_id) || (current && (current.owner_user_id || current.created_by_user_id)),
+      owner_email: clean(source.ownerEmail || access.owner_email || folder.owner_email || folder.created_by_email) || (current && (current.owner_email || current.created_by_email)),
+      owner_name: clean(source.ownerName || access.owner_name || folder.owner_name || folder.created_by_name) || (current && (current.owner_name || current.created_by_name)),
+      updatedAt: now(),
+    });
+    if (!merged) return null;
+    if (current) Object.assign(current, merged);
+    else { folders.unshift(merged); current = merged; }
+    setActive(current);
+    saveLocal();
+    render();
+    return current;
+  }
+
   function localFolder() {
     if (authType() !== "guest") return null;
     const id = identity();
@@ -1158,9 +1232,13 @@
       return folders;
     }
     try {
+      const id = identity();
       const out = await edge("seflik_folder_list_my_sefliks", {
-        seflik: identity().seflik,
-        folderSeflik: identity().seflik,
+        seflik: id.seflik,
+        folderSeflik: id.seflik,
+        seflikKey: id.seflikKey,
+        seflik_key: id.seflikKey,
+        folderId: id.folderId,
       });
       const remote = (Array.isArray(out.folders) ? out.folders : [])
         .map(normalizeFolder)
@@ -1197,6 +1275,9 @@
       const out = await edge("seflik_folder_list_members", {
         seflik: af.seflik,
         folderSeflik: af.seflik,
+        seflikKey: clean(af.seflik_key || af.seflikKey),
+        seflik_key: clean(af.seflik_key || af.seflikKey),
+        folderId: clean(af.id || af.folder_id || af.folderId),
       });
       const list = (Array.isArray(out.members) ? out.members : [])
         .map((m) => ({
@@ -1220,6 +1301,9 @@
       const out = await edge("seflik_folder_list", {
         seflik: af.seflik,
         folderSeflik: af.seflik,
+        seflikKey: clean(af.seflik_key || af.seflikKey),
+        seflik_key: clean(af.seflik_key || af.seflikKey),
+        folderId: clean(af.id || af.folder_id || af.folderId),
       });
       const hasAuthoritativeList = Array.isArray(out && out.divisions) || Array.isArray(out && out.summaries);
       if (!hasAuthoritativeList) return;
@@ -1301,8 +1385,8 @@
   function syncAppCaches() {
     const af = activeFolder();
     if (!af) {
-      write(K.mesahaFolderCache, { at: now(), seflik: "", divisions: [] });
-      write(K.mesahaPendingDivisions, { seflik: "", divisions: [] });
+      write(K.mesahaFolderCache, { at: now(), seflik: "", seflik_key: "", folder_id: "", divisions: [] });
+      write(K.mesahaPendingDivisions, { seflik: "", seflik_key: "", folder_id: "", divisions: [] });
       try {
         localStorage.removeItem(K.mesahaLastBolme);
       } catch {}
@@ -1326,7 +1410,10 @@
     write(K.mesahaFolderCache, {
       at: now(),
       seflik: af.seflik,
+      seflik_key: k,
+      folder_id: clean(af.id || af.folder_id || af.folderId),
       divisions: dvs.map((d) => ({
+        seflik_key: k,
         bolme_no: d.bolme_no,
         status: "open",
         record_count: d.record_count || 0,
@@ -1342,6 +1429,8 @@
     });
     write(K.mesahaPendingDivisions, {
       seflik: af.seflik,
+      seflik_key: k,
+      folder_id: clean(af.id || af.folder_id || af.folderId),
       divisions: dvs
         .filter((d) => d.pending)
         .map((d) => ({
@@ -1360,7 +1449,7 @@
     try {
       window.dispatchEvent(
         new CustomEvent("mesaha-suite:shared-data-updated", {
-          detail: { seflik: af.seflik, divisions: dvs, source: "suite-root" },
+          detail: { seflik: af.seflik, seflikKey: k, folderId: clean(af.id || af.folder_id || af.folderId), divisions: dvs, source: "suite-root" },
         }),
       );
     } catch {}
@@ -1502,8 +1591,8 @@
     if (!box || !wrap) return;
     const type = authType();
     const loginModal = $("loginModal"), loginTitle = loginModal && loginModal.querySelector(".modal-head h3"), loginKicker = loginModal && loginModal.querySelector(".modal-kicker");
-    if (loginTitle) loginTitle.textContent = type === "google" ? "Oturum Bilgileri" : type === "terminal" ? "Terminal Oturumu" : type === "guest" ? "Misafir Oturumu" : "Giriş Seçimi";
-    if (loginKicker) loginKicker.textContent = type === "google" ? "GOOGLE HESABI" : type === "terminal" ? "KODLA EŞLEŞMİŞ CİHAZ" : type === "guest" ? "YEREL TERMİNAL" : "ORTAK OTURUM";
+    if (loginTitle) loginTitle.textContent = type === "google" ? "Oturum Bilgileri" : type === "terminal" ? "Terminal Oturumu" : type === "guest" ? "Misafir Oturumu" : type === "cached" ? "Google Oturumunu Yenile" : "Giriş Seçimi";
+    if (loginKicker) loginKicker.textContent = type === "google" ? "GOOGLE HESABI" : type === "terminal" ? "KODLA EŞLEŞMİŞ CİHAZ" : type === "guest" ? "YEREL TERMİNAL" : type === "cached" ? "KAYITLI PROFİL" : "ORTAK OTURUM";
     if (googleBtn) googleBtn.hidden = type === "google";
     if (guestBtn)
       guestBtn.hidden =
@@ -1522,7 +1611,9 @@
         ? "Google hesabı"
         : type === "terminal"
           ? "Kodla eşleşmiş terminal"
-          : "Yerel misafir";
+          : type === "cached"
+            ? "Kayıtlı Google profili • yeniden giriş gerekli"
+            : "Yerel misafir";
     box.innerHTML = `<div class="auth-session-box profile-line"><div class="auth-session-avatar">${avatarHTML(id.avatar, id.name)}</div><div class="auth-session-copy"><span class="auth-session-kicker">AKTİF OTURUM</span><b>${esc(id.name || label)}</b><small>${esc(label)}</small>${id.email ? `<em>${esc(id.email)}</em>` : ""}${activeFolder() ? `<strong>${esc(activeFolder().seflik)}</strong>` : `<strong>Şeflik seçilmedi</strong>`}</div></div>`;
     wrap.innerHTML =
       '<button class="danger-button" id="logoutBtn">Oturumu Kapat</button>';
@@ -1534,8 +1625,8 @@
   function clearActiveFolderContext(nextFolder) {
     if (nextFolder) { setActive(nextFolder); return; }
     try { localStorage.removeItem(K.active); } catch {}
-    const p = panel(); p.activeSeflik = ""; p.seflik = ""; p.bolmeNo = ""; p.updatedAt = now(); write(K.panel, p);
-    const st = settings(); st.seflik = ""; st.bolmeNo = ""; write(K.settings, st);
+    const p = panel(); p.activeSeflik = ""; p.seflik = ""; p.activeSeflikKey = ""; p.seflikKey = ""; p.bolmeNo = ""; p.updatedAt = now(); write(K.panel, p);
+    const st = settings(); st.seflik = ""; st.seflikKey = ""; st.seflik_key = ""; st.bolmeNo = ""; write(K.settings, st);
     try { window.dispatchEvent(new Event("mesaha:seflik-folder-active-changed")); } catch {}
   }
   function purgeFolderLocalCaches(folder) {
@@ -1957,6 +2048,10 @@
       const out = await edge("seflik_folder_search_users", {
         query: q,
         seflik: af.seflik,
+        folderSeflik: af.seflik,
+        seflikKey: clean(af.seflik_key || af.seflikKey),
+        seflik_key: clean(af.seflik_key || af.seflikKey),
+        folderId: clean(af.id || af.folder_id || af.folderId),
       });
       const users = Array.isArray(out.users) ? out.users : [];
       box.innerHTML = users.length
@@ -2193,6 +2288,9 @@
         const out = await edge("seflik_folder_read", {
           seflik: af.seflik,
           folderSeflik: af.seflik,
+          seflikKey: clean(af.seflik_key || af.seflikKey),
+          seflik_key: clean(af.seflik_key || af.seflikKey),
+          folderId: clean(af.id || af.folder_id || af.folderId),
           bolmeNo: no,
         });
         rows = Array.isArray(out.records) ? out.records : [];
@@ -3071,6 +3169,17 @@
       prepareOffline,
       sendPendingToServer,
       loadFolders,
+      applyCanonicalFolderContext,
+      getActiveFolderContext: () => {
+        const f = activeFolder(), id = identity();
+        return {
+          seflik: clean(f && f.seflik || id.seflik),
+          seflikKey: clean(f && (f.seflik_key || f.seflikKey) || id.seflikKey),
+          folderId: clean(f && (f.id || f.folder_id || f.folderId) || id.folderId),
+          role: clean(f && f.role || id.role),
+          isOwner: !!(f && canManageFolder(f)),
+        };
+      },
       syncAppCaches,
       toast,
       openModal,
