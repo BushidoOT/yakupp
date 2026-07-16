@@ -899,6 +899,8 @@ function terminalAuthPayload() {
         terminalToken: clean(terminal.terminalToken),
         terminalPairedUserId: clean(terminal.pairedUserId),
         terminalPairedEmail: clean(terminal.pairedEmail),
+        terminalDeviceId: clean(terminal.deviceId || terminal.terminalDeviceId || (() => { try { return localStorage.getItem("mesaha_supabase_v500_device") || ""; } catch (_) { return ""; } })()),
+        deviceId: clean(terminal.deviceId || terminal.terminalDeviceId || (() => { try { return localStorage.getItem("mesaha_supabase_v500_device") || ""; } catch (_) { return ""; } })()),
       }
     : {};
 }
@@ -1142,18 +1144,14 @@ function normalizeForester(raw) {
   );
   if (!name) return null;
   return {
-    id: clean(
-      raw.id ||
-        raw.userId ||
-        raw.user_id ||
-        raw.forester_user_id ||
-        `custom_${stableKey(name)}`,
+    id: clean(raw.email || raw.user_email || raw.member_email).toLocaleLowerCase("tr-TR") || clean(
+      raw.id || raw.userId || raw.user_id || raw.forester_user_id || `custom_${stableKey(name)}`,
     ),
     userId: clean(
       raw.userId || raw.user_id || raw.forester_user_id || raw.member_user_id,
     ),
     name,
-    email: clean(raw.email || raw.user_email || raw.member_email),
+    email: clean(raw.email || raw.user_email || raw.member_email).toLocaleLowerCase("tr-TR"),
     avatarUrl: clean(
       raw.avatarUrl ||
         raw.avatar_url ||
@@ -1230,11 +1228,13 @@ async function syncCustomForestersForFolder(folder) {
     ? [...state.customForestersBySeflik[folder.key]]
     : [];
   try {
-    for (const item of local.filter((x) => x.pending && x.name)) {
+    for (const item of local.filter((x) => x.pending && x.email)) {
       try {
         await bridgeCall("forester_add", {
           seflikKey: folder.key,
           seflik: folder.name,
+          userId: item.userId,
+          email: item.email,
           name: item.name,
         });
       } catch {}
@@ -1247,7 +1247,7 @@ async function syncCustomForestersForFolder(folder) {
     const pending = local.filter(
       (item) =>
         item.pending &&
-        !remote.some((x) => stableKey(x.name) === stableKey(item.name)),
+        !remote.some((x) => clean(x.email).toLocaleLowerCase("tr-TR") === clean(item.email).toLocaleLowerCase("tr-TR")),
     );
     state.customForestersBySeflik[folder.key] = [...remote, ...pending];
   } catch {
@@ -1330,10 +1330,10 @@ function valuesByAlias(map, aliases) {
 }
 
 function foresterKey(item) {
-  return item?.userId
-    ? `uid:${item.userId}`
-    : item?.email
-      ? `email:${clean(item.email).toLocaleLowerCase("tr-TR")}`
+  return item?.email
+    ? `email:${clean(item.email).toLocaleLowerCase("tr-TR")}`
+    : item?.userId
+      ? `uid:${item.userId}`
       : `name:${stableKey(item?.name)}`;
 }
 
@@ -1428,10 +1428,10 @@ function refreshCurrentMembers() {
     if (!map.has(k) || normalized.custom) map.set(k, normalized);
   });
   if (state.auth.name) {
-    const selfKey = state.auth.userId
-      ? `uid:${state.auth.userId}`
-      : state.auth.email
-        ? `email:${state.auth.email}`
+    const selfKey = state.auth.email
+      ? `email:${clean(state.auth.email).toLocaleLowerCase("tr-TR")}`
+      : state.auth.userId
+        ? `uid:${state.auth.userId}`
         : `name:${stableKey(state.auth.name)}`;
     if (!map.has(selfKey))
       map.set(selfKey, {
@@ -1454,7 +1454,7 @@ function refreshCurrentMembers() {
           existing.email &&
           clean(item.email).toLocaleLowerCase("tr-TR") ===
             clean(existing.email).toLocaleLowerCase("tr-TR")) ||
-        (item.name &&
+        (!item.userId && !existing.userId && !item.email && !existing.email && item.name &&
           existing.name &&
           stableKey(item.name) === stableKey(existing.name)),
     );

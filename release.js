@@ -1,31 +1,31 @@
 (function (root) {
   "use strict";
   const DATA = /*MESAHA_RELEASE_DATA_START*/{
-  "build": 44,
-  "version": "44.0.0",
+  "build": 48,
+  "version": "48.0.0",
   "channel": "stable",
-  "releasedAt": "2026-07-16T08:12:00+03:00",
-  "assetToken": "orman-io-stable-20260716-6",
-  "cacheName": "orman-io-shell-stable-20260716-6",
+  "releasedAt": "2026-07-16T18:10:00+03:00",
+  "assetToken": "orman-io-stable-20260716-10",
+  "cacheName": "orman-io-shell-stable-20260716-10",
   "apps": {
     "suite": {
       "label": "Orman İO",
-      "version": "44.0.0"
+      "version": "48.0.0"
     },
     "mesaha": {
       "label": "Mesaha İO",
-      "version": "5.89"
+      "version": "5.91"
     },
     "istif": {
       "label": "İstif İO",
-      "version": "0.3.14"
+      "version": "0.3.15"
     },
     "admin": {
       "label": "Orman İO Yönetim",
-      "version": "42.0.0"
+      "version": "48.0.0"
     }
   },
-  "description": "Şefliğe Gönder ekranının cihaz kayıtlarını yalnız gecikmeli localStorage kopyasından okuması düzeltildi; canlı Mesaha state ve IndexedDB kalıcı depo kayıtları öncelikli okunarak cihazdaki kayıt adedi ve gönderim doğru hale getirildi."
+  "description": "Eski e-postasız üyelik kuyruğu kullanıcı kimliğinden güvenli biçimde onarılır; Sunucuda Bekleyenler ekranında işlemler görüntülenebilir, yeniden denenebilir ve tek tek veya topluca iptal edilebilir."
 }/*MESAHA_RELEASE_DATA_END*/;
   const APP_NAMES = DATA.apps || {};
   const SCRIPT_URL = (() => {

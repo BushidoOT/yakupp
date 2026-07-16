@@ -333,7 +333,7 @@
         function () {
           setActive(fs[Number(this.value)]);
           renderAllBridge();
-          refreshFolder(false);
+          refreshFolder(true);
         },
         "Orman İO’dan şeflik oluşturun",
       );
@@ -443,7 +443,7 @@
     document.querySelectorAll('#bottomNav [data-nav]').forEach((b)=>b.classList.toggle("active",b.dataset.nav==="seflikFolder"));
     try { window.scrollTo(0,0); } catch {}
     renderAllBridge();
-    setTimeout(()=>refreshFolder(false),30);
+    setTimeout(()=>refreshFolder(true),30);
   }
   window.__suiteOpenFolderViewV10 = forceFolderView;
   window.__suiteOpenFolderViewV9 = forceFolderView;
@@ -736,25 +736,34 @@
     } catch {}
     if (bad) alert(message);
   }
+  let folderRefreshPromiseV45 = null;
+  let lastFolderRefreshAtV45 = 0;
   async function refreshFolder(force) {
     renderFolderList();
     if (!navigator.onLine || !(window.MesahaSuiteSyncV28 || window.MesahaSuiteSyncV27 || window.MesahaSuiteSyncV26 || window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8)) return;
+    if (folderRefreshPromiseV45) return folderRefreshPromiseV45;
+    if (!force && Date.now() - lastFolderRefreshAtV45 < 5000) return;
     const meta = $("seflikFolderRemoteMetaV528");
     if (meta) {
       meta.textContent = "Sunucudan yenileniyor…";
       meta.classList.add("suite-folder-loading-v8");
     }
-    try {
-      await (window.MesahaSuiteSyncV28 || window.MesahaSuiteSyncV27 || window.MesahaSuiteSyncV26 || window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8).refreshFolderData({
-        includeRecords: true,
-        quiet: true,
-        force: !!force,
-        forceRecords: !!force,
-      });
-    } finally {
-      if (meta) meta.classList.remove("suite-folder-loading-v8");
-      renderFolderList();
-    }
+    folderRefreshPromiseV45 = (async () => {
+      try {
+        await (window.MesahaSuiteSyncV28 || window.MesahaSuiteSyncV27 || window.MesahaSuiteSyncV26 || window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8).refreshFolderData({
+          includeRecords: true,
+          quiet: true,
+          force: true,
+          forceRecords: true,
+        });
+        lastFolderRefreshAtV45 = Date.now();
+      } finally {
+        if (meta) meta.classList.remove("suite-folder-loading-v8");
+        renderFolderList();
+      }
+    })();
+    try { return await folderRefreshPromiseV45; }
+    finally { folderRefreshPromiseV45 = null; }
   }
   function note() {
     const oldNote = $("suiteManagedNoteV8");
@@ -853,7 +862,7 @@
       $("seflikFolderView") &&
       $("seflikFolderView").classList.contains("active")
     )
-      refreshFolder(false);
+      refreshFolder(true);
   };
   if (document.readyState === "loading")
     document.addEventListener("DOMContentLoaded", boot, { once: true });
@@ -870,14 +879,21 @@
   window.addEventListener("mesaha-suite:shared-data-updated", schedule);
   window.addEventListener("mesaha-suite:sync-complete", () => {
     schedule();
-    refreshFolder(false);
+    refreshFolder(true);
   });
   window.addEventListener("online", () => {
     if (
       $("seflikFolderView") &&
       $("seflikFolderView").classList.contains("active")
     )
-      refreshFolder(false);
+      refreshFolder(true);
+  });
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible" && $("seflikFolderView") && $("seflikFolderView").classList.contains("active"))
+      refreshFolder(true);
+  });
+  window.addEventListener("focus", () => {
+    if ($("seflikFolderView") && $("seflikFolderView").classList.contains("active")) refreshFolder(true);
   });
   setTimeout(schedule, 350);
   setTimeout(schedule, 1200);

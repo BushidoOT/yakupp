@@ -2271,3 +2271,24 @@ body.modal-open{overflow:hidden!important;touch-action:none}
   .orman-management-tools .tool-strip button{min-height:90px!important;padding:8px!important}
 }
 
+
+
+.pending-tool-button{position:relative}
+.pending-tool-button small{font-weight:800!important}
+.pending-ops-modal{max-width:760px!important}
+.pending-ops-summary{margin:0 0 14px;padding:13px 15px;border:1px solid #d8e8df;border-radius:15px;background:#f4faf6;color:#284d3b;line-height:1.45}
+.pending-ops-list{display:grid;gap:11px;max-height:min(58vh,560px);overflow:auto;padding:2px 3px 4px}
+.pending-op-card{border:1px solid #dce8e1;border-radius:17px;background:#fff;padding:14px;box-shadow:0 7px 18px rgba(20,58,43,.05)}
+.pending-op-card.has-error{border-color:#efb8b8;background:#fffafa}
+.pending-op-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.pending-op-head>div{display:flex;flex-direction:column;gap:3px}.pending-op-head strong{color:#183c2d;font-size:15px}.pending-op-head small{color:#718078;font-weight:700;font-size:11px}
+.pending-op-head>span{max-width:45%;padding:4px 8px;border-radius:999px;background:#edf6f0;color:#39705a;font-size:10px;font-weight:850;overflow:hidden;text-overflow:ellipsis}
+.pending-op-card p{margin:11px 0;color:#365747;font-weight:750;line-height:1.4;overflow-wrap:anywhere}
+.pending-op-error,.pending-op-warning{margin:9px 0;padding:10px 11px;border-radius:12px;font-size:12px;font-weight:750;line-height:1.4}
+.pending-op-error{background:#feecec;color:#9c2525}.pending-op-warning{background:#fff4d2;color:#795600}
+.pending-op-buttons{display:flex;justify-content:flex-end;margin-top:11px}.pending-op-buttons button{min-height:38px;color:#a32424;border-color:#efc4c4;background:#fff7f7}
+.pending-ops-empty{text-align:center;padding:28px 18px;border:1px dashed #cbded3;border-radius:16px;color:#61766a;font-weight:800;background:#fbfdfc}
+.pending-ops-help{margin-top:13px;color:#6a7b72;font-size:11px;font-weight:700;line-height:1.45}
+.pending-ops-actions{margin-top:14px}.pending-ops-actions #pendingCancelAll{color:#a32424;border-color:#efc4c4;background:#fff7f7}
+@media(max-width:600px){.pending-ops-modal{width:calc(100vw - 20px)!important;max-height:calc(100dvh - 24px)!important}.pending-ops-list{max-height:52dvh}.pending-ops-actions{grid-template-columns:1fr!important}.pending-op-head{gap:7px}.pending-op-head>span{max-width:50%;font-size:9px}}
+

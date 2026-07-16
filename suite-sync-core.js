@@ -155,6 +155,8 @@
           terminalToken: clean(t.terminalToken),
           terminalPairedUserId: clean(t.pairedUserId),
           terminalPairedEmail: clean(t.pairedEmail),
+          terminalDeviceId: clean(t.deviceId || t.terminalDeviceId || (() => { try { return localStorage.getItem("mesaha_supabase_v500_device") || ""; } catch (_) { return ""; } })()),
+          deviceId: clean(t.deviceId || t.terminalDeviceId || (() => { try { return localStorage.getItem("mesaha_supabase_v500_device") || ""; } catch (_) { return ""; } })()),
         }
       : {};
   }
@@ -606,26 +608,44 @@
         seflik: af.seflik,
         folderSeflik: af.seflik,
       });
+      const hasAuthoritativeList = Array.isArray(out && out.divisions) || Array.isArray(out && out.summaries);
       const remote = (
-        Array.isArray(out.divisions)
+        Array.isArray(out && out.divisions)
           ? out.divisions
-          : Array.isArray(out.summaries)
+          : Array.isArray(out && out.summaries)
             ? out.summaries
             : []
       )
         .map((d) => normalizeDivision(d, af))
         .filter(Boolean);
-      if (remote.length || options.force) {
+      if (hasAuthoritativeList) {
+        const oldByNo = new Map((Array.isArray(list) ? list : []).map((d) => [clean(d && (d.bolme_no || d.bolmeNo)), d]));
+        const remoteNos = new Set(remote.map((d) => clean(d.bolme_no)));
         const localPending = list.filter(
           (d) =>
             d &&
             (d.pending || d.local_pending) &&
-            !remote.some((r) => clean(r.bolme_no) === clean(d.bolme_no)),
+            !remoteNos.has(clean(d.bolme_no || d.bolmeNo)),
         );
-        list = [...remote, ...localPending];
+        list = remote.map((d) => {
+          const no = clean(d.bolme_no);
+          return { ...(oldByNo.get(no) || {}), ...d, deleted: false, pending: false, local_pending: false };
+        }).concat(localPending);
+        const nextNos = new Set(list.map((d) => clean(d && (d.bolme_no || d.bolmeNo))));
+        const readyStore = read(K.ready, {});
+        const yieldStore = read(K.yieldTargets, {});
+        for (const [no, oldRow] of oldByNo.entries()) {
+          if (!no || nextNos.has(no) || (oldRow && (oldRow.pending || oldRow.local_pending))) continue;
+          if (recordsStore[key] && typeof recordsStore[key] === "object") delete recordsStore[key][no];
+          delete readyStore[`${key}::${no}`];
+          delete yieldStore[`${key}::${no}`];
+        }
+        write(K.ready, readyStore);
+        write(K.yieldTargets, yieldStore);
         reconcileMesahaSuppressions(af.seflik, remote);
         divisionsStore[key] = list;
         write(K.divisions, divisionsStore);
+        write(K.divisionRecords, recordsStore);
       }
     } catch (e) {
       if (!options.quiet) throw e;
@@ -637,10 +657,10 @@
       });
       const members = (Array.isArray(out.members) ? out.members : [])
         .map((m) => ({
-          id: clean(m.user_id || m.id || m.email || m.name),
+          id: clean(m.email).toLocaleLowerCase("tr-TR") || clean(m.user_id || m.id),
           userId: clean(m.user_id || m.member_user_id),
           name: clean(m.name || m.canonical_name || m.email),
-          email: clean(m.email),
+          email: clean(m.email).toLocaleLowerCase("tr-TR"),
           avatarUrl: clean(m.avatar_url || m.avatarUrl),
           role: clean(m.role || m.member_role || "member"),
           isSelf: !!m.is_self,
@@ -759,7 +779,7 @@
   }
   function pendingKey(item) {
     const p = (item && item.payload) || {};
-    return [item && item.type, fold(p.seflik || p.oldName || ""), fold(p.bolmeNo || p.newName || p.member_user_id || "")].join("::");
+    return [item && item.type, fold(p.seflik || p.oldName || ""), fold(p.bolmeNo || p.newName || p.member_email || p.email || p.member_user_id || "")].join("::");
   }
   function enqueuePending(type, payload) {
     const list = pendingOps(), item = { id: "suite_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2, 8), type, payload: payload || {}, createdAt: now() };
@@ -797,6 +817,22 @@
     return { ok: true, created: match < 0, merged: match >= 0, serverKnown, division: row };
   }
 
+  function enrichPendingMemberPayload(item) {
+    if (!item || !["add_member", "remove_member"].includes(clean(item.type))) return item;
+    const p = item.payload && typeof item.payload === "object" ? item.payload : (item.payload = {});
+    if (clean(p.member_email || p.email)) return item;
+    const userId = clean(p.member_user_id || p.user_id);
+    if (!userId) return item;
+    const stores = read(K.foresters, {});
+    const rows = Object.values(stores && typeof stores === "object" ? stores : {}).flatMap((list) => Array.isArray(list) ? list : []);
+    const match = rows.find((row) => row && clean(row.userId || row.user_id || row.id) === userId && clean(row.email));
+    if (match) {
+      p.member_email = lower(match.email);
+      p.email = lower(match.email);
+      item.updatedAt = now();
+    }
+    return item;
+  }
   async function syncManagement() {
     const list = pendingOps();
     if (!list.length) {
@@ -808,6 +844,7 @@
     let done = 0;
     for (const item of list) {
       try {
+        enrichPendingMemberPayload(item);
         const p = item.payload || {};
         if (item.type === "create_seflik")
           await edge("seflik_folder_create_seflik", { seflik: p.seflik });
@@ -826,12 +863,20 @@
         else if (item.type === "add_member")
           await edge("seflik_folder_add_member", {
             seflik: p.seflik,
+            folderSeflik: p.seflik,
+            seflikKey: p.seflikKey || p.seflik_key,
+            seflik_key: p.seflik_key || p.seflikKey,
             member_user_id: p.member_user_id,
+            member_email: p.member_email || p.email,
           });
         else if (item.type === "remove_member")
           await edge("seflik_folder_remove_member", {
             seflik: p.seflik,
+            folderSeflik: p.seflik,
+            seflikKey: p.seflikKey || p.seflik_key,
+            seflik_key: p.seflik_key || p.seflikKey,
             member_user_id: p.member_user_id,
+            member_email: p.member_email || p.email,
           });
         else if (item.type === "create_division") {
           try {
@@ -941,7 +986,7 @@
         await edge("seflik_folder_push", { seflik, bolmeNo: bolme, syncToken: token, records: rows.slice(i, i + 150), appVersion: (window.MesahaRelease?.telemetry("suite") || "Orman İO"), mergeMode: "barcode" });
       let backup = null, driveError = "";
       try {
-        if (id.google)
+        if (cloudSyncAllowed())
           backup = await drive("backup_json", {
             seflik, appId: "mesaha",
             fileName: `Mesaha_${fold(seflik)}_${fold(bolme)}_${new Date().toISOString().slice(0, 10)}.json`,
@@ -953,7 +998,7 @@
         seflik, bolmeNo: bolme, syncToken: token, recordCount: rows.length,
         totalVolume: rows.reduce((sum, r) => sum + volume(r), 0),
         driveFileId: (backup && backup.fileId) || "", driveFileName: (backup && backup.fileName) || "",
-        driveStatus: backup ? "saved" : id.google ? "error" : "not_connected", driveError,
+        driveStatus: backup ? "saved" : cloudSyncAllowed() ? "error" : "not_connected", driveError,
         appVersion: (window.MesahaRelease?.telemetry("suite") || "Orman İO"), mergeMode: "barcode",
       });
       clearStableSyncToken(seflik, bolme);
@@ -1275,7 +1320,7 @@
       (syncedBySeflik[seflik] || (syncedBySeflik[seflik] = [])).push(r);
       done++;
     }
-    if (id.google)
+    if (cloudSyncAllowed())
       for (const seflik of Object.keys(syncedBySeflik))
         try {
           const latest = (await idbAll("records")).filter((r) => r && !r.isDemo);
@@ -1363,7 +1408,7 @@
     } catch (edgeError) {
       // Eski smooth-function henüz dağıtılmadıysa Google oturumlarında
       // istif-drive record_list ile geriye uyumlu şekilde kayıtları çek.
-      if (!id.google) throw edgeError;
+      if (!cloudSyncAllowed()) throw edgeError;
       out = await drive("record_list", { seflik, seflikKey });
     }
 
@@ -1506,7 +1551,15 @@
         force || (before.istif && before.istif.dirty)
           ? await syncIstif()
           : { done: 0, skipped: true };
-      const istifPull = await pullIstifRecords();
+      let istifPull;
+      try {
+        istifPull = await pullIstifRecords();
+      } catch (pullError) {
+        const pullMessage = clean(pullError && pullError.message || pullError);
+        if (/şefliğe erişiminiz yok|şeflik klasörünü sadece içindeki kullanıcılar|şeflik bulunamadı/i.test(pullMessage)) {
+          istifPull = { ok: false, skipped: true, accessRefreshRequired: true, error: pullMessage };
+        } else throw pullError;
+      }
       const folder = await refreshFolderData({
         includeRecords: true,
         quiet: true,
@@ -1514,9 +1567,21 @@
       });
       write(K.last, { at: now(), management, mesaha, istif, istifPull, folder });
       dispatch();
-      if (istif && istif.failed) {
+      if (management && management.left) {
+        const pending = pendingOps();
+        const firstError = clean(pending[0] && pending[0].error);
+        toast(
+          `${management.left} yönetim işlemi sunucuda bekliyor${firstError ? ": " + firstError : "."}`,
+          true,
+        );
+        scheduleAutoRetry(nextAutoRetryDelay());
+      } else if (istif && istif.failed) {
         toast(`${istif.failed} İstif kaydı veya fotoğrafı cihazda bekliyor. Ayrıntıyı İstif İO'da görebilirsiniz.`, true);
         if (istif.retryable) scheduleAutoRetry(nextAutoRetryDelay());
+      } else if (istifPull && istifPull.accessRefreshRequired) {
+        autoRetryAttempt = 0;
+        clearTimeout(autoRetryTimer);
+        toast("Yönetim ve Mesaha senkronlandı. İstif erişimi sunucuda yeniden doğrulanacak.", true);
       } else {
         autoRetryAttempt = 0;
         clearTimeout(autoRetryTimer);
@@ -1581,7 +1646,7 @@
   }
   async function driveStatus() {
     const id = identity();
-    if (!id.google) return { ok: true, connected: false, googleRequired: true };
+    if (!cloudSyncAllowed()) return { ok: true, connected: false, googleRequired: true };
     const x = await drive("status", { seflik: id.seflik });
     write(K.drive, x);
     return x;
@@ -1608,8 +1673,8 @@
   }
   async function driveConnect() {
     const id = identity();
-    if (!id.google)
-      throw new Error("Drive bağlantısı için Google ile giriş yapın");
+    if (!cloudSyncAllowed())
+      throw new Error("Drive bağlantısı için Google ile giriş yapın veya terminal koduyla eşleşin");
     const status = await driveStatus();
     if (status && status.isOwner === false)
       throw new Error("Drive hesabını yalnızca şeflik kurucusu bağlayabilir");
@@ -1641,7 +1706,7 @@
   async function createMesahaBackup(options) {
     options = options || {};
     const id = identity(), af = activeFolder();
-    if (!id.google) { openDriveSetup(); throw new Error("Drive yedeği için Google ile giriş yapın"); }
+    if (!cloudSyncAllowed()) { openDriveSetup(); throw new Error("Drive yedeği için Google ile giriş yapın veya terminal koduyla eşleşin"); }
     await ensureDriveConnected({ redirect: true });
     const seflik = clean((af && af.seflik) || id.seflik), selected = clean(options.bolmeNo || "");
     if (!seflik) throw new Error("Önce şeflik seçin");
@@ -1675,7 +1740,7 @@
 
   async function createSuiteBackup() {
     const id = identity();
-    if (!id.google) { openDriveSetup(); throw new Error("Drive yedeği için Google ile giriş yapın"); }
+    if (!cloudSyncAllowed()) { openDriveSetup(); throw new Error("Drive yedeği için Google ile giriş yapın veya terminal koduyla eşleşin"); }
     await ensureDriveConnected({ redirect: true });
     const mesaha = read(K.records, []),
       istif = (await idbAll("records")).map((r) => ({

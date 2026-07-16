@@ -41,6 +41,7 @@
       .replace(/ü/g, "u")
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-+|-+$/g, "");
+  const emailKey = (v) => clean(v).toLocaleLowerCase("tr-TR");
   const stableKey = (v) => fold(v) || "yerel-" + Date.now().toString(36);
   const read = (k, f = {}) => {
     try {
@@ -419,6 +420,8 @@
           terminalToken: clean(t.terminalToken),
           terminalPairedUserId: clean(t.pairedUserId),
           terminalPairedEmail: clean(t.pairedEmail),
+          terminalDeviceId: clean(t.deviceId || t.terminalDeviceId || (() => { try { return localStorage.getItem("mesaha_supabase_v500_device") || ""; } catch (_) { return ""; } })()),
+          deviceId: clean(t.deviceId || t.terminalDeviceId || (() => { try { return localStorage.getItem("mesaha_supabase_v500_device") || ""; } catch (_) { return ""; } })()),
         }
       : {};
   }
@@ -788,6 +791,7 @@
     divisionReady = read(K.divisionReady, {});
     pendingOps = read(K.pendingOps, []);
     if (!Array.isArray(pendingOps)) pendingOps = [];
+    repairPendingMemberIdentities();
   }
   function saveLocal() {
     write(K.folderCache, folders);
@@ -841,6 +845,159 @@
   function updatePendingBadge() {
     const dot = $("notificationDot");
     if (dot) dot.style.display = pendingOps.length ? "block" : "none";
+    const count = $("pendingToolCount");
+    if (count) count.textContent = pendingOps.length ? `${pendingOps.length} işlem bekliyor` : "Bekleyen işlem yok";
+    if ($("pendingOpsModal") && !$('pendingOpsModal').hidden) renderPendingOpsModal();
+  }
+  function pendingMemberCandidates(payload) {
+    const p = payload || {}, wantedUserId = clean(p.member_user_id || p.user_id), wantedEmail = emailKey(p.member_email || p.email);
+    const rows = Object.values(foresters || {}).flatMap((list) => Array.isArray(list) ? list : []);
+    return rows.filter((row) => {
+      if (!row) return false;
+      if (wantedUserId && clean(row.userId || row.user_id || row.id) === wantedUserId) return true;
+      if (wantedEmail && emailKey(row.email) === wantedEmail) return true;
+      return false;
+    });
+  }
+  function repairPendingMemberIdentity(item) {
+    if (!item || !["add_member", "remove_member"].includes(clean(item.type))) return false;
+    const p = item.payload && typeof item.payload === "object" ? item.payload : (item.payload = {});
+    let changed = false;
+    let email = emailKey(p.member_email || p.email);
+    let userId = clean(p.member_user_id || p.user_id);
+    const candidates = pendingMemberCandidates(p);
+    if (!email) {
+      const emails = [...new Set(candidates.map((row) => emailKey(row.email)).filter(Boolean))];
+      if (emails.length === 1) { email = emails[0]; changed = true; }
+    }
+    if (!userId) {
+      const ids = [...new Set(candidates.map((row) => clean(row.userId || row.user_id || row.id)).filter(Boolean))];
+      if (ids.length === 1) { userId = ids[0]; changed = true; }
+    }
+    if (email) {
+      if (p.member_email !== email) changed = true;
+      p.member_email = email;
+      p.email = email;
+    }
+    if (userId) {
+      if (p.member_user_id !== userId) changed = true;
+      p.member_user_id = userId;
+    }
+    if (changed) item.updatedAt = now();
+    return changed;
+  }
+  function repairPendingMemberIdentities() {
+    let changed = false;
+    (pendingOps || []).forEach((item) => { if (repairPendingMemberIdentity(item)) changed = true; });
+    if (changed) write(K.pendingOps, pendingOps);
+    return changed;
+  }
+  function pendingTypeLabel(type) {
+    return ({
+      create_seflik: "Şeflik oluşturma", delete_seflik: "Şeflik silme", rename_seflik: "Şeflik adını değiştirme",
+      add_member: "Ormancı ekleme", remove_member: "Ormancı çıkarma", create_division: "Bölme oluşturma", delete_division: "Bölme silme",
+    })[clean(type)] || clean(type || "Bilinmeyen işlem");
+  }
+  function pendingTargetText(item) {
+    const p = (item && item.payload) || {};
+    const parts = [];
+    if (p.seflik || p.oldName) parts.push(clean(p.seflik || p.oldName));
+    if (p.bolmeNo) parts.push(`Bölme ${clean(p.bolmeNo)}`);
+    if (p.member_email || p.email) parts.push(emailKey(p.member_email || p.email));
+    else if (p.member_user_id) parts.push(`Kullanıcı kimliği: ${clean(p.member_user_id).slice(0, 14)}…`);
+    else if (p.name) parts.push(clean(p.name));
+    if (p.newName) parts.push(`→ ${clean(p.newName)}`);
+    return parts.filter(Boolean).join(" • ") || "İşlem ayrıntısı yok";
+  }
+  function formatPendingTime(value) {
+    try { return new Date(value || now()).toLocaleString("tr-TR", { day:"2-digit", month:"2-digit", hour:"2-digit", minute:"2-digit" }); }
+    catch (_) { return clean(value || ""); }
+  }
+  function refreshPendingOpsFromStorage() {
+    const stored = read(K.pendingOps, []);
+    pendingOps = Array.isArray(stored) ? stored : [];
+    return pendingOps;
+  }
+  function renderPendingOpsModal() {
+    refreshPendingOpsFromStorage();
+    repairPendingMemberIdentities();
+    const list = $("pendingOpsList"), summary = $("pendingOpsSummary"), retry = $("pendingRetryAll"), cancelAll = $("pendingCancelAll");
+    if (!list || !summary) return;
+    summary.innerHTML = pendingOps.length
+      ? `<strong>${pendingOps.length} işlem</strong> sunucuya gönderilmeyi bekliyor.`
+      : `<strong>Bekleyen işlem yok.</strong> Cihaz ile sunucu kuyruğu temiz.`;
+    if (retry) retry.disabled = !pendingOps.length || navigator.onLine === false || !cloudIdentity();
+    if (cancelAll) cancelAll.disabled = !pendingOps.length;
+    list.innerHTML = pendingOps.length ? pendingOps.map((item) => {
+      const p = item.payload || {}, missingIdentity = ["add_member","remove_member"].includes(clean(item.type)) && !emailKey(p.member_email || p.email) && !clean(p.member_user_id);
+      return `<article class="pending-op-card ${item.error ? "has-error" : ""}">
+        <div class="pending-op-head"><div><strong>${esc(pendingTypeLabel(item.type))}</strong><small>${esc(formatPendingTime(item.createdAt || item.updatedAt))}</small></div><span>${esc(clean(item.type))}</span></div>
+        <p>${esc(pendingTargetText(item))}</p>
+        ${missingIdentity ? '<div class="pending-op-warning">Bu eski işlemde e-posta ve kullanıcı kimliği yok. Güvenli biçimde onarılamaz; iptal edip kullanıcıyı e-posta görünen arama sonucundan yeniden ekleyin.</div>' : ''}
+        ${item.error ? `<div class="pending-op-error">${esc(item.error)}</div>` : ''}
+        <div class="pending-op-buttons"><button class="secondary-button" type="button" data-pending-cancel="${esc(item.id)}">İptal Et</button></div>
+      </article>`;
+    }).join("") : '<div class="pending-ops-empty">Sunucuya gönderilmeyi bekleyen yönetim işlemi bulunmuyor.</div>';
+  }
+  async function reconcileAfterPendingCancel() {
+    try {
+      if (navigator.onLine !== false && cloudIdentity()) await loadFolders(true);
+      else { saveLocal(); render(); }
+    } catch (_) { saveLocal(); render(); }
+  }
+  function rollbackPendingLocal(item) {
+    const p = (item && item.payload) || {}, key = clean(p.seflik_key || p.seflikKey) || stableKey(p.seflik || p.oldName || "");
+    if (item.type === "add_member" && key) {
+      const email = emailKey(p.member_email || p.email), userId = clean(p.member_user_id);
+      foresters[key] = (foresters[key] || []).filter((row) => {
+        if (!row || row.pending !== true) return true;
+        if (email && emailKey(row.email) === email) return false;
+        if (userId && clean(row.userId || row.user_id || row.id) === userId) return false;
+        return true;
+      });
+    }
+    if (item.type === "create_division" && key) {
+      const no = fold(p.bolmeNo);
+      divisions[key] = (divisions[key] || []).filter((row) => !(row && (row.pending || row.local_pending) && fold(row.bolme_no || row.bolmeNo) === no));
+    }
+    if (item.type === "create_seflik") {
+      const sk = clean(p.seflik_key) || stableKey(p.seflik || "");
+      folders = folders.filter((folder) => !(folder && clean(folder.seflik_key) === sk && (folder.is_local || folder.pending || folder.local_pending)));
+    }
+  }
+  async function cancelPendingOperation(id) {
+    const index = pendingOps.findIndex((item) => clean(item && item.id) === clean(id));
+    if (index < 0) return;
+    const item = pendingOps[index];
+    if (!confirm(`${pendingTypeLabel(item.type)} işlemi sunucu kuyruğundan iptal edilsin mi?`)) return;
+    rollbackPendingLocal(item);
+    pendingOps.splice(index, 1);
+    write(K.pendingOps, pendingOps);
+    if (!pendingOps.length) {
+      try { const api = window.MesahaSuiteSync; if (api && typeof api.clearDirty === "function") api.clearDirty("suite"); } catch (_) {}
+    }
+    updatePendingBadge();
+    renderPendingOpsModal();
+    await reconcileAfterPendingCancel();
+    toast("Bekleyen işlem iptal edildi.");
+  }
+  async function cancelAllPendingOperations() {
+    if (!pendingOps.length) return;
+    if (!confirm(`${pendingOps.length} bekleyen işlemin tamamı iptal edilsin mi?`)) return;
+    pendingOps.forEach(rollbackPendingLocal);
+    pendingOps = [];
+    write(K.pendingOps, pendingOps);
+    try { const api = window.MesahaSuiteSync; if (api && typeof api.clearDirty === "function") api.clearDirty("suite"); } catch (_) {}
+    updatePendingBadge();
+    renderPendingOpsModal();
+    await reconcileAfterPendingCancel();
+    toast("Tüm bekleyen işlemler iptal edildi.");
+  }
+  function openPendingOpsModal() {
+    refreshPendingOpsFromStorage();
+    repairPendingMemberIdentities();
+    renderPendingOpsModal();
+    openModal("pendingOpsModal");
   }
   function normalizeFolder(raw) {
     const name = clean(raw && (raw.seflik || raw.name || raw.folderSeflik));
@@ -1010,8 +1167,17 @@
         .filter(Boolean);
       if (remote.length) folders = remote;
       else folders = lf ? [lf] : [];
-      if (!activeFolder() && folders[0]) setActive(creatorFolder() || folders[0]);
-      if (!folders.length) clearActiveFolderContext();
+      if (folders.length) {
+        const stored = read(K.active, {}) || {};
+        const storedKey = clean(stored.seflik_key || stored.seflikKey);
+        const storedName = clean(stored.seflik);
+        const selected =
+          folders.find((f) => storedKey && clean(f.seflik_key || f.seflikKey) === storedKey) ||
+          folders.find((f) => storedName && fold(f.seflik) === fold(storedName)) ||
+          creatorFolder() ||
+          folders[0];
+        if (selected) setActive(selected);
+      } else clearActiveFolderContext();
       await loadMembersFromServer();
       await loadDivisionsFromServer();
       saveLocal();
@@ -1034,10 +1200,10 @@
       });
       const list = (Array.isArray(out.members) ? out.members : [])
         .map((m) => ({
-          id: clean(m.user_id || m.id || m.member_user_id || m.email || m.name),
+          id: emailKey(m.email) || clean(m.user_id || m.id || m.member_user_id),
           userId: clean(m.user_id || m.member_user_id),
           name: clean(m.name || m.canonical_name || m.email),
-          email: clean(m.email),
+          email: emailKey(m.email),
           avatarUrl: clean(m.avatar_url || m.avatarUrl),
           role: clean(m.role || m.member_role || "member"),
           isSelf: !!m.is_self,
@@ -1055,29 +1221,56 @@
         seflik: af.seflik,
         folderSeflik: af.seflik,
       });
-      const deleting = new Set((pendingOps || []).filter((item) => item && item.type === "delete_division" && clean(item.payload && item.payload.seflik) === clean(af.seflik)).map((item) => clean(item.payload && item.payload.bolmeNo)));
-      const list = (
-        Array.isArray(out.divisions)
-          ? out.divisions
-          : Array.isArray(out.summaries)
-            ? out.summaries
-            : []
-      )
+      const hasAuthoritativeList = Array.isArray(out && out.divisions) || Array.isArray(out && out.summaries);
+      if (!hasAuthoritativeList) return;
+      const key = clean(af.seflik_key || af.seflikKey) || stableKey(af.seflik);
+      const deleting = new Set((pendingOps || [])
+        .filter((item) => item && item.type === "delete_division" && clean(item.payload && item.payload.seflik) === clean(af.seflik))
+        .map((item) => clean(item.payload && item.payload.bolmeNo)));
+      const remote = (Array.isArray(out.divisions) ? out.divisions : out.summaries)
         .map((d) => normalizeDivision(d, af))
         .filter((d) => d && !deleting.has(clean(d.bolme_no)));
-      if (list.length || deleting.size) {
-        const old = currentDivisions().filter((d) => !deleting.has(clean(d.bolme_no)));
-        const merged = new Map();
-        old.forEach((x) => merged.set(clean(x.bolme_no), x));
-        list.forEach((x) =>
-          merged.set(clean(x.bolme_no), {
-            ...merged.get(clean(x.bolme_no)),
-            ...x,
-          }),
-        );
-        divisions[af.seflik_key] = Array.from(merged.values());
+      const old = currentDivisions();
+      const oldByNo = new Map(old.map((d) => [clean(d.bolme_no), d]));
+      const remoteNos = new Set(remote.map((d) => clean(d.bolme_no)));
+      const localPendingCreates = old.filter((d) => {
+        const no = clean(d && d.bolme_no);
+        return no && !deleting.has(no) && !remoteNos.has(no) && !!(d.pending || d.local_pending);
+      });
+      const next = remote.map((d) => {
+        const no = clean(d.bolme_no);
+        return {
+          ...(oldByNo.get(no) || {}),
+          ...d,
+          deleted: false,
+          pending: false,
+          local_pending: false,
+        };
+      }).concat(localPendingCreates);
+
+      const nextNos = new Set(next.map((d) => clean(d.bolme_no)));
+      const removed = old.filter((d) => {
+        const no = clean(d && d.bolme_no);
+        return no && !nextNos.has(no);
+      });
+      for (const d of removed) {
+        const no = clean(d.bolme_no);
+        const rk = readyKey(key, no);
+        delete divisionReady[rk];
+        delete divisionRecords[rk];
+        if (divisionRecords[key] && typeof divisionRecords[key] === "object") delete divisionRecords[key][no];
+        const yieldTargets = read(K.yieldTargets, {});
+        if (yieldTargets[rk]) {
+          delete yieldTargets[rk];
+          write(K.yieldTargets, yieldTargets);
+        }
       }
-    } catch {}
+      divisions[key] = next;
+      saveLocal();
+      renderBolmeModal();
+    } catch (error) {
+      console.warn("[Orman İO] Bölme listesi yenilenemedi", error);
+    }
   }
   function normalizeDivision(raw, folder) {
     folder = folder || activeFolder();
@@ -1297,6 +1490,7 @@
     if ($("seflikModal") && !$("seflikModal").hidden) renderSeflikModal();
     if ($("ormanciModal") && !$("ormanciModal").hidden) renderOrmanciModal();
     if ($("bolmeModal") && !$("bolmeModal").hidden) renderBolmeModal();
+    if ($("pendingOpsModal") && !$("pendingOpsModal").hidden) renderPendingOpsModal();
   }
   function renderAuthBox() {
     const id = identity(),
@@ -1785,7 +1979,7 @@
         '<div class="modal-note warn">' + esc(err.message) + "</div>";
     }
   }
-  function addOrmanci(u, btn) {
+  async function addOrmanci(u, btn) {
     if (!canManageFolder())
       return toast(
         "Bu işlemi yalnızca şeflik kurucusu Orman İO üzerinden yapabilir.",
@@ -1795,44 +1989,117 @@
     if (!af) return;
     const k = af.seflik_key;
     const item = {
-      id:
-        clean(u.user_id || u.userId || u.email || u.name) ||
-        "local_" + Date.now(),
+      id: emailKey(u.email) || clean(u.user_id || u.userId) || "local_" + Date.now(),
       userId: clean(u.user_id || u.userId),
       name: clean(
         u.name || u.canonical_name || u.email || $("ormanciSearch")?.value,
       ),
-      email: clean(u.email),
+      email: emailKey(u.email),
       avatarUrl: clean(u.avatar_url || u.avatarUrl || u.picture),
       role: "member",
       pending: true,
       updatedAt: now(),
     };
     if (!item.name) return toast("Kullanıcı adı alınamadı.", true);
+    if (!item.email)
+      return toast("Ormancı eklemek için kullanıcının e-posta adresi gerekli.", true);
+    if (!item.userId)
+      return toast("Ormancının önce Google ile giriş yapması gerekir.", true);
     const list = foresters[k] || [];
     if (
-      list.some(
-        (x) => clean(x.id) === item.id || fold(x.name) === fold(item.name),
+      list.some((x) =>
+        emailKey(x.email) === item.email ||
+        (!!item.userId && clean(x.userId || x.id) === item.userId)
       )
     )
-      return toast("Bu ormancı zaten ekli.", true);
+      return toast(`Bu e-posta adresi zaten ekli: ${item.email}`, true);
+
     foresters[k] = [...list, item];
-    op("add_member", {
-      seflik: af.seflik,
-      seflik_key: k,
-      member_user_id: item.userId,
-      name: item.name,
-      email: item.email,
-      avatarUrl: item.avatarUrl,
-    });
     saveLocal();
-    if (btn) {
-      btn.textContent = "Eklendi";
-      btn.disabled = true;
-    }
-    toast("Ormancı eklendi.");
     render();
     renderOrmanciModal();
+    if (btn) {
+      btn.textContent = "Ekleniyor…";
+      btn.disabled = true;
+    }
+
+    const payload = {
+      seflik: af.seflik,
+      folderSeflik: af.seflik,
+      seflikKey: clean(af.seflik_key || af.seflikKey),
+      seflik_key: clean(af.seflik_key || af.seflikKey),
+      member_user_id: item.userId,
+      member_email: item.email,
+      email: item.email,
+    };
+
+    if (!cloudIdentity() || navigator.onLine === false) {
+      op("add_member", {
+        ...payload,
+        name: item.name,
+        email: item.email,
+        avatarUrl: item.avatarUrl,
+      });
+      toast("Ormancı cihazda eklendi. İnternet gelince sunucuya gönderilecek.");
+      return;
+    }
+
+    try {
+      const out = await edge("seflik_folder_add_member", payload);
+      const serverMember = out && out.member ? out.member : {};
+      const updated = {
+        ...item,
+        id: emailKey(serverMember.email || item.email) || clean(serverMember.user_id || serverMember.id || item.id),
+        userId: clean(serverMember.user_id || item.userId),
+        name: clean(serverMember.name || item.name),
+        email: emailKey(serverMember.email || item.email),
+        avatarUrl: clean(serverMember.avatar_url || item.avatarUrl),
+        pending: false,
+        updatedAt: now(),
+      };
+      foresters[k] = (foresters[k] || []).map((x) =>
+        emailKey(x.email) === item.email || clean(x.userId || x.id) === clean(item.userId || item.id) ? updated : x,
+      );
+      pendingOps = pendingOps.filter((opItem) => {
+        if (!opItem || opItem.type !== "add_member") return true;
+        const p = opItem.payload || {};
+        return !(
+          (emailKey(p.member_email || p.email) === item.email || clean(p.member_user_id) === item.userId) &&
+          (clean(p.seflik_key || p.seflikKey) === clean(af.seflik_key || af.seflikKey) ||
+            fold(p.seflik) === fold(af.seflik))
+        );
+      });
+      saveLocal();
+      await loadMembersFromServer();
+      saveLocal();
+      render();
+      renderOrmanciModal();
+      toast("Ormancı şefliğe eklendi. Kullanıcının cihazında şeflik otomatik görünecek.");
+      if (btn) btn.textContent = "Eklendi";
+      try {
+        window.dispatchEvent(
+          new CustomEvent("mesaha-suite:membership-changed", {
+            detail: { seflik: af.seflik, seflikKey: k, memberUserId: item.userId },
+          }),
+        );
+      } catch {}
+    } catch (error) {
+      op("add_member", {
+        ...payload,
+        name: item.name,
+        email: item.email,
+        avatarUrl: item.avatarUrl,
+      });
+      if (btn) {
+        btn.textContent = "Bekliyor";
+        btn.disabled = false;
+      }
+      toast(
+        "Ormancı sunucuya eklenemedi; işlem bekleyenlere alındı: " +
+          clean(error && error.message ? error.message : error),
+        true,
+      );
+    }
   }
   function removeOrmanci(index) {
     if (!canManageFolder())
@@ -1846,14 +2113,17 @@
       list = foresters[k] || [],
       m = list[index];
     if (!m) return;
-    if (!confirm(`${m.name} şeflikten çıkarılsın mı?`)) return;
+    const memberEmail = emailKey(m.email);
+    if (!memberEmail) return toast("Bu kullanıcı için e-posta bilgisi bulunamadı. Listeyi yenileyip tekrar deneyin.", true);
+    if (!confirm(`${m.name || memberEmail} (${memberEmail}) şeflikten çıkarılsın mı?`)) return;
     foresters[k] = list.filter((_, i) => i !== index);
     op("remove_member", {
       seflik: af.seflik,
       seflik_key: k,
       member_user_id: m.userId,
+      member_email: memberEmail,
       name: m.name,
-      email: m.email,
+      email: memberEmail,
     });
     saveLocal();
     toast("Ormancı çıkarıldı.");
@@ -2138,6 +2408,8 @@
         true,
       );
     if (!navigator.onLine) return toast("İnternet bağlantısı yok.", true);
+    refreshPendingOpsFromStorage();
+    repairPendingMemberIdentities();
     if (!pendingOps.length) {
       toast("Gönderilecek yeni işlem yok.");
       await loadFolders(true);
@@ -2165,18 +2437,29 @@
             new_seflik: p.newName,
           });
         } else if (item.type === "add_member") {
-          if (!p.member_user_id)
-            throw new Error("Ormancı için Google kullanıcı id yok");
+          repairPendingMemberIdentity(item);
+          if (!p.member_email && !p.email && !p.member_user_id)
+            throw new Error("Eklenecek kullanıcı için e-posta veya kullanıcı kimliği yok");
           await edge("seflik_folder_add_member", {
             seflik: p.seflik,
+            folderSeflik: p.seflik,
+            seflikKey: p.seflikKey || p.seflik_key,
+            seflik_key: p.seflik_key || p.seflikKey,
             member_user_id: p.member_user_id,
+            member_email: p.member_email || p.email,
           });
         } else if (item.type === "remove_member") {
-          if (p.member_user_id)
+          repairPendingMemberIdentity(item);
+          if (p.member_email || p.email || p.member_user_id)
             await edge("seflik_folder_remove_member", {
               seflik: p.seflik,
+              folderSeflik: p.seflik,
+              seflikKey: p.seflikKey || p.seflik_key,
+              seflik_key: p.seflik_key || p.seflikKey,
               member_user_id: p.member_user_id,
+              member_email: p.member_email || p.email,
             });
+          else throw new Error("Çıkarılacak kullanıcı için e-posta veya kullanıcı kimliği yok");
         } else if (item.type === "create_division") {
           await edge("seflik_folder_create_division", {
             seflik: p.seflik,
@@ -2383,7 +2666,14 @@
     return ensureLoginThen(() => openModal("ormanciModal"));
   }
   function openBolmeModal() {
-    return ensureLoginThen(() => openModal("bolmeModal"));
+    return ensureLoginThen(() => {
+      openModal("bolmeModal");
+      if (cloudIdentity() && navigator.onLine !== false) {
+        loadDivisionsFromServer()
+          .then(() => { renderBolmeModal(); render(); })
+          .catch(() => {});
+      }
+    });
   }
   async function goApp(app) {
     if (!signedIn()) {
@@ -2561,6 +2851,10 @@
       prepareOffline();
       return true;
     }
+    if (tool === "pending") {
+      openPendingOpsModal();
+      return true;
+    }
     if (tool === "guide") {
       showInfo(
         "Kılavuz",
@@ -2705,6 +2999,18 @@
       deleteDivision(Number(target.dataset.deleteDivision));
       return true;
     }
+    if (target.dataset.pendingCancel != null) {
+      cancelPendingOperation(target.dataset.pendingCancel);
+      return true;
+    }
+    if (id === "pendingCancelAll") {
+      cancelAllPendingOperations();
+      return true;
+    }
+    if (id === "pendingRetryAll") {
+      sendPendingToServer().then(() => { renderPendingOpsModal(); updatePendingBadge(); }).catch(() => {});
+      return true;
+    }
     return false;
   }
   function bind() {
@@ -2769,6 +3075,7 @@
       toast,
       openModal,
       closeModals,
+      openPending: openPendingOpsModal,
     };
     window.addEventListener("online", () => {
       render();
@@ -2776,6 +3083,21 @@
       setTimeout(pingAdminProfile, 300);
     });
     window.addEventListener("offline", render);
+    let membershipRefreshTimer = 0;
+    const refreshMembershipContext = () => {
+      if (!cloudIdentity() || navigator.onLine === false || document.hidden) return;
+      clearTimeout(membershipRefreshTimer);
+      membershipRefreshTimer = setTimeout(() => loadFolders(false).catch(() => {}), 120);
+    };
+    window.addEventListener("focus", refreshMembershipContext, { passive: true });
+    window.addEventListener("pageshow", refreshMembershipContext, { passive: true });
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) refreshMembershipContext();
+    });
+    window.addEventListener("mesaha-suite:membership-changed", refreshMembershipContext);
+    setInterval(() => {
+      if (!document.hidden) refreshMembershipContext();
+    }, 45000);
     window.addEventListener("storage", () => {
       loadLocal();
       render();
