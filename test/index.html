@@ -64,25 +64,17 @@
         <section class="app-grid orman-app-grid">
           <button class="app-card mesaha-card" data-app="mesaha" type="button"><span class="app-icon app-icon-green"><svg viewBox="0 0 64 64"><path d="M32 5 16 25h9L12 42h13v17h14V42h13L39 25h9z" /></svg></span><span class="app-copy"><h2>Mesaha Gir</h2><p>Hızlı mesaha girişi ve ölçümler</p></span><span class="app-arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" /></svg></span></button>
           <button class="app-card istif-card" data-app="istif" type="button"><span class="app-icon app-icon-gold"><svg viewBox="0 0 64 64"><path d="m32 7 22 11-22 11L10 18 32 7Zm-22 17 19 10v22L10 46V24Zm44 0L35 34v22l19-10V24Z" /></svg></span><span class="app-copy"><h2>İstif Al</h2><p>İstif, fotoğraf ve kayıt yönetimi</p></span><span class="app-arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" /></svg></span></button>
-          <button class="app-card seflik-card" data-modal="seflik" type="button"><span class="app-icon app-icon-blue"><svg viewBox="0 0 64 64"><path d="M7 18h20l6 7h24v28H7z" /></svg></span><span class="app-copy"><h2>Şeflikler</h2><p id="seflikCardSub">Ortak klasör ve bölmeler</p></span><span class="app-arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" /></svg></span></button>
           <button class="app-card admin-card" data-tool="admin" type="button"><span class="app-icon app-icon-purple"><svg viewBox="0 0 64 64"><path d="M13 49V27h9v22M28 49V15h9v34M43 49V23h9v26M9 53h47" /></svg></span><span class="app-copy"><h2>Yönetim</h2><p>Admin paneli ve raporlar</p></span><span class="app-arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" /></svg></span></button>
         </section>
 
-        <section class="orman-management-tools" aria-label="Yönetim araçları">
-          <div class="orman-management-title"><div><span>YÖNETİM ARAÇLARI</span><h2>Saha yönetimi</h2></div><small>Her zaman kullanıma açık</small></div><section class="quick-grid">
-            <button class="quick-card" data-modal="ormanci"><span class="quick-icon"><svg viewBox="0 0 24 24"><path d="M15 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M8.5 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM19 8v6M16 11h6" /></svg></span><span><strong>Ormancı Yönetimi</strong><small>Aktif şefliğe kullanıcı ekleyin</small></span><svg class="chevron" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6" /></svg></button>
-            <button class="quick-card" data-modal="bolme"><span class="quick-icon"><svg viewBox="0 0 24 24"><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6ZM9 3v15M15 6v15" /></svg></span><span><strong>Bölme Yönetimi</strong><small>Aktif şefliğe bölme oluşturun</small></span><svg class="chevron" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6" /></svg></button>
-          </section>
-          <section class="tool-strip">
-            <button data-tool="sync"><svg viewBox="0 0 24 24"><path d="M7 18a4.6 4.6 0 0 1-.8-9.13A6 6 0 0 1 17.5 7.5 4 4 0 1 1 18 18M9 15l3 3 3-3M12 12v6" /></svg><strong>Senkronizasyon</strong><small>Şeflik verilerini yenile</small></button>
-            <button data-tool="guide" class="guide-tool-button"><svg viewBox="0 0 24 24"><path d="M6 4.5A2.5 2.5 0 0 0 3.5 7v10A2.5 2.5 0 0 0 6 19.5h12A2.5 2.5 0 0 0 20.5 17V7A2.5 2.5 0 0 0 18 4.5H6Zm1.5 3h9M7.5 11h9M7.5 14.5h5"/></svg><strong>Kılavuz</strong><small>Mesaha ve İstif kullanım yardımı</small></button>
-            <button data-tool="updates"><svg viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M5 21h14" /></svg><strong>Offline Hazırlık</strong><small id="cacheToolText">Dosyalar hazırlanıyor</small></button>
-            <button data-tool="server"><svg viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M5 21h14" /></svg><strong>Sunucuya Gönder</strong><small>Yeni işlemleri senkronize et</small></button>
-            <button data-tool="pending" class="pending-tool-button"><svg viewBox="0 0 24 24"><path d="M5 4h14v16H5zM8 8h8M8 12h8M8 16h5" /></svg><strong>Sunucuda Bekleyenler</strong><small id="pendingToolCount">Bekleyen işlem yok</small></button>
-            <button data-tool="backups" class="drive-tool-button"><svg class="google-drive-logo" viewBox="0 0 64 56"><path fill="#0F9D58" d="M22 2h20l20 34H42z"/><path fill="#F4B400" d="M22 2 2 36l10 18 20-34z"/><path fill="#4285F4" d="M12 54 2 36h40l20 0-10 18z"/></svg><strong>Yedekler</strong><small>Şeflik Kurucu Drive</small></button>
-            <button data-tool="legacy-backups"><svg viewBox="0 0 24 24"><path d="M4 7h16v13H4zM3 4h18v3H3zM9 11h6M12 11v5" /></svg><strong>Eski Yedekler</strong><small>Drive arşivi</small></button>
-            <button data-tool="telegram"><svg viewBox="0 0 24 24"><path d="M21.5 3.2 3.4 10.3c-1.2.5-1.2 1.2-.2 1.5l4.6 1.4 1.8 5.5c.2.7.1 1 .9 1 .6 0 .9-.3 1.2-.6l2.3-2.2 4.8 3.5c.9.5 1.5.2 1.8-.8l3.1-14.8c.4-1.3-.5-1.9-1.7-1.4ZM9.6 12.8l9-5.7c.5-.3.9-.1.5.2l-7.4 6.7-.3 3.1-1.8-4.3Z" /></svg><strong>Telegram</strong><small>Destek grubu</small></button>
-            <button data-tool="about"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7h.01" /></svg><strong>Hakkında</strong><small>Uygulama bilgileri</small></button>
+        <section class="orman-management-tools" aria-label="Saha yönetimi">
+          <div class="orman-management-title"><div><span>YÖNETİM ARAÇLARI</span><h2>Saha yönetimi</h2></div><small>Her zaman kullanıma açık</small></div>
+          <section class="quick-grid orman-field-grid">
+            <button class="quick-card" data-modal="seflik" type="button"><span class="quick-icon"><svg viewBox="0 0 24 24"><path d="M3 7h7l2 2h9v11H3zM3 7V4h7l2 3" /></svg></span><span><strong>Şeflikler</strong><small id="seflikCardSub">Şeflik oluşturun ve aktif şefliği yönetin</small></span><svg class="chevron" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6" /></svg></button>
+            <button class="quick-card" data-modal="ormanci" type="button"><span class="quick-icon"><svg viewBox="0 0 24 24"><path d="M15 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M8.5 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM19 8v6M16 11h6" /></svg></span><span><strong>Ormancı Yönetimi</strong><small>Aktif şefliğe kullanıcı ekleyin</small></span><svg class="chevron" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6" /></svg></button>
+            <button class="quick-card" data-modal="bolme" type="button"><span class="quick-icon"><svg viewBox="0 0 24 24"><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6ZM9 3v15M15 6v15" /></svg></span><span><strong>Bölme Yönetimi</strong><small>Aktif şefliğe bölme oluşturun</small></span><svg class="chevron" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6" /></svg></button>
+            <button class="quick-card" data-modal="terminal" type="button"><span class="quick-icon"><svg viewBox="0 0 24 24"><path d="M7 3h10a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2ZM9 7h6M9 11h6M10 17h4" /></svg></span><span><strong>Terminal Kodu ve Cihazlar</strong><small>Kod oluşturun ve bağlı cihazları yönetin</small></span><svg class="chevron" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6" /></svg></button>
+            <button class="quick-card backup-sync-card" data-modal="backup-sync" type="button"><span class="quick-icon"><svg viewBox="0 0 24 24"><path d="M7 18a4.6 4.6 0 0 1-.8-9.13A6 6 0 0 1 17.5 7.5 4 4 0 1 1 18 18M8 14l4 4 4-4M12 10v8" /></svg></span><span><strong>Yedekler ve Senkronizasyon</strong><small>Offline hazırlık, yedekler ve bekleyen işlemler</small></span><svg class="chevron" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6" /></svg></button>
           </section>
         </section>
 
@@ -104,6 +96,10 @@
         <footer class="status-footer"><div class="sync-info"><svg viewBox="0 0 24 24"><path d="M7 18a4.6 4.6 0 0 1-.8-9.13A6 6 0 0 1 17.5 7.5 4 4 0 1 1 18 18" /></svg><span><small>Offline Durumu</small><strong id="lastSync">Hazırlanıyor…</strong><div class="cache-progress"><span id="cacheProgressBar"></span></div></span><span class="sync-check"><svg viewBox="0 0 24 24"><path d="m6 12 4 4 8-8" /></svg></span></div></footer>
       </main>
     </div>
+    <nav class="orman-bottom-nav" id="bottomNav" aria-label="Sunucu işlemleri">
+      <button type="button" data-tool="server-upload" id="serverUploadButton"><svg viewBox="0 0 24 24"><path d="M12 21V9M7 14l5-5 5 5M5 3h14" /></svg><span><strong>Sunucuya Gönder</strong><small>Yeni kayıtları yükle</small></span></button>
+      <button type="button" data-tool="server-download" id="serverDownloadButton"><svg viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M5 21h14" /></svg><span><strong>Sunucudan İndir</strong><small>Offline hazırlığı tamamla</small></span></button>
+    </nav>
     <div class="modal-backdrop" id="modalBackdrop" hidden></div>
     <section class="modal" id="loginModal" hidden>
       <div class="modal-head">
@@ -142,6 +138,14 @@
           >
         </button>
       </div>
+      <div style="margin-top: 14px" id="logoutWrap"></div>
+    </section>
+    <section class="modal terminal-management-modal" id="terminalModal" hidden>
+      <div class="modal-head">
+        <div><span class="modal-kicker">TERMİNAL YÖNETİMİ</span><h3>Terminal Kodu ve Cihazlar</h3></div>
+        <button class="modal-close" type="button" aria-label="Kapat">×</button>
+      </div>
+      <div class="modal-note">Terminal kodu yalnız Google hesabıyla oluşturulur. Kodla bağlanan cihazlar aynı hesap ve şeflik bilgilerini kullanır.</div>
       <section class="google-terminal-tools" id="googleTerminalTools" hidden>
         <div class="terminal-tools-head">
           <span class="terminal-tools-icon">▣</span>
@@ -172,7 +176,22 @@
         <div id="terminalCodeResultSuite"></div>
         <div id="terminalDeviceListSuite" class="terminal-device-list"></div>
       </section>
-      <div style="margin-top: 14px" id="logoutWrap"></div>
+    </section>
+    <section class="modal backup-sync-modal" id="backupSyncModal" hidden>
+      <div class="modal-head">
+        <div><span class="modal-kicker">VERİ VE YEDEK YÖNETİMİ</span><h3>Yedekler ve Senkronizasyon</h3></div>
+        <button class="modal-close" type="button" aria-label="Kapat">×</button>
+      </div>
+      <div class="modal-note backup-sync-note">Sunucuya gönderme ve sunucudan indirme işlemleri ana ekranın alt menüsündedir. Buradan offline dosyaları, kuyrukları ve Drive yedeklerini yönetebilirsiniz.</div>
+      <section class="tool-strip backup-sync-tools">
+        <button data-tool="updates" type="button"><svg viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M5 21h14" /></svg><strong>Offline Hazırlık</strong><small id="cacheToolText">Dosyalar hazırlanıyor</small></button>
+        <button data-tool="pending" class="pending-tool-button" type="button"><svg viewBox="0 0 24 24"><path d="M5 4h14v16H5zM8 8h8M8 12h8M8 16h5" /></svg><strong>Sunucuda Bekleyenler</strong><small id="pendingToolCount">Bekleyen işlem yok</small></button>
+        <button data-tool="backups" class="drive-tool-button" type="button"><svg class="google-drive-logo" viewBox="0 0 64 56"><path fill="#0F9D58" d="M22 2h20l20 34H42z"/><path fill="#F4B400" d="M22 2 2 36l10 18 20-34z"/><path fill="#4285F4" d="M12 54 2 36h40l20 0-10 18z"/></svg><strong>Yedekler</strong><small>Şeflik Kurucu Drive</small></button>
+        <button data-tool="legacy-backups" type="button"><svg viewBox="0 0 24 24"><path d="M4 7h16v13H4zM3 4h18v3H3zM9 11h6M12 11v5" /></svg><strong>Eski Yedekler</strong><small>Drive arşivi</small></button>
+        <button data-tool="guide" class="guide-tool-button" type="button"><svg viewBox="0 0 24 24"><path d="M6 4.5A2.5 2.5 0 0 0 3.5 7v10A2.5 2.5 0 0 0 6 19.5h12A2.5 2.5 0 0 0 20.5 17V7A2.5 2.5 0 0 0 18 4.5H6Zm1.5 3h9M7.5 11h9M7.5 14.5h5"/></svg><strong>Kılavuz</strong><small>Mesaha ve İstif kullanım yardımı</small></button>
+        <button data-tool="telegram" type="button"><svg viewBox="0 0 24 24"><path d="M21.5 3.2 3.4 10.3c-1.2.5-1.2 1.2-.2 1.5l4.6 1.4 1.8 5.5c.2.7.1 1 .9 1 .6 0 .9-.3 1.2-.6l2.3-2.2 4.8 3.5c.9.5 1.5.2 1.8-.8l3.1-14.8c.4-1.3-.5-1.9-1.7-1.4ZM9.6 12.8l9-5.7c.5-.3.9-.1.5.2l-7.4 6.7-.3 3.1-1.8-4.3Z" /></svg><strong>Telegram</strong><small>Destek grubu</small></button>
+        <button data-tool="about" type="button"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7h.01" /></svg><strong>Hakkında</strong><small>Uygulama bilgileri</small></button>
+      </section>
     </section>
     <section class="modal" id="seflikModal" hidden>
       <div class="modal-head">

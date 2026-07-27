@@ -773,6 +773,11 @@
     if (id === "seflikModal") renderSeflikModal();
     if (id === "ormanciModal") renderOrmanciModal();
     if (id === "bolmeModal") renderBolmeModal();
+    if (id === "terminalModal") {
+      renderAuthBox();
+      if (authType() === "google" && Date.now() - terminalDevicesLoadedAt > 5000)
+        setTimeout(() => refreshTerminalDevicesSuite(true), 0);
+    }
     if (id === "yieldModal") renderYieldModal();
     setTimeout(() => {
       try {
@@ -2284,7 +2289,7 @@
     const d = currentDivisions()[idx];
     if (d) return downloadDivisionByBolme(d.bolme_no, quiet);
   }
-  async function downloadDivisionByBolme(no, quiet = false) {
+  async function downloadDivisionByBolme(no, quiet = false, strict = false) {
     const af = activeFolder();
     if (!af || !no) return;
     const k = af.seflik_key;
@@ -2300,7 +2305,8 @@
           bolmeNo: no,
         });
         rows = Array.isArray(out.records) ? out.records : [];
-      } catch {
+      } catch (error) {
+        if (strict) throw error;
         rows = [];
       }
     }
@@ -2779,6 +2785,103 @@
       }
     });
   }
+  function openTerminalModal() {
+    if (!signedIn()) {
+      openModal("loginModal");
+      toast("Terminal yönetimi için önce Google ile giriş yapın.", true);
+      return;
+    }
+    if (authType() !== "google") {
+      openModal("loginModal");
+      toast("Terminal kodu oluşturmak ve cihazları görmek için Google ile giriş yapın.", true);
+      return;
+    }
+    openModal("terminalModal");
+  }
+  function openBackupSyncModal() {
+    openModal("backupSyncModal");
+  }
+  function setBottomSyncBusy(kind, busyState, text) {
+    const id = kind === "download" ? "serverDownloadButton" : "serverUploadButton";
+    const button = $(id);
+    if (!button) return;
+    button.disabled = !!busyState;
+    button.classList.toggle("is-busy", !!busyState);
+    const strong = button.querySelector("strong");
+    if (strong) strong.textContent = text || (kind === "download" ? "Sunucudan İndir" : "Sunucuya Gönder");
+  }
+  async function uploadAllToServer() {
+    if (!signedIn()) return openModal("loginModal"), toast("Önce giriş yapın.", true);
+    if (!cloudIdentity()) return toast("Sunucuya göndermek için Google hesabı veya kodla eşleşmiş terminal gerekir.", true);
+    if (navigator.onLine === false) return toast("İnternet bağlantısı yok. Kayıtlar cihazda korunuyor.", true);
+    setBottomSyncBusy("upload", true, "Gönderiliyor…");
+    try {
+      const api = suiteSyncApi();
+      if (api && typeof api.syncAll === "function") {
+        const result = await api.syncAll({ source: "orman-bottom-upload", force: true });
+        if (result && result.ok === false && !result.busy) throw new Error("Sunucu gönderimi tamamlanamadı.");
+      } else {
+        await sendPendingToServer();
+      }
+      await loadFolders(true);
+      render();
+    } catch (error) {
+      toast(clean(error && error.message || error) || "Sunucu gönderimi tamamlanamadı.", true);
+    } finally {
+      setBottomSyncBusy("upload", false, "Sunucuya Gönder");
+    }
+  }
+  async function downloadFromServerAndPrepareOffline() {
+    if (!signedIn()) return openModal("loginModal"), toast("Önce giriş yapın.", true);
+    if (!cloudIdentity()) return toast("Sunucudan indirmek için Google hesabı veya kodla eşleşmiş terminal gerekir.", true);
+    if (navigator.onLine === false) return toast("İnternet bağlantısı yok. Daha önce indirilen offline veriler kullanılabilir.", true);
+    setBottomSyncBusy("download", true, "İndiriliyor…");
+    showStartup("Sunucudan indiriliyor", "Şeflik, bölmeler, uygulama dosyaları ve offline kayıtlar hazırlanıyor.", 12, false);
+    try {
+      setCacheStatus("Şeflik ve bölmeler sunucudan alınıyor…", 24);
+      await loadFolders(true);
+      const api = suiteSyncApi();
+      if (api && typeof api.refreshFolderData === "function") {
+        try { await api.refreshFolderData({ includeRecords: true, quiet: true, forceRecords: true }); } catch (_) {}
+      }
+      setCacheStatus("İstif kayıtları offline kullanım için indiriliyor…", 44);
+      if (api && typeof api.pullIstifRecords === "function") {
+        try { await api.pullIstifRecords(); } catch (_) {}
+      }
+      await loadFolders(true);
+      const rows = currentDivisions();
+      setCacheStatus(rows.length ? `${rows.length} bölme offline hazırlanıyor…` : "Bölme listesi kontrol edildi…", 58);
+      for (let i = 0; i < rows.length; i++) {
+        await downloadDivisionByBolme(rows[i].bolme_no, true, true);
+        setCacheStatus(`Bölmeler indiriliyor (${i + 1}/${rows.length})`, 58 + Math.round(((i + 1) / Math.max(1, rows.length)) * 24));
+      }
+      setCacheStatus("Mesaha İO ve İstif İO dosyaları offline hazırlanıyor…", 86);
+      let offlineReadyNow = await prepareOffline();
+      if (!offlineReadyNow && "serviceWorker" in navigator) {
+        showStartup("Offline hazırlık tamamlanıyor", "Uygulama dosyalarının tamamı cihazda doğrulanıyor.", 91, false);
+        const reg = await navigator.serviceWorker.ready;
+        const worker = reg.active || navigator.serviceWorker.controller || reg.waiting;
+        if (worker) {
+          const warmResult = await workerMessage(worker, "WARM_CACHE", 45000);
+          offlineReadyNow = !!(warmResult && warmResult.ready);
+        }
+      }
+      if (!offlineReadyNow) throw new Error("Uygulama dosyalarının offline hazırlığı tamamlanamadı");
+      saveLocal();
+      syncAppCaches();
+      write(K.lastServerSync, { at: now(), direction: "download", divisions: rows.length, offlineReady: true });
+      setCacheStatus(`${rows.length} bölme ve iki uygulama offline kullanıma hazır`, 100);
+      toast(`${rows.length} bölme sunucudan indirildi ve offline kullanıma hazırlandı.`);
+      render();
+      closeStartup(180);
+    } catch (error) {
+      closeStartup(180);
+      toast("Sunucudan indirme tamamlanamadı: " + (clean(error && error.message || error) || "Bilinmeyen hata"), true);
+    } finally {
+      setBottomSyncBusy("download", false, "Sunucudan İndir");
+    }
+  }
+
   async function goApp(app) {
     if (!signedIn()) {
       openModal("loginModal");
@@ -2882,13 +2985,13 @@
             <li>Yeni istif kaydı oluşturup fotoğrafı çekin ve bilgileri girin.</li>
             <li>Kayıtları cihazda güvenle saklayın; internet varsa buluta da gönderilir.</li>
             <li>Fotoğraflar otomatik inmez; gerekirse <b>İstifi Buluttan Getir</b> kullanın.</li>
-            <li>Bekleyen kayıtları topluca göndermek için Orman İO’daki <b>Senkronizasyon</b> ve <b>Sunucuya Gönder</b> düğmelerini kullanın.</li>
+            <li>Bekleyen kayıtları topluca göndermek için Orman İO alt menüsündeki <b>Sunucuya Gönder</b> düğmesini kullanın.</li>
           </ol>
         </section>
       </div>
       <div class="suite-guide-note-box">
         <strong>Kısa Not</strong>
-        <p>Şeflik, bölme, Drive ve genel senkron işlemleri Orman İO ana menüsünden yönetilir. Yardım gerekirse Telegram destek grubunu kullanabilirsiniz.</p>
+        <p>Şeflik ve bölme işlemleri Saha Yönetimi bölümünden; gönderme ve indirme işlemleri alt menüden yönetilir. Yardım gerekirse Telegram destek grubunu kullanabilirsiniz.</p>
       </div>`;
   }
 
@@ -2939,16 +3042,22 @@
     if (modal === "seflik") return openSeflikModal(), true;
     if (modal === "ormanci") return openOrmanciModal(), true;
     if (modal === "bolme") return openBolmeModal(), true;
+    if (modal === "terminal") return openTerminalModal(), true;
+    if (modal === "backup-sync") return openBackupSyncModal(), true;
     if (app) {
       goApp(app);
       return true;
     }
+    if (tool === "server-upload") {
+      uploadAllToServer();
+      return true;
+    }
+    if (tool === "server-download") {
+      downloadFromServerAndPrepareOffline();
+      return true;
+    }
     if (tool === "sync" || tool === "server") {
-      if (window.MesahaSuiteSync || window.MesahaSuiteSyncV28 || window.MesahaSuiteSyncV27 || window.MesahaSuiteSyncV26 || window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8)
-        (window.MesahaSuiteSync || window.MesahaSuiteSyncV28 || window.MesahaSuiteSyncV27 || window.MesahaSuiteSyncV26 || window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8).syncAll({ source: tool })
-          .then(() => loadFolders(true))
-          .catch(() => {});
-      else sendPendingToServer();
+      uploadAllToServer();
       return true;
     }
     if (tool === "updates") {
@@ -3005,7 +3114,7 @@
     if (tool === "about") {
       showInfo(
         "Orman İO",
-        `<p>Google veya terminal/misafir oturumu Mesaha İO ve İstif İO tarafından ortak kullanılır.</p><p><b>Bekleyen işlem:</b> ${pendingOps.length}</p><p>Bölmeler offline indirildikten sonra iki uygulamada kayıt eklemeye hazır olur.</p><div class="about-action-grid"><a class="about-telegram" href="${esc(TELEGRAM_URL)}" target="_blank" rel="noopener">✈ Telegram Destek</a><a class="about-youtube" href="${esc(YOUTUBE_URL)}" target="_blank" rel="noopener">▶ YouTube Anlatım</a></div>`,
+        `<p>Google veya terminal/misafir oturumu Mesaha İO ve İstif İO tarafından ortak kullanılır.</p><p><b>Bekleyen işlem:</b> ${pendingOps.length}</p><p>Alt menüdeki Sunucudan İndir işlemi şeflikleri, bölmeleri ve uygulama dosyalarını tek seferde offline kullanıma hazırlar.</p><div class="about-action-grid"><a class="about-telegram" href="${esc(TELEGRAM_URL)}" target="_blank" rel="noopener">✈ Telegram Destek</a><a class="about-youtube" href="${esc(YOUTUBE_URL)}" target="_blank" rel="noopener">▶ YouTube Anlatım</a></div>`,
       );
       return true;
     }
@@ -3171,8 +3280,12 @@
       openSeflik: openSeflikModal,
       openOrmanci: openOrmanciModal,
       openBolme: openBolmeModal,
+      openTerminal: openTerminalModal,
+      openBackupSync: openBackupSyncModal,
       goApp,
       prepareOffline,
+      uploadToServer: uploadAllToServer,
+      downloadFromServer: downloadFromServerAndPrepareOffline,
       sendPendingToServer,
       loadFolders,
       applyCanonicalFolderContext,

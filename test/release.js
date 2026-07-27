@@ -1,16 +1,16 @@
 (function (root) {
   "use strict";
   const DATA = /*MESAHA_RELEASE_DATA_START*/{
-  "build": 54,
-  "version": "54.0.0",
+  "build": 55,
+  "version": "55.0.0",
   "channel": "stable",
-  "releasedAt": "2026-07-27T13:45:00+03:00",
-  "assetToken": "orman-io-stable-20260727-3",
-  "cacheName": "orman-io-shell-stable-20260727-3",
+  "releasedAt": "2026-07-27T15:30:00+03:00",
+  "assetToken": "orman-io-stable-20260727-4",
+  "cacheName": "orman-io-shell-stable-20260727-4",
   "apps": {
     "suite": {
       "label": "Orman İO",
-      "version": "54.0.0"
+      "version": "55.0.0"
     },
     "mesaha": {
       "label": "Mesaha İO",
@@ -22,10 +22,10 @@
     },
     "admin": {
       "label": "Orman İO Yönetim",
-      "version": "54.0.0"
+      "version": "55.0.0"
     }
   },
-  "description": "Offline çalışma korunarak hızlı açılış mimarisi uygulandı. Sayfa geçişleri cache-first çalışır; internet güncellemeleri arka planda alınır. Orman, Mesaha, İstif, ortak dosyalar ve yönetim ayrı cache bölümlerinde tutulur. Yeni sürüm eksik kalırsa önceki çalışan offline cache silinmez. PDF motoru dahil tüm çalışma dosyaları offline pakete alınır."
+  "description": "Orman İO ana ekranı sadeleştirildi. Şeflik, ormancı, bölme, terminal ve yedek/senkronizasyon araçları Saha Yönetimi altında toplandı. Terminal kodu ve cihazlar ayrı ekrana taşındı. Sabit alt menüde Sunucuya Gönder ve Sunucudan İndir eklendi. Sunucudan İndir; şeflikleri, bölmeleri, Mesaha/İstif verilerini ve uygulama dosyalarını tek işlemle offline kullanıma hazırlar."
 }/*MESAHA_RELEASE_DATA_END*/;
   const APP_NAMES = DATA.apps || {};
   const SCRIPT_URL = (() => {
