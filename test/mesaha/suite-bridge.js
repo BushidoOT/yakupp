@@ -687,8 +687,21 @@
         activeSeflik: f.seflik,
         bolmeNo: clean(bolme),
       });
-      if (typeof window.renderAll === "function") window.renderAll();
-      if (typeof window.showView === "function") window.showView("records");
+      try {
+        if (typeof window.renderAll === "function") window.renderAll();
+      } catch (renderError) {
+        console.warn("Mesaha görünümü yenilenirken görsel bir hata oluştu; kayıt yükleme tamamlandı.", renderError);
+      }
+      try {
+        if (typeof window.showView === "function") window.showView("records");
+      } catch (viewError) {
+        console.warn("Ölçümler görünümü açılamadı; kayıtlar kalıcı depoya yazıldı.", viewError);
+      }
+      try {
+        window.dispatchEvent(new CustomEvent("mesaha-records-changed", {
+          detail: { source: "suite-folder-merge-v53", bolmeNo: clean(bolme), count: records.length }
+        }));
+      } catch (_) {}
       notify(`Bölme ${bolme} kayıtları barkoda göre birleştirildi. Toplam ${records.length} kayıt hazır.`);
     } catch (e) {
       notify(clean((e && e.message) || e), true);

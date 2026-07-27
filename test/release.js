@@ -1,31 +1,31 @@
 (function (root) {
   "use strict";
   const DATA = /*MESAHA_RELEASE_DATA_START*/{
-  "build": 52,
-  "version": "52.0.0",
+  "build": 54,
+  "version": "54.0.0",
   "channel": "stable",
-  "releasedAt": "2026-07-27T12:15:00+03:00",
-  "assetToken": "orman-io-stable-20260727-1",
-  "cacheName": "orman-io-shell-stable-20260727-1",
+  "releasedAt": "2026-07-27T13:45:00+03:00",
+  "assetToken": "orman-io-stable-20260727-3",
+  "cacheName": "orman-io-shell-stable-20260727-3",
   "apps": {
     "suite": {
       "label": "Orman İO",
-      "version": "52.0.0"
+      "version": "54.0.0"
     },
     "mesaha": {
       "label": "Mesaha İO",
-      "version": "5.94"
+      "version": "5.96"
     },
     "istif": {
       "label": "İstif İO",
-      "version": "0.3.17"
+      "version": "0.3.18"
     },
     "admin": {
       "label": "Orman İO Yönetim",
-      "version": "52.0.0"
+      "version": "54.0.0"
     }
   },
-  "description": "ORBİS .xls üretimindeki BIFF8 INDEX/DBCELL adres kayması giderildi. Dosya indirilmeden önce çalışma kitabı bütünlüğü doğrulanır; yapısal olarak geçersiz XLS artık indirilemez."
+  "description": "Offline çalışma korunarak hızlı açılış mimarisi uygulandı. Sayfa geçişleri cache-first çalışır; internet güncellemeleri arka planda alınır. Orman, Mesaha, İstif, ortak dosyalar ve yönetim ayrı cache bölümlerinde tutulur. Yeni sürüm eksik kalırsa önceki çalışan offline cache silinmez. PDF motoru dahil tüm çalışma dosyaları offline pakete alınır."
 }/*MESAHA_RELEASE_DATA_END*/;
   const APP_NAMES = DATA.apps || {};
   const SCRIPT_URL = (() => {

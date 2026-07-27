@@ -2697,7 +2697,7 @@
     const failOpen = setTimeout(() => {
       setCacheStatus("Uygulama açıldı • offline hazırlık arka planda sürüyor", 55);
       closeStartup(0);
-    }, online ? 3200 : 4200);
+    }, online ? 1400 : 1800);
     if (!("serviceWorker" in navigator)) {
       clearTimeout(failOpen);
       setCacheStatus("Tarayıcı çevrimdışı kullanımı desteklemiyor", 0);
@@ -2708,12 +2708,12 @@
       await cleanupNestedWorkers();
       const reg = await navigator.serviceWorker.register("./service-worker.js?release=" + encodeURIComponent(window.MESAHA_RELEASE?.assetToken || "stable"), { scope: "./", updateViaCache: "none" });
       const worker = await Promise.race([
-        waitForActiveWorker(reg, online ? 5000 : 3500),
-        new Promise((resolve) => setTimeout(() => resolve(reg.active || navigator.serviceWorker.controller || null), online ? 5200 : 3700)),
+        waitForActiveWorker(reg, online ? 2600 : 2000),
+        new Promise((resolve) => setTimeout(() => resolve(reg.active || navigator.serviceWorker.controller || null), online ? 2800 : 2200)),
       ]);
       let st = { ready: false, criticalMissing: [] };
       if (worker) {
-        try { st = await workerMessage(worker, "GET_STATUS", online ? 2600 : 1800); } catch (_) {}
+        try { st = await workerMessage(worker, "GET_STATUS", online ? 1300 : 1000); } catch (_) {}
       }
       cacheReady = !!st.ready;
       clearTimeout(failOpen);

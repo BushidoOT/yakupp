@@ -39,7 +39,7 @@
               .map((k) => caches.delete(k)),
           );
           const reg = await navigator.serviceWorker.register(
-            "./service-worker.js?v=28",
+            "./service-worker.js?v=54",
             { scope: "./", updateViaCache: "none" },
           );
           await navigator.serviceWorker.ready;
