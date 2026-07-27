@@ -220,11 +220,70 @@
     if (!response || !response.ok) throw networkError("Bağlantı zayıf", "NETWORK_WEAK");
     return true;
   }
+  let contextRepairPromise = null;
+  function isFolderContextFailure(status, payload) {
+    const code = clean(payload && (payload.code || payload.errorCode)).toUpperCase();
+    const message = clean(payload && (payload.error || payload.message)).toLocaleLowerCase("tr-TR");
+    return ["SEFLIK_CONTEXT_MISSING", "SEFLIK_NOT_FOUND", "SEFLIK_ACCESS_DENIED", "SEFLIK_OWNER_NOT_FOUND", "FOLDER_NOT_FOUND", "FOLDER_ACCESS_DENIED"].includes(code) ||
+      (Number(status) >= 400 && /(şeflik|seflik|klasör|folder).*(bulunamad|erişim|eksik|uyuş|eşleş)/i.test(message));
+  }
+  async function repairFolderContextDirect() {
+    if (contextRepairPromise) return contextRepairPromise;
+    contextRepairPromise = (async () => {
+      if (!cloudSyncAllowed() || navigator.onLine === false) return false;
+      const terminalPayload = terminalAuth();
+      const terminalRequest = !!clean(terminalPayload.terminalCode || terminalPayload.terminalToken);
+      if (!terminalRequest) {
+        try { await refreshGoogleSession(false); } catch {}
+      }
+      const old = folderContext();
+      const response = await fetchWithTimeout(SMOOTH, {
+        method: "POST",
+        cache: "no-store",
+        headers: authHeaders(),
+        body: JSON.stringify({
+          action: "seflik_folder_list_my_sefliks",
+          source: "mesaha-suite-v51-context-repair",
+          ...terminalPayload,
+          seflik: old.seflik || identity().seflik,
+          folderSeflik: old.seflik || identity().seflik,
+          seflikKey: old.seflikKey || identity().seflikKey,
+          seflik_key: old.seflikKey || identity().seflikKey,
+          folderId: old.folderId || "",
+        }),
+      }, 20000);
+      const out = await response.json().catch(() => ({}));
+      if (!response.ok || out.ok === false) return false;
+      const list = Array.isArray(out.folders) ? out.folders.filter(Boolean) : [];
+      if (!list.length) return false;
+      const active = read(K.active, {}) || {};
+      const activeKey = clean(active.seflik_key || active.seflikKey);
+      const activeId = clean(active.folder_id || active.folderId);
+      const activeName = clean(active.seflik);
+      const chosen = list.find((f) => activeId && clean(f.id || f.folder_id || f.folderId) === activeId) ||
+        list.find((f) => activeKey && clean(f.seflik_key || f.seflikKey) === activeKey) ||
+        list.find((f) => activeName && fold(f.seflik || f.name) === fold(activeName)) ||
+        list.find((f) => f.is_creator === true || f.isCreator === true || ["owner", "creator", "kurucu"].includes(clean(f.role).toLocaleLowerCase("tr-TR"))) ||
+        list[0];
+      if (!chosen) return false;
+      applyCanonicalServerContext({
+        ...out,
+        folder: chosen,
+        seflik: chosen.seflik || chosen.name,
+        seflikKey: chosen.seflik_key || chosen.seflikKey,
+        seflikFolderId: chosen.id || chosen.folder_id || chosen.folderId,
+        membershipRole: chosen.role,
+        isOwner: chosen.is_creator === true || chosen.isCreator === true,
+      });
+      return true;
+    })().finally(() => { contextRepairPromise = null; });
+    return contextRepairPromise;
+  }
   async function post(url, action, data) {
     const terminalPayload = terminalAuth();
     const body = {
       action,
-      source: "mesaha-suite-v50",
+      source: "mesaha-suite-v51",
       ...terminalPayload,
       ...(data || {}),
     };
@@ -233,7 +292,8 @@
       try { await refreshGoogleSession(false); } catch {}
     }
     let r, j;
-    for (let attempt = 0; attempt < 2; attempt += 1) {
+    let authRetried = false, contextRetried = false;
+    for (let attempt = 0; attempt < 3; attempt += 1) {
       r = await fetchWithTimeout(url, {
         method: "POST",
         cache: "no-store",
@@ -245,7 +305,8 @@
         try { applyCanonicalServerContext(j); } catch (_) {}
         return j;
       }
-      if (!terminalRequest && attempt === 0 && isAuthSessionFailure(r.status, j)) {
+      if (!terminalRequest && !authRetried && isAuthSessionFailure(r.status, j)) {
+        authRetried = true;
         try {
           await refreshGoogleSession(true);
           continue;
@@ -256,6 +317,18 @@
           error.retryable = false;
           throw error;
         }
+      }
+      if (!contextRetried && action !== "seflik_folder_list_my_sefliks" && isFolderContextFailure(r.status, j)) {
+        contextRetried = true;
+        try {
+          if (await repairFolderContextDirect()) {
+            const ctx = folderContext();
+            if (ctx.seflik) { body.seflik = ctx.seflik; body.folderSeflik = ctx.seflik; }
+            if (ctx.seflikKey) { body.seflikKey = ctx.seflikKey; body.seflik_key = ctx.seflikKey; }
+            if (ctx.folderId) body.folderId = ctx.folderId;
+            continue;
+          }
+        } catch (_) {}
       }
       break;
     }
@@ -594,11 +667,86 @@
     positionDock();
   }
 
+  const round3 = (value) => Number((Number(value) || 0).toFixed(3));
+  function recordQuantity(r) {
+    const raw = num(r && (r.quantity ?? r.adet ?? r.count ?? 1));
+    return Math.max(1, Math.round(raw || 1));
+  }
   function volume(r) {
-    const d = num(r.diameter || r.cap),
-      l = num(r.length || r.boy),
-      q = Math.max(1, num(r.quantity || r.adet || 1));
-    return d && l ? ((Math.PI * Math.pow(d / 100, 2)) / 4) * l * q : 0;
+    const d = num(r && (r.diameter ?? r.cap ?? r.diameterCm)),
+      l = num(r && (r.length ?? r.boy ?? r.lengthM)),
+      q = recordQuantity(r || {});
+    if (d > 0 && l > 0) return round3(((Math.PI * Math.pow(d / 100, 2)) / 4) * l * q);
+    const explicit = num(r && (r.sourceVolumeM3 ?? r.totalVolume ?? r.total_volume ?? r.volume ?? r.hacim));
+    return round3(explicit);
+  }
+  function canonicalMesahaStats(input) {
+    const list = Array.isArray(input) ? input : [];
+    const unique = new Map();
+    list.forEach((raw, index) => {
+      const r = raw && typeof raw === "object" ? raw : null;
+      if (!r || r.deleted === true || r.isDeleted === true || clean(r.status).toLocaleLowerCase("tr-TR") === "deleted") return;
+      const key = clean(r.barcode || r.barkod || r.barkodNo || r.barkod_no || r.id || r.recordId || r.record_id) ||
+        [clean(r.treeType || r.tree_type), clean(r.productType || r.product_type), clean(r.diameter || r.cap), clean(r.length || r.boy), clean(r.productionDate), index].join("|");
+      unique.set(key.toLocaleUpperCase("tr-TR"), r);
+    });
+    let itemCount = 0, totalVolume = 0;
+    const treeTotals = {}, productTotals = {};
+    for (const r of unique.values()) {
+      const quantity = recordQuantity(r), rowM3 = volume(r);
+      itemCount += quantity; totalVolume += rowM3;
+      const tree = clean(r.treeType || r.tree_type || r.species || r.agacTuru || r.agacAdi || "Belirsiz") || "Belirsiz";
+      const product = clean(r.productType || r.product_type || r.odunTuru || r.odunAdi || "Belirsiz") || "Belirsiz";
+      const add = (target, name) => {
+        const old = target[name] || { adet: 0, count: 0, m3: 0 };
+        old.adet += quantity; old.count += quantity; old.m3 = round3(old.m3 + rowM3); target[name] = old;
+      };
+      add(treeTotals, tree); add(productTotals, product);
+    }
+    return {
+      rowCount: unique.size,
+      itemCount,
+      recordCount: itemCount,
+      adet: itemCount,
+      totalVolume: round3(totalVolume),
+      totalM3: round3(totalVolume),
+      m3: round3(totalVolume),
+      treeTotals,
+      productTotals,
+      records: [...unique.values()],
+    };
+  }
+  async function sendExactBackupStats(stats, backupResult, scope) {
+    if (!stats || !stats.rowCount || navigator.onLine === false || !cloudSyncAllowed()) return false;
+    const id = identity(), ctx = folderContext();
+    const backupId = clean(backupResult && (backupResult.fileId || backupResult.backup?.id || backupResult.id)) || String(Date.now());
+    try {
+      await edge("stats_sync", {
+        reason: "drive-backup",
+        idempotencyKey: ["drive-backup", backupId, stats.rowCount, stats.itemCount, stats.totalVolume].join(":"),
+        name: id.name,
+        seflik: ctx.seflik || id.seflik,
+        seflikKey: ctx.seflikKey || id.seflikKey,
+        folderId: ctx.folderId,
+        bolmeNo: clean(scope && scope.bolmeNo),
+        operationRowCount: stats.rowCount,
+        operationItemCount: stats.itemCount,
+        operationTotalVolume: stats.totalVolume,
+        recordCount: stats.itemCount,
+        totalRecords: stats.itemCount,
+        adet: stats.itemCount,
+        totalM3: stats.totalVolume,
+        m3: stats.totalVolume,
+        treeTotals: stats.treeTotals,
+        productTotals: stats.productTotals,
+        scopeText: clean(scope && scope.text) || "Drive yedeği",
+        scopeMode: "drive-backup",
+        backupFileId: backupId,
+        appVersion: VERSION,
+        source: "mesaha-suite-v51-exact-backup-stats",
+      });
+      return true;
+    } catch (_) { return false; }
   }
   function activeFolder() {
     const a = read(K.active, {}),
@@ -1864,6 +2012,23 @@
     write(K.drive, { connected: false });
     return x;
   }
+  async function currentMesahaRecordsReady() {
+    try {
+      const store = window.MesahaStorageV527;
+      if (store && typeof store.flush === "function") await store.flush();
+      if (store && typeof store.lastCommittedRecords === "function") {
+        const rows = store.lastCommittedRecords();
+        if (Array.isArray(rows)) return rows.slice();
+      }
+      if (store && typeof store.bootstrapRecords === "function") {
+        const rows = store.bootstrapRecords();
+        if (Array.isArray(rows)) return rows.slice();
+      }
+    } catch (_) {}
+    try { if (window.state && Array.isArray(window.state.records)) return window.state.records.slice(); } catch (_) {}
+    const rows = read(K.records, []);
+    return Array.isArray(rows) ? rows : [];
+  }
   async function createMesahaBackup(options) {
     options = options || {};
     const id = identity(), af = activeFolder();
@@ -1871,22 +2036,31 @@
     await ensureDriveConnected({ redirect: true });
     const seflik = clean((af && af.seflik) || id.seflik), selected = clean(options.bolmeNo || "");
     if (!seflik) throw new Error("Önce şeflik seçin");
-    const all = read(K.records, []), rows = (Array.isArray(all) ? all : []).filter((r) => !selected || clean(r.bolmeNo || r.bolme_no || id.bolme) === selected);
-    if (!rows.length) throw new Error(selected ? `Bölme ${selected} için yedeklenecek Mesaha kaydı yok` : "Yedeklenecek Mesaha kaydı yok");
-    return drive("backup_json", {
+    const all = Array.isArray(options.records) ? options.records.slice() : await currentMesahaRecordsReady(),
+      selectedRows = (Array.isArray(all) ? all : []).filter((r) => !selected || clean(r.bolmeNo || r.bolme_no || id.bolme) === selected);
+    const stats = canonicalMesahaStats(selectedRows);
+    if (!stats.rowCount) throw new Error(selected ? `Bölme ${selected} için yedeklenecek Mesaha kaydı yok` : "Yedeklenecek Mesaha kaydı yok");
+    const result = await drive("backup_json", {
       seflik, appId: "mesaha",
       fileName: `Mesaha_${fold(seflik)}_${selected ? fold(selected) + "_" : ""}${new Date().toISOString().replace(/[:.]/g, "-")}.json`,
-      recordCount: rows.length, totalVolume: rows.reduce((sum, r) => sum + volume(r), 0),
-      payload: { schema: "mesaha-suite-v31", app: "mesaha", seflik, bolme: selected, createdAt: now(), settings: read(K.settings, {}), records: rows },
+      recordCount: stats.itemCount,
+      rowCount: stats.rowCount,
+      itemCount: stats.itemCount,
+      totalVolume: stats.totalVolume,
+      treeTotals: stats.treeTotals,
+      productTotals: stats.productTotals,
+      payload: { schema: "mesaha-suite-v51", app: "mesaha", seflik, bolme: selected, createdAt: now(), settings: read(K.settings, {}), records: stats.records },
     });
+    await sendExactBackupStats(stats, result, { bolmeNo: selected, text: selected ? `Bölme ${selected} Drive yedeği` : "Mesaha Drive yedeği" });
+    return result;
   }
   async function restoreMesahaBackup(id, mode) {
     const out = await readBackup(id), p = out.payload || out.data || out || {};
     const incoming = Array.isArray(p.mesahaRecords) ? p.mesahaRecords : Array.isArray(p.records) ? p.records : [];
     if (!incoming.length) throw new Error("Bu yedekte Mesaha kaydı bulunamadı");
     const current = read(K.records, []), result = mode === "replace" ? incoming : (() => {
-      const map = new Map((Array.isArray(current) ? current : []).map((r) => [String(r.id || r.barcode || Math.random()), r]));
-      incoming.forEach((r) => map.set(String(r.id || r.barcode || Math.random()), r));
+      const map = new Map((Array.isArray(current) ? current : []).map((r) => [String(r.barcode || r.barkod || r.barkodNo || r.barkod_no || r.id || Math.random()), r]));
+      incoming.forEach((r) => map.set(String(r.barcode || r.barkod || r.barkodNo || r.barkod_no || r.id || Math.random()), r));
       return [...map.values()];
     })();
     window.__suiteRemoteHydrating = true;
@@ -1903,7 +2077,7 @@
     const id = identity();
     if (!cloudSyncAllowed()) { openDriveSetup(); throw new Error("Drive yedeği için Google ile giriş yapın veya terminal koduyla eşleşin"); }
     await ensureDriveConnected({ redirect: true });
-    const mesaha = read(K.records, []),
+    const mesaha = await currentMesahaRecordsReady(),
       istif = (await idbAll("records")).map((r) => ({
         ...r,
         photos: undefined,
@@ -1923,21 +2097,36 @@
         yieldTargets: read(K.yieldTargets, {}),
       },
     };
-    const total = payload.mesahaRecords.reduce((s, r) => s + volume(r), 0);
-    return drive("backup_json", {
+    const stats = canonicalMesahaStats(payload.mesahaRecords);
+    payload.mesahaRecords = stats.records;
+    payload.stats = {
+      mesahaRowCount: stats.rowCount,
+      mesahaItemCount: stats.itemCount,
+      mesahaTotalVolume: stats.totalVolume,
+      treeTotals: stats.treeTotals,
+      productTotals: stats.productTotals,
+      istifRowCount: payload.istifRecords.length,
+    };
+    const result = await drive("backup_json", {
       seflik: id.seflik,
       appId: "suite",
       fileName: `Mesaha_Suite_${fold(id.seflik || id.name)}_${new Date().toISOString().replace(/[:.]/g, "-")}.json`,
-      recordCount: payload.mesahaRecords.length + payload.istifRecords.length,
-      totalVolume: total,
+      recordCount: stats.itemCount,
+      rowCount: stats.rowCount,
+      itemCount: stats.itemCount,
+      totalVolume: stats.totalVolume,
+      treeTotals: stats.treeTotals,
+      productTotals: stats.productTotals,
+      istifRowCount: payload.istifRecords.length,
       payload,
     });
+    if (stats.rowCount) await sendExactBackupStats(stats, result, { text: "Orman İO tam Drive yedeği" });
+    return result;
   }
-  const listBackups = () => drive("backup_list", { seflik: identity().seflik });
-  const readBackup = (id) =>
-    drive("backup_read", { id, seflik: identity().seflik });
-  const deleteBackup = (id) =>
-    drive("backup_delete", { id, seflik: identity().seflik });
+  const backupContext = () => { const ctx = folderContext(); return { seflik: ctx.seflik || identity().seflik, seflikKey: ctx.seflikKey || identity().seflikKey, folderId: ctx.folderId }; };
+  const listBackups = () => drive("backup_list", backupContext());
+  const readBackup = (id) => drive("backup_read", { id, ...backupContext() });
+  const deleteBackup = (id) => drive("backup_delete", { id, ...backupContext() });
 
   function watchStorage() {
     const orig = Storage.prototype.setItem;
@@ -2052,6 +2241,8 @@
     deleteBackup,
     identity,
     applyCanonicalServerContext,
+    repairFolderContext: repairFolderContextDirect,
+    canonicalMesahaStats,
     edge,
     drive,
     updateButton,
@@ -2085,9 +2276,10 @@
     watchStorage();
     dispatch();
     updateButton();
-    if (navigator.onLine !== false && isDirty() && cloudSyncAllowed())
-      scheduleAutoRetry(4200, true);
-    else if (!cloudSyncAllowed()) stopGuestSync();
+    if (navigator.onLine !== false && cloudSyncAllowed()) {
+      setTimeout(() => repairFolderContextDirect().catch(() => {}), 900);
+      if (isDirty()) scheduleAutoRetry(4200, true);
+    } else if (!cloudSyncAllowed()) stopGuestSync();
   }
   if (document.readyState === "loading")
     document.addEventListener("DOMContentLoaded", boot, { once: true });

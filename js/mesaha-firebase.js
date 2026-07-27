@@ -268,6 +268,13 @@
     try{return await fetch(url,{method:'POST',cache:'no-store',headers:{'Content-Type':'application/json',apikey:c.anonKey,Authorization:'Bearer '+token},body:payload,signal:ctrl&&ctrl.signal})}finally{if(timer)clearTimeout(timer)}
   }
   async function edge(action,data){
+    /* V51: Orman, Mesaha ve İstif aynı Google/terminal/şeflik bağlamını kullanır.
+       Suite merkezi hazırsa bütün smooth-function çağrıları kanonik bağlam onarımı,
+       Google refresh ve terminal kimliğiyle buradan geçirilir. */
+    var suiteApi=window.MesahaSuiteSync||window.MesahaSuiteSyncV31||window.MesahaSuiteSyncV28||window.MesahaSuiteSyncV27;
+    if(window.MESAHA_SUITE_MODE&&suiteApi&&typeof suiteApi.edge==='function'){
+      return await suiteApi.edge(String(action||'check'),data||{});
+    }
     var c=cfg(), terminalMode=!!(data&&(data.terminalCode||data.terminal_code||data.p_terminal_code)), token='';
     try{token=await getAccessToken()}catch(e){if(terminalMode&&c.anonKey)token=c.anonKey;else throw e}
     if(!token&&terminalMode&&c.anonKey)token=c.anonKey;

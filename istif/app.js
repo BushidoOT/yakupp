@@ -1043,6 +1043,8 @@ function isSharedAuthFailure(status, body) {
 }
 
 async function edgeCall(action, payload = {}, retried = false) {
+  const suiteApi = window.MesahaSuiteSync || window.MesahaSuiteSyncV31 || window.MesahaSuiteSyncV28;
+  if (!retried && suiteApi && typeof suiteApi.edge === "function") return await suiteApi.edge(action, payload || {});
   const session = readSharedSession();
   const terminalPayload = terminalAuthPayload();
   if (!session?.access_token && !isPairedTerminal())
@@ -1058,7 +1060,7 @@ async function edgeCall(action, payload = {}, retried = false) {
     },
     body: JSON.stringify({
       action,
-      source: "mesaha-istif-v50-suite",
+      source: "mesaha-istif-v51-suite",
       ...terminalPayload,
       ...payload,
     }),

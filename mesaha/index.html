@@ -1944,7 +1944,15 @@
           absolutePos += bofBytes.length;
 
           const indexPartIndex = parts.length;
-          const indexPlaceholder = s12Index(rows.length, []);
+          // V52: INDEX kaydı sonradan DBCELL adresleri eklenince büyümemeli.
+          // Eski akış boş bir INDEX yer tutucusu kullanıyor, final INDEX her 32 satır
+          // grubu için 4 bayt büyüyordu. Bu büyüme sonrası hesaplanan DBCELL adresleri
+          // geride kalıyor ve bazı Excel/ORBİS kurulumları dosyayı bozuk kabul ediyordu.
+          const dbCellGroupCount = Math.ceil(rows.length / 32);
+          const indexPlaceholder = s12Index(
+            rows.length,
+            new Array(dbCellGroupCount).fill(0),
+          );
           parts.push(indexPlaceholder);
           absolutePos += indexPlaceholder.length;
 
@@ -2355,8 +2363,112 @@
           return s12Concat([globals, sheet1, sheet2]);
         }
 
+        function s12ReadU16(bytes, offset) {
+          return (bytes[offset] | (bytes[offset + 1] << 8)) >>> 0;
+        }
+
+        function s12ReadU32(bytes, offset) {
+          return (
+            bytes[offset] |
+            (bytes[offset + 1] << 8) |
+            (bytes[offset + 2] << 16) |
+            (bytes[offset + 3] << 24)
+          ) >>> 0;
+        }
+
+        function s12ValidateWorkbook(workbook) {
+          if (!(workbook instanceof Uint8Array) || workbook.length < 32) {
+            throw new Error("XLS çalışma kitabı oluşturulamadı.");
+          }
+
+          const sheetOffsets = [];
+          let pos = 0;
+          let globalEof = false;
+
+          while (pos + 4 <= workbook.length) {
+            const opcode = s12ReadU16(workbook, pos);
+            const length = s12ReadU16(workbook, pos + 2);
+            const next = pos + 4 + length;
+            if (next > workbook.length) {
+              throw new Error("XLS global kayıt sınırı geçersiz.");
+            }
+            if (opcode === 0x0085 && length >= 8) {
+              sheetOffsets.push(s12ReadU32(workbook, pos + 4));
+            }
+            pos = next;
+            if (opcode === 0x000a) {
+              globalEof = true;
+              break;
+            }
+          }
+
+          if (!globalEof || !sheetOffsets.length) {
+            throw new Error("XLS sayfa bilgileri doğrulanamadı.");
+          }
+
+          for (const sheetOffset of sheetOffsets) {
+            if (
+              sheetOffset + 4 > workbook.length ||
+              s12ReadU16(workbook, sheetOffset) !== 0x0809
+            ) {
+              throw new Error("XLS sayfa başlangıcı geçersiz.");
+            }
+
+            let sheetPos = sheetOffset;
+            let sheetEof = false;
+            let indexChecked = false;
+
+            while (sheetPos + 4 <= workbook.length) {
+              const opcode = s12ReadU16(workbook, sheetPos);
+              const length = s12ReadU16(workbook, sheetPos + 2);
+              const next = sheetPos + 4 + length;
+              if (next > workbook.length) {
+                throw new Error("XLS sayfa kayıt sınırı geçersiz.");
+              }
+
+              if (opcode === 0x020b) {
+                if (length < 16 || (length - 16) % 4 !== 0) {
+                  throw new Error("XLS INDEX kaydı geçersiz.");
+                }
+                const count = (length - 16) / 4;
+                for (let i = 0; i < count; i++) {
+                  const dbCellPos = s12ReadU32(
+                    workbook,
+                    sheetPos + 4 + 16 + i * 4,
+                  );
+                  if (
+                    dbCellPos < sheetOffset ||
+                    dbCellPos + 4 > workbook.length ||
+                    s12ReadU16(workbook, dbCellPos) !== 0x00d7
+                  ) {
+                    throw new Error(
+                      "XLS satır dizini doğrulanamadı (DBCELL adresi geçersiz).",
+                    );
+                  }
+                }
+                indexChecked = true;
+              }
+
+              sheetPos = next;
+              if (opcode === 0x000a) {
+                sheetEof = true;
+                break;
+              }
+            }
+
+            if (!sheetEof || !indexChecked) {
+              throw new Error("XLS sayfa bütünlüğü doğrulanamadı.");
+            }
+          }
+
+          return true;
+        }
+
         function s12MakeSystemXls(dataRows) {
           const workbook = s12MakeWorkbook(dataRows);
+          // V52: Dosya kullanıcıya indirilmeden önce BIFF8 INDEX/DBCELL adresleri ve
+          // kayıt sınırları doğrulanır. Geçersiz bir dosya hiçbir koşulda indirilmez.
+          s12ValidateWorkbook(workbook);
           return s12MakeCfb([
             { name: "Workbook", data: workbook },
             {
@@ -2393,7 +2505,13 @@
         function makeXls(records) {
           return s12MakeSystemXls(makeRows(records));
         }
-        root.OrbisXls = { downloadXls, makeXls, headers: HEADERS };
+        root.OrbisXls = {
+          downloadXls,
+          makeXls,
+          headers: HEADERS,
+          validateWorkbook: s12ValidateWorkbook,
+          build: "v52-index-dbcell-integrity",
+        };
       })(window);
     </script>
     <script id="mesaha-inline-app-v313">
@@ -5114,19 +5232,13 @@
           const ordered = list.slice();
           const bolme = cleanFile(state.settings.bolmeNo);
           const file = `Mesaha_${bolme ? bolme + "_" : ""}${formatDateFile()}.xls`;
-          try {
-            if (
-              window.mesahaExportStatsV323 &&
-              typeof window.mesahaExportStatsV323.send === "function"
-            )
-              window.mesahaExportStatsV323.send("xls-download-legacy", {
-                list: ordered,
-                text: "Mesaha dosyası",
-                mode: "legacy",
-              });
-          } catch {}
-          if (window.OrbisXls) window.OrbisXls.downloadXls(ordered, file);
-          else toast("XLS modülü yüklenmedi.");
+          if (window.OrbisXls) {
+            window.OrbisXls.downloadXls(ordered, file);
+            try {
+              if (window.mesahaExportStatsV323 && typeof window.mesahaExportStatsV323.send === "function")
+                window.mesahaExportStatsV323.send("xls-download-legacy", { list: ordered, text: "Mesaha dosyası", mode: "legacy" });
+            } catch {}
+          } else toast("XLS modülü yüklenmedi.");
         }
         function backupJson() {
           const data = {
@@ -6241,16 +6353,13 @@
           }
           const bolme = cleanFile(settings().bolmeNo || "");
           const file = `Mesaha_${bolme ? bolme + "_" : ""}${dateFile()}.xls`;
-          try {
-            if (
-              window.mesahaExportStatsV323 &&
-              typeof window.mesahaExportStatsV323.send === "function"
-            )
-              window.mesahaExportStatsV323.send("xls-download", scope);
-          } catch {}
-          if (window.OrbisXls)
+          if (window.OrbisXls) {
             window.OrbisXls.downloadXls(scope.list.slice(), file);
-          else toast("XLS modülü yüklenmedi.");
+            try {
+              if (window.mesahaExportStatsV323 && typeof window.mesahaExportStatsV323.send === "function")
+                window.mesahaExportStatsV323.send("xls-download", scope);
+            } catch {}
+          } else toast("XLS modülü yüklenmedi.");
         }
 
         function crc32(bytes) {
@@ -8166,6 +8275,14 @@
             }
           };
         function records() {
+          try {
+            if (window.state && Array.isArray(window.state.records)) return window.state.records.slice();
+            const store = window.MesahaStorageV527;
+            if (store && typeof store.lastCommittedRecords === "function") {
+              const committed = store.lastCommittedRecords();
+              if (Array.isArray(committed)) return committed.slice();
+            }
+          } catch (_) {}
           const r = jsonGet(STORAGE_KEY, []);
           return Array.isArray(r) ? r : [];
         }
@@ -9750,70 +9867,69 @@
           jsonSet(USAGE_KEY, u);
           return u;
         }
+        function round3Stats(value) {
+          return Number((Number(value) || 0).toFixed(3));
+        }
+        function statsQuantity(r) {
+          const q = Number(r && (r.quantity ?? r.adet ?? r.count ?? 1));
+          return Math.max(1, Math.round(Number.isFinite(q) && q > 0 ? q : 1));
+        }
+        function statsRowVolume(r) {
+          const d = Number(r && (r.diameter ?? r.cap ?? r.diameterCm)),
+            l = Number(r && (r.length ?? r.boy ?? r.lengthM)),
+            q = statsQuantity(r || {});
+          if (Number.isFinite(d) && d > 0 && Number.isFinite(l) && l > 0)
+            return round3Stats((Math.PI * Math.pow(d / 100, 2) / 4) * l * q);
+          const explicit = Number(r && (r.sourceVolumeM3 ?? r.totalVolume ?? r.total_volume ?? r.volume ?? r.hacim));
+          return round3Stats(Number.isFinite(explicit) ? explicit : 0);
+        }
+        function canonicalStatsRecords(list) {
+          const source = Array.isArray(list) ? list : records();
+          const map = new Map();
+          source.forEach((raw, index) => {
+            if (!raw || typeof raw !== "object" || raw.deleted === true || raw.isDeleted === true || clean(raw.status).toLocaleLowerCase("tr-TR") === "deleted") return;
+            const key = clean(raw.barcode || raw.barkod || raw.barkodNo || raw.barkod_no || raw.id || raw.recordId || raw.record_id) ||
+              [clean(raw.treeType || raw.tree_type), clean(raw.productType || raw.product_type), clean(raw.diameter || raw.cap), clean(raw.length || raw.boy), clean(raw.productionDate), index].join("|");
+            map.set(key.toLocaleUpperCase("tr-TR"), raw);
+          });
+          return [...map.values()];
+        }
         function summarize(list) {
-          const all = Array.isArray(list) ? list : records();
-          const today = trDate(),
-            wk = weekKey(new Date());
-          const treeTotals = {},
-            productTotals = {};
-          let count = 0,
-            m3 = 0,
-            todayRecords = 0,
-            todayM3 = 0,
-            weekRecordCount = 0,
-            weekM3 = 0;
+          const all = canonicalStatsRecords(list),
+            today = trDate(), wk = weekKey(new Date());
+          const treeTotals = {}, productTotals = {};
+          let itemCount = 0, m3 = 0, todayRecords = 0, todayM3 = 0, weekRecordCount = 0, weekM3 = 0;
           all.forEach((r) => {
-            const q = Number(r.quantity || r.adet || 1) || 1;
-            const vol = volume(r);
-            count += q;
-            m3 += vol;
-            const tree =
-              clean(
-                r.treeType ||
-                  r.species ||
-                  r.agacTuru ||
-                  r.agacAdi ||
-                  "Belirsiz",
-              ) || "Belirsiz";
-            const prod =
-              clean(r.productType || r.odunTuru || r.odunAdi || "Belirsiz") ||
-              "Belirsiz";
-            treeTotals[tree] = treeTotals[tree] || { adet: 0, m3: 0 };
-            treeTotals[tree].adet += q;
-            treeTotals[tree].m3 += vol;
-            productTotals[prod] = productTotals[prod] || { adet: 0, m3: 0 };
-            productTotals[prod].adet += q;
-            productTotals[prod].m3 += vol;
-            const dt = String(r.createdAt || r.productionDate || "").slice(
-              0,
-              10,
-            );
-            if (dt === today) {
-              todayRecords += q;
-              todayM3 += vol;
-            }
-            if (
-              weekKey(
-                new Date(r.createdAt || r.productionDate || Date.now()),
-              ) === wk
-            ) {
-              weekRecordCount += q;
-              weekM3 += vol;
-            }
+            const q = statsQuantity(r), vol = statsRowVolume(r);
+            itemCount += q; m3 += vol;
+            const tree = clean(r.treeType || r.tree_type || r.species || r.agacTuru || r.agacAdi || "Belirsiz") || "Belirsiz";
+            const prod = clean(r.productType || r.product_type || r.odunTuru || r.odunAdi || "Belirsiz") || "Belirsiz";
+            const add = (target, name) => {
+              const old = target[name] || { adet: 0, count: 0, m3: 0 };
+              old.adet += q; old.count += q; old.m3 = round3Stats(old.m3 + vol); target[name] = old;
+            };
+            add(treeTotals, tree); add(productTotals, prod);
+            const dt = String(r.productionDate || r.createdAt || "").slice(0, 10);
+            if (dt === today) { todayRecords += q; todayM3 += vol; }
+            const dateValue = r.productionDate || r.createdAt;
+            if (dateValue && weekKey(new Date(dateValue)) === wk) { weekRecordCount += q; weekM3 += vol; }
           });
           return {
-            recordCount: count,
-            adet: count,
-            m3,
-            totalM3: m3,
+            rowCount: all.length,
+            itemCount,
+            recordCount: itemCount,
+            adet: itemCount,
+            m3: round3Stats(m3),
+            totalM3: round3Stats(m3),
             todayRecords,
-            todayM3: Number(todayM3.toFixed(3)),
-            dayM3: Number(todayM3.toFixed(3)),
+            todayM3: round3Stats(todayM3),
+            dayM3: round3Stats(todayM3),
             weekKey: wk,
             weekRecordCount,
-            weekM3,
+            weekM3: round3Stats(weekM3),
             treeTotals,
             productTotals,
+            records: all,
           };
         }
         function setSyncText(t) {
@@ -9879,23 +9995,15 @@
           "backup-local": "local-backup",
           "cloud-backup": "cloud-backup",
           "drive-backup": "drive-backup",
-          "seflik-send": "seflik-send",
         };
         function operationKey(reason, user, list, scope) {
-          list = Array.isArray(list) ? list : [];
-          const last = list.length ? list[list.length - 1] : {};
-          return [
-            reason,
-            userKey(user.name, user.seflik),
-            list.length,
-            clean(last.id || last.barcode || last.barkod || ""),
-            clean(
-              last.updatedAt || last.createdAt || last.productionDate || "",
-            ),
-            clean((scope && scope.idempotencyKey) || ""),
-          ]
-            .join(":")
-            .slice(0, 240);
+          const stats = summarize(list);
+          let hash = 2166136261;
+          stats.records.forEach((r) => {
+            const token = [clean(r.barcode || r.barkod || r.barkodNo || r.barkod_no || r.id || ""), statsQuantity(r), clean(r.diameter || r.cap), clean(r.length || r.boy), statsRowVolume(r), clean(r.updatedAt || r.productionDate || r.createdAt || "")].join("|");
+            for (let i = 0; i < token.length; i += 1) { hash ^= token.charCodeAt(i); hash = Math.imul(hash, 16777619); }
+          });
+          return [reason, userKey(user.name, user.seflik), stats.rowCount, stats.itemCount, stats.m3.toFixed(3), (hash >>> 0).toString(36), clean((scope && scope.idempotencyKey) || "")].join(":").slice(0, 240);
         }
         async function send(reason, scope) {
           const approved =
@@ -9939,23 +10047,32 @@
               name: user.name,
               seflik: user.seflik,
               bolmeNo: user.bolmeNo,
-              recordCount: fullStats.recordCount,
-              totalRecords: fullStats.recordCount,
-              adet: fullStats.adet,
-              totalM3: fullStats.m3,
-              m3: fullStats.m3,
+              operationRowCount: scopeStats.rowCount,
+              operationItemCount: scopeStats.itemCount,
+              operationTotalVolume: scopeStats.m3,
+              rowCount: scopeStats.rowCount,
+              itemCount: scopeStats.itemCount,
+              recordCount: scopeStats.itemCount,
+              totalRecords: scopeStats.itemCount,
+              adet: scopeStats.itemCount,
+              totalM3: scopeStats.m3,
+              m3: scopeStats.m3,
+              treeTotals: scopeStats.treeTotals,
+              productTotals: scopeStats.productTotals,
+              lastExportRowCount: scopeStats.rowCount,
+              lastExportRecordCount: scopeStats.itemCount,
+              lastExportM3: scopeStats.m3,
+              lastExportTreeTotals: scopeStats.treeTotals,
+              lastExportProductTotals: scopeStats.productTotals,
+              fullSnapshotRowCount: fullStats.rowCount,
+              fullSnapshotItemCount: fullStats.itemCount,
+              fullSnapshotM3: fullStats.m3,
               todayRecords: fullStats.todayRecords,
               todayM3: fullStats.todayM3,
               dayM3: fullStats.todayM3,
               weekKey: fullStats.weekKey,
               weekRecordCount: fullStats.weekRecordCount,
               weekM3: fullStats.weekM3,
-              treeTotals: fullStats.treeTotals,
-              productTotals: fullStats.productTotals,
-              lastExportRecordCount: scopeStats.recordCount,
-              lastExportM3: scopeStats.m3,
-              lastExportTreeTotals: scopeStats.treeTotals,
-              lastExportProductTotals: scopeStats.productTotals,
               scopeText: (scope && scope.text) || approved,
               scopeMode: (scope && scope.mode) || approved,
               usageMs: Number(usage.totalMs || 0),
@@ -9966,7 +10083,7 @@
               fileVersion: FILE_VERSION,
               updatedAt: trText(),
               updatedAtMs: now,
-              source: "mesaha-v554-approved-stats",
+              source: "mesaha-v593-exact-operation-stats",
             };
             await withTimeout(
               api.edge("stats_sync", payload),
@@ -14938,24 +15055,13 @@
           }
           const bolme = cleanFile(settings().bolmeNo || "");
           const file = `Mesaha_${bolme ? bolme + "_" : ""}${dateFile()}.xls`;
-          try {
-            if (
-              window.mesahaExportStatsV323 &&
-              typeof window.mesahaExportStatsV323.send === "function"
-            )
-              window.mesahaExportStatsV323.send("xls-download-v392", {
-                list: scope.list.slice(),
-                text: scope.text,
-                mode: scope.mode,
-                orbisRounding: true,
-              });
-          } catch (e) {}
-          if (
-            window.OrbisXls &&
-            typeof window.OrbisXls.downloadXls === "function"
-          )
+          if (window.OrbisXls && typeof window.OrbisXls.downloadXls === "function") {
             window.OrbisXls.downloadXls(scope.list.slice(), file);
-          else toast("XLS modülü yüklenmedi.");
+            try {
+              if (window.mesahaExportStatsV323 && typeof window.mesahaExportStatsV323.send === "function")
+                window.mesahaExportStatsV323.send("xls-download-v392", { list: scope.list.slice(), text: scope.text, mode: scope.mode, orbisRounding: true });
+            } catch (e) {}
+          } else toast("XLS modülü yüklenmedi.");
           setTimeout(updateBeyan, 120);
         }
         async function confirmAndDownload() {
