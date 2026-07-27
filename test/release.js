@@ -1,20 +1,20 @@
 (function (root) {
   "use strict";
   const DATA = /*MESAHA_RELEASE_DATA_START*/{
-  "build": 57,
-  "version": "57.0.0",
+  "build": 58,
+  "version": "58.0.0",
   "channel": "stable",
-  "releasedAt": "2026-07-27T16:55:00+03:00",
-  "assetToken": "orman-io-stable-20260727-6",
-  "cacheName": "orman-io-shell-stable-20260727-6",
+  "releasedAt": "2026-07-27T17:30:00+03:00",
+  "assetToken": "orman-io-stable-20260727-7",
+  "cacheName": "orman-io-shell-stable-20260727-7",
   "apps": {
     "suite": {
       "label": "Orman İO",
-      "version": "57.0.0"
+      "version": "58.0.0"
     },
     "mesaha": {
       "label": "Mesaha İO",
-      "version": "5.98"
+      "version": "5.99"
     },
     "istif": {
       "label": "İstif İO",
@@ -22,10 +22,10 @@
     },
     "admin": {
       "label": "Orman İO Yönetim",
-      "version": "57.0.0"
+      "version": "58.0.0"
     }
   },
-  "description": "Mesaha İO V57 düzeltme sürümü: Ağaç ve kesimci filtreleri gerçek açılır-kapanır yapıya geçirildi. Beyan ekranında çoğalan Ölçümler başlıkları temizlendi. Şefliğe Gönder düğmesi sarı olarak güncellendi. Alt menü ikonları Instagram benzeri sade çizgisel SVG ikonlarla yenilendi."
+  "description": "Mesaha İO Beyan ekranına çevrimdışı XLS yedek dönüştürücü eklendi. Mesaha/ORBİS BIFF8 .xls dosyaları cihaz üzerinde okunur, kayıtlar uygulamanın Yedek Yükle ile kabul ettiği JSON biçimine dönüştürülür ve indirilen dosya mevcut kayıtları değiştirmeden hazırlanır."
 }/*MESAHA_RELEASE_DATA_END*/;
   const APP_NAMES = DATA.apps || {};
   const SCRIPT_URL = (() => {
