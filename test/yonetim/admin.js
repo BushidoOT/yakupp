@@ -198,10 +198,12 @@
     const date = first(raw.date, payload.date, payload.day, raw.last_seen_at, raw.updated_at, raw.created_at);
     return {
       id: first(raw.user_id, raw.id, payload.user_id),
+      userId: first(raw.user_id, payload.user_id, user.id),
+      email: first(raw.email, payload.email, user.email),
       userKey: first(raw.user_key, payload.user_key, payload.userKey, userKeyFrom(name, seflik)),
       name, seflik, date, dateMs: ms(date), source,
-      count: pickNum(raw, ['record_count','payload.record_count','payload.recordCount','payload.totalRecords','payload.adet','payload.todayRecords']),
-      volume: pickNum(raw, ['total_volume','payload.total_volume','payload.totalM3','payload.m3','payload.todayM3']),
+      count: pickNum(raw, ['record_count','payload.operationItemCount','payload.itemCount','payload.lastExportRecordCount','payload.canonicalItemCount','payload.recordCount','payload.totalRecords','payload.adet']),
+      volume: pickNum(raw, ['total_volume','payload.operationTotalVolume','payload.lastExportM3','payload.canonicalTotalVolume','payload.totalM3','payload.m3']),
       tree: readTotals(raw, ['tree_totals','treeTotals','agacTotals','agac_totals','ağaçTotals']),
       wood: readTotals(raw, ['product_totals','productTotals','woodTotals','wood_totals','odunTotals','odun_totals','emvalTotals']),
       version: info.version, raw
@@ -214,6 +216,8 @@
     const lastSeen = first(raw.last_seen_at, raw.updated_at, payload.lastSeenAt, payload.lastSeen, raw.created_at);
     return {
       id: first(raw.user_id, raw.id, payload.user_id),
+      userId: first(raw.user_id, payload.user_id, user.id),
+      email: first(raw.email, payload.email, user.email),
       userKey: first(raw.user_key, payload.user_key, payload.userKey, userKeyFrom(name, seflik)),
       name, seflik, bolme: first(raw.bolme_no, payload.bolmeNo, payload.bolme),
       ip: info.ip, deviceId: info.id, platform: info.platform, browser: info.browser, version: info.version,
@@ -230,10 +234,12 @@
     const fileName = first(raw.fileName, raw.filename, raw.backupName, raw.backup_name, payload.fileName, payload.backupName, raw.name, 'Drive yedeği');
     return {
       id: first(raw.row_id, raw.slot_id, raw.uuid, raw.id, driveFileId), driveFileId, fileName,
+      userId: first(raw.user_id, raw.userId, payload.user_id, payload.userId, user.id),
+      email: first(raw.email, payload.email, user.email),
       userKey: first(raw.userKey, raw.user_key, user.userKey, user.user_key, payload.userKey, payload.user_key, userKeyFrom(name, seflik)),
       name, seflik, createdAt, createdAtMs: ms(createdAt),
-      count: pickNum(raw, ['count','recordCount','record_count','payload.recordCount','payload.count','payload.totalRecords']),
-      volume: pickNum(raw, ['totalVolume','total_volume','m3','payload.totalM3','payload.total_volume','payload.m3']),
+      count: pickNum(raw, ['metadata.mesaha_item_count','metadata.mesahaItemCount','payload.stats.mesahaItemCount','payload.operationItemCount','itemCount','recordCount','record_count','payload.recordCount','payload.count','payload.totalRecords']),
+      volume: pickNum(raw, ['metadata.mesaha_total_volume','metadata.mesahaTotalVolume','payload.stats.mesahaTotalVolume','payload.operationTotalVolume','totalVolume','total_volume','m3','payload.totalM3','payload.total_volume','payload.m3']),
       version: first(raw.version, raw.appVersion, raw.app_version, payload.visibleVersion, payload.version, payload.appVersion, '-'),
       avatarUrl: first(raw.avatar_url, raw.google_avatar_url, raw.picture, payload.avatar_url, payload.google_avatar_url, user.avatar_url, user.picture),
       tree: readTotals(raw, ['tree_totals','treeTotals','agacTotals','agac_totals']),
@@ -253,7 +259,7 @@
     };
   }
 
-  function identityKey(user) { return compact(user.userKey) || compact(`${user.name}_${user.seflik}`) || (clean(user.id) ? `id_${compact(user.id)}` : ''); }
+  function identityKey(user) { const uid=clean(user&&user.userId), email=lower(user&&user.email); return uid ? `uid_${compact(uid)}` : email ? `mail_${compact(email)}` : compact(user&&user.userKey) || compact(`${user&&user.name}_${user&&user.seflik}`) || ''; }
   function validUser(user) {
     if (!hasRealIdentity(user.name, user.seflik)) return false;
     const key = lower(user.userKey);
@@ -404,7 +410,7 @@
     return true;
   }
   function statisticsRecords() {
-    const dailyRows = state.daily.map((x) => mapStatRow(x, 'Günlük tablo')).filter((x) => hasRealIdentity(x.name, x.seflik) && (x.count || x.volume) && inRange(x.date, state.range));
+    const dailyRows = latestSnapshotPerUser(state.daily.map((x) => mapStatRow(x, 'Günlük tablo')).filter((x) => hasRealIdentity(x.name, x.seflik) && (x.count || x.volume) && inRange(x.date, state.range)));
     const dailyKeys = new Set(dailyRows.map(identityKey));
     const backupRows = latestSnapshotPerUser(state.backups.map((b) => ({...b, date:b.createdAt, dateMs:b.createdAtMs, source:'Drive yedeği'})).filter((x) => (x.count || x.volume) && inRange(x.date, state.range)))
       .filter((x) => !dailyKeys.has(identityKey(x)));

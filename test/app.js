@@ -1134,6 +1134,12 @@
     );
   }
   async function edge(action, data = {}) {
+    const suiteApi = window.MesahaSuiteSync || window.MesahaSuiteSyncV31 || window.MesahaSuiteSyncV28;
+    if (suiteApi && typeof suiteApi.edge === "function") {
+      const result = await suiteApi.edge(action, data || {});
+      try { applyCanonicalFolderContext(result); } catch (_) {}
+      return result;
+    }
     const api = window.mesahaSupabase;
     if (!api || typeof api.edge !== "function")
       throw new Error("Sunucu bağlantısı hazır değil.");
@@ -1151,7 +1157,7 @@
       if (!payload.folderId && sameActive) payload.folderId = clean(af && (af.id || af.folder_id || af.folderId));
     }
     const result = await api.edge(action, {
-      source: "mesaha-suite-v50",
+      source: "mesaha-suite-v51",
       ...terminalAuth(),
       ...payload,
     });

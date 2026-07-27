@@ -246,6 +246,11 @@
   }
 
   async function driveBackupCustom(list,bolme){
+    var suite=window.MesahaSuiteSync||window.MesahaSuiteSyncV31||window.MesahaSuiteSyncV28||window.MesahaSuiteSyncV27;
+    if(window.MESAHA_SUITE_MODE&&suite&&typeof suite.createMesahaBackup==='function'){
+      var out=await suite.createMesahaBackup({records:Array.isArray(list)?list.slice():[],bolmeNo:bolme,source:'seflik-folder-send',silent:true});
+      return {id:clean(out&&out.fileId||out&&out.id),name:clean(out&&out.fileName||out&&out.name),raw:out};
+    }
     var bridge=window.mesahaDriveBridgeV463||window.MESAHA_DRIVE_BRIDGE_V463;
     if(!bridge||typeof bridge.backupCustom!=='function')throw new Error('Güvenli Drive köprüsü hazır değil');
     return bridge.backupCustom({records:list,bolmeNo:bolme,type:'mesaha-seflik-folder-backup',silent:true,sharedFolder:true});
@@ -271,8 +276,12 @@
     if(!openDivisions().some(function(x){return clean(x.bolme_no)===bolme})){notify('Bölme açık değil','Önce Orman İO ana menüsünden bölmeyi oluşturup Offline İndir yapın.','warning');return false}
     if(!navigator.onLine){notify('İnternet bağlantısı yok','Sunucu ve Drive yedeği için çevrimiçi olun.','warning');return false}
     if(!list.length){notify('Gönderilecek kayıt yok','Ölçümler sayfasında kayıt bulunamadı.','warning');return false}
-    var total=list.reduce(function(a,r){return a+volume(r)},0);
-    if(!confirm('Bölme '+bolme+' için '+list.length+' kayıt ('+fmt(total,3)+' m³) Şeflik Klasörüne gönderilecek ve Drive yedeği alınacak. Devam edilsin mi?'))return false;
+    var suiteStatsApi=window.MesahaSuiteSync||window.MesahaSuiteSyncV31||window.MesahaSuiteSyncV28||window.MesahaSuiteSyncV27;
+    var exactStats=suiteStatsApi&&typeof suiteStatsApi.canonicalMesahaStats==='function'
+      ? suiteStatsApi.canonicalMesahaStats(list)
+      : {rowCount:list.length,itemCount:list.reduce(function(a,r){return a+Math.max(1,Math.round(num(r&&((r.quantity!=null?r.quantity:r.adet!=null?r.adet:1)))||1))},0),totalVolume:Number(list.reduce(function(a,r){return a+Number(volume(r).toFixed(3))},0).toFixed(3))};
+    var rowCount=Number(exactStats.rowCount||list.length),itemCount=Number(exactStats.itemCount||rowCount),total=Number(exactStats.totalVolume||0);
+    if(!confirm('Bölme '+bolme+' için '+itemCount+' adet ('+rowCount+' kayıt satırı • '+fmt(total,3)+' m³) Şeflik Klasörüne gönderilecek ve Drive yedeği alınacak. Devam edilsin mi?'))return false;
     busy=true;showTransferOverlay('Veriler gönderiliyor…','Sunucu yüklemesi hazırlanıyor.',6);updatePreview();setStatus('Sunucu yüklemesi hazırlanıyor…','busy');setProgress(1);var syncToken=uuid(),drive=null,driveError='';
     try{
       for(var i=0;i<list.length;i+=CHUNK_SIZE){
@@ -283,12 +292,11 @@
       setStatus('Google Drive yedeği alınıyor…','busy');setProgress(82);updateTransferOverlay('Drive yedeği alınıyor…','Sunucu gönderimi tamamlandı, yedek hazırlanıyor.',84);
       try{drive=await driveBackupCustom(list.map(function(r){return Object.assign({},r,{bolmeNo:bolme,seflik:u.seflik})}),bolme)}catch(e){driveError=String(e&&e.message?e.message:e)}
       setProgress(92);updateTransferOverlay('Gönderim tamamlanıyor…','Bölme bilgileri kaydediliyor.',94);
-      await edge('seflik_folder_finish',{bolmeNo:bolme,syncToken:syncToken,recordCount:list.length,totalVolume:Number(total.toFixed(3)),driveFileId:clean(drive&&drive.id),driveFileName:clean(drive&&drive.name),driveStatus:driveError?'failed':'ok',driveError:driveError});
-      try{if(window.mesahaExportStatsV323&&typeof window.mesahaExportStatsV323.send==='function')window.mesahaExportStatsV323.send('seflik-send',{list:list.slice(),idempotencyKey:'seflik-send:'+syncToken});}catch(e){}
+      await edge('seflik_folder_finish',{bolmeNo:bolme,syncToken:syncToken,rowCount:rowCount,itemCount:itemCount,recordCount:itemCount,totalVolume:Number(total.toFixed(3)),driveFileId:clean(drive&&drive.id),driveFileName:clean(drive&&drive.name),driveStatus:driveError?'failed':'ok',driveError:driveError});
       localStorage.setItem(LAST_BOLME_KEY,bolme);await persistActiveBolme(bolme);setProgress(100);updateTransferOverlay('Gönderim tamamlandı','Şeflik Klasörü yenileniyor.',100);await syncFolder(false);
       closeSendModal();
       if(driveError){setStatus('Sunucu tamamlandı; Drive yedeği alınamadı: '+driveError,'error');notify('Şefliğe gönderildi','Drive yedeği başarısız; daha sonra tekrar gönderebilirsiniz.','warning')}
-      else{setStatus('Sunucu ve Drive yedeği tamamlandı.','success');notify('Şeflik Klasörüne gönderildi','Bölme '+bolme+' • '+list.length+' kayıt • Drive yedekli','success')}
+      else{setStatus('Sunucu ve Drive yedeği tamamlandı.','success');notify('Şeflik Klasörüne gönderildi','Bölme '+bolme+' • '+itemCount+' adet • '+rowCount+' kayıt satırı • Drive yedekli','success')}
       return true;
     }catch(e){setStatus('Gönderim başarısız: '+String(e&&e.message?e.message:e),'error');notify('Şeflik Klasörüne gönderilemedi',String(e&&e.message?e.message:e),'error');return false}
     finally{busy=false;modalBusy=false;hideTransferOverlay();updatePreview();setProgress(0);var confirmBtn=$('seflikSendConfirmV529');if(confirmBtn)confirmBtn.disabled=false}
