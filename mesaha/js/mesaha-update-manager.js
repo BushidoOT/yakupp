@@ -70,7 +70,9 @@
     const keys = await caches.keys();
     const deleted = [];
     await Promise.all(keys.map(async (name) => {
-      if (!/^yakupp-suite-shell-/i.test(name) || name === keep) return;
+      const isSuiteCache = /^(?:yakupp-suite-shell-|orman-io-shell-)/i.test(name);
+      const isCurrentFamily = name === keep || name.startsWith(keep + "-");
+      if (!isSuiteCache || isCurrentFamily) return;
       try { if (await caches.delete(name)) deleted.push(name); } catch (_) {}
     }));
     return deleted;

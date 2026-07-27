@@ -1373,18 +1373,21 @@
         </section>
       </main>
     </div>
-    <nav class="bottom-nav" id="bottomNav">
+    <nav class="bottom-nav mesaha-nav-v570" id="bottomNav">
       <button class="active" data-nav="home" type="button">
-        <span>🏠</span><b>Ana Ekran</b>
+        <span>⌂</span><b>Ana Menü</b>
       </button>
       <button data-nav="records" type="button">
-        <span>📏</span><b>Ölçümler</b>
+        <span>◷</span><b>Ölçümler</b>
+      </button>
+      <button data-nav="beyan" type="button">
+        <span>↓</span><b>Beyan</b>
       </button>
       <button data-nav="seflikFolder" type="button">
-        <span>📁</span><b>Şeflik</b>
+        <span>▰</span><b>Şeflik</b>
       </button>
-      <button data-nav="guide" type="button">
-        <span>▰</span><b>Kılavuz</b>
+      <button data-nav="settings" type="button">
+        <span>⚙</span><b>Ayarlar</b>
       </button>
     </nav>
     <div
@@ -3544,7 +3547,7 @@
         function showView(view) {
           state.view = view;
           document.body.classList.toggle("entry-open", view === "entry");
-          ["home", "entry", "records", "seflikFolder", "guide"].forEach((v) =>
+          ["home", "entry", "records", "beyan", "seflikFolder", "guide", "settings"].forEach((v) =>
             $(`${v}View`)?.classList.toggle("active", v === view),
           );
           document
@@ -3553,6 +3556,7 @@
               b.classList.toggle("active", b.dataset.nav === view),
             );
           if (view === "records") renderRecords();
+          if (view === "beyan") renderRecords();
           if (view === "home") renderHome();
           try {
             window.dispatchEvent(
@@ -11638,10 +11642,10 @@
           var nav = $("bottomNav");
           if (!nav) return;
           var defs = [
-            ["home", "⌂", "Ana Sayfa"],
+            ["home", "⌂", "Ana Menü"],
             ["records", "◷", "Ölçümler"],
+            ["beyan", "↓", "Beyan"],
             ["seflikFolder", "▰", "Şeflik"],
-            ["guide", "▣", "Kılavuz"],
             ["settings", "⚙", "Ayarlar"],
           ];
           defs.forEach(function (d) {
@@ -11746,7 +11750,7 @@
           if (!qs(".settings-title-v325", view)) {
             var title = document.createElement("div");
             title.className = "settings-title-v325";
-            title.innerHTML = '<button class="back" type="button">←</button><h2>Giriş Ayarları</h2>';
+            title.innerHTML = '<button class="back" type="button">←</button><h2>Ayarlar</h2>';
             view.prepend(title);
             title.querySelector("button").addEventListener("click", function () { showLocal("home"); });
           }
@@ -11892,7 +11896,7 @@
         }
         function polishRecords() {
           var head = qs(".records-card>.section-head h2");
-          if (head) head.textContent = "BEYAN";
+          if (head) head.textContent = "Ölçümler";
           buildProductFilter();
           filterRecordCards();
           var restore = $("restoreBtn");
@@ -11910,6 +11914,7 @@
             "home",
             "entry",
             "records",
+            "beyan",
             "seflikFolder",
             "guide",
             "settings",
@@ -11923,12 +11928,12 @@
           });
           try {
             if (
-              view === "records" &&
+              (view === "records" || view === "beyan") &&
               window.mesahaV303 &&
               window.mesahaV303.records
             )
               window.mesahaV303.records();
-            else if (view === "records" && window.renderRecords)
+            else if ((view === "records" || view === "beyan") && window.renderRecords)
               window.renderRecords();
           } catch (e) {}
           try {
@@ -12581,6 +12586,7 @@
             "home",
             "entry",
             "records",
+            "beyan",
             "seflikFolder",
             "guide",
             "settings",
@@ -19946,6 +19952,240 @@
       })();
     </script>
 
+    <script src="./js/mesaha-xls-backup-converter.js"></script>
     <script src="./js/mesaha-production-stabilizer.js"></script>
+    <style id="mesaha-v570-layout-patch">
+      html:not([data-mesaha-v570-ready="1"]) #bottomNav{opacity:0!important;transform:translate(-50%,10px)!important}
+      html[data-mesaha-v570-ready="1"] #bottomNav{opacity:1!important;transform:translateX(-50%)!important;transition:opacity .16s ease,transform .16s ease}
+
+      #bottomNav.mesaha-nav-v570{position:fixed!important;left:50%!important;bottom:12px!important;transform:translateX(-50%)!important;width:min(calc(100% - 20px),780px)!important;padding:8px 10px!important;display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:4px!important;border-radius:25px!important;background:rgba(255,255,255,.96)!important;backdrop-filter:blur(18px)!important;-webkit-backdrop-filter:blur(18px)!important;box-shadow:0 18px 42px rgba(15,23,42,.16),0 1px 0 rgba(255,255,255,.9) inset!important;z-index:80!important;border:1px solid rgba(216,226,221,.95)!important}
+      #bottomNav.mesaha-nav-v570 button{position:relative!important;border:0!important;background:transparent!important;border-radius:18px!important;min-height:64px!important;padding:8px 3px 7px!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:4px!important;color:#53665e!important;font-weight:800!important;box-shadow:none!important;transition:transform .14s ease,background .16s ease,color .16s ease!important;-webkit-tap-highlight-color:transparent!important;touch-action:manipulation!important}
+      #bottomNav.mesaha-nav-v570 button .nav-icon-v570{display:grid!important;place-items:center!important;width:28px!important;height:28px!important;background:transparent!important;color:currentColor!important}
+      #bottomNav.mesaha-nav-v570 button .nav-icon-v570 svg{display:block!important;width:25px!important;height:25px!important;fill:none!important;stroke:currentColor!important;stroke-width:2.05!important;stroke-linecap:round!important;stroke-linejoin:round!important}
+      #bottomNav.mesaha-nav-v570 button b{font-size:11.5px!important;line-height:1.1!important;letter-spacing:0!important;white-space:nowrap!important;color:inherit!important}
+      #bottomNav.mesaha-nav-v570 button.active{background:#eaf8ef!important;color:#0b7446!important;box-shadow:none!important}
+      #bottomNav.mesaha-nav-v570 button.active::before{content:"";position:absolute;top:4px;left:50%;width:22px;height:3px;border-radius:999px;background:#0b7446;transform:translateX(-50%)}
+      #bottomNav.mesaha-nav-v570 button:active{transform:scale(.96)!important}
+
+      #beyanView .beyan-card-v570,#recordsView .records-card{display:flex!important;flex-direction:column!important;gap:14px!important}
+      #beyanView .beyan-card-v570 .action-grid{margin-top:4px!important}
+      #beyanView .beyan-card-v570>.section-head:not(#beyanSummaryHeadV570){display:none!important}
+      #recordsView #recordsListHeaderV570{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:12px!important;margin-bottom:4px!important}
+      #recordsView #recordsListHeaderV570 span{padding:8px 12px!important;border-radius:999px!important;background:#eef7f1!important;color:#285846!important;font-size:12px!important;font-weight:800!important}
+      #recordsView .record-toolbar{margin-top:0!important}
+
+      #recordsView .filter-box.filter-box-v570{border:1px solid #dce9e2!important;border-radius:22px!important;background:#fff!important;padding:0!important;margin:10px 0!important;box-shadow:0 10px 24px rgba(15,23,42,.055)!important;overflow:hidden!important}
+      #recordsView .filter-toggle-v570{width:100%!important;min-height:68px!important;border:0!important;background:linear-gradient(180deg,#ffffff 0%,#f7fbf9 100%)!important;padding:12px 14px!important;display:grid!important;grid-template-columns:42px minmax(0,1fr) 38px!important;align-items:center!important;gap:12px!important;text-align:left!important;color:#173d2d!important;font:inherit!important;font-weight:800!important;box-shadow:none!important;-webkit-tap-highlight-color:transparent!important;touch-action:manipulation!important}
+      #recordsView .filter-toggle-icon-v570{width:42px!important;height:42px!important;border-radius:14px!important;display:grid!important;place-items:center!important;background:#eaf7ef!important;color:#0d7145!important}
+      #recordsView .filter-toggle-icon-v570 svg{width:22px!important;height:22px!important;fill:none!important;stroke:currentColor!important;stroke-width:2!important;stroke-linecap:round!important;stroke-linejoin:round!important}
+      #recordsView .filter-toggle-copy-v570{display:flex!important;flex-direction:column!important;gap:3px!important;min-width:0!important}
+      #recordsView .filter-toggle-copy-v570 b{font-size:16px!important;color:#173d2d!important}
+      #recordsView .filter-toggle-copy-v570 span{font-size:12px!important;color:#72877d!important;font-weight:700!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+      #recordsView .filter-toggle-chevron-v570{width:36px!important;height:36px!important;border-radius:12px!important;display:grid!important;place-items:center!important;background:#f0f6f3!important;color:#1d6948!important;transition:transform .2s ease,background .2s ease!important}
+      #recordsView .filter-toggle-chevron-v570 svg{width:20px!important;height:20px!important;fill:none!important;stroke:currentColor!important;stroke-width:2.25!important;stroke-linecap:round!important;stroke-linejoin:round!important}
+      #recordsView .filter-box-v570[data-open="1"] .filter-toggle-chevron-v570{transform:rotate(180deg)!important;background:#dff2e7!important}
+      #recordsView .filter-box-v570 .filter-chips{display:flex!important;margin:0!important;padding:0 14px 14px!important;gap:8px!important;overflow-x:auto!important;flex-wrap:nowrap!important;max-height:180px!important;opacity:1!important;transform:translateY(0)!important;transition:max-height .2s ease,opacity .16s ease,transform .16s ease,padding .2s ease!important}
+      #recordsView .filter-box-v570[data-open="0"] .filter-chips{display:none!important;max-height:0!important;opacity:0!important;transform:translateY(-5px)!important;padding-top:0!important;padding-bottom:0!important;pointer-events:none!important}
+
+      #seflikSendFromRecordsV529{background:linear-gradient(180deg,#ffc62a 0%,#ffae00 100%)!important;border-color:#eca000!important;color:#5c3a00!important;box-shadow:0 9px 20px rgba(255,174,0,.25)!important;font-weight:900!important}
+      #seflikSendFromRecordsV529:active{transform:translateY(1px)!important;box-shadow:0 4px 10px rgba(255,174,0,.2)!important}
+
+      #settingsView .guide-launch-card-v570 .guide-launch-copy{margin:0 0 14px!important;color:#587365!important;line-height:1.5!important}
+      #settingsView .guide-launch-card-v570 .btn{width:100%!important}
+      #modernModal.mesaha-guide-open-v570 .modal-card{max-width:min(92vw,760px)!important}
+      #modernModal.mesaha-guide-open-v570 .modal-body{max-height:70vh!important;overflow:auto!important;padding-right:4px!important}
+      #modernModal.mesaha-guide-open-v570 .modal-body .section-head{display:none!important}
+      #modernModal.mesaha-guide-open-v570 .modal-body .guide-section-guide-clean{margin-bottom:18px!important}
+      #modernModal.mesaha-guide-open-v570 .modal-actions{display:flex!important;justify-content:flex-end!important}
+
+      @media(max-width:640px){
+        #bottomNav.mesaha-nav-v570{width:calc(100% - 18px)!important;padding:7px 6px!important;gap:2px!important;bottom:9px!important;border-radius:23px!important}
+        #bottomNav.mesaha-nav-v570 button{min-height:61px!important;padding:8px 1px 6px!important}
+        #bottomNav.mesaha-nav-v570 button .nav-icon-v570{width:26px!important;height:26px!important}
+        #bottomNav.mesaha-nav-v570 button .nav-icon-v570 svg{width:23px!important;height:23px!important}
+        #bottomNav.mesaha-nav-v570 button b{font-size:10.8px!important}
+      }
+    </style>
+    <script id="mesaha-v570-layout-script">
+      (function(){
+        "use strict";
+        function $(id){return document.getElementById(id)}
+        function qs(sel,root){return (root||document).querySelector(sel)}
+        function qsa(sel,root){return Array.prototype.slice.call((root||document).querySelectorAll(sel))}
+        var icons={
+          home:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 10.8 12 3.8l8.5 7v8.4a1.8 1.8 0 0 1-1.8 1.8H5.3a1.8 1.8 0 0 1-1.8-1.8Z"/><path d="M9.2 21v-6.3h5.6V21"/></svg>',
+          records:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4.5h14v15H5z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>',
+          beyan:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3.5h7l3 3V12"/><path d="M14 3.5V7h3.5"/><path d="M7 3.5a2 2 0 0 0-2 2v13A2 2 0 0 0 7 20.5h4"/><path d="M16 13v7M13.5 17.5 16 20l2.5-2.5"/></svg>',
+          seflikFolder:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 7.5h6l1.8 2h9.2v8.7a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2Z"/><path d="M3.5 7.5v-1.7a2 2 0 0 1 2-2h4l1.8 2h7.2a2 2 0 0 1 2 2v1.7"/></svg>',
+          settings:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2"/><path d="M19.3 13.2a7.8 7.8 0 0 0 0-2.4l2-1.5-2-3.4-2.5 1a8.5 8.5 0 0 0-2.1-1.2L14.4 3h-4.1L10 5.7A8.5 8.5 0 0 0 7.9 7L5.4 6 3.3 9.3l2 1.5a7.8 7.8 0 0 0 0 2.4l-2 1.5 2.1 3.4 2.5-1a8.5 8.5 0 0 0 2.1 1.2l.3 2.7h4.1l.3-2.7a8.5 8.5 0 0 0 2.1-1.2l2.5 1 2-3.4Z"/></svg>'
+        };
+        var labels={home:"Ana Menü",records:"Ölçümler",beyan:"Beyan",seflikFolder:"Şeflik",settings:"Ayarlar"};
+        function paintNav(){
+          var nav=$("bottomNav");
+          if(!nav) return;
+          nav.classList.remove("mesaha-nav-v560");
+          nav.classList.add("mesaha-nav-v570");
+          ["home","records","beyan","seflikFolder","settings"].forEach(function(key){
+            var btn=qs('[data-nav="'+key+'"]',nav);
+            if(!btn) return;
+            if(btn.dataset.iconVersion!=="570" || !qs("svg",btn)){
+              btn.innerHTML='<span class="nav-icon-v570">'+icons[key]+'</span><b>'+labels[key]+'</b>';
+              btn.dataset.iconVersion="570";
+            }
+          });
+        }
+        function watchNav(){
+          var nav=$("bottomNav");
+          if(!nav||nav.__v570Observer) return;
+          nav.__v570Observer=new MutationObserver(function(){setTimeout(paintNav,0)});
+          nav.__v570Observer.observe(nav,{childList:true,subtree:true,characterData:true});
+        }
+        function closeGuideModal(){
+          var modal=$("modernModal");
+          if(!modal) return;
+          modal.classList.add("hidden");
+          modal.classList.remove("mesaha-guide-open-v570");
+        }
+        function openGuideModal(){
+          var modal=$("modernModal"), title=$("modalTitle"), body=$("modalBody"), actions=$("modalActions");
+          if(!modal||!title||!body||!actions) return;
+          var guide=qs("#guideView .guide-card");
+          title.textContent="Kılavuz";
+          body.innerHTML=guide?guide.innerHTML:"<p>Kılavuz yüklenemedi.</p>";
+          actions.innerHTML='<button class="btn green" id="guideModalCloseBtnV570" type="button">Kapat</button>';
+          var footerBtn=$("guideModalCloseBtnV570");
+          if(footerBtn) footerBtn.addEventListener("click",closeGuideModal,{once:true});
+          modal.classList.remove("hidden");
+          modal.classList.add("mesaha-guide-open-v570");
+        }
+        function ensureGuideCard(){
+          var settingsView=$("settingsView");
+          if(!settingsView) return;
+          var old=$("guideLaunchCardV560"); if(old) old.remove();
+          var maintenance=qs(".maintenance-card",settingsView);
+          var card=$("guideLaunchCardV570");
+          if(!card){
+            card=document.createElement("section");
+            card.id="guideLaunchCardV570";
+            card.className="card settings-card guide-launch-card-v570";
+            card.innerHTML='<div class="section-head"><h2>Kılavuz</h2><span>Yardım</span></div><p class="guide-launch-copy">Uygulama kullanım adımlarını ayrı bir pencerede görüntüleyin.</p><button class="btn soft" id="openGuideModalV570" type="button">Kılavuzu Aç</button>';
+            if(maintenance&&maintenance.parentNode===settingsView) settingsView.insertBefore(card,maintenance); else settingsView.appendChild(card);
+          }
+          var btn=$("openGuideModalV570");
+          if(btn&&!btn.__v570Bound){btn.__v570Bound=true;btn.addEventListener("click",openGuideModal)}
+          var close=$("modalCloseBtn");
+          if(close&&!close.__v570Bound){close.__v570Bound=true;close.addEventListener("click",closeGuideModal)}
+          var modal=$("modernModal");
+          if(modal&&!modal.__v570Backdrop){modal.__v570Backdrop=true;modal.addEventListener("click",function(ev){if(ev.target===modal)closeGuideModal()})}
+        }
+        function directChildrenByClass(parent,className){
+          return parent?Array.prototype.filter.call(parent.children,function(el){return el.classList&&el.classList.contains(className)}):[];
+        }
+        function ensureBeyanView(){
+          var recordsView=$("recordsView"), recordsCard=recordsView&&qs(".records-card",recordsView);
+          if(!recordsCard) return;
+          var beyanView=$("beyanView");
+          if(!beyanView){
+            beyanView=document.createElement("section");
+            beyanView.id="beyanView";
+            beyanView.className="view";
+            recordsView.parentNode.insertBefore(beyanView,$("seflikFolderView")||$("guideView")||recordsView.nextSibling);
+          }
+          var oldCard=qs(".beyan-card-v560",beyanView);
+          if(oldCard) oldCard.classList.replace("beyan-card-v560","beyan-card-v570");
+          var beyanCard=qs(".beyan-card-v570",beyanView);
+          if(!beyanCard){
+            beyanCard=document.createElement("section");
+            beyanCard.className="card beyan-card-v570";
+            beyanView.appendChild(beyanCard);
+          }
+          var count=$("recordCountPill");
+          var summaryHead=count&&count.closest?count.closest(".section-head"):null;
+          if(summaryHead){
+            summaryHead.id="beyanSummaryHeadV570";
+            if(summaryHead.parentNode!==beyanCard) beyanCard.insertBefore(summaryHead,beyanCard.firstChild);
+            var title=qs("h2",summaryHead); if(title) title.textContent="Beyan / İndir";
+          }
+          [qs(".summary-grid.small",recordsCard),$("productTotals"),qs(".action-grid.records-action-grid-v530",recordsCard)].forEach(function(node){
+            if(node&&node.parentNode!==beyanCard) beyanCard.appendChild(node);
+          });
+          directChildrenByClass(beyanCard,"section-head").forEach(function(head){if(head!==summaryHead)head.remove()});
+          directChildrenByClass(recordsCard,"section-head").forEach(function(head){head.remove()});
+          var recordsHead=document.createElement("div");
+          recordsHead.id="recordsListHeaderV570";
+          recordsHead.className="section-head";
+          recordsHead.innerHTML='<h2>Ölçümler</h2><span>Kayıt listesi</span>';
+          recordsCard.insertBefore(recordsHead,recordsCard.firstChild);
+        }
+        function filterIcon(key){
+          if(key==="tree") return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 7.5 9h2.8L6.5 14h4v6h3v-6h4L13.7 9h2.8Z"/></svg>';
+          return '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.2"/><path d="M5.5 20c.7-4 3-6 6.5-6s5.8 2 6.5 6"/></svg>';
+        }
+        function readFilterState(key){
+          try{var x=JSON.parse(localStorage.getItem("mesaha_filter_open_v570")||"{}");return x[key]===true}catch(_){return false}
+        }
+        function saveFilterState(key,open){
+          try{var x=JSON.parse(localStorage.getItem("mesaha_filter_open_v570")||"{}");x[key]=!!open;localStorage.setItem("mesaha_filter_open_v570",JSON.stringify(x))}catch(_){ }
+        }
+        function setFilterOpen(box,btn,chips,key,open){
+          box.dataset.open=open?"1":"0";
+          btn.setAttribute("aria-expanded",open?"true":"false");
+          chips.setAttribute("aria-hidden",open?"false":"true");
+          saveFilterState(key,open);
+        }
+        function enhanceFilters(){
+          [["treeFilters","tree"],["cutterFilters","cutter"]].forEach(function(pair){
+            var chips=$(pair[0]), key=pair[1];
+            if(!chips) return;
+            var box=chips.closest(".filter-box");
+            if(!box) return;
+            box.classList.add("filter-box-v570");
+            var oldButton=qs(".filter-toggle-v560",box);
+            if(oldButton){
+              var oldLabel=qs(".filter-toggle-label-v560",oldButton);
+              var restored=document.createElement("div");
+              restored.className="filter-head";
+              restored.innerHTML=oldLabel?oldLabel.innerHTML:"";
+              oldButton.replaceWith(restored);
+            }
+            var btn=qs(".filter-toggle-v570",box);
+            if(!btn){
+              var head=qs(".filter-head",box);
+              if(!head) return;
+              var title=qs("b",head), status=qs("span",head);
+              btn=document.createElement("button");
+              btn.type="button";
+              btn.className="filter-toggle-v570";
+              btn.innerHTML='<span class="filter-toggle-icon-v570">'+filterIcon(key)+'</span><span class="filter-toggle-copy-v570"><b>'+(title?title.textContent:(key==="tree"?"Ağaç filtresi":"Kesimci filtresi"))+'</b><span class="filter-status-v570" id="'+(key==="tree"?"treeFilterText":"cutterFilterText")+'">'+(status?status.textContent:"Seçili: Tümü")+'</span></span><span class="filter-toggle-chevron-v570"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6.5 9 5.5 5.5L17.5 9"/></svg></span>';
+              head.replaceWith(btn);
+              var open=readFilterState(key);
+              setFilterOpen(box,btn,chips,key,open);
+              btn.addEventListener("click",function(ev){
+                ev.preventDefault();
+                ev.stopPropagation();
+                setFilterOpen(box,btn,chips,key,box.dataset.open!=="1");
+              },true);
+            }
+            var liveStatus=key==="tree"?$("treeFilterText"):$("cutterFilterText");
+            var statusTarget=qs(".filter-status-v570",btn);
+            if(liveStatus&&statusTarget&&statusTarget.textContent!==liveStatus.textContent)statusTarget.textContent=liveStatus.textContent;
+          });
+        }
+        function boot(){
+          document.documentElement.setAttribute("data-mesaha-v570-ready","1");
+          document.documentElement.removeAttribute("data-mesaha-v560-ready");
+          paintNav();watchNav();ensureBeyanView();enhanceFilters();ensureGuideCard();
+        }
+        if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});else boot();
+        window.addEventListener("mesaha:view-changed",function(ev){
+          var view=ev&&ev.detail?ev.detail.view:"";
+          if(view==="records")setTimeout(enhanceFilters,70);
+          if(view==="settings")setTimeout(ensureGuideCard,70);
+          setTimeout(function(){ensureBeyanView();paintNav()},150);
+        });
+        [200,700,1500,3000].forEach(function(ms){setTimeout(boot,ms)});
+      })();
+    </script>
+
   </body>
 </html>

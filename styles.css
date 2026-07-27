@@ -2292,3 +2292,53 @@ body.modal-open{overflow:hidden!important;touch-action:none}
 .pending-ops-actions{margin-top:14px}.pending-ops-actions #pendingCancelAll{color:#a32424;border-color:#efc4c4;background:#fff7f7}
 @media(max-width:600px){.pending-ops-modal{width:calc(100vw - 20px)!important;max-height:calc(100dvh - 24px)!important}.pending-ops-list{max-height:52dvh}.pending-ops-actions{grid-template-columns:1fr!important}.pending-op-head{gap:7px}.pending-op-head>span{max-width:50%;font-size:9px}}
 
+
+
+/* Orman İO V55 — sade ana menü, saha araçları ve çift yönlü alt senkron menüsü */
+body.orman-io-home{padding-bottom:calc(92px + env(safe-area-inset-bottom))!important}
+.orman-content{padding-bottom:42px!important}
+.orman-app-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+.orman-management-tools .orman-field-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important}
+.orman-management-tools .orman-field-grid .quick-card{min-height:92px!important}
+.orman-management-tools .orman-field-grid .backup-sync-card{grid-column:1/-1}
+.orman-management-tools .tool-strip{display:none!important}
+.backup-sync-modal{width:min(760px,calc(100vw - 24px))!important}
+.backup-sync-modal .backup-sync-tools{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:10px!important;margin-top:14px!important;padding:0!important;border:0!important;background:transparent!important;box-shadow:none!important}
+.backup-sync-modal .backup-sync-tools button{min-height:112px!important;border:1px solid #e1ebe5!important;border-radius:16px!important;background:#f8fbf9!important}
+.backup-sync-modal .backup-sync-tools button:after{display:none!important}
+.backup-sync-note{margin-bottom:4px}
+.terminal-management-modal{width:min(620px,calc(100vw - 24px))!important}
+.terminal-management-modal .google-terminal-tools{margin-top:14px}
+.orman-bottom-nav{position:fixed!important;left:50%!important;bottom:0!important;transform:translateX(-50%)!important;width:min(760px,100%)!important;height:auto!important;min-height:76px!important;padding:9px max(12px,env(safe-area-inset-left)) calc(9px + env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-right))!important;display:grid!important;grid-template-columns:1fr 1fr!important;gap:9px!important;background:rgba(250,252,251,.96)!important;border:1px solid #dce8e1!important;border-bottom:0!important;border-radius:22px 22px 0 0!important;box-shadow:0 -10px 35px rgba(20,58,43,.14)!important;z-index:850!important;backdrop-filter:blur(18px)!important;-webkit-backdrop-filter:blur(18px)!important}
+.orman-bottom-nav button{min-width:0!important;min-height:56px!important;border:1px solid #d9e7df!important;border-radius:16px!important;padding:8px 10px!important;display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:center!important;gap:10px!important;cursor:pointer!important;font:inherit!important}
+.orman-bottom-nav button:first-child{background:linear-gradient(135deg,#174a32,#0f6d46)!important;color:#fff!important;border-color:#174a32!important}
+.orman-bottom-nav button:last-child{background:linear-gradient(135deg,#edf7f2,#fff)!important;color:#174a32!important}
+.orman-bottom-nav button svg{width:24px!important;height:24px!important;flex:none!important;fill:none!important;stroke:currentColor!important;stroke-width:1.8!important;stroke-linecap:round!important;stroke-linejoin:round!important}
+.orman-bottom-nav button span{display:grid!important;text-align:left!important;gap:2px!important;min-width:0!important}
+.orman-bottom-nav button strong{font-size:13px!important;line-height:1.1!important;white-space:nowrap!important}
+.orman-bottom-nav button small{font-size:9px!important;line-height:1.2!important;opacity:.78!important;white-space:nowrap!important}
+.orman-bottom-nav button:disabled{opacity:.65!important;cursor:wait!important}
+.orman-bottom-nav button.is-busy svg{animation:orman-sync-spin .9s linear infinite}
+@keyframes orman-sync-spin{to{transform:rotate(360deg)}}
+@media(max-width:760px){
+  body.orman-io-home{padding-bottom:calc(88px + env(safe-area-inset-bottom))!important}
+  .orman-content{padding-bottom:26px!important}
+  .orman-app-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+  .orman-app-grid .app-card{min-height:146px!important}
+  .orman-management-tools .orman-field-grid{grid-template-columns:1fr!important}
+  .orman-management-tools .orman-field-grid .backup-sync-card{grid-column:auto}
+  .backup-sync-modal .backup-sync-tools{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
+@media(max-width:430px){
+  .orman-app-grid{gap:7px!important}
+  .orman-app-grid .app-card{min-height:134px!important;padding:11px 6px!important}
+  .orman-app-grid .app-copy h2{font-size:11px!important}
+  .orman-app-grid .app-copy p{font-size:8.5px!important}
+  .orman-bottom-nav{gap:7px!important;padding-left:8px!important;padding-right:8px!important}
+  .orman-bottom-nav button{gap:7px!important;padding:8px 7px!important}
+  .orman-bottom-nav button svg{width:21px!important;height:21px!important}
+  .orman-bottom-nav button strong{font-size:11.5px!important}
+  .orman-bottom-nav button small{font-size:8px!important}
+  .backup-sync-modal .backup-sync-tools{grid-template-columns:1fr 1fr!important;gap:8px!important}
+  .backup-sync-modal .backup-sync-tools button{min-height:102px!important}
+}

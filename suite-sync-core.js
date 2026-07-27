@@ -137,6 +137,7 @@
     /* Mesaha ekranında yüzen senkron düğmesi kullanılmaz. Senkronizasyon
        Orman İO ana ekranından veya İstif uygulamasından yönetilir. */
     if (/\/mesaha(?:\/|$)/.test(path)) return false;
+    if (!/\/(?:mesaha|istif)(?:\/|$)/.test(path)) return false;
     return cloudSyncAllowed();
   }
   function authEngine() {
