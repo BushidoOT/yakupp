@@ -1,20 +1,20 @@
 (function (root) {
   "use strict";
   const DATA = /*MESAHA_RELEASE_DATA_START*/{
-  "build": 56,
-  "version": "56.0.0",
+  "build": 57,
+  "version": "57.0.0",
   "channel": "stable",
-  "releasedAt": "2026-07-27T16:20:00+03:00",
-  "assetToken": "orman-io-stable-20260727-5",
-  "cacheName": "orman-io-shell-stable-20260727-5",
+  "releasedAt": "2026-07-27T16:55:00+03:00",
+  "assetToken": "orman-io-stable-20260727-6",
+  "cacheName": "orman-io-shell-stable-20260727-6",
   "apps": {
     "suite": {
       "label": "Orman İO",
-      "version": "56.0.0"
+      "version": "57.0.0"
     },
     "mesaha": {
       "label": "Mesaha İO",
-      "version": "5.97"
+      "version": "5.98"
     },
     "istif": {
       "label": "İstif İO",
@@ -22,10 +22,10 @@
     },
     "admin": {
       "label": "Orman İO Yönetim",
-      "version": "56.0.0"
+      "version": "57.0.0"
     }
   },
-  "description": "Mesaha İO alt menüsü modernleştirildi. İlk açılışta görünen eski alt menü butonları temizlendi. Alt menü sırası Ana Menü, Ölçümler, Beyan, Şeflik ve Ayarlar olarak düzenlendi. Kılavuz ayrı pencere olarak Ayarlar içine taşındı. Beyan indirme, yedek alma ve geri yükleme işlemleri yeni Beyan menüsüne taşındı. Ölçümler ekranındaki ağaç ve kesimci filtreleri açılır-kapanır modern menüler haline getirildi."
+  "description": "Mesaha İO V57 düzeltme sürümü: Ağaç ve kesimci filtreleri gerçek açılır-kapanır yapıya geçirildi. Beyan ekranında çoğalan Ölçümler başlıkları temizlendi. Şefliğe Gönder düğmesi sarı olarak güncellendi. Alt menü ikonları Instagram benzeri sade çizgisel SVG ikonlarla yenilendi."
 }/*MESAHA_RELEASE_DATA_END*/;
   const APP_NAMES = DATA.apps || {};
   const SCRIPT_URL = (() => {
