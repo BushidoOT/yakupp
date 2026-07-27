@@ -1,20 +1,20 @@
 (function (root) {
   "use strict";
   const DATA = /*MESAHA_RELEASE_DATA_START*/{
-  "build": 52,
-  "version": "52.0.0",
+  "build": 53,
+  "version": "53.0.0",
   "channel": "stable",
-  "releasedAt": "2026-07-27T12:15:00+03:00",
-  "assetToken": "orman-io-stable-20260727-1",
-  "cacheName": "orman-io-shell-stable-20260727-1",
+  "releasedAt": "2026-07-27T13:10:00+03:00",
+  "assetToken": "orman-io-stable-20260727-2",
+  "cacheName": "orman-io-shell-stable-20260727-2",
   "apps": {
     "suite": {
       "label": "Orman İO",
-      "version": "52.0.0"
+      "version": "53.0.0"
     },
     "mesaha": {
       "label": "Mesaha İO",
-      "version": "5.94"
+      "version": "5.95"
     },
     "istif": {
       "label": "İstif İO",
@@ -22,10 +22,10 @@
     },
     "admin": {
       "label": "Orman İO Yönetim",
-      "version": "52.0.0"
+      "version": "53.0.0"
     }
   },
-  "description": "ORBİS .xls üretimindeki BIFF8 INDEX/DBCELL adres kayması giderildi. Dosya indirilmeden önce çalışma kitabı bütünlüğü doğrulanır; yapısal olarak geçersiz XLS artık indirilemez."
+  "description": "Şeflik klasöründeki Mesahaya Devam Et işleminde kaldırılmış versionText öğesinin oluşturduğu null hatası giderildi. Kayıt yükleme sonrası görsel yenileme hataları artık kalıcı kayıt aktarımını yarıda kesmez. V52 XLS bütünlük düzeltmesi korunur."
 }/*MESAHA_RELEASE_DATA_END*/;
   const APP_NAMES = DATA.apps || {};
   const SCRIPT_URL = (() => {

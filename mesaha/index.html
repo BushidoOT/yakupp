@@ -3617,7 +3617,8 @@
         function renderVersion() {
           const text =
             VERSION.visibleVersion || VERSION.shortVersion || "Mesaha İO";
-          $("versionText").textContent = text;
+          const versionNode = $("versionText");
+          if (versionNode) versionNode.textContent = text;
           document
             .querySelectorAll(".version-card b")
             .forEach((b) => (b.textContent = text));
