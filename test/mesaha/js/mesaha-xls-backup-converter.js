@@ -636,109 +636,250 @@
     return clean(value).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
   }
 
+  function modalParts() {
+    return {
+      modal: document.getElementById("modernModal"),
+      title: document.getElementById("modalTitle"),
+      body: document.getElementById("modalBody"),
+      actions: document.getElementById("modalActions"),
+      closeButton: document.getElementById("modalCloseBtn")
+    };
+  }
+
+  function closeConverterModal() {
+    const parts = modalParts();
+    if (!parts.modal) return;
+    parts.modal.classList.add("hidden");
+    parts.modal.classList.remove("mesaha-xls-converter-v590", "mesaha-xls-result-v590");
+    const input = document.getElementById("xlsToBackupInputV590");
+    if (input) input.value = "";
+  }
+
   function showResult(result, originalName) {
-    const modal = document.getElementById("modernModal");
-    const title = document.getElementById("modalTitle");
-    const body = document.getElementById("modalBody");
-    const actions = document.getElementById("modalActions");
-    if (!modal || !title || !body || !actions) {
+    const parts = modalParts();
+    if (!parts.modal || !parts.title || !parts.body || !parts.actions) {
       if (typeof root.toast === "function") root.toast(result.records.length + " kayıt yedeğe dönüştürüldü.");
       return;
     }
-    title.textContent = "XLS yedeğe dönüştürüldü";
-    body.innerHTML =
-      '<div class="xls-convert-result-v580">' +
+    parts.title.textContent = "Yedek dosyası hazır";
+    parts.body.innerHTML =
+      '<div class="xls-convert-result-v590">' +
         '<div><small>Kaynak dosya</small><b>' + escapeHtml(originalName) + '</b></div>' +
         '<div><small>Okunan sayfa</small><b>' + escapeHtml(result.sheetName) + '</b></div>' +
         '<div><small>Dönüştürülen kayıt</small><b>' + result.records.length + '</b></div>' +
         '<div><small>Bölme</small><b>' + escapeHtml(result.bolmeNo || "Dosyada bulunamadı") + '</b></div>' +
-        (result.duplicateRows ? '<p>' + result.duplicateRows + ' yinelenen barkod atlandı.</p>' : '') +
-        (result.invalidRows ? '<p>' + result.invalidRows + ' eksik/geçersiz satır atlandı.</p>' : '') +
-        '<p class="xls-convert-note-v580">İndirilen JSON dosyasını <b>Yedek Yükle</b> butonundan açabilirsiniz. Mevcut kayıtlarınız dönüşüm sırasında değiştirilmedi.</p>' +
+        (result.duplicateRows ? '<p class="warn">' + result.duplicateRows + ' yinelenen barkod atlandı.</p>' : '') +
+        (result.invalidRows ? '<p class="warn">' + result.invalidRows + ' eksik veya geçersiz satır atlandı.</p>' : '') +
+        '<p class="success">JSON yedek dosyası indirildi. Bu dosyayı Beyan ekranındaki <b>Yedek Yükle</b> butonuyla açabilirsiniz. Uygulamadaki mevcut kayıtlar değiştirilmedi.</p>' +
       '</div>';
-    actions.innerHTML = '<button class="btn green" id="xlsConvertCloseV580" type="button">Tamam</button>';
-    modal.classList.remove("hidden");
-    modal.classList.add("mesaha-xls-result-v580");
-    const close = function () {
-      modal.classList.add("hidden");
-      modal.classList.remove("mesaha-xls-result-v580");
+    parts.actions.innerHTML = '<button class="btn green" id="xlsConvertCloseV590" type="button">Tamam</button>';
+    parts.modal.classList.remove("hidden", "mesaha-xls-converter-v590");
+    parts.modal.classList.add("mesaha-xls-result-v590");
+    const button = document.getElementById("xlsConvertCloseV590");
+    if (button) button.addEventListener("click", closeConverterModal, { once: true });
+  }
+
+  function selectedFileName(file) {
+    return file && file.name ? String(file.name) : "Henüz dosya seçilmedi";
+  }
+
+  function openConverterModal() {
+    const parts = modalParts();
+    if (!parts.modal || !parts.title || !parts.body || !parts.actions) {
+      const inputFallback = document.getElementById("xlsToBackupInputV590");
+      if (inputFallback) inputFallback.click();
+      return;
+    }
+    parts.title.textContent = "Mesaha Dosyasını Yedek Dosyasına Dönüştür";
+    parts.body.innerHTML =
+      '<div class="xls-converter-info-v590">' +
+        '<div class="xls-converter-hero-v590"><span class="xls-converter-icon-v590" aria-hidden="true">' +
+          '<svg viewBox="0 0 24 24"><path d="M6 3.5h8l4 4v13H6z"/><path d="M14 3.5v4h4M8.5 12h7M8.5 15.5h5"/></svg>' +
+        '</span><div><b>Mesaha Excel dosyasını uygulama yedeğine çevirir</b><p>Mesaha Dosyasını İndir ile oluşturulan eski Excel <code>.xls</code> dosyasını seçin. Sistem kayıtları okuyup Mesaha İO’nun Yedek Yükle bölümünde kullanılabilen <code>.json</code> yedek dosyasını hazırlar.</p></div></div>' +
+        '<ul class="xls-converter-list-v590">' +
+          '<li>Dönüştürme tamamen cihazınızda yapılır; dosya sunucuya gönderilmez.</li>' +
+          '<li>Mevcut Mesaha kayıtlarınız silinmez veya değiştirilmez.</li>' +
+          '<li>Eksik satırlar ve yinelenen barkodlar güvenli şekilde atlanır.</li>' +
+          '<li>Oluşan JSON dosyasını daha sonra <b>Yedek Yükle</b> ile içeri aktarabilirsiniz.</li>' +
+        '</ul>' +
+        '<label class="xls-file-picker-v590" for="xlsToBackupInputV590">' +
+          '<span class="xls-file-picker-icon-v590"><svg viewBox="0 0 24 24"><path d="M12 16V4M7.5 8.5 12 4l4.5 4.5M5 14v5.5h14V14"/></svg></span>' +
+          '<span><b>Mesaha dosyasını seç</b><small id="xlsSelectedFileV590">Henüz dosya seçilmedi</small></span>' +
+        '</label>' +
+        '<div class="xls-converter-status-v590" id="xlsConverterStatusV590" hidden></div>' +
+      '</div>';
+    parts.actions.innerHTML =
+      '<button class="btn soft" id="xlsConvertCancelV590" type="button">Vazgeç</button>' +
+      '<button class="btn green" id="xlsConvertStartV590" type="button" disabled>Yedek Dosyasına Dönüştür</button>';
+    parts.modal.classList.remove("hidden", "mesaha-xls-result-v590");
+    parts.modal.classList.add("mesaha-xls-converter-v590");
+
+    const input = document.getElementById("xlsToBackupInputV590");
+    const fileLabel = document.getElementById("xlsSelectedFileV590");
+    const startButton = document.getElementById("xlsConvertStartV590");
+    const cancelButton = document.getElementById("xlsConvertCancelV590");
+    const status = document.getElementById("xlsConverterStatusV590");
+    if (input) input.value = "";
+    if (fileLabel) fileLabel.textContent = "Henüz dosya seçilmedi";
+    if (startButton) startButton.disabled = true;
+    if (status) { status.hidden = true; status.textContent = ""; status.className = "xls-converter-status-v590"; }
+
+    const refreshSelection = function () {
+      const file = input && input.files ? input.files[0] : null;
+      if (fileLabel) fileLabel.textContent = selectedFileName(file);
+      if (startButton) startButton.disabled = !file;
     };
-    const button = document.getElementById("xlsConvertCloseV580");
-    if (button) button.addEventListener("click", close, { once: true });
+    if (input) input.onchange = refreshSelection;
+    if (cancelButton) cancelButton.onclick = closeConverterModal;
+    if (startButton) startButton.onclick = async function () {
+      const file = input && input.files ? input.files[0] : null;
+      if (!file) {
+        refreshSelection();
+        return;
+      }
+      startButton.disabled = true;
+      startButton.textContent = "Dönüştürülüyor…";
+      if (cancelButton) cancelButton.disabled = true;
+      if (status) {
+        status.hidden = false;
+        status.className = "xls-converter-status-v590 is-working";
+        status.textContent = "Dosya okunuyor ve yedek hazırlanıyor. Lütfen bekleyin.";
+      }
+      try {
+        const buffer = await file.arrayBuffer();
+        const stateSettings = root.state && root.state.settings ? root.state.settings : {};
+        const version = root.MESAHA_VERSION && root.MESAHA_VERSION.version ? root.MESAHA_VERSION.version : "local";
+        const result = convert(buffer, { fileName: file.name, settings: stateSettings, version: version });
+        downloadJson(result);
+        showResult(result, file.name);
+        if (typeof root.toast === "function") root.toast(result.records.length + " kayıt yedeğe dönüştürüldü.");
+      } catch (error) {
+        if (root.MesahaErrorLog && typeof root.MesahaErrorLog.error === "function") {
+          try { root.MesahaErrorLog.error("backup.xls.convert", error); } catch (_) {}
+        }
+        if (status) {
+          status.hidden = false;
+          status.className = "xls-converter-status-v590 is-error";
+          status.textContent = error && error.message ? error.message : "Mesaha dosyası dönüştürülemedi.";
+        }
+        startButton.disabled = false;
+        startButton.textContent = "Yedek Dosyasına Dönüştür";
+        if (cancelButton) cancelButton.disabled = false;
+      }
+    };
   }
 
   function ensureStyle() {
-    if (document.getElementById("mesaha-xls-converter-v580-style")) return;
+    if (document.getElementById("mesaha-xls-converter-v590-style")) return;
     const style = document.createElement("style");
-    style.id = "mesaha-xls-converter-v580-style";
+    style.id = "mesaha-xls-converter-v590-style";
     style.textContent =
-      '#xlsToBackupBtnV580{background:linear-gradient(180deg,#edf7ff 0%,#e5f1fb 100%)!important;border:1px solid #c8dfef!important;color:#185376!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:8px!important}' +
-      '#xlsToBackupBtnV580 svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}' +
-      '#xlsToBackupBtnV580:disabled{opacity:.65!important;pointer-events:none!important}' +
-      '#modernModal.mesaha-xls-result-v580 .modal-card{max-width:min(92vw,620px)!important}' +
-      '.xls-convert-result-v580{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}' +
-      '.xls-convert-result-v580>div{padding:12px;border:1px solid #dce9e2;border-radius:15px;background:#f8fcfa;display:flex;flex-direction:column;gap:4px}' +
-      '.xls-convert-result-v580 small{color:#6b8177;font-weight:700}.xls-convert-result-v580 b{color:#173d2d;word-break:break-word}' +
-      '.xls-convert-result-v580 p{grid-column:1/-1;margin:0;padding:10px 12px;border-radius:13px;background:#fff7df;color:#6f5311;line-height:1.45}' +
-      '.xls-convert-result-v580 .xls-convert-note-v580{background:#eaf7ef;color:#24543f}' +
-      '@media(max-width:520px){.xls-convert-result-v580{grid-template-columns:1fr}}';
+      '#beyanView .records-action-grid-v530{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important}' +
+      '#beyanView .records-action-grid-v530>#downloadXlsBtn{grid-column:1/-1!important;order:1!important}' +
+      '#beyanView .records-action-grid-v530>#seflikSendFromRecordsV529{order:2!important}' +
+      '#beyanView .records-action-grid-v530>#printBtn{order:3!important}' +
+      '#beyanView .records-action-grid-v530>#restoreBtn{order:4!important}' +
+      '#beyanView .records-action-grid-v530>#backupBtn{order:5!important}' +
+      '#beyanView .records-action-grid-v530>#cloudBackupBtnV316{order:6!important}' +
+      '#beyanView .records-action-grid-v530>#cloudRestoreBtnV316{order:7!important}' +
+      '#beyanView .records-action-grid-v530>#xlsToBackupBtnV590{grid-column:1/-1!important;order:8!important;min-height:58px!important}' +
+      '#xlsToBackupBtnV590{background:linear-gradient(135deg,#eef8f2 0%,#e5f3eb 100%)!important;border:1px solid #bcdccb!important;color:#174d38!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:10px!important;font-weight:900!important}' +
+      '#xlsToBackupBtnV590 svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}' +
+      '#modernModal.mesaha-xls-converter-v590 .modal-card,#modernModal.mesaha-xls-result-v590 .modal-card{max-width:min(94vw,680px)!important}' +
+      '#modernModal.mesaha-xls-converter-v590 .modal-icon,#modernModal.mesaha-xls-result-v590 .modal-icon{display:none!important}' +
+      '.xls-converter-info-v590{display:grid;gap:15px}' +
+      '.xls-converter-hero-v590{display:flex;gap:13px;align-items:flex-start;padding:14px;border:1px solid #d8e9df;border-radius:18px;background:linear-gradient(180deg,#f8fcfa,#f1f8f4)}' +
+      '.xls-converter-hero-v590 b{display:block;color:#143d2c;font-size:16px;margin-bottom:5px}' +
+      '.xls-converter-hero-v590 p{margin:0;color:#5a7567;line-height:1.5}' +
+      '.xls-converter-hero-v590 code{padding:2px 5px;border-radius:6px;background:#e3f0e8;color:#1f5b41}' +
+      '.xls-converter-icon-v590{flex:0 0 46px;width:46px;height:46px;display:grid;place-items:center;border-radius:15px;background:#dff1e7;color:#176643}' +
+      '.xls-converter-icon-v590 svg,.xls-file-picker-icon-v590 svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}' +
+      '.xls-converter-list-v590{margin:0;padding:0;display:grid;gap:8px;list-style:none}' +
+      '.xls-converter-list-v590 li{position:relative;padding:10px 12px 10px 38px;border-radius:14px;background:#f8fbf9;color:#486557;line-height:1.45}' +
+      '.xls-converter-list-v590 li:before{content:"✓";position:absolute;left:13px;top:10px;width:18px;height:18px;display:grid;place-items:center;border-radius:50%;background:#daf0e3;color:#167044;font-weight:900;font-size:12px}' +
+      '.xls-file-picker-v590{cursor:pointer;display:flex;align-items:center;gap:12px;padding:15px;border:1.5px dashed #8ebba3;border-radius:18px;background:#f4fbf7;transition:border-color .15s ease,background .15s ease,transform .15s ease}' +
+      '.xls-file-picker-v590:active{transform:scale(.99)}.xls-file-picker-v590:hover{border-color:#258258;background:#edf8f2}' +
+      '.xls-file-picker-icon-v590{width:44px;height:44px;display:grid;place-items:center;border-radius:14px;background:#dcefe4;color:#166742}' +
+      '.xls-file-picker-v590 span:last-child{min-width:0;display:grid;gap:4px}.xls-file-picker-v590 b{color:#173e2d}.xls-file-picker-v590 small{color:#657d71;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:430px}' +
+      '.xls-converter-status-v590{padding:11px 13px;border-radius:13px;line-height:1.45;font-weight:700}.xls-converter-status-v590.is-working{background:#eef6ff;color:#235c86}.xls-converter-status-v590.is-error{background:#fff0f0;color:#a52b2b}' +
+      '.xls-convert-result-v590{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}' +
+      '.xls-convert-result-v590>div{padding:12px;border:1px solid #dce9e2;border-radius:15px;background:#f8fcfa;display:flex;flex-direction:column;gap:4px}' +
+      '.xls-convert-result-v590 small{color:#6b8177;font-weight:700}.xls-convert-result-v590 b{color:#173d2d;word-break:break-word}' +
+      '.xls-convert-result-v590 p{grid-column:1/-1;margin:0;padding:11px 13px;border-radius:13px;line-height:1.45}.xls-convert-result-v590 .warn{background:#fff7df;color:#6f5311}.xls-convert-result-v590 .success{background:#eaf7ef;color:#24543f}' +
+      '@media(max-width:520px){.xls-convert-result-v590{grid-template-columns:1fr}.xls-converter-hero-v590{align-items:center}.xls-converter-list-v590 li{padding-right:9px}.xls-file-picker-v590 small{max-width:245px}}';
     document.head.appendChild(style);
+  }
+
+  function arrangeButtons(grid) {
+    if (!grid) return;
+    const order = [
+      ["downloadXlsBtn", "Mesaha Dosyasını İndir"],
+      ["seflikSendFromRecordsV529", "Şefliğe Gönder"],
+      ["printBtn", "Beyan İndir"],
+      ["restoreBtn", "Yedek Yükle"],
+      ["backupBtn", "Yedek Al"],
+      ["cloudBackupBtnV316", "Drive’a Yükle"],
+      ["cloudRestoreBtnV316", "Drive’dan Getir"],
+      ["xlsToBackupBtnV590", ""]
+    ];
+    const nodes = [];
+    order.forEach(function (item) {
+      const node = document.getElementById(item[0]);
+      if (!node) return;
+      if (item[1] && clean(node.textContent) !== item[1]) node.textContent = item[1];
+      nodes.push(node);
+    });
+    const current = Array.prototype.slice.call(grid.children).filter(function (node) {
+      return nodes.indexOf(node) >= 0;
+    });
+    const sameOrder = current.length === nodes.length && current.every(function (node, index) {
+      return node === nodes[index] && node.parentNode === grid;
+    });
+    if (!sameOrder) nodes.forEach(function (node) { grid.appendChild(node); });
   }
 
   function ensureUi() {
     const grid = document.querySelector("#beyanView .records-action-grid-v530, #beyanView .action-grid, .records-action-grid-v530");
     if (!grid) return false;
     ensureStyle();
-    let input = document.getElementById("xlsToBackupInputV580");
+
+    const oldButton = document.getElementById("xlsToBackupBtnV580");
+    if (oldButton) oldButton.remove();
+    const oldInput = document.getElementById("xlsToBackupInputV580");
+    if (oldInput) oldInput.remove();
+
+    let input = document.getElementById("xlsToBackupInputV590");
     if (!input) {
       input = document.createElement("input");
-      input.id = "xlsToBackupInputV580";
+      input.id = "xlsToBackupInputV590";
       input.type = "file";
       input.accept = ".xls,application/vnd.ms-excel";
       input.hidden = true;
       document.body.appendChild(input);
     }
-    let button = document.getElementById("xlsToBackupBtnV580");
+
+    let button = document.getElementById("xlsToBackupBtnV590");
     if (!button) {
       button = document.createElement("button");
-      button.id = "xlsToBackupBtnV580";
+      button.id = "xlsToBackupBtnV590";
       button.type = "button";
       button.className = "btn soft";
-      button.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3.5h9l5 5v12H5z"/><path d="M14 3.5v5h5M8 12h8M8 16h5"/></svg><span>XLS’yi Yedeğe Çevir</span>';
-      const backupButton = document.getElementById("backupBtn");
-      if (backupButton && backupButton.parentNode === grid) grid.insertBefore(button, backupButton.nextSibling);
-      else grid.appendChild(button);
+      button.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3.5h9l5 5v12H5z"/><path d="M14 3.5v5h5M8 12h8M8 16h5"/></svg><span>Mesaha Dosyasını Yedek Dosyasına Dönüştür</span>';
+      grid.appendChild(button);
     }
-    if (!button.__xlsConverterBoundV580) {
-      button.__xlsConverterBoundV580 = true;
-      button.addEventListener("click", function () { input.click(); });
+    if (!button.__xlsConverterBoundV590) {
+      button.__xlsConverterBoundV590 = true;
+      button.addEventListener("click", openConverterModal);
     }
-    if (!input.__xlsConverterBoundV580) {
-      input.__xlsConverterBoundV580 = true;
-      input.addEventListener("change", async function () {
-        const file = input.files && input.files[0];
-        if (!file) return;
-        const originalHtml = button.innerHTML;
-        button.disabled = true;
-        button.textContent = "Dönüştürülüyor…";
-        try {
-          const buffer = await file.arrayBuffer();
-          const stateSettings = root.state && root.state.settings ? root.state.settings : {};
-          const version = root.MESAHA_VERSION && root.MESAHA_VERSION.version ? root.MESAHA_VERSION.version : "local";
-          const result = convert(buffer, { fileName: file.name, settings: stateSettings, version: version });
-          downloadJson(result);
-          showResult(result, file.name);
-          if (typeof root.toast === "function") root.toast(result.records.length + " kayıt yedeğe dönüştürüldü.");
-        } catch (error) {
-          if (root.MesahaErrorLog && typeof root.MesahaErrorLog.error === "function") {
-            try { root.MesahaErrorLog.error("backup.xls.convert", error); } catch (_) {}
-          }
-          if (typeof root.toast === "function") root.toast(error && error.message ? error.message : "XLS dosyası dönüştürülemedi.");
-          else alert(error && error.message ? error.message : "XLS dosyası dönüştürülemedi.");
-        } finally {
-          button.disabled = false;
-          button.innerHTML = originalHtml;
-          input.value = "";
+
+    arrangeButtons(grid);
+
+    const parts = modalParts();
+    if (parts.closeButton && !parts.closeButton.__xlsConverterBoundV590) {
+      parts.closeButton.__xlsConverterBoundV590 = true;
+      parts.closeButton.addEventListener("click", function () {
+        if (parts.modal && (parts.modal.classList.contains("mesaha-xls-converter-v590") || parts.modal.classList.contains("mesaha-xls-result-v590"))) {
+          closeConverterModal();
         }
       });
     }
@@ -748,10 +889,15 @@
   function bootUi() {
     if (typeof document === "undefined") return;
     ensureUi();
-    [250, 700, 1500, 3000].forEach(function (delay) { setTimeout(ensureUi, delay); });
+    [150, 450, 900, 1800, 3200].forEach(function (delay) { setTimeout(ensureUi, delay); });
     root.addEventListener("mesaha:view-changed", function (event) {
-      if (event && event.detail && event.detail.view === "beyan") setTimeout(ensureUi, 80);
+      if (event && event.detail && event.detail.view === "beyan") setTimeout(ensureUi, 60);
     });
+    const observer = new MutationObserver(function () {
+      clearTimeout(bootUi.__timer);
+      bootUi.__timer = setTimeout(ensureUi, 60);
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
   }
 
   const api = Object.freeze({

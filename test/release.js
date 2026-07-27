@@ -1,20 +1,20 @@
 (function (root) {
   "use strict";
   const DATA = /*MESAHA_RELEASE_DATA_START*/{
-  "build": 58,
-  "version": "58.0.0",
+  "build": 59,
+  "version": "59.0.0",
   "channel": "stable",
-  "releasedAt": "2026-07-27T17:30:00+03:00",
-  "assetToken": "orman-io-stable-20260727-7",
-  "cacheName": "orman-io-shell-stable-20260727-7",
+  "releasedAt": "2026-07-27T15:55:00+03:00",
+  "assetToken": "orman-io-stable-20260727-8",
+  "cacheName": "orman-io-shell-stable-20260727-8",
   "apps": {
     "suite": {
       "label": "Orman İO",
-      "version": "58.0.0"
+      "version": "59.0.0"
     },
     "mesaha": {
       "label": "Mesaha İO",
-      "version": "5.99"
+      "version": "6.00"
     },
     "istif": {
       "label": "İstif İO",
@@ -22,10 +22,10 @@
     },
     "admin": {
       "label": "Orman İO Yönetim",
-      "version": "58.0.0"
+      "version": "59.0.0"
     }
   },
-  "description": "Mesaha İO Beyan ekranına çevrimdışı XLS yedek dönüştürücü eklendi. Mesaha/ORBİS BIFF8 .xls dosyaları cihaz üzerinde okunur, kayıtlar uygulamanın Yedek Yükle ile kabul ettiği JSON biçimine dönüştürülür ve indirilen dosya mevcut kayıtları değiştirmeden hazırlanır."
+  "description": "Mesaha İO Beyan ekranındaki işlem sırası yeniden düzenlendi. Mesaha dosyasını yedek dosyasına dönüştürme işlemi ayrıntılı açıklama penceresine taşındı; dosya seçimi ve dönüştürme bu pencere üzerinden yapılır. Buton sırası Mesaha Dosyasını İndir, Şefliğe Gönder/Beyan İndir, Yedek Yükle/Yedek Al, Drive’a Yükle/Drive’dan Getir ve en altta dönüştürücü olacak şekilde sabitlendi."
 }/*MESAHA_RELEASE_DATA_END*/;
   const APP_NAMES = DATA.apps || {};
   const SCRIPT_URL = (() => {
