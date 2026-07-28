@@ -55,7 +55,7 @@
       <main class="content">
         <section id="page-users" class="page is-active" data-page="users">
           <div class="page-heading">
-            <div><span class="eyebrow">Genel bakış</span><h2>Kullanıcılar</h2><p>Son giriş sırasına göre gerçek kullanıcılar ve cihaz bilgileri.</p></div>
+            <div><span class="eyebrow">Genel bakış</span><h2>Google Kullanıcıları</h2><p>Google hesabı veya terminal koduyla eşleşmiş kullanıcılar ve cihaz bilgileri.</p></div>
             <span id="userCountBadge" class="counter-badge">0 kullanıcı</span>
           </div>
 
@@ -67,13 +67,22 @@
             <article class="metric-card"><span class="metric-icon">🌲</span><small>Mesaha İO</small><b id="metricMesaha">0</b><em>Son kullanılan uygulama</em></article><article class="metric-card"><span class="metric-icon">▦</span><small>İstif İO</small><b id="metricIstif">0</b><em>Son kullanılan uygulama</em></article><article class="metric-card"><span class="metric-icon">◆</span><small>Orman İO</small><b id="metricSuite">0</b><em>Ortak ana menü</em></article><article class="metric-card metric-wide"><span class="metric-icon">♧</span><small>Toplam m³</small><b id="metricVolume">0,000</b><em>Son güvenilir veri</em></article>
           </div>
 
-          <div class="section-title-row"><h3>Kullanıcılar</h3><span id="userFilterInfo" class="muted">Tümü</span></div>
+          <div class="section-title-row"><h3>Google ve Kodlu Kullanıcılar</h3><span id="userFilterInfo" class="muted">Tümü</span></div>
           <div class="toolbar toolbar-users">
             <label class="search-box"><span>⌕</span><input id="userSearch" placeholder="Kullanıcı, şeflik, IP, cihaz, sürüm ara"></label>
             <select id="userFilter" aria-label="Kullanıcı filtresi"><option value="all">Tümü</option><option value="today">Bugün giriş yapan</option><option value="online">Son 15 dakika</option><option value="blocked">Engelli</option><option value="mesaha">Mesaha İO</option><option value="istif">İstif İO</option><option value="suite">Orman İO</option></select>
             <button id="clearUserFilter" class="button subtle" type="button">Temizle</button>
           </div>
           <div id="userList" class="user-list"></div>
+
+          <section class="guest-users-panel" aria-labelledby="guestUsersTitle">
+            <div class="guest-users-heading">
+              <div><span class="eyebrow">Ayrı oturumlar</span><h3 id="guestUsersTitle">Misafir Girişleri</h3><p>Google hesabı veya terminal kodu olmadan, yerel misafir modu ile giriş yapan cihazlar.</p></div>
+              <span id="guestCountBadge" class="counter-badge guest-counter">0 misafir</span>
+            </div>
+            <label class="search-box guest-search-box"><span>⌕</span><input id="guestSearch" placeholder="Misafir adı, şeflik, IP veya cihaz ara"></label>
+            <div id="guestList" class="guest-user-list"></div>
+          </section>
         </section>
 
         <section id="page-stats" class="page" data-page="stats">

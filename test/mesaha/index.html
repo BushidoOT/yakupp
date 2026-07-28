@@ -15159,9 +15159,9 @@
               icon: "▣",
               html,
               buttons: [
-                { text: "Vazgeç", value: false, cls: "ghost xls-cancel-v62" },
-                { text: "Paylaş", value: false, cls: "xls-share-button-v62", onClick: shareXlsV62 },
                 { text: "Dosyayı İndir", value: "download", cls: "primary xls-download-v62" },
+                { text: "Paylaş", value: false, cls: "xls-share-button-v62", onClick: shareXlsV62 },
+                { text: "Vazgeç", value: false, cls: "ghost xls-cancel-v62" },
               ],
             });
           else action = confirm(scope.text + " indirilsin mi?") ? "download" : false;
@@ -20282,12 +20282,13 @@
       #modernModal .modal-actions .xls-share-button-v62{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:48px;padding:12px 18px;color:#fff;border:1px solid #0f7650;background:linear-gradient(180deg,#1aa96b,#11764d);box-shadow:0 9px 20px rgba(17,118,77,.2);font-weight:900}
       #modernModal .modal-actions .xls-share-button-v62:before{content:"";width:21px;height:21px;flex:none;background:no-repeat center/contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='18' cy='5' r='3'/%3E%3Ccircle cx='6' cy='12' r='3'/%3E%3Ccircle cx='18' cy='19' r='3'/%3E%3Cpath d='m8.6 10.7 6.8-4.1M8.6 13.3l6.8 4.1'/%3E%3C/svg%3E")}
       #modernModal .modal-actions .xls-download-v62{min-height:48px;padding:12px 18px}
+      #modernModal .modal-actions:has(.xls-download-v62){position:sticky;bottom:-18px;z-index:5;display:grid!important;grid-template-columns:1fr!important;gap:9px!important;margin:18px -2px -2px;padding:12px 2px 2px;background:linear-gradient(180deg,rgba(255,255,255,0),#fff 20%,#fff);}
+      #modernModal .modal-actions:has(.xls-download-v62) button{width:100%!important;min-width:0!important;margin:0!important}
+      #modernModal .modal-actions .xls-download-v62{order:1;min-height:54px!important;font-size:16px}
+      #modernModal .modal-actions .xls-share-button-v62{order:2;min-height:50px!important}
+      #modernModal .modal-actions .xls-cancel-v62{order:3;min-height:44px!important;background:#fff!important}
       @media(max-width:620px){
-        #modernModal .modal-actions{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important}
-        #modernModal .modal-actions button{width:100%!important;margin:0!important;min-width:0!important}
-        #modernModal .modal-actions .xls-cancel-v62{grid-column:1;grid-row:1}
-        #modernModal .modal-actions .xls-share-button-v62{grid-column:2;grid-row:1}
-        #modernModal .modal-actions .xls-download-v62{grid-column:1/-1;grid-row:2}
+        #modernModal .modal-actions:has(.xls-download-v62){bottom:-14px;padding-bottom:calc(4px + env(safe-area-inset-bottom,0px))}
       }
     </style>
 

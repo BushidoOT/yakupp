@@ -12,7 +12,7 @@
   const $ = (id) => document.getElementById(id);
   const state = {
     page: 'users', range: 'day', blockView: 'user_key', accessStatus: 'pending',
-    profiles: [], usage: [], daily: [], events: [], logs: [], audit: [], blocks: [], backups: [], users: [], userAccess: [], userAuthEvents: [], seflikFolders: [], seflikMembers: [], seflikDivisions: [],
+    profiles: [], usage: [], daily: [], events: [], logs: [], audit: [], blocks: [], backups: [], users: [], guests: [], userAccess: [], userAuthEvents: [], seflikFolders: [], seflikMembers: [], seflikDivisions: [],
     summary: {}, hiddenBackupIds: new Set(), loading: false, errors: {}
   };
   window.MESAHA_ADMIN_LIGHT_STATE = state;
@@ -266,6 +266,43 @@
     if (/^(user|kullanici|kullanıcı|device|dev|cihaz)[_\-]/.test(key) || ['user','kullanici','kullanıcı'].includes(key)) return false;
     return true;
   }
+  function guestMarker(raw) {
+    raw = obj(raw); const payload = obj(raw.payload), meta = obj(first(raw.metadata, raw.detail)), device = obj(first(raw.device_info, raw.deviceInfo, payload.deviceInfo, meta.deviceInfo));
+    const auth = lower(first(raw.auth_type, raw.authType, payload.auth_type, payload.authType, payload.type, meta.auth_type, meta.authType, device.auth_type));
+    const source = lower(first(raw.source, payload.source, meta.source));
+    const eventType = lower(first(raw.event_type, raw.eventType, payload.event_type, meta.event_type));
+    const explicitLocal = raw.is_local === true || payload.is_local === true || meta.is_local === true || device.is_local === true;
+    const hay = lower(JSON.stringify(raw));
+    const paired = /pair[_-]?code|paireduserid|paired_user_id|terminaltoken|terminal_token/.test(hay);
+    if (paired) return false;
+    return auth === 'guest' || auth === 'misafir' || explicitLocal || eventType === 'guest_session_ping' || /guest[_-]?session|guest[_-]?login|misafir[_ -]?mod|yerel[_ -]?misafir|source["']?\s*:\s*["']manual/.test(hay) || source === 'manual';
+  }
+  function isGuestUser(user) {
+    if (!user) return false;
+    if (googleInfoForUser(user)) return false;
+    return guestMarker(user.raw || user);
+  }
+  function collectGuestSessions(seedUsers) {
+    const map = new Map();
+    function upsert(candidate) {
+      const user = candidate && candidate.raw ? candidate : mapProfile(candidate || {});
+      if (!guestMarker(user.raw || candidate || user)) return;
+      const device = clean(user.deviceId && user.deviceId !== '-' ? user.deviceId : '');
+      const ip = clean(user.ip && user.ip !== '-' ? user.ip : '');
+      const key = device ? `device_${compact(device)}` : ip ? `ip_${compact(ip)}_${compact(user.name)}` : identityKey(user) || `guest_${map.size}`;
+      const old = map.get(key) || {name:'Misafir kullanıcı',seflik:'Şeflik seçilmedi',userKey:key,id:'',lastSeenMs:0,ip:'-',deviceId:'-',platform:'-',browser:'-',version:'-',avatarUrl:'',raw:{}};
+      const incomingName = isRealText(user.name) ? user.name : 'Misafir kullanıcı';
+      const incomingSeflik = isRealText(user.seflik) ? user.seflik : 'Şeflik seçilmedi';
+      if ((user.lastSeenMs || 0) >= (old.lastSeenMs || 0)) {
+        Object.assign(old,{name:incomingName,seflik:incomingSeflik,lastSeen:user.lastSeen,lastSeenMs:user.lastSeenMs||0,raw:user.raw||candidate||user});
+        ['ip','deviceId','platform','browser','version'].forEach((field)=>{if(clean(user[field])&&user[field]!=='-')old[field]=user[field]});
+      }
+      map.set(key,old);
+    }
+    arr(seedUsers).forEach(upsert);
+    [...state.profiles,...state.usage,...state.events,...state.userAuthEvents].forEach(upsert);
+    state.guests=[...map.values()].sort((a,b)=>(b.lastSeenMs||0)-(a.lastSeenMs||0));
+  }
   function mergeUsers() {
     const map = new Map();
     const idIndex = new Map();
@@ -305,7 +342,10 @@
       if (technical.lastSeenMs > target.lastSeenMs) { target.lastSeen = technical.lastSeen; target.lastSeenMs = technical.lastSeenMs; }
       map.set(targetKey, target);
     });
-    state.users = [...map.values()].filter(validUser).sort((a,b) => b.lastSeenMs - a.lastSeenMs);
+    const merged = [...map.values()].filter(validUser).sort((a,b) => b.lastSeenMs - a.lastSeenMs);
+    const guestSeeds = merged.filter(isGuestUser);
+    state.users = merged.filter((user) => !isGuestUser(user));
+    collectGuestSessions(guestSeeds);
   }
 
   function collectHiddenFromLogs() {
@@ -485,6 +525,23 @@ function appLabel(user){return appKind(user)==='istif'?'İstif İO':appKind(user
     }).join('') : '<div class="empty-state">Filtreye uygun gerçek kullanıcı bulunamadı.</div>';
   }
 
+  function filteredGuests() {
+    const input = $('guestSearch'); const q = lower(input && input.value);
+    return state.guests.filter((guest) => !q || [guest.name,guest.seflik,guest.ip,guest.deviceId,guest.platform,guest.browser,guest.version].join(' ').toLocaleLowerCase('tr-TR').includes(q));
+  }
+  function renderGuests() {
+    const list = $('guestList'), badge = $('guestCountBadge'); if (!list || !badge) return;
+    const guests = filteredGuests(); badge.textContent = `${fmtInt(state.guests.length)} misafir`;
+    list.innerHTML = guests.length ? guests.map((guest,index) => `<article class="guest-user-card">
+      <div class="guest-user-head"><div class="guest-avatar">M</div><div class="guest-user-title"><h4>${escapeHtml(guest.name || 'Misafir kullanıcı')} <span class="guest-mode-badge">Misafir</span></h4><p>${escapeHtml(guest.seflik || 'Şeflik seçilmedi')} • son giriş ${escapeHtml(fmtDate(guest.lastSeen))}</p></div><span class="status-pill">${onlineNow(guest)?'Online':'Yerel'}</span></div>
+      <div class="user-data"><div class="data-cell"><small>IP adresi</small><b class="ip">${escapeHtml(guest.ip||'-')}</b></div><div class="data-cell"><small>Cihaz</small><b>${escapeHtml(guest.deviceId||'-')}</b></div><div class="data-cell"><small>Platform</small><b>${escapeHtml(guest.platform||'-')}</b></div><div class="data-cell"><small>Tarayıcı</small><b>${escapeHtml(guest.browser||'-')}</b></div><div class="data-cell"><small>Sürüm</small><b>${escapeHtml(guest.version||'-')}</b></div><div class="data-cell"><small>Giriş tipi</small><b>Yerel misafir</b></div></div>
+      <div class="guest-user-actions"><button class="button info" data-action="guest-detail" data-guest-index="${state.guests.indexOf(guest)}" type="button">Detay</button></div>
+    </article>`).join('') : '<div class="empty-state">Henüz misafir giriş kaydı yok.</div>';
+  }
+  function guestDetail(guest){
+    openModal('Misafir giriş detayı',`<div class="detail-grid"><div><small>Misafir</small><b>${escapeHtml(guest.name||'Misafir kullanıcı')}</b></div><div><small>Şeflik</small><b>${escapeHtml(guest.seflik||'-')}</b></div><div><small>IP</small><b class="ip">${escapeHtml(guest.ip||'-')}</b></div><div><small>Cihaz</small><b>${escapeHtml(guest.deviceId||'-')}</b></div><div><small>Platform</small><b>${escapeHtml(guest.platform||'-')}</b></div><div><small>Tarayıcı</small><b>${escapeHtml(guest.browser||'-')}</b></div><div><small>Sürüm</small><b>${escapeHtml(guest.version||'-')}</b></div><div><small>Son giriş</small><b>${escapeHtml(fmtDate(guest.lastSeen))}</b></div></div><pre class="raw-data">${escapeHtml(JSON.stringify(guest.raw||guest,null,2))}</pre>`)
+  }
+
   function renderStats() {
     const records = statisticsRecords(), users = aggregateByUser(records);
     const count = users.reduce((s,x) => s+x.count, 0), volume = users.reduce((s,x) => s+x.volume, 0);
@@ -610,7 +667,7 @@ function appLabel(user){return appKind(user)==='istif'?'İstif İO':appKind(user
       return `<article class="seflik-admin-card"><div class="seflik-admin-head"><div><h4>${escapeHtml(f.seflik||'-')}</h4><p>Kurucu: ${escapeHtml(first(f.created_by_name,'-'))} • ${escapeHtml(fmtDate(f.created_at))}</p></div><span class="counter-badge">${fmtInt(members.length)} üye • ${fmtInt(divisions.length)} bölme</span></div><div class="seflik-admin-members">${members.length?members.map((m)=>`<div class="seflik-admin-member">${memberAvatar(m)}<div><b>${escapeHtml(first(m.name,'-'))}</b><small>${escapeHtml((clean(m.role)==='owner'?'Kurucu':'Ormancı')+(m.email?' • '+m.email:''))}</small></div></div>`).join(''):'<div class="empty-state small">Üye yok</div>'}</div></article>`;
     }).join('');
   }
-  function renderAll(){renderUsers();renderStats();renderBackups();renderBlocks();renderSecurityLogs();renderGoogleAccess();renderSeflikAdmin();renderSummary()}
+  function renderAll(){renderUsers();renderGuests();renderStats();renderBackups();renderBlocks();renderSecurityLogs();renderGoogleAccess();renderSeflikAdmin();renderSummary()}
   function switchPage(page){state.page=page;document.querySelectorAll('.page').forEach((el)=>el.classList.toggle('is-active',el.dataset.page===page));document.querySelectorAll('.nav-item').forEach((el)=>el.classList.toggle('is-active',el.dataset.pageTarget===page));if(page==='stats')renderStats();if(page==='backups')renderBackups();if(page==='manage'){renderBlocks();renderSecurityLogs();renderGoogleAccess();renderSeflikAdmin();}window.scrollTo({top:0,behavior:'smooth'})}
   function openModal(title,html){$('modalTitle').textContent=title;$('modalBody').innerHTML=html;$('modal').classList.add('is-open');$('modal').setAttribute('aria-hidden','false')}
   function closeModal(){$('modal').classList.remove('is-open');$('modal').setAttribute('aria-hidden','true')}
@@ -690,9 +747,9 @@ function appLabel(user){return appKind(user)==='istif'?'İstif İO':appKind(user
     document.querySelectorAll('.manage-tab').forEach((button)=>button.addEventListener('click',()=>{state.blockView=button.dataset.blockView;document.querySelectorAll('.manage-tab').forEach((x)=>x.classList.toggle('is-active',x===button));renderBlocks()}));
     document.querySelectorAll('.google-access-tab').forEach((button)=>button.addEventListener('click',()=>{state.accessStatus=button.dataset.accessStatus;document.querySelectorAll('.google-access-tab').forEach((x)=>x.classList.toggle('is-active',x===button));renderGoogleAccess()}));
     ['userSearch','userFilter'].forEach((id)=>$(id).addEventListener('input',renderUsers));['backupSearch','backupSort'].forEach((id)=>$(id).addEventListener('input',renderBackups));$('blockSearch').addEventListener('input',renderBlocks);
-    $('clearUserFilter').addEventListener('click',()=>{$('userSearch').value='';$('userFilter').value='all';renderUsers()});$('clearBackupFilter').addEventListener('click',()=>{$('backupSearch').value='';$('backupSort').value='new';renderBackups()});$('addIpBtn').addEventListener('click',()=>addIp().catch((e)=>toast(errorText(e))));
+    $('clearUserFilter').addEventListener('click',()=>{$('userSearch').value='';$('userFilter').value='all';renderUsers()});if($('guestSearch'))$('guestSearch').addEventListener('input',renderGuests);$('clearBackupFilter').addEventListener('click',()=>{$('backupSearch').value='';$('backupSort').value='new';renderBackups()});$('addIpBtn').addEventListener('click',()=>addIp().catch((e)=>toast(errorText(e))));
     $('modalClose').addEventListener('click',closeModal);$('modal').addEventListener('click',(e)=>{if(e.target===$('modal'))closeModal()});
-    document.addEventListener('click',(e)=>{touchActivity();const button=e.target.closest('[data-action]');if(!button)return;const action=button.dataset.action;const user=state.users[Number(button.dataset.userIndex)];if(action==='detail'&&user)userDetail(user);if(action==='block'&&user)blockUser(user).catch((x)=>toast(errorText(x)));if(action==='unblock-user'&&user)unblockUser(user).catch((x)=>toast(errorText(x)));if(action==='delete-user'&&user)deleteUser(user).catch((x)=>toast(errorText(x)));if(action==='hide-backup')hideBackup(button.dataset.backupId).catch((x)=>toast(errorText(x)));if(action==='unblock')unblock(button).catch((x)=>toast(errorText(x)));const access=state.userAccess[Number(button.dataset.accessIndex)];if(action==='access-approve'&&access)accessApprove(access).catch((x)=>toast(errorText(x)));if(action==='access-reject'&&access)accessDecision(access,'admin_user_access_reject').catch((x)=>toast(errorText(x)));if(action==='access-revoke'&&access)accessDecision(access,'admin_user_access_revoke').catch((x)=>toast(errorText(x)));if(action==='access-reopen'&&access)accessDecision(access,'admin_user_access_reopen').catch((x)=>toast(errorText(x))) });
+    document.addEventListener('click',(e)=>{touchActivity();const button=e.target.closest('[data-action]');if(!button)return;const action=button.dataset.action;const user=state.users[Number(button.dataset.userIndex)];const guest=state.guests[Number(button.dataset.guestIndex)];if(action==='guest-detail'&&guest)guestDetail(guest);if(action==='detail'&&user)userDetail(user);if(action==='block'&&user)blockUser(user).catch((x)=>toast(errorText(x)));if(action==='unblock-user'&&user)unblockUser(user).catch((x)=>toast(errorText(x)));if(action==='delete-user'&&user)deleteUser(user).catch((x)=>toast(errorText(x)));if(action==='hide-backup')hideBackup(button.dataset.backupId).catch((x)=>toast(errorText(x)));if(action==='unblock')unblock(button).catch((x)=>toast(errorText(x)));const access=state.userAccess[Number(button.dataset.accessIndex)];if(action==='access-approve'&&access)accessApprove(access).catch((x)=>toast(errorText(x)));if(action==='access-reject'&&access)accessDecision(access,'admin_user_access_reject').catch((x)=>toast(errorText(x)));if(action==='access-revoke'&&access)accessDecision(access,'admin_user_access_revoke').catch((x)=>toast(errorText(x)));if(action==='access-reopen'&&access)accessDecision(access,'admin_user_access_reopen').catch((x)=>toast(errorText(x))) });
     ['keydown','pointerdown','touchstart'].forEach((name)=>document.addEventListener(name,touchActivity,{passive:true}));
     setInterval(()=>{const last=Number(sessionStorage.getItem(LAST_ACTIVITY_KEY)||0);if(readSession().access_token&&last&&Date.now()-last>IDLE_MS)logout(false,true)},60000);
   }

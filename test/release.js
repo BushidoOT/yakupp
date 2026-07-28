@@ -1,20 +1,20 @@
 (function (root) {
   "use strict";
   const DATA = /*MESAHA_RELEASE_DATA_START*/{
-  "build": 62,
-  "version": "62.0.0",
+  "build": 63,
+  "version": "63.0.0",
   "channel": "stable",
-  "releasedAt": "2026-07-28T20:30:00+03:00",
-  "assetToken": "orman-io-stable-20260728-11",
-  "cacheName": "orman-io-shell-stable-20260728-11",
+  "releasedAt": "2026-07-28T21:00:00+03:00",
+  "assetToken": "orman-io-stable-20260728-12",
+  "cacheName": "orman-io-shell-stable-20260728-12",
   "apps": {
     "suite": {
       "label": "Orman İO",
-      "version": "62.0.0"
+      "version": "63.0.0"
     },
     "mesaha": {
       "label": "Mesaha İO",
-      "version": "6.03"
+      "version": "6.04"
     },
     "istif": {
       "label": "İstif İO",
@@ -22,10 +22,10 @@
     },
     "admin": {
       "label": "Orman İO Yönetim",
-      "version": "62.0.0"
+      "version": "63.0.0"
     }
   },
-  "description": "Mesaha dosyası indirme penceresindeki WhatsApp ve Telegram düğmeleri kaldırılarak tek Paylaş düğmesi eklendi. Android Chrome dosya paylaşımını açamazsa dosya güvenli biçimde indirilir. Şeflik üyelerine Orman İO, Mesaha İO ve İstif İO içinden yeni bölme oluşturma yetkisi verildi; bölme silme yetkisi kurucuda kalır. Mesaha ve İstif bölme alanlarına görünür + Bölme Oluştur düğmeleri eklendi."
+  "description": "Mesaha dosyası penceresinde Dosyayı İndir düğmesi görünür biçimde en üste, Paylaş düğmesi altına taşındı ve eylem alanı kaydırmada görünür kalır. Mesaha İO Bölme Oluştur düğmesi küçültülerek dengelendi. Yönetim panelinde yerel misafir girişleri Google ve kodla eşleşmiş kullanıcılardan ayrı bir bölümde gösterilir. Misafir oturumları IP, cihaz, platform, tarayıcı, sürüm ve son giriş bilgileriyle ayrı olay kaydı olarak tutulur."
 }/*MESAHA_RELEASE_DATA_END*/;
   const APP_NAMES = DATA.apps || {};
   const SCRIPT_URL = (() => {
