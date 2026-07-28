@@ -15084,57 +15084,74 @@
           } else toast("XLS modülü yüklenmedi.");
           setTimeout(updateBeyan, 120);
         }
-        function xlsFileNameV61() {
+        function xlsFileNameV62() {
           const bolme = cleanFile(settings().bolmeNo || "");
           return `Mesaha_${bolme ? bolme + "_" : ""}${dateFile()}.xls`;
         }
-        function buildXlsFileV61(scope) {
+        function buildXlsShareBundleV62(scope) {
           if (!window.OrbisXls || typeof window.OrbisXls.makeXls !== "function")
             throw new Error("XLS modülü yüklenmedi.");
-          const filename = xlsFileNameV61();
+          const filename = xlsFileNameV62();
           const bytes = window.OrbisXls.makeXls(scope.list.slice());
-          const file = new File([bytes], filename, {
-            type: "application/vnd.ms-excel",
-            lastModified: Date.now(),
-          });
-          return { file, filename };
+          const stamp = Date.now();
+          const files = [
+            new File([bytes], filename, {
+              type: "application/vnd.ms-excel",
+              lastModified: stamp,
+            }),
+            new File([bytes], filename, {
+              type: "application/octet-stream",
+              lastModified: stamp,
+            }),
+          ];
+          return { bytes, files, filename };
         }
-        async function shareXlsV61(target) {
+        function pickShareFileV62(files) {
+          if (!navigator || typeof navigator.share !== "function") return null;
+          for (const file of files) {
+            try {
+              if (typeof navigator.canShare !== "function" || navigator.canShare({ files: [file] }))
+                return file;
+            } catch (_) {}
+          }
+          return null;
+        }
+        async function shareXlsV62() {
           const scope = exportScope();
           if (!scope.list.length) return toast("Paylaşılacak kayıt yok.");
           let built;
           try {
-            built = buildXlsFileV61(scope);
+            built = buildXlsShareBundleV62(scope);
           } catch (err) {
             toast(err && err.message ? err.message : "Dosya hazırlanamadı.");
             return;
           }
-          const label = target === "telegram" ? "Telegram" : "WhatsApp";
-          const payload = {
-            files: [built.file],
-            title: built.filename,
-            text: "Mesaha İO ORBİS uyumlu mesaha dosyası",
-          };
+          const shareFile = pickShareFileV62(built.files);
+          if (!shareFile) {
+            downloadFile();
+            toast("Bu tarayıcı dosya paylaşımını desteklemiyor. Mesaha dosyası indirildi.");
+            return;
+          }
           try {
-            const fileShareOk = !!navigator.share &&
-              (!navigator.canShare || navigator.canShare({ files: payload.files }));
-            if (!fileShareOk) throw new Error("FILE_SHARE_UNSUPPORTED");
-            await navigator.share(payload);
+            await navigator.share({ files: [shareFile], title: built.filename });
             try {
               if (window.mesahaExportStatsV323 && typeof window.mesahaExportStatsV323.send === "function")
-                window.mesahaExportStatsV323.send("xls-share-v61", { list: scope.list.slice(), text: scope.text, mode: scope.mode, target });
+                window.mesahaExportStatsV323.send("xls-share-v62", { list: scope.list.slice(), text: scope.text, mode: scope.mode, target: "system-share" });
             } catch (_) {}
-            toast(label + " paylaşım ekranı açıldı.");
+            toast("Paylaşım menüsü açıldı.");
           } catch (err) {
-            if (err && (err.name === "AbortError" || err.name === "NotAllowedError")) return;
+            if (err && err.name === "AbortError") return;
             downloadFile();
-            toast("Bu tarayıcı dosyayı doğrudan paylaşamadı. Dosya indirildi; " + label + " içinden ekleyebilirsiniz.");
+            const reason = err && err.name === "NotAllowedError"
+              ? "Android Chrome dosya paylaşımına izin vermedi. Dosya indirildi; paylaşımı İndirilenler klasöründen yapabilirsiniz."
+              : "Paylaşım açılamadı. Mesaha dosyası indirildi.";
+            toast(reason);
           }
         }
         async function confirmAndDownload() {
           const scope = exportScope();
           const st = totals(scope.list);
-          const html = `<p><b>${esc(scope.text)}</b> ORBİS uyumlu .xls olarak indirilecek.</p><div class="modal-note"><b>Kontrol:</b> ${scope.list.length} kayıt • ${fmt(st.m3, 3)} m³<br>Hacimler ORBİS mantığıyla her kayıt 3 haneye yuvarlanarak hesaplanır.</div><div class="orbis-video-note-v392">Video anlatım: <a class="orbis-video-link-v392" href="https://youtube.com/shorts/J25xp8NrHw8?si=-SeJsWMar3Ja3O4I" target="_blank" rel="noopener">ORBİS aktarım videosunu aç</a></div><div class="xls-share-note-v61">WhatsApp veya Telegram düğmesi dosyayı hazırlar ve telefonun güvenli paylaşım ekranını açar.</div><ol><li>Dosyayı bilgisayara aktarınız.</li><li>ORBİS’e bilgisayar üzerinden giriş yapınız.</li><li>İşletme Pazarlama modülüne giriniz.</li><li>Kesme Faaliyetleri Raporu ekranında şeflik ve bölme bilgilerini giriniz.</li><li>Bölmeye çift tıklayıp dosya yükleme bölümünden <b>Excel’den Aktar</b> deyiniz.</li></ol>`;
+          const html = `<p><b>${esc(scope.text)}</b> ORBİS uyumlu .xls olarak hazırlanacak.</p><div class="modal-note"><b>Kontrol:</b> ${scope.list.length} kayıt • ${fmt(st.m3, 3)} m³<br>Hacimler ORBİS mantığıyla her kayıt 3 haneye yuvarlanarak hesaplanır.</div><div class="orbis-video-note-v392">Video anlatım: <a class="orbis-video-link-v392" href="https://youtube.com/shorts/J25xp8NrHw8?si=-SeJsWMar3Ja3O4I" target="_blank" rel="noopener">ORBİS aktarım videosunu aç</a></div><div class="xls-share-note-v62"><b>Paylaş</b> düğmesi telefonun sistem paylaşım menüsünü açar. Telefonda bulunan uygun uygulamayı açılan menüden seçebilirsiniz. Android Chrome dosya paylaşımını engellerse dosya otomatik indirilir.</div><ol><li>Dosyayı bilgisayara aktarınız.</li><li>ORBİS’e bilgisayar üzerinden giriş yapınız.</li><li>İşletme Pazarlama modülüne giriniz.</li><li>Kesme Faaliyetleri Raporu ekranında şeflik ve bölme bilgilerini giriniz.</li><li>Bölmeye çift tıklayıp dosya yükleme bölümünden <b>Excel’den Aktar</b> deyiniz.</li></ol>`;
           let action = "download";
           if (typeof window.mesahaModal === "function")
             action = await window.mesahaModal({
@@ -15142,10 +15159,9 @@
               icon: "▣",
               html,
               buttons: [
-                { text: "Vazgeç", value: false, cls: "ghost xls-cancel-v61" },
-                { text: "WhatsApp", value: false, cls: "xls-share-button-v61 xls-whatsapp-v61", onClick: () => shareXlsV61("whatsapp") },
-                { text: "Telegram", value: false, cls: "xls-share-button-v61 xls-telegram-v61", onClick: () => shareXlsV61("telegram") },
-                { text: "Dosyayı İndir", value: "download", cls: "primary xls-download-v61" },
+                { text: "Vazgeç", value: false, cls: "ghost xls-cancel-v62" },
+                { text: "Paylaş", value: false, cls: "xls-share-button-v62", onClick: shareXlsV62 },
+                { text: "Dosyayı İndir", value: "download", cls: "primary xls-download-v62" },
               ],
             });
           else action = confirm(scope.text + " indirilsin mi?") ? "download" : false;
@@ -20261,22 +20277,17 @@
       })();
     </script>
 
-    <style id="mesaha-v61-xls-share-style">
-      #modernModal .xls-share-note-v61{margin:14px 0;padding:11px 13px;border:1px solid #d9e9e2;border-radius:15px;background:#f4faf7;color:#36584a;font-size:12px;font-weight:800;line-height:1.45}
-      #modernModal .modal-actions .xls-share-button-v61{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:12px 15px;color:#fff;border-width:1px;box-shadow:0 9px 20px rgba(15,23,42,.13)}
-      #modernModal .modal-actions .xls-share-button-v61:before{content:"";width:21px;height:21px;flex:none;background-repeat:no-repeat;background-position:center;background-size:contain}
-      #modernModal .modal-actions .xls-whatsapp-v61{background:linear-gradient(180deg,#2bd36b,#159b4b);border-color:#128b43}
-      #modernModal .modal-actions .xls-whatsapp-v61:before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='9' fill='none' stroke='white' stroke-width='2'/%3E%3Cpath d='M8.2 7.8c.5-.5 1.2-.3 1.5.3l.8 1.7c.2.4.1.8-.2 1.1l-.6.6c.7 1.5 1.8 2.6 3.3 3.3l.6-.6c.3-.3.7-.4 1.1-.2l1.7.8c.6.3.8 1 .3 1.5-.6.7-1.5 1-2.4.9-3.9-.5-6.9-3.5-7.4-7.4-.1-.9.2-1.8.9-2.4Z' fill='white'/%3E%3Cpath d='m7 18-1 3 3-1' fill='none' stroke='white' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E")}
-      #modernModal .modal-actions .xls-telegram-v61{background:linear-gradient(180deg,#35b8f0,#1689d2);border-color:#147fc4}
-      #modernModal .modal-actions .xls-telegram-v61:before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M21 4 3.8 10.6c-.9.3-.9.9-.1 1.2l4.4 1.4 1.7 5.1c.2.6.4.6.8.2l2.5-2.4 4.7 3.4c.6.4 1.1.2 1.3-.6L22 5.2c.2-.9-.3-1.4-1-1.2ZM9.5 12.8l8.6-5.4-7.1 6.4-.3 3-1.2-4Z' fill='white'/%3E%3C/svg%3E")}
-      #modernModal .modal-actions .xls-download-v61{min-height:48px;padding:12px 18px}
+    <style id="mesaha-v62-xls-share-style">
+      #modernModal .xls-share-note-v62{margin:14px 0;padding:12px 14px;border:1px solid #d9e9e2;border-radius:15px;background:#f4faf7;color:#36584a;font-size:12px;font-weight:750;line-height:1.5}
+      #modernModal .modal-actions .xls-share-button-v62{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:48px;padding:12px 18px;color:#fff;border:1px solid #0f7650;background:linear-gradient(180deg,#1aa96b,#11764d);box-shadow:0 9px 20px rgba(17,118,77,.2);font-weight:900}
+      #modernModal .modal-actions .xls-share-button-v62:before{content:"";width:21px;height:21px;flex:none;background:no-repeat center/contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='18' cy='5' r='3'/%3E%3Ccircle cx='6' cy='12' r='3'/%3E%3Ccircle cx='18' cy='19' r='3'/%3E%3Cpath d='m8.6 10.7 6.8-4.1M8.6 13.3l6.8 4.1'/%3E%3C/svg%3E")}
+      #modernModal .modal-actions .xls-download-v62{min-height:48px;padding:12px 18px}
       @media(max-width:620px){
         #modernModal .modal-actions{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important}
         #modernModal .modal-actions button{width:100%!important;margin:0!important;min-width:0!important}
-        #modernModal .modal-actions .xls-cancel-v61{order:1}
-        #modernModal .modal-actions .xls-whatsapp-v61{order:2}
-        #modernModal .modal-actions .xls-telegram-v61{order:3}
-        #modernModal .modal-actions .xls-download-v61{order:4}
+        #modernModal .modal-actions .xls-cancel-v62{grid-column:1;grid-row:1}
+        #modernModal .modal-actions .xls-share-button-v62{grid-column:2;grid-row:1}
+        #modernModal .modal-actions .xls-download-v62{grid-column:1/-1;grid-row:2}
       }
     </style>
 

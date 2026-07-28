@@ -231,6 +231,9 @@
       .suite-folder-refresh-v8{display:inline-flex;align-items:center;gap:6px;color:#17683f;font-weight:850}
       .suite-folder-loading-v8{opacity:.72}
       .suite-folder-load-v10{background:#17683f!important;color:#fff!important;border-color:#17683f!important}
+      .suite-create-division-v62{width:100%;min-height:46px;margin:9px 0 2px;border:1px solid #b9ddc8;border-radius:15px;background:linear-gradient(180deg,#effaf3,#e2f4e9);color:#145f3c;font:900 13px/1 system-ui;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 7px 16px rgba(20,95,60,.08);touch-action:manipulation}
+      .suite-create-division-v62 span{display:grid;place-items:center;width:23px;height:23px;border-radius:50%;background:#17683f;color:#fff;font-size:18px;line-height:1}
+      .suite-create-division-v62:active{transform:scale(.985)}
       .suite-folder-delete-mesaha-v28{background:#fff2f2!important;color:#a92828!important;border:1px solid #efb4b4!important;font-weight:850!important}
       .suite-folder-delete-mesaha-v28:disabled{opacity:.55!important}
             .suite-central-hidden-v10{display:none!important}
@@ -279,6 +282,7 @@
         .forEach((el) => el.classList.add("suite-central-hidden-v10")),
     );
     document.querySelectorAll("button,a").forEach((el) => {
+      if (["suiteMesahaCreateDivisionBtnV62", "suiteMesahaFolderCreateDivisionBtnV62"].includes(el.id)) return;
       const t = clean(el.textContent).toLocaleLowerCase("tr-TR");
       if (
         /şeflik oluştur|şefliği sil|şeflik sil|ormancı ekle|ormancı çıkar|bölme oluştur|bölme sil|güncelleme kontrol/.test(
@@ -363,9 +367,10 @@
         function () {
           setBolme(this.value);
         },
-        "Orman İO’dan offline bölme oluşturun",
+        "Bölme seçin veya + Bölme Oluştur kullanın",
       );
       if (!sel.parentNode) bi.parentNode.appendChild(sel);
+      ensureCreateDivisionButtonV62(sel, "suiteMesahaCreateDivisionBtnV62");
       if (list.length && !list.includes(cur)) setBolme(list[0]);
     }
   }
@@ -384,8 +389,32 @@
       renderAllBridge();
       const sel = selectEl || $("seflikFolderBolmeV528");
       if (sel) { sel.value = clean(out.division?.bolme_no || no); sel.dispatchEvent(new Event("change", { bubbles: false })); }
-      notify(out.created ? `Bölme ${no} offline oluşturuldu.` : `Bölme ${no} zaten vardı; aynı bölme seçildi.`);
+      notify(out.created ? `Bölme ${no} oluşturuldu ve offline hazırlandı.` : `Bölme ${no} zaten vardı; aynı bölme seçildi.`);
     } catch (e) { notify(clean(e && e.message || e), true); }
+  }
+  function ensureCreateDivisionButtonV62(selectEl, id) {
+    if (!selectEl || !selectEl.parentNode) return null;
+    let btn = $(id);
+    if (!btn) {
+      btn = document.createElement("button");
+      btn.id = id;
+      btn.type = "button";
+      btn.className = "suite-create-division-v62";
+      btn.innerHTML = '<span aria-hidden="true">＋</span>Bölme Oluştur';
+      const host = selectEl.closest && selectEl.closest("label") ? selectEl.closest("label") : selectEl;
+      host.insertAdjacentElement("afterend", btn);
+    }
+    if (!btn.__suiteCreateV62Bound) {
+      btn.__suiteCreateV62Bound = true;
+      btn.addEventListener("click", function (ev) {
+        ev.preventDefault();
+        ev.stopPropagation();
+        createDivisionFromMesahaFolder(selectEl);
+      }, true);
+    }
+    btn.classList.remove("suite-central-hidden-v10");
+    btn.style.removeProperty("display");
+    return btn;
   }
   function folderSelectRows() {
     const f = activeFolder();
@@ -407,6 +436,7 @@
       sel.value = target;
     }
     sel.disabled = false;
+    ensureCreateDivisionButtonV62(sel, "suiteMesahaFolderCreateDivisionBtnV62");
     if (!sel.__suiteV11Bound) {
       sel.__suiteV11Bound = true;
       sel.addEventListener("change", () => {

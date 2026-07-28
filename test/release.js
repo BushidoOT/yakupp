@@ -1,31 +1,31 @@
 (function (root) {
   "use strict";
   const DATA = /*MESAHA_RELEASE_DATA_START*/{
-  "build": 61,
-  "version": "61.0.0",
+  "build": 62,
+  "version": "62.0.0",
   "channel": "stable",
-  "releasedAt": "2026-07-27T20:35:00+03:00",
-  "assetToken": "orman-io-stable-20260727-10",
-  "cacheName": "orman-io-shell-stable-20260727-10",
+  "releasedAt": "2026-07-28T20:30:00+03:00",
+  "assetToken": "orman-io-stable-20260728-11",
+  "cacheName": "orman-io-shell-stable-20260728-11",
   "apps": {
     "suite": {
       "label": "Orman İO",
-      "version": "61.0.0"
+      "version": "62.0.0"
     },
     "mesaha": {
       "label": "Mesaha İO",
-      "version": "6.02"
+      "version": "6.03"
     },
     "istif": {
       "label": "İstif İO",
-      "version": "0.3.18"
+      "version": "0.3.19"
     },
     "admin": {
       "label": "Orman İO Yönetim",
-      "version": "61.0.0"
+      "version": "62.0.0"
     }
   },
-  "description": "Şeflik üyesi kullanıcılar için Şeflikten Ayrıl seçeneği geri getirildi ve görünür hale getirildi. Kurucular şefliği silme akışını kullanmaya devam eder. Mesaha dosyası indirme penceresine WhatsApp ve Telegram dosya paylaşım düğmeleri eklendi. Desteklenen mobil tarayıcılarda ORBİS uyumlu XLS dosyası cihazın güvenli paylaşım ekranına dosya olarak gönderilir; desteklenmeyen tarayıcılarda dosya indirme yedeği kullanılır."
+  "description": "Mesaha dosyası indirme penceresindeki WhatsApp ve Telegram düğmeleri kaldırılarak tek Paylaş düğmesi eklendi. Android Chrome dosya paylaşımını açamazsa dosya güvenli biçimde indirilir. Şeflik üyelerine Orman İO, Mesaha İO ve İstif İO içinden yeni bölme oluşturma yetkisi verildi; bölme silme yetkisi kurucuda kalır. Mesaha ve İstif bölme alanlarına görünür + Bölme Oluştur düğmeleri eklendi."
 }/*MESAHA_RELEASE_DATA_END*/;
   const APP_NAMES = DATA.apps || {};
   const SCRIPT_URL = (() => {

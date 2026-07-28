@@ -1949,7 +1949,7 @@ function renderNew() {
       ${fieldRow("forest", "Şeflik", "seflik", draft.seflik, "select", seflikOptions)}
       ${fieldRow("calendar", "Tarih", "date", draft.date, "date")}
       ${fieldRow("layers", "Bölme", "bolme", draft.bolme, "select", bolmeOptions)}
-      ${bolmeOptions.length ? "" : '<div class="info-note"><b>' + icon("info", 21) + "</b><span>İnternet yokken de aşağıdaki Offline Bölme Oluştur düğmesiyle yeni bölme açabilirsiniz. Bölme cihazda saklanır ve internet geldiğinde sunucuya gönderilir.</span></div>"}
+      ${bolmeOptions.length ? "" : '<div class="info-note"><b>' + icon("info", 21) + "</b><span>İnternet yokken de aşağıdaki Bölme Oluştur düğmesiyle yeni bölme açabilirsiniz. Bölme cihazda saklanır ve internet geldiğinde sunucuya gönderilir.</span></div>"}
       ${fieldRow("logs", "İstif No", "istifNo", draft.istifNo)}
       ${fieldRow("forest", "Odun Türü", "type", draft.type, "select", ["İbreli Kabuklu Kağıtlık Odun", "İbreli Lif Yonga Odun", "İbreli Yakacak Odun", "İbreli Sırık 2 Boy", "İbreli Sırık 3 Boy", "İbreli Sırık 4 Boy", "İbreli Sırık 5 Boy"])}
       ${fieldRow("cube", "Ster Sayısı", "ster", draft.ster, "number")}
@@ -2728,7 +2728,7 @@ async function saveRecord(event, draftOnly = false) {
   }
   if (!draftOnly && !suiteReadyBolmeler.length) {
     toast(
-      "Önce bu ekrandaki Offline Bölme Oluştur düğmesiyle bir bölme oluşturun veya Orman İO’dan hazır bölmeyi indirin.",
+      "Önce bu ekrandaki Bölme Oluştur düğmesiyle bir bölme oluşturun veya Orman İO’dan hazır bölmeyi indirin.",
       "bad",
     );
     return;

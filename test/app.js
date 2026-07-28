@@ -1842,10 +1842,10 @@
         : '<div class="modal-note">Henüz bölme oluşturulmadı.</div>') +
       '<button type="button" class="secondary-button wide-action" data-action="download-all-divisions">Tüm Bölmeleri Offline İndir</button>';
     form.querySelectorAll("label").forEach((el) => {
-      if (el.querySelector("#bolmeNo,#bolmeLocation")) el.hidden = !manage;
+      if (el.querySelector("#bolmeNo,#bolmeLocation")) el.hidden = false;
     });
     const actions = form.querySelector(".form-actions");
-    if (actions) actions.hidden = !manage;
+    if (actions) actions.hidden = false;
     let note = $("bolmeManagedNoteV6");
     if (!note) {
       note = document.createElement("div");
@@ -1854,8 +1854,8 @@
       form.insertBefore(note, form.firstChild);
     }
     note.textContent = manage
-      ? "Bölme oluşturma, silme ve offline indirme yalnızca Orman İO üzerinden yönetilir."
-      : "Bu şeflikte üyesiniz. Bölmeleri silemez veya oluşturamazsınız; hazır bölmeleri indirebilirsiniz.";
+      ? "Yeni bölme oluşturabilir, mevcut bölmeleri offline indirebilir ve gerektiğinde silebilirsiniz."
+      : "Bu şeflikte üyesiniz. Yeni bölme oluşturabilir ve bölmeleri offline indirebilirsiniz; bölme silme yetkisi yalnızca şeflik kurucusundadır.";
   }
   async function logout() {
     if (!confirm("Oturum kapatılsın mı? Yerel kayıtlar silinmez.")) return;
@@ -2242,12 +2242,8 @@
     autoSyncDestructive("Ormancı çıkarma işlemi");
   }
   async function createBolme(e) {
-    if (!canManageFolder())
-      return toast(
-        "Bu işlemi yalnızca şeflik kurucusu Orman İO üzerinden yapabilir.",
-        true,
-      );
     e.preventDefault();
+    if (!signedIn()) return toast("Bölme oluşturmak için önce giriş yapın.", true);
     const no = clean($("bolmeNo") && $("bolmeNo").value),
       loc = clean($("bolmeLocation") && $("bolmeLocation").value),
       af = activeFolder();

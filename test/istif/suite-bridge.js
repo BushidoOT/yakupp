@@ -43,7 +43,7 @@
     if(!api||typeof api.createOfflineDivision!=="function")return notify("Orman İO bölme sistemi hazır değil.",true);
     const no=clean(prompt("Yeni bölme numarasını yazın:"));if(!no)return;
     const loc=clean(prompt("Mevki / açıklama (isteğe bağlı):")||"");
-    try{const out=api.createOfflineDivision(no,loc,{source:"istif-new"});patchBolmeSelector();selectBolme(out.division.bolme_no||no);notify(out.created?`Bölme ${no} offline oluşturuldu.`:`Bölme ${no} zaten vardı; aynı bölme seçildi.`);}
+    try{const out=api.createOfflineDivision(no,loc,{source:"istif-new"});patchBolmeSelector();selectBolme(out.division.bolme_no||no);notify(out.created?`Bölme ${no} oluşturuldu ve offline hazırlandı.`:`Bölme ${no} zaten vardı; aynı bölme seçildi.`);}
     catch(e){notify(clean(e&&e.message||e),true);}
   }
   function ensureCreateDivisionButton(){
@@ -54,7 +54,7 @@
     btn.id="suiteCreateDivisionBtnV10";
     btn.className="suite-create-division-v10";
     btn.type="button";
-    btn.innerHTML='<span aria-hidden="true">＋</span> Offline Bölme Oluştur';
+    btn.innerHTML='<span aria-hidden="true">＋</span> Bölme Oluştur';
     btn.addEventListener("click",function(e){e.preventDefault();e.stopPropagation();createDivisionFromIstif();});
     row.insertAdjacentElement("afterend",btn);
   }
@@ -134,7 +134,7 @@
       n.id = "suiteIstifNoteV8";
       n.className = "suite-istif-note-v10";
       n.textContent =
-        "Şeflik, personel, bölme, Drive, yedek ve senkronizasyon işlemleri Orman İO ana menüsünden yönetilir. İstif İO içinde yalnızca Orman İO’dan gelen şeflik ve bölme seçenekleri kullanılır; kullanıcı kimliği otomatik uygulanır.";
+        "Şeflik ve personel yönetimi Orman İO ana menüsündedir. Şeflik üyeleri İstif İO içindeki + Bölme Oluştur düğmesiyle yeni bölme açabilir; oluşturulan bölme offline hazırlanır ve sonraki sunucu gönderiminde ortak şefliğe aktarılır.";
       settings.insertBefore(n, settings.firstChild);
     }
   }
