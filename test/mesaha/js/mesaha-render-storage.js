@@ -8,6 +8,8 @@
   function active(id){var el=document.getElementById(id);return !!(el&&el.classList&&el.classList.contains('active'));}
   function entryViewActive(){return active('entryView')||(document.body&&document.body.classList.contains('entry-open'));}
   function recordsViewVisible(){return active('recordsView');}
+  function beyanViewVisible(){return active('beyanView');}
+  function recordsDataVisible(){return recordsViewVisible()||beyanViewVisible();}
   function homeViewVisible(){return active('homeView');}
   function fastEntryRefresh(){
     /* V5.76: kayıt sırasında tüm kayıt listesini tarama. Kısayol/son barkod kendi
@@ -19,7 +21,7 @@
       if(document.hidden)return;
       if(entryViewActive()){fastEntryRefresh();return;}
       safe(window.renderAll);
-      if(recordsViewVisible())safe(function(){if(window.mesahaV305)window.mesahaV305.updateBeyanTotals();});
+      if(recordsDataVisible())safe(function(){if(window.mesahaV305)window.mesahaV305.updateBeyanTotals();});
     },delay||90);
   }
   function renderRecordsSoon(delay){
@@ -33,7 +35,7 @@
     clearTimeout(lightTimer);lightTimer=setTimeout(function(){
       if(document.hidden)return;
       if(entryViewActive()){fastEntryRefresh();return;}
-      if(recordsViewVisible()){
+      if(recordsDataVisible()){
         safe(function(){if(window.mesahaV305)window.mesahaV305.updateBeyanTotals();});
         safe(function(){if(window.mesahaV304)window.mesahaV304.updateExportScopeInfo();});
       }else if(homeViewVisible())safe(function(){if(typeof window.renderAll==='function')window.renderAll();});
@@ -45,6 +47,7 @@
       var hasRecords=commitFlags.records;commitFlags={records:false,settings:false};
       if(entryViewActive()){if(hasRecords)fastEntryRefresh();return;}
       if(recordsViewVisible()){if(hasRecords)renderRecordsSoon(20);else lightRefreshSoon(60);return;}
+      if(beyanViewVisible()){lightRefreshSoon(hasRecords?25:60);return;}
       if(homeViewVisible()&&hasRecords)renderAllSoon(60);
     },45);
   }

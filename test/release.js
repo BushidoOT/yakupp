@@ -1,31 +1,31 @@
 (function (root) {
   "use strict";
   const DATA = /*MESAHA_RELEASE_DATA_START*/{
-  "build": 63,
-  "version": "63.0.0",
+  "build": 66,
+  "version": "66.0.0",
   "channel": "stable",
-  "releasedAt": "2026-07-28T21:00:00+03:00",
-  "assetToken": "orman-io-stable-20260728-12",
-  "cacheName": "orman-io-shell-stable-20260728-12",
+  "releasedAt": "2026-07-31T13:50:00+03:00",
+  "assetToken": "orman-io-stable-20260731-1",
+  "cacheName": "orman-io-shell-stable-20260731-1",
   "apps": {
     "suite": {
       "label": "Orman İO",
-      "version": "63.0.0"
+      "version": "66.0.0"
     },
     "mesaha": {
       "label": "Mesaha İO",
-      "version": "6.04"
+      "version": "6.07"
     },
     "istif": {
       "label": "İstif İO",
-      "version": "0.3.19"
+      "version": "0.3.20"
     },
     "admin": {
       "label": "Orman İO Yönetim",
-      "version": "63.0.0"
+      "version": "66.0.0"
     }
   },
-  "description": "Mesaha dosyası penceresinde Dosyayı İndir düğmesi görünür biçimde en üste, Paylaş düğmesi altına taşındı ve eylem alanı kaydırmada görünür kalır. Mesaha İO Bölme Oluştur düğmesi küçültülerek dengelendi. Yönetim panelinde yerel misafir girişleri Google ve kodla eşleşmiş kullanıcılardan ayrı bir bölümde gösterilir. Misafir oturumları IP, cihaz, platform, tarayıcı, sürüm ve son giriş bilgileriyle ayrı olay kaydı olarak tutulur."
+  "description": "Yeni özellik eklenmeden genel stabilizasyon yapıldı. Beyan ekranı ayrıldıktan sonra eksik kalan toplam ve filtre yenilemeleri düzeltildi. Tek kök service worker denetimi, kalıcı depolama isteği, sınırlı çalışma zamanı hata kaydı ve güvenli sayfa geri dönüşü eklendi. Offline cache yazma ve arka plan yenileme işlemleri kota, zaman aşımı ve service worker kapanmalarına karşı güçlendirildi."
 }/*MESAHA_RELEASE_DATA_END*/;
   const APP_NAMES = DATA.apps || {};
   const SCRIPT_URL = (() => {

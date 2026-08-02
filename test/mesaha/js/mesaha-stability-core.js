@@ -8,9 +8,11 @@
   function active(id){var e=document.getElementById(id);return !!(e&&e.classList.contains('active'));}
   function entryActive(){return active('entryView')||(document.body&&document.body.classList.contains('entry-open'));}
   function recordsActive(){return active('recordsView');}
+  function beyanActive(){return active('beyanView');}
+  function recordsDataActive(){return recordsActive()||beyanActive();}
   function callTotals(){
     if(entryActive()){try{if(window.MesahaEntryStatsV576)window.MesahaEntryStatsV576.refresh(false);}catch(e){}return;}
-    if(!recordsActive())return;
+    if(!recordsDataActive())return;
     try{if(window.mesahaV305&&typeof window.mesahaV305.updateBeyanTotals==='function')window.mesahaV305.updateBeyanTotals();}catch(e){}
     try{if(window.mesahaV304&&typeof window.mesahaV304.updateExportScopeInfo==='function')window.mesahaV304.updateExportScopeInfo();}catch(e){}
   }

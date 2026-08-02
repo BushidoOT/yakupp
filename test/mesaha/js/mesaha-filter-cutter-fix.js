@@ -136,7 +136,7 @@
     setTimeout(renderFilters,80);
   }
 
-  function recordsViewActive(){var e=$('recordsView');return !!(e&&e.classList.contains('active'));}
+  function recordsViewActive(){var e=$('recordsView'),b=$('beyanView');return !!((e&&e.classList.contains('active'))||(b&&b.classList.contains('active')));}
   function schedule(delay){clearTimeout(timer);if(!recordsViewActive())return;timer=setTimeout(function(){if(recordsViewActive())renderCuttersAndSelects();},delay==null?60:delay)}
 
   document.addEventListener('click',function(ev){
@@ -175,12 +175,13 @@
   function boot(){
     if(recordsViewActive())renderCuttersAndSelects();
     [180,700,1800].forEach(function(ms){setTimeout(function(){if(recordsViewActive())renderCuttersAndSelects();},ms)});
-    var rec=$('recordsView');
-    if(rec && window.MutationObserver && !rec.__filterWatch){
-      rec.__filterWatch=true;
-      new MutationObserver(function(){schedule(80)}).observe(rec,{childList:true,subtree:true});
-    }
-    window.addEventListener('mesaha:view-changed',function(ev){if(ev&&ev.detail&&ev.detail.view==='records')schedule(40)},{passive:true});
+    [$('recordsView'),$('beyanView')].forEach(function(rec){
+      if(rec && window.MutationObserver && !rec.__filterWatch){
+        rec.__filterWatch=true;
+        new MutationObserver(function(){schedule(80)}).observe(rec,{childList:true,subtree:true});
+      }
+    });
+    window.addEventListener('mesaha:view-changed',function(ev){var v=ev&&ev.detail&&ev.detail.view;if(v==='records'||v==='beyan')schedule(40)},{passive:true});
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true}); else boot();
   var api={render:renderCuttersAndSelects,filters:renderFilters,syncCutters:syncCutterStore,stats:buildStats,clearStats:invalidateStats};

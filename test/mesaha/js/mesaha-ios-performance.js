@@ -10,7 +10,7 @@
   function byId(id){return document.getElementById(id);}
   function active(id){var e=byId(id);return !!(e&&e.classList.contains('active'));}
   function entryActive(){return active('entryView')||!!(document.body&&document.body.classList.contains('entry-open'));}
-  function recordsActive(){return active('recordsView');}
+  function recordsActive(){return active('recordsView')||active('beyanView');}
   function homeActive(){return active('homeView');}
   function quantity(r){var q=Number(r&&(r.quantity||r.adet||1));return Number.isFinite(q)&&q>0?q:1;}
   function volume(r){var d=Number(String(r&&(r.diameter||r.cap||0)||0).replace(',','.')),l=Number(String(r&&(r.length||r.boy||0)||0).replace(',','.')),q=quantity(r);return d>0&&l>0?Math.PI*Math.pow(d/100,2)/4*l*q:0;}

@@ -53,6 +53,7 @@
       document.documentElement.setAttribute("data-suite-managed", "1");
     </script>
     <script src="../release.js"></script>
+    <script src="../suite-runtime-stabilizer.js"></script>
     <script>window.MesahaRelease && window.MesahaRelease.use("mesaha");</script>
     <script>
       try {
@@ -2670,7 +2671,7 @@
             l = num(r.length),
             q = num(r.quantity || 1);
           if (!d || !l) return 0;
-          return ((Math.PI * Math.pow(d / 100, 2)) / 4) * l * q;
+          return Math.round((((Math.PI * Math.pow(d / 100, 2)) / 4) * l * q) * 1000 + Number.EPSILON) / 1000;
         }
         function productInfo(key) {
           return PRODUCTS.find((p) => p.key === key) || PRODUCTS[0];
@@ -5449,7 +5450,7 @@
             l = num(length),
             q = num(quantity || 1);
           if (!d || !l || !q) return 0;
-          return ((Math.PI * Math.pow(d / 100, 2)) / 4) * l * q;
+          return Math.round((((Math.PI * Math.pow(d / 100, 2)) / 4) * l * q) * 1000 + Number.EPSILON) / 1000;
         }
         function productInfo(key) {
           try {
@@ -6049,7 +6050,7 @@
             l = num(r.length),
             q = num(r.quantity || 1);
           if (!d || !l || !q) return 0;
-          return ((Math.PI * Math.pow(d / 100, 2)) / 4) * l * q;
+          return Math.round((((Math.PI * Math.pow(d / 100, 2)) / 4) * l * q) * 1000 + Number.EPSILON) / 1000;
         }
 
         function modal(opts) {
@@ -7131,7 +7132,7 @@
             l = num(r.length),
             q = num(r.quantity || 1);
           if (!d || !l || !q) return 0;
-          return ((Math.PI * Math.pow(d / 100, 2)) / 4) * l * q;
+          return Math.round((((Math.PI * Math.pow(d / 100, 2)) / 4) * l * q) * 1000 + Number.EPSILON) / 1000;
         }
         function totals(list) {
           return (list || []).reduce(
@@ -7309,8 +7310,9 @@
         }
 
         function recordsVisibleV578() {
-          const v = $("recordsView");
-          return !!(v && v.classList.contains("active"));
+          const records = $("recordsView");
+          const beyan = $("beyanView");
+          return !!((records && records.classList.contains("active")) || (beyan && beyan.classList.contains("active")));
         }
         function boot() {
           bindSelectOnTap();
@@ -8470,7 +8472,7 @@
           const l = Number(String(r.length || r.boy || 0).replace(",", "."));
           const q = Number(r.quantity || r.adet || 1);
           if (!d || !l) return 0;
-          return ((Math.PI * Math.pow(d / 100, 2)) / 4) * l * q;
+          return Math.round((((Math.PI * Math.pow(d / 100, 2)) / 4) * l * q) * 1000 + Number.EPSILON) / 1000;
         }
         function dateMsOf(r) {
           const raw =
@@ -9797,7 +9799,7 @@
             l = num(r.length || r.boy),
             q = num(r.quantity || r.adet || 1);
           if (!d || !l) return 0;
-          return ((Math.PI * Math.pow(d / 100, 2)) / 4) * l * q;
+          return Math.round((((Math.PI * Math.pow(d / 100, 2)) / 4) * l * q) * 1000 + Number.EPSILON) / 1000;
         }
         function weekKey(d) {
           const x = new Date(d);
@@ -15092,19 +15094,32 @@
           if (!window.OrbisXls || typeof window.OrbisXls.makeXls !== "function")
             throw new Error("XLS modülü yüklenmedi.");
           const filename = xlsFileNameV62();
-          const bytes = window.OrbisXls.makeXls(scope.list.slice());
+          const raw = window.OrbisXls.makeXls(scope.list.slice());
+          const bytes = raw instanceof Uint8Array
+            ? raw
+            : raw instanceof ArrayBuffer
+              ? new Uint8Array(raw)
+              : new Uint8Array(raw && raw.buffer ? raw.buffer : raw);
           const stamp = Date.now();
           const files = [
             new File([bytes], filename, {
               type: "application/vnd.ms-excel",
               lastModified: stamp,
             }),
-            new File([bytes], filename, {
-              type: "application/octet-stream",
-              lastModified: stamp,
-            }),
           ];
           return { bytes, files, filename };
+        }
+        function isAndroidBrowserV65() {
+          return /Android/i.test(String((navigator && navigator.userAgent) || ""));
+        }
+        function bytesToBase64V65(bytes) {
+          const u8 = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes || []);
+          let binary = "";
+          const chunk = 0x8000;
+          for (let i = 0; i < u8.length; i += chunk) {
+            binary += String.fromCharCode.apply(null, Array.from(u8.subarray(i, i + chunk)));
+          }
+          return btoa(binary);
         }
         function pickShareFileV62(files) {
           if (!navigator || typeof navigator.share !== "function") return null;
@@ -15116,6 +15131,94 @@
           }
           return null;
         }
+        async function directFileShareV65(built, scope) {
+          const shareFile = pickShareFileV62(built.files);
+          if (!shareFile) return false;
+          try {
+            await navigator.share({ files: [shareFile], title: built.filename });
+            try {
+              if (window.mesahaExportStatsV323 && typeof window.mesahaExportStatsV323.send === "function")
+                window.mesahaExportStatsV323.send("xls-share-v65", { list: scope.list.slice(), text: scope.text, mode: scope.mode, target: "direct-file-share" });
+            } catch (_) {}
+            toast("Paylaşım menüsü açıldı.");
+            return true;
+          } catch (err) {
+            if (err && err.name === "AbortError") return true;
+            return false;
+          }
+        }
+        async function showShareLinkReadyV65(built, linkData, scope) {
+          const shareUrl = String((linkData && linkData.url) || "").trim();
+          if (!shareUrl) throw new Error("Paylaşım bağlantısı alınamadı.");
+          const html = `<p>Android Chrome, <b>.xls dosyasını doğrudan uygulamaya eklemeye izin vermediği</b> için güvenli indirme bağlantısı hazırlandı.</p><div class="modal-note"><b>${esc(built.filename)}</b><br>Bağlantı 24 saat geçerlidir. Alıcı bağlantıya dokunduğunda gerçek ORBİS uyumlu XLS dosyası iner.</div><div class="xls-share-note-v62">Dosya geçici ve özel alanda tutulur; bağlantının süresi dolduğunda indirilemez.</div>`;
+          if (typeof window.mesahaModal !== "function") {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+              await navigator.clipboard.writeText(shareUrl);
+              toast("Paylaşım bağlantısı kopyalandı.");
+              return;
+            }
+            window.open(shareUrl, "_blank", "noopener");
+            return;
+          }
+          await window.mesahaModal({
+            title: "Paylaşım bağlantısı hazır",
+            icon: "↗",
+            html,
+            buttons: [
+              {
+                text: "Paylaşım Menüsünü Aç",
+                value: false,
+                cls: "primary xls-link-share-v65",
+                onClick: async function () {
+                  if (!navigator || typeof navigator.share !== "function") {
+                    throw new Error("Sistem paylaşım menüsü bu tarayıcıda kullanılamıyor.");
+                  }
+                  try {
+                    await navigator.share({
+                      title: built.filename,
+                      text: "ORBİS uyumlu Mesaha dosyası. Bağlantı 24 saat geçerlidir.",
+                      url: shareUrl,
+                    });
+                    try {
+                      if (window.mesahaExportStatsV323 && typeof window.mesahaExportStatsV323.send === "function")
+                        window.mesahaExportStatsV323.send("xls-share-v65", { list: scope.list.slice(), text: scope.text, mode: scope.mode, target: "temporary-link" });
+                    } catch (_) {}
+                  } catch (err) {
+                    if (err && err.name === "AbortError") return;
+                    throw err;
+                  }
+                },
+              },
+              {
+                text: "Bağlantıyı Kopyala",
+                value: false,
+                cls: "soft xls-copy-link-v65",
+                onClick: async function () {
+                  if (navigator.clipboard && navigator.clipboard.writeText) {
+                    await navigator.clipboard.writeText(shareUrl);
+                    toast("Paylaşım bağlantısı kopyalandı.");
+                    return;
+                  }
+                  window.prompt("Bağlantıyı kopyalayın:", shareUrl);
+                },
+              },
+              { text: "Kapat", value: false, cls: "ghost" },
+            ],
+          });
+        }
+        async function createTemporaryShareLinkV65(built) {
+          if (navigator.onLine === false) throw new Error("Paylaşım bağlantısı için internet bağlantısı gerekiyor.");
+          const api = window.MesahaSuiteSync || window.MesahaSuiteSyncV31 || window.MesahaSuiteSyncV28;
+          if (!api || typeof api.edge !== "function") throw new Error("Güvenli paylaşım servisi hazır değil.");
+          toast("Güvenli paylaşım bağlantısı hazırlanıyor…");
+          return await api.edge("xls_share_link_create", {
+            filename: built.filename,
+            fileBase64: bytesToBase64V65(built.bytes),
+            fileSize: built.bytes.length,
+            expiresIn: 86400,
+            appVersion: String((window.MESAHA_VERSION && window.MESAHA_VERSION.version) || "Mesaha İO"),
+          });
+        }
         async function shareXlsV62() {
           const scope = exportScope();
           if (!scope.list.length) return toast("Paylaşılacak kayıt yok.");
@@ -15126,32 +15229,30 @@
             toast(err && err.message ? err.message : "Dosya hazırlanamadı.");
             return;
           }
-          const shareFile = pickShareFileV62(built.files);
-          if (!shareFile) {
-            downloadFile();
-            toast("Bu tarayıcı dosya paylaşımını desteklemiyor. Mesaha dosyası indirildi.");
-            return;
+
+          /* iOS/Safari destekliyorsa gerçek dosyayı doğrudan paylaşır. Android Chromium
+             XLS uzantısını güvenlik nedeniyle reddettiği için orada zaman kaybetmeden
+             24 saatlik özel indirme bağlantısı hazırlanır. */
+          if (!isAndroidBrowserV65()) {
+            const direct = await directFileShareV65(built, scope);
+            if (direct) return;
           }
+
           try {
-            await navigator.share({ files: [shareFile], title: built.filename });
-            try {
-              if (window.mesahaExportStatsV323 && typeof window.mesahaExportStatsV323.send === "function")
-                window.mesahaExportStatsV323.send("xls-share-v62", { list: scope.list.slice(), text: scope.text, mode: scope.mode, target: "system-share" });
-            } catch (_) {}
-            toast("Paylaşım menüsü açıldı.");
+            const linkData = await createTemporaryShareLinkV65(built);
+            await showShareLinkReadyV65(built, linkData, scope);
           } catch (err) {
-            if (err && err.name === "AbortError") return;
             downloadFile();
-            const reason = err && err.name === "NotAllowedError"
-              ? "Android Chrome dosya paylaşımına izin vermedi. Dosya indirildi; paylaşımı İndirilenler klasöründen yapabilirsiniz."
-              : "Paylaşım açılamadı. Mesaha dosyası indirildi.";
-            toast(reason);
+            const message = err && err.message
+              ? err.message + " Dosya indirildi; İndirilenler klasöründen paylaşabilirsiniz."
+              : "Paylaşım bağlantısı hazırlanamadı. Dosya indirildi.";
+            toast(message);
           }
         }
         async function confirmAndDownload() {
           const scope = exportScope();
           const st = totals(scope.list);
-          const html = `<p><b>${esc(scope.text)}</b> ORBİS uyumlu .xls olarak hazırlanacak.</p><div class="modal-note"><b>Kontrol:</b> ${scope.list.length} kayıt • ${fmt(st.m3, 3)} m³<br>Hacimler ORBİS mantığıyla her kayıt 3 haneye yuvarlanarak hesaplanır.</div><div class="orbis-video-note-v392">Video anlatım: <a class="orbis-video-link-v392" href="https://youtube.com/shorts/J25xp8NrHw8?si=-SeJsWMar3Ja3O4I" target="_blank" rel="noopener">ORBİS aktarım videosunu aç</a></div><div class="xls-share-note-v62"><b>Paylaş</b> düğmesi telefonun sistem paylaşım menüsünü açar. Telefonda bulunan uygun uygulamayı açılan menüden seçebilirsiniz. Android Chrome dosya paylaşımını engellerse dosya otomatik indirilir.</div><ol><li>Dosyayı bilgisayara aktarınız.</li><li>ORBİS’e bilgisayar üzerinden giriş yapınız.</li><li>İşletme Pazarlama modülüne giriniz.</li><li>Kesme Faaliyetleri Raporu ekranında şeflik ve bölme bilgilerini giriniz.</li><li>Bölmeye çift tıklayıp dosya yükleme bölümünden <b>Excel’den Aktar</b> deyiniz.</li></ol>`;
+          const html = `<p><b>${esc(scope.text)}</b> ORBİS uyumlu .xls olarak hazırlanacak.</p><div class="modal-note"><b>Kontrol:</b> ${scope.list.length} kayıt • ${fmt(st.m3, 3)} m³<br>Hacimler ORBİS mantığıyla her kayıt 3 haneye yuvarlanarak hesaplanır.</div><div class="orbis-video-note-v392">Video anlatım: <a class="orbis-video-link-v392" href="https://youtube.com/shorts/J25xp8NrHw8?si=-SeJsWMar3Ja3O4I" target="_blank" rel="noopener">ORBİS aktarım videosunu aç</a></div><div class="xls-share-note-v62"><b>Paylaş</b> düğmesi iPhone/iPad’de dosyayı doğrudan paylaşır. Android Chrome’da XLS dosya eki desteklenmediği için 24 saatlik güvenli indirme bağlantısı hazırlanır ve sistem paylaşım menüsüyle gönderilir.</div><ol><li>Dosyayı bilgisayara aktarınız.</li><li>ORBİS’e bilgisayar üzerinden giriş yapınız.</li><li>İşletme Pazarlama modülüne giriniz.</li><li>Kesme Faaliyetleri Raporu ekranında şeflik ve bölme bilgilerini giriniz.</li><li>Bölmeye çift tıklayıp dosya yükleme bölümünden <b>Excel’den Aktar</b> deyiniz.</li></ol>`;
           let action = "download";
           if (typeof window.mesahaModal === "function")
             action = await window.mesahaModal({
@@ -15211,8 +15312,9 @@
           return true;
         }
         function recordsVisibleV578() {
-          const v = $("recordsView");
-          return !!(v && v.classList.contains("active"));
+          const records = $("recordsView");
+          const beyan = $("beyanView");
+          return !!((records && records.classList.contains("active")) || (beyan && beyan.classList.contains("active")));
         }
         function boot() {
           try {
@@ -20281,6 +20383,9 @@
       #modernModal .xls-share-note-v62{margin:14px 0;padding:12px 14px;border:1px solid #d9e9e2;border-radius:15px;background:#f4faf7;color:#36584a;font-size:12px;font-weight:750;line-height:1.5}
       #modernModal .modal-actions .xls-share-button-v62{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:48px;padding:12px 18px;color:#fff;border:1px solid #0f7650;background:linear-gradient(180deg,#1aa96b,#11764d);box-shadow:0 9px 20px rgba(17,118,77,.2);font-weight:900}
       #modernModal .modal-actions .xls-share-button-v62:before{content:"";width:21px;height:21px;flex:none;background:no-repeat center/contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='18' cy='5' r='3'/%3E%3Ccircle cx='6' cy='12' r='3'/%3E%3Ccircle cx='18' cy='19' r='3'/%3E%3Cpath d='m8.6 10.7 6.8-4.1M8.6 13.3l6.8 4.1'/%3E%3C/svg%3E")}
+      #modernModal .modal-actions .xls-link-share-v65{display:flex!important;align-items:center;justify-content:center;gap:9px;min-height:52px!important;background:linear-gradient(180deg,#168b59,#0d6942)!important;color:#fff!important;font-weight:950!important;border-radius:16px!important}
+      #modernModal .modal-actions .xls-link-share-v65:before{content:"";width:21px;height:21px;flex:none;background:no-repeat center/contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='18' cy='5' r='3'/%3E%3Ccircle cx='6' cy='12' r='3'/%3E%3Ccircle cx='18' cy='19' r='3'/%3E%3Cpath d='m8.6 10.7 6.8-4.1M8.6 13.3l6.8 4.1'/%3E%3C/svg%3E")}
+      #modernModal .modal-actions .xls-copy-link-v65{min-height:48px!important;border-radius:15px!important;font-weight:850!important}
       #modernModal .modal-actions .xls-download-v62{min-height:48px;padding:12px 18px}
       #modernModal .modal-actions:has(.xls-download-v62){position:sticky;bottom:-18px;z-index:5;display:grid!important;grid-template-columns:1fr!important;gap:9px!important;margin:18px -2px -2px;padding:12px 2px 2px;background:linear-gradient(180deg,rgba(255,255,255,0),#fff 20%,#fff);}
       #modernModal .modal-actions:has(.xls-download-v62) button{width:100%!important;min-width:0!important;margin:0!important}

@@ -100,6 +100,7 @@ const CORE = [
   "./suite-security.js",
   "./suite-cache-reset.js",
   "./suite-health.js",
+  "./suite-runtime-stabilizer.js",
   "./suite-sync-core.js",
   "./suite-ui.js",
   "./temizle.html",
@@ -115,6 +116,7 @@ const CRITICAL = [
   "./suite-security.js",
   "./suite-cache-reset.js",
   "./suite-health.js",
+  "./suite-runtime-stabilizer.js",
   "./suite-sync-core.js",
   "./suite-ui.js",
   "./manifest.json",
@@ -238,9 +240,14 @@ async function matchSuite(value, options) {
 
 async function putCurrent(value, response) {
   if (!response || (!response.ok && response.type !== "opaque")) return false;
-  const cache = await cacheFor(value);
-  await cache.put(value, response.clone());
-  return true;
+  try {
+    const cache = await cacheFor(value);
+    await cache.put(value, response.clone());
+    return true;
+  } catch (_) {
+    // Depolama kotası dolsa bile başarılı ağ yanıtını kullanıcıdan saklama.
+    return false;
+  }
 }
 
 async function notify(data) {
@@ -256,7 +263,7 @@ function reply(event, data) {
 
 async function fetchForCache(path) {
   const request = new Request(new URL(path, self.registration.scope).href, { cache: "reload" });
-  const response = await fetch(request);
+  const response = await fetchWithTimeout(request, 12000);
   if (!response || (!response.ok && response.type !== "opaque")) throw new Error(path);
   return [request, response];
 }
@@ -359,7 +366,7 @@ async function cacheAll(force = false, cleanupOld = true) {
   }
 
   const data = await buildStatus();
-  await writeOfflineStatus(data);
+  try { await writeOfflineStatus(data); } catch (_) {}
   if (data.ready && cleanupOld) await deleteOldCaches();
   await notify({
     type: data.ready ? "CACHE_READY" : "CACHE_INCOMPLETE",
@@ -475,7 +482,7 @@ async function fetchWithTimeout(request, timeout = 5000) {
   }
 }
 
-async function stale(request, fallback) {
+async function stale(request, fallback, event) {
   const hit = (await matchSuite(request, { ignoreSearch: true })) ||
     (fallback && (await matchSuite(fallback, { ignoreSearch: true })));
   const network = fetchWithTimeout(request, 7000)
@@ -486,7 +493,7 @@ async function stale(request, fallback) {
     .catch(() => null);
 
   if (hit) {
-    network.catch(() => {});
+    if (event && typeof event.waitUntil === "function") event.waitUntil(network.then(() => undefined).catch(() => undefined));
     return hit;
   }
   return (await network) ||
@@ -539,7 +546,7 @@ self.addEventListener("fetch", (event) => {
   const url = new URL(event.request.url);
 
   if (url.origin !== self.location.origin) {
-    if (EXTERNAL.includes(url.href)) event.respondWith(stale(event.request));
+    if (EXTERNAL.includes(url.href)) event.respondWith(stale(event.request, null, event));
     return;
   }
 
@@ -559,5 +566,5 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  event.respondWith(stale(event.request));
+  event.respondWith(stale(event.request, null, event));
 });
