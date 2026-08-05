@@ -1,20 +1,20 @@
 (function (root) {
   "use strict";
   const DATA = /*MESAHA_RELEASE_DATA_START*/{
-  "build": 74,
-  "version": "74.0.0",
+  "build": 75,
+  "version": "75.0.0",
   "channel": "stable",
   "releasedAt": "2026-08-06T01:20:00+03:00",
-  "assetToken": "orman-io-stable-20260806-v74",
-  "cacheName": "orman-io-shell-stable-20260806-v74",
+  "assetToken": "orman-io-stable-20260806-v75",
+  "cacheName": "orman-io-shell-stable-20260806-v75",
   "apps": {
     "suite": {
       "label": "Orman İO",
-      "version": "74.0.0"
+      "version": "75.0.0"
     },
     "mesaha": {
       "label": "Mesaha İO",
-      "version": "6.14"
+      "version": "6.15"
     },
     "istif": {
       "label": "İstif İO",
@@ -22,10 +22,10 @@
     },
     "admin": {
       "label": "Orman İO Yönetim",
-      "version": "74.0.0"
+      "version": "75.0.0"
     }
   },
-  "description": "Mesaha ölçüm giriş ekranı modernize edildi; özet, kesimci, ağaç türü, boy-çap, ürün, barkod ve son kayıt alanları tek tasarım dilinde birleştirildi. Sürüm numaralı Mesaha UI dosyaları kaldırılıp sabit mesaha-ui.css ve mesaha-ui.js dosyalarına geçirildi."
+  "description": "Mesaha ölçüm giriş ekranı sade ve düzenli tasarıma geçirildi. Yüzen Kaydet korunurken kart yoğunluğu azaltıldı; ürün seçimleri kompaktlaştırıldı ve son üç barkod ürün türüne göre renkli ince şeritlerle yeniden düzenlendi."
 }/*MESAHA_RELEASE_DATA_END*/;
   const APP_NAMES = DATA.apps || {};
   const SCRIPT_URL = (() => {
