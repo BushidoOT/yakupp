@@ -104,7 +104,8 @@
   function normalizeDivision(x,fallbackBolme){x=Object.assign({},x||{});x.bolme_no=clean(x.bolme_no||fallbackBolme);x.status=fold(x.status||'open')==='open'?'open':clean(x.status||'open');x.record_count=num(x.record_count);x.total_volume=num(x.total_volume);x.contributors=Array.isArray(x.contributors)?x.contributors.filter(Boolean):[];return x}
   function pendingDivisions(){var u=user(),p=readJson(PENDING_DIVISIONS_KEY,{}),list=p&&p.seflik===u.seflik&&Array.isArray(p.divisions)?p.divisions:[];return list.map(function(x){return normalizeDivision(x)}).filter(function(x){return !!x.bolme_no})}
   function savePending(list){writeJson(PENDING_DIVISIONS_KEY,{seflik:user().seflik,updatedAt:new Date().toISOString(),divisions:(list||[]).map(function(x){return normalizeDivision(x)})})}
-  function mergeRemoteDivisions(remote){var remoteList=(Array.isArray(remote)?remote:[]).map(function(x){return normalizeDivision(x)}),map=new Map();remoteList.forEach(function(x){if(x.bolme_no)map.set(divisionId(x),x)});var unresolved=[];pendingDivisions().forEach(function(x){var k=divisionId(x);if(!map.has(k)){x.local_pending=true;map.set(k,x);unresolved.push(x)}});savePending(unresolved);return Array.from(map.values())}
+  function authoritativeFolderListV68(out){return !!(out&&out.sync_contract==='orman-io-sync-v68'&&out.complete===true&&out.partial!==true&&out.truncated!==true)}
+  function mergeRemoteDivisions(remote,authoritative){var remoteList=(Array.isArray(remote)?remote:[]).map(function(x){return normalizeDivision(x)}),map=new Map();remoteList.forEach(function(x){if(x.bolme_no)map.set(divisionId(x),x)});if(!authoritative)(Array.isArray(divisions)?divisions:[]).forEach(function(x){x=normalizeDivision(x);var k=divisionId(x);if(k&&!map.has(k))map.set(k,x)});var unresolved=[];pendingDivisions().forEach(function(x){var k=divisionId(x);if(!map.has(k)){x.local_pending=true;map.set(k,x);unresolved.push(x)}});savePending(unresolved);return Array.from(map.values())}
   function cacheAndRender(){var u=user();writeJson(CACHE_KEY,{at:new Date().toISOString(),seflik:u.seflik,divisions:divisions});renderList()}
   function upsertLocalDivision(row,asPending){var x=normalizeDivision(row),k=divisionId(x),found=false;divisions=divisions.map(function(d){if(divisionId(d)===k){found=true;return Object.assign({},d,x)}return d});if(!found)divisions.unshift(x);if(asPending){var p=pendingDivisions(),pf=false;p=p.map(function(d){if(divisionId(d)===k){pf=true;return Object.assign({},d,x,{local_pending:true})}return d});if(!pf)p.unshift(Object.assign({},x,{local_pending:true}));savePending(p)}cacheAndRender();return x}
   function openDivisions(){return divisions.filter(function(x){return fold(x.status||'open')==='open'})}
@@ -188,9 +189,9 @@
       }
       setStatus('Şeflik klasörü senkronize ediliyor…','busy');
       try{
-        var out=await edge('seflik_folder_list',{}),remote=Array.isArray(out.divisions)?out.divisions:(Array.isArray(out.summaries)?out.summaries:[]);
-        divisions=mergeRemoteDivisions(remote);cacheAndRender();markNeedsOnlineRefresh(false);lastSyncAt=Date.now();
-        setStatus('Senkronizasyon tamamlandı • '+new Date().toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'}),'success');
+        var out=await edge('seflik_folder_list',{}),remote=Array.isArray(out.divisions)?out.divisions:(Array.isArray(out.summaries)?out.summaries:[]),authoritative=authoritativeFolderListV68(out);
+        divisions=mergeRemoteDivisions(remote,authoritative);cacheAndRender();markNeedsOnlineRefresh(!authoritative);lastSyncAt=Date.now();
+        setStatus((authoritative?'Senkronizasyon tamamlandı':'Eksik sunucu cevabı: cihazdaki bölmeler korundu')+' • '+new Date().toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'}),authoritative?'success':'busy');
         if(syncToastRequested)notify('Şeflik klasörü güncellendi',openDivisions().length+' açık bölme bulundu.','success');
         return true;
       }catch(e){
@@ -199,18 +200,18 @@
           try{
             setStatus('Şeflik yetkisi onarılıyor…','busy');
             await edge('seflik_folder_ensure_active',{});
-            var outFix=await edge('seflik_folder_list',{}),remoteFix=Array.isArray(outFix.divisions)?outFix.divisions:(Array.isArray(outFix.summaries)?outFix.summaries:[]);
-            divisions=mergeRemoteDivisions(remoteFix);cacheAndRender();markNeedsOnlineRefresh(false);lastSyncAt=Date.now();
-            setStatus('Senkronizasyon tamamlandı • '+new Date().toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'}),'success');
+            var outFix=await edge('seflik_folder_list',{}),remoteFix=Array.isArray(outFix.divisions)?outFix.divisions:(Array.isArray(outFix.summaries)?outFix.summaries:[]),authoritativeFix=authoritativeFolderListV68(outFix);
+            divisions=mergeRemoteDivisions(remoteFix,authoritativeFix);cacheAndRender();markNeedsOnlineRefresh(!authoritativeFix);lastSyncAt=Date.now();
+            setStatus((authoritativeFix?'Senkronizasyon tamamlandı':'Eksik sunucu cevabı: cihazdaki bölmeler korundu')+' • '+new Date().toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'}),authoritativeFix?'success':'busy');
             if(syncToastRequested)notify('Şeflik klasörü güncellendi',openDivisions().length+' açık bölme bulundu.','success');
             return true;
           }catch(_fixError){}
         }
         if(/Google ile giriş|oturum|jwt|token|auth|401|403/i.test(msg)&&hasApprovedIdentity()){
           setStatus('Oturum yenileniyor…','busy');await recoverAuthForFolder();
-          var out2=await edge('seflik_folder_list',{}),remote2=Array.isArray(out2.divisions)?out2.divisions:(Array.isArray(out2.summaries)?out2.summaries:[]);
-          divisions=mergeRemoteDivisions(remote2);cacheAndRender();markNeedsOnlineRefresh(false);lastSyncAt=Date.now();
-          setStatus('Senkronizasyon tamamlandı • '+new Date().toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'}),'success');
+          var out2=await edge('seflik_folder_list',{}),remote2=Array.isArray(out2.divisions)?out2.divisions:(Array.isArray(out2.summaries)?out2.summaries:[]),authoritative2=authoritativeFolderListV68(out2);
+          divisions=mergeRemoteDivisions(remote2,authoritative2);cacheAndRender();markNeedsOnlineRefresh(!authoritative2);lastSyncAt=Date.now();
+          setStatus((authoritative2?'Senkronizasyon tamamlandı':'Eksik sunucu cevabı: cihazdaki bölmeler korundu')+' • '+new Date().toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'}),authoritative2?'success':'busy');
           if(syncToastRequested)notify('Şeflik klasörü güncellendi',openDivisions().length+' açık bölme bulundu.','success');
           return true;
         }
@@ -295,7 +296,12 @@
       await edge('seflik_folder_finish',{bolmeNo:bolme,syncToken:syncToken,rowCount:rowCount,itemCount:itemCount,recordCount:itemCount,totalVolume:Number(total.toFixed(3)),driveFileId:clean(drive&&drive.id),driveFileName:clean(drive&&drive.name),driveStatus:driveError?'failed':'ok',driveError:driveError});
       localStorage.setItem(LAST_BOLME_KEY,bolme);await persistActiveBolme(bolme);setProgress(100);updateTransferOverlay('Gönderim tamamlandı','Şeflik Klasörü yenileniyor.',100);await syncFolder(false);
       closeSendModal();
-      if(driveError){setStatus('Sunucu tamamlandı; Drive yedeği alınamadı: '+driveError,'error');notify('Şefliğe gönderildi','Drive yedeği başarısız; daha sonra tekrar gönderebilirsiniz.','warning')}
+      if(driveError){
+        var retrySuite=window.MesahaSuiteSync||window.MesahaSuiteSyncV31||window.MesahaSuiteSyncV28||window.MesahaSuiteSyncV27;
+        if(retrySuite&&typeof retrySuite.markDirty==='function')retrySuite.markDirty('mesaha',{manual:true,manualSend:true,sefligeGonder:true,source:'seflige-gonder',bolmeNo:bolme,backupFailed:1,backupError:driveError});
+        setStatus('Sunucu tamamlandı; Drive yedeği bekliyor: '+driveError,'error');
+        notify('Sunucuya gönderildi','Drive yedeği tamamlanamadı ve yeniden deneme kuyruğuna alındı.','warning');
+      }
       else{setStatus('Sunucu ve Drive yedeği tamamlandı.','success');notify('Şeflik Klasörüne gönderildi','Bölme '+bolme+' • '+itemCount+' adet • '+rowCount+' kayıt satırı • Drive yedekli','success')}
       return true;
     }catch(e){setStatus('Gönderim başarısız: '+String(e&&e.message?e.message:e),'error');notify('Şeflik Klasörüne gönderilemedi',String(e&&e.message?e.message:e),'error');return false}
@@ -322,7 +328,10 @@
     if(!navigator.onLine){notify('İnternet bağlantısı yok','Mesahaya devam etmek için bölme kayıtları sunucudan alınmalı.','warning');return}
     setStatus('Bölme '+bolme+' kayıtları indiriliyor…','busy');
     try{
-      var out=await edge('seflik_folder_read',{bolmeNo:bolme}),rows=Array.isArray(out.records)?out.records:[];
+      var out=await edge('seflik_folder_read',{bolmeNo:bolme});
+      if(!Array.isArray(out.records))throw new Error('Sunucu geçerli bölme kayıtları döndürmedi');
+      if(!authoritativeFolderListV68(out))throw new Error('Bölme verisi V68 tam liste sözleşmesiyle doğrulanamadı; cihazdaki kayıtlar değiştirilmedi');
+      var rows=out.records;
       var remoteRecords=rows.map(function(r,i){return normalizeRemoteRecord(r,bolme,i)}),nextRecords=mergeByBarcodeV17(remoteRecords,localRecords);
       var duplicateCount=Math.max(0,remoteRecords.length+localRecords.length-nextRecords.length);
       if(!confirm('Bölme '+bolme+' içindeki '+remoteRecords.length+' ortak kayıt, cihazdaki '+localCount+' kayıtla barkoda göre birleştirilsin mi?'+(duplicateCount?' '+duplicateCount+' aynı barkod tek kayıt tutulacak.':'')))return;

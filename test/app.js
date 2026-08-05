@@ -644,7 +644,7 @@
             seflikKey: clean(af.seflik_key || af.seflikKey) || stableKey(seflik),
             bolmeNo: no,
           });
-          remoteIstifAuthoritative = out.complete !== false && out.truncated !== true;
+          remoteIstifAuthoritative = !!(out && out.sync_contract === "orman-io-sync-v68" && out.complete === true && out.partial !== true && out.truncated !== true && (!Array.isArray(out.query_errors) || out.query_errors.length === 0) && (out.expected_queries == null || Number(out.successful_queries) === Number(out.expected_queries)));
           remoteIstif = (Array.isArray(out && out.records) ? out.records : []).filter((r) =>
             clean(r.bolme_no || r.bolme || r.bolmeNo) === no &&
             !istifDeletedIdsForYield.has(clean(r.id || r.record_id)),
@@ -1254,8 +1254,25 @@
       const remote = (Array.isArray(out.folders) ? out.folders : [])
         .map(normalizeFolder)
         .filter(Boolean);
-      if (remote.length) folders = remote;
-      else folders = lf ? [lf] : [];
+      const authoritative = out?.sync_contract === "orman-io-sync-v68" && out?.complete === true && out?.partial !== true && out?.truncated !== true;
+      if (authoritative) {
+        folders = remote.length ? remote : (lf ? [lf] : []);
+      } else {
+        const merged = new Map();
+        for (const row of folders) {
+          const key = clean(row?.seflik_key || row?.seflikKey) || fold(row?.seflik);
+          if (key) merged.set(key, row);
+        }
+        for (const row of remote) {
+          const key = clean(row?.seflik_key || row?.seflikKey) || fold(row?.seflik);
+          if (key) merged.set(key, { ...(merged.get(key) || {}), ...row });
+        }
+        if (lf) {
+          const key = clean(lf.seflik_key) || fold(lf.seflik);
+          if (key && !merged.has(key)) merged.set(key, lf);
+        }
+        folders = Array.from(merged.values());
+      }
       if (folders.length) {
         const stored = read(K.active, {}) || {};
         const storedKey = clean(stored.seflik_key || stored.seflikKey);
@@ -1266,7 +1283,7 @@
           creatorFolder() ||
           folders[0];
         if (selected) setActive(selected);
-      } else clearActiveFolderContext();
+      } else if (out?.sync_contract === "orman-io-sync-v68" && out?.complete === true) clearActiveFolderContext();
       await loadMembersFromServer();
       await loadDivisionsFromServer();
       saveLocal();
@@ -1316,8 +1333,9 @@
         seflik_key: clean(af.seflik_key || af.seflikKey),
         folderId: clean(af.id || af.folder_id || af.folderId),
       });
-      const hasAuthoritativeList = Array.isArray(out && out.divisions) || Array.isArray(out && out.summaries);
-      if (!hasAuthoritativeList) return;
+      const hasRemoteList = Array.isArray(out && out.divisions) || Array.isArray(out && out.summaries);
+      if (!hasRemoteList) return;
+      const authoritative = out?.sync_contract === "orman-io-sync-v68" && out?.complete === true && out?.partial !== true && out?.truncated !== true;
       const key = clean(af.seflik_key || af.seflikKey) || stableKey(af.seflik);
       const deleting = new Set((pendingOps || [])
         .filter((item) => item && item.type === "delete_division" && clean(item.payload && item.payload.seflik) === clean(af.seflik))
@@ -1332,22 +1350,21 @@
         const no = clean(d && d.bolme_no);
         return no && !deleting.has(no) && !remoteNos.has(no) && !!(d.pending || d.local_pending);
       });
-      const next = remote.map((d) => {
+      const remoteMerged = remote.map((d) => {
         const no = clean(d.bolme_no);
-        return {
-          ...(oldByNo.get(no) || {}),
-          ...d,
-          deleted: false,
-          pending: false,
-          local_pending: false,
-        };
-      }).concat(localPendingCreates);
+        return { ...(oldByNo.get(no) || {}), ...d, deleted: false, pending: false, local_pending: false };
+      });
+      const preservedMissing = authoritative ? [] : old.filter((d) => {
+        const no = clean(d?.bolme_no);
+        return no && !deleting.has(no) && !remoteNos.has(no);
+      });
+      const next = remoteMerged.concat(localPendingCreates, preservedMissing.filter((row) => !localPendingCreates.some((p) => clean(p.bolme_no) === clean(row.bolme_no))));
 
       const nextNos = new Set(next.map((d) => clean(d.bolme_no)));
-      const removed = old.filter((d) => {
+      const removed = authoritative ? old.filter((d) => {
         const no = clean(d && d.bolme_no);
         return no && !nextNos.has(no);
-      });
+      }) : [];
       for (const d of removed) {
         const no = clean(d.bolme_no);
         const rk = readyKey(key, no);
@@ -2291,11 +2308,15 @@
   }
   async function downloadDivisionByBolme(no, quiet = false, strict = false) {
     const af = activeFolder();
-    if (!af || !no) return;
+    if (!af || !no) return { ok: false, reason: "missing-context" };
     const k = af.seflik_key;
-    let rows = [];
-    if (cloudIdentity() && navigator.onLine) {
-      try {
+    const rk = readyKey(k, no);
+    const previousRows = Array.isArray(divisionRecords[rk]) ? divisionRecords[rk] : null;
+    const previousReady = divisionReady[rk] && typeof divisionReady[rk] === "object" ? { ...divisionReady[rk] } : null;
+    const division = (divisions[k] || []).find((d) => clean(d.bolme_no) === clean(no));
+    let rows = previousRows;
+    try {
+      if (cloudIdentity() && navigator.onLine) {
         const out = await edge("seflik_folder_read", {
           seflik: af.seflik,
           folderSeflik: af.seflik,
@@ -2304,38 +2325,53 @@
           folderId: clean(af.id || af.folder_id || af.folderId),
           bolmeNo: no,
         });
-        rows = Array.isArray(out.records) ? out.records : [];
-      } catch (error) {
-        if (strict) throw error;
+        if (!Array.isArray(out.records)) throw new Error("Sunucu bölme kayıtlarını geçerli biçimde döndürmedi");
+        if (out.sync_contract !== "orman-io-sync-v68" || out.complete !== true || out.truncated === true || out.partial === true)
+          throw new Error("Bölme verisi V68 tam liste sözleşmesiyle doğrulanamadı; mevcut offline kayıtlar korundu");
+        rows = out.records;
+      } else if (!rows && division && (division.pending || division.local_pending)) {
         rows = [];
+      } else if (!rows) {
+        throw new Error(navigator.onLine === false ? "İnternet yok; daha önce indirilen kayıt bulunamadı" : "Bulut oturumu bulunamadı");
       }
+
+      const nextRows = Array.isArray(rows) ? rows : [];
+      divisionRecords[rk] = nextRows;
+      divisionReady[rk] = { ready: true, at: now(), recordCount: nextRows.length, complete: true };
+      divisions[k] = (divisions[k] || []).map((d) =>
+        clean(d.bolme_no) === clean(no)
+          ? { ...d, offline_ready: true, record_count: nextRows.length, updated_at: now() }
+          : d,
+      );
+      saveLocal();
+      if (!quiet) toast("Bölme " + no + " offline kullanıma hazır.");
+      render();
+      renderBolmeModal();
+      return { ok: true, recordCount: nextRows.length };
+    } catch (error) {
+      if (previousRows) divisionRecords[rk] = previousRows;
+      else delete divisionRecords[rk];
+      if (previousReady) divisionReady[rk] = previousReady;
+      else delete divisionReady[rk];
+      saveLocal();
+      const message = clean(error && error.message || error) || "Bölme indirilemedi";
+      if (strict) throw new Error(message);
+      if (!quiet) toast(message + ". Mevcut offline veri korundu.", true);
+      return { ok: false, error: message, preserved: true };
     }
-    divisionRecords[readyKey(k, no)] = rows;
-    divisionReady[readyKey(k, no)] = {
-      ready: true,
-      at: now(),
-      recordCount: rows.length,
-    };
-    divisions[k] = (divisions[k] || []).map((d) =>
-      clean(d.bolme_no) === clean(no)
-        ? {
-            ...d,
-            offline_ready: true,
-            record_count: Math.max(d.record_count || 0, rows.length),
-            updated_at: now(),
-          }
-        : d,
-    );
-    saveLocal();
-    if (!quiet) toast("Bölme " + no + " offline kullanıma hazır.");
-    render();
-    renderBolmeModal();
   }
   async function downloadAllDivisions() {
     const rows = currentDivisions();
     if (!rows.length) return toast("İndirilecek bölme yok.", true);
-    for (const d of rows) await downloadDivisionByBolme(d.bolme_no, true);
-    toast(rows.length + " bölme offline kullanıma hazır.");
+    let completed = 0;
+    const failed = [];
+    for (const d of rows) {
+      const result = await downloadDivisionByBolme(d.bolme_no, true);
+      if (result?.ok) completed += 1;
+      else failed.push(clean(d.bolme_no));
+    }
+    if (failed.length) toast(`${completed} bölme hazırlandı; ${failed.length} bölme indirilemedi ve eski verisi korundu.`, true);
+    else toast(rows.length + " bölme offline kullanıma hazır.");
     render();
   }
 
@@ -2819,7 +2855,7 @@
       const api = suiteSyncApi();
       if (api && typeof api.syncAll === "function") {
         const result = await api.syncAll({ source: "orman-bottom-upload", force: true });
-        if (result && result.ok === false && !result.busy) throw new Error("Sunucu gönderimi tamamlanamadı.");
+        if (result && result.ok === false && !result.busy) throw new Error(result.message || "Sunucu gönderimi tamamlanamadı.");
       } else {
         await sendPendingToServer();
       }
@@ -2841,13 +2877,15 @@
       setCacheStatus("Şeflik ve bölmeler sunucudan alınıyor…", 24);
       await loadFolders(true);
       const api = suiteSyncApi();
-      if (api && typeof api.refreshFolderData === "function") {
-        try { await api.refreshFolderData({ includeRecords: true, quiet: true, forceRecords: true }); } catch (_) {}
-      }
+      if (!api || typeof api.refreshFolderData !== "function") throw new Error("Bulut senkronizasyon servisi hazır değil");
+      const folderResult = await api.refreshFolderData({ includeRecords: true, quiet: false, forceRecords: true, strict: true });
+      if (!folderResult?.ok || folderResult?.complete !== true || folderResult?.truncated === true)
+        throw new Error(folderResult?.error || "Şeflik ve Mesaha kayıtlarının tamamı V68 sözleşmesiyle doğrulanamadı");
       setCacheStatus("İstif kayıtları offline kullanım için indiriliyor…", 44);
-      if (api && typeof api.pullIstifRecords === "function") {
-        try { await api.pullIstifRecords(); } catch (_) {}
-      }
+      if (typeof api.pullIstifRecords !== "function") throw new Error("İstif bulut indirme servisi hazır değil");
+      const istifResult = await api.pullIstifRecords();
+      if (istifResult?.authoritative !== true || istifResult?.partial === true || istifResult?.truncated === true || istifResult?.complete !== true)
+        throw new Error("İstif kayıtlarının tamamı V68 sözleşmesiyle doğrulanamadı; mevcut cihaz verileri korundu");
       await loadFolders(true);
       const rows = currentDivisions();
       setCacheStatus(rows.length ? `${rows.length} bölme offline hazırlanıyor…` : "Bölme listesi kontrol edildi…", 58);

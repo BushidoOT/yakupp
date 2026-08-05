@@ -60,6 +60,7 @@ const CORE = [
   "./mesaha/js/mesaha-error-log.js",
   "./mesaha/js/mesaha-fast-tap-nav.js",
   "./mesaha/js/mesaha-filter-cutter-fix.js",
+  "./mesaha/js/mesaha-filter-mirror.js",
   "./mesaha/js/mesaha-firebase.js",
   "./mesaha/js/mesaha-google-auth.js",
   "./mesaha/js/mesaha-hybrid-cloud.js",
@@ -134,6 +135,7 @@ const CRITICAL = [
   "./mesaha/js/mesaha-persistent-store.js",
   "./mesaha/js/mesaha-sound.js",
   "./mesaha/js/mesaha-production-stabilizer.js",
+  "./mesaha/js/mesaha-filter-mirror.js",
   "./mesaha/js/mesaha-xls-backup-converter.js",
   "./mesaha/js/mesaha-save-focus.js",
   "./istif/index.html",
@@ -382,7 +384,7 @@ self.addEventListener("install", (event) => {
   event.waitUntil((async () => {
     // Üç uygulamanın tüm çalışma kabuğunu kurulum sırasında hazırla.
     // Böylece service worker etkinleştiği anda Orman, Mesaha ve İstif çevrimdışı açılabilir.
-    await cacheAll(false, false);
+    await cacheAll(true, false);
     const criticalMissing = await missingFrom(CRITICAL);
     if (criticalMissing.length) {
       throw new Error("Kritik offline dosyalar alınamadı: " + criticalMissing.join(", "));

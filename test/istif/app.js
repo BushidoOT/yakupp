@@ -1557,6 +1557,7 @@ async function syncSharedContext({ manual = false } = {}) {
         ? folderOut.folders
         : [];
       const membersBySeflik = {};
+      const memberErrors = [];
       for (const folder of rawFolders) {
         try {
           const memberOut = await edgeCall("seflik_folder_list_members", {
@@ -1565,8 +1566,16 @@ async function syncSharedContext({ manual = false } = {}) {
           });
           membersBySeflik[folder.seflik_key || stableKey(folder.seflik)] =
             memberOut.members || [];
-        } catch {}
+        } catch (memberError) {
+          memberErrors.push(clean(memberError?.message || memberError) || clean(folder.seflik));
+        }
       }
+      const folderListComplete = !!(
+        folderOut?.sync_contract === "orman-io-sync-v68" &&
+        folderOut?.complete === true &&
+        folderOut?.partial !== true &&
+        folderOut?.truncated !== true
+      );
       out = {
         folders: rawFolders,
         membersBySeflik,
@@ -1576,13 +1585,36 @@ async function syncSharedContext({ manual = false } = {}) {
           email: readSharedTerminal().pairedEmail,
           name: readSharedTerminal().name,
         },
+        sync_contract: folderOut?.sync_contract,
+        scope: "all_folders",
+        complete: folderListComplete && memberErrors.length === 0,
+        partial: !folderListComplete || memberErrors.length > 0,
+        truncated: folderOut?.truncated === true,
+        member_errors: memberErrors,
       };
     }
-    const folders = (out.folders || []).map(normalizeFolder).filter(Boolean);
+    const remoteFolders = (out.folders || []).map(normalizeFolder).filter(Boolean);
+    const contextComplete = !!(
+      out?.sync_contract === "orman-io-sync-v68" &&
+      out?.complete === true &&
+      out?.partial !== true &&
+      out?.truncated !== true
+    );
+    const folderListAuthoritative = contextComplete && out?.scope === "all_folders";
+    const folderMap = new Map();
+    if (!folderListAuthoritative) {
+      for (const folder of state.seflikler || []) {
+        const normalized = normalizeFolder(folder);
+        if (normalized) folderMap.set(normalized.key || stableKey(normalized.name), normalized);
+      }
+    }
+    for (const folder of remoteFolders)
+      folderMap.set(folder.key || stableKey(folder.name), { ...(folderMap.get(folder.key || stableKey(folder.name)) || {}), ...folder });
+    const folders = folderListAuthoritative ? remoteFolders : Array.from(folderMap.values());
     if (!folders.length)
       throw new Error("Mesaha İO Şeflik Klasörü bulunamadı.");
     state.seflikler = folders;
-    const nextMembers = {};
+    const nextMembers = contextComplete ? {} : { ...(state.membersBySeflik || {}) };
     Object.entries(out.membersBySeflik || {}).forEach(([key, members]) => {
       nextMembers[key] = (Array.isArray(members) ? members : [])
         .map(normalizeMember)
@@ -2592,19 +2624,23 @@ function recordHasDriveAssets(record) {
   );
 }
 
-async function deleteDriveFilesForRecord(record) {
-  const fileIds = driveFileIdsFromRecord(record);
-  const driveFolderId = clean(record.driveFolderId);
-  if (!fileIds.length && !driveFolderId) return { ok: true, skipped: true };
+async function deleteDriveFileIdsForRecord(record, fileIds = [], driveFolderId = "") {
+  const ids = Array.from(new Set((Array.isArray(fileIds) ? fileIds : []).map(clean).filter(Boolean)));
+  const folderId = clean(driveFolderId);
+  if (!ids.length && !folderId) return { ok: true, skipped: true };
   return bridgeCall("delete_drive_files", {
     seflikKey: record.seflikKey || stableKey(record.seflik),
     seflik: record.seflik,
     recordId: record.id,
     istifNo: record.istifNo,
     bolmeNo: record.bolme,
-    fileIds,
-    driveFolderId,
+    fileIds: ids,
+    driveFolderId: folderId,
   });
+}
+
+async function deleteDriveFilesForRecord(record) {
+  return deleteDriveFileIdsForRecord(record, driveFileIdsFromRecord(record), clean(record.driveFolderId));
 }
 
 async function deleteRecord(recordId) {
@@ -2768,6 +2804,9 @@ async function saveRecord(event, draftOnly = false) {
     const file = draft.driveFiles[index];
     return { index, status: file ? "uploaded" : "pending", fileId: driveFileId(file), attempts: 0, error: "", code: "", retryable: false, updatedAt: new Date().toISOString() };
   });
+  const keptDriveIds = new Set(draft.driveFiles.map((file) => driveFileId(file)).filter(Boolean));
+  const removedDriveIds = previousDriveFiles.map((file) => driveFileId(file)).filter((id) => id && !keptDriveIds.has(id));
+  draft.pendingDriveDeleteIds = Array.from(new Set([...(Array.isArray(draft.pendingDriveDeleteIds) ? draft.pendingDriveDeleteIds : []), ...removedDriveIds]));
   if (!draft.driveFiles.some(Boolean)) draft.driveFolderId = "";
   draft.syncStatus = "local";
   draft.syncError = "";
@@ -2783,6 +2822,21 @@ async function saveRecord(event, draftOnly = false) {
   const index = state.records.findIndex((record) => record.id === draft.id);
   if (index >= 0) state.records[index] = cloneValue(draft);
   else state.records.push(cloneValue(draft));
+  if (draft.pendingDriveDeleteIds.length && navigator.onLine !== false && hasSharedCloudIdentity()) {
+    try {
+      await deleteDriveFileIdsForRecord(draft, draft.pendingDriveDeleteIds);
+      draft.pendingDriveDeleteIds = [];
+      await idbPut("records", cloneValue(draft));
+      const refreshedIndex = state.records.findIndex((record) => record.id === draft.id);
+      if (refreshedIndex >= 0) state.records[refreshedIndex] = cloneValue(draft);
+    } catch (cleanupError) {
+      draft.syncError = `Kaldırılan Drive fotoğrafları temizlenmeyi bekliyor: ${clean(cleanupError?.message || cleanupError)}`;
+      draft.syncRetryable = true;
+      await idbPut("records", cloneValue(draft));
+      const refreshedIndex = state.records.findIndex((record) => record.id === draft.id);
+      if (refreshedIndex >= 0) state.records[refreshedIndex] = cloneValue(draft);
+    }
+  }
   toast(
     draftOnly
       ? "Taslak yerelde kaydedildi."
@@ -3339,6 +3393,18 @@ function normalizeRemoteRecord(row) {
   };
 }
 
+function authoritativeRemoteList(out) {
+  return !!(
+    out &&
+    out.sync_contract === "orman-io-sync-v68" &&
+    out.complete === true &&
+    out.partial !== true &&
+    out.truncated !== true &&
+    (!Array.isArray(out.query_errors) || out.query_errors.length === 0) &&
+    (out.expected_queries == null || Number(out.successful_queries) === Number(out.expected_queries))
+  );
+}
+
 async function mergeRemoteRecords(remoteRows = [], { authoritative = false } = {}) {
   const normalizedRemote = remoteRows.map(normalizeRemoteRecord).filter(Boolean);
   const listedRemoteIds = new Set(normalizedRemote.map((record) => record.id));
@@ -3427,7 +3493,7 @@ async function loadRemoteRecords({ silent = true } = {}) {
         folderSeflik: state.settings.seflik,
       });
     } catch (edgeError) {
-      if (!readSharedSession()) throw edgeError;
+      if (!hasSharedCloudIdentity()) throw edgeError;
       out = await bridgeCall("record_list", {
         seflikKey: state.settings.seflikKey,
         seflik: state.settings.seflik,
@@ -3435,7 +3501,7 @@ async function loadRemoteRecords({ silent = true } = {}) {
     }
     const count = await mergeRemoteRecords(
       Array.isArray(out.records) ? out.records : [],
-      { authoritative: out.complete !== false && out.truncated !== true },
+      { authoritative: authoritativeRemoteList(out) },
     );
     if (!silent && count)
       toast(`${count} ortak istif kaydı güncellendi.`, "good");

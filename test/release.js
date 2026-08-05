@@ -1,31 +1,31 @@
 (function (root) {
   "use strict";
   const DATA = /*MESAHA_RELEASE_DATA_START*/{
-  "build": 66,
-  "version": "66.0.0",
+  "build": 68,
+  "version": "68.0.0",
   "channel": "stable",
-  "releasedAt": "2026-07-31T13:50:00+03:00",
-  "assetToken": "orman-io-stable-20260731-1",
-  "cacheName": "orman-io-shell-stable-20260731-1",
+  "releasedAt": "2026-08-05T20:14:00+03:00",
+  "assetToken": "orman-io-stable-20260805-v68",
+  "cacheName": "orman-io-shell-stable-20260805-v68",
   "apps": {
     "suite": {
       "label": "Orman İO",
-      "version": "66.0.0"
+      "version": "68.0.0"
     },
     "mesaha": {
       "label": "Mesaha İO",
-      "version": "6.07"
+      "version": "6.09"
     },
     "istif": {
       "label": "İstif İO",
-      "version": "0.3.20"
+      "version": "0.3.21"
     },
     "admin": {
       "label": "Orman İO Yönetim",
-      "version": "66.0.0"
+      "version": "68.0.0"
     }
   },
-  "description": "Yeni özellik eklenmeden genel stabilizasyon yapıldı. Beyan ekranı ayrıldıktan sonra eksik kalan toplam ve filtre yenilemeleri düzeltildi. Tek kök service worker denetimi, kalıcı depolama isteği, sınırlı çalışma zamanı hata kaydı ve güvenli sayfa geri dönüşü eklendi. Offline cache yazma ve arka plan yenileme işlemleri kota, zaman aşımı ve service worker kapanmalarına karşı güçlendirildi."
+  "description": "V68 bulut güvenliği sürümü: kısmi sunucu cevaplarında yerel veri silme engellendi, Mesaha offline indirme atomik hale getirildi, İstif ana/yedek oturumu düzeltildi, kayıt listeleri sayfalı ve doğrulanmış sözleşmeye geçirildi, tekil bulut kaydı indirme eklendi, Drive fotoğraf temizliği ve yedekleme sonucu senkronizasyon durumuna bağlandı."
 }/*MESAHA_RELEASE_DATA_END*/;
   const APP_NAMES = DATA.apps || {};
   const SCRIPT_URL = (() => {

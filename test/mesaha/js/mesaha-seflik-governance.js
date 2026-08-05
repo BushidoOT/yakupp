@@ -36,6 +36,8 @@
   function activeSeflikKey(){var a=active();return clean(a.seflik_key||a.seflikKey)}
   function sameSeflik(a,b){return clean(a).toLocaleLowerCase('tr-TR')===clean(b).toLocaleLowerCase('tr-TR')}
   function mergeFallbackFolder(list){list=Array.isArray(list)?list.slice():[];var activeName=activeSeflik(),activeKey=activeSeflikKey();if(activeName&&!list.some(function(f){return sameSeflik(f.seflik,activeName)})){list.unshift({seflik:activeName,seflik_key:activeKey,role:'local',is_local:true,status:'active'});}return list}
+  function authoritativeFolderListV68(out){return !!(out&&out.sync_contract==='orman-io-sync-v68'&&out.complete===true&&out.partial!==true&&out.truncated!==true)}
+  function mergeFolderListsV68(remote,authoritative){var map=new Map();if(!authoritative)(Array.isArray(folders)?folders:[]).forEach(function(f){var k=clean(f&&f.seflik_key)||clean(f&&f.seflik).toLocaleLowerCase('tr-TR');if(k)map.set(k,f)});(Array.isArray(remote)?remote:[]).forEach(function(f){var k=clean(f&&f.seflik_key)||clean(f&&f.seflik).toLocaleLowerCase('tr-TR');if(k)map.set(k,Object.assign({},map.get(k)||{},f))});return Array.from(map.values())}
   function syncActiveFromFolders(list){list=Array.isArray(list)?list:[];var activeName=activeSeflik(),match=list.find(function(f){return sameSeflik(f.seflik,activeName)});if(match){setActive(match);return match}var preferred=creatorFolder(list)||list[0];if(preferred)setActive(preferred);return preferred||null}
   function viewActive(){var v=$('seflikFolderView');return !!(v&&v.classList.contains('active'))}
   function hash(n){n=clean(n)||'Mesaha';var h=0;for(var i=0;i<n.length;i++)h=((h<<5)-h+n.charCodeAt(i))|0;return Math.abs(h)}
@@ -63,9 +65,9 @@
         var activeName=activeSeflik(),ensured=null;
         if(activeName){try{ensured=await edge('seflik_folder_ensure_active',{seflik:activeName,folderSeflik:activeName,seflikKey:activeSeflikKey()});if(ensured&&ensured.ok&&ensured.folder)setActive(ensured.folder)}catch(_ensureError){}}
         var out=await edge('seflik_folder_list_my_sefliks',{seflik:activeSeflik(),folderSeflik:activeSeflik()});
-        var raw=Array.isArray(out.folders)?out.folders:[];
+        var raw=Array.isArray(out.folders)?out.folders:[],authoritative=authoritativeFolderListV68(out);
         if(ensured&&ensured.folder&&!raw.some(function(f){return sameSeflik(f.seflik,ensured.folder.seflik)}))raw.push(ensured.folder);
-        folders=mergeFallbackFolder(raw);folderLoadedAt=Date.now();syncActiveFromFolders(folders);renderFolders(folders);return folders
+        folders=mergeFallbackFolder(mergeFolderListsV68(raw,authoritative));folderLoadedAt=Date.now();syncActiveFromFolders(folders);renderFolders(folders,authoritative?'':'Eksik sunucu cevabı: mevcut şeflikler korundu.');return folders
       }
       catch(e){if(!silent)toast('Şeflikler alınamadı',String(e&&e.message?e.message:e),'error');folders=mergeFallbackFolder(folders);syncActiveFromFolders(folders);renderFolders(folders,String(e&&e.message?e.message:e));return folders}
     })().finally(function(){folderLoadPromise=null});

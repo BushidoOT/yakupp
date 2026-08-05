@@ -285,21 +285,21 @@
     const folder = effectiveRecordSeflik(record);
     let out;
     try {
-      out = await api.edge("istif_record_list", {
+      out = await api.edge("istif_record_get", {
         seflik: folder.seflik,
         folderSeflik: folder.seflik,
         seflikKey: folder.seflikKey,
+        recordId: record.id,
       });
     } catch (edgeError) {
       if (!api.drive) throw edgeError;
-      out = await api.drive("record_list", {
+      out = await api.drive("record_get", {
         seflik: folder.seflik,
         seflikKey: folder.seflikKey,
+        recordId: record.id,
       });
     }
-    const raw = (Array.isArray(out?.records) ? out.records : []).find(
-      (row) => clean(row?.id || row?.record_id) === clean(record.id),
-    );
+    const raw = out?.record;
     if (!raw) throw new Error("İstif bulutta bulunamadı veya erişim yetkisi yok.");
     const normalized = normalizeRemoteRecord(raw);
     if (!normalized) throw new Error("Buluttaki İstif kaydı okunamadı.");
