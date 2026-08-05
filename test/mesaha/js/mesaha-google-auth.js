@@ -91,7 +91,7 @@
   function setEmailExistsRetry(){try{localStorage.setItem(EMAIL_EXISTS_RETRY_KEY,String(Date.now()));return true}catch(e){return false}}
   function recentEmailExistsRetry(){try{var t=Number(localStorage.getItem(EMAIL_EXISTS_RETRY_KEY)||0)||0;return !!(t&&Date.now()-t<25000)}catch(e){return false}}
   function clearEmailExistsRetry(){try{localStorage.removeItem(EMAIL_EXISTS_RETRY_KEY)}catch(e){}}
-  function plainOAuthUrl(reason){var redir=redirectUrl(),path='/auth/v1/authorize?provider=google&redirect_to='+encodeURIComponent(redir);var url=cfg().url+path;loginLog('oauth_plain_direct_url',{reason:reason||'',redirectUrl:redir,path:path},'debug');return url}
+  function plainOAuthUrl(reason){var redir=redirectUrl(),path='/auth/v1/authorize?provider=google&redirect_to='+encodeURIComponent(redir)+'&prompt=select_account';var url=cfg().url+path;loginLog('oauth_plain_direct_url',{reason:reason||'',redirectUrl:redir,path:path},'debug');return url}
   function goPlainOAuth(reason){markPlainOauth(true);try{var a=api();if(a&&a.clearSession)a.clearSession()}catch(e){}var url=plainOAuthUrl(reason);loginLog('oauth_redirect_plain_google_direct',{reason:reason||'',redirectUrl:redirectUrl()},'info');location.assign(url);return true}
   function localIdentity(){
     var panel=getJson(PANEL_KEY,{}),st={};try{st=window.state&&window.state.settings||{}}catch(e){}if(!clean(st.ekipNot)||!clean(st.seflik))st=getJson(SETTINGS_KEY,{});
@@ -146,6 +146,14 @@
   function approvedAccess(){return currentAccess||cached()||approvedFromPanel()}
   function cacheAccess(x){if(!x)return;currentAccess=x;lastStatusAt=Date.now();setJson(ACCESS_KEY,Object.assign({},x,{cached_at:lastStatusAt}))}
   function clearAccess(){currentAccess=null;try{localStorage.removeItem(ACCESS_KEY)}catch(e){}}
+  function hardClearAuthState(){
+    var keys=[SESSION_KEY,SESSION_BACKUP_KEY,ACCESS_KEY,TERMINAL_MODE_KEY,'mesaha_terminal_local_mode_v557',PLAIN_OAUTH_KEY,EMAIL_EXISTS_RETRY_KEY,'mesaha_active_seflik_folder_v564','mesaha_suite_folder_cache_v4','mesaha_suite_folder_cache_v2','mesaha_seflik_folder_cache_v529','mesaha_user_confirmed_v319'];
+    try{keys.forEach(function(k){localStorage.removeItem(k)})}catch(e){}
+    try{var p=getJson(PANEL_KEY,{});['name','seflik','bolmeNo','googleUserId','googleEmail','googleFullName','googleAvatarUrl','avatarUrl','googleApproved','terminalMode','terminalPairedUserId','terminalPairedEmail','activeSeflik','activeSeflikKey','seflikKey'].forEach(function(k){delete p[k]});setJson(PANEL_KEY,p)}catch(e){}
+    try{var st=getJson(SETTINGS_KEY,{});['ekipNot','seflik','seflikKey','seflik_key','bolmeNo','ormanci'].forEach(function(k){delete st[k]});setJson(SETTINGS_KEY,st)}catch(e){}
+    try{sessionStorage.removeItem('mesaha_google_plain_oauth_v553');sessionStorage.removeItem('mesaha_google_email_exists_retry_v568')}catch(e){}
+    try{document.documentElement.removeAttribute('data-mesaha-terminal-mode');document.documentElement.removeAttribute('data-mesaha-terminal-cloud');window.dispatchEvent(new CustomEvent('mesaha:hard-logout',{detail:{source:'google-auth-v69'}}))}catch(e){}
+  }
   function applyIdentity(x,options){
     options=options||{};
     if(identityBusy||!x||clean(x.status)!=='approved')return false;
@@ -240,7 +248,7 @@
       markPlainOauth(true);plain=true;
     }
     if(plain){try{if(a&&a.clearSession)a.clearSession()}catch(e){}}
-    path='/auth/v1/authorize?provider=google&redirect_to='+encodeURIComponent(redir);
+    path='/auth/v1/authorize?provider=google&redirect_to='+encodeURIComponent(redir)+'&prompt=select_account';
     var url2=await oauthStartUrl(path,'');loginLog('oauth_redirect_plain_google',{path:path,redirectUrl:redir,direct:true},'info');location.assign(url2);
   }
   async function rpcCompat(primary,fallback,params){try{return await rpc(primary,params)}catch(e){var msg=clean(e&&e.message||e);if(/could not find the function|schema cache|does not exist|SQL kurulumu eksik/i.test(msg)){loginLog('rpc_compat_fallback',{primary:primary,fallback:fallback,message:msg},'warning');return await rpc(fallback,params)}throw e}}
@@ -277,7 +285,7 @@
   }
   async function requestAccess(data){loginLog('request_access_click',{auto:!!data},'info');data=data||{};var n=document.getElementById('googleRequestNameV548'),s=document.getElementById('googleRequestSeflikV548'),gName=googleDisplayName(),name=clean(gName||data.name||n&&n.value),seflik=clean(data.seflik||s&&s.value||'Dosya');if(clean(name).length<2)throw new Error('Google ad-soyad alınamadı. Ad soyad girin.');loading('Google hesabı kullanıcıya tanımlanıyor…');loginLog('request_access_send',{name:name,seflik:seflik,googleFullName:gName,googleAvatarUrl:googleAvatarUrl(),auto:true},'info');var out=await rpcCompat('mesaha_google_access_request_v560','mesaha_google_access_request_v557',{p_name:name,p_seflik:seflik,p_device_info:deviceInfo(),p_app_version:(window.MESAHA_VERSION||{}).visibleVersion||'Mesaha İO',p_google_full_name:gName});renderAccess(out.access||out)}
   
-  async function logout(){loginLog('logout_start',{},'info');loading('Oturum kapatılıyor…');try{await api().signOut('global')}catch(e){try{api().clearSession()}catch(_e){}}clearAccess();location.replace(redirectUrl())}
+  async function logout(options){options=options||{};loginLog('logout_start',{},'info');loading('Oturum kapatılıyor…');try{await api().signOut('global')}catch(e){try{api().clearSession({preserveBackup:false})}catch(_e){}}hardClearAuthState();clearAccess();if(options.redirect===false)return true;location.replace(redirectUrl()+'?open=account&signed_out=1&t='+Date.now());return true}
   async function handle(action){if(action==='google'){clearTerminalMode();return beginGoogle()}if(action==='terminal')return terminalForm();if(action==='terminal-save')return saveTerminalFromForm();if(action==='terminal-claim')return claimTerminalCode();if(action==='terminal-code-copy')return copyText(lastTerminalCode).then(function(){try{if(typeof window.mesahaFloatToastV315==='function')window.mesahaFloatToastV315('Kod kopyalandı',lastTerminalCode,'success')}catch(e){}});if(action==='terminal-code-close'){hide();ensureTerminalCodePanel();return true}if(action==='refresh')return boot(true);if(action==='request')return requestAccess();if(action==='request-form')return renderAccess({status:'unregistered',email:user().email});if(action==='logout')return logout()}
     async function bootCore(force){
     loginLog('boot_core_start',{force:!!force,hasSession:!!session(),isGoogle:isGoogle(),terminalMode:isTerminalMode(),url:location.href},'info');

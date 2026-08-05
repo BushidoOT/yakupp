@@ -18,8 +18,15 @@
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
-    <div id="bootOverlay" hidden style="display: none !important"></div>
-    <div id="app" class="app-shell" aria-live="polite"></div>
+    <div id="bootOverlay" class="boot-overlay show" role="status" aria-live="polite">
+      <div class="boot-card">
+        <div class="boot-spinner" aria-hidden="true"></div>
+        <h1 id="bootTitle">İstif İO açılıyor…</h1>
+        <p id="bootText">Cihaz kayıtları ve şeflik bilgileri hazırlanıyor.</p>
+        <small>iOS güvenli açılış denetimi etkin</small>
+      </div>
+    </div>
+    <div id="app" class="app-shell" aria-live="polite"><main class="view"><section class="empty"><h2>İstif İO hazırlanıyor…</h2><p>Yerel kayıtlar açılıyor.</p></section></main></div>
     <input id="photoPicker" type="file" accept="image/*" multiple hidden />
 
     <div id="cameraModal" class="modal" hidden>
@@ -78,6 +85,7 @@
     <script src="../suite-audio.js"></script>
     <script src="../suite-security.js"></script>
     <script src="../suite-sync-core.js"></script>
+    <script src="./ios-stability.js"></script>
     <script src="./app.js" defer></script>
     <script src="./cloud-on-demand.js" defer></script>
     <script src="./suite-bridge.js" defer></script>

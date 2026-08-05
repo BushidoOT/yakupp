@@ -1874,25 +1874,149 @@
       ? "Yeni bölme oluşturabilir, mevcut bölmeleri offline indirebilir ve gerektiğinde silebilirsiniz."
       : "Bu şeflikte üyesiniz. Yeni bölme oluşturabilir ve bölmeleri offline indirebilirsiniz; bölme silme yetkisi yalnızca şeflik kurucusundadır.";
   }
-  async function logout() {
-    if (!confirm("Oturum kapatılsın mı? Yerel kayıtlar silinmez.")) return;
+  function clearIstifIdentityCacheV69() {
+    return new Promise((resolve) => {
+      if (!("indexedDB" in window)) return resolve(false);
+      let finished = false;
+      const done = (value) => {
+        if (finished) return;
+        finished = true;
+        resolve(!!value);
+      };
+      const timer = setTimeout(() => done(false), 2200);
+      try {
+        const request = indexedDB.open("mesaha-istif-prototype", 2);
+        request.onerror = () => { clearTimeout(timer); done(false); };
+        request.onblocked = () => { clearTimeout(timer); done(false); };
+        request.onsuccess = () => {
+          const db = request.result;
+          try {
+            if (!db.objectStoreNames.contains("settings")) {
+              db.close(); clearTimeout(timer); return done(false);
+            }
+            const tx = db.transaction("settings", "readwrite");
+            const store = tx.objectStore("settings");
+            const get = store.get(K.istifShared);
+            get.onsuccess = () => {
+              const row = get.result || { key: K.istifShared, value: {} };
+              const value = row.value && typeof row.value === "object" ? row.value : {};
+              row.value = {
+                ...value,
+                seflikler: [],
+                membersBySeflik: {},
+                customForestersBySeflik: {},
+                removedForestersBySeflik: {},
+                auth: { status: "signed_out", userId: "", email: "", name: "", avatarUrl: "", error: "", updatedAt: now() },
+                drive: { status: "idle", connected: false, isOwner: false, ownerEmail: "", ownerName: "", folderId: "", folderName: "", folderUrl: "", updatedAt: "", error: "", quota: null },
+                updatedAt: now(),
+              };
+              store.put(row);
+              const appGet = store.get("app");
+              appGet.onsuccess = () => {
+                const appRow = appGet.result;
+                if (!appRow || !appRow.value || typeof appRow.value !== "object") return;
+                const appValue = { ...appRow.value };
+                ["seflik","seflikKey","ormanci"].forEach((key) => delete appValue[key]);
+                appValue.setupComplete = false;
+                store.put({ key: "app", value: appValue });
+              };
+            };
+            tx.oncomplete = () => { try { db.close(); } catch {} clearTimeout(timer); done(true); };
+            tx.onerror = () => { try { db.close(); } catch {} clearTimeout(timer); done(false); };
+            tx.onabort = tx.onerror;
+          } catch (_) {
+            try { db.close(); } catch {}
+            clearTimeout(timer); done(false);
+          }
+        };
+      } catch (_) {
+        clearTimeout(timer);
+        done(false);
+      }
+    });
+  }
+  async function hardClearAuthStateV69() {
+    const authKeys = [
+      K.session, K.backup, K.access, K.terminal, K.terminalOld, K.active,
+      K.folderCache, K.oldFolderCache, K.mesahaFolderCache, K.istifShared,
+      "mesaha_google_plain_oauth_v553", "mesaha_google_email_exists_retry_v568",
+      "mesaha_user_confirmed_v319", "mesaha_terminal_local_mode_v556",
+      "mesaha_terminal_local_mode_v557"
+    ];
+    authKeys.forEach((key) => { try { localStorage.removeItem(key); } catch {} });
     try {
-      if (authType() === "google" && googleAuthApi())
-        await googleAuthApi().logout();
+      const p = panel();
+      ["name","seflik","bolmeNo","googleUserId","googleEmail","googleFullName","googleAvatarUrl","avatarUrl","googleApproved","terminalMode","terminalPairedUserId","terminalPairedEmail","activeSeflik","activeSeflikKey","seflikKey"].forEach((key) => delete p[key]);
+      write(K.panel, p);
     } catch {}
-    [
-      K.session,
-      K.backup,
-      K.access,
-      K.terminal,
-      K.terminalOld,
-      K.folderCache,
-      K.oldFolderCache,
-    ].forEach((k) => localStorage.removeItem(k));
+    try {
+      const st = settings();
+      ["ekipNot","seflik","seflikKey","seflik_key","bolmeNo","ormanci"].forEach((key) => delete st[key]);
+      write(K.settings, st);
+    } catch {}
+    try {
+      const fallbackKey = "mesaha_istif_storage_fallback_v69";
+      const fallback = JSON.parse(localStorage.getItem(fallbackKey) || "null");
+      if (fallback && Array.isArray(fallback.settings)) {
+        fallback.settings = fallback.settings.map((row) => {
+          if (!row || typeof row !== "object") return row;
+          if (row.key === K.istifShared) {
+            const value = row.value && typeof row.value === "object" ? row.value : {};
+            return {
+              ...row,
+              value: {
+                ...value,
+                seflikler: [],
+                membersBySeflik: {},
+                customForestersBySeflik: {},
+                removedForestersBySeflik: {},
+                auth: { status: "signed_out", userId: "", email: "", name: "", avatarUrl: "", error: "", updatedAt: now() },
+                drive: { status: "idle", connected: false, isOwner: false, ownerEmail: "", ownerName: "", folderId: "", folderName: "", folderUrl: "", updatedAt: "", error: "", quota: null },
+                updatedAt: now(),
+              },
+            };
+          }
+          if (row.key === "app") {
+            const value = row.value && typeof row.value === "object" ? { ...row.value } : {};
+            ["seflik","seflikKey","ormanci"].forEach((key) => delete value[key]);
+            value.setupComplete = false;
+            return { ...row, value };
+          }
+          return row;
+        });
+        fallback.updatedAt = now();
+        localStorage.setItem(fallbackKey, JSON.stringify(fallback));
+      }
+    } catch {}
+    try {
+      ["mesaha_google_plain_oauth_v553","mesaha_google_email_exists_retry_v568","orman_io_auth_logout_v69"].forEach((key) => sessionStorage.removeItem(key));
+    } catch {}
     folders = [];
+    foresters = {};
+    divisions = {};
+    divisionRecords = {};
+    divisionReady = {};
+    terminalDevicesLoadedAt = 0;
+    try { await clearIstifIdentityCacheV69(); } catch {}
+    try { window.dispatchEvent(new CustomEvent("mesaha:hard-logout", { detail: { source: "suite-root-v69" } })); } catch {}
+  }
+  async function logout() {
+    if (!confirm("Oturum tamamen kapatılsın mı? Cihazdaki ölçüm ve istif kayıtları silinmez.")) return;
+    const button = $("logoutBtn");
+    if (button) { button.disabled = true; button.textContent = "Oturum kapatılıyor…"; }
+    try { sessionStorage.setItem("orman_io_auth_logout_v69", String(Date.now())); } catch {}
+    try {
+      if (authType() === "google" && googleAuthApi()) {
+        await Promise.race([
+          Promise.resolve(googleAuthApi().logout({ redirect: false })),
+          new Promise((resolve) => setTimeout(resolve, 3200)),
+        ]);
+      }
+    } catch {}
+    await hardClearAuthStateV69();
     closeModals();
     render();
-    toast("Oturum kapatıldı");
+    location.replace("./?open=account&signed_out=1&t=" + Date.now());
   }
   async function openGoogle() {
     closeModals();

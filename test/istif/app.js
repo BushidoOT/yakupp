@@ -280,7 +280,6 @@ function playConfirmSound(force = false) {
     } catch {}
   },
 );
-preloadConfirmSound();
 
 const state = {
   view: "home",
@@ -434,7 +433,116 @@ const bootOverlay = document.getElementById("bootOverlay");
 const bootTitle = document.getElementById("bootTitle");
 const bootText = document.getElementById("bootText");
 let dbPromise = null;
+let dbConnection = null;
+let storageFallbackMode = false;
 let deletedRecordTombstones = Object.create(null);
+const ISTIF_STORAGE_FALLBACK_KEY = "mesaha_istif_storage_fallback_v69";
+const ISTIF_DB_OPEN_TIMEOUT_MS = 7000;
+const ISTIF_DB_REQUEST_TIMEOUT_MS = 6500;
+
+function fallbackSafeClone(value) {
+  try {
+    const seen = typeof WeakSet === "function" ? new WeakSet() : null;
+    return JSON.parse(
+      JSON.stringify(value, (key, item) => {
+        if (typeof Blob !== "undefined" && item instanceof Blob) return undefined;
+        if (typeof File !== "undefined" && item instanceof File) return undefined;
+        if (key === "blob") return undefined;
+        if ((key === "previewUrl" || key === "objectUrl") && /^blob:/i.test(String(item || ""))) return "";
+        if (key === "dataUrl" && typeof item === "string" && item.length > 2048) return "";
+        if (item && typeof item === "object" && seen) {
+          if (seen.has(item)) return undefined;
+          seen.add(item);
+        }
+        return item;
+      }),
+    );
+  } catch {
+    return null;
+  }
+}
+function readStorageFallback() {
+  try {
+    const value = JSON.parse(localStorage.getItem(ISTIF_STORAGE_FALLBACK_KEY) || "null") || {};
+    return {
+      records: Array.isArray(value.records) ? value.records : [],
+      settings: Array.isArray(value.settings) ? value.settings : [],
+      updatedAt: value.updatedAt || "",
+    };
+  } catch {
+    return { records: [], settings: [], updatedAt: "" };
+  }
+}
+function writeStorageFallback(value) {
+  try {
+    localStorage.setItem(
+      ISTIF_STORAGE_FALLBACK_KEY,
+      JSON.stringify({
+        records: Array.isArray(value.records) ? value.records : [],
+        settings: Array.isArray(value.settings) ? value.settings : [],
+        updatedAt: new Date().toISOString(),
+      }),
+    );
+    return true;
+  } catch {
+    return false;
+  }
+}
+function fallbackStoreKey(store, value) {
+  return store === "records" ? clean(value?.id) : clean(value?.key);
+}
+function fallbackGetAll(store) {
+  const value = readStorageFallback();
+  return cloneValue(store === "records" ? value.records : value.settings);
+}
+function fallbackPut(store, value) {
+  const safe = fallbackSafeClone(value);
+  const key = fallbackStoreKey(store, safe);
+  if (!safe || !key) return false;
+  const cache = readStorageFallback();
+  const rows = store === "records" ? cache.records : cache.settings;
+  const index = rows.findIndex((row) => fallbackStoreKey(store, row) === key);
+  if (index >= 0) rows[index] = safe;
+  else rows.push(safe);
+  return writeStorageFallback(cache);
+}
+function fallbackDelete(store, key) {
+  const cache = readStorageFallback();
+  const rows = store === "records" ? cache.records : cache.settings;
+  const next = rows.filter((row) => fallbackStoreKey(store, row) !== clean(key));
+  if (store === "records") cache.records = next;
+  else cache.settings = next;
+  return writeStorageFallback(cache);
+}
+function mirrorFallbackSnapshot(records, settings) {
+  const safeRecords = fallbackSafeClone(Array.isArray(records) ? records : []) || [];
+  const safeSettings = fallbackSafeClone(Array.isArray(settings) ? settings : []) || [];
+  return writeStorageFallback({ records: safeRecords, settings: safeSettings });
+}
+function requestWithTimeout(request, timeoutMs, label) {
+  return new Promise((resolve, reject) => {
+    let finished = false;
+    const done = (ok, value) => {
+      if (finished) return;
+      finished = true;
+      clearTimeout(timer);
+      ok ? resolve(value) : reject(value || new Error(label + " tamamlanamadı."));
+    };
+    const timer = setTimeout(
+      () => done(false, new Error(label + " zaman aşımına uğradı.")),
+      Math.max(1500, Number(timeoutMs) || ISTIF_DB_REQUEST_TIMEOUT_MS),
+    );
+    request.onsuccess = () => done(true, request.result);
+    request.onerror = () => done(false, request.error || new Error(label + " başarısız."));
+  });
+}
+window.IstifStorageFallbackV69 = {
+  getAll: fallbackGetAll,
+  put: fallbackPut,
+  delete: fallbackDelete,
+  mirror: mirrorFallbackSnapshot,
+  isFallback: () => storageFallbackMode,
+};
 
 function icon(name, size = 24, extraClass = "") {
   const paths = {
@@ -590,75 +698,163 @@ function hideBoot() {
 }
 
 function openDB() {
+  if (dbConnection) return Promise.resolve(dbConnection);
   if (dbPromise) return dbPromise;
   dbPromise = new Promise((resolve, reject) => {
-    const req = indexedDB.open(DB_NAME, DB_VERSION);
-    req.onupgradeneeded = () => {
-      const db = req.result;
-      if (!db.objectStoreNames.contains("records"))
-        db.createObjectStore("records", { keyPath: "id" });
-      if (!db.objectStoreNames.contains("settings"))
-        db.createObjectStore("settings", { keyPath: "key" });
+    if (!("indexedDB" in window) || !window.indexedDB) {
+      reject(new Error("Bu tarayıcı yerel veritabanını desteklemiyor."));
+      return;
+    }
+    let finished = false;
+    let request = null;
+    const finish = (ok, value) => {
+      if (finished) {
+        if (ok && value && typeof value.close === "function") {
+          try { value.close(); } catch {}
+        }
+        return;
+      }
+      finished = true;
+      clearTimeout(timer);
+      if (!ok) dbPromise = null;
+      ok ? resolve(value) : reject(value || new Error("İstif veritabanı açılamadı."));
     };
-    req.onsuccess = () => resolve(req.result);
-    req.onerror = () => reject(req.error);
+    const timer = setTimeout(
+      () => finish(false, new Error("İstif veritabanı iOS tarafından kilitlendi. Geçici depolama açıldı.")),
+      ISTIF_DB_OPEN_TIMEOUT_MS,
+    );
+    try {
+      request = indexedDB.open(DB_NAME, DB_VERSION);
+      request.onupgradeneeded = () => {
+        const db = request.result;
+        if (!db.objectStoreNames.contains("records"))
+          db.createObjectStore("records", { keyPath: "id" });
+        if (!db.objectStoreNames.contains("settings"))
+          db.createObjectStore("settings", { keyPath: "key" });
+      };
+      request.onblocked = () =>
+        finish(false, new Error("İstif veritabanı başka bir açık sekme tarafından kilitlendi."));
+      request.onerror = () => finish(false, request.error || new Error("İstif veritabanı açılamadı."));
+      request.onsuccess = () => {
+        const db = request.result;
+        if (finished) {
+          try { db.close(); } catch {}
+          return;
+        }
+        dbConnection = db;
+        db.onversionchange = () => {
+          try { db.close(); } catch {}
+          if (dbConnection === db) dbConnection = null;
+          dbPromise = null;
+        };
+        db.onclose = () => {
+          if (dbConnection === db) dbConnection = null;
+          dbPromise = null;
+        };
+        finish(true, db);
+      };
+    } catch (error) {
+      finish(false, error);
+    }
   });
   return dbPromise;
 }
 
 async function idbGetAll(store) {
-  const db = await openDB();
-  return new Promise((resolve, reject) => {
-    const req = db.transaction(store).objectStore(store).getAll();
-    req.onsuccess = () => resolve(req.result);
-    req.onerror = () => reject(req.error);
-  });
+  try {
+    const db = await openDB();
+    const tx = db.transaction(store, "readonly");
+    const rows = await requestWithTimeout(
+      tx.objectStore(store).getAll(),
+      ISTIF_DB_REQUEST_TIMEOUT_MS,
+      "İstif kayıtları okunması",
+    );
+    storageFallbackMode = false;
+    return Array.isArray(rows) ? rows : [];
+  } catch (error) {
+    storageFallbackMode = true;
+    dbPromise = null;
+    return fallbackGetAll(store);
+  }
 }
 
 async function idbPut(store, value) {
-  const db = await openDB();
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction(store, "readwrite");
-    tx.objectStore(store).put(value);
-    tx.oncomplete = () => {
-      if (store === "records" && !(value && value.isDemo)) {
-        try {
-          window.dispatchEvent(
-            new CustomEvent("mesaha-istif:changed", {
-              detail: { type: "put", id: value && value.id },
-            }),
-          );
-          suiteSyncApi()?.markDirty("istif", {
-              id: value && value.id,
-            });
-        } catch {}
-      }
-      resolve();
-    };
-    tx.onerror = () => reject(tx.error);
-  });
+  fallbackPut(store, value);
+  try {
+    const db = await openDB();
+    await new Promise((resolve, reject) => {
+      let finished = false;
+      const done = (ok, error) => {
+        if (finished) return;
+        finished = true;
+        clearTimeout(timer);
+        ok ? resolve() : reject(error || new Error("İstif kaydı yazılamadı."));
+      };
+      const timer = setTimeout(
+        () => done(false, new Error("İstif kaydı yazma işlemi zaman aşımına uğradı.")),
+        ISTIF_DB_REQUEST_TIMEOUT_MS,
+      );
+      const tx = db.transaction(store, "readwrite");
+      tx.objectStore(store).put(value);
+      tx.oncomplete = () => done(true);
+      tx.onerror = () => done(false, tx.error);
+      tx.onabort = () => done(false, tx.error);
+    });
+    storageFallbackMode = false;
+  } catch {
+    storageFallbackMode = true;
+  }
+  if (store === "records" && !(value && value.isDemo)) {
+    const synced = clean(value?.syncStatus) === "synced" && !clean(value?.syncError);
+    if (!synced) {
+      try {
+        window.dispatchEvent(
+          new CustomEvent("mesaha-istif:changed", {
+            detail: { type: "put", id: value && value.id },
+          }),
+        );
+        suiteSyncApi()?.markDirty("istif", { id: value && value.id });
+      } catch {}
+    }
+  }
 }
 
 async function idbDelete(store, key) {
-  const db = await openDB();
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction(store, "readwrite");
-    tx.objectStore(store).delete(key);
-    tx.oncomplete = () => {
-      if (store === "records") {
-        try {
-          window.dispatchEvent(
-            new CustomEvent("mesaha-istif:changed", {
-              detail: { type: "delete", id: key },
-            }),
-          );
-          suiteSyncApi()?.markDirty("istif", { id: key });
-        } catch {}
-      }
-      resolve();
-    };
-    tx.onerror = () => reject(tx.error);
-  });
+  fallbackDelete(store, key);
+  try {
+    const db = await openDB();
+    await new Promise((resolve, reject) => {
+      let finished = false;
+      const done = (ok, error) => {
+        if (finished) return;
+        finished = true;
+        clearTimeout(timer);
+        ok ? resolve() : reject(error || new Error("İstif kaydı silinemedi."));
+      };
+      const timer = setTimeout(
+        () => done(false, new Error("İstif silme işlemi zaman aşımına uğradı.")),
+        ISTIF_DB_REQUEST_TIMEOUT_MS,
+      );
+      const tx = db.transaction(store, "readwrite");
+      tx.objectStore(store).delete(key);
+      tx.oncomplete = () => done(true);
+      tx.onerror = () => done(false, tx.error);
+      tx.onabort = () => done(false, tx.error);
+    });
+    storageFallbackMode = false;
+  } catch {
+    storageFallbackMode = true;
+  }
+  if (store === "records") {
+    try {
+      window.dispatchEvent(
+        new CustomEvent("mesaha-istif:changed", {
+          detail: { type: "delete", id: key },
+        }),
+      );
+      suiteSyncApi()?.markDirty("istif", { id: key });
+    } catch {}
+  }
 }
 
 function normalizeDeletedRecordTombstones(value) {
@@ -783,6 +979,7 @@ async function saveSharedCache() {
 async function loadData() {
   state.records = await idbGetAll("records");
   const rows = await idbGetAll("settings");
+  if (!storageFallbackMode) mirrorFallbackSnapshot(state.records, rows);
   const saved = rows.find((x) => x.key === "app");
   if (saved) state.settings = { ...DEFAULT_SETTINGS, ...saved.value };
   const tombstoneRow = rows.find((x) => x.key === ISTIF_TOMBSTONE_SETTING_KEY);
@@ -3941,17 +4138,28 @@ window.addEventListener("mesaha-suite:sync-complete", async () => {
   );
   render();
 });
-window.addEventListener("online", () => {
-  if (hasSharedCloudIdentity()) syncSharedContext({ manual: false });
-});
+let lastResumeSyncAtV69 = 0;
+function scheduleResumeSyncV69(delay = 180) {
+  if (!navigator.onLine || !hasSharedCloudIdentity()) return;
+  const now = Date.now();
+  if (now - lastResumeSyncAtV69 < 12000) return;
+  lastResumeSyncAtV69 = now;
+  setTimeout(() => syncSharedContext({ manual: false }), Math.max(0, Number(delay) || 0));
+}
+window.addEventListener("online", () => scheduleResumeSyncV69(500), { passive: true });
 document.addEventListener("visibilitychange", () => {
   if (document.hidden) {
     if (state.cameraStream) stopCamera();
     return;
   }
-  if (navigator.onLine && hasSharedCloudIdentity())
-    syncSharedContext({ manual: false });
-});
+  scheduleResumeSyncV69(260);
+}, { passive: true });
+window.addEventListener("pageshow", (event) => {
+  if (event.persisted) {
+    try { render(); } catch {}
+    scheduleResumeSyncV69(350);
+  }
+}, { passive: true });
 window.addEventListener(
   "pagehide",
   (event) => {
@@ -3962,21 +4170,28 @@ window.addEventListener(
 );
 
 (async function init() {
+  showBoot("İstif İO açılıyor…", "Cihaz kayıtları ve şeflik bilgileri hazırlanıyor.");
   try {
-    if (bootOverlay) {
-      bootOverlay.hidden = true;
-      bootOverlay.classList.remove("show");
-    }
     await loadData();
     hydrateLocalSharedIdentity();
     refreshCurrentMembers();
     if (!state.settings.setupComplete) state.view = "settings";
     render();
+    hideBoot();
+    try { window.IstifStabilityV69?.ready(); } catch {}
+    if (storageFallbackMode) {
+      setTimeout(
+        () => toast("iOS yerel veritabanı geçici olarak kilitli. Uygulama güvenli yedek depolamayla açıldı.", "bad"),
+        250,
+      );
+    }
     if (navigator.onLine && hasSharedCloudIdentity())
-      setTimeout(() => syncSharedContext({ manual: false }), 0);
+      setTimeout(() => syncSharedContext({ manual: false }), 120);
     /* Ortak kayıt listesi sunucu için otoritatiftir; silinen kayıtlar tüm cihazlardan temizlenir. */
   } catch (error) {
-    if (bootOverlay) bootOverlay.hidden = true;
-    app.innerHTML = `<div class="empty"><h2>Uygulama açılamadı</h2><p>${esc(error.message)}</p></div>`;
+    hideBoot();
+    const message = clean(error?.message || error || "Uygulama başlatılamadı.");
+    if (window.IstifStabilityV69?.fail) window.IstifStabilityV69.fail(message);
+    else app.innerHTML = `<div class="empty"><h2>Uygulama açılamadı</h2><p>${esc(message)}</p><button class="btn primary" onclick="location.reload()">Tekrar Dene</button><button class="btn ghost" onclick="location.href='../'">Ana Menü</button></div>`;
   }
 })();

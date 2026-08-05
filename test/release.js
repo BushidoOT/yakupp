@@ -1,31 +1,31 @@
 (function (root) {
   "use strict";
   const DATA = /*MESAHA_RELEASE_DATA_START*/{
-  "build": 68,
-  "version": "68.0.0",
+  "build": 69,
+  "version": "69.0.0",
   "channel": "stable",
-  "releasedAt": "2026-08-05T20:14:00+03:00",
-  "assetToken": "orman-io-stable-20260805-v68",
-  "cacheName": "orman-io-shell-stable-20260805-v68",
+  "releasedAt": "2026-08-05T20:51:00+03:00",
+  "assetToken": "orman-io-stable-20260805-v69",
+  "cacheName": "orman-io-shell-stable-20260805-v69",
   "apps": {
     "suite": {
       "label": "Orman İO",
-      "version": "68.0.0"
+      "version": "69.0.0"
     },
     "mesaha": {
       "label": "Mesaha İO",
-      "version": "6.09"
+      "version": "6.10"
     },
     "istif": {
       "label": "İstif İO",
-      "version": "0.3.21"
+      "version": "0.3.22"
     },
     "admin": {
       "label": "Orman İO Yönetim",
-      "version": "68.0.0"
+      "version": "69.0.0"
     }
   },
-  "description": "V68 bulut güvenliği sürümü: kısmi sunucu cevaplarında yerel veri silme engellendi, Mesaha offline indirme atomik hale getirildi, İstif ana/yedek oturumu düzeltildi, kayıt listeleri sayfalı ve doğrulanmış sözleşmeye geçirildi, tekil bulut kaydı indirme eklendi, Drive fotoğraf temizliği ve yedekleme sonucu senkronizasyon durumuna bağlandı."
+  "description": "V69 oturum ve iOS stabilite sürümü: çıkışta ana/yedek Google oturumu, terminal kimliği ve hesap önbelleği tamamen temizlenir; kullanıcı giriş ekranına döner. İstif İO iOS açılışı zaman aşımı, IndexedDB kilitlenme koruması, güvenli yedek depolama, kurtarma ekranı ve azaltılmış arayüz/senkron yükü ile güçlendirildi."
 }/*MESAHA_RELEASE_DATA_END*/;
   const APP_NAMES = DATA.apps || {};
   const SCRIPT_URL = (() => {

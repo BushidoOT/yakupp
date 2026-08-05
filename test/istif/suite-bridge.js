@@ -139,25 +139,30 @@
       settings.insertBefore(n, settings.firstChild);
     }
   }
-  let timer = 0, applying = false;
-  function schedule() {
-    if (applying) return;
+  let timer = 0, applying = false, frame = 0, rerun = false;
+  function applySuiteUiV69() {
+    frame = 0;
+    if (applying) { rerun = true; return; }
     applying = true;
-    try { patchBolmeSelector(); } finally { applying = false; }
+    try {
+      syncLocal();
+      hide();
+      hideForesterUi();
+      patchBolmeSelector();
+      ensureCreateDivisionButton();
+      const api = window.MesahaSuiteSyncV24 || window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8;
+      if (api) api.updateButton();
+    } finally {
+      applying = false;
+      if (rerun) { rerun = false; schedule(); }
+    }
+  }
+  function schedule() {
     clearTimeout(timer);
     timer = setTimeout(() => {
-      if (applying) return;
-      applying = true;
-      try {
-        syncLocal();
-        hide();
-        hideForesterUi();
-        patchBolmeSelector();
-        ensureCreateDivisionButton();
-        const api = window.MesahaSuiteSyncV24 || window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8;
-        if (api) api.updateButton();
-      } finally { applying = false; }
-    }, 60);
+      if (frame) return;
+      frame = (window.requestAnimationFrame || function (fn) { return setTimeout(fn, 16); })(applySuiteUiV69);
+    }, 90);
   }
   function block(e) {
     const t =
@@ -174,7 +179,7 @@
     else location.href = "../";
   }
   if (!valid()) {
-    location.replace("../");
+    location.replace("../?open=account");
     return;
   }
   window.MESAHA_SUITE_MODE = true;
@@ -213,6 +218,6 @@
     if (e.target && e.target.closest && e.target.closest('[data-view="new"]'))
       setTimeout(schedule, 0);
   }, true);
-  setTimeout(schedule, 350);
-  setTimeout(schedule, 1200);
+  setTimeout(schedule, 260);
+  setTimeout(schedule, 900);
 })();

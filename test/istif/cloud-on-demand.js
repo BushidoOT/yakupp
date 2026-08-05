@@ -6,6 +6,9 @@
   const originalBindDynamicCore = bindDynamic;
   let dirtyReconcileTimerCloud = 0;
   let cloudPullingIdCloud = "";
+  const RECORD_PAGE_SIZE_CLOUD = window.IstifStabilityV69?.isIos?.() ? 40 : 70;
+  let recordRenderLimitCloud = RECORD_PAGE_SIZE_CLOUD;
+  let lastFilteredRowsCloud = [];
 
   function installStylesCloud() {
     if (document.getElementById("istifCloudOnDemandCssCloud")) return;
@@ -24,6 +27,8 @@
       .remote-thumb-cloud{position:relative;background:linear-gradient(145deg,#fff8dd,#f6e7a8)!important}
       .remote-thumb-cloud:after{content:"Bulutta";position:absolute;left:4px;right:4px;bottom:4px;padding:2px 3px;border-radius:6px;background:rgba(81,57,0,.82);color:#fff;font:800 8px/1 system-ui;text-align:center}
       .cloud-ready-badge-cloud{display:inline-flex;align-items:center;gap:5px;margin:0 0 8px;padding:5px 9px;border-radius:999px;background:#edf8f1;color:#17623b;font:800 11px/1.1 system-ui}
+      .record-load-more-cloud{display:grid;gap:7px;justify-items:center;margin:12px 0 2px;padding:14px;border:1px dashed #cbded2;border-radius:16px;background:#f8fbf9;color:#587065;text-align:center}
+      .record-load-more-cloud small{font-size:11.5px;font-weight:750}.record-load-more-cloud .btn{min-width:min(100%,280px)}
       @media(max-width:390px){.record-actions{grid-template-columns:1fr}.istif-search-cloud{padding:10px}.istif-search-input-cloud{font-size:16px}}
     `;
     document.head.appendChild(style);
@@ -96,45 +101,70 @@
    * kirli olarak işaretler.
    */
   idbPut = async function idbPutCloud(store, value) {
-    const db = await openDB();
-    return new Promise((resolve, reject) => {
-      const tx = db.transaction(store, "readwrite");
-      tx.objectStore(store).put(value);
-      tx.oncomplete = () => {
-        if (store === "records" && !(value && value.isDemo)) {
-          const synced = clean(value?.syncStatus) === "synced" && !clean(value?.syncError);
-          if (synced) {
-            scheduleDirtyReconcileCloud();
-          } else {
-            try {
-              window.dispatchEvent(
-                new CustomEvent("mesaha-istif:changed", {
-                  detail: { type: "put", id: value && value.id, source: "istif-cloud" },
-                }),
-              );
-              suiteSyncApi()?.markDirty("istif", { id: value && value.id });
-            } catch (_) {}
-          }
-        }
-        resolve();
-      };
-      tx.onerror = () => reject(tx.error);
-    });
+    try { window.IstifStorageFallbackV69?.put(store, value); } catch (_) {}
+    try {
+      const db = await openDB();
+      await new Promise((resolve, reject) => {
+        let finished = false;
+        const done = (ok, error) => {
+          if (finished) return;
+          finished = true;
+          clearTimeout(timer);
+          ok ? resolve() : reject(error || new Error("İstif kaydı yazılamadı."));
+        };
+        const timer = setTimeout(() => done(false, new Error("İstif yazma işlemi zaman aşımına uğradı.")), 6500);
+        const tx = db.transaction(store, "readwrite");
+        tx.objectStore(store).put(value);
+        tx.oncomplete = () => done(true);
+        tx.onerror = () => done(false, tx.error);
+        tx.onabort = () => done(false, tx.error);
+      });
+    } catch (_) {
+      /* iOS IndexedDB kilitlenirse güvenli localStorage aynası kullanılır. */
+    }
+    if (store === "records" && !(value && value.isDemo)) {
+      const synced = clean(value?.syncStatus) === "synced" && !clean(value?.syncError);
+      if (synced) {
+        scheduleDirtyReconcileCloud();
+      } else {
+        try {
+          window.dispatchEvent(
+            new CustomEvent("mesaha-istif:changed", {
+              detail: { type: "put", id: value && value.id, source: "istif-cloud" },
+            }),
+          );
+          suiteSyncApi()?.markDirty("istif", { id: value && value.id });
+        } catch (_) {}
+      }
+    }
   };
 
   /* Silme akışı sunucuyu önce temizlediği için silinen kaydı tekrar kirli yapma. */
   idbDelete = async function idbDeleteCloud(store, key) {
-    const db = await openDB();
-    return new Promise((resolve, reject) => {
-      const tx = db.transaction(store, "readwrite");
-      tx.objectStore(store).delete(key);
-      tx.oncomplete = () => {
-        if (store === "records") scheduleDirtyReconcileCloud();
-        resolve();
-      };
-      tx.onerror = () => reject(tx.error);
-    });
+    try { window.IstifStorageFallbackV69?.delete(store, key); } catch (_) {}
+    try {
+      const db = await openDB();
+      await new Promise((resolve, reject) => {
+        let finished = false;
+        const done = (ok, error) => {
+          if (finished) return;
+          finished = true;
+          clearTimeout(timer);
+          ok ? resolve() : reject(error || new Error("İstif kaydı silinemedi."));
+        };
+        const timer = setTimeout(() => done(false, new Error("İstif silme işlemi zaman aşımına uğradı.")), 6500);
+        const tx = db.transaction(store, "readwrite");
+        tx.objectStore(store).delete(key);
+        tx.oncomplete = () => done(true);
+        tx.onerror = () => done(false, tx.error);
+        tx.onabort = () => done(false, tx.error);
+      });
+    } catch (_) {
+      /* Güvenli yedek depolamada silme bilgisi korunur. */
+    }
+    if (store === "records") scheduleDirtyReconcileCloud();
   };
+
 
   /* Liste açılırken Drive fotoğrafını otomatik indirme. */
   loadRemoteThumbnails = async function loadRemoteThumbnailsCloud() {
@@ -158,6 +188,8 @@
   renderRecords = function renderRecordsCloud() {
     const bolmes = [...new Set(state.records.map((row) => row.bolme).filter(Boolean))];
     const query = clean(state.recordSearchCloud || "");
+    lastFilteredRowsCloud = sortedRecords();
+    recordRenderLimitCloud = RECORD_PAGE_SIZE_CLOUD;
     return `${head("İstifler", "İstif No veya barkoda göre arayın", { back: true, action: `<button class="icon-btn" aria-label="Filtre">${icon("filter", 22)}</button>` })}
       <section class="istif-search-cloud">
         <label for="istifSearchCloud">İstif No / Barkod</label>
@@ -168,7 +200,7 @@
         <div class="filter-box"><label>Bölme</label><select id="filterBolme"><option value="">Tümü</option>${bolmes.map((value) => `<option>${esc(value)}</option>`).join("")}</select></div>
         <div class="filter-box"><label>Tür</label><select id="filterType"><option value="">Tümü</option>${TYPE_ORDER.map((value) => `<option value="${esc(value)}">${esc(value.replace("İbreli ", ""))}</option>`).join("")}</select></div>
       </section>
-      <section id="recordList" class="records">${recordCards(sortedRecords())}</section>`;
+      <section id="recordList" class="records">${recordCards(lastFilteredRowsCloud)}</section>`;
   };
 
   applyRecordFilters = function applyRecordFiltersCloud() {
@@ -192,6 +224,8 @@
         );
       }),
     );
+    lastFilteredRowsCloud = rows;
+    recordRenderLimitCloud = RECORD_PAGE_SIZE_CLOUD;
     const list = app.querySelector("#recordList");
     if (list) list.innerHTML = recordCards(rows);
     bindCloudButtonsCloud();
@@ -200,7 +234,9 @@
   recordCards = function recordCardsCloud(rows) {
     if (!rows.length)
       return '<div class="empty card">İstif No veya barkoda uygun kayıt bulunamadı.</div>';
-    return rows
+    const visibleRows = rows.slice(0, Math.max(RECORD_PAGE_SIZE_CLOUD, recordRenderLimitCloud));
+    const moreCount = Math.max(0, rows.length - visibleRows.length);
+    const cards = visibleRows
       .map((record) => {
         const sent = recordSent(record);
         const sentDate = sent && record.sentAt ? trDate(String(record.sentAt).slice(0, 10)) : "";
@@ -240,6 +276,8 @@
         </article>`;
       })
       .join("");
+    if (!moreCount) return cards;
+    return `${cards}<div class="record-load-more-cloud"><small>${visibleRows.length} / ${rows.length} istif gösteriliyor</small><button class="btn ghost" type="button" data-load-more-cloud>${Math.min(RECORD_PAGE_SIZE_CLOUD, moreCount)} kayıt daha göster</button></div>`;
   };
 
   /* Terminal kodlu cihaz da kayıt güncellemelerini ana kullanıcı yetkisiyle Edge Function üzerinden yapar. */
@@ -392,6 +430,16 @@
       if (button.dataset.boundCloud === "1") return;
       button.dataset.boundCloud = "1";
       button.addEventListener("click", () => pullRecordFromCloudCloud(button.dataset.cloudPullCloud));
+    });
+    app.querySelectorAll("[data-load-more-cloud]").forEach((button) => {
+      if (button.dataset.boundCloud === "1") return;
+      button.dataset.boundCloud = "1";
+      button.addEventListener("click", () => {
+        recordRenderLimitCloud += RECORD_PAGE_SIZE_CLOUD;
+        const list = app.querySelector("#recordList");
+        if (list) list.innerHTML = recordCards(lastFilteredRowsCloud);
+        bindCloudButtonsCloud();
+      });
     });
     const search = app.querySelector("#istifSearchCloud");
     if (search && search.dataset.boundCloud !== "1") {

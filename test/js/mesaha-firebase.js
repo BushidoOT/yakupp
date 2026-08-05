@@ -95,7 +95,7 @@
     if(old&&old.access_token)return old;
     throw new Error('Google ile giriş gerekli.');
   }
-  function clearSession(){authSession=null;try{var old=safeJson(localStorage.getItem(SESSION_KEY)||'',null);if(old&&old.access_token)backupSession(old);localStorage.removeItem(SESSION_KEY);}catch(e){}}
+  function clearSession(options){authSession=null;options=options||{};try{var old=safeJson(localStorage.getItem(SESSION_KEY)||'',null);if(options.preserveBackup===true&&old&&old.access_token)backupSession(old);localStorage.removeItem(SESSION_KEY);if(options.preserveBackup!==true)localStorage.removeItem(SESSION_BACKUP_KEY);}catch(e){}}
   function storedTerminalPair(){try{var t=getJsonSafe('mesaha_terminal_local_mode_v556',null)||getJsonSafe('mesaha_terminal_local_mode_v557',null);return t&&t.active===true&&clean(t.source)==='pair_code'?t:null}catch(e){return null}}
   function terminalAccessRevoked(out,status){var msg=clean(out&&((out.error)||(out.reason)));return !!(out&&(out.terminal_required===true||out.terminal_revoked===true)||Number(status)===403&&/terminal.*(eşleştirme|güvenlik|geçersiz|kapat|revok|expired|required)|kod.*(kapat|geçersiz|süresi)/i.test(msg))}
   function clearRevokedTerminalSession(out){
@@ -122,7 +122,7 @@
   async function signOut(scope){
     var c=cfg(),s=storedSession();scope=scope==='global'?'global':'local';
     if(s&&s.access_token){try{await fetch(c.url+'/auth/v1/logout?scope='+scope,{method:'POST',cache:'no-store',headers:{apikey:c.anonKey,Authorization:'Bearer '+s.access_token}});}catch(e){}}
-    clearSession();readyPromise=null;return true;
+    clearSession({preserveBackup:false});readyPromise=null;return true;
   }
   function uid(){var s=authSession||storedSession()||{}; return (s.user&&s.user.id)||'';}
 
