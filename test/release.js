@@ -1,20 +1,20 @@
 (function (root) {
   "use strict";
   const DATA = /*MESAHA_RELEASE_DATA_START*/{
-  "build": 70,
-  "version": "70.0.0",
+  "build": 71,
+  "version": "71.0.0",
   "channel": "stable",
-  "releasedAt": "2026-08-05T22:10:00+03:00",
-  "assetToken": "orman-io-stable-20260805-v70",
-  "cacheName": "orman-io-shell-stable-20260805-v70",
+  "releasedAt": "2026-08-05T22:56:00+03:00",
+  "assetToken": "orman-io-stable-20260805-v71",
+  "cacheName": "orman-io-shell-stable-20260805-v71",
   "apps": {
     "suite": {
       "label": "Orman İO",
-      "version": "70.0.0"
+      "version": "71.0.0"
     },
     "mesaha": {
       "label": "Mesaha İO",
-      "version": "6.11"
+      "version": "6.12"
     },
     "istif": {
       "label": "İstif İO",
@@ -22,10 +22,10 @@
     },
     "admin": {
       "label": "Orman İO Yönetim",
-      "version": "70.0.0"
+      "version": "71.0.0"
     }
   },
-  "description": "V70 temiz Mesaha giriş ve performans sürümü: Tomruk boyu en az 1,50 m olarak doğrulanır. Klavye üstü Kaydet ve kayıt bildirimi tek motorda birleştirildi; bildirim Kaydet düğmesinin soluna ekran genişliğine göre yerleşir ve ürün türüne göre renklenir. Tekrarlanan klavye, toast ve render yamaları kaldırılarak performans çekirdeği sadeleştirildi."
+  "description": "V71 temiz Mesaha çekirdeği: ürün bildirimleri düğme stillerinden ayrıldı ve Maden, Kağıtlık, Sanayi ile Tel bildirimlerinde yüksek kontrast sağlandı. Başlangıç, performans, dokunma, odak, klavye ve kayıt yamaları iki ortak çekirdekte birleştirildi; eski dokuz dosya kaldırıldı."
 }/*MESAHA_RELEASE_DATA_END*/;
   const APP_NAMES = DATA.apps || {};
   const SCRIPT_URL = (() => {

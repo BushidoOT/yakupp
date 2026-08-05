@@ -489,3 +489,241 @@ html.mesaha-ios-device body.entry-open .save-float-toast-v313{backdrop-filter:no
     font-size: max(16px, 1em) !important;
   }
 }
+
+/* Mesaha İO V71 — birleşik giriş performansı, yüzen Kaydet ve yüksek kontrast ürün bildirimi. */
+:root {
+  --mesaha-keyboard-inset-v71: 0px;
+  --mesaha-save-right-v71: 10px;
+  --mesaha-save-width-v71: 142px;
+  --mesaha-control-bottom-v71: calc(var(--mesaha-keyboard-inset-v71) + env(safe-area-inset-bottom, 0px) + 10px);
+}
+
+#entryView #saveBtn {
+  display: none !important;
+  visibility: hidden !important;
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  min-height: 0 !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  overflow: hidden !important;
+}
+#entryView .barcode-save {
+  grid-template-columns: minmax(0, 1fr) !important;
+  padding-bottom: 0 !important;
+}
+#entryView .barcode-save > label { grid-column: 1 / -1 !important; }
+
+#floatingSaveBtnV531 {
+  display: none !important;
+  position: fixed !important;
+  right: var(--mesaha-save-right-v71) !important;
+  bottom: var(--mesaha-control-bottom-v71) !important;
+  top: auto !important;
+  left: auto !important;
+  width: var(--mesaha-save-width-v71) !important;
+  min-height: 58px !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border: 1px solid rgba(255,255,255,.5) !important;
+  border-radius: 21px !important;
+  background: linear-gradient(180deg,#18ad69,#087144) !important;
+  color: #fff !important;
+  font-size: clamp(17px,4.4vw,20px) !important;
+  font-weight: 950 !important;
+  box-shadow: 0 14px 34px rgba(8,113,68,.34) !important;
+  z-index: 2147483500 !important;
+  pointer-events: auto !important;
+  touch-action: manipulation !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  transform: translateZ(0) !important;
+}
+html.mesaha-entry-controls-open-v71 body #floatingSaveBtnV531,
+body.mesaha-entry-controls-open-v71 #floatingSaveBtnV531 {
+  display: inline-flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+#floatingSaveBtnV531[disabled],
+#floatingSaveBtnV531[aria-busy="true"] {
+  opacity: .58 !important;
+  filter: saturate(.65) !important;
+}
+body.mesaha-entry-controls-open-v71 .bottom-nav {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+#mesahaEntryToastV71 {
+  --toast-bg: rgba(30,41,59,.96);
+  --toast-fg: #fff;
+  --toast-detail: rgba(255,255,255,.88);
+  --toast-icon-bg: rgba(255,255,255,.19);
+  display: none;
+  position: fixed;
+  z-index: 2147483490;
+  min-height: 58px;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 11px;
+  border: 1px solid rgba(255,255,255,.4);
+  border-radius: 20px;
+  background: var(--toast-bg) !important;
+  color: var(--toast-fg) !important;
+  box-shadow: 0 14px 34px rgba(15,23,42,.28);
+  pointer-events: none;
+  contain: layout paint style;
+  opacity: 0;
+}
+#mesahaEntryToastV71.show {
+  display: flex;
+  opacity: 1;
+  animation: mesahaToastInV71 .16s ease-out;
+}
+#mesahaEntryToastV71 .ico {
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
+  display: grid;
+  place-items: center;
+  border-radius: 13px;
+  background: var(--toast-icon-bg);
+  color: var(--toast-fg) !important;
+  font-weight: 950;
+  font-size: 20px;
+}
+#mesahaEntryToastV71 .txt { min-width: 0; }
+#mesahaEntryToastV71 b {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  font-size: clamp(12px,3.2vw,14px);
+  line-height: 1.12;
+  color: var(--toast-fg) !important;
+  overflow-wrap: anywhere;
+}
+#mesahaEntryToastV71 small {
+  display: block;
+  margin-top: 3px;
+  font-size: clamp(10px,2.7vw,11px);
+  line-height: 1.1;
+  color: var(--toast-detail) !important;
+}
+body.mesaha-entry-controls-open-v71 #mesahaEntryToastV71 {
+  left: max(8px, env(safe-area-inset-left, 0px));
+  right: calc(var(--mesaha-save-right-v71) + var(--mesaha-save-width-v71) + 8px);
+  bottom: var(--mesaha-control-bottom-v71);
+  width: auto;
+  max-width: none;
+  transform: none;
+}
+body:not(.mesaha-entry-controls-open-v71) #mesahaEntryToastV71 {
+  left: 50%;
+  right: auto;
+  bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+  width: min(88vw, 430px);
+  transform: translateX(-50%);
+}
+#mesahaEntryToastV71.toast-product-tomruk {
+  --toast-bg: linear-gradient(135deg,#fff3b0,#fde68a);
+  --toast-fg: #4a3500;
+  --toast-detail: rgba(74,53,0,.78);
+  --toast-icon-bg: rgba(255,255,255,.72);
+  border-color: #d4a900;
+}
+#mesahaEntryToastV71.toast-product-maden {
+  --toast-bg: linear-gradient(135deg,#dbeafe,#bfdbfe);
+  --toast-fg: #0f3d70;
+  --toast-detail: rgba(15,61,112,.8);
+  --toast-icon-bg: rgba(255,255,255,.74);
+  border-color: #2563eb;
+}
+#mesahaEntryToastV71.toast-product-kagit {
+  --toast-bg: linear-gradient(135deg,#ffe4e6,#fecdd3);
+  --toast-fg: #7f1d1d;
+  --toast-detail: rgba(127,29,29,.78);
+  --toast-icon-bg: rgba(255,255,255,.74);
+  border-color: #dc2626;
+}
+#mesahaEntryToastV71.toast-product-sanayi {
+  --toast-bg: linear-gradient(135deg,#dcfce7,#bbf7d0);
+  --toast-fg: #14532d;
+  --toast-detail: rgba(20,83,45,.78);
+  --toast-icon-bg: rgba(255,255,255,.74);
+  border-color: #16a34a;
+}
+#mesahaEntryToastV71.toast-product-tel {
+  --toast-bg: linear-gradient(135deg,#ede9fe,#ddd6fe);
+  --toast-fg: #4c1d95;
+  --toast-detail: rgba(76,29,149,.78);
+  --toast-icon-bg: rgba(255,255,255,.74);
+  border-color: #7c3aed;
+}
+#mesahaEntryToastV71.is-warning:not([class*="product-"]) {
+  --toast-bg: linear-gradient(135deg,#f59e0b,#d97706);
+  --toast-fg: #271700;
+  --toast-detail: rgba(39,23,0,.78);
+  --toast-icon-bg: rgba(255,255,255,.46);
+  border-color: rgba(120,53,15,.28);
+}
+#mesahaEntryToastV71.is-error:not([class*="product-"]) {
+  --toast-bg: linear-gradient(135deg,#dc2626,#991b1b);
+  --toast-fg: #fff;
+  --toast-detail: rgba(255,255,255,.88);
+  --toast-icon-bg: rgba(255,255,255,.22);
+}
+@keyframes mesahaToastInV71 {
+  from { opacity: 0; transform: translate3d(0,8px,0); }
+  to { opacity: 1; transform: translate3d(0,0,0); }
+}
+body:not(.mesaha-entry-controls-open-v71) #mesahaEntryToastV71.show {
+  animation-name: mesahaToastCenterInV71;
+}
+@keyframes mesahaToastCenterInV71 {
+  from { opacity: 0; transform: translate3d(-50%,8px,0); }
+  to { opacity: 1; transform: translate3d(-50%,0,0); }
+}
+
+/* Ağır görünüm efektlerini giriş sırasında devreden çıkarır. */
+html.mesaha-low-power-v71 body.entry-open #entryView,
+html.mesaha-low-power-v71 body.entry-open #entryView * { scroll-behavior: auto !important; }
+html.mesaha-low-power-v71 body.entry-open #entryView .entry-form,
+html.mesaha-low-power-v71 body.entry-open #entryView .entry-total,
+html.mesaha-low-power-v71 body.entry-open #entryView .measure-grid label,
+html.mesaha-low-power-v71 body.entry-open #entryView .barcode-save label,
+html.mesaha-low-power-v71 body.entry-open #entryView .recent-box,
+html.mesaha-low-power-v71 body.entry-open #entryView .tree-panel,
+html.mesaha-low-power-v71 body.entry-open #entryView .tree-option,
+html.mesaha-low-power-v71 body.entry-open #entryView .product-btn,
+html.mesaha-low-power-v71 body.entry-open #entryView .chip {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  filter: none !important;
+  box-shadow: none !important;
+}
+html.mesaha-low-power-v71 body.entry-open #entryView *,
+html.mesaha-low-power-v71 body.entry-open #entryView *::before,
+html.mesaha-low-power-v71 body.entry-open #entryView *::after {
+  animation-duration: .001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: .001ms !important;
+  will-change: auto !important;
+}
+#entryView .tree-panel,
+#entryView #productButtons,
+#entryView #cutterChips,
+#entryView #recentList { contain: layout style paint; }
+
+@media (max-width: 360px) {
+  :root { --mesaha-save-width-v71: 108px; --mesaha-save-right-v71: 7px; }
+  #floatingSaveBtnV531 { min-height: 54px !important; }
+  #mesahaEntryToastV71 { min-height: 54px; padding: 8px; gap: 7px; }
+  #mesahaEntryToastV71 .ico { width: 31px; height: 31px; flex-basis: 31px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #mesahaEntryToastV71.show { animation: none !important; }
+}
