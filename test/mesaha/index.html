@@ -801,6 +801,34 @@
                 /><span>40 barkodda bir kontrol ekranı göster</span></label
               >
             </div>
+            <div class="setting-block" id="productAutomationSettingV72">
+              <b>Ürün Seçim Otomasyonu</b>
+              <p>
+                Otomatik seçim yalnız ölçü girilirken çalışır. Ürünü elle
+                değiştirirseniz seçiminiz o barkod kaydedilene kadar korunur.
+              </p>
+              <div class="check-grid product-automation-grid-v72">
+                <label class="check-card"
+                  ><input id="autoPaperLengthEnabled" type="checkbox" /><span
+                    ><b>2 ve 2,50 → Kâğıtlık</b><small
+                      >Boy tam 2,00 veya 2,50 olduğunda Kâğıtlık seçilir.</small
+                    ></span
+                  ></label
+                >
+                <label class="check-card"
+                  ><input id="autoProductStandardEnabled" type="checkbox" /><span
+                    ><b>Standarda göre otomatik seç</b><small
+                      >Çap ve boya göre Sanayi, Tel, Tomruk veya Maden seçilir.</small
+                    ></span
+                  ></label
+                >
+              </div>
+              <p class="hint">
+                İki ayar birlikte açıksa 2,00 ve 2,50 Kâğıtlık kuralı önce
+                uygulanır. Standart otomasyonu yalnız Giriş Ayarlarında açık
+                olan ürün türleri arasından seçim yapar.
+              </p>
+            </div>
           </section>
           <section class="card sound-card">
             <h2>Ses Ayarı</h2>
@@ -2583,6 +2611,8 @@
           soundEnabled: true,
           barcodeControlEnabled: true,
           barcodeControlEvery: 40,
+          autoPaperLengthEnabled: false,
+          autoProductStandardEnabled: false,
           treeFilter: "Tümü",
           cutterFilter: "Tümü",
         };
@@ -3023,6 +3053,10 @@
           state.settings.barcodeControlEnabled =
             state.settings.barcodeControlEnabled !== false;
           state.settings.barcodeControlEvery = 40;
+          state.settings.autoPaperLengthEnabled =
+            state.settings.autoPaperLengthEnabled === true;
+          state.settings.autoProductStandardEnabled =
+            state.settings.autoProductStandardEnabled === true;
           try {
             const savedTree = localStorage.getItem("mesaha_last_tree_stable");
             if (savedTree && state.settings.visibleTrees.includes(savedTree))
@@ -3464,6 +3498,57 @@
                   : "Barkod kontrolü kapatıldı.",
               );
             });
+          const autoPaperToggle = $("autoPaperLengthEnabled");
+          if (autoPaperToggle)
+            autoPaperToggle.addEventListener("change", () => {
+              state.settings.autoPaperLengthEnabled = autoPaperToggle.checked;
+              if (
+                autoPaperToggle.checked &&
+                !state.settings.visibleProducts.includes("Kağıtlık")
+              ) {
+                state.settings.visibleProducts.push("Kağıtlık");
+              }
+              saveSettings();
+              try {
+                __flushSettings();
+              } catch {}
+              renderHomeChecks();
+              renderEntry();
+              try {
+                window.dispatchEvent(
+                  new CustomEvent("mesaha:automation-settings-changed", {
+                    detail: { key: "autoPaperLengthEnabled", enabled: autoPaperToggle.checked },
+                  }),
+                );
+              } catch {}
+              toast(
+                autoPaperToggle.checked
+                  ? "2 ve 2,50 boyu Kâğıtlık otomasyonu açıldı."
+                  : "2 ve 2,50 boyu Kâğıtlık otomasyonu kapatıldı.",
+              );
+            });
+          const autoStandardToggle = $("autoProductStandardEnabled");
+          if (autoStandardToggle)
+            autoStandardToggle.addEventListener("change", () => {
+              state.settings.autoProductStandardEnabled =
+                autoStandardToggle.checked;
+              saveSettings();
+              try {
+                __flushSettings();
+              } catch {}
+              try {
+                window.dispatchEvent(
+                  new CustomEvent("mesaha:automation-settings-changed", {
+                    detail: { key: "autoProductStandardEnabled", enabled: autoStandardToggle.checked },
+                  }),
+                );
+              } catch {}
+              toast(
+                autoStandardToggle.checked
+                  ? "Standarda göre ürün seçimi açıldı."
+                  : "Standarda göre ürün seçimi kapatıldı.",
+              );
+            });
           bindEntryTreeToggleV575();
           $("addCutterBtn").addEventListener("click", addCutter);
           $("saveBtn").addEventListener("click", function (ev) {
@@ -3679,6 +3764,13 @@
           $("mesahaDate").value = state.settings.mesahaDate || todayISO();
           const bc = $("barcodeControlEnabled");
           if (bc) bc.checked = state.settings.barcodeControlEnabled !== false;
+          const autoPaper = $("autoPaperLengthEnabled");
+          if (autoPaper)
+            autoPaper.checked = state.settings.autoPaperLengthEnabled === true;
+          const autoStandard = $("autoProductStandardEnabled");
+          if (autoStandard)
+            autoStandard.checked =
+              state.settings.autoProductStandardEnabled === true;
           renderHomeChecks();
           renderSummary();
           renderSound();
@@ -10760,6 +10852,28 @@
       .home-date-card-v325 {
         position: relative;
       }
+      #productAutomationSettingV72 .product-automation-grid-v72 {
+        grid-template-columns: 1fr !important;
+      }
+      #productAutomationSettingV72 .check-card {
+        align-items: flex-start !important;
+      }
+      #productAutomationSettingV72 .check-card span {
+        display: grid;
+        gap: 3px;
+        min-width: 0;
+      }
+      #productAutomationSettingV72 .check-card span b {
+        color: #18372b;
+        font-size: 13px;
+        line-height: 1.3;
+      }
+      #productAutomationSettingV72 .check-card span small {
+        color: #6b7f77;
+        font-size: 10.5px;
+        font-weight: 750;
+        line-height: 1.4;
+      }
       @media (max-width: 370px) {
         #userBadge {
           max-width: 122px !important;
@@ -10990,7 +11104,7 @@
             options.innerHTML = "<h2>Giriş Seçenekleri</h2>";
             view.appendChild(options);
           }
-          ["homeProductChecks", "homeTreeChecks", "barcodeControlEnabled"].forEach(function (id) {
+          ["homeProductChecks", "homeTreeChecks", "barcodeControlEnabled", "autoPaperLengthEnabled", "autoProductStandardEnabled"].forEach(function (id) {
             var target = $(id);
             var block = target && target.closest ? target.closest(".setting-block") : null;
             if (block && block.parentNode !== options) options.appendChild(block);

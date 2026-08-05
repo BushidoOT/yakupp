@@ -1,20 +1,20 @@
 (function (root) {
   "use strict";
   const DATA = /*MESAHA_RELEASE_DATA_START*/{
-  "build": 71,
-  "version": "71.0.0",
+  "build": 72,
+  "version": "72.0.0",
   "channel": "stable",
-  "releasedAt": "2026-08-05T22:56:00+03:00",
-  "assetToken": "orman-io-stable-20260805-v71",
-  "cacheName": "orman-io-shell-stable-20260805-v71",
+  "releasedAt": "2026-08-06T00:29:00+03:00",
+  "assetToken": "orman-io-stable-20260806-v72",
+  "cacheName": "orman-io-shell-stable-20260806-v72",
   "apps": {
     "suite": {
       "label": "Orman İO",
-      "version": "71.0.0"
+      "version": "72.0.0"
     },
     "mesaha": {
       "label": "Mesaha İO",
-      "version": "6.12"
+      "version": "6.13"
     },
     "istif": {
       "label": "İstif İO",
@@ -22,10 +22,10 @@
     },
     "admin": {
       "label": "Orman İO Yönetim",
-      "version": "71.0.0"
+      "version": "72.0.0"
     }
   },
-  "description": "V71 temiz Mesaha çekirdeği: ürün bildirimleri düğme stillerinden ayrıldı ve Maden, Kağıtlık, Sanayi ile Tel bildirimlerinde yüksek kontrast sağlandı. Başlangıç, performans, dokunma, odak, klavye ve kayıt yamaları iki ortak çekirdekte birleştirildi; eski dokuz dosya kaldırıldı."
+  "description": "V72 Mesaha ürün seçim otomasyonu: Ayarlara 2,00/2,50 boyu Kâğıtlık seçme ve çap-boy standartlarına göre ürün seçme seçenekleri eklendi. Otomasyon yalnız giriş anında çalışır; kullanıcının elle seçtiği ürün aynı barkod kaydedilene kadar korunur."
 }/*MESAHA_RELEASE_DATA_END*/;
   const APP_NAMES = DATA.apps || {};
   const SCRIPT_URL = (() => {

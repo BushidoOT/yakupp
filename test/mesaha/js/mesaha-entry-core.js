@@ -1,4 +1,4 @@
-/* Mesaha İO V71 — dokunma, odak, ürün seçimi, klavye, Kaydet ve bildirim çekirdeği */
+/* Mesaha İO V72 — dokunma, odak, ürün otomasyonu, klavye, Kaydet ve bildirim çekirdeği */
 
 /* ===== mesaha-save-focus.js ===== */
 /* Mesaha İO V5.84 — iOS/Android kayıt sonrası klavye ve ölçü alanı odak koruması. */
@@ -461,11 +461,222 @@
   };
 })();
 
+
+/* ===== mesaha-product-automation.js ===== */
+/* Mesaha İO V72 — kullanıcı tercihini ezmeyen ölçüye göre ürün seçimi. */
+(function installMesahaProductAutomation(root) {
+  "use strict";
+  if (!root || root.MesahaProductAutomationV72) return;
+
+  var PRODUCTS = ["Tomruk", "Maden Direk", "Kağıtlık", "Sanayi Odunu", "Tel Direk"];
+  var manualOverride = false;
+  var manualBarcode = "";
+  var scheduled = 0;
+  var lastAutoProduct = "";
+  var lastAutoAt = 0;
+  var bound = false;
+
+  function byId(id) { return document.getElementById(id); }
+  function clean(value) { return String(value == null ? "" : value).trim(); }
+  function numberValue(value) {
+    var parsed = Number(clean(value).replace(",", "."));
+    return Number.isFinite(parsed) ? parsed : 0;
+  }
+  function normalizeProduct(value) {
+    var name = clean(value).toLocaleLowerCase("tr-TR");
+    if (name === "tomruk") return "Tomruk";
+    if (/^maden( direk| direği| diregi)?$/.test(name)) return "Maden Direk";
+    if (/^ka(ğ|g)ıtlık( odun)?$/.test(name)) return "Kağıtlık";
+    if (name === "sanayi" || name === "sanayi odunu") return "Sanayi Odunu";
+    if (/^tel( direk| direği| diregi)?$/.test(name)) return "Tel Direk";
+    return PRODUCTS.indexOf(value) >= 0 ? value : "Tomruk";
+  }
+  function appState() {
+    return root.state && root.state.settings ? root.state : null;
+  }
+  function currentBarcode() {
+    var input = byId("barcodeInput");
+    return clean(input ? input.value : appState() && appState().settings.barcode).toUpperCase();
+  }
+  function visible(settings, product) {
+    var list = settings && Array.isArray(settings.visibleProducts)
+      ? settings.visibleProducts.map(normalizeProduct)
+      : [];
+    return !list.length || list.indexOf(product) >= 0;
+  }
+  function exactLength(length, expected) {
+    return Math.abs(Number(length || 0) - expected) < 0.0001;
+  }
+  function classify(diameter, length, settings) {
+    var d = numberValue(diameter);
+    var l = numberValue(length);
+    if (!(l > 0 && l <= 50)) return "";
+
+    /* Kullanıcının ayrı 2 / 2,50 ayarı yalnız boya bakar ve standart
+       sınıflandırmadan önce gelir; çap daha sonra girilse de seçim korunur. */
+    if (
+      settings.autoPaperLengthEnabled === true &&
+      visible(settings, "Kağıtlık") &&
+      (exactLength(l, 2) || exactLength(l, 2.5))
+    ) return "Kağıtlık";
+
+    if (settings.autoProductStandardEnabled !== true) return "";
+    if (!(d > 0 && d <= 200)) return "";
+
+    /* Dar ve özel boy aralıkları önce değerlendirilir; ardından çap temelli
+       Tomruk/Maden ayrımı yapılır. Gizlenen ürün türleri otomasyona katılmaz. */
+    if (visible(settings, "Sanayi Odunu") && d >= 12 && l >= 0.5 && l <= 1.45)
+      return "Sanayi Odunu";
+    if (visible(settings, "Tel Direk") && d >= 12 && d <= 40 && l >= 6.5 && l <= 25)
+      return "Tel Direk";
+    if (visible(settings, "Tomruk") && d >= 21 && l >= 1.5)
+      return "Tomruk";
+    if (visible(settings, "Maden Direk") && d <= 20)
+      return "Maden Direk";
+    return "";
+  }
+  function resetManual(reason) {
+    manualOverride = false;
+    manualBarcode = currentBarcode();
+    try {
+      root.dispatchEvent(new CustomEvent("mesaha:product-automation-reset", {
+        detail: { reason: reason || "reset", barcode: manualBarcode },
+      }));
+    } catch (_) {}
+  }
+  function markManual(reason) {
+    manualOverride = true;
+    manualBarcode = currentBarcode();
+    try {
+      root.dispatchEvent(new CustomEvent("mesaha:product-automation-manual", {
+        detail: { reason: reason || "manual", barcode: manualBarcode },
+      }));
+    } catch (_) {}
+  }
+  function syncBarcodeLock() {
+    var now = currentBarcode();
+    if (!manualOverride) {
+      manualBarcode = now;
+      return;
+    }
+    /* Boş barkodda yapılan elle seçim, ilk barkod yazılırken korunur. Yalnız
+       dolu bir barkoddan başka dolu bir barkoda geçiş yeni kayıt sayılır. */
+    if (manualBarcode && now && manualBarcode !== now) resetManual("barcode-change");
+  }
+  function applyProduct(product, reason) {
+    var state = appState();
+    if (!state || !product || PRODUCTS.indexOf(product) < 0) return false;
+    var current = normalizeProduct(state.settings.currentProduct);
+    if (current === product) return true;
+    var now = Date.now();
+    if (lastAutoProduct === product && now - lastAutoAt < 180) return true;
+    lastAutoProduct = product;
+    lastAutoAt = now;
+    var api = root.MesahaProductTouchV577 || root.MesahaProductTouchV576 || root.MesahaProductTouchV542;
+    var applied = false;
+    try {
+      if (api && typeof api.apply === "function") applied = api.apply(product, "auto-standard") !== false;
+    } catch (_) {}
+    if (!applied) {
+      state.settings.currentProduct = product;
+      try { if (typeof root.saveSettings === "function") root.saveSettings(); } catch (_) {}
+      try {
+        root.dispatchEvent(new CustomEvent("mesaha:product-selected", {
+          detail: { product: product, source: "auto-standard" },
+        }));
+      } catch (_) {}
+      applied = true;
+    }
+    try {
+      root.dispatchEvent(new CustomEvent("mesaha:product-auto-selected", {
+        detail: { product: product, reason: reason || "measure-input" },
+      }));
+    } catch (_) {}
+    return applied;
+  }
+  function run(reason) {
+    scheduled = 0;
+    var state = appState();
+    if (!state || state.editingId) return false;
+    syncBarcodeLock();
+    if (manualOverride) return false;
+    var diameterInput = byId("diameterInput");
+    var lengthInput = byId("lengthInput");
+    var target = classify(
+      diameterInput ? diameterInput.value : state.settings.diameter,
+      lengthInput ? lengthInput.value : state.settings.length,
+      state.settings,
+    );
+    if (!target) return false;
+    return applyProduct(target, reason);
+  }
+  function schedule(reason) {
+    if (scheduled) return;
+    scheduled = (root.requestAnimationFrame || function (fn) { return setTimeout(fn, 16); })(function () {
+      run(reason || "measure-input");
+    });
+  }
+  function manualButton(event) {
+    var button = event.target && event.target.closest
+      ? event.target.closest("#productButtons [data-product]")
+      : null;
+    if (button) markManual("product-button");
+  }
+  function bind() {
+    if (bound) return;
+    bound = true;
+    document.addEventListener("click", manualButton, true);
+    document.addEventListener("input", function (event) {
+      var id = event.target && event.target.id;
+      if (id === "barcodeInput") {
+        syncBarcodeLock();
+        return;
+      }
+      if (id === "diameterInput" || id === "lengthInput") schedule("measure-input");
+    }, false);
+    document.addEventListener("click", function (event) {
+      var target = event.target && event.target.closest
+        ? event.target.closest("#clearBtn,#cancelEditBtn")
+        : null;
+      if (target) resetManual(target.id || "entry-reset");
+    }, true);
+    root.addEventListener("mesaha:product-selected", function (event) {
+      var source = event && event.detail ? clean(event.detail.source) : "";
+      if (source && source !== "auto-standard") markManual(source);
+    }, { passive: true });
+    root.addEventListener("mesaha:entry-save-complete", function () {
+      resetManual("save-complete");
+    }, { passive: true });
+    root.addEventListener("mesaha:automation-settings-changed", function () {
+      resetManual("settings-changed");
+      schedule("settings-changed");
+    }, { passive: true });
+    root.addEventListener("mesaha:view-changed", function (event) {
+      if (event && event.detail && event.detail.view === "entry") schedule("entry-open");
+    }, { passive: true });
+    root.addEventListener("pageshow", function () { schedule("pageshow"); }, { passive: true });
+    setTimeout(function () { schedule("startup"); }, 80);
+  }
+
+  var api = Object.freeze({
+    classify: classify,
+    run: run,
+    reset: resetManual,
+    isManual: function () { return manualOverride; },
+    currentBarcode: currentBarcode,
+  });
+  root.MesahaProductAutomationV72 = api;
+
+  if (document.readyState === "loading")
+    document.addEventListener("DOMContentLoaded", bind, { once: true });
+  else bind();
+})(typeof window !== "undefined" ? window : null);
+
 /* ===== mesaha-entry-runtime.js ===== */
-/* Mesaha İO V71 — tek klavye, Kaydet, ürün kuralı ve yüksek kontrast bildirim motoru. */
+/* Mesaha İO V72 — tek klavye, Kaydet, ürün kuralı ve yüksek kontrast bildirim motoru. */
 (function installMesahaEntryRuntime(root) {
   "use strict";
-  if (!root || root.MesahaEntryRuntimeV71) return;
+  if (!root || root.MesahaEntryRuntimeV72) return;
 
   var INPUT_IDS = ["diameterInput", "lengthInput", "barcodeInput", "quantityInput"];
   var THEMES = {
@@ -833,6 +1044,7 @@
     applyLengthRule: applyLengthRule,
     fireSave: fireSave,
   });
+  root.MesahaEntryRuntimeV72 = entryRuntimeApi;
   root.MesahaEntryRuntimeV71 = entryRuntimeApi;
   root.MesahaEntryRuntimeV70 = entryRuntimeApi;
 
