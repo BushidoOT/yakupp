@@ -12,7 +12,7 @@
   var usePointer=isIOS&&!!window.PointerEvent;
   var lastHandledAt=0,lastHandledKey='',gesture=null,lastFocus=null,moveLimit=14;
   var PRODUCT={
-    'Tomruk':{cls:'tomruk',rule:'Tomruk: çap 21 ve üzeri olmalı.'},
+    'Tomruk':{cls:'tomruk',rule:'Tomruk: çap 21 ve üzeri, boy en az 1,50 m olmalı.'},
     'Maden Direk':{cls:'maden',rule:'Maden: çap 20 ve altı olmalı.'},
     'Kağıtlık':{cls:'kagit',rule:'Kağıtlık: özel çap kilidi yok.'},
     'Sanayi Odunu':{cls:'sanayi',rule:'Sanayi: çap en az 12, boy 0,50 - 1,45 m olmalı.'},
