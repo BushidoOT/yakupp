@@ -701,26 +701,28 @@
               <span></span><span></span><span></span>
             </div>
           </section>
-          <section class="status-card">
-            <div class="status-item net-status" id="netStatusCard">
-              <span class="status-icon" id="netIcon">⌁</span>
-              <div>
-                <small>Bağlantı durumu</small
-                ><b id="netText">Kontrol ediliyor</b
-                ><em id="netSubText">Bağlantı kontrol ediliyor…</em>
-              </div>
-            </div>
+          <section class="home-action-grid-v73" aria-label="Mesaha işlemleri">
             <button
-              class="status-item entry-launch"
+              class="home-action-card-v73 home-entry-card-v73"
               id="openEntryBtn"
               type="button"
             >
-              <span class="status-icon flash">⚡</span>
-              <div>
-                <small>Giriş Modu</small><b>Mesaha Gir</b
-                ><em>Dokun ve hızlı mesaha girişine geç</em>
-              </div>
+              <span class="home-action-icon-v73" aria-hidden="true">↗</span>
+              <span class="home-action-copy-v73">
+                <small>Hızlı giriş</small>
+                <b>Mesaha Gir</b>
+                <em>Ölçüm ekranını aç</em>
+              </span>
             </button>
+            <label class="home-action-card-v73 home-date-card-v73" for="mesahaDate">
+              <span class="home-action-icon-v73" aria-hidden="true">▣</span>
+              <span class="home-action-copy-v73">
+                <small>Çalışma tarihi</small>
+                <b id="mesahaDateDisplayV73">--.--.----</b>
+                <em>Değiştirmek için dokun</em>
+              </span>
+              <input id="mesahaDate" type="date" aria-label="Mesaha tarihi" />
+            </label>
           </section>
           <section
             aria-label="Şeflik Klasörünü aç"
@@ -742,44 +744,52 @@
             </div>
             <span class="arrow">›</span>
           </section>
-          <section class="card file-card">
-            <div class="section-head">
-              <h2>Dosya Bilgileri</h2>
-              <span>Açık</span>
+          <section class="card file-card file-card-v73">
+            <div class="section-head file-card-head-v73">
+              <div>
+                <small>Aktif çalışma</small>
+                <h2>Dosya Bilgileri</h2>
+              </div>
+              <span>Düzenle</span>
             </div>
-            <div class="grid two">
-              <label
-                >Bölme No<input
-                  autocomplete="off"
-                  id="bolmeNo"
-                  inputmode="text"
-                  type="text"
-              /></label>
-              <label
-                >Şeflik<input
-                  autocomplete="off"
-                  id="seflik"
-                  inputmode="text"
-                  type="text"
-              /></label>
+            <div class="file-info-grid-v73">
+              <div class="file-field-card-v73 file-field-bolme-v73">
+                <span class="file-field-icon-v73" aria-hidden="true">#</span>
+                <label
+                  ><span>Bölme No</span><input
+                    autocomplete="off"
+                    id="bolmeNo"
+                    inputmode="text"
+                    type="text"
+                /></label>
+              </div>
+              <div class="file-field-card-v73 file-field-seflik-v73">
+                <span class="file-field-icon-v73" aria-hidden="true">⌂</span>
+                <label
+                  ><span>Şeflik</span><input
+                    autocomplete="off"
+                    id="seflik"
+                    inputmode="text"
+                    type="text"
+                /></label>
+              </div>
+              <div class="file-field-card-v73 file-field-ekip-v73">
+                <span class="file-field-icon-v73" aria-hidden="true">◎</span>
+                <label
+                  ><span>Not / Ekip Bilgisi</span><input
+                    autocomplete="off"
+                    id="ekipNot"
+                    inputmode="text"
+                    type="text"
+                /></label>
+              </div>
             </div>
-            <label
-              >Not / Ekip Bilgisi<input
-                autocomplete="off"
-                id="ekipNot"
-                inputmode="text"
-                type="text"
-            /></label>
-            <p class="hint">
-              Bu bilgiler sistem Excel’ine yazılmaz; dosya adını düzenli
-              oluşturmak ve takip kolaylığı için kullanılır.
+            <p class="hint file-card-hint-v73">
+              Dosya adı ve çalışma takibi için kullanılır; sistem Excel’ine yazılmaz.
             </p>
           </section>
-          <section class="card settings-card">
+          <section class="card settings-card home-settings-source-v73" hidden aria-hidden="true">
             <h2>Giriş Ayarları</h2>
-            <label class="setting-block"
-              >Mesaha Tarihi<input id="mesahaDate" type="date"
-            /></label>
             <div class="setting-block">
               <b>Odun Türleri</b>
               <p>Tikli olan odun türleri Giriş Modu içinde görünür.</p>
@@ -793,12 +803,12 @@
             <div class="setting-block" id="barcodeControlSettingV515">
               <b>Barkod Kontrolü</b>
               <p>Aktifken her 40 barkodda son barkod kontrol ekranı açılır.</p>
-              <label class="check-card barcode-control-toggle-v515"
+              <label class="check-card setting-toggle-card-v73 barcode-control-toggle-v515"
                 ><input
                   checked=""
                   id="barcodeControlEnabled"
                   type="checkbox"
-                /><span>40 barkodda bir kontrol ekranı göster</span></label
+                /><span class="choice-copy-v73"><b>40 barkodda kontrol</b><small>Son barkodu doğrulamak için kontrol ekranı gösterir.</small></span><span class="choice-switch-v73" aria-hidden="true"></span></label
               >
             </div>
             <div class="setting-block" id="productAutomationSettingV72">
@@ -808,18 +818,18 @@
                 değiştirirseniz seçiminiz o barkod kaydedilene kadar korunur.
               </p>
               <div class="check-grid product-automation-grid-v72">
-                <label class="check-card"
-                  ><input id="autoPaperLengthEnabled" type="checkbox" /><span
+                <label class="check-card setting-toggle-card-v73"
+                  ><input id="autoPaperLengthEnabled" type="checkbox" /><span class="choice-copy-v73"
                     ><b>2 ve 2,50 → Kâğıtlık</b><small
                       >Boy tam 2,00 veya 2,50 olduğunda Kâğıtlık seçilir.</small
-                    ></span
+                    ></span><span class="choice-switch-v73" aria-hidden="true"></span
                   ></label
                 >
-                <label class="check-card"
-                  ><input id="autoProductStandardEnabled" type="checkbox" /><span
+                <label class="check-card setting-toggle-card-v73"
+                  ><input id="autoProductStandardEnabled" type="checkbox" /><span class="choice-copy-v73"
                     ><b>Standarda göre otomatik seç</b><small
                       >Çap ve boya göre Sanayi, Tel, Tomruk veya Maden seçilir.</small
-                    ></span
+                    ></span><span class="choice-switch-v73" aria-hidden="true"></span
                   ></label
                 >
               </div>
@@ -3762,6 +3772,7 @@
           $("seflik").value = state.settings.seflik || "";
           $("ekipNot").value = state.settings.ekipNot || "";
           $("mesahaDate").value = state.settings.mesahaDate || todayISO();
+          try { if (window.MesahaHomeV73) window.MesahaHomeV73.syncDate(); } catch (_) {}
           const bc = $("barcodeControlEnabled");
           if (bc) bc.checked = state.settings.barcodeControlEnabled !== false;
           const autoPaper = $("autoPaperLengthEnabled");
@@ -3792,8 +3803,20 @@
             .querySelectorAll("[data-check-kind]")
             .forEach((ch) => ch.addEventListener("change", checkChanged));
         }
+        function settingChoiceMetaV73(kind, value, label) {
+          const products = {
+            "Tomruk": { cls: "choice-product-tomruk-v73", icon: "T", desc: "21 cm+ • 1,50 m+" },
+            "Maden Direk": { cls: "choice-product-maden-v73", icon: "M", desc: "20 cm ve altı" },
+            "Kağıtlık": { cls: "choice-product-kagit-v73", icon: "K", desc: "Serbest çap standardı" },
+            "Sanayi Odunu": { cls: "choice-product-sanayi-v73", icon: "S", desc: "12 cm+ • 0,50–1,45 m" },
+            "Tel Direk": { cls: "choice-product-tel-v73", icon: "TD", desc: "12–40 cm • 6,5–25 m" },
+          };
+          if (kind === "product" && products[value]) return products[value];
+          return { cls: "choice-tree-v73", icon: String(label || value || "A").trim().charAt(0).toLocaleUpperCase("tr-TR"), desc: "Hızlı girişte göster" };
+        }
         function checkCard(kind, value, label, checked) {
-          return `<label class="check-card"><input type="checkbox" data-check-kind="${kind}" value="${esc(value)}" ${checked ? "checked" : ""}><span>${esc(label)}</span></label>`;
+          const meta = settingChoiceMetaV73(kind, value, label);
+          return `<label class="check-card setting-choice-v73 ${meta.cls}"><input type="checkbox" data-check-kind="${kind}" value="${esc(value)}" ${checked ? "checked" : ""}><span class="choice-icon-v73" aria-hidden="true">${esc(meta.icon)}</span><span class="choice-copy-v73"><b>${esc(label)}</b><small>${esc(meta.desc)}</small></span><span class="choice-switch-v73" aria-hidden="true"></span></label>`;
         }
         function checkChanged(e) {
           const kind = e.target.dataset.checkKind;
@@ -11044,7 +11067,16 @@
               stateObj.visibleTrees = treesStable.slice();
           }
           function card(kind, value, label, checked) {
-            return '<label class="check-card"><input type="checkbox" data-check-kind="' + kind + '" value="' + value.replace(/&/g,"&amp;").replace(/"/g,"&quot;") + '" ' + (checked ? "checked" : "") + '><span>' + label + '</span></label>';
+            var productMeta = {
+              "Tomruk": ["choice-product-tomruk-v73", "T", "21 cm+ • 1,50 m+"],
+              "Maden Direk": ["choice-product-maden-v73", "M", "20 cm ve altı"],
+              "Kağıtlık": ["choice-product-kagit-v73", "K", "Serbest çap standardı"],
+              "Sanayi Odunu": ["choice-product-sanayi-v73", "S", "12 cm+ • 0,50–1,45 m"],
+              "Tel Direk": ["choice-product-tel-v73", "TD", "12–40 cm • 6,5–25 m"]
+            };
+            var meta = kind === "product" && productMeta[value] ? productMeta[value] : ["choice-tree-v73", String(label || value || "A").trim().charAt(0).toLocaleUpperCase("tr-TR"), "Hızlı girişte göster"];
+            var safeValue = value.replace(/&/g,"&amp;").replace(/"/g,"&quot;");
+            return '<label class="check-card setting-choice-v73 ' + meta[0] + '"><input type="checkbox" data-check-kind="' + kind + '" value="' + safeValue + '" ' + (checked ? "checked" : "") + '><span class="choice-icon-v73" aria-hidden="true">' + meta[1] + '</span><span class="choice-copy-v73"><b>' + label + '</b><small>' + meta[2] + '</small></span><span class="choice-switch-v73" aria-hidden="true"></span></label>';
           }
           // Önce ana uygulamanın kendi render fonksiyonuna fırsat verilir; eski cihazda
           // render çalışmadıysa aşağıdaki güvenli yedek liste devreye girer.
@@ -11109,10 +11141,10 @@
             var block = target && target.closest ? target.closest(".setting-block") : null;
             if (block && block.parentNode !== options) options.appendChild(block);
           });
-          var homeSettings = qs("#homeView .settings-card");
+          var homeSettings = qs("#homeView .home-settings-source-v73");
           if (homeSettings) {
-            homeSettings.classList.add("home-date-card-v325");
-            var h = qs("h2", homeSettings); if (h) h.textContent = "Mesaha Tarihi";
+            homeSettings.hidden = true;
+            homeSettings.setAttribute("aria-hidden", "true");
           }
           ["sound-card", "maintenance-card"].forEach(function (cls) {
             var el = qs("#homeView ." + cls) || qs("#settingsView ." + cls);
@@ -11158,10 +11190,9 @@
           if (home) {
             var order = [
               ".hero-card",
-              ".status-card",
+              ".home-action-grid-v73",
               ".seflik-folder-home-shortcut",
               ".file-card",
-              ".settings-card",
               ".summary-card",
               ".detail-summary-card",
             ];
@@ -18827,8 +18858,12 @@
     <style id="mesaha-profile-avatar-stable-style">
       #userBadge,#userPanelBtnV316{display:none!important}
       .top-actions-v316{display:flex!important;justify-content:flex-end!important;align-items:center!important}
-      #mesahaAccountAvatar{width:46px;height:46px;min-width:46px;border:2px solid #fff;border-radius:50%;padding:0;overflow:hidden;background:#eaf5ef;color:#145b3d;box-shadow:0 7px 18px rgba(15,23,42,.13);display:grid;place-items:center;font-weight:950;font-size:14px;touch-action:manipulation}
+      #mesahaAccountAvatar{position:relative;width:46px;height:46px;min-width:46px;border:0;border-radius:50%;padding:0;overflow:visible;background:transparent;color:#145b3d;box-shadow:none;display:grid;place-items:center;font-weight:950;font-size:14px;touch-action:manipulation}
+      #mesahaAccountAvatar .mesaha-avatar-media-v73{width:46px;height:46px;border:2px solid #fff;border-radius:50%;overflow:hidden;background:#eaf5ef;box-shadow:0 7px 18px rgba(15,23,42,.13);display:grid;place-items:center}
       #mesahaAccountAvatar img{width:100%;height:100%;object-fit:cover;display:block}
+      #mesahaAccountAvatar .mesaha-online-dot-v73{position:absolute;right:-1px;bottom:2px;width:14px;height:14px;border:3px solid #fff;border-radius:50%;background:#94a3b8;box-shadow:0 3px 8px rgba(15,23,42,.2);transition:background .18s ease,box-shadow .18s ease}
+      #mesahaAccountAvatar.is-online-v73 .mesaha-online-dot-v73{background:#22c55e;box-shadow:0 0 0 3px rgba(34,197,94,.14),0 3px 8px rgba(15,23,42,.18)}
+      #mesahaAccountAvatar.is-offline-v73 .mesaha-online-dot-v73{background:#94a3b8}
       #settingsView .settings-options-card-stable{display:grid!important;gap:14px!important;margin-bottom:14px!important;padding:15px!important}
       #settingsView .settings-options-card-stable>.setting-block{display:block!important;visibility:visible!important;opacity:1!important;margin:0!important;padding:13px!important;border:1px solid #dce9e2!important;border-radius:17px!important;background:#fff!important}
       #settingsView .settings-options-card-stable .check-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important;margin-top:10px!important}
@@ -18844,10 +18879,11 @@
         function read(k){try{return JSON.parse(localStorage.getItem(k)||"{}")||{}}catch(e){return {}}}
         function clean(v){return String(v==null?"":v).trim()}
         function profile(){var p=read("mesaha_panel_user_v316"),a=read("mesaha_google_access_v548"),t=read("mesaha_terminal_local_mode_v556"),s=read("mesaha_supabase_v500_session"),u=s.user||{},m=u.user_metadata||{};return{name:clean(p.googleFullName||p.name||a.canonical_name||a.name||t.name||m.full_name||m.name||u.email||"Kullanıcı"),avatar:clean(p.googleAvatarUrl||p.avatarUrl||a.avatar_url||a.google_avatar_url||t.avatarUrl||t.avatar_url||m.avatar_url||m.picture)}}
-        function paint(){var actions=document.querySelector(".top-actions-v316");if(!actions)return;var old=document.getElementById("userPanelBtnV316");if(old)old.hidden=true;var btn=document.getElementById("mesahaAccountAvatar");if(!btn){btn=document.createElement("button");btn.id="mesahaAccountAvatar";btn.type="button";btn.setAttribute("aria-label","Orman İO hesap bilgileri");actions.appendChild(btn);btn.addEventListener("click",function(){location.href="../?open=account"},true)}var x=profile();btn.innerHTML=x.avatar?'<img src="'+x.avatar.replace(/"/g,"&quot;")+'" alt="" referrerpolicy="no-referrer">':clean(x.name).split(/\s+/).slice(0,2).map(function(v){return v.charAt(0)}).join("").toUpperCase()}
+        function updateOnline(btn){if(!btn)return;var online=navigator.onLine!==false;btn.classList.toggle("is-online-v73",online);btn.classList.toggle("is-offline-v73",!online);btn.setAttribute("data-network",online?"online":"offline")}
+        function paint(){var actions=document.querySelector(".top-actions-v316");if(!actions)return;var old=document.getElementById("userPanelBtnV316");if(old)old.hidden=true;var btn=document.getElementById("mesahaAccountAvatar");if(!btn){btn=document.createElement("button");btn.id="mesahaAccountAvatar";btn.type="button";btn.setAttribute("aria-label","Orman İO hesap bilgileri");actions.appendChild(btn);btn.addEventListener("click",function(){location.href="../?open=account"},true)}var x=profile();var media=x.avatar?'<img src="'+x.avatar.replace(/"/g,"&quot;")+'" alt="" referrerpolicy="no-referrer">':clean(x.name).split(/\s+/).slice(0,2).map(function(v){return v.charAt(0)}).join("").toUpperCase();btn.innerHTML='<span class="mesaha-avatar-media-v73">'+media+'</span><span class="mesaha-online-dot-v73" aria-hidden="true"></span>';updateOnline(btn)}
         function boot(){paint();setTimeout(paint,350);setTimeout(paint,1400)}
         if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});else boot();
-        window.addEventListener("storage",paint);["mesaha:user-login","mesaha:terminal-mode-enabled","mesaha:google-access-approved","pageshow"].forEach(function(n){window.addEventListener(n,function(){setTimeout(paint,50)},{passive:true})});
+        window.addEventListener("storage",paint);window.addEventListener("online",function(){updateOnline(document.getElementById("mesahaAccountAvatar"))},{passive:true});window.addEventListener("offline",function(){updateOnline(document.getElementById("mesahaAccountAvatar"))},{passive:true});["mesaha:user-login","mesaha:terminal-mode-enabled","mesaha:google-access-approved","pageshow"].forEach(function(n){window.addEventListener(n,function(){setTimeout(paint,50)},{passive:true})});
       })();
     </script>
 
@@ -19116,6 +19152,9 @@
         #modernModal .modal-actions:has(.xls-download-v62){bottom:-14px;padding-bottom:calc(4px + env(safe-area-inset-bottom,0px))}
       }
     </style>
+
+    <link href="./css/mesaha-home-settings-v73.css" rel="stylesheet" />
+    <script src="./js/mesaha-home-settings-v73.js"></script>
 
   </body>
 </html>

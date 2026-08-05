@@ -1,20 +1,20 @@
 (function (root) {
   "use strict";
   const DATA = /*MESAHA_RELEASE_DATA_START*/{
-  "build": 72,
-  "version": "72.0.0",
+  "build": 73,
+  "version": "73.0.0",
   "channel": "stable",
-  "releasedAt": "2026-08-06T00:29:00+03:00",
-  "assetToken": "orman-io-stable-20260806-v72",
-  "cacheName": "orman-io-shell-stable-20260806-v72",
+  "releasedAt": "2026-08-06T00:58:00+03:00",
+  "assetToken": "orman-io-stable-20260806-v73",
+  "cacheName": "orman-io-shell-stable-20260806-v73",
   "apps": {
     "suite": {
       "label": "Orman İO",
-      "version": "72.0.0"
+      "version": "73.0.0"
     },
     "mesaha": {
       "label": "Mesaha İO",
-      "version": "6.13"
+      "version": "6.14"
     },
     "istif": {
       "label": "İstif İO",
@@ -22,10 +22,10 @@
     },
     "admin": {
       "label": "Orman İO Yönetim",
-      "version": "72.0.0"
+      "version": "73.0.0"
     }
   },
-  "description": "V72 Mesaha ürün seçim otomasyonu: Ayarlara 2,00/2,50 boyu Kâğıtlık seçme ve çap-boy standartlarına göre ürün seçme seçenekleri eklendi. Otomasyon yalnız giriş anında çalışır; kullanıcının elle seçtiği ürün aynı barkod kaydedilene kadar korunur."
+  "description": "V73 Mesaha ana ekran ve ayarlar modernizasyonu: bağlantı kartı kaldırıldı, profil çevrimiçi durum noktası eklendi, Mesaha Gir ve tarih seçimi büyük yeşil/sarı kartlara dönüştürüldü, dosya bilgileri düzenlendi ve ürün/ağaç seçimleri modern kart-switch arayüzüne geçirildi."
 }/*MESAHA_RELEASE_DATA_END*/;
   const APP_NAMES = DATA.apps || {};
   const SCRIPT_URL = (() => {

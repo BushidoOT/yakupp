@@ -1,0 +1,551 @@
+/* Orman İO V73 — Ana ekran, dosya bilgileri ve ayarlar arayüzü */
+#homeView .home-settings-source-v73 {
+  display: none !important;
+}
+
+#homeView .home-action-grid-v73 {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 12px !important;
+  margin: 14px 0 !important;
+  padding: 0 !important;
+}
+
+#homeView .home-action-card-v73 {
+  position: relative !important;
+  min-width: 0 !important;
+  min-height: 112px !important;
+  border: 1px solid transparent !important;
+  border-radius: 25px !important;
+  padding: 16px !important;
+  display: grid !important;
+  grid-template-columns: 48px minmax(0, 1fr) !important;
+  align-items: center !important;
+  gap: 12px !important;
+  overflow: hidden !important;
+  text-align: left !important;
+  font: inherit !important;
+  cursor: pointer !important;
+  touch-action: manipulation !important;
+  -webkit-tap-highlight-color: transparent !important;
+  transition: transform .15s ease, box-shadow .18s ease, filter .18s ease !important;
+}
+
+#homeView .home-action-card-v73::before {
+  content: "";
+  position: absolute;
+  width: 110px;
+  height: 110px;
+  right: -48px;
+  top: -54px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .16);
+  pointer-events: none;
+}
+
+#homeView .home-action-card-v73:active {
+  transform: scale(.985) !important;
+}
+
+#homeView .home-entry-card-v73 {
+  background: linear-gradient(145deg, #0d7247 0%, #13945a 58%, #32b96d 100%) !important;
+  border-color: rgba(7, 103, 61, .52) !important;
+  color: #fff !important;
+  box-shadow: 0 14px 30px rgba(13, 114, 71, .22) !important;
+}
+
+#homeView .home-date-card-v73 {
+  background: linear-gradient(145deg, #fff9df 0%, #ffe99b 58%, #f4ca55 100%) !important;
+  border-color: #efd378 !important;
+  color: #4c3907 !important;
+  box-shadow: 0 14px 30px rgba(170, 126, 16, .16) !important;
+}
+
+#homeView .home-action-icon-v73 {
+  width: 48px !important;
+  height: 48px !important;
+  border-radius: 17px !important;
+  display: grid !important;
+  place-items: center !important;
+  font-size: 22px !important;
+  font-weight: 950 !important;
+  line-height: 1 !important;
+  background: rgba(255, 255, 255, .9) !important;
+  color: #0d7247 !important;
+  box-shadow: 0 8px 20px rgba(12, 62, 40, .13) !important;
+}
+
+#homeView .home-date-card-v73 .home-action-icon-v73 {
+  background: rgba(255, 255, 255, .76) !important;
+  color: #8b6500 !important;
+}
+
+#homeView .home-action-copy-v73 {
+  min-width: 0 !important;
+  display: grid !important;
+  gap: 3px !important;
+  position: relative !important;
+  z-index: 1 !important;
+  pointer-events: none !important;
+}
+
+#homeView .home-action-copy-v73 small,
+#homeView .home-action-copy-v73 em {
+  display: block !important;
+  margin: 0 !important;
+  font-style: normal !important;
+  line-height: 1.25 !important;
+}
+
+#homeView .home-action-copy-v73 small {
+  font-size: 10.5px !important;
+  font-weight: 900 !important;
+  letter-spacing: .03em !important;
+  opacity: .84 !important;
+}
+
+#homeView .home-action-copy-v73 b {
+  display: block !important;
+  min-width: 0 !important;
+  font-size: clamp(17px, 2.5vw, 21px) !important;
+  line-height: 1.08 !important;
+  font-weight: 950 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  color: inherit !important;
+}
+
+#homeView .home-action-copy-v73 em {
+  font-size: 10px !important;
+  font-weight: 760 !important;
+  opacity: .76 !important;
+}
+
+#homeView .home-date-card-v73 #mesahaDate {
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 4 !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: inherit !important;
+  opacity: 0 !important;
+  cursor: pointer !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+}
+
+/* Dosya bilgileri */
+#homeView .file-card-v73 {
+  padding: 18px !important;
+  border-radius: 26px !important;
+  background: linear-gradient(180deg, #fff 0%, #fbfefc 100%) !important;
+  border: 1px solid #dce9e2 !important;
+  box-shadow: 0 14px 34px rgba(20, 73, 48, .075) !important;
+}
+
+#homeView .file-card-head-v73 {
+  align-items: center !important;
+  margin-bottom: 14px !important;
+}
+
+#homeView .file-card-head-v73 > div {
+  display: grid !important;
+  gap: 2px !important;
+}
+
+#homeView .file-card-head-v73 small {
+  color: #7a8c84 !important;
+  font-size: 10px !important;
+  font-weight: 850 !important;
+  text-transform: uppercase !important;
+  letter-spacing: .08em !important;
+}
+
+#homeView .file-card-head-v73 h2 {
+  margin: 0 !important;
+  font-size: 18px !important;
+  line-height: 1.1 !important;
+  color: #173d2d !important;
+}
+
+#homeView .file-card-head-v73 > span {
+  display: inline-flex !important;
+  align-items: center !important;
+  min-height: 34px !important;
+  padding: 7px 12px !important;
+  border-radius: 999px !important;
+  background: #eaf8ef !important;
+  border: 1px solid #d1ecdc !important;
+  color: #0d7145 !important;
+  font-size: 11px !important;
+  font-weight: 900 !important;
+}
+
+#homeView .file-info-grid-v73 {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 12px !important;
+}
+
+#homeView .file-field-card-v73 {
+  min-width: 0 !important;
+  padding: 13px !important;
+  border: 1px solid #dfeae5 !important;
+  border-radius: 20px !important;
+  background: #f9fcfa !important;
+  display: grid !important;
+  grid-template-columns: 40px minmax(0, 1fr) !important;
+  align-items: start !important;
+  gap: 10px !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .95) !important;
+}
+
+#homeView .file-field-ekip-v73 {
+  grid-column: 1 / -1 !important;
+}
+
+#homeView .file-field-icon-v73 {
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 14px !important;
+  display: grid !important;
+  place-items: center !important;
+  background: #e8f6ee !important;
+  color: #0e7145 !important;
+  font-size: 18px !important;
+  font-weight: 950 !important;
+}
+
+#homeView .file-field-card-v73 > label {
+  min-width: 0 !important;
+  display: grid !important;
+  gap: 6px !important;
+  margin: 0 !important;
+  color: #233e33 !important;
+}
+
+#homeView .file-field-card-v73 > label > span {
+  display: block !important;
+  margin: 0 !important;
+  color: #5e756b !important;
+  font-size: 10.5px !important;
+  font-weight: 900 !important;
+}
+
+#homeView .file-field-card-v73 input,
+#homeView .file-field-card-v73 .suite-managed-select-v8 {
+  width: 100% !important;
+  min-width: 0 !important;
+  height: 46px !important;
+  min-height: 46px !important;
+  margin: 0 !important;
+  padding: 0 12px !important;
+  border: 1px solid #d8e7df !important;
+  border-radius: 14px !important;
+  background: #fff !important;
+  color: #173d2d !important;
+  font-size: 13px !important;
+  font-weight: 850 !important;
+  box-shadow: none !important;
+}
+
+#homeView .file-field-bolme-v73 .suite-create-division-v62 {
+  grid-column: 2 !important;
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 0 !important;
+  min-height: 42px !important;
+  margin: 8px 0 0 !important;
+  border-radius: 14px !important;
+}
+
+#homeView .file-card-hint-v73 {
+  margin: 12px 2px 0 !important;
+  color: #73857d !important;
+  font-size: 10px !important;
+  line-height: 1.45 !important;
+}
+
+/* Ayarlar */
+#settingsView .settings-options-card-stable {
+  padding: 0 !important;
+  gap: 12px !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+#settingsView .settings-options-card-stable > h2 {
+  margin: 2px 2px 0 !important;
+  color: #6b7f76 !important;
+  font-size: 11px !important;
+  font-weight: 900 !important;
+  letter-spacing: .08em !important;
+  text-transform: uppercase !important;
+}
+
+#settingsView .settings-options-card-stable > .setting-block {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  margin: 0 !important;
+  padding: 16px !important;
+  border: 1px solid #dce9e2 !important;
+  border-radius: 24px !important;
+  background: linear-gradient(180deg, #fff 0%, #fbfefc 100%) !important;
+  box-shadow: 0 12px 28px rgba(20, 73, 48, .06) !important;
+}
+
+#settingsView .settings-options-card-stable > .setting-block > b {
+  margin: 0 !important;
+  color: #173d2d !important;
+  font-size: 17px !important;
+  line-height: 1.2 !important;
+  font-weight: 950 !important;
+}
+
+#settingsView .settings-options-card-stable > .setting-block > p {
+  margin: 5px 0 0 !important;
+  color: #6d8178 !important;
+  font-size: 11px !important;
+  line-height: 1.45 !important;
+  font-weight: 720 !important;
+}
+
+#settingsView .settings-options-card-stable .check-grid {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 10px !important;
+  margin-top: 13px !important;
+}
+
+#settingsView .setting-choice-v73,
+#settingsView .setting-toggle-card-v73 {
+  position: relative !important;
+  min-width: 0 !important;
+  min-height: 76px !important;
+  margin: 0 !important;
+  padding: 11px !important;
+  border: 1px solid #dce8e2 !important;
+  border-radius: 19px !important;
+  background: #fff !important;
+  display: grid !important;
+  grid-template-columns: 42px minmax(0, 1fr) 38px !important;
+  align-items: center !important;
+  gap: 10px !important;
+  color: #203a30 !important;
+  box-shadow: 0 8px 18px rgba(23, 74, 50, .05) !important;
+  cursor: pointer !important;
+  touch-action: manipulation !important;
+  -webkit-tap-highlight-color: transparent !important;
+  transition: border-color .16s ease, box-shadow .16s ease, transform .14s ease, opacity .16s ease !important;
+}
+
+#settingsView .setting-choice-v73:active,
+#settingsView .setting-toggle-card-v73:active {
+  transform: scale(.988) !important;
+}
+
+#settingsView .setting-choice-v73::after,
+#settingsView .setting-toggle-card-v73::after {
+  content: none !important;
+  display: none !important;
+}
+
+#settingsView .setting-choice-v73 > input,
+#settingsView .setting-toggle-card-v73 > input {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+#settingsView .choice-icon-v73 {
+  width: 42px !important;
+  height: 42px !important;
+  border-radius: 14px !important;
+  display: grid !important;
+  place-items: center !important;
+  background: #edf6f1 !important;
+  color: #176a45 !important;
+  font-size: 13px !important;
+  font-weight: 950 !important;
+  letter-spacing: -.02em !important;
+}
+
+#settingsView .choice-copy-v73 {
+  min-width: 0 !important;
+  display: grid !important;
+  gap: 3px !important;
+  align-self: center !important;
+}
+
+#settingsView .choice-copy-v73 b {
+  min-width: 0 !important;
+  color: inherit !important;
+  font-size: 13px !important;
+  line-height: 1.22 !important;
+  font-weight: 950 !important;
+  white-space: normal !important;
+}
+
+#settingsView .choice-copy-v73 small {
+  color: #70827a !important;
+  font-size: 9.5px !important;
+  line-height: 1.35 !important;
+  font-weight: 720 !important;
+}
+
+#settingsView .choice-switch-v73 {
+  position: relative !important;
+  width: 38px !important;
+  height: 23px !important;
+  border-radius: 999px !important;
+  background: #d8e1dc !important;
+  box-shadow: inset 0 1px 3px rgba(15, 23, 42, .12) !important;
+  transition: background .16s ease !important;
+}
+
+#settingsView .choice-switch-v73::after {
+  content: "" !important;
+  position: absolute !important;
+  width: 17px !important;
+  height: 17px !important;
+  left: 3px !important;
+  top: 3px !important;
+  border-radius: 50% !important;
+  background: #fff !important;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, .22) !important;
+  transition: transform .16s ease !important;
+}
+
+#settingsView .setting-choice-v73:has(input:checked),
+#settingsView .setting-toggle-card-v73:has(input:checked) {
+  opacity: 1 !important;
+  border-color: #a9d7bd !important;
+  box-shadow: 0 10px 22px rgba(13, 95, 59, .10) !important;
+}
+
+#settingsView .setting-choice-v73:not(:has(input:checked)) {
+  opacity: .66 !important;
+  filter: saturate(.72) !important;
+}
+
+#settingsView input:checked ~ .choice-switch-v73 {
+  background: #15945a !important;
+}
+
+#settingsView input:checked ~ .choice-switch-v73::after {
+  transform: translateX(15px) !important;
+}
+
+#settingsView .choice-product-tomruk-v73 {
+  background: linear-gradient(145deg, #fffdf5, #fff7d8) !important;
+  color: #5c4300 !important;
+}
+#settingsView .choice-product-tomruk-v73 .choice-icon-v73 { background: #ffe99f !important; color: #6a4a00 !important; }
+#settingsView .choice-product-maden-v73 {
+  background: linear-gradient(145deg, #fbfdff, #eaf5ff) !important;
+  color: #0b538a !important;
+}
+#settingsView .choice-product-maden-v73 .choice-icon-v73 { background: #d7ecff !important; color: #0b5b98 !important; }
+#settingsView .choice-product-kagit-v73 {
+  background: linear-gradient(145deg, #fffafb, #ffedf1) !important;
+  color: #8c1d38 !important;
+}
+#settingsView .choice-product-kagit-v73 .choice-icon-v73 { background: #ffdce4 !important; color: #9b1f3c !important; }
+#settingsView .choice-product-sanayi-v73 {
+  background: linear-gradient(145deg, #fbfffc, #eaf8ef) !important;
+  color: #0a6840 !important;
+}
+#settingsView .choice-product-sanayi-v73 .choice-icon-v73 { background: #d9f2e3 !important; color: #0a7044 !important; }
+#settingsView .choice-product-tel-v73 {
+  background: linear-gradient(145deg, #fdfcff, #f1ecff) !important;
+  color: #6035a5 !important;
+}
+#settingsView .choice-product-tel-v73 .choice-icon-v73 { background: #e7ddff !important; color: #6738ad !important; }
+#settingsView .choice-tree-v73 .choice-icon-v73 { background: #e4f4eb !important; color: #126d45 !important; }
+
+#settingsView .setting-toggle-card-v73 {
+  grid-template-columns: minmax(0, 1fr) 38px !important;
+  min-height: 72px !important;
+  background: #f9fcfa !important;
+}
+
+#settingsView #productAutomationSettingV72 .product-automation-grid-v72 {
+  grid-template-columns: 1fr !important;
+}
+
+#settingsView .sound-card {
+  padding: 16px !important;
+  border-radius: 24px !important;
+  border: 1px solid #dce9e2 !important;
+  box-shadow: 0 12px 28px rgba(20, 73, 48, .06) !important;
+}
+
+#settingsView .sound-card #soundBtn {
+  width: 100% !important;
+  min-height: 50px !important;
+  border-radius: 16px !important;
+  background: #edf8f1 !important;
+  border-color: #cce9d8 !important;
+  color: #0e7145 !important;
+}
+
+@media (max-width: 620px) {
+  #homeView .home-action-grid-v73 {
+    gap: 9px !important;
+  }
+  #homeView .home-action-card-v73 {
+    min-height: 100px !important;
+    padding: 13px !important;
+    grid-template-columns: 42px minmax(0, 1fr) !important;
+    gap: 9px !important;
+    border-radius: 21px !important;
+  }
+  #homeView .home-action-icon-v73 {
+    width: 42px !important;
+    height: 42px !important;
+    border-radius: 14px !important;
+    font-size: 19px !important;
+  }
+  #homeView .home-action-copy-v73 b {
+    font-size: 16px !important;
+  }
+  #homeView .home-action-copy-v73 em {
+    display: none !important;
+  }
+  #homeView .file-info-grid-v73 {
+    grid-template-columns: 1fr !important;
+  }
+  #homeView .file-field-ekip-v73 {
+    grid-column: auto !important;
+  }
+  #settingsView .settings-options-card-stable .check-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 360px) {
+  #homeView .home-action-card-v73 {
+    min-height: 94px !important;
+    padding: 11px !important;
+    grid-template-columns: 38px minmax(0, 1fr) !important;
+  }
+  #homeView .home-action-icon-v73 {
+    width: 38px !important;
+    height: 38px !important;
+  }
+  #homeView .home-action-copy-v73 small {
+    font-size: 9px !important;
+  }
+  #homeView .home-action-copy-v73 b {
+    font-size: 14px !important;
+  }
+}
