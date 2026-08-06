@@ -1241,3 +1241,235 @@ body.product-tel-active #entryView .product-rule-hint { border-color: #d9cdef !i
   #entryView #productButtons { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
 }
 
+
+
+/* === compact cutter strip + yellow home button refinement === */
+#entryView #entryHomeBtn {
+  min-height: 54px !important;
+  padding: 0 22px !important;
+  border: 1.5px solid #e7bd38 !important;
+  border-radius: 18px !important;
+  background: linear-gradient(180deg, #fff2b8 0%, #ffe68d 100%) !important;
+  color: #6f4a00 !important;
+  font-size: 15px !important;
+  font-weight: 950 !important;
+  box-shadow: 0 10px 24px rgba(231, 189, 56, .22) !important;
+}
+
+#entryView .cutter-row {
+  gap: 10px !important;
+  padding: 18px 16px 14px !important;
+}
+#entryView .cutter-row::before {
+  content: "Kesimci" !important;
+  position: static !important;
+  display: block !important;
+  margin: 0 0 2px !important;
+  color: #142820 !important;
+  font-size: 15px !important;
+  font-weight: 950 !important;
+}
+#entryView #cutterChips,
+#entryView #cutterChips.cutter-manager-v406 {
+  min-height: 0 !important;
+  padding: 4px 2px 6px !important;
+  display: flex !important;
+  align-items: stretch !important;
+  gap: 10px !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  scrollbar-width: none !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+#entryView #cutterChips::-webkit-scrollbar,
+#entryView #cutterChips.cutter-manager-v406::-webkit-scrollbar {
+  display: none !important;
+}
+#entryView #cutterChips .cutter-none-v406,
+#entryView #cutterChips .chip[data-cutter=""] {
+  flex: 0 0 auto !important;
+  min-width: 126px !important;
+  min-height: 96px !important;
+  padding: 14px 12px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border: 1.5px dashed #cdd9d3 !important;
+  border-radius: 18px !important;
+  background: #fbfdfc !important;
+  color: #6b7d75 !important;
+  font-size: 13px !important;
+  font-weight: 850 !important;
+  text-align: center !important;
+  line-height: 1.3 !important;
+  box-shadow: none !important;
+}
+#entryView #cutterChips .cutter-none-v406.active,
+#entryView #cutterChips .chip[data-cutter=""].active {
+  border-style: solid !important;
+  border-color: #98d2b0 !important;
+  background: #effaf3 !important;
+  color: #0b663f !important;
+}
+#entryView #cutterChips .cutter-chip-v406 {
+  position: relative !important;
+  flex: 0 0 auto !important;
+  width: 118px !important;
+  min-height: 112px !important;
+  padding: 10px 10px 12px !important;
+  display: grid !important;
+  grid-template-rows: 1fr auto auto !important;
+  gap: 8px !important;
+  align-items: start !important;
+  border: 1.5px solid #dbe4df !important;
+  border-radius: 18px !important;
+  background: #ffffff !important;
+  box-shadow: 0 4px 14px rgba(22, 47, 36, .05) !important;
+}
+#entryView #cutterChips .cutter-chip-v406.active {
+  border-color: #8fcfac !important;
+  background: linear-gradient(180deg, #f8fdf9 0%, #eef9f2 100%) !important;
+  box-shadow: 0 10px 22px rgba(31, 120, 74, .13) !important;
+  transform: translateY(-1px) !important;
+}
+#entryView #cutterChips .cutter-chip-v406.active::before {
+  content: "✓" !important;
+  position: absolute !important;
+  top: 10px !important;
+  right: 10px !important;
+  width: 26px !important;
+  height: 26px !important;
+  display: grid !important;
+  place-items: center !important;
+  border: 2px solid #fff !important;
+  border-radius: 50% !important;
+  background: #168b59 !important;
+  color: #fff !important;
+  font-size: 15px !important;
+  line-height: 1 !important;
+  box-shadow: 0 4px 12px rgba(22, 139, 89, .22) !important;
+}
+#entryView #cutterChips .cutter-chip-v406.active::after {
+  content: "Seçili" !important;
+  position: absolute !important;
+  left: 10px !important;
+  top: 10px !important;
+  min-height: 24px !important;
+  padding: 0 10px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 999px !important;
+  background: #dff5e7 !important;
+  color: #0d7648 !important;
+  font-size: 11px !important;
+  font-weight: 900 !important;
+}
+#entryView #cutterChips .cutter-name-v406 {
+  width: 100% !important;
+  min-height: 56px !important;
+  margin: 0 !important;
+  padding: 34px 6px 2px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border: 0 !important;
+  background: transparent !important;
+  color: #1b2f27 !important;
+  text-align: center !important;
+  font-size: 13px !important;
+  line-height: 1.2 !important;
+  font-weight: 900 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+#entryView #cutterChips .cutter-chip-v406.active .cutter-name-v406 {
+  color: #0a613b !important;
+  padding-top: 38px !important;
+}
+#entryView #cutterChips .cutter-edit-v406,
+#entryView #cutterChips .cutter-delete-v406 {
+  min-width: 0 !important;
+  min-height: 30px !important;
+  padding: 0 8px !important;
+  border-radius: 10px !important;
+  font-size: 11px !important;
+  font-weight: 850 !important;
+  box-shadow: none !important;
+}
+#entryView #cutterChips .cutter-edit-v406 {
+  border: 1px solid #b8dcc7 !important;
+  background: #f6fcf8 !important;
+  color: #0f7a4d !important;
+}
+#entryView #cutterChips .cutter-delete-v406 {
+  border: 1px solid #f1c5cd !important;
+  background: #fff7f8 !important;
+  color: #b62f49 !important;
+}
+#entryView #cutterChips .cutter-chip-v406 .cutter-edit-v406::before { content: "✎ "; }
+#entryView #cutterChips .cutter-chip-v406 .cutter-delete-v406::before { content: "🗑 "; }
+#entryView #cutterChips .cutter-chip-v406 > .cutter-edit-v406,
+#entryView #cutterChips .cutter-chip-v406 > .cutter-delete-v406 {
+  width: calc(50% - 4px) !important;
+}
+#entryView #cutterChips .cutter-chip-v406 {
+  grid-template-columns: 1fr 1fr !important;
+}
+#entryView #cutterChips .cutter-chip-v406 .cutter-name-v406 {
+  grid-column: 1 / -1 !important;
+}
+#entryView #cutterChips .cutter-chip-v406 .cutter-edit-v406 { grid-column: 1 !important; }
+#entryView #cutterChips .cutter-chip-v406 .cutter-delete-v406 { grid-column: 2 !important; }
+#entryView #addCutterBtn {
+  width: 100% !important;
+  min-height: 54px !important;
+  border: 1.5px dashed #c9d7d1 !important;
+  border-radius: 18px !important;
+  background: #fbfdfc !important;
+  color: #547365 !important;
+  font-size: 15px !important;
+  font-weight: 900 !important;
+  box-shadow: none !important;
+}
+#entryView #addCutterBtn:hover,
+#entryView #addCutterBtn:active {
+  background: #f5fbf7 !important;
+  color: #0d6f45 !important;
+  border-color: #9ccfb2 !important;
+}
+
+#entryView #productButtons {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 10px !important;
+}
+#entryView #productButtons .product-btn {
+  position: relative !important;
+  min-height: 54px !important;
+  padding: 0 38px 0 14px !important;
+  justify-content: center !important;
+  border-width: 1.5px !important;
+  border-radius: 18px !important;
+  font-size: 14px !important;
+  font-weight: 900 !important;
+}
+#entryView #productButtons .product-btn.active {
+  box-shadow: 0 8px 18px rgba(20, 53, 39, .08) !important;
+}
+#entryView #productButtons .product-btn.active::after {
+  right: 10px !important;
+  width: 24px !important;
+  height: 24px !important;
+  font-size: 13px !important;
+}
+@media (min-width: 760px) {
+  #entryView #productButtons {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+}
