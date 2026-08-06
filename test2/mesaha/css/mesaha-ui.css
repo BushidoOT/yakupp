@@ -1453,370 +1453,546 @@ body.product-tel-active #entryView .product-rule-hint { border-color: #d9cdef !i
 }
 
 
-/* === Beyan dashboard redesign === */
-#recordsView .records-card {
-  padding: 18px !important;
-  border-radius: 28px !important;
-  background: linear-gradient(180deg, #ffffff 0%, #fbfefc 100%) !important;
-  border: 1px solid #dce9e2 !important;
-  box-shadow: 0 16px 34px rgba(18, 64, 44, .07) !important;
+/* === Beyan arayüzü — çalışan #beyanView yapısı === */
+html body #beyanView {
+  padding-bottom: 132px !important;
 }
-#recordsView .section-head {
+
+html body #beyanView .beyan-card-v600 {
+  position: relative !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 16px !important;
+  padding: 18px 18px 22px !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  overflow: visible !important;
+}
+
+html body #beyanView #beyanSummaryHeadV600 {
+  position: relative !important;
+  min-height: 104px !important;
+  margin: 0 0 2px !important;
+  padding: 8px 150px 8px 4px !important;
+  display: flex !important;
   align-items: flex-start !important;
-  margin-bottom: 8px !important;
+  justify-content: flex-start !important;
+  overflow: hidden !important;
 }
-#recordsView .section-head h2 {
+
+html body #beyanView #beyanSummaryHeadV600::after {
+  content: "" !important;
+  position: absolute !important;
+  top: 2px !important;
+  right: 4px !important;
+  width: 138px !important;
+  height: 88px !important;
+  opacity: .82 !important;
+  pointer-events: none !important;
+  background: no-repeat center / contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 92' fill='none'%3E%3Cpath d='M5 79c30-21 65-19 96 0 19-12 35-15 54-7' stroke='%23b7dfc7' stroke-width='2.5' stroke-linecap='round'/%3E%3Cpath d='M105 70V24M105 24 91 46h9L88 61h34l-12-15h9l-14-22Z' stroke='%230a8a53' stroke-width='2.2' stroke-linejoin='round'/%3E%3Cpath d='M136 70V11M136 11l-13 23h8l-11 16h31l-11-16h8l-12-23Z' stroke='%23086d43' stroke-width='2.2' stroke-linejoin='round'/%3E%3Cpath d='M76 67V35M76 35 66 50h6l-8 12h24l-8-12h6L76 35Z' stroke='%237fc69c' stroke-width='2' stroke-linejoin='round'/%3E%3Cpath d='M34 64c-9-8-11-17-7-27 10 2 17 8 21 17-5 4-10 7-14 10Z' fill='%23d9efdf'/%3E%3C/svg%3E") !important;
+}
+
+html body #beyanView #beyanSummaryHeadV600 h2 {
   margin: 0 !important;
-  font-size: 34px !important;
-  line-height: 1.05 !important;
-  letter-spacing: -.02em !important;
-  text-transform: none !important;
-  color: #103d2d !important;
+  color: #0b5638 !important;
+  font-size: clamp(30px, 6vw, 42px) !important;
+  line-height: 1.02 !important;
+  font-weight: 950 !important;
+  letter-spacing: -.035em !important;
 }
-#recordsView .section-head h2::after {
+
+html body #beyanView #beyanSummaryHeadV600 h2::after {
   content: "Orman ürünleri beyan ve işlemleri" !important;
   display: block !important;
-  margin-top: 8px !important;
+  margin-top: 10px !important;
+  color: #315f4c !important;
   font-size: 14px !important;
-  font-weight: 760 !important;
-  color: #5f7770 !important;
+  line-height: 1.25 !important;
+  font-weight: 720 !important;
+  letter-spacing: 0 !important;
+  white-space: nowrap !important;
 }
-#recordsView #recordCountPill {
-  min-height: 36px !important;
-  padding: 8px 14px !important;
-  border-radius: 999px !important;
-  background: #eff8f3 !important;
-  border: 1px solid #d5e9dc !important;
-  color: #0d7448 !important;
-  font-size: 12px !important;
-  font-weight: 900 !important;
+
+html body #beyanView #recordCountPill {
+  display: none !important;
 }
-#recordsView .summary-grid.small {
+
+html body #beyanView .beyan-card-v600 > .summary-grid.small {
   display: grid !important;
   grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   gap: 14px !important;
-  margin: 14px 0 18px !important;
+  margin: 0 !important;
 }
-#recordsView .summary-grid.small > div {
+
+html body #beyanView .beyan-card-v600 > .summary-grid.small > div {
   position: relative !important;
-  min-height: 122px !important;
-  padding: 22px 18px 18px 88px !important;
-  border: 1px solid #d9ebe1 !important;
-  border-radius: 26px !important;
-  background: linear-gradient(145deg, #f7fcf9 0%, #ffffff 100%) !important;
-  box-shadow: 0 12px 24px rgba(19, 70, 47, .06) !important;
+  min-width: 0 !important;
+  min-height: 124px !important;
+  padding: 22px 16px 18px 82px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  border: 1px solid #cde5d7 !important;
+  border-radius: 25px !important;
+  background: linear-gradient(145deg, #f4fbf7 0%, #ffffff 100%) !important;
+  box-shadow: 0 12px 26px rgba(14, 68, 44, .055) !important;
   overflow: hidden !important;
 }
-#recordsView .summary-grid.small > div::before {
+
+html body #beyanView .beyan-card-v600 > .summary-grid.small > div::before {
   content: "" !important;
   position: absolute !important;
   left: 18px !important;
-  top: 22px !important;
-  width: 50px !important;
-  height: 50px !important;
-  border-radius: 18px !important;
-  background: #e8f4ec no-repeat center / 26px 26px !important;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.9) !important;
-}
-#recordsView .summary-grid.small > div:nth-child(1)::before {
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230d7448' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M5 20V10'/><path d='M12 20V4'/><path d='M19 20v-7'/><path d='M3 20h18'/></svg>");
-}
-#recordsView .summary-grid.small > div:nth-child(2)::before {
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230d7448' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><rect x='6' y='4' width='12' height='16' rx='2'/><path d='M9 8h6'/><path d='M9 12h6'/><path d='M9 16h4'/></svg>");
-}
-#recordsView .summary-grid.small small {
-  display: block !important;
-  margin: 0 0 8px !important;
-  color: #698079 !important;
-  font-size: 15px !important;
-  font-weight: 850 !important;
-}
-#recordsView .summary-grid.small b {
-  margin: 0 !important;
-  font-size: clamp(25px, 5vw, 34px) !important;
-  line-height: 1.04 !important;
-  color: #123d2d !important;
-}
-#recordsView .summary-grid.small em {
-  display: block !important;
-  margin-top: 8px !important;
-  color: #7b9088 !important;
-  font-style: normal !important;
-  font-size: 12px !important;
-  font-weight: 760 !important;
+  top: 50% !important;
+  width: 48px !important;
+  height: 48px !important;
+  transform: translateY(-50%) !important;
+  border: 1px solid #d3eadc !important;
+  border-radius: 17px !important;
+  background: #ebf7f0 no-repeat center / 25px 25px !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.95) !important;
 }
 
-#recordsView .product-totals {
+html body #beyanView .beyan-card-v600 > .summary-grid.small > div:nth-child(1)::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230c7549' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 20h16'/%3E%3Cpath d='M6 17V9'/%3E%3Cpath d='M12 17V4'/%3E%3Cpath d='M18 17v-5'/%3E%3C/svg%3E") !important;
+}
+
+html body #beyanView .beyan-card-v600 > .summary-grid.small > div:nth-child(2)::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230c7549' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='6' y='3.5' width='12' height='17' rx='2'/%3E%3Cpath d='M9 8h6M9 12h6M9 16h4'/%3E%3C/svg%3E") !important;
+}
+
+html body #beyanView .beyan-card-v600 > .summary-grid.small small {
+  display: block !important;
+  margin: 0 0 8px !important;
+  color: #547267 !important;
+  font-size: 14px !important;
+  line-height: 1.1 !important;
+  font-weight: 820 !important;
+}
+
+html body #beyanView .beyan-card-v600 > .summary-grid.small b {
+  display: block !important;
+  margin: 0 !important;
+  color: #0b4e35 !important;
+  font-size: clamp(25px, 5vw, 36px) !important;
+  line-height: 1.03 !important;
+  font-weight: 950 !important;
+  letter-spacing: -.025em !important;
+  white-space: nowrap !important;
+}
+
+html body #beyanView .beyan-card-v600 > .product-totals {
   display: grid !important;
   grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   gap: 14px !important;
-  margin: 0 0 18px !important;
+  margin: 2px 0 0 !important;
 }
-#recordsView .prod-total {
+
+html body #beyanView .beyan-card-v600 > .product-totals > .prod-total {
   position: relative !important;
-  min-height: 138px !important;
-  padding: 20px 18px 18px !important;
-  border: 1.5px solid #dde9e3 !important;
-  border-left-width: 10px !important;
-  border-radius: 26px !important;
-  background: #ffffff !important;
-  box-shadow: 0 12px 24px rgba(16, 60, 40, .05) !important;
+  min-width: 0 !important;
+  min-height: 154px !important;
+  padding: 22px 20px 18px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  border: 1.5px solid #dfe9e4 !important;
+  border-left-width: 5px !important;
+  border-radius: 25px !important;
+  background: #fff !important;
+  box-shadow: 0 12px 25px rgba(17, 60, 42, .05) !important;
   overflow: hidden !important;
 }
-#recordsView .prod-total::after {
+
+html body #beyanView .beyan-card-v600 > .product-totals > .prod-total::after {
   content: "" !important;
   position: absolute !important;
-  right: -24px !important;
-  top: -24px !important;
-  width: 92px !important;
-  height: 92px !important;
+  right: -34px !important;
+  top: -34px !important;
+  width: 105px !important;
+  height: 105px !important;
   border-radius: 50% !important;
-  opacity: .65 !important;
-  background: rgba(255,255,255,.55) !important;
+  background: rgba(255,255,255,.48) !important;
+  pointer-events: none !important;
 }
-#recordsView .prod-total b {
-  display: block !important;
-  margin: 12px 0 10px !important;
-  font-size: clamp(28px, 5vw, 40px) !important;
-  line-height: 1.02 !important;
-  color: #103b2b !important;
-}
-#recordsView .prod-total small {
-  display: block !important;
+
+html body #beyanView .beyan-card-v600 > .product-totals > .prod-total small {
   position: relative !important;
   z-index: 1 !important;
+  display: block !important;
+  color: #64766f !important;
   font-size: 14px !important;
-  color: #6c8079 !important;
-  font-weight: 820 !important;
+  line-height: 1.2 !important;
+  font-weight: 800 !important;
 }
-#recordsView .prod-total small:first-child {
-  font-size: 18px !important;
-  font-weight: 900 !important;
-  color: #103b2b !important;
+
+html body #beyanView .beyan-card-v600 > .product-totals > .prod-total small:first-child {
+  color: #183d2f !important;
+  font-size: 17px !important;
+  font-weight: 920 !important;
 }
-#recordsView .prod-total small:last-child {
-  margin-top: 10px !important;
-  padding-left: 28px !important;
+
+html body #beyanView .beyan-card-v600 > .product-totals > .prod-total b {
+  position: relative !important;
+  z-index: 1 !important;
+  display: block !important;
+  margin: 13px 0 12px !important;
+  color: #0c4b34 !important;
+  font-size: clamp(27px, 5.5vw, 39px) !important;
+  line-height: 1 !important;
+  font-weight: 950 !important;
+  letter-spacing: -.025em !important;
+  white-space: nowrap !important;
 }
-#recordsView .prod-total small:last-child::before {
+
+html body #beyanView .beyan-card-v600 > .product-totals > .prod-total small:last-child {
+  min-height: 24px !important;
+  padding-left: 30px !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+html body #beyanView .beyan-card-v600 > .product-totals > .prod-total small:last-child::before {
   content: "" !important;
   position: absolute !important;
   left: 0 !important;
   top: 50% !important;
-  width: 20px !important;
-  height: 20px !important;
+  width: 22px !important;
+  height: 22px !important;
   transform: translateY(-50%) !important;
   opacity: .72 !important;
-  background: no-repeat center / 20px 20px url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2342555b' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z'/><path d='M3.3 7l8.7 5 8.7-5'/><path d='M12 22V12'/></svg>") !important;
-}
-#recordsView .prod-total.product-tomruk {
-  background: linear-gradient(145deg, #fffaf0 0%, #fff 100%) !important;
-  border-color: #f0cf76 !important;
-  border-left-color: #f5b102 !important;
-}
-#recordsView .prod-total.product-maden {
-  background: linear-gradient(145deg, #f7f9ff 0%, #fff 100%) !important;
-  border-color: #bfd4ff !important;
-  border-left-color: #2f6df6 !important;
-}
-#recordsView .prod-total.product-kagit {
-  background: linear-gradient(145deg, #fff8f8 0%, #fff 100%) !important;
-  border-color: #f5b6bc !important;
-  border-left-color: #ef4444 !important;
-}
-#recordsView .prod-total.product-sanayi {
-  background: linear-gradient(145deg, #f6fdf8 0%, #fff 100%) !important;
-  border-color: #afe2be !important;
-  border-left-color: #22b35f !important;
-}
-#recordsView .prod-total.product-tel {
-  background: linear-gradient(145deg, #fbf8ff 0%, #fff 100%) !important;
-  border-color: #d6c2ff !important;
-  border-left-color: #8b5cf6 !important;
+  background: no-repeat center / contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23445b65' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z'/%3E%3Cpath d='M3.3 7 12 12l8.7-5M12 22V12'/%3E%3C/svg%3E") !important;
 }
 
-#recordsView .action-grid.records-action-grid-v530 {
+html body #beyanView .beyan-card-v600 > .product-totals > .product-tomruk {
+  border-color: #f0c55d !important;
+  border-left-color: #f2a900 !important;
+  background: linear-gradient(145deg, #fff9ed 0%, #fff 100%) !important;
+}
+html body #beyanView .beyan-card-v600 > .product-totals > .product-tomruk small:first-child { color: #a85c00 !important; }
+
+html body #beyanView .beyan-card-v600 > .product-totals > .product-maden {
+  border-color: #9fc1ff !important;
+  border-left-color: #2f72ef !important;
+  background: linear-gradient(145deg, #f3f7ff 0%, #fff 100%) !important;
+}
+html body #beyanView .beyan-card-v600 > .product-totals > .product-maden small:first-child { color: #125bc8 !important; }
+
+html body #beyanView .beyan-card-v600 > .product-totals > .product-kagit {
+  border-color: #f2a6ad !important;
+  border-left-color: #ec404c !important;
+  background: linear-gradient(145deg, #fff5f6 0%, #fff 100%) !important;
+}
+html body #beyanView .beyan-card-v600 > .product-totals > .product-kagit small:first-child { color: #b52230 !important; }
+
+html body #beyanView .beyan-card-v600 > .product-totals > .product-sanayi {
+  border-color: #9cd7b0 !important;
+  border-left-color: #1fa75c !important;
+  background: linear-gradient(145deg, #f1fbf5 0%, #fff 100%) !important;
+}
+html body #beyanView .beyan-card-v600 > .product-totals > .product-sanayi small:first-child { color: #0b7140 !important; }
+
+html body #beyanView .beyan-card-v600 > .product-totals > .product-tel {
+  border-color: #cdb3ff !important;
+  border-left-color: #8554ef !important;
+  background: linear-gradient(145deg, #f8f4ff 0%, #fff 100%) !important;
+}
+html body #beyanView .beyan-card-v600 > .product-totals > .product-tel small:first-child { color: #6330cc !important; }
+
+html body #beyanView .beyan-card-v600 > .records-action-grid-v530 {
   display: grid !important;
   grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   gap: 12px !important;
-  margin: 0 0 16px !important;
+  margin: 4px 0 0 !important;
 }
-#recordsView .action-grid.records-action-grid-v530 > .btn {
+
+html body #beyanView .beyan-card-v600 > .records-action-grid-v530 > .btn {
   position: relative !important;
+  min-width: 0 !important;
   min-height: 68px !important;
-  padding: 16px 48px 16px 58px !important;
+  margin: 0 !important;
+  padding: 15px 48px 15px 58px !important;
+  display: flex !important;
+  align-items: center !important;
   justify-content: flex-start !important;
-  text-align: left !important;
-  border-radius: 22px !important;
-  border: 1.5px solid #dbe8e2 !important;
+  border: 1.5px solid #dce8e2 !important;
+  border-radius: 21px !important;
   background: #fff !important;
-  box-shadow: 0 10px 20px rgba(18, 64, 44, .04) !important;
-  color: #123d2d !important;
+  box-shadow: 0 9px 20px rgba(16, 58, 40, .045) !important;
+  color: #154331 !important;
+  text-align: left !important;
   font-size: 14px !important;
+  line-height: 1.2 !important;
   font-weight: 900 !important;
   overflow: hidden !important;
 }
-#recordsView .action-grid.records-action-grid-v530 > .btn::before,
-#recordsView .action-grid.records-action-grid-v530 > .btn::after {
+
+html body #beyanView .beyan-card-v600 > .records-action-grid-v530 > .btn::before {
+  content: "" !important;
   position: absolute !important;
+  left: 18px !important;
   top: 50% !important;
+  width: 27px !important;
+  height: 27px !important;
   transform: translateY(-50%) !important;
+  background: no-repeat center / contain !important;
   pointer-events: none !important;
 }
-#recordsView .action-grid.records-action-grid-v530 > .btn::before {
-  left: 18px !important;
-  width: 28px !important;
-  height: 28px !important;
-  content: "" !important;
-  background: no-repeat center / 24px 24px !important;
-  opacity: .95 !important;
-}
-#recordsView .action-grid.records-action-grid-v530 > .btn::after {
-  right: 16px !important;
+
+html body #beyanView .beyan-card-v600 > .records-action-grid-v530 > .btn::after {
   content: "›" !important;
-  font-size: 26px !important;
+  position: absolute !important;
+  right: 17px !important;
+  top: 50% !important;
+  transform: translateY(-52%) !important;
+  color: currentColor !important;
+  font-size: 28px !important;
   line-height: 1 !important;
   font-weight: 500 !important;
-  opacity: .78 !important;
+  opacity: .8 !important;
+  pointer-events: none !important;
 }
-#recordsView #downloadXlsBtn {
+
+html body #beyanView .beyan-card-v600 > .records-action-grid-v530 > #downloadXlsBtn {
   grid-column: 1 / -1 !important;
-  min-height: 84px !important;
-  padding-left: 88px !important;
+  order: 1 !important;
+  min-height: 98px !important;
+  padding: 22px 68px 38px 92px !important;
   border: 0 !important;
+  border-radius: 25px !important;
   color: #fff !important;
-  background: linear-gradient(135deg, #0f6b48 0%, #0d7a56 58%, #17956a 100%) !important;
-  box-shadow: 0 16px 28px rgba(13, 122, 86, .25) !important;
+  font-size: 18px !important;
+  background-color: #0d7650 !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m9 18 6-6-6-6'/%3E%3C/svg%3E"), linear-gradient(135deg,#0c6947 0%,#0d7952 58%,#168965 100%) !important;
+  background-repeat: no-repeat, no-repeat !important;
+  background-position: calc(100% - 22px) 50%, 0 0 !important;
+  background-size: 26px 26px, 100% 100% !important;
+  box-shadow: 0 16px 30px rgba(10, 105, 70, .24) !important;
 }
-#recordsView #downloadXlsBtn::before {
-  left: 24px !important;
-  width: 46px !important;
-  height: 46px !important;
+
+html body #beyanView .beyan-card-v600 > .records-action-grid-v530 > #downloadXlsBtn::before {
+  left: 22px !important;
+  width: 52px !important;
+  height: 52px !important;
   border-radius: 50% !important;
-  background: #fff no-repeat center / 24px 24px !important;
-  box-shadow: 0 8px 18px rgba(6, 37, 24, .15) !important;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230f6b48' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M12 3v12'/><path d='m7 10 5 5 5-5'/><path d='M5 21h14'/></svg>") !important;
+  background-color: #fff !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230d7650' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3v12'/%3E%3Cpath d='m7 10 5 5 5-5'/%3E%3Cpath d='M5 21h14'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  background-size: 25px 25px !important;
+  box-shadow: 0 8px 18px rgba(7, 54, 35, .15) !important;
 }
-#recordsView #downloadXlsBtn::after { color: #fff !important; }
-#recordsView #downloadXlsBtn { font-size: 16px !important; }
-#recordsView #downloadXlsBtn { line-height: 1.2 !important; }
-#recordsView #downloadXlsBtn::selection { background: transparent; }
 
-#recordsView #seflikSendFromRecordsV529 {
+html body #beyanView .beyan-card-v600 > .records-action-grid-v530 > #downloadXlsBtn::after {
+  content: "Tüm beyan verilerini dosya olarak indirin" !important;
+  left: 92px !important;
+  right: 58px !important;
+  top: auto !important;
+  bottom: 19px !important;
+  transform: none !important;
+  color: rgba(255,255,255,.82) !important;
+  font-size: 12px !important;
+  line-height: 1.15 !important;
+  font-weight: 650 !important;
+  opacity: 1 !important;
+}
+
+html body #beyanView .beyan-card-v600 > .records-action-grid-v530 > #seflikSendFromRecordsV529 {
   order: 2 !important;
-  background: linear-gradient(145deg, #f7faff 0%, #fff 100%) !important;
-  border-color: #c9dbff !important;
-  color: #1f62ea !important;
+  border-color: #b7d0ff !important;
+  color: #175fd7 !important;
+  background: linear-gradient(145deg,#f4f8ff,#fff) !important;
+  box-shadow: 0 9px 20px rgba(23,95,215,.06) !important;
 }
-#recordsView #seflikSendFromRecordsV529::before {
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231f62ea' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'><path d='M22 2 11 13'/><path d='M22 2 15 22 11 13 2 9 22 2z'/></svg>") !important;
-}
-#recordsView #printBtn {
-  order: 3 !important;
-  background: linear-gradient(145deg, #fffaf1 0%, #fff 100%) !important;
-  border-color: #f1d496 !important;
-  color: #b87806 !important;
-}
-#recordsView #printBtn::before {
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23b87806' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z'/><path d='M14 2v6h6'/><path d='M12 18v-6'/><path d='m9.5 14.5 2.5 2.5 2.5-2.5'/></svg>") !important;
-}
-#recordsView #restoreBtn {
-  order: 4 !important;
-  background: linear-gradient(145deg, #f6fdf8 0%, #fff 100%) !important;
-  border-color: #cde8d8 !important;
-  color: #0d7a56 !important;
-}
-#recordsView #restoreBtn::before {
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230d7a56' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M12 3v12'/><path d='m7 10 5 5 5-5'/><path d='M20 21H4'/></svg>") !important;
-}
-#recordsView #backupBtn {
-  order: 5 !important;
-  background: linear-gradient(145deg, #f6fdf8 0%, #fff 100%) !important;
-  border-color: #cde8d8 !important;
-  color: #0d7a56 !important;
-}
-#recordsView #backupBtn::before {
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230d7a56' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4'/><path d='M7 10l5 5 5-5'/><path d='M12 15V3'/></svg>") !important;
-}
-#recordsView #cloudBackupBtnV316 {
-  order: 6 !important;
-  background: linear-gradient(145deg, #faf6ff 0%, #fff 100%) !important;
-  border-color: #dccaee !important;
-  color: #7d45e4 !important;
-}
-#recordsView #cloudBackupBtnV316::before {
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237d45e4' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M20 17.58A5 5 0 0 0 18 8h-1.26A8 8 0 1 0 4 16.25'/><path d='M12 12v9'/><path d='m8 17 4-4 4 4'/></svg>") !important;
-}
-#recordsView #cloudRestoreBtnV316 {
-  order: 7 !important;
-  background: linear-gradient(145deg, #f7f9ff 0%, #fff 100%) !important;
-  border-color: #c9dbff !important;
-  color: #2b66ec !important;
-}
-#recordsView #cloudRestoreBtnV316::before {
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232b66ec' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M20 17.58A5 5 0 0 0 18 8h-1.26A8 8 0 1 0 4 16.25'/><path d='m16 16-4 4-4-4'/><path d='M12 12v8'/></svg>") !important;
+html body #beyanView .beyan-card-v600 > .records-action-grid-v530 > #seflikSendFromRecordsV529::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23175fd7' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 2 11 13'/%3E%3Cpath d='M22 2 15 22 11 13 2 9 22 2z'/%3E%3C/svg%3E") !important;
 }
 
-#recordsView .record-toolbar {
-  border-radius: 24px !important;
-  background: linear-gradient(180deg, #fff 0%, #fbfefc 100%) !important;
-  border: 1px solid #dce9e2 !important;
-  box-shadow: 0 10px 24px rgba(18, 64, 44, .05) !important;
+html body #beyanView .beyan-card-v600 > .records-action-grid-v530 > #printBtn {
+  order: 3 !important;
+  border-color: #efd59c !important;
+  color: #a86100 !important;
+  background: linear-gradient(145deg,#fff9ef,#fff) !important;
 }
-#recordsView .record-toolbar::before { color: #143c2c !important; }
-#recordsView .filter-box,
-#recordsView #recordList,
-#recordsView #pager {
-  margin-top: 12px !important;
+html body #beyanView .beyan-card-v600 > .records-action-grid-v530 > #printBtn::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23b36b00' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z'/%3E%3Cpath d='M14 2v6h6M12 12v6M9.5 15.5 12 18l2.5-2.5'/%3E%3C/svg%3E") !important;
 }
-@media (max-width: 760px) {
-  #recordsView .section-head h2 { font-size: 30px !important; }
-  #recordsView .summary-grid.small,
-  #recordsView .product-totals,
-  #recordsView .action-grid.records-action-grid-v530 {
-    gap: 12px !important;
-  }
+
+html body #beyanView .beyan-card-v600 > .records-action-grid-v530 > #restoreBtn {
+  order: 4 !important;
+  border-color: #bfe0ce !important;
+  color: #087147 !important;
+  background: linear-gradient(145deg,#f2fbf6,#fff) !important;
 }
+html body #beyanView .beyan-card-v600 > .records-action-grid-v530 > #restoreBtn::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23087147' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3v12M7 10l5 5 5-5M5 21h14'/%3E%3C/svg%3E") !important;
+}
+
+html body #beyanView .beyan-card-v600 > .records-action-grid-v530 > #backupBtn {
+  order: 5 !important;
+  border-color: #bfe0ce !important;
+  color: #087147 !important;
+  background: linear-gradient(145deg,#f2fbf6,#fff) !important;
+}
+html body #beyanView .beyan-card-v600 > .records-action-grid-v530 > #backupBtn::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23087147' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 17v3h16v-3M12 3v12M7 8l5-5 5 5'/%3E%3C/svg%3E") !important;
+}
+
+html body #beyanView .beyan-card-v600 > .records-action-grid-v530 > #cloudBackupBtnV316 {
+  order: 6 !important;
+  border-color: #d4bfff !important;
+  color: #7442da !important;
+  background: linear-gradient(145deg,#f8f4ff,#fff) !important;
+}
+html body #beyanView .beyan-card-v600 > .records-action-grid-v530 > #cloudBackupBtnV316::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237442da' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 17.6A5 5 0 0 0 18 8h-1.3A8 8 0 1 0 4 16.3'/%3E%3Cpath d='M12 12v9M8 17l4-4 4 4'/%3E%3C/svg%3E") !important;
+}
+
+html body #beyanView .beyan-card-v600 > .records-action-grid-v530 > #cloudRestoreBtnV316 {
+  order: 7 !important;
+  border-color: #b7d0ff !important;
+  color: #1760d9 !important;
+  background: linear-gradient(145deg,#f4f8ff,#fff) !important;
+}
+html body #beyanView .beyan-card-v600 > .records-action-grid-v530 > #cloudRestoreBtnV316::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231760d9' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 17.6A5 5 0 0 0 18 8h-1.3A8 8 0 1 0 4 16.3'/%3E%3Cpath d='m16 16-4 4-4-4M12 12v8'/%3E%3C/svg%3E") !important;
+}
+
+html body #beyanView .beyan-card-v600 > .records-action-grid-v530 > #xlsToBackupBtnV590 {
+  grid-column: 1 / -1 !important;
+  order: 8 !important;
+  min-height: 62px !important;
+  padding: 14px 18px !important;
+  justify-content: center !important;
+  gap: 10px !important;
+  border-color: #bfddcb !important;
+  color: #174e38 !important;
+  background: linear-gradient(145deg,#edf8f1,#f8fcfa) !important;
+}
+html body #beyanView .beyan-card-v600 > .records-action-grid-v530 > #xlsToBackupBtnV590::before,
+html body #beyanView .beyan-card-v600 > .records-action-grid-v530 > #xlsToBackupBtnV590::after {
+  display: none !important;
+}
+html body #beyanView .beyan-card-v600 > .records-action-grid-v530 > #xlsToBackupBtnV590 svg {
+  width: 23px !important;
+  height: 23px !important;
+  flex: none !important;
+}
+
+html body #beyanView #beyanFiltersV600 {
+  margin-top: 10px !important;
+  padding-top: 4px !important;
+}
+html body #beyanView #beyanFiltersV600 .beyan-filters-head-v600 h3 {
+  font-size: 21px !important;
+  color: #123f2e !important;
+}
+
 @media (max-width: 620px) {
-  #recordsView .records-card { padding: 16px !important; }
-  #recordsView .summary-grid.small > div {
-    min-height: 110px !important;
-    padding: 18px 14px 16px 76px !important;
+  html body #beyanView .beyan-card-v600 {
+    padding: 14px 12px 20px !important;
+    gap: 13px !important;
   }
-  #recordsView .summary-grid.small > div::before {
-    left: 14px !important;
-    top: 18px !important;
-    width: 46px !important;
-    height: 46px !important;
+  html body #beyanView #beyanSummaryHeadV600 {
+    min-height: 92px !important;
+    padding: 6px 112px 6px 2px !important;
   }
-  #recordsView .prod-total {
-    min-height: 124px !important;
-    padding: 18px 14px 16px !important;
+  html body #beyanView #beyanSummaryHeadV600::after {
+    width: 110px !important;
+    height: 76px !important;
   }
-  #recordsView .prod-total b { font-size: clamp(22px, 7vw, 32px) !important; }
-  #recordsView .action-grid.records-action-grid-v530 > .btn {
-    min-height: 62px !important;
-    padding: 14px 42px 14px 52px !important;
-    font-size: 13px !important;
+  html body #beyanView #beyanSummaryHeadV600 h2 {
+    font-size: 31px !important;
   }
-  #recordsView #downloadXlsBtn {
-    min-height: 76px !important;
-    padding-left: 78px !important;
+  html body #beyanView #beyanSummaryHeadV600 h2::after {
+    margin-top: 8px !important;
+    font-size: 12.5px !important;
   }
-  #recordsView #downloadXlsBtn::before {
-    left: 18px !important;
+  html body #beyanView .beyan-card-v600 > .summary-grid.small,
+  html body #beyanView .beyan-card-v600 > .product-totals,
+  html body #beyanView .beyan-card-v600 > .records-action-grid-v530 {
+    gap: 10px !important;
+  }
+  html body #beyanView .beyan-card-v600 > .summary-grid.small > div {
+    min-height: 108px !important;
+    padding: 17px 11px 15px 66px !important;
+    border-radius: 21px !important;
+  }
+  html body #beyanView .beyan-card-v600 > .summary-grid.small > div::before {
+    left: 12px !important;
     width: 42px !important;
     height: 42px !important;
+    border-radius: 14px !important;
+    background-size: 22px 22px !important;
+  }
+  html body #beyanView .beyan-card-v600 > .summary-grid.small small {
+    font-size: 12px !important;
+  }
+  html body #beyanView .beyan-card-v600 > .summary-grid.small b {
+    font-size: clamp(21px, 6.3vw, 29px) !important;
+  }
+  html body #beyanView .beyan-card-v600 > .product-totals > .prod-total {
+    min-height: 132px !important;
+    padding: 18px 14px 15px !important;
+    border-radius: 21px !important;
+  }
+  html body #beyanView .beyan-card-v600 > .product-totals > .prod-total small:first-child {
+    font-size: 14px !important;
+  }
+  html body #beyanView .beyan-card-v600 > .product-totals > .prod-total b {
+    margin: 10px 0 !important;
+    font-size: clamp(23px, 7vw, 31px) !important;
+  }
+  html body #beyanView .beyan-card-v600 > .product-totals > .prod-total small:last-child {
+    font-size: 12px !important;
+  }
+  html body #beyanView .beyan-card-v600 > .records-action-grid-v530 > .btn {
+    min-height: 64px !important;
+    padding: 13px 40px 13px 48px !important;
+    border-radius: 18px !important;
+    font-size: 12.5px !important;
+  }
+  html body #beyanView .beyan-card-v600 > .records-action-grid-v530 > .btn::before {
+    left: 14px !important;
+    width: 24px !important;
+    height: 24px !important;
+  }
+  html body #beyanView .beyan-card-v600 > .records-action-grid-v530 > .btn::after {
+    right: 12px !important;
+    font-size: 24px !important;
+  }
+  html body #beyanView .beyan-card-v600 > .records-action-grid-v530 > #downloadXlsBtn {
+    min-height: 88px !important;
+    padding: 18px 52px 34px 78px !important;
+    font-size: 16px !important;
+  }
+  html body #beyanView .beyan-card-v600 > .records-action-grid-v530 > #downloadXlsBtn::before {
+    left: 17px !important;
+    width: 45px !important;
+    height: 45px !important;
+  }
+  html body #beyanView .beyan-card-v600 > .records-action-grid-v530 > #downloadXlsBtn::after {
+    left: 78px !important;
+    bottom: 16px !important;
+    font-size: 10.5px !important;
   }
 }
-@media (max-width: 440px) {
-  #recordsView .summary-grid.small,
-  #recordsView .product-totals,
-  #recordsView .action-grid.records-action-grid-v530 {
-    grid-template-columns: 1fr 1fr !important;
+
+@media (max-width: 390px) {
+  html body #beyanView .beyan-card-v600 > .summary-grid.small > div {
+    padding-left: 58px !important;
   }
-  #recordsView .summary-grid.small small { font-size: 13px !important; }
-  #recordsView .summary-grid.small b { font-size: clamp(22px, 8vw, 30px) !important; }
-  #recordsView .prod-total small:first-child { font-size: 16px !important; }
-  #recordsView .prod-total small:last-child { font-size: 13px !important; }
+  html body #beyanView .beyan-card-v600 > .summary-grid.small > div::before {
+    left: 9px !important;
+    width: 38px !important;
+    height: 38px !important;
+  }
+  html body #beyanView .beyan-card-v600 > .summary-grid.small b {
+    font-size: 20px !important;
+  }
+  html body #beyanView .beyan-card-v600 > .product-totals > .prod-total b {
+    font-size: 23px !important;
+  }
 }

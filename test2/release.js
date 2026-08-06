@@ -1,16 +1,16 @@
 (function (root) {
   "use strict";
   const DATA = /*MESAHA_RELEASE_DATA_START*/{
-  "build": 77,
-  "version": "77.0.0",
+  "build": 78,
+  "version": "78.0.0",
   "channel": "stable",
-  "releasedAt": "2026-08-06T22:57:00+03:00",
-  "assetToken": "orman-io-stable-20260806-v77",
-  "cacheName": "orman-io-shell-stable-20260806-v77",
+  "releasedAt": "2026-08-06T23:12:00+03:00",
+  "assetToken": "orman-io-stable-20260806-v78",
+  "cacheName": "orman-io-shell-stable-20260806-v78",
   "apps": {
     "suite": {
       "label": "Orman İO",
-      "version": "77.0.0"
+      "version": "78.0.0"
     },
     "mesaha": {
       "label": "Mesaha İO",
@@ -22,10 +22,10 @@
     },
     "admin": {
       "label": "Orman İO Yönetim",
-      "version": "77.0.0"
+      "version": "78.0.0"
     }
   },
-  "description": "Beyan ekranı yeni renk tabanlı kart tasarımına geçirildi. Toplam adet ve m³ kartlarına simgeler eklendi, ana sayfaya otomatik sürüm kartı yerleştirildi ve V77 cache anahtarıyla güncel arayüzün çevrimiçi/offline yüklenmesi güvenceye alındı."
+  "description": "Beyan ekranı gerçek çalışan beyanView yapısına bağlandı. Başlık, özet simgeleri, ürün kartları ve işlem düğmeleri onaylanan sade tasarıma geçirildi; V78 cache anahtarıyla güncel arayüzün çevrimiçi ve offline yüklenmesi sağlandı."
 }/*MESAHA_RELEASE_DATA_END*/;
   const APP_NAMES = DATA.apps || {};
   const SCRIPT_URL = (() => {
