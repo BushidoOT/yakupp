@@ -70,13 +70,26 @@
   };
 
   function session() {
-    return read(K.session, null) || read(K.backupSession, null) || {};
+    const shared = window.OrmanSuiteIdentity;
+    if (shared && typeof shared.session === "function") return shared.session() || {};
+    const primary = read(K.session, null);
+    if (primary && primary.access_token) return primary;
+    const backup = read(K.backupSession, null);
+    if (backup && backup.access_token) { write(K.session, backup); return backup; }
+    return {};
   }
   function terminal() {
-    const t = read(K.terminal, null) || read(K.terminalOld, null) || {};
-    return t && t.active ? t : {};
+    const shared = window.OrmanSuiteIdentity;
+    if (shared && typeof shared.terminal === "function") return shared.terminal() || {};
+    const primary = read(K.terminal, null);
+    if (primary && primary.active) return primary;
+    const old = read(K.terminalOld, null);
+    if (old && old.active) { write(K.terminal, old); return old; }
+    return {};
   }
   function identity() {
+    const shared = window.OrmanSuiteIdentity;
+    if (shared && typeof shared.identity === "function") return shared.identity();
     const s = session(),
       u = s.user || {},
       m = u.user_metadata || {},
@@ -127,9 +140,10 @@
     };
   }
   function cloudSyncAllowed() {
-    const t = terminal();
-    const id = identity();
-    return !!(id.google || (t && t.source === "pair_code" && (t.terminalCode || t.terminalToken || t.pairedUserId)));
+    const shared = window.OrmanSuiteIdentity;
+    if (shared && typeof shared.cloudAllowed === "function") return shared.cloudAllowed();
+    const t = terminal(), id = identity();
+    return !!(id.google || (t && t.source === "pair_code" && t.pairedUserId && (t.terminalCode || t.terminalToken)));
   }
   function floatingSyncAllowed() {
     let path = "";
@@ -166,12 +180,13 @@
     }
     return session();
   }
-  function authHeaders() {
+  function authHeaders(terminalRequest) {
     const s = session();
+    const token = terminalRequest ? ANON_KEY : clean(s.access_token || ANON_KEY);
     return {
       "Content-Type": "application/json",
       apikey: ANON_KEY,
-      Authorization: "Bearer " + clean(s.access_token || ANON_KEY),
+      Authorization: "Bearer " + token,
     };
   }
   function isAuthSessionFailure(status, payload) {
@@ -182,17 +197,14 @@
       /oturum doğrulanamadı|oturum gecersiz|oturum geçersiz|jwt|token.*(?:expired|invalid|geçersiz|süresi)/i.test(message);
   }
   function terminalAuth() {
+    const shared = window.OrmanSuiteIdentity;
+    if (shared && typeof shared.terminalAuthPayload === "function") return shared.terminalAuthPayload();
     const t = terminal();
-    return t && t.source === "pair_code"
-      ? {
-          terminalCode: clean(t.terminalCode),
-          terminalToken: clean(t.terminalToken),
-          terminalPairedUserId: clean(t.pairedUserId),
-          terminalPairedEmail: clean(t.pairedEmail),
-          terminalDeviceId: clean(t.deviceId || t.terminalDeviceId || (() => { try { return localStorage.getItem("mesaha_supabase_v500_device") || ""; } catch (_) { return ""; } })()),
-          deviceId: clean(t.deviceId || t.terminalDeviceId || (() => { try { return localStorage.getItem("mesaha_supabase_v500_device") || ""; } catch (_) { return ""; } })()),
-        }
-      : {};
+    return t && t.source === "pair_code" && t.pairedUserId ? {
+      terminalCode: clean(t.terminalCode), terminalToken: clean(t.terminalToken),
+      terminalPairedUserId: clean(t.pairedUserId), terminalPairedEmail: clean(t.pairedEmail),
+      terminalDeviceId: clean(t.deviceId || t.terminalDeviceId), deviceId: clean(t.deviceId || t.terminalDeviceId)
+    } : {};
   }
   function networkError(message, code) {
     const error = new Error(message);
@@ -241,7 +253,7 @@
       const response = await fetchWithTimeout(SMOOTH, {
         method: "POST",
         cache: "no-store",
-        headers: authHeaders(),
+        headers: authHeaders(terminalRequest),
         body: JSON.stringify({
           action: "seflik_folder_list_my_sefliks",
           source: "mesaha-suite-v51-context-repair",
@@ -264,9 +276,13 @@
       const chosen = list.find((f) => activeId && clean(f.id || f.folder_id || f.folderId) === activeId) ||
         list.find((f) => activeKey && clean(f.seflik_key || f.seflikKey) === activeKey) ||
         list.find((f) => activeName && fold(f.seflik || f.name) === fold(activeName)) ||
-        list.find((f) => f.is_creator === true || f.isCreator === true || ["owner", "creator", "kurucu"].includes(clean(f.role).toLocaleLowerCase("tr-TR"))) ||
-        list[0];
-      if (!chosen) return false;
+        (list.length === 1 ? list[0] : null);
+      if (!chosen) {
+        const error = new Error("Birden fazla şeflik bulundu. Senkronizasyon için aktif şefliği seçin.");
+        error.code = "ACTIVE_SEFLIK_REQUIRED";
+        error.retryable = false;
+        throw error;
+      }
       applyCanonicalServerContext({
         ...out,
         folder: chosen,
@@ -298,7 +314,7 @@
       r = await fetchWithTimeout(url, {
         method: "POST",
         cache: "no-store",
-        headers: authHeaders(),
+        headers: authHeaders(terminalRequest),
         body: JSON.stringify(body),
       }, 30000);
       j = await r.json().catch(() => ({}));
@@ -357,6 +373,7 @@
       m.manual === true ||
       m.manualSend === true ||
       m.sefligeGonder === true ||
+      m.restore === true ||
       m.source === "manual" ||
       m.source === "seflige-gonder" ||
       (m.drive === true && m.merge === true)
@@ -750,18 +767,17 @@
     } catch (_) { return false; }
   }
   function activeFolder() {
-    const a = read(K.active, {}),
-      fs = read(K.folders, []);
-    return (
-      (Array.isArray(fs) ? fs : []).find(
-        (f) =>
-          f &&
-          !f.deleted &&
-          (clean(f.seflik_key || f.seflikKey) ===
-            clean(a.seflik_key || a.seflikKey) ||
-            clean(f.seflik) === clean(a.seflik)),
-      ) || (clean(a.seflik) ? a : null)
-    );
+    const shared = window.OrmanSuiteIdentity;
+    if (shared && typeof shared.activeFolder === "function") return shared.activeFolder();
+    const a = read(K.active, {}) || {}, fs = read(K.folders, []);
+    const rows = (Array.isArray(fs) ? fs : []).filter((f) => f && !f.deleted);
+    const activeId = clean(a.folder_id || a.folderId);
+    const activeKey = clean(a.seflik_key || a.seflikKey);
+    const activeName = clean(a.seflik);
+    return rows.find((f) => activeId && clean(f.id || f.folder_id || f.folderId) === activeId) ||
+      rows.find((f) => activeKey && clean(f.seflik_key || f.seflikKey) === activeKey) ||
+      rows.find((f) => activeName && fold(f.seflik || f.name) === fold(activeName)) ||
+      (activeName || activeKey || activeId ? a : null);
   }
   function folderContext() {
     const af = activeFolder(), id = identity();
@@ -776,14 +792,27 @@
     };
   }
   function applyCanonicalServerContext(payload) {
+    const shared = window.OrmanSuiteIdentity;
+    const canonical = shared && typeof shared.applyCanonicalContext === "function"
+      ? shared.applyCanonicalContext(payload)
+      : null;
     const data = payload && typeof payload === "object" ? payload : {};
     const access = data.access && typeof data.access === "object" ? data.access : {};
-    const folder = data.folder && typeof data.folder === "object"
-      ? data.folder
-      : (Array.isArray(data.folders) && data.folders[0] && typeof data.folders[0] === "object" ? data.folders[0] : {});
-    const seflik = clean(data.seflik || access.seflik || access.canonical_seflik || folder.seflik || folder.name);
-    const seflikKey = clean(data.seflikKey || data.seflik_key || access.seflikKey || access.seflik_key || folder.seflik_key || folder.seflikKey || folder.key);
-    const folderId = clean(data.seflikFolderId || data.seflik_folder_id || access.seflikFolderId || access.seflik_folder_id || folder.id || folder.folder_id || folder.folderId);
+    let folder = data.folder && typeof data.folder === "object" ? data.folder : {};
+    if (!Object.keys(folder).length && Array.isArray(data.folders)) {
+      const active = read(K.active, {}) || {};
+      const activeKey = clean(data.active_seflik_key || active.seflik_key || active.seflikKey);
+      const activeId = clean(data.active_folder_id || active.folder_id || active.folderId);
+      const activeName = clean(data.active_seflik || active.seflik);
+      folder = data.folders.find((row) => row && (
+        (activeId && clean(row.id || row.folder_id || row.folderId) === activeId) ||
+        (activeKey && clean(row.seflik_key || row.seflikKey) === activeKey) ||
+        (activeName && fold(row.seflik || row.name) === fold(activeName))
+      )) || (data.folders.length === 1 ? data.folders[0] : {});
+    }
+    const seflik = clean((canonical && canonical.seflik) || data.seflik || access.seflik || access.canonical_seflik || folder.seflik || folder.name);
+    const seflikKey = clean((canonical && canonical.seflik_key) || data.seflikKey || data.seflik_key || access.seflikKey || access.seflik_key || folder.seflik_key || folder.seflikKey || folder.key);
+    const folderId = clean((canonical && canonical.folder_id) || data.seflikFolderId || data.seflik_folder_id || access.seflikFolderId || access.seflik_folder_id || folder.id || folder.folder_id || folder.folderId);
     if (!seflik && !seflikKey && !folderId) return false;
     const currentActive = read(K.active, {}) || {};
     const next = {
@@ -807,15 +836,10 @@
         (next.seflik && fold(item.seflik) === fold(next.seflik))
       ));
       const merged = {
-        ...(found || {}),
-        id: next.folder_id || clean(found && (found.id || found.folder_id || found.folderId)),
-        seflik: next.seflik,
-        seflik_key: next.seflik_key,
-        role: next.role || clean(found && found.role),
-        is_creator: next.creator,
-        owner_user_id: next.owner_user_id,
-        owner_email: next.owner_email,
-        owner_name: next.owner_name,
+        ...(found || {}), id: next.folder_id || clean(found && (found.id || found.folder_id || found.folderId)),
+        seflik: next.seflik, seflik_key: next.seflik_key,
+        role: next.role || clean(found && found.role), is_creator: next.creator,
+        owner_user_id: next.owner_user_id, owner_email: next.owner_email, owner_name: next.owner_name,
         updatedAt: Date.now(),
       };
       if (found) Object.assign(found, merged); else folders.unshift(merged);
@@ -947,7 +971,17 @@
         name: clean(m.name || m.canonical_name || m.email), email: clean(m.email).toLocaleLowerCase("tr-TR"),
         avatarUrl: clean(m.avatar_url || m.avatarUrl), role: clean(m.role || m.member_role || "member"), isSelf: !!m.is_self, updatedAt: now(),
       })).filter((m) => m.name);
-      forestersStore[key] = members;
+      const authoritativeMembers = authoritativeSyncResponse(out);
+      if (authoritativeMembers) forestersStore[key] = members;
+      else if (members.length) {
+        const oldMembers = Array.isArray(forestersStore[key]) ? forestersStore[key] : [];
+        const mergedMembers = new Map(oldMembers.map((row) => [clean(row.email).toLocaleLowerCase("tr-TR") || clean(row.userId || row.id), row]));
+        members.forEach((row) => {
+          const memberKey = clean(row.email).toLocaleLowerCase("tr-TR") || clean(row.userId || row.id);
+          if (memberKey) mergedMembers.set(memberKey, { ...(mergedMembers.get(memberKey) || {}), ...row });
+        });
+        forestersStore[key] = Array.from(mergedMembers.values());
+      }
       write(K.foresters, forestersStore);
     } catch (e) {
       errors.push(clean(e?.message || e) || "Üye listesi alınamadı");
@@ -1197,23 +1231,51 @@
     const id = clean(r.id || r.recordId || (row && (row.record_key || row.id)));
     return id ? "id::" + id : "row::" + String(index == null ? Math.random() : index);
   }
+  function mesahaRowTimestamp(row) {
+    const source = row && row.record_data && typeof row.record_data === "object" ? row.record_data : (row || {});
+    const raw = clean(source.updatedAt || source.updated_at || source.createdAt || source.created_at || row?.updated_at || row?.created_at);
+    const value = raw ? Date.parse(raw) : 0;
+    return Number.isFinite(value) ? value : 0;
+  }
   function mergeMesahaRows(baseRows, incomingRows) {
     const map = new Map();
-    const put = (row, i, source) => map.set(mesahaRecordKey(row, source + "_" + i), { ...(row && row.record_data ? row.record_data : (row || {})) });
+    const put = (row, i, sourceName) => {
+      const normalized = { ...(row && row.record_data ? row.record_data : (row || {})) };
+      const key = mesahaRecordKey(normalized, sourceName + "_" + i);
+      const current = map.get(key);
+      if (!current) {
+        map.set(key, { row: normalized, source: sourceName });
+        return;
+      }
+      const currentTime = mesahaRowTimestamp(current.row);
+      const incomingTime = mesahaRowTimestamp(normalized);
+      if (incomingTime > currentTime || (incomingTime === currentTime && sourceName === "local")) {
+        map.set(key, { row: normalized, source: sourceName });
+      }
+    };
     (Array.isArray(baseRows) ? baseRows : []).forEach((row, i) => put(row, i, "remote"));
     (Array.isArray(incomingRows) ? incomingRows : []).forEach((row, i) => put(row, i, "local"));
-    return Array.from(map.values());
+    return Array.from(map.values()).map((entry) => entry.row);
   }
   function syncTokenFingerprint(rows) {
     const list = Array.isArray(rows) ? rows : [];
-    const first = list[0] || {}, last = list[list.length - 1] || {};
-    return [
-      list.length,
-      clean(first.barcode || first.barkodNo || first.barkod_no || first.id),
-      clean(last.barcode || last.barkodNo || last.barkod_no || last.id),
-      clean(last.updatedAt || last.updated_at || first.updatedAt || first.updated_at),
-    ].join("|");
+    const signatures = list.map((row, index) => {
+      const r = row && row.record_data && typeof row.record_data === "object" ? row.record_data : (row || {});
+      return [
+        mesahaRecordKey(r, index), clean(r.updatedAt || r.updated_at || r.createdAt || r.created_at),
+        clean(r.diameter || r.cap), clean(r.length || r.boy), clean(r.quantity || r.adet),
+        clean(r.productType || r.product_type), clean(r.treeType || r.tree_type), clean(r.cutter || r.kesimci)
+      ].join("|");
+    }).sort();
+    let hash = 2166136261;
+    const text = signatures.join("\n");
+    for (let i = 0; i < text.length; i += 1) {
+      hash ^= text.charCodeAt(i);
+      hash = Math.imul(hash, 16777619);
+    }
+    return list.length + "|" + (hash >>> 0).toString(36);
   }
+
   function stableSyncToken(seflik, bolme, rows) {
     const key = fold(seflik) + "::" + fold(bolme);
     const fingerprint = syncTokenFingerprint(rows);
@@ -1233,72 +1295,94 @@
   async function syncMesaha() {
     const records = read(K.records, []);
     if (!Array.isArray(records)) return { done: 0 };
-    const id = identity(), af = activeFolder(), seflik = clean((af && af.seflik) || id.seflik);
-    if (!seflik || !records.length) { clearDirty("mesaha"); return { done: 0 }; }
-    const groups = {};
-    for (const r of records) {
-      const b = clean(r.bolmeNo || r.bolme_no || id.bolme);
-      if (!b) continue;
-      (groups[b] || (groups[b] = [])).push(r);
+    const id = identity();
+    const currentFolder = activeFolder();
+    const fallbackSeflik = clean((currentFolder && currentFolder.seflik) || id.seflik);
+    if (!records.length) { clearDirty("mesaha"); return { done: 0 }; }
+
+    const groups = new Map();
+    for (const record of records) {
+      if (!record || typeof record !== "object") continue;
+      const seflik = clean(record.seflik || record.folderSeflik || fallbackSeflik);
+      const bolme = clean(record.bolmeNo || record.bolme_no || id.bolme);
+      if (!seflik || !bolme) continue;
+      const key = fold(seflik) + "::" + fold(bolme);
+      if (!groups.has(key)) groups.set(key, { seflik, bolme, rows: [] });
+      groups.get(key).rows.push(record);
     }
-    let done = 0, suppressed = 0, suppressedBolmeler = [], backupFailed = 0;
-    const backupErrors = [];
-    for (const [bolme, localRows] of Object.entries(groups)) {
+    if (!groups.size) {
+      markDirty("mesaha", { resubmit: true, source: "seflige-gonder", error: "Mesaha kayıtlarında şeflik veya bölme bilgisi eksik", code: "RECORD_CONTEXT_MISSING" });
+      return { done: 0, failed: records.length, errors: [{ error: "Şeflik veya bölme bilgisi eksik" }] };
+    }
+
+    let done = 0, suppressed = 0, backupFailed = 0, failedGroups = 0;
+    const suppressedBolmeler = [], backupErrors = [], errors = [];
+    for (const group of groups.values()) {
+      const seflik = group.seflik, bolme = group.bolme, localRows = group.rows;
       if (mesahaDivisionSuppressed(seflik, bolme)) {
         suppressed += localRows.length;
         suppressedBolmeler.push(bolme);
         continue;
       }
-      try { await edge("seflik_folder_create_division", { seflik, bolmeNo: bolme, location: "" }); }
-      catch (e) { if (!duplicateLike(e)) throw e; }
-      let remoteRows = [];
       try {
+        try { await edge("seflik_folder_create_division", { seflik, folderSeflik: seflik, bolmeNo: bolme, location: "" }); }
+        catch (error) { if (!duplicateLike(error)) throw error; }
+
         const remote = await edge("seflik_folder_read", { seflik, folderSeflik: seflik, bolmeNo: bolme });
         if (!Array.isArray(remote.records)) throw new Error("Sunucu geçerli Mesaha kayıtları döndürmedi");
-        if (!authoritativeSyncResponse(remote))
-          throw new Error("Sunucudaki Mesaha kayıtları V68 tam liste sözleşmesiyle doğrulanamadı; gönderim veri güvenliği için durduruldu");
-        remoteRows = remote.records;
-      } catch (e) {
-        const error = new Error(clean(e?.message || e) || "Ortak kayıtlar alınamadı");
-        error.code = clean(e?.code) || "REMOTE_MESAHA_INCOMPLETE";
-        error.retryable = true;
-        throw error;
-      }
-      const rows = mergeMesahaRows(remoteRows, localRows).map((r) => ({ ...r, seflik, bolmeNo: bolme, bolme_no: bolme }));
-      const token = stableSyncToken(seflik, bolme, rows);
-      for (let i = 0; i < rows.length; i += 150)
-        await edge("seflik_folder_push", { seflik, bolmeNo: bolme, syncToken: token, records: rows.slice(i, i + 150), appVersion: (window.MesahaRelease?.telemetry("suite") || "Orman İO"), mergeMode: "barcode" });
-      let backup = null, driveError = "";
-      try {
-        if (cloudSyncAllowed())
-          backup = await drive("backup_json", {
-            seflik, appId: "mesaha",
-            fileName: `Mesaha_${fold(seflik)}_${fold(bolme)}_${new Date().toISOString().slice(0, 10)}.json`,
-            recordCount: rows.length, totalVolume: rows.reduce((sum, r) => sum + volume(r), 0),
-            payload: { schema: "mesaha-suite-v31", app: "mesaha", seflik, bolme, createdAt: now(), records: rows },
-          });
-      } catch (e) {
-        driveError = clean(e.message || e);
-        if (cloudSyncAllowed()) {
-          backupFailed += 1;
-          backupErrors.push({ bolme, error: driveError || "Mesaha Drive yedeği oluşturulamadı" });
+        if (!authoritativeSyncResponse(remote)) {
+          const incomplete = new Error("Sunucudaki Mesaha kayıtları tam liste sözleşmesiyle doğrulanamadı; yerel kayıtlar korunarak gönderim ertelendi");
+          incomplete.code = "REMOTE_MESAHA_INCOMPLETE";
+          incomplete.retryable = true;
+          throw incomplete;
         }
+        const rows = mergeMesahaRows(remote.records, localRows).map((row) => ({ ...row, seflik, bolmeNo: bolme, bolme_no: bolme }));
+        const token = stableSyncToken(seflik, bolme, rows);
+        for (let i = 0; i < rows.length; i += 150) {
+          await edge("seflik_folder_push", {
+            seflik, folderSeflik: seflik, bolmeNo: bolme, syncToken: token,
+            records: rows.slice(i, i + 150), appVersion: (window.MesahaRelease?.telemetry("suite") || "Orman İO"), mergeMode: "barcode"
+          });
+        }
+        let backup = null, driveError = "";
+        try {
+          if (cloudSyncAllowed()) {
+            backup = await drive("backup_json", {
+              seflik, folderSeflik: seflik, appId: "mesaha",
+              fileName: `Mesaha_${fold(seflik)}_${fold(bolme)}_${new Date().toISOString().slice(0, 10)}.json`,
+              recordCount: rows.length, totalVolume: rows.reduce((sum, row) => sum + volume(row), 0),
+              payload: { schema: "mesaha-suite-v31", app: "mesaha", seflik, bolme, createdAt: now(), records: rows },
+            });
+          }
+        } catch (error) {
+          driveError = clean(error?.message || error);
+          if (cloudSyncAllowed()) {
+            backupFailed += 1;
+            backupErrors.push({ seflik, bolme, error: driveError || "Mesaha Drive yedeği oluşturulamadı" });
+          }
+        }
+        await edge("seflik_folder_finish", {
+          seflik, folderSeflik: seflik, bolmeNo: bolme, syncToken: token,
+          recordCount: rows.length, totalVolume: rows.reduce((sum, row) => sum + volume(row), 0),
+          driveFileId: (backup && backup.fileId) || "", driveFileName: (backup && backup.fileName) || "",
+          driveStatus: backup ? "ok" : cloudSyncAllowed() ? "failed" : "not_connected", driveError,
+          appVersion: (window.MesahaRelease?.telemetry("suite") || "Orman İO"), mergeMode: "barcode",
+        });
+        clearStableSyncToken(seflik, bolme);
+        done += rows.length;
+      } catch (error) {
+        failedGroups += 1;
+        const meta = syncErrorMeta(error);
+        errors.push({ seflik, bolme, recordCount: localRows.length, error: meta.message, code: meta.code, retryable: meta.retryable });
       }
-      await edge("seflik_folder_finish", {
-        seflik, bolmeNo: bolme, syncToken: token, recordCount: rows.length,
-        totalVolume: rows.reduce((sum, r) => sum + volume(r), 0),
-        driveFileId: (backup && backup.fileId) || "", driveFileName: (backup && backup.fileName) || "",
-        driveStatus: backup ? "ok" : cloudSyncAllowed() ? "failed" : "not_connected", driveError,
-        appVersion: (window.MesahaRelease?.telemetry("suite") || "Orman İO"), mergeMode: "barcode",
-      });
-      clearStableSyncToken(seflik, bolme);
-      done += rows.length;
     }
-    if (backupFailed) markDirty("mesaha", { backupFailed, backupErrors });
-    else clearDirty("mesaha");
+    if (failedGroups || backupFailed) {
+      markDirty("mesaha", { resubmit: true, source: "seflige-gonder", failedGroups, errors, backupFailed, backupErrors, backupRetry: backupFailed > 0 });
+    } else clearDirty("mesaha");
     if (suppressedBolmeler.length) toast(`Sunucudan silinen Bölme ${suppressedBolmeler.join(", ")} kayıtları otomatik yeniden gönderilmedi. Yeniden yüklemek için Şefliğe Gönder düğmesini kullanın.`);
-    return { done, suppressed, suppressedBolmeler, backupFailed, backupErrors };
+    return { done, suppressed, suppressedBolmeler, failedGroups, errors, backupFailed, backupErrors };
   }
+
   function openDb() {
     return new Promise((resolve, reject) => {
       const q = indexedDB.open("mesaha-istif-prototype", 2);
@@ -1934,6 +2018,11 @@
           true,
         );
         scheduleAutoRetry(nextAutoRetryDelay());
+      } else if (mesaha && (mesaha.failedGroups || mesaha.failed)) {
+        const failedCount = Number(mesaha.failedGroups || mesaha.failed || 0);
+        const firstError = clean(mesaha.errors && mesaha.errors[0] && mesaha.errors[0].error);
+        toast(`${failedCount} Mesaha grubu gönderilemedi${firstError ? ": " + firstError : "."} Yerel kayıtlar korunuyor.`, true);
+        if (Array.isArray(mesaha.errors) && mesaha.errors.some((item) => item && item.retryable === true)) scheduleAutoRetry(nextAutoRetryDelay());
       } else if (mesaha && mesaha.backupFailed) {
         toast(`${mesaha.backupFailed} bölme için Mesaha Drive JSON yedeği oluşturulamadı. Sunucu kayıtları korundu; yedekleme tekrar denenecek.`, true);
         scheduleAutoRetry(nextAutoRetryDelay());
@@ -1965,7 +2054,7 @@
       } catch {}
       const partial = !!(
         (management && management.left) ||
-        (mesaha && mesaha.backupFailed) ||
+        (mesaha && (mesaha.failedGroups || mesaha.failed || mesaha.backupFailed)) ||
         (istif && (istif.failed || istif.backupFailed)) ||
         (istifPull && (istifPull.accessRefreshRequired || istifPull.partial || istifPull.truncated || istifPull.complete === false)) ||
         (folder && (folder.complete === false || folder.truncated === true))

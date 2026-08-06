@@ -28,17 +28,17 @@
   function panel(){return getJson(PANEL_KEY,{})||{}}
   function settings(){return getJson(SETTINGS_KEY,{})||{}}
   function access(){return getJson(ACCESS_KEY,{})||{}}
-  function session(){return getJson(SESSION_KEY,{})||{}}
-  function terminal(){var x=getJson(TERMINAL_KEY,null)||getJson(TERMINAL_OLD,null)||{};return x&&x.active?x:{}}
-  function activeSeflik(){var a=active(),p=panel(),s=settings(),t=terminal();return clean(a.seflik||p.activeSeflik||p.seflik||t.seflik||s.seflik)}
-  function activeKey(){var a=active();return clean(a.seflik_key||a.seflikKey)}
+  function session(){try{if(window.OrmanSuiteIdentity&&window.OrmanSuiteIdentity.session)return window.OrmanSuiteIdentity.session()||{}}catch(e){}return getJson(SESSION_KEY,{})||{}}
+  function terminal(){try{if(window.OrmanSuiteIdentity&&window.OrmanSuiteIdentity.terminal)return window.OrmanSuiteIdentity.terminal()||{}}catch(e){}var x=getJson(TERMINAL_KEY,null)||getJson(TERMINAL_OLD,null)||{};return x&&x.active?x:{}}
+  function activeSeflik(){try{if(window.OrmanSuiteIdentity&&window.OrmanSuiteIdentity.identity)return clean(window.OrmanSuiteIdentity.identity().seflik)}catch(e){}var a=active(),p=panel(),s=settings(),t=terminal();return clean(a.seflik||p.activeSeflik||p.seflik||t.seflik||s.seflik)}
+  function activeKey(){try{if(window.OrmanSuiteIdentity&&window.OrmanSuiteIdentity.identity)return clean(window.OrmanSuiteIdentity.identity().seflikKey)}catch(e){}var a=active();return clean(a.seflik_key||a.seflikKey)}
   function userName(){var p=panel(),a=access(),s=session(),u=s.user||{},m=u.user_metadata||{},t=terminal();return clean(p.googleFullName||p.name||a.canonical_name||a.requested_name||t.name||m.full_name||m.name||u.email||'Kullanıcı')}
   function userEmail(){var p=panel(),a=access(),s=session(),u=s.user||{},t=terminal();return clean(a.email||p.googleEmail||t.pairedEmail||u.email)}
   function avatar(){var p=panel(),a=access(),s=session(),u=s.user||{},m=u.user_metadata||{},t=terminal();var vals=[p.googleAvatarUrl,p.avatarUrl,a.avatar_url,a.google_avatar_url,t.avatarUrl,t.avatar_url,m.avatar_url,m.picture];for(var i=0;i<vals.length;i++){var v=clean(vals[i]);if(/^https?:\/\//i.test(v))return v}return ''}
   function api(){return window.mesahaSupabaseV380||window.mesahaSupabaseV383||window.mesahaSupabase||null}
-  function terminalAuth(){var t=terminal();if(t.active&&clean(t.source)==='pair_code'&&(t.terminalCode||t.terminalToken))return{terminalCode:clean(t.terminalCode),terminalToken:clean(t.terminalToken),terminalPairedUserId:clean(t.pairedUserId),terminalPairedEmail:clean(t.pairedEmail)};return {}}
-  function pairedTerminal(){var t=terminal();return !!(t.active&&clean(t.source)==='pair_code'&&(t.pairedUserId||t.terminalToken||t.terminalCode))}
-  function cloudAccess(){var p=panel(),a=access(),s=session();return !!(s.access_token||clean(a.status)==='approved'||p.googleApproved===true||p.terminalPairedUserId||pairedTerminal())}
+  function terminalAuth(){try{if(window.OrmanSuiteIdentity&&window.OrmanSuiteIdentity.terminalAuthPayload)return window.OrmanSuiteIdentity.terminalAuthPayload()||{}}catch(e){}var t=terminal();if(t.active&&clean(t.source)==='pair_code'&&(t.terminalCode||t.terminalToken))return{terminalCode:clean(t.terminalCode),terminalToken:clean(t.terminalToken),terminalPairedUserId:clean(t.pairedUserId),terminalPairedEmail:clean(t.pairedEmail)};return {}}
+  function pairedTerminal(){try{if(window.OrmanSuiteIdentity&&window.OrmanSuiteIdentity.pairedTerminal)return window.OrmanSuiteIdentity.pairedTerminal()}catch(e){}var t=terminal();return !!(t.active&&clean(t.source)==='pair_code'&&(t.pairedUserId||t.terminalToken||t.terminalCode))}
+  function cloudAccess(){try{if(window.OrmanSuiteIdentity&&window.OrmanSuiteIdentity.cloudAllowed)return window.OrmanSuiteIdentity.cloudAllowed()}catch(e){}return !!(session().access_token||pairedTerminal())}
   function blockedMessage(){var t=terminal();return t.active&&!pairedTerminal()?'Misafir modunda Şeflik Klasörü buluta bağlanmaz. Terminal kodu eşleştirin veya Google ile giriş yapın.':'Şeflik Klasörü için Google girişi veya kodla eşleşmiş terminal gerekir.'}
   function edge(action,data){var a=api();if(!a||typeof a.edge!=='function')return Promise.reject(new Error('Güvenli sunucu bağlantısı hazır değil.'));return a.edge(action,Object.assign({source:'seflik-entry-repair-v582',seflik:activeSeflik(),folderSeflik:activeSeflik()},terminalAuth(),data||{}))}
   function withTimeout(promise,ms,msg){var timer=0;return Promise.race([Promise.resolve(promise),new Promise(function(_,reject){timer=setTimeout(function(){reject(new Error(msg||'10 saniyede cevap gelmedi.'))},ms||10000)})]).finally(function(){if(timer)clearTimeout(timer)})}

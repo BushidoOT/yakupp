@@ -1,31 +1,31 @@
 (function (root) {
   "use strict";
   const DATA = /*MESAHA_RELEASE_DATA_START*/{
-  "build": 75,
-  "version": "75.0.0",
+  "build": 76,
+  "version": "76.0.0",
   "channel": "stable",
-  "releasedAt": "2026-08-06T01:20:00+03:00",
-  "assetToken": "orman-io-stable-20260806-v75",
-  "cacheName": "orman-io-shell-stable-20260806-v75",
+  "releasedAt": "2026-08-06T08:04:00+03:00",
+  "assetToken": "orman-io-stable-20260806-v76",
+  "cacheName": "orman-io-shell-stable-20260806-v76",
   "apps": {
     "suite": {
       "label": "Orman İO",
-      "version": "75.0.0"
+      "version": "76.0.0"
     },
     "mesaha": {
       "label": "Mesaha İO",
-      "version": "6.15"
+      "version": "6.16"
     },
     "istif": {
       "label": "İstif İO",
-      "version": "0.3.22"
+      "version": "0.3.23"
     },
     "admin": {
       "label": "Orman İO Yönetim",
-      "version": "75.0.0"
+      "version": "76.0.0"
     }
   },
-  "description": "Mesaha ölçüm giriş ekranı sade ve düzenli tasarıma geçirildi. Yüzen Kaydet korunurken kart yoğunluğu azaltıldı; ürün seçimleri kompaktlaştırıldı ve son üç barkod ürün türüne göre renkli ince şeritlerle yeniden düzenlendi."
+  "description": "Ortak kimlik ve şeflik bağlamı tek çekirdekte birleştirildi. Google ve terminal kodlu hesapların aynı şeflik yetkileri eşitlendi; Mesaha kayıtları şeflik bazında güvenli gruplanarak senkronize ediliyor, kısmi listelerde offline veriler korunuyor ve yinelenen kimlik/yapılandırma dosyaları kaldırıldı."
 }/*MESAHA_RELEASE_DATA_END*/;
   const APP_NAMES = DATA.apps || {};
   const SCRIPT_URL = (() => {

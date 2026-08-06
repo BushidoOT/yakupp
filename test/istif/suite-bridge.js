@@ -18,15 +18,24 @@
   };
   const clean = (v) => String(v == null ? "" : v).trim();
   function valid() {
+    try {
+      if (window.OrmanSuiteIdentity && typeof window.OrmanSuiteIdentity.authType === "function") {
+        return window.OrmanSuiteIdentity.authType() !== "none";
+      }
+    } catch (_) {}
     const primary = read("mesaha_supabase_v500_session", null);
     const backup = read("mesaha_supabase_v569_session_backup", null);
     const s = primary && primary.access_token ? primary : backup && backup.access_token ? backup : {};
     if ((!primary || !primary.access_token) && s.access_token) write("mesaha_supabase_v500_session", s);
     const a = read("mesaha_google_access_v548", {});
-    const t =
-      read("mesaha_terminal_local_mode_v556", null) ||
-      read("mesaha_terminal_local_mode_v557", {});
-    return !!(s.access_token || a.status === "approved" || (t && t.active));
+    const current = read("mesaha_terminal_local_mode_v556", null);
+    const old = read("mesaha_terminal_local_mode_v557", null);
+    const t = current && current.active ? current : old && old.active ? old : {};
+    if ((!current || !current.active) && t.active) {
+      write("mesaha_terminal_local_mode_v556", t);
+      try { localStorage.removeItem("mesaha_terminal_local_mode_v557"); } catch (_) {}
+    }
+    return !!(s.access_token || a.status === "approved" || t.active);
   }
   function css() {
     if (document.getElementById("suiteIstifCssV10")) return;

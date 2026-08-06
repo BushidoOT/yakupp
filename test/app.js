@@ -228,18 +228,16 @@
   }
 
   function session() {
-    const cached = read(K.session, null) || read(K.backup, null) || {};
-    if (cached && cached.access_token) return cached;
-    try {
-      const api = window.mesahaSupabase || window.mesahaCloud || null;
-      const live = api && typeof api.getStoredSession === "function" ? api.getStoredSession() : null;
-      if (live && live.access_token) {
-        write(K.session, live);
-        write(K.backup, { ...live, backup_at: Date.now() });
-        return live;
-      }
-    } catch (_) {}
-    return cached || {};
+    const shared = window.OrmanSuiteIdentity;
+    if (shared && typeof shared.session === "function") return shared.session() || {};
+    const primary = read(K.session, null);
+    if (primary && primary.access_token) return primary;
+    const backup = read(K.backup, null);
+    if (backup && backup.access_token) {
+      write(K.session, backup);
+      return backup;
+    }
+    return {};
   }
   function access() {
     return read(K.access, {}) || {};
@@ -251,20 +249,25 @@
     return read(K.settings, {}) || {};
   }
   function terminal() {
-    const t = read(K.terminal, null) || read(K.terminalOld, null) || {};
-    return t && t.active ? t : {};
+    const shared = window.OrmanSuiteIdentity;
+    if (shared && typeof shared.terminal === "function") return shared.terminal() || {};
+    const primary = read(K.terminal, null);
+    if (primary && primary.active) return primary;
+    const old = read(K.terminalOld, null);
+    if (old && old.active) { write(K.terminal, old); return old; }
+    return {};
   }
   function pairedTerminal() {
+    const shared = window.OrmanSuiteIdentity;
+    if (shared && typeof shared.pairedTerminal === "function") return shared.pairedTerminal();
     const t = terminal();
-    return !!(
-      t.active &&
-      t.source === "pair_code" &&
-      (t.terminalCode || t.terminalToken || t.pairedUserId)
-    );
+    return !!(t.active && t.source === "pair_code" && t.pairedUserId && (t.terminalCode || t.terminalToken));
   }
   function authType() {
-    if (session().access_token) return "google";
+    const shared = window.OrmanSuiteIdentity;
+    if (shared && typeof shared.authType === "function") return shared.authType();
     if (pairedTerminal()) return "terminal";
+    if (session().access_token) return "google";
     if (terminal().active) return "guest";
     if (access().status === "approved") return "cached";
     return "none";
@@ -425,19 +428,18 @@
     }
   }
   function terminalAuth() {
+    const shared = window.OrmanSuiteIdentity;
+    if (shared && typeof shared.terminalAuthPayload === "function") return shared.terminalAuthPayload();
     const t = terminal();
-    return pairedTerminal()
-      ? {
-          terminalCode: clean(t.terminalCode),
-          terminalToken: clean(t.terminalToken),
-          terminalPairedUserId: clean(t.pairedUserId),
-          terminalPairedEmail: clean(t.pairedEmail),
-          terminalDeviceId: clean(t.deviceId || t.terminalDeviceId || (() => { try { return localStorage.getItem("mesaha_supabase_v500_device") || ""; } catch (_) { return ""; } })()),
-          deviceId: clean(t.deviceId || t.terminalDeviceId || (() => { try { return localStorage.getItem("mesaha_supabase_v500_device") || ""; } catch (_) { return ""; } })()),
-        }
-      : {};
+    return pairedTerminal() ? {
+      terminalCode: clean(t.terminalCode), terminalToken: clean(t.terminalToken),
+      terminalPairedUserId: clean(t.pairedUserId), terminalPairedEmail: clean(t.pairedEmail),
+      terminalDeviceId: clean(t.deviceId || t.terminalDeviceId), deviceId: clean(t.deviceId || t.terminalDeviceId)
+    } : {};
   }
   function identity() {
+    const shared = window.OrmanSuiteIdentity;
+    if (shared && typeof shared.identity === "function") return shared.identity();
     const s = session(),
       a = access(),
       p = panel(),
@@ -1059,22 +1061,19 @@
     );
   }
   function activeFolder() {
-    const a = read(K.active, {}),
-      id = identity();
-    return (
-      folders.find(
-        (f) =>
-          f &&
-          !f.deleted &&
-          (clean(f.seflik_key || f.seflikKey) ===
-            clean(a.seflik_key || a.seflikKey) ||
-            clean(f.seflik).toLocaleLowerCase("tr-TR") ===
-              clean(id.seflik).toLocaleLowerCase("tr-TR")),
-      ) ||
-      creatorFolder() ||
-      folders.find((f) => !f.deleted) ||
-      null
-    );
+    const a = read(K.active, {}) || {}, id = identity();
+    const rows = folders.filter((f) => f && !f.deleted);
+    const activeId = clean(a.folder_id || a.folderId);
+    const activeKey = clean(a.seflik_key || a.seflikKey);
+    const activeName = clean(a.seflik);
+    const identityKey = clean(id.seflikKey);
+    const identityName = clean(id.seflik);
+    return rows.find((f) => activeId && clean(f.id || f.folder_id || f.folderId) === activeId) ||
+      rows.find((f) => activeKey && clean(f.seflik_key || f.seflikKey) === activeKey) ||
+      rows.find((f) => activeName && fold(f.seflik || f.name) === fold(activeName)) ||
+      rows.find((f) => identityKey && clean(f.seflik_key || f.seflikKey) === identityKey) ||
+      rows.find((f) => identityName && fold(f.seflik || f.name) === fold(identityName)) ||
+      (rows.length === 1 ? rows[0] : null);
   }
   function activeKey() {
     const f = activeFolder();
@@ -1170,14 +1169,27 @@
     return result;
   }
   function applyCanonicalFolderContext(raw) {
+    const shared = window.OrmanSuiteIdentity;
+    const canonical = shared && typeof shared.applyCanonicalContext === "function"
+      ? shared.applyCanonicalContext(raw)
+      : null;
     const source = raw && typeof raw === "object" ? raw : {};
     const access = source.access && typeof source.access === "object" ? source.access : {};
-    const folder = source.folder && typeof source.folder === "object"
-      ? source.folder
-      : (Array.isArray(source.folders) && source.folders[0] && typeof source.folders[0] === "object" ? source.folders[0] : {});
-    const seflik = clean(source.seflik || source.folderSeflik || access.seflik || access.canonical_seflik || folder.seflik || folder.name);
-    const seflikKey = clean(source.seflikKey || source.seflik_key || access.seflikKey || access.seflik_key || folder.seflik_key || folder.seflikKey || folder.key);
-    const folderId = clean(source.seflikFolderId || source.seflik_folder_id || access.seflikFolderId || access.seflik_folder_id || folder.id || folder.folder_id || folder.folderId);
+    let folder = source.folder && typeof source.folder === "object" ? source.folder : {};
+    if (!Object.keys(folder).length && Array.isArray(source.folders)) {
+      const currentActive = read(K.active, {}) || {};
+      const wantedId = clean(source.active_folder_id || currentActive.folder_id || currentActive.folderId);
+      const wantedKey = clean(source.active_seflik_key || currentActive.seflik_key || currentActive.seflikKey);
+      const wantedName = clean(source.active_seflik || currentActive.seflik);
+      folder = source.folders.find((row) => row && (
+        (wantedId && clean(row.id || row.folder_id || row.folderId) === wantedId) ||
+        (wantedKey && clean(row.seflik_key || row.seflikKey) === wantedKey) ||
+        (wantedName && fold(row.seflik || row.name) === fold(wantedName))
+      )) || (source.folders.length === 1 ? source.folders[0] : {});
+    }
+    const seflik = clean((canonical && canonical.seflik) || source.seflik || source.folderSeflik || access.seflik || access.canonical_seflik || folder.seflik || folder.name);
+    const seflikKey = clean((canonical && canonical.seflik_key) || source.seflikKey || source.seflik_key || access.seflikKey || access.seflik_key || folder.seflik_key || folder.seflikKey || folder.key);
+    const folderId = clean((canonical && canonical.folder_id) || source.seflikFolderId || source.seflik_folder_id || access.seflikFolderId || access.seflik_folder_id || folder.id || folder.folder_id || folder.folderId);
     if (!seflik && !seflikKey && !folderId) return null;
     let current = folders.find((f) =>
       (folderId && clean(f.id || f.folder_id || f.folderId) === folderId) ||
@@ -1185,8 +1197,7 @@
       (seflik && fold(f.seflik) === fold(seflik))
     );
     const merged = normalizeFolder({
-      ...(current || {}),
-      seflik: seflik || (current && current.seflik),
+      ...(current || {}), seflik: seflik || (current && current.seflik),
       seflik_key: seflikKey || (current && (current.seflik_key || current.seflikKey)),
       id: folderId || (current && (current.id || current.folder_id || current.folderId)),
       role: clean(source.membershipRole || access.role || folder.role) || (current && current.role) || "member",
@@ -1197,12 +1208,26 @@
       updatedAt: now(),
     });
     if (!merged) return null;
-    if (current) Object.assign(current, merged);
-    else { folders.unshift(merged); current = merged; }
-    setActive(current);
-    saveLocal();
-    render();
-    return current;
+    if (current) Object.assign(current, merged); else { folders.unshift(merged); current = merged; }
+    setActive(current); saveLocal(); render(); return current;
+  }
+
+  function preferredFolder(list) {
+    const rows = Array.isArray(list) ? list.filter(Boolean) : [];
+    if (!rows.length) return null;
+    const stored = read(K.active, {}) || {};
+    const id = identity();
+    const storedId = clean(stored.folder_id || stored.folderId);
+    const storedKey = clean(stored.seflik_key || stored.seflikKey);
+    const storedName = clean(stored.seflik);
+    const identityKey = clean(id.seflikKey);
+    const identityName = clean(id.seflik);
+    return rows.find((f) => storedId && clean(f.id || f.folder_id || f.folderId) === storedId) ||
+      rows.find((f) => storedKey && clean(f.seflik_key || f.seflikKey) === storedKey) ||
+      rows.find((f) => storedName && fold(f.seflik || f.name) === fold(storedName)) ||
+      rows.find((f) => identityKey && clean(f.seflik_key || f.seflikKey) === identityKey) ||
+      rows.find((f) => identityName && fold(f.seflik || f.name) === fold(identityName)) ||
+      (rows.length === 1 ? rows[0] : null);
   }
 
   function localFolder() {
@@ -1238,7 +1263,10 @@
     )
       folders.unshift(lf);
     if (!cloudIdentity() || navigator.onLine === false) {
-      if (!activeFolder() && folders[0]) setActive(folders[0]);
+      if (!activeFolder()) {
+        const selected = preferredFolder(folders);
+        if (selected) setActive(selected);
+      }
       render();
       return folders;
     }
@@ -1274,15 +1302,9 @@
         folders = Array.from(merged.values());
       }
       if (folders.length) {
-        const stored = read(K.active, {}) || {};
-        const storedKey = clean(stored.seflik_key || stored.seflikKey);
-        const storedName = clean(stored.seflik);
-        const selected =
-          folders.find((f) => storedKey && clean(f.seflik_key || f.seflikKey) === storedKey) ||
-          folders.find((f) => storedName && fold(f.seflik) === fold(storedName)) ||
-          creatorFolder() ||
-          folders[0];
+        const selected = preferredFolder(folders);
         if (selected) setActive(selected);
+        else if (!activeFolder()) toast("Birden fazla şeflik bulundu. Devam etmek için Şeflik Klasörü ekranından aktif şefliği seçin.", true);
       } else if (out?.sync_contract === "orman-io-sync-v68" && out?.complete === true) clearActiveFolderContext();
       await loadMembersFromServer();
       await loadDivisionsFromServer();
@@ -1291,7 +1313,10 @@
       return folders;
     } catch (e) {
       if (force) toast("Şeflikler alınamadı: " + e.message, true);
-      if (!activeFolder() && folders[0]) setActive(folders[0]);
+      if (!activeFolder()) {
+        const selected = preferredFolder(folders);
+        if (selected) setActive(selected);
+      }
       render();
       return folders;
     }
@@ -1319,7 +1344,14 @@
           updatedAt: now(),
         }))
         .filter((x) => x.name);
-      foresters[af.seflik_key] = list;
+      const authoritative = out?.sync_contract === "orman-io-sync-v68" && out?.complete === true && out?.partial !== true && out?.truncated !== true;
+      if (authoritative) foresters[af.seflik_key] = list;
+      else if (list.length) {
+        const old = Array.isArray(foresters[af.seflik_key]) ? foresters[af.seflik_key] : [];
+        const merged = new Map(old.map((row) => [emailKey(row.email) || clean(row.userId || row.id), row]));
+        list.forEach((row) => merged.set(emailKey(row.email) || clean(row.userId || row.id), { ...(merged.get(emailKey(row.email) || clean(row.userId || row.id)) || {}), ...row }));
+        foresters[af.seflik_key] = Array.from(merged.values());
+      }
     } catch {}
   }
   async function loadDivisionsFromServer() {

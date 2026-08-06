@@ -27,6 +27,11 @@
     return out;
   }
   function session() {
+    try {
+      if (window.OrmanSuiteIdentity && typeof window.OrmanSuiteIdentity.session === "function") {
+        return window.OrmanSuiteIdentity.session() || {};
+      }
+    } catch (_) {}
     for (var i = 0; i < SESSION_KEYS.length; i++) {
       var s = readJson(SESSION_KEYS[i], null);
       if (s && (s.access_token || s.refresh_token || (s.user && s.user.id))) return s;
@@ -39,6 +44,11 @@
     writeJson(SESSION_KEYS[1], s);
   }
   function terminal() {
+    try {
+      if (window.OrmanSuiteIdentity && typeof window.OrmanSuiteIdentity.terminal === "function") {
+        return window.OrmanSuiteIdentity.terminal() || {};
+      }
+    } catch (_) {}
     for (var i = 0; i < TERMINAL_KEYS.length; i++) {
       var t = readJson(TERMINAL_KEYS[i], null);
       if (t && t.active) return t;
@@ -149,15 +159,23 @@
       try { s = await refreshSession(s); } catch (_) {}
     }
     var terminalPayload = {};
-    if (t && t.active && t.source === "pair_code") {
+    try {
+      if (window.OrmanSuiteIdentity && typeof window.OrmanSuiteIdentity.terminalAuthPayload === "function") {
+        terminalPayload = window.OrmanSuiteIdentity.terminalAuthPayload() || {};
+      }
+    } catch (_) {}
+    if (!clean(terminalPayload.terminalCode || terminalPayload.terminalToken) && t && t.active && t.source === "pair_code") {
       terminalPayload = {
         terminalCode: clean(t.terminalCode),
         terminalToken: clean(t.terminalToken),
         terminalPairedUserId: clean(t.pairedUserId),
-        terminalPairedEmail: clean(t.pairedEmail)
+        terminalPairedEmail: clean(t.pairedEmail),
+        terminalDeviceId: clean(t.deviceId || t.terminalDeviceId),
+        deviceId: clean(t.deviceId || t.terminalDeviceId)
       };
     }
-    return { token: clean(s.access_token) || ANON_KEY, terminalPayload: terminalPayload };
+    var terminalRequest = !!clean(terminalPayload.terminalCode || terminalPayload.terminalToken);
+    return { token: terminalRequest ? ANON_KEY : (clean(s.access_token) || ANON_KEY), terminalPayload: terminalPayload };
   }
 
   async function check(force) {

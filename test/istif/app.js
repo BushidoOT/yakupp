@@ -1057,6 +1057,9 @@ async function loadData() {
 }
 
 function readSharedSession() {
+  try {
+    if (window.OrmanSuiteIdentity?.session) return window.OrmanSuiteIdentity.session();
+  } catch {}
   const primary = jsonRead(SHARED_SESSION_KEY, null);
   if (primary?.access_token) return primary;
   const backup = jsonRead(SHARED_SESSION_BACKUP_KEY, null);
@@ -1068,27 +1071,47 @@ function readSharedSession() {
 }
 
 function readSharedTerminal() {
-  const terminal =
-    jsonRead(SHARED_TERMINAL_KEY, null) ||
-    jsonRead(SHARED_TERMINAL_OLD_KEY, null) ||
-    {};
-  return terminal?.active ? terminal : {};
+  try {
+    if (window.OrmanSuiteIdentity?.terminal) return window.OrmanSuiteIdentity.terminal();
+  } catch {}
+  const current = jsonRead(SHARED_TERMINAL_KEY, null);
+  if (current?.active) return current;
+  const old = jsonRead(SHARED_TERMINAL_OLD_KEY, null);
+  if (old?.active) {
+    jsonWrite(SHARED_TERMINAL_KEY, old);
+    try { localStorage.removeItem(SHARED_TERMINAL_OLD_KEY); } catch {}
+    return old;
+  }
+  return {};
 }
 function isPairedTerminal() {
+  try {
+    if (window.OrmanSuiteIdentity?.pairedTerminal) return window.OrmanSuiteIdentity.pairedTerminal();
+  } catch {}
   const terminal = readSharedTerminal();
   return !!(
     terminal.active &&
     terminal.source === "pair_code" &&
-    (terminal.terminalCode || terminal.terminalToken || terminal.pairedUserId)
+    terminal.pairedUserId &&
+    (terminal.terminalCode || terminal.terminalToken)
   );
 }
 function hasSharedIdentity() {
+  try {
+    if (window.OrmanSuiteIdentity?.authType) return window.OrmanSuiteIdentity.authType() !== "none";
+  } catch {}
   return !!(readSharedSession()?.access_token || readSharedTerminal().active);
 }
 function hasSharedCloudIdentity() {
+  try {
+    if (window.OrmanSuiteIdentity?.cloudAllowed) return window.OrmanSuiteIdentity.cloudAllowed();
+  } catch {}
   return !!(readSharedSession()?.access_token || isPairedTerminal());
 }
 function terminalAuthPayload() {
+  try {
+    if (window.OrmanSuiteIdentity?.terminalAuthPayload) return window.OrmanSuiteIdentity.terminalAuthPayload();
+  } catch {}
   const terminal = readSharedTerminal();
   return isPairedTerminal()
     ? {
@@ -1246,7 +1269,8 @@ async function edgeCall(action, payload = {}, retried = false) {
   const terminalPayload = terminalAuthPayload();
   if (!session?.access_token && !isPairedTerminal())
     throw new Error("Google veya terminal kodu ile giriş gerekli.");
-  const token = session?.access_token || SUPABASE_ANON_KEY;
+  const terminalRequest = isPairedTerminal();
+  const token = terminalRequest ? SUPABASE_ANON_KEY : (session?.access_token || SUPABASE_ANON_KEY);
   const response = await fetch(EDGE_URL, {
     method: "POST",
     cache: "no-store",
@@ -1265,6 +1289,7 @@ async function edgeCall(action, payload = {}, retried = false) {
   const body = await response.json().catch(() => ({}));
   if (
     isSharedAuthFailure(response.status, body) &&
+    !terminalRequest &&
     session?.refresh_token &&
     !retried
   ) {
@@ -1288,7 +1313,8 @@ async function bridgeCall(action, payload = {}, retried = false) {
   const terminalPayload = terminalAuthPayload();
   if (!session?.access_token && !isPairedTerminal())
     throw new Error("Google veya terminal kodu ile giriş gerekli.");
-  const token = session?.access_token || SUPABASE_ANON_KEY;
+  const terminalRequest = isPairedTerminal();
+  const token = terminalRequest ? SUPABASE_ANON_KEY : (session?.access_token || SUPABASE_ANON_KEY);
   const response = await fetch(DRIVE_BRIDGE_URL, {
     method: "POST",
     cache: "no-store",
@@ -1307,6 +1333,7 @@ async function bridgeCall(action, payload = {}, retried = false) {
   const body = await response.json().catch(() => ({}));
   if (
     isSharedAuthFailure(response.status, body) &&
+    !terminalRequest &&
     session?.refresh_token &&
     !retried
   ) {
@@ -1761,8 +1788,18 @@ async function syncSharedContext({ manual = false } = {}) {
             seflik: folder.seflik,
             folderSeflik: folder.seflik,
           });
+          const memberListComplete = !!(
+            memberOut?.sync_contract === "orman-io-sync-v68" &&
+            memberOut?.complete === true &&
+            memberOut?.partial !== true &&
+            memberOut?.truncated !== true
+          );
+          if (!memberListComplete) {
+            memberErrors.push(`${clean(folder.seflik) || "Şeflik"}: üye listesi eksik`);
+            continue;
+          }
           membersBySeflik[folder.seflik_key || stableKey(folder.seflik)] =
-            memberOut.members || [];
+            Array.isArray(memberOut.members) ? memberOut.members : [];
         } catch (memberError) {
           memberErrors.push(clean(memberError?.message || memberError) || clean(folder.seflik));
         }
