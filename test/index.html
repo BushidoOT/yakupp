@@ -1,59 +1,18 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>Yükleniyor...</title>
-
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #f5f7fa;
-      font-family: Arial, sans-serif;
-    }
-
-    .loading {
-      text-align: center;
-    }
-
-    .spinner {
-      width: 48px;
-      height: 48px;
-      margin: 0 auto 16px;
-      border: 5px solid #dfe5ec;
-      border-top-color: #16a66a;
-      border-radius: 50%;
-      animation: don 0.8s linear infinite;
-    }
-
-    .loading p {
-      color: #444;
-      font-size: 16px;
-      font-weight: 600;
-    }
-
-    @keyframes don {
-      to {
-        transform: rotate(360deg);
-      }
-    }
-  </style>
+  <meta charset="utf-8">
+  <title>Orman İO Taşındı</title>
+  <meta http-equiv="refresh" content="3;url=https://orman.viohy.com/">
 </head>
-
 <body>
-  <div class="loading">
-    <div class="spinner"></div>
-    <p>Yükleniyor...</p>
-  </div>
+  <h1>Orman İO yeni adresine taşındı</h1>
+  <p>Yeni adrese yönlendiriliyorsunuz…</p>
+
+  <script>
+    setTimeout(() => {
+      window.location.replace("https://viohy.com/orman");
+    }, 3000);
+  </script>
 </body>
 </html>
