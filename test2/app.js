@@ -2895,7 +2895,7 @@
     const failOpen = setTimeout(() => {
       setCacheStatus("Uygulama açıldı • offline hazırlık arka planda sürüyor", 55);
       closeStartup(0);
-    }, online ? 1400 : 1800);
+    }, online ? 850 : 1250);
     if (!("serviceWorker" in navigator)) {
       clearTimeout(failOpen);
       setCacheStatus("Tarayıcı çevrimdışı kullanımı desteklemiyor", 0);

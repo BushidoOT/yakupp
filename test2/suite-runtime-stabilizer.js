@@ -130,10 +130,9 @@
         try { await navigator.serviceWorker.ready; } catch (_) {}
         worker = navigator.serviceWorker.controller || registration.active || registration.waiting;
       }
-      var status = await postMessage(worker, "GET_STATUS", 4500);
-      if (navigator.onLine !== false && status && Array.isArray(status.criticalMissing) && status.criticalMissing.length) {
-        status = (await postMessage(worker, "WARM_CACHE", 45000)) || status;
-      }
+      // Yalnız durumu oku. Büyük cache hazırlığını app.js / ilgili uygulama çekirdeği
+      // tek bir yerden başlatır; burada ikinci kez WARM_CACHE çağrısı yapılmaz.
+      var status = await postMessage(worker, "GET_STATUS", 2200);
       return { ok: true, registration: registration, status: status };
     })().catch(function (error) {
       rememberError("service-worker", error, { source: workerUrl.href });

@@ -51,35 +51,33 @@ const CORE = [
   "./manifest.json",
   "./mesaha/admin.html",
   "./mesaha/css/app.css",
+  "./mesaha/css/mesaha-runtime.css",
   "./mesaha/css/mesaha-ui.css",
-  "./mesaha/js/mesaha-core.js",
-  "./mesaha/js/mesaha-ui.js",
-  "./mesaha/js/mesaha-entry-core.js",
+  "./mesaha/js/mesaha-foundation.js",
+  "./mesaha/js/mesaha-app-runtime.js",
+  "./mesaha/js/mesaha-auth-ui-runtime.js",
+  "./mesaha/js/mesaha-home-runtime.js",
+  "./mesaha/js/mesaha-feature-runtime.js",
+  "./mesaha/js/mesaha-offline-guard-runtime.js",
+  "./mesaha/js/mesaha-cloud-ui-runtime.js",
+  "./mesaha/js/mesaha-session-ui-runtime.js",
+  "./mesaha/js/mesaha-filter-runtime.js",
+  "./mesaha/js/mesaha-profile-runtime.js",
+  "./mesaha/js/mesaha-layout-runtime.js",
+  "./mesaha/js/mesaha-lazy-features.js",
   "./mesaha/css/mesaha-seflik-folder.css",
   "./mesaha/giris-log.html",
   "./mesaha/guncelle.html",
   "./mesaha/index.html",
-  "./mesaha/js/mesaha-data-guard.js",
-  "./mesaha/js/mesaha-backup-format.js",
-  "./mesaha/js/mesaha-drive-bridge.js",
-  "./mesaha/js/mesaha-error-log.js",
-  "./mesaha/js/mesaha-filter-cutter-fix.js",
-  "./mesaha/js/mesaha-filter-mirror.js",
-  "./mesaha/js/mesaha-hybrid-cloud.js",
-  "./mesaha/js/mesaha-ios-actions.js",
-  "./mesaha/js/mesaha-login-debug.js",
+  "./mesaha/js/mesaha-cloud-runtime.js",
+  "./mesaha/js/mesaha-final-runtime.js",
   "./mesaha/js/mesaha-offline-core.js",
-  "./mesaha/js/mesaha-persistent-store.js",
-  "./mesaha/js/mesaha-runtime.js",
   "./mesaha/js/mesaha-sound.js",
   "./mesaha/js/mesaha-xls-backup-converter.js",
-  "./mesaha/js/mesaha-seflik-entry-repair.js",
-  "./mesaha/js/mesaha-seflik-folder.js",
-  "./mesaha/js/mesaha-seflik-governance.js",
-  "./mesaha/js/mesaha-storage-health.js",
-  "./mesaha/js/mesaha-terminal-local.js",
+  "./mesaha/js/mesaha-seflik-ui.js",
+  "./mesaha/js/mesaha-record-tools.js",
+  "./mesaha/js/mesaha-seflik-runtime.js",
   "./mesaha/js/mesaha-update-manager.js",
-  "./mesaha/js/mesaha-url-cleanup.js",
   "./mesaha/manifest.json",
   "./mesaha/suite-bridge.js",
   "./mesaha/temizle.html",
@@ -119,19 +117,26 @@ const CRITICAL = [
   "./assets/mesaha_uyari.wav",
   "./mesaha/index.html",
   "./mesaha/css/app.css",
+  "./mesaha/css/mesaha-runtime.css",
   "./mesaha/css/mesaha-ui.css",
   "./mesaha/css/mesaha-seflik-folder.css",
   "./mesaha/manifest.json",
   "./mesaha/suite-bridge.js",
-  "./mesaha/js/mesaha-runtime.js",
-  "./mesaha/js/mesaha-core.js",
-  "./mesaha/js/mesaha-ui.js",
-  "./mesaha/js/mesaha-entry-core.js",
+  "./mesaha/js/mesaha-foundation.js",
+  "./mesaha/js/mesaha-app-runtime.js",
+  "./mesaha/js/mesaha-auth-ui-runtime.js",
+  "./mesaha/js/mesaha-home-runtime.js",
+  "./mesaha/js/mesaha-feature-runtime.js",
+  "./mesaha/js/mesaha-offline-guard-runtime.js",
+  "./mesaha/js/mesaha-cloud-ui-runtime.js",
+  "./mesaha/js/mesaha-session-ui-runtime.js",
+  "./mesaha/js/mesaha-filter-runtime.js",
+  "./mesaha/js/mesaha-profile-runtime.js",
+  "./mesaha/js/mesaha-layout-runtime.js",
+  "./mesaha/js/mesaha-lazy-features.js",
   "./mesaha/js/mesaha-offline-core.js",
-  "./mesaha/js/mesaha-persistent-store.js",
   "./mesaha/js/mesaha-sound.js",
-  "./mesaha/js/mesaha-filter-mirror.js",
-  "./mesaha/js/mesaha-xls-backup-converter.js",
+  "./mesaha/js/mesaha-final-runtime.js",
   "./istif/index.html",
   "./istif/styles.css",
   "./istif/app.js",
@@ -143,6 +148,29 @@ const CRITICAL = [
   "./istif/templates/ornek_doldurulmus.xlsx",
   "./vendor/jspdf.umd.min.js",
 ];
+
+const SHELL_CRITICAL = [
+  "./index.html",
+  "./styles.css",
+  "./app.js",
+  "./release.js",
+  "./suite-audio.js",
+  "./suite-runtime-stabilizer.js",
+  "./suite-identity.js",
+  "./suite-security.js",
+  "./suite-sync-core.js",
+  "./suite-ui.js",
+  "./suite-health.js",
+  "./suite-cache-reset.js",
+  "./js/mesaha-supabase-config.js",
+  "./js/mesaha-firebase.js",
+  "./js/mesaha-google-auth.js",
+  "./manifest.json",
+  "./assets/icon-192.png",
+  "./assets/icon-512.png",
+  "./assets/orman_io_hero.webp"
+];
+
 
 const EXTERNAL = [];
 
@@ -321,6 +349,7 @@ function appGroups() {
 async function buildStatus() {
   const missing = await missingFrom(CORE);
   const criticalMissing = await missingFrom(CRITICAL);
+  const shellMissing = await missingFrom(SHELL_CRITICAL);
   const groups = appGroups();
   const apps = {};
   for (const [name, paths] of Object.entries(groups)) {
@@ -332,6 +361,8 @@ async function buildStatus() {
     missing,
     missingCount: missing.length,
     criticalMissing,
+    shellMissing,
+    shellReady: shellMissing.length === 0,
     cache: BASE_CACHE,
     caches: CACHE_NAMES,
     build: Number(RELEASE.build || 0),
@@ -352,7 +383,9 @@ async function writeOfflineStatus(data) {
   );
 }
 
-async function cacheAll(force = false, cleanupOld = true) {
+let CACHE_ALL_PROMISE = null;
+
+async function runCacheAll(force = false, cleanupOld = true) {
   let targets = force ? CORE.slice() : await missingFrom(CORE);
   if (targets.length) await cachePass(targets, force);
 
@@ -375,14 +408,45 @@ async function cacheAll(force = false, cleanupOld = true) {
   return data;
 }
 
+
+const CACHE_APP_PROMISES = new Map();
+
+async function cacheApp(appName, force = false) {
+  const name = String(appName || "").toLowerCase();
+  const groups = appGroups();
+  const paths = groups[name];
+  if (!paths) return { ok: false, app: name, error: "Bilinmeyen uygulama" };
+  if (CACHE_APP_PROMISES.has(name) && !force) return CACHE_APP_PROMISES.get(name);
+  const promise = (async () => {
+    const targets = force ? paths.slice() : await missingFrom(paths);
+    if (targets.length) await cachePass(targets, force);
+    const missing = await missingFrom(paths);
+    const result = { ok: missing.length === 0, app: name, ready: missing.length === 0, missing, totalCount: paths.length };
+    await notify({ type: result.ready ? "APP_CACHE_READY" : "APP_CACHE_INCOMPLETE", app: name, missing });
+    return result;
+  })().finally(() => CACHE_APP_PROMISES.delete(name));
+  CACHE_APP_PROMISES.set(name, promise);
+  return promise;
+}
+async function cacheAll(force = false, cleanupOld = true) {
+  if (CACHE_ALL_PROMISE) {
+    if (!force) return CACHE_ALL_PROMISE;
+    try { await CACHE_ALL_PROMISE; } catch (_) {}
+  }
+  CACHE_ALL_PROMISE = runCacheAll(force, cleanupOld).finally(() => {
+    CACHE_ALL_PROMISE = null;
+  });
+  return CACHE_ALL_PROMISE;
+}
+
 self.addEventListener("install", (event) => {
   event.waitUntil((async () => {
-    // Üç uygulamanın tüm çalışma kabuğunu kurulum sırasında hazırla.
-    // Böylece service worker etkinleştiği anda Orman, Mesaha ve İstif çevrimdışı açılabilir.
-    await cacheAll(true, false);
-    const criticalMissing = await missingFrom(CRITICAL);
-    if (criticalMissing.length) {
-      throw new Error("Kritik offline dosyalar alınamadı: " + criticalMissing.join(", "));
+    // Önce yalnız ana kabuğu hazırla. Büyük Mesaha/İstif dosyaları sayfa açıldıktan
+    // sonra WARM_CACHE ile tamamlanır; eski tam cache bu sırada korunur.
+    await cachePass(SHELL_CRITICAL, false);
+    const shellMissing = await missingFrom(SHELL_CRITICAL);
+    if (shellMissing.length) {
+      throw new Error("Ana offline kabuk alınamadı: " + shellMissing.join(", "));
     }
     await self.skipWaiting();
   })());
@@ -390,15 +454,15 @@ self.addEventListener("install", (event) => {
 
 self.addEventListener("activate", (event) => {
   event.waitUntil((async () => {
-    const status = await buildStatus();
-    // Yeni sürüm tamamen hazır değilse eski çalışan offline cache'i koru.
-    if (status.ready) await deleteOldCaches();
     await self.clients.claim();
+    const status = await buildStatus();
+    if (status.ready) await deleteOldCaches();
     await notify({
       type: status.ready ? "CACHE_READY" : "CACHE_INCOMPLETE",
-      percent: status.ready ? 100 : 55,
+      percent: status.ready ? 100 : (status.shellReady ? 62 : 35),
       missing: status.missing,
       missingCount: status.missingCount,
+      shellReady: status.shellReady,
       apps: status.apps,
       preservedPreviousCache: !status.ready,
     });
@@ -414,6 +478,8 @@ self.addEventListener("message", (event) => {
       repaired: true,
       preserved: true,
     })));
+  } else if (data.type === "CACHE_APP") {
+    event.waitUntil(cacheApp(data.app, false).then((result) => reply(event, result)));
   } else if (data.type === "CLEAR_APP_CACHE") {
     event.waitUntil((async () => {
       try {
@@ -480,8 +546,9 @@ async function fetchWithTimeout(request, timeout = 5000) {
 }
 
 async function stale(request, fallback, event) {
-  const hit = (await matchSuite(request, { ignoreSearch: true })) ||
-    (fallback && (await matchSuite(fallback, { ignoreSearch: true })));
+  // Güncel sürüm cache'inde varsa hızlı aç ve ağı arka planda yenile.
+  const current = (await matchCurrent(request, { ignoreSearch: true })) ||
+    (fallback && (await matchCurrent(fallback, { ignoreSearch: true })));
   const network = fetchWithTimeout(request, 7000)
     .then(async (response) => {
       if (response && (response.ok || response.type === "opaque")) await putCurrent(request, response);
@@ -489,11 +556,16 @@ async function stale(request, fallback, event) {
     })
     .catch(() => null);
 
-  if (hit) {
+  if (current) {
     if (event && typeof event.waitUntil === "function") event.waitUntil(network.then(() => undefined).catch(() => undefined));
-    return hit;
+    return current;
   }
-  return (await network) ||
+
+  // Yeni cache boşsa önce ağı dene. Önceki sürüm cache'i yalnız gerçek offline yedektir;
+  // böylece güncellemeden sonraki ilk açılışta eski CSS/JS gösterilmez.
+  const fresh = await network;
+  if (fresh) return fresh;
+  return (await matchSuite(request, { ignoreSearch: true })) ||
     (fallback && (await matchSuite(fallback, { ignoreSearch: true }))) ||
     Response.error();
 }
@@ -517,24 +589,25 @@ async function networkFirst(request, timeout = 5000) {
 async function navigationCacheFirst(event, url) {
   const request = event.request;
   const fallbackPath = appFallback(url);
-  const cached = (await matchSuite(request, { ignoreSearch: true })) ||
-    (await matchSuite(fallbackPath, { ignoreSearch: true }));
+  const current = (await matchCurrent(request, { ignoreSearch: true })) ||
+    (await matchCurrent(fallbackPath, { ignoreSearch: true }));
 
-  const refresh = fetchWithTimeout(new Request(request, { cache: "no-store" }), 4500)
+  const refresh = fetchWithTimeout(new Request(request, { cache: "no-store" }), 3500)
     .then(async (response) => {
       if (response && response.ok) await putCurrent(request, response);
       return response;
     })
     .catch(() => null);
 
-  if (cached) {
-    event.waitUntil(refresh.then(() => undefined));
-    return injectSuiteCacheTool(cached, url);
+  if (current) {
+    event.waitUntil(refresh.then(() => undefined).catch(() => undefined));
+    return injectSuiteCacheTool(current, url);
   }
 
   const fresh = await refresh;
   if (fresh && fresh.ok) return injectSuiteCacheTool(fresh, url);
-  const fallback = await matchSuite(fallbackPath, { ignoreSearch: true });
+  const fallback = (await matchSuite(request, { ignoreSearch: true })) ||
+    (await matchSuite(fallbackPath, { ignoreSearch: true }));
   return injectSuiteCacheTool(fallback || Response.error(), url);
 }
 

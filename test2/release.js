@@ -1,20 +1,20 @@
 (function (root) {
   "use strict";
   const DATA = /*MESAHA_RELEASE_DATA_START*/{
-  "build": 79,
-  "version": "79.0.0",
+  "build": 80,
+  "version": "80.0.0",
   "channel": "stable",
-  "releasedAt": "2026-08-06T23:59:00+03:00",
-  "assetToken": "orman-io-stable-20260806-v79",
-  "cacheName": "orman-io-shell-stable-20260806-v79",
+  "releasedAt": "2026-08-07T00:40:00+03:00",
+  "assetToken": "orman-io-stable-20260807-v80",
+  "cacheName": "orman-io-shell-stable-20260807-v80",
   "apps": {
     "suite": {
       "label": "Orman İO",
-      "version": "79.0.0"
+      "version": "80.0.0"
     },
     "mesaha": {
       "label": "Mesaha İO",
-      "version": "6.18"
+      "version": "6.19"
     },
     "istif": {
       "label": "İstif İO",
@@ -22,10 +22,10 @@
     },
     "admin": {
       "label": "Orman İO Yönetim",
-      "version": "79.0.0"
+      "version": "80.0.0"
     }
   },
-  "description": "Ana menüde Şeflik Klasörü kısayolu sade ve modern klasör kartına dönüştürüldü. Gereksiz paylaşılan kullanıcı ve kayıt sayaçları kaldırıldı; mevcut Mesaha Gir ve Çalışma Tarihi kartları korunarak V79 cache anahtarı oluşturuldu."
+  "description": "V80 kod tabanı temizliği: Mesaha inline stil ve çalışma blokları cachelenebilir ortak dosyalara birleştirildi, üretim giriş teşhisi normal açılıştan çıkarıldı, XLS dönüştürücü ihtiyaç anında yüklenir hale getirildi, yinelenen cache hazırlıkları tek kuyruğa alındı ve Service Worker kademeli offline hazırlığa geçirildi."
 }/*MESAHA_RELEASE_DATA_END*/;
   const APP_NAMES = DATA.apps || {};
   const SCRIPT_URL = (() => {
@@ -66,23 +66,19 @@
       "#suiteVersionCorner", "#suiteVersionLabel", "#versionLabel", "#versionText",
       ".version-card", ".version-chip-v407", "[data-version-label]"
     ];
-    const hide = () => selectors.forEach((selector) =>
-      document.querySelectorAll(selector).forEach((node) => {
-        node.hidden = true;
-        node.setAttribute("aria-hidden", "true");
-        node.style.setProperty("display", "none", "important");
-      })
-    );
-    const keepTitle = () => {
+    const run = () => {
+      selectors.forEach((selector) =>
+        document.querySelectorAll(selector).forEach((node) => {
+          node.hidden = true;
+          node.setAttribute("aria-hidden", "true");
+          node.style.setProperty("display", "none", "important");
+        })
+      );
       if (document.title !== label) document.title = label;
     };
-    const run = () => { hide(); keepTitle(); };
     if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", run, { once: true });
     else run();
-    try {
-      const observer = new MutationObserver(run);
-      observer.observe(document.documentElement, { childList: true, subtree: true });
-    } catch (_) {}
+    window.addEventListener("pageshow", run, { passive: true });
   }
 
   async function fetchRemote(options) {
