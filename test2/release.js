@@ -1,20 +1,20 @@
 (function (root) {
   "use strict";
   const DATA = /*MESAHA_RELEASE_DATA_START*/{
-  "build": 78,
-  "version": "78.0.0",
+  "build": 79,
+  "version": "79.0.0",
   "channel": "stable",
-  "releasedAt": "2026-08-06T23:12:00+03:00",
-  "assetToken": "orman-io-stable-20260806-v78",
-  "cacheName": "orman-io-shell-stable-20260806-v78",
+  "releasedAt": "2026-08-06T23:59:00+03:00",
+  "assetToken": "orman-io-stable-20260806-v79",
+  "cacheName": "orman-io-shell-stable-20260806-v79",
   "apps": {
     "suite": {
       "label": "Orman İO",
-      "version": "78.0.0"
+      "version": "79.0.0"
     },
     "mesaha": {
       "label": "Mesaha İO",
-      "version": "6.17"
+      "version": "6.18"
     },
     "istif": {
       "label": "İstif İO",
@@ -22,10 +22,10 @@
     },
     "admin": {
       "label": "Orman İO Yönetim",
-      "version": "78.0.0"
+      "version": "79.0.0"
     }
   },
-  "description": "Beyan ekranı gerçek çalışan beyanView yapısına bağlandı. Başlık, özet simgeleri, ürün kartları ve işlem düğmeleri onaylanan sade tasarıma geçirildi; V78 cache anahtarıyla güncel arayüzün çevrimiçi ve offline yüklenmesi sağlandı."
+  "description": "Ana menüde Şeflik Klasörü kısayolu sade ve modern klasör kartına dönüştürüldü. Gereksiz paylaşılan kullanıcı ve kayıt sayaçları kaldırıldı; mevcut Mesaha Gir ve Çalışma Tarihi kartları korunarak V79 cache anahtarı oluşturuldu."
 }/*MESAHA_RELEASE_DATA_END*/;
   const APP_NAMES = DATA.apps || {};
   const SCRIPT_URL = (() => {

@@ -155,51 +155,71 @@ body.seflik-transfer-busy-v534 #bottomNav{visibility:hidden!important;pointer-ev
 /* V5.84 — Sunucudaki Mesaha kayıtlarını silme butonu */
 .suite-folder-delete-mesaha-v28{min-height:43px}.seflik-division-actions-v529.has-delete-v28{grid-template-columns:minmax(0,1fr) minmax(150px,.72fr)!important}@media(max-width:560px){.seflik-division-actions-v529.has-delete-v28{grid-template-columns:1fr!important}}
 
-/* V5.85 — Ana menü Şeflik Klasörü kısayolu modern kart */
+/* V5.85 — Ana menü Şeflik Klasörü kısayolu sade premium kart */
 .seflik-folder-home-shortcut{
+  position:relative;
+  min-height:170px;
   display:grid;
-  grid-template-columns:92px minmax(0,1fr) auto;
+  grid-template-columns:minmax(0,1fr) 150px;
   align-items:center;
-  gap:16px;
+  gap:18px;
+  overflow:hidden;
   cursor:pointer;
-  border:1px solid #d6e8dd;
-  background:linear-gradient(180deg,#ffffff 0%,#fbfefc 100%);
-  border-radius:26px;
-  padding:18px;
-  box-shadow:0 14px 34px rgba(20,73,48,.075);
+  border:1px solid rgba(255,255,255,.22);
+  border-radius:28px;
+  padding:24px;
+  background:
+    radial-gradient(circle at 84% 18%,rgba(255,255,255,.16) 0 56px,transparent 57px),
+    radial-gradient(circle at 73% 82%,rgba(255,255,255,.08) 0 88px,transparent 89px),
+    linear-gradient(135deg,#0d5737 0%,#147047 52%,#26915f 100%);
+  box-shadow:0 18px 42px rgba(13,87,55,.22);
+  color:#fff;
+  isolation:isolate;
 }
-.seflik-folder-home-shortcut .left{display:contents}
-.seflik-home-visual{display:grid;place-items:center}
-.seflik-home-folder-stack{position:relative;width:72px;height:58px;filter:drop-shadow(0 14px 18px rgba(28,104,63,.12));}
+.seflik-folder-home-shortcut::before{
+  content:"";
+  position:absolute;
+  inset:auto 0 0 0;
+  height:54%;
+  z-index:-1;
+  opacity:.2;
+  background:
+    linear-gradient(160deg,transparent 0 42%,rgba(4,49,31,.72) 43% 100%),
+    repeating-linear-gradient(95deg,transparent 0 24px,rgba(255,255,255,.04) 25px 26px);
+  clip-path:polygon(0 60%,15% 42%,30% 68%,46% 35%,63% 59%,80% 28%,100% 54%,100% 100%,0 100%);
+}
+.seflik-home-copy{min-width:0;display:grid;align-content:center;gap:8px;position:relative;z-index:2}
+.seflik-home-kicker{display:inline-flex;align-items:center;gap:7px;width:max-content;max-width:100%;padding:7px 10px;border:1px solid rgba(255,255,255,.2);border-radius:999px;background:rgba(255,255,255,.1);color:#d9f8e7;font-size:10px;font-weight:900;letter-spacing:.08em}
+.seflik-home-kicker::before{content:"";width:7px;height:7px;border-radius:50%;background:#8ee7b3;box-shadow:0 0 0 4px rgba(142,231,179,.12)}
+.seflik-folder-home-shortcut b{display:block;color:#fff;font-size:clamp(22px,3.4vw,30px);line-height:1.06;letter-spacing:-.025em}
+.seflik-folder-home-shortcut small{display:block;max-width:430px;margin:0;color:#daf5e6;font-size:13px;font-weight:720;line-height:1.5}
+.seflik-home-open{display:inline-flex;align-items:center;gap:9px;width:max-content;min-height:38px;margin-top:3px;padding:0 14px;border-radius:13px;background:#fff;color:#0e633d;font-size:12px;font-weight:950;box-shadow:0 8px 20px rgba(5,43,27,.18)}
+.seflik-home-open i{font-style:normal;font-size:21px;line-height:1;margin-top:-1px}
+.seflik-home-visual{position:relative;align-self:stretch;display:grid;place-items:center;z-index:2}
+.seflik-home-folder-stack{position:relative;width:132px;height:108px;filter:drop-shadow(0 22px 24px rgba(4,39,24,.26))}
 .seflik-home-folder-stack .folder-back,
-.seflik-home-folder-stack .folder-front{position:absolute;left:0;border-radius:16px 16px 18px 18px}
-.seflik-home-folder-stack .folder-back{width:60px;height:42px;top:0;left:8px;background:linear-gradient(180deg,#65b488,#2f8b5d);opacity:.22}
-.seflik-home-folder-stack .folder-front{width:72px;height:48px;bottom:0;background:linear-gradient(180deg,#2d8a57,#17683f);box-shadow:inset 0 1px 0 rgba(255,255,255,.32)}
-.seflik-home-folder-stack .folder-front::before{content:"";position:absolute;left:8px;top:-8px;width:28px;height:12px;border-radius:12px 12px 4px 4px;background:#62b285}
-.seflik-home-folder-stack img{position:absolute;left:50%;top:56%;transform:translate(-50%,-50%);width:36px;height:36px;object-fit:contain;border-radius:50%;background:rgba(255,255,255,.92);padding:4px;box-shadow:0 6px 18px rgba(8,46,27,.14)}
-.seflik-home-main{min-width:0;display:grid;gap:14px}
-.seflik-home-copy{min-width:0;display:grid;gap:4px}
-.seflik-folder-home-shortcut b{display:block;color:#173d2b;font-size:18px;line-height:1.1}
-.seflik-folder-home-shortcut small{display:block;margin:0;color:#60776a;font-weight:760;line-height:1.42}
-.seflik-home-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
-.seflik-home-stat{min-width:0;border-left:1px solid #e7efea;padding-left:12px;display:grid;gap:4px}
-.seflik-home-stat:first-child{border-left:0;padding-left:0}
-.seflik-home-stat span{display:block;color:#698075;font-size:11px;font-weight:800;line-height:1.25}
-.seflik-home-stat strong{display:block;color:#183d2b;font-size:17px;line-height:1.05;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.seflik-home-stat-accent strong{color:#17683f}
-.seflik-folder-home-shortcut .arrow{width:42px;height:42px;display:grid;place-items:center;border-radius:14px;background:#f1f8f4;color:#17683f;font-size:28px;font-weight:900;box-shadow:inset 0 1px 0 rgba(255,255,255,.95)}
+.seflik-home-folder-stack .folder-front,
+.seflik-home-folder-stack .folder-paper{position:absolute;left:50%;transform:translateX(-50%)}
+.seflik-home-folder-stack .folder-back{width:104px;height:72px;top:15px;border-radius:18px 18px 15px 15px;background:linear-gradient(180deg,#b8dfbe,#75b985);transform:translateX(-50%) rotate(-6deg)}
+.seflik-home-folder-stack .folder-paper{width:84px;height:66px;top:9px;border-radius:12px;background:linear-gradient(180deg,#fff,#e9f2eb);border:1px solid rgba(21,91,54,.14)}
+.seflik-home-folder-stack .paper-one{transform:translateX(-58%) rotate(-2deg)}
+.seflik-home-folder-stack .paper-two{transform:translateX(-38%) rotate(5deg);top:16px}
+.seflik-home-folder-stack .folder-paper::before,
+.seflik-home-folder-stack .folder-paper::after{content:"";position:absolute;left:14px;right:14px;height:4px;border-radius:999px;background:#bad1bf}
+.seflik-home-folder-stack .folder-paper::before{top:17px;box-shadow:0 12px 0 #d0dfd3}
+.seflik-home-folder-stack .folder-paper::after{top:41px;right:30px}
+.seflik-home-folder-stack .folder-front{width:126px;height:82px;bottom:0;border-radius:18px 18px 24px 24px;background:linear-gradient(155deg,#75bc84 0%,#3b985f 52%,#1c7747 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,.34)}
+.seflik-home-folder-stack .folder-front::before{content:"";position:absolute;left:12px;top:-12px;width:48px;height:18px;border-radius:13px 13px 3px 3px;background:#81c590}
+.seflik-home-folder-stack img{position:absolute;left:50%;bottom:17px;transform:translateX(-50%);width:48px;height:48px;object-fit:contain;border-radius:50%;background:rgba(255,255,255,.9);padding:5px;box-shadow:0 8px 20px rgba(5,52,30,.18)}
+.seflik-folder-home-shortcut:active{transform:scale(.992)}
 @media(max-width:620px){
-  .seflik-folder-home-shortcut{grid-template-columns:72px minmax(0,1fr);padding:16px;gap:14px}
-  .seflik-folder-home-shortcut .arrow{grid-column:2;justify-self:end;margin-top:-4px}
-  .seflik-home-main{gap:12px}
-  .seflik-home-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .seflik-home-stat:nth-child(3){grid-column:1/-1;border-left:0;padding-left:0;padding-top:10px;border-top:1px solid #e7efea}
+  .seflik-folder-home-shortcut{grid-template-columns:minmax(0,1fr) 110px;min-height:156px;padding:20px;gap:10px}
+  .seflik-home-folder-stack{width:104px;height:88px;transform:scale(.88)}
+  .seflik-folder-home-shortcut small{font-size:12px;line-height:1.42}
 }
-@media(max-width:420px){
-  .seflik-folder-home-shortcut{grid-template-columns:1fr;justify-items:start}
-  .seflik-home-visual{justify-self:start}
-  .seflik-folder-home-shortcut .arrow{grid-column:auto;justify-self:end;position:absolute;right:16px;top:16px}
-  .seflik-home-stats{grid-template-columns:1fr}
-  .seflik-home-stat,.seflik-home-stat:first-child{border-left:0;padding-left:0;padding-top:10px;border-top:1px solid #e7efea}
-  .seflik-home-stat:first-child{padding-top:0;border-top:0}
+@media(max-width:430px){
+  .seflik-folder-home-shortcut{grid-template-columns:minmax(0,1fr) 86px;min-height:150px;padding:18px 16px;border-radius:24px}
+  .seflik-home-folder-stack{transform:scale(.72);transform-origin:center}
+  .seflik-folder-home-shortcut b{font-size:22px}
+  .seflik-home-open{min-height:35px;padding:0 12px}
 }
