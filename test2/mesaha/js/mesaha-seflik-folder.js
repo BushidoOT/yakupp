@@ -57,6 +57,7 @@
     renderList();updatePreview(true);setStatus(msg,'error');
     var meta=$('seflikFolderRemoteMetaV528');if(meta)meta.textContent=msg;
     var box=$('seflikFolderListV528');if(box&&!openDivisions().length)box.innerHTML='<div class="seflik-folder-empty">Şeflik Klasörü kapalı<br><small>'+esc(msg)+'</small></div>';
+    try{updateHomeShortcutSummary(openDivisions())}catch(e){}
     if(!silent)notify('Şeflik Klasörü kapalı',msg,'warning');
     return false;
   }
@@ -146,11 +147,24 @@
     }
     updatePreview();
   }
+  function updateHomeShortcutSummary(list,users,count){
+    list=Array.isArray(list)?list:openDivisions();
+    if(!(users instanceof Set)){
+      users=new Set();
+      list.forEach(function(x){(x.contributors||[]).forEach(function(n){n=clean(n);if(n)users.add(n)})});
+    }
+    if(count==null)count=list.reduce(function(a,x){return a+num(x.record_count)},0);
+    var bolmeEl=$('seflikHomeBolmeCountV528'), userEl=$('seflikHomeUserCountV528'), recordEl=$('seflikHomeRecordCountV528');
+    if(bolmeEl)bolmeEl.textContent=String(list.length||0);
+    if(userEl)userEl.textContent=String(users.size||0);
+    if(recordEl)recordEl.textContent=(Number(count)||0).toLocaleString('tr-TR');
+  }
   function renderSummaryHeader(){
     var list=openDivisions(),count=list.reduce(function(a,x){return a+num(x.record_count)},0),m3=list.reduce(function(a,x){return a+num(x.total_volume)},0),users=new Set();
     list.forEach(function(x){(x.contributors||[]).forEach(function(n){users.add(n)})});
     var a=$('seflikFolderMetricBolmeV528'),b=$('seflikFolderMetricCountV528'),c=$('seflikFolderMetricM3V528');if(a)a.textContent=list.length;if(b)b.textContent=count.toLocaleString('tr-TR');if(c)c.textContent=fmt(m3,3)+' m³';
     var meta=$('seflikFolderRemoteMetaV528');if(meta)meta.textContent=(users.size?users.size+' kullanıcı • ':'')+(list.length?list.length+' açık bölme':'Henüz açık bölme yok');
+    updateHomeShortcutSummary(list,users,count);
   }
   function renderList(){
     renderSummaryHeader();fillIdentity();var box=$('seflikFolderListV528');if(!box)return;
