@@ -2350,3 +2350,52 @@ body.orman-io-home{padding-bottom:calc(92px + env(safe-area-inset-bottom))!impor
 .leave-seflik-v61 svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .member-leave-note-v61{grid-column:1/-1;margin-top:10px;padding:10px 12px;border:1px solid #fed7d7;border-radius:14px;background:#fff;color:#7f1d1d;font-size:12px;font-weight:750;line-height:1.45}
 @media(max-width:640px){.member-leave-actions-v61,.leave-seflik-v61{width:100%!important}}
+
+
+/* Orman İO V77 — ana marka sürüm kartı */
+.orman-brand .orman-brand-copy {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.orman-brand .orman-brand-title-row {
+  min-width: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 9px;
+}
+.orman-brand .orman-version-badge {
+  flex: 0 0 auto;
+  min-height: 25px;
+  padding: 4px 9px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #cce4d6;
+  border-radius: 9px;
+  background: linear-gradient(180deg, #f7fcf9 0%, #eaf7ef 100%);
+  color: #0c7046;
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 10px;
+  line-height: 1;
+  font-weight: 900;
+  letter-spacing: .025em;
+  box-shadow: 0 4px 10px rgba(12, 112, 70, .08);
+}
+@media (max-width: 760px) {
+  .orman-brand .orman-brand-title-row { gap: 6px; }
+  .orman-brand .orman-version-badge {
+    min-height: 22px;
+    padding: 3px 7px;
+    border-radius: 8px;
+    font-size: 9px;
+  }
+}
+@media (max-width: 390px) {
+  .orman-brand .orman-version-badge {
+    min-height: 20px;
+    padding: 3px 6px;
+    font-size: 8px;
+  }
+}

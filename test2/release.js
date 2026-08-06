@@ -1,20 +1,20 @@
 (function (root) {
   "use strict";
   const DATA = /*MESAHA_RELEASE_DATA_START*/{
-  "build": 76,
-  "version": "76.0.0",
+  "build": 77,
+  "version": "77.0.0",
   "channel": "stable",
-  "releasedAt": "2026-08-06T08:04:00+03:00",
-  "assetToken": "orman-io-stable-20260806-v76",
-  "cacheName": "orman-io-shell-stable-20260806-v76",
+  "releasedAt": "2026-08-06T22:57:00+03:00",
+  "assetToken": "orman-io-stable-20260806-v77",
+  "cacheName": "orman-io-shell-stable-20260806-v77",
   "apps": {
     "suite": {
       "label": "Orman İO",
-      "version": "76.0.0"
+      "version": "77.0.0"
     },
     "mesaha": {
       "label": "Mesaha İO",
-      "version": "6.16"
+      "version": "6.17"
     },
     "istif": {
       "label": "İstif İO",
@@ -22,10 +22,10 @@
     },
     "admin": {
       "label": "Orman İO Yönetim",
-      "version": "76.0.0"
+      "version": "77.0.0"
     }
   },
-  "description": "Ortak kimlik ve şeflik bağlamı tek çekirdekte birleştirildi. Google ve terminal kodlu hesapların aynı şeflik yetkileri eşitlendi; Mesaha kayıtları şeflik bazında güvenli gruplanarak senkronize ediliyor, kısmi listelerde offline veriler korunuyor ve yinelenen kimlik/yapılandırma dosyaları kaldırıldı."
+  "description": "Beyan ekranı yeni renk tabanlı kart tasarımına geçirildi. Toplam adet ve m³ kartlarına simgeler eklendi, ana sayfaya otomatik sürüm kartı yerleştirildi ve V77 cache anahtarıyla güncel arayüzün çevrimiçi/offline yüklenmesi güvenceye alındı."
 }/*MESAHA_RELEASE_DATA_END*/;
   const APP_NAMES = DATA.apps || {};
   const SCRIPT_URL = (() => {

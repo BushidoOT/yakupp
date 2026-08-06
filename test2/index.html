@@ -15,7 +15,23 @@
     <link rel="stylesheet" href="./styles.css" />
     <script src="./release.js"></script>
     <script src="./suite-runtime-stabilizer.js"></script>
-    <script>window.MESAHA_SUITE_AUTH_MODE = true; window.MesahaRelease && window.MesahaRelease.use("suite");</script>
+    <script>
+      window.MESAHA_SUITE_AUTH_MODE = true;
+      window.MesahaRelease && window.MesahaRelease.use("suite");
+      (function () {
+        function paintSuiteVersion() {
+          var badge = document.getElementById("ormanVersionBadge");
+          if (!badge) return;
+          var release = window.MESAHA_RELEASE || {};
+          var suite = release.apps && release.apps.suite ? release.apps.suite : {};
+          var version = String(suite.version || release.version || "").trim();
+          badge.textContent = version ? "v" + version.replace(/^v/i, "") : "Sürüm";
+          badge.title = "Orman İO sürümü: " + (version || "bilinmiyor");
+        }
+        if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", paintSuiteVersion, { once: true });
+        else paintSuiteVersion();
+      })();
+    </script>
   </head>
   <body class="suite-starting orman-io-home">
     <div class="suite-startup-overlay" id="suiteStartupOverlay" role="status" aria-live="polite">
@@ -35,7 +51,13 @@
       <header class="orman-topbar">
         <a class="orman-brand" href="./" aria-label="Orman İO ana sayfa">
           <img src="./assets/icon-192.png" alt="" />
-          <span><strong>Orman İO</strong><small>Orman İşleri Dijital Yönetim</small></span>
+          <div class="orman-brand-copy">
+            <div class="orman-brand-title-row">
+              <strong>Orman İO</strong>
+              <span class="orman-version-badge" id="ormanVersionBadge">v77.0.0</span>
+            </div>
+            <small>Orman İşleri Dijital Yönetim</small>
+          </div>
         </a>
         <div class="orman-top-actions">
           <div class="connection-pill" id="connectionPill"><span class="status-dot"></span><span id="connectionText">Bağlantı kontrol ediliyor</span></div>
