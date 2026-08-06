@@ -717,11 +717,19 @@
   }
   function validInput(node) { return !!(node && INPUT_IDS.indexOf(node.id) >= 0); }
   function focusedInput() { return validInput(document.activeElement); }
+  function isIOS() {
+    try {
+      var ua = String((navigator && navigator.userAgent) || "");
+      return /iPhone|iPad|iPod/i.test(ua) || (navigator && navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    } catch (_) { return false; }
+  }
   function keyboardInset() {
     try {
       var vv = root.visualViewport;
       if (!vv) return 0;
-      return Math.max(0, Math.round(root.innerHeight - vv.height - vv.offsetTop));
+      var inset = Math.max(0, Math.round(root.innerHeight - vv.height - vv.offsetTop));
+      if (isIOS() && inset > 140) inset = Math.max(0, inset - 42);
+      return inset;
     } catch (_) { return 0; }
   }
   function saveWidth() {

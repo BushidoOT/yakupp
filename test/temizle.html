@@ -39,7 +39,7 @@
               .map((k) => caches.delete(k)),
           );
           const reg = await navigator.serviceWorker.register(
-            "./service-worker.js?release=orman-io-stable-20260805-v69",
+            "./service-worker.js?release=orman-io-stable-20260806-v75",
             { scope: "./", updateViaCache: "none" },
           );
           await navigator.serviceWorker.ready;
