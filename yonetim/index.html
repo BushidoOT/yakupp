@@ -8,9 +8,10 @@
   <title>Orman İO Yönetim</title>
   <link rel="manifest" href="../manifest.json">
   <link rel="apple-touch-icon" href="../assets/icon-192.png">
-  <link rel="stylesheet" href="./admin.css">
+  <link rel="stylesheet" href="./admin.css?v=80-export1">
   <link rel="stylesheet" href="./admin-system-report.css">
   <script src="../release.js"></script>
+  <script src="../suite-runtime-stabilizer.js"></script>
   <script>window.MesahaRelease && window.MesahaRelease.use("admin");</script>
   <script src="../js/mesaha-supabase-config.js"></script>
 </head>
@@ -55,7 +56,7 @@
       <main class="content">
         <section id="page-users" class="page is-active" data-page="users">
           <div class="page-heading">
-            <div><span class="eyebrow">Genel bakış</span><h2>Kullanıcılar</h2><p>Son giriş sırasına göre gerçek kullanıcılar ve cihaz bilgileri.</p></div>
+            <div><span class="eyebrow">Genel bakış</span><h2>Google Kullanıcıları</h2><p>Google hesabı veya terminal koduyla eşleşmiş kullanıcılar ve cihaz bilgileri.</p></div>
             <span id="userCountBadge" class="counter-badge">0 kullanıcı</span>
           </div>
 
@@ -67,13 +68,22 @@
             <article class="metric-card"><span class="metric-icon">🌲</span><small>Mesaha İO</small><b id="metricMesaha">0</b><em>Son kullanılan uygulama</em></article><article class="metric-card"><span class="metric-icon">▦</span><small>İstif İO</small><b id="metricIstif">0</b><em>Son kullanılan uygulama</em></article><article class="metric-card"><span class="metric-icon">◆</span><small>Orman İO</small><b id="metricSuite">0</b><em>Ortak ana menü</em></article><article class="metric-card metric-wide"><span class="metric-icon">♧</span><small>Toplam m³</small><b id="metricVolume">0,000</b><em>Son güvenilir veri</em></article>
           </div>
 
-          <div class="section-title-row"><h3>Kullanıcılar</h3><span id="userFilterInfo" class="muted">Tümü</span></div>
+          <div class="section-title-row"><h3>Google ve Kodlu Kullanıcılar</h3><span id="userFilterInfo" class="muted">Tümü</span></div>
           <div class="toolbar toolbar-users">
             <label class="search-box"><span>⌕</span><input id="userSearch" placeholder="Kullanıcı, şeflik, IP, cihaz, sürüm ara"></label>
             <select id="userFilter" aria-label="Kullanıcı filtresi"><option value="all">Tümü</option><option value="today">Bugün giriş yapan</option><option value="online">Son 15 dakika</option><option value="blocked">Engelli</option><option value="mesaha">Mesaha İO</option><option value="istif">İstif İO</option><option value="suite">Orman İO</option></select>
             <button id="clearUserFilter" class="button subtle" type="button">Temizle</button>
           </div>
           <div id="userList" class="user-list"></div>
+
+          <section class="guest-users-panel" aria-labelledby="guestUsersTitle">
+            <div class="guest-users-heading">
+              <div><span class="eyebrow">Ayrı oturumlar</span><h3 id="guestUsersTitle">Misafir Girişleri</h3><p>Google hesabı veya terminal kodu olmadan, yerel misafir modu ile giriş yapan cihazlar.</p></div>
+              <span id="guestCountBadge" class="counter-badge guest-counter">0 misafir</span>
+            </div>
+            <label class="search-box guest-search-box"><span>⌕</span><input id="guestSearch" placeholder="Misafir adı, şeflik, IP veya cihaz ara"></label>
+            <div id="guestList" class="guest-user-list"></div>
+          </section>
         </section>
 
         <section id="page-stats" class="page" data-page="stats">
@@ -124,6 +134,42 @@
           <div id="backupList" class="backup-list"></div>
         </section>
 
+
+        <section id="page-export" class="page" data-page="export">
+          <div class="page-heading">
+            <div><span class="eyebrow">Viohy geçişi</span><h2>Supabase Veri Dışa Aktarma</h2><p>Orman İO verilerini tablo bazlı JSON dosyaları ve doğrulama manifestiyle tek ZIP paketinde hazırlayın.</p></div>
+            <span id="exportStateBadge" class="counter-badge">Hazır</span>
+          </div>
+
+          <article class="surface export-hero">
+            <div class="export-hero-icon" aria-hidden="true">⇩</div>
+            <div class="export-hero-copy"><h3>Viohy aktarım paketini oluştur</h3><p>Mesaha, İstif, Şeflik, bölme, kullanıcı, Drive referansları, güvenlik ve senkron kayıtlarını Supabase'den okuyup ZIP içine yerleştirir. Supabase Auth parolaları ve oturum anahtarları taşınmaz.</p></div>
+            <button id="exportAllBtn" class="button primary export-main-button" type="button">Tüm verileri ZIP olarak indir</button>
+          </article>
+
+          <div class="export-summary-grid">
+            <article><small>Tablo</small><b id="exportTableCount">0</b><span>Aktarım kapsamı</span></article>
+            <article><small>Alınan kayıt</small><b id="exportRowCount">0</b><span>Son çalıştırma</span></article>
+            <article><small>Hata</small><b id="exportErrorCount">0</b><span>Doğrulama sonucu</span></article>
+          </div>
+
+          <article class="surface export-progress-panel">
+            <div class="card-heading"><div><h3>Aktarım durumu</h3><p id="exportStatusText">Henüz dışa aktarma başlatılmadı.</p></div><span id="exportProgressText" class="counter-badge">0%</span></div>
+            <div class="export-progress-track" aria-hidden="true"><i id="exportProgressBar"></i></div>
+            <div id="exportTableList" class="export-table-list"></div>
+          </article>
+
+          <article class="surface export-info-panel">
+            <h3>ZIP içeriği</h3>
+            <div class="export-info-grid">
+              <div><b>tables/</b><span>Supabase tablolarının ham JSON kayıtları</span></div>
+              <div><b>manifest.json</b><span>Tablo listesi, kayıt sayıları ve sürüm bilgisi</span></div>
+              <div><b>validation.json</b><span>Eksik/hatalı tablo ve aktarım uygunluğu kontrolü</span></div>
+              <div><b>panel/</b><span>Yönetim API özeti ve sistem raporu</span></div>
+            </div>
+            <p class="export-security-note"><strong>Güvenlik:</strong> Supabase servis anahtarı, Google access/refresh tokenları ve yönetim oturum tokenları ZIP'e yazılmaz. Google hesapları Viohy tarafında yeniden Google ile giriş yaparak eşleştirilecek.</p>
+          </article>
+        </section>
         <section id="page-manage" class="page" data-page="manage">
           <div class="page-heading">
             <div><span class="eyebrow">Güvenlik</span><h2>Yönetim</h2><p>Engellenen kullanıcı, IP ve cihazları yönetin.</p></div>
@@ -180,6 +226,7 @@
         <button class="nav-item is-active" data-page-target="users" type="button"><span>♙</span><b>Kullanıcılar</b></button>
         <button class="nav-item" data-page-target="stats" type="button"><span>▥</span><b>İstatistikler</b></button>
         <button class="nav-item" data-page-target="backups" type="button"><span>☁</span><b>Yedekler</b></button>
+        <button class="nav-item" data-page-target="export" type="button"><span>⇩</span><b>Aktar</b></button>
         <button class="nav-item" data-page-target="manage" type="button"><span>⚙</span><b>Yönetim</b></button>
       </nav>
     </div>
@@ -192,6 +239,6 @@
     </div>
   </div>
   <div id="toast" class="toast" role="status"></div>
-  <a class="suite-admin-home" href="../">⌂ Orman İO Ana Menüsü</a><script src="./admin.js"></script><script src="./admin-system-report.js" defer></script>
+  <a class="suite-admin-home" href="../">⌂ Orman İO Ana Menüsü</a><script src="./admin.js?v=80-export1"></script><script src="./admin-system-report.js" defer></script>
 </body>
 </html>

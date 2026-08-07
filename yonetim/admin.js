@@ -12,7 +12,7 @@
   const $ = (id) => document.getElementById(id);
   const state = {
     page: 'users', range: 'day', blockView: 'user_key', accessStatus: 'pending',
-    profiles: [], usage: [], daily: [], events: [], logs: [], audit: [], blocks: [], backups: [], users: [], userAccess: [], userAuthEvents: [], seflikFolders: [], seflikMembers: [], seflikDivisions: [],
+    profiles: [], usage: [], daily: [], events: [], logs: [], audit: [], blocks: [], backups: [], users: [], guests: [], userAccess: [], userAuthEvents: [], seflikFolders: [], seflikMembers: [], seflikDivisions: [],
     summary: {}, hiddenBackupIds: new Set(), loading: false, errors: {}
   };
   window.MESAHA_ADMIN_LIGHT_STATE = state;
@@ -266,6 +266,43 @@
     if (/^(user|kullanici|kullanıcı|device|dev|cihaz)[_\-]/.test(key) || ['user','kullanici','kullanıcı'].includes(key)) return false;
     return true;
   }
+  function guestMarker(raw) {
+    raw = obj(raw); const payload = obj(raw.payload), meta = obj(first(raw.metadata, raw.detail)), device = obj(first(raw.device_info, raw.deviceInfo, payload.deviceInfo, meta.deviceInfo));
+    const auth = lower(first(raw.auth_type, raw.authType, payload.auth_type, payload.authType, payload.type, meta.auth_type, meta.authType, device.auth_type));
+    const source = lower(first(raw.source, payload.source, meta.source));
+    const eventType = lower(first(raw.event_type, raw.eventType, payload.event_type, meta.event_type));
+    const explicitLocal = raw.is_local === true || payload.is_local === true || meta.is_local === true || device.is_local === true;
+    const hay = lower(JSON.stringify(raw));
+    const paired = /pair[_-]?code|paireduserid|paired_user_id|terminaltoken|terminal_token/.test(hay);
+    if (paired) return false;
+    return auth === 'guest' || auth === 'misafir' || explicitLocal || eventType === 'guest_session_ping' || /guest[_-]?session|guest[_-]?login|misafir[_ -]?mod|yerel[_ -]?misafir|source["']?\s*:\s*["']manual/.test(hay) || source === 'manual';
+  }
+  function isGuestUser(user) {
+    if (!user) return false;
+    if (googleInfoForUser(user)) return false;
+    return guestMarker(user.raw || user);
+  }
+  function collectGuestSessions(seedUsers) {
+    const map = new Map();
+    function upsert(candidate) {
+      const user = candidate && candidate.raw ? candidate : mapProfile(candidate || {});
+      if (!guestMarker(user.raw || candidate || user)) return;
+      const device = clean(user.deviceId && user.deviceId !== '-' ? user.deviceId : '');
+      const ip = clean(user.ip && user.ip !== '-' ? user.ip : '');
+      const key = device ? `device_${compact(device)}` : ip ? `ip_${compact(ip)}_${compact(user.name)}` : identityKey(user) || `guest_${map.size}`;
+      const old = map.get(key) || {name:'Misafir kullanıcı',seflik:'Şeflik seçilmedi',userKey:key,id:'',lastSeenMs:0,ip:'-',deviceId:'-',platform:'-',browser:'-',version:'-',avatarUrl:'',raw:{}};
+      const incomingName = isRealText(user.name) ? user.name : 'Misafir kullanıcı';
+      const incomingSeflik = isRealText(user.seflik) ? user.seflik : 'Şeflik seçilmedi';
+      if ((user.lastSeenMs || 0) >= (old.lastSeenMs || 0)) {
+        Object.assign(old,{name:incomingName,seflik:incomingSeflik,lastSeen:user.lastSeen,lastSeenMs:user.lastSeenMs||0,raw:user.raw||candidate||user});
+        ['ip','deviceId','platform','browser','version'].forEach((field)=>{if(clean(user[field])&&user[field]!=='-')old[field]=user[field]});
+      }
+      map.set(key,old);
+    }
+    arr(seedUsers).forEach(upsert);
+    [...state.profiles,...state.usage,...state.events,...state.userAuthEvents].forEach(upsert);
+    state.guests=[...map.values()].sort((a,b)=>(b.lastSeenMs||0)-(a.lastSeenMs||0));
+  }
   function mergeUsers() {
     const map = new Map();
     const idIndex = new Map();
@@ -305,7 +342,10 @@
       if (technical.lastSeenMs > target.lastSeenMs) { target.lastSeen = technical.lastSeen; target.lastSeenMs = technical.lastSeenMs; }
       map.set(targetKey, target);
     });
-    state.users = [...map.values()].filter(validUser).sort((a,b) => b.lastSeenMs - a.lastSeenMs);
+    const merged = [...map.values()].filter(validUser).sort((a,b) => b.lastSeenMs - a.lastSeenMs);
+    const guestSeeds = merged.filter(isGuestUser);
+    state.users = merged.filter((user) => !isGuestUser(user));
+    collectGuestSessions(guestSeeds);
   }
 
   function collectHiddenFromLogs() {
@@ -485,6 +525,23 @@ function appLabel(user){return appKind(user)==='istif'?'İstif İO':appKind(user
     }).join('') : '<div class="empty-state">Filtreye uygun gerçek kullanıcı bulunamadı.</div>';
   }
 
+  function filteredGuests() {
+    const input = $('guestSearch'); const q = lower(input && input.value);
+    return state.guests.filter((guest) => !q || [guest.name,guest.seflik,guest.ip,guest.deviceId,guest.platform,guest.browser,guest.version].join(' ').toLocaleLowerCase('tr-TR').includes(q));
+  }
+  function renderGuests() {
+    const list = $('guestList'), badge = $('guestCountBadge'); if (!list || !badge) return;
+    const guests = filteredGuests(); badge.textContent = `${fmtInt(state.guests.length)} misafir`;
+    list.innerHTML = guests.length ? guests.map((guest,index) => `<article class="guest-user-card">
+      <div class="guest-user-head"><div class="guest-avatar">M</div><div class="guest-user-title"><h4>${escapeHtml(guest.name || 'Misafir kullanıcı')} <span class="guest-mode-badge">Misafir</span></h4><p>${escapeHtml(guest.seflik || 'Şeflik seçilmedi')} • son giriş ${escapeHtml(fmtDate(guest.lastSeen))}</p></div><span class="status-pill">${onlineNow(guest)?'Online':'Yerel'}</span></div>
+      <div class="user-data"><div class="data-cell"><small>IP adresi</small><b class="ip">${escapeHtml(guest.ip||'-')}</b></div><div class="data-cell"><small>Cihaz</small><b>${escapeHtml(guest.deviceId||'-')}</b></div><div class="data-cell"><small>Platform</small><b>${escapeHtml(guest.platform||'-')}</b></div><div class="data-cell"><small>Tarayıcı</small><b>${escapeHtml(guest.browser||'-')}</b></div><div class="data-cell"><small>Sürüm</small><b>${escapeHtml(guest.version||'-')}</b></div><div class="data-cell"><small>Giriş tipi</small><b>Yerel misafir</b></div></div>
+      <div class="guest-user-actions"><button class="button info" data-action="guest-detail" data-guest-index="${state.guests.indexOf(guest)}" type="button">Detay</button></div>
+    </article>`).join('') : '<div class="empty-state">Henüz misafir giriş kaydı yok.</div>';
+  }
+  function guestDetail(guest){
+    openModal('Misafir giriş detayı',`<div class="detail-grid"><div><small>Misafir</small><b>${escapeHtml(guest.name||'Misafir kullanıcı')}</b></div><div><small>Şeflik</small><b>${escapeHtml(guest.seflik||'-')}</b></div><div><small>IP</small><b class="ip">${escapeHtml(guest.ip||'-')}</b></div><div><small>Cihaz</small><b>${escapeHtml(guest.deviceId||'-')}</b></div><div><small>Platform</small><b>${escapeHtml(guest.platform||'-')}</b></div><div><small>Tarayıcı</small><b>${escapeHtml(guest.browser||'-')}</b></div><div><small>Sürüm</small><b>${escapeHtml(guest.version||'-')}</b></div><div><small>Son giriş</small><b>${escapeHtml(fmtDate(guest.lastSeen))}</b></div></div><pre class="raw-data">${escapeHtml(JSON.stringify(guest.raw||guest,null,2))}</pre>`)
+  }
+
   function renderStats() {
     const records = statisticsRecords(), users = aggregateByUser(records);
     const count = users.reduce((s,x) => s+x.count, 0), volume = users.reduce((s,x) => s+x.volume, 0);
@@ -610,8 +667,88 @@ function appLabel(user){return appKind(user)==='istif'?'İstif İO':appKind(user
       return `<article class="seflik-admin-card"><div class="seflik-admin-head"><div><h4>${escapeHtml(f.seflik||'-')}</h4><p>Kurucu: ${escapeHtml(first(f.created_by_name,'-'))} • ${escapeHtml(fmtDate(f.created_at))}</p></div><span class="counter-badge">${fmtInt(members.length)} üye • ${fmtInt(divisions.length)} bölme</span></div><div class="seflik-admin-members">${members.length?members.map((m)=>`<div class="seflik-admin-member">${memberAvatar(m)}<div><b>${escapeHtml(first(m.name,'-'))}</b><small>${escapeHtml((clean(m.role)==='owner'?'Kurucu':'Ormancı')+(m.email?' • '+m.email:''))}</small></div></div>`).join(''):'<div class="empty-state small">Üye yok</div>'}</div></article>`;
     }).join('');
   }
-  function renderAll(){renderUsers();renderStats();renderBackups();renderBlocks();renderSecurityLogs();renderGoogleAccess();renderSeflikAdmin();renderSummary()}
-  function switchPage(page){state.page=page;document.querySelectorAll('.page').forEach((el)=>el.classList.toggle('is-active',el.dataset.page===page));document.querySelectorAll('.nav-item').forEach((el)=>el.classList.toggle('is-active',el.dataset.pageTarget===page));if(page==='stats')renderStats();if(page==='backups')renderBackups();if(page==='manage'){renderBlocks();renderSecurityLogs();renderGoogleAccess();renderSeflikAdmin();}window.scrollTo({top:0,behavior:'smooth'})}
+  function renderAll(){renderUsers();renderGuests();renderStats();renderBackups();renderBlocks();renderSecurityLogs();renderGoogleAccess();renderSeflikAdmin();renderSummary()}
+
+
+  /* V80 — Supabase -> Viohy migration export (management panel only) */
+  const MIGRATION_TABLES = [
+    {name:'mesaha_user_profiles', critical:true, group:'Kimlik'},
+    {name:'mesaha_usage_current', critical:false, group:'İstatistik'},
+    {name:'mesaha_usage_daily', critical:false, group:'İstatistik'},
+    {name:'mesaha_backup_slots', critical:true, group:'Yedek'},
+    {name:'mesaha_backup_chunks', critical:true, group:'Yedek'},
+    {name:'mesaha_log_current', critical:false, group:'Log'},
+    {name:'mesaha_security_events', critical:false, group:'Güvenlik'},
+    {name:'mesaha_security_blocks', critical:false, group:'Güvenlik'},
+    {name:'mesaha_seflik_records', critical:true, group:'Mesaha'},
+    {name:'mesaha_seflik_syncs', critical:true, group:'Mesaha'},
+    {name:'mesaha_seflik_divisions', critical:true, group:'Şeflik'},
+    {name:'mesaha_seflik_folders', critical:true, group:'Şeflik'},
+    {name:'mesaha_seflik_members', critical:true, group:'Şeflik'},
+    {name:'mesaha_admin_audit_logs', critical:false, group:'Güvenlik'},
+    {name:'mesaha_user_access', critical:true, group:'Kimlik'},
+    {name:'mesaha_user_auth_events', critical:false, group:'Kimlik'},
+    {name:'mesaha_terminal_pairing_codes', critical:true, group:'Terminal'},
+    {name:'mesaha_user_drive_backups', critical:true, group:'Drive'},
+    {name:'mesaha_istif_records', critical:true, group:'İstif'},
+    {name:'mesaha_seflik_drive_bindings', critical:true, group:'Drive'}
+  ];
+  const NONPORTABLE_TABLES = ['mesaha_admin_accounts','mesaha_admin_sessions','mesaha_rate_limits','mesaha_request_dedup'];
+
+  function exportUiSet(id,value){const el=$(id);if(el)el.textContent=String(value)}
+  function exportProgress(done,total,message){const pct=total?Math.round(done/total*100):0;const bar=$('exportProgressBar');if(bar)bar.style.width=pct+'%';exportUiSet('exportProgressText',pct+'%');if(message)exportUiSet('exportStatusText',message)}
+  function renderExportTables(statusMap={}){
+    const host=$('exportTableList');if(!host)return;
+    host.innerHTML=MIGRATION_TABLES.map((t)=>{const st=statusMap[t.name]||{};const cls=st.state||'';const label=cls==='ok'?fmtInt(st.rows||0)+' kayıt':cls==='fail'?'Okunamadı':cls==='loading'?'Alınıyor…':'Bekliyor';return `<div class="export-table-row ${cls}"><div><b>${escapeHtml(t.name)}</b><small>${escapeHtml(t.group)}${t.critical?' • kritik':''}</small></div><span class="export-table-state">${escapeHtml(label)}</span></div>`}).join('');
+  }
+  function jsonBytes(value){return new TextEncoder().encode(JSON.stringify(value,null,2))}
+  let CRC_TABLE=null;
+  function crcTable(){if(CRC_TABLE)return CRC_TABLE;CRC_TABLE=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=(c&1)?(0xedb88320^(c>>>1)):(c>>>1);CRC_TABLE[n]=c>>>0}return CRC_TABLE}
+  function crc32(bytes){let c=0xffffffff,t=crcTable();for(let i=0;i<bytes.length;i++)c=t[(c^bytes[i])&255]^(c>>>8);return(c^0xffffffff)>>>0}
+  function u16(v){const b=new Uint8Array(2);new DataView(b.buffer).setUint16(0,v,true);return b}
+  function u32(v){const b=new Uint8Array(4);new DataView(b.buffer).setUint32(0,v>>>0,true);return b}
+  function concatBytes(parts){let size=0;parts.forEach((p)=>size+=p.length);const out=new Uint8Array(size);let off=0;parts.forEach((p)=>{out.set(p,off);off+=p.length});return out}
+  function dosStamp(date=new Date()){let y=Math.max(1980,date.getFullYear());return{time:((date.getHours()&31)<<11)|((date.getMinutes()&63)<<5)|((date.getSeconds()/2)&31),date:(((y-1980)&127)<<9)|(((date.getMonth()+1)&15)<<5)|(date.getDate()&31)}}
+  function buildZip(files){
+    const locals=[],centrals=[];let offset=0;const stamp=dosStamp();
+    for(const file of files){const name=new TextEncoder().encode(file.name);const data=file.bytes instanceof Uint8Array?file.bytes:new Uint8Array(file.bytes);const crc=crc32(data);const local=concatBytes([u32(0x04034b50),u16(20),u16(0x0800),u16(0),u16(stamp.time),u16(stamp.date),u32(crc),u32(data.length),u32(data.length),u16(name.length),u16(0),name,data]);locals.push(local);const central=concatBytes([u32(0x02014b50),u16(20),u16(20),u16(0x0800),u16(0),u16(stamp.time),u16(stamp.date),u32(crc),u32(data.length),u32(data.length),u16(name.length),u16(0),u16(0),u16(0),u16(0),u32(0),u32(offset),name]);centrals.push(central);offset+=local.length}
+    const centralStart=offset;const centralSize=centrals.reduce((n,b)=>n+b.length,0);const end=concatBytes([u32(0x06054b50),u16(0),u16(0),u16(files.length),u16(files.length),u32(centralSize),u32(centralStart),u16(0)]);return new Blob([...locals,...centrals,end],{type:'application/zip'})
+  }
+  function downloadBlob(blob,name){const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000)}
+  function safeExportValue(value){
+    const secretKeys=/^(access_token|refresh_token|token|service_role|service_role_key|anon_key|apikey|authorization|password|secret)$/i;
+    if(Array.isArray(value))return value.map(safeExportValue);
+    if(value&&typeof value==='object'){const out={};Object.entries(value).forEach(([k,v])=>{if(secretKeys.test(k))return;out[k]=safeExportValue(v)});return out}
+    return value;
+  }
+  async function restTableAll(table,onPage){
+    const c=cfg();let sess=await validSession();if(!sess)throw new Error('Yönetim oturumu sona erdi');const pageSize=1000;let from=0,rows=[],total=null;
+    for(let guard=0;guard<1000;guard++){
+      const to=from+pageSize-1;const res=await fetch(c.url+'/rest/v1/'+encodeURIComponent(table)+'?select=*',{method:'GET',cache:'no-store',headers:{apikey:c.anonKey,Authorization:'Bearer '+sess.access_token,Accept:'application/json','Range-Unit':'items',Range:`${from}-${to}`,Prefer:'count=exact'}});
+      const text=await res.text();let out=[];try{out=text?JSON.parse(text):[]}catch{throw new Error('Geçersiz Supabase cevabı')}
+      if(!res.ok){const e=new Error(clean(out&&out.message)||clean(out&&out.error)||`HTTP ${res.status}`);e.status=res.status;throw e}
+      if(!Array.isArray(out))throw new Error('Tablo cevabı dizi değil');rows.push(...out);const range=clean(res.headers.get('content-range'));const m=range.match(/\/(\d+|\*)$/);if(m&&m[1]!=='*')total=Number(m[1]);if(onPage)onPage(rows.length,total);if(out.length<pageSize||(Number.isFinite(total)&&rows.length>=total))break;from+=out.length;if(out.length===0)break;
+    }
+    return rows;
+  }
+  function expectedCoreCounts(report){const s=obj(report);const seflikler=arr(s.seflikler);return{mesaha_seflik_records:seflikler.reduce((n,x)=>n+num(x.mesaha_count),0),mesaha_istif_records:seflikler.reduce((n,x)=>n+num(x.istif_count),0),mesaha_seflik_folders:num(obj(s.summary).seflik_count)}}
+  async function exportAllSupabase(){
+    const button=$('exportAllBtn');if(!button)return;button.disabled=true;const badge=$('exportStateBadge');if(badge)badge.textContent='Hazırlanıyor';const statuses={};MIGRATION_TABLES.forEach((t)=>statuses[t.name]={state:'',rows:0});renderExportTables(statuses);exportUiSet('exportRowCount','0');exportUiSet('exportErrorCount','0');exportProgress(0,MIGRATION_TABLES.length+2,'Yönetim raporları alınıyor…');
+    try{
+      const [panelSnapshot,systemReport]=await Promise.all([edge('admin_list_all',{limit:5000}),edge('admin_system_report',{limit:10000})]);
+      const files=[{name:'panel/admin_list_all.json',bytes:jsonBytes(safeExportValue(panelSnapshot))},{name:'panel/admin_system_report.json',bytes:jsonBytes(safeExportValue(systemReport))}];
+      const results={},errors=[];let totalRows=0,done=2;exportProgress(done,MIGRATION_TABLES.length+2,'Supabase tabloları okunuyor…');
+      for(const table of MIGRATION_TABLES){statuses[table.name]={state:'loading',rows:0};renderExportTables(statuses);try{const rows=await restTableAll(table.name,(count)=>{statuses[table.name].rows=count;renderExportTables(statuses)});results[table.name]=rows;statuses[table.name]={state:'ok',rows:rows.length};totalRows+=rows.length;files.push({name:'tables/'+table.name+'.json',bytes:jsonBytes(safeExportValue(rows))})}catch(error){statuses[table.name]={state:'fail',rows:0,error:errorText(error)};errors.push({table:table.name,critical:table.critical,error:errorText(error)})}done++;renderExportTables(statuses);exportUiSet('exportRowCount',fmtInt(totalRows));exportUiSet('exportErrorCount',fmtInt(errors.length));exportProgress(done,MIGRATION_TABLES.length+2,errors.length?'Tablolar kontrol ediliyor…':'Tablolar alındı, doğrulanıyor…')}
+      const expected=expectedCoreCounts(systemReport);const validationChecks=[];Object.entries(expected).forEach(([table,count])=>{if(count>0){const actual=Array.isArray(results[table])?results[table].length:0;validationChecks.push({table,expected:Number(count),actual,ok:actual>=Number(count)})}});
+      const criticalErrors=errors.filter((x)=>x.critical);const countFailures=validationChecks.filter((x)=>!x.ok);const migrationReady=criticalErrors.length===0&&countFailures.length===0;
+      const generatedAt=new Date().toISOString();const manifest={format:'viohy-orman-migration',format_version:1,source:'Orman IO V80 / Supabase',generated_at:generatedAt,admin_version:ADMIN_VERSION,timezone:ISTANBUL_TZ,migration_ready:migrationReady,total_rows:totalRows,tables:MIGRATION_TABLES.map((t)=>({name:t.name,group:t.group,critical:t.critical,rows:Array.isArray(results[t.name])?results[t.name].length:0,exported:Array.isArray(results[t.name])})),nonportable_tables:NONPORTABLE_TABLES,notes:['Supabase Auth parola/oturum bilgileri aktarılmaz.','Google kullanıcıları Viohy tarafında Google hesabı ile yeniden doğrulanacaktır.','Google/Drive erişim ve yenileme tokenları güvenlik nedeniyle dışa aktarma paketine yazılmaz.']};
+      const validation={ok:migrationReady,generated_at:generatedAt,critical_errors:criticalErrors,count_checks:validationChecks,count_failures:countFailures,all_errors:errors};files.push({name:'manifest.json',bytes:jsonBytes(manifest)},{name:'validation.json',bytes:jsonBytes(validation)});
+      if(!migrationReady){if(badge)badge.textContent='Eksik veri';exportUiSet('exportStatusText','Tam aktarım doğrulanamadı. Kritik tablo erişimi veya kayıt sayısı uyuşmazlığı var; eksik ZIP indirilmedi.');toast('Tam aktarım durduruldu: kritik veriler eksik');return}
+      const stamp=new Date().toLocaleDateString('en-CA',{timeZone:ISTANBUL_TZ}).replaceAll('-','')+'_'+new Date().toLocaleTimeString('tr-TR',{timeZone:ISTANBUL_TZ,hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}).replaceAll(':','');exportUiSet('exportStatusText','Doğrulama tamamlandı. ZIP oluşturuluyor…');const blob=buildZip(files);downloadBlob(blob,`ORMAN_IO_SUPABASE_TAM_AKTARIM_${stamp}.zip`);if(badge)badge.textContent='Tamamlandı';exportProgress(MIGRATION_TABLES.length+2,MIGRATION_TABLES.length+2,'Tam aktarım paketi indirildi. Viohy içe aktarma için hazır.');toast('Supabase tam aktarım ZIP’i hazır')
+    }catch(error){if(badge)badge.textContent='Hata';exportUiSet('exportStatusText','Dışa aktarma başarısız: '+errorText(error));toast(errorText(error))}finally{button.disabled=false}
+  }
+
+  function switchPage(page){state.page=page;document.querySelectorAll('.page').forEach((el)=>el.classList.toggle('is-active',el.dataset.page===page));document.querySelectorAll('.nav-item').forEach((el)=>el.classList.toggle('is-active',el.dataset.pageTarget===page));if(page==='stats')renderStats();if(page==='backups')renderBackups();if(page==='manage'){renderBlocks();renderSecurityLogs();renderGoogleAccess();renderSeflikAdmin();}if(page==='export'){renderExportTables();exportUiSet('exportTableCount',MIGRATION_TABLES.length);}window.scrollTo({top:0,behavior:'smooth'})}
   function openModal(title,html){$('modalTitle').textContent=title;$('modalBody').innerHTML=html;$('modal').classList.add('is-open');$('modal').setAttribute('aria-hidden','false')}
   function closeModal(){$('modal').classList.remove('is-open');$('modal').setAttribute('aria-hidden','true')}
 
@@ -690,9 +827,9 @@ function appLabel(user){return appKind(user)==='istif'?'İstif İO':appKind(user
     document.querySelectorAll('.manage-tab').forEach((button)=>button.addEventListener('click',()=>{state.blockView=button.dataset.blockView;document.querySelectorAll('.manage-tab').forEach((x)=>x.classList.toggle('is-active',x===button));renderBlocks()}));
     document.querySelectorAll('.google-access-tab').forEach((button)=>button.addEventListener('click',()=>{state.accessStatus=button.dataset.accessStatus;document.querySelectorAll('.google-access-tab').forEach((x)=>x.classList.toggle('is-active',x===button));renderGoogleAccess()}));
     ['userSearch','userFilter'].forEach((id)=>$(id).addEventListener('input',renderUsers));['backupSearch','backupSort'].forEach((id)=>$(id).addEventListener('input',renderBackups));$('blockSearch').addEventListener('input',renderBlocks);
-    $('clearUserFilter').addEventListener('click',()=>{$('userSearch').value='';$('userFilter').value='all';renderUsers()});$('clearBackupFilter').addEventListener('click',()=>{$('backupSearch').value='';$('backupSort').value='new';renderBackups()});$('addIpBtn').addEventListener('click',()=>addIp().catch((e)=>toast(errorText(e))));
+    $('clearUserFilter').addEventListener('click',()=>{$('userSearch').value='';$('userFilter').value='all';renderUsers()});if($('guestSearch'))$('guestSearch').addEventListener('input',renderGuests);$('clearBackupFilter').addEventListener('click',()=>{$('backupSearch').value='';$('backupSort').value='new';renderBackups()});$('addIpBtn').addEventListener('click',()=>addIp().catch((e)=>toast(errorText(e))));if($('exportAllBtn'))$('exportAllBtn').addEventListener('click',()=>exportAllSupabase().catch((e)=>toast(errorText(e))));
     $('modalClose').addEventListener('click',closeModal);$('modal').addEventListener('click',(e)=>{if(e.target===$('modal'))closeModal()});
-    document.addEventListener('click',(e)=>{touchActivity();const button=e.target.closest('[data-action]');if(!button)return;const action=button.dataset.action;const user=state.users[Number(button.dataset.userIndex)];if(action==='detail'&&user)userDetail(user);if(action==='block'&&user)blockUser(user).catch((x)=>toast(errorText(x)));if(action==='unblock-user'&&user)unblockUser(user).catch((x)=>toast(errorText(x)));if(action==='delete-user'&&user)deleteUser(user).catch((x)=>toast(errorText(x)));if(action==='hide-backup')hideBackup(button.dataset.backupId).catch((x)=>toast(errorText(x)));if(action==='unblock')unblock(button).catch((x)=>toast(errorText(x)));const access=state.userAccess[Number(button.dataset.accessIndex)];if(action==='access-approve'&&access)accessApprove(access).catch((x)=>toast(errorText(x)));if(action==='access-reject'&&access)accessDecision(access,'admin_user_access_reject').catch((x)=>toast(errorText(x)));if(action==='access-revoke'&&access)accessDecision(access,'admin_user_access_revoke').catch((x)=>toast(errorText(x)));if(action==='access-reopen'&&access)accessDecision(access,'admin_user_access_reopen').catch((x)=>toast(errorText(x))) });
+    document.addEventListener('click',(e)=>{touchActivity();const button=e.target.closest('[data-action]');if(!button)return;const action=button.dataset.action;const user=state.users[Number(button.dataset.userIndex)];const guest=state.guests[Number(button.dataset.guestIndex)];if(action==='guest-detail'&&guest)guestDetail(guest);if(action==='detail'&&user)userDetail(user);if(action==='block'&&user)blockUser(user).catch((x)=>toast(errorText(x)));if(action==='unblock-user'&&user)unblockUser(user).catch((x)=>toast(errorText(x)));if(action==='delete-user'&&user)deleteUser(user).catch((x)=>toast(errorText(x)));if(action==='hide-backup')hideBackup(button.dataset.backupId).catch((x)=>toast(errorText(x)));if(action==='unblock')unblock(button).catch((x)=>toast(errorText(x)));const access=state.userAccess[Number(button.dataset.accessIndex)];if(action==='access-approve'&&access)accessApprove(access).catch((x)=>toast(errorText(x)));if(action==='access-reject'&&access)accessDecision(access,'admin_user_access_reject').catch((x)=>toast(errorText(x)));if(action==='access-revoke'&&access)accessDecision(access,'admin_user_access_revoke').catch((x)=>toast(errorText(x)));if(action==='access-reopen'&&access)accessDecision(access,'admin_user_access_reopen').catch((x)=>toast(errorText(x))) });
     ['keydown','pointerdown','touchstart'].forEach((name)=>document.addEventListener(name,touchActivity,{passive:true}));
     setInterval(()=>{const last=Number(sessionStorage.getItem(LAST_ACTIVITY_KEY)||0);if(readSession().access_token&&last&&Date.now()-last>IDLE_MS)logout(false,true)},60000);
   }
