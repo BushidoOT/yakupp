@@ -8,7 +8,7 @@
   <title>Orman İO Yönetim</title>
   <link rel="manifest" href="../manifest.json">
   <link rel="apple-touch-icon" href="../assets/icon-192.png">
-  <link rel="stylesheet" href="./admin.css?v=80-export1">
+  <link rel="stylesheet" href="./admin.css?v=80-export2">
   <link rel="stylesheet" href="./admin-system-report.css">
   <script src="../release.js"></script>
   <script src="../suite-runtime-stabilizer.js"></script>
@@ -143,7 +143,7 @@
 
           <article class="surface export-hero">
             <div class="export-hero-icon" aria-hidden="true">⇩</div>
-            <div class="export-hero-copy"><h3>Viohy aktarım paketini oluştur</h3><p>Mesaha, İstif, Şeflik, bölme, kullanıcı, Drive referansları, güvenlik ve senkron kayıtlarını Supabase'den okuyup ZIP içine yerleştirir. Supabase Auth parolaları ve oturum anahtarları taşınmaz.</p></div>
+            <div class="export-hero-copy"><h3>Viohy aktarım paketini oluştur</h3><p>Mesaha, İstif, Şeflik, bölme, kullanıcı, Drive referansları, Google Auth eşleştirmeleri, güvenlik ve senkron kayıtlarını tek ZIP'e alır. İndirme sırasında yalnız bir kez Supabase Legacy service_role JWT anahtarı istenir; anahtar kaydedilmez. Yeni sb_secret_ anahtarları tarayıcıda kullanılamaz.</p></div>
             <button id="exportAllBtn" class="button primary export-main-button" type="button">Tüm verileri ZIP olarak indir</button>
           </article>
 
@@ -165,9 +165,9 @@
               <div><b>tables/</b><span>Supabase tablolarının ham JSON kayıtları</span></div>
               <div><b>manifest.json</b><span>Tablo listesi, kayıt sayıları ve sürüm bilgisi</span></div>
               <div><b>validation.json</b><span>Eksik/hatalı tablo ve aktarım uygunluğu kontrolü</span></div>
-              <div><b>panel/</b><span>Yönetim API özeti ve sistem raporu</span></div>
+              <div><b>auth/</b><span>Google kullanıcı eşleştirmesi için güvenli Auth kullanıcı özeti</span></div><div><b>schema/</b><span>Tablo alanları ve PostgREST şema özeti</span></div>
             </div>
-            <p class="export-security-note"><strong>Güvenlik:</strong> Supabase servis anahtarı, Google access/refresh tokenları ve yönetim oturum tokenları ZIP'e yazılmaz. Google hesapları Viohy tarafında yeniden Google ile giriş yaparak eşleştirilecek.</p>
+            <p class="export-security-note"><strong>Güvenlik:</strong> Legacy service_role JWT yalnız açık sayfanın belleğinde kullanılır; localStorage/sessionStorage veya ZIP içine yazılmaz. Supabase parolaları/oturumları ve Google Drive access/refresh tokenları taşınmaz.</p>
           </article>
         </section>
         <section id="page-manage" class="page" data-page="manage">
@@ -239,6 +239,6 @@
     </div>
   </div>
   <div id="toast" class="toast" role="status"></div>
-  <a class="suite-admin-home" href="../">⌂ Orman İO Ana Menüsü</a><script src="./admin.js?v=80-export1"></script><script src="./admin-system-report.js" defer></script>
+  <a class="suite-admin-home" href="../">⌂ Orman İO Ana Menüsü</a><script src="./admin.js?v=80-export2"></script><script src="./admin-system-report.js" defer></script>
 </body>
 </html>

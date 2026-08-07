@@ -670,9 +670,12 @@ function appLabel(user){return appKind(user)==='istif'?'İstif İO':appKind(user
   function renderAll(){renderUsers();renderGuests();renderStats();renderBackups();renderBlocks();renderSecurityLogs();renderGoogleAccess();renderSeflikAdmin();renderSummary()}
 
 
-  /* V80 — Supabase -> Viohy migration export (management panel only) */
+  /* V80 — Supabase -> Viohy migration export (service-role, management panel only) */
   const MIGRATION_TABLES = [
+    {name:'auth.users', critical:true, group:'Google/Auth', kind:'auth'},
     {name:'mesaha_user_profiles', critical:true, group:'Kimlik'},
+    {name:'mesaha_user_access', critical:true, group:'Kimlik'},
+    {name:'mesaha_user_auth_events', critical:false, group:'Kimlik'},
     {name:'mesaha_usage_current', critical:false, group:'İstatistik'},
     {name:'mesaha_usage_daily', critical:false, group:'İstatistik'},
     {name:'mesaha_backup_slots', critical:true, group:'Yedek'},
@@ -685,15 +688,18 @@ function appLabel(user){return appKind(user)==='istif'?'İstif İO':appKind(user
     {name:'mesaha_seflik_divisions', critical:true, group:'Şeflik'},
     {name:'mesaha_seflik_folders', critical:true, group:'Şeflik'},
     {name:'mesaha_seflik_members', critical:true, group:'Şeflik'},
-    {name:'mesaha_admin_audit_logs', critical:false, group:'Güvenlik'},
-    {name:'mesaha_user_access', critical:true, group:'Kimlik'},
-    {name:'mesaha_user_auth_events', critical:false, group:'Kimlik'},
     {name:'mesaha_terminal_pairing_codes', critical:true, group:'Terminal'},
-    {name:'mesaha_user_drive_backups', critical:true, group:'Drive'},
     {name:'mesaha_istif_records', critical:true, group:'İstif'},
-    {name:'mesaha_seflik_drive_bindings', critical:true, group:'Drive'}
+    {name:'mesaha_istif_foresters', critical:true, group:'İstif'},
+    {name:'mesaha_user_drive_backups', critical:true, group:'Drive'},
+    {name:'mesaha_seflik_drive_bindings', critical:true, group:'Drive'},
+    {name:'mesaha_user_drive_connections', critical:false, group:'Drive'},
+    {name:'mesaha_admin_accounts', critical:false, group:'Yönetim'},
+    {name:'mesaha_admin_audit_logs', critical:false, group:'Yönetim'}
   ];
-  const NONPORTABLE_TABLES = ['mesaha_admin_accounts','mesaha_admin_sessions','mesaha_rate_limits','mesaha_request_dedup'];
+  const NONPORTABLE_TABLES = [
+    'mesaha_admin_sessions','mesaha_rate_limits','mesaha_request_dedup','mesaha_user_drive_oauth_states'
+  ];
 
   function exportUiSet(id,value){const el=$(id);if(el)el.textContent=String(value)}
   function exportProgress(done,total,message){const pct=total?Math.round(done/total*100):0;const bar=$('exportProgressBar');if(bar)bar.style.width=pct+'%';exportUiSet('exportProgressText',pct+'%');if(message)exportUiSet('exportStatusText',message)}
@@ -715,37 +721,78 @@ function appLabel(user){return appKind(user)==='istif'?'İstif İO':appKind(user
     const centralStart=offset;const centralSize=centrals.reduce((n,b)=>n+b.length,0);const end=concatBytes([u32(0x06054b50),u16(0),u16(0),u16(files.length),u16(files.length),u32(centralSize),u32(centralStart),u16(0)]);return new Blob([...locals,...centrals,end],{type:'application/zip'})
   }
   function downloadBlob(blob,name){const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000)}
+  function sensitiveExportKey(k){
+    const key=lower(k).replace(/[^a-z0-9_]+/g,'_');
+    return key==='password'||key==='encrypted_password'||key==='authorization'||key==='apikey'||key==='anon_key'||key==='service_role'||key==='service_role_key'||key==='client_secret'||key==='secret'||/(^|_)(access_token|refresh_token|id_token|token_cipher|access_token_cipher|refresh_token_cipher|client_secret|service_role|password|secret)(_|$)/i.test(key);
+  }
   function safeExportValue(value){
-    const secretKeys=/^(access_token|refresh_token|token|service_role|service_role_key|anon_key|apikey|authorization|password|secret)$/i;
     if(Array.isArray(value))return value.map(safeExportValue);
-    if(value&&typeof value==='object'){const out={};Object.entries(value).forEach(([k,v])=>{if(secretKeys.test(k))return;out[k]=safeExportValue(v)});return out}
+    if(value&&typeof value==='object'){const out={};Object.entries(value).forEach(([k,v])=>{if(sensitiveExportKey(k))return;out[k]=safeExportValue(v)});return out}
     return value;
   }
-  async function restTableAll(table,onPage){
-    const c=cfg();let sess=await validSession();if(!sess)throw new Error('Yönetim oturumu sona erdi');const pageSize=1000;let from=0,rows=[],total=null;
-    for(let guard=0;guard<1000;guard++){
-      const to=from+pageSize-1;const res=await fetch(c.url+'/rest/v1/'+encodeURIComponent(table)+'?select=*',{method:'GET',cache:'no-store',headers:{apikey:c.anonKey,Authorization:'Bearer '+sess.access_token,Accept:'application/json','Range-Unit':'items',Range:`${from}-${to}`,Prefer:'count=exact'}});
-      const text=await res.text();let out=[];try{out=text?JSON.parse(text):[]}catch{throw new Error('Geçersiz Supabase cevabı')}
-      if(!res.ok){const e=new Error(clean(out&&out.message)||clean(out&&out.error)||`HTTP ${res.status}`);e.status=res.status;throw e}
-      if(!Array.isArray(out))throw new Error('Tablo cevabı dizi değil');rows.push(...out);const range=clean(res.headers.get('content-range'));const m=range.match(/\/(\d+|\*)$/);if(m&&m[1]!=='*')total=Number(m[1]);if(onPage)onPage(rows.length,total);if(out.length<pageSize||(Number.isFinite(total)&&rows.length>=total))break;from+=out.length;if(out.length===0)break;
-    }
-    return rows;
+  function valueType(v){if(v===null)return'null';if(Array.isArray(v))return'array';return typeof v}
+  function inferredSchema(rows){const columns={};for(const row of arr(rows).slice(0,250)){if(!row||typeof row!=='object'||Array.isArray(row))continue;for(const [k,v] of Object.entries(row)){const t=valueType(v);const old=columns[k]||{types:{},nullable:false};old.types[t]=(old.types[t]||0)+1;if(v===null)old.nullable=true;columns[k]=old}}return{inferred:true,sample_rows:Math.min(arr(rows).length,250),columns}}
+
+  function serviceRolePrompt(){
+    return new Promise((resolve)=>{
+      const old=document.getElementById('serviceRoleExportOverlay');if(old)old.remove();
+      const overlay=document.createElement('div');overlay.id='serviceRoleExportOverlay';overlay.style.cssText='position:fixed;inset:0;z-index:99999;background:rgba(15,23,18,.62);display:flex;align-items:center;justify-content:center;padding:18px;backdrop-filter:blur(7px)';
+      overlay.innerHTML=`<div style="width:min(560px,100%);background:#fff;border-radius:24px;padding:22px;box-shadow:0 24px 80px rgba(0,0,0,.3);font-family:inherit"><div style="display:flex;gap:14px;align-items:flex-start"><div style="width:46px;height:46px;border-radius:14px;background:#edf7ea;display:grid;place-items:center;font-size:24px;flex:0 0 auto">🔐</div><div><h3 style="margin:0 0 7px;font-size:20px;color:#17251c">Tek seferlik Supabase anahtarı</h3><p style="margin:0;color:#69766d;line-height:1.45;font-size:14px">Supabase Dashboard → Project Settings → API Keys → <b>Legacy API Keys</b> bölümündeki <b>service_role</b> JWT anahtarını yapıştır. Anahtar kaydedilmez ve ZIP'e eklenmez.</p></div></div><label style="display:block;margin-top:18px"><span style="display:block;font-size:13px;font-weight:800;color:#526058;margin-bottom:7px">Legacy service_role JWT</span><input id="serviceRoleExportInput" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="eyJ…" style="box-sizing:border-box;width:100%;height:50px;border:1px solid #cfd8d1;border-radius:14px;padding:0 14px;font:inherit;font-size:15px;outline:none"></label><p style="margin:11px 0 0;font-size:12px;line-height:1.45;color:#8a5d28;background:#fff8ea;border:1px solid #f2dfba;border-radius:12px;padding:10px 12px"><b>Önemli:</b> Bu çok güçlü bir anahtardır. Yalnız kendi cihazında kullan ve aktarım bittikten sonra Supabase'de anahtarı yenile.</p><div style="display:flex;gap:10px;margin-top:18px"><button id="serviceRoleExportCancel" type="button" style="flex:1;height:46px;border:1px solid #d7ded8;border-radius:13px;background:#fff;font:inherit;font-weight:800;color:#49564d">Vazgeç</button><button id="serviceRoleExportOk" type="button" style="flex:1.4;height:46px;border:0;border-radius:13px;background:#4f8c50;color:#fff;font:inherit;font-weight:900">Devam et</button></div></div>`;
+      document.body.appendChild(overlay);const input=overlay.querySelector('#serviceRoleExportInput'),ok=overlay.querySelector('#serviceRoleExportOk'),cancel=overlay.querySelector('#serviceRoleExportCancel');
+      setTimeout(()=>input&&input.focus(),80);
+      const finish=(value)=>{if(input)input.value='';overlay.remove();resolve(value)};
+      cancel.addEventListener('click',()=>finish(''));overlay.addEventListener('click',(e)=>{if(e.target===overlay)finish('')});
+      ok.addEventListener('click',()=>{const key=clean(input.value);if(key.startsWith('sb_secret_')){input.value='';input.placeholder='Yeni sb_secret_ tarayıcıda çalışmaz; Legacy service_role (eyJ…) gerekli';input.focus();input.style.borderColor='#d55';return}if(!key.startsWith('eyJ')||key.length<80){input.focus();input.style.borderColor='#d55';return}finish(key)});
+      input.addEventListener('keydown',(e)=>{if(e.key==='Enter'){e.preventDefault();ok.click()}else if(e.key==='Escape')finish('')});
+    });
   }
-  function expectedCoreCounts(report){const s=obj(report);const seflikler=arr(s.seflikler);return{mesaha_seflik_records:seflikler.reduce((n,x)=>n+num(x.mesaha_count),0),mesaha_istif_records:seflikler.reduce((n,x)=>n+num(x.istif_count),0),mesaha_seflik_folders:num(obj(s.summary).seflik_count)}}
+  async function parseJsonResponse(res,label){const text=await res.text();let out;try{out=text?JSON.parse(text):{}}catch{throw new Error(`${label}: geçersiz JSON cevabı`)}if(!res.ok){throw new Error(clean(out?.message||out?.error_description||out?.error)||`${label}: HTTP ${res.status}`)}return out}
+  async function validateServiceRole(serviceKey){
+    const c=cfg();if(!c.url)throw new Error('Supabase URL bulunamadı');
+    const res=await fetch(c.url+'/auth/v1/admin/users?page=1&per_page=1',{method:'GET',cache:'no-store',headers:{apikey:serviceKey,Authorization:'Bearer '+serviceKey,Accept:'application/json'}});
+    await parseJsonResponse(res,'Service Role doğrulaması');return true;
+  }
+  async function authUsersAll(serviceKey,onPage){
+    const c=cfg(),perPage=1000,rows=[];for(let page=1;page<=1000;page++){
+      const res=await fetch(c.url+`/auth/v1/admin/users?page=${page}&per_page=${perPage}`,{method:'GET',cache:'no-store',headers:{apikey:serviceKey,Authorization:'Bearer '+serviceKey,Accept:'application/json'}});
+      const out=await parseJsonResponse(res,'auth.users');const batch=arr(out.users);rows.push(...batch.map(safeExportValue));if(onPage)onPage(rows.length,Number(out.total||out.total_count||0)||null);if(batch.length<perPage)break;
+    }return{rows,total:rows.length};
+  }
+  async function restTableAllService(table,serviceKey,onPage){
+    const c=cfg();const pageSize=1000;let from=0,rows=[],total=null;
+    for(let guard=0;guard<1000;guard++){
+      const to=from+pageSize-1;const res=await fetch(c.url+'/rest/v1/'+encodeURIComponent(table)+'?select=*',{method:'GET',cache:'no-store',headers:{apikey:serviceKey,Authorization:'Bearer '+serviceKey,Accept:'application/json','Range-Unit':'items',Range:`${from}-${to}`,Prefer:'count=exact'}});
+      const out=await parseJsonResponse(res,table);if(!Array.isArray(out))throw new Error(`${table}: cevap dizi değil`);rows.push(...out);const range=clean(res.headers.get('content-range'));const m=range.match(/\/(\d+|\*)$/);if(m&&m[1]!=='*')total=Number(m[1]);if(onPage)onPage(rows.length,total);if(out.length<pageSize||(Number.isFinite(total)&&rows.length>=total)||out.length===0)break;from+=out.length;
+    }
+    if(Number.isFinite(total)&&rows.length!==total)throw new Error(`${table}: ${total} kaydın ${rows.length} tanesi alınabildi`);
+    return{rows,total:Number.isFinite(total)?total:rows.length};
+  }
+  async function fetchOpenApi(serviceKey){
+    const c=cfg();try{const res=await fetch(c.url+'/rest/v1/',{method:'GET',cache:'no-store',headers:{apikey:serviceKey,Authorization:'Bearer '+serviceKey,Accept:'application/openapi+json'}});if(!res.ok)return null;return await res.json()}catch{return null}
+  }
+  function secretLeakCheck(files,serviceKey){if(!serviceKey)return;const decoder=new TextDecoder();for(const f of files){if(decoder.decode(f.bytes).includes(serviceKey))throw new Error('Güvenlik kontrolü: service_role anahtarı paket içeriğinde tespit edildi. ZIP oluşturulmadı.')}}
   async function exportAllSupabase(){
-    const button=$('exportAllBtn');if(!button)return;button.disabled=true;const badge=$('exportStateBadge');if(badge)badge.textContent='Hazırlanıyor';const statuses={};MIGRATION_TABLES.forEach((t)=>statuses[t.name]={state:'',rows:0});renderExportTables(statuses);exportUiSet('exportRowCount','0');exportUiSet('exportErrorCount','0');exportProgress(0,MIGRATION_TABLES.length+2,'Yönetim raporları alınıyor…');
+    const button=$('exportAllBtn');if(!button)return;button.disabled=true;const badge=$('exportStateBadge');if(badge)badge.textContent='Anahtar bekleniyor';const statuses={};MIGRATION_TABLES.forEach((t)=>statuses[t.name]={state:'',rows:0});renderExportTables(statuses);exportUiSet('exportRowCount','0');exportUiSet('exportErrorCount','0');exportProgress(0,MIGRATION_TABLES.length+2,'Legacy service_role JWT bekleniyor…');
+    let serviceKey='';
     try{
-      const [panelSnapshot,systemReport]=await Promise.all([edge('admin_list_all',{limit:5000}),edge('admin_system_report',{limit:10000})]);
-      const files=[{name:'panel/admin_list_all.json',bytes:jsonBytes(safeExportValue(panelSnapshot))},{name:'panel/admin_system_report.json',bytes:jsonBytes(safeExportValue(systemReport))}];
-      const results={},errors=[];let totalRows=0,done=2;exportProgress(done,MIGRATION_TABLES.length+2,'Supabase tabloları okunuyor…');
-      for(const table of MIGRATION_TABLES){statuses[table.name]={state:'loading',rows:0};renderExportTables(statuses);try{const rows=await restTableAll(table.name,(count)=>{statuses[table.name].rows=count;renderExportTables(statuses)});results[table.name]=rows;statuses[table.name]={state:'ok',rows:rows.length};totalRows+=rows.length;files.push({name:'tables/'+table.name+'.json',bytes:jsonBytes(safeExportValue(rows))})}catch(error){statuses[table.name]={state:'fail',rows:0,error:errorText(error)};errors.push({table:table.name,critical:table.critical,error:errorText(error)})}done++;renderExportTables(statuses);exportUiSet('exportRowCount',fmtInt(totalRows));exportUiSet('exportErrorCount',fmtInt(errors.length));exportProgress(done,MIGRATION_TABLES.length+2,errors.length?'Tablolar kontrol ediliyor…':'Tablolar alındı, doğrulanıyor…')}
-      const expected=expectedCoreCounts(systemReport);const validationChecks=[];Object.entries(expected).forEach(([table,count])=>{if(count>0){const actual=Array.isArray(results[table])?results[table].length:0;validationChecks.push({table,expected:Number(count),actual,ok:actual>=Number(count)})}});
-      const criticalErrors=errors.filter((x)=>x.critical);const countFailures=validationChecks.filter((x)=>!x.ok);const migrationReady=criticalErrors.length===0&&countFailures.length===0;
-      const generatedAt=new Date().toISOString();const manifest={format:'viohy-orman-migration',format_version:1,source:'Orman IO V80 / Supabase',generated_at:generatedAt,admin_version:ADMIN_VERSION,timezone:ISTANBUL_TZ,migration_ready:migrationReady,total_rows:totalRows,tables:MIGRATION_TABLES.map((t)=>({name:t.name,group:t.group,critical:t.critical,rows:Array.isArray(results[t.name])?results[t.name].length:0,exported:Array.isArray(results[t.name])})),nonportable_tables:NONPORTABLE_TABLES,notes:['Supabase Auth parola/oturum bilgileri aktarılmaz.','Google kullanıcıları Viohy tarafında Google hesabı ile yeniden doğrulanacaktır.','Google/Drive erişim ve yenileme tokenları güvenlik nedeniyle dışa aktarma paketine yazılmaz.']};
-      const validation={ok:migrationReady,generated_at:generatedAt,critical_errors:criticalErrors,count_checks:validationChecks,count_failures:countFailures,all_errors:errors};files.push({name:'manifest.json',bytes:jsonBytes(manifest)},{name:'validation.json',bytes:jsonBytes(validation)});
-      if(!migrationReady){if(badge)badge.textContent='Eksik veri';exportUiSet('exportStatusText','Tam aktarım doğrulanamadı. Kritik tablo erişimi veya kayıt sayısı uyuşmazlığı var; eksik ZIP indirilmedi.');toast('Tam aktarım durduruldu: kritik veriler eksik');return}
-      const stamp=new Date().toLocaleDateString('en-CA',{timeZone:ISTANBUL_TZ}).replaceAll('-','')+'_'+new Date().toLocaleTimeString('tr-TR',{timeZone:ISTANBUL_TZ,hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}).replaceAll(':','');exportUiSet('exportStatusText','Doğrulama tamamlandı. ZIP oluşturuluyor…');const blob=buildZip(files);downloadBlob(blob,`ORMAN_IO_SUPABASE_TAM_AKTARIM_${stamp}.zip`);if(badge)badge.textContent='Tamamlandı';exportProgress(MIGRATION_TABLES.length+2,MIGRATION_TABLES.length+2,'Tam aktarım paketi indirildi. Viohy içe aktarma için hazır.');toast('Supabase tam aktarım ZIP’i hazır')
-    }catch(error){if(badge)badge.textContent='Hata';exportUiSet('exportStatusText','Dışa aktarma başarısız: '+errorText(error));toast(errorText(error))}finally{button.disabled=false}
+      serviceKey=await serviceRolePrompt();if(!serviceKey){if(badge)badge.textContent='Hazır';exportUiSet('exportStatusText','Aktarım iptal edildi.');return}
+      exportUiSet('exportStatusText','Legacy service_role anahtarı doğrulanıyor…');await validateServiceRole(serviceKey);if(badge)badge.textContent='Doğrulandı';
+      const files=[],results={},errors=[],checks=[];let totalRows=0,done=1;exportProgress(done,MIGRATION_TABLES.length+2,'Supabase verileri okunuyor…');
+      const openApi=await fetchOpenApi(serviceKey);if(openApi)files.push({name:'schema/postgrest-openapi.json',bytes:jsonBytes(safeExportValue(openApi))});done++;exportProgress(done,MIGRATION_TABLES.length+2,'Tablolar ve Google kullanıcıları okunuyor…');
+      for(const source of MIGRATION_TABLES){statuses[source.name]={state:'loading',rows:0};renderExportTables(statuses);try{
+        const got=source.kind==='auth'?await authUsersAll(serviceKey,(count)=>{statuses[source.name].rows=count;renderExportTables(statuses)}):await restTableAllService(source.name,serviceKey,(count)=>{statuses[source.name].rows=count;renderExportTables(statuses)});
+        const rows=safeExportValue(got.rows);results[source.name]=rows;statuses[source.name]={state:'ok',rows:rows.length};totalRows+=rows.length;const target=source.kind==='auth'?'auth/users.json':'tables/'+source.name+'.json';files.push({name:target,bytes:jsonBytes(rows)});files.push({name:'schema/'+source.name.replaceAll('.','_')+'.json',bytes:jsonBytes(inferredSchema(rows))});checks.push({source:source.name,expected:Number(got.total),actual:rows.length,ok:!Number.isFinite(Number(got.total))||Number(got.total)===rows.length});
+      }catch(error){statuses[source.name]={state:'fail',rows:0,error:errorText(error)};errors.push({table:source.name,critical:source.critical,error:errorText(error)})}
+        done++;renderExportTables(statuses);exportUiSet('exportRowCount',fmtInt(totalRows));exportUiSet('exportErrorCount',fmtInt(errors.length));exportProgress(done,MIGRATION_TABLES.length+2,errors.length?'Veriler doğrulanıyor…':'Veriler alınıyor…');
+      }
+      const criticalErrors=errors.filter((x)=>x.critical),countFailures=checks.filter((x)=>!x.ok),migrationReady=criticalErrors.length===0&&countFailures.length===0,generatedAt=new Date().toISOString();
+      const manifest={format:'viohy-orman-migration',format_version:2,source:'Orman IO V80 / Supabase direct service-role export',generated_at:generatedAt,admin_version:ADMIN_VERSION,timezone:ISTANBUL_TZ,migration_ready:migrationReady,total_rows:totalRows,sources:MIGRATION_TABLES.map((t)=>({name:t.name,group:t.group,critical:t.critical,kind:t.kind||'table',rows:Array.isArray(results[t.name])?results[t.name].length:0,exported:Array.isArray(results[t.name])})),excluded_nonportable_tables:NONPORTABLE_TABLES,security:{service_role_stored:false,service_role_in_zip:false,passwords_exported:false,supabase_sessions_exported:false,google_drive_tokens_exported:false},notes:['auth/users.json Google hesaplarını Viohy kullanıcılarıyla eşleştirmek içindir; Supabase parolaları taşınmaz.','Drive bağlantı kayıtları içindeki access/refresh token, cipher ve secret alanları dışa aktarım sırasında çıkarılır.','Oturum/rate-limit/OAuth state gibi geçici tablolar yeni sisteme taşınmaz.']};
+      const validation={ok:migrationReady,generated_at:generatedAt,critical_errors:criticalErrors,count_checks:checks,count_failures:countFailures,all_errors:errors};
+      const readme=`ORMAN İO V80 -> VIOHY AKTARIM PAKETİ\n\nOluşturma: ${generatedAt}\nToplam kayıt: ${totalRows}\nAktarıma hazır: ${migrationReady?'EVET':'HAYIR'}\n\nBu paket service_role anahtarını, Supabase parolalarını/oturumlarını veya Google Drive access-refresh tokenlarını içermez.\nViohy içe aktarmada manifest.json ve validation.json doğrulanmadan veri yazılmamalıdır.\n`;
+      files.push({name:'manifest.json',bytes:jsonBytes(manifest)},{name:'validation.json',bytes:jsonBytes(validation)},{name:'README.txt',bytes:new TextEncoder().encode(readme)});
+      if(!migrationReady){if(badge)badge.textContent='Eksik veri';exportUiSet('exportStatusText','Tam aktarım doğrulanamadı. Kritik kaynaklardan biri okunamadığı için ZIP oluşturulmadı.');toast('Tam aktarım durduruldu: kritik veri eksik');return}
+      secretLeakCheck(files,serviceKey);const stamp=new Date().toLocaleDateString('en-CA',{timeZone:ISTANBUL_TZ}).replaceAll('-','')+'_'+new Date().toLocaleTimeString('tr-TR',{timeZone:ISTANBUL_TZ,hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}).replaceAll(':','');exportUiSet('exportStatusText','Doğrulama tamamlandı. ZIP oluşturuluyor…');const blob=buildZip(files);downloadBlob(blob,`ORMAN_IO_SUPABASE_TAM_AKTARIM_${stamp}.zip`);if(badge)badge.textContent='Tamamlandı';exportProgress(MIGRATION_TABLES.length+2,MIGRATION_TABLES.length+2,'Tam aktarım paketi indirildi. Viohy içe aktarma için hazır.');toast('Supabase tam aktarım ZIP’i hazır');
+    }catch(error){if(badge)badge.textContent='Hata';exportUiSet('exportStatusText','Dışa aktarma başarısız: '+errorText(error));toast(errorText(error))}finally{serviceKey='';button.disabled=false}
   }
 
   function switchPage(page){state.page=page;document.querySelectorAll('.page').forEach((el)=>el.classList.toggle('is-active',el.dataset.page===page));document.querySelectorAll('.nav-item').forEach((el)=>el.classList.toggle('is-active',el.dataset.pageTarget===page));if(page==='stats')renderStats();if(page==='backups')renderBackups();if(page==='manage'){renderBlocks();renderSecurityLogs();renderGoogleAccess();renderSeflikAdmin();}if(page==='export'){renderExportTables();exportUiSet('exportTableCount',MIGRATION_TABLES.length);}window.scrollTo({top:0,behavior:'smooth'})}
