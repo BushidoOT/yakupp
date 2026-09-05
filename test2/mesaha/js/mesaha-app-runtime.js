@@ -1039,6 +1039,7 @@
           barcodeControlEnabled: true,
           barcodeControlEvery: 40,
           autoPaperLengthEnabled: false,
+          paperLengthRules: "2-2.5",
           autoProductStandardEnabled: false,
           treeFilter: "Tümü",
           cutterFilter: "Tümü",
@@ -1482,6 +1483,8 @@
           state.settings.barcodeControlEvery = 40;
           state.settings.autoPaperLengthEnabled =
             state.settings.autoPaperLengthEnabled === true;
+          state.settings.paperLengthRules =
+            norm(state.settings.paperLengthRules) || "2-2.5";
           state.settings.autoProductStandardEnabled =
             state.settings.autoProductStandardEnabled === true;
           try {
@@ -1950,9 +1953,35 @@
               } catch {}
               toast(
                 autoPaperToggle.checked
-                  ? "2 ve 2,50 boyu Kâğıtlık otomasyonu açıldı."
-                  : "2 ve 2,50 boyu Kâğıtlık otomasyonu kapatıldı.",
+                  ? "Kâğıtlık boy otomasyonu açıldı."
+                  : "Kâğıtlık boy otomasyonu kapatıldı.",
               );
+            });
+          const paperLengthRules = $("paperLengthRules");
+          if (paperLengthRules)
+            paperLengthRules.addEventListener("change", () => {
+              const values = String(paperLengthRules.value || "")
+                .replace(/[–—;\s]+/g, "-")
+                .split("-")
+                .map((value) => Number(String(value).replace(",", ".")))
+                .filter((value) => Number.isFinite(value) && value > 0 && value <= 50);
+              const unique = [...new Set(values.map((value) => Number(value.toFixed(3))))];
+              if (!unique.length) {
+                paperLengthRules.value = state.settings.paperLengthRules || "2-2.5";
+                return toast("En az bir geçerli boy yazın. Örnek: 1.5-2-2.5");
+              }
+              state.settings.paperLengthRules = unique.join("-");
+              paperLengthRules.value = state.settings.paperLengthRules;
+              saveSettings();
+              try { __flushSettings(); } catch {}
+              try {
+                window.dispatchEvent(
+                  new CustomEvent("mesaha:automation-settings-changed", {
+                    detail: { key: "paperLengthRules", value: state.settings.paperLengthRules },
+                  }),
+                );
+              } catch {}
+              toast("Kâğıtlık boyları kaydedildi.");
             });
           const autoStandardToggle = $("autoProductStandardEnabled");
           if (autoStandardToggle)
@@ -2064,7 +2093,7 @@
         function showView(view) {
           state.view = view;
           document.body.classList.toggle("entry-open", view === "entry");
-          ["home", "entry", "records", "beyan", "seflikFolder", "guide", "settings"].forEach((v) =>
+          ["home", "entry", "records", "beyan", "seflikFolder", "management", "guide", "settings"].forEach((v) =>
             $(`${v}View`)?.classList.toggle("active", v === view),
           );
           document
@@ -2073,7 +2102,7 @@
               b.classList.toggle("active", b.dataset.nav === view),
             );
           if (view === "records") renderRecords();
-          if (view === "beyan") renderRecords();
+          if (view === "beyan") renderBeyanSummaryV81();
           if (view === "home") renderHome();
           try {
             window.dispatchEvent(
@@ -2195,6 +2224,9 @@
           const autoPaper = $("autoPaperLengthEnabled");
           if (autoPaper)
             autoPaper.checked = state.settings.autoPaperLengthEnabled === true;
+          const paperRules = $("paperLengthRules");
+          if (paperRules)
+            paperRules.value = state.settings.paperLengthRules || "2-2.5";
           const autoStandard = $("autoProductStandardEnabled");
           if (autoStandard)
             autoStandard.checked =
@@ -3700,6 +3732,15 @@
                 else renderAll();
               }),
             );
+        }
+        function renderBeyanSummaryV81() {
+          const totalAll = totals(state.records);
+          const count = $("recordCountPill"), totalM3 = $("recTotalM3"), totalCount = $("recTotalCount");
+          if (count) count.textContent = `${state.records.length} kayıt`;
+          if (totalM3) totalM3.textContent = `${fmt(totalAll.m3, 3)} m³`;
+          if (totalCount) totalCount.textContent = totalAll.count.toLocaleString("tr-TR");
+          renderProductTotals();
+          renderFilters();
         }
         function renderProductTotals() {
           const stats = recordStatsV447();

@@ -1983,8 +1983,10 @@
             var order = [
               ".hero-card",
               ".home-action-grid",
-              ".seflik-folder-home-shortcut",
+              "#seflikFolderHomeShortcutV528",
+              "#managementHomeShortcutV81",
               ".file-card",
+              ".mesaha-date-setting-v81",
               ".summary-card",
               ".detail-summary-card",
             ];
@@ -2081,6 +2083,7 @@
             "records",
             "beyan",
             "seflikFolder",
+            "management",
             "guide",
             "settings",
           ].forEach(function (v) {
@@ -2093,12 +2096,12 @@
           });
           try {
             if (
-              (view === "records" || view === "beyan") &&
+              view === "records" &&
               window.mesahaV303 &&
               window.mesahaV303.records
             )
               window.mesahaV303.records();
-            else if ((view === "records" || view === "beyan") && window.renderRecords)
+            else if (view === "records" && window.renderRecords)
               window.renderRecords();
           } catch (e) {}
           try {
@@ -2349,6 +2352,7 @@
             "records",
             "beyan",
             "seflikFolder",
+            "management",
             "guide",
             "settings",
           ].forEach(function (v) {
@@ -2380,7 +2384,9 @@
               "home",
               "entry",
               "records",
+              "beyan",
               "seflikFolder",
+              "management",
               "guide",
               "settings",
             ].forEach(function (v) {
@@ -3117,4 +3123,3 @@
         window.addEventListener("pageshow", clean, { passive: true });
       })();
 ;
-

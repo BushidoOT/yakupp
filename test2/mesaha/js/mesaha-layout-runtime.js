@@ -16,7 +16,7 @@
           var nav=$("bottomNav");
           if(!nav) return;
           nav.classList.add("mesaha-nav-v600");
-          ["home","records","beyan","seflikFolder","settings"].forEach(function(key){
+          ["home","records","beyan","seflikFolder","management","settings"].forEach(function(key){
             var btn=qs('[data-nav="'+key+'"]',nav);
             if(!btn) return;
             if(btn.dataset.iconVersion!=="600" || !qs("svg",btn)){

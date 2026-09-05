@@ -507,17 +507,24 @@
   function exactLength(length, expected) {
     return Math.abs(Number(length || 0) - expected) < 0.0001;
   }
+  function paperLengths(settings) {
+    return String(settings && settings.paperLengthRules || "2-2.5")
+      .replace(/[–—;\s]+/g, "-")
+      .split("-")
+      .map(function (value) { return Number(String(value).replace(",", ".")); })
+      .filter(function (value) { return Number.isFinite(value) && value > 0 && value <= 50; });
+  }
   function classify(diameter, length, settings) {
     var d = numberValue(diameter);
     var l = numberValue(length);
     if (!(l > 0 && l <= 50)) return "";
 
-    /* Kullanıcının ayrı 2 / 2,50 ayarı yalnız boya bakar ve standart
-       sınıflandırmadan önce gelir; çap daha sonra girilse de seçim korunur. */
+    /* Kullanıcının tireyle ayırarak yazdığı Kâğıtlık boyları yalnız boya bakar
+       ve standart sınıflandırmadan önce gelir. */
     if (
       settings.autoPaperLengthEnabled === true &&
       visible(settings, "Kağıtlık") &&
-      (exactLength(l, 2) || exactLength(l, 2.5))
+      paperLengths(settings).some(function (value) { return exactLength(l, value); })
     ) return "Kağıtlık";
 
     if (settings.autoProductStandardEnabled !== true) return "";

@@ -54,7 +54,7 @@
           window.MesahaVersion.applyToDocument(document);
       } catch (e) {}
     </script>
-    <script src="./js/mesaha-foundation.js?v=80.0.0"></script>
+    <script src="./js/mesaha-foundation.js?v=81.0.0"></script>
 
     
     
@@ -83,12 +83,13 @@
         } catch (e) {}
       })();
     </script>
-    <link href="./css/app.css?v=80.0.0" rel="stylesheet" />
-    <link href="./css/mesaha-ui.css?v=80.0.0" rel="stylesheet" />
-<link href="./css/mesaha-seflik-folder.css?v=80.0.0" rel="stylesheet" />
-    <link href="./css/mesaha-runtime.css?v=80.0.0" rel="stylesheet" />
-    <link href="./js/mesaha-app-runtime.js?v=80.0.0" rel="preload" as="script" />
-    <link href="./js/mesaha-auth-ui-runtime.js?v=80.0.0" rel="preload" as="script" />
+    <link href="./css/app.css?v=81.0.0" rel="stylesheet" />
+    <link href="./css/mesaha-ui.css?v=81.0.0" rel="stylesheet" />
+<link href="./css/mesaha-seflik-folder.css?v=81.0.0" rel="stylesheet" />
+    <link href="./css/mesaha-runtime.css?v=81.0.0" rel="stylesheet" />
+    <link href="./css/mesaha-management-v81.css?v=81.0.0" rel="stylesheet" />
+    <link href="./js/mesaha-app-runtime.js?v=81.0.0" rel="preload" as="script" />
+    <link href="./js/mesaha-auth-ui-runtime.js?v=81.0.0" rel="preload" as="script" />
     
     
     
@@ -167,15 +168,30 @@
                 <em>Ölçüm ekranını aç</em>
               </span>
             </button>
-            <label class="home-action-card home-date-card" for="mesahaDate">
+            <button class="home-action-card home-istif-card" id="openIstifBtnV81" type="button">
               <span class="home-action-icon" aria-hidden="true">▣</span>
               <span class="home-action-copy">
-                <small>Çalışma tarihi</small>
-                <b id="mesahaDateDisplay">--.--.----</b>
-                <em>Değiştirmek için dokun</em>
+                <small>İstif uygulaması</small>
+                <b>İstif Al</b>
+                <em>İstif, fotoğraf ve kayıt yönetimi</em>
               </span>
-              <input id="mesahaDate" type="date" aria-label="Mesaha tarihi" />
-            </label>
+            </button>
+          </section>
+          <section
+            aria-label="Yönetimi aç"
+            class="seflik-folder-home-shortcut management-home-shortcut-v81"
+            id="managementHomeShortcutV81"
+            data-nav="management"
+            role="button"
+            tabindex="0"
+          >
+            <div class="seflik-home-copy">
+              <span class="seflik-home-kicker">YÖNETİM ARAÇLARI</span>
+              <b>Yönetim</b>
+              <small>Şeflik, ormancı, bölme ve terminal işlemlerini tek yerden yönetin.</small>
+              <span class="seflik-home-open">Yönetimi Aç <i aria-hidden="true">›</i></span>
+            </div>
+            <div class="management-home-visual-v81" aria-hidden="true">⚙</div>
           </section>
           <section
             aria-label="Şeflik Klasörünü aç"
@@ -245,6 +261,13 @@
               Dosya adı ve çalışma takibi için kullanılır; sistem Excel’ine yazılmaz.
             </p>
           </section>
+          <section class="card mesaha-date-setting-v81">
+            <div class="section-head"><h2>Mesaha Tarihi</h2><span id="mesahaDateDisplay">Tarih seç</span></div>
+            <label class="paper-length-rules-v81" for="mesahaDate">
+              <span>Çalışma tarihi</span>
+              <input id="mesahaDate" type="date" aria-label="Mesaha tarihi" />
+            </label>
+          </section>
           <section class="card settings-card home-settings-source" hidden aria-hidden="true">
             <h2>Giriş Ayarları</h2>
             <div class="setting-block">
@@ -275,13 +298,24 @@
                 değiştirirseniz seçiminiz o barkod kaydedilene kadar korunur.
               </p>
               <div class="check-grid product-automation-grid-v72">
-                <label class="check-card setting-toggle-card"
+                <label class="check-card setting-toggle-card paper-rule-card-v81"
                   ><input id="autoPaperLengthEnabled" type="checkbox" /><span class="choice-copy"
-                    ><b>2 ve 2,50 → Kâğıtlık</b><small
-                      >Boy tam 2,00 veya 2,50 olduğunda Kâğıtlık seçilir.</small
+                    ><b>Kâğıtlık boylarını otomatik seç</b><small
+                      >Aşağıya yazdığınız boylardan biri girildiğinde Kâğıtlık seçilir.</small
                     ></span><span class="choice-switch" aria-hidden="true"></span
                   ></label
                 >
+                <label class="paper-length-rules-v81">
+                  <span>Kâğıtlık Boyları</span>
+                  <input
+                    autocomplete="off"
+                    id="paperLengthRules"
+                    inputmode="text"
+                    placeholder="Örn: 1.5-2-2.5"
+                    type="text"
+                  />
+                  <small>Boyları <b>-</b> ile ayırın. Nokta veya virgül kullanabilirsiniz.</small>
+                </label>
                 <label class="check-card setting-toggle-card"
                   ><input id="autoProductStandardEnabled" type="checkbox" /><span class="choice-copy"
                     ><b>Standarda göre otomatik seç</b><small
@@ -291,7 +325,7 @@
                 >
               </div>
               <p class="hint">
-                İki ayar birlikte açıksa 2,00 ve 2,50 Kâğıtlık kuralı önce
+                İki ayar birlikte açıksa yazdığınız Kâğıtlık boyları önce
                 uygulanır. Standart otomasyonu yalnız Giriş Ayarlarında açık
                 olan ürün türleri arasından seçim yapar.
               </p>
@@ -423,6 +457,35 @@
           >
             Kaydet
           </button>
+        </section>
+        <section class="view management-view-v81" id="managementView">
+          <section class="management-shell-v81">
+            <div class="management-head-v81">
+              <div>
+                <small>YÖNETİM ARAÇLARI</small>
+                <h2>Saha Yönetimi</h2>
+                <p>Şeflik, ekip, bölme ve terminal işlemlerini buradan yönetin.</p>
+              </div>
+              <button class="btn soft" data-nav="home" type="button">Ana Menü</button>
+            </div>
+            <div class="management-grid-v81">
+              <button class="management-tool-v81" data-management-tool="seflik" type="button">
+                <span aria-hidden="true">▱</span><div><b>Şeflik Yönetimi</b><small>Şeflik oluşturun, seçin ve düzenleyin</small></div><i>›</i>
+              </button>
+              <button class="management-tool-v81" data-management-tool="ormanci" type="button">
+                <span aria-hidden="true">♙</span><div><b>Ormancı Yönetimi</b><small>Aktif şefliğe kullanıcı ekleyin veya çıkarın</small></div><i>›</i>
+              </button>
+              <button class="management-tool-v81" data-management-tool="bolme" type="button">
+                <span aria-hidden="true">⌑</span><div><b>Bölme Yönetimi</b><small>Aktif şefliğe bölme oluşturun ve görüntüleyin</small></div><i>›</i>
+              </button>
+              <button class="management-tool-v81" data-management-tool="terminal" type="button">
+                <span aria-hidden="true">⌘</span><div><b>Terminal Kodu</b><small>Kod oluşturun ve bağlı terminalleri yönetin</small></div><i>›</i>
+              </button>
+              <button class="management-tool-v81 management-admin-v81" data-admin-only-v81 data-management-tool="admin" type="button" hidden>
+                <span aria-hidden="true">▦</span><div><b>Yönetim Paneli</b><small>Sistem kullanıcıları ve raporlar</small></div><i>›</i>
+              </button>
+            </div>
+          </section>
         </section>
         <section class="view" id="recordsView">
           <section class="card records-card">
@@ -1039,7 +1102,7 @@
       </div>
     </div>
     <div class="toast" id="toast"></div>
-        <script src="./js/mesaha-app-runtime.js?v=80.0.0"></script>
+        <script src="./js/mesaha-app-runtime.js?v=81.0.0"></script>
     
     
     
@@ -1055,7 +1118,7 @@
     ></script>
     
     <script id="mesaha-google-auth" src="../js/mesaha-google-auth.js"></script>
-        <script src="./js/mesaha-auth-ui-runtime.js?v=80.0.0"></script>
+        <script src="./js/mesaha-auth-ui-runtime.js?v=81.0.0"></script>
     
     
     
@@ -1129,9 +1192,9 @@
     
     <script
       id="mesaha-offline-core-v380"
-      src="./js/mesaha-offline-core.js?v=80.0.0"
+      src="./js/mesaha-offline-core.js?v=81.0.0"
     ></script>
-        <script src="./js/mesaha-home-runtime.js?v=80.0.0"></script>
+        <script src="./js/mesaha-home-runtime.js?v=81.0.0"></script>
     
     
     
@@ -1146,7 +1209,7 @@
 <script id="mesaha-sound-engine" src="./js/mesaha-sound.js"></script>
 
     
-        <script src="./js/mesaha-feature-runtime.js?v=80.0.0"></script>
+        <script src="./js/mesaha-feature-runtime.js?v=81.0.0"></script>
     
     
     
@@ -1177,31 +1240,31 @@
     
     
     
-<script src="./js/mesaha-record-tools.js?v=80.0.0"></script>
+<script src="./js/mesaha-record-tools.js?v=81.0.0"></script>
     
     
-        <script src="./js/mesaha-offline-guard-runtime.js?v=80.0.0"></script>
+        <script src="./js/mesaha-offline-guard-runtime.js?v=81.0.0"></script>
 
-    <script src="./js/mesaha-cloud-runtime.js?v=80.0.0"></script>
+    <script src="./js/mesaha-cloud-runtime.js?v=81.0.0"></script>
     
-        <script src="./js/mesaha-cloud-ui-runtime.js?v=80.0.0"></script>
-    
-    
-    
-    <script src="./js/mesaha-seflik-runtime.js?v=80.0.0"></script>
+        <script src="./js/mesaha-cloud-ui-runtime.js?v=81.0.0"></script>
     
     
     
+    <script src="./js/mesaha-seflik-runtime.js?v=81.0.0"></script>
     
-
-
     
-        <script src="./js/mesaha-session-ui-runtime.js?v=80.0.0"></script>
-
-    <script src="./js/mesaha-seflik-ui.js?v=80.0.0"></script>
+    
     
 
-        <script src="./js/mesaha-filter-runtime.js?v=80.0.0"></script>
+
+    
+        <script src="./js/mesaha-session-ui-runtime.js?v=81.0.0"></script>
+
+    <script src="./js/mesaha-seflik-ui.js?v=81.0.0"></script>
+    
+
+        <script src="./js/mesaha-filter-runtime.js?v=81.0.0"></script>
 
     <script src="../suite-audio.js"></script>
     <script src="../suite-identity.js"></script>
@@ -1210,13 +1273,14 @@
     <script src="./suite-bridge.js"></script>
   
     
-        <script src="./js/mesaha-profile-runtime.js?v=80.0.0"></script>
+        <script src="./js/mesaha-profile-runtime.js?v=81.0.0"></script>
 
-        <script src="./js/mesaha-lazy-features.js?v=80.0.0"></script>
+        <script src="./js/mesaha-lazy-features.js?v=81.0.0"></script>
 
-        <script src="./js/mesaha-layout-runtime.js?v=80.0.0"></script>
+        <script src="./js/mesaha-layout-runtime.js?v=81.0.0"></script>
 
-    <script src="./js/mesaha-final-runtime.js?v=80.0.0"></script>
+    <script src="./js/mesaha-final-runtime.js?v=81.0.0"></script>
+    <script src="./js/mesaha-management-runtime-v81.js?v=81.0.0"></script>
 
     
 
