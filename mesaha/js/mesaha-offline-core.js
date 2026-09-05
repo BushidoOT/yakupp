@@ -57,7 +57,7 @@
     try {
       const registration = await navigator.serviceWorker.ready;
       const worker = registration.active || navigator.serviceWorker.controller;
-      if (worker) worker.postMessage({ type: "CACHE_ALL", source: "mesaha-offline-core" });
+      if (worker) worker.postMessage({ type: "CACHE_APP", app: "mesaha", source: "mesaha-offline-core" });
       return true;
     } catch (_) { return false; }
   }

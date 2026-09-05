@@ -889,15 +889,10 @@
   function bootUi() {
     if (typeof document === "undefined") return;
     ensureUi();
-    [150, 450, 900, 1800, 3200].forEach(function (delay) { setTimeout(ensureUi, delay); });
+    [120, 420, 900].forEach(function (delay) { setTimeout(ensureUi, delay); });
     root.addEventListener("mesaha:view-changed", function (event) {
-      if (event && event.detail && event.detail.view === "beyan") setTimeout(ensureUi, 60);
-    });
-    const observer = new MutationObserver(function () {
-      clearTimeout(bootUi.__timer);
-      bootUi.__timer = setTimeout(ensureUi, 60);
-    });
-    observer.observe(document.body, { childList: true, subtree: true });
+      if (event && event.detail && event.detail.view === "beyan") setTimeout(ensureUi, 40);
+    }, { passive: true });
   }
 
   const api = Object.freeze({

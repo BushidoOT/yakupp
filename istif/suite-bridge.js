@@ -18,14 +18,24 @@
   };
   const clean = (v) => String(v == null ? "" : v).trim();
   function valid() {
-    const s =
-        read("mesaha_supabase_v500_session", {}) ||
-        read("mesaha_supabase_v569_session_backup", {}),
-      a = read("mesaha_google_access_v548", {}),
-      t =
-        read("mesaha_terminal_local_mode_v556", null) ||
-        read("mesaha_terminal_local_mode_v557", {});
-    return !!(s.access_token || a.status === "approved" || (t && t.active));
+    try {
+      if (window.OrmanSuiteIdentity && typeof window.OrmanSuiteIdentity.authType === "function") {
+        return window.OrmanSuiteIdentity.authType() !== "none";
+      }
+    } catch (_) {}
+    const primary = read("mesaha_supabase_v500_session", null);
+    const backup = read("mesaha_supabase_v569_session_backup", null);
+    const s = primary && primary.access_token ? primary : backup && backup.access_token ? backup : {};
+    if ((!primary || !primary.access_token) && s.access_token) write("mesaha_supabase_v500_session", s);
+    const a = read("mesaha_google_access_v548", {});
+    const current = read("mesaha_terminal_local_mode_v556", null);
+    const old = read("mesaha_terminal_local_mode_v557", null);
+    const t = current && current.active ? current : old && old.active ? old : {};
+    if ((!current || !current.active) && t.active) {
+      write("mesaha_terminal_local_mode_v556", t);
+      try { localStorage.removeItem("mesaha_terminal_local_mode_v557"); } catch (_) {}
+    }
+    return !!(s.access_token || a.status === "approved" || t.active);
   }
   function css() {
     if (document.getElementById("suiteIstifCssV10")) return;
@@ -43,7 +53,7 @@
     if(!api||typeof api.createOfflineDivision!=="function")return notify("Orman İO bölme sistemi hazır değil.",true);
     const no=clean(prompt("Yeni bölme numarasını yazın:"));if(!no)return;
     const loc=clean(prompt("Mevki / açıklama (isteğe bağlı):")||"");
-    try{const out=api.createOfflineDivision(no,loc,{source:"istif-new"});patchBolmeSelector();selectBolme(out.division.bolme_no||no);notify(out.created?`Bölme ${no} offline oluşturuldu.`:`Bölme ${no} zaten vardı; aynı bölme seçildi.`);}
+    try{const out=api.createOfflineDivision(no,loc,{source:"istif-new"});patchBolmeSelector();selectBolme(out.division.bolme_no||no);notify(out.created?`Bölme ${no} oluşturuldu ve offline hazırlandı.`:`Bölme ${no} zaten vardı; aynı bölme seçildi.`);}
     catch(e){notify(clean(e&&e.message||e),true);}
   }
   function ensureCreateDivisionButton(){
@@ -54,7 +64,7 @@
     btn.id="suiteCreateDivisionBtnV10";
     btn.className="suite-create-division-v10";
     btn.type="button";
-    btn.innerHTML='<span aria-hidden="true">＋</span> Offline Bölme Oluştur';
+    btn.innerHTML='<span aria-hidden="true">＋</span> Bölme Oluştur';
     btn.addEventListener("click",function(e){e.preventDefault();e.stopPropagation();createDivisionFromIstif();});
     row.insertAdjacentElement("afterend",btn);
   }
@@ -134,29 +144,34 @@
       n.id = "suiteIstifNoteV8";
       n.className = "suite-istif-note-v10";
       n.textContent =
-        "Şeflik, personel, bölme, Drive, yedek ve senkronizasyon işlemleri Orman İO ana menüsünden yönetilir. İstif İO içinde yalnızca Orman İO’dan gelen şeflik ve bölme seçenekleri kullanılır; kullanıcı kimliği otomatik uygulanır.";
+        "Şeflik ve personel yönetimi Mesaha uygulamasındaki Yönetim bölümündedir. Şeflik üyeleri İstif İO içindeki + Bölme Oluştur düğmesiyle yeni bölme açabilir; oluşturulan bölme offline hazırlanır ve sonraki sunucu gönderiminde ortak şefliğe aktarılır.";
       settings.insertBefore(n, settings.firstChild);
     }
   }
-  let timer = 0, applying = false;
-  function schedule() {
-    if (applying) return;
+  let timer = 0, applying = false, frame = 0, rerun = false;
+  function applySuiteUiV69() {
+    frame = 0;
+    if (applying) { rerun = true; return; }
     applying = true;
-    try { patchBolmeSelector(); } finally { applying = false; }
+    try {
+      syncLocal();
+      hide();
+      hideForesterUi();
+      patchBolmeSelector();
+      ensureCreateDivisionButton();
+      const api = window.MesahaSuiteSyncV24 || window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8;
+      if (api) api.updateButton();
+    } finally {
+      applying = false;
+      if (rerun) { rerun = false; schedule(); }
+    }
+  }
+  function schedule() {
     clearTimeout(timer);
     timer = setTimeout(() => {
-      if (applying) return;
-      applying = true;
-      try {
-        syncLocal();
-        hide();
-        hideForesterUi();
-        patchBolmeSelector();
-        ensureCreateDivisionButton();
-        const api = window.MesahaSuiteSyncV24 || window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8;
-        if (api) api.updateButton();
-      } finally { applying = false; }
-    }, 60);
+      if (frame) return;
+      frame = (window.requestAnimationFrame || function (fn) { return setTimeout(fn, 16); })(applySuiteUiV69);
+    }, 90);
   }
   function block(e) {
     const t =
@@ -173,7 +188,7 @@
     else location.href = "../";
   }
   if (!valid()) {
-    location.replace("../");
+    location.replace("../?open=account");
     return;
   }
   window.MESAHA_SUITE_MODE = true;
@@ -212,6 +227,6 @@
     if (e.target && e.target.closest && e.target.closest('[data-view="new"]'))
       setTimeout(schedule, 0);
   }, true);
-  setTimeout(schedule, 350);
-  setTimeout(schedule, 1200);
+  setTimeout(schedule, 260);
+  setTimeout(schedule, 900);
 })();

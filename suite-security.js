@@ -11,6 +11,7 @@
   var SHARED_DEVICE_KEY = "mesaha_suite_security_device_v26";
   var CHECK_INTERVAL = 20000;
   var running = false;
+  var refreshPromise = null;
   var lastCheck = 0;
   var intervalId = 0;
 
@@ -27,6 +28,11 @@
     return out;
   }
   function session() {
+    try {
+      if (window.OrmanSuiteIdentity && typeof window.OrmanSuiteIdentity.session === "function") {
+        return window.OrmanSuiteIdentity.session() || {};
+      }
+    } catch (_) {}
     for (var i = 0; i < SESSION_KEYS.length; i++) {
       var s = readJson(SESSION_KEYS[i], null);
       if (s && (s.access_token || s.refresh_token || (s.user && s.user.id))) return s;
@@ -39,6 +45,11 @@
     writeJson(SESSION_KEYS[1], s);
   }
   function terminal() {
+    try {
+      if (window.OrmanSuiteIdentity && typeof window.OrmanSuiteIdentity.terminal === "function") {
+        return window.OrmanSuiteIdentity.terminal() || {};
+      }
+    } catch (_) {}
     for (var i = 0; i < TERMINAL_KEYS.length; i++) {
       var t = readJson(TERMINAL_KEYS[i], null);
       if (t && t.active) return t;
@@ -92,6 +103,25 @@
     });
   }
   function clearCachedBlock() { removeKey(BLOCK_CACHE_KEY); }
+  function timedFetch(url, options, timeoutMs) {
+    options = options || {};
+    var controller = !options.signal && typeof AbortController !== "undefined" ? new AbortController() : null;
+    var timer = controller ? setTimeout(function () { try { controller.abort(); } catch (_) {} }, Math.max(1000, Number(timeoutMs) || 12000)) : 0;
+    return fetch(url, Object.assign({}, options, controller ? { signal: controller.signal } : {})).finally(function () { if (timer) clearTimeout(timer); });
+  }
+  function terminalSessionInvalid(status, body) {
+    var code = clean(body && (body.code || body.errorCode)).toUpperCase();
+    var message = clean(body && (body.error || body.message || body.reason));
+    return !!(body && (body.terminal_required === true || body.terminal_revoked === true)) ||
+      Number(status) === 403 && (/^TERMINAL_(REQUIRED|TOKEN_INVALID|DEVICE_MISMATCH|USER_MISMATCH|EMAIL_MISMATCH)$/.test(code) || /terminal.*(eşleştirme|güvenlik anahtarı|farklı cihaz|geçersiz|kapatıldı|revoked|required)/i.test(message));
+  }
+  function clearInvalidTerminal(body) {
+    var existing = terminal();
+    if (!(existing && existing.active && existing.source === "pair_code")) return false;
+    TERMINAL_KEYS.forEach(removeKey);
+    try { window.dispatchEvent(new CustomEvent("mesaha:terminal-session-revoked", { detail: { reason: clean(body && (body.error || body.message || body.reason)) } })); } catch (_) {}
+    return true;
+  }
 
   function ensureStyle() {
     if (document.getElementById("suiteSecurityStyleV26")) return;
@@ -125,23 +155,32 @@
   }
 
   async function refreshSession(old) {
+    if (refreshPromise) return refreshPromise;
     if (!old || !old.refresh_token || navigator.onLine === false) return old || {};
-    var response = await fetch(SUPABASE_URL + "/auth/v1/token?grant_type=refresh_token", {
-      method: "POST", cache: "no-store",
-      headers: { "Content-Type": "application/json", apikey: ANON_KEY },
-      body: JSON.stringify({ refresh_token: old.refresh_token })
-    });
-    var out = await response.json().catch(function () { return {}; });
-    if (!response.ok || !out.access_token) return old || {};
-    var next = {
-      access_token: out.access_token,
-      refresh_token: out.refresh_token || old.refresh_token,
-      expires_at: out.expires_at || Math.floor(Date.now() / 1000) + Number(out.expires_in || 3600),
-      token_type: out.token_type || old.token_type || "bearer",
-      user: out.user || old.user || {}
-    };
-    saveSession(next);
-    return next;
+    refreshPromise = (async function () {
+      var engine = window.mesahaSupabase || window.mesahaCloud;
+      if (engine && typeof engine.refreshSession === "function") {
+        var shared = await engine.refreshSession(old);
+        return shared || old || {};
+      }
+      var response = await timedFetch(SUPABASE_URL + "/auth/v1/token?grant_type=refresh_token", {
+        method: "POST", cache: "no-store",
+        headers: { "Content-Type": "application/json", apikey: ANON_KEY },
+        body: JSON.stringify({ refresh_token: old.refresh_token })
+      }, 15000);
+      var out = await response.json().catch(function () { return {}; });
+      if (!response.ok || !out.access_token) return old || {};
+      var next = {
+        access_token: out.access_token,
+        refresh_token: out.refresh_token || old.refresh_token,
+        expires_at: out.expires_at || Math.floor(Date.now() / 1000) + Number(out.expires_in || 3600),
+        token_type: out.token_type || old.token_type || "bearer",
+        user: out.user || old.user || {}
+      };
+      saveSession(next);
+      return next;
+    })().finally(function () { refreshPromise = null; });
+    return refreshPromise;
   }
   async function authData() {
     var s = session(), t = terminal();
@@ -149,15 +188,23 @@
       try { s = await refreshSession(s); } catch (_) {}
     }
     var terminalPayload = {};
-    if (t && t.active && t.source === "pair_code") {
+    try {
+      if (window.OrmanSuiteIdentity && typeof window.OrmanSuiteIdentity.terminalAuthPayload === "function") {
+        terminalPayload = window.OrmanSuiteIdentity.terminalAuthPayload() || {};
+      }
+    } catch (_) {}
+    if (!clean(terminalPayload.terminalCode || terminalPayload.terminalToken) && t && t.active && t.source === "pair_code") {
       terminalPayload = {
         terminalCode: clean(t.terminalCode),
         terminalToken: clean(t.terminalToken),
         terminalPairedUserId: clean(t.pairedUserId),
-        terminalPairedEmail: clean(t.pairedEmail)
+        terminalPairedEmail: clean(t.pairedEmail),
+        terminalDeviceId: clean(t.deviceId || t.terminalDeviceId),
+        deviceId: clean(t.deviceId || t.terminalDeviceId)
       };
     }
-    return { token: clean(s.access_token) || ANON_KEY, terminalPayload: terminalPayload };
+    var terminalRequest = !!clean(terminalPayload.terminalCode || terminalPayload.terminalToken);
+    return { token: terminalRequest ? ANON_KEY : (clean(s.access_token) || ANON_KEY), terminalPayload: terminalPayload };
   }
 
   async function check(force) {
@@ -173,7 +220,7 @@
     try {
       var auth = await authData();
       var ids = deviceIds();
-      var response = await fetch(EDGE_URL, {
+      var response = await timedFetch(EDGE_URL, {
         method: "POST", cache: "no-store",
         headers: { "Content-Type": "application/json", apikey: ANON_KEY, Authorization: "Bearer " + auth.token },
         body: JSON.stringify(Object.assign({
@@ -183,8 +230,14 @@
           deviceIds: ids,
           appPath: location.pathname || ""
         }, auth.terminalPayload))
-      });
+      }, 12000);
       var body = await response.json().catch(function () { return {}; });
+      if (terminalSessionInvalid(response.status, body)) {
+        clearInvalidTerminal(body);
+        clearCachedBlock();
+        hideBlocked();
+        return false;
+      }
       if (body && body.blocked === true) {
         showBlocked(body);
         return true;
@@ -214,6 +267,7 @@
   }
 
   window.addEventListener("online", function () { setTimeout(function () { check(true); }, 100); });
+  window.addEventListener("pageshow", function () { setTimeout(function () { check(true); }, 120); }, { passive: true });
   document.addEventListener("visibilitychange", function () { if (!document.hidden) check(true); });
   window.addEventListener("storage", function (event) {
     if (!event || SESSION_KEYS.indexOf(event.key) >= 0 || TERMINAL_KEYS.indexOf(event.key) >= 0 || event.key === BLOCK_CACHE_KEY) check(true);

@@ -1,31 +1,31 @@
 (function (root) {
   "use strict";
   const DATA = /*MESAHA_RELEASE_DATA_START*/{
-  "build": 59,
-  "version": "59.0.0",
+  "build": 83,
+  "version": "83.0.0",
   "channel": "stable",
-  "releasedAt": "2026-07-27T15:55:00+03:00",
-  "assetToken": "orman-io-stable-20260727-8",
-  "cacheName": "orman-io-shell-stable-20260727-8",
+  "releasedAt": "2026-09-05T18:18:50+03:00",
+  "assetToken": "orman-io-stable-20260905-v83",
+  "cacheName": "orman-io-shell-stable-20260905-v83",
   "apps": {
     "suite": {
       "label": "Orman İO",
-      "version": "59.0.0"
+      "version": "83.0.0"
     },
     "mesaha": {
       "label": "Mesaha İO",
-      "version": "6.00"
+      "version": "6.22"
     },
     "istif": {
       "label": "İstif İO",
-      "version": "0.3.18"
+      "version": "0.3.24"
     },
     "admin": {
       "label": "Orman İO Yönetim",
-      "version": "59.0.0"
+      "version": "83.0.0"
     }
   },
-  "description": "Mesaha İO Beyan ekranındaki işlem sırası yeniden düzenlendi. Mesaha dosyasını yedek dosyasına dönüştürme işlemi ayrıntılı açıklama penceresine taşındı; dosya seçimi ve dönüştürme bu pencere üzerinden yapılır. Buton sırası Mesaha Dosyasını İndir, Şefliğe Gönder/Beyan İndir, Yedek Yükle/Yedek Al, Drive’a Yükle/Drive’dan Getir ve en altta dönüştürücü olacak şekilde sabitlendi."
+  "description": "V83 mobil kararlılık ve güvenli senkronizasyon: Android/iOS terminal oturumları zaman aşımı ve yenileme yarışlarına karşı güçlendirildi; Şeflik, Mesaha ve İstif indirmelerinde eksik sunucu cevabı yerel veriyi silemez; Drive fotoğraf yüklemeleri tekrar denemelerde çoğalmaz; Beyan görünümü ve mobil yönetim arayüzü hızlandırıldı."
 }/*MESAHA_RELEASE_DATA_END*/;
   const APP_NAMES = DATA.apps || {};
   const SCRIPT_URL = (() => {
@@ -66,23 +66,19 @@
       "#suiteVersionCorner", "#suiteVersionLabel", "#versionLabel", "#versionText",
       ".version-card", ".version-chip-v407", "[data-version-label]"
     ];
-    const hide = () => selectors.forEach((selector) =>
-      document.querySelectorAll(selector).forEach((node) => {
-        node.hidden = true;
-        node.setAttribute("aria-hidden", "true");
-        node.style.setProperty("display", "none", "important");
-      })
-    );
-    const keepTitle = () => {
+    const run = () => {
+      selectors.forEach((selector) =>
+        document.querySelectorAll(selector).forEach((node) => {
+          node.hidden = true;
+          node.setAttribute("aria-hidden", "true");
+          node.style.setProperty("display", "none", "important");
+        })
+      );
       if (document.title !== label) document.title = label;
     };
-    const run = () => { hide(); keepTitle(); };
     if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", run, { once: true });
     else run();
-    try {
-      const observer = new MutationObserver(run);
-      observer.observe(document.documentElement, { childList: true, subtree: true });
-    } catch (_) {}
+    window.addEventListener("pageshow", run, { passive: true });
   }
 
   async function fetchRemote(options) {

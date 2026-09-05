@@ -8,7 +8,7 @@
   <title>Orman İO Yönetim</title>
   <link rel="manifest" href="../manifest.json">
   <link rel="apple-touch-icon" href="../assets/icon-192.png">
-  <link rel="stylesheet" href="./admin.css?v=80-export2">
+  <link rel="stylesheet" href="./admin.css">
   <link rel="stylesheet" href="./admin-system-report.css">
   <script src="../release.js"></script>
   <script src="../suite-runtime-stabilizer.js"></script>
@@ -134,42 +134,6 @@
           <div id="backupList" class="backup-list"></div>
         </section>
 
-
-        <section id="page-export" class="page" data-page="export">
-          <div class="page-heading">
-            <div><span class="eyebrow">Viohy geçişi</span><h2>Supabase Veri Dışa Aktarma</h2><p>Orman İO verilerini tablo bazlı JSON dosyaları ve doğrulama manifestiyle tek ZIP paketinde hazırlayın.</p></div>
-            <span id="exportStateBadge" class="counter-badge">Hazır</span>
-          </div>
-
-          <article class="surface export-hero">
-            <div class="export-hero-icon" aria-hidden="true">⇩</div>
-            <div class="export-hero-copy"><h3>Viohy aktarım paketini oluştur</h3><p>Mesaha, İstif, Şeflik, bölme, kullanıcı, Drive referansları, Google Auth eşleştirmeleri, güvenlik ve senkron kayıtlarını tek ZIP'e alır. İndirme sırasında yalnız bir kez Supabase Legacy service_role JWT anahtarı istenir; anahtar kaydedilmez. Yeni sb_secret_ anahtarları tarayıcıda kullanılamaz.</p></div>
-            <button id="exportAllBtn" class="button primary export-main-button" type="button">Tüm verileri ZIP olarak indir</button>
-          </article>
-
-          <div class="export-summary-grid">
-            <article><small>Tablo</small><b id="exportTableCount">0</b><span>Aktarım kapsamı</span></article>
-            <article><small>Alınan kayıt</small><b id="exportRowCount">0</b><span>Son çalıştırma</span></article>
-            <article><small>Hata</small><b id="exportErrorCount">0</b><span>Doğrulama sonucu</span></article>
-          </div>
-
-          <article class="surface export-progress-panel">
-            <div class="card-heading"><div><h3>Aktarım durumu</h3><p id="exportStatusText">Henüz dışa aktarma başlatılmadı.</p></div><span id="exportProgressText" class="counter-badge">0%</span></div>
-            <div class="export-progress-track" aria-hidden="true"><i id="exportProgressBar"></i></div>
-            <div id="exportTableList" class="export-table-list"></div>
-          </article>
-
-          <article class="surface export-info-panel">
-            <h3>ZIP içeriği</h3>
-            <div class="export-info-grid">
-              <div><b>tables/</b><span>Supabase tablolarının ham JSON kayıtları</span></div>
-              <div><b>manifest.json</b><span>Tablo listesi, kayıt sayıları ve sürüm bilgisi</span></div>
-              <div><b>validation.json</b><span>Eksik/hatalı tablo ve aktarım uygunluğu kontrolü</span></div>
-              <div><b>auth/</b><span>Google kullanıcı eşleştirmesi için güvenli Auth kullanıcı özeti</span></div><div><b>schema/</b><span>Tablo alanları ve PostgREST şema özeti</span></div>
-            </div>
-            <p class="export-security-note"><strong>Güvenlik:</strong> Legacy service_role JWT yalnız açık sayfanın belleğinde kullanılır; localStorage/sessionStorage veya ZIP içine yazılmaz. Supabase parolaları/oturumları ve Google Drive access/refresh tokenları taşınmaz.</p>
-          </article>
-        </section>
         <section id="page-manage" class="page" data-page="manage">
           <div class="page-heading">
             <div><span class="eyebrow">Güvenlik</span><h2>Yönetim</h2><p>Engellenen kullanıcı, IP ve cihazları yönetin.</p></div>
@@ -226,7 +190,6 @@
         <button class="nav-item is-active" data-page-target="users" type="button"><span>♙</span><b>Kullanıcılar</b></button>
         <button class="nav-item" data-page-target="stats" type="button"><span>▥</span><b>İstatistikler</b></button>
         <button class="nav-item" data-page-target="backups" type="button"><span>☁</span><b>Yedekler</b></button>
-        <button class="nav-item" data-page-target="export" type="button"><span>⇩</span><b>Aktar</b></button>
         <button class="nav-item" data-page-target="manage" type="button"><span>⚙</span><b>Yönetim</b></button>
       </nav>
     </div>
@@ -239,6 +202,6 @@
     </div>
   </div>
   <div id="toast" class="toast" role="status"></div>
-  <a class="suite-admin-home" href="../">⌂ Orman İO Ana Menüsü</a><script src="./admin.js?v=80-export2"></script><script src="./admin-system-report.js" defer></script>
+  <a class="suite-admin-home" href="../">⌂ Orman İO Ana Menüsü</a><script src="./admin.js"></script><script src="./admin-system-report.js" defer></script>
 </body>
 </html>

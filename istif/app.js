@@ -280,7 +280,6 @@ function playConfirmSound(force = false) {
     } catch {}
   },
 );
-preloadConfirmSound();
 
 const state = {
   view: "home",
@@ -434,7 +433,116 @@ const bootOverlay = document.getElementById("bootOverlay");
 const bootTitle = document.getElementById("bootTitle");
 const bootText = document.getElementById("bootText");
 let dbPromise = null;
+let dbConnection = null;
+let storageFallbackMode = false;
 let deletedRecordTombstones = Object.create(null);
+const ISTIF_STORAGE_FALLBACK_KEY = "mesaha_istif_storage_fallback_v69";
+const ISTIF_DB_OPEN_TIMEOUT_MS = 7000;
+const ISTIF_DB_REQUEST_TIMEOUT_MS = 6500;
+
+function fallbackSafeClone(value) {
+  try {
+    const seen = typeof WeakSet === "function" ? new WeakSet() : null;
+    return JSON.parse(
+      JSON.stringify(value, (key, item) => {
+        if (typeof Blob !== "undefined" && item instanceof Blob) return undefined;
+        if (typeof File !== "undefined" && item instanceof File) return undefined;
+        if (key === "blob") return undefined;
+        if ((key === "previewUrl" || key === "objectUrl") && /^blob:/i.test(String(item || ""))) return "";
+        if (key === "dataUrl" && typeof item === "string" && item.length > 2048) return "";
+        if (item && typeof item === "object" && seen) {
+          if (seen.has(item)) return undefined;
+          seen.add(item);
+        }
+        return item;
+      }),
+    );
+  } catch {
+    return null;
+  }
+}
+function readStorageFallback() {
+  try {
+    const value = JSON.parse(localStorage.getItem(ISTIF_STORAGE_FALLBACK_KEY) || "null") || {};
+    return {
+      records: Array.isArray(value.records) ? value.records : [],
+      settings: Array.isArray(value.settings) ? value.settings : [],
+      updatedAt: value.updatedAt || "",
+    };
+  } catch {
+    return { records: [], settings: [], updatedAt: "" };
+  }
+}
+function writeStorageFallback(value) {
+  try {
+    localStorage.setItem(
+      ISTIF_STORAGE_FALLBACK_KEY,
+      JSON.stringify({
+        records: Array.isArray(value.records) ? value.records : [],
+        settings: Array.isArray(value.settings) ? value.settings : [],
+        updatedAt: new Date().toISOString(),
+      }),
+    );
+    return true;
+  } catch {
+    return false;
+  }
+}
+function fallbackStoreKey(store, value) {
+  return store === "records" ? clean(value?.id) : clean(value?.key);
+}
+function fallbackGetAll(store) {
+  const value = readStorageFallback();
+  return cloneValue(store === "records" ? value.records : value.settings);
+}
+function fallbackPut(store, value) {
+  const safe = fallbackSafeClone(value);
+  const key = fallbackStoreKey(store, safe);
+  if (!safe || !key) return false;
+  const cache = readStorageFallback();
+  const rows = store === "records" ? cache.records : cache.settings;
+  const index = rows.findIndex((row) => fallbackStoreKey(store, row) === key);
+  if (index >= 0) rows[index] = safe;
+  else rows.push(safe);
+  return writeStorageFallback(cache);
+}
+function fallbackDelete(store, key) {
+  const cache = readStorageFallback();
+  const rows = store === "records" ? cache.records : cache.settings;
+  const next = rows.filter((row) => fallbackStoreKey(store, row) !== clean(key));
+  if (store === "records") cache.records = next;
+  else cache.settings = next;
+  return writeStorageFallback(cache);
+}
+function mirrorFallbackSnapshot(records, settings) {
+  const safeRecords = fallbackSafeClone(Array.isArray(records) ? records : []) || [];
+  const safeSettings = fallbackSafeClone(Array.isArray(settings) ? settings : []) || [];
+  return writeStorageFallback({ records: safeRecords, settings: safeSettings });
+}
+function requestWithTimeout(request, timeoutMs, label) {
+  return new Promise((resolve, reject) => {
+    let finished = false;
+    const done = (ok, value) => {
+      if (finished) return;
+      finished = true;
+      clearTimeout(timer);
+      ok ? resolve(value) : reject(value || new Error(label + " tamamlanamadı."));
+    };
+    const timer = setTimeout(
+      () => done(false, new Error(label + " zaman aşımına uğradı.")),
+      Math.max(1500, Number(timeoutMs) || ISTIF_DB_REQUEST_TIMEOUT_MS),
+    );
+    request.onsuccess = () => done(true, request.result);
+    request.onerror = () => done(false, request.error || new Error(label + " başarısız."));
+  });
+}
+window.IstifStorageFallbackV69 = {
+  getAll: fallbackGetAll,
+  put: fallbackPut,
+  delete: fallbackDelete,
+  mirror: mirrorFallbackSnapshot,
+  isFallback: () => storageFallbackMode,
+};
 
 function icon(name, size = 24, extraClass = "") {
   const paths = {
@@ -590,75 +698,163 @@ function hideBoot() {
 }
 
 function openDB() {
+  if (dbConnection) return Promise.resolve(dbConnection);
   if (dbPromise) return dbPromise;
   dbPromise = new Promise((resolve, reject) => {
-    const req = indexedDB.open(DB_NAME, DB_VERSION);
-    req.onupgradeneeded = () => {
-      const db = req.result;
-      if (!db.objectStoreNames.contains("records"))
-        db.createObjectStore("records", { keyPath: "id" });
-      if (!db.objectStoreNames.contains("settings"))
-        db.createObjectStore("settings", { keyPath: "key" });
+    if (!("indexedDB" in window) || !window.indexedDB) {
+      reject(new Error("Bu tarayıcı yerel veritabanını desteklemiyor."));
+      return;
+    }
+    let finished = false;
+    let request = null;
+    const finish = (ok, value) => {
+      if (finished) {
+        if (ok && value && typeof value.close === "function") {
+          try { value.close(); } catch {}
+        }
+        return;
+      }
+      finished = true;
+      clearTimeout(timer);
+      if (!ok) dbPromise = null;
+      ok ? resolve(value) : reject(value || new Error("İstif veritabanı açılamadı."));
     };
-    req.onsuccess = () => resolve(req.result);
-    req.onerror = () => reject(req.error);
+    const timer = setTimeout(
+      () => finish(false, new Error("İstif veritabanı iOS tarafından kilitlendi. Geçici depolama açıldı.")),
+      ISTIF_DB_OPEN_TIMEOUT_MS,
+    );
+    try {
+      request = indexedDB.open(DB_NAME, DB_VERSION);
+      request.onupgradeneeded = () => {
+        const db = request.result;
+        if (!db.objectStoreNames.contains("records"))
+          db.createObjectStore("records", { keyPath: "id" });
+        if (!db.objectStoreNames.contains("settings"))
+          db.createObjectStore("settings", { keyPath: "key" });
+      };
+      request.onblocked = () =>
+        finish(false, new Error("İstif veritabanı başka bir açık sekme tarafından kilitlendi."));
+      request.onerror = () => finish(false, request.error || new Error("İstif veritabanı açılamadı."));
+      request.onsuccess = () => {
+        const db = request.result;
+        if (finished) {
+          try { db.close(); } catch {}
+          return;
+        }
+        dbConnection = db;
+        db.onversionchange = () => {
+          try { db.close(); } catch {}
+          if (dbConnection === db) dbConnection = null;
+          dbPromise = null;
+        };
+        db.onclose = () => {
+          if (dbConnection === db) dbConnection = null;
+          dbPromise = null;
+        };
+        finish(true, db);
+      };
+    } catch (error) {
+      finish(false, error);
+    }
   });
   return dbPromise;
 }
 
 async function idbGetAll(store) {
-  const db = await openDB();
-  return new Promise((resolve, reject) => {
-    const req = db.transaction(store).objectStore(store).getAll();
-    req.onsuccess = () => resolve(req.result);
-    req.onerror = () => reject(req.error);
-  });
+  try {
+    const db = await openDB();
+    const tx = db.transaction(store, "readonly");
+    const rows = await requestWithTimeout(
+      tx.objectStore(store).getAll(),
+      ISTIF_DB_REQUEST_TIMEOUT_MS,
+      "İstif kayıtları okunması",
+    );
+    storageFallbackMode = false;
+    return Array.isArray(rows) ? rows : [];
+  } catch (error) {
+    storageFallbackMode = true;
+    dbPromise = null;
+    return fallbackGetAll(store);
+  }
 }
 
 async function idbPut(store, value) {
-  const db = await openDB();
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction(store, "readwrite");
-    tx.objectStore(store).put(value);
-    tx.oncomplete = () => {
-      if (store === "records" && !(value && value.isDemo)) {
-        try {
-          window.dispatchEvent(
-            new CustomEvent("mesaha-istif:changed", {
-              detail: { type: "put", id: value && value.id },
-            }),
-          );
-          suiteSyncApi()?.markDirty("istif", {
-              id: value && value.id,
-            });
-        } catch {}
-      }
-      resolve();
-    };
-    tx.onerror = () => reject(tx.error);
-  });
+  fallbackPut(store, value);
+  try {
+    const db = await openDB();
+    await new Promise((resolve, reject) => {
+      let finished = false;
+      const done = (ok, error) => {
+        if (finished) return;
+        finished = true;
+        clearTimeout(timer);
+        ok ? resolve() : reject(error || new Error("İstif kaydı yazılamadı."));
+      };
+      const timer = setTimeout(
+        () => done(false, new Error("İstif kaydı yazma işlemi zaman aşımına uğradı.")),
+        ISTIF_DB_REQUEST_TIMEOUT_MS,
+      );
+      const tx = db.transaction(store, "readwrite");
+      tx.objectStore(store).put(value);
+      tx.oncomplete = () => done(true);
+      tx.onerror = () => done(false, tx.error);
+      tx.onabort = () => done(false, tx.error);
+    });
+    storageFallbackMode = false;
+  } catch {
+    storageFallbackMode = true;
+  }
+  if (store === "records" && !(value && value.isDemo)) {
+    const synced = clean(value?.syncStatus) === "synced" && !clean(value?.syncError);
+    if (!synced) {
+      try {
+        window.dispatchEvent(
+          new CustomEvent("mesaha-istif:changed", {
+            detail: { type: "put", id: value && value.id },
+          }),
+        );
+        suiteSyncApi()?.markDirty("istif", { id: value && value.id });
+      } catch {}
+    }
+  }
 }
 
 async function idbDelete(store, key) {
-  const db = await openDB();
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction(store, "readwrite");
-    tx.objectStore(store).delete(key);
-    tx.oncomplete = () => {
-      if (store === "records") {
-        try {
-          window.dispatchEvent(
-            new CustomEvent("mesaha-istif:changed", {
-              detail: { type: "delete", id: key },
-            }),
-          );
-          suiteSyncApi()?.markDirty("istif", { id: key });
-        } catch {}
-      }
-      resolve();
-    };
-    tx.onerror = () => reject(tx.error);
-  });
+  fallbackDelete(store, key);
+  try {
+    const db = await openDB();
+    await new Promise((resolve, reject) => {
+      let finished = false;
+      const done = (ok, error) => {
+        if (finished) return;
+        finished = true;
+        clearTimeout(timer);
+        ok ? resolve() : reject(error || new Error("İstif kaydı silinemedi."));
+      };
+      const timer = setTimeout(
+        () => done(false, new Error("İstif silme işlemi zaman aşımına uğradı.")),
+        ISTIF_DB_REQUEST_TIMEOUT_MS,
+      );
+      const tx = db.transaction(store, "readwrite");
+      tx.objectStore(store).delete(key);
+      tx.oncomplete = () => done(true);
+      tx.onerror = () => done(false, tx.error);
+      tx.onabort = () => done(false, tx.error);
+    });
+    storageFallbackMode = false;
+  } catch {
+    storageFallbackMode = true;
+  }
+  if (store === "records") {
+    try {
+      window.dispatchEvent(
+        new CustomEvent("mesaha-istif:changed", {
+          detail: { type: "delete", id: key },
+        }),
+      );
+      suiteSyncApi()?.markDirty("istif", { id: key });
+    } catch {}
+  }
 }
 
 function normalizeDeletedRecordTombstones(value) {
@@ -783,6 +979,7 @@ async function saveSharedCache() {
 async function loadData() {
   state.records = await idbGetAll("records");
   const rows = await idbGetAll("settings");
+  if (!storageFallbackMode) mirrorFallbackSnapshot(state.records, rows);
   const saved = rows.find((x) => x.key === "app");
   if (saved) state.settings = { ...DEFAULT_SETTINGS, ...saved.value };
   const tombstoneRow = rows.find((x) => x.key === ISTIF_TOMBSTONE_SETTING_KEY);
@@ -860,6 +1057,9 @@ async function loadData() {
 }
 
 function readSharedSession() {
+  try {
+    if (window.OrmanSuiteIdentity?.session) return window.OrmanSuiteIdentity.session();
+  } catch {}
   const primary = jsonRead(SHARED_SESSION_KEY, null);
   if (primary?.access_token) return primary;
   const backup = jsonRead(SHARED_SESSION_BACKUP_KEY, null);
@@ -871,27 +1071,47 @@ function readSharedSession() {
 }
 
 function readSharedTerminal() {
-  const terminal =
-    jsonRead(SHARED_TERMINAL_KEY, null) ||
-    jsonRead(SHARED_TERMINAL_OLD_KEY, null) ||
-    {};
-  return terminal?.active ? terminal : {};
+  try {
+    if (window.OrmanSuiteIdentity?.terminal) return window.OrmanSuiteIdentity.terminal();
+  } catch {}
+  const current = jsonRead(SHARED_TERMINAL_KEY, null);
+  if (current?.active) return current;
+  const old = jsonRead(SHARED_TERMINAL_OLD_KEY, null);
+  if (old?.active) {
+    jsonWrite(SHARED_TERMINAL_KEY, old);
+    try { localStorage.removeItem(SHARED_TERMINAL_OLD_KEY); } catch {}
+    return old;
+  }
+  return {};
 }
 function isPairedTerminal() {
+  try {
+    if (window.OrmanSuiteIdentity?.pairedTerminal) return window.OrmanSuiteIdentity.pairedTerminal();
+  } catch {}
   const terminal = readSharedTerminal();
   return !!(
     terminal.active &&
     terminal.source === "pair_code" &&
-    (terminal.terminalCode || terminal.terminalToken || terminal.pairedUserId)
+    terminal.pairedUserId &&
+    (terminal.terminalCode || terminal.terminalToken)
   );
 }
 function hasSharedIdentity() {
+  try {
+    if (window.OrmanSuiteIdentity?.authType) return window.OrmanSuiteIdentity.authType() !== "none";
+  } catch {}
   return !!(readSharedSession()?.access_token || readSharedTerminal().active);
 }
 function hasSharedCloudIdentity() {
+  try {
+    if (window.OrmanSuiteIdentity?.cloudAllowed) return window.OrmanSuiteIdentity.cloudAllowed();
+  } catch {}
   return !!(readSharedSession()?.access_token || isPairedTerminal());
 }
 function terminalAuthPayload() {
+  try {
+    if (window.OrmanSuiteIdentity?.terminalAuthPayload) return window.OrmanSuiteIdentity.terminalAuthPayload();
+  } catch {}
   const terminal = readSharedTerminal();
   return isPairedTerminal()
     ? {
@@ -1049,7 +1269,8 @@ async function edgeCall(action, payload = {}, retried = false) {
   const terminalPayload = terminalAuthPayload();
   if (!session?.access_token && !isPairedTerminal())
     throw new Error("Google veya terminal kodu ile giriş gerekli.");
-  const token = session?.access_token || SUPABASE_ANON_KEY;
+  const terminalRequest = isPairedTerminal();
+  const token = terminalRequest ? SUPABASE_ANON_KEY : (session?.access_token || SUPABASE_ANON_KEY);
   const response = await fetch(EDGE_URL, {
     method: "POST",
     cache: "no-store",
@@ -1068,6 +1289,7 @@ async function edgeCall(action, payload = {}, retried = false) {
   const body = await response.json().catch(() => ({}));
   if (
     isSharedAuthFailure(response.status, body) &&
+    !terminalRequest &&
     session?.refresh_token &&
     !retried
   ) {
@@ -1091,7 +1313,8 @@ async function bridgeCall(action, payload = {}, retried = false) {
   const terminalPayload = terminalAuthPayload();
   if (!session?.access_token && !isPairedTerminal())
     throw new Error("Google veya terminal kodu ile giriş gerekli.");
-  const token = session?.access_token || SUPABASE_ANON_KEY;
+  const terminalRequest = isPairedTerminal();
+  const token = terminalRequest ? SUPABASE_ANON_KEY : (session?.access_token || SUPABASE_ANON_KEY);
   const response = await fetch(DRIVE_BRIDGE_URL, {
     method: "POST",
     cache: "no-store",
@@ -1110,6 +1333,7 @@ async function bridgeCall(action, payload = {}, retried = false) {
   const body = await response.json().catch(() => ({}));
   if (
     isSharedAuthFailure(response.status, body) &&
+    !terminalRequest &&
     session?.refresh_token &&
     !retried
   ) {
@@ -1557,16 +1781,35 @@ async function syncSharedContext({ manual = false } = {}) {
         ? folderOut.folders
         : [];
       const membersBySeflik = {};
+      const memberErrors = [];
       for (const folder of rawFolders) {
         try {
           const memberOut = await edgeCall("seflik_folder_list_members", {
             seflik: folder.seflik,
             folderSeflik: folder.seflik,
           });
+          const memberListComplete = !!(
+            memberOut?.sync_contract === "orman-io-sync-v68" &&
+            memberOut?.complete === true &&
+            memberOut?.partial !== true &&
+            memberOut?.truncated !== true
+          );
+          if (!memberListComplete) {
+            memberErrors.push(`${clean(folder.seflik) || "Şeflik"}: üye listesi eksik`);
+            continue;
+          }
           membersBySeflik[folder.seflik_key || stableKey(folder.seflik)] =
-            memberOut.members || [];
-        } catch {}
+            Array.isArray(memberOut.members) ? memberOut.members : [];
+        } catch (memberError) {
+          memberErrors.push(clean(memberError?.message || memberError) || clean(folder.seflik));
+        }
       }
+      const folderListComplete = !!(
+        folderOut?.sync_contract === "orman-io-sync-v68" &&
+        folderOut?.complete === true &&
+        folderOut?.partial !== true &&
+        folderOut?.truncated !== true
+      );
       out = {
         folders: rawFolders,
         membersBySeflik,
@@ -1576,13 +1819,36 @@ async function syncSharedContext({ manual = false } = {}) {
           email: readSharedTerminal().pairedEmail,
           name: readSharedTerminal().name,
         },
+        sync_contract: folderOut?.sync_contract,
+        scope: "all_folders",
+        complete: folderListComplete && memberErrors.length === 0,
+        partial: !folderListComplete || memberErrors.length > 0,
+        truncated: folderOut?.truncated === true,
+        member_errors: memberErrors,
       };
     }
-    const folders = (out.folders || []).map(normalizeFolder).filter(Boolean);
+    const remoteFolders = (out.folders || []).map(normalizeFolder).filter(Boolean);
+    const contextComplete = !!(
+      out?.sync_contract === "orman-io-sync-v68" &&
+      out?.complete === true &&
+      out?.partial !== true &&
+      out?.truncated !== true
+    );
+    const folderListAuthoritative = contextComplete && out?.scope === "all_folders";
+    const folderMap = new Map();
+    if (!folderListAuthoritative) {
+      for (const folder of state.seflikler || []) {
+        const normalized = normalizeFolder(folder);
+        if (normalized) folderMap.set(normalized.key || stableKey(normalized.name), normalized);
+      }
+    }
+    for (const folder of remoteFolders)
+      folderMap.set(folder.key || stableKey(folder.name), { ...(folderMap.get(folder.key || stableKey(folder.name)) || {}), ...folder });
+    const folders = folderListAuthoritative ? remoteFolders : Array.from(folderMap.values());
     if (!folders.length)
       throw new Error("Mesaha İO Şeflik Klasörü bulunamadı.");
     state.seflikler = folders;
-    const nextMembers = {};
+    const nextMembers = contextComplete ? {} : { ...(state.membersBySeflik || {}) };
     Object.entries(out.membersBySeflik || {}).forEach(([key, members]) => {
       nextMembers[key] = (Array.isArray(members) ? members : [])
         .map(normalizeMember)
@@ -1949,7 +2215,7 @@ function renderNew() {
       ${fieldRow("forest", "Şeflik", "seflik", draft.seflik, "select", seflikOptions)}
       ${fieldRow("calendar", "Tarih", "date", draft.date, "date")}
       ${fieldRow("layers", "Bölme", "bolme", draft.bolme, "select", bolmeOptions)}
-      ${bolmeOptions.length ? "" : '<div class="info-note"><b>' + icon("info", 21) + "</b><span>İnternet yokken de aşağıdaki Offline Bölme Oluştur düğmesiyle yeni bölme açabilirsiniz. Bölme cihazda saklanır ve internet geldiğinde sunucuya gönderilir.</span></div>"}
+      ${bolmeOptions.length ? "" : '<div class="info-note"><b>' + icon("info", 21) + "</b><span>İnternet yokken de aşağıdaki Bölme Oluştur düğmesiyle yeni bölme açabilirsiniz. Bölme cihazda saklanır ve internet geldiğinde sunucuya gönderilir.</span></div>"}
       ${fieldRow("logs", "İstif No", "istifNo", draft.istifNo)}
       ${fieldRow("forest", "Odun Türü", "type", draft.type, "select", ["İbreli Kabuklu Kağıtlık Odun", "İbreli Lif Yonga Odun", "İbreli Yakacak Odun", "İbreli Sırık 2 Boy", "İbreli Sırık 3 Boy", "İbreli Sırık 4 Boy", "İbreli Sırık 5 Boy"])}
       ${fieldRow("cube", "Ster Sayısı", "ster", draft.ster, "number")}
@@ -2316,7 +2582,7 @@ function renderSettings() {
       <div class="shared-card-title"><span>${icon("doc", 22)}</span><div><b>Kurum ve Evrak Bilgileri</b><small>Bu bilgiler örnek olarak gelmez; kullanıcı tarafından bir kez kaydedilir.</small></div></div>
       <label>Bölge Müdürlüğü<input name="bolgeMudurlugu" value="${esc(state.settings.bolgeMudurlugu || "")}" placeholder="Bölge Müdürlüğü gir" autocomplete="organization"></label>
       <label>İşletme Müdürlüğü<input name="isletmeMudurlugu" value="${esc(state.settings.isletmeMudurlugu || "")}" placeholder="İşletme Müdürlüğü gir"></label>
-      <label>Şeflik<select name="seflik">${state.seflikler.map((item) => `<option value="${esc(item.name)}" ${item.name === state.settings.seflik ? "selected" : ""}>${esc(item.name)}${item.role === "owner" ? " • kurucu" : " • üye"}</option>`).join("")}</select></label><p class="settings-hint">Şeflik, personel ve bölme düzenlemeleri yalnızca Orman İO ana menüsünden yapılır.</p>
+      <label>Şeflik<select name="seflik">${state.seflikler.map((item) => `<option value="${esc(item.name)}" ${item.name === state.settings.seflik ? "selected" : ""}>${esc(item.name)}${item.role === "owner" ? " • kurucu" : " • üye"}</option>`).join("")}</select></label><p class="settings-hint">Şeflik, personel ve bölme düzenlemeleri Mesaha uygulamasındaki Yönetim bölümünden yapılır.</p>
       <label>Rampa / Satış İstif Yeri<input name="satisIstifYeri" value="${esc(state.settings.satisIstifYeri || "")}" placeholder="Rampa veya depo adı gir"></label>
       <p class="settings-hint">Orijinal boş evrak şablonu esas alınır. Doldurulmuş dosya yalnızca alanların nereye yazılacağını gösteren örnektir.</p>
       <button class="btn primary wide" type="submit">${icon("save", 20)} Bilgileri Kaydet</button>
@@ -2533,6 +2799,7 @@ async function editRecord(recordId) {
             name: photo.name || `foto_${Date.now()}.jpg`,
             type: photo.type || (photo.blob && photo.blob.type) || "image/jpeg",
             size: photo.size || (photo.blob && photo.blob.size) || 0,
+            syncKey: clean(photo.syncKey || photo.sync_key || driveFile?.appProperties?.orman_io_photo_key) || uid(),
             fromDrive: photo.fromDrive === true || !!driveFile,
             driveFileId: clean(photo.driveFileId) || driveFileId(driveFile),
           };
@@ -2592,19 +2859,23 @@ function recordHasDriveAssets(record) {
   );
 }
 
-async function deleteDriveFilesForRecord(record) {
-  const fileIds = driveFileIdsFromRecord(record);
-  const driveFolderId = clean(record.driveFolderId);
-  if (!fileIds.length && !driveFolderId) return { ok: true, skipped: true };
+async function deleteDriveFileIdsForRecord(record, fileIds = [], driveFolderId = "") {
+  const ids = Array.from(new Set((Array.isArray(fileIds) ? fileIds : []).map(clean).filter(Boolean)));
+  const folderId = clean(driveFolderId);
+  if (!ids.length && !folderId) return { ok: true, skipped: true };
   return bridgeCall("delete_drive_files", {
     seflikKey: record.seflikKey || stableKey(record.seflik),
     seflik: record.seflik,
     recordId: record.id,
     istifNo: record.istifNo,
     bolmeNo: record.bolme,
-    fileIds,
-    driveFolderId,
+    fileIds: ids,
+    driveFolderId: folderId,
   });
+}
+
+async function deleteDriveFilesForRecord(record) {
+  return deleteDriveFileIdsForRecord(record, driveFileIdsFromRecord(record), clean(record.driveFolderId));
 }
 
 async function deleteRecord(recordId) {
@@ -2704,7 +2975,7 @@ async function saveRecord(event, draftOnly = false) {
     return;
   }
   if (!draft.seflik || !draft.ormanci) {
-    toast("Şeflik ve kullanıcı kimliği Orman İO ana menüsünden alınamadı.", "bad");
+    toast("Şeflik ve kullanıcı kimliği Mesaha Yönetim bölümünden alınamadı.", "bad");
     return;
   }
   if (
@@ -2721,14 +2992,14 @@ async function saveRecord(event, draftOnly = false) {
     !suiteReadyBolmeler.includes(draft.bolme)
   ) {
     toast(
-      "Bu bölme Orman İO ana menüsünde offline indirilmeden ster kaydı eklenemez.",
+      "Bu bölme Mesaha Yönetim bölümünde offline indirilmeden ster kaydı eklenemez.",
       "bad",
     );
     return;
   }
   if (!draftOnly && !suiteReadyBolmeler.length) {
     toast(
-      "Önce bu ekrandaki Offline Bölme Oluştur düğmesiyle bir bölme oluşturun veya Orman İO’dan hazır bölmeyi indirin.",
+      "Önce bu ekrandaki Bölme Oluştur düğmesiyle bir bölme oluşturun veya Orman İO’dan hazır bölmeyi indirin.",
       "bad",
     );
     return;
@@ -2743,6 +3014,7 @@ async function saveRecord(event, draftOnly = false) {
     type: photo.type,
     size: photo.size,
     blob: photo.blob,
+    syncKey: clean(photo.syncKey || photo.sync_key) || uid(),
     fromDrive: photo.fromDrive === true,
     driveFileId: clean(photo.driveFileId),
   }));
@@ -2768,6 +3040,9 @@ async function saveRecord(event, draftOnly = false) {
     const file = draft.driveFiles[index];
     return { index, status: file ? "uploaded" : "pending", fileId: driveFileId(file), attempts: 0, error: "", code: "", retryable: false, updatedAt: new Date().toISOString() };
   });
+  const keptDriveIds = new Set(draft.driveFiles.map((file) => driveFileId(file)).filter(Boolean));
+  const removedDriveIds = previousDriveFiles.map((file) => driveFileId(file)).filter((id) => id && !keptDriveIds.has(id));
+  draft.pendingDriveDeleteIds = Array.from(new Set([...(Array.isArray(draft.pendingDriveDeleteIds) ? draft.pendingDriveDeleteIds : []), ...removedDriveIds]));
   if (!draft.driveFiles.some(Boolean)) draft.driveFolderId = "";
   draft.syncStatus = "local";
   draft.syncError = "";
@@ -2783,6 +3058,21 @@ async function saveRecord(event, draftOnly = false) {
   const index = state.records.findIndex((record) => record.id === draft.id);
   if (index >= 0) state.records[index] = cloneValue(draft);
   else state.records.push(cloneValue(draft));
+  if (draft.pendingDriveDeleteIds.length && navigator.onLine !== false && hasSharedCloudIdentity()) {
+    try {
+      await deleteDriveFileIdsForRecord(draft, draft.pendingDriveDeleteIds);
+      draft.pendingDriveDeleteIds = [];
+      await idbPut("records", cloneValue(draft));
+      const refreshedIndex = state.records.findIndex((record) => record.id === draft.id);
+      if (refreshedIndex >= 0) state.records[refreshedIndex] = cloneValue(draft);
+    } catch (cleanupError) {
+      draft.syncError = `Kaldırılan Drive fotoğrafları temizlenmeyi bekliyor: ${clean(cleanupError?.message || cleanupError)}`;
+      draft.syncRetryable = true;
+      await idbPut("records", cloneValue(draft));
+      const refreshedIndex = state.records.findIndex((record) => record.id === draft.id);
+      if (refreshedIndex >= 0) state.records[refreshedIndex] = cloneValue(draft);
+    }
+  }
   toast(
     draftOnly
       ? "Taslak yerelde kaydedildi."
@@ -2982,6 +3272,7 @@ function addPhotoBlob(blob, name) {
     name,
     type: "image/jpeg",
     size: blob.size,
+    syncKey: uid(),
   });
 }
 
@@ -3101,7 +3392,7 @@ function showOrmanciPicker() {
   refreshCurrentMembers();
   if (!state.ormancilar.length) {
     showDialog(
-      `<h3>Ormancı bulunamadı</h3><p>Bu şefliğe Orman İO ana menüsünden eklenen ormancılar otomatik gelir.</p><div class="dialog-actions"><button class="btn" data-dialog-close>Kapat</button><button class="btn primary" id="refreshMembersDialog">Güncelle</button></div>`,
+      `<h3>Ormancı bulunamadı</h3><p>Bu şefliğe Mesaha Yönetim bölümünden eklenen ormancılar otomatik gelir.</p><div class="dialog-actions"><button class="btn" data-dialog-close>Kapat</button><button class="btn primary" id="refreshMembersDialog">Güncelle</button></div>`,
     );
     document.getElementById("refreshMembersDialog").onclick = () => {
       closeDialog();
@@ -3126,7 +3417,7 @@ function showOrmanciPicker() {
 
 function showAddOrmanciDialog() {
   showDialog(
-    '<h3>Orman İO üzerinden yönetin</h3><p>Ormancı ekleme ve çıkarma işlemleri İstif İO içinden kaldırıldı. Orman İO ana menüsündeki Ormancı Yönetimi bölümünü kullanın.</p><div class="dialog-actions"><button class="btn" data-dialog-close>Kapat</button><a class="btn primary" href="../">Orman İO Ana Menüsü</a></div>',
+    '<h3>Mesaha üzerinden yönetin</h3><p>Ormancı ekleme ve çıkarma işlemleri İstif İO içinden kaldırıldı. Mesaha uygulamasındaki Ormancı Yönetimi bölümünü kullanın.</p><div class="dialog-actions"><button class="btn" data-dialog-close>Kapat</button><a class="btn primary" href="../mesaha/">Mesaha\u2019yı Aç</a></div>',
   );
 }
 
@@ -3283,9 +3574,13 @@ async function uploadPhotoToDrive(record, photo, index) {
   if (!photo?.blob) throw new Error("Yüklenecek fotoğraf bulunamadı.");
   const folder = effectiveRecordSeflik(record);
   const dataUrl = await blobToDataUrl(photo.blob);
+  const photoKey = clean(photo.syncKey || photo.sync_key) || uid();
   return bridgeCall("upload_photo", {
     seflikKey: folder.seflikKey,
     seflik: folder.seflik,
+    recordId: String(record.id || ""),
+    photoIndex: index,
+    idempotencyKey: photoKey.startsWith("istif-photo:") ? photoKey : `istif-photo:${String(record.id || "legacy")}:${photoKey}`,
     recordDate: record.date,
     bolmeNo: record.bolme,
     istifNo: record.istifNo,
@@ -3337,6 +3632,18 @@ function normalizeRemoteRecord(row) {
     updatedAt: clean(row.updated_at || row.updatedAt || ""),
     remoteOnly: true,
   };
+}
+
+function authoritativeRemoteList(out) {
+  return !!(
+    out &&
+    out.sync_contract === "orman-io-sync-v68" &&
+    out.complete === true &&
+    out.partial !== true &&
+    out.truncated !== true &&
+    (!Array.isArray(out.query_errors) || out.query_errors.length === 0) &&
+    (out.expected_queries == null || Number(out.successful_queries) === Number(out.expected_queries))
+  );
 }
 
 async function mergeRemoteRecords(remoteRows = [], { authoritative = false } = {}) {
@@ -3427,7 +3734,7 @@ async function loadRemoteRecords({ silent = true } = {}) {
         folderSeflik: state.settings.seflik,
       });
     } catch (edgeError) {
-      if (!readSharedSession()) throw edgeError;
+      if (!hasSharedCloudIdentity()) throw edgeError;
       out = await bridgeCall("record_list", {
         seflikKey: state.settings.seflikKey,
         seflik: state.settings.seflik,
@@ -3435,7 +3742,7 @@ async function loadRemoteRecords({ silent = true } = {}) {
     }
     const count = await mergeRemoteRecords(
       Array.isArray(out.records) ? out.records : [],
-      { authoritative: out.complete !== false && out.truncated !== true },
+      { authoritative: authoritativeRemoteList(out) },
     );
     if (!silent && count)
       toast(`${count} ortak istif kaydı güncellendi.`, "good");
@@ -3498,7 +3805,7 @@ async function syncAll() {
     }
     return;
   }
-  toast("Senkronizasyon Orman İO ana menüsünden yönetilir.", "bad");
+  toast("Senkronizasyon Mesaha uygulamasındaki Yönetim bölümünden yönetilir.", "bad");
 }
 
 function selectedForDocs() {
@@ -3576,6 +3883,7 @@ async function hydrateDrivePhotosForEdit(record) {
           `${record.istifNo || "istif"}_foto_${index + 1}.jpg`,
         type: blob.type || mimeType,
         size: blob.size,
+        syncKey: clean(file?.appProperties?.orman_io_photo_key) || uid(),
         fromDrive: true,
         driveFileId: driveFileId(file),
       };
@@ -3875,17 +4183,28 @@ window.addEventListener("mesaha-suite:sync-complete", async () => {
   );
   render();
 });
-window.addEventListener("online", () => {
-  if (hasSharedCloudIdentity()) syncSharedContext({ manual: false });
-});
+let lastResumeSyncAtV69 = 0;
+function scheduleResumeSyncV69(delay = 180) {
+  if (!navigator.onLine || !hasSharedCloudIdentity()) return;
+  const now = Date.now();
+  if (now - lastResumeSyncAtV69 < 12000) return;
+  lastResumeSyncAtV69 = now;
+  setTimeout(() => syncSharedContext({ manual: false }), Math.max(0, Number(delay) || 0));
+}
+window.addEventListener("online", () => scheduleResumeSyncV69(500), { passive: true });
 document.addEventListener("visibilitychange", () => {
   if (document.hidden) {
     if (state.cameraStream) stopCamera();
     return;
   }
-  if (navigator.onLine && hasSharedCloudIdentity())
-    syncSharedContext({ manual: false });
-});
+  scheduleResumeSyncV69(260);
+}, { passive: true });
+window.addEventListener("pageshow", (event) => {
+  if (event.persisted) {
+    try { render(); } catch {}
+    scheduleResumeSyncV69(350);
+  }
+}, { passive: true });
 window.addEventListener(
   "pagehide",
   (event) => {
@@ -3896,21 +4215,28 @@ window.addEventListener(
 );
 
 (async function init() {
+  showBoot("İstif İO açılıyor…", "Cihaz kayıtları ve şeflik bilgileri hazırlanıyor.");
   try {
-    if (bootOverlay) {
-      bootOverlay.hidden = true;
-      bootOverlay.classList.remove("show");
-    }
     await loadData();
     hydrateLocalSharedIdentity();
     refreshCurrentMembers();
     if (!state.settings.setupComplete) state.view = "settings";
     render();
+    hideBoot();
+    try { window.IstifStabilityV69?.ready(); } catch {}
+    if (storageFallbackMode) {
+      setTimeout(
+        () => toast("iOS yerel veritabanı geçici olarak kilitli. Uygulama güvenli yedek depolamayla açıldı.", "bad"),
+        250,
+      );
+    }
     if (navigator.onLine && hasSharedCloudIdentity())
-      setTimeout(() => syncSharedContext({ manual: false }), 0);
+      setTimeout(() => syncSharedContext({ manual: false }), 120);
     /* Ortak kayıt listesi sunucu için otoritatiftir; silinen kayıtlar tüm cihazlardan temizlenir. */
   } catch (error) {
-    if (bootOverlay) bootOverlay.hidden = true;
-    app.innerHTML = `<div class="empty"><h2>Uygulama açılamadı</h2><p>${esc(error.message)}</p></div>`;
+    hideBoot();
+    const message = clean(error?.message || error || "Uygulama başlatılamadı.");
+    if (window.IstifStabilityV69?.fail) window.IstifStabilityV69.fail(message);
+    else app.innerHTML = `<div class="empty"><h2>Uygulama açılamadı</h2><p>${esc(message)}</p><button class="btn primary" onclick="location.reload()">Tekrar Dene</button><button class="btn ghost" onclick="location.href='../'">Ana Menü</button></div>`;
   }
 })();

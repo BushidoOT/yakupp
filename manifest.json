@@ -1,7 +1,7 @@
 {
-  "name": "Orman İO",
-  "short_name": "Orman İO",
-  "start_url": "./",
+  "name": "Mesaha İO",
+  "short_name": "Mesaha İO",
+  "start_url": "./mesaha/",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f5f8f6",

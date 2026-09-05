@@ -668,134 +668,7 @@ function appLabel(user){return appKind(user)==='istif'?'İstif İO':appKind(user
     }).join('');
   }
   function renderAll(){renderUsers();renderGuests();renderStats();renderBackups();renderBlocks();renderSecurityLogs();renderGoogleAccess();renderSeflikAdmin();renderSummary()}
-
-
-  /* V80 — Supabase -> Viohy migration export (service-role, management panel only) */
-  const MIGRATION_TABLES = [
-    {name:'auth.users', critical:true, group:'Google/Auth', kind:'auth'},
-    {name:'mesaha_user_profiles', critical:true, group:'Kimlik'},
-    {name:'mesaha_user_access', critical:true, group:'Kimlik'},
-    {name:'mesaha_user_auth_events', critical:false, group:'Kimlik'},
-    {name:'mesaha_usage_current', critical:false, group:'İstatistik'},
-    {name:'mesaha_usage_daily', critical:false, group:'İstatistik'},
-    {name:'mesaha_backup_slots', critical:true, group:'Yedek'},
-    {name:'mesaha_backup_chunks', critical:true, group:'Yedek'},
-    {name:'mesaha_log_current', critical:false, group:'Log'},
-    {name:'mesaha_security_events', critical:false, group:'Güvenlik'},
-    {name:'mesaha_security_blocks', critical:false, group:'Güvenlik'},
-    {name:'mesaha_seflik_records', critical:true, group:'Mesaha'},
-    {name:'mesaha_seflik_syncs', critical:true, group:'Mesaha'},
-    {name:'mesaha_seflik_divisions', critical:true, group:'Şeflik'},
-    {name:'mesaha_seflik_folders', critical:true, group:'Şeflik'},
-    {name:'mesaha_seflik_members', critical:true, group:'Şeflik'},
-    {name:'mesaha_terminal_pairing_codes', critical:true, group:'Terminal'},
-    {name:'mesaha_istif_records', critical:true, group:'İstif'},
-    {name:'mesaha_istif_foresters', critical:true, group:'İstif'},
-    {name:'mesaha_user_drive_backups', critical:true, group:'Drive'},
-    {name:'mesaha_seflik_drive_bindings', critical:true, group:'Drive'},
-    {name:'mesaha_user_drive_connections', critical:false, group:'Drive'},
-    {name:'mesaha_admin_accounts', critical:false, group:'Yönetim'},
-    {name:'mesaha_admin_audit_logs', critical:false, group:'Yönetim'}
-  ];
-  const NONPORTABLE_TABLES = [
-    'mesaha_admin_sessions','mesaha_rate_limits','mesaha_request_dedup','mesaha_user_drive_oauth_states'
-  ];
-
-  function exportUiSet(id,value){const el=$(id);if(el)el.textContent=String(value)}
-  function exportProgress(done,total,message){const pct=total?Math.round(done/total*100):0;const bar=$('exportProgressBar');if(bar)bar.style.width=pct+'%';exportUiSet('exportProgressText',pct+'%');if(message)exportUiSet('exportStatusText',message)}
-  function renderExportTables(statusMap={}){
-    const host=$('exportTableList');if(!host)return;
-    host.innerHTML=MIGRATION_TABLES.map((t)=>{const st=statusMap[t.name]||{};const cls=st.state||'';const label=cls==='ok'?fmtInt(st.rows||0)+' kayıt':cls==='fail'?'Okunamadı':cls==='loading'?'Alınıyor…':'Bekliyor';return `<div class="export-table-row ${cls}"><div><b>${escapeHtml(t.name)}</b><small>${escapeHtml(t.group)}${t.critical?' • kritik':''}</small></div><span class="export-table-state">${escapeHtml(label)}</span></div>`}).join('');
-  }
-  function jsonBytes(value){return new TextEncoder().encode(JSON.stringify(value,null,2))}
-  let CRC_TABLE=null;
-  function crcTable(){if(CRC_TABLE)return CRC_TABLE;CRC_TABLE=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=(c&1)?(0xedb88320^(c>>>1)):(c>>>1);CRC_TABLE[n]=c>>>0}return CRC_TABLE}
-  function crc32(bytes){let c=0xffffffff,t=crcTable();for(let i=0;i<bytes.length;i++)c=t[(c^bytes[i])&255]^(c>>>8);return(c^0xffffffff)>>>0}
-  function u16(v){const b=new Uint8Array(2);new DataView(b.buffer).setUint16(0,v,true);return b}
-  function u32(v){const b=new Uint8Array(4);new DataView(b.buffer).setUint32(0,v>>>0,true);return b}
-  function concatBytes(parts){let size=0;parts.forEach((p)=>size+=p.length);const out=new Uint8Array(size);let off=0;parts.forEach((p)=>{out.set(p,off);off+=p.length});return out}
-  function dosStamp(date=new Date()){let y=Math.max(1980,date.getFullYear());return{time:((date.getHours()&31)<<11)|((date.getMinutes()&63)<<5)|((date.getSeconds()/2)&31),date:(((y-1980)&127)<<9)|(((date.getMonth()+1)&15)<<5)|(date.getDate()&31)}}
-  function buildZip(files){
-    const locals=[],centrals=[];let offset=0;const stamp=dosStamp();
-    for(const file of files){const name=new TextEncoder().encode(file.name);const data=file.bytes instanceof Uint8Array?file.bytes:new Uint8Array(file.bytes);const crc=crc32(data);const local=concatBytes([u32(0x04034b50),u16(20),u16(0x0800),u16(0),u16(stamp.time),u16(stamp.date),u32(crc),u32(data.length),u32(data.length),u16(name.length),u16(0),name,data]);locals.push(local);const central=concatBytes([u32(0x02014b50),u16(20),u16(20),u16(0x0800),u16(0),u16(stamp.time),u16(stamp.date),u32(crc),u32(data.length),u32(data.length),u16(name.length),u16(0),u16(0),u16(0),u16(0),u32(0),u32(offset),name]);centrals.push(central);offset+=local.length}
-    const centralStart=offset;const centralSize=centrals.reduce((n,b)=>n+b.length,0);const end=concatBytes([u32(0x06054b50),u16(0),u16(0),u16(files.length),u16(files.length),u32(centralSize),u32(centralStart),u16(0)]);return new Blob([...locals,...centrals,end],{type:'application/zip'})
-  }
-  function downloadBlob(blob,name){const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000)}
-  function sensitiveExportKey(k){
-    const key=lower(k).replace(/[^a-z0-9_]+/g,'_');
-    return key==='password'||key==='encrypted_password'||key==='authorization'||key==='apikey'||key==='anon_key'||key==='service_role'||key==='service_role_key'||key==='client_secret'||key==='secret'||/(^|_)(access_token|refresh_token|id_token|token_cipher|access_token_cipher|refresh_token_cipher|client_secret|service_role|password|secret)(_|$)/i.test(key);
-  }
-  function safeExportValue(value){
-    if(Array.isArray(value))return value.map(safeExportValue);
-    if(value&&typeof value==='object'){const out={};Object.entries(value).forEach(([k,v])=>{if(sensitiveExportKey(k))return;out[k]=safeExportValue(v)});return out}
-    return value;
-  }
-  function valueType(v){if(v===null)return'null';if(Array.isArray(v))return'array';return typeof v}
-  function inferredSchema(rows){const columns={};for(const row of arr(rows).slice(0,250)){if(!row||typeof row!=='object'||Array.isArray(row))continue;for(const [k,v] of Object.entries(row)){const t=valueType(v);const old=columns[k]||{types:{},nullable:false};old.types[t]=(old.types[t]||0)+1;if(v===null)old.nullable=true;columns[k]=old}}return{inferred:true,sample_rows:Math.min(arr(rows).length,250),columns}}
-
-  function serviceRolePrompt(){
-    return new Promise((resolve)=>{
-      const old=document.getElementById('serviceRoleExportOverlay');if(old)old.remove();
-      const overlay=document.createElement('div');overlay.id='serviceRoleExportOverlay';overlay.style.cssText='position:fixed;inset:0;z-index:99999;background:rgba(15,23,18,.62);display:flex;align-items:center;justify-content:center;padding:18px;backdrop-filter:blur(7px)';
-      overlay.innerHTML=`<div style="width:min(560px,100%);background:#fff;border-radius:24px;padding:22px;box-shadow:0 24px 80px rgba(0,0,0,.3);font-family:inherit"><div style="display:flex;gap:14px;align-items:flex-start"><div style="width:46px;height:46px;border-radius:14px;background:#edf7ea;display:grid;place-items:center;font-size:24px;flex:0 0 auto">🔐</div><div><h3 style="margin:0 0 7px;font-size:20px;color:#17251c">Tek seferlik Supabase anahtarı</h3><p style="margin:0;color:#69766d;line-height:1.45;font-size:14px">Supabase Dashboard → Project Settings → API Keys → <b>Legacy API Keys</b> bölümündeki <b>service_role</b> JWT anahtarını yapıştır. Anahtar kaydedilmez ve ZIP'e eklenmez.</p></div></div><label style="display:block;margin-top:18px"><span style="display:block;font-size:13px;font-weight:800;color:#526058;margin-bottom:7px">Legacy service_role JWT</span><input id="serviceRoleExportInput" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="eyJ…" style="box-sizing:border-box;width:100%;height:50px;border:1px solid #cfd8d1;border-radius:14px;padding:0 14px;font:inherit;font-size:15px;outline:none"></label><p style="margin:11px 0 0;font-size:12px;line-height:1.45;color:#8a5d28;background:#fff8ea;border:1px solid #f2dfba;border-radius:12px;padding:10px 12px"><b>Önemli:</b> Bu çok güçlü bir anahtardır. Yalnız kendi cihazında kullan ve aktarım bittikten sonra Supabase'de anahtarı yenile.</p><div style="display:flex;gap:10px;margin-top:18px"><button id="serviceRoleExportCancel" type="button" style="flex:1;height:46px;border:1px solid #d7ded8;border-radius:13px;background:#fff;font:inherit;font-weight:800;color:#49564d">Vazgeç</button><button id="serviceRoleExportOk" type="button" style="flex:1.4;height:46px;border:0;border-radius:13px;background:#4f8c50;color:#fff;font:inherit;font-weight:900">Devam et</button></div></div>`;
-      document.body.appendChild(overlay);const input=overlay.querySelector('#serviceRoleExportInput'),ok=overlay.querySelector('#serviceRoleExportOk'),cancel=overlay.querySelector('#serviceRoleExportCancel');
-      setTimeout(()=>input&&input.focus(),80);
-      const finish=(value)=>{if(input)input.value='';overlay.remove();resolve(value)};
-      cancel.addEventListener('click',()=>finish(''));overlay.addEventListener('click',(e)=>{if(e.target===overlay)finish('')});
-      ok.addEventListener('click',()=>{const key=clean(input.value);if(key.startsWith('sb_secret_')){input.value='';input.placeholder='Yeni sb_secret_ tarayıcıda çalışmaz; Legacy service_role (eyJ…) gerekli';input.focus();input.style.borderColor='#d55';return}if(!key.startsWith('eyJ')||key.length<80){input.focus();input.style.borderColor='#d55';return}finish(key)});
-      input.addEventListener('keydown',(e)=>{if(e.key==='Enter'){e.preventDefault();ok.click()}else if(e.key==='Escape')finish('')});
-    });
-  }
-  async function parseJsonResponse(res,label){const text=await res.text();let out;try{out=text?JSON.parse(text):{}}catch{throw new Error(`${label}: geçersiz JSON cevabı`)}if(!res.ok){throw new Error(clean(out?.message||out?.error_description||out?.error)||`${label}: HTTP ${res.status}`)}return out}
-  async function validateServiceRole(serviceKey){
-    const c=cfg();if(!c.url)throw new Error('Supabase URL bulunamadı');
-    const res=await fetch(c.url+'/auth/v1/admin/users?page=1&per_page=1',{method:'GET',cache:'no-store',headers:{apikey:serviceKey,Authorization:'Bearer '+serviceKey,Accept:'application/json'}});
-    await parseJsonResponse(res,'Service Role doğrulaması');return true;
-  }
-  async function authUsersAll(serviceKey,onPage){
-    const c=cfg(),perPage=1000,rows=[];for(let page=1;page<=1000;page++){
-      const res=await fetch(c.url+`/auth/v1/admin/users?page=${page}&per_page=${perPage}`,{method:'GET',cache:'no-store',headers:{apikey:serviceKey,Authorization:'Bearer '+serviceKey,Accept:'application/json'}});
-      const out=await parseJsonResponse(res,'auth.users');const batch=arr(out.users);rows.push(...batch.map(safeExportValue));if(onPage)onPage(rows.length,Number(out.total||out.total_count||0)||null);if(batch.length<perPage)break;
-    }return{rows,total:rows.length};
-  }
-  async function restTableAllService(table,serviceKey,onPage){
-    const c=cfg();const pageSize=1000;let from=0,rows=[],total=null;
-    for(let guard=0;guard<1000;guard++){
-      const to=from+pageSize-1;const res=await fetch(c.url+'/rest/v1/'+encodeURIComponent(table)+'?select=*',{method:'GET',cache:'no-store',headers:{apikey:serviceKey,Authorization:'Bearer '+serviceKey,Accept:'application/json','Range-Unit':'items',Range:`${from}-${to}`,Prefer:'count=exact'}});
-      const out=await parseJsonResponse(res,table);if(!Array.isArray(out))throw new Error(`${table}: cevap dizi değil`);rows.push(...out);const range=clean(res.headers.get('content-range'));const m=range.match(/\/(\d+|\*)$/);if(m&&m[1]!=='*')total=Number(m[1]);if(onPage)onPage(rows.length,total);if(out.length<pageSize||(Number.isFinite(total)&&rows.length>=total)||out.length===0)break;from+=out.length;
-    }
-    if(Number.isFinite(total)&&rows.length!==total)throw new Error(`${table}: ${total} kaydın ${rows.length} tanesi alınabildi`);
-    return{rows,total:Number.isFinite(total)?total:rows.length};
-  }
-  async function fetchOpenApi(serviceKey){
-    const c=cfg();try{const res=await fetch(c.url+'/rest/v1/',{method:'GET',cache:'no-store',headers:{apikey:serviceKey,Authorization:'Bearer '+serviceKey,Accept:'application/openapi+json'}});if(!res.ok)return null;return await res.json()}catch{return null}
-  }
-  function secretLeakCheck(files,serviceKey){if(!serviceKey)return;const decoder=new TextDecoder();for(const f of files){if(decoder.decode(f.bytes).includes(serviceKey))throw new Error('Güvenlik kontrolü: service_role anahtarı paket içeriğinde tespit edildi. ZIP oluşturulmadı.')}}
-  async function exportAllSupabase(){
-    const button=$('exportAllBtn');if(!button)return;button.disabled=true;const badge=$('exportStateBadge');if(badge)badge.textContent='Anahtar bekleniyor';const statuses={};MIGRATION_TABLES.forEach((t)=>statuses[t.name]={state:'',rows:0});renderExportTables(statuses);exportUiSet('exportRowCount','0');exportUiSet('exportErrorCount','0');exportProgress(0,MIGRATION_TABLES.length+2,'Legacy service_role JWT bekleniyor…');
-    let serviceKey='';
-    try{
-      serviceKey=await serviceRolePrompt();if(!serviceKey){if(badge)badge.textContent='Hazır';exportUiSet('exportStatusText','Aktarım iptal edildi.');return}
-      exportUiSet('exportStatusText','Legacy service_role anahtarı doğrulanıyor…');await validateServiceRole(serviceKey);if(badge)badge.textContent='Doğrulandı';
-      const files=[],results={},errors=[],checks=[];let totalRows=0,done=1;exportProgress(done,MIGRATION_TABLES.length+2,'Supabase verileri okunuyor…');
-      const openApi=await fetchOpenApi(serviceKey);if(openApi)files.push({name:'schema/postgrest-openapi.json',bytes:jsonBytes(safeExportValue(openApi))});done++;exportProgress(done,MIGRATION_TABLES.length+2,'Tablolar ve Google kullanıcıları okunuyor…');
-      for(const source of MIGRATION_TABLES){statuses[source.name]={state:'loading',rows:0};renderExportTables(statuses);try{
-        const got=source.kind==='auth'?await authUsersAll(serviceKey,(count)=>{statuses[source.name].rows=count;renderExportTables(statuses)}):await restTableAllService(source.name,serviceKey,(count)=>{statuses[source.name].rows=count;renderExportTables(statuses)});
-        const rows=safeExportValue(got.rows);results[source.name]=rows;statuses[source.name]={state:'ok',rows:rows.length};totalRows+=rows.length;const target=source.kind==='auth'?'auth/users.json':'tables/'+source.name+'.json';files.push({name:target,bytes:jsonBytes(rows)});files.push({name:'schema/'+source.name.replaceAll('.','_')+'.json',bytes:jsonBytes(inferredSchema(rows))});checks.push({source:source.name,expected:Number(got.total),actual:rows.length,ok:!Number.isFinite(Number(got.total))||Number(got.total)===rows.length});
-      }catch(error){statuses[source.name]={state:'fail',rows:0,error:errorText(error)};errors.push({table:source.name,critical:source.critical,error:errorText(error)})}
-        done++;renderExportTables(statuses);exportUiSet('exportRowCount',fmtInt(totalRows));exportUiSet('exportErrorCount',fmtInt(errors.length));exportProgress(done,MIGRATION_TABLES.length+2,errors.length?'Veriler doğrulanıyor…':'Veriler alınıyor…');
-      }
-      const criticalErrors=errors.filter((x)=>x.critical),countFailures=checks.filter((x)=>!x.ok),migrationReady=criticalErrors.length===0&&countFailures.length===0,generatedAt=new Date().toISOString();
-      const manifest={format:'viohy-orman-migration',format_version:2,source:'Orman IO V80 / Supabase direct service-role export',generated_at:generatedAt,admin_version:ADMIN_VERSION,timezone:ISTANBUL_TZ,migration_ready:migrationReady,total_rows:totalRows,sources:MIGRATION_TABLES.map((t)=>({name:t.name,group:t.group,critical:t.critical,kind:t.kind||'table',rows:Array.isArray(results[t.name])?results[t.name].length:0,exported:Array.isArray(results[t.name])})),excluded_nonportable_tables:NONPORTABLE_TABLES,security:{service_role_stored:false,service_role_in_zip:false,passwords_exported:false,supabase_sessions_exported:false,google_drive_tokens_exported:false},notes:['auth/users.json Google hesaplarını Viohy kullanıcılarıyla eşleştirmek içindir; Supabase parolaları taşınmaz.','Drive bağlantı kayıtları içindeki access/refresh token, cipher ve secret alanları dışa aktarım sırasında çıkarılır.','Oturum/rate-limit/OAuth state gibi geçici tablolar yeni sisteme taşınmaz.']};
-      const validation={ok:migrationReady,generated_at:generatedAt,critical_errors:criticalErrors,count_checks:checks,count_failures:countFailures,all_errors:errors};
-      const readme=`ORMAN İO V80 -> VIOHY AKTARIM PAKETİ\n\nOluşturma: ${generatedAt}\nToplam kayıt: ${totalRows}\nAktarıma hazır: ${migrationReady?'EVET':'HAYIR'}\n\nBu paket service_role anahtarını, Supabase parolalarını/oturumlarını veya Google Drive access-refresh tokenlarını içermez.\nViohy içe aktarmada manifest.json ve validation.json doğrulanmadan veri yazılmamalıdır.\n`;
-      files.push({name:'manifest.json',bytes:jsonBytes(manifest)},{name:'validation.json',bytes:jsonBytes(validation)},{name:'README.txt',bytes:new TextEncoder().encode(readme)});
-      if(!migrationReady){if(badge)badge.textContent='Eksik veri';exportUiSet('exportStatusText','Tam aktarım doğrulanamadı. Kritik kaynaklardan biri okunamadığı için ZIP oluşturulmadı.');toast('Tam aktarım durduruldu: kritik veri eksik');return}
-      secretLeakCheck(files,serviceKey);const stamp=new Date().toLocaleDateString('en-CA',{timeZone:ISTANBUL_TZ}).replaceAll('-','')+'_'+new Date().toLocaleTimeString('tr-TR',{timeZone:ISTANBUL_TZ,hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}).replaceAll(':','');exportUiSet('exportStatusText','Doğrulama tamamlandı. ZIP oluşturuluyor…');const blob=buildZip(files);downloadBlob(blob,`ORMAN_IO_SUPABASE_TAM_AKTARIM_${stamp}.zip`);if(badge)badge.textContent='Tamamlandı';exportProgress(MIGRATION_TABLES.length+2,MIGRATION_TABLES.length+2,'Tam aktarım paketi indirildi. Viohy içe aktarma için hazır.');toast('Supabase tam aktarım ZIP’i hazır');
-    }catch(error){if(badge)badge.textContent='Hata';exportUiSet('exportStatusText','Dışa aktarma başarısız: '+errorText(error));toast(errorText(error))}finally{serviceKey='';button.disabled=false}
-  }
-
-  function switchPage(page){state.page=page;document.querySelectorAll('.page').forEach((el)=>el.classList.toggle('is-active',el.dataset.page===page));document.querySelectorAll('.nav-item').forEach((el)=>el.classList.toggle('is-active',el.dataset.pageTarget===page));if(page==='stats')renderStats();if(page==='backups')renderBackups();if(page==='manage'){renderBlocks();renderSecurityLogs();renderGoogleAccess();renderSeflikAdmin();}if(page==='export'){renderExportTables();exportUiSet('exportTableCount',MIGRATION_TABLES.length);}window.scrollTo({top:0,behavior:'smooth'})}
+  function switchPage(page){state.page=page;document.querySelectorAll('.page').forEach((el)=>el.classList.toggle('is-active',el.dataset.page===page));document.querySelectorAll('.nav-item').forEach((el)=>el.classList.toggle('is-active',el.dataset.pageTarget===page));if(page==='stats')renderStats();if(page==='backups')renderBackups();if(page==='manage'){renderBlocks();renderSecurityLogs();renderGoogleAccess();renderSeflikAdmin();}window.scrollTo({top:0,behavior:'smooth'})}
   function openModal(title,html){$('modalTitle').textContent=title;$('modalBody').innerHTML=html;$('modal').classList.add('is-open');$('modal').setAttribute('aria-hidden','false')}
   function closeModal(){$('modal').classList.remove('is-open');$('modal').setAttribute('aria-hidden','true')}
 
@@ -874,7 +747,7 @@ function appLabel(user){return appKind(user)==='istif'?'İstif İO':appKind(user
     document.querySelectorAll('.manage-tab').forEach((button)=>button.addEventListener('click',()=>{state.blockView=button.dataset.blockView;document.querySelectorAll('.manage-tab').forEach((x)=>x.classList.toggle('is-active',x===button));renderBlocks()}));
     document.querySelectorAll('.google-access-tab').forEach((button)=>button.addEventListener('click',()=>{state.accessStatus=button.dataset.accessStatus;document.querySelectorAll('.google-access-tab').forEach((x)=>x.classList.toggle('is-active',x===button));renderGoogleAccess()}));
     ['userSearch','userFilter'].forEach((id)=>$(id).addEventListener('input',renderUsers));['backupSearch','backupSort'].forEach((id)=>$(id).addEventListener('input',renderBackups));$('blockSearch').addEventListener('input',renderBlocks);
-    $('clearUserFilter').addEventListener('click',()=>{$('userSearch').value='';$('userFilter').value='all';renderUsers()});if($('guestSearch'))$('guestSearch').addEventListener('input',renderGuests);$('clearBackupFilter').addEventListener('click',()=>{$('backupSearch').value='';$('backupSort').value='new';renderBackups()});$('addIpBtn').addEventListener('click',()=>addIp().catch((e)=>toast(errorText(e))));if($('exportAllBtn'))$('exportAllBtn').addEventListener('click',()=>exportAllSupabase().catch((e)=>toast(errorText(e))));
+    $('clearUserFilter').addEventListener('click',()=>{$('userSearch').value='';$('userFilter').value='all';renderUsers()});if($('guestSearch'))$('guestSearch').addEventListener('input',renderGuests);$('clearBackupFilter').addEventListener('click',()=>{$('backupSearch').value='';$('backupSort').value='new';renderBackups()});$('addIpBtn').addEventListener('click',()=>addIp().catch((e)=>toast(errorText(e))));
     $('modalClose').addEventListener('click',closeModal);$('modal').addEventListener('click',(e)=>{if(e.target===$('modal'))closeModal()});
     document.addEventListener('click',(e)=>{touchActivity();const button=e.target.closest('[data-action]');if(!button)return;const action=button.dataset.action;const user=state.users[Number(button.dataset.userIndex)];const guest=state.guests[Number(button.dataset.guestIndex)];if(action==='guest-detail'&&guest)guestDetail(guest);if(action==='detail'&&user)userDetail(user);if(action==='block'&&user)blockUser(user).catch((x)=>toast(errorText(x)));if(action==='unblock-user'&&user)unblockUser(user).catch((x)=>toast(errorText(x)));if(action==='delete-user'&&user)deleteUser(user).catch((x)=>toast(errorText(x)));if(action==='hide-backup')hideBackup(button.dataset.backupId).catch((x)=>toast(errorText(x)));if(action==='unblock')unblock(button).catch((x)=>toast(errorText(x)));const access=state.userAccess[Number(button.dataset.accessIndex)];if(action==='access-approve'&&access)accessApprove(access).catch((x)=>toast(errorText(x)));if(action==='access-reject'&&access)accessDecision(access,'admin_user_access_reject').catch((x)=>toast(errorText(x)));if(action==='access-revoke'&&access)accessDecision(access,'admin_user_access_revoke').catch((x)=>toast(errorText(x)));if(action==='access-reopen'&&access)accessDecision(access,'admin_user_access_reopen').catch((x)=>toast(errorText(x))) });
     ['keydown','pointerdown','touchstart'].forEach((name)=>document.addEventListener(name,touchActivity,{passive:true}));

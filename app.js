@@ -228,18 +228,16 @@
   }
 
   function session() {
-    const cached = read(K.session, null) || read(K.backup, null) || {};
-    if (cached && cached.access_token) return cached;
-    try {
-      const api = window.mesahaSupabase || window.mesahaCloud || null;
-      const live = api && typeof api.getStoredSession === "function" ? api.getStoredSession() : null;
-      if (live && live.access_token) {
-        write(K.session, live);
-        write(K.backup, { ...live, backup_at: Date.now() });
-        return live;
-      }
-    } catch (_) {}
-    return cached || {};
+    const shared = window.OrmanSuiteIdentity;
+    if (shared && typeof shared.session === "function") return shared.session() || {};
+    const primary = read(K.session, null);
+    if (primary && primary.access_token) return primary;
+    const backup = read(K.backup, null);
+    if (backup && backup.access_token) {
+      write(K.session, backup);
+      return backup;
+    }
+    return {};
   }
   function access() {
     return read(K.access, {}) || {};
@@ -251,20 +249,25 @@
     return read(K.settings, {}) || {};
   }
   function terminal() {
-    const t = read(K.terminal, null) || read(K.terminalOld, null) || {};
-    return t && t.active ? t : {};
+    const shared = window.OrmanSuiteIdentity;
+    if (shared && typeof shared.terminal === "function") return shared.terminal() || {};
+    const primary = read(K.terminal, null);
+    if (primary && primary.active) return primary;
+    const old = read(K.terminalOld, null);
+    if (old && old.active) { write(K.terminal, old); return old; }
+    return {};
   }
   function pairedTerminal() {
+    const shared = window.OrmanSuiteIdentity;
+    if (shared && typeof shared.pairedTerminal === "function") return shared.pairedTerminal();
     const t = terminal();
-    return !!(
-      t.active &&
-      t.source === "pair_code" &&
-      (t.terminalCode || t.terminalToken || t.pairedUserId)
-    );
+    return !!(t.active && t.source === "pair_code" && t.pairedUserId && (t.terminalCode || t.terminalToken));
   }
   function authType() {
-    if (session().access_token) return "google";
+    const shared = window.OrmanSuiteIdentity;
+    if (shared && typeof shared.authType === "function") return shared.authType();
     if (pairedTerminal()) return "terminal";
+    if (session().access_token) return "google";
     if (terminal().active) return "guest";
     if (access().status === "approved") return "cached";
     return "none";
@@ -425,19 +428,18 @@
     }
   }
   function terminalAuth() {
+    const shared = window.OrmanSuiteIdentity;
+    if (shared && typeof shared.terminalAuthPayload === "function") return shared.terminalAuthPayload();
     const t = terminal();
-    return pairedTerminal()
-      ? {
-          terminalCode: clean(t.terminalCode),
-          terminalToken: clean(t.terminalToken),
-          terminalPairedUserId: clean(t.pairedUserId),
-          terminalPairedEmail: clean(t.pairedEmail),
-          terminalDeviceId: clean(t.deviceId || t.terminalDeviceId || (() => { try { return localStorage.getItem("mesaha_supabase_v500_device") || ""; } catch (_) { return ""; } })()),
-          deviceId: clean(t.deviceId || t.terminalDeviceId || (() => { try { return localStorage.getItem("mesaha_supabase_v500_device") || ""; } catch (_) { return ""; } })()),
-        }
-      : {};
+    return pairedTerminal() ? {
+      terminalCode: clean(t.terminalCode), terminalToken: clean(t.terminalToken),
+      terminalPairedUserId: clean(t.pairedUserId), terminalPairedEmail: clean(t.pairedEmail),
+      terminalDeviceId: clean(t.deviceId || t.terminalDeviceId), deviceId: clean(t.deviceId || t.terminalDeviceId)
+    } : {};
   }
   function identity() {
+    const shared = window.OrmanSuiteIdentity;
+    if (shared && typeof shared.identity === "function") return shared.identity();
     const s = session(),
       a = access(),
       p = panel(),
@@ -644,7 +646,7 @@
             seflikKey: clean(af.seflik_key || af.seflikKey) || stableKey(seflik),
             bolmeNo: no,
           });
-          remoteIstifAuthoritative = out.complete !== false && out.truncated !== true;
+          remoteIstifAuthoritative = !!(out && out.sync_contract === "orman-io-sync-v68" && out.complete === true && out.partial !== true && out.truncated !== true && (!Array.isArray(out.query_errors) || out.query_errors.length === 0) && (out.expected_queries == null || Number(out.successful_queries) === Number(out.expected_queries)));
           remoteIstif = (Array.isArray(out && out.records) ? out.records : []).filter((r) =>
             clean(r.bolme_no || r.bolme || r.bolmeNo) === no &&
             !istifDeletedIdsForYield.has(clean(r.id || r.record_id)),
@@ -1059,22 +1061,19 @@
     );
   }
   function activeFolder() {
-    const a = read(K.active, {}),
-      id = identity();
-    return (
-      folders.find(
-        (f) =>
-          f &&
-          !f.deleted &&
-          (clean(f.seflik_key || f.seflikKey) ===
-            clean(a.seflik_key || a.seflikKey) ||
-            clean(f.seflik).toLocaleLowerCase("tr-TR") ===
-              clean(id.seflik).toLocaleLowerCase("tr-TR")),
-      ) ||
-      creatorFolder() ||
-      folders.find((f) => !f.deleted) ||
-      null
-    );
+    const a = read(K.active, {}) || {}, id = identity();
+    const rows = folders.filter((f) => f && !f.deleted);
+    const activeId = clean(a.folder_id || a.folderId);
+    const activeKey = clean(a.seflik_key || a.seflikKey);
+    const activeName = clean(a.seflik);
+    const identityKey = clean(id.seflikKey);
+    const identityName = clean(id.seflik);
+    return rows.find((f) => activeId && clean(f.id || f.folder_id || f.folderId) === activeId) ||
+      rows.find((f) => activeKey && clean(f.seflik_key || f.seflikKey) === activeKey) ||
+      rows.find((f) => activeName && fold(f.seflik || f.name) === fold(activeName)) ||
+      rows.find((f) => identityKey && clean(f.seflik_key || f.seflikKey) === identityKey) ||
+      rows.find((f) => identityName && fold(f.seflik || f.name) === fold(identityName)) ||
+      (rows.length === 1 ? rows[0] : null);
   }
   function activeKey() {
     const f = activeFolder();
@@ -1170,14 +1169,27 @@
     return result;
   }
   function applyCanonicalFolderContext(raw) {
+    const shared = window.OrmanSuiteIdentity;
+    const canonical = shared && typeof shared.applyCanonicalContext === "function"
+      ? shared.applyCanonicalContext(raw)
+      : null;
     const source = raw && typeof raw === "object" ? raw : {};
     const access = source.access && typeof source.access === "object" ? source.access : {};
-    const folder = source.folder && typeof source.folder === "object"
-      ? source.folder
-      : (Array.isArray(source.folders) && source.folders[0] && typeof source.folders[0] === "object" ? source.folders[0] : {});
-    const seflik = clean(source.seflik || source.folderSeflik || access.seflik || access.canonical_seflik || folder.seflik || folder.name);
-    const seflikKey = clean(source.seflikKey || source.seflik_key || access.seflikKey || access.seflik_key || folder.seflik_key || folder.seflikKey || folder.key);
-    const folderId = clean(source.seflikFolderId || source.seflik_folder_id || access.seflikFolderId || access.seflik_folder_id || folder.id || folder.folder_id || folder.folderId);
+    let folder = source.folder && typeof source.folder === "object" ? source.folder : {};
+    if (!Object.keys(folder).length && Array.isArray(source.folders)) {
+      const currentActive = read(K.active, {}) || {};
+      const wantedId = clean(source.active_folder_id || currentActive.folder_id || currentActive.folderId);
+      const wantedKey = clean(source.active_seflik_key || currentActive.seflik_key || currentActive.seflikKey);
+      const wantedName = clean(source.active_seflik || currentActive.seflik);
+      folder = source.folders.find((row) => row && (
+        (wantedId && clean(row.id || row.folder_id || row.folderId) === wantedId) ||
+        (wantedKey && clean(row.seflik_key || row.seflikKey) === wantedKey) ||
+        (wantedName && fold(row.seflik || row.name) === fold(wantedName))
+      )) || (source.folders.length === 1 ? source.folders[0] : {});
+    }
+    const seflik = clean((canonical && canonical.seflik) || source.seflik || source.folderSeflik || access.seflik || access.canonical_seflik || folder.seflik || folder.name);
+    const seflikKey = clean((canonical && canonical.seflik_key) || source.seflikKey || source.seflik_key || access.seflikKey || access.seflik_key || folder.seflik_key || folder.seflikKey || folder.key);
+    const folderId = clean((canonical && canonical.folder_id) || source.seflikFolderId || source.seflik_folder_id || access.seflikFolderId || access.seflik_folder_id || folder.id || folder.folder_id || folder.folderId);
     if (!seflik && !seflikKey && !folderId) return null;
     let current = folders.find((f) =>
       (folderId && clean(f.id || f.folder_id || f.folderId) === folderId) ||
@@ -1185,8 +1197,7 @@
       (seflik && fold(f.seflik) === fold(seflik))
     );
     const merged = normalizeFolder({
-      ...(current || {}),
-      seflik: seflik || (current && current.seflik),
+      ...(current || {}), seflik: seflik || (current && current.seflik),
       seflik_key: seflikKey || (current && (current.seflik_key || current.seflikKey)),
       id: folderId || (current && (current.id || current.folder_id || current.folderId)),
       role: clean(source.membershipRole || access.role || folder.role) || (current && current.role) || "member",
@@ -1197,12 +1208,26 @@
       updatedAt: now(),
     });
     if (!merged) return null;
-    if (current) Object.assign(current, merged);
-    else { folders.unshift(merged); current = merged; }
-    setActive(current);
-    saveLocal();
-    render();
-    return current;
+    if (current) Object.assign(current, merged); else { folders.unshift(merged); current = merged; }
+    setActive(current); saveLocal(); render(); return current;
+  }
+
+  function preferredFolder(list) {
+    const rows = Array.isArray(list) ? list.filter(Boolean) : [];
+    if (!rows.length) return null;
+    const stored = read(K.active, {}) || {};
+    const id = identity();
+    const storedId = clean(stored.folder_id || stored.folderId);
+    const storedKey = clean(stored.seflik_key || stored.seflikKey);
+    const storedName = clean(stored.seflik);
+    const identityKey = clean(id.seflikKey);
+    const identityName = clean(id.seflik);
+    return rows.find((f) => storedId && clean(f.id || f.folder_id || f.folderId) === storedId) ||
+      rows.find((f) => storedKey && clean(f.seflik_key || f.seflikKey) === storedKey) ||
+      rows.find((f) => storedName && fold(f.seflik || f.name) === fold(storedName)) ||
+      rows.find((f) => identityKey && clean(f.seflik_key || f.seflikKey) === identityKey) ||
+      rows.find((f) => identityName && fold(f.seflik || f.name) === fold(identityName)) ||
+      (rows.length === 1 ? rows[0] : null);
   }
 
   function localFolder() {
@@ -1238,7 +1263,10 @@
     )
       folders.unshift(lf);
     if (!cloudIdentity() || navigator.onLine === false) {
-      if (!activeFolder() && folders[0]) setActive(folders[0]);
+      if (!activeFolder()) {
+        const selected = preferredFolder(folders);
+        if (selected) setActive(selected);
+      }
       render();
       return folders;
     }
@@ -1254,19 +1282,30 @@
       const remote = (Array.isArray(out.folders) ? out.folders : [])
         .map(normalizeFolder)
         .filter(Boolean);
-      if (remote.length) folders = remote;
-      else folders = lf ? [lf] : [];
+      const authoritative = out?.sync_contract === "orman-io-sync-v68" && out?.complete === true && out?.partial !== true && out?.truncated !== true;
+      if (authoritative) {
+        folders = remote.length ? remote : (lf ? [lf] : []);
+      } else {
+        const merged = new Map();
+        for (const row of folders) {
+          const key = clean(row?.seflik_key || row?.seflikKey) || fold(row?.seflik);
+          if (key) merged.set(key, row);
+        }
+        for (const row of remote) {
+          const key = clean(row?.seflik_key || row?.seflikKey) || fold(row?.seflik);
+          if (key) merged.set(key, { ...(merged.get(key) || {}), ...row });
+        }
+        if (lf) {
+          const key = clean(lf.seflik_key) || fold(lf.seflik);
+          if (key && !merged.has(key)) merged.set(key, lf);
+        }
+        folders = Array.from(merged.values());
+      }
       if (folders.length) {
-        const stored = read(K.active, {}) || {};
-        const storedKey = clean(stored.seflik_key || stored.seflikKey);
-        const storedName = clean(stored.seflik);
-        const selected =
-          folders.find((f) => storedKey && clean(f.seflik_key || f.seflikKey) === storedKey) ||
-          folders.find((f) => storedName && fold(f.seflik) === fold(storedName)) ||
-          creatorFolder() ||
-          folders[0];
+        const selected = preferredFolder(folders);
         if (selected) setActive(selected);
-      } else clearActiveFolderContext();
+        else if (!activeFolder()) toast("Birden fazla şeflik bulundu. Devam etmek için Şeflik Klasörü ekranından aktif şefliği seçin.", true);
+      } else if (out?.sync_contract === "orman-io-sync-v68" && out?.complete === true) clearActiveFolderContext();
       await loadMembersFromServer();
       await loadDivisionsFromServer();
       saveLocal();
@@ -1274,7 +1313,10 @@
       return folders;
     } catch (e) {
       if (force) toast("Şeflikler alınamadı: " + e.message, true);
-      if (!activeFolder() && folders[0]) setActive(folders[0]);
+      if (!activeFolder()) {
+        const selected = preferredFolder(folders);
+        if (selected) setActive(selected);
+      }
       render();
       return folders;
     }
@@ -1302,7 +1344,14 @@
           updatedAt: now(),
         }))
         .filter((x) => x.name);
-      foresters[af.seflik_key] = list;
+      const authoritative = out?.sync_contract === "orman-io-sync-v68" && out?.complete === true && out?.partial !== true && out?.truncated !== true;
+      if (authoritative) foresters[af.seflik_key] = list;
+      else if (list.length) {
+        const old = Array.isArray(foresters[af.seflik_key]) ? foresters[af.seflik_key] : [];
+        const merged = new Map(old.map((row) => [emailKey(row.email) || clean(row.userId || row.id), row]));
+        list.forEach((row) => merged.set(emailKey(row.email) || clean(row.userId || row.id), { ...(merged.get(emailKey(row.email) || clean(row.userId || row.id)) || {}), ...row }));
+        foresters[af.seflik_key] = Array.from(merged.values());
+      }
     } catch {}
   }
   async function loadDivisionsFromServer() {
@@ -1316,8 +1365,9 @@
         seflik_key: clean(af.seflik_key || af.seflikKey),
         folderId: clean(af.id || af.folder_id || af.folderId),
       });
-      const hasAuthoritativeList = Array.isArray(out && out.divisions) || Array.isArray(out && out.summaries);
-      if (!hasAuthoritativeList) return;
+      const hasRemoteList = Array.isArray(out && out.divisions) || Array.isArray(out && out.summaries);
+      if (!hasRemoteList) return;
+      const authoritative = out?.sync_contract === "orman-io-sync-v68" && out?.complete === true && out?.partial !== true && out?.truncated !== true;
       const key = clean(af.seflik_key || af.seflikKey) || stableKey(af.seflik);
       const deleting = new Set((pendingOps || [])
         .filter((item) => item && item.type === "delete_division" && clean(item.payload && item.payload.seflik) === clean(af.seflik))
@@ -1332,22 +1382,21 @@
         const no = clean(d && d.bolme_no);
         return no && !deleting.has(no) && !remoteNos.has(no) && !!(d.pending || d.local_pending);
       });
-      const next = remote.map((d) => {
+      const remoteMerged = remote.map((d) => {
         const no = clean(d.bolme_no);
-        return {
-          ...(oldByNo.get(no) || {}),
-          ...d,
-          deleted: false,
-          pending: false,
-          local_pending: false,
-        };
-      }).concat(localPendingCreates);
+        return { ...(oldByNo.get(no) || {}), ...d, deleted: false, pending: false, local_pending: false };
+      });
+      const preservedMissing = authoritative ? [] : old.filter((d) => {
+        const no = clean(d?.bolme_no);
+        return no && !deleting.has(no) && !remoteNos.has(no);
+      });
+      const next = remoteMerged.concat(localPendingCreates, preservedMissing.filter((row) => !localPendingCreates.some((p) => clean(p.bolme_no) === clean(row.bolme_no))));
 
       const nextNos = new Set(next.map((d) => clean(d.bolme_no)));
-      const removed = old.filter((d) => {
+      const removed = authoritative ? old.filter((d) => {
         const no = clean(d && d.bolme_no);
         return no && !nextNos.has(no);
-      });
+      }) : [];
       for (const d of removed) {
         const no = clean(d.bolme_no);
         const rk = readyKey(key, no);
@@ -1697,7 +1746,7 @@
       return clean(p.seflik_key || p.seflikKey) === key || clean(p.seflik).toLocaleLowerCase("tr-TR") === clean(folder.seflik).toLocaleLowerCase("tr-TR");
     });
     if (pendingForFolder) return toast("Bu şeflikte sunucuya gönderilmemiş işlem var. Önce Senkronize Et düğmesini kullanın.", true);
-    if (!confirm(folder.seflik + " şefliğinden çıkılsın mı? Ortak kayıtlar sunucuda korunur; bu cihazdaki offline şeflik ve İstif kopyaları temizlenir.")) return;
+    if (!confirm(folder.seflik + " şefliğinden ayrılmak istediğinize emin misiniz? Ortak kayıtlar sunucuda korunur; bu cihazdaki offline şeflik ve İstif kopyaları temizlenir.")) return;
     busy = true; renderSeflikModal();
     try {
       await edge("seflik_folder_leave", { seflik: folder.seflik, folderSeflik: folder.seflik, seflikKey: key });
@@ -1708,13 +1757,17 @@
       saveLocal();
       await loadFolders(true);
       closeModals(); render();
-      toast(folder.seflik + " şefliğinden çıkıldı.");
+      toast(folder.seflik + " şefliğinden ayrıldınız.");
     } catch (e) { toast(e.message || String(e), true); }
     finally { busy = false; renderSeflikModal(); }
   }
   function renderSeflikModal() {
     const form = $("seflikForm");
     if (!form) return;
+    const modalTitle = document.querySelector("#seflikModal .modal-head h3");
+    const modalKicker = document.querySelector("#seflikModal .modal-head .modal-kicker");
+    if (modalTitle) modalTitle.textContent = "Şeflikler";
+    if (modalKicker) modalKicker.textContent = "ŞEFLİK YÖNETİMİ";
     let box = $("currentSeflikBox");
     if (!box) {
       box = document.createElement("div");
@@ -1728,7 +1781,7 @@
       ? `<label class="suite-select-label">Aktif Şeflik<select id="suiteFolderSelectV6">${list.map((f, i) => `<option value="${i}" ${af && clean(f.seflik_key) === clean(af.seflik_key) ? "selected" : ""}>${esc(f.seflik)}${canManageFolder(f) ? " • kurucu" : " • üye"}</option>`).join("")}</select></label>`
       : '<div class="modal-note">Henüz seçilebilecek şeflik yok.</div>';
     const current = af
-      ? `<div class="manager-card"><div><small>Aktif Şeflik</small><b>${esc(af.seflik)}</b><span>${canManageFolder(af) ? "Bu şefliği yönetebilirsiniz." : "Bu şeflikte üyesiniz; yalnızca seçim yapabilirsiniz."}</span></div>${canManageFolder(af) ? `<div class="manager-actions"><button type="button" class="mini-button" data-action="rename-seflik">İsmini Düzenle</button><button type="button" class="mini-button danger-mini" data-action="delete-seflik">Şefliği Sil</button></div>` : `<div class="manager-actions"><button type="button" class="mini-button danger-mini" data-action="leave-seflik" ${busy ? "disabled" : ""}>Şeflikten Çık</button></div>`}</div>`
+      ? `<div class="manager-card ${canManageFolder(af) ? "" : "member-leave-card-v61"}"><div><small>Aktif Şeflik</small><b>${esc(af.seflik)}</b><span>${canManageFolder(af) ? "Bu şefliği yönetebilirsiniz." : "Bu şefliğin üyesisiniz. İsterseniz üyeliğinizi sonlandırabilirsiniz."}</span></div>${canManageFolder(af) ? `<div class="manager-actions"><button type="button" class="mini-button" data-action="rename-seflik">İsmini Düzenle</button><button type="button" class="mini-button danger-mini" data-action="delete-seflik">Şefliği Sil</button></div>` : `<div class="manager-actions member-leave-actions-v61"><button type="button" class="mini-button danger-mini leave-seflik-v61" data-action="leave-seflik" ${busy ? "disabled" : ""}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 5H5v14h5M14 8l4 4-4 4M18 12H9"/></svg><span>Şeflikten Ayrıl</span></button></div><div class="member-leave-note-v61">Ortak kayıtlar sunucuda korunur. Bu cihazdaki o şefliğe ait offline kopyalar, bekleyen işlem olmadığı doğrulandıktan sonra temizlenir.</div>`}</div>`
       : "";
     box.innerHTML = options + current;
     const sel = $("suiteFolderSelectV6");
@@ -1838,10 +1891,10 @@
         : '<div class="modal-note">Henüz bölme oluşturulmadı.</div>') +
       '<button type="button" class="secondary-button wide-action" data-action="download-all-divisions">Tüm Bölmeleri Offline İndir</button>';
     form.querySelectorAll("label").forEach((el) => {
-      if (el.querySelector("#bolmeNo,#bolmeLocation")) el.hidden = !manage;
+      if (el.querySelector("#bolmeNo,#bolmeLocation")) el.hidden = false;
     });
     const actions = form.querySelector(".form-actions");
-    if (actions) actions.hidden = !manage;
+    if (actions) actions.hidden = false;
     let note = $("bolmeManagedNoteV6");
     if (!note) {
       note = document.createElement("div");
@@ -1850,28 +1903,152 @@
       form.insertBefore(note, form.firstChild);
     }
     note.textContent = manage
-      ? "Bölme oluşturma, silme ve offline indirme yalnızca Orman İO üzerinden yönetilir."
-      : "Bu şeflikte üyesiniz. Bölmeleri silemez veya oluşturamazsınız; hazır bölmeleri indirebilirsiniz.";
+      ? "Yeni bölme oluşturabilir, mevcut bölmeleri offline indirebilir ve gerektiğinde silebilirsiniz."
+      : "Bu şeflikte üyesiniz. Yeni bölme oluşturabilir ve bölmeleri offline indirebilirsiniz; bölme silme yetkisi yalnızca şeflik kurucusundadır.";
+  }
+  function clearIstifIdentityCacheV69() {
+    return new Promise((resolve) => {
+      if (!("indexedDB" in window)) return resolve(false);
+      let finished = false;
+      const done = (value) => {
+        if (finished) return;
+        finished = true;
+        resolve(!!value);
+      };
+      const timer = setTimeout(() => done(false), 2200);
+      try {
+        const request = indexedDB.open("mesaha-istif-prototype", 2);
+        request.onerror = () => { clearTimeout(timer); done(false); };
+        request.onblocked = () => { clearTimeout(timer); done(false); };
+        request.onsuccess = () => {
+          const db = request.result;
+          try {
+            if (!db.objectStoreNames.contains("settings")) {
+              db.close(); clearTimeout(timer); return done(false);
+            }
+            const tx = db.transaction("settings", "readwrite");
+            const store = tx.objectStore("settings");
+            const get = store.get(K.istifShared);
+            get.onsuccess = () => {
+              const row = get.result || { key: K.istifShared, value: {} };
+              const value = row.value && typeof row.value === "object" ? row.value : {};
+              row.value = {
+                ...value,
+                seflikler: [],
+                membersBySeflik: {},
+                customForestersBySeflik: {},
+                removedForestersBySeflik: {},
+                auth: { status: "signed_out", userId: "", email: "", name: "", avatarUrl: "", error: "", updatedAt: now() },
+                drive: { status: "idle", connected: false, isOwner: false, ownerEmail: "", ownerName: "", folderId: "", folderName: "", folderUrl: "", updatedAt: "", error: "", quota: null },
+                updatedAt: now(),
+              };
+              store.put(row);
+              const appGet = store.get("app");
+              appGet.onsuccess = () => {
+                const appRow = appGet.result;
+                if (!appRow || !appRow.value || typeof appRow.value !== "object") return;
+                const appValue = { ...appRow.value };
+                ["seflik","seflikKey","ormanci"].forEach((key) => delete appValue[key]);
+                appValue.setupComplete = false;
+                store.put({ key: "app", value: appValue });
+              };
+            };
+            tx.oncomplete = () => { try { db.close(); } catch {} clearTimeout(timer); done(true); };
+            tx.onerror = () => { try { db.close(); } catch {} clearTimeout(timer); done(false); };
+            tx.onabort = tx.onerror;
+          } catch (_) {
+            try { db.close(); } catch {}
+            clearTimeout(timer); done(false);
+          }
+        };
+      } catch (_) {
+        clearTimeout(timer);
+        done(false);
+      }
+    });
+  }
+  async function hardClearAuthStateV69() {
+    const authKeys = [
+      K.session, K.backup, K.access, K.terminal, K.terminalOld, K.active,
+      K.folderCache, K.oldFolderCache, K.mesahaFolderCache, K.istifShared,
+      "mesaha_google_plain_oauth_v553", "mesaha_google_email_exists_retry_v568",
+      "mesaha_user_confirmed_v319", "mesaha_terminal_local_mode_v556",
+      "mesaha_terminal_local_mode_v557"
+    ];
+    authKeys.forEach((key) => { try { localStorage.removeItem(key); } catch {} });
+    try {
+      const p = panel();
+      ["name","seflik","bolmeNo","googleUserId","googleEmail","googleFullName","googleAvatarUrl","avatarUrl","googleApproved","terminalMode","terminalPairedUserId","terminalPairedEmail","activeSeflik","activeSeflikKey","seflikKey"].forEach((key) => delete p[key]);
+      write(K.panel, p);
+    } catch {}
+    try {
+      const st = settings();
+      ["ekipNot","seflik","seflikKey","seflik_key","bolmeNo","ormanci"].forEach((key) => delete st[key]);
+      write(K.settings, st);
+    } catch {}
+    try {
+      const fallbackKey = "mesaha_istif_storage_fallback_v69";
+      const fallback = JSON.parse(localStorage.getItem(fallbackKey) || "null");
+      if (fallback && Array.isArray(fallback.settings)) {
+        fallback.settings = fallback.settings.map((row) => {
+          if (!row || typeof row !== "object") return row;
+          if (row.key === K.istifShared) {
+            const value = row.value && typeof row.value === "object" ? row.value : {};
+            return {
+              ...row,
+              value: {
+                ...value,
+                seflikler: [],
+                membersBySeflik: {},
+                customForestersBySeflik: {},
+                removedForestersBySeflik: {},
+                auth: { status: "signed_out", userId: "", email: "", name: "", avatarUrl: "", error: "", updatedAt: now() },
+                drive: { status: "idle", connected: false, isOwner: false, ownerEmail: "", ownerName: "", folderId: "", folderName: "", folderUrl: "", updatedAt: "", error: "", quota: null },
+                updatedAt: now(),
+              },
+            };
+          }
+          if (row.key === "app") {
+            const value = row.value && typeof row.value === "object" ? { ...row.value } : {};
+            ["seflik","seflikKey","ormanci"].forEach((key) => delete value[key]);
+            value.setupComplete = false;
+            return { ...row, value };
+          }
+          return row;
+        });
+        fallback.updatedAt = now();
+        localStorage.setItem(fallbackKey, JSON.stringify(fallback));
+      }
+    } catch {}
+    try {
+      ["mesaha_google_plain_oauth_v553","mesaha_google_email_exists_retry_v568","orman_io_auth_logout_v69"].forEach((key) => sessionStorage.removeItem(key));
+    } catch {}
+    folders = [];
+    foresters = {};
+    divisions = {};
+    divisionRecords = {};
+    divisionReady = {};
+    terminalDevicesLoadedAt = 0;
+    try { await clearIstifIdentityCacheV69(); } catch {}
+    try { window.dispatchEvent(new CustomEvent("mesaha:hard-logout", { detail: { source: "suite-root-v69" } })); } catch {}
   }
   async function logout() {
-    if (!confirm("Oturum kapatılsın mı? Yerel kayıtlar silinmez.")) return;
+    if (!confirm("Oturum tamamen kapatılsın mı? Cihazdaki ölçüm ve istif kayıtları silinmez.")) return;
+    const button = $("logoutBtn");
+    if (button) { button.disabled = true; button.textContent = "Oturum kapatılıyor…"; }
+    try { sessionStorage.setItem("orman_io_auth_logout_v69", String(Date.now())); } catch {}
     try {
-      if (authType() === "google" && googleAuthApi())
-        await googleAuthApi().logout();
+      if (authType() === "google" && googleAuthApi()) {
+        await Promise.race([
+          Promise.resolve(googleAuthApi().logout({ redirect: false })),
+          new Promise((resolve) => setTimeout(resolve, 3200)),
+        ]);
+      }
     } catch {}
-    [
-      K.session,
-      K.backup,
-      K.access,
-      K.terminal,
-      K.terminalOld,
-      K.folderCache,
-      K.oldFolderCache,
-    ].forEach((k) => localStorage.removeItem(k));
-    folders = [];
+    await hardClearAuthStateV69();
     closeModals();
     render();
-    toast("Oturum kapatıldı");
+    location.replace("./?open=account&signed_out=1&t=" + Date.now());
   }
   async function openGoogle() {
     closeModals();
@@ -2238,12 +2415,8 @@
     autoSyncDestructive("Ormancı çıkarma işlemi");
   }
   async function createBolme(e) {
-    if (!canManageFolder())
-      return toast(
-        "Bu işlemi yalnızca şeflik kurucusu Orman İO üzerinden yapabilir.",
-        true,
-      );
     e.preventDefault();
+    if (!signedIn()) return toast("Bölme oluşturmak için önce giriş yapın.", true);
     const no = clean($("bolmeNo") && $("bolmeNo").value),
       loc = clean($("bolmeLocation") && $("bolmeLocation").value),
       af = activeFolder();
@@ -2291,11 +2464,15 @@
   }
   async function downloadDivisionByBolme(no, quiet = false, strict = false) {
     const af = activeFolder();
-    if (!af || !no) return;
+    if (!af || !no) return { ok: false, reason: "missing-context" };
     const k = af.seflik_key;
-    let rows = [];
-    if (cloudIdentity() && navigator.onLine) {
-      try {
+    const rk = readyKey(k, no);
+    const previousRows = Array.isArray(divisionRecords[rk]) ? divisionRecords[rk] : null;
+    const previousReady = divisionReady[rk] && typeof divisionReady[rk] === "object" ? { ...divisionReady[rk] } : null;
+    const division = (divisions[k] || []).find((d) => clean(d.bolme_no) === clean(no));
+    let rows = previousRows;
+    try {
+      if (cloudIdentity() && navigator.onLine) {
         const out = await edge("seflik_folder_read", {
           seflik: af.seflik,
           folderSeflik: af.seflik,
@@ -2304,38 +2481,53 @@
           folderId: clean(af.id || af.folder_id || af.folderId),
           bolmeNo: no,
         });
-        rows = Array.isArray(out.records) ? out.records : [];
-      } catch (error) {
-        if (strict) throw error;
+        if (!Array.isArray(out.records)) throw new Error("Sunucu bölme kayıtlarını geçerli biçimde döndürmedi");
+        if (out.sync_contract !== "orman-io-sync-v68" || out.complete !== true || out.truncated === true || out.partial === true)
+          throw new Error("Bölme verisi V68 tam liste sözleşmesiyle doğrulanamadı; mevcut offline kayıtlar korundu");
+        rows = out.records;
+      } else if (!rows && division && (division.pending || division.local_pending)) {
         rows = [];
+      } else if (!rows) {
+        throw new Error(navigator.onLine === false ? "İnternet yok; daha önce indirilen kayıt bulunamadı" : "Bulut oturumu bulunamadı");
       }
+
+      const nextRows = Array.isArray(rows) ? rows : [];
+      divisionRecords[rk] = nextRows;
+      divisionReady[rk] = { ready: true, at: now(), recordCount: nextRows.length, complete: true };
+      divisions[k] = (divisions[k] || []).map((d) =>
+        clean(d.bolme_no) === clean(no)
+          ? { ...d, offline_ready: true, record_count: nextRows.length, updated_at: now() }
+          : d,
+      );
+      saveLocal();
+      if (!quiet) toast("Bölme " + no + " offline kullanıma hazır.");
+      render();
+      renderBolmeModal();
+      return { ok: true, recordCount: nextRows.length };
+    } catch (error) {
+      if (previousRows) divisionRecords[rk] = previousRows;
+      else delete divisionRecords[rk];
+      if (previousReady) divisionReady[rk] = previousReady;
+      else delete divisionReady[rk];
+      saveLocal();
+      const message = clean(error && error.message || error) || "Bölme indirilemedi";
+      if (strict) throw new Error(message);
+      if (!quiet) toast(message + ". Mevcut offline veri korundu.", true);
+      return { ok: false, error: message, preserved: true };
     }
-    divisionRecords[readyKey(k, no)] = rows;
-    divisionReady[readyKey(k, no)] = {
-      ready: true,
-      at: now(),
-      recordCount: rows.length,
-    };
-    divisions[k] = (divisions[k] || []).map((d) =>
-      clean(d.bolme_no) === clean(no)
-        ? {
-            ...d,
-            offline_ready: true,
-            record_count: Math.max(d.record_count || 0, rows.length),
-            updated_at: now(),
-          }
-        : d,
-    );
-    saveLocal();
-    if (!quiet) toast("Bölme " + no + " offline kullanıma hazır.");
-    render();
-    renderBolmeModal();
   }
   async function downloadAllDivisions() {
     const rows = currentDivisions();
     if (!rows.length) return toast("İndirilecek bölme yok.", true);
-    for (const d of rows) await downloadDivisionByBolme(d.bolme_no, true);
-    toast(rows.length + " bölme offline kullanıma hazır.");
+    let completed = 0;
+    const failed = [];
+    for (const d of rows) {
+      const result = await downloadDivisionByBolme(d.bolme_no, true);
+      if (result?.ok) completed += 1;
+      else failed.push(clean(d.bolme_no));
+    }
+    if (failed.length) toast(`${completed} bölme hazırlandı; ${failed.length} bölme indirilemedi ve eski verisi korundu.`, true);
+    else toast(rows.length + " bölme offline kullanıma hazır.");
     render();
   }
 
@@ -2703,7 +2895,7 @@
     const failOpen = setTimeout(() => {
       setCacheStatus("Uygulama açıldı • offline hazırlık arka planda sürüyor", 55);
       closeStartup(0);
-    }, online ? 1400 : 1800);
+    }, online ? 850 : 1250);
     if (!("serviceWorker" in navigator)) {
       clearTimeout(failOpen);
       setCacheStatus("Tarayıcı çevrimdışı kullanımı desteklemiyor", 0);
@@ -2819,7 +3011,7 @@
       const api = suiteSyncApi();
       if (api && typeof api.syncAll === "function") {
         const result = await api.syncAll({ source: "orman-bottom-upload", force: true });
-        if (result && result.ok === false && !result.busy) throw new Error("Sunucu gönderimi tamamlanamadı.");
+        if (result && result.ok === false && !result.busy) throw new Error(result.message || "Sunucu gönderimi tamamlanamadı.");
       } else {
         await sendPendingToServer();
       }
@@ -2841,13 +3033,15 @@
       setCacheStatus("Şeflik ve bölmeler sunucudan alınıyor…", 24);
       await loadFolders(true);
       const api = suiteSyncApi();
-      if (api && typeof api.refreshFolderData === "function") {
-        try { await api.refreshFolderData({ includeRecords: true, quiet: true, forceRecords: true }); } catch (_) {}
-      }
+      if (!api || typeof api.refreshFolderData !== "function") throw new Error("Bulut senkronizasyon servisi hazır değil");
+      const folderResult = await api.refreshFolderData({ includeRecords: true, quiet: false, forceRecords: true, strict: true });
+      if (!folderResult?.ok || folderResult?.complete !== true || folderResult?.truncated === true)
+        throw new Error(folderResult?.error || "Şeflik ve Mesaha kayıtlarının tamamı V68 sözleşmesiyle doğrulanamadı");
       setCacheStatus("İstif kayıtları offline kullanım için indiriliyor…", 44);
-      if (api && typeof api.pullIstifRecords === "function") {
-        try { await api.pullIstifRecords(); } catch (_) {}
-      }
+      if (typeof api.pullIstifRecords !== "function") throw new Error("İstif bulut indirme servisi hazır değil");
+      const istifResult = await api.pullIstifRecords();
+      if (istifResult?.authoritative !== true || istifResult?.partial === true || istifResult?.truncated === true || istifResult?.complete !== true)
+        throw new Error("İstif kayıtlarının tamamı V68 sözleşmesiyle doğrulanamadı; mevcut cihaz verileri korundu");
       await loadFolders(true);
       const rows = currentDivisions();
       setCacheStatus(rows.length ? `${rows.length} bölme offline hazırlanıyor…` : "Bölme listesi kontrol edildi…", 58);

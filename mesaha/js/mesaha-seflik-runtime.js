@@ -1,3 +1,292 @@
+/* module: mesaha-terminal-local.js */
+/* Mesaha İO V5.78 — Kalıcı terminal oturumu, güvenli çıkış ve hafif arayüz yenileme
+   Elle terminal modunda uygulama cihaz içi çalışır; kodla eşleşmiş terminalde Bulut ve Şeflik Klasörü açıktır. */
+(function(){
+  'use strict';
+  if(window.__mesahaTerminalLocalV556) return;
+  window.__mesahaTerminalLocalV556 = true;
+  var TERMINAL_KEY='mesaha_terminal_local_mode_v556';
+  var OLD_TERMINAL_KEY='mesaha_terminal_local_mode_v557';
+  var SETTINGS_KEY='cam_mesaha_ayarlar_v1';
+  var PANEL_KEY='mesaha_panel_user_v316';
+  var CLOUD_SELECTORS=['#cloudBackupBtnV316','#cloudRestoreBtnV316','[data-hybrid-id-v501]','[data-hybrid-delete-id-v506]'].join(',');
+  var SEFLIK_SELECTORS=[
+    '#seflikSendFromRecordsV529','#seflikFolderHomeShortcutV528','#seflikFolderCreateV529','#seflikFolderSendV528','#seflikFolderSyncV528',
+    '[data-nav="seflikFolder"]','[data-seflik-continue]','[data-seflik-delete]'
+  ].join(',');
+  var GOOGLE_ONLY_SELECTORS=['[data-drive-restore-v463]'].join(',');
+  var BLOCK_SELECTORS=[CLOUD_SELECTORS,SEFLIK_SELECTORS,GOOGLE_ONLY_SELECTORS].join(',');
+
+  function $(id){return document.getElementById(id)}
+  function clean(v){return String(v==null?'':v).trim().replace(/\s+/g,' ')}
+  function esc(v){return clean(v).replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]})}
+  function jsonGet(k,f){try{var v=localStorage.getItem(k);return v?JSON.parse(v):f}catch(e){return f}}
+  function jsonSet(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}}
+  function terminalData(){var x=jsonGet(TERMINAL_KEY,null);if(!(x&&x.active===true)){var old=jsonGet(OLD_TERMINAL_KEY,null);if(old&&old.active===true){x=old;jsonSet(TERMINAL_KEY,old);try{localStorage.removeItem(OLD_TERMINAL_KEY)}catch(e){}}}return x||{}}
+  function terminal(){var x=terminalData();return !!(x&&x.active===true)}
+  function terminalCloudAllowed(){var x=terminalData();return !!(x&&x.active===true&&x.source==='pair_code'&&x.pairedUserId&&(x.terminalToken||x.terminalCode));}
+  function user(){var u=jsonGet(PANEL_KEY,{}),s=jsonGet(SETTINGS_KEY,{}),t=terminalData();return{name:clean(t.name||u.name||s.ekipNot),seflik:clean(t.seflik||u.seflik||s.seflik),bolmeNo:clean(t.bolmeNo||u.bolmeNo||s.bolmeNo)}}
+  function toast(title,sub,kind){try{if(typeof window.mesahaFloatToastV315==='function')return window.mesahaFloatToastV315(title,sub||'',kind||'warning')}catch(e){}try{if(typeof window.toast==='function')return window.toast(title,sub||'',kind||'warning')}catch(e){}try{alert(title+(sub?'\n'+sub:''))}catch(e){}}
+  function log(event,detail,level){try{if(window.MesahaLoginLog&&typeof window.MesahaLoginLog.log==='function')window.MesahaLoginLog.log(event,detail||{},level||'info')}catch(e){}}
+  function clearTerminal(){try{localStorage.removeItem(TERMINAL_KEY);localStorage.removeItem(OLD_TERMINAL_KEY)}catch(e){}try{document.documentElement.removeAttribute('data-mesaha-terminal-mode');document.documentElement.removeAttribute('data-mesaha-terminal-cloud');['terminalLocalHomeV556','terminalLocalPanelV556','terminalPairPanelV561'].forEach(function(id){var el=$(id);if(el&&el.parentNode)el.parentNode.removeChild(el)})}catch(e){}log('terminal_mode_disabled_for_google',{},'info')}
+  function goGoogle(){clearTerminal();try{if(window.mesahaSupabase&&window.mesahaSupabase.clearSession)window.mesahaSupabase.clearSession()}catch(e){}try{window.dispatchEvent(new CustomEvent('mesaha:google-auth-required',{detail:{reason:'terminal_cloud_feature'}}))}catch(e){}setTimeout(function(){try{if(window.MesahaGoogleAuthV548&&typeof window.MesahaGoogleAuthV548.boot==='function')window.MesahaGoogleAuthV548.boot(true)}catch(e){}},80)}
+  function askGoogle(){
+    log('terminal_cloud_feature_blocked',{url:location.href},'warning');
+    toast('Google ile giriş yap','Bu özellik terminal modunda kapalıdır. Kod ile eşleşmiş terminalde Bulut ve Şeflik Klasörü açılır; Drive için Google gerekir.','warning');
+    setTimeout(function(){
+      try{if(confirm('Bu özellik için Google ile giriş yapmanız gerekiyor. Google giriş ekranını açalım mı?'))goGoogle()}catch(e){}
+    },80);
+  }
+  function style(){
+    if($('mesaha-terminal-local-v557-style')) return;
+    var st=document.createElement('style');st.id='mesaha-terminal-local-v557-style';st.textContent=[
+      'html[data-mesaha-terminal-mode="1"] #userBadge{background:#eef2ff!important;color:#3730a3!important;border-color:#c7d2fe!important}',
+      '.terminal-card-v557{border:1px solid #c7d2fe;background:linear-gradient(180deg,#eef2ff,#f8fafc);color:#1e1b4b;border-radius:20px;padding:13px 14px;margin:10px 0;font-weight:850;box-shadow:0 8px 20px rgba(79,70,229,.08)}',
+      '.terminal-card-v557 b{display:block;font-size:15px;margin-bottom:4px}.terminal-card-v557 small{display:block;color:#475569;line-height:1.35;font-weight:750}',
+      '.terminal-card-v557 button{margin-top:10px;width:100%;min-height:42px;border:0;border-radius:14px;background:#fff;color:#1d4ed8;font-weight:950;box-shadow:inset 0 0 0 1px #bfdbfe}',
+      '.terminal-card-v557 input{box-sizing:border-box;width:100%;min-height:44px;border:1px solid #bfdbfe;border-radius:14px;margin-top:10px;padding:10px 12px;font:inherit;font-weight:900;background:#fff;color:#1e1b4b;text-transform:uppercase}',
+      'html[data-mesaha-terminal-mode="1"] #cloudBackupBtnV316,html[data-mesaha-terminal-mode="1"] #cloudRestoreBtnV316,html[data-mesaha-terminal-mode="1"] #seflikSendFromRecordsV529,html[data-mesaha-terminal-mode="1"] #seflikFolderSendV528,html[data-mesaha-terminal-mode="1"] #seflikFolderSyncV528,html[data-mesaha-terminal-mode="1"] #seflikFolderCreateV529{background:#f1f5f9!important;color:#64748b!important;border-color:#cbd5e1!important;box-shadow:none!important}',
+      'html[data-mesaha-terminal-mode="1"] [data-nav="seflikFolder"]{opacity:.55!important}',
+      'html[data-mesaha-terminal-mode="1"] #seflikFolderHomeShortcutV528{opacity:.72!important;filter:grayscale(.25)!important}',
+      'html[data-mesaha-terminal-cloud="1"] #seflikSendFromRecordsV529,html[data-mesaha-terminal-cloud="1"] #seflikFolderSendV528,html[data-mesaha-terminal-cloud="1"] #seflikFolderSyncV528,html[data-mesaha-terminal-cloud="1"] #seflikFolderCreateV529{background:revert!important;color:revert!important;border-color:revert!important;box-shadow:revert!important}',
+      'html[data-mesaha-terminal-cloud="1"] [data-nav="seflikFolder"],html[data-mesaha-terminal-cloud="1"] #seflikFolderHomeShortcutV528{opacity:1!important;filter:none!important}'
+    ].join('');document.head.appendChild(st);
+  }
+  function terminalCardHtml(){var u=user(),ok=terminalCloudAllowed();return '<div class="terminal-card-v557"><b>🖥 Terminal modu aktif</b><small>'+esc(u.name||'Kullanıcı')+' • '+esc(u.seflik||'Şeflik')+'<br>'+(ok?'Terminal kodu eşleşti. Bulut ve Şeflik Klasörü açık. Çıkış için kullanıcı panelindeki Çıkış Yap düğmesini kullanın.':'Bu cihaz yerel çalışır. Bulut ve Şeflik Klasörü için terminal kodu veya Google gerekir.')+'</small>'+(ok?'':'<button type="button" data-terminal-google-v578>Google ile giriş yap</button>')+'</div>'}
+  function terminalPairPanelHtml(){return '<div class="terminal-card-v557" id="terminalPairPanelV561"><b>Terminal kodu gir</b><small>Telefondan kullanıcı panelinde oluşturulan terminal kodunu sonradan buradan eşleştirebilirsin. Kod eşleşince Bulut ve Şeflik Klasörü açılır.</small><input id="terminalPairCodePanelV561" maxlength="20" inputmode="text" autocapitalize="characters" enterkeyhint="done" spellcheck="false" autocomplete="one-time-code" placeholder="Örn: A1B2-C3D4"><button type="button" id="terminalPairApplyPanelV561">Terminal kodunu eşleştir</button></div>'}
+  function bindTerminalPairPanel(){var b=$('terminalPairApplyPanelV561');if(!b||b.__terminalPairV561)return;b.__terminalPairV561=true;b.addEventListener('click',function(ev){ev.preventDefault();ev.stopPropagation();var inp=$('terminalPairCodePanelV561'),code=clean(inp&&inp.value).toUpperCase();if(code.length<6){toast('Terminal kodu gerekli','Telefondan oluşturulan kodu girin.','warning');return}if(window.MesahaGoogleAuthV548&&typeof window.MesahaGoogleAuthV548.claimTerminalCode==='function'){var oldText=b.textContent;b.disabled=true;b.textContent='Kod kontrol ediliyor…';window.MesahaGoogleAuthV548.claimTerminalCode(code).then(function(){boot();}).catch(function(e){toast('Kod eşleşmedi',clean(e&&e.message||e),'error')}).finally(function(){b.disabled=false;b.textContent=oldText||'Terminal kodunu eşleştir'});return}toast('Giriş modülü hazır değil','Sayfayı yenileyip tekrar deneyin.','warning')},true)}
+  function ensureCards(){
+    if(!terminal())return;
+    var cardHtml=terminalCardHtml(),cardState=terminalCloudAllowed()?'paired':'local';
+    var status=document.querySelector('.status-card'),home=$('terminalLocalHomeV556');
+    if(status&&!home){home=document.createElement('section');home.id='terminalLocalHomeV556';home.dataset.terminalStateV578=cardState;home.innerHTML=cardHtml;status.parentNode.insertBefore(home,status.nextSibling)}else if(home&&home.dataset.terminalStateV578!==cardState){home.dataset.terminalStateV578=cardState;home.innerHTML=cardHtml}
+    var panel=document.querySelector('#userPanelOverlayV316 .panel-stats-v316'),panelCard=$('terminalLocalPanelV556');
+    if(panel&&!panelCard){panelCard=document.createElement('div');panelCard.id='terminalLocalPanelV556';panelCard.dataset.terminalStateV578=cardState;panelCard.innerHTML=cardHtml;panel.parentNode.insertBefore(panelCard,panel)}else if(panelCard&&panelCard.dataset.terminalStateV578!==cardState){panelCard.dataset.terminalStateV578=cardState;panelCard.innerHTML=cardHtml}
+    var card=document.querySelector('#userPanelOverlayV316 .panel-card-v316'), before=$('panelTelegramSectionV515'), pair=$('terminalPairPanelV561');
+    if(card&&terminalCloudAllowed()&&pair){try{pair.remove()}catch(e){}}
+    if(card&&!terminalCloudAllowed()&&!pair){var q=document.createElement('div');q.innerHTML=terminalPairPanelHtml();if(before&&before.parentNode)before.parentNode.insertBefore(q.firstChild,before);else card.appendChild(q.firstChild)}
+    bindTerminalPairPanel();
+    document.querySelectorAll('[data-terminal-google-v578]').forEach(function(btn){if(!btn.__terminalGoogleV556){btn.__terminalGoogleV556=true;btn.addEventListener('click',function(ev){ev.preventDefault();ev.stopPropagation();goGoogle()},true)}});
+  }
+  function applyBadge(){
+    if(!terminal())return;
+    document.documentElement.setAttribute('data-mesaha-terminal-mode','1');
+    if(terminalCloudAllowed())document.documentElement.setAttribute('data-mesaha-terminal-cloud','1');else document.documentElement.removeAttribute('data-mesaha-terminal-cloud');
+    var u=user(),badge=$('userBadge');
+    if(badge&&u.name&&u.seflik){badge.textContent='Terminal • '+u.name+' • '+u.seflik;badge.classList.remove('login-needed')}
+    var sync=$('panelSyncTextV316');if(sync)sync.textContent=terminalCloudAllowed()?'Terminal modu: kod eşleşti • Bulut ve Şeflik Klasörü açık':'Terminal modu: yerel kullanım • bulut kapalı';
+  }
+  function labelBlockedButtons(){
+    if(!terminal())return;
+    var ok=terminalCloudAllowed();
+    [['cloudBackupBtnV316',ok?'Buluta Yedekle':'Google ile giriş yap'],['cloudRestoreBtnV316',ok?'Buluttan Getir':'Google ile giriş yap'],['seflikSendFromRecordsV529',ok?'Şefliğe Gönder':'Google ile giriş yap'],['seflikFolderCreateV529',ok?'Bölme Oluştur':'Google gerekli'],['seflikFolderSendV528',ok?'Şefliğe Gönder':'Google gerekli'],['seflikFolderSyncV528',ok?'Kayıtları Senkronize Et':'Google ile giriş yap']].forEach(function(x){var b=$(x[0]);if(b){b.textContent=x[1];b.title=ok?'Terminal kodu eşleşti. Bulut ve Şeflik Klasörü açıktır.':'Terminal modunda bulut kapalı. Kullanmak için Google ile giriş yapın.'}});
+    var st=$('seflikFolderStatusV528');if(st)st.textContent=ok?'Terminal kodu eşleşti. Şeflik Klasörü ve bulut işlemleri açık.':'Terminal modunda Şeflik Klasörü kapalı. Kullanmak için Google ile giriş yapın.';
+    var identity=$('seflikFolderIdentityV528');if(identity)identity.textContent=ok?'Terminal kodu eşleşti • '+user().seflik:'Google girişi gerekli';
+  }
+  function gatePromise(){askGoogle();return Promise.reject(new Error('Bu özellik için Google veya kodla eşleşmiş terminal gerekir.'))}
+  function patchObject(obj){if(!obj||obj.__terminalPatchedV556)return;['backup','backupCustom','openCloudRestore','openRestore','restore','list','deleteBackup','backupSupabase','backupDrive','post'].forEach(function(k){if(typeof obj[k]==='function'){obj[k]=gatePromise}});obj.__terminalPatchedV556=true}
+  function patchGlobals(){
+    if(!terminal()||terminalCloudAllowed())return;
+    ['MESAHA_HYBRID_CLOUD_V501','MESAHA_HYBRID_CLOUD_V505','MESAHA_HYBRID_CLOUD_V506','MESAHA_HYBRID_CLOUD_V508','mesahaHybridCloudV501','mesahaHybridCloudV505','mesahaHybridCloudV506','mesahaHybridCloudV508','MESAHA_DRIVE_BRIDGE_V463','mesahaDriveBridgeV463','mesahaOnlineV317','mesahaUserBackupsV318'].forEach(function(n){try{patchObject(window[n])}catch(e){}});
+    try{window.mesahaPanelV316=window.mesahaPanelV316||{};window.mesahaPanelV316.cloudBackup=gatePromise;window.mesahaPanelV316.openCloudRestore=function(){askGoogle();return false}}catch(e){}
+    try{if(window.MesahaIpV518&&typeof window.MesahaIpV518.ping==='function'&&!window.MesahaIpV518.__terminalPatchedV556){window.MesahaIpV518.ping=function(){return Promise.resolve(false)};window.MesahaIpV518.__terminalPatchedV556=true}}catch(e){}
+  }
+  function bindGate(){
+    if(window.__mesahaTerminalGateClickV556)return;window.__mesahaTerminalGateClickV556=true;
+    document.addEventListener('click',function(ev){
+      if(!terminal())return;
+      var target=ev.target&&ev.target.closest&&ev.target.closest(BLOCK_SELECTORS);
+      if(!target)return;
+      var isCloud=!!(target.matches&&target.matches(CLOUD_SELECTORS))||!!(target.closest&&target.closest(CLOUD_SELECTORS));
+      var isSeflik=!!(target.matches&&target.matches(SEFLIK_SELECTORS))||!!(target.closest&&target.closest(SEFLIK_SELECTORS));
+      if((isCloud||isSeflik)&&terminalCloudAllowed())return;
+      ev.preventDefault();ev.stopPropagation();ev.stopImmediatePropagation();askGoogle();return false;
+    },true);
+    document.addEventListener('keydown',function(ev){
+      if(!terminal()||!(ev.key==='Enter'||ev.key===' '))return;
+      var target=ev.target&&ev.target.closest&&ev.target.closest(BLOCK_SELECTORS);
+      if(!target)return;
+      var isCloud=!!(target.matches&&target.matches(CLOUD_SELECTORS))||!!(target.closest&&target.closest(CLOUD_SELECTORS));
+      var isSeflik=!!(target.matches&&target.matches(SEFLIK_SELECTORS))||!!(target.closest&&target.closest(SEFLIK_SELECTORS));
+      if((isCloud||isSeflik)&&terminalCloudAllowed())return;
+      ev.preventDefault();ev.stopPropagation();ev.stopImmediatePropagation();askGoogle();return false;
+    },true);
+  }
+  function boot(){style();if(terminal()){applyBadge();ensureCards();labelBlockedButtons();patchGlobals()}bindGate()}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+  [120,700,1800].forEach(function(ms){setTimeout(boot,ms)});
+  window.addEventListener('mesaha:terminal-mode-enabled',boot);
+  window.addEventListener('mesaha:terminal-session-revoked',function(){clearTerminal();toast('Terminal oturumu kapatıldı','Bu cihazın kodlu erişimi ana cihazdan kapatıldı. Yeniden giriş için yeni terminal kodu kullanın.','warning')});
+  window.addEventListener('mesaha:settings-saved',boot);
+  window.MesahaTerminalLocalV556={isActive:terminal,canUseCloud:terminalCloudAllowed,data:terminalData,disable:clearTerminal,google:goGoogle,boot:boot};
+})();
+;
+
+/* module: mesaha-runtime.js */
+/* Mesaha İO V5.78 — Yaşam döngüsü ve kalıcı depolama stabilite bağlayıcısı */
+(function(){
+  'use strict';
+  if(window.__mesahaRuntimeV527)return;
+  window.__mesahaRuntimeV527=true;
+  var PANEL_KEY='mesaha_panel_user_v316';
+  var SETTINGS_KEY='cam_mesaha_ayarlar_v1';
+  var INSTALL_KEY='mesaha_install_identity_v527';
+  var lastStorageToastAt=0;
+  function clean(v){return String(v==null?'':v).trim().replace(/\s+/g,' ');}
+  function read(k,f){try{var v=localStorage.getItem(k);return v?JSON.parse(v):f;}catch(e){return f;}}
+  function write(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true;}catch(e){return false;}}
+  function valid(name,seflik){
+    name=clean(name);seflik=clean(seflik);
+    if(name.length<2||seflik.length<2)return false;
+    var n=name.toLocaleLowerCase('tr-TR'),s=seflik.toLocaleLowerCase('tr-TR');
+    if(/^(kullanıcı|kullanici|user|guest|misafir|boş|bos|-)$/.test(n))return false;
+    if(/^(şeflik|seflik|unknown|bilinmiyor|boş|bos|-)$/.test(s))return false;
+    return true;
+  }
+  function installIdentity(){
+    var x=read(INSTALL_KEY,null);
+    if(x&&x.id)return x;
+    x={id:'install_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,12),createdAt:new Date().toISOString()};
+    write(INSTALL_KEY,x);return x;
+  }
+  function toast(t,s,k){try{if(typeof window.mesahaFloatToastV315==='function')return window.mesahaFloatToastV315(t,s||'',k||'warning');if(typeof window.toast==='function')return window.toast(t);}catch(e){}}
+  function log(kind,err,extra){try{if(window.MesahaErrorLog)window.MesahaErrorLog.error(kind,err,extra||{});}catch(e){}}
+  function cleanLegacy(){
+    try{[
+      'cam_mesaha_kayitlari_v1_mirror_v515','cam_mesaha_kayitlari_v1_mirror_meta_v515','cam_mesaha_kayitlari_v1_last_ok','cam_mesaha_kayitlari_v1_snapshot_v385',
+      'cam_mesaha_ayarlar_v1_mirror_v515','cam_mesaha_ayarlar_v1_mirror_meta_v515'
+    ].forEach(function(k){localStorage.removeItem(k);});}catch(e){}
+  }
+  function settingsCandidates(){
+    var out=[];
+    try{if(window.state&&window.state.settings)out.push(window.state.settings);}catch(e){}
+    try{if(window.MesahaStorageV527&&typeof window.MesahaStorageV527.lastCommittedSettings==='function')out.push(window.MesahaStorageV527.lastCommittedSettings());}catch(e){}
+    out.push(read(SETTINGS_KEY,{}));
+    return out;
+  }
+  function bestSettings(){
+    var list=settingsCandidates(),fallback={};
+    for(var i=0;i<list.length;i++){
+      var st=list[i];if(!st||typeof st!=='object'||Array.isArray(st))continue;
+      if(!Object.keys(fallback).length)fallback=st;
+      if(valid(st.ekipNot,st.seflik))return st;
+    }
+    return fallback;
+  }
+  function panelFromSettings(st){
+    st=st||bestSettings();
+    if(!valid(st&&st.ekipNot,st&&st.seflik))return false;
+    var u=read(PANEL_KEY,{});
+    if(!valid(u.name,u.seflik)||clean(u.name)!==clean(st.ekipNot)||clean(u.seflik)!==clean(st.seflik)||clean(u.bolmeNo)!==clean(st.bolmeNo)){
+      write(PANEL_KEY,{name:clean(st.ekipNot),seflik:clean(st.seflik),bolmeNo:clean(st.bolmeNo),updatedAt:new Date().toISOString(),installId:installIdentity().id,recovered:true});
+    }
+    return true;
+  }
+  function validateSavedUser(){
+    var u=read(PANEL_KEY,{});
+    if(valid(u.name,u.seflik))return true;
+    if(u.name||u.seflik){try{localStorage.removeItem(PANEL_KEY);}catch(e){}}
+    return panelFromSettings(bestSettings());
+  }
+  async function reconcileIdentityAfterRecovery(){
+    var st=bestSettings(),u=read(PANEL_KEY,{});
+    if(valid(st&&st.ekipNot,st&&st.seflik)){
+      panelFromSettings(st);
+      try{window.dispatchEvent(new CustomEvent('mesaha:identity-restored',{detail:{name:clean(st.ekipNot),seflik:clean(st.seflik),bolmeNo:clean(st.bolmeNo)}}));}catch(e){}
+      return true;
+    }
+    /* Panel doğruysa ama ayar kopyası eksikse, yalnız kurtarma tamamlandıktan sonra
+       kimlik alanlarını mevcut ayarlara ekle; diğer kullanıcı tercihlerini silme. */
+    if(valid(u.name,u.seflik)){
+      var next=Object.assign({},st||{},{ekipNot:clean(u.name),seflik:clean(u.seflik),bolmeNo:clean(u.bolmeNo)});
+      try{if(window.state&&window.state.settings)Object.assign(window.state.settings,next);}catch(e){}
+      try{if(window.MesahaStorageV527)await window.MesahaStorageV527.saveSettings(next,{reason:'identity-recovery'});else write(SETTINGS_KEY,next);}catch(e){log('identity.recovery-save',e);}
+      return true;
+    }
+    return false;
+  }
+  async function persistPanelIdentity(button){
+    var name=clean((document.getElementById('panelNameV316')||{}).value),seflik=clean((document.getElementById('panelSeflikV316')||{}).value),bolmeNo=clean((document.getElementById('panelBolmeV316')||{}).value);
+    if(!valid(name,seflik)){toast('Geçerli kullanıcı adı ve şeflik girin.','Boş veya genel adlarla kullanıcı oluşturulmaz.','warning');return false;}
+    var oldSettings=read(SETTINGS_KEY,{}),next=Object.assign({},oldSettings,{ekipNot:name,seflik:seflik,bolmeNo:bolmeNo});
+    var oldState=null;
+    try{if(window.state&&window.state.settings){oldState=JSON.parse(JSON.stringify(window.state.settings));Object.assign(window.state.settings,next);next=window.state.settings;}}catch(e){}
+    try{
+      if(button){button.disabled=true;button.setAttribute('aria-busy','true');}
+      var result=window.MesahaStorageV527?await window.MesahaStorageV527.saveSettings(next,{reason:'user-panel-save'}):(write(SETTINGS_KEY,next)?{ok:true}:{ok:false});
+      if(!result||result.ok===false)throw new Error(result&&result.error||'Kullanıcı bilgisi kalıcı depolamaya yazılamadı');
+      write(PANEL_KEY,{name:name,seflik:seflik,bolmeNo:bolmeNo,updatedAt:new Date().toISOString(),installId:installIdentity().id});
+      try{localStorage.setItem('mesaha_user_confirmed_v319','1');localStorage.setItem('mesaha_install_id_v527',installIdentity().id);}catch(e){}
+      ['ekipNot','seflik','bolmeNo'].forEach(function(id){var el=document.getElementById(id);if(el){el.value=next[id]||'';try{el.dispatchEvent(new Event('input',{bubbles:true}));}catch(e){}}});
+      var badge=document.getElementById('userBadge');if(badge){badge.textContent=name+' • '+seflik;badge.classList.remove('login-needed');}
+      try{if(typeof window.renderUser==='function')window.renderUser();}catch(e){}
+      toast('Kullanıcı bilgileri kaydedildi.','Mesaha adet ve m³ verisi yalnız Mesaha/Yedek işlemlerinde gönderilir.','success');
+      try{if(window.MesahaIpV518)window.MesahaIpV518.ping('profile_ping_panel_save');}catch(e){}
+      return true;
+    }catch(err){
+      try{if(window.state&&oldState)window.state.settings=oldState;}catch(e){}
+      log('identity.save',err,{name:name,seflik:seflik});
+      toast('Kullanıcı bilgisi kaydedilemedi.','Telefon depolamasını kontrol edin.','error');
+      return false;
+    }finally{if(button){button.disabled=false;button.removeAttribute('aria-busy');}}
+  }
+  function bindIdentityGate(){
+    document.addEventListener('click',function(ev){
+      var b=ev.target&&ev.target.closest&&ev.target.closest('#panelSaveV316');
+      if(!b)return;
+      ev.preventDefault();ev.stopPropagation();ev.stopImmediatePropagation();
+      persistPanelIdentity(b);
+    },true);
+  }
+  function bindErrors(){
+    window.addEventListener('mesaha:storage-warning',function(ev){
+      var d=ev.detail||{};log('storage.replica-warning',d.message||'İkinci depolama kopyası gecikti',d);
+    });
+    window.addEventListener('mesaha:storage-error',function(ev){
+      var d=ev.detail||{};log('storage.failure',d.message||'Depolama hatası',d);
+      if(d.fatal!==true)return;
+      var t=Date.now();if(t-lastStorageToastAt<5000)return;lastStorageToastAt=t;
+      toast('Kayıt kaydedilemedi','Uygulamayı açık tutup tekrar deneyin. Sorun sürerse önce yedek alın.','error');
+    });
+    window.addEventListener('mesaha:storage-recovered',function(ev){
+      try{reconcileIdentityAfterRecovery();}catch(e){}
+      try{if(ev.detail&&String(ev.detail.reason||'').indexOf('newer')===0)toast('Kayıtlar doğrulandı',String(ev.detail.count||0)+' kayıt güvenli depodan açıldı.','success');}catch(e){}
+    });
+    window.addEventListener('mesaha:settings-saved',function(){try{panelFromSettings(bestSettings());}catch(e){};},{passive:true});
+    if('serviceWorker' in navigator){
+      navigator.serviceWorker.addEventListener('message',function(ev){if(ev.data&&ev.data.error)log('service-worker.message',ev.data.error,ev.data);});
+      navigator.serviceWorker.ready.catch(function(e){log('service-worker.ready',e);});
+    }
+  }
+  function flushPersistence(reason){
+    try{if(typeof window.__flushSettings==='function')Promise.resolve(window.__flushSettings(reason||'lifecycle')).catch(function(){});}catch(e){}
+    try{if(window.MesahaStorageV527&&typeof window.MesahaStorageV527.flush==='function')Promise.resolve(window.MesahaStorageV527.flush()).catch(function(){});}catch(e){}
+  }
+  function bindPersistence(){
+    document.addEventListener('visibilitychange',function(){if(document.hidden)flushPersistence('runtime-hidden');},{passive:true});
+    window.addEventListener('pagehide',function(){flushPersistence('runtime-pagehide');},{passive:true});
+  }
+  async function selfTest(){
+    var out={version:(window.MESAHA_VERSION&&window.MESAHA_VERSION.visibleVersion)||'',storage:false,serviceWorker:false,identity:false};
+    try{out.storage=!!(window.MesahaStorageV527&&window.MesahaStorageV527.info().database);}catch(e){out.storageError=String(e);}
+    try{out.serviceWorker=!('serviceWorker' in navigator)||!!(await navigator.serviceWorker.getRegistration('./'));}catch(e){out.serviceWorkerError=String(e);}
+    try{var u=read(PANEL_KEY,{});out.identity=!u.name&&!u.seflik||valid(u.name,u.seflik);}catch(e){}
+    return out;
+  }
+  function boot(){
+    cleanLegacy();installIdentity();validateSavedUser();bindIdentityGate();bindErrors();bindPersistence();
+    try{
+      if(window.MesahaStorageV527){
+        Promise.resolve(window.MesahaStorageV527.recoverIntoApp()).then(reconcileIdentityAfterRecovery).catch(function(e){log('storage.recover',e);});
+      }
+    }catch(e){log('storage.recover',e);}
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+  window.MesahaRuntimeV527={validIdentity:valid,installIdentity:installIdentity,persistPanelIdentity:persistPanelIdentity,reconcileIdentity:reconcileIdentityAfterRecovery,selfTest:selfTest};
+})();
+;
+
+/* module: mesaha-seflik-folder.js */
 /* Mesaha İO V5.84 — Misafir modunda Şeflik Klasörü takılma önleyici güvenli çıkış */
 (function(){
   'use strict';
@@ -136,7 +425,7 @@
     clearTimeout(previewTimer);previewTimer=setTimeout(function(){updatePreview(true)},60);
   }
   function fillIdentity(){
-    var u=user(),name=$('seflikFolderIdentityV528');if(name)name.textContent=u.seflik?('Aktif Şeflik: '+u.seflik):'Önce Orman İO ana menüsünden şeflik seçin';
+    var u=user(),name=$('seflikFolderIdentityV528');if(name)name.textContent=u.seflik?('Aktif Şeflik: '+u.seflik):'Önce Yönetim bölümünden şeflik seçin';
     var select=$('seflikFolderBolmeV528');
     if(select){
       var previous=clean(select.value||localStorage.getItem(LAST_BOLME_KEY)||u.bolmeNo);
@@ -155,7 +444,7 @@
   function renderList(){
     renderSummaryHeader();fillIdentity();var box=$('seflikFolderListV528');if(!box)return;
     var list=openDivisions();
-    if(!list.length){box.innerHTML='<div class="seflik-folder-empty">Henüz Orman İO üzerinden oluşturulmuş açık bölme yok.<br><small>Bölme yönetimi Orman İO ana menüsündedir.</small></div>';return}
+    if(!list.length){box.innerHTML='<div class="seflik-folder-empty">Henüz oluşturulmuş açık bölme yok.<br><small>Bölme yönetimi Yönetim bölümündedir.</small></div>';return}
     box.innerHTML=list.map(function(x){var contributors=(x.contributors||[]).filter(Boolean),drive=!!x.drive_backed_up,empty=num(x.record_count)===0;return '<article class="seflik-division-card">'+
       '<div class="seflik-division-top"><div class="seflik-division-title"><span class="seflik-division-icon">📁</span><div><b>Bölme '+esc(x.bolme_no||'-')+(x.local_pending?' <span class="seflik-local-pending-v530">Sunucu doğrulanıyor</span>':'')+'</b><small>'+esc(contributors.length?contributors.join(', '):(x.created_by_name?('Oluşturan: '+x.created_by_name):'Henüz mesaha gönderilmedi'))+'</small></div></div><span class="seflik-open-pill">Açık</span></div>'+
       '<div class="seflik-division-stats"><div class="seflik-division-stat"><small>MESaha ADEDİ</small><b>'+num(x.record_count).toLocaleString('tr-TR')+'</b></div><div class="seflik-division-stat"><small>TOPLAM m³</small><b>'+fmt(x.total_volume,3)+'</b></div><div class="seflik-division-stat"><small>KULLANICI</small><b>'+contributors.length+'</b></div></div>'+
@@ -274,7 +563,7 @@
     var u=user();bolme=clean(bolme);list=Array.isArray(list)?list.slice():[];
     if(!validIdentity(u)){notify('Kullanıcı bilgisi eksik','Önce kullanıcı panelinden ad ve şeflik kaydedin.','warning');return false}
     if(!bolme){notify('Bölme seçilmedi','Açık bir bölme seçin.','warning');return false}
-    if(!openDivisions().some(function(x){return clean(x.bolme_no)===bolme})){notify('Bölme açık değil','Önce Orman İO ana menüsünden bölmeyi oluşturup Offline İndir yapın.','warning');return false}
+    if(!openDivisions().some(function(x){return clean(x.bolme_no)===bolme})){notify('Bölme açık değil','Önce Yönetim bölümünden bölmeyi oluşturup Offline İndir yapın.','warning');return false}
     if(!navigator.onLine){notify('İnternet bağlantısı yok','Sunucu ve Drive yedeği için çevrimiçi olun.','warning');return false}
     if(!list.length){notify('Gönderilecek kayıt yok','Ölçümler sayfasında kayıt bulunamadı.','warning');return false}
     var suiteStatsApi=window.MesahaSuiteSync||window.MesahaSuiteSyncV31||window.MesahaSuiteSyncV28||window.MesahaSuiteSyncV27;
@@ -408,7 +697,7 @@
     openBusy=true;if(btn)btn.disabled=true;showTransferOverlay('Veriler yükleniyor…','Açık bölmeler ve şeflik bilgileri kontrol ediliyor.',18);
     try{
       await syncFolder(false);updateTransferOverlay('Veriler yükleniyor…','Gönderme ekranı hazırlanıyor.',75);
-      if(!openDivisions().length){hideTransferOverlay();notify('Orman İO bölmesi gerekli','Şefliğe göndermek için Orman İO ana menüsünde bölmeyi oluşturup Offline İndir yapın.','warning');return}
+      if(!openDivisions().length){hideTransferOverlay();notify('Açık bölme gerekli','Şefliğe göndermek için Yönetim bölümünde bölmeyi oluşturup Offline İndir yapın.','warning');return}
       updateTransferOverlay('Hazır','Açık bölmeler getirildi.',100);await new Promise(function(resolve){setTimeout(resolve,120)});hideTransferOverlay();openSendModal();
     }catch(e){hideTransferOverlay();notify('Bölmeler alınamadı',String(e&&e.message?e.message:e),'error')}
     finally{openBusy=false;if(btn)btn.disabled=false}
@@ -455,3 +744,4 @@
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
   window.MesahaSeflikFolderV529={sync:syncFolder,autoSync:autoSyncOnEntryV577,refreshPreview:function(){updatePreview(true)},send:sendFolder,sendToDivision:sendToDivision,continueDivision:continueDivision,getDivisions:function(){return divisions.slice()},managedBySuite:true};
 })();
+;
