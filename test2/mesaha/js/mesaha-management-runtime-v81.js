@@ -8,6 +8,7 @@
     folders: "mesaha_suite_folder_cache_v4",
     foresters: "mesaha_suite_foresters_v4",
     divisions: "mesaha_suite_divisions_v4",
+    pending: "mesaha_suite_pending_ops_v4",
     settings: "cam_mesaha_ayarlar_v1",
     panel: "mesaha_panel_user_v316"
   };
@@ -198,10 +199,61 @@
     try {
       var out = await rpc("mesaha_list_terminal_sessions_v577", {}), list = Array.isArray(out) ? out : (Array.isArray(out.terminals) ? out.terminals : (Array.isArray(out.items) ? out.items : []));
       body().innerHTML = '<div class="management-actions-v81"><button type="button" id="createTerminalCodeV81">Yeni Terminal Kodu Oluştur</button><button class="soft" type="button" id="refreshTerminalV81">Yenile</button></div><div id="terminalCodeBoxV81"></div><div class="management-list-v81">' + (list.length ? list.map(function (t, i) { var info = t.used_device_info || t.device_info || {}, label = clean(t.label || info.os || info.platform || "Terminal cihaz"); return '<article class="management-row-v81"><div><strong>' + esc(label) + '</strong><small>' + esc(clean(t.code)) + ' • Giriş: ' + esc(dateText(t.used_at || t.paired_at)) + '</small></div><button class="danger" type="button" data-revoke-terminal-v81="' + i + '">Çıkış Yap</button></article>'; }).join("") : '<div class="management-note-v81">Kod ile giriş yapan aktif terminal yok.</div>') + '</div>';
-      document.getElementById("createTerminalCodeV81").onclick = async function () { var button = this; button.disabled = true; try { var made = await rpc("mesaha_create_terminal_code_v557", { p_label: "terminal", p_app_version: "Mesaha İO 6.20" }), t = made.terminal || made, code = clean(t.code); if (!code) throw new Error("Terminal kodu alınamadı."); document.getElementById("terminalCodeBoxV81").innerHTML = '<div class="terminal-code-v81"><small>TEK KULLANIMLIK TERMİNAL KODU</small><strong>' + esc(code) + '</strong><small>' + esc(t.expires_at ? dateText(t.expires_at) + " tarihine kadar geçerli" : "Kısa süre geçerli") + '</small></div>'; notify("Terminal kodu oluşturuldu."); } catch (e) { notify(clean(e.message || e), "error"); } finally { button.disabled = false; } };
+      document.getElementById("createTerminalCodeV81").onclick = async function () { var button = this; button.disabled = true; try { var made = await rpc("mesaha_create_terminal_code_v557", { p_label: "terminal", p_app_version: "Mesaha İO 6.21" }), t = made.terminal || made, code = clean(t.code); if (!code) throw new Error("Terminal kodu alınamadı."); document.getElementById("terminalCodeBoxV81").innerHTML = '<div class="terminal-code-v81"><small>TEK KULLANIMLIK TERMİNAL KODU</small><strong>' + esc(code) + '</strong><small>' + esc(t.expires_at ? dateText(t.expires_at) + " tarihine kadar geçerli" : "Kısa süre geçerli") + '</small></div>'; notify("Terminal kodu oluşturuldu."); } catch (e) { notify(clean(e.message || e), "error"); } finally { button.disabled = false; } };
       document.getElementById("refreshTerminalV81").onclick = renderTerminal;
       body().querySelectorAll("[data-revoke-terminal-v81]").forEach(function (button) { button.onclick = async function () { var t = list[Number(button.dataset.revokeTerminalV81)], code = clean(t && t.code); if (!confirm("Bu terminal cihazın oturumu kapatılsın mı?")) return; button.disabled = true; try { await rpc("mesaha_revoke_terminal_session_v577", { p_code: code }); notify("Terminal oturumu kapatıldı."); await renderTerminal(); } catch (e) { button.disabled = false; notify(clean(e.message || e), "error"); } }; });
     } catch (e) { body().innerHTML = errorCard(e); }
+  }
+
+  function ensureManagementTools() {
+    var grid = document.querySelector("#managementView .management-grid-v81");
+    if (!grid) return;
+    grid.innerHTML = [
+      ["seflik", "▱", "Şeflikler", "Aktif şefliği seçin, oluşturun ve düzenleyin", ""],
+      ["ormanci", "♙", "Ormancı Yönetimi", "Aktif şefliğe kullanıcı ekleyin veya çıkarın", ""],
+      ["bolme", "⌑", "Bölme Yönetimi", "Aktif şefliğe bölme oluşturun ve görüntüleyin", ""],
+      ["terminal", "▤", "Terminal Kodu ve Cihazlar", "Kod oluşturun ve bağlı cihazları yönetin", ""],
+      ["backup", "☁", "Yedekler ve Senkronizasyon", "Offline hazırlık, yedekler ve bekleyen işlemler", ""],
+      ["admin", "▦", "Yönetim Paneli", "Sistem kullanıcıları ve raporlar", "management-admin-v81"]
+    ].map(function (item) {
+      var admin = item[0] === "admin";
+      return '<button class="management-tool-v81 ' + item[4] + '" data-management-tool="' + item[0] + '" ' + (admin ? 'data-admin-only-v81 hidden' : '') + ' type="button"><span aria-hidden="true">' + item[1] + '</span><div><b>' + item[2] + '</b><small>' + item[3] + '</small></div><i aria-hidden="true">›</i></button>';
+    }).join("");
+  }
+
+  async function renderBackupListV82() {
+    var host = document.getElementById("managementBackupListV82"), service = api();
+    if (!host || !service || typeof service.listBackups !== "function") return;
+    host.innerHTML = '<div class="management-note-v81">Drive yedekleri alınıyor…</div>';
+    try {
+      var out = await service.listBackups(), all = Array.isArray(out && out.items) ? out.items : (Array.isArray(out && out.backups) ? out.backups : []);
+      var list = all.filter(function (item) { var app = lower(item && (item.app_id || item.appId)); return !app || app === "mesaha" || app === "suite"; });
+      host.innerHTML = list.length ? list.map(function (item, index) {
+        return '<article class="management-row-v81"><div><strong>' + esc(item.file_name || item.fileName || "Mesaha yedeği") + '</strong><small>' + esc(dateText(item.created_at || item.createdAt)) + ' • ' + Number(item.record_count || item.recordCount || 0).toLocaleString("tr-TR") + ' kayıt</small></div><button class="soft" type="button" data-restore-backup-v82="' + index + '">Yükle</button></article>';
+      }).join("") : '<div class="management-note-v81">Bu şeflik için Drive yedeği bulunamadı.</div>';
+      host.querySelectorAll("[data-restore-backup-v82]").forEach(function (button) {
+        button.onclick = async function () {
+          var item = list[Number(button.dataset.restoreBackupV82)], id = clean(item && (item.id || item.backup_id));
+          if (!id || !confirm("Bu yedek mevcut Mesaha kayıtlarıyla birleştirilsin mi?")) return;
+          button.disabled = true;
+          try { var result = await service.restoreMesahaBackup(id, "merge"); notify(Number(result.imported || 0).toLocaleString("tr-TR") + " kayıt yedekten alındı."); setTimeout(function () { location.reload(); }, 450); }
+          catch (e) { button.disabled = false; notify(clean(e.message || e), "error"); }
+        };
+      });
+    } catch (e) { host.innerHTML = errorCard(e); }
+  }
+
+  function renderBackupSyncV82() {
+    var service = api(), pending = read(K.pending, []); if (!Array.isArray(pending)) pending = [];
+    var online = navigator.onLine !== false, folder = activeFolder();
+    openOverlay("Yedekler ve Senkronizasyon", '<div class="management-sync-status-v82"><div><small>BAĞLANTI</small><b>' + (online ? 'Online' : 'Offline') + '</b></div><div><small>AKTİF ŞEFLİK</small><b>' + esc(folder && (folder.seflik || folder.name) || 'Seçilmedi') + '</b></div><div><small>BEKLEYEN</small><b>' + pending.length.toLocaleString("tr-TR") + ' işlem</b></div></div><div class="management-backup-actions-v82"><button type="button" id="managementSyncNowV82" ' + (!online ? 'disabled' : '') + '>Sunucuya Gönder</button><button class="soft" type="button" id="managementPullNowV82" ' + (!online ? 'disabled' : '') + '>Sunucudan İndir</button><button class="soft" type="button" id="managementLocalBackupV82">Cihaza JSON Yedek İndir</button><button class="gold" type="button" id="managementMesahaDriveBackupV82" ' + (!online ? 'disabled' : '') + '>Mesaha Drive Yedeği Al</button><button class="soft" type="button" id="managementSuiteDriveBackupV82" ' + (!online ? 'disabled' : '') + '>Tam Uygulama Yedeği Al</button><button class="soft" type="button" id="managementDriveSetupV82" ' + (!online ? 'disabled' : '') + '>Drive Bağlantısı</button><button class="soft" type="button" id="managementListBackupsV82" ' + (!online ? 'disabled' : '') + '>Drive Yedeklerini Göster</button></div><div class="management-note-v81 ' + (online ? '' : 'warn') + '">' + (online ? 'Senkronizasyon mevcut çevrimdışı kuyruğu kullanır; kayıtların offline çalışma düzeni korunur.' : 'İnternet yok. Kayıtlar cihazda korunuyor ve bekleyen işlemler bağlantı geldiğinde gönderilebilir.') + '</div><div class="management-list-v81" id="managementBackupListV82"></div>');
+    var sync = document.getElementById("managementSyncNowV82"); if (sync) sync.onclick = async function () { if (!service || typeof service.syncAll !== "function") return notify("Senkronizasyon modülü hazır değil.", "warning"); sync.disabled = true; try { await service.syncAll({ source: "management-v82" }); notify("Senkronizasyon tamamlandı."); renderBackupSyncV82(); } catch (e) { sync.disabled = false; notify(clean(e.message || e), "error"); } };
+    var pull = document.getElementById("managementPullNowV82"); if (pull) pull.onclick = async function () { if (!service || typeof service.refreshFolderData !== "function") return notify("Sunucudan indirme modülü hazır değil.", "warning"); pull.disabled = true; try { await service.refreshFolderData({ source: "management-v82-pull" }); notify("Sunucudaki şeflik verileri indirildi."); renderBackupSyncV82(); } catch (e) { pull.disabled = false; notify(clean(e.message || e), "error"); } };
+    var local = document.getElementById("managementLocalBackupV82"); if (local) local.onclick = function () { var backup = document.getElementById("backupBtn"); if (backup) backup.click(); else notify("Yerel yedek düğmesi hazır değil.", "warning"); };
+    var mesaha = document.getElementById("managementMesahaDriveBackupV82"); if (mesaha) mesaha.onclick = async function () { mesaha.disabled = true; try { await service.createMesahaBackup({}); notify("Mesaha Drive yedeği oluşturuldu."); } catch (e) { notify(clean(e.message || e), "error"); } finally { mesaha.disabled = false; } };
+    var suite = document.getElementById("managementSuiteDriveBackupV82"); if (suite) suite.onclick = async function () { suite.disabled = true; try { await service.createSuiteBackup(); notify("Tam uygulama yedeği oluşturuldu."); } catch (e) { notify(clean(e.message || e), "error"); } finally { suite.disabled = false; } };
+    var setup = document.getElementById("managementDriveSetupV82"); if (setup) setup.onclick = function () { if (service && typeof service.openDriveSetup === "function") service.openDriveSetup(); };
+    var listButton = document.getElementById("managementListBackupsV82"); if (listButton) listButton.onclick = renderBackupListV82;
   }
 
   function openTool(name) {
@@ -209,12 +261,13 @@
     if (name === "ormanci") return renderOrmanci();
     if (name === "bolme") return renderBolme(true);
     if (name === "terminal") return renderTerminal();
+    if (name === "backup") return renderBackupSyncV82();
     if (name === "admin" && lower(identity().email) === ADMIN_EMAIL) location.href = "../yonetim/";
   }
   function updateAdminVisibility() { document.querySelectorAll("[data-admin-only-v81]").forEach(function (node) { node.hidden = lower(identity().email) !== ADMIN_EMAIL; }); }
   function showManagement() { if (typeof root.showView === "function") root.showView("management"); updateAdminVisibility(); }
   function boot() {
-    ensureOverlay(); updateAdminVisibility();
+    ensureOverlay(); ensureManagementTools(); updateAdminVisibility();
     var shortcut = document.getElementById("managementHomeShortcutV81");
     if (shortcut) { shortcut.addEventListener("click", showManagement); shortcut.addEventListener("keydown", function (event) { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); showManagement(); } }); }
     var istif = document.getElementById("openIstifBtnV81"); if (istif) istif.addEventListener("click", function () { location.href = "../istif/"; });

@@ -1,20 +1,20 @@
 (function (root) {
   "use strict";
   const DATA = /*MESAHA_RELEASE_DATA_START*/{
-  "build": 81,
-  "version": "81.0.0",
+  "build": 82,
+  "version": "82.0.0",
   "channel": "stable",
   "releasedAt": "2026-09-05T12:00:00+03:00",
-  "assetToken": "orman-io-stable-20260905-v81",
-  "cacheName": "orman-io-shell-stable-20260905-v81",
+  "assetToken": "orman-io-stable-20260905-v82",
+  "cacheName": "orman-io-shell-stable-20260905-v82",
   "apps": {
     "suite": {
       "label": "Orman İO",
-      "version": "81.0.0"
+      "version": "82.0.0"
     },
     "mesaha": {
       "label": "Mesaha İO",
-      "version": "6.20"
+      "version": "6.21"
     },
     "istif": {
       "label": "İstif İO",
@@ -22,10 +22,10 @@
     },
     "admin": {
       "label": "Orman İO Yönetim",
-      "version": "81.0.0"
+      "version": "82.0.0"
     }
   },
-  "description": "V81 Mesaha merkezli arayüz: İstif ve yönetim geçişleri Mesaha ana ekranına taşındı; yerel oturum paneli ve bağlantı göstergesi yenilendi; Kâğıtlık boyları kullanıcı tanımlı hale getirildi; Beyan açılışı ve gereksiz XLS yüklemeleri optimize edildi; yönetim paneli tek yönetici hesabıyla sınırlandı."
+  "description": "V82 yönetim arayüzü düzeltmesi: Ana menüdeki Yönetim kartı okunabilir hale getirildi; Şeflikler, Ormancı, Bölme, Terminal Kodu ve Cihazlar ile Yedekler ve Senkronizasyon araçları eksiksiz ve kalıcı biçimde Mesaha yönetimine taşındı."
 }/*MESAHA_RELEASE_DATA_END*/;
   const APP_NAMES = DATA.apps || {};
   const SCRIPT_URL = (() => {

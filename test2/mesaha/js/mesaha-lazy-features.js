@@ -27,7 +27,7 @@
   }
 
   function loadXlsConverter() {
-    return loadScript("xls-backup-converter", "./js/mesaha-xls-backup-converter.js?v=81.0.0");
+    return loadScript("xls-backup-converter", "./js/mesaha-xls-backup-converter.js?v=82.0.0");
   }
 
   document.addEventListener("click", function (event) {
