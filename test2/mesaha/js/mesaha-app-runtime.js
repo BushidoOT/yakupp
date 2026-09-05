@@ -1039,7 +1039,7 @@
           barcodeControlEnabled: true,
           barcodeControlEvery: 40,
           autoPaperLengthEnabled: false,
-          paperLengthRules: "2-2.5",
+          paperLengthRules: "",
           autoProductStandardEnabled: false,
           treeFilter: "Tümü",
           cutterFilter: "Tümü",
@@ -1484,7 +1484,17 @@
           state.settings.autoPaperLengthEnabled =
             state.settings.autoPaperLengthEnabled === true;
           state.settings.paperLengthRules =
-            norm(state.settings.paperLengthRules) || "2-2.5";
+            norm(state.settings.paperLengthRules);
+          try {
+            if (localStorage.getItem("mesaha_paper_lengths_manual_v83") !== "1") {
+              if (state.settings.paperLengthRules === "2-2.5") {
+                state.settings.paperLengthRules = "";
+                state.settings.autoPaperLengthEnabled = false;
+              }
+              localStorage.setItem("mesaha_paper_lengths_manual_v83", "1");
+              saveSettings();
+            }
+          } catch (_) {}
           state.settings.autoProductStandardEnabled =
             state.settings.autoProductStandardEnabled === true;
           try {
@@ -1931,6 +1941,13 @@
           const autoPaperToggle = $("autoPaperLengthEnabled");
           if (autoPaperToggle)
             autoPaperToggle.addEventListener("change", () => {
+              if (autoPaperToggle.checked && !String(state.settings.paperLengthRules || "").trim()) {
+                autoPaperToggle.checked = false;
+                state.settings.autoPaperLengthEnabled = false;
+                const rules = $("paperLengthRules");
+                try { rules && rules.focus({ preventScroll: true }); } catch (_) { try { rules && rules.focus(); } catch (__){ } }
+                return toast("Önce Kâğıtlık boylarını - ile ayırarak yazın. Örnek: 1.5-2-2.5");
+              }
               state.settings.autoPaperLengthEnabled = autoPaperToggle.checked;
               if (
                 autoPaperToggle.checked &&
@@ -1967,8 +1984,13 @@
                 .filter((value) => Number.isFinite(value) && value > 0 && value <= 50);
               const unique = [...new Set(values.map((value) => Number(value.toFixed(3))))];
               if (!unique.length) {
-                paperLengthRules.value = state.settings.paperLengthRules || "2-2.5";
-                return toast("En az bir geçerli boy yazın. Örnek: 1.5-2-2.5");
+                state.settings.paperLengthRules = "";
+                state.settings.autoPaperLengthEnabled = false;
+                paperLengthRules.value = "";
+                if (autoPaperToggle) autoPaperToggle.checked = false;
+                saveSettings();
+                try { __flushSettings(); } catch {}
+                return toast("Boylar temizlendi. Otomatik Kâğıtlık seçimi kapatıldı.");
               }
               state.settings.paperLengthRules = unique.join("-");
               paperLengthRules.value = state.settings.paperLengthRules;
@@ -2226,7 +2248,7 @@
             autoPaper.checked = state.settings.autoPaperLengthEnabled === true;
           const paperRules = $("paperLengthRules");
           if (paperRules)
-            paperRules.value = state.settings.paperLengthRules || "2-2.5";
+            paperRules.value = state.settings.paperLengthRules || "";
           const autoStandard = $("autoProductStandardEnabled");
           if (autoStandard)
             autoStandard.checked =
@@ -5592,7 +5614,7 @@
                 ev.target &&
                 ev.target.closest &&
                 ev.target.closest(
-                  "#recordsView,[data-tree-filter],[data-cutter-filter]",
+                  "[data-tree-filter],[data-cutter-filter],#clearSelectionBtn,#selectFilteredBtn,#bulkCutterTransferBtnV406,[data-select]",
                 )
               )
                 scheduleExportScopeV542(100);

@@ -1,31 +1,31 @@
 (function (root) {
   "use strict";
   const DATA = /*MESAHA_RELEASE_DATA_START*/{
-  "build": 82,
-  "version": "82.0.0",
+  "build": 83,
+  "version": "83.0.0",
   "channel": "stable",
-  "releasedAt": "2026-09-05T12:00:00+03:00",
-  "assetToken": "orman-io-stable-20260905-v82",
-  "cacheName": "orman-io-shell-stable-20260905-v82",
+  "releasedAt": "2026-09-05T18:18:50+03:00",
+  "assetToken": "orman-io-stable-20260905-v83",
+  "cacheName": "orman-io-shell-stable-20260905-v83",
   "apps": {
     "suite": {
       "label": "Orman İO",
-      "version": "82.0.0"
+      "version": "83.0.0"
     },
     "mesaha": {
       "label": "Mesaha İO",
-      "version": "6.21"
+      "version": "6.22"
     },
     "istif": {
       "label": "İstif İO",
-      "version": "0.3.23"
+      "version": "0.3.24"
     },
     "admin": {
       "label": "Orman İO Yönetim",
-      "version": "82.0.0"
+      "version": "83.0.0"
     }
   },
-  "description": "V82 yönetim arayüzü düzeltmesi: Ana menüdeki Yönetim kartı okunabilir hale getirildi; Şeflikler, Ormancı, Bölme, Terminal Kodu ve Cihazlar ile Yedekler ve Senkronizasyon araçları eksiksiz ve kalıcı biçimde Mesaha yönetimine taşındı."
+  "description": "V83 mobil kararlılık ve güvenli senkronizasyon: Android/iOS terminal oturumları zaman aşımı ve yenileme yarışlarına karşı güçlendirildi; Şeflik, Mesaha ve İstif indirmelerinde eksik sunucu cevabı yerel veriyi silemez; Drive fotoğraf yüklemeleri tekrar denemelerde çoğalmaz; Beyan görünümü ve mobil yönetim arayüzü hızlandırıldı."
 }/*MESAHA_RELEASE_DATA_END*/;
   const APP_NAMES = DATA.apps || {};
   const SCRIPT_URL = (() => {

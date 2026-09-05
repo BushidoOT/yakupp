@@ -144,7 +144,7 @@
       n.id = "suiteIstifNoteV8";
       n.className = "suite-istif-note-v10";
       n.textContent =
-        "Şeflik ve personel yönetimi Orman İO ana menüsündedir. Şeflik üyeleri İstif İO içindeki + Bölme Oluştur düğmesiyle yeni bölme açabilir; oluşturulan bölme offline hazırlanır ve sonraki sunucu gönderiminde ortak şefliğe aktarılır.";
+        "Şeflik ve personel yönetimi Mesaha uygulamasındaki Yönetim bölümündedir. Şeflik üyeleri İstif İO içindeki + Bölme Oluştur düğmesiyle yeni bölme açabilir; oluşturulan bölme offline hazırlanır ve sonraki sunucu gönderiminde ortak şefliğe aktarılır.";
       settings.insertBefore(n, settings.firstChild);
     }
   }

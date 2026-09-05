@@ -751,7 +751,7 @@
           return !!(
             t.closest &&
             t.closest(
-              "#recordsView,[data-tree-filter],[data-cutter-filter],#clearSelectionBtn,#selectFilteredBtn,#bulkCutterTransferBtnV406",
+              "[data-tree-filter],[data-cutter-filter],#clearSelectionBtn,#selectFilteredBtn,#bulkCutterTransferBtnV406,[data-select]",
             )
           );
         }
@@ -2282,7 +2282,7 @@
         async function check(silent) {
           if (window.MESAHA_SUITE_MODE) {
             if (!silent)
-              setSyncText("Senkronizasyon Orman İO tarafından yönetilir");
+              setSyncText("Senkronizasyon Yönetim bölümünden yönetilir");
             return navigator.onLine;
           }
           var api =

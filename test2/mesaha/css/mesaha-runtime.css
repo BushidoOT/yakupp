@@ -544,7 +544,7 @@ html[data-suite-managed="1"] #seflikFolderView .seflik-create-row-v529,
 html[data-suite-managed="1"] #userPanelOverlayV316 .panel-title-v316 h2{font-size:0!important}
       html[data-suite-managed="1"] #userPanelOverlayV316 .panel-title-v316 h2::after{content:"Temel Bilgiler";font-size:22px}
       html[data-suite-managed="1"] #userPanelOverlayV316 #panelSyncTextV316{font-size:0!important}
-      html[data-suite-managed="1"] #userPanelOverlayV316 #panelSyncTextV316::after{content:"Orman İO tarafından yönetilir";font-size:12px}
+      html[data-suite-managed="1"] #userPanelOverlayV316 #panelSyncTextV316::after{content:"Mesaha hesabı ve aktif oturum";font-size:12px}
       html[data-suite-managed="1"] #userPanelOverlayV316 .panel-field-v316:has(#panelDeviceV316),
       html[data-suite-managed="1"] #userPanelOverlayV316 #panelStatsV316,
       html[data-suite-managed="1"] #userPanelOverlayV316 #panelSaveV316,
@@ -4782,3 +4782,12 @@ html:not([data-mesaha-v600-ready="1"]) #bottomNav{opacity:0!important;transform:
         #modernModal .modal-actions:has(.xls-download-v62){bottom:-14px;padding-bottom:calc(4px + env(safe-area-inset-bottom,0px))}
       }
 
+/* V83 — iOS/Android güvenli alan ve düşük maliyetli saha görünümü */
+#bottomNav.mesaha-nav-v600{bottom:calc(8px + env(safe-area-inset-bottom,0px))!important}
+#userPanelOverlayV316 .panel-card-v316{max-height:calc(100dvh - 20px - env(safe-area-inset-bottom,0px))!important;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+@media(max-width:640px){#bottomNav.mesaha-nav-v600{bottom:calc(6px + env(safe-area-inset-bottom,0px))!important}}
+@media(hover:none) and (pointer:coarse){
+  .topbar,#bottomNav.mesaha-nav-v600,.panel-overlay-v316,#modernModal,.seflik-send-overlay-v529,.seflik-transfer-overlay-v534{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+  #bottomNav.mesaha-nav-v600 button,.management-tool-v81,.management-row-v81{transition:none!important}
+  #recordsView .record-card,#beyanView .beyan-card-v600{contain:layout paint}
+}

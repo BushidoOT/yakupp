@@ -2582,7 +2582,7 @@ function renderSettings() {
       <div class="shared-card-title"><span>${icon("doc", 22)}</span><div><b>Kurum ve Evrak Bilgileri</b><small>Bu bilgiler örnek olarak gelmez; kullanıcı tarafından bir kez kaydedilir.</small></div></div>
       <label>Bölge Müdürlüğü<input name="bolgeMudurlugu" value="${esc(state.settings.bolgeMudurlugu || "")}" placeholder="Bölge Müdürlüğü gir" autocomplete="organization"></label>
       <label>İşletme Müdürlüğü<input name="isletmeMudurlugu" value="${esc(state.settings.isletmeMudurlugu || "")}" placeholder="İşletme Müdürlüğü gir"></label>
-      <label>Şeflik<select name="seflik">${state.seflikler.map((item) => `<option value="${esc(item.name)}" ${item.name === state.settings.seflik ? "selected" : ""}>${esc(item.name)}${item.role === "owner" ? " • kurucu" : " • üye"}</option>`).join("")}</select></label><p class="settings-hint">Şeflik, personel ve bölme düzenlemeleri yalnızca Orman İO ana menüsünden yapılır.</p>
+      <label>Şeflik<select name="seflik">${state.seflikler.map((item) => `<option value="${esc(item.name)}" ${item.name === state.settings.seflik ? "selected" : ""}>${esc(item.name)}${item.role === "owner" ? " • kurucu" : " • üye"}</option>`).join("")}</select></label><p class="settings-hint">Şeflik, personel ve bölme düzenlemeleri Mesaha uygulamasındaki Yönetim bölümünden yapılır.</p>
       <label>Rampa / Satış İstif Yeri<input name="satisIstifYeri" value="${esc(state.settings.satisIstifYeri || "")}" placeholder="Rampa veya depo adı gir"></label>
       <p class="settings-hint">Orijinal boş evrak şablonu esas alınır. Doldurulmuş dosya yalnızca alanların nereye yazılacağını gösteren örnektir.</p>
       <button class="btn primary wide" type="submit">${icon("save", 20)} Bilgileri Kaydet</button>
@@ -2799,6 +2799,7 @@ async function editRecord(recordId) {
             name: photo.name || `foto_${Date.now()}.jpg`,
             type: photo.type || (photo.blob && photo.blob.type) || "image/jpeg",
             size: photo.size || (photo.blob && photo.blob.size) || 0,
+            syncKey: clean(photo.syncKey || photo.sync_key || driveFile?.appProperties?.orman_io_photo_key) || uid(),
             fromDrive: photo.fromDrive === true || !!driveFile,
             driveFileId: clean(photo.driveFileId) || driveFileId(driveFile),
           };
@@ -2974,7 +2975,7 @@ async function saveRecord(event, draftOnly = false) {
     return;
   }
   if (!draft.seflik || !draft.ormanci) {
-    toast("Şeflik ve kullanıcı kimliği Orman İO ana menüsünden alınamadı.", "bad");
+    toast("Şeflik ve kullanıcı kimliği Mesaha Yönetim bölümünden alınamadı.", "bad");
     return;
   }
   if (
@@ -2991,7 +2992,7 @@ async function saveRecord(event, draftOnly = false) {
     !suiteReadyBolmeler.includes(draft.bolme)
   ) {
     toast(
-      "Bu bölme Orman İO ana menüsünde offline indirilmeden ster kaydı eklenemez.",
+      "Bu bölme Mesaha Yönetim bölümünde offline indirilmeden ster kaydı eklenemez.",
       "bad",
     );
     return;
@@ -3013,6 +3014,7 @@ async function saveRecord(event, draftOnly = false) {
     type: photo.type,
     size: photo.size,
     blob: photo.blob,
+    syncKey: clean(photo.syncKey || photo.sync_key) || uid(),
     fromDrive: photo.fromDrive === true,
     driveFileId: clean(photo.driveFileId),
   }));
@@ -3270,6 +3272,7 @@ function addPhotoBlob(blob, name) {
     name,
     type: "image/jpeg",
     size: blob.size,
+    syncKey: uid(),
   });
 }
 
@@ -3389,7 +3392,7 @@ function showOrmanciPicker() {
   refreshCurrentMembers();
   if (!state.ormancilar.length) {
     showDialog(
-      `<h3>Ormancı bulunamadı</h3><p>Bu şefliğe Orman İO ana menüsünden eklenen ormancılar otomatik gelir.</p><div class="dialog-actions"><button class="btn" data-dialog-close>Kapat</button><button class="btn primary" id="refreshMembersDialog">Güncelle</button></div>`,
+      `<h3>Ormancı bulunamadı</h3><p>Bu şefliğe Mesaha Yönetim bölümünden eklenen ormancılar otomatik gelir.</p><div class="dialog-actions"><button class="btn" data-dialog-close>Kapat</button><button class="btn primary" id="refreshMembersDialog">Güncelle</button></div>`,
     );
     document.getElementById("refreshMembersDialog").onclick = () => {
       closeDialog();
@@ -3414,7 +3417,7 @@ function showOrmanciPicker() {
 
 function showAddOrmanciDialog() {
   showDialog(
-    '<h3>Orman İO üzerinden yönetin</h3><p>Ormancı ekleme ve çıkarma işlemleri İstif İO içinden kaldırıldı. Orman İO ana menüsündeki Ormancı Yönetimi bölümünü kullanın.</p><div class="dialog-actions"><button class="btn" data-dialog-close>Kapat</button><a class="btn primary" href="../">Orman İO Ana Menüsü</a></div>',
+    '<h3>Mesaha üzerinden yönetin</h3><p>Ormancı ekleme ve çıkarma işlemleri İstif İO içinden kaldırıldı. Mesaha uygulamasındaki Ormancı Yönetimi bölümünü kullanın.</p><div class="dialog-actions"><button class="btn" data-dialog-close>Kapat</button><a class="btn primary" href="../mesaha/">Mesaha\u2019yı Aç</a></div>',
   );
 }
 
@@ -3571,9 +3574,13 @@ async function uploadPhotoToDrive(record, photo, index) {
   if (!photo?.blob) throw new Error("Yüklenecek fotoğraf bulunamadı.");
   const folder = effectiveRecordSeflik(record);
   const dataUrl = await blobToDataUrl(photo.blob);
+  const photoKey = clean(photo.syncKey || photo.sync_key) || uid();
   return bridgeCall("upload_photo", {
     seflikKey: folder.seflikKey,
     seflik: folder.seflik,
+    recordId: String(record.id || ""),
+    photoIndex: index,
+    idempotencyKey: photoKey.startsWith("istif-photo:") ? photoKey : `istif-photo:${String(record.id || "legacy")}:${photoKey}`,
     recordDate: record.date,
     bolmeNo: record.bolme,
     istifNo: record.istifNo,
@@ -3798,7 +3805,7 @@ async function syncAll() {
     }
     return;
   }
-  toast("Senkronizasyon Orman İO ana menüsünden yönetilir.", "bad");
+  toast("Senkronizasyon Mesaha uygulamasındaki Yönetim bölümünden yönetilir.", "bad");
 }
 
 function selectedForDocs() {
@@ -3876,6 +3883,7 @@ async function hydrateDrivePhotosForEdit(record) {
           `${record.istifNo || "istif"}_foto_${index + 1}.jpg`,
         type: blob.type || mimeType,
         size: blob.size,
+        syncKey: clean(file?.appProperties?.orman_io_photo_key) || uid(),
         fromDrive: true,
         driveFileId: driveFileId(file),
       };

@@ -53,7 +53,7 @@
     ].join('');document.head.appendChild(st);
   }
   function terminalCardHtml(){var u=user(),ok=terminalCloudAllowed();return '<div class="terminal-card-v557"><b>🖥 Terminal modu aktif</b><small>'+esc(u.name||'Kullanıcı')+' • '+esc(u.seflik||'Şeflik')+'<br>'+(ok?'Terminal kodu eşleşti. Bulut ve Şeflik Klasörü açık. Çıkış için kullanıcı panelindeki Çıkış Yap düğmesini kullanın.':'Bu cihaz yerel çalışır. Bulut ve Şeflik Klasörü için terminal kodu veya Google gerekir.')+'</small>'+(ok?'':'<button type="button" data-terminal-google-v578>Google ile giriş yap</button>')+'</div>'}
-  function terminalPairPanelHtml(){return '<div class="terminal-card-v557" id="terminalPairPanelV561"><b>Terminal kodu gir</b><small>Telefondan kullanıcı panelinde oluşturulan terminal kodunu sonradan buradan eşleştirebilirsin. Kod eşleşince Bulut ve Şeflik Klasörü açılır.</small><input id="terminalPairCodePanelV561" maxlength="20" inputmode="text" autocomplete="one-time-code" placeholder="Örn: A1B2-C3D4"><button type="button" id="terminalPairApplyPanelV561">Terminal kodunu eşleştir</button></div>'}
+  function terminalPairPanelHtml(){return '<div class="terminal-card-v557" id="terminalPairPanelV561"><b>Terminal kodu gir</b><small>Telefondan kullanıcı panelinde oluşturulan terminal kodunu sonradan buradan eşleştirebilirsin. Kod eşleşince Bulut ve Şeflik Klasörü açılır.</small><input id="terminalPairCodePanelV561" maxlength="20" inputmode="text" autocapitalize="characters" enterkeyhint="done" spellcheck="false" autocomplete="one-time-code" placeholder="Örn: A1B2-C3D4"><button type="button" id="terminalPairApplyPanelV561">Terminal kodunu eşleştir</button></div>'}
   function bindTerminalPairPanel(){var b=$('terminalPairApplyPanelV561');if(!b||b.__terminalPairV561)return;b.__terminalPairV561=true;b.addEventListener('click',function(ev){ev.preventDefault();ev.stopPropagation();var inp=$('terminalPairCodePanelV561'),code=clean(inp&&inp.value).toUpperCase();if(code.length<6){toast('Terminal kodu gerekli','Telefondan oluşturulan kodu girin.','warning');return}if(window.MesahaGoogleAuthV548&&typeof window.MesahaGoogleAuthV548.claimTerminalCode==='function'){var oldText=b.textContent;b.disabled=true;b.textContent='Kod kontrol ediliyor…';window.MesahaGoogleAuthV548.claimTerminalCode(code).then(function(){boot();}).catch(function(e){toast('Kod eşleşmedi',clean(e&&e.message||e),'error')}).finally(function(){b.disabled=false;b.textContent=oldText||'Terminal kodunu eşleştir'});return}toast('Giriş modülü hazır değil','Sayfayı yenileyip tekrar deneyin.','warning')},true)}
   function ensureCards(){
     if(!terminal())return;
@@ -425,7 +425,7 @@
     clearTimeout(previewTimer);previewTimer=setTimeout(function(){updatePreview(true)},60);
   }
   function fillIdentity(){
-    var u=user(),name=$('seflikFolderIdentityV528');if(name)name.textContent=u.seflik?('Aktif Şeflik: '+u.seflik):'Önce Orman İO ana menüsünden şeflik seçin';
+    var u=user(),name=$('seflikFolderIdentityV528');if(name)name.textContent=u.seflik?('Aktif Şeflik: '+u.seflik):'Önce Yönetim bölümünden şeflik seçin';
     var select=$('seflikFolderBolmeV528');
     if(select){
       var previous=clean(select.value||localStorage.getItem(LAST_BOLME_KEY)||u.bolmeNo);
@@ -444,7 +444,7 @@
   function renderList(){
     renderSummaryHeader();fillIdentity();var box=$('seflikFolderListV528');if(!box)return;
     var list=openDivisions();
-    if(!list.length){box.innerHTML='<div class="seflik-folder-empty">Henüz Orman İO üzerinden oluşturulmuş açık bölme yok.<br><small>Bölme yönetimi Orman İO ana menüsündedir.</small></div>';return}
+    if(!list.length){box.innerHTML='<div class="seflik-folder-empty">Henüz oluşturulmuş açık bölme yok.<br><small>Bölme yönetimi Yönetim bölümündedir.</small></div>';return}
     box.innerHTML=list.map(function(x){var contributors=(x.contributors||[]).filter(Boolean),drive=!!x.drive_backed_up,empty=num(x.record_count)===0;return '<article class="seflik-division-card">'+
       '<div class="seflik-division-top"><div class="seflik-division-title"><span class="seflik-division-icon">📁</span><div><b>Bölme '+esc(x.bolme_no||'-')+(x.local_pending?' <span class="seflik-local-pending-v530">Sunucu doğrulanıyor</span>':'')+'</b><small>'+esc(contributors.length?contributors.join(', '):(x.created_by_name?('Oluşturan: '+x.created_by_name):'Henüz mesaha gönderilmedi'))+'</small></div></div><span class="seflik-open-pill">Açık</span></div>'+
       '<div class="seflik-division-stats"><div class="seflik-division-stat"><small>MESaha ADEDİ</small><b>'+num(x.record_count).toLocaleString('tr-TR')+'</b></div><div class="seflik-division-stat"><small>TOPLAM m³</small><b>'+fmt(x.total_volume,3)+'</b></div><div class="seflik-division-stat"><small>KULLANICI</small><b>'+contributors.length+'</b></div></div>'+
@@ -563,7 +563,7 @@
     var u=user();bolme=clean(bolme);list=Array.isArray(list)?list.slice():[];
     if(!validIdentity(u)){notify('Kullanıcı bilgisi eksik','Önce kullanıcı panelinden ad ve şeflik kaydedin.','warning');return false}
     if(!bolme){notify('Bölme seçilmedi','Açık bir bölme seçin.','warning');return false}
-    if(!openDivisions().some(function(x){return clean(x.bolme_no)===bolme})){notify('Bölme açık değil','Önce Orman İO ana menüsünden bölmeyi oluşturup Offline İndir yapın.','warning');return false}
+    if(!openDivisions().some(function(x){return clean(x.bolme_no)===bolme})){notify('Bölme açık değil','Önce Yönetim bölümünden bölmeyi oluşturup Offline İndir yapın.','warning');return false}
     if(!navigator.onLine){notify('İnternet bağlantısı yok','Sunucu ve Drive yedeği için çevrimiçi olun.','warning');return false}
     if(!list.length){notify('Gönderilecek kayıt yok','Ölçümler sayfasında kayıt bulunamadı.','warning');return false}
     var suiteStatsApi=window.MesahaSuiteSync||window.MesahaSuiteSyncV31||window.MesahaSuiteSyncV28||window.MesahaSuiteSyncV27;
@@ -697,7 +697,7 @@
     openBusy=true;if(btn)btn.disabled=true;showTransferOverlay('Veriler yükleniyor…','Açık bölmeler ve şeflik bilgileri kontrol ediliyor.',18);
     try{
       await syncFolder(false);updateTransferOverlay('Veriler yükleniyor…','Gönderme ekranı hazırlanıyor.',75);
-      if(!openDivisions().length){hideTransferOverlay();notify('Orman İO bölmesi gerekli','Şefliğe göndermek için Orman İO ana menüsünde bölmeyi oluşturup Offline İndir yapın.','warning');return}
+      if(!openDivisions().length){hideTransferOverlay();notify('Açık bölme gerekli','Şefliğe göndermek için Yönetim bölümünde bölmeyi oluşturup Offline İndir yapın.','warning');return}
       updateTransferOverlay('Hazır','Açık bölmeler getirildi.',100);await new Promise(function(resolve){setTimeout(resolve,120)});hideTransferOverlay();openSendModal();
     }catch(e){hideTransferOverlay();notify('Bölmeler alınamadı',String(e&&e.message?e.message:e),'error')}
     finally{openBusy=false;if(btn)btn.disabled=false}

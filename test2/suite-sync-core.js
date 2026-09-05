@@ -196,6 +196,29 @@
       ["AUTH_SESSION_INVALID", "JWT_EXPIRED", "INVALID_JWT"].includes(code) ||
       /oturum doğrulanamadı|oturum gecersiz|oturum geçersiz|jwt|token.*(?:expired|invalid|geçersiz|süresi)/i.test(message);
   }
+  function isTerminalSessionFailure(status, payload) {
+    const code = clean(payload && (payload.code || payload.errorCode)).toUpperCase();
+    const message = clean(payload && (payload.error || payload.message || payload.reason));
+    return !!(payload && (payload.terminal_required === true || payload.terminal_revoked === true)) ||
+      Number(status) === 403 && (
+        ["TERMINAL_REQUIRED", "TERMINAL_TOKEN_INVALID", "TERMINAL_DEVICE_MISMATCH", "TERMINAL_USER_MISMATCH", "TERMINAL_EMAIL_MISMATCH"].includes(code) ||
+        /terminal.*(eşleştirme|güvenlik anahtarı|farklı cihaz|geçersiz|kapatıldı|revoked|required)/i.test(message)
+      );
+  }
+  function clearInvalidTerminalSession(payload) {
+    const t = terminal();
+    if (!(t && t.active && clean(t.source) === "pair_code")) return false;
+    try {
+      localStorage.removeItem("mesaha_terminal_local_mode_v556");
+      localStorage.removeItem("mesaha_terminal_local_mode_v557");
+    } catch (_) {}
+    try {
+      window.dispatchEvent(new CustomEvent("mesaha:terminal-session-revoked", {
+        detail: { reason: clean(payload && (payload.error || payload.message || payload.reason)) }
+      }));
+    } catch (_) {}
+    return true;
+  }
   function terminalAuth() {
     const shared = window.OrmanSuiteIdentity;
     if (shared && typeof shared.terminalAuthPayload === "function") return shared.terminalAuthPayload();
@@ -266,7 +289,7 @@
         }),
       }, 20000);
       const out = await response.json().catch(() => ({}));
-      if (!response.ok || out.ok === false) return false;
+      if (!response.ok || out.ok === false || out.complete === false || out.partial === true || out.truncated === true || out.missing_sql === true) return false;
       const list = Array.isArray(out.folders) ? out.folders.filter(Boolean) : [];
       if (!list.length) return false;
       const active = read(K.active, {}) || {};
@@ -310,17 +333,28 @@
     }
     let r, j;
     let authRetried = false, contextRetried = false;
+    const requestTimeout = url === DRIVE
+      ? (/^(upload_photo|backup_json|photo_data)$/.test(clean(action)) ? 70000 : 45000)
+      : 30000;
     for (let attempt = 0; attempt < 3; attempt += 1) {
       r = await fetchWithTimeout(url, {
         method: "POST",
         cache: "no-store",
         headers: authHeaders(terminalRequest),
         body: JSON.stringify(body),
-      }, 30000);
+      }, requestTimeout);
       j = await r.json().catch(() => ({}));
       if (r.ok && j.ok !== false) {
         try { applyCanonicalServerContext(j); } catch (_) {}
         return j;
+      }
+      if (terminalRequest && isTerminalSessionFailure(r.status, j)) {
+        clearInvalidTerminalSession(j);
+        const terminalError = new Error(clean(j && (j.error || j.message || j.reason)) || "Terminal oturumu kapatıldı. Yeni kodla tekrar eşleştirin.");
+        terminalError.status = r.status;
+        terminalError.code = clean(j && (j.code || j.errorCode)) || "TERMINAL_REQUIRED";
+        terminalError.retryable = false;
+        throw terminalError;
       }
       if (!terminalRequest && !authRetried && isAuthSessionFailure(r.status, j)) {
         authRetried = true;
@@ -645,24 +679,10 @@
     updateButton();
   }
   function registerHomeButton(handler) {
-    let b = document.getElementById("suiteHomeButtonV8");
-    if (!b) {
-      b = document.createElement("button");
-      b.id = "suiteHomeButtonV8";
-      b.type = "button";
-      b.innerHTML = '<span aria-hidden="true">⌂</span><b>Orman İO</b>';
-      getDock().appendChild(b);
-      reliablePress(
-        b,
-        handler ||
-          (() => {
-            location.href = "../";
-          }),
-      );
-    }
-    b.classList.add("is-visible");
+    const b = document.getElementById("suiteHomeButtonV8");
+    if (b && b.parentNode) b.parentNode.removeChild(b);
     positionDock();
-    return b;
+    return null;
   }
   function updateButton() {
     if (!floatingSyncAllowed()) {
@@ -1101,7 +1121,7 @@
   }
   function createOfflineDivision(bolmeNo, location, options) {
     const af = activeFolder();
-    if (!af) throw new Error("Önce Orman İO ana menüsünden şeflik seçin");
+    if (!af) throw new Error("Önce Yönetim > Şeflikler bölümünden aktif şefliği seçin");
     const no = clean(bolmeNo), loc = clean(location), key = clean(af.seflik_key || af.seflikKey) || fold(af.seflik);
     if (!no) throw new Error("Bölme numarasını yazın");
     const store = read(K.divisions, {}), ready = read(K.ready, {}), list = Array.isArray(store[key]) ? store[key] : [];
@@ -1213,7 +1233,7 @@
             personalDriveAssetsDeleted: true,
           });
           cleanupResults.push({ result: cleanup, bolmeNo: p.bolmeNo, seflik: p.seflik });
-        }
+        } else throw new Error("Bilinmeyen bekleyen işlem korundu: " + clean(item.type || "tür yok"));
         done++;
       } catch (e) {
         item.error = clean(e.message || e);
@@ -1349,6 +1369,7 @@
           if (cloudSyncAllowed()) {
             backup = await drive("backup_json", {
               seflik, folderSeflik: seflik, appId: "mesaha",
+              idempotencyKey: `mesaha-auto:${fold(seflik)}:${fold(bolme)}:${syncTokenFingerprint(rows)}`,
               fileName: `Mesaha_${fold(seflik)}_${fold(bolme)}_${new Date().toISOString().slice(0, 10)}.json`,
               recordCount: rows.length, totalVolume: rows.reduce((sum, row) => sum + volume(row), 0),
               payload: { schema: "mesaha-suite-v31", app: "mesaha", seflik, bolme, createdAt: now(), records: rows },
@@ -1648,8 +1669,16 @@
         try {
           const dataUrl = await dataUrlFromPhoto(photos[i]);
           if (!dataUrl) throw new Error("Fotoğraf verisi okunamadı");
+          const storedPhotoKey = clean(photos[i] && (photos[i].syncKey || photos[i].sync_key));
+          const storedDriveKey = clean(r.driveFiles[i] && r.driveFiles[i].appProperties && r.driveFiles[i].appProperties.orman_io_photo_key);
+          const photoKey = storedPhotoKey || storedDriveKey || ("photo-" + now() + "-" + Math.random().toString(36).slice(2, 10));
+          if (photos[i] && typeof photos[i] === "object" && !storedPhotoKey) photos[i].syncKey = photoKey;
+          const idempotencyKey = photoKey.indexOf("istif-photo:") === 0 ? photoKey : `istif-photo:${String(r.id)}:${photoKey}`;
           const up = await drive("upload_photo", {
             seflik,
+            recordId: String(r.id),
+            photoIndex: i,
+            idempotencyKey,
             recordDate: r.date || r.recordDate,
             bolmeNo: bolme,
             istifNo: r.istifNo,
@@ -1740,6 +1769,7 @@
           await drive("backup_json", {
             seflik,
             appId: "istif",
+            idempotencyKey: `istif-auto:${fold(seflik)}:${syncTokenFingerprint(payloadRows)}`,
             fileName: `Istif_${fold(seflik)}_${new Date().toISOString().slice(0, 10)}.json`,
             recordCount: payloadRows.length,
             totalVolume: payloadRows.reduce((sum, r) => sum + num(r.ster), 0),
@@ -1938,6 +1968,10 @@
     clearTimeout(autoRetryTimer);
     const delay = Math.max(1200, Math.min(5 * 60 * 1000, delayMs || 15000));
     autoRetryTimer = setTimeout(() => {
+      if (document.hidden) {
+        autoRetryTimer = 0;
+        return;
+      }
       if (syncing || navigator.onLine === false || !isDirty()) return;
       autoRetryAttempt += 1;
       syncAll({ source: "auto-retry" }).catch(() => {});
@@ -2095,7 +2129,17 @@
   }
   function openDriveSetup() {
     try { localStorage.setItem("mesaha_suite_open_drive_v14", "1"); } catch {}
-    const nested = /\/(?:mesaha|istif)\//i.test(location.pathname);
+    const nested = /\/(?:mesaha|istif)(?:\/|$)/i.test(location.pathname);
+    if (nested) {
+      if (navigator.onLine === false) {
+        toast("Drive bağlantısı için internet gerekli.", true);
+        return false;
+      }
+      Promise.resolve().then(() => driveConnect()).then((result) => {
+        if (result && result.connected) toast("Şeflik Google Drive hesabı zaten bağlı.");
+      }).catch((error) => toast(clean(error && error.message || error), true));
+      return true;
+    }
     if (!nested && window.MesahaSuiteUI && typeof window.MesahaSuiteUI.openLogin === "function") {
       window.MesahaSuiteUI.openLogin();
       setTimeout(() => {
@@ -2146,6 +2190,7 @@
     if (!cloudSyncAllowed())
       throw new Error("Drive bağlantısı için Google ile giriş yapın veya terminal koduyla eşleşin");
     const status = await driveStatus();
+    if (status && status.connected) return status;
     if (status && status.isOwner === false)
       throw new Error("Drive hesabını yalnızca şeflik kurucusu bağlayabilir");
     const redirect = location.origin + location.pathname.replace(/[^/]*$/, "");
@@ -2371,7 +2416,7 @@
         isDirty() &&
         cloudSyncAllowed()
       )
-        scheduleAutoRetry(2500, true);
+        scheduleAutoRetry(2500, false);
       else if (!cloudSyncAllowed()) stopGuestSync();
     });
     const mo = new MutationObserver((mutations) => {

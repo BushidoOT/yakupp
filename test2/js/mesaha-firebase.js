@@ -7,7 +7,7 @@
 (function(){
   'use strict';
   var VERSION=(window.MESAHA_VERSION&&window.MESAHA_VERSION.version)||'local';
-  var readyPromise=null, lastOkMs=0, lastError='', authSession=null, supabaseApi=null;
+  var readyPromise=null, refreshPromise=null, lastOkMs=0, lastError='', authSession=null, supabaseApi=null;
   var SESSION_KEY='mesaha_supabase_v500_session';
   var SESSION_BACKUP_KEY='mesaha_supabase_v569_session_backup';
   var DEVICE_KEY='mesaha_supabase_v500_device';
@@ -57,18 +57,42 @@
     try{var s=safeJson(localStorage.getItem(SESSION_KEY)||'',null); if(s&&s.access_token&&Number(s.expires_at||0)*1000>Date.now()+60000){authSession=s;return s;}}catch(e){}
     return null;
   }
+  async function timedFetch(url,options,timeoutMs){
+    options=options||{};
+    var own=!options.signal&&typeof AbortController!=='undefined'?new AbortController():null;
+    var timer=own?setTimeout(function(){try{own.abort()}catch(e){}},Math.max(1000,Number(timeoutMs)||15000)):0;
+    try{return await fetch(url,Object.assign({},options,own?{signal:own.signal}:{}))}
+    catch(e){if(e&&e.name==='AbortError'){var timeoutError=new Error('Sunucu bağlantısı zaman aşımına uğradı.');timeoutError.code='NETWORK_TIMEOUT';throw timeoutError}throw e}
+    finally{if(timer)clearTimeout(timer)}
+  }
   async function authFetch(path,options){
     var c=cfg();
     var headers=Object.assign({apikey:c.anonKey,'Content-Type':'application/json'},(options&&options.headers)||{});
-    var res=await fetch(c.url+path,Object.assign({},options||{},{headers:headers,cache:'no-store'}));
+    var res=await timedFetch(c.url+path,Object.assign({},options||{},{headers:headers,cache:'no-store'}),15000);
     var txt=await res.text(); var json=safeJson(txt,txt);
     if(!res.ok){var err=new Error((json&&json.msg)||(json&&json.message)||String(json||res.statusText||'Auth hata'));err.status=res.status;err.payload=json;throw err;}
     return json;
   }
   async function refreshSession(s){
+    if(refreshPromise)return refreshPromise;
     if(!s || !s.refresh_token) throw new Error('Oturum yenileme bilgisi yok');
-    var j=await authFetch('/auth/v1/token?grant_type=refresh_token',{method:'POST',body:JSON.stringify({refresh_token:s.refresh_token})});
-    saveSession(j); return j;
+    var attemptedToken=clean(s.refresh_token);
+    refreshPromise=(async function(){
+      try{
+        var j=await authFetch('/auth/v1/token?grant_type=refresh_token',{method:'POST',body:JSON.stringify({refresh_token:attemptedToken})});
+        if(!j.refresh_token)j.refresh_token=attemptedToken;
+        return saveSession(j);
+      }catch(e){
+        /* Başka bir sekme yenileme anahtarını daha önce döndürdüyse eski isteğin
+           400 cevabı yeni ve geçerli oturumu silmemelidir. */
+        try{
+          var latest=safeJson(localStorage.getItem(SESSION_KEY)||'',null);
+          if(latest&&latest.access_token&&clean(latest.refresh_token)&&clean(latest.refresh_token)!==attemptedToken){authSession=latest;backupSession(latest);return latest}
+        }catch(_e){}
+        throw e;
+      }
+    })().finally(function(){refreshPromise=null});
+    return refreshPromise;
   }
   function saveSession(j){
     var s={access_token:j.access_token,refresh_token:j.refresh_token,expires_at:j.expires_at,user:j.user||{}};
@@ -121,7 +145,7 @@
   function isGoogle(){return providerNames(authUser()).indexOf('google')>=0;}
   async function signOut(scope){
     var c=cfg(),s=storedSession();scope=scope==='global'?'global':'local';
-    if(s&&s.access_token){try{await fetch(c.url+'/auth/v1/logout?scope='+scope,{method:'POST',cache:'no-store',headers:{apikey:c.anonKey,Authorization:'Bearer '+s.access_token}});}catch(e){}}
+    if(s&&s.access_token){try{await timedFetch(c.url+'/auth/v1/logout?scope='+scope,{method:'POST',cache:'no-store',headers:{apikey:c.anonKey,Authorization:'Bearer '+s.access_token}},10000);}catch(e){}}
     clearSession({preserveBackup:false});readyPromise=null;return true;
   }
   function uid(){var s=authSession||storedSession()||{}; return (s.user&&s.user.id)||'';}
@@ -131,7 +155,7 @@
     var url=c.url+'/rest/v1/'+table+(qs?('?'+qs):'');
     var headers=Object.assign({apikey:c.anonKey,Authorization:'Bearer '+s.access_token,Accept:'application/json'},(opts&&opts.headers)||{});
     if(opts&&opts.body!=null) headers['Content-Type']='application/json';
-    var res=await fetch(url,Object.assign({},opts||{},{headers:headers,cache:'no-store'}));
+    var res=await timedFetch(url,Object.assign({},opts||{},{headers:headers,cache:'no-store'}),20000);
     var text=await res.text(); var json=safeJson(text,text);
     if(!res.ok){var msg=(json&&json.message)||(json&&json.msg)||String(json||res.statusText||'Supabase hata'); throw new Error(msg);}
     return json;

@@ -508,7 +508,7 @@
     return Math.abs(Number(length || 0) - expected) < 0.0001;
   }
   function paperLengths(settings) {
-    return String(settings && settings.paperLengthRules || "2-2.5")
+    return String(settings && settings.paperLengthRules || "")
       .replace(/[–—;\s]+/g, "-")
       .split("-")
       .map(function (value) { return Number(String(value).replace(",", ".")); })
