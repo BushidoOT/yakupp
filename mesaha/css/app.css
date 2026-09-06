@@ -1,7 +1,6 @@
-/* source: mesaha-suite-overlay-clean-v10 */
-html[data-suite-managed="1"] #googleAuthOverlayV548,
-      html[data-suite-managed="1"] #telegramSupportModalV429,
-      html[data-suite-managed="1"] .google-auth-v548,
+/* source: mesaha-suite-overlay-clean-v86
+   Google giriş penceresi suite kabuğunun aktif giriş kapısıdır; gizlenmez. */
+html[data-suite-managed="1"] #telegramSupportModalV429,
       html[data-suite-managed="1"] .app-loading-overlay,
       html[data-suite-managed="1"] .startup-loading-overlay {display:none!important;pointer-events:none!important;visibility:hidden!important;}
 

@@ -1,20 +1,20 @@
 (function (root) {
   "use strict";
   const DATA = /*MESAHA_RELEASE_DATA_START*/{
-  "build": 85,
-  "version": "85.0.0",
+  "build": 86,
+  "version": "86.0.0",
   "channel": "stable",
-  "releasedAt": "2026-09-06T12:20:00+03:00",
-  "assetToken": "orman-io-stable-20260906-v85",
-  "cacheName": "orman-io-shell-stable-20260906-v85",
+  "releasedAt": "2026-09-06T12:45:00+03:00",
+  "assetToken": "orman-io-stable-20260906-v86",
+  "cacheName": "orman-io-shell-stable-20260906-v86",
   "apps": {
     "suite": {
       "label": "Orman İO",
-      "version": "85.0.0"
+      "version": "86.0.0"
     },
     "mesaha": {
       "label": "Mesaha İO",
-      "version": "6.24"
+      "version": "6.25"
     },
     "istif": {
       "label": "İstif İO",
@@ -22,10 +22,10 @@
     },
     "admin": {
       "label": "Orman İO Yönetim",
-      "version": "85.0.0"
+      "version": "86.0.0"
     }
   },
-  "description": "V85 giriş düzeltmesi: giriş yapmamış kullanıcıyı ana dizin ile Mesaha kabuğu arasında sürekli yönlendiren döngü kaldırıldı; Google ve terminal giriş ekranı sayfada kararlı biçimde açılır; giriş tamamlanınca köprü yenileme gerektirmeden aktif oturuma geçer."
+  "description": "V86 giriş ekranı düzeltmesi: suite görünümündeki eski CSS kuralının Google giriş penceresini zorla gizlemesi kaldırıldı; girişsiz kullanıcıda Google ve terminal seçenekleri görünür; eski önbellek CSS'i gelse bile giriş katmanı kendini görünür tutar."
 }/*MESAHA_RELEASE_DATA_END*/;
   const APP_NAMES = DATA.apps || {};
   const SCRIPT_URL = (() => {
