@@ -598,7 +598,7 @@
         }
         async function createTemporaryShareLinkV65(built) {
           if (navigator.onLine === false) throw new Error("Paylaşım bağlantısı için internet bağlantısı gerekiyor.");
-          const api = window.MesahaSuiteSync || window.MesahaSuiteSyncV31 || window.MesahaSuiteSyncV28;
+          const api = window.MesahaSuiteSync || window.MesahaSuiteSyncV31 || null;
           if (!api || typeof api.edge !== "function") throw new Error("Güvenli paylaşım servisi hazır değil.");
           toast("Güvenli paylaşım bağlantısı hazırlanıyor…");
           return await api.edge("xls_share_link_create", {

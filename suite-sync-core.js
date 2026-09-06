@@ -173,7 +173,9 @@
   function cloudSyncAllowed() {
     const shared = window.OrmanSuiteIdentity;
     if (shared && typeof shared.cloudAllowed === "function") return shared.cloudAllowed();
-    return !!identity().google;
+    if (identity().google) return true;
+    const auth = terminalAuth();
+    return !!clean(auth.terminalCode || auth.terminalToken);
   }
   let transientRequestTimeoutMs = 0;
   let transientNetworkAbort = false;
@@ -271,10 +273,29 @@
     return true;
   }
   function terminalAuth() {
-    /* V91: terminal eşleşmesi yalnız yerel kimliktir; suite bulut isteklerine taşınmaz. */
-    return {};
+    const shared = window.OrmanSuiteIdentity;
+    if (shared && typeof shared.terminalAuthPayload === "function") {
+      try { return shared.terminalAuthPayload() || {}; } catch (_) {}
+    }
+    const t = terminal();
+    if (!(t && t.active && clean(t.source) === "pair_code")) return {};
+    const deviceId = clean(t.deviceId || t.device_id || t.terminalDeviceId);
+    return {
+      terminalCode: clean(t.terminalCode || t.code),
+      terminalToken: clean(t.terminalToken || t.token),
+      terminalPairedUserId: clean(t.pairedUserId || t.owner_user_id),
+      terminalPairedEmail: clean(t.pairedEmail || t.owner_email),
+      terminalDeviceId: deviceId,
+      deviceId
+    };
   }
 
+  function captureRuntime(kind, error, source) {
+    try {
+      const runtime = window.OrmanIoRuntimeStability || window.OrmanIoRuntimeStabilityV66;
+      if (runtime && typeof runtime.capture === "function") runtime.capture(kind || "sync", error, { source: clean(source) });
+    } catch (_) {}
+  }
   function networkError(message, code) {
     const error = new Error(message);
     error.code = code || "NETWORK_ERROR";
@@ -371,8 +392,8 @@
   }
   async function post(url, action, data) {
     if (!cloudSyncAllowed()) {
-      const error = new Error("Bu bulut işlemi için Google ile giriş gerekli.");
-      error.code = "GOOGLE_REQUIRED";
+      const error = new Error("Bu bulut işlemi için Google hesabı veya kodla eşleşmiş terminal gerekir.");
+      error.code = "CLOUD_IDENTITY_REQUIRED";
       error.retryable = false;
       throw error;
     }
@@ -447,6 +468,7 @@
     error.detail = clean(j && j.detail || "");
     error.requestId = clean(j && j.requestId || "");
     error.retryAfter = num(j && (j.retry_after || j.retryAfter));
+    captureRuntime(url === DRIVE ? "drive" : "edge", error, clean(action));
     throw error;
   }
   const edge = (action, data) => post(SMOOTH, action, contextualize(action, data, false));
@@ -2521,9 +2543,15 @@
   }
   function openDriveSetup() {
     try { localStorage.setItem("mesaha_suite_open_drive_v14", "1"); } catch {}
+    const id = identity();
     if (!cloudSyncAllowed()) {
       requestGoogleLogin("drive");
       toast("Drive bağlantısı için önce Google ile giriş yapın.", true);
+      return false;
+    }
+    if (!id.google) {
+      requestGoogleLogin("drive-oauth");
+      toast("Yeni Drive hesabı bağlamak için kurucunun Google hesabıyla giriş yapması gerekir.", true);
       return false;
     }
     const nested = /\/(?:mesaha|istif)(?:\/|$)/i.test(location.pathname);
@@ -2577,26 +2605,31 @@
     if (status && status.connected) return status;
     const localOwner = folderIsCreator(activeFolder());
     const memberWithoutOwnerDrive = status && status.isOwner !== true && !localOwner;
+    const directGoogle = identity().google === true;
     const error = new Error(
       status && status.googleRequired
         ? "Drive bağlantısı için önce Google ile giriş yapın"
         : memberWithoutOwnerDrive
           ? "Şeflik kurucusu Google Drive hesabını henüz bağlamadı"
-          : "Şeflik Google Drive hesabı bağlı değil",
+          : !directGoogle
+            ? "Şeflik Drive hesabı bağlı değil. Kurucu Drive bağlantısını Google hesabının açık olduğu cihazdan yapmalı"
+            : "Şeflik Google Drive hesabı bağlı değil",
     );
     error.code = status && status.googleRequired
       ? "GOOGLE_REQUIRED"
       : memberWithoutOwnerDrive
         ? "OWNER_DRIVE_NOT_CONNECTED"
         : "DRIVE_NOT_CONNECTED";
-    if (opts.redirect !== false && !memberWithoutOwnerDrive) openDriveSetup();
+    if (opts.redirect !== false && !memberWithoutOwnerDrive && identity().google === true) openDriveSetup();
     throw error;
   }
   async function driveConnect() {
     const id = identity();
-    if (!cloudSyncAllowed()) {
+    // OAuth yalnız doğrudan Google oturumunda başlatılır. Terminal bağlı Drive'ı
+    // kullanabilir ancak Google tokenı terminale taşınmaz ve yeni hesap bağlayamaz.
+    if (!id.google) {
       requestGoogleLogin("drive-connect");
-      const error = new Error("Drive bağlantısı için Google ile giriş yapın");
+      const error = new Error("Yeni Drive bağlantısı için şeflik kurucusunun Google hesabıyla giriş yapması gerekir");
       error.code = "GOOGLE_REQUIRED";
       throw error;
     }
@@ -2667,8 +2700,8 @@
         toast("Google Drive bağlantısı iptal edildi: " + message, true);
         return { ok: false, cancelled: true, error: message };
       }
-      if (!cloudSyncAllowed()) {
-        const error = new Error("Drive bağlantısını tamamlamak için Google oturumu gerekli");
+      if (identity().google !== true) {
+        const error = new Error("Drive bağlantısını tamamlamak için doğrudan Google oturumu gerekli");
         error.code = "GOOGLE_REQUIRED";
         throw error;
       }
@@ -2705,8 +2738,8 @@
   async function driveDisconnect() {
     if (!cloudSyncAllowed()) {
       requestGoogleLogin("drive-disconnect");
-      const error = new Error("Drive bağlantısını kesmek için Google ile giriş yapın");
-      error.code = "GOOGLE_REQUIRED";
+      const error = new Error("Drive bağlantısını kesmek için Google hesabı veya kurucuya bağlı terminal gerekir");
+      error.code = "CLOUD_IDENTITY_REQUIRED";
       throw error;
     }
     const ctx = folderContext();
@@ -2744,7 +2777,7 @@
   async function createMesahaBackupUnlocked(options) {
     options = options || {};
     const id = identity(), af = activeFolder();
-    if (!cloudSyncAllowed()) { openDriveSetup(); throw new Error("Drive yedeği için Google ile giriş yapın"); }
+    if (!cloudSyncAllowed()) { openDriveSetup(); throw new Error("Drive yedeği için Google hesabı veya kodla eşleşmiş terminal gerekir"); }
     await ensureDriveConnected({ redirect: true });
     const seflik = clean((af && af.seflik) || id.seflik), selected = clean(options.bolmeNo || "");
     if (!seflik) throw new Error("Önce şeflik seçin");
@@ -2788,7 +2821,7 @@
 
   async function createSuiteBackupUnlocked() {
     const id = identity();
-    if (!cloudSyncAllowed()) { openDriveSetup(); throw new Error("Drive yedeği için Google ile giriş yapın"); }
+    if (!cloudSyncAllowed()) { openDriveSetup(); throw new Error("Drive yedeği için Google hesabı veya kodla eşleşmiş terminal gerekir"); }
     await ensureDriveConnected({ redirect: true });
     const mesaha = await currentMesahaRecordsReady(),
       istif = (await idbAll("records")).map((r) => ({
@@ -2998,9 +3031,10 @@
     const dockRoot = document.getElementById("app") || document.body;
     if (dockRoot)
       mo.observe(dockRoot, { childList: true, subtree: true });
-    // Kaydırma, klavye ve görünüm olayları zaten anlık konumlandırır.
-    // Seyrek kontrol yalnızca tarayıcıların kaçırdığı alt menü değişiklikleri içindir.
-    setInterval(queueDockPosition, 2500);
+    // V93: sürekli 2,5 sn timer kaldırıldı. Resize/visualViewport/mutation/focus
+    // olayları yeterli; uygulama yeniden görünür olduğunda bir kez doğrulanır.
+    window.addEventListener("pageshow", queueDockPosition, { passive: true });
+    document.addEventListener("visibilitychange", () => { if (!document.hidden) queueDockPosition(); }, { passive: true });
   }
 
   const api = {

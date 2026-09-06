@@ -87,7 +87,9 @@
     })());
   }
   function terminalAuthPayload() {
-    if (!pairedTerminal()) return {};
+    // Doğrudan Google oturumu varsa her zaman Google kimliği önceliklidir.
+    // Eski terminal eşleşmesi localStorage'da kalsa bile terminal anahtarı sunucuya gönderilmez.
+    if (validSession(session()) || !pairedTerminal()) return {};
     var value = terminal();
     return {
       terminalCode: clean(value.terminalCode || value.code || value.p_terminal_code),
@@ -99,8 +101,8 @@
     };
   }
   function authType() {
-    /* V91: Google oturumu her zaman terminal eşleşmesinden önceliklidir.
-       Terminal modu yerel kullanım için korunur; şeflik/bulut yetkisi vermez. */
+    /* V93: Google oturumu her zaman terminal eşleşmesinden önceliklidir.
+       Google yoksa kodla eşleşmiş terminal, bağlı hesabın sunucuda doğrulanan uygulama yetkilerini devralır. */
     if (validSession(session())) return "google";
     if (pairedTerminal()) return "terminal";
     if (validTerminal(terminal())) return "guest";
@@ -109,7 +111,10 @@
     return "none";
   }
   function cloudAllowed() {
-    return authType() === "google";
+    var type = authType();
+    // V93: kodla eşleşmiş terminal, ana Google hesabının uygulama yetkilerini
+    // terminal cihaz anahtarıyla devralır. Google access/refresh tokenı terminale kopyalanmaz.
+    return type === "google" || type === "terminal";
   }
   function activeFolder() {
     var active = read(K.active, {}) || {};
@@ -213,7 +218,7 @@
   }
 
   root.OrmanSuiteIdentity = Object.freeze({
-    version: "1.0.0",
+    version: "1.2.0",
     keys: K,
     clean: clean,
     fold: fold,

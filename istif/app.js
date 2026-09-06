@@ -662,20 +662,7 @@ function wait(ms) {
 }
 
 function suiteSyncApi() {
-  return (
-    window.MesahaSuiteSync || window.MesahaSuiteSyncV28 || window.MesahaSuiteSyncV27 ||
-    window.MesahaSuiteSyncV26 ||
-    window.MesahaSuiteSyncV25 ||
-    window.MesahaSuiteSyncV24 ||
-    window.MesahaSuiteSyncV14 ||
-    window.MesahaSuiteSyncV13 ||
-    window.MesahaSuiteSyncV12 ||
-    window.MesahaSuiteSyncV11 ||
-    window.MesahaSuiteSyncV10 ||
-    window.MesahaSuiteSyncV9 ||
-    window.MesahaSuiteSyncV8 ||
-    null
-  );
+  return window.MesahaSuiteSync || window.MesahaSuiteSyncV31 || null;
 }
 
 function showBoot(
@@ -1106,7 +1093,7 @@ function hasSharedCloudIdentity() {
   try {
     if (window.OrmanSuiteIdentity?.cloudAllowed) return window.OrmanSuiteIdentity.cloudAllowed();
   } catch {}
-  return !!clean(readSharedSession()?.access_token);
+  return !!clean(readSharedSession()?.access_token) || isPairedTerminal();
 }
 function hasGoogleSession() {
   return !!clean(readSharedSession()?.access_token);
@@ -1118,9 +1105,14 @@ function redirectToGoogleLogin() {
   }, 80);
   return false;
 }
-function requireGoogleCloud() {
+function requireCloudAccess() {
+  return hasSharedCloudIdentity() ? true : redirectToGoogleLogin();
+}
+function requireGoogleOAuth() {
   return hasGoogleSession() ? true : redirectToGoogleLogin();
 }
+// Eski çağrılar için güvenli alias: bulut erişimi Google veya eşleşmiş terminal olabilir.
+function requireGoogleCloud() { return requireCloudAccess(); }
 function terminalAuthPayload() {
   try {
     if (window.OrmanSuiteIdentity?.terminalAuthPayload) return window.OrmanSuiteIdentity.terminalAuthPayload();
@@ -1267,6 +1259,13 @@ function hydrateLocalSharedIdentity() {
   }
 }
 
+function captureRuntimeError(kind, error, source = "") {
+  try {
+    const runtime = window.OrmanIoRuntimeStability || window.OrmanIoRuntimeStabilityV66;
+    if (runtime && typeof runtime.capture === "function") runtime.capture(kind || "istif", error, { source: clean(source) });
+  } catch {}
+}
+
 function isSharedAuthFailure(status, body) {
   const code = clean(body?.code || body?.errorCode);
   const message = clean(body?.error || body?.reason || body?.message);
@@ -1275,14 +1274,37 @@ function isSharedAuthFailure(status, body) {
     /oturum doğrulanamadı|oturum geçersiz|jwt|token.*(?:expired|invalid|geçersiz|süresi)/i.test(message);
 }
 
+function isTerminalAuthFailure(status, body) {
+  const code = clean(body?.code || body?.errorCode).toUpperCase();
+  const message = clean(body?.error || body?.reason || body?.message);
+  return !!(body && (body.terminal_required === true || body.terminal_revoked === true)) ||
+    (Number(status) === 403 && (
+      ["TERMINAL_REQUIRED", "TERMINAL_TOKEN_INVALID", "TERMINAL_DEVICE_MISMATCH", "TERMINAL_USER_MISMATCH", "TERMINAL_EMAIL_MISMATCH"].includes(code) ||
+      /terminal.*(eşleştirme|güvenlik anahtarı|farklı cihaz|geçersiz|kapatıldı|revoked|required)/i.test(message)
+    ));
+}
+
+function clearInvalidPairedTerminal(body) {
+  try {
+    localStorage.removeItem(SHARED_TERMINAL_KEY);
+    localStorage.removeItem(SHARED_TERMINAL_OLD_KEY);
+  } catch {}
+  hydrateLocalSharedIdentity();
+  try {
+    window.dispatchEvent(new CustomEvent("mesaha:terminal-session-revoked", {
+      detail: { reason: clean(body?.error || body?.reason || body?.message) }
+    }));
+  } catch {}
+}
+
 async function edgeCall(action, payload = {}, retried = false) {
-  const suiteApi = window.MesahaSuiteSync || window.MesahaSuiteSyncV31 || window.MesahaSuiteSyncV28;
+  const suiteApi = suiteSyncApi();
   if (!retried && suiteApi && typeof suiteApi.edge === "function") return await suiteApi.edge(action, payload || {});
   const session = readSharedSession();
-  const terminalPayload = terminalAuthPayload();
-  if (!session?.access_token && !isPairedTerminal())
-    throw new Error("Google ile giriş gerekli.");
-  const terminalRequest = isPairedTerminal();
+  const terminalRequest = !clean(session?.access_token) && isPairedTerminal();
+  const terminalPayload = terminalRequest ? terminalAuthPayload() : {};
+  if (!clean(session?.access_token) && !terminalRequest)
+    throw new Error("Google hesabı veya terminal kodu gerekli.");
   const token = terminalRequest ? SUPABASE_ANON_KEY : (session?.access_token || SUPABASE_ANON_KEY);
   const response = await fetch(EDGE_URL, {
     method: "POST",
@@ -1294,12 +1316,20 @@ async function edgeCall(action, payload = {}, retried = false) {
     },
     body: JSON.stringify({
       action,
-      source: "mesaha-istif-v51-suite",
+      source: "mesaha-istif-v93-suite",
       ...terminalPayload,
       ...payload,
     }),
   });
   const body = await response.json().catch(() => ({}));
+  if (terminalRequest && isTerminalAuthFailure(response.status, body)) {
+    clearInvalidPairedTerminal(body);
+    const error = new Error(clean(body?.error || body?.reason || body?.message) || "Terminal oturumu kapatıldı. Yeni kodla tekrar eşleştirin.");
+    error.status = response.status;
+    error.code = clean(body?.code || body?.errorCode) || "TERMINAL_REQUIRED";
+    error.retryable = false;
+    throw error;
+  }
   if (
     isSharedAuthFailure(response.status, body) &&
     !terminalRequest &&
@@ -1316,22 +1346,27 @@ async function edgeCall(action, payload = {}, retried = false) {
     const error = new Error(body.error || body.reason || `Sunucu hatası ${response.status}`);
     error.status = response.status;
     error.payload = body;
+    captureRuntimeError("istif-edge", error, action);
     throw error;
   }
   return body;
 }
 
 async function bridgeCall(action, payload = {}, retried = false) {
-  const session = readSharedSession();
-  if (!clean(session?.access_token)) {
-    const error = new Error("Bu bulut işlemi için Google ile giriş gerekli.");
-    error.code = "GOOGLE_REQUIRED";
+  let session = readSharedSession();
+  const terminalRequest = !clean(session?.access_token) && isPairedTerminal();
+  const terminalPayload = terminalRequest ? terminalAuthPayload() : {};
+  if (!clean(session?.access_token) && !terminalRequest) {
+    const error = new Error("Bu bulut işlemi için Google hesabı veya terminal kodu gerekir.");
+    error.code = "CLOUD_IDENTITY_REQUIRED";
     throw error;
   }
-  /* Google aktifken eski terminal eşleşmesi hiçbir isteğin kimliğini gölgeleyemez. */
-  const terminalPayload = {};
-  const terminalRequest = false;
-  const token = session.access_token;
+  /* V93: Google varsa Google önceliklidir; kodlu terminalde yalnız terminal cihaz anahtarı
+     gönderilir. Ana hesabın Google access/refresh tokenı terminal cihaza kopyalanmaz. */
+  if (!terminalRequest) {
+    try { session = await ensureSharedSession(false); } catch {}
+  }
+  const token = terminalRequest ? SUPABASE_ANON_KEY : clean(session?.access_token || SUPABASE_ANON_KEY);
   const response = await fetch(DRIVE_BRIDGE_URL, {
     method: "POST",
     cache: "no-store",
@@ -1342,12 +1377,20 @@ async function bridgeCall(action, payload = {}, retried = false) {
     },
     body: JSON.stringify({
       action,
-      source: "mesaha-istif-v50-suite",
+      source: "mesaha-istif-v93-suite",
       ...terminalPayload,
       ...payload,
     }),
   });
   const body = await response.json().catch(() => ({}));
+  if (terminalRequest && isTerminalAuthFailure(response.status, body)) {
+    clearInvalidPairedTerminal(body);
+    const error = new Error(clean(body?.error || body?.reason || body?.message) || "Terminal oturumu kapatıldı. Yeni kodla tekrar eşleştirin.");
+    error.status = response.status;
+    error.code = clean(body?.code || body?.errorCode) || "TERMINAL_REQUIRED";
+    error.retryable = false;
+    throw error;
+  }
   if (
     isSharedAuthFailure(response.status, body) &&
     !terminalRequest &&
@@ -1363,6 +1406,7 @@ async function bridgeCall(action, payload = {}, retried = false) {
     error.code = clean(body.code || body.errorCode);
     error.retryable = body.retryable === true;
     error.payload = body;
+    captureRuntimeError("istif-drive", error, action);
     throw error;
   }
   return body;
@@ -1771,7 +1815,7 @@ async function syncSharedContext({ manual = false } = {}) {
     render();
     return;
   }
-  if (manual && !hasGoogleSession()) {
+  if (manual && !hasSharedCloudIdentity()) {
     hydrateLocalSharedIdentity();
     refreshCurrentMembers();
     render();
@@ -2593,8 +2637,9 @@ function renderDriveCard() {
     ${connected ? `<div class="drive-details"><div><span>Şeflik</span><b>${esc(displaySeflik())}</b></div><div><span>Bağlı hesap</span><b>${esc(state.drive.ownerEmail || state.drive.ownerName || "Kurucu hesabı")}</b></div><div><span>Klasör</span><b>${esc(state.drive.folderName || "Orman İO")}</b></div></div>` : ""}
     ${renderDriveQuota()}
     <div class="drive-actions">
-      ${isOwner && !connected ? `<button class="btn primary wide" data-action="connect-drive">${icon("link", 20)} Google Hesabı ile Bağla</button>` : ""}
-      ${isOwner && connected ? `<button class="btn primary" data-action="connect-drive">${icon("refresh", 19)} Bağlantıyı Yenile</button><button class="btn danger-soft" data-action="disconnect-drive">Bağlantıyı Kaldır</button>` : ""}
+      ${isOwner && !connected && hasGoogleSession() ? `<button class="btn primary wide" data-action="connect-drive">${icon("link", 20)} Google Hesabı ile Bağla</button>` : ""}
+      ${isOwner && connected ? `${hasGoogleSession() ? `<button class="btn primary" data-action="connect-drive">${icon("refresh", 19)} Bağlantıyı Yenile</button>` : ""}<button class="btn danger-soft" data-action="disconnect-drive">Bağlantıyı Kaldır</button>` : ""}
+      ${isOwner && !connected && isPairedTerminal() ? `<div class="managed-pill">Yeni Drive bağlantısı için kurucu Google oturumlu cihazı kullanmalı</div>` : ""}
       ${!isOwner && connected ? `<div class="managed-pill">${icon("check", 17)} Kurucu tarafından yönetiliyor</div>` : ""}
     </div>
     <p class="drive-security">Kurucunun Google erişim anahtarı üyelerin telefonlarında tutulmaz. Üyeler yalnızca kendi fotoğrafları için güvenli, tek kullanımlık Drive yükleme oturumu alır.</p>
@@ -2603,10 +2648,11 @@ function renderDriveCard() {
 
 function renderSettings() {
   const loggedIn = state.auth.status !== "signed_out";
+  const pairedTerminalLogin = !hasGoogleSession() && isPairedTerminal();
   return `${head("Ayarlar", "Hesap, şeflik ve Drive", { back: true })}
     <section class="account-card card">
       <div class="account-avatar">${state.auth.avatarUrl ? `<img src="${esc(state.auth.avatarUrl)}" alt="">` : icon("user", 27)}</div>
-      <div class="account-copy"><small>${loggedIn ? "Google hesabı bağlı" : "Google girişi gerekli"}</small><strong>${esc(state.auth.name || state.auth.email || "Mesaha İO hesabı")}</strong><span>${esc(state.auth.email || authSummary())}</span></div>
+      <div class="account-copy"><small>${pairedTerminalLogin ? "Terminal kodu • hesap yetkileri aktif" : (loggedIn ? "Google hesabı bağlı" : "Google girişi gerekli")}</small><strong>${esc(state.auth.name || state.auth.email || "Mesaha İO hesabı")}</strong><span>${esc(state.auth.email || authSummary())}</span></div>
       <span class="status-dot ${state.auth.status === "connected" ? "online" : ""}"></span>
     </section>
     <form id="institutionSettingsForm" class="settings-card card">
@@ -2667,7 +2713,7 @@ function bindDynamic() {
   app
     .querySelector('[data-action="connect-drive"]')
     ?.addEventListener("click", () => {
-      if (!requireGoogleCloud()) return;
+      if (!requireGoogleOAuth()) return;
       beginDriveConnection();
     });
   app
@@ -3498,7 +3544,7 @@ async function beginDriveConnection() {
     toast("Drive bağlantısını yalnızca şeflik kurucusu yapabilir.", "bad");
     return;
   }
-  if (!requireGoogleCloud()) return;
+  if (!requireGoogleOAuth()) return;
   if (!navigator.onLine)
     return toast("Drive bağlantısı için internet gerekli.", "bad");
   try {
@@ -3535,6 +3581,7 @@ async function handleDriveOAuthCallback() {
     return true;
   }
   try {
+    if (!hasGoogleSession()) throw new Error("Drive bağlantısını tamamlamak için doğrudan Google oturumu gerekli.");
     showDialog(
       '<h3>Google Drive Bağlanıyor</h3><p>Şeflik klasörü hazırlanıyor. Bu ekranı kapatmayın.</p><div class="progress"><span style="width:65%"></span></div>',
     );
@@ -3871,7 +3918,7 @@ async function supabaseUpsertRecord(record) {
 }
 
 async function syncAll() {
-  if (!hasGoogleSession()) {
+  if (!hasSharedCloudIdentity()) {
     redirectToGoogleLogin();
     return;
   }

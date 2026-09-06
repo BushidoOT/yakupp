@@ -6,6 +6,8 @@
       name="viewport"
       content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no,interactive-widget=resizes-content"
     />
+    <meta http-equiv="Content-Security-Policy" content="object-src 'none'; base-uri 'self'" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
     <meta name="theme-color" content="#12683f" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />
@@ -15,7 +17,7 @@
     <link rel="manifest" href="./manifest.json" />
     <link rel="icon" href="../assets/icon-192.png" type="image/png" />
     <link rel="apple-touch-icon" href="../assets/icon-192.png" />
-    <link rel="stylesheet" href="./styles.css?v=92.0.0" />
+    <link rel="stylesheet" href="./styles.css?v=93.0.0" />
   </head>
   <body>
     <div id="bootOverlay" class="boot-overlay show" role="status" aria-live="polite">
@@ -79,17 +81,17 @@
     </div>
 
     <section id="printArea" class="print-area" aria-hidden="true"></section>
-    <script src="../release.js"></script>
-    <script src="../suite-runtime-stabilizer.js"></script>
+    <script src="../release.js?v=93.0.0"></script>
+    <script src="../suite-runtime-stabilizer.js?v=93.0.0"></script>
     <script>window.MesahaRelease && window.MesahaRelease.use("istif");</script>
     <script src="../suite-audio.js"></script>
-    <script src="../suite-identity.js?v=92.0.0"></script>
-    <script src="../suite-security.js"></script>
-    <script src="../suite-offline-store.js?v=92.0.0"></script>
-    <script src="../suite-sync-core.js?v=92.0.0"></script>
+    <script src="../suite-identity.js?v=93.0.0"></script>
+    <script src="../suite-security.js?v=93.0.0"></script>
+    <script src="../suite-offline-store.js?v=93.0.0"></script>
+    <script src="../suite-sync-core.js?v=93.0.0"></script>
     <script src="./ios-stability.js"></script>
-    <script src="./app.js?v=92.0.0" defer></script>
-    <script src="./cloud-on-demand.js?v=92.0.0" defer></script>
+    <script src="./app.js?v=93.0.0" defer></script>
+    <script src="./cloud-on-demand.js?v=93.0.0" defer></script>
     <script src="./suite-bridge.js" defer></script>
   </body>
 </html>

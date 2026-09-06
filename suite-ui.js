@@ -19,7 +19,7 @@
     canDeleteBackups = true,
     lastDriveStatus = null;
   function api() {
-    return window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8;
+    return window.MesahaSuiteSync || window.MesahaSuiteSyncV31 || null;
   }
   function toast(m, b) {
     window.MesahaSuiteUI && window.MesahaSuiteUI.toast

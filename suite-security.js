@@ -9,7 +9,7 @@
   var TERMINAL_KEYS = ["mesaha_terminal_local_mode_v556", "mesaha_terminal_local_mode_v557"];
   var BLOCK_CACHE_KEY = "mesaha_suite_security_block_v26";
   var SHARED_DEVICE_KEY = "mesaha_suite_security_device_v26";
-  var CHECK_INTERVAL = 20000;
+  var CHECK_INTERVAL = 60000;
   var running = false;
   var refreshPromise = null;
   var lastCheck = 0;
@@ -193,7 +193,7 @@
         terminalPayload = window.OrmanSuiteIdentity.terminalAuthPayload() || {};
       }
     } catch (_) {}
-    if (!clean(terminalPayload.terminalCode || terminalPayload.terminalToken) && t && t.active && t.source === "pair_code") {
+    if (!clean(s.access_token) && !clean(terminalPayload.terminalCode || terminalPayload.terminalToken) && t && t.active && t.source === "pair_code") {
       terminalPayload = {
         terminalCode: clean(t.terminalCode),
         terminalToken: clean(t.terminalToken),
@@ -203,7 +203,8 @@
         deviceId: clean(t.deviceId || t.terminalDeviceId)
       };
     }
-    var terminalRequest = !!clean(terminalPayload.terminalCode || terminalPayload.terminalToken);
+    var terminalRequest = !clean(s.access_token) && !!clean(terminalPayload.terminalCode || terminalPayload.terminalToken);
+    if (!terminalRequest) terminalPayload = {};
     return { token: terminalRequest ? ANON_KEY : (clean(s.access_token) || ANON_KEY), terminalPayload: terminalPayload };
   }
 
@@ -225,7 +226,7 @@
         headers: { "Content-Type": "application/json", apikey: ANON_KEY, Authorization: "Bearer " + auth.token },
         body: JSON.stringify(Object.assign({
           action: "security_check",
-          source: "suite-security-v26",
+          source: "suite-security-v93",
           deviceId: currentDeviceId(),
           deviceIds: ids,
           appPath: location.pathname || ""
@@ -277,7 +278,7 @@
   window.addEventListener("mesaha:google-access-approved", function () { setTimeout(function () { check(true); }, 100); });
   window.addEventListener("mesaha:terminal-mode-enabled", function () { setTimeout(function () { check(true); }, 100); });
 
-  window.MesahaSuiteSecurityV26 = { check: check, showBlocked: showBlocked, hideBlocked: hideBlocked, version: "26.0.0" };
+  window.MesahaSuiteSecurityV26 = { check: check, showBlocked: showBlocked, hideBlocked: hideBlocked, version: "93.0.0" };
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot, { once: true });
   else boot();
 })();

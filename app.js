@@ -276,7 +276,9 @@
     return authType() !== "none";
   }
   function cloudIdentity() {
-    return authType() === "google";
+    const shared = window.OrmanSuiteIdentity;
+    if (shared && typeof shared.cloudAllowed === "function") return shared.cloudAllowed();
+    return authType() === "google" || authType() === "terminal";
   }
   function googleAuthApi() {
     return window.MesahaGoogleAuthV548 || window.MesahaGoogleAuthV648 || null;
@@ -639,7 +641,7 @@
     let remoteIstif = [], remoteIstifAuthoritative = false;
     if (navigator.onLine !== false) {
       try {
-        const api = window.MesahaSuiteSync || window.MesahaSuiteSyncV28 || window.MesahaSuiteSyncV27 || window.MesahaSuiteSyncV26 || window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10;
+        const api = suiteSyncApi();
         if (api && typeof api.drive === "function" && af) {
           const out = await api.drive("record_list", {
             seflik,
@@ -837,8 +839,8 @@
     });
     write(K.pendingOps, pendingOps);
     try {
-      window.MesahaSuiteSyncV8 &&
-        (window.MesahaSuiteSyncV10||window.MesahaSuiteSyncV9||window.MesahaSuiteSyncV8).markDirty("suite", { type: type });
+      const api = suiteSyncApi();
+      if (api && typeof api.markDirty === "function") api.markDirty("suite", { type: type });
     } catch {}
     updatePendingBadge();
   }
@@ -849,13 +851,13 @@
       toast(
         cloudIdentity()
           ? `${label} cihazda uygulandı. İnternet geldiğinde senkronize edilecek.`
-          : `${label} cihazda uygulandı. Google ile giriş yapılana kadar yalnızca cihazda kalır.`,
+          : `${label} cihazda uygulandı. Google hesabı veya kodla eşleşmiş terminal olmadan yalnızca cihazda kalır.`,
       );
       return;
     }
     destructiveSyncTimer = setTimeout(async () => {
       try {
-        const api = window.MesahaSuiteSync || window.MesahaSuiteSyncV28 || window.MesahaSuiteSyncV27 || window.MesahaSuiteSyncV26 || window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8;
+        const api = suiteSyncApi();
         if (api && typeof api.syncAll === "function") await api.syncAll({ source: "delete-auto" });
         else await sendPendingToServer();
         toast(`${label} sunucuya da anında işlendi.`);
@@ -1138,7 +1140,7 @@
     );
   }
   async function edge(action, data = {}) {
-    const suiteApi = window.MesahaSuiteSync || window.MesahaSuiteSyncV31 || window.MesahaSuiteSyncV28;
+    const suiteApi = suiteSyncApi();
     if (suiteApi && typeof suiteApi.edge === "function") {
       const result = await suiteApi.edge(action, data || {});
       try { applyCanonicalFolderContext(result); } catch (_) {}
@@ -1602,7 +1604,7 @@
         t === "google"
           ? "Google hesabı bağlı"
           : t === "terminal"
-            ? "Terminal kodu ile bağlı"
+            ? "Bağlı hesabın yetkileri aktif"
             : t === "guest"
               ? "Yerel misafir modu"
               : "Google hesabı ile giriş gerekli");
@@ -1670,7 +1672,7 @@
       type === "google"
         ? "Google hesabı"
         : type === "terminal"
-          ? "Kodla eşleşmiş terminal"
+          ? "Kodla eşleşmiş terminal • hesap yetkileri aktif"
           : type === "cached"
             ? "Kayıtlı Google profili • yeniden giriş gerekli"
             : "Yerel misafir";
@@ -1746,7 +1748,7 @@
     if (canManageFolder(folder)) return toast("Şeflik kurucusu şeflikten çıkamaz. Gerekirse Şefliği Sil işlemini kullanın.", true);
     if (!cloudIdentity() || navigator.onLine === false) return toast("Şeflikten çıkmak için internet bağlantısı gerekir.", true);
     const key = clean(folder.seflik_key || folder.seflikKey) || stableKey(folder.seflik);
-    const syncApi = window.MesahaSuiteSyncV25 || window.MesahaSuiteSyncV24 || window.MesahaSuiteSyncV20;
+    const syncApi = suiteSyncApi();
     if (syncApi && typeof syncApi.isDirty === "function" && syncApi.isDirty()) return toast("Cihazda henüz senkronize edilmemiş kayıt veya işlem var. Önce Senkronize Et düğmesini kullanın.", true);
     const pendingForFolder = pendingOps.some((item) => {
       const p = item && item.payload || {};
@@ -2539,7 +2541,7 @@
   }
 
   function suiteSyncApi() {
-    return window.MesahaSuiteSync || window.MesahaSuiteSyncV28 || window.MesahaSuiteSyncV27 || window.MesahaSuiteSyncV26 || window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || null;
+    return window.MesahaSuiteSync || window.MesahaSuiteSyncV31 || null;
   }
   async function driveAction(action, data = {}) {
     const api = suiteSyncApi();
@@ -2956,11 +2958,10 @@
       $("lastSync").classList.toggle("offline-ready", pct >= 100);
     if(!startupClosed){const e=startupEls();if(e.text)e.text.textContent=text;if(e.bar)e.bar.style.width=Math.max(3,Math.min(100,Number(pct)||3))+"%";if(e.counter)e.counter.textContent=Math.max(0,Math.min(100,Number(pct)||0))+"%";}
   }
-  function ensureGoogleThen(fn, reason) {
-    if (authType() !== "google") {
+  function ensureCloudThen(fn, reason) {
+    if (!cloudIdentity()) {
       openModal("loginModal");
-      toast((reason || "Bu işlem") + " için Google ile giriş yapın.", true);
-      setTimeout(() => { try { openGoogle(); } catch (_) {} }, 60);
+      toast((reason || "Bu işlem") + " için Google hesabı veya terminal kodu gerekir.", true);
       return false;
     }
     try {
@@ -2971,13 +2972,13 @@
     return true;
   }
   function openSeflikModal() {
-    return ensureGoogleThen(() => openModal("seflikModal"), "Şeflik işlemleri");
+    return ensureCloudThen(() => openModal("seflikModal"), "Şeflik işlemleri");
   }
   function openOrmanciModal() {
-    return ensureGoogleThen(() => openModal("ormanciModal"), "Ormancı işlemleri");
+    return ensureCloudThen(() => openModal("ormanciModal"), "Ormancı işlemleri");
   }
   function openBolmeModal() {
-    return ensureGoogleThen(() => {
+    return ensureCloudThen(() => {
       openModal("bolmeModal");
       if (navigator.onLine !== false) {
         loadDivisionsFromServer()
@@ -3000,7 +3001,7 @@
     openModal("terminalModal");
   }
   function openBackupSyncModal() {
-    return ensureGoogleThen(() => openModal("backupSyncModal"), "Bulut ve senkronizasyon işlemleri");
+    return ensureCloudThen(() => openModal("backupSyncModal"), "Bulut ve senkronizasyon işlemleri");
   }
   function setBottomSyncBusy(kind, busyState, text) {
     const id = kind === "download" ? "serverDownloadButton" : "serverUploadButton";
@@ -3012,7 +3013,7 @@
     if (strong) strong.textContent = text || (kind === "download" ? "Sunucudan İndir" : "Sunucuya Gönder");
   }
   async function uploadAllToServer() {
-    if (!cloudIdentity()) { openModal("loginModal"); toast("Sunucuya göndermek için Google ile giriş yapın.", true); setTimeout(() => openGoogle(), 60); return; }
+    if (!cloudIdentity()) { openModal("loginModal"); toast("Sunucuya göndermek için Google hesabı veya terminal kodu gerekir.", true); return; }
     if (navigator.onLine === false) return toast("İnternet bağlantısı yok. Kayıtlar cihazda korunuyor.", true);
     setBottomSyncBusy("upload", true, "Gönderiliyor…");
     try {
@@ -3032,7 +3033,7 @@
     }
   }
   async function downloadFromServerAndPrepareOffline() {
-    if (!cloudIdentity()) { openModal("loginModal"); toast("Sunucudan indirmek için Google ile giriş yapın.", true); setTimeout(() => openGoogle(), 60); return; }
+    if (!cloudIdentity()) { openModal("loginModal"); toast("Sunucudan indirmek için Google hesabı veya terminal kodu gerekir.", true); return; }
     if (navigator.onLine === false) return toast("İnternet bağlantısı yok. Daha önce indirilen offline veriler kullanılabilir.", true);
     setBottomSyncBusy("download", true, "İndiriliyor…");
     showStartup("Sunucudan indiriliyor", "Şeflik, bölmeler, uygulama dosyaları ve offline kayıtlar hazırlanıyor.", 12, false);
@@ -3526,7 +3527,7 @@
     window.addEventListener("mesaha-suite:membership-changed", refreshMembershipContext);
     setInterval(() => {
       if (!document.hidden) refreshMembershipContext();
-    }, 45000);
+    }, 90000);
     window.addEventListener("storage", () => {
       loadLocal();
       render();

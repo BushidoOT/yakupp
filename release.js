@@ -1,31 +1,31 @@
 (function (root) {
   "use strict";
   const DATA = /*MESAHA_RELEASE_DATA_START*/{
-  "build": 92,
-  "version": "92.0.0",
+  "build": 93,
+  "version": "93.0.0",
   "channel": "stable",
-  "releasedAt": "2026-09-06T11:20:00+03:00",
-  "assetToken": "orman-io-stable-20260906-v92",
-  "cacheName": "orman-io-shell-stable-20260906-v92",
+  "releasedAt": "2026-09-06T12:20:00+03:00",
+  "assetToken": "orman-io-stable-20260906-v93",
+  "cacheName": "orman-io-shell-stable-20260906-v93",
   "apps": {
     "suite": {
       "label": "Orman İO",
-      "version": "92.0.0"
+      "version": "93.0.0"
     },
     "mesaha": {
       "label": "Mesaha İO",
-      "version": "6.31"
+      "version": "6.32"
     },
     "istif": {
       "label": "İstif İO",
-      "version": "0.3.29"
+      "version": "0.3.30"
     },
     "admin": {
       "label": "Orman İO Yönetim",
-      "version": "92.0.0"
+      "version": "93.0.0"
     }
   },
-  "description": "V92 Paket 2: büyük bölme önbelleği localStorage'dan IndexedDB'ye güvenli migrasyonla taşındı ve şeflik çalışma alanları birbirinden ayrıldı. İstif uzak kayıt revizyonu kararlı hale getirildi. Ana manifest Orman İO olarak düzeltildi. Service Worker uygulama nesillerini atomik seçer; eksik yeni sürüm ile eski sürüm dosyalarını karıştırmaz, bir önceki tam sürümü fallback olarak korur. Otomatik offline hazırlık zayıf bağlantıda ve toplam 5 saniyelik bütçede durur; yalnız kullanıcı tarafından başlatılan tam indirme/güncelleme daha uzun çalışabilir."
+  "description": "V93 Paket 3: terminal koduyla eşleşen cihaz Google tokenı kopyalanmadan bağlı hesabın sunucuda doğrulanan Şeflik, rol, bulut ve mevcut ortak Drive yetkilerini devralır. Gerçek Google oturumu her zaman terminalden önceliklidir; yeni Drive OAuth bağlantısı ve terminal cihaz yönetimi doğrudan Google oturumu ister. Aktif runtime kontrolleri sıkılaştırıldı, terminal iptalinde eşleşme temizlenir, güvenlik ve üyelik periyotları azaltıldı, hata günlüğü 50 kayda çıkarılıp token/URL sırları maskelendi ve temel CSP/referrer koruması eklendi."
 }/*MESAHA_RELEASE_DATA_END*/;
   const APP_NAMES = DATA.apps || {};
   const SCRIPT_URL = (() => {

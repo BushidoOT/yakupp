@@ -48,7 +48,7 @@
   };
 
   function api() {
-    return window.MesahaSuiteSync || window.MesahaSuiteSyncV28 || window.MesahaSuiteSyncV27 || window.MesahaSuiteSyncV26 || window.MesahaSuiteSyncV22 || null;
+    return window.MesahaSuiteSync || window.MesahaSuiteSyncV31 || null;
   }
 
   function toast(message, bad) {

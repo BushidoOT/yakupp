@@ -5,7 +5,7 @@
 
   var ERROR_KEY = "orman_io_runtime_errors_v66";
   var PERSIST_KEY = "orman_io_storage_persist_v66";
-  var MAX_ERRORS = 24;
+  var MAX_ERRORS = 50;
   var scriptUrl = (document.currentScript && document.currentScript.src) || location.href;
   var rootBase = new URL("./", scriptUrl);
   var workerUrl = new URL("./service-worker.js", rootBase);
@@ -39,9 +39,15 @@
     if (/\/yonetim(?:\/|$)/.test(path)) return "admin";
     return "orman";
   }
+  function redact(value) {
+    return String(value == null ? "" : value)
+      .replace(/Bearer\s+[A-Za-z0-9._~+\/-]+/gi, "Bearer [REDACTED]")
+      .replace(/([?&](?:code|state|access_token|refresh_token)=)[^&#\s]+/gi, "$1[REDACTED]")
+      .replace(/("?(?:access_token|refresh_token|terminalToken)"?\s*[:=]\s*"?)[^"\s,&}]+/gi, "$1[REDACTED]");
+  }
   function errorText(error) {
     if (!error) return "Bilinmeyen hata";
-    return clean(error.message || error.reason || error, 700);
+    return clean(redact(error.message || error.reason || error), 700);
   }
   function rememberError(kind, error, meta) {
     var message = errorText(error);
@@ -49,7 +55,7 @@
     var rows = readJson(ERROR_KEY, []);
     if (!Array.isArray(rows)) rows = [];
     var last = rows.length ? rows[rows.length - 1] : null;
-    var signature = kind + "|" + message + "|" + clean(meta && meta.source, 180);
+    var signature = kind + "|" + message + "|" + clean(redact(meta && meta.source), 180);
     if (last && last.signature === signature && Date.now() - Number(last.time || 0) < 3000) return;
     rows.push({
       time: Date.now(),
@@ -57,7 +63,7 @@
       app: appName(),
       kind: clean(kind, 40),
       message: message,
-      source: clean(meta && meta.source, 220),
+      source: clean(redact(meta && meta.source), 220),
       line: Number(meta && meta.line || 0),
       column: Number(meta && meta.column || 0),
       version: clean(root.MESAHA_RELEASE && root.MESAHA_RELEASE.version, 40),
@@ -204,11 +210,14 @@
   }
 
   root.OrmanIoRuntimeStabilityV66 = {
+    version: "93.0.0",
     app: appName,
     errors: function () { return readJson(ERROR_KEY, []); },
+    capture: function (kind, error, meta) { rememberError(kind || "app", error, meta || {}); },
     clearErrors: function () { try { localStorage.removeItem(ERROR_KEY); } catch (_) {} },
     repairOffline: ensureRootWorker,
     persistStorage: requestPersistentStorage,
     cleanupWorkers: cleanupNestedWorkers
   };
+  root.OrmanIoRuntimeStability = root.OrmanIoRuntimeStabilityV66;
 })(window);

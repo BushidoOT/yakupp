@@ -295,7 +295,7 @@
     /* V51: Orman, Mesaha ve İstif aynı Google/terminal/şeflik bağlamını kullanır.
        Suite merkezi hazırsa bütün smooth-function çağrıları kanonik bağlam onarımı,
        Google refresh ve terminal kimliğiyle buradan geçirilir. */
-    var suiteApi=window.MesahaSuiteSync||window.MesahaSuiteSyncV31||window.MesahaSuiteSyncV28||window.MesahaSuiteSyncV27;
+    var suiteApi=window.MesahaSuiteSync||window.MesahaSuiteSyncV31||null;
     if(window.MESAHA_SUITE_MODE&&suiteApi&&typeof suiteApi.edge==='function'){
       return await suiteApi.edge(String(action||'check'),data||{});
     }

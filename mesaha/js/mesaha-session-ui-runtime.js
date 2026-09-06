@@ -67,9 +67,9 @@
             };
           if (terminalPaired())
             return {
-              type: "Terminal kodlu",
+              type: "Terminal kodlu • Yetkili",
               cls: "terminal",
-              sub: "Bu cihaz yerel terminal olarak eşleşmiş. Şeflik ve bulut işlemleri için Google ile giriş gerekir.",
+              sub: "Bağlı hesabın Şeflik, rol ve bulut yetkileri aktif. Google erişim anahtarı bu cihaza kopyalanmaz.",
             };
           if (t.active)
             return {
@@ -110,7 +110,7 @@
             ["owner", "creator", "kurucu"].indexOf(role) >= 0;
         }
         function driveApi() {
-          return window.MesahaSuiteSync || window.MesahaSuiteSyncV31 || window.MesahaSuiteSyncV28 || window.MesahaSuiteSyncV27 || window.MesahaSuiteSyncV26 || window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || null;
+          return window.MesahaSuiteSync || window.MesahaSuiteSyncV31 || null;
         }
         function sameDriveFolder(status, folder) {
           status = status || {};
@@ -148,10 +148,10 @@
             folderName = clean(status.folderName),
             quota = status.quota || null,
             membership = isOwner ? "Kurucu" : "Şeflik üyesi",
-            relation = isOwner ? "Bu hesap Drive bağlantısını yönetebilir" : "Kurucunun bağlı Drive alanı kullanılıyor",
+            relation = isOwner ? (googleActive() ? "Bu hesap Drive bağlantısını yönetebilir" : "Bağlı Drive alanı terminal yetkisiyle kullanılabilir") : "Kurucunun bağlı Drive alanı kullanılıyor",
             storage = quota ? (quota.remainingBytes == null ? "Sınırsız alan" : formatBytes(quota.remainingBytes) + " boş") : (connected ? "Alan bilgisi alınamadı" : "Drive bağlı değil"),
             statusText = connected ? "Drive bağlı" : (isOwner ? "Drive hesabı henüz bağlanmadı" : "Şeflik kurucusu Drive hesabını henüz bağlamadı");
-          return '<section class="panel-drive-v87 ' + (connected ? "connected" : "disconnected") + '"><div class="panel-drive-head-v87"><span class="panel-drive-logo-v87">△</span><div><small>ŞEFLİK GOOGLE DRIVE</small><b>' + esc(statusText) + '</b><span>' + esc(relation) + '</span></div><i class="panel-drive-state-v87"></i></div><div class="panel-drive-grid-v87"><div><small>Drive Sahibi</small><strong>' + esc(owner || "Şeflik kurucusu") + '</strong><span>' + esc(ownerEmail || "E-posta bilgisi yok") + '</span></div><div><small>Aktif Şeflik</small><strong>' + esc(seflik || "Seçilmedi") + '</strong><span>' + esc(membership) + '</span></div><div><small>Drive Klasörü</small><strong>' + esc(folderName || (connected ? "Mesaha Suite klasörü" : "Oluşturulmadı")) + '</strong><span>' + esc(connected ? "Ortak Mesaha ve İstif alanı" : "Bağlantı bekleniyor") + '</span></div><div><small>Depolama</small><strong>' + esc(storage) + '</strong><span>' + esc(quota && quota.percent != null ? "%" + Number(quota.percent || 0).toLocaleString("tr-TR", { maximumFractionDigits: 1 }) + " dolu" : (status.quotaError || "")) + '</span></div></div><div class="panel-drive-actions-v87"><button type="button" class="panel-drive-refresh-v87" id="panelDriveRefreshV87">' + (driveBusy ? "Kontrol ediliyor…" : "Durumu Yenile") + '</button>' + (!connected && isOwner && !status.googleRequired ? '<button type="button" class="panel-drive-connect-v87" id="panelDriveConnectV87">Drive Bağla</button>' : "") + (canDisconnect ? '<button type="button" class="panel-drive-disconnect-v90" id="panelDriveDisconnectV90">Drive Bağlantısını Kes</button>' : "") + '</div>' + (driveError ? '<p class="panel-drive-error-v87">' + esc(driveError) + '</p>' : "") + '</section>';
+          return '<section class="panel-drive-v87 ' + (connected ? "connected" : "disconnected") + '"><div class="panel-drive-head-v87"><span class="panel-drive-logo-v87">△</span><div><small>ŞEFLİK GOOGLE DRIVE</small><b>' + esc(statusText) + '</b><span>' + esc(relation) + '</span></div><i class="panel-drive-state-v87"></i></div><div class="panel-drive-grid-v87"><div><small>Drive Sahibi</small><strong>' + esc(owner || "Şeflik kurucusu") + '</strong><span>' + esc(ownerEmail || "E-posta bilgisi yok") + '</span></div><div><small>Aktif Şeflik</small><strong>' + esc(seflik || "Seçilmedi") + '</strong><span>' + esc(membership) + '</span></div><div><small>Drive Klasörü</small><strong>' + esc(folderName || (connected ? "Mesaha Suite klasörü" : "Oluşturulmadı")) + '</strong><span>' + esc(connected ? "Ortak Mesaha ve İstif alanı" : "Bağlantı bekleniyor") + '</span></div><div><small>Depolama</small><strong>' + esc(storage) + '</strong><span>' + esc(quota && quota.percent != null ? "%" + Number(quota.percent || 0).toLocaleString("tr-TR", { maximumFractionDigits: 1 }) + " dolu" : (status.quotaError || "")) + '</span></div></div><div class="panel-drive-actions-v87"><button type="button" class="panel-drive-refresh-v87" id="panelDriveRefreshV87">' + (driveBusy ? "Kontrol ediliyor…" : "Durumu Yenile") + '</button>' + (!connected && isOwner && !status.googleRequired && googleActive() ? '<button type="button" class="panel-drive-connect-v87" id="panelDriveConnectV87">Drive Bağla</button>' : "") + (canDisconnect ? '<button type="button" class="panel-drive-disconnect-v90" id="panelDriveDisconnectV90">Drive Bağlantısını Kes</button>' : "") + '</div>' + (driveError ? '<p class="panel-drive-error-v87">' + esc(driveError) + '</p>' : "") + '</section>';
         }
         function bindDriveActions() {
           var refresh = $("panelDriveRefreshV87"), connect = $("panelDriveConnectV87"), disconnect = $("panelDriveDisconnectV90");

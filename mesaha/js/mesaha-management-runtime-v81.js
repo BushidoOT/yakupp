@@ -33,7 +33,7 @@
     try { localStorage.setItem(key, JSON.stringify(value)); return true; }
     catch (_) { return false; }
   }
-  function api() { return root.MesahaSuiteSync || root.MesahaSuiteSyncV28 || null; }
+  function api() { return root.MesahaSuiteSync || root.MesahaSuiteSyncV31 || null; }
   function identity() {
     var service = api();
     if (service && typeof service.identity === "function") return service.identity() || {};
@@ -52,7 +52,7 @@
     return !!clean(session.access_token);
   }
   function openGoogleRequired() {
-    notify("Bulut ve Şeflik işlemleri için Google ile giriş yapın.", "warning");
+    notify("Bulut ve Şeflik işlemleri için Google hesabı veya terminal kodu gerekir.", "warning");
     setTimeout(function () {
       try {
         if (root.MesahaTerminalLocalV556 && typeof root.MesahaTerminalLocalV556.google === "function") {
@@ -67,9 +67,17 @@
     }, 40);
     return false;
   }
-  function requireGoogle() {
-    return googleSessionActive() ? true : openGoogleRequired();
+  function terminalPaired() {
+    try { if (root.OrmanSuiteIdentity && typeof root.OrmanSuiteIdentity.pairedTerminal === "function") return root.OrmanSuiteIdentity.pairedTerminal(); } catch (_) {}
+    var t = read("mesaha_terminal_local_mode_v556", {}) || {};
+    return !!(t.active === true && clean(t.source) === "pair_code" && clean(t.pairedUserId || t.owner_user_id) && clean(t.terminalCode || t.terminalToken || t.code || t.token));
   }
+  function cloudAllowed() {
+    try { if (root.OrmanSuiteIdentity && typeof root.OrmanSuiteIdentity.cloudAllowed === "function") return root.OrmanSuiteIdentity.cloudAllowed(); } catch (_) {}
+    return googleSessionActive() || terminalPaired();
+  }
+  function requireCloud() { return cloudAllowed() ? true : openGoogleRequired(); }
+  function requireGoogle() { return googleSessionActive() ? true : openGoogleRequired(); }
   function activeFolder() {
     var active = read(K.active, {}) || {}, folders = read(K.folders, []);
     if (!Array.isArray(folders)) folders = [];
@@ -396,7 +404,8 @@
   }
 
   function openTool(name) {
-    if (["seflik", "ormanci", "bolme", "backup"].indexOf(name) >= 0 && !requireGoogle()) return false;
+    if (["seflik", "ormanci", "bolme", "backup"].indexOf(name) >= 0 && !requireCloud()) return false;
+    if (name === "terminal" && !requireGoogle()) return false;
     if (name === "seflik") return renderSeflik();
     if (name === "ormanci") return renderOrmanci();
     if (name === "bolme") return renderBolme(true);
