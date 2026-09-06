@@ -24,6 +24,7 @@ const CORE = [
   "./release.js",
   "./suite-audio.js",
   "./suite-identity.js",
+  "./suite-offline-store.js",
   "./app.js",
   "./assets/hero_forest_cover.webp",
   "./assets/orman_io_hero.webp",
@@ -106,6 +107,7 @@ const CRITICAL = [
   "./release.js",
   "./suite-audio.js",
   "./suite-identity.js",
+  "./suite-offline-store.js",
   "./suite-security.js",
   "./suite-cache-reset.js",
   "./suite-health.js",
@@ -161,6 +163,7 @@ const SHELL_CRITICAL = [
   "./suite-audio.js",
   "./suite-runtime-stabilizer.js",
   "./suite-identity.js",
+  "./suite-offline-store.js",
   "./suite-security.js",
   "./suite-sync-core.js",
   "./suite-ui.js",
@@ -222,15 +225,43 @@ async function cacheFor(value) {
   return openNamedCache(CACHE_NAMES[bucketFor(value)] || CACHE_NAMES.orman);
 }
 
-async function legacyCacheNames() {
-  const keys = await caches.keys();
-  return keys.filter((name) => suiteCacheName(name) && !CURRENT_CACHE_NAMES.includes(name));
+function cacheFamilyBase(name) {
+  const text = String(name || "");
+  const match = text.match(/^(.*)-(shared|orman|mesaha|istif|admin)$/);
+  return match && suiteCacheName(text) ? match[1] : "";
 }
 
+function familyRank(base) {
+  const text = String(base || "");
+  const version = text.match(/(?:^|-)v(\d+)(?:\D|$)/i);
+  const date = text.match(/(20\d{6})/);
+  return (Number(date && date[1] || 0) * 100000) + Number(version && version[1] || 0);
+}
+
+async function legacyFamilyBases() {
+  const keys = await caches.keys();
+  const bases = [];
+  keys.forEach((name) => {
+    const base = cacheFamilyBase(name);
+    if (base && base !== BASE_CACHE && !bases.includes(base)) bases.push(base);
+  });
+  return bases.sort((a, b) => familyRank(b) - familyRank(a));
+}
+
+// Bir önceki eksiksiz sürümü koru. Böylece yeni paket hazırlanırken eski çalışan
+// uygulama tek parça fallback olarak kalır; daha eski nesiller depolama şişirmesin.
 async function deleteOldCaches() {
-  const old = await legacyCacheNames();
-  await Promise.all(old.map((name) => caches.delete(name)));
-  return old;
+  const bases = await legacyFamilyBases();
+  const keep = new Set(bases.slice(0, 2));
+  const keys = await caches.keys();
+  const deletable = keys.filter((name) => {
+    if (!suiteCacheName(name) || CURRENT_CACHE_NAMES.includes(name)) return false;
+    const base = cacheFamilyBase(name);
+    return base && !keep.has(base);
+  });
+  await Promise.all(deletable.map((name) => caches.delete(name)));
+  invalidateGenerationState(false);
+  return deletable;
 }
 
 async function matchCurrent(value, options) {
@@ -239,32 +270,110 @@ async function matchCurrent(value, options) {
   const primary = await openNamedCache(primaryName);
   let hit = await primary.match(value, opts);
   if (hit) return hit;
-
   if (primaryName !== CACHE_NAMES.shared) {
     const shared = await openNamedCache(CACHE_NAMES.shared);
     hit = await shared.match(value, opts);
     if (hit) return hit;
   }
+  return null;
+}
 
-  for (const name of CURRENT_CACHE_NAMES) {
-    if (name === primaryName || name === CACHE_NAMES.shared) continue;
-    const cache = await openNamedCache(name);
-    hit = await cache.match(value, opts);
+async function matchFamily(base, value, options) {
+  if (!base) return null;
+  const opts = { ignoreSearch: true, ...(options || {}) };
+  const bucket = bucketFor(value);
+  const primary = await caches.open(base + "-" + bucket);
+  let hit = await primary.match(value, opts);
+  if (hit) return hit;
+  if (bucket !== "shared") {
+    const shared = await caches.open(base + "-shared");
+    hit = await shared.match(value, opts);
     if (hit) return hit;
   }
   return null;
 }
 
-async function matchSuite(value, options) {
-  const current = await matchCurrent(value, options);
-  if (current) return current;
-  const opts = { ignoreSearch: true, ...(options || {}) };
-  for (const name of await legacyCacheNames()) {
-    const cache = await caches.open(name);
-    const hit = await cache.match(value, opts);
-    if (hit) return hit;
+function contextApp(value, fallback) {
+  const pathApp = (input) => {
+    const path = relativePath(input).toLowerCase();
+    if (path.startsWith("./mesaha/")) return "mesaha";
+    if (path.startsWith("./istif/")) return "istif";
+    if (path.startsWith("./yonetim/")) return "admin";
+    return "orman";
+  };
+  const directBucket = bucketFor(value);
+  if (directBucket !== "shared") return directBucket;
+  try {
+    if (value instanceof Request && value.referrer) return pathApp(value.referrer);
+  } catch (_) {}
+  if (fallback) return pathApp(fallback);
+  return "orman";
+}
+
+const APP_GENERATION_CACHE = new Map();
+const CLIENT_GENERATION_CACHE = new Map();
+function invalidateGenerationState(includeClients = false) {
+  APP_GENERATION_CACHE.clear();
+  if (includeClients) CLIENT_GENERATION_CACHE.clear();
+}
+function clientGenerationKey(clientId, app) {
+  return String(clientId || "") + "::" + String(app || "orman");
+}
+function cleanupClientGenerations() {
+  const cutoff = Date.now() - 10 * 60 * 1000;
+  CLIENT_GENERATION_CACHE.forEach((value, key) => { if (!value || Number(value.at || 0) < cutoff) CLIENT_GENERATION_CACHE.delete(key); });
+}
+async function generationForApp(app, force = false, clientId = "") {
+  const name = String(app || "orman");
+  const clientKey = clientId ? clientGenerationKey(clientId, name) : "";
+  cleanupClientGenerations();
+  if (!force && clientKey) {
+    const pinned = CLIENT_GENERATION_CACHE.get(clientKey);
+    if (pinned) return pinned;
   }
-  return null;
+  const cached = APP_GENERATION_CACHE.get(name);
+  if (!force && !clientKey && cached && Date.now() - cached.at < 30000) return cached;
+  const groups = appGroups();
+  const paths = groups[name] || groups.orman || [];
+  const currentReady = (await missingFrom(paths)).length === 0;
+  let legacyBase = "";
+  if (!currentReady) {
+    const bases = await legacyFamilyBases();
+    for (const base of bases) {
+      let complete = true;
+      for (const path of paths) {
+        if (!(await matchFamily(base, path, { ignoreSearch: true }))) { complete = false; break; }
+      }
+      if (complete) { legacyBase = base; break; }
+    }
+  }
+  const result = { app: name, current: currentReady, legacy: legacyBase, at: Date.now() };
+  APP_GENERATION_CACHE.set(name, result);
+  if (clientKey) CLIENT_GENERATION_CACHE.set(clientKey, result);
+  return result;
+}
+
+async function matchAtomic(value, fallback, options) {
+  const raw = options && typeof options === "object" ? options : {};
+  const clientId = String(raw._clientId || "");
+  const forceGeneration = raw._forceGeneration === true;
+  const cacheOptions = { ...raw };
+  delete cacheOptions._clientId;
+  delete cacheOptions._forceGeneration;
+  const app = contextApp(value, fallback);
+  const state = await generationForApp(app, forceGeneration, clientId);
+  if (state.current) {
+    return (await matchCurrent(value, cacheOptions)) || (fallback && await matchCurrent(fallback, cacheOptions)) || null;
+  }
+  const legacyBase = state.legacy;
+  if (legacyBase) {
+    return (await matchFamily(legacyBase, value, cacheOptions)) || (fallback && await matchFamily(legacyBase, fallback, cacheOptions)) || null;
+  }
+  return (await matchCurrent(value, cacheOptions)) || (fallback && await matchCurrent(fallback, cacheOptions)) || null;
+}
+
+async function matchSuite(value, options) {
+  return matchAtomic(value, null, options);
 }
 
 async function putCurrent(value, response) {
@@ -272,6 +381,8 @@ async function putCurrent(value, response) {
   try {
     const cache = await cacheFor(value);
     await cache.put(value, response.clone());
+    // Aktif sayfanın seçtiği nesli burada değiştirmiyoruz. Sonraki navigasyon
+    // yeni cache'in eksiksizliğini tekrar ölçer ve atomik olarak yeni nesle geçer.
     return true;
   } catch (_) {
     // Depolama kotası dolsa bile başarılı ağ yanıtını kullanıcıdan saklama.
@@ -290,9 +401,9 @@ function reply(event, data) {
   } catch (_) {}
 }
 
-async function fetchForCache(path) {
+async function fetchForCache(path, timeoutMs) {
   const request = new Request(new URL(path, self.registration.scope).href, { cache: "reload" });
-  const response = await fetchWithTimeout(request, 12000);
+  const response = await fetchWithTimeout(request, Math.max(600, Math.min(12000, Number(timeoutMs) || 12000)));
   if (!response || (!response.ok && response.type !== "opaque")) throw new Error(path);
   return [request, response];
 }
@@ -305,14 +416,31 @@ async function missingFrom(list = CORE) {
   return missing;
 }
 
-async function cachePass(paths, force = false) {
+function weakConnectionForWarmup() {
+  try {
+    const c = self.navigator && (self.navigator.connection || self.navigator.mozConnection || self.navigator.webkitConnection);
+    if (!c) return false;
+    if (c.saveData === true) return true;
+    const type = String(c.effectiveType || "").toLowerCase();
+    if (type === "slow-2g" || type === "2g") return true;
+    const downlink = Number(c.downlink || 0);
+    return downlink > 0 && downlink < 0.45;
+  } catch (_) { return false; }
+}
+
+async function cachePass(paths, force = false, options = {}) {
   let cursor = 0;
   let done = 0;
   const failed = [];
-  const workerCount = Math.max(1, Math.min(5, paths.length));
+  const startedAt = Number(options.startedAt || Date.now());
+  const maxMs = Math.max(0, Number(options.maxMs || 0));
+  const deadline = maxMs ? startedAt + maxMs : 0;
+  const shouldStop = () => !!(deadline && Date.now() >= deadline) || (options.weakAware === true && weakConnectionForWarmup());
+  const workerCount = Math.max(1, Math.min(options.weakAware ? 3 : 5, paths.length));
 
   async function worker() {
     while (true) {
+      if (shouldStop()) return;
       const index = cursor++;
       if (index >= paths.length) return;
       const path = paths[index];
@@ -320,7 +448,9 @@ async function cachePass(paths, force = false) {
         if (!force && (await matchCurrent(path, { ignoreSearch: true }))) {
           // Zaten güncel sürüm önbelleğinde.
         } else {
-          const [request, response] = await fetchForCache(path);
+          const remaining = deadline ? Math.max(600, deadline - Date.now()) : 12000;
+          if (deadline && remaining <= 600) return;
+          const [request, response] = await fetchForCache(path, remaining);
           await putCurrent(request, response);
         }
       } catch (_) {
@@ -338,7 +468,7 @@ async function cachePass(paths, force = false) {
   }
 
   await Promise.all(Array.from({ length: workerCount }, worker));
-  return failed;
+  return { failed, stopped: shouldStop(), done, total: paths.length, weak: options.weakAware === true && weakConnectionForWarmup(), timedOut: !!(deadline && Date.now() >= deadline) };
 }
 
 function appGroups() {
@@ -389,18 +519,24 @@ async function writeOfflineStatus(data) {
 
 let CACHE_ALL_PROMISE = null;
 
-async function runCacheAll(force = false, cleanupOld = true) {
+async function runCacheAll(force = false, cleanupOld = true, options = {}) {
+  const startedAt = Date.now();
+  const passOptions = { ...(options || {}), startedAt };
+  let pass = { stopped: false, weak: false, timedOut: false };
   let targets = force ? CORE.slice() : await missingFrom(CORE);
-  if (targets.length) await cachePass(targets, force);
+  if (targets.length) pass = await cachePass(targets, force, passOptions);
 
   let missing = await missingFrom(CORE);
-  if (missing.length) {
-    await new Promise((resolve) => setTimeout(resolve, 250));
-    await cachePass(missing, false);
+  const canRetry = missing.length && !pass.stopped && !(passOptions.maxMs && Date.now() - startedAt >= Number(passOptions.maxMs));
+  if (canRetry) {
+    await new Promise((resolve) => setTimeout(resolve, 180));
+    pass = await cachePass(missing, false, passOptions);
+    missing = await missingFrom(CORE);
   }
 
-  const data = await buildStatus();
+  const data = { ...(await buildStatus()), warmupStopped: !!pass.stopped, weakConnection: !!pass.weak, timedOut: !!pass.timedOut };
   try { await writeOfflineStatus(data); } catch (_) {}
+  if (data.ready) invalidateGenerationState(false);
   if (data.ready && cleanupOld) await deleteOldCaches();
   await notify({
     type: data.ready ? "CACHE_READY" : "CACHE_INCOMPLETE",
@@ -415,7 +551,7 @@ async function runCacheAll(force = false, cleanupOld = true) {
 
 const CACHE_APP_PROMISES = new Map();
 
-async function cacheApp(appName, force = false) {
+async function cacheApp(appName, force = false, options = {}) {
   const name = String(appName || "").toLowerCase();
   const groups = appGroups();
   const paths = groups[name];
@@ -423,21 +559,24 @@ async function cacheApp(appName, force = false) {
   if (CACHE_APP_PROMISES.has(name) && !force) return CACHE_APP_PROMISES.get(name);
   const promise = (async () => {
     const targets = force ? paths.slice() : await missingFrom(paths);
-    if (targets.length) await cachePass(targets, force);
+    let pass = { stopped: false, weak: false, timedOut: false, done: 0, total: targets.length };
+    if (targets.length) pass = await cachePass(targets, force, { ...(options || {}), startedAt: Date.now() });
     const missing = await missingFrom(paths);
-    const result = { ok: missing.length === 0, app: name, ready: missing.length === 0, missing, totalCount: paths.length };
+    const ready = missing.length === 0;
+    if (ready) APP_GENERATION_CACHE.delete(name);
+    const result = { ok: ready, app: name, ready, missing, totalCount: paths.length, warmupStopped: !!pass.stopped, weakConnection: !!pass.weak, timedOut: !!pass.timedOut };
     await notify({ type: result.ready ? "APP_CACHE_READY" : "APP_CACHE_INCOMPLETE", app: name, missing });
     return result;
   })().finally(() => CACHE_APP_PROMISES.delete(name));
   CACHE_APP_PROMISES.set(name, promise);
   return promise;
 }
-async function cacheAll(force = false, cleanupOld = true) {
+async function cacheAll(force = false, cleanupOld = true, options = {}) {
   if (CACHE_ALL_PROMISE) {
     if (!force) return CACHE_ALL_PROMISE;
     try { await CACHE_ALL_PROMISE; } catch (_) {}
   }
-  CACHE_ALL_PROMISE = runCacheAll(force, cleanupOld).finally(() => {
+  CACHE_ALL_PROMISE = runCacheAll(force, cleanupOld, options).finally(() => {
     CACHE_ALL_PROMISE = null;
   });
   return CACHE_ALL_PROMISE;
@@ -460,6 +599,7 @@ self.addEventListener("activate", (event) => {
   event.waitUntil((async () => {
     await self.clients.claim();
     const status = await buildStatus();
+    invalidateGenerationState(true);
     if (status.ready) await deleteOldCaches();
     await notify({
       type: status.ready ? "CACHE_READY" : "CACHE_INCOMPLETE",
@@ -475,15 +615,32 @@ self.addEventListener("activate", (event) => {
 
 self.addEventListener("message", (event) => {
   const data = event.data || {};
-  if (data.type === "CACHE_ALL" || data.type === "REPAIR_CACHE" || data.type === "WARM_CACHE") {
+  if (data.type === "WARM_CACHE") {
+    const source = String(data.source || "startup");
+    const explicitMax = Number(data.maxMs || 0);
+    const manual = /update|repair|manual|download|user/i.test(source);
+    const maxMs = explicitMax > 0 ? explicitMax : (manual ? 45000 : 5000);
+    event.waitUntil((async () => {
+      // Kullanıcı elle güncelleme/indirme başlattıysa daha önceki 5 sn'lik startup
+      // kuyruğunun sonucunu tekrar kullanma; onu bitirip tam hazırlığı ayrıca çalıştır.
+      if (manual && CACHE_ALL_PROMISE) { try { await CACHE_ALL_PROMISE; } catch (_) {} }
+      const result = await cacheAll(false, true, { maxMs, weakAware: !manual });
+      reply(event, { ok: result.ready, ...result, repaired: true, preserved: true, source, maxMs });
+    })());
+  } else if (data.type === "CACHE_ALL" || data.type === "REPAIR_CACHE") {
     event.waitUntil(cacheAll(false).then((result) => reply(event, {
-      ok: result.ready,
-      ...result,
-      repaired: true,
-      preserved: true,
+      ok: result.ready, ...result, repaired: true, preserved: true,
     })));
   } else if (data.type === "CACHE_APP") {
-    event.waitUntil(cacheApp(data.app, false).then((result) => reply(event, result)));
+    const source = String(data.source || "app-startup");
+    const manual = /update|repair|manual|download|user/i.test(source);
+    const maxMs = Number(data.maxMs || 0) > 0 ? Number(data.maxMs) : (manual ? 45000 : 5000);
+    event.waitUntil((async () => {
+      const appName = String(data.app || "").toLowerCase();
+      if (manual && CACHE_APP_PROMISES.has(appName)) { try { await CACHE_APP_PROMISES.get(appName); } catch (_) {} }
+      const result = await cacheApp(appName, false, { maxMs, weakAware: !manual });
+      reply(event, { ...result, source, maxMs });
+    })());
   } else if (data.type === "CLEAR_APP_CACHE") {
     event.waitUntil((async () => {
       try {
@@ -551,8 +708,8 @@ async function fetchWithTimeout(request, timeout = 5000) {
 
 async function stale(request, fallback, event) {
   // Güncel sürüm cache'inde varsa hızlı aç ve ağı arka planda yenile.
-  const current = (await matchCurrent(request, { ignoreSearch: true })) ||
-    (fallback && (await matchCurrent(fallback, { ignoreSearch: true })));
+  const clientId = event && event.clientId ? event.clientId : "";
+  const current = await matchAtomic(request, fallback, { ignoreSearch: true, _clientId: clientId });
   const network = fetchWithTimeout(request, 7000)
     .then(async (response) => {
       if (response && (response.ok || response.type === "opaque")) await putCurrent(request, response);
@@ -569,9 +726,7 @@ async function stale(request, fallback, event) {
   // böylece güncellemeden sonraki ilk açılışta eski CSS/JS gösterilmez.
   const fresh = await network;
   if (fresh) return fresh;
-  return (await matchSuite(request, { ignoreSearch: true })) ||
-    (fallback && (await matchSuite(fallback, { ignoreSearch: true }))) ||
-    Response.error();
+  return (await matchAtomic(request, fallback, { ignoreSearch: true, _clientId: clientId })) || Response.error();
 }
 
 async function networkFirst(request, timeout = 5000) {
@@ -593,8 +748,9 @@ async function networkFirst(request, timeout = 5000) {
 async function navigationCacheFirst(event, url) {
   const request = event.request;
   const fallbackPath = appFallback(url);
-  const current = (await matchCurrent(request, { ignoreSearch: true })) ||
-    (await matchCurrent(fallbackPath, { ignoreSearch: true }));
+  const clientId = String(event.resultingClientId || event.clientId || "");
+  const atomicOptions = { ignoreSearch: true, _clientId: clientId, _forceGeneration: true };
+  const current = await matchAtomic(request, fallbackPath, atomicOptions);
 
   const refresh = fetchWithTimeout(new Request(request, { cache: "no-store" }), 3500)
     .then(async (response) => {
@@ -610,8 +766,7 @@ async function navigationCacheFirst(event, url) {
 
   const fresh = await refresh;
   if (fresh && fresh.ok) return injectSuiteCacheTool(fresh, url);
-  const fallback = (await matchSuite(request, { ignoreSearch: true })) ||
-    (await matchSuite(fallbackPath, { ignoreSearch: true }));
+  const fallback = await matchAtomic(request, fallbackPath, { ignoreSearch: true, _clientId: clientId });
   return injectSuiteCacheTool(fallback || Response.error(), url);
 }
 

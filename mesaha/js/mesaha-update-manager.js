@@ -64,18 +64,10 @@
     catch (error) { return { ready: false, error: clean(error && error.message || error) }; }
   }
 
-  async function clearOldCaches(keepName) {
-    if (!("caches" in root)) return [];
-    const keep = clean(keepName || release().cacheName);
-    const keys = await caches.keys();
-    const deleted = [];
-    await Promise.all(keys.map(async (name) => {
-      const isSuiteCache = /^(?:yakupp-suite-shell-|orman-io-shell-)/i.test(name);
-      const isCurrentFamily = name === keep || name.startsWith(keep + "-");
-      if (!isSuiteCache || isCurrentFamily) return;
-      try { if (await caches.delete(name)) deleted.push(name); } catch (_) {}
-    }));
-    return deleted;
+  async function clearOldCaches() {
+    // V92: eski cache nesillerini sayfa kodu silmez. Service Worker yalnız yeni
+    // sürüm tam hazır olduğunda kontrollü budama yapar ve önceki tam nesli fallback tutar.
+    return [];
   }
 
   async function installLatest(remote) {
@@ -91,9 +83,14 @@
       registration = await navigator.serviceWorker.getRegistration("../").catch(() => registration) || registration;
       worker = registration.active || navigator.serviceWorker.controller || worker;
     }
-    if (worker) workerMessage(worker, { type: "WARM_CACHE", source: "mesaha-update" }, 45000).catch(() => {});
-    const status = worker ? await Promise.race([workerStatus(worker), wait(4500).then(() => ({ ready: true, warming: true }))]) : { ready: true, serviceWorker: false };
-    await clearOldCaches(target.cacheName || release().cacheName);
+    let status = { ready: true, serviceWorker: false };
+    if (worker) {
+      // Güncelleme kullanıcı tarafından başlatıldığı için Mesaha paketini tek parça
+      // hazırlamak üzere daha uzun süre bekleyebiliriz. Eksik kalırsa eski tam nesil korunur.
+      try {
+        status = await workerMessage(worker, { type: "CACHE_APP", app: "mesaha", source: "mesaha-update", maxMs: 30000 }, 34000);
+      } catch (_) { status = await workerStatus(worker); }
+    }
     return { ok: status.ready !== false, serviceWorker: true, targetBuild: Number(target.build || release().build || 0), remote: target, status };
   }
 
@@ -104,8 +101,9 @@
     if (!registration) registration = await navigator.serviceWorker.register(workerScript(release()), { scope: "../", updateViaCache: "none" });
     const worker = registration.active || registration.waiting || navigator.serviceWorker.controller || await waitForWorker(registration, 25000);
     if (!worker) return installLatest(release());
-    workerMessage(worker, { type: "WARM_CACHE", source: "mesaha-repair" }, 45000).catch(() => {});
-    const result = await Promise.race([workerStatus(worker), wait(3500).then(() => ({ ready: true, warming: true }))]);
+    let result;
+    try { result = await workerMessage(worker, { type: "CACHE_APP", app: "mesaha", source: "mesaha-repair", maxMs: 30000 }, 34000); }
+    catch (_) { result = await workerStatus(worker); }
     return { ok: true, repaired: true, preserved: true, targetBuild: Number(release().build || 0), status: result };
   }
 

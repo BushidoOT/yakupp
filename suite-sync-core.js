@@ -65,6 +65,36 @@
     }
   };
   const now = () => new Date().toISOString();
+  function offlineStore() { return window.OrmanOfflineStore && window.OrmanOfflineStore.schemaVersion >= 92 ? window.OrmanOfflineStore : null; }
+  async function divisionFolderRecords(key) {
+    const store = offlineStore();
+    if (store) { try { return await store.getFolder(key); } catch (_) {} }
+    const legacy = read(K.divisionRecords, {});
+    if (legacy && legacy[key] && typeof legacy[key] === "object" && !Array.isArray(legacy[key])) return { ...legacy[key] };
+    const out = {};
+    Object.keys(legacy || {}).forEach((id) => {
+      if (id.startsWith(key + "::") && Array.isArray(legacy[id])) out[id.slice(key.length + 2)] = legacy[id];
+    });
+    return out;
+  }
+  async function saveDivisionRecords(key, bolmeNo, records, meta) {
+    const store = offlineStore();
+    if (store) { try { return await store.setDivision(key, bolmeNo, records, meta); } catch (_) {} }
+    const legacy = read(K.divisionRecords, {});
+    legacy[key] = legacy[key] && typeof legacy[key] === "object" && !Array.isArray(legacy[key]) ? legacy[key] : {};
+    legacy[key][clean(bolmeNo)] = Array.isArray(records) ? records : [];
+    write(K.divisionRecords, legacy);
+    return records;
+  }
+  async function deleteDivisionRecords(key, bolmeNo) {
+    const store = offlineStore();
+    if (store) { try { return await store.deleteDivision(key, bolmeNo); } catch (_) {} }
+    const legacy = read(K.divisionRecords, {});
+    if (legacy[key] && typeof legacy[key] === "object") delete legacy[key][clean(bolmeNo)];
+    delete legacy[key + "::" + clean(bolmeNo)];
+    write(K.divisionRecords, legacy);
+    return true;
+  }
   const num = (v) => {
     const n = Number(String(v == null ? "" : v).replace(",", "."));
     return Number.isFinite(n) ? n : 0;
@@ -825,6 +855,132 @@
       rows.find((f) => activeName && fold(f.seflik || f.name) === fold(activeName)) ||
       (activeName || activeKey || activeId ? a : null);
   }
+  const MESAHA_WORKSPACE_LAST_KEY = "orman_io_mesaha_workspace_last_v92";
+  let mesahaWorkspaceKey = "";
+  let mesahaWorkspaceHydrating = false;
+  let mesahaWorkspaceChain = Promise.resolve();
+  function isMesahaPage() {
+    try { return /\/mesaha(?:\/|$)/i.test(String(location.pathname || "")); } catch (_) { return false; }
+  }
+  function currentWorkspaceContext() {
+    const af = activeFolder();
+    const seflik = clean(af && af.seflik);
+    const key = clean(af && (af.seflik_key || af.seflikKey)) || fold(seflik);
+    return { key, seflik, folder: af };
+  }
+  async function committedMesahaRecords() {
+    try {
+      const storage = window.MesahaStorageV527;
+      if (storage && typeof storage.flush === "function") await storage.flush();
+      if (storage && typeof storage.lastCommittedRecords === "function") {
+        const rows = storage.lastCommittedRecords();
+        if (Array.isArray(rows)) return rows;
+      }
+    } catch (_) {}
+    return currentMesahaRecordsReady();
+  }
+  function mesahaRowsAffinity(rows, seflik) {
+    const target = fold(seflik);
+    let tagged = 0, mismatched = 0;
+    (Array.isArray(rows) ? rows : []).forEach((row) => {
+      const label = clean(row && (row.seflik || row.seflikAdi || row.seflik_adi));
+      if (!label) return;
+      tagged += 1;
+      if (target && fold(label) !== target) mismatched += 1;
+    });
+    return { tagged, mismatched, explicitMatch: tagged > 0 && mismatched === 0 };
+  }
+  async function saveMesahaWorkspaceSnapshot(key, seflik) {
+    const store = offlineStore();
+    if (!store || !key || mesahaWorkspaceHydrating) return false;
+    const rows = await committedMesahaRecords();
+    // Aktif şeflik anahtarı değiştikten sonra event geç gelirse, yeni şefliğin
+    // kayıtlarını eski çalışma alanının üstüne yazma. Etiketli kayıtlar uyuşmuyorsa koru.
+    const affinity = mesahaRowsAffinity(rows, seflik);
+    if (seflik && affinity.tagged > 0 && affinity.mismatched > 0) return false;
+    let settings = read(K.settings, {}) || {};
+    try {
+      const storage = window.MesahaStorageV527;
+      if (storage && typeof storage.lastCommittedSettings === "function") settings = { ...settings, ...(storage.lastCommittedSettings() || {}) };
+    } catch (_) {}
+    await store.saveWorkspace(key, seflik, rows, settings);
+    return true;
+  }
+  async function restoreMesahaWorkspace(ctx, reason) {
+    const store = offlineStore();
+    if (!store || !ctx || !ctx.key) return false;
+    const workspace = await store.getWorkspace(ctx.key);
+    const records = workspace && Array.isArray(workspace.records) ? workspace.records : [];
+    const settings = {
+      ...(read(K.settings, {}) || {}),
+      ...((workspace && workspace.settings) || {}),
+      seflik: ctx.seflik || clean(workspace && workspace.seflik),
+      seflikKey: ctx.key,
+      seflik_key: ctx.key,
+    };
+    mesahaWorkspaceHydrating = true;
+    window.__suiteRemoteHydrating = true;
+    try {
+      const storage = window.MesahaStorageV527;
+      if (storage && typeof storage.replaceAll === "function") {
+        const result = await storage.replaceAll(records, settings, { reason: "workspace-v92-" + clean(reason || "switch") });
+        if (result && result.ok === false) throw new Error(result.error || "Şeflik çalışma alanı yüklenemedi");
+      } else {
+        write(K.records, records);
+        write(K.settings, settings);
+      }
+      if (window.state) { window.state.records = records.slice(); window.state.settings = { ...(window.state.settings || {}), ...settings }; }
+      mesahaWorkspaceKey = ctx.key;
+      try { localStorage.setItem(MESAHA_WORKSPACE_LAST_KEY, ctx.key); } catch (_) {}
+      try { window.dispatchEvent(new CustomEvent("mesaha-suite:workspace-switched", { detail: { seflik: ctx.seflik, seflikKey: ctx.key, count: records.length, reason: reason || "switch" } })); } catch (_) {}
+      return true;
+    } finally {
+      setTimeout(() => { window.__suiteRemoteHydrating = false; mesahaWorkspaceHydrating = false; }, 80);
+    }
+  }
+  function queueMesahaWorkspaceSwitch(reason) {
+    if (!isMesahaPage()) return Promise.resolve(false);
+    mesahaWorkspaceChain = mesahaWorkspaceChain.catch(() => false).then(async () => {
+      const store = offlineStore();
+      if (!store) return false;
+      await store.ready();
+      const next = currentWorkspaceContext();
+      if (!next.key) return false;
+      const oldKey = mesahaWorkspaceKey || (() => { try { return clean(localStorage.getItem(MESAHA_WORKSPACE_LAST_KEY)); } catch (_) { return ""; } })();
+      if (oldKey && oldKey !== next.key) {
+        const oldWorkspace = await store.getWorkspace(oldKey).catch(() => null);
+        if (oldWorkspace && fold(oldWorkspace.seflik) === fold(next.seflik)) {
+          await store.renameFolder(oldKey, next.key).catch(() => false);
+        } else {
+          await saveMesahaWorkspaceSnapshot(oldKey, clean(oldWorkspace && oldWorkspace.seflik));
+        }
+        const nextWorkspace = await store.getWorkspace(next.key).catch(() => null);
+        if (nextWorkspace) return restoreMesahaWorkspace(next, reason || "folder-change");
+        // Yeni şefliğin kaydı, şeflik değişim eventinden önce gerçekten cihaza geldiyse
+        // onu koru; aksi durumda eski şefliğin çalışma kopyasını boşaltarak veri karışmasını önle.
+        const current = await committedMesahaRecords();
+        const affinity = mesahaRowsAffinity(current, next.seflik);
+        if (affinity.explicitMatch) {
+          await store.saveWorkspace(next.key, next.seflik, current, read(K.settings, {}));
+          mesahaWorkspaceKey = next.key;
+          try { localStorage.setItem(MESAHA_WORKSPACE_LAST_KEY, next.key); } catch (_) {}
+          return true;
+        }
+        return restoreMesahaWorkspace(next, reason || "folder-change");
+      }
+      mesahaWorkspaceKey = next.key;
+      try { localStorage.setItem(MESAHA_WORKSPACE_LAST_KEY, next.key); } catch (_) {}
+      const existing = await store.getWorkspace(next.key).catch(() => null);
+      if (existing) return restoreMesahaWorkspace(next, reason || "startup");
+      const current = await committedMesahaRecords();
+      const affinity = mesahaRowsAffinity(current, next.seflik);
+      if (current.length && !affinity.explicitMatch) return restoreMesahaWorkspace(next, reason || "startup-isolate");
+      await store.saveWorkspace(next.key, next.seflik, current, read(K.settings, {}));
+      return true;
+    });
+    return mesahaWorkspaceChain;
+  }
+
   function folderContext() {
     const af = activeFolder(), id = identity();
     const seflik = clean((af && af.seflik) || id.seflik);
@@ -985,7 +1141,8 @@
     if (!af) return { ok: false, complete: false, reason: "no-folder" };
     if (navigator.onLine === false) return { ok: false, complete: false, offline: true };
     const key = clean(af.seflik_key || af.seflikKey) || fold(af.seflik);
-    const divisionsStore = read(K.divisions, {}), recordsStore = read(K.divisionRecords, {}), forestersStore = read(K.foresters, {}), readyStore = read(K.ready, {});
+    const divisionsStore = read(K.divisions, {}), forestersStore = read(K.foresters, {}), readyStore = read(K.ready, {});
+    const folderRecords = await divisionFolderRecords(key);
     let list = Array.isArray(divisionsStore[key]) ? divisionsStore[key] : [];
     const errors = [];
     let truncated = false;
@@ -1013,7 +1170,8 @@
         const yieldStore = read(K.yieldTargets, {});
         for (const [no, oldRow] of oldByNo.entries()) {
           if (!no || nextNos.has(no) || (oldRow && (oldRow.pending || oldRow.local_pending))) continue;
-          if (recordsStore[key] && typeof recordsStore[key] === "object") delete recordsStore[key][no];
+          delete folderRecords[no];
+          await deleteDivisionRecords(key, no);
           delete readyStore[`${key}::${no}`];
           delete yieldStore[`${key}::${no}`];
         }
@@ -1023,7 +1181,6 @@
       }
       divisionsStore[key] = list;
       write(K.divisions, divisionsStore);
-      write(K.divisionRecords, recordsStore);
     } catch (e) {
       errors.push(clean(e?.message || e) || "Bölme listesi alınamadı");
       if (options.strict || !options.quiet) throw e;
@@ -1052,9 +1209,8 @@
       if (options.strict) throw e;
     }
     if (options.includeRecords && !transientNetworkAbort) {
-      recordsStore[key] = recordsStore[key] && typeof recordsStore[key] === "object" ? recordsStore[key] : {};
       for (const d of list) {
-        const no = clean(d.bolme_no), cached = recordsStore[key][no], expected = num(d.record_count);
+        const no = clean(d.bolme_no), cached = folderRecords[no], expected = num(d.record_count);
         const readyKey = `${key}::${no}`;
         const readyMeta = readyStore[readyKey] && typeof readyStore[readyKey] === "object" ? readyStore[readyKey] : {};
         const revision = divisionRevision(d);
@@ -1070,7 +1226,8 @@
             truncated = true;
             throw new Error(`Bölme ${no} verisi eksik geldi; eski offline kayıt korundu`);
           }
-          recordsStore[key][no] = out.records;
+          folderRecords[no] = out.records;
+          await saveDivisionRecords(key, no, out.records, { serverRevision: divisionRevision(d) });
           d.record_count = out.records.length;
           d.total_volume = num(out.total_volume || d.total_volume || out.records.reduce((s, row) => s + volume(row.record_data || row), 0));
           const serverRevision = clean(
@@ -1088,13 +1245,12 @@
           if (options.strict || (options.forceRecords && !options.quiet)) throw e;
         }
       }
-      write(K.divisionRecords, recordsStore);
       write(K.ready, readyStore);
       divisionsStore[key] = list;
       write(K.divisions, divisionsStore);
     }
     syncFolderCache(af, list);
-    const result = { ok: errors.length === 0 && !truncated, complete: errors.length === 0 && !truncated, truncated, divisions: list, records: recordsStore[key] || {}, errors, error: errors[0] || "" };
+    const result = { ok: errors.length === 0 && !truncated, complete: errors.length === 0 && !truncated, truncated, divisions: list, records: folderRecords, errors, error: errors[0] || "" };
     if (options.strict && !result.ok) throw new Error(result.error || "Offline veri hazırlığı tamamlanamadı");
     return result;
   }
@@ -1102,12 +1258,10 @@
     const af = activeFolder();
     if (!af) throw new Error("Aktif şeflik bulunamadı");
     const key = clean(af.seflik_key || af.seflikKey) || fold(af.seflik),
-      no = clean(bolmeNo),
-      store = read(K.divisionRecords, {});
-    if (!force && store[key] && Array.isArray(store[key][no]))
-      return store[key][no];
-    if (navigator.onLine === false)
-      return store[key] && Array.isArray(store[key][no]) ? store[key][no] : [];
+      no = clean(bolmeNo);
+    const cached = await divisionFolderRecords(key);
+    if (!force && Array.isArray(cached[no])) return cached[no];
+    if (navigator.onLine === false) return Array.isArray(cached[no]) ? cached[no] : [];
     const out = await edge("seflik_folder_read", {
       seflik: af.seflik,
       folderSeflik: af.seflik,
@@ -1116,9 +1270,8 @@
     if (!Array.isArray(out.records)) throw new Error("Sunucu geçerli bölme kayıtları döndürmedi");
     if (!authoritativeSyncResponse(out))
       throw new Error("Bölme verisi doğrulanamadı; mevcut offline kayıt korundu. Önce V68 sunucu fonksiyonlarını yayınlayın.");
-    store[key] = store[key] || {};
-    store[key][no] = out.records;
-    write(K.divisionRecords, store);
+    cached[no] = out.records;
+    await saveDivisionRecords(key, no, out.records);
     const readyStore = read(K.ready, {});
     const divisionsStore = read(K.divisions, {});
     const division = (Array.isArray(divisionsStore[key]) ? divisionsStore[key] : []).find((row) => clean(row && (row.bolme_no || row.bolmeNo)) === no) || {};
@@ -1140,16 +1293,15 @@
         }),
       );
     } catch {}
-    return store[key][no];
+    return cached[no];
   }
 
-  function clearDivisionRecordCache(bolmeNo) {
+  async function clearDivisionRecordCache(bolmeNo) {
     const af = activeFolder();
     if (!af) return false;
     const key = clean(af.seflik_key || af.seflikKey) || fold(af.seflik), no = clean(bolmeNo);
-    const recordsStore = read(K.divisionRecords, {}), divisionsStore = read(K.divisions, {});
-    if (recordsStore[key] && typeof recordsStore[key] === "object") delete recordsStore[key][no];
-    write(K.divisionRecords, recordsStore);
+    const divisionsStore = read(K.divisions, {});
+    await deleteDivisionRecords(key, no);
     if (Array.isArray(divisionsStore[key])) {
       divisionsStore[key] = divisionsStore[key].map((d) => clean(d && (d.bolme_no || d.bolmeNo)) === no ? { ...d, record_count: 0, recordCount: 0, total_volume: 0, totalVolume: 0, contributors: [], drive_backed_up: false, updated_at: now() } : d);
       write(K.divisions, divisionsStore);
@@ -1169,7 +1321,7 @@
       bolmeNo: no,
       confirmBolme: no,
     });
-    clearDivisionRecordCache(no);
+    await clearDivisionRecordCache(no);
     suppressMesahaDivision(no);
     const localSettings = read(K.settings, {});
     if (clean(localSettings.bolmeNo || localSettings.bolme_no) === no) clearDirty("mesaha");
@@ -1875,6 +2027,22 @@
     return { done, failed, retryable: retryableFailures, pending, backupFailed, backupErrors };
   }
 
+  function remoteIstifRevision(row, driveFiles) {
+    row = row && typeof row === "object" ? row : {};
+    const explicit = clean(row.updated_at || row.updatedAt || row.revision || row.server_revision || row.checksum || row.etag);
+    if (explicit) return "v:" + explicit;
+    const files = (Array.isArray(driveFiles) ? driveFiles : []).map((file) => clean(file && (file.id || file.fileId || file.file_id || file.name || file.fileName))).filter(Boolean).sort();
+    const signature = JSON.stringify([
+      clean(row.id || row.record_id), clean(row.created_at || row.createdAt), clean(row.seflik_key || row.seflikKey), clean(row.seflik || row.folder_seflik),
+      clean(row.ormanci || row.forester || row.forester_name), clean(row.record_date || row.date), clean(row.bolme_no || row.bolme || row.bolmeNo),
+      clean(row.istif_no || row.istifNo), clean(row.wood_type || row.type), clean(row.ster || row.miktar || row.quantity),
+      clean(row.coordinates || row.coordinate || row.kordinat), clean(row.mevki || row.location_note), clean(row.description || row.aciklama),
+      clean(row.barcode_no || row.barcode), num(row.photo_count || files.length), files, row.is_sent === true || row.isSent === true, clean(row.sent_at || row.sentAt)
+    ]);
+    let hash = 2166136261;
+    for (let i = 0; i < signature.length; i += 1) { hash ^= signature.charCodeAt(i); hash = Math.imul(hash, 16777619); }
+    return "h:" + (hash >>> 0).toString(36) + ":" + signature.length;
+  }
   function normalizeRemoteIstifRecord(row) {
     row = row && typeof row === "object" ? row : {};
     const id = clean(row.id || row.record_id);
@@ -1903,7 +2071,7 @@
       photoCount: num(row.photo_count || driveFiles.length),
       driveFolderId: clean(row.drive_folder_id || row.driveFolderId),
       driveFiles,
-      photoUploadStates: driveFiles.map((file, index) => ({ index, status: "uploaded", fileId: clean(file && (file.id || file.fileId || file.file_id)), attempts: 0, error: "", code: "", retryable: false, updatedAt: clean(row.updated_at || row.updatedAt || now()) })),
+      photoUploadStates: driveFiles.map((file, index) => ({ index, status: "uploaded", fileId: clean(file && (file.id || file.fileId || file.file_id)), attempts: 0, error: "", code: "", retryable: false, updatedAt: clean(row.updated_at || row.updatedAt || row.created_at || row.createdAt) })),
       syncStatus: "synced",
       syncError: "",
       syncErrorCode: "",
@@ -1911,8 +2079,9 @@
       isSent: row.is_sent === true || row.isSent === true,
       sentAt: clean(row.sent_at || row.sentAt),
       sentBy: clean(row.sent_by || row.sentBy),
-      createdAt: clean(row.created_at || row.createdAt || now()),
-      updatedAt: clean(row.updated_at || row.updatedAt || now()),
+      createdAt: clean(row.created_at || row.createdAt),
+      updatedAt: clean(row.updated_at || row.updatedAt || row.created_at || row.createdAt),
+      remoteRevision: remoteIstifRevision(row, driveFiles),
       remoteOnly: true,
     };
   }
@@ -1986,12 +2155,9 @@
         current.syncStatus &&
         current.syncStatus !== "synced";
       if (localPending) continue;
-      const sameRemoteVersion = !!(
-        current &&
-        clean(current.updatedAt || current.updated_at) &&
-        clean(current.updatedAt || current.updated_at) === clean(remoteRecord.updatedAt || remoteRecord.updated_at) &&
-        clean(current.syncStatus) === "synced"
-      );
+      const currentRevision = clean(current && (current.remoteRevision || current.remote_revision || current.updatedAt || current.updated_at || current.createdAt || current.created_at));
+      const incomingRevision = clean(remoteRecord.remoteRevision || remoteRecord.updatedAt || remoteRecord.updated_at || remoteRecord.createdAt || remoteRecord.created_at);
+      const sameRemoteVersion = !!(current && currentRevision && currentRevision === incomingRevision && clean(current.syncStatus) === "synced");
       if (sameRemoteVersion) continue;
       const merged = {
         ...(current || {}),
@@ -2640,7 +2806,7 @@
         folders: read(K.folders, []),
         divisions: read(K.divisions, {}),
         divisionReady: read(K.ready, {}),
-        divisionRecords: read(K.divisionRecords, {}),
+        divisionRecords: offlineStore() ? await offlineStore().exportDivisions() : read(K.divisionRecords, {}),
         yieldTargets: read(K.yieldTargets, {}),
       },
     };
@@ -2812,11 +2978,19 @@
     });
     ["mesaha:seflik-folder-active-changed", "mesaha-suite:active-folder-changed"].forEach((eventName) => {
       window.addEventListener(eventName, () => {
+        queueMesahaWorkspaceSwitch(eventName).catch(() => {});
         if (navigator.onLine === false || !cloudSyncAllowed() || startupWeakSessionStop) return;
         if (["idle", "waiting-folder"].includes(startupPrepareState))
           setTimeout(() => prepareStartupData().catch(() => {}), 100);
       }, { passive: true });
     });
+    window.addEventListener("mesaha:records-saved", () => {
+      if (!isMesahaPage() || mesahaWorkspaceHydrating) return;
+      const ctx = currentWorkspaceContext();
+      if (!ctx.key) return;
+      mesahaWorkspaceKey = ctx.key;
+      setTimeout(() => saveMesahaWorkspaceSnapshot(ctx.key, ctx.seflik).catch(() => {}), 30);
+    }, { passive: true });
     const mo = new MutationObserver((mutations) => {
       if (mutations.some((mutation) => mutation.type === "childList"))
         queueDockPosition();
@@ -2889,6 +3063,9 @@
     watchStorage();
     dispatch();
     updateButton();
+    if (isMesahaPage() && offlineStore()) {
+      offlineStore().ready().then(() => queueMesahaWorkspaceSwitch("startup")).catch(() => {});
+    }
     /* Drive OAuth dönüşü açılış senkronundan önce işlenir. */
     Promise.resolve(handleDriveOAuthReturn()).catch(() => false).finally(() => {
       if (navigator.onLine !== false && cloudSyncAllowed()) {

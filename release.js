@@ -1,31 +1,31 @@
 (function (root) {
   "use strict";
   const DATA = /*MESAHA_RELEASE_DATA_START*/{
-  "build": 91,
-  "version": "91.0.0",
+  "build": 92,
+  "version": "92.0.0",
   "channel": "stable",
-  "releasedAt": "2026-09-06T10:59:21+03:00",
-  "assetToken": "orman-io-stable-20260906-v91",
-  "cacheName": "orman-io-shell-stable-20260906-v91",
+  "releasedAt": "2026-09-06T11:20:00+03:00",
+  "assetToken": "orman-io-stable-20260906-v92",
+  "cacheName": "orman-io-shell-stable-20260906-v92",
   "apps": {
     "suite": {
       "label": "Orman İO",
-      "version": "91.0.0"
+      "version": "92.0.0"
     },
     "mesaha": {
       "label": "Mesaha İO",
-      "version": "6.30"
+      "version": "6.31"
     },
     "istif": {
       "label": "İstif İO",
-      "version": "0.3.28"
+      "version": "0.3.29"
     },
     "admin": {
       "label": "Orman İO Yönetim",
-      "version": "91.0.0"
+      "version": "92.0.0"
     }
   },
-  "description": "V91 Paket 1: Google oturumu bulut ve şeflik işlemlerinde tek yetkili kimlik haline getirildi ve terminal eşleşmesinin Google hesabını gölgelemesi engellendi. Açılış hazırlığı tüm istekler için toplam 5 saniyelik bütçe ile sınırlandı; zayıf bağlantıda aynı uygulama oturumunda otomatik tekrar durduruldu. Bölme önbelleği sunucu revizyonu ile kontrol edilir. Drive OAuth dönüşü uygulama tarafından tamamlanıp bağlantı durumu hemen doğrulanır; yeniden bağlama döngüsü giderildi ve kurucu kontrolü istemci tarafında sıkılaştırıldı."
+  "description": "V92 Paket 2: büyük bölme önbelleği localStorage'dan IndexedDB'ye güvenli migrasyonla taşındı ve şeflik çalışma alanları birbirinden ayrıldı. İstif uzak kayıt revizyonu kararlı hale getirildi. Ana manifest Orman İO olarak düzeltildi. Service Worker uygulama nesillerini atomik seçer; eksik yeni sürüm ile eski sürüm dosyalarını karıştırmaz, bir önceki tam sürümü fallback olarak korur. Otomatik offline hazırlık zayıf bağlantıda ve toplam 5 saniyelik bütçede durur; yalnız kullanıcı tarafından başlatılan tam indirme/güncelleme daha uzun çalışabilir."
 }/*MESAHA_RELEASE_DATA_END*/;
   const APP_NAMES = DATA.apps || {};
   const SCRIPT_URL = (() => {

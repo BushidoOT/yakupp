@@ -182,7 +182,7 @@
         worker = navigator.serviceWorker.controller || reg.active || reg.waiting || worker;
         setUpdateProgress(58, "Offline uygulama dosyaları yenileniyor…");
         if (worker) {
-          try { workerMessage(worker, "WARM_CACHE", 45000).catch(() => {}); } catch (_) {}
+          try { await workerMessage(worker, { type: "WARM_CACHE", source: "suite-update", maxMs: 45000 }, 50000); } catch (_) {}
         }
       }
       setUpdateProgress(100, "Güncelleme tamamlandı. Uygulama yeniden açılıyor…");
@@ -1702,12 +1702,19 @@
     });
     write(K.pendingOps, pendingOps);
     try { localStorage.removeItem("mesaha_istif_last_bolme_v14::" + key); } catch {}
-    /* Mesaha kayıt deposu şeflik bazında ayrılmadığı için ayrılan şefliğin offline kayıtlarının
-       başka şeflikte görünmemesi adına senkronizasyon doğrulandıktan sonra yerel kopya sıfırlanır. */
+    /* V92: ayrılan şefliğin cache'i hedefli silinir. Mesaha'nın ortak IndexedDB
+       veritabanını komple silmek diğer şefliklerin offline çalışma alanlarını yok ediyordu. */
     try {
+      const store = window.OrmanOfflineStore;
+      if (store && store.schemaVersion >= 92) {
+        Promise.resolve(store.deleteFolder(key)).catch(() => {});
+        Promise.resolve(store.deleteWorkspace(key)).catch(() => {});
+      }
       localStorage.setItem("cam_mesaha_kayitlari_v1", "[]");
       ["cam_mesaha_kayitlari_v1_mirror_v515","cam_mesaha_kayitlari_v1_last_ok","cam_mesaha_kayitlari_v1_snapshot_v385","cam_mesaha_kayitlari_v1_mirror_meta_v515","mesaha_v527_records_meta"].forEach((k) => localStorage.removeItem(k));
-      indexedDB.deleteDatabase("mesaha_io_storage_v527");
+      const persistent = window.MesahaStorageV527;
+      if (persistent && typeof persistent.replaceAll === "function")
+        Promise.resolve(persistent.replaceAll([], { ...(settings() || {}), seflik: "", seflikKey: "", seflik_key: "", bolmeNo: "" }, { reason: "leave-seflik-v92" })).catch(() => {});
     } catch {}
     try {
       const request = indexedDB.open("mesaha-istif-prototype", 2);
@@ -2865,9 +2872,10 @@
       }
     } catch {}
   }
-  function workerMessage(worker, type, timeout = 45000) {
+  function workerMessage(worker, message, timeout = 45000) {
     return new Promise((resolve) => {
       if (!worker) return resolve({ ready: false });
+      const payload = typeof message === "string" ? { type: message } : { ...(message || {}) };
       const ch = new MessageChannel(),
         t = setTimeout(() => resolve({ ready: false, timeout: true }), timeout);
       ch.port1.onmessage = (e) => {
@@ -2875,7 +2883,7 @@
         resolve(e.data || { ready: false });
       };
       try {
-        worker.postMessage({ type }, [ch.port2]);
+        worker.postMessage(payload, [ch.port2]);
       } catch {
         clearTimeout(t);
         resolve({ ready: false });
@@ -2923,7 +2931,7 @@
         setCacheStatus(online ? "Uygulama açık • offline dosyalar arka planda hazırlanıyor" : criticalMissing ? "Offline dosyaların bir kısmı eksik" : "Cihazdaki son sürüm açıldı", online ? 62 : 45);
         closeStartup(250);
         if (online && worker) {
-          setTimeout(() => { workerMessage(worker, "WARM_CACHE", 45000).then((result) => {
+          setTimeout(() => { workerMessage(worker, { type: "WARM_CACHE", source: "suite-startup", maxMs: 5000 }, 6500).then((result) => {
             cacheReady = !!result.ready;
             setCacheStatus(cacheReady ? "İki uygulama çevrimdışı kullanıma hazır" : "Offline hazırlık daha sonra devam edecek", cacheReady ? 100 : 72);
           }).catch(() => {}); }, 50);
@@ -3055,7 +3063,7 @@
         const reg = await navigator.serviceWorker.ready;
         const worker = reg.active || navigator.serviceWorker.controller || reg.waiting;
         if (worker) {
-          const warmResult = await workerMessage(worker, "WARM_CACHE", 45000);
+          const warmResult = await workerMessage(worker, { type: "WARM_CACHE", source: "manual-download", maxMs: 45000 }, 50000);
           offlineReadyNow = !!(warmResult && warmResult.ready);
         }
       }

@@ -110,10 +110,15 @@
       );
   }
   function cachedRows(f, bolme) {
-    const all = read(K.divisionRecords, {}),
-      key = folderKey(f),
-      rows = all && all[key] && all[key][clean(bolme)];
-    return Array.isArray(rows) ? rows : [];
+    const key = folderKey(f);
+    const store = window.OrmanOfflineStore;
+    if (store && store.schemaVersion >= 92) {
+      try { return store.peekDivision(key, bolme); } catch (_) {}
+    }
+    const all = read(K.divisionRecords, {}), rows = all && all[key] && all[key][clean(bolme)];
+    if (Array.isArray(rows)) return rows;
+    const flat = all && all[key + "::" + clean(bolme)];
+    return Array.isArray(flat) ? flat : [];
   }
   function currentLocalMesahaRecords() {
     try {
@@ -1005,6 +1010,8 @@
   window.addEventListener("mesaha:records-saved", schedule);
   window.addEventListener("mesaha:records-recovered", schedule);
   window.addEventListener("mesaha-suite:shared-data-updated", schedule);
+  window.addEventListener("orman-io:offline-store-ready", schedule, { passive: true });
+  window.addEventListener("mesaha-suite:workspace-switched", schedule, { passive: true });
   window.addEventListener("mesaha-suite:drive-backup-state", (event) => {
     driveBackupStateV88(event && event.detail || {});
   }, { passive: true });

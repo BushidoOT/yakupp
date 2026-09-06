@@ -3652,6 +3652,22 @@ async function uploadPhotoToDrive(record, photo, index) {
   });
 }
 
+function remoteRecordRevision(row, driveFiles = []) {
+  const explicit = clean(row?.updated_at || row?.updatedAt || row?.revision || row?.server_revision || row?.checksum || row?.etag);
+  if (explicit) return `v:${explicit}`;
+  const files = (Array.isArray(driveFiles) ? driveFiles : []).map((file) => clean(file?.id || file?.fileId || file?.file_id || file?.name || file?.fileName)).filter(Boolean).sort();
+  const signature = JSON.stringify([
+    clean(row?.id || row?.record_id), clean(row?.created_at || row?.createdAt), clean(row?.seflik_key || row?.seflikKey), clean(row?.seflik || row?.folder_seflik),
+    clean(row?.ormanci || row?.forester || row?.forester_name), clean(row?.record_date || row?.date), clean(row?.bolme_no || row?.bolme || row?.bolmeNo),
+    clean(row?.istif_no || row?.istifNo), clean(row?.wood_type || row?.type), clean(row?.ster || row?.miktar || row?.quantity),
+    clean(row?.coordinates || row?.coordinate || row?.kordinat), clean(row?.mevki || row?.location_note), clean(row?.description || row?.aciklama),
+    clean(row?.barcode_no || row?.barcode), Number(row?.photo_count || files.length || 0) || 0, files, row?.is_sent === true || row?.isSent === true, clean(row?.sent_at || row?.sentAt)
+  ]);
+  let hash = 2166136261;
+  for (let i = 0; i < signature.length; i += 1) { hash ^= signature.charCodeAt(i); hash = Math.imul(hash, 16777619); }
+  return `h:${(hash >>> 0).toString(36)}:${signature.length}`;
+}
+
 function normalizeRemoteRecord(row) {
   const id = clean(row.id || row.record_id);
   if (!id) return null;
@@ -3679,7 +3695,7 @@ function normalizeRemoteRecord(row) {
     photoCount: Number(row.photo_count || driveFiles.length || 0) || 0,
     driveFolderId: clean(row.drive_folder_id || row.driveFolderId),
     driveFiles,
-    photoUploadStates: driveFiles.map((file, index) => ({ index, status: "uploaded", fileId: driveFileId(file), attempts: 0, error: "", code: "", retryable: false, updatedAt: clean(row.updated_at || row.updatedAt || new Date().toISOString()) })),
+    photoUploadStates: driveFiles.map((file, index) => ({ index, status: "uploaded", fileId: driveFileId(file), attempts: 0, error: "", code: "", retryable: false, updatedAt: clean(row.updated_at || row.updatedAt || row.created_at || row.createdAt) })),
     syncStatus: "synced",
     syncError: "",
     syncErrorCode: "",
@@ -3687,10 +3703,9 @@ function normalizeRemoteRecord(row) {
     isSent: row.is_sent === true || row.isSent === true,
     sentAt: clean(row.sent_at || row.sentAt),
     sentBy: clean(row.sent_by || row.sentBy),
-    createdAt: clean(
-      row.created_at || row.createdAt || new Date().toISOString(),
-    ),
-    updatedAt: clean(row.updated_at || row.updatedAt || ""),
+    createdAt: clean(row.created_at || row.createdAt || ""),
+    updatedAt: clean(row.updated_at || row.updatedAt || row.created_at || row.createdAt || ""),
+    remoteRevision: remoteRecordRevision(row, driveFiles),
     remoteOnly: true,
   };
 }
@@ -3747,6 +3762,9 @@ async function mergeRemoteRecords(remoteRows = [], { authoritative = false } = {
       localRecord.syncStatus &&
       localRecord.syncStatus !== "synced";
     if (localPending) continue;
+    const currentRevision = clean(localRecord?.remoteRevision || localRecord?.remote_revision || localRecord?.updatedAt || localRecord?.updated_at || localRecord?.createdAt || localRecord?.created_at);
+    const incomingRevision = clean(remoteRecord.remoteRevision || remoteRecord.updatedAt || remoteRecord.updated_at || remoteRecord.createdAt || remoteRecord.created_at);
+    if (localRecord && currentRevision && currentRevision === incomingRevision && clean(localRecord.syncStatus) === "synced") continue;
     const merged = {
       ...(localRecord || {}),
       ...remoteRecord,
@@ -4291,6 +4309,18 @@ window.addEventListener(
   { passive: true },
 );
 
+async function warmIstifOfflineShellV92() {
+  if (!("serviceWorker" in navigator) || navigator.onLine === false) return false;
+  try {
+    const url = new URL("../service-worker.js", location.href);
+    url.searchParams.set("release", String(window.MESAHA_RELEASE?.assetToken || "stable"));
+    const reg = await navigator.serviceWorker.register(url.href, { scope: "../", updateViaCache: "none" });
+    const worker = reg.active || navigator.serviceWorker.controller || reg.waiting || reg.installing;
+    if (worker) worker.postMessage({ type: "CACHE_APP", app: "istif", source: "istif-startup", maxMs: 5000 });
+    return true;
+  } catch (_) { return false; }
+}
+
 (async function init() {
   showBoot("İstif İO açılıyor…", "Cihaz kayıtları ve şeflik bilgileri hazırlanıyor.");
   try {
@@ -4299,6 +4329,7 @@ window.addEventListener(
     refreshCurrentMembers();
     if (!state.settings.setupComplete) state.view = "settings";
     render();
+    warmIstifOfflineShellV92().catch(() => {});
     hideBoot();
     try { window.IstifStabilityV69?.ready(); } catch {}
     if (storageFallbackMode) {
