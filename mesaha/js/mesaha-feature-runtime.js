@@ -1366,6 +1366,10 @@
           )
             st.cutterFilter = "Tümü";
           st.cutters = list;
+          if (list.length && !clean(st.activeCutter)) {
+            st.activeCutter = list[0];
+            Promise.resolve(saveSettings("cutter-auto-select-v94")).catch(function () {});
+          }
           return list;
         }
         function countByCutter(name) {
@@ -1382,10 +1386,9 @@
           rendering = true;
           var list = cutterList();
           chips.classList.add("cutter-manager-v406");
-          var html =
-            '<button class="cutter-none-v406 ' +
-            (!st.activeCutter ? "active" : "") +
-            '" data-cutter-select-v406="" type="button">Kesimci seçilmedi</button>';
+          var html = list.length
+            ? ""
+            : '<button class="cutter-none-v406 active" data-cutter-select-v406="" type="button">Kesimci seçilmedi</button>';
           html += list
             .map(function (c) {
               var active = clean(st.activeCutter) === c;

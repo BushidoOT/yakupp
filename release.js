@@ -1,20 +1,20 @@
 (function (root) {
   "use strict";
   const DATA = /*MESAHA_RELEASE_DATA_START*/{
-  "build": 93,
-  "version": "93.0.0",
+  "build": 94,
+  "version": "94.0.0",
   "channel": "stable",
-  "releasedAt": "2026-09-06T12:20:00+03:00",
-  "assetToken": "orman-io-stable-20260906-v93",
-  "cacheName": "orman-io-shell-stable-20260906-v93",
+  "releasedAt": "2026-09-06T13:05:00+03:00",
+  "assetToken": "orman-io-stable-20260906-v94",
+  "cacheName": "orman-io-shell-stable-20260906-v94",
   "apps": {
     "suite": {
       "label": "Orman İO",
-      "version": "93.0.0"
+      "version": "94.0.0"
     },
     "mesaha": {
       "label": "Mesaha İO",
-      "version": "6.32"
+      "version": "6.33"
     },
     "istif": {
       "label": "İstif İO",
@@ -22,10 +22,10 @@
     },
     "admin": {
       "label": "Orman İO Yönetim",
-      "version": "93.0.0"
+      "version": "94.0.0"
     }
   },
-  "description": "V93 Paket 3: terminal koduyla eşleşen cihaz Google tokenı kopyalanmadan bağlı hesabın sunucuda doğrulanan Şeflik, rol, bulut ve mevcut ortak Drive yetkilerini devralır. Gerçek Google oturumu her zaman terminalden önceliklidir; yeni Drive OAuth bağlantısı ve terminal cihaz yönetimi doğrudan Google oturumu ister. Aktif runtime kontrolleri sıkılaştırıldı, terminal iptalinde eşleşme temizlenir, güvenlik ve üyelik periyotları azaltıldı, hata günlüğü 50 kayda çıkarılıp token/URL sırları maskelendi ve temel CSP/referrer koruması eklendi."
+  "description": "V94: Mesaha girişinde en az bir kesimci varsa Kesimci seçilmedi seçeneği kaldırıldı ve geçerli ilk kesimci otomatik aktif tutulur. Drive’dan Getir artık IndexedDB kalıcı Mesaha deposuna ve aktif şeflik çalışma alanına yazar; barkoda göre güvenli birleştirir, reload sırasında eski workspace snapshotının geri gelmesini engeller."
 }/*MESAHA_RELEASE_DATA_END*/;
   const APP_NAMES = DATA.apps || {};
   const SCRIPT_URL = (() => {

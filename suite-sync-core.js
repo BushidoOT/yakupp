@@ -2800,23 +2800,106 @@
     await sendExactBackupStats(stats, result, { bolmeNo: selected, text: selected ? `Bölme ${selected} Drive yedeği` : "Mesaha Drive yedeği" });
     return result;
   }
+  function restoreMesahaRecordKey(row, index) {
+    const r = row && row.record_data && typeof row.record_data === "object" ? row.record_data : (row || {});
+    const barcode = clean(r.barcode || r.barkod || r.barkodNo || r.barkod_no || (row && row.barcode));
+    if (barcode) return "barcode::" + barcode.toLocaleUpperCase("tr-TR");
+    const id = clean(r.id || r.recordId || (row && (row.record_key || row.id)));
+    return id ? "id::" + id : "row::" + String(index);
+  }
+  function normalizeDriveMesahaRecord(row, index, ctx, fallbackBolme) {
+    const source = row && row.record_data && typeof row.record_data === "object" ? row.record_data : (row || {});
+    const out = { ...source };
+    const barcode = clean(out.barcode || out.barkod || out.barkodNo || out.barkod_no || (row && row.barcode));
+    const bolme = clean(out.bolmeNo || out.bolme_no || out.bolme || fallbackBolme);
+    if (barcode && !clean(out.barcode)) out.barcode = barcode;
+    if (!clean(out.id)) out.id = clean(row && (row.record_key || row.id)) || `drive_${fold(ctx && ctx.seflik || "mesaha")}_${fold(bolme || "all")}_${fold(barcode || String(index))}`;
+    if (ctx && ctx.seflik) out.seflik = ctx.seflik;
+    if (bolme) out.bolmeNo = bolme;
+    return out;
+  }
   async function restoreMesahaBackup(id, mode) {
     const out = await readBackup(id), p = out.payload || out.data || out || {};
-    const incoming = Array.isArray(p.mesahaRecords) ? p.mesahaRecords : Array.isArray(p.records) ? p.records : [];
-    if (!incoming.length) throw new Error("Bu yedekte Mesaha kaydı bulunamadı");
-    const current = read(K.records, []), result = mode === "replace" ? incoming : (() => {
-      const map = new Map((Array.isArray(current) ? current : []).map((r) => [String(r.barcode || r.barkod || r.barkodNo || r.barkod_no || r.id || Math.random()), r]));
-      incoming.forEach((r) => map.set(String(r.barcode || r.barkod || r.barkodNo || r.barkod_no || r.id || Math.random()), r));
-      return [...map.values()];
-    })();
+    const rawIncoming = Array.isArray(p.mesahaRecords) ? p.mesahaRecords : Array.isArray(p.records) ? p.records : [];
+    if (!rawIncoming.length) throw new Error("Bu yedekte Mesaha kaydı bulunamadı");
+
+    const ctx = currentWorkspaceContext();
+    const backupSettings = p.settings && typeof p.settings === "object" ? p.settings : {};
+    const fallbackBolme = clean(backupSettings.bolmeNo || backupSettings.bolme || backupSettings.bolme_no);
+    const incoming = rawIncoming.map((row, index) => normalizeDriveMesahaRecord(row, index, ctx, fallbackBolme));
+    const current = await currentMesahaRecordsReady();
+    let result;
+    if (mode === "replace") {
+      result = incoming;
+    } else {
+      /* Şeflik klasöründeki "Mesahaya Devam Et" ile aynı güvenli mantık:
+         önce uzak kayıtları koy, sonra cihazdaki yerel kaydı aynı barkodda koru. */
+      const map = new Map();
+      incoming.forEach((row, index) => map.set(restoreMesahaRecordKey(row, "drive_" + index), row));
+      (Array.isArray(current) ? current : []).forEach((row, index) => map.set(restoreMesahaRecordKey(row, "local_" + index), row));
+      result = [...map.values()];
+    }
+
+    const currentSettings = read(K.settings, {}) || {};
+    const settings = {
+      ...currentSettings,
+      ...backupSettings,
+      ...(ctx.seflik ? { seflik: ctx.seflik } : {}),
+      ...(ctx.key ? { seflikKey: ctx.key, seflik_key: ctx.key } : {}),
+    };
+    const firstBolme = clean(settings.bolmeNo || settings.bolme || settings.bolme_no || (incoming[0] && (incoming[0].bolmeNo || incoming[0].bolme_no)));
+    if (firstBolme) settings.bolmeNo = firstBolme;
+
     window.__suiteRemoteHydrating = true;
     try {
+      let saved = { ok: true };
+      const store = window.MesahaStorageV527;
+      if (store && typeof store.replaceAll === "function") {
+        saved = await store.replaceAll(result, settings, { reason: "drive-restore-v94-" + (mode || "merge") });
+      } else {
+        const recordsOk = write(K.records, result);
+        const settingsOk = write(K.settings, settings);
+        saved = { ok: recordsOk !== false && settingsOk !== false };
+      }
+      if (saved && saved.ok === false) throw new Error(saved.error || "Drive yedeği kalıcı depolamaya yazılamadı");
+
       write(K.records, result);
-      if (p.settings && typeof p.settings === "object") write(K.settings, { ...read(K.settings, {}), ...p.settings });
-      if (window.state) { window.state.records = result; if (p.settings) window.state.settings = { ...(window.state.settings || {}), ...p.settings }; }
-    } finally { setTimeout(() => { window.__suiteRemoteHydrating = false; }, 300); }
+      write(K.settings, settings);
+      if (window.state) {
+        window.state.records = result.slice();
+        window.state.settings = { ...(window.state.settings || {}), ...settings };
+      }
+      const panel = read(K.panel, {}) || {};
+      write(K.panel, {
+        ...panel,
+        ...(ctx.seflik ? { seflik: ctx.seflik, activeSeflik: ctx.seflik } : {}),
+        ...(firstBolme ? { bolmeNo: firstBolme } : {}),
+      });
+
+      /* V92 çalışma alanı izolasyonu reload sırasında eski snapshot'ı geri basmasın. */
+      if (ctx.key && offlineStore()) {
+        await offlineStore().ready().catch(() => false);
+        await offlineStore().saveWorkspace(ctx.key, ctx.seflik, result, settings).catch(() => false);
+        mesahaWorkspaceKey = ctx.key;
+        try { localStorage.setItem(MESAHA_WORKSPACE_LAST_KEY, ctx.key); } catch (_) {}
+      }
+
+      try {
+        if (typeof window.renderAll === "function") window.renderAll();
+      } catch (_) {}
+      try {
+        window.dispatchEvent(new CustomEvent("mesaha-records-changed", {
+          detail: { source: "drive-restore-v94", backupId: id, mode: mode || "merge", imported: incoming.length, count: result.length }
+        }));
+        window.dispatchEvent(new CustomEvent("mesaha:records-recovered", {
+          detail: { reason: "drive-restore-v94", count: result.length }
+        }));
+      } catch (_) {}
+    } finally {
+      setTimeout(() => { window.__suiteRemoteHydrating = false; }, 350);
+    }
     markDirty("mesaha", { restore: true, backupId: id, mode: mode || "merge" });
-    return { ok: true, count: result.length, imported: incoming.length };
+    return { ok: true, count: result.length, imported: incoming.length, durable: true, workspaceSaved: !!ctx.key };
   }
 
   async function createSuiteBackupUnlocked() {

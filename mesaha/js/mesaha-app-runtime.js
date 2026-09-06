@@ -2390,6 +2390,7 @@
         }
         function renderCutters() {
           const before = (state.settings.cutters || []).join("\u0001");
+          const activeBefore = state.settings.activeCutter || "";
           const list = [
             ...new Set(
               [
@@ -2399,9 +2400,10 @@
             ),
           ];
           state.settings.cutters = list;
-          if (before !== list.join("\u0001")) saveSettings();
+          if (list.length && !state.settings.activeCutter) state.settings.activeCutter = list[0];
+          if (before !== list.join("\u0001") || activeBefore !== (state.settings.activeCutter || "")) saveSettings();
           $("cutterChips").innerHTML =
-            `<button class="chip ${!state.settings.activeCutter ? "active" : ""}" data-cutter="">Kesimci seçilmedi</button>` +
+            (list.length ? "" : `<button class="chip active" data-cutter="">Kesimci seçilmedi</button>`) +
             list
               .map(
                 (c) =>
