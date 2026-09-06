@@ -4798,3 +4798,49 @@ html:not([data-mesaha-v600-ready="1"]) #bottomNav{opacity:0!important;transform:
   #bottomNav.mesaha-nav-v600 button,.management-tool-v81,.management-row-v81{transition:none!important}
   #recordsView .record-card,#beyanView .beyan-card-v600{contain:layout paint}
 }
+
+
+/* V90 — Mesaha girişinde alt menü yalnız gerçek ekran klavyesi açıldığında gizlenir. */
+body.entry-open:not(.mesaha-v90-keyboard-open) #bottomNav.mesaha-nav-v600,
+body.mesaha-entry-controls-open-v71.entry-open:not(.mesaha-v90-keyboard-open) #bottomNav.mesaha-nav-v600{
+  display:grid!important;
+  visibility:visible!important;
+  opacity:1!important;
+  pointer-events:auto!important;
+  transform:translateX(-50%)!important;
+}
+body.mesaha-v90-keyboard-open #bottomNav.mesaha-nav-v600,
+html.mesaha-v90-keyboard-open body #bottomNav.mesaha-nav-v600{
+  display:none!important;
+  visibility:hidden!important;
+  opacity:0!important;
+  pointer-events:none!important;
+}
+
+/* V90 — yeni hesap/Drive kartı tek paneldir; Çıkış Yap altındaki eski alanlar gösterilmez. */
+#userPanelOverlayV316 .panel-card-v316.mesaha-panel-compact-v90 > .panel-grid-v316,
+#userPanelOverlayV316 .panel-card-v316.mesaha-panel-compact-v90 > .panel-stats-v316,
+#userPanelOverlayV316 .panel-card-v316.mesaha-panel-compact-v90 > .panel-actions-v316,
+#userPanelOverlayV316 .panel-card-v316.mesaha-panel-compact-v90 > #panelIpCardV518,
+#userPanelOverlayV316 .panel-card-v316.mesaha-panel-compact-v90 > #panelTelegramSectionV515{
+  display:none!important;
+}
+body.mesaha-user-panel-open-v393 #panelFloatingCloseV393{
+  display:none!important;
+}
+body.mesaha-user-panel-open-v393 #userPanelOverlayV316 .panel-card-v316.mesaha-panel-compact-v90{
+  padding-bottom:18px!important;
+}
+.panel-drive-actions-v87 .panel-drive-disconnect-v90{
+  grid-column:1/-1;
+  min-height:40px;
+  border:1px solid #fecaca;
+  border-radius:12px;
+  padding:9px 11px;
+  background:#fff1f2;
+  color:#b42318;
+  font-size:11px;
+  font-weight:950;
+}
+.panel-drive-actions-v87 .panel-drive-disconnect-v90:disabled{opacity:.58;cursor:wait}
+@media(max-width:380px){.panel-drive-actions-v87 .panel-drive-disconnect-v90{grid-column:auto}}

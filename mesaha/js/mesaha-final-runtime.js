@@ -1444,3 +1444,88 @@
   else bind();
 })(typeof window !== "undefined" ? window : null);
 ;
+
+
+/* V90 — alt menü / gerçek ekran klavyesi ayrımı. */
+(function (root) {
+  "use strict";
+  if (!root || root.__mesahaV90KeyboardNav) return;
+  root.__mesahaV90KeyboardNav = true;
+  var baselineViewport = 0,
+    baselineInner = 0,
+    timer = 0;
+
+  function editable(el) {
+    if (!el || el === document.body || el === document.documentElement) return false;
+    if (el.isContentEditable) return true;
+    var tag = String(el.tagName || "").toLowerCase();
+    if (tag === "textarea") return true;
+    if (tag !== "input") return false;
+    var type = String(el.type || "text").toLowerCase();
+    return ["button", "submit", "reset", "checkbox", "radio", "range", "color", "file", "hidden"].indexOf(type) < 0;
+  }
+
+  function viewportHeight() {
+    try { return root.visualViewport ? Number(root.visualViewport.height || 0) : Number(root.innerHeight || 0); }
+    catch (_) { return Number(root.innerHeight || 0); }
+  }
+
+  function virtualKeyboardHeight() {
+    try {
+      var rect = navigator.virtualKeyboard && navigator.virtualKeyboard.boundingRect;
+      return rect ? Number(rect.height || 0) : 0;
+    } catch (_) { return 0; }
+  }
+
+  function rememberBaseline(force) {
+    var active = editable(document.activeElement), vh = viewportHeight(), ih = Number(root.innerHeight || 0);
+    if (force || !active) {
+      if (vh > baselineViewport) baselineViewport = vh;
+      if (ih > baselineInner) baselineInner = ih;
+    }
+  }
+
+  function detectOpen() {
+    if (!editable(document.activeElement)) return false;
+    var vh = viewportHeight(), ih = Number(root.innerHeight || 0), vv = root.visualViewport;
+    var shrinkViewport = Math.max(0, (baselineViewport || vh) - vh);
+    var shrinkInner = Math.max(0, (baselineInner || ih) - ih);
+    var inset = 0;
+    try { if (vv) inset = Math.max(0, ih - Number(vv.height || 0) - Number(vv.offsetTop || 0)); } catch (_) {}
+    return virtualKeyboardHeight() > 90 || shrinkViewport > 110 || shrinkInner > 110 || inset > 110;
+  }
+
+  function sync() {
+    timer = 0;
+    rememberBaseline(false);
+    var open = detectOpen(), body = document.body, html = document.documentElement;
+    if (body) body.classList.toggle("mesaha-v90-keyboard-open", open);
+    if (html) html.classList.toggle("mesaha-v90-keyboard-open", open);
+  }
+
+  function queue(delay) {
+    clearTimeout(timer);
+    timer = setTimeout(sync, delay == null ? 20 : delay);
+  }
+
+  function boot() {
+    rememberBaseline(true);
+    sync();
+    document.addEventListener("focusin", function () { queue(30); setTimeout(sync, 180); setTimeout(sync, 360); }, true);
+    document.addEventListener("focusout", function () { queue(80); setTimeout(sync, 260); }, true);
+    root.addEventListener("resize", function () { queue(10); }, { passive: true });
+    root.addEventListener("orientationchange", function () { baselineViewport = 0; baselineInner = 0; setTimeout(function () { rememberBaseline(true); sync(); }, 420); }, { passive: true });
+    root.addEventListener("pageshow", function () { setTimeout(function () { rememberBaseline(false); sync(); }, 80); }, { passive: true });
+    if (root.visualViewport) {
+      root.visualViewport.addEventListener("resize", function () { queue(0); }, { passive: true });
+      root.visualViewport.addEventListener("scroll", function () { queue(0); }, { passive: true });
+    }
+    try {
+      if (navigator.virtualKeyboard && typeof navigator.virtualKeyboard.addEventListener === "function")
+        navigator.virtualKeyboard.addEventListener("geometrychange", function () { queue(0); });
+    } catch (_) {}
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot, { once: true });
+  else boot();
+})(typeof window !== "undefined" ? window : null);
