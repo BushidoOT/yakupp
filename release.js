@@ -1,20 +1,20 @@
 (function (root) {
   "use strict";
   const DATA = /*MESAHA_RELEASE_DATA_START*/{
-  "build": 87,
-  "version": "87.0.0",
+  "build": 88,
+  "version": "88.0.0",
   "channel": "stable",
-  "releasedAt": "2026-09-06T13:20:00+03:00",
-  "assetToken": "orman-io-stable-20260906-v87",
-  "cacheName": "orman-io-shell-stable-20260906-v87",
+  "releasedAt": "2026-09-06T13:45:00+03:00",
+  "assetToken": "orman-io-stable-20260906-v88",
+  "cacheName": "orman-io-shell-stable-20260906-v88",
   "apps": {
     "suite": {
       "label": "Orman İO",
-      "version": "87.0.0"
+      "version": "88.0.0"
     },
     "mesaha": {
       "label": "Mesaha İO",
-      "version": "6.26"
+      "version": "6.27"
     },
     "istif": {
       "label": "İstif İO",
@@ -22,10 +22,10 @@
     },
     "admin": {
       "label": "Orman İO Yönetim",
-      "version": "87.0.0"
+      "version": "88.0.0"
     }
   },
-  "description": "V87 profil ve Drive bilgileri: profil resminden açılan panelde tam hesap, oturum, cihaz, şeflik, yetki, bekleyen işlem ve bağlantı bilgileri görünür; aktif şefliğin kurucu Drive bağlantısı, sahibi, klasörü ve depolama durumu kurucu olmayan üyelere de salt okunur gösterilir."
+  "description": "V88 Drive yedekleme güvenliği: Drive yükleme başlar başlamaz tam ekran ilerleme bildirimi gösterilir ve ilgili düğmeler kilitlenir; eşzamanlı tekrar basmalar tek işleme bağlanır; aynı veri için kısa sürede yinelenen istekler sunucu idempotency anahtarıyla ikinci yedek oluşturmaz."
 }/*MESAHA_RELEASE_DATA_END*/;
   const APP_NAMES = DATA.apps || {};
   const SCRIPT_URL = (() => {

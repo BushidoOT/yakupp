@@ -244,6 +244,12 @@
       .suite-send-spinner-v19{width:48px;height:48px;border:5px solid #dcece3;border-top-color:#17683f;border-radius:50%;margin:0 auto 16px;animation:suiteSpinV19 .8s linear infinite}
       .suite-send-card-v19 h3{margin:0 0 8px;font-size:22px}.suite-send-card-v19 p{margin:0;color:#61766a;font-weight:700;line-height:1.45}.suite-send-card-v19 small{display:block;margin-top:12px;color:#839188}
       @keyframes suiteSpinV19{to{transform:rotate(360deg)}}
+      #suiteDriveUploadOverlayV88[hidden]{display:none!important}
+      #suiteDriveUploadOverlayV88{position:fixed;inset:0;z-index:2147483646;background:rgba(6,30,20,.64);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:grid;place-items:center;padding:calc(18px + env(safe-area-inset-top,0px)) 18px calc(18px + env(safe-area-inset-bottom,0px))}
+      .suite-drive-upload-card-v88{width:min(410px,100%);border:1px solid rgba(255,255,255,.7);border-radius:25px;background:#fff;padding:25px 20px;text-align:center;box-shadow:0 30px 90px rgba(0,0,0,.34);color:#174a32}
+      .suite-drive-upload-spinner-v88{width:52px;height:52px;margin:0 auto 16px;border:5px solid #dcece3;border-top-color:#168554;border-radius:50%;animation:suiteDriveSpinV88 .78s linear infinite}.suite-drive-upload-card-v88.success .suite-drive-upload-spinner-v88{border:0;background:#1aa565;color:#fff;animation:none}.suite-drive-upload-card-v88.success .suite-drive-upload-spinner-v88::after{content:"✓";display:grid;place-items:center;width:52px;height:52px;font-size:29px;font-weight:1000}.suite-drive-upload-card-v88.error .suite-drive-upload-spinner-v88{border:0;background:#d74444;color:#fff;animation:none}.suite-drive-upload-card-v88.error .suite-drive-upload-spinner-v88::after{content:"!";display:grid;place-items:center;width:52px;height:52px;font-size:29px;font-weight:1000}
+      .suite-drive-upload-card-v88 h3{margin:0 0 8px;font-size:21px}.suite-drive-upload-card-v88 p{margin:0;color:#60766a;font-size:13px;font-weight:760;line-height:1.45}.suite-drive-upload-card-v88 small{display:block;margin-top:13px;padding:9px 11px;border-radius:12px;background:#f1f8f4;color:#47705b;font-size:11px;font-weight:850}.suite-drive-upload-card-v88.error small{background:#fff1f1;color:#a03636}
+      @keyframes suiteDriveSpinV88{to{transform:rotate(360deg)}}
       #mesahaDriveBackupOverlayV10[hidden]{display:none!important}
       #mesahaDriveBackupOverlayV10{position:fixed;inset:0;z-index:2147483000;background:rgba(9,32,22,.48);backdrop-filter:blur(5px);display:grid;place-items:center;padding:14px}
       .mesaha-drive-modal-v10{width:min(620px,100%);max-height:min(86vh,820px);overflow:auto;background:#fff;border-radius:22px;padding:18px;box-shadow:0 30px 80px #0005}
@@ -575,7 +581,50 @@
       setTimeout(() => { window.__suiteRemoteHydrating = false; }, 350);
     }
   }
-  let backupItemsV10=[];
+  let backupItemsV10=[],driveBackupBusyV88=false,driveBackupHideTimerV88=0,driveBackupPhaseV88="idle";
+  function ensureDriveUploadOverlayV88(){
+    let ov=$("suiteDriveUploadOverlayV88");if(ov)return ov;
+    ov=document.createElement("div");ov.id="suiteDriveUploadOverlayV88";ov.hidden=true;ov.setAttribute("role","status");ov.setAttribute("aria-live","assertive");ov.innerHTML='<section class="suite-drive-upload-card-v88"><div class="suite-drive-upload-spinner-v88" aria-hidden="true"></div><h3 id="suiteDriveUploadTitleV88">Drive yedeği yükleniyor</h3><p id="suiteDriveUploadTextV88">Kayıtlar hazırlanıp güvenli Drive alanına gönderiliyor.</p><small id="suiteDriveUploadNoteV88">Tekrar basmanıza gerek yok. Bu ekran kapanana kadar işlem devam eder.</small></section>';
+    document.body.appendChild(ov);return ov;
+  }
+  function setDriveBackupButtonsV88(busy){
+    document.querySelectorAll('#cloudBackupBtnV316,[data-mesaha-drive-backup-v10],#managementMesahaDriveBackupV82,#managementSuiteDriveBackupV82,#backupNowV8').forEach((button)=>{
+      if(busy){
+        if(!button.hasAttribute("data-drive-prev-disabled-v88")){
+          button.setAttribute("data-drive-prev-disabled-v88",button.disabled?"1":"0");
+          button.setAttribute("data-drive-prev-text-v88",button.textContent||"");
+        }
+        button.disabled=true;button.setAttribute("aria-busy","true");button.textContent="Drive’a yükleniyor…";
+      }else if(button.hasAttribute("data-drive-prev-disabled-v88")){
+        button.disabled=button.getAttribute("data-drive-prev-disabled-v88")==="1";
+        button.textContent=button.getAttribute("data-drive-prev-text-v88")||"Drive’a Yedekle";
+        button.removeAttribute("data-drive-prev-disabled-v88");button.removeAttribute("data-drive-prev-text-v88");button.removeAttribute("aria-busy");
+      }
+    });
+  }
+  function driveBackupStateV88(detail){
+    detail=detail||{};const phase=clean(detail.phase||"start"),kind=clean(detail.kind||"mesaha"),ov=ensureDriveUploadOverlayV88(),card=ov.querySelector(".suite-drive-upload-card-v88"),title=$("suiteDriveUploadTitleV88"),text=$("suiteDriveUploadTextV88"),note=$("suiteDriveUploadNoteV88");
+    clearTimeout(driveBackupHideTimerV88);
+    if(phase==="start"){
+      driveBackupPhaseV88="start";ov.hidden=false;card&&card.classList.remove("success","error");setDriveBackupButtonsV88(true);
+      if(title)title.textContent=kind==="suite"?"Tam uygulama yedeği yükleniyor":"Drive yedeği yükleniyor";
+      if(text)text.textContent=kind==="suite"?"Mesaha, İstif ve şeflik verileri hazırlanıp Drive’a gönderiliyor.":"Mesaha kayıtları hazırlanıp şefliğin Drive alanına gönderiliyor.";
+      if(note)note.textContent="Tekrar basmanıza gerek yok. Bu ekran kapanana kadar işlem devam eder.";
+      return;
+    }
+    if(phase==="success"){
+      driveBackupPhaseV88="success";ov.hidden=false;card&&card.classList.add("success");card&&card.classList.remove("error");
+      if(title)title.textContent="Drive yedeği tamamlandı";if(text)text.textContent="Yedek şefliğin Drive alanına başarıyla kaydedildi.";if(note)note.textContent="Aynı işlem ikinci kez oluşturulmadı.";return;
+    }
+    if(phase==="error"){
+      driveBackupPhaseV88="error";ov.hidden=false;card&&card.classList.add("error");card&&card.classList.remove("success");
+      if(title)title.textContent="Drive yedeği tamamlanamadı";if(text)text.textContent=clean(detail.message||"Bağlantıyı kontrol edip tekrar deneyin.");if(note)note.textContent="Yeni bir deneme yapmak için bu ekranın kapanmasını bekleyin.";return;
+    }
+    if(phase==="end"){
+      setDriveBackupButtonsV88(false);
+      driveBackupHideTimerV88=setTimeout(()=>{ov.hidden=true;card&&card.classList.remove("success","error");driveBackupPhaseV88="idle";},driveBackupPhaseV88==="error"?1500:900);
+    }
+  }
   function ensureDriveModalV10(){
     let ov=$("mesahaDriveBackupOverlayV10"); if(ov) return ov;
     ov=document.createElement("div"); ov.id="mesahaDriveBackupOverlayV10"; ov.hidden=true;
@@ -595,7 +644,24 @@
     }catch(e){host.innerHTML=`<div class="mesaha-drive-empty-v10">${esc(clean(e&&e.message||e))}<br><small>Kurucuysanız Yönetim → Yedekler ve Senkronizasyon bölümünden Drive bağlayın.</small></div>`;}
   }
   function openDriveModalV10(){const ov=ensureDriveModalV10();ov.hidden=false;document.body.classList.add("mesaha-drive-modal-open-v10");loadDriveBackupsV10();}
-  async function createDriveBackupV10(){const api=(window.MesahaSuiteSyncV28 || window.MesahaSuiteSyncV27 || window.MesahaSuiteSyncV26 || window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8);try{await api.createMesahaBackup({bolmeNo:clean($("seflikFolderBolmeV528")?.value||"")});notify("Mesaha yedeği şeflik kurucusunun Drive hesabına kaydedildi.");await loadDriveBackupsV10();}catch(e){if(e&&(e.code==="DRIVE_NOT_CONNECTED"||e.code==="GOOGLE_REQUIRED")){api.openDriveSetup&&api.openDriveSetup();return;}notify(clean(e&&e.message||e),true);}}
+  async function createDriveBackupV10(){
+    const api=(window.MesahaSuiteSyncV28 || window.MesahaSuiteSyncV27 || window.MesahaSuiteSyncV26 || window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8);
+    if(driveBackupBusyV88){notify("Drive yedeği zaten yükleniyor. Lütfen işlemin tamamlanmasını bekleyin.");return;}
+    if(!api||typeof api.createMesahaBackup!=="function"){notify("Drive yedekleme modülü hazır değil.",true);return;}
+    driveBackupBusyV88=true;driveBackupStateV88({phase:"start",kind:"mesaha"});
+    try{
+      await api.createMesahaBackup({bolmeNo:clean($("seflikFolderBolmeV528")?.value||"")});
+      driveBackupStateV88({phase:"success",kind:"mesaha"});
+      notify("Mesaha yedeği şeflik kurucusunun Drive hesabına kaydedildi.");
+      await loadDriveBackupsV10();
+    }catch(e){
+      driveBackupStateV88({phase:"error",kind:"mesaha",message:clean(e&&e.message||e)});
+      if(e&&(e.code==="DRIVE_NOT_CONNECTED"||e.code==="GOOGLE_REQUIRED")){api.openDriveSetup&&api.openDriveSetup();return;}
+      notify(clean(e&&e.message||e),true);
+    }finally{
+      driveBackupBusyV88=false;driveBackupStateV88({phase:"end",kind:"mesaha"});
+    }
+  }
   async function restoreDriveBackupV10(id,mode){const api=(window.MesahaSuiteSyncV28 || window.MesahaSuiteSyncV27 || window.MesahaSuiteSyncV26 || window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || window.MesahaSuiteSyncV20 || window.MesahaSuiteSyncV19 || window.MesahaSuiteSyncV18 || window.MesahaSuiteSyncV17 || window.MesahaSuiteSyncV14 || window.MesahaSuiteSyncV13 || window.MesahaSuiteSyncV12 || window.MesahaSuiteSyncV11 || window.MesahaSuiteSyncV10 || window.MesahaSuiteSyncV9 || window.MesahaSuiteSyncV8);if(!confirm(mode==="replace"?"Cihazdaki mevcut Mesaha kayıtları silinip bu yedek yüklensin mi?":"Yedek mevcut Mesaha kayıtlarıyla birleştirilsin mi?"))return;try{const out=await api.restoreMesahaBackup(id,mode);notify(`${out.imported} kayıt yedekten alındı.`);closeDriveModalV10();setTimeout(()=>location.reload(),450);}catch(e){notify(clean(e&&e.message||e),true);}}
 
   function renderFolderList() {
@@ -939,6 +1005,9 @@
   window.addEventListener("mesaha:records-saved", schedule);
   window.addEventListener("mesaha:records-recovered", schedule);
   window.addEventListener("mesaha-suite:shared-data-updated", schedule);
+  window.addEventListener("mesaha-suite:drive-backup-state", (event) => {
+    driveBackupStateV88(event && event.detail || {});
+  }, { passive: true });
   window.addEventListener("mesaha-suite:sync-complete", () => {
     schedule();
     refreshFolder(false).catch(() => {});

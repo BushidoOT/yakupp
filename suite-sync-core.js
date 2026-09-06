@@ -2242,7 +2242,7 @@
     const rows = read(K.records, []);
     return Array.isArray(rows) ? rows : [];
   }
-  async function createMesahaBackup(options) {
+  async function createMesahaBackupUnlocked(options) {
     options = options || {};
     const id = identity(), af = activeFolder();
     if (!cloudSyncAllowed()) { openDriveSetup(); throw new Error("Drive yedeği için Google ile giriş yapın veya terminal koduyla eşleşin"); }
@@ -2255,6 +2255,7 @@
     if (!stats.rowCount) throw new Error(selected ? `Bölme ${selected} için yedeklenecek Mesaha kaydı yok` : "Yedeklenecek Mesaha kaydı yok");
     const result = await drive("backup_json", {
       seflik, appId: "mesaha",
+      idempotencyKey: `manual-mesaha:${fold(af && (af.seflik_key || af.seflikKey || af.seflik) || seflik)}:${fold(selected || "all")}:${syncTokenFingerprint(stats.records)}:${Math.floor(Date.now() / 120000)}`,
       fileName: `Mesaha_${fold(seflik)}_${selected ? fold(selected) + "_" : ""}${new Date().toISOString().replace(/[:.]/g, "-")}.json`,
       recordCount: stats.itemCount,
       rowCount: stats.rowCount,
@@ -2286,7 +2287,7 @@
     return { ok: true, count: result.length, imported: incoming.length };
   }
 
-  async function createSuiteBackup() {
+  async function createSuiteBackupUnlocked() {
     const id = identity();
     if (!cloudSyncAllowed()) { openDriveSetup(); throw new Error("Drive yedeği için Google ile giriş yapın veya terminal koduyla eşleşin"); }
     await ensureDriveConnected({ redirect: true });
@@ -2323,6 +2324,7 @@
     const result = await drive("backup_json", {
       seflik: id.seflik,
       appId: "suite",
+      idempotencyKey: `manual-suite:${fold(id.seflik || id.name)}:${syncTokenFingerprint(stats.records)}:${syncTokenFingerprint(payload.istifRecords)}:${Math.floor(Date.now() / 120000)}`,
       fileName: `Mesaha_Suite_${fold(id.seflik || id.name)}_${new Date().toISOString().replace(/[:.]/g, "-")}.json`,
       recordCount: stats.itemCount,
       rowCount: stats.rowCount,
@@ -2335,6 +2337,52 @@
     });
     if (stats.rowCount) await sendExactBackupStats(stats, result, { text: "Orman İO tam Drive yedeği" });
     return result;
+  }
+  let manualDriveBackupLockV88 = null;
+  function emitDriveBackupStateV88(phase, kind, extra) {
+    try {
+      window.dispatchEvent(new CustomEvent("mesaha-suite:drive-backup-state", {
+        detail: { phase, kind, ...(extra || {}) },
+      }));
+    } catch (_) {}
+  }
+  function runManualDriveBackupV88(kind, work, silent) {
+    if (manualDriveBackupLockV88) {
+      if (!silent && manualDriveBackupLockV88.silent) {
+        manualDriveBackupLockV88.silent = false;
+        emitDriveBackupStateV88("start", manualDriveBackupLockV88.kind, { startedAt: manualDriveBackupLockV88.startedAt });
+      }
+      return manualDriveBackupLockV88.promise;
+    }
+    const startedAt = Date.now();
+    const entry = { kind, promise: null, startedAt, silent: silent === true };
+    if (!entry.silent) emitDriveBackupStateV88("start", kind, { startedAt });
+    const promise = Promise.resolve()
+      .then(work)
+      .then((result) => {
+        if (!entry.silent) emitDriveBackupStateV88("success", kind, { startedAt, result });
+        return result;
+      })
+      .catch((error) => {
+        if (!entry.silent) emitDriveBackupStateV88("error", kind, { startedAt, message: clean(error && error.message || error) });
+        throw error;
+      })
+      .finally(() => {
+        if (!entry.silent) emitDriveBackupStateV88("end", kind, { startedAt });
+        setTimeout(() => {
+          if (manualDriveBackupLockV88 && manualDriveBackupLockV88.promise === promise)
+            manualDriveBackupLockV88 = null;
+        }, 1200);
+      });
+    entry.promise = promise;
+    manualDriveBackupLockV88 = entry;
+    return promise;
+  }
+  function createMesahaBackup(options) {
+    return runManualDriveBackupV88("mesaha", () => createMesahaBackupUnlocked(options), !!(options && options.silent));
+  }
+  function createSuiteBackup() {
+    return runManualDriveBackupV88("suite", () => createSuiteBackupUnlocked());
   }
   const backupContext = () => { const ctx = folderContext(); return { seflik: ctx.seflik || identity().seflik, seflikKey: ctx.seflikKey || identity().seflikKey, folderId: ctx.folderId }; };
   const listBackups = () => drive("backup_list", backupContext());
