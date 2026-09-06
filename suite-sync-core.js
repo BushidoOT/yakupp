@@ -1842,19 +1842,19 @@
     };
   }
   function authoritativeSyncResponse(out) {
-    return !!(out && out.sync_contract === "orman-io-sync-v68" && out.complete === true && out.partial !== true && out.truncated !== true);
+    if (!out || out.ok === false || out.partial === true || out.truncated === true || out.complete === false) return false;
+    /* Yeni fonksiyonlar açık sözleşme döndürür. Eski, tam Supabase fonksiyonları
+       complete alanını göndermiyordu; truncated=false cevabı geriye uyumlu ve
+       güvenli kabul edilir. Böylece sunucu kademeli güncellenirken bulut kilitlenmez. */
+    if (out.sync_contract) return out.sync_contract === "orman-io-sync-v68" && out.complete === true;
+    return out.truncated !== true;
   }
 
   function authoritativeIstifList(out) {
-    return !!(
-      out &&
-      out.sync_contract === "orman-io-sync-v68" &&
-      out.complete === true &&
-      out.partial !== true &&
-      out.truncated !== true &&
-      (!Array.isArray(out.query_errors) || out.query_errors.length === 0) &&
-      (out.expected_queries == null || Number(out.successful_queries) === Number(out.expected_queries))
-    );
+    if (!out || out.ok === false || out.complete !== true || out.partial === true || out.truncated === true) return false;
+    if (Array.isArray(out.query_errors) && out.query_errors.length) return false;
+    if (out.expected_queries != null && Number(out.successful_queries) !== Number(out.expected_queries)) return false;
+    return !out.sync_contract || out.sync_contract === "orman-io-sync-v68";
   }
   async function pullIstifRecords() {
     if (navigator.onLine === false) return { received: 0, changed: 0, offline: true };

@@ -4684,9 +4684,15 @@ html[data-suite-managed="1"] #userPanelOverlayV316 .panel-title-v316 h2{font-siz
         color: #991b1b !important;
         border-color: #fecaca !important;
       }
-      .panel-session-v563 .logout:hover {
+.panel-session-v563 .logout:hover {
         filter: brightness(0.98);
       }
+      .panel-account-head-v84{display:grid;grid-template-columns:52px minmax(0,1fr) auto;align-items:center;gap:11px;padding-bottom:10px;border-bottom:1px solid rgba(22,101,62,.12)}
+      .panel-account-avatar-v84{width:52px;height:52px;border-radius:17px;display:grid;place-items:center;overflow:hidden;background:linear-gradient(145deg,#1f8154,#125b3a);color:#fff;font-size:16px;font-weight:1000;box-shadow:0 8px 18px rgba(20,93,58,.18)}
+      .panel-account-avatar-v84 img{width:100%;height:100%;object-fit:cover;display:block}.panel-account-head-v84>div:nth-child(2){min-width:0;display:grid;gap:2px}.panel-account-head-v84>div:nth-child(2)>small{color:#58806d;font-size:9px;font-weight:950;letter-spacing:.12em}.panel-account-head-v84>div:nth-child(2)>b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#123f2c;font-size:16px}.panel-account-head-v84>div:nth-child(2)>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#65786f;font-size:11px;font-weight:750}
+      .panel-connection-v84{min-height:38px;border:1px solid;border-radius:13px;padding:0 10px;display:flex;align-items:center;gap:6px;background:#fff;font-size:11px;font-weight:950;touch-action:manipulation}.panel-connection-v84 i{width:9px;height:9px;border-radius:50%}.panel-connection-v84.online{border-color:#b9e5cb;color:#137044;background:#edf9f2}.panel-connection-v84.online i{background:#27b96f;box-shadow:0 0 0 4px rgba(39,185,111,.13)}.panel-connection-v84.offline{border-color:#efc4c4;color:#a42d2d;background:#fff1f1}.panel-connection-v84.offline i{background:#dd3c3c;box-shadow:0 0 0 4px rgba(221,60,60,.12)}
+      .panel-account-details-v84{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.panel-account-details-v84>div{min-width:0;padding:9px 10px;border:1px solid #dce9e2;border-radius:13px;background:rgba(255,255,255,.78);display:grid;gap:3px}.panel-account-details-v84 small{color:#71847b;font-size:9px;font-weight:850;letter-spacing:.03em}.panel-account-details-v84 strong{overflow-wrap:anywhere;color:#173f2e;font-size:12px}.panel-account-id-v84{padding:9px 10px;border-radius:12px;background:#fff;border:1px solid #dce9e2}.panel-account-id-v84 summary{cursor:pointer;color:#536d61;font-size:11px;font-weight:850}.panel-account-id-v84 code{display:block;margin-top:7px;overflow-wrap:anywhere;color:#40564c;font-size:10px;user-select:text}
+      @media(max-width:380px){.panel-account-head-v84{grid-template-columns:46px minmax(0,1fr)}.panel-account-avatar-v84{width:46px;height:46px;border-radius:15px}.panel-connection-v84{grid-column:1/-1;justify-content:center}.panel-account-details-v84{grid-template-columns:1fr}}
 
 
 /* source: mesaha-profile-avatar-stable-style */

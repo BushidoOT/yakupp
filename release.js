@@ -1,31 +1,31 @@
 (function (root) {
   "use strict";
   const DATA = /*MESAHA_RELEASE_DATA_START*/{
-  "build": 83,
-  "version": "83.0.0",
+  "build": 84,
+  "version": "84.0.0",
   "channel": "stable",
-  "releasedAt": "2026-09-05T18:18:50+03:00",
-  "assetToken": "orman-io-stable-20260905-v83",
-  "cacheName": "orman-io-shell-stable-20260905-v83",
+  "releasedAt": "2026-09-06T11:30:00+03:00",
+  "assetToken": "orman-io-stable-20260906-v84",
+  "cacheName": "orman-io-shell-stable-20260906-v84",
   "apps": {
     "suite": {
       "label": "Orman İO",
-      "version": "83.0.0"
+      "version": "84.0.0"
     },
     "mesaha": {
       "label": "Mesaha İO",
-      "version": "6.22"
+      "version": "6.23"
     },
     "istif": {
       "label": "İstif İO",
-      "version": "0.3.24"
+      "version": "0.3.25"
     },
     "admin": {
       "label": "Orman İO Yönetim",
-      "version": "83.0.0"
+      "version": "84.0.0"
     }
   },
-  "description": "V83 mobil kararlılık ve güvenli senkronizasyon: Android/iOS terminal oturumları zaman aşımı ve yenileme yarışlarına karşı güçlendirildi; Şeflik, Mesaha ve İstif indirmelerinde eksik sunucu cevabı yerel veriyi silemez; Drive fotoğraf yüklemeleri tekrar denemelerde çoğalmaz; Beyan görünümü ve mobil yönetim arayüzü hızlandırıldı."
+  "description": "V84 tam bulut ve yönetim düzeltmesi: eksiksiz Supabase fonksiyonlarıyla eski/yeni cevap uyumu sağlandı; Bölme Yönetimini gizleyen arayüz çakışması kaldırıldı; bölüm oluşturma sunucu doğrulamalı çalışır; Yönetim altında tüm bölmeleri indirme ve tüm bekleyen verileri yükleme kontrolleri eklendi; profil panelinde tam hesap ve oturum bilgileri geri getirildi."
 }/*MESAHA_RELEASE_DATA_END*/;
   const APP_NAMES = DATA.apps || {};
   const SCRIPT_URL = (() => {

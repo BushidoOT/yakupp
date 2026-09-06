@@ -282,6 +282,13 @@
         .forEach((el) => el.classList.add("suite-central-hidden-v10")),
     );
     document.querySelectorAll("button,a").forEach((el) => {
+      /* Yönetim V84 kendi araçlarını ve formlarını yönetir. Eski merkezileştirme
+         filtresi kart metnindeki “bölme oluştur” ifadesini yakalayıp hem kartı
+         hem gerçek oluşturma düğmesini görünmez yapmamalıdır. */
+      if (el.closest("#managementView,#mesahaManagementOverlayV81")) {
+        el.classList.remove("suite-central-hidden-v10");
+        return;
+      }
       if (["suiteMesahaCreateDivisionBtnV62", "suiteMesahaFolderCreateDivisionBtnV62"].includes(el.id)) return;
       const t = clean(el.textContent).toLocaleLowerCase("tr-TR");
       if (
@@ -814,8 +821,8 @@
   }
   function simplifyUserPanelV11() {
     const title=$("userPanelTitleV316"), sub=$("panelSyncTextV316");
-    if(title) title.textContent="Temel Bilgiler";
-    if(sub) sub.textContent="Mesaha hesabı ve aktif oturum";
+    if(title) title.textContent="Hesap ve Oturum Bilgileri";
+    if(sub) sub.textContent="Hesap, yetki, şeflik, cihaz ve bağlantı durumu";
     ["panelNameV316","panelSeflikV316","panelBolmeV316"].forEach((id)=>{const el=$(id);if(el){el.readOnly=true;el.setAttribute("aria-readonly","true");}});
     ["panelDeviceV316","panelStatsV316","panelSaveV316","panelSyncV316","panelTelegramSectionV515","terminalCodePanelV557","terminalLocalPanelV556","terminalPairPanelV561","mesahaProfileV564","mesahaProfileV565"].forEach((id)=>{const el=$(id);if(el)el.style.display="none";});
     const activeSession=$("panelSessionV563");if(activeSession)activeSession.style.display="";

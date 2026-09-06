@@ -7,7 +7,11 @@
           TERMINAL_OLD = "mesaha_terminal_local_mode_v557",
           SESSION_KEY = "mesaha_supabase_v500_session",
           ACCESS_KEY = "mesaha_google_access_v548",
-          PANEL_KEY = "mesaha_panel_user_v316";
+          PANEL_KEY = "mesaha_panel_user_v316",
+          SETTINGS_KEY = "cam_mesaha_ayarlar_v1",
+          ACTIVE_FOLDER_KEY = "mesaha_active_seflik_folder_v564",
+          FOLDERS_KEY = "mesaha_suite_folder_cache_v4",
+          PENDING_KEY = "mesaha_suite_pending_ops_v4";
         function $(id) {
           return document.getElementById(id);
         }
@@ -79,6 +83,27 @@
             sub: "Bulut özellikleri için Google ile giriş veya terminal kodu gerekir.",
           };
         }
+        function fold(v) {
+          return clean(v).toLocaleLowerCase("tr-TR").replace(/ç/g, "c").replace(/ğ/g, "g").replace(/ı/g, "i").replace(/ö/g, "o").replace(/ş/g, "s").replace(/ü/g, "u").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+        }
+        function activeFolder() {
+          var active = getJson(ACTIVE_FOLDER_KEY, {}) || {}, folders = getJson(FOLDERS_KEY, []);
+          if (!Array.isArray(folders)) folders = [];
+          var id = clean(active.id || active.folder_id || active.folderId), key = clean(active.seflik_key || active.seflikKey), name = clean(active.seflik || active.name);
+          return folders.find(function (row) { return id && clean(row && (row.id || row.folder_id || row.folderId)) === id; }) ||
+            folders.find(function (row) { return key && clean(row && (row.seflik_key || row.seflikKey)) === key; }) ||
+            folders.find(function (row) { return name && fold(row && (row.seflik || row.name)) === fold(name); }) || active;
+        }
+        function roleText(folder) {
+          var role = clean(folder && (folder.role || folder.member_role)).toLocaleLowerCase("tr-TR");
+          if (folder && (folder.is_creator === true || folder.isCreator === true || folder.creator === true) || ["owner", "creator", "kurucu"].indexOf(role) >= 0) return "Kurucu";
+          if (["admin", "manager", "yönetici", "yonetici"].indexOf(role) >= 0) return "Yönetici";
+          return role ? role.charAt(0).toLocaleUpperCase("tr-TR") + role.slice(1) : "Üye";
+        }
+        function toastStatus(message, kind) {
+          try { if (typeof window.mesahaFloatToastV315 === "function") return window.mesahaFloatToastV315(message, "", kind || "success"); } catch (_) {}
+          try { if (typeof window.toast === "function") return window.toast(message); } catch (_) {}
+        }
         function ensure() {
           var card = document.querySelector(
             "#userPanelOverlayV316 .panel-card-v316",
@@ -116,8 +141,21 @@
           var email = clean(
             t.pairedEmail || a.email || (s.user && s.user.email) || "",
           );
+          var panel = getJson(PANEL_KEY, {}) || {}, settings = getJson(SETTINGS_KEY, {}) || {}, folder = activeFolder() || {}, pending = getJson(PENDING_KEY, []), online = navigator.onLine !== false;
+          if (!Array.isArray(pending)) pending = [];
+          var user = s.user || {}, meta = user.user_metadata || {}, seflik = clean(folder.seflik || folder.name || panel.seflik || settings.seflik), bolme = clean(settings.bolmeNo || settings.bolme_no || panel.bolmeNo || panel.bolme_no), userId = clean(user.id || a.user_id || a.userId || t.pairedUserId || t.terminalCode), avatar = clean(t.avatarUrl || t.avatar_url || a.avatar_url || a.google_avatar_url || meta.avatar_url || meta.picture), device = clean(t.deviceName || t.label || navigator.platform || "Mobil cihaz");
+          var details = [
+            ["Ad Soyad", name || "Belirtilmedi"],
+            ["E-posta", email || "Terminal / yerel oturum"],
+            ["Aktif Şeflik", seflik || "Seçilmedi"],
+            ["Şeflik Yetkisi", seflik ? roleText(folder) : "-"],
+            ["Aktif Bölme", bolme || "Seçilmedi"],
+            ["Oturum Türü", l.type],
+            ["Cihaz", device],
+            ["Bekleyen İşlem", pending.length.toLocaleString("tr-TR")]
+          ];
           box.innerHTML =
-            '<b>Oturum Durumu</b><div class="row"><span class="pill ' +
+            '<div class="panel-account-head-v84"><div class="panel-account-avatar-v84">' + (avatar ? '<img src="' + esc(avatar) + '" alt="" referrerpolicy="no-referrer">' : esc((name || "K").split(/\s+/).slice(0, 2).map(function (word) { return word.charAt(0); }).join("").toLocaleUpperCase("tr-TR"))) + '</div><div><small>AKTİF HESAP</small><b>' + esc(name || "Kullanıcı") + '</b><span>' + esc(email || l.type) + '</span></div><button type="button" id="panelConnectionV84" class="panel-connection-v84 ' + (online ? "online" : "offline") + '"><i></i>' + (online ? "Online" : "Offline") + '</button></div><div class="row"><span class="pill ' +
             l.cls +
             '">' +
             (l.cls === "google" ? "G" : l.cls === "terminal" ? "⌁" : "•") +
@@ -126,9 +164,11 @@
             "</span>" +
             (name ? '<span class="pill">' + esc(name) + "</span>" : "") +
             (email ? '<span class="pill">' + esc(email) + "</span>" : "") +
-            "</div><p>" +
+            "</div><div class=\"panel-account-details-v84\">" + details.map(function (item) { return '<div><small>' + esc(item[0]) + '</small><strong>' + esc(item[1]) + '</strong></div>'; }).join("") + "</div>" + (userId ? '<details class="panel-account-id-v84"><summary>Hesap kimliği</summary><code>' + esc(userId) + '</code></details>' : "") + "<p>" +
             esc(l.sub) +
             '</p><button class="btn soft full logout" id="panelLogoutV563" type="button">Çıkış Yap</button>';
+          var connection = $("panelConnectionV84");
+          if (connection) connection.onclick = function () { toastStatus(online ? "Cihaz online; bulut ve şeflik senkronizasyonu kullanılabilir." : "Cihaz offline; kayıtlar cihazda korunuyor.", online ? "success" : "warning"); };
           var b = $("panelLogoutV563");
           if (b && !b.__bound) {
             b.__bound = true;
@@ -213,6 +253,9 @@
         window.addEventListener("pageshow", function () {
           setTimeout(boot, 80);
         });
+        window.addEventListener("online", boot, { passive: true });
+        window.addEventListener("offline", boot, { passive: true });
+        ["mesaha:user-login", "mesaha:google-access-approved", "mesaha:terminal-mode-enabled", "mesaha:seflik-folder-active-changed", "mesaha-suite:shared-data-updated"].forEach(function (name) { window.addEventListener(name, boot, { passive: true }); });
         if (window.MesahaUiHub)
           window.MesahaUiHub.watchClass("userPanelOverlayV316", function () {
             setTimeout(boot, 60);

@@ -107,13 +107,101 @@
   function body() { return document.getElementById("managementModalBodyV81"); }
   function errorCard(error) { return '<div class="management-note-v81 error">' + esc(error && (error.message || error.error || error) || "İşlem tamamlanamadı.") + '</div>'; }
 
+  var serverBusyV84 = false;
+  function serverStatusV84(message, kind) {
+    var node = document.getElementById("managementServerStatusV84");
+    if (!node) return;
+    node.textContent = clean(message) || "Hazır";
+    node.className = kind ? "is-" + kind : "";
+  }
+  function setServerBusyV84(busy, message) {
+    serverBusyV84 = !!busy;
+    ["managementServerUploadV84", "managementServerDownloadV84"].forEach(function (id) {
+      var button = document.getElementById(id); if (button) button.disabled = serverBusyV84 || navigator.onLine === false;
+    });
+    if (message) serverStatusV84(message, busy ? "busy" : "");
+  }
+  function ensureServerBarV84() {
+    var shell = document.querySelector("#managementView .management-shell-v81"), bar = document.getElementById("managementServerBarV84");
+    if (!shell) return null;
+    if (!bar) {
+      bar = document.createElement("div"); bar.id = "managementServerBarV84"; bar.className = "management-server-bar-v84"; bar.setAttribute("aria-label", "Sunucu senkronizasyon işlemleri");
+      bar.innerHTML = '<button class="management-server-upload-v84" id="managementServerUploadV84" type="button"><span aria-hidden="true">↑</span><div><b>Sunucuya Yükle</b><small>Cihazdaki tüm bekleyen verileri gönder</small></div></button><button class="management-server-download-v84" id="managementServerDownloadV84" type="button"><span aria-hidden="true">↓</span><div><b>Sunucudan İndir</b><small>Tüm bölmeleri ve güncel verileri al</small></div></button><p id="managementServerStatusV84" role="status" aria-live="polite">Hazır</p>';
+      shell.appendChild(bar);
+    }
+    return bar;
+  }
+  async function uploadServerV84(options) {
+    options = options || {};
+    var service = api();
+    if (serverBusyV84) return { ok: false, busy: true };
+    if (navigator.onLine === false) { notify("İnternet yok. Veriler cihazda bekliyor.", "warning"); return { ok: false, offline: true }; }
+    if (!service || typeof service.syncAll !== "function") throw new Error("Sunucuya yükleme modülü hazır değil.");
+    setServerBusyV84(true, "Cihazdaki Mesaha, İstif ve yönetim verileri sunucuya yükleniyor…");
+    try {
+      var result = await service.syncAll({ source: options.source || "management-v84-upload", force: true });
+      if (!result || result.ok === false) {
+        var warning = clean(result && result.message) || (result && result.busy ? "Başka bir senkronizasyon halen devam ediyor." : "Bazı veriler cihazda bekliyor; bağlantı gelince yeniden gönderilecek.");
+        serverStatusV84(warning, "error"); notify(warning, "warning"); return result || { ok: false };
+      }
+      serverStatusV84("Tüm bekleyen veriler sunucuya yüklendi ve doğrulandı.", "success");
+      if (!options.quiet) notify("Sunucuya yükleme tamamlandı.", "success");
+      return result;
+    } catch (error) {
+      var message = clean(error && error.message || error) || "Sunucuya yükleme tamamlanamadı.";
+      serverStatusV84(message + " Yerel veriler korundu.", "error"); notify(message, "error"); throw error;
+    } finally { setServerBusyV84(false); }
+  }
+  async function downloadServerV84(options) {
+    options = options || {};
+    var service = api(), folder = activeFolder();
+    if (serverBusyV84) return { ok: false, busy: true };
+    if (navigator.onLine === false) { notify("İnternet yok. Cihazdaki son offline veriler gösteriliyor.", "warning"); return { ok: false, offline: true }; }
+    if (!folder) { notify("Önce Şeflikler bölümünden aktif şefliği seçin.", "warning"); return { ok: false, noFolder: true }; }
+    if (!service || typeof service.refreshFolderData !== "function") throw new Error("Sunucudan indirme modülü hazır değil.");
+    setServerBusyV84(true, "Aktif şefliğin tüm bölmeleri, Mesaha ve İstif kayıtları indiriliyor…");
+    try {
+      await loadFolders();
+      var folderResult = await service.refreshFolderData({ source: options.source || "management-v84-download", includeRecords: true, forceRecords: true, quiet: true });
+      var istifResult = typeof service.pullIstifRecords === "function" ? await service.pullIstifRecords() : { ok: true, skipped: true };
+      var incomplete = !folderResult || folderResult.complete === false || folderResult.partial === true || folderResult.truncated === true || istifResult && (istifResult.complete === false || istifResult.partial === true || istifResult.truncated === true);
+      if (incomplete) {
+        var warning = "Sunucunun bazı bölümleri eksik cevap verdi; mevcut offline veriler silinmeden korundu.";
+        serverStatusV84(warning, "error"); notify(warning, "warning");
+        return { ok: false, partial: true, folder: folderResult, istif: istifResult };
+      }
+      var divisionCount = Array.isArray(folderResult.divisions) ? folderResult.divisions.length : divisionList(activeFolder()).length;
+      serverStatusV84(divisionCount.toLocaleString("tr-TR") + " bölme ve güncel kayıtlar cihaza indirildi.", "success");
+      if (!options.quiet) notify("Sunucudan indirme tamamlandı: " + divisionCount + " bölme.", "success");
+      try { root.dispatchEvent(new CustomEvent("mesaha-suite:shared-data-updated", { detail: { source: "management-v84-download", divisionCount: divisionCount } })); } catch (_) {}
+      return { ok: true, folder: folderResult, istif: istifResult, divisionCount: divisionCount };
+    } catch (error) {
+      var message = clean(error && error.message || error) || "Sunucudan indirme tamamlanamadı.";
+      serverStatusV84(message + " Cihazdaki veriler korundu.", "error"); notify(message, "error"); throw error;
+    } finally { setServerBusyV84(false); }
+  }
+  function bindServerBarV84() {
+    ensureServerBarV84();
+    var upload = document.getElementById("managementServerUploadV84"), download = document.getElementById("managementServerDownloadV84");
+    if (upload && !upload.__managementV84Bound) { upload.__managementV84Bound = true; upload.addEventListener("click", function () { uploadServerV84().catch(function () {}); }); }
+    if (download && !download.__managementV84Bound) { download.__managementV84Bound = true; download.addEventListener("click", function () { downloadServerV84().catch(function () {}); }); }
+    setServerBusyV84(serverBusyV84, navigator.onLine === false ? "Offline: cihazdaki veriler korunuyor." : "Sunucu işlemleri hazır.");
+  }
+
   async function loadFolders() {
     var cached = read(K.folders, []); if (!Array.isArray(cached)) cached = [];
     if (navigator.onLine === false || !api() || typeof api().edge !== "function") return cached.filter(Boolean);
     var out = await api().edge("seflik_folder_list_my_sefliks", folderPayload());
     if (!Array.isArray(out && out.folders)) throw new Error("Sunucu geçerli şeflik listesi döndürmedi; cihazdaki liste korundu.");
-    if (out.complete === false || out.partial === true || out.truncated === true || out.missing_sql === true) throw new Error(clean(out.error) || "Sunucu şeflik listesini eksiksiz doğrulayamadı; cihazdaki liste korundu.");
+    if (out.missing_sql === true) throw new Error(clean(out.error) || "Şeflik tabloları sunucuda hazır değil; cihazdaki liste korundu.");
     var list = out.folders;
+    if (out.complete === false || out.partial === true || out.truncated === true) {
+      var merged = new Map();
+      cached.forEach(function (row) { var key = clean(row && (row.seflik_key || row.seflikKey)) || fold(row && (row.seflik || row.name)); if (key) merged.set(key, row); });
+      list.forEach(function (row) { var key = clean(row && (row.seflik_key || row.seflikKey)) || fold(row && (row.seflik || row.name)); if (key) merged.set(key, Object.assign({}, merged.get(key) || {}, row)); });
+      list = Array.from(merged.values());
+      notify("Sunucu listesi kısmi geldi; cihazdaki şeflikler korunarak birleştirildi.", "warning");
+    }
     write(K.folders, list);
     return list;
   }
@@ -180,7 +268,26 @@
     if (refresh && navigator.onLine !== false && api() && typeof api().refreshFolderData === "function") { try { await api().refreshFolderData({ source: "management-v81" }); } catch (_) {} }
     var list = divisionList(folder), canDelete = owner(folder) && navigator.onLine !== false;
     body().innerHTML = '<form class="management-form-v81 two" id="createDivisionFormV81"><input id="divisionNoV81" placeholder="Bölme No" required><input id="divisionLocationV81" placeholder="Konum (isteğe bağlı)"><button type="submit">Bölme Oluştur</button></form><div class="management-note-v81">Bölme oluşturma çevrimdışıyken de çalışır; internet geldiğinde mevcut senkron kuyruğu gönderir.</div><div class="management-list-v81">' + (list.length ? list.map(function (d, i) { var no = clean(d.bolme_no || d.bolmeNo); return '<article class="management-row-v81"><div><strong>Bölme ' + esc(no) + '</strong><small>' + Number(d.record_count || d.recordCount || 0).toLocaleString("tr-TR") + ' kayıt' + (d.pending || d.local_pending ? ' • Senkron bekliyor' : '') + '</small></div>' + (canDelete ? '<button class="danger" type="button" data-delete-division-v81="' + i + '">Sil</button>' : '') + '</article>'; }).join("") : '<div class="management-note-v81">Henüz bölme oluşturulmamış.</div>') + '</div>';
-    document.getElementById("createDivisionFormV81").onsubmit = async function (event) { event.preventDefault(); var no = clean(document.getElementById("divisionNoV81").value), locationText = clean(document.getElementById("divisionLocationV81").value); try { if (!api() || typeof api().createOfflineDivision !== "function") throw new Error("Bölme modülü hazır değil."); api().createOfflineDivision(no, locationText, { source: "management-v81" }); notify("Bölme cihazda oluşturuldu."); if (navigator.onLine !== false && typeof api().syncAll === "function") api().syncAll({ source: "management-v81-create-division" }).catch(function () {}); await renderBolme(false); } catch (e) { notify(clean(e.message || e), "error"); } };
+    document.getElementById("createDivisionFormV81").onsubmit = async function (event) {
+      event.preventDefault();
+      var form = event.currentTarget, submit = form.querySelector('button[type="submit"]'), no = clean(document.getElementById("divisionNoV81").value), locationText = clean(document.getElementById("divisionLocationV81").value), service = api();
+      if (!no) { notify("Bölme numarasını yazın.", "warning"); return; }
+      try {
+        if (submit) submit.disabled = true;
+        if (!service || typeof service.createOfflineDivision !== "function") throw new Error("Bölme modülü hazır değil.");
+        var localResult = service.createOfflineDivision(no, locationText, { source: "management-v84" });
+        notify(localResult && localResult.created ? "Bölme cihazda oluşturuldu." : "Bölme bilgileri cihazda güncellendi.", "success");
+        await renderBolme(false);
+        if (navigator.onLine === false) { notify("Bölme offline oluşturuldu; internet geldiğinde sunucuya yüklenecek.", "warning"); return; }
+        var uploaded = await uploadServerV84({ source: "management-v84-create-division", quiet: true });
+        if (!uploaded || uploaded.ok === false) { notify("Bölme cihazda kayıtlı; sunucu gönderimi bekliyor.", "warning"); return; }
+        await downloadServerV84({ source: "management-v84-create-confirm", quiet: true });
+        var exists = divisionList(activeFolder()).some(function (d) { return fold(d && (d.bolme_no || d.bolmeNo)) === fold(no); });
+        notify(exists ? "Bölme " + no + " sunucuya eklendi." : "Bölme gönderildi; sunucu listesi yeniden doğrulanacak.", exists ? "success" : "warning");
+        await renderBolme(false);
+      } catch (e) { notify(clean(e.message || e), "error"); }
+      finally { var current = document.querySelector("#createDivisionFormV81 button[type='submit']"); if (current) current.disabled = false; }
+    };
     body().querySelectorAll("[data-delete-division-v81]").forEach(function (button) { button.onclick = async function () { var d = list[Number(button.dataset.deleteDivisionV81)], no = clean(d && (d.bolme_no || d.bolmeNo)); if (prompt("Bölme " + no + " silinecek. Onay için bölme numarasını yazın:") !== no) return; button.disabled = true; try { await api().edge("seflik_folder_delete_division", Object.assign(folderPayload(folder), { bolmeNo: no, confirmBolme: no })); var store = read(K.divisions, {}), key = clean(folder.seflik_key || folder.seflikKey) || fold(folder.seflik); store[key] = (store[key] || []).filter(function (x) { return clean(x.bolme_no || x.bolmeNo) !== no; }); write(K.divisions, store); notify("Bölme silindi."); await renderBolme(false); } catch (e) { button.disabled = false; notify(clean(e.message || e), "error"); } }; });
   }
 
@@ -206,7 +313,7 @@
     try {
       var out = await rpc("mesaha_list_terminal_sessions_v577", {}), list = Array.isArray(out) ? out : (Array.isArray(out.terminals) ? out.terminals : (Array.isArray(out.items) ? out.items : []));
       body().innerHTML = '<div class="management-actions-v81"><button type="button" id="createTerminalCodeV81">Yeni Terminal Kodu Oluştur</button><button class="soft" type="button" id="refreshTerminalV81">Yenile</button></div><div id="terminalCodeBoxV81"></div><div class="management-list-v81">' + (list.length ? list.map(function (t, i) { var info = t.used_device_info || t.device_info || {}, label = clean(t.label || info.os || info.platform || "Terminal cihaz"); return '<article class="management-row-v81"><div><strong>' + esc(label) + '</strong><small>' + esc(clean(t.code)) + ' • Giriş: ' + esc(dateText(t.used_at || t.paired_at)) + '</small></div><button class="danger" type="button" data-revoke-terminal-v81="' + i + '">Çıkış Yap</button></article>'; }).join("") : '<div class="management-note-v81">Kod ile giriş yapan aktif terminal yok.</div>') + '</div>';
-      document.getElementById("createTerminalCodeV81").onclick = async function () { var button = this; button.disabled = true; try { var made = await rpc("mesaha_create_terminal_code_v557", { p_label: "terminal", p_app_version: "Mesaha İO 6.22" }), t = made.terminal || made, code = clean(t.code); if (!code) throw new Error("Terminal kodu alınamadı."); document.getElementById("terminalCodeBoxV81").innerHTML = '<div class="terminal-code-v81"><small>TEK KULLANIMLIK TERMİNAL KODU</small><strong>' + esc(code) + '</strong><small>' + esc(t.expires_at ? dateText(t.expires_at) + " tarihine kadar geçerli" : "Kısa süre geçerli") + '</small></div>'; notify("Terminal kodu oluşturuldu."); } catch (e) { notify(clean(e.message || e), "error"); } finally { button.disabled = false; } };
+      document.getElementById("createTerminalCodeV81").onclick = async function () { var button = this; button.disabled = true; try { var made = await rpc("mesaha_create_terminal_code_v557", { p_label: "terminal", p_app_version: "Mesaha İO 6.23" }), t = made.terminal || made, code = clean(t.code); if (!code) throw new Error("Terminal kodu alınamadı."); document.getElementById("terminalCodeBoxV81").innerHTML = '<div class="terminal-code-v81"><small>TEK KULLANIMLIK TERMİNAL KODU</small><strong>' + esc(code) + '</strong><small>' + esc(t.expires_at ? dateText(t.expires_at) + " tarihine kadar geçerli" : "Kısa süre geçerli") + '</small></div>'; notify("Terminal kodu oluşturuldu."); } catch (e) { notify(clean(e.message || e), "error"); } finally { button.disabled = false; } };
       document.getElementById("refreshTerminalV81").onclick = renderTerminal;
       body().querySelectorAll("[data-revoke-terminal-v81]").forEach(function (button) { button.onclick = async function () { var t = list[Number(button.dataset.revokeTerminalV81)], code = clean(t && t.code); if (!confirm("Bu terminal cihazın oturumu kapatılsın mı?")) return; button.disabled = true; try { await rpc("mesaha_revoke_terminal_session_v577", { p_code: code }); notify("Terminal oturumu kapatıldı."); await renderTerminal(); } catch (e) { button.disabled = false; notify(clean(e.message || e), "error"); } }; });
     } catch (e) { body().innerHTML = errorCard(e); }
@@ -254,8 +361,8 @@
     var service = api(), pending = read(K.pending, []); if (!Array.isArray(pending)) pending = [];
     var online = navigator.onLine !== false, folder = activeFolder();
     openOverlay("Yedekler ve Senkronizasyon", '<div class="management-sync-status-v82"><div><small>BAĞLANTI</small><b>' + (online ? 'Online' : 'Offline') + '</b></div><div><small>AKTİF ŞEFLİK</small><b>' + esc(folder && (folder.seflik || folder.name) || 'Seçilmedi') + '</b></div><div><small>BEKLEYEN</small><b>' + pending.length.toLocaleString("tr-TR") + ' işlem</b></div></div><div class="management-backup-actions-v82"><button type="button" id="managementSyncNowV82" ' + (!online ? 'disabled' : '') + '>Sunucuya Gönder</button><button class="soft" type="button" id="managementPullNowV82" ' + (!online ? 'disabled' : '') + '>Sunucudan İndir</button><button class="soft" type="button" id="managementLocalBackupV82">Cihaza JSON Yedek İndir</button><button class="gold" type="button" id="managementMesahaDriveBackupV82" ' + (!online ? 'disabled' : '') + '>Mesaha Drive Yedeği Al</button><button class="soft" type="button" id="managementSuiteDriveBackupV82" ' + (!online ? 'disabled' : '') + '>Tam Uygulama Yedeği Al</button><button class="soft" type="button" id="managementDriveSetupV82" ' + (!online ? 'disabled' : '') + '>Drive Bağlantısı</button><button class="soft" type="button" id="managementListBackupsV82" ' + (!online ? 'disabled' : '') + '>Drive Yedeklerini Göster</button></div><div class="management-note-v81 ' + (online ? '' : 'warn') + '">' + (online ? 'Senkronizasyon mevcut çevrimdışı kuyruğu kullanır; kayıtların offline çalışma düzeni korunur.' : 'İnternet yok. Kayıtlar cihazda korunuyor ve bekleyen işlemler bağlantı geldiğinde gönderilebilir.') + '</div><div class="management-list-v81" id="managementBackupListV82"></div>');
-    var sync = document.getElementById("managementSyncNowV82"); if (sync) sync.onclick = async function () { if (!service || typeof service.syncAll !== "function") return notify("Senkronizasyon modülü hazır değil.", "warning"); sync.disabled = true; try { var result = await service.syncAll({ source: "management-v83", force: true }); notify(result && result.ok === false ? (result.message || "Bazı kayıtlar cihazda bekliyor; tekrar denenecek.") : "Senkronizasyon tamamlandı.", result && result.ok === false ? "warning" : "success"); renderBackupSyncV82(); } catch (e) { sync.disabled = false; notify(clean(e.message || e), "error"); } };
-    var pull = document.getElementById("managementPullNowV82"); if (pull) pull.onclick = async function () { if (!service || typeof service.refreshFolderData !== "function") return notify("Sunucudan indirme modülü hazır değil.", "warning"); pull.disabled = true; try { var folderResult = await service.refreshFolderData({ source: "management-v83-pull", includeRecords: true, forceRecords: true, quiet: true }); var istifResult = typeof service.pullIstifRecords === "function" ? await service.pullIstifRecords() : { skipped: true }; var incomplete = folderResult && folderResult.complete === false || istifResult && (istifResult.partial || istifResult.truncated || istifResult.complete === false); notify(incomplete ? "Sunucu verisinin bir bölümü doğrulanamadı; mevcut offline kayıtlar korundu." : "Şeflik, Mesaha ve İstif verileri sunucudan indirildi.", incomplete ? "warning" : "success"); renderBackupSyncV82(); } catch (e) { pull.disabled = false; notify(clean(e.message || e), "error"); } };
+    var sync = document.getElementById("managementSyncNowV82"); if (sync) sync.onclick = async function () { sync.disabled = true; try { await uploadServerV84({ source: "management-v84-backup-upload" }); renderBackupSyncV82(); } catch (e) { sync.disabled = false; } };
+    var pull = document.getElementById("managementPullNowV82"); if (pull) pull.onclick = async function () { pull.disabled = true; try { await downloadServerV84({ source: "management-v84-backup-download" }); renderBackupSyncV82(); } catch (e) { pull.disabled = false; } };
     var local = document.getElementById("managementLocalBackupV82"); if (local) local.onclick = function () { var backup = document.getElementById("backupBtn"); if (backup) backup.click(); else notify("Yerel yedek düğmesi hazır değil.", "warning"); };
     var mesaha = document.getElementById("managementMesahaDriveBackupV82"); if (mesaha) mesaha.onclick = async function () { mesaha.disabled = true; try { await service.createMesahaBackup({}); notify("Mesaha Drive yedeği oluşturuldu."); } catch (e) { notify(clean(e.message || e), "error"); } finally { mesaha.disabled = false; } };
     var suite = document.getElementById("managementSuiteDriveBackupV82"); if (suite) suite.onclick = async function () { suite.disabled = true; try { await service.createSuiteBackup(); notify("Tam uygulama yedeği oluşturuldu."); } catch (e) { notify(clean(e.message || e), "error"); } finally { suite.disabled = false; } };
@@ -274,7 +381,7 @@
   function updateAdminVisibility() { document.querySelectorAll("[data-admin-only-v81]").forEach(function (node) { node.hidden = lower(identity().email) !== ADMIN_EMAIL; }); }
   function showManagement() { if (typeof root.showView === "function") root.showView("management"); updateAdminVisibility(); }
   function boot() {
-    ensureOverlay(); ensureManagementTools(); updateAdminVisibility();
+    ensureOverlay(); ensureManagementTools(); bindServerBarV84(); updateAdminVisibility();
     var shortcut = document.getElementById("managementHomeShortcutV81");
     if (shortcut) { shortcut.addEventListener("click", showManagement); shortcut.addEventListener("keydown", function (event) { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); showManagement(); } }); }
     var istif = document.getElementById("openIstifBtnV81"); if (istif) istif.addEventListener("click", function () { location.href = "../istif/"; });
@@ -284,5 +391,5 @@
     var stale = document.getElementById("suiteHomeButtonV8"); if (stale) stale.remove();
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot, { once: true }); else boot();
-  ["storage", "online", "offline", "mesaha:user-login", "mesaha:google-access-approved", "mesaha:terminal-mode-enabled"].forEach(function (name) { root.addEventListener(name, updateAdminVisibility, { passive: true }); });
+  ["storage", "online", "offline", "mesaha:user-login", "mesaha:google-access-approved", "mesaha:terminal-mode-enabled"].forEach(function (name) { root.addEventListener(name, function () { updateAdminVisibility(); bindServerBarV84(); }, { passive: true }); });
 })(window);
