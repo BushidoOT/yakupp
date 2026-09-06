@@ -1,4 +1,4 @@
-/* source: mesaha-v563-user-panel-logout-terminal-badge */
+/* source: mesaha-v87-full-account-drive-panel */
 (function () {
         "use strict";
         if (window.__mesahaV563PanelSession) return;
@@ -11,7 +11,11 @@
           SETTINGS_KEY = "cam_mesaha_ayarlar_v1",
           ACTIVE_FOLDER_KEY = "mesaha_active_seflik_folder_v564",
           FOLDERS_KEY = "mesaha_suite_folder_cache_v4",
-          PENDING_KEY = "mesaha_suite_pending_ops_v4";
+          PENDING_KEY = "mesaha_suite_pending_ops_v4",
+          DRIVE_STATUS_KEY = "mesaha_suite_drive_status_v8",
+          driveBusy = false,
+          driveError = "",
+          lastDriveRefreshAt = 0;
         function $(id) {
           return document.getElementById(id);
         }
@@ -100,6 +104,85 @@
           if (["admin", "manager", "yönetici", "yonetici"].indexOf(role) >= 0) return "Yönetici";
           return role ? role.charAt(0).toLocaleUpperCase("tr-TR") + role.slice(1) : "Üye";
         }
+        function driveApi() {
+          return window.MesahaSuiteSync || window.MesahaSuiteSyncV31 || window.MesahaSuiteSyncV28 || window.MesahaSuiteSyncV27 || window.MesahaSuiteSyncV26 || window.MesahaSuiteSyncV22 || window.MesahaSuiteSyncV21 || null;
+        }
+        function sameDriveFolder(status, folder) {
+          status = status || {};
+          folder = folder || {};
+          var statusFolderId = clean(status.seflikFolderId || status.seflik_folder_id),
+            folderId = clean(folder.id || folder.folder_id || folder.folderId),
+            statusKey = clean(status.seflikKey || status.seflik_key),
+            folderKey = clean(folder.seflik_key || folder.seflikKey);
+          if (statusFolderId && folderId) return statusFolderId === folderId;
+          if (statusKey && folderKey) return statusKey === folderKey;
+          return !clean(status.seflik) || fold(status.seflik) === fold(folder.seflik || folder.name);
+        }
+        function cachedDrive(folder) {
+          var status = getJson(DRIVE_STATUS_KEY, null);
+          return status && sameDriveFolder(status, folder) ? status : null;
+        }
+        function formatBytes(value) {
+          var bytes = Number(value);
+          if (!Number.isFinite(bytes) || bytes < 0) return "-";
+          if (bytes < 1024) return Math.round(bytes) + " B";
+          var units = ["KB", "MB", "GB", "TB"], size = bytes / 1024, unit = units[0];
+          for (var i = 1; i < units.length && size >= 1024; i += 1) { size /= 1024; unit = units[i]; }
+          return size.toLocaleString("tr-TR", { maximumFractionDigits: size >= 100 ? 0 : size >= 10 ? 1 : 2 }) + " " + unit;
+        }
+        function driveCardHtml(folder, online) {
+          var status = cachedDrive(folder), loading = driveBusy && !status;
+          if (loading) return '<section class="panel-drive-v87 loading"><div class="panel-drive-head-v87"><span class="panel-drive-logo-v87">△</span><div><small>ŞEFLİK GOOGLE DRIVE</small><b>Bağlantı kontrol ediliyor…</b></div></div></section>';
+          if (!status) return '<section class="panel-drive-v87 unavailable"><div class="panel-drive-head-v87"><span class="panel-drive-logo-v87">△</span><div><small>ŞEFLİK GOOGLE DRIVE</small><b>' + esc(online ? (driveError || "Drive bilgisi henüz alınmadı") : "Offline • Son Drive bilgisi bulunamadı") + '</b></div></div><button type="button" class="panel-drive-refresh-v87" id="panelDriveRefreshV87">Durumu Yenile</button></section>';
+          var connected = status.connected === true,
+            isOwner = status.isOwner !== false,
+            owner = clean(status.ownerName || status.name),
+            ownerEmail = clean(status.ownerEmail || status.email),
+            seflik = clean(status.seflik || folder.seflik || folder.name),
+            folderName = clean(status.folderName),
+            quota = status.quota || null,
+            membership = isOwner ? "Kurucu" : "Şeflik üyesi",
+            relation = isOwner ? "Bu hesap Drive bağlantısını yönetebilir" : "Kurucunun bağlı Drive alanı kullanılıyor",
+            storage = quota ? (quota.remainingBytes == null ? "Sınırsız alan" : formatBytes(quota.remainingBytes) + " boş") : (connected ? "Alan bilgisi alınamadı" : "Drive bağlı değil"),
+            statusText = connected ? "Drive bağlı" : (isOwner ? "Drive hesabı henüz bağlanmadı" : "Şeflik kurucusu Drive hesabını henüz bağlamadı");
+          return '<section class="panel-drive-v87 ' + (connected ? "connected" : "disconnected") + '"><div class="panel-drive-head-v87"><span class="panel-drive-logo-v87">△</span><div><small>ŞEFLİK GOOGLE DRIVE</small><b>' + esc(statusText) + '</b><span>' + esc(relation) + '</span></div><i class="panel-drive-state-v87"></i></div><div class="panel-drive-grid-v87"><div><small>Drive Sahibi</small><strong>' + esc(owner || "Şeflik kurucusu") + '</strong><span>' + esc(ownerEmail || "E-posta bilgisi yok") + '</span></div><div><small>Aktif Şeflik</small><strong>' + esc(seflik || "Seçilmedi") + '</strong><span>' + esc(membership) + '</span></div><div><small>Drive Klasörü</small><strong>' + esc(folderName || (connected ? "Mesaha Suite klasörü" : "Oluşturulmadı")) + '</strong><span>' + esc(connected ? "Ortak Mesaha ve İstif alanı" : "Bağlantı bekleniyor") + '</span></div><div><small>Depolama</small><strong>' + esc(storage) + '</strong><span>' + esc(quota && quota.percent != null ? "%" + Number(quota.percent || 0).toLocaleString("tr-TR", { maximumFractionDigits: 1 }) + " dolu" : (status.quotaError || "")) + '</span></div></div><div class="panel-drive-actions-v87"><button type="button" class="panel-drive-refresh-v87" id="panelDriveRefreshV87">' + (driveBusy ? "Kontrol ediliyor…" : "Durumu Yenile") + '</button>' + (!connected && isOwner && !status.googleRequired ? '<button type="button" class="panel-drive-connect-v87" id="panelDriveConnectV87">Drive Bağla</button>' : "") + '</div>' + (driveError ? '<p class="panel-drive-error-v87">' + esc(driveError) + '</p>' : "") + '</section>';
+        }
+        function bindDriveActions() {
+          var refresh = $("panelDriveRefreshV87"), connect = $("panelDriveConnectV87");
+          if (refresh) refresh.onclick = function () { refreshDriveStatus(true); };
+          if (connect) connect.onclick = function () {
+            var api = driveApi();
+            if (!api || typeof api.driveConnect !== "function") return toastStatus("Drive bağlantı modülü hazır değil.", "warning");
+            connect.disabled = true;
+            Promise.resolve(api.driveConnect()).then(function (out) {
+              if (out && out.connected) refreshDriveStatus(true);
+            }).catch(function (error) {
+              driveError = clean(error && error.message || error);
+              render();
+            });
+          };
+        }
+        function refreshDriveStatus(force) {
+          var api = driveApi();
+          if (driveBusy || navigator.onLine === false || !api || typeof api.driveStatus !== "function") return Promise.resolve(cachedDrive(activeFolder()));
+          if (!force && lastDriveRefreshAt && Date.now() - lastDriveRefreshAt < 15000) return Promise.resolve(cachedDrive(activeFolder()));
+          driveBusy = true;
+          driveError = "";
+          render();
+          return Promise.resolve(api.driveStatus()).then(function (status) {
+            lastDriveRefreshAt = Date.now();
+            if (status) {
+              try { localStorage.setItem(DRIVE_STATUS_KEY, JSON.stringify(status)); } catch (e) {}
+            }
+            return status;
+          }).catch(function (error) {
+            driveError = clean(error && error.message || error || "Drive durumu alınamadı");
+            return cachedDrive(activeFolder());
+          }).finally(function () {
+            driveBusy = false;
+            render();
+          });
+        }
         function toastStatus(message, kind) {
           try { if (typeof window.mesahaFloatToastV315 === "function") return window.mesahaFloatToastV315(message, "", kind || "success"); } catch (_) {}
           try { if (typeof window.toast === "function") return window.toast(message); } catch (_) {}
@@ -114,11 +197,15 @@
             box = document.createElement("div");
             box.id = "panelSessionV563";
             box.className = "panel-session-v563";
-            var before =
+            var before = card.querySelector(".panel-grid-v316") ||
               $("terminalCodePanelV557") || $("panelTelegramSectionV515");
             if (before && before.parentNode)
               before.parentNode.insertBefore(box, before);
             else card.appendChild(box);
+          } else {
+            var topAnchor = card.querySelector(".panel-grid-v316");
+            if (topAnchor && box.nextSibling !== topAnchor)
+              card.insertBefore(box, topAnchor);
           }
           render();
         }
@@ -164,11 +251,12 @@
             "</span>" +
             (name ? '<span class="pill">' + esc(name) + "</span>" : "") +
             (email ? '<span class="pill">' + esc(email) + "</span>" : "") +
-            "</div><div class=\"panel-account-details-v84\">" + details.map(function (item) { return '<div><small>' + esc(item[0]) + '</small><strong>' + esc(item[1]) + '</strong></div>'; }).join("") + "</div>" + (userId ? '<details class="panel-account-id-v84"><summary>Hesap kimliği</summary><code>' + esc(userId) + '</code></details>' : "") + "<p>" +
+            "</div><div class=\"panel-account-details-v84\">" + details.map(function (item) { return '<div><small>' + esc(item[0]) + '</small><strong>' + esc(item[1]) + '</strong></div>'; }).join("") + "</div>" + driveCardHtml(folder, online) + (userId ? '<details class="panel-account-id-v84"><summary>Hesap kimliği</summary><code>' + esc(userId) + '</code></details>' : "") + "<p>" +
             esc(l.sub) +
             '</p><button class="btn soft full logout" id="panelLogoutV563" type="button">Çıkış Yap</button>';
           var connection = $("panelConnectionV84");
           if (connection) connection.onclick = function () { toastStatus(online ? "Cihaz online; bulut ve şeflik senkronizasyonu kullanılabilir." : "Cihaz offline; kayıtlar cihazda korunuyor.", online ? "success" : "warning"); };
+          bindDriveActions();
           var b = $("panelLogoutV563");
           if (b && !b.__bound) {
             b.__bound = true;
@@ -240,8 +328,13 @@
           } catch (e) {}
           location.replace("./index.html?logout=" + Date.now());
         }
+        function panelOpen() {
+          var panel = $("userPanelOverlayV316");
+          return !!(panel && !panel.classList.contains("hidden"));
+        }
         function boot() {
           ensure();
+          if (panelOpen()) refreshDriveStatus(false);
         }
         if (document.readyState === "loading")
           document.addEventListener("DOMContentLoaded", boot, { once: true });
@@ -255,7 +348,18 @@
         });
         window.addEventListener("online", boot, { passive: true });
         window.addEventListener("offline", boot, { passive: true });
-        ["mesaha:user-login", "mesaha:google-access-approved", "mesaha:terminal-mode-enabled", "mesaha:seflik-folder-active-changed", "mesaha-suite:shared-data-updated"].forEach(function (name) { window.addEventListener(name, boot, { passive: true }); });
+        ["mesaha:user-login", "mesaha:google-access-approved", "mesaha:terminal-mode-enabled", "mesaha-suite:shared-data-updated"].forEach(function (name) { window.addEventListener(name, boot, { passive: true }); });
+        window.addEventListener("mesaha:seflik-folder-active-changed", function () {
+          lastDriveRefreshAt = 0;
+          driveError = "";
+          boot();
+        }, { passive: true });
+        window.addEventListener("mesaha-suite:drive-status", function (event) {
+          var status = event && event.detail;
+          if (status) try { localStorage.setItem(DRIVE_STATUS_KEY, JSON.stringify(status)); } catch (e) {}
+          driveError = "";
+          render();
+        }, { passive: true });
         if (window.MesahaUiHub)
           window.MesahaUiHub.watchClass("userPanelOverlayV316", function () {
             setTimeout(boot, 60);

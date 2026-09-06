@@ -540,9 +540,9 @@ html[data-suite-managed="1"] #seflikFolderView .seflik-create-row-v529,
       }
 
 
-/* source: mesaha-suite-basic-panel-v11 */
+/* source: mesaha-suite-full-account-panel-v87 */
 html[data-suite-managed="1"] #userPanelOverlayV316 .panel-title-v316 h2{font-size:0!important}
-      html[data-suite-managed="1"] #userPanelOverlayV316 .panel-title-v316 h2::after{content:"Temel Bilgiler";font-size:22px}
+      html[data-suite-managed="1"] #userPanelOverlayV316 .panel-title-v316 h2::after{content:"Hesap ve Oturum Bilgileri";font-size:22px}
       html[data-suite-managed="1"] #userPanelOverlayV316 #panelSyncTextV316{font-size:0!important}
       html[data-suite-managed="1"] #userPanelOverlayV316 #panelSyncTextV316::after{content:"Mesaha hesabı ve aktif oturum";font-size:12px}
       html[data-suite-managed="1"] #userPanelOverlayV316 .panel-field-v316:has(#panelDeviceV316),
@@ -555,11 +555,8 @@ html[data-suite-managed="1"] #userPanelOverlayV316 .panel-title-v316 h2{font-siz
       html[data-suite-managed="1"] #userPanelOverlayV316 #terminalPairPanelV561,
       html[data-suite-managed="1"] #userPanelOverlayV316 #mesahaProfileV564,
       html[data-suite-managed="1"] #userPanelOverlayV316 #mesahaProfileV565,
-      html[data-suite-managed="1"] #userPanelOverlayV316 #panelSessionV563,
       html[data-suite-managed="1"] #userPanelOverlayV316 .google-auth-status-v548,
-      html[data-suite-managed="1"] #userPanelOverlayV316 .google-auth-email-v548,
-      html[data-suite-managed="1"] #userPanelOverlayV316 [id*="connection" i],
-      html[data-suite-managed="1"] #userPanelOverlayV316 [class*="connection" i]{display:none!important}
+      html[data-suite-managed="1"] #userPanelOverlayV316 .google-auth-email-v548{display:none!important}
       html[data-suite-managed="1"] #userPanelOverlayV316 .panel-actions-v316{grid-template-columns:1fr!important}
       html[data-suite-managed="1"] #userPanelOverlayV316 #panelClose2V316{display:flex!important;width:100%!important}
       html[data-suite-managed="1"] #userPanelOverlayV316 #panelNameV316,
@@ -4692,7 +4689,11 @@ html[data-suite-managed="1"] #userPanelOverlayV316 .panel-title-v316 h2{font-siz
       .panel-account-avatar-v84 img{width:100%;height:100%;object-fit:cover;display:block}.panel-account-head-v84>div:nth-child(2){min-width:0;display:grid;gap:2px}.panel-account-head-v84>div:nth-child(2)>small{color:#58806d;font-size:9px;font-weight:950;letter-spacing:.12em}.panel-account-head-v84>div:nth-child(2)>b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#123f2c;font-size:16px}.panel-account-head-v84>div:nth-child(2)>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#65786f;font-size:11px;font-weight:750}
       .panel-connection-v84{min-height:38px;border:1px solid;border-radius:13px;padding:0 10px;display:flex;align-items:center;gap:6px;background:#fff;font-size:11px;font-weight:950;touch-action:manipulation}.panel-connection-v84 i{width:9px;height:9px;border-radius:50%}.panel-connection-v84.online{border-color:#b9e5cb;color:#137044;background:#edf9f2}.panel-connection-v84.online i{background:#27b96f;box-shadow:0 0 0 4px rgba(39,185,111,.13)}.panel-connection-v84.offline{border-color:#efc4c4;color:#a42d2d;background:#fff1f1}.panel-connection-v84.offline i{background:#dd3c3c;box-shadow:0 0 0 4px rgba(221,60,60,.12)}
       .panel-account-details-v84{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.panel-account-details-v84>div{min-width:0;padding:9px 10px;border:1px solid #dce9e2;border-radius:13px;background:rgba(255,255,255,.78);display:grid;gap:3px}.panel-account-details-v84 small{color:#71847b;font-size:9px;font-weight:850;letter-spacing:.03em}.panel-account-details-v84 strong{overflow-wrap:anywhere;color:#173f2e;font-size:12px}.panel-account-id-v84{padding:9px 10px;border-radius:12px;background:#fff;border:1px solid #dce9e2}.panel-account-id-v84 summary{cursor:pointer;color:#536d61;font-size:11px;font-weight:850}.panel-account-id-v84 code{display:block;margin-top:7px;overflow-wrap:anywhere;color:#40564c;font-size:10px;user-select:text}
-      @media(max-width:380px){.panel-account-head-v84{grid-template-columns:46px minmax(0,1fr)}.panel-account-avatar-v84{width:46px;height:46px;border-radius:15px}.panel-connection-v84{grid-column:1/-1;justify-content:center}.panel-account-details-v84{grid-template-columns:1fr}}
+      .panel-drive-v87{display:grid;gap:10px;padding:12px;border:1px solid #d9e9e1;border-radius:16px;background:linear-gradient(145deg,#fff,#f5faf7);color:#173f2e}.panel-drive-v87.connected{border-color:#b9dfc8;background:linear-gradient(145deg,#f2fbf6,#fff)}.panel-drive-v87.disconnected,.panel-drive-v87.unavailable{border-color:#eadfc4;background:linear-gradient(145deg,#fffaf0,#fff)}
+      .panel-drive-head-v87{display:grid;grid-template-columns:42px minmax(0,1fr) auto;align-items:center;gap:9px}.panel-drive-logo-v87{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;background:conic-gradient(from 205deg,#4285f4 0 33%,#f4b400 0 66%,#0f9d58 0);color:#fff;font-size:19px;font-weight:1000;box-shadow:0 7px 16px rgba(15,75,48,.13)}.panel-drive-head-v87>div{min-width:0;display:grid;gap:2px}.panel-drive-head-v87 small,.panel-drive-grid-v87 small{color:#71847b;font-size:9px;font-weight:900;letter-spacing:.04em}.panel-drive-head-v87 b{font-size:13px;color:#183e2e}.panel-drive-head-v87 span{font-size:10px;color:#60766b;font-weight:750}.panel-drive-state-v87{width:11px;height:11px;border-radius:50%;background:#d14b4b;box-shadow:0 0 0 4px rgba(209,75,75,.11)}.panel-drive-v87.connected .panel-drive-state-v87{background:#25ad68;box-shadow:0 0 0 4px rgba(37,173,104,.12)}
+      .panel-drive-grid-v87{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.panel-drive-grid-v87>div{min-width:0;display:grid;gap:2px;padding:9px;border:1px solid rgba(24,93,58,.11);border-radius:12px;background:rgba(255,255,255,.82)}.panel-drive-grid-v87 strong{overflow-wrap:anywhere;font-size:11px;color:#173f2e}.panel-drive-grid-v87 span{overflow-wrap:anywhere;font-size:9px;color:#71847b;font-weight:720}
+      .panel-drive-actions-v87{display:grid;grid-template-columns:1fr 1fr;gap:7px}.panel-drive-refresh-v87,.panel-drive-connect-v87{min-height:38px;border-radius:12px;padding:8px 10px;font-size:10px;font-weight:950}.panel-drive-refresh-v87{border:1px solid #cfe0d7;background:#fff;color:#315d48}.panel-drive-connect-v87{border:1px solid #147344;background:#147344;color:#fff}.panel-drive-error-v87{margin:0!important;color:#a33a32!important;font-size:10px!important}.panel-drive-v87.loading{animation:panelDrivePulseV87 1.2s ease-in-out infinite alternate}@keyframes panelDrivePulseV87{to{opacity:.68}}
+      @media(max-width:380px){.panel-account-head-v84{grid-template-columns:46px minmax(0,1fr)}.panel-account-avatar-v84{width:46px;height:46px;border-radius:15px}.panel-connection-v84{grid-column:1/-1;justify-content:center}.panel-account-details-v84,.panel-drive-grid-v87,.panel-drive-actions-v87{grid-template-columns:1fr}.panel-drive-head-v87{grid-template-columns:38px minmax(0,1fr) auto}.panel-drive-logo-v87{width:38px;height:38px}}
 
 
 /* source: mesaha-profile-avatar-stable-style */
