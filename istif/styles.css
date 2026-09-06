@@ -47,6 +47,9 @@ img{max-width:100%;display:block}
 .page-head.compact .title-wrap h1{font-size:clamp(26px,6.4vw,32px)}
 .title-wrap p{margin:5px 0 0;color:var(--muted);font-size:15px;line-height:1.25;font-weight:480;white-space:normal}
 .head-action{display:flex;align-items:center;justify-content:flex-end}
+.istif-head-actions{display:flex;align-items:center;justify-content:flex-end;gap:8px}
+.main-center-btn{min-height:44px;border:1px solid #cfe3d5;background:#f7fbf8;color:var(--green-dark);border-radius:15px;padding:0 12px;display:inline-flex;align-items:center;justify-content:center;gap:7px;font:800 12.5px/1 system-ui;white-space:nowrap;box-shadow:var(--shadow-sm)}
+.main-center-btn:active{transform:scale(.97)}
 .icon-btn,.back-btn,.profile-btn{border:1px solid var(--line);background:#f8fbf9;color:var(--green);width:46px;height:46px;border-radius:17px;display:grid;place-items:center;box-shadow:var(--shadow-sm);padding:0}
 .profile-btn{overflow:hidden;border-radius:50%}
 .profile-btn img{width:100%;height:100%;object-fit:cover}
@@ -250,6 +253,8 @@ body.is-printing .print-area{display:block!important;position:relative;z-index:9
 @media(max-width:440px){
   .app-shell{padding-left:11px;padding-right:11px}
   .page-head{grid-template-columns:64px minmax(0,1fr) 44px;gap:10px}
+  .page-head.logo-only{grid-template-columns:auto minmax(0,1fr) auto}
+  .main-center-btn{min-height:42px;padding:0 10px;font-size:11.5px}
   .brand-logo{width:59px;height:59px}.title-wrap h1{font-size:30px}
   .sync-banner{grid-template-columns:42px minmax(0,1fr) auto;padding:12px;gap:9px}.sync-copy strong{font-size:14px}.sync-copy span{font-size:11.5px}.sync-banner .btn{min-width:105px;padding-left:11px;padding-right:11px;font-size:13px}
   .metrics{gap:6px}.metric{padding:11px 3px}.metric-icon{width:39px;height:39px}.metric b{font-size:24px}.metric span{font-size:10.5px}
@@ -258,6 +263,8 @@ body.is-printing .print-area{display:block!important;position:relative;z-index:9
   .filter-grid{gap:5px}.filter-box{padding:8px 6px}.filter-box select,.filter-box input{font-size:11px}
 }
 @media(max-width:360px){
+  .main-center-btn{width:42px;padding:0}.main-center-btn span{display:none}
+  .istif-head-actions{gap:6px}
   .metrics{grid-template-columns:repeat(2,1fr)}
   .actions-grid{grid-template-columns:repeat(2,1fr)}
   .sync-banner{grid-template-columns:40px minmax(0,1fr)}.sync-banner .btn{grid-column:1/-1;width:100%}

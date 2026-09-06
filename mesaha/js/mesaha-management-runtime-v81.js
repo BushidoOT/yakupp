@@ -47,6 +47,29 @@
       if (typeof root.toast === "function") return root.toast(message);
     } catch (_) {}
   }
+  function googleSessionActive() {
+    var session = read(K.session, {}) || {};
+    return !!clean(session.access_token);
+  }
+  function openGoogleRequired() {
+    notify("Bulut ve Şeflik işlemleri için Google ile giriş yapın.", "warning");
+    setTimeout(function () {
+      try {
+        if (root.MesahaTerminalLocalV556 && typeof root.MesahaTerminalLocalV556.google === "function") {
+          root.MesahaTerminalLocalV556.google();
+          return;
+        }
+      } catch (_) {}
+      try { root.dispatchEvent(new CustomEvent("mesaha:google-auth-required", { detail: { reason: "management_cloud_feature" } })); } catch (_) {}
+      try {
+        if (root.MesahaGoogleAuthV548 && typeof root.MesahaGoogleAuthV548.boot === "function") root.MesahaGoogleAuthV548.boot(true);
+      } catch (_) {}
+    }, 40);
+    return false;
+  }
+  function requireGoogle() {
+    return googleSessionActive() ? true : openGoogleRequired();
+  }
   function activeFolder() {
     var active = read(K.active, {}) || {}, folders = read(K.folders, []);
     if (!Array.isArray(folders)) folders = [];
@@ -134,6 +157,7 @@
   async function uploadServerV84(options) {
     options = options || {};
     var service = api();
+    if (!requireGoogle()) return { ok: false, authRequired: true };
     if (serverBusyV84) return { ok: false, busy: true };
     if (navigator.onLine === false) { notify("İnternet yok. Veriler cihazda bekliyor.", "warning"); return { ok: false, offline: true }; }
     if (!service || typeof service.syncAll !== "function") throw new Error("Sunucuya yükleme modülü hazır değil.");
@@ -155,6 +179,7 @@
   async function downloadServerV84(options) {
     options = options || {};
     var service = api(), folder = activeFolder();
+    if (!requireGoogle()) return { ok: false, authRequired: true };
     if (serverBusyV84) return { ok: false, busy: true };
     if (navigator.onLine === false) { notify("İnternet yok. Cihazdaki son offline veriler gösteriliyor.", "warning"); return { ok: false, offline: true }; }
     if (!folder) { notify("Önce Şeflikler bölümünden aktif şefliği seçin.", "warning"); return { ok: false, noFolder: true }; }
@@ -371,6 +396,7 @@
   }
 
   function openTool(name) {
+    if (["seflik", "ormanci", "bolme", "backup"].indexOf(name) >= 0 && !requireGoogle()) return false;
     if (name === "seflik") return renderSeflik();
     if (name === "ormanci") return renderOrmanci();
     if (name === "bolme") return renderBolme(true);

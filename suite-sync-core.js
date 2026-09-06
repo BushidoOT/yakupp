@@ -145,6 +145,16 @@
     const t = terminal(), id = identity();
     return !!(id.google || (t && t.source === "pair_code" && t.pairedUserId && (t.terminalCode || t.terminalToken)));
   }
+  let transientRequestTimeoutMs = 0;
+  let transientNetworkAbort = false;
+  let startupPrepareStarted = false;
+  let startupPrepareFinished = false;
+  let autoRetryPausedWeak = false;
+  function remainingRequestBudget(defaultMs) {
+    if (transientNetworkAbort) throw networkError("Bağlantı zayıf olduğu için açılış senkronizasyonu durduruldu", "NETWORK_TIMEOUT");
+    const base = Math.max(250, Number(defaultMs) || 20000);
+    return transientRequestTimeoutMs ? Math.max(250, Math.min(base, transientRequestTimeoutMs)) : base;
+  }
   function floatingSyncAllowed() {
     let path = "";
     try { path = String(location.pathname || "").toLowerCase(); } catch (_) {}
@@ -236,12 +246,16 @@
   }
   async function fetchWithTimeout(url, options, timeoutMs) {
     const controller = typeof AbortController !== "undefined" ? new AbortController() : null;
-    const timer = controller ? setTimeout(() => controller.abort(), Math.max(1000, timeoutMs || 20000)) : null;
+    const timer = controller ? setTimeout(() => controller.abort(), Math.max(250, timeoutMs || 20000)) : null;
     try {
       return await fetch(url, { ...(options || {}), ...(controller ? { signal: controller.signal } : {}) });
     } catch (error) {
-      if (error && error.name === "AbortError") throw networkError("Bağlantı zaman aşımına uğradı", "NETWORK_TIMEOUT");
+      if (error && error.name === "AbortError") {
+        if (transientRequestTimeoutMs) transientNetworkAbort = true;
+        throw networkError("Bağlantı zaman aşımına uğradı", "NETWORK_TIMEOUT");
+      }
       if (navigator.onLine === false) throw networkError("İnternet bağlantısı yok", "OFFLINE");
+      if (transientRequestTimeoutMs) transientNetworkAbort = true;
       throw networkError("Sunucuya ulaşılamadı", "NETWORK_WEAK");
     } finally {
       if (timer) clearTimeout(timer);
@@ -287,7 +301,7 @@
           seflik_key: old.seflikKey || identity().seflikKey,
           folderId: old.folderId || "",
         }),
-      }, 20000);
+      }, remainingRequestBudget(20000));
       const out = await response.json().catch(() => ({}));
       if (!response.ok || out.ok === false || out.complete === false || out.partial === true || out.truncated === true || out.missing_sql === true) return false;
       const list = Array.isArray(out.folders) ? out.folders.filter(Boolean) : [];
@@ -333,7 +347,7 @@
     }
     let r, j;
     let authRetried = false, contextRetried = false;
-    const requestTimeout = url === DRIVE
+    const baseRequestTimeout = url === DRIVE
       ? (/^(upload_photo|backup_json|photo_data)$/.test(clean(action)) ? 70000 : 45000)
       : 30000;
     for (let attempt = 0; attempt < 3; attempt += 1) {
@@ -342,7 +356,7 @@
         cache: "no-store",
         headers: authHeaders(terminalRequest),
         body: JSON.stringify(body),
-      }, requestTimeout);
+      }, remainingRequestBudget(baseRequestTimeout));
       j = await r.json().catch(() => ({}));
       if (r.ok && j.ok !== false) {
         try { applyCanonicalServerContext(j); } catch (_) {}
@@ -984,7 +998,7 @@
       errors.push(clean(e?.message || e) || "Bölme listesi alınamadı");
       if (options.strict || !options.quiet) throw e;
     }
-    try {
+    if (!transientNetworkAbort) try {
       const out = await edge("seflik_folder_list_members", { seflik: af.seflik, folderSeflik: af.seflik });
       const members = (Array.isArray(out.members) ? out.members : []).map((m) => ({
         id: clean(m.email).toLocaleLowerCase("tr-TR") || clean(m.user_id || m.id), userId: clean(m.user_id || m.member_user_id),
@@ -1007,7 +1021,7 @@
       errors.push(clean(e?.message || e) || "Üye listesi alınamadı");
       if (options.strict) throw e;
     }
-    if (options.includeRecords) {
+    if (options.includeRecords && !transientNetworkAbort) {
       recordsStore[key] = recordsStore[key] && typeof recordsStore[key] === "object" ? recordsStore[key] : {};
       for (const d of list) {
         const no = clean(d.bolme_no), cached = recordsStore[key][no], expected = num(d.record_count);
@@ -1911,6 +1925,13 @@
         current.syncStatus &&
         current.syncStatus !== "synced";
       if (localPending) continue;
+      const sameRemoteVersion = !!(
+        current &&
+        clean(current.updatedAt || current.updated_at) &&
+        clean(current.updatedAt || current.updated_at) === clean(remoteRecord.updatedAt || remoteRecord.updated_at) &&
+        clean(current.syncStatus) === "synced"
+      );
+      if (sameRemoteVersion) continue;
       const merged = {
         ...(current || {}),
         ...remoteRecord,
@@ -1959,6 +1980,7 @@
     positionDock();
   }
   function scheduleAutoRetry(delayMs = 15000, reset = false) {
+    if (autoRetryPausedWeak) return;
     if (!cloudSyncAllowed()) {
       stopGuestSync();
       return;
@@ -2007,12 +2029,15 @@
     try {
       try {
         await checkSyncConnection(5000);
+        autoRetryPausedWeak = false;
       } catch (connectionError) {
         if (connectionError && connectionError.code === "OFFLINE") {
           toast("İnternet yok. Senkronizasyon yapılamadı.", true);
           return { ok: false, offline: true };
         }
-        toast("Senkronizasyon başarısız. Bağlantı zayıf.", true);
+        autoRetryPausedWeak = true;
+        clearTimeout(autoRetryTimer);
+        toast("Senkronizasyon durduruldu. Bağlantı 5 saniye içinde yanıt vermedi.", true);
         return { ok: false, weakConnection: true };
       }
       setSyncButtonBusy(true, "Senkronize ediliyor");
@@ -2102,8 +2127,9 @@
         return { ok: false, offline: true };
       }
       if (code === "NETWORK_TIMEOUT" || code === "NETWORK_WEAK") {
-        toast("Senkronizasyon başarısız. Bağlantı zayıf.", true);
-        scheduleAutoRetry(nextAutoRetryDelay());
+        autoRetryPausedWeak = true;
+        clearTimeout(autoRetryTimer);
+        toast("Senkronizasyon durduruldu. Bağlantı zayıf; otomatik tekrar yapılmayacak.", true);
         return { ok: false, weakConnection: true };
       }
       if (e && e.retryable) scheduleAutoRetry(nextAutoRetryDelay());
@@ -2113,6 +2139,71 @@
       syncing = false;
       setSyncButtonBusy(false, "Senkronize Et");
       updateButton();
+    }
+  }
+
+  async function prepareStartupData() {
+    if (startupPrepareStarted) return { ok: startupPrepareFinished, skipped: true, reason: "already-started" };
+    if (navigator.onLine === false || !cloudSyncAllowed()) {
+      return { ok: false, skipped: true, offline: navigator.onLine === false, authRequired: !cloudSyncAllowed() };
+    }
+    startupPrepareStarted = true;
+    const previousTimeout = transientRequestTimeoutMs;
+    const previousAbort = transientNetworkAbort;
+    transientRequestTimeoutMs = 5000;
+    transientNetworkAbort = false;
+    let folder = null, istif = null;
+    try {
+      await checkSyncConnection(remainingRequestBudget(5000));
+      autoRetryPausedWeak = false;
+      if (!activeFolder()) {
+        try { await repairFolderContextDirect(); } catch (_) {}
+      }
+      if (!activeFolder()) return { ok: false, skipped: true, reason: "no-active-folder" };
+      const results = await Promise.allSettled([
+        refreshFolderData({
+          source: "startup-prefetch-v89",
+          includeRecords: true,
+          forceRecords: false,
+          quiet: true,
+        }),
+        pullIstifRecords(),
+      ]);
+      folder = results[0].status === "fulfilled" ? results[0].value : { ok: false, error: clean(results[0].reason && results[0].reason.message || results[0].reason) };
+      istif = results[1].status === "fulfilled" ? results[1].value : { ok: false, error: clean(results[1].reason && results[1].reason.message || results[1].reason) };
+      const weakText = [folder, istif]
+        .map((item) => clean(item && (item.error || item.message || (Array.isArray(item.errors) ? item.errors.join(" ") : ""))))
+        .join(" ");
+      const weak = transientNetworkAbort ||
+        [results[0], results[1]].some((r) => r.status === "rejected" && ["NETWORK_TIMEOUT", "NETWORK_WEAK"].includes(clean(r.reason && r.reason.code))) ||
+        /zaman aşım|5 saniye|sunucuya ulaşılamadı|bağlantı zayıf/i.test(weakText);
+      if (weak) {
+        autoRetryPausedWeak = true;
+        clearTimeout(autoRetryTimer);
+      }
+      startupPrepareFinished = true;
+      try {
+        window.dispatchEvent(new CustomEvent("mesaha-suite:startup-prefetch", {
+          detail: { ok: !weak, weakConnection: weak, folder, istif, photosDownloaded: false, timeoutMs: 5000 }
+        }));
+      } catch (_) {}
+      return { ok: !weak, weakConnection: weak, folder, istif, photosDownloaded: false };
+    } catch (error) {
+      const code = clean(error && error.code);
+      if (code === "NETWORK_TIMEOUT" || code === "NETWORK_WEAK") {
+        autoRetryPausedWeak = true;
+        clearTimeout(autoRetryTimer);
+      }
+      startupPrepareFinished = true;
+      try {
+        window.dispatchEvent(new CustomEvent("mesaha-suite:startup-prefetch", {
+          detail: { ok: false, weakConnection: code === "NETWORK_TIMEOUT" || code === "NETWORK_WEAK", error: clean(error && error.message || error), photosDownloaded: false, timeoutMs: 5000 }
+        }));
+      } catch (_) {}
+      return { ok: false, weakConnection: code === "NETWORK_TIMEOUT" || code === "NETWORK_WEAK", error: clean(error && error.message || error), photosDownloaded: false };
+    } finally {
+      transientRequestTimeoutMs = previousTimeout;
+      transientNetworkAbort = previousAbort;
     }
   }
 
@@ -2452,9 +2543,12 @@
       }, 450),
     );
     window.addEventListener("online", () => {
+      autoRetryPausedWeak = false;
       updateButton();
-      if (cloudSyncAllowed()) scheduleAutoRetry(1800, true);
-      else stopGuestSync();
+      if (cloudSyncAllowed()) {
+        if (!startupPrepareStarted) setTimeout(() => prepareStartupData().catch(() => {}), 120);
+        if (isDirty()) scheduleAutoRetry(1800, true);
+      } else stopGuestSync();
     });
     window.addEventListener("offline", () => { updateButton(); clearTimeout(autoRetryTimer); });
     document.addEventListener("visibilitychange", () => {
@@ -2466,6 +2560,12 @@
       )
         scheduleAutoRetry(2500, false);
       else if (!cloudSyncAllowed()) stopGuestSync();
+    });
+    ["mesaha:user-login", "mesaha:google-access-approved", "mesaha:auth-session-restored"].forEach((eventName) => {
+      window.addEventListener(eventName, () => {
+        if (navigator.onLine === false || !cloudSyncAllowed() || startupPrepareStarted) return;
+        setTimeout(() => prepareStartupData().catch(() => {}), 100);
+      }, { passive: true });
     });
     const mo = new MutationObserver((mutations) => {
       if (mutations.some((mutation) => mutation.type === "childList"))
@@ -2512,6 +2612,7 @@
     positionDock,
     refreshFolderData,
     pullIstifRecords,
+    prepareStartupData,
     loadDivisionRecords,
     clearDivisionRecordCache,
     deleteMesahaDivisionRecords,
@@ -2538,8 +2639,11 @@
     dispatch();
     updateButton();
     if (navigator.onLine !== false && cloudSyncAllowed()) {
-      setTimeout(() => repairFolderContextDirect().catch(() => {}), 900);
-      if (isDirty()) scheduleAutoRetry(4200, true);
+      setTimeout(() => {
+        prepareStartupData().then(() => {
+          if (isDirty() && !autoRetryPausedWeak) scheduleAutoRetry(1800, true);
+        }).catch(() => {});
+      }, 180);
     } else if (!cloudSyncAllowed()) stopGuestSync();
   }
   if (document.readyState === "loading")

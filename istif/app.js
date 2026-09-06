@@ -1108,6 +1108,19 @@ function hasSharedCloudIdentity() {
   } catch {}
   return !!(readSharedSession()?.access_token || isPairedTerminal());
 }
+function hasGoogleSession() {
+  return !!clean(readSharedSession()?.access_token);
+}
+function redirectToGoogleLogin() {
+  toast("Bulut ve Şeflik işlemleri için Google ile giriş yapın.", "bad");
+  setTimeout(() => {
+    location.href = "../?google=1&return=istif";
+  }, 80);
+  return false;
+}
+function requireGoogleCloud() {
+  return hasGoogleSession() ? true : redirectToGoogleLogin();
+}
 function terminalAuthPayload() {
   try {
     if (window.OrmanSuiteIdentity?.terminalAuthPayload) return window.OrmanSuiteIdentity.terminalAuthPayload();
@@ -1754,11 +1767,17 @@ async function syncSharedContext({ manual = false } = {}) {
     render();
     return;
   }
+  if (manual && !hasGoogleSession()) {
+    hydrateLocalSharedIdentity();
+    refreshCurrentMembers();
+    render();
+    redirectToGoogleLogin();
+    return;
+  }
   if (!hasSharedCloudIdentity()) {
     hydrateLocalSharedIdentity();
     refreshCurrentMembers();
     render();
-    if (manual) toast("Yerel misafir modunda bulut senkronizasyonu kapalı.");
     return;
   }
   state.sharedSyncing = true;
@@ -1931,6 +1950,14 @@ function profileButton() {
   return `<button class="icon-btn" data-action="account" aria-label="Hesap">${icon("user", 23)}</button>`;
 }
 
+function mainCenterButton() {
+  return `<button class="main-center-btn" data-action="main-center" type="button" aria-label="Ana Merkeze Dön">${icon("home", 18)}<span>Ana Merkez</span></button>`;
+}
+
+function homeHeadActions() {
+  return `<div class="istif-head-actions">${mainCenterButton()}${profileButton()}</div>`;
+}
+
 function head(title, subtitle = "", { back = false, action = "" } = {}) {
   const titleBlock = title || subtitle ? `<div class="title-wrap"><h1>${esc(title)}</h1>${subtitle ? `<p>${esc(subtitle)}</p>` : ""}</div>` : '<div class="title-wrap logo-only-title" aria-hidden="true"></div>';
   return `<header class="page-head ${back ? "compact" : ""} ${!title && !subtitle ? "logo-only" : ""}">
@@ -2060,7 +2087,7 @@ function pendingUploadCounts() {
 function renderHome() {
   const c = counts();
   const pending = pendingUploadCounts();
-  return `${head("", "", { action: profileButton() })}
+  return `${head("", "", { action: homeHeadActions() })}
     ${state.settings.setupComplete ? "" : `<button class="setup-warning card" data-view="settings"><span>${icon("info", 22)}</span><div><b>İşletme ve evrak bilgilerini girin</b><small>Bölge, işletme, şeflik ve rampa bilgilerini kaydedin.</small></div>${icon("chevron", 21)}</button>`}
     ${state.drive.connected && state.drive.quota && ["warning", "critical", "full"].includes(state.drive.quota.level) ? `<button class="drive-home-warning ${esc(state.drive.quota.level)}" data-view="settings"><span>${icon("drive", 22)}</span><div><b>${esc(driveQuotaLevelText(state.drive.quota))}</b><small>${state.drive.quota.remainingBytes == null ? "Drive alanını kontrol edin" : `${formatStorageBytes(state.drive.quota.remainingBytes)} boş alan kaldı`}</small></div>${icon("chevron", 20)}</button>` : ""}
     <section class="sync-banner card">
@@ -2591,7 +2618,7 @@ function renderSettings() {
       <div class="shared-card-title"><span>${icon("folder", 22)}</span><div><b>Orman İO Ortak Veri Bağlantısı</b><small>Şeflik, bölmeler ve kayıt durumu Orman İO tarafından yönetilir.</small></div></div>
       <div class="shared-current"><span>Şeflik</span><b>${esc(displaySeflik())}</b></div>
       <button class="btn wide" data-action="refresh-shared">${icon("refresh", 20)} Ortak Bilgileri Güncelle</button>
-      ${loggedIn ? "" : '<a class="btn primary wide login-link" href="../">Mesaha İO’da Google ile Giriş Yap</a>'}
+      ${loggedIn ? "" : '<a class="btn primary wide login-link" href="../?google=1&return=istif">Mesaha İO’da Google ile Giriş Yap</a>'}
     </section>
     ${renderDriveCard()}
     <div class="info-note"><b>${icon("info", 21)}</b><span>Kayıtlar offline saklanır. İstif, fotoğraf ve evrak verileri bu uygulamaya özeldir.</span></div>`;
@@ -2607,7 +2634,10 @@ function bindDynamic() {
   app.querySelectorAll('[data-action="back"]').forEach((button) => {
     button.onclick = () => setView("home");
   });
-  app.querySelector('[data-action="sync"]')?.addEventListener("click", syncAll);
+  app.querySelector('[data-action="sync"]')?.addEventListener("click", () => {
+    if (!requireGoogleCloud()) return;
+    syncAll();
+  });
   app
     .querySelector('[data-action="geo"]')
     ?.addEventListener("click", getLocation);
@@ -2615,21 +2645,39 @@ function bindDynamic() {
     .querySelector('[data-action="account"]')
     ?.addEventListener("click", showAccountDialog);
   app
+    .querySelector('[data-action="main-center"]')
+    ?.addEventListener("click", () => {
+      stopCamera();
+      location.href = "../";
+    });
+  app
     .querySelector('[data-action="pick-seflik"]')
-    ?.addEventListener("click", showSeflikPicker);
+    ?.addEventListener("click", () => {
+      if (!requireGoogleCloud()) return;
+      showSeflikPicker();
+    });
   app
     .querySelector('[data-action="pick-ormanci"]')
     ?.addEventListener("click", showOrmanciPicker);
   // Personel kimliği Orman İO ana menüsünden otomatik uygulanır.
   app
     .querySelector('[data-action="connect-drive"]')
-    ?.addEventListener("click", beginDriveConnection);
+    ?.addEventListener("click", () => {
+      if (!requireGoogleCloud()) return;
+      beginDriveConnection();
+    });
   app
     .querySelector('[data-action="disconnect-drive"]')
-    ?.addEventListener("click", disconnectDrive);
+    ?.addEventListener("click", () => {
+      if (!requireGoogleCloud()) return;
+      disconnectDrive();
+    });
   app
     .querySelector('[data-action="refresh-shared"]')
-    ?.addEventListener("click", () => syncSharedContext({ manual: true }));
+    ?.addEventListener("click", () => {
+      if (!requireGoogleCloud()) return;
+      syncSharedContext({ manual: true });
+    });
   app.querySelectorAll("[data-add-photo]").forEach((button) => {
     button.onclick = openCameraChooser;
   });
@@ -3792,6 +3840,10 @@ async function supabaseUpsertRecord(record) {
 }
 
 async function syncAll() {
+  if (!hasGoogleSession()) {
+    redirectToGoogleLogin();
+    return;
+  }
   const suiteApi = suiteSyncApi();
   if (suiteApi) {
     try {
@@ -4183,13 +4235,25 @@ window.addEventListener("mesaha-suite:sync-complete", async () => {
   );
   render();
 });
+window.addEventListener("mesaha-suite:startup-prefetch", async () => {
+  state.records = (await idbGetAll("records")).filter(
+    (record) => record && !isRecordTombstoned(record),
+  );
+  hydrateLocalSharedIdentity();
+  refreshCurrentMembers();
+  render();
+});
 let lastResumeSyncAtV69 = 0;
 function scheduleResumeSyncV69(delay = 180) {
   if (!navigator.onLine || !hasSharedCloudIdentity()) return;
   const now = Date.now();
   if (now - lastResumeSyncAtV69 < 12000) return;
   lastResumeSyncAtV69 = now;
-  setTimeout(() => syncSharedContext({ manual: false }), Math.max(0, Number(delay) || 0));
+  setTimeout(() => {
+    const service = suiteSyncApi();
+    if (service && typeof service.prepareStartupData === "function")
+      service.prepareStartupData().catch(() => {});
+  }, Math.max(0, Number(delay) || 0));
 }
 window.addEventListener("online", () => scheduleResumeSyncV69(500), { passive: true });
 document.addEventListener("visibilitychange", () => {
@@ -4231,8 +4295,12 @@ window.addEventListener(
       );
     }
     if (navigator.onLine && hasSharedCloudIdentity())
-      setTimeout(() => syncSharedContext({ manual: false }), 120);
-    /* Ortak kayıt listesi sunucu için otoritatiftir; silinen kayıtlar tüm cihazlardan temizlenir. */
+      setTimeout(() => {
+        const service = suiteSyncApi();
+        if (service && typeof service.prepareStartupData === "function")
+          service.prepareStartupData().catch(() => {});
+      }, 120);
+    /* Açılış hazırlığında her sunucu isteği en fazla 5 saniye beklenir; zayıf bağlantıda döngü durur ve İstif fotoğrafları indirilmez. */
   } catch (error) {
     hideBoot();
     const message = clean(error?.message || error || "Uygulama başlatılamadı.");

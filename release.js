@@ -1,31 +1,31 @@
 (function (root) {
   "use strict";
   const DATA = /*MESAHA_RELEASE_DATA_START*/{
-  "build": 88,
-  "version": "88.0.0",
+  "build": 89,
+  "version": "89.0.0",
   "channel": "stable",
-  "releasedAt": "2026-09-06T13:45:00+03:00",
-  "assetToken": "orman-io-stable-20260906-v88",
-  "cacheName": "orman-io-shell-stable-20260906-v88",
+  "releasedAt": "2026-09-06T09:41:00+03:00",
+  "assetToken": "orman-io-stable-20260906-v89",
+  "cacheName": "orman-io-shell-stable-20260906-v89",
   "apps": {
     "suite": {
       "label": "Orman İO",
-      "version": "88.0.0"
+      "version": "89.0.0"
     },
     "mesaha": {
       "label": "Mesaha İO",
-      "version": "6.27"
+      "version": "6.28"
     },
     "istif": {
       "label": "İstif İO",
-      "version": "0.3.25"
+      "version": "0.3.26"
     },
     "admin": {
       "label": "Orman İO Yönetim",
-      "version": "88.0.0"
+      "version": "89.0.0"
     }
   },
-  "description": "V88 Drive yedekleme güvenliği: Drive yükleme başlar başlamaz tam ekran ilerleme bildirimi gösterilir ve ilgili düğmeler kilitlenir; eşzamanlı tekrar basmalar tek işleme bağlanır; aynı veri için kısa sürede yinelenen istekler sunucu idempotency anahtarıyla ikinci yedek oluşturmaz."
+  "description": "V89 açılış hazırlığı ve erişim güvenliği: uygulama bağlantı varsa aktif şefliğin bölme ve Mesaha kayıtlarını, ayrıca İstif kayıt metadatasını fotoğrafları indirmeden hazırlar; açılış isteklerinden biri 5 saniyede yanıt vermezse hazırlığı durdurur; tam mevcut kayıtları tekrar indirmez; zayıf bağlantıda otomatik tekrar döngüsünü durdurur. İstif İO ana ekranına Ana Merkez dönüşü eklendi; Bulut, Drive ve Şeflik işlemleri Google oturumu yoksa doğrudan Google girişine yönlendirir."
 }/*MESAHA_RELEASE_DATA_END*/;
   const APP_NAMES = DATA.apps || {};
   const SCRIPT_URL = (() => {
