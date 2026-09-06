@@ -143,7 +143,9 @@
         open.hidden = true;
         return s;
       }
-      const isOwner = s.isOwner !== false;
+      const identity = api() && typeof api().identity === "function" ? api().identity() : {};
+      const role = clean(identity && identity.role).toLocaleLowerCase("tr-TR");
+      const isOwner = s.isOwner === true || ["owner", "creator", "kurucu"].includes(role);
       if (s.connected) {
         text.textContent = isOwner
           ? `Kurucu Drive bağlı • ${clean(s.ownerEmail || s.email || "Google Drive")}`
@@ -201,29 +203,28 @@
     refreshDrive(true).catch(() => {});
   }
   async function handleCallback() {
-    const q = new URLSearchParams(location.search),
-      code = q.get("code"),
-      state = q.get("state");
-    if (!code || !state || !api()) return;
+    const service = api();
+    if (!service) return;
+    if (typeof service.handleDriveOAuthReturn === "function") {
+      try {
+        const out = await service.handleDriveOAuthReturn();
+        if (out && out.ok) await refreshDrive(true);
+      } catch (_) {}
+      return;
+    }
+    /* Eski paketler için geriye uyumlu fallback. */
+    const q = new URLSearchParams(location.search), code = q.get("code"), state = q.get("state");
+    if (!code || !state || typeof service.driveFinish !== "function") return;
     try {
       toast("Google Drive bağlantısı tamamlanıyor…");
-      await api().driveFinish(code, state);
-      q.delete("code");
-      q.delete("state");
-      q.delete("scope");
-      q.delete("authuser");
-      q.delete("prompt");
-      history.replaceState(
-        {},
-        "",
-        location.pathname + (q.toString() ? "?" + q : "") + location.hash,
-      );
+      await service.driveFinish(code, state);
+      q.delete("code"); q.delete("state"); q.delete("scope"); q.delete("authuser"); q.delete("prompt");
+      history.replaceState({}, "", location.pathname + (q.toString() ? "?" + q : "") + location.hash);
       await refreshDrive(true);
       toast("Şeflik kurucusunun Drive hesabı bağlandı.");
-    } catch (e) {
-      toast("Drive bağlantısı tamamlanamadı: " + e.message, true);
-    }
+    } catch (e) { toast("Drive bağlantısı tamamlanamadı: " + e.message, true); }
   }
+
   function open() {
     if (!api()) return;
     const m = $("backupsModalV8"),

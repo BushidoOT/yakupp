@@ -42,12 +42,8 @@
           return getJson(ACCESS_KEY, null) || {};
         }
         function googleActive() {
-          var s = session(),
-            a = access();
-          return !!(
-            (s && s.access_token) ||
-            (a && a.status === "approved" && a.user_id)
-          );
+          var s = session();
+          return !!(s && clean(s.access_token));
         }
         function terminalPaired() {
           var t = terminal();
@@ -61,18 +57,6 @@
           var t = terminal(),
             a = access(),
             s = session();
-          if (terminalPaired())
-            return {
-              type: "Terminal kodlu",
-              cls: "terminal",
-              sub: "Bu cihaz terminal kodu ile kullanıcıya eşleşmiş. Bulut yedekleri eşleşen kullanıcı adına çalışır.",
-            };
-          if (t.active)
-            return {
-              type: "Terminal / Misafir",
-              cls: "terminal",
-              sub: "Bu cihaz yerel terminal modunda. Bulut için terminal kodu veya Google gerekir.",
-            };
           if (googleActive())
             return {
               type: "Google hesabı",
@@ -81,12 +65,25 @@
                 clean(a.email || (s.user && s.user.email)) ||
                 "Google ile doğrulanmış oturum açık.",
             };
+          if (terminalPaired())
+            return {
+              type: "Terminal kodlu",
+              cls: "terminal",
+              sub: "Bu cihaz yerel terminal olarak eşleşmiş. Şeflik ve bulut işlemleri için Google ile giriş gerekir.",
+            };
+          if (t.active)
+            return {
+              type: "Terminal / Misafir",
+              cls: "terminal",
+              sub: "Bu cihaz yerel terminal modunda. Şeflik ve bulut işlemleri için Google ile giriş gerekir.",
+            };
           return {
             type: "Yerel kullanım",
             cls: "",
-            sub: "Bulut özellikleri için Google ile giriş veya terminal kodu gerekir.",
+            sub: "Şeflik ve bulut özellikleri için Google ile giriş gerekir.",
           };
         }
+
         function fold(v) {
           return clean(v).toLocaleLowerCase("tr-TR").replace(/ç/g, "c").replace(/ğ/g, "g").replace(/ı/g, "i").replace(/ö/g, "o").replace(/ş/g, "s").replace(/ü/g, "u").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
         }
@@ -143,7 +140,7 @@
           if (loading) return '<section class="panel-drive-v87 loading"><div class="panel-drive-head-v87"><span class="panel-drive-logo-v87">△</span><div><small>ŞEFLİK GOOGLE DRIVE</small><b>Bağlantı kontrol ediliyor…</b></div></div></section>';
           if (!status) return '<section class="panel-drive-v87 unavailable"><div class="panel-drive-head-v87"><span class="panel-drive-logo-v87">△</span><div><small>ŞEFLİK GOOGLE DRIVE</small><b>' + esc(online ? (driveError || "Drive bilgisi henüz alınmadı") : "Offline • Son Drive bilgisi bulunamadı") + '</b></div></div><button type="button" class="panel-drive-refresh-v87" id="panelDriveRefreshV87">Durumu Yenile</button></section>';
           var connected = status.connected === true,
-            isOwner = status.isOwner !== false,
+            isOwner = founderCanManageDrive(folder, status),
             canDisconnect = connected && founderCanManageDrive(folder, status),
             owner = clean(status.ownerName || status.name),
             ownerEmail = clean(status.ownerEmail || status.email),
@@ -259,7 +256,7 @@
           );
           var panel = getJson(PANEL_KEY, {}) || {}, settings = getJson(SETTINGS_KEY, {}) || {}, folder = activeFolder() || {}, pending = getJson(PENDING_KEY, []), online = navigator.onLine !== false;
           if (!Array.isArray(pending)) pending = [];
-          var user = s.user || {}, meta = user.user_metadata || {}, seflik = clean(folder.seflik || folder.name || panel.seflik || settings.seflik), bolme = clean(settings.bolmeNo || settings.bolme_no || panel.bolmeNo || panel.bolme_no), userId = clean(user.id || a.user_id || a.userId || t.pairedUserId || t.terminalCode), avatar = clean(t.avatarUrl || t.avatar_url || a.avatar_url || a.google_avatar_url || meta.avatar_url || meta.picture), device = clean(t.deviceName || t.label || navigator.platform || "Mobil cihaz");
+          var user = s.user || {}, meta = user.user_metadata || {}, seflik = clean(folder.seflik || folder.name || panel.seflik || settings.seflik), bolme = clean(settings.bolmeNo || settings.bolme_no || panel.bolmeNo || panel.bolme_no), userId = clean(user.id || a.user_id || a.userId || t.pairedUserId || t.terminalCode), avatar = clean(a.avatar_url || a.google_avatar_url || meta.avatar_url || meta.picture || t.avatarUrl || t.avatar_url), device = clean(t.deviceName || t.label || navigator.platform || "Mobil cihaz");
           var details = [
             ["Ad Soyad", name || "Belirtilmedi"],
             ["E-posta", email || "Terminal / yerel oturum"],

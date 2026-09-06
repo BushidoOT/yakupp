@@ -1106,7 +1106,7 @@ function hasSharedCloudIdentity() {
   try {
     if (window.OrmanSuiteIdentity?.cloudAllowed) return window.OrmanSuiteIdentity.cloudAllowed();
   } catch {}
-  return !!(readSharedSession()?.access_token || isPairedTerminal());
+  return !!clean(readSharedSession()?.access_token);
 }
 function hasGoogleSession() {
   return !!clean(readSharedSession()?.access_token);
@@ -1281,7 +1281,7 @@ async function edgeCall(action, payload = {}, retried = false) {
   const session = readSharedSession();
   const terminalPayload = terminalAuthPayload();
   if (!session?.access_token && !isPairedTerminal())
-    throw new Error("Google veya terminal kodu ile giriş gerekli.");
+    throw new Error("Google ile giriş gerekli.");
   const terminalRequest = isPairedTerminal();
   const token = terminalRequest ? SUPABASE_ANON_KEY : (session?.access_token || SUPABASE_ANON_KEY);
   const response = await fetch(EDGE_URL, {
@@ -1323,11 +1323,15 @@ async function edgeCall(action, payload = {}, retried = false) {
 
 async function bridgeCall(action, payload = {}, retried = false) {
   const session = readSharedSession();
-  const terminalPayload = terminalAuthPayload();
-  if (!session?.access_token && !isPairedTerminal())
-    throw new Error("Google veya terminal kodu ile giriş gerekli.");
-  const terminalRequest = isPairedTerminal();
-  const token = terminalRequest ? SUPABASE_ANON_KEY : (session?.access_token || SUPABASE_ANON_KEY);
+  if (!clean(session?.access_token)) {
+    const error = new Error("Bu bulut işlemi için Google ile giriş gerekli.");
+    error.code = "GOOGLE_REQUIRED";
+    throw error;
+  }
+  /* Google aktifken eski terminal eşleşmesi hiçbir isteğin kimliğini gölgeleyemez. */
+  const terminalPayload = {};
+  const terminalRequest = false;
+  const token = session.access_token;
   const response = await fetch(DRIVE_BRIDGE_URL, {
     method: "POST",
     cache: "no-store",
@@ -1894,7 +1898,7 @@ async function syncSharedContext({ manual = false } = {}) {
     }
     const term = readSharedTerminal();
     state.auth = {
-      status: isPairedTerminal() ? "terminal" : "connected",
+      status: session?.access_token ? "connected" : isPairedTerminal() ? "terminal" : "connected",
       userId: clean(
         out.access?.user_id ||
           out.access?.userId ||
@@ -3494,9 +3498,15 @@ async function beginDriveConnection() {
     toast("Drive bağlantısını yalnızca şeflik kurucusu yapabilir.", "bad");
     return;
   }
+  if (!requireGoogleCloud()) return;
   if (!navigator.onLine)
     return toast("Drive bağlantısı için internet gerekli.", "bad");
   try {
+    const shared = suiteSyncApi();
+    if (shared && typeof shared.driveConnect === "function") {
+      await shared.driveConnect(); // V91: pending redirect bağlamını merkezi çekirdek saklar.
+      return;
+    }
     const redirectUri = DRIVE_REDIRECT_URI;
     const out = await bridgeCall("oauth_start", {
       seflikKey: state.settings.seflikKey,
@@ -3552,7 +3562,10 @@ async function disconnectDrive() {
   )
     return;
   try {
-    await bridgeCall("disconnect", {
+    if (!requireGoogleCloud()) return;
+    const shared = suiteSyncApi();
+    if (shared && typeof shared.driveDisconnect === "function") await shared.driveDisconnect();
+    else await bridgeCall("disconnect", {
       seflikKey: state.settings.seflikKey,
       seflik: state.settings.seflik,
     });

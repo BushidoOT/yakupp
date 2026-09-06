@@ -29,7 +29,7 @@
   function jsonSet(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}}
   function terminalData(){var x=jsonGet(TERMINAL_KEY,null);if(!(x&&x.active===true)){var old=jsonGet(OLD_TERMINAL_KEY,null);if(old&&old.active===true){x=old;jsonSet(TERMINAL_KEY,old);try{localStorage.removeItem(OLD_TERMINAL_KEY)}catch(e){}}}return x||{}}
   function terminal(){var x=terminalData();return !!(x&&x.active===true)}
-  function terminalCloudAllowed(){var x=terminalData();return !!(x&&x.active===true&&x.source==='pair_code'&&x.pairedUserId&&(x.terminalToken||x.terminalCode));}
+  function terminalCloudAllowed(){return false;} // V91: terminal yalnız yerel kimliktir; bulut/şeflik Google ister
   function googleSessionActive(){
     var s=jsonGet(SESSION_KEY,{})||{};
     return !!clean(s.access_token);
@@ -38,7 +38,7 @@
   function toast(title,sub,kind){try{if(typeof window.mesahaFloatToastV315==='function')return window.mesahaFloatToastV315(title,sub||'',kind||'warning')}catch(e){}try{if(typeof window.toast==='function')return window.toast(title,sub||'',kind||'warning')}catch(e){}try{alert(title+(sub?'\n'+sub:''))}catch(e){}}
   function log(event,detail,level){try{if(window.MesahaLoginLog&&typeof window.MesahaLoginLog.log==='function')window.MesahaLoginLog.log(event,detail||{},level||'info')}catch(e){}}
   function clearTerminal(){try{localStorage.removeItem(TERMINAL_KEY);localStorage.removeItem(OLD_TERMINAL_KEY)}catch(e){}try{document.documentElement.removeAttribute('data-mesaha-terminal-mode');document.documentElement.removeAttribute('data-mesaha-terminal-cloud');['terminalLocalHomeV556','terminalLocalPanelV556','terminalPairPanelV561'].forEach(function(id){var el=$(id);if(el&&el.parentNode)el.parentNode.removeChild(el)})}catch(e){}log('terminal_mode_disabled_for_google',{},'info')}
-  function goGoogle(){clearTerminal();try{if(window.mesahaSupabase&&window.mesahaSupabase.clearSession)window.mesahaSupabase.clearSession()}catch(e){}try{window.dispatchEvent(new CustomEvent('mesaha:google-auth-required',{detail:{reason:'terminal_cloud_feature'}}))}catch(e){}setTimeout(function(){try{if(window.MesahaGoogleAuthV548&&typeof window.MesahaGoogleAuthV548.boot==='function')window.MesahaGoogleAuthV548.boot(true)}catch(e){}},80)}
+  function goGoogle(){clearTerminal();try{window.dispatchEvent(new CustomEvent('mesaha:google-auth-required',{detail:{reason:'terminal_cloud_feature',forceGoogle:true}}))}catch(e){}setTimeout(function(){try{if(window.MesahaGoogleAuthV548&&typeof window.MesahaGoogleAuthV548.openGoogle==='function')window.MesahaGoogleAuthV548.openGoogle();else if(window.MesahaGoogleAuthV548&&typeof window.MesahaGoogleAuthV548.boot==='function')window.MesahaGoogleAuthV548.boot(true)}catch(e){}},80)}
   function askGoogle(){
     log('google_cloud_feature_required',{url:location.href},'warning');
     toast('Google ile giriş yap','Bulut ve Şeflik işlemleri için Google hesabıyla giriş yapmanız gerekiyor.','warning');
@@ -330,14 +330,14 @@
   function records(){var r=(window.state&&Array.isArray(window.state.records))?window.state.records:readJson(RECORDS_KEY,[]);return Array.isArray(r)?r:[]}
   function activeSeflikFolder(){return readJson(ACTIVE_SEFLIK_KEY,{})||{}}
   function terminal(){var x=readJson(TERMINAL_KEY,{})||{};return x&&x.active?x:{}}
-  function terminalAuth(){var t=terminal();if(t.active&&clean(t.source)==='pair_code'&&(t.terminalCode||t.terminalToken))return{terminalCode:clean(t.terminalCode),terminalToken:clean(t.terminalToken),terminalPairedUserId:clean(t.pairedUserId),terminalPairedEmail:clean(t.pairedEmail)};return {}}
+  function terminalAuth(){return {}} // V91: şeflik/bulut isteklerinde terminal kimliği gönderilmez
   function user(){var p=readJson(PANEL_KEY,{}),s=settings(),f=activeSeflikFolder();return{name:clean(p.googleFullName||p.name||s.ekipNot),seflik:clean(f.seflik||p.activeSeflik||p.seflik||s.seflik),bolmeNo:clean(p.bolmeNo||s.bolmeNo),seflikKey:clean(f.seflik_key||f.seflikKey),folder:f}}
   function validIdentity(u){return clean(u&&u.name).length>1&&clean(u&&u.seflik).length>1}
   function token(){var s=readJson(SESSION_KEY,null);return clean(s&&s.access_token)}
   function access(){return readJson(ACCESS_KEY,{})||{}}
-  function hasApprovedIdentity(){var u=user(),a=access(),p=readJson(PANEL_KEY,{}),t=terminal();return clean(u.name).length>1&&clean(u.seflik).length>1&&(clean(a.status)==='approved'||p.googleApproved===true||p.terminalPairedUserId||(t.active&&clean(t.source)==='pair_code'&&(t.pairedUserId||t.terminalToken)))}
+  function hasApprovedIdentity(){var u=user(),a=access(),p=readJson(PANEL_KEY,{});return !!token()&&clean(u.name).length>1&&clean(u.seflik).length>1&&(clean(a.status)==='approved'||p.googleApproved===true)}
   function pairedTerminal(){var t=terminal();return !!(t.active&&clean(t.source)==='pair_code'&&(t.pairedUserId||t.terminalToken||t.terminalCode))}
-  function guestBlockedMessageV582(){var t=terminal();return t.active&&!pairedTerminal()?'Misafir modunda Şeflik Klasörü buluta bağlanmaz. Terminal kodu eşleştirin veya Google ile giriş yapın. En son mevcut bilgiler gösteriliyor.':'Şeflik Klasörü için Google girişi veya kodla eşleşmiş terminal gerekir. En son mevcut bilgiler gösteriliyor.'}
+  function guestBlockedMessageV582(){return 'Şeflik Klasörü ve bulut işlemleri için Google ile giriş yapın. En son cihazdaki bilgiler gösteriliyor.'}
   function renderGuestBlockedV582(silent){
     markNeedsOnlineRefresh(true);
     try{hideTransferOverlay();setProgress(0)}catch(e){}
@@ -351,7 +351,7 @@
   }
   function markNeedsOnlineRefresh(on){try{if(on)localStorage.setItem(OFFLINE_REFRESH_KEY,JSON.stringify({at:new Date().toISOString(),seflik:user().seflik}));else localStorage.removeItem(OFFLINE_REFRESH_KEY)}catch(e){}}
   function needsOnlineRefresh(){try{return !!localStorage.getItem(OFFLINE_REFRESH_KEY)}catch(e){return false}}
-  async function recoverAuthForFolder(){try{var api=window.mesahaSupabaseV380||window.mesahaSupabaseV383||window.mesahaSupabase;if(api&&typeof api.ready==='function')await api.ready();if(window.MesahaGoogleAuthV548&&typeof window.MesahaGoogleAuthV548.boot==='function'){await window.MesahaGoogleAuthV548.boot(true)}}catch(e){}return !!token()||hasApprovedIdentity()}
+  async function recoverAuthForFolder(){try{var api=window.mesahaSupabaseV380||window.mesahaSupabaseV383||window.mesahaSupabase;if(api&&typeof api.ready==='function')await api.ready()}catch(e){}return !!token()}
   function anonKey(){var c=window.MESAHA_SUPABASE_CONFIG||{};return clean(c.anonKey||c.anon_key)}
   function uuid(){try{return crypto.randomUUID()}catch(e){return 'sync_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2)}}
   function num(v){var n=Number(String(v==null?'':v).replace(',','.'));return Number.isFinite(n)?n:0}
@@ -382,8 +382,9 @@
     return Promise.race([Promise.resolve(promise),new Promise(function(_,reject){timer=setTimeout(function(){reject(new Error(message||'Sunucu isteği zaman aşımı'))},ms)})]).finally(function(){if(timer)clearTimeout(timer)});
   }
   async function edge(action,payload){
+    await ensureToken(); // V91: otomatik/arka plan şeflik çağrıları da gerçek Google oturumu olmadan çıkamaz.
     var u=user(),info=deviceInfo();
-    var body=Object.assign({name:u.name,seflik:u.seflik,seflikKey:u.seflikKey,folderSeflik:u.seflik,bolmeNo:u.bolmeNo,deviceId:info.deviceId,deviceInfo:info,appVersion:info.appVersion,fileVersion:info.fileVersion,source:'mesaha-seflik-folder-v582'},terminalAuth(),payload||{});
+    var body=Object.assign({name:u.name,seflik:u.seflik,seflikKey:u.seflikKey,folderSeflik:u.seflik,bolmeNo:u.bolmeNo,deviceId:info.deviceId,deviceInfo:info,appVersion:info.appVersion,fileVersion:info.fileVersion,source:'mesaha-seflik-folder-v591'},payload||{});
     var api=window.mesahaSupabaseV380||window.mesahaSupabaseV383||window.mesahaSupabase;
     if(!api||typeof api.edge!=='function')throw new Error('Güvenli sunucu bağlantısı hazır değil');
     return await withTimeout(api.edge(action,body),35000,'Sunucu isteği zaman aşımı');
@@ -459,8 +460,8 @@
     syncPromise=(async function(){
       var u=user();
       if(!clean(u.name)){
-        setStatus('Kullanıcı bilgisi eksik. Google veya terminal kodu ile giriş yapın.','error');
-        if(!options.silent)notify('Önce Google veya terminal kodu ile giriş yapın','Şeflik Klasörü için kullanıcı ad-soyad gerekli.','warning');
+        setStatus('Google hesabı ile giriş yapın.','error');
+        if(!options.silent)notify('Google ile giriş yapın','Şeflik Klasörü ve bulut işlemleri için Google hesabı gerekir.','warning');
         return false;
       }
       if(!clean(u.seflik)){

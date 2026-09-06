@@ -351,7 +351,7 @@
     if (navigator.onLine === false)
       return toast("İstifi buluttan getirmek için internet gerekli.", "bad");
     if (!hasSharedCloudIdentity())
-      return toast("Google veya terminal kodu ile bağlı kullanıcı oturumu gerekli.", "bad");
+      return toast("Bu bulut işlemi için Google ile giriş gerekli.", "bad");
 
     cloudPullingIdCloud = recordId;
     render();

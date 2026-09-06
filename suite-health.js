@@ -236,7 +236,7 @@
         email: clean(identity.email || panel.googleEmail || terminal.pairedEmail),
         seflik: clean(identity.seflik || active.seflik || panel.activeSeflik || panel.seflik || terminal.seflik),
         seflikKey: clean(identity.seflikKey || active.seflik_key || active.seflikKey),
-        authType: terminal && terminal.source === "pair_code" ? "terminal" : identity.google ? "google" : terminal && terminal.active ? "guest" : "none",
+        authType: identity.google ? "google" : terminal && terminal.source === "pair_code" ? "terminal" : terminal && terminal.active ? "guest" : "none",
       },
       device: platformInfo(),
       mesaha: {

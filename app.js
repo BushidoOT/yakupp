@@ -266,8 +266,8 @@
   function authType() {
     const shared = window.OrmanSuiteIdentity;
     if (shared && typeof shared.authType === "function") return shared.authType();
-    if (pairedTerminal()) return "terminal";
     if (session().access_token) return "google";
+    if (pairedTerminal()) return "terminal";
     if (terminal().active) return "guest";
     if (access().status === "approved") return "cached";
     return "none";
@@ -276,7 +276,7 @@
     return authType() !== "none";
   }
   function cloudIdentity() {
-    return authType() === "google" || authType() === "terminal";
+    return authType() === "google";
   }
   function googleAuthApi() {
     return window.MesahaGoogleAuthV548 || window.MesahaGoogleAuthV648 || null;
@@ -849,7 +849,7 @@
       toast(
         cloudIdentity()
           ? `${label} cihazda uygulandı. İnternet geldiğinde senkronize edilecek.`
-          : `${label} cihazda uygulandı. Google veya terminal koduyla giriş yapılana kadar yalnızca cihazda kalır.`,
+          : `${label} cihazda uygulandı. Google ile giriş yapılana kadar yalnızca cihazda kalır.`,
       );
       return;
     }
@@ -1605,7 +1605,7 @@
             ? "Terminal kodu ile bağlı"
             : t === "guest"
               ? "Yerel misafir modu"
-              : "Google veya terminal modu");
+              : "Google hesabı ile giriş gerekli");
     const cr = creatorFolder();
     $("seflikCardSub") &&
       ($("seflikCardSub").textContent = cr
@@ -2948,10 +2948,11 @@
       $("lastSync").classList.toggle("offline-ready", pct >= 100);
     if(!startupClosed){const e=startupEls();if(e.text)e.text.textContent=text;if(e.bar)e.bar.style.width=Math.max(3,Math.min(100,Number(pct)||3))+"%";if(e.counter)e.counter.textContent=Math.max(0,Math.min(100,Number(pct)||0))+"%";}
   }
-  function ensureLoginThen(fn) {
-    if (!signedIn()) {
+  function ensureGoogleThen(fn, reason) {
+    if (authType() !== "google") {
       openModal("loginModal");
-      toast("Önce Google veya terminal modu ile giriş yapın.", true);
+      toast((reason || "Bu işlem") + " için Google ile giriş yapın.", true);
+      setTimeout(() => { try { openGoogle(); } catch (_) {} }, 60);
       return false;
     }
     try {
@@ -2962,20 +2963,20 @@
     return true;
   }
   function openSeflikModal() {
-    return ensureLoginThen(() => openModal("seflikModal"));
+    return ensureGoogleThen(() => openModal("seflikModal"), "Şeflik işlemleri");
   }
   function openOrmanciModal() {
-    return ensureLoginThen(() => openModal("ormanciModal"));
+    return ensureGoogleThen(() => openModal("ormanciModal"), "Ormancı işlemleri");
   }
   function openBolmeModal() {
-    return ensureLoginThen(() => {
+    return ensureGoogleThen(() => {
       openModal("bolmeModal");
-      if (cloudIdentity() && navigator.onLine !== false) {
+      if (navigator.onLine !== false) {
         loadDivisionsFromServer()
           .then(() => { renderBolmeModal(); render(); })
           .catch(() => {});
       }
-    });
+    }, "Bölme işlemleri");
   }
   function openTerminalModal() {
     if (!signedIn()) {
@@ -2991,7 +2992,7 @@
     openModal("terminalModal");
   }
   function openBackupSyncModal() {
-    openModal("backupSyncModal");
+    return ensureGoogleThen(() => openModal("backupSyncModal"), "Bulut ve senkronizasyon işlemleri");
   }
   function setBottomSyncBusy(kind, busyState, text) {
     const id = kind === "download" ? "serverDownloadButton" : "serverUploadButton";
@@ -3003,8 +3004,7 @@
     if (strong) strong.textContent = text || (kind === "download" ? "Sunucudan İndir" : "Sunucuya Gönder");
   }
   async function uploadAllToServer() {
-    if (!signedIn()) return openModal("loginModal"), toast("Önce giriş yapın.", true);
-    if (!cloudIdentity()) return toast("Sunucuya göndermek için Google hesabı veya kodla eşleşmiş terminal gerekir.", true);
+    if (!cloudIdentity()) { openModal("loginModal"); toast("Sunucuya göndermek için Google ile giriş yapın.", true); setTimeout(() => openGoogle(), 60); return; }
     if (navigator.onLine === false) return toast("İnternet bağlantısı yok. Kayıtlar cihazda korunuyor.", true);
     setBottomSyncBusy("upload", true, "Gönderiliyor…");
     try {
@@ -3024,8 +3024,7 @@
     }
   }
   async function downloadFromServerAndPrepareOffline() {
-    if (!signedIn()) return openModal("loginModal"), toast("Önce giriş yapın.", true);
-    if (!cloudIdentity()) return toast("Sunucudan indirmek için Google hesabı veya kodla eşleşmiş terminal gerekir.", true);
+    if (!cloudIdentity()) { openModal("loginModal"); toast("Sunucudan indirmek için Google ile giriş yapın.", true); setTimeout(() => openGoogle(), 60); return; }
     if (navigator.onLine === false) return toast("İnternet bağlantısı yok. Daha önce indirilen offline veriler kullanılabilir.", true);
     setBottomSyncBusy("download", true, "İndiriliyor…");
     showStartup("Sunucudan indiriliyor", "Şeflik, bölmeler, uygulama dosyaları ve offline kayıtlar hazırlanıyor.", 12, false);
@@ -3308,7 +3307,7 @@
     if (tool === "about") {
       showInfo(
         "Orman İO",
-        `<p>Google veya terminal/misafir oturumu Mesaha İO ve İstif İO tarafından ortak kullanılır.</p><p><b>Bekleyen işlem:</b> ${pendingOps.length}</p><p>Alt menüdeki Sunucudan İndir işlemi şeflikleri, bölmeleri ve uygulama dosyalarını tek seferde offline kullanıma hazırlar.</p><div class="about-action-grid"><a class="about-telegram" href="${esc(TELEGRAM_URL)}" target="_blank" rel="noopener">✈ Telegram Destek</a><a class="about-youtube" href="${esc(YOUTUBE_URL)}" target="_blank" rel="noopener">▶ YouTube Anlatım</a></div>`,
+        `<p>Google oturumu Mesaha İO ve İstif İO tarafından ortak kullanılır. Terminal modu yerel kullanım içindir.</p><p><b>Bekleyen işlem:</b> ${pendingOps.length}</p><p>Alt menüdeki Sunucudan İndir işlemi şeflikleri, bölmeleri ve uygulama dosyalarını tek seferde offline kullanıma hazırlar.</p><div class="about-action-grid"><a class="about-telegram" href="${esc(TELEGRAM_URL)}" target="_blank" rel="noopener">✈ Telegram Destek</a><a class="about-youtube" href="${esc(YOUTUBE_URL)}" target="_blank" rel="noopener">▶ YouTube Anlatım</a></div>`,
       );
       return true;
     }

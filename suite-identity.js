@@ -99,18 +99,17 @@
     };
   }
   function authType() {
-    /* Terminal eşleşmesi aktifse cihazın gerçek çalışma kimliği terminaldir.
-       Tarayıcıda kalmış eski Google oturumu terminal yetkisini gölgeleyemez. */
-    if (pairedTerminal()) return "terminal";
+    /* V91: Google oturumu her zaman terminal eşleşmesinden önceliklidir.
+       Terminal modu yerel kullanım için korunur; şeflik/bulut yetkisi vermez. */
     if (validSession(session())) return "google";
+    if (pairedTerminal()) return "terminal";
     if (validTerminal(terminal())) return "guest";
     var access = read(K.access, {}) || {};
     if (clean(access.status).toLocaleLowerCase("tr-TR") === "approved") return "cached";
     return "none";
   }
   function cloudAllowed() {
-    var type = authType();
-    return type === "google" || type === "terminal";
+    return authType() === "google";
   }
   function activeFolder() {
     var active = read(K.active, {}) || {};

@@ -24,6 +24,7 @@
     dirty: "mesaha_suite_dirty_v8",
     last: "mesaha_suite_last_full_sync_v8",
     drive: "mesaha_suite_drive_status_v8",
+    drivePending: "mesaha_suite_drive_oauth_pending_v91",
     records: "cam_mesaha_kayitlari_v1",
     yieldTargets: "mesaha_suite_yield_targets_v12",
     folderCache: "mesaha_seflik_folder_cache_v529",
@@ -142,18 +143,28 @@
   function cloudSyncAllowed() {
     const shared = window.OrmanSuiteIdentity;
     if (shared && typeof shared.cloudAllowed === "function") return shared.cloudAllowed();
-    const t = terminal(), id = identity();
-    return !!(id.google || (t && t.source === "pair_code" && t.pairedUserId && (t.terminalCode || t.terminalToken)));
+    return !!identity().google;
   }
   let transientRequestTimeoutMs = 0;
   let transientNetworkAbort = false;
-  let startupPrepareStarted = false;
+  let startupDeadlineAt = 0;
+  let startupPrepareState = "idle"; // idle | running | waiting-folder | done | weak-stopped
   let startupPrepareFinished = false;
   let autoRetryPausedWeak = false;
+  let startupWeakSessionStop = false;
+  let driveCallbackPromise = null;
   function remainingRequestBudget(defaultMs) {
     if (transientNetworkAbort) throw networkError("Bağlantı zayıf olduğu için açılış senkronizasyonu durduruldu", "NETWORK_TIMEOUT");
-    const base = Math.max(250, Number(defaultMs) || 20000);
-    return transientRequestTimeoutMs ? Math.max(250, Math.min(base, transientRequestTimeoutMs)) : base;
+    const base = Math.max(1, Number(defaultMs) || 20000);
+    if (startupDeadlineAt) {
+      const remaining = startupDeadlineAt - Date.now();
+      if (remaining <= 0) {
+        transientNetworkAbort = true;
+        throw networkError("Açılış senkronizasyonu 5 saniyelik süreyi aştı", "NETWORK_TIMEOUT");
+      }
+      return Math.max(1, Math.min(base, remaining));
+    }
+    return transientRequestTimeoutMs ? Math.max(1, Math.min(base, transientRequestTimeoutMs)) : base;
   }
   function floatingSyncAllowed() {
     let path = "";
@@ -230,15 +241,10 @@
     return true;
   }
   function terminalAuth() {
-    const shared = window.OrmanSuiteIdentity;
-    if (shared && typeof shared.terminalAuthPayload === "function") return shared.terminalAuthPayload();
-    const t = terminal();
-    return t && t.source === "pair_code" && t.pairedUserId ? {
-      terminalCode: clean(t.terminalCode), terminalToken: clean(t.terminalToken),
-      terminalPairedUserId: clean(t.pairedUserId), terminalPairedEmail: clean(t.pairedEmail),
-      terminalDeviceId: clean(t.deviceId || t.terminalDeviceId), deviceId: clean(t.deviceId || t.terminalDeviceId)
-    } : {};
+    /* V91: terminal eşleşmesi yalnız yerel kimliktir; suite bulut isteklerine taşınmaz. */
+    return {};
   }
+
   function networkError(message, code) {
     const error = new Error(message);
     error.code = code || "NETWORK_ERROR";
@@ -334,6 +340,12 @@
     return contextRepairPromise;
   }
   async function post(url, action, data) {
+    if (!cloudSyncAllowed()) {
+      const error = new Error("Bu bulut işlemi için Google ile giriş gerekli.");
+      error.code = "GOOGLE_REQUIRED";
+      error.retryable = false;
+      throw error;
+    }
     const terminalPayload = terminalAuth();
     const body = {
       action,
@@ -926,9 +938,27 @@
       seflik_key: clean(af.seflik_key || af.seflikKey) || fold(af.seflik),
       record_count: num(raw.record_count || raw.recordCount),
       total_volume: num(raw.total_volume || raw.totalVolume),
-      updated_at: raw.updated_at || raw.updatedAt || now(),
+      /* Sunucu tarih vermiyorsa now() yazmayız; aksi halde her açılışta değişmiş görünür. */
+      updated_at: clean(raw.updated_at || raw.updatedAt || raw.revision_updated_at || raw.revisionUpdatedAt),
       status: raw.status || "open",
     };
+  }
+  function divisionRevision(row) {
+    row = row && typeof row === "object" ? row : {};
+    const explicit = clean(
+      row.revision || row.server_revision || row.serverRevision || row.checksum || row.etag ||
+      row.updated_at || row.updatedAt || row.revision_updated_at || row.revisionUpdatedAt
+    );
+    if (explicit) return "v:" + explicit;
+    const contributors = Array.isArray(row.contributors)
+      ? row.contributors.map((item) => clean(item && (item.user_id || item.userId || item.email || item.name || item))).filter(Boolean).sort()
+      : [];
+    return "s:" + JSON.stringify([
+      num(row.record_count || row.recordCount),
+      Number(num(row.total_volume || row.totalVolume).toFixed(6)),
+      contributors,
+      clean(row.status || "open")
+    ]);
   }
   function syncFolderCache(af, list) {
     write(K.folderCache, {
@@ -955,7 +985,7 @@
     if (!af) return { ok: false, complete: false, reason: "no-folder" };
     if (navigator.onLine === false) return { ok: false, complete: false, offline: true };
     const key = clean(af.seflik_key || af.seflikKey) || fold(af.seflik);
-    const divisionsStore = read(K.divisions, {}), recordsStore = read(K.divisionRecords, {}), forestersStore = read(K.foresters, {});
+    const divisionsStore = read(K.divisions, {}), recordsStore = read(K.divisionRecords, {}), forestersStore = read(K.foresters, {}), readyStore = read(K.ready, {});
     let list = Array.isArray(divisionsStore[key]) ? divisionsStore[key] : [];
     const errors = [];
     let truncated = false;
@@ -980,7 +1010,7 @@
       list = remoteMerged.concat(localPending, preservedMissing);
       const nextNos = new Set(list.map((d) => clean(d && (d.bolme_no || d.bolmeNo))));
       if (authoritative) {
-        const readyStore = read(K.ready, {}), yieldStore = read(K.yieldTargets, {});
+        const yieldStore = read(K.yieldTargets, {});
         for (const [no, oldRow] of oldByNo.entries()) {
           if (!no || nextNos.has(no) || (oldRow && (oldRow.pending || oldRow.local_pending))) continue;
           if (recordsStore[key] && typeof recordsStore[key] === "object") delete recordsStore[key][no];
@@ -1025,7 +1055,13 @@
       recordsStore[key] = recordsStore[key] && typeof recordsStore[key] === "object" ? recordsStore[key] : {};
       for (const d of list) {
         const no = clean(d.bolme_no), cached = recordsStore[key][no], expected = num(d.record_count);
-        const stale = options.forceRecords || !Array.isArray(cached) || (expected >= 0 && cached.length !== expected);
+        const readyKey = `${key}::${no}`;
+        const readyMeta = readyStore[readyKey] && typeof readyStore[readyKey] === "object" ? readyStore[readyKey] : {};
+        const revision = divisionRevision(d);
+        const cachedRevision = clean(readyMeta.serverRevision || readyMeta.revision);
+        const stale = options.forceRecords || !Array.isArray(cached) ||
+          (expected >= 0 && cached.length !== expected) ||
+          !cachedRevision || cachedRevision !== revision;
         if (!stale) continue;
         try {
           const out = await edge("seflik_folder_read", { seflik: af.seflik, folderSeflik: af.seflik, bolmeNo: no });
@@ -1037,12 +1073,23 @@
           recordsStore[key][no] = out.records;
           d.record_count = out.records.length;
           d.total_volume = num(out.total_volume || d.total_volume || out.records.reduce((s, row) => s + volume(row.record_data || row), 0));
+          const serverRevision = clean(
+            out.revision || out.server_revision || out.serverRevision || out.checksum || out.etag ||
+            out.updated_at || out.updatedAt
+          );
+          readyStore[readyKey] = {
+            ready: true,
+            at: now(),
+            recordCount: out.records.length,
+            serverRevision: serverRevision ? "v:" + serverRevision : divisionRevision(d)
+          };
         } catch (e) {
           errors.push(clean(e?.message || e) || `Bölme ${no} indirilemedi`);
           if (options.strict || (options.forceRecords && !options.quiet)) throw e;
         }
       }
       write(K.divisionRecords, recordsStore);
+      write(K.ready, readyStore);
       divisionsStore[key] = list;
       write(K.divisions, divisionsStore);
     }
@@ -1072,6 +1119,20 @@
     store[key] = store[key] || {};
     store[key][no] = out.records;
     write(K.divisionRecords, store);
+    const readyStore = read(K.ready, {});
+    const divisionsStore = read(K.divisions, {});
+    const division = (Array.isArray(divisionsStore[key]) ? divisionsStore[key] : []).find((row) => clean(row && (row.bolme_no || row.bolmeNo)) === no) || {};
+    const serverRevision = clean(
+      out.revision || out.server_revision || out.serverRevision || out.checksum || out.etag ||
+      out.updated_at || out.updatedAt
+    );
+    readyStore[`${key}::${no}`] = {
+      ready: true,
+      at: now(),
+      recordCount: out.records.length,
+      serverRevision: serverRevision ? "v:" + serverRevision : divisionRevision({ ...division, record_count: out.records.length, total_volume: out.total_volume || division.total_volume })
+    };
+    write(K.ready, readyStore);
     try {
       window.dispatchEvent(
         new CustomEvent("mesaha-suite:shared-data-updated", {
@@ -2142,27 +2203,42 @@
     }
   }
 
-  async function prepareStartupData() {
-    if (startupPrepareStarted) return { ok: startupPrepareFinished, skipped: true, reason: "already-started" };
+  async function prepareStartupData(options) {
+    const opts = options && typeof options === "object" ? options : {};
+    const force = opts.force === true || opts.manual === true;
+    if (startupPrepareState === "running") return { ok: false, skipped: true, reason: "already-running" };
+    if (!force && startupPrepareState === "done") return { ok: true, skipped: true, reason: "already-finished" };
+    if (!force && (startupPrepareState === "weak-stopped" || startupWeakSessionStop))
+      return { ok: false, skipped: true, weakConnection: true, reason: "weak-session-stopped" };
     if (navigator.onLine === false || !cloudSyncAllowed()) {
+      startupPrepareState = "idle";
       return { ok: false, skipped: true, offline: navigator.onLine === false, authRequired: !cloudSyncAllowed() };
     }
-    startupPrepareStarted = true;
+
+    startupPrepareState = "running";
+    startupPrepareFinished = false;
     const previousTimeout = transientRequestTimeoutMs;
     const previousAbort = transientNetworkAbort;
+    const previousDeadline = startupDeadlineAt;
     transientRequestTimeoutMs = 5000;
     transientNetworkAbort = false;
+    startupDeadlineAt = Date.now() + 5000;
     let folder = null, istif = null;
     try {
+      /* Tek toplam bütçe: bağlantı testi + şeflik + üyeler + bölmeler + İstif toplam 5 sn. */
       await checkSyncConnection(remainingRequestBudget(5000));
-      autoRetryPausedWeak = false;
       if (!activeFolder()) {
-        try { await repairFolderContextDirect(); } catch (_) {}
+        try { await repairFolderContextDirect(); } catch (error) {
+          if (["NETWORK_TIMEOUT", "NETWORK_WEAK"].includes(clean(error && error.code))) throw error;
+        }
       }
-      if (!activeFolder()) return { ok: false, skipped: true, reason: "no-active-folder" };
+      if (!activeFolder()) {
+        startupPrepareState = "waiting-folder";
+        return { ok: false, skipped: true, reason: "no-active-folder" };
+      }
       const results = await Promise.allSettled([
         refreshFolderData({
-          source: "startup-prefetch-v89",
+          source: "startup-prefetch-v91",
           includeRecords: true,
           forceRecords: false,
           quiet: true,
@@ -2174,36 +2250,47 @@
       const weakText = [folder, istif]
         .map((item) => clean(item && (item.error || item.message || (Array.isArray(item.errors) ? item.errors.join(" ") : ""))))
         .join(" ");
-      const weak = transientNetworkAbort ||
+      const deadlineExpired = Date.now() >= startupDeadlineAt;
+      const weak = transientNetworkAbort || deadlineExpired ||
         [results[0], results[1]].some((r) => r.status === "rejected" && ["NETWORK_TIMEOUT", "NETWORK_WEAK"].includes(clean(r.reason && r.reason.code))) ||
         /zaman aşım|5 saniye|sunucuya ulaşılamadı|bağlantı zayıf/i.test(weakText);
       if (weak) {
         autoRetryPausedWeak = true;
+        startupWeakSessionStop = true;
+        startupPrepareState = "weak-stopped";
         clearTimeout(autoRetryTimer);
+      } else {
+        startupPrepareState = "done";
+        startupPrepareFinished = true;
       }
-      startupPrepareFinished = true;
       try {
         window.dispatchEvent(new CustomEvent("mesaha-suite:startup-prefetch", {
-          detail: { ok: !weak, weakConnection: weak, folder, istif, photosDownloaded: false, timeoutMs: 5000 }
+          detail: { ok: !weak, weakConnection: weak, folder, istif, photosDownloaded: false, timeoutMs: 5000, totalBudget: true }
         }));
       } catch (_) {}
-      return { ok: !weak, weakConnection: weak, folder, istif, photosDownloaded: false };
+      return { ok: !weak, weakConnection: weak, folder, istif, photosDownloaded: false, timeoutMs: 5000 };
     } catch (error) {
       const code = clean(error && error.code);
-      if (code === "NETWORK_TIMEOUT" || code === "NETWORK_WEAK") {
+      const weak = code === "NETWORK_TIMEOUT" || code === "NETWORK_WEAK" || Date.now() >= startupDeadlineAt;
+      if (weak) {
         autoRetryPausedWeak = true;
+        startupWeakSessionStop = true;
+        startupPrepareState = "weak-stopped";
         clearTimeout(autoRetryTimer);
+      } else {
+        startupPrepareState = activeFolder() ? "done" : "waiting-folder";
+        startupPrepareFinished = startupPrepareState === "done";
       }
-      startupPrepareFinished = true;
       try {
         window.dispatchEvent(new CustomEvent("mesaha-suite:startup-prefetch", {
-          detail: { ok: false, weakConnection: code === "NETWORK_TIMEOUT" || code === "NETWORK_WEAK", error: clean(error && error.message || error), photosDownloaded: false, timeoutMs: 5000 }
+          detail: { ok: false, weakConnection: weak, error: clean(error && error.message || error), photosDownloaded: false, timeoutMs: 5000, totalBudget: true }
         }));
       } catch (_) {}
-      return { ok: false, weakConnection: code === "NETWORK_TIMEOUT" || code === "NETWORK_WEAK", error: clean(error && error.message || error), photosDownloaded: false };
+      return { ok: false, weakConnection: weak, error: clean(error && error.message || error), photosDownloaded: false, timeoutMs: 5000 };
     } finally {
       transientRequestTimeoutMs = previousTimeout;
       transientNetworkAbort = previousAbort;
+      startupDeadlineAt = previousDeadline;
     }
   }
 
@@ -2218,8 +2305,61 @@
     u.searchParams.set("open", "drive");
     return u.href;
   }
+  function driveRedirectUriForCurrentPage() {
+    const u = new URL(location.href);
+    u.hash = "";
+    u.search = "";
+    const path = String(u.pathname || "/");
+    const nested = path.match(/^(.*\/)(mesaha|istif)(?:\/.*)?$/i);
+    if (nested) u.pathname = nested[1] + nested[2].toLocaleLowerCase("tr-TR") + "/";
+    else {
+      u.pathname = path.endsWith("/") ? path : path.replace(/[^/]*$/, "");
+      if (!u.pathname.endsWith("/")) u.pathname += "/";
+    }
+    return u.href;
+  }
+  function folderIsCreator(folder) {
+    folder = folder && typeof folder === "object" ? folder : {};
+    const role = clean(folder.role || folder.member_role).toLocaleLowerCase("tr-TR");
+    return folder.is_creator === true || folder.isCreator === true || folder.creator === true ||
+      ["owner", "creator", "kurucu"].includes(role);
+  }
+  function requestGoogleLogin(reason) {
+    try {
+      window.dispatchEvent(new CustomEvent("mesaha:google-auth-required", { detail: { reason: reason || "cloud" } }));
+    } catch (_) {}
+    try {
+      if (window.MesahaTerminalLocalV556 && typeof window.MesahaTerminalLocalV556.google === "function") {
+        window.MesahaTerminalLocalV556.google();
+        return true;
+      }
+    } catch (_) {}
+    try {
+      if (window.MesahaGoogleAuthV548 && typeof window.MesahaGoogleAuthV548.openGoogle === "function") {
+        window.MesahaGoogleAuthV548.openGoogle();
+        return true;
+      }
+      if (window.MesahaGoogleAuthV548 && typeof window.MesahaGoogleAuthV548.boot === "function") {
+        window.MesahaGoogleAuthV548.boot(true);
+        return true;
+      }
+    } catch (_) {}
+    return false;
+  }
+  function clearDriveOAuthQuery() {
+    try {
+      const q = new URLSearchParams(location.search);
+      ["code", "state", "scope", "authuser", "prompt", "error", "error_description", "error_uri"].forEach((key) => q.delete(key));
+      history.replaceState({}, "", location.pathname + (q.toString() ? "?" + q.toString() : "") + location.hash);
+    } catch (_) {}
+  }
   function openDriveSetup() {
     try { localStorage.setItem("mesaha_suite_open_drive_v14", "1"); } catch {}
+    if (!cloudSyncAllowed()) {
+      requestGoogleLogin("drive");
+      toast("Drive bağlantısı için önce Google ile giriş yapın.", true);
+      return false;
+    }
     const nested = /\/(?:mesaha|istif)(?:\/|$)/i.test(location.pathname);
     if (nested) {
       if (navigator.onLine === false) {
@@ -2244,9 +2384,17 @@
     location.href = suiteRootUrlForDrive();
     return true;
   }
+  function emitDriveStatus(status) {
+    try { window.dispatchEvent(new CustomEvent("mesaha-suite:drive-status", { detail: status || null })); } catch (_) {}
+  }
   async function driveStatus() {
     const id = identity(), ctx = folderContext();
-    if (!cloudSyncAllowed()) return { ok: true, connected: false, googleRequired: true };
+    if (!cloudSyncAllowed()) {
+      const local = { ok: true, connected: false, googleRequired: true, isOwner: folderIsCreator(activeFolder()) };
+      write(K.drive, local);
+      emitDriveStatus(local);
+      return local;
+    }
     const x = await drive("status", {
       seflik: ctx.seflik || id.seflik,
       seflikKey: ctx.seflikKey || id.seflikKey,
@@ -2254,13 +2402,15 @@
       folderId: ctx.folderId,
     });
     write(K.drive, x);
+    emitDriveStatus(x);
     return x;
   }
   async function ensureDriveConnected(options) {
     const opts = options || {};
     const status = await driveStatus();
     if (status && status.connected) return status;
-    const memberWithoutOwnerDrive = status && status.isOwner === false;
+    const localOwner = folderIsCreator(activeFolder());
+    const memberWithoutOwnerDrive = status && status.isOwner !== true && !localOwner;
     const error = new Error(
       status && status.googleRequired
         ? "Drive bağlantısı için önce Google ile giriş yapın"
@@ -2278,44 +2428,136 @@
   }
   async function driveConnect() {
     const id = identity();
-    if (!cloudSyncAllowed())
-      throw new Error("Drive bağlantısı için Google ile giriş yapın veya terminal koduyla eşleşin");
+    if (!cloudSyncAllowed()) {
+      requestGoogleLogin("drive-connect");
+      const error = new Error("Drive bağlantısı için Google ile giriş yapın");
+      error.code = "GOOGLE_REQUIRED";
+      throw error;
+    }
     const status = await driveStatus();
     if (status && status.connected) return status;
-    if (status && status.isOwner === false)
-      throw new Error("Drive hesabını yalnızca şeflik kurucusu bağlayabilir");
-    const redirect = location.origin + location.pathname.replace(/[^/]*$/, "");
     const ctx = folderContext();
-    const x = await drive("oauth_start", {
+    const ownerAllowed = status && status.isOwner === true || folderIsCreator(activeFolder());
+    if (!ownerAllowed) {
+      const error = new Error("Drive hesabını yalnızca şeflik kurucusu bağlayabilir");
+      error.code = "DRIVE_OWNER_REQUIRED";
+      throw error;
+    }
+    const redirect = driveRedirectUriForCurrentPage();
+    const pending = {
+      redirectUri: redirect,
       seflik: ctx.seflik || id.seflik,
       seflikKey: ctx.seflikKey || id.seflikKey,
-      folderId: ctx.folderId,
+      folderId: ctx.folderId || clean(activeFolder() && (activeFolder().id || activeFolder().folder_id || activeFolder().folderId)),
+      startedAt: Date.now(),
+    };
+    const x = await drive("oauth_start", {
+      seflik: pending.seflik,
+      seflikKey: pending.seflikKey,
+      folderId: pending.folderId,
       redirectUri: redirect,
     });
     if (!x.authorizationUrl)
       throw new Error("Google bağlantı adresi alınamadı");
-    location.href = x.authorizationUrl;
+    write(K.drivePending, pending);
+    location.assign(x.authorizationUrl);
+    return { ok: true, redirecting: true };
   }
-  async function driveFinish(code, state) {
-    const redirect = location.origin + location.pathname.replace(/[^/]*$/, "");
+  async function driveFinish(code, state, options) {
+    const opts = options && typeof options === "object" ? options : {};
+    const pending = opts.pending && typeof opts.pending === "object" ? opts.pending : read(K.drivePending, {}) || {};
+    const redirect = clean(opts.redirectUri || pending.redirectUri) || driveRedirectUriForCurrentPage();
     const ctx = folderContext();
+    const id = identity();
     const x = await drive("oauth_finish", {
       code,
       state,
       redirectUri: redirect,
-      seflik: ctx.seflik || identity().seflik,
-      seflikKey: ctx.seflikKey || identity().seflikKey,
-      folderId: ctx.folderId,
+      seflik: clean(pending.seflik) || ctx.seflik || id.seflik,
+      seflikKey: clean(pending.seflikKey) || ctx.seflikKey || id.seflikKey,
+      folderId: clean(pending.folderId) || ctx.folderId,
     });
     write(K.drive, x);
+    emitDriveStatus(x);
     return x;
+  }
+  async function handleDriveOAuthReturn() {
+    if (driveCallbackPromise) return driveCallbackPromise;
+    let q;
+    try { q = new URLSearchParams(location.search); } catch (_) { return false; }
+    const code = clean(q.get("code"));
+    const oauthState = clean(q.get("state"));
+    const oauthError = clean(q.get("error"));
+    const pending = read(K.drivePending, {}) || {};
+    const onSuiteApp = /\/(?:mesaha|istif)(?:\/|$)/i.test(location.pathname);
+    if (!oauthError && !(code && oauthState)) return false;
+    if (!clean(pending.redirectUri) && !onSuiteApp) return false;
+
+    driveCallbackPromise = (async () => {
+      if (oauthError) {
+        try { localStorage.removeItem(K.drivePending); } catch (_) {}
+        clearDriveOAuthQuery();
+        const message = clean(q.get("error_description")) || oauthError;
+        toast("Google Drive bağlantısı iptal edildi: " + message, true);
+        return { ok: false, cancelled: true, error: message };
+      }
+      if (!cloudSyncAllowed()) {
+        const error = new Error("Drive bağlantısını tamamlamak için Google oturumu gerekli");
+        error.code = "GOOGLE_REQUIRED";
+        throw error;
+      }
+      try {
+        toast("Google Drive bağlantısı tamamlanıyor…");
+        const finishResult = await driveFinish(code, oauthState, {
+          pending,
+          redirectUri: clean(pending.redirectUri) || driveRedirectUriForCurrentPage(),
+        });
+        let result = finishResult;
+        try {
+          const verified = await driveStatus();
+          if (verified && verified.connected === true) result = verified;
+        } catch (_) {}
+        try { localStorage.removeItem(K.drivePending); } catch (_) {}
+        clearDriveOAuthQuery();
+        emitDriveStatus(result);
+        try { window.dispatchEvent(new CustomEvent("mesaha-suite:drive-connected", { detail: result || null })); } catch (_) {}
+        toast("Şeflik Google Drive hesabı bağlandı.");
+        return { ok: true, result };
+      } catch (error) {
+        const codeName = clean(error && error.code);
+        const retryable = ["NETWORK_TIMEOUT", "NETWORK_WEAK", "OFFLINE"].includes(codeName) || error && error.retryable === true;
+        if (!retryable) {
+          try { localStorage.removeItem(K.drivePending); } catch (_) {}
+          clearDriveOAuthQuery();
+        }
+        toast("Drive bağlantısı tamamlanamadı: " + clean(error && error.message || error), true);
+        throw error;
+      }
+    })().finally(() => { driveCallbackPromise = null; });
+    return driveCallbackPromise;
   }
   async function driveDisconnect() {
+    if (!cloudSyncAllowed()) {
+      requestGoogleLogin("drive-disconnect");
+      const error = new Error("Drive bağlantısını kesmek için Google ile giriş yapın");
+      error.code = "GOOGLE_REQUIRED";
+      throw error;
+    }
     const ctx = folderContext();
+    const status = await driveStatus();
+    const ownerAllowed = status && status.isOwner === true || folderIsCreator(activeFolder());
+    if (!ownerAllowed) {
+      const error = new Error("Drive bağlantısını yalnızca şeflik kurucusu kesebilir");
+      error.code = "DRIVE_OWNER_REQUIRED";
+      throw error;
+    }
     const x = await drive("disconnect", { seflik: ctx.seflik || identity().seflik, seflikKey: ctx.seflikKey || identity().seflikKey, folderId: ctx.folderId });
-    write(K.drive, { connected: false });
+    const next = { ...status, connected: false, folderId: "", folderName: "", folderUrl: "", updatedAt: now() };
+    write(K.drive, next);
+    emitDriveStatus(next);
     return x;
   }
+
   async function currentMesahaRecordsReady() {
     try {
       const store = window.MesahaStorageV527;
@@ -2336,7 +2578,7 @@
   async function createMesahaBackupUnlocked(options) {
     options = options || {};
     const id = identity(), af = activeFolder();
-    if (!cloudSyncAllowed()) { openDriveSetup(); throw new Error("Drive yedeği için Google ile giriş yapın veya terminal koduyla eşleşin"); }
+    if (!cloudSyncAllowed()) { openDriveSetup(); throw new Error("Drive yedeği için Google ile giriş yapın"); }
     await ensureDriveConnected({ redirect: true });
     const seflik = clean((af && af.seflik) || id.seflik), selected = clean(options.bolmeNo || "");
     if (!seflik) throw new Error("Önce şeflik seçin");
@@ -2380,7 +2622,7 @@
 
   async function createSuiteBackupUnlocked() {
     const id = identity();
-    if (!cloudSyncAllowed()) { openDriveSetup(); throw new Error("Drive yedeği için Google ile giriş yapın veya terminal koduyla eşleşin"); }
+    if (!cloudSyncAllowed()) { openDriveSetup(); throw new Error("Drive yedeği için Google ile giriş yapın"); }
     await ensureDriveConnected({ redirect: true });
     const mesaha = await currentMesahaRecordsReady(),
       istif = (await idbAll("records")).map((r) => ({
@@ -2543,11 +2785,11 @@
       }, 450),
     );
     window.addEventListener("online", () => {
-      autoRetryPausedWeak = false;
       updateButton();
       if (cloudSyncAllowed()) {
-        if (!startupPrepareStarted) setTimeout(() => prepareStartupData().catch(() => {}), 120);
-        if (isDirty()) scheduleAutoRetry(1800, true);
+        if (!startupWeakSessionStop && ["idle", "waiting-folder"].includes(startupPrepareState))
+          setTimeout(() => prepareStartupData().catch(() => {}), 120);
+        if (isDirty() && !autoRetryPausedWeak) scheduleAutoRetry(1800, true);
       } else stopGuestSync();
     });
     window.addEventListener("offline", () => { updateButton(); clearTimeout(autoRetryTimer); });
@@ -2556,15 +2798,23 @@
         document.visibilityState === "visible" &&
         navigator.onLine !== false &&
         isDirty() &&
-        cloudSyncAllowed()
+        cloudSyncAllowed() &&
+        !autoRetryPausedWeak
       )
         scheduleAutoRetry(2500, false);
       else if (!cloudSyncAllowed()) stopGuestSync();
     });
     ["mesaha:user-login", "mesaha:google-access-approved", "mesaha:auth-session-restored"].forEach((eventName) => {
       window.addEventListener(eventName, () => {
-        if (navigator.onLine === false || !cloudSyncAllowed() || startupPrepareStarted) return;
+        if (navigator.onLine === false || !cloudSyncAllowed() || startupWeakSessionStop || startupPrepareState === "running" || startupPrepareState === "done") return;
         setTimeout(() => prepareStartupData().catch(() => {}), 100);
+      }, { passive: true });
+    });
+    ["mesaha:seflik-folder-active-changed", "mesaha-suite:active-folder-changed"].forEach((eventName) => {
+      window.addEventListener(eventName, () => {
+        if (navigator.onLine === false || !cloudSyncAllowed() || startupWeakSessionStop) return;
+        if (["idle", "waiting-folder"].includes(startupPrepareState))
+          setTimeout(() => prepareStartupData().catch(() => {}), 100);
       }, { passive: true });
     });
     const mo = new MutationObserver((mutations) => {
@@ -2591,6 +2841,7 @@
     openDriveSetup,
     driveConnect,
     driveFinish,
+    handleDriveOAuthReturn,
     driveDisconnect,
     createSuiteBackup,
     createMesahaBackup,
@@ -2638,13 +2889,16 @@
     watchStorage();
     dispatch();
     updateButton();
-    if (navigator.onLine !== false && cloudSyncAllowed()) {
-      setTimeout(() => {
-        prepareStartupData().then(() => {
-          if (isDirty() && !autoRetryPausedWeak) scheduleAutoRetry(1800, true);
-        }).catch(() => {});
-      }, 180);
-    } else if (!cloudSyncAllowed()) stopGuestSync();
+    /* Drive OAuth dönüşü açılış senkronundan önce işlenir. */
+    Promise.resolve(handleDriveOAuthReturn()).catch(() => false).finally(() => {
+      if (navigator.onLine !== false && cloudSyncAllowed()) {
+        setTimeout(() => {
+          prepareStartupData().then(() => {
+            if (isDirty() && !autoRetryPausedWeak) scheduleAutoRetry(1800, true);
+          }).catch(() => {});
+        }, 180);
+      } else if (!cloudSyncAllowed()) stopGuestSync();
+    });
   }
   if (document.readyState === "loading")
     document.addEventListener("DOMContentLoaded", boot, { once: true });
