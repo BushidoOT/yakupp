@@ -894,12 +894,19 @@
     }
   }
 
-  if (!valid()) {
-    location.replace("../");
-    return;
-  }
+  /*
+   * V85 giriş kapısı:
+   *
+   * Ana dizin artık Mesaha kabuğuna yönlendirildiği için girişsiz kullanıcıyı
+   * tekrar "../" adresine göndermek iki sayfa arasında sonsuz yenileme döngüsü
+   * oluşturuyordu. Kimlik yokken sayfada kal; mesaha-google-auth kendi güvenli
+   * giriş penceresini gösterir. Köprü yalnız yerel kabuğu hazırlar, sunucu
+   * işlemlerinin yetki kontrolü mevcut senkron katmanında devam eder.
+   */
+  const guestBootV85 = !valid();
   window.MESAHA_SUITE_MODE = true;
   document.documentElement.dataset.suiteSubapp = "mesaha";
+  document.documentElement.dataset.suiteAuth = guestBootV85 ? "guest" : "active";
   document.documentElement.setAttribute("data-suite-managed", "1");
   injectCss();
   const boot = () => {
@@ -923,6 +930,12 @@
     }
   }, true);
   window.addEventListener("storage", schedule);
+  ["mesaha:user-login", "mesaha:google-access-approved", "mesaha:terminal-mode-enabled", "mesaha:auth-session-restored"].forEach((name) => {
+    window.addEventListener(name, () => {
+      document.documentElement.dataset.suiteAuth = valid() ? "active" : "guest";
+      schedule();
+    }, { passive: true });
+  });
   window.addEventListener("mesaha:records-saved", schedule);
   window.addEventListener("mesaha:records-recovered", schedule);
   window.addEventListener("mesaha-suite:shared-data-updated", schedule);

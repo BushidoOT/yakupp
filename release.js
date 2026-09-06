@@ -1,20 +1,20 @@
 (function (root) {
   "use strict";
   const DATA = /*MESAHA_RELEASE_DATA_START*/{
-  "build": 84,
-  "version": "84.0.0",
+  "build": 85,
+  "version": "85.0.0",
   "channel": "stable",
-  "releasedAt": "2026-09-06T11:30:00+03:00",
-  "assetToken": "orman-io-stable-20260906-v84",
-  "cacheName": "orman-io-shell-stable-20260906-v84",
+  "releasedAt": "2026-09-06T12:20:00+03:00",
+  "assetToken": "orman-io-stable-20260906-v85",
+  "cacheName": "orman-io-shell-stable-20260906-v85",
   "apps": {
     "suite": {
       "label": "Orman İO",
-      "version": "84.0.0"
+      "version": "85.0.0"
     },
     "mesaha": {
       "label": "Mesaha İO",
-      "version": "6.23"
+      "version": "6.24"
     },
     "istif": {
       "label": "İstif İO",
@@ -22,10 +22,10 @@
     },
     "admin": {
       "label": "Orman İO Yönetim",
-      "version": "84.0.0"
+      "version": "85.0.0"
     }
   },
-  "description": "V84 tam bulut ve yönetim düzeltmesi: eksiksiz Supabase fonksiyonlarıyla eski/yeni cevap uyumu sağlandı; Bölme Yönetimini gizleyen arayüz çakışması kaldırıldı; bölüm oluşturma sunucu doğrulamalı çalışır; Yönetim altında tüm bölmeleri indirme ve tüm bekleyen verileri yükleme kontrolleri eklendi; profil panelinde tam hesap ve oturum bilgileri geri getirildi."
+  "description": "V85 giriş düzeltmesi: giriş yapmamış kullanıcıyı ana dizin ile Mesaha kabuğu arasında sürekli yönlendiren döngü kaldırıldı; Google ve terminal giriş ekranı sayfada kararlı biçimde açılır; giriş tamamlanınca köprü yenileme gerektirmeden aktif oturuma geçer."
 }/*MESAHA_RELEASE_DATA_END*/;
   const APP_NAMES = DATA.apps || {};
   const SCRIPT_URL = (() => {
