@@ -295,6 +295,7 @@
       ["homeProductChecks", "settings-product-block"],
       ["homeTreeChecks", "settings-tree-block"],
       ["barcodeControlEnabled", "settings-barcode-block"],
+      ["warnLowDiameterEnabled", "settings-warning-block-v95"],
       ["autoPaperLengthEnabled", "settings-automation-block"],
     ];
     map.forEach(function (row) {

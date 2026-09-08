@@ -1,20 +1,20 @@
 (function (root) {
   "use strict";
   const DATA = /*MESAHA_RELEASE_DATA_START*/{
-  "build": 94,
-  "version": "94.0.0",
+  "build": 95,
+  "version": "95.0.0",
   "channel": "stable",
-  "releasedAt": "2026-09-06T13:05:00+03:00",
-  "assetToken": "orman-io-stable-20260906-v94",
-  "cacheName": "orman-io-shell-stable-20260906-v94",
+  "releasedAt": "2026-09-08T17:58:00+03:00",
+  "assetToken": "orman-io-stable-20260908-v95",
+  "cacheName": "orman-io-shell-stable-20260908-v95",
   "apps": {
     "suite": {
       "label": "Orman İO",
-      "version": "94.0.0"
+      "version": "95.0.0"
     },
     "mesaha": {
       "label": "Mesaha İO",
-      "version": "6.33"
+      "version": "6.34"
     },
     "istif": {
       "label": "İstif İO",
@@ -22,10 +22,10 @@
     },
     "admin": {
       "label": "Orman İO Yönetim",
-      "version": "94.0.0"
+      "version": "95.0.0"
     }
   },
-  "description": "V94: Mesaha girişinde en az bir kesimci varsa Kesimci seçilmedi seçeneği kaldırıldı ve geçerli ilk kesimci otomatik aktif tutulur. Drive’dan Getir artık IndexedDB kalıcı Mesaha deposuna ve aktif şeflik çalışma alanına yazar; barkoda göre güvenli birleştirir, reload sırasında eski workspace snapshotının geri gelmesini engeller."
+  "description": "V95: Mesaha girişine isteğe bağlı ölçü kontrol uyarıları eklendi. Çap 9 cm ve altı, çap 100 cm ve üstü veya boy 10 m ve üstü olduğunda kayıt öncesi onay penceresi açılır; kullanıcı onaylarsa kayıt devam eder. Üç uyarı Ayarlar bölümünden ayrı ayrı kapatılıp açılabilir ve varsayılan olarak açıktır."
 }/*MESAHA_RELEASE_DATA_END*/;
   const APP_NAMES = DATA.apps || {};
   const SCRIPT_URL = (() => {

@@ -1,3 +1,4 @@
+/* Orman İO V95 — ölçü uyarıları ve yeni atomik cache nesli. */
 importScripts("./release.js");
 
 const RELEASE = self.MESAHA_RELEASE || {

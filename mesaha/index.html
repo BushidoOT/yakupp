@@ -74,8 +74,8 @@
       window.MESAHA_SUITE_MODE = true;
       document.documentElement.setAttribute("data-suite-managed", "1");
     </script>
-    <script src="../release.js?v=94.0.0"></script>
-    <script src="../suite-runtime-stabilizer.js?v=94.0.0"></script>
+    <script src="../release.js?v=95.0.0"></script>
+    <script src="../suite-runtime-stabilizer.js?v=95.0.0"></script>
     <script>window.MesahaRelease && window.MesahaRelease.use("mesaha");</script>
     <script>
       try {
@@ -113,12 +113,12 @@
       })();
     </script>
     <link href="./css/app.css?v=86.0.0" rel="stylesheet" />
-    <link href="./css/mesaha-ui.css?v=84.0.0" rel="stylesheet" />
+    <link href="./css/mesaha-ui.css?v=95.0.0" rel="stylesheet" />
 <link href="./css/mesaha-seflik-folder.css?v=84.0.0" rel="stylesheet" />
-    <link href="./css/mesaha-runtime.css?v=94.0.0" rel="stylesheet" />
+    <link href="./css/mesaha-runtime.css?v=95.0.0" rel="stylesheet" />
     <link href="./css/mesaha-management-v81.css?v=84.0.0" rel="stylesheet" />
-    <link href="./js/mesaha-app-runtime.js?v=84.0.0" rel="preload" as="script" />
-    <link href="./js/mesaha-auth-ui-runtime.js?v=84.0.0" rel="preload" as="script" />
+    <link href="./js/mesaha-app-runtime.js?v=95.0.0" rel="preload" as="script" />
+    <link href="./js/mesaha-auth-ui-runtime.js?v=95.0.0" rel="preload" as="script" />
     
     
     
@@ -319,6 +319,28 @@
                   type="checkbox"
                 /><span class="choice-copy"><b>40 barkodda kontrol</b><small>Son barkodu doğrulamak için kontrol ekranı gösterir.</small></span><span class="choice-switch" aria-hidden="true"></span></label
               >
+            </div>
+            <div class="setting-block" id="measurementWarningSettingV95">
+              <b>Ölçü Giriş Uyarıları</b>
+              <p>Şüpheli çap ve boy değerlerinde kayıt eklenmeden önce onay penceresi gösterir.</p>
+              <div class="check-grid measurement-warning-grid-v95">
+                <label class="check-card setting-toggle-card">
+                  <input checked="" id="warnLowDiameterEnabled" type="checkbox" />
+                  <span class="choice-copy"><b>9 ve altı çap uyarısı</b><small>Çap 9 cm veya daha düşükse kaydetmeden önce onay ister.</small></span>
+                  <span class="choice-switch" aria-hidden="true"></span>
+                </label>
+                <label class="check-card setting-toggle-card">
+                  <input checked="" id="warnThreeDigitDiameterEnabled" type="checkbox" />
+                  <span class="choice-copy"><b>3 haneli çap uyarısı</b><small>Çap 100 cm veya daha yüksekse kaydetmeden önce onay ister.</small></span>
+                  <span class="choice-switch" aria-hidden="true"></span>
+                </label>
+                <label class="check-card setting-toggle-card">
+                  <input checked="" id="warnDoubleDigitLengthEnabled" type="checkbox" />
+                  <span class="choice-copy"><b>Çift haneli boy uyarısı</b><small>Boy 10 metre veya daha yüksekse kaydetmeden önce onay ister.</small></span>
+                  <span class="choice-switch" aria-hidden="true"></span>
+                </label>
+              </div>
+              <p class="hint">Uyarıyı onaylarsanız değer normal şekilde kaydedilir. Bu kontroller veri giriş hatalarını fark etmek içindir.</p>
             </div>
             <div class="setting-block" id="productAutomationSettingV72">
               <b>Ürün Seçim Otomasyonu</b>
@@ -1143,7 +1165,7 @@
       </div>
     </div>
     <div class="toast" id="toast"></div>
-        <script src="./js/mesaha-app-runtime.js?v=84.0.0"></script>
+        <script src="./js/mesaha-app-runtime.js?v=95.0.0"></script>
     
     
     
@@ -1158,8 +1180,8 @@
       src="../js/mesaha-firebase.js"
     ></script>
     
-    <script id="mesaha-google-auth" src="../js/mesaha-google-auth.js?v=94.0.0"></script>
-        <script src="./js/mesaha-auth-ui-runtime.js?v=84.0.0"></script>
+    <script id="mesaha-google-auth" src="../js/mesaha-google-auth.js?v=95.0.0"></script>
+        <script src="./js/mesaha-auth-ui-runtime.js?v=95.0.0"></script>
     
     
     
@@ -1233,7 +1255,7 @@
     
     <script
       id="mesaha-offline-core-v380"
-      src="./js/mesaha-offline-core.js?v=94.0.0"
+      src="./js/mesaha-offline-core.js?v=95.0.0"
     ></script>
         <script src="./js/mesaha-home-runtime.js?v=84.0.0"></script>
     
@@ -1292,7 +1314,7 @@
     
     
     
-    <script src="./js/mesaha-seflik-runtime.js?v=94.0.0"></script>
+    <script src="./js/mesaha-seflik-runtime.js?v=95.0.0"></script>
     
     
     
@@ -1300,7 +1322,7 @@
 
 
     
-        <script src="./js/mesaha-session-ui-runtime.js?v=94.0.0"></script>
+        <script src="./js/mesaha-session-ui-runtime.js?v=95.0.0"></script>
 
     <script src="./js/mesaha-seflik-ui.js?v=84.0.0"></script>
     
@@ -1308,11 +1330,11 @@
         <script src="./js/mesaha-filter-runtime.js?v=84.0.0"></script>
 
     <script src="../suite-audio.js"></script>
-    <script src="../suite-identity.js?v=94.0.0"></script>
-    <script src="../suite-security.js?v=94.0.0"></script>
-    <script src="../suite-offline-store.js?v=94.0.0"></script>
-    <script src="../suite-sync-core.js?v=94.0.0"></script>
-    <script src="./suite-bridge.js?v=94.0.0"></script>
+    <script src="../suite-identity.js?v=95.0.0"></script>
+    <script src="../suite-security.js?v=95.0.0"></script>
+    <script src="../suite-offline-store.js?v=95.0.0"></script>
+    <script src="../suite-sync-core.js?v=95.0.0"></script>
+    <script src="./suite-bridge.js?v=95.0.0"></script>
   
     
         <script src="./js/mesaha-profile-runtime.js?v=84.0.0"></script>
@@ -1321,8 +1343,8 @@
 
         <script src="./js/mesaha-layout-runtime.js?v=84.0.0"></script>
 
-    <script src="./js/mesaha-final-runtime.js?v=94.0.0"></script>
-    <script src="./js/mesaha-management-runtime-v81.js?v=94.0.0"></script>
+    <script src="./js/mesaha-final-runtime.js?v=95.0.0"></script>
+    <script src="./js/mesaha-management-runtime-v81.js?v=95.0.0"></script>
 
     
 

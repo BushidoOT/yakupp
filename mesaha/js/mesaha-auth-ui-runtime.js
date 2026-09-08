@@ -1928,7 +1928,7 @@
             options.innerHTML = "<h2>Giriş Seçenekleri</h2>";
             view.appendChild(options);
           }
-          ["homeProductChecks", "homeTreeChecks", "barcodeControlEnabled", "autoPaperLengthEnabled", "autoProductStandardEnabled"].forEach(function (id) {
+          ["homeProductChecks", "homeTreeChecks", "barcodeControlEnabled", "measurementWarningSettingV95", "autoPaperLengthEnabled", "autoProductStandardEnabled"].forEach(function (id) {
             var target = $(id);
             var block = target && target.closest ? target.closest(".setting-block") : null;
             if (block && block.parentNode !== options) options.appendChild(block);

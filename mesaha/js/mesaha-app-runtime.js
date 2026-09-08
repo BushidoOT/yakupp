@@ -1038,6 +1038,9 @@
           soundEnabled: true,
           barcodeControlEnabled: true,
           barcodeControlEvery: 40,
+          warnLowDiameterEnabled: true,
+          warnThreeDigitDiameterEnabled: true,
+          warnDoubleDigitLengthEnabled: true,
           autoPaperLengthEnabled: false,
           paperLengthRules: "",
           autoProductStandardEnabled: false,
@@ -1481,6 +1484,12 @@
           state.settings.barcodeControlEnabled =
             state.settings.barcodeControlEnabled !== false;
           state.settings.barcodeControlEvery = 40;
+          state.settings.warnLowDiameterEnabled =
+            state.settings.warnLowDiameterEnabled !== false;
+          state.settings.warnThreeDigitDiameterEnabled =
+            state.settings.warnThreeDigitDiameterEnabled !== false;
+          state.settings.warnDoubleDigitLengthEnabled =
+            state.settings.warnDoubleDigitLengthEnabled !== false;
           state.settings.autoPaperLengthEnabled =
             state.settings.autoPaperLengthEnabled === true;
           state.settings.paperLengthRules =
@@ -1938,6 +1947,20 @@
                   : "Barkod kontrolü kapatıldı.",
               );
             });
+          [
+            ["warnLowDiameterEnabled", "warnLowDiameterEnabled", "9 ve altı çap uyarısı"],
+            ["warnThreeDigitDiameterEnabled", "warnThreeDigitDiameterEnabled", "3 haneli çap uyarısı"],
+            ["warnDoubleDigitLengthEnabled", "warnDoubleDigitLengthEnabled", "Çift haneli boy uyarısı"],
+          ].forEach(([id, key, label]) => {
+            const toggle = $(id);
+            if (!toggle) return;
+            toggle.addEventListener("change", () => {
+              state.settings[key] = toggle.checked;
+              saveSettings();
+              try { __flushSettings(); } catch {}
+              toast(label + (toggle.checked ? " açıldı." : " kapatıldı."));
+            });
+          });
           const autoPaperToggle = $("autoPaperLengthEnabled");
           if (autoPaperToggle)
             autoPaperToggle.addEventListener("change", () => {
@@ -2243,6 +2266,12 @@
           try { if (window.MesahaUI) window.MesahaUI.syncDate(); } catch (_) {}
           const bc = $("barcodeControlEnabled");
           if (bc) bc.checked = state.settings.barcodeControlEnabled !== false;
+          const lowDiaWarn = $("warnLowDiameterEnabled");
+          if (lowDiaWarn) lowDiaWarn.checked = state.settings.warnLowDiameterEnabled !== false;
+          const threeDiaWarn = $("warnThreeDigitDiameterEnabled");
+          if (threeDiaWarn) threeDiaWarn.checked = state.settings.warnThreeDigitDiameterEnabled !== false;
+          const doubleLenWarn = $("warnDoubleDigitLengthEnabled");
+          if (doubleLenWarn) doubleLenWarn.checked = state.settings.warnDoubleDigitLengthEnabled !== false;
           const autoPaper = $("autoPaperLengthEnabled");
           if (autoPaper)
             autoPaper.checked = state.settings.autoPaperLengthEnabled === true;
@@ -3258,6 +3287,96 @@
               }),
             );
         }
+        function measurementWarningItemsV95(diameter, length) {
+          const d = num(diameter), l = num(length), items = [];
+          if (state.settings.warnLowDiameterEnabled !== false && d > 0 && d <= 9) {
+            items.push({
+              title: "Düşük çap değeri",
+              value: d + " cm",
+              detail: "Çap 9 cm veya daha düşük girildi.",
+            });
+          }
+          if (state.settings.warnThreeDigitDiameterEnabled !== false && d >= 100) {
+            items.push({
+              title: "3 haneli çap değeri",
+              value: d + " cm",
+              detail: "Çap 100 cm veya daha yüksek girildi.",
+            });
+          }
+          if (state.settings.warnDoubleDigitLengthEnabled !== false && l >= 10) {
+            items.push({
+              title: "Çift haneli boy değeri",
+              value: formatBoy(l) + " m",
+              detail: "Boy 10 metre veya daha yüksek girildi.",
+            });
+          }
+          return items;
+        }
+        function confirmMeasurementWarningsV95(diameter, length) {
+          const items = measurementWarningItemsV95(diameter, length);
+          if (!items.length) return Promise.resolve(true);
+          try { if (document.activeElement && document.activeElement.blur) document.activeElement.blur(); } catch (_) {}
+          try { vibrate("warn"); } catch (_) {}
+          try {
+            if (window.mesahaSound && typeof window.mesahaSound.warning === "function")
+              window.mesahaSound.warning();
+          } catch (_) {}
+          const summary = items.map((item) => item.title + ": " + item.value).join("\n");
+          const back = $("modernModal");
+          if (!back)
+            return Promise.resolve(confirm("Ölçüyü kontrol edin:\n\n" + summary + "\n\nYine de kaydedilsin mi?"));
+          return new Promise((resolve) => {
+            const card = back.querySelector(".modal-card");
+            const close = $("modalCloseBtn");
+            const icon = $("modalIcon");
+            const title = $("modalTitle");
+            const body = $("modalBody");
+            const actions = $("modalActions");
+            if (!card || !close || !icon || !title || !body || !actions) {
+              resolve(confirm("Ölçüyü kontrol edin:\n\n" + summary + "\n\nYine de kaydedilsin mi?"));
+              return;
+            }
+            card.classList.remove("danger", "success");
+            card.classList.add("warn");
+            icon.textContent = "!";
+            title.textContent = "Ölçüyü Kontrol Edin";
+            body.innerHTML =
+              '<p>Girilen değerlerden biri alışılmadık görünüyor. Doğruysa yine de kaydedebilirsiniz.</p>' +
+              '<div class="measurement-warning-list-v95">' +
+              items.map((item) =>
+                '<div class="measurement-warning-item-v95"><b>' + esc(item.title) + '</b><strong>' + esc(item.value) + '</strong><small>' + esc(item.detail) + '</small></div>'
+              ).join("") +
+              '</div>';
+            actions.innerHTML = "";
+            const cancel = document.createElement("button");
+            cancel.type = "button";
+            cancel.className = "soft";
+            cancel.textContent = "Geri Dön";
+            const approve = document.createElement("button");
+            approve.type = "button";
+            approve.className = "primary";
+            approve.textContent = "Yine de Kaydet";
+            actions.append(cancel, approve);
+            let finished = false;
+            function done(value) {
+              if (finished) return;
+              finished = true;
+              back.classList.add("hidden");
+              document.body.classList.remove("modal-open");
+              back.onclick = null;
+              close.onclick = null;
+              cancel.onclick = null;
+              approve.onclick = null;
+              resolve(value);
+            }
+            cancel.onclick = () => done(false);
+            approve.onclick = () => done(true);
+            close.onclick = () => done(false);
+            back.onclick = (ev) => { if (ev.target === back) done(false); };
+            back.classList.remove("hidden");
+            document.body.classList.add("modal-open");
+          });
+        }
         async function saveEntry() {
           if (window.__mesahaSaveBusyV527) return false;
           const wasEditing = Boolean(state.editingId),
@@ -3303,6 +3422,7 @@
             toast("Bu barkod daha önce kayıtlı.");
             return false;
           }
+          if (!(await confirmMeasurementWarningsV95(diameter, length))) return false;
 
           window.__mesahaSaveBusyV527 = true;
           const entry = $("entryView"),

@@ -1996,3 +1996,42 @@ html body #beyanView #beyanFiltersV600 .beyan-filters-head-v600 h3 {
     font-size: 23px !important;
   }
 }
+
+/* V95 — ölçü giriş uyarıları */
+#settingsView .settings-warning-block-v95 .measurement-warning-grid-v95 {
+  grid-template-columns: 1fr !important;
+}
+#settingsView .settings-warning-block-v95 .setting-toggle-card {
+  min-height: 64px !important;
+}
+#modernModal .measurement-warning-list-v95 {
+  display: grid;
+  gap: 9px;
+  margin-top: 12px;
+}
+#modernModal .measurement-warning-item-v95 {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 3px 10px;
+  align-items: center;
+  padding: 11px 12px;
+  border: 1px solid #f0d79a;
+  border-radius: 14px;
+  background: #fffaf0;
+}
+#modernModal .measurement-warning-item-v95 b {
+  min-width: 0;
+  color: #6f4d00;
+  font-size: 13px;
+}
+#modernModal .measurement-warning-item-v95 strong {
+  color: #9a5b00;
+  font-size: 17px;
+  white-space: nowrap;
+}
+#modernModal .measurement-warning-item-v95 small {
+  grid-column: 1 / -1;
+  color: #7b6a45;
+  font-weight: 700;
+  line-height: 1.35;
+}
