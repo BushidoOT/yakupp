@@ -4143,16 +4143,17 @@
           clearTimeout(el.__t);
           el.__t = setTimeout(() => el.classList.remove("show"), 2400);
         }
-        function saveRecords() {
+        function saveRecords(reason) {
           try {
             if (typeof window.saveRecords === "function")
-              return window.saveRecords();
+              return window.saveRecords(reason || "records-tools-save");
           } catch {}
           try {
-            localStorage.setItem(
-              "cam_mesaha_kayitlari_v1",
-              JSON.stringify(records()),
-            );
+            var list = records();
+            var destructive = /(^|[-_:])(record-delete|single-delete|bulk-delete|delete-all|legacy-delete-all|recent-delete|user-delete|confirmed-delete)([-_:]|$)/i.test(String(reason || ""));
+            var old = JSON.parse(localStorage.getItem("cam_mesaha_kayitlari_v1") || "[]");
+            if (!list.length && Array.isArray(old) && old.length && !destructive) return Promise.resolve({ ok: true, protected: true });
+            localStorage.setItem("cam_mesaha_kayitlari_v1", JSON.stringify(list));
           } catch {}
         }
         function saveSettings() {
@@ -4732,10 +4733,16 @@
           };
           return map[key] || map["Tomruk"];
         };
-        function saveRecords() {
+        function saveRecords(reason) {
           if (typeof window.saveRecords === "function")
-            return window.saveRecords();
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(records()));
+            return window.saveRecords(reason || "records-premium-save");
+          var list = records();
+          var destructive = /(^|[-_:])(record-delete|single-delete|bulk-delete|delete-all|legacy-delete-all|recent-delete|user-delete|confirmed-delete)([-_:]|$)/i.test(String(reason || ""));
+          try {
+            var old = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+            if (!list.length && Array.isArray(old) && old.length && !destructive) return Promise.resolve({ ok: true, protected: true });
+          } catch {}
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
         }
         function saveSettings() {
           if (typeof window.saveSettings === "function")

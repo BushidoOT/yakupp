@@ -1977,69 +1977,19 @@
     });
   }
   async function hardClearAuthStateV69() {
-    const authKeys = [
-      K.session, K.backup, K.access, K.terminal, K.terminalOld, K.active,
-      K.folderCache, K.oldFolderCache, K.mesahaFolderCache, K.istifShared,
-      "mesaha_google_plain_oauth_v553", "mesaha_google_email_exists_retry_v568",
-      "mesaha_user_confirmed_v319", "mesaha_terminal_local_mode_v556",
-      "mesaha_terminal_local_mode_v557"
-    ];
+    /* V96: Google oturumu kapansa veya başarısız olsa bile terminal modu, aktif
+       şeflik/bölme ve cihazdaki Mesaha/İstif kayıtları korunur. */
+    const authKeys = [K.session, K.backup, K.access, "mesaha_google_plain_oauth_v553", "mesaha_google_email_exists_retry_v568"];
     authKeys.forEach((key) => { try { localStorage.removeItem(key); } catch {} });
     try {
       const p = panel();
-      ["name","seflik","bolmeNo","googleUserId","googleEmail","googleFullName","googleAvatarUrl","avatarUrl","googleApproved","terminalMode","terminalPairedUserId","terminalPairedEmail","activeSeflik","activeSeflikKey","seflikKey"].forEach((key) => delete p[key]);
+      ["googleUserId","googleEmail","googleFullName","googleAvatarUrl","googleApproved"].forEach((key) => delete p[key]);
       write(K.panel, p);
     } catch {}
-    try {
-      const st = settings();
-      ["ekipNot","seflik","seflikKey","seflik_key","bolmeNo","ormanci"].forEach((key) => delete st[key]);
-      write(K.settings, st);
-    } catch {}
-    try {
-      const fallbackKey = "mesaha_istif_storage_fallback_v69";
-      const fallback = JSON.parse(localStorage.getItem(fallbackKey) || "null");
-      if (fallback && Array.isArray(fallback.settings)) {
-        fallback.settings = fallback.settings.map((row) => {
-          if (!row || typeof row !== "object") return row;
-          if (row.key === K.istifShared) {
-            const value = row.value && typeof row.value === "object" ? row.value : {};
-            return {
-              ...row,
-              value: {
-                ...value,
-                seflikler: [],
-                membersBySeflik: {},
-                customForestersBySeflik: {},
-                removedForestersBySeflik: {},
-                auth: { status: "signed_out", userId: "", email: "", name: "", avatarUrl: "", error: "", updatedAt: now() },
-                drive: { status: "idle", connected: false, isOwner: false, ownerEmail: "", ownerName: "", folderId: "", folderName: "", folderUrl: "", updatedAt: "", error: "", quota: null },
-                updatedAt: now(),
-              },
-            };
-          }
-          if (row.key === "app") {
-            const value = row.value && typeof row.value === "object" ? { ...row.value } : {};
-            ["seflik","seflikKey","ormanci"].forEach((key) => delete value[key]);
-            value.setupComplete = false;
-            return { ...row, value };
-          }
-          return row;
-        });
-        fallback.updatedAt = now();
-        localStorage.setItem(fallbackKey, JSON.stringify(fallback));
-      }
-    } catch {}
-    try {
-      ["mesaha_google_plain_oauth_v553","mesaha_google_email_exists_retry_v568","orman_io_auth_logout_v69"].forEach((key) => sessionStorage.removeItem(key));
-    } catch {}
-    folders = [];
-    foresters = {};
-    divisions = {};
-    divisionRecords = {};
-    divisionReady = {};
+    try { ["mesaha_google_plain_oauth_v553","mesaha_google_email_exists_retry_v568","orman_io_auth_logout_v69"].forEach((key) => sessionStorage.removeItem(key)); } catch {}
+    folders = Array.isArray(folders) ? folders : [];
     terminalDevicesLoadedAt = 0;
-    try { await clearIstifIdentityCacheV69(); } catch {}
-    try { window.dispatchEvent(new CustomEvent("mesaha:hard-logout", { detail: { source: "suite-root-v69" } })); } catch {}
+    try { window.dispatchEvent(new CustomEvent("mesaha:auth-signed-out", { detail: { source: "suite-root-v96", localDataPreserved: true } })); } catch {}
   }
   async function logout() {
     if (!confirm("Oturum tamamen kapatılsın mı? Cihazdaki ölçüm ve istif kayıtları silinmez.")) return;

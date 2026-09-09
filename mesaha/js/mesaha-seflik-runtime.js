@@ -42,11 +42,11 @@
   function toast(title,sub,kind){try{if(typeof window.mesahaFloatToastV315==='function')return window.mesahaFloatToastV315(title,sub||'',kind||'warning')}catch(e){}try{if(typeof window.toast==='function')return window.toast(title,sub||'',kind||'warning')}catch(e){}try{alert(title+(sub?'\n'+sub:''))}catch(e){}}
   function log(event,detail,level){try{if(window.MesahaLoginLog&&typeof window.MesahaLoginLog.log==='function')window.MesahaLoginLog.log(event,detail||{},level||'info')}catch(e){}}
   function clearTerminal(){try{localStorage.removeItem(TERMINAL_KEY);localStorage.removeItem(OLD_TERMINAL_KEY)}catch(e){}try{document.documentElement.removeAttribute('data-mesaha-terminal-mode');document.documentElement.removeAttribute('data-mesaha-terminal-cloud');['terminalLocalHomeV556','terminalLocalPanelV556','terminalPairPanelV561'].forEach(function(id){var el=$(id);if(el&&el.parentNode)el.parentNode.removeChild(el)})}catch(e){}log('terminal_mode_disabled_for_google',{},'info')}
-  function goGoogle(){clearTerminal();try{window.dispatchEvent(new CustomEvent('mesaha:google-auth-required',{detail:{reason:'terminal_cloud_feature',forceGoogle:true}}))}catch(e){}setTimeout(function(){try{if(window.MesahaGoogleAuthV548&&typeof window.MesahaGoogleAuthV548.openGoogle==='function')window.MesahaGoogleAuthV548.openGoogle();else if(window.MesahaGoogleAuthV548&&typeof window.MesahaGoogleAuthV548.boot==='function')window.MesahaGoogleAuthV548.boot(true)}catch(e){}},80)}
+  function goGoogle(){try{window.dispatchEvent(new CustomEvent('mesaha:google-auth-required',{detail:{reason:'terminal_cloud_feature_v96',forceGoogle:true,preserveTerminal:true}}))}catch(e){}setTimeout(function(){try{if(window.MesahaGoogleAuthV548&&typeof window.MesahaGoogleAuthV548.openGoogle==='function')window.MesahaGoogleAuthV548.openGoogle();else if(window.MesahaGoogleAuthV548&&typeof window.MesahaGoogleAuthV548.boot==='function')window.MesahaGoogleAuthV548.boot(true)}catch(e){}},80)}
   function askGoogle(){
     log('google_cloud_feature_required',{url:location.href},'warning');
-    toast('Google ile giriş yap','Bulut ve Şeflik işlemleri için Google hesabıyla giriş yapmanız gerekiyor.','warning');
-    setTimeout(goGoogle,40);
+    try{if(typeof window.__mesahaPromptGoogleForSeflikV96==='function'){window.__mesahaPromptGoogleForSeflikV96();return}}catch(e){}
+    toast('Google ile giriş gerekli','Devam etmek için Google hesabıyla giriş yapabilirsiniz. Terminal ve barkodlarınız korunur.','warning');
   }
   function style(){
     if($('mesaha-terminal-local-v557-style')) return;

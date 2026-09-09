@@ -219,9 +219,24 @@
     return recordChain;
   }
 
+  function explicitDeleteReason(reason){
+    reason=String(reason||'').toLocaleLowerCase('tr-TR');
+    return /(^|[-_:])(record-delete|single-delete|bulk-delete|delete-all|legacy-delete-all|recent-delete|user-delete|confirmed-delete)([-_:]|$)/.test(reason);
+  }
+  function protectAccidentalEmpty(list,opts){
+    list=Array.isArray(list)?list:[];opts=opts||{};
+    var current=Array.isArray(lastCommittedRecords)&&lastCommittedRecords.length?lastCommittedRecords:(Array.isArray(bootRecords)?bootRecords:[]);
+    if(list.length===0&&current.length>0&&!explicitDeleteReason(opts.reason)){
+      try{if(window.state&&Array.isArray(window.state.records))window.state.records=cloneRecordsForApi(current)}catch(e){}
+      notifyWarning('records',new Error('Kayıtların otomatik boşaltılması engellendi.'),{protected:true,reason:String(opts.reason||'save'),count:current.length});
+      return cloneRecordsForApi(current);
+    }
+    return list;
+  }
   function saveRecords(list,opts){
     list=Array.isArray(list)?list.slice():[];
     opts=Object.assign({},opts||{});
+    list=protectAccidentalEmpty(list,opts);
     recordChain=recordChain.catch(function(){return null;}).then(async function(){
       var base=null;try{base=await idbGet(META_STORE,'records');}catch(e){}
       var meta=recordMetaFrom(base||bootRecordMeta||{},list,opts&&opts.reason||'records-save');
@@ -261,6 +276,7 @@
     records=Array.isArray(records)?records.slice():[];
     settings=validSettings(settings)?shallowSettings(settings):{};
     opts=Object.assign({},opts||{});
+    records=protectAccidentalEmpty(records,opts);
     bulkChain=bulkChain.catch(function(){return null;}).then(async function(){
       await Promise.all([recordChain.catch(function(){}),settingsChain.catch(function(){})]);
       var currentMeta=null,currentSettings=null;try{var p=await Promise.all([idbGet(META_STORE,'records').catch(function(){return null;}),idbGet(DOC_STORE,'settings').catch(function(){return null;})]);currentMeta=p[0];currentSettings=p[1];}catch(e){}
@@ -384,7 +400,7 @@
     checkpointRecords:function(records,reason){return checkpointKind('records',records,reason||'manual-records-checkpoint');},
     checkpointSettings:function(settings,reason){return checkpointKind('settings',settings,reason||'manual-settings-checkpoint');},
     checkpointAll:checkpointAll,
-    clearRecords:function(reason){return saveRecords([],{reason:reason||'clear'});},
+    clearRecords:function(reason){return saveRecords([],{reason:reason||'confirmed-delete'});},
     recoverIntoApp:recoverIntoApp,
     flush:flush,
     info:info,

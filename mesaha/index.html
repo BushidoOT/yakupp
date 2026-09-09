@@ -20,40 +20,60 @@
       window.MESAHA_SUITE_MODE = true;
       window.MESAHA_SUITE_VERSION = 29;
     </script>
-    <script id="mesaha-suite-folder-early-nav-v89">
+    <script id="mesaha-suite-folder-early-nav-v96">
       (function(){
+        var promptOpen=false;
         function targetOf(e){try{return e.target&&e.target.closest&&e.target.closest('[data-nav="seflikFolder"],#seflikFolderHomeShortcutV528');}catch(_){return null;}}
-        function readSession(){try{return JSON.parse(localStorage.getItem('mesaha_supabase_v500_session')||'{}')||{};}catch(_){return {};}}
-        function googleActive(){return !!String(readSession().access_token||'').trim();}
+        function readJson(key){try{return JSON.parse(localStorage.getItem(key)||'{}')||{};}catch(_){return {};}}
+        function sessionLike(){
+          var primary=readJson('mesaha_supabase_v500_session');
+          if(String(primary.access_token||'').trim())return primary;
+          var backup=readJson('mesaha_supabase_v569_session_backup');
+          if(String(backup.access_token||'').trim())return backup;
+          return {};
+        }
+        function googleActive(){return !!String(sessionLike().access_token||'').trim();}
         function pairedTerminal(){
           try{
-            var t=JSON.parse(localStorage.getItem('mesaha_terminal_local_mode_v556')||localStorage.getItem('mesaha_terminal_local_mode_v557')||'{}')||{};
+            var t=readJson('mesaha_terminal_local_mode_v556');
+            if(!(t&&t.active===true))t=readJson('mesaha_terminal_local_mode_v557');
             return !!(t.active===true&&String(t.source||'').trim()==='pair_code'&&String(t.pairedUserId||t.owner_user_id||'').trim()&&String(t.terminalCode||t.code||t.terminalToken||t.token||'').trim());
           }catch(_){return false;}
         }
         function cloudActive(){
-          try{if(window.OrmanSuiteIdentity&&typeof window.OrmanSuiteIdentity.cloudAllowed==='function')return !!window.OrmanSuiteIdentity.cloudAllowed();}catch(_){}
+          try{if(window.OrmanSuiteIdentity&&typeof window.OrmanSuiteIdentity.cloudAllowed==='function'&&window.OrmanSuiteIdentity.cloudAllowed())return true;}catch(_){}
           return googleActive()||pairedTerminal();
         }
+        function ensurePrompt(){
+          var ov=document.getElementById('seflikGooglePromptV96');
+          if(ov)return ov;
+          var style=document.createElement('style');style.id='seflikGooglePromptV96Style';style.textContent='#seflikGooglePromptV96{position:fixed;inset:0;z-index:2147483595;background:rgba(15,23,42,.56);display:grid;place-items:center;padding:max(16px,env(safe-area-inset-top)) 16px max(16px,env(safe-area-inset-bottom));font-family:inherit}#seflikGooglePromptV96[hidden]{display:none!important}#seflikGooglePromptV96 .sgp-card{width:min(420px,100%);background:#fff;border-radius:24px;padding:22px;box-shadow:0 26px 80px rgba(15,23,42,.3);color:#0f172a}#seflikGooglePromptV96 .sgp-icon{width:52px;height:52px;border-radius:17px;background:#eff6ff;color:#2563eb;display:grid;place-items:center;font-size:25px;font-weight:1000;margin-bottom:12px}#seflikGooglePromptV96 h3{margin:0 0 8px;font-size:22px}#seflikGooglePromptV96 p{margin:0;color:#52606d;font-weight:700;line-height:1.5;font-size:14px}#seflikGooglePromptV96 .sgp-note{margin-top:12px;background:#f0fdf4;border:1px solid #bbf7d0;color:#166534;border-radius:14px;padding:10px 12px;font-size:12px;font-weight:800}#seflikGooglePromptV96 .sgp-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:17px}#seflikGooglePromptV96 button{min-height:50px;border-radius:15px;border:1px solid #d8e2dc;font:inherit;font-weight:950;cursor:pointer}#seflikGooglePromptV96 [data-sgp-back]{background:#f8fafc;color:#334155}#seflikGooglePromptV96 [data-sgp-go]{background:#17683f;color:#fff;border-color:#17683f}@media(max-width:390px){#seflikGooglePromptV96 .sgp-actions{grid-template-columns:1fr}}';document.head.appendChild(style);
+          ov=document.createElement('div');ov.id='seflikGooglePromptV96';ov.hidden=true;ov.innerHTML='<div class="sgp-card" role="dialog" aria-modal="true" aria-labelledby="sgpTitleV96"><div class="sgp-icon">G</div><h3 id="sgpTitleV96">Google ile giriş gerekli</h3><p>Şeflik Klasörü ortak bulut alanıdır. Google hesabınızla giriş yaparak devam edebilirsiniz.</p><div class="sgp-note">Geri dönerseniz mevcut terminal modunuz, cihazdaki barkodlarınız ve yerel kayıtlarınız aynen korunur.</div><div class="sgp-actions"><button type="button" data-sgp-back>Geri Dön</button><button type="button" data-sgp-go>Devam Et</button></div></div>';document.body.appendChild(ov);
+          ov.querySelector('[data-sgp-back]').onclick=function(){ov.hidden=true;promptOpen=false;};
+          ov.querySelector('[data-sgp-go]').onclick=function(){ov.hidden=true;promptOpen=false;openGoogle();};
+          ov.addEventListener('click',function(e){if(e.target===ov){ov.hidden=true;promptOpen=false;}});
+          return ov;
+        }
+        function promptGoogle(){var ov=ensurePrompt();promptOpen=true;ov.hidden=false;}
         function openGoogle(){
           try{
-            if(window.MesahaTerminalLocalV556&&typeof window.MesahaTerminalLocalV556.google==='function'){
-              window.MesahaTerminalLocalV556.google();return;
+            if(window.MesahaGoogleAuthV548&&typeof window.MesahaGoogleAuthV548.openGoogle==='function'){
+              window.MesahaGoogleAuthV548.openGoogle();return;
             }
           }catch(_){}
-          try{window.dispatchEvent(new CustomEvent('mesaha:google-auth-required',{detail:{reason:'seflik_folder'}}));}catch(_){}
-          setTimeout(function(){try{if(window.MesahaGoogleAuthV548&&typeof window.MesahaGoogleAuthV548.boot==='function')window.MesahaGoogleAuthV548.boot(true);}catch(_){}},40);
+          try{window.dispatchEvent(new CustomEvent('mesaha:google-auth-required',{detail:{reason:'seflik_folder_v96',preserveTerminal:true}}));}catch(_){}
         }
+        window.__mesahaPromptGoogleForSeflikV96=promptGoogle;
         document.addEventListener('click',function(e){
           if(!targetOf(e))return;
           try{e.preventDefault();e.stopPropagation();if(e.stopImmediatePropagation)e.stopImmediatePropagation();}catch(_){}
-          if(!cloudActive()){openGoogle();return;}
+          if(!cloudActive()){promptGoogle();return;}
           if(typeof window.__suiteOpenFolderViewV10==='function')window.__suiteOpenFolderViewV10();
           else window.__suiteOpenFolderPendingV10=true;
         },true);
         try{
           if(new URLSearchParams(location.search).get('google')==='1'&&!googleActive()){
-            window.addEventListener('load',function(){setTimeout(openGoogle,80);},{once:true});
+            window.addEventListener('load',function(){setTimeout(promptGoogle,100);},{once:true});
           }
         }catch(_){}
       })();
@@ -74,8 +94,8 @@
       window.MESAHA_SUITE_MODE = true;
       document.documentElement.setAttribute("data-suite-managed", "1");
     </script>
-    <script src="../release.js?v=95.0.0"></script>
-    <script src="../suite-runtime-stabilizer.js?v=95.0.0"></script>
+    <script src="../release.js?v=96.0.0"></script>
+    <script src="../suite-runtime-stabilizer.js?v=96.0.0"></script>
     <script>window.MesahaRelease && window.MesahaRelease.use("mesaha");</script>
     <script>
       try {
@@ -113,12 +133,12 @@
       })();
     </script>
     <link href="./css/app.css?v=86.0.0" rel="stylesheet" />
-    <link href="./css/mesaha-ui.css?v=95.0.0" rel="stylesheet" />
+    <link href="./css/mesaha-ui.css?v=96.0.0" rel="stylesheet" />
 <link href="./css/mesaha-seflik-folder.css?v=84.0.0" rel="stylesheet" />
-    <link href="./css/mesaha-runtime.css?v=95.0.0" rel="stylesheet" />
+    <link href="./css/mesaha-runtime.css?v=96.0.0" rel="stylesheet" />
     <link href="./css/mesaha-management-v81.css?v=84.0.0" rel="stylesheet" />
-    <link href="./js/mesaha-app-runtime.js?v=95.0.0" rel="preload" as="script" />
-    <link href="./js/mesaha-auth-ui-runtime.js?v=95.0.0" rel="preload" as="script" />
+    <link href="./js/mesaha-app-runtime.js?v=96.0.0" rel="preload" as="script" />
+    <link href="./js/mesaha-auth-ui-runtime.js?v=96.0.0" rel="preload" as="script" />
     
     
     
@@ -1165,7 +1185,7 @@
       </div>
     </div>
     <div class="toast" id="toast"></div>
-        <script src="./js/mesaha-app-runtime.js?v=95.0.0"></script>
+        <script src="./js/mesaha-app-runtime.js?v=96.0.0"></script>
     
     
     
@@ -1180,8 +1200,8 @@
       src="../js/mesaha-firebase.js"
     ></script>
     
-    <script id="mesaha-google-auth" src="../js/mesaha-google-auth.js?v=95.0.0"></script>
-        <script src="./js/mesaha-auth-ui-runtime.js?v=95.0.0"></script>
+    <script id="mesaha-google-auth" src="../js/mesaha-google-auth.js?v=96.0.0"></script>
+        <script src="./js/mesaha-auth-ui-runtime.js?v=96.0.0"></script>
     
     
     
@@ -1255,7 +1275,7 @@
     
     <script
       id="mesaha-offline-core-v380"
-      src="./js/mesaha-offline-core.js?v=95.0.0"
+      src="./js/mesaha-offline-core.js?v=96.0.0"
     ></script>
         <script src="./js/mesaha-home-runtime.js?v=84.0.0"></script>
     
@@ -1314,7 +1334,7 @@
     
     
     
-    <script src="./js/mesaha-seflik-runtime.js?v=95.0.0"></script>
+    <script src="./js/mesaha-seflik-runtime.js?v=96.0.0"></script>
     
     
     
@@ -1322,7 +1342,7 @@
 
 
     
-        <script src="./js/mesaha-session-ui-runtime.js?v=95.0.0"></script>
+        <script src="./js/mesaha-session-ui-runtime.js?v=96.0.0"></script>
 
     <script src="./js/mesaha-seflik-ui.js?v=84.0.0"></script>
     
@@ -1330,11 +1350,11 @@
         <script src="./js/mesaha-filter-runtime.js?v=84.0.0"></script>
 
     <script src="../suite-audio.js"></script>
-    <script src="../suite-identity.js?v=95.0.0"></script>
-    <script src="../suite-security.js?v=95.0.0"></script>
-    <script src="../suite-offline-store.js?v=95.0.0"></script>
-    <script src="../suite-sync-core.js?v=95.0.0"></script>
-    <script src="./suite-bridge.js?v=95.0.0"></script>
+    <script src="../suite-identity.js?v=96.0.0"></script>
+    <script src="../suite-security.js?v=96.0.0"></script>
+    <script src="../suite-offline-store.js?v=96.0.0"></script>
+    <script src="../suite-sync-core.js?v=96.0.0"></script>
+    <script src="./suite-bridge.js?v=96.0.0"></script>
   
     
         <script src="./js/mesaha-profile-runtime.js?v=84.0.0"></script>
@@ -1343,8 +1363,8 @@
 
         <script src="./js/mesaha-layout-runtime.js?v=84.0.0"></script>
 
-    <script src="./js/mesaha-final-runtime.js?v=95.0.0"></script>
-    <script src="./js/mesaha-management-runtime-v81.js?v=95.0.0"></script>
+    <script src="./js/mesaha-final-runtime.js?v=96.0.0"></script>
+    <script src="./js/mesaha-management-runtime-v81.js?v=96.0.0"></script>
 
     
 

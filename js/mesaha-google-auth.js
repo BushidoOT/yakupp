@@ -12,6 +12,7 @@
   var TERMINAL_MODE_KEY='mesaha_terminal_local_mode_v556';
   var PLAIN_OAUTH_KEY='mesaha_google_plain_oauth_v553';
   var EMAIL_EXISTS_RETRY_KEY='mesaha_google_email_exists_retry_v568';
+  var RETURN_SNAPSHOT_KEY='mesaha_google_return_snapshot_v96';
   var PANEL_KEY='mesaha_panel_user_v316';
   var SETTINGS_KEY='cam_mesaha_ayarlar_v1';
   var BUSY=false, overlay=null, currentAccess=null, statusPromise=null, bootPromise=null, lastStatusAt=0, identityBusy=false, lastTerminalCode='';
@@ -95,7 +96,7 @@
   function recentEmailExistsRetry(){try{var t=Number(localStorage.getItem(EMAIL_EXISTS_RETRY_KEY)||0)||0;return !!(t&&Date.now()-t<25000)}catch(e){return false}}
   function clearEmailExistsRetry(){try{localStorage.removeItem(EMAIL_EXISTS_RETRY_KEY)}catch(e){}}
   function plainOAuthUrl(reason){var redir=redirectUrl(),path='/auth/v1/authorize?provider=google&redirect_to='+encodeURIComponent(redir)+'&prompt=select_account';var url=cfg().url+path;loginLog('oauth_plain_direct_url',{reason:reason||'',redirectUrl:redir,path:path},'debug');return url}
-  function goPlainOAuth(reason){markPlainOauth(true);try{var a=api();if(a&&a.clearSession)a.clearSession()}catch(e){}var url=plainOAuthUrl(reason);loginLog('oauth_redirect_plain_google_direct',{reason:reason||'',redirectUrl:redirectUrl()},'info');location.assign(url);return true}
+  function goPlainOAuth(reason){saveReturnSnapshot();markPlainOauth(true);try{var a=api();if(a&&a.clearSession)a.clearSession({preserveBackup:true})}catch(e){}var url=plainOAuthUrl(reason);loginLog('oauth_redirect_plain_google_direct',{reason:reason||'',redirectUrl:redirectUrl()},'info');location.assign(url);return true}
   function localIdentity(){
     var panel=getJson(PANEL_KEY,{}),st={};try{st=window.state&&window.state.settings||{}}catch(e){}if(!clean(st.ekipNot)||!clean(st.seflik))st=getJson(SETTINGS_KEY,{});
     var g=isGoogle()?googleDisplayName():'';
@@ -120,7 +121,7 @@
     if(clean(term.source)!=='pair_code')setTimeout(function(){guestSessionPingV63(term)},20);
     loginLog('terminal_mode_enabled',{name:name,seflik:seflik,bolmeNo:bolme,source:term.source,paired:!!data.terminalCode},'info');return true}
   
-  function terminalForm(){var li=terminalData();show('<div class="google-auth-status-v548 pending"><b>Terminal giriş modu (Misafir modu)</b><br>Telefondan Google ile giriş yapan kullanıcı, kullanıcı panelinden terminal kodu oluşturabilir. Bu kodla cihaz, kodu oluşturan hesabın Şeflik, rol ve bulut yetkileriyle eşleşir; Google erişim anahtarı bu cihaza kopyalanmaz.</div><div class="google-auth-fields-v548"><label>Terminal Kodu<input id="terminalPairCodeV557" maxlength="20" inputmode="text" autocapitalize="characters" enterkeyhint="done" spellcheck="false" placeholder="Örn: A1B2-C3D4" autocomplete="one-time-code"></label></div>'+button('terminal-claim','Kod ile terminali eşleştir','green')+'<p class="google-auth-note-v548">Kod yoksa aşağıdan elle yerel terminal modu açılabilir.</p><div class="google-auth-fields-v548"><label>Kullanıcı adı<input id="terminalNameV556" maxlength="120" value="'+esc(li.name)+'" autocomplete="name"></label><label>Şeflik<input id="terminalSeflikV556" maxlength="120" value="'+esc(li.seflik)+'" autocomplete="organization"></label><label>Bölme No <input id="terminalBolmeV556" maxlength="80" value="'+esc(li.bolmeNo)+'"></label></div>'+button('terminal-save','Elle terminal modunda devam et','subtle')+button('google','Google ile giriş yap','primary')+'<p class="google-auth-note-v548">Elle terminal modunda kayıtlar cihazda kalır. Bulut, Drive ve Şeflik işlemleri için Google girişi gerekir.</p>')}
+  function terminalForm(){var li=terminalData();show('<div class="google-auth-status-v548 pending"><b>Terminal giriş modu (Misafir modu)</b><br>Telefondan Google ile giriş yapan kullanıcı, kullanıcı panelinden terminal kodu oluşturabilir. Bu kodla cihaz, kodu oluşturan hesabın Şeflik, rol ve bulut yetkileriyle eşleşir; Google erişim anahtarı bu cihaza kopyalanmaz.</div><div class="google-auth-fields-v548"><label>Terminal Kodu<input id="terminalPairCodeV557" maxlength="20" inputmode="text" autocapitalize="characters" enterkeyhint="done" spellcheck="false" placeholder="Örn: A1B2-C3D4" autocomplete="one-time-code"></label></div>'+button('terminal-claim','Kod ile terminali eşleştir','green')+'<p class="google-auth-note-v548">Kod yoksa aşağıdan elle yerel terminal modu açılabilir.</p><div class="google-auth-fields-v548"><label>Kullanıcı adı<input id="terminalNameV556" maxlength="120" value="'+esc(li.name)+'" autocomplete="name"></label><label>Şeflik<input id="terminalSeflikV556" maxlength="120" value="'+esc(li.seflik)+'" autocomplete="organization"></label><label>Bölme No <input id="terminalBolmeV556" maxlength="80" value="'+esc(li.bolmeNo)+'"></label></div>'+button('terminal-save','Terminal ile devam et','subtle')+button('google','Google ile giriş yap','primary')+'<p class="google-auth-note-v548">Elle terminal modunda kayıtlar cihazda kalır. Bulut, Drive ve Şeflik işlemleri için Google girişi gerekir.</p>')}
   async function claimTerminalCode(codeArg){
     var el=document.getElementById('terminalPairCodeV557'),el2=document.getElementById('terminalPairCodePanelV561'),fromPanel=!!codeArg,code=clean(codeArg||el&&el.value||el2&&el2.value).toUpperCase();
     if(code.length<6)throw new Error('Telefondan oluşturulan terminal kodunu girin.');
@@ -142,6 +143,25 @@
   }
   function saveTerminalFromForm(){var n=document.getElementById('terminalNameV556'),s=document.getElementById('terminalSeflikV556'),b=document.getElementById('terminalBolmeV556');writeTerminalIdentity({name:n&&n.value,seflik:s&&s.value,bolmeNo:b&&b.value,source:'manual'});hide();try{if(typeof window.mesahaFloatToastV315==='function')window.mesahaFloatToastV315('Terminal modu açıldı','Bulut özellikleri Google girişi isteyecek','success');else if(typeof window.toast==='function')window.toast('Terminal modu açıldı','Bulut özellikleri Google girişi isteyecek','success')}catch(e){}return true}
   
+  function saveReturnSnapshot(){
+    try{
+      var term=getJson(TERMINAL_MODE_KEY,null)||getJson('mesaha_terminal_local_mode_v557',null)||null;
+      var snap={at:Date.now(),terminal:term&&term.active===true?term:null,active:getJson('mesaha_active_seflik_folder_v564',{}),panel:getJson(PANEL_KEY,{}),settings:getJson(SETTINGS_KEY,{})};
+      localStorage.setItem(RETURN_SNAPSHOT_KEY,JSON.stringify(snap));
+      return snap;
+    }catch(e){return null}
+  }
+  function getReturnSnapshot(){try{var x=getJson(RETURN_SNAPSHOT_KEY,null);return x&&Date.now()-Number(x.at||0)<30*60*1000?x:null}catch(e){return null}}
+  function clearReturnSnapshot(){try{localStorage.removeItem(RETURN_SNAPSHOT_KEY)}catch(e){}}
+  function restoreReturnSnapshot(){
+    var snap=getReturnSnapshot();if(!snap)return false;
+    try{if(snap.active&&typeof snap.active==='object')setJson('mesaha_active_seflik_folder_v564',snap.active)}catch(e){}
+    try{if(snap.panel&&typeof snap.panel==='object')setJson(PANEL_KEY,snap.panel)}catch(e){}
+    try{if(snap.settings&&typeof snap.settings==='object')setJson(SETTINGS_KEY,snap.settings)}catch(e){}
+    try{if(snap.terminal&&snap.terminal.active===true){setJson(TERMINAL_MODE_KEY,snap.terminal);writeTerminalIdentity(snap.terminal)}}catch(e){}
+    try{window.dispatchEvent(new Event('mesaha:identity-restored'));window.dispatchEvent(new Event('mesaha:settings-saved'))}catch(e){}
+    return true;
+  }
   function clearTerminalMode(){try{localStorage.removeItem(TERMINAL_MODE_KEY)}catch(e){}try{document.documentElement.removeAttribute('data-mesaha-terminal-mode');document.documentElement.removeAttribute('data-mesaha-terminal-cloud');window.dispatchEvent(new Event('mesaha:terminal-mode-disabled'))}catch(e){}}
 
   function cached(){var x=getJson(ACCESS_KEY,null);if(!x)return null;var id=uid(),ts=Number(x.cached_at||0)||0;if(id&&clean(x.user_id)&&clean(x.user_id)!==id)return null;if(!id&&clean(x.status)==='approved'&&ts&&Date.now()-ts>LONG_APPROVED_MS)return null;return x}
@@ -150,12 +170,13 @@
   function cacheAccess(x){if(!x)return;currentAccess=x;lastStatusAt=Date.now();setJson(ACCESS_KEY,Object.assign({},x,{cached_at:lastStatusAt}))}
   function clearAccess(){currentAccess=null;try{localStorage.removeItem(ACCESS_KEY)}catch(e){}}
   function hardClearAuthState(){
-    var keys=[SESSION_KEY,SESSION_BACKUP_KEY,ACCESS_KEY,TERMINAL_MODE_KEY,'mesaha_terminal_local_mode_v557',PLAIN_OAUTH_KEY,EMAIL_EXISTS_RETRY_KEY,'mesaha_active_seflik_folder_v564','mesaha_suite_folder_cache_v4','mesaha_suite_folder_cache_v2','mesaha_seflik_folder_cache_v529','mesaha_user_confirmed_v319'];
+    /* V96: oturum kapatma/Google hatası hiçbir zaman yerel Mesaha kayıtlarını, aktif
+       şeflik-bölme bağlamını veya terminal kimliğini silmez. Sadece bulut kimlik anahtarları temizlenir. */
+    var keys=[SESSION_KEY,SESSION_BACKUP_KEY,ACCESS_KEY,PLAIN_OAUTH_KEY,EMAIL_EXISTS_RETRY_KEY];
     try{keys.forEach(function(k){localStorage.removeItem(k)})}catch(e){}
-    try{var p=getJson(PANEL_KEY,{});['name','seflik','bolmeNo','googleUserId','googleEmail','googleFullName','googleAvatarUrl','avatarUrl','googleApproved','terminalMode','terminalPairedUserId','terminalPairedEmail','activeSeflik','activeSeflikKey','seflikKey'].forEach(function(k){delete p[k]});setJson(PANEL_KEY,p)}catch(e){}
-    try{var st=getJson(SETTINGS_KEY,{});['ekipNot','seflik','seflikKey','seflik_key','bolmeNo','ormanci'].forEach(function(k){delete st[k]});setJson(SETTINGS_KEY,st)}catch(e){}
+    try{var p=getJson(PANEL_KEY,{});['googleUserId','googleEmail','googleFullName','googleAvatarUrl','googleApproved'].forEach(function(k){delete p[k]});setJson(PANEL_KEY,p)}catch(e){}
     try{sessionStorage.removeItem('mesaha_google_plain_oauth_v553');sessionStorage.removeItem('mesaha_google_email_exists_retry_v568')}catch(e){}
-    try{document.documentElement.removeAttribute('data-mesaha-terminal-mode');document.documentElement.removeAttribute('data-mesaha-terminal-cloud');window.dispatchEvent(new CustomEvent('mesaha:hard-logout',{detail:{source:'google-auth-v69'}}))}catch(e){}
+    try{window.dispatchEvent(new CustomEvent('mesaha:auth-signed-out',{detail:{source:'google-auth-v96',localDataPreserved:true}}))}catch(e){}
   }
   function applyIdentity(x,options){
     options=options||{};
@@ -183,24 +204,24 @@
       ['ekipNot','panelNameV316'].forEach(function(id){var el=document.getElementById(id);if(el){if(clean(el.value)!==name)changed=true;el.value=name;el.readOnly=true;el.setAttribute('aria-readonly','true')}});
       ['seflik','panelSeflikV316'].forEach(function(id){var el=document.getElementById(id);if(el){el.readOnly=false;el.disabled=false;el.removeAttribute('readonly');el.removeAttribute('aria-readonly');el.removeAttribute('disabled');el.classList.remove('readonly','locked','google-locked')}});
       var badge=document.getElementById('userBadge');if(badge){badge.textContent=name;badge.classList.remove('login-needed')}
-      try{clearTerminalMode();ensureTerminalCodePanel()}catch(e){}
+      try{clearTerminalMode();clearReturnSnapshot();ensureTerminalCodePanel()}catch(e){}
       if(changed&&!options.silent){try{window.dispatchEvent(new CustomEvent('mesaha:google-access-approved',{detail:x}));window.dispatchEvent(new Event('mesaha:settings-saved'))}catch(e){}}
       return true;
     }finally{identityBusy=false}
   }
   function enforceCanonicalSoon(){var x=approvedAccess();if(!x||x.status!=='approved')return;setTimeout(function(){applyIdentity(x,{silent:true})},30)}
   function style(){if(document.getElementById('mesaha-google-auth-v548-style'))return;var s=document.createElement('style');s.id='mesaha-google-auth-v548-style';s.textContent='\
-#firstLoginOverlayV321{display:none!important}.google-auth-v548{position:fixed;inset:0;z-index:2147483600;background:linear-gradient(155deg,rgba(240,253,244,.98),rgba(239,246,255,.98));display:flex;align-items:center;justify-content:center;padding:18px;font-family:inherit}.google-auth-v548.hidden{display:none!important}html[data-suite-managed="1"] #googleAuthOverlayV548.google-auth-v548:not(.hidden){display:flex!important;visibility:visible!important;pointer-events:auto!important}.google-auth-card-v548{width:min(460px,100%);max-height:calc(100dvh - 36px);overflow:auto;background:#fff;border:1px solid #dbeafe;border-radius:28px;padding:24px;box-shadow:0 30px 90px rgba(15,23,42,.22);color:#0f172a}.google-auth-brand-v548{display:flex;gap:13px;align-items:center;margin-bottom:17px}.google-auth-brand-v548 img{width:58px;height:58px;object-fit:contain}.google-auth-brand-v548 h2{font-size:23px;margin:0}.google-auth-brand-v548 p{margin:4px 0 0;color:#64748b;font-weight:700;font-size:13px}.google-auth-status-v548{border-radius:18px;padding:14px;margin:12px 0;background:#f8fafc;border:1px solid #e2e8f0;line-height:1.45;font-weight:750;font-size:14px}.google-auth-status-v548.pending{background:#fffbeb;border-color:#fde68a;color:#92400e}.google-auth-status-v548.denied{background:#fef2f2;border-color:#fecaca;color:#991b1b}.google-auth-status-v548.ok{background:#f0fdf4;border-color:#bbf7d0;color:#166534}.google-auth-btn-v548{width:100%;min-height:54px;border:0;border-radius:17px;padding:12px 15px;font-size:16px;font-weight:950;margin-top:10px;cursor:pointer}.google-auth-btn-v548.primary{background:#fff;color:#1f2937;border:1px solid #cbd5e1;box-shadow:0 8px 22px rgba(15,23,42,.09)}.google-auth-btn-v548.primary:before{content:"G";display:inline-grid;place-items:center;width:27px;height:27px;margin-right:10px;border-radius:50%;font-size:18px;color:#2563eb;background:#eff6ff}.google-auth-btn-v548.green{background:#16a34a;color:#fff}.google-auth-btn-v548.subtle{background:#f1f5f9;color:#334155}.google-auth-btn-v548.danger{background:#fff1f2;color:#be123c}.google-auth-btn-v548:disabled{opacity:.55;cursor:wait}.google-auth-fields-v548{display:grid;gap:11px;margin:14px 0}.google-auth-fields-v548 label{font-weight:900;font-size:13px}.google-auth-fields-v548 input{box-sizing:border-box;width:100%;margin-top:6px;min-height:50px;border:1px solid #cbd5e1;border-radius:15px;padding:12px;font:inherit;font-weight:800}.google-auth-email-v548{overflow-wrap:anywhere;font-size:12px;color:#475569;text-align:center;margin:10px 0}.google-auth-note-v548{font-size:12px;color:#64748b;line-height:1.45;margin:13px 0 0}.terminal-code-v557{font-size:34px;font-weight:1000;letter-spacing:3px;text-align:center;border:1px dashed #93c5fd;border-radius:18px;background:#eff6ff;color:#1d4ed8;padding:18px;margin:12px 0}.terminal-code-panel-v557{border:1px solid #bfdbfe;background:#eff6ff;border-radius:18px;padding:12px;margin:12px 0;color:#1e3a8a}.terminal-code-panel-v557 b{font-size:15px}.terminal-code-panel-v557 p{font-size:12px;line-height:1.45;margin:6px 0 10px;color:#475569;font-weight:750}.google-auth-spinner-v548{width:24px;height:24px;border:3px solid #dbeafe;border-top-color:#2563eb;border-radius:50%;animation:googleSpinV548 .8s linear infinite;margin:8px auto}@keyframes googleSpinV548{to{transform:rotate(360deg)}}';document.head.appendChild(s)}
+#firstLoginOverlayV321{display:none!important}.google-auth-v548{position:fixed;inset:0;z-index:2147483600;background:linear-gradient(155deg,rgba(240,253,244,.98),rgba(239,246,255,.98));display:flex;align-items:flex-start;justify-content:center;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;scroll-padding-bottom:140px;padding:max(14px,env(safe-area-inset-top)) 18px max(18px,env(safe-area-inset-bottom));font-family:inherit}.google-auth-v548.hidden{display:none!important}html[data-suite-managed="1"] #googleAuthOverlayV548.google-auth-v548:not(.hidden){display:flex!important;visibility:visible!important;pointer-events:auto!important}.google-auth-card-v548{width:min(460px,100%);max-height:none;overflow:visible;margin:auto 0;background:#fff;border:1px solid #dbeafe;border-radius:28px;padding:24px;box-shadow:0 30px 90px rgba(15,23,42,.22);color:#0f172a}.google-auth-brand-v548{display:flex;gap:13px;align-items:center;margin-bottom:17px}.google-auth-brand-v548 img{width:58px;height:58px;object-fit:contain}.google-auth-brand-v548 h2{font-size:23px;margin:0}.google-auth-brand-v548 p{margin:4px 0 0;color:#64748b;font-weight:700;font-size:13px}.google-auth-status-v548{border-radius:18px;padding:14px;margin:12px 0;background:#f8fafc;border:1px solid #e2e8f0;line-height:1.45;font-weight:750;font-size:14px}.google-auth-status-v548.pending{background:#fffbeb;border-color:#fde68a;color:#92400e}.google-auth-status-v548.denied{background:#fef2f2;border-color:#fecaca;color:#991b1b}.google-auth-status-v548.ok{background:#f0fdf4;border-color:#bbf7d0;color:#166534}.google-auth-btn-v548{width:100%;min-height:54px;border:0;border-radius:17px;padding:12px 15px;font-size:16px;font-weight:950;margin-top:10px;cursor:pointer}.google-auth-btn-v548.primary{background:#fff;color:#1f2937;border:1px solid #cbd5e1;box-shadow:0 8px 22px rgba(15,23,42,.09)}.google-auth-btn-v548.primary:before{content:"G";display:inline-grid;place-items:center;width:27px;height:27px;margin-right:10px;border-radius:50%;font-size:18px;color:#2563eb;background:#eff6ff}.google-auth-btn-v548.green{background:#16a34a;color:#fff}.google-auth-btn-v548.subtle{background:#f1f5f9;color:#334155}.google-auth-btn-v548.terminal-continue-v96{background:#eaf7ef;color:#14532d;border:1px solid #bbf7d0}.google-auth-btn-v548.danger{background:#fff1f2;color:#be123c}.google-auth-btn-v548:disabled{opacity:.55;cursor:wait}.google-auth-fields-v548{display:grid;gap:11px;margin:14px 0}.google-auth-fields-v548 label{font-weight:900;font-size:13px}.google-auth-fields-v548 input{box-sizing:border-box;width:100%;margin-top:6px;min-height:50px;border:1px solid #cbd5e1;border-radius:15px;padding:12px;font:inherit;font-weight:800}.google-auth-email-v548{overflow-wrap:anywhere;font-size:12px;color:#475569;text-align:center;margin:10px 0}.google-auth-note-v548{font-size:12px;color:#64748b;line-height:1.45;margin:13px 0 0}.terminal-code-v557{font-size:34px;font-weight:1000;letter-spacing:3px;text-align:center;border:1px dashed #93c5fd;border-radius:18px;background:#eff6ff;color:#1d4ed8;padding:18px;margin:12px 0}.terminal-code-panel-v557{border:1px solid #bfdbfe;background:#eff6ff;border-radius:18px;padding:12px;margin:12px 0;color:#1e3a8a}.terminal-code-panel-v557 b{font-size:15px}.terminal-code-panel-v557 p{font-size:12px;line-height:1.45;margin:6px 0 10px;color:#475569;font-weight:750}@media(max-height:720px){.google-auth-v548{justify-content:flex-start}.google-auth-card-v548{margin:0 auto 18px}.google-auth-brand-v548{margin-bottom:10px}.google-auth-status-v548{margin:8px 0}.google-auth-btn-v548{min-height:50px}}.google-auth-spinner-v548{width:24px;height:24px;border:3px solid #dbeafe;border-top-color:#2563eb;border-radius:50%;animation:googleSpinV548 .8s linear infinite;margin:8px auto}@keyframes googleSpinV548{to{transform:rotate(360deg)}}';document.head.appendChild(s)}
   function ensure(){
     style();if(overlay)return overlay;overlay=document.createElement('div');overlay.id='googleAuthOverlayV548';overlay.className='google-auth-v548 hidden';overlay.setAttribute('role','dialog');overlay.setAttribute('aria-modal','true');overlay.innerHTML='<div class="google-auth-card-v548"><div class="google-auth-brand-v548"><img src="'+logoUrl()+'" alt=""><div><h2>Mesaha İO Güvenli Giriş</h2><p>Kimliğin Google hesabınla doğrulanır.</p></div></div><div id="googleAuthBodyV548"></div></div>';document.body.appendChild(overlay);return overlay
   }
   function show(html){ensure();var b=document.getElementById('googleAuthBodyV548');if(b)b.innerHTML=html;overlay.classList.remove('hidden');bindActions()}
   function hide(){if(overlay)overlay.classList.add('hidden')}
-  function button(action,text,kind){return'<button type="button" class="google-auth-btn-v548 '+(kind||'subtle')+'" data-google-action-v548="'+esc(action)+'">'+esc(text)+'</button>'}
+  function button(action,text,kind){var extra=action==='terminal-save'?' terminal-continue-v96':'';return'<button type="button" class="google-auth-btn-v548 '+(kind||'subtle')+extra+'" data-google-action-v548="'+esc(action)+'">'+esc(text)+'</button>'}
   function loading(text){show('<div class="google-auth-spinner-v548"></div><div class="google-auth-status-v548">'+esc(text||'Kontrol ediliyor…')+'</div>')}
   function bindActions(){document.querySelectorAll('[data-google-action-v548]').forEach(function(el){if(el.__ga548)return;el.__ga548=true;el.addEventListener('click',function(){handle(el.getAttribute('data-google-action-v548')).catch(fail)})})}
   function friendlyError(e){var msg=clean(e&&e.message||e||'İşlem başarısız');if(/email_exists|already been registered|already registered/i.test(msg))return 'Bu Google e-postası sistemde zaten kayıtlı. Eski anonim oturumu bağlamak yerine doğrudan Google hesabıyla yeniden giriş yapılacak.';if(/failed to fetch|networkerror|load failed|network request failed/i.test(msg))return 'Bağlantı kısa süreli kesildi. İnternet bağlantısını kontrol edip Tekrar dene butonuna bas.';return msg}
-  function fail(e){loginLog('google_auth_fail',{error:e,message:e&&e.message,code:e&&e.code,canPlainGoogle:!!(e&&e.canPlainGoogle)},'error');BUSY=false;var msg=friendlyError(e),primary=(e&&e.canPlainGoogle)?button('google','Google ile tekrar giriş yap','primary'):button('refresh','Tekrar dene','primary');show('<div class="google-auth-status-v548 denied"><b>İşlem tamamlanamadı</b><br>'+esc(msg)+'</div>'+primary+(session()?button('logout','Bu Google oturumundan çık','subtle'):'') )}
+  function fail(e){loginLog('google_auth_fail',{error:e,message:e&&e.message,code:e&&e.code,canPlainGoogle:!!(e&&e.canPlainGoogle)},'error');BUSY=false;var restored=restoreReturnSnapshot(),msg=friendlyError(e),primary=(e&&e.canPlainGoogle)?button('google','Google ile tekrar giriş yap','primary'):button('refresh','Tekrar dene','primary'),back=(restored||isTerminalMode()||getReturnSnapshot())?button('terminal-return','Terminal moduna geri dön','subtle'):'';show('<div class="google-auth-status-v548 denied"><b>İşlem tamamlanamadı</b><br>'+esc(msg)+'</div>'+primary+back+(session()?button('logout','Bu Google oturumundan çık','subtle'):'') )}
   function decodeJwtUser(token){try{var part=String(token||'').split('.')[1];if(!part)return null;part=part.replace(/-/g,'+').replace(/_/g,'/');while(part.length%4)part+='=';var bin=atob(part),bytes=new Uint8Array(bin.length);for(var i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);var payload=JSON.parse(new TextDecoder().decode(bytes));if(!payload||!payload.sub)return null;return{id:String(payload.sub),email:clean(payload.email),aud:payload.aud||'authenticated',role:payload.role||'authenticated',app_metadata:payload.app_metadata||{},user_metadata:payload.user_metadata||{},is_anonymous:payload.is_anonymous===true,identities:[]}}catch(e){return null}}
   async function getAuthUser(token){var local=decodeJwtUser(token);if(local)return local;var c=cfg(),ctrl=typeof AbortController!=='undefined'?new AbortController():null,timer=ctrl?setTimeout(function(){ctrl.abort()},10000):0;try{var r=await fetch(c.url+'/auth/v1/user',{headers:{apikey:c.anonKey,Authorization:'Bearer '+token},cache:'no-store',signal:ctrl&&ctrl.signal}),t=await r.text(),j={};try{j=t?JSON.parse(t):{}}catch(e){}if(!r.ok||!j.id)throw new Error(j.message||'Google kullanıcı bilgisi alınamadı');return j}catch(e){throw new Error(/abort/i.test(clean(e&&e.name||e))?'Google oturum doğrulaması zaman aşımına uğradı.':friendlyError(e))}finally{if(timer)clearTimeout(timer)}}
   async function consumeCallback(){
@@ -209,14 +230,10 @@
     if(errCode||errDesc){
       loginLog('consume_callback_error_url',{error_code:errCode,error_description:errDesc},'error');
       try{history.replaceState(null,document.title,redirectUrl())}catch(e){}
+      restoreReturnSnapshot();
       if(/email_exists|already_registered|already been registered/i.test(errCode+' '+errDesc)){
-        try{var a0=api();if(a0&&a0.clearSession)a0.clearSession()}catch(e){}
-        clearAccess();markPlainOauth(true);loginLog('email_exists_detected_session_cleared',{error_code:errCode,error_description:errDesc},'error');
-        if(!recentEmailExistsRetry()){
-          setEmailExistsRetry();loginLog('email_exists_auto_plain_retry',{redirectUrl:redirectUrl()},'info');
-          setTimeout(function(){goPlainOAuth('email_exists_auto_retry')},150);return true;
-        }
-        var ex=new Error('Bu Google e-postası sistemde zaten kayıtlı. Eski anonim oturum temizlendi; doğrudan Google hesabıyla giriş yapılacak.');
+        clearAccess();markPlainOauth(true);loginLog('email_exists_detected_preserved_local',{error_code:errCode,error_description:errDesc},'warning');
+        var ex=new Error('Bu Google e-postası sistemde zaten kayıtlı. Yerel terminal ve barkodlar korunuyor; istersen Google ile tekrar deneyebilirsin.');
         ex.code='email_exists';ex.canPlainGoogle=true;throw ex;
       }
       var er=new Error(errDesc||errCode||'Google girişi tamamlanamadı');er.code=errCode;throw er;
@@ -244,15 +261,26 @@
   }
   async function beginGoogle(){
     loginLog('begin_google_click',{hasSession:!!session(),isAnon:isAnon(),plainNeeded:plainOauthNeeded(),redirectUrl:redirectUrl()},'info');
-    if(BUSY)return;BUSY=true;var a=api(),redir=redirectUrl(),path,plain=plainOauthNeeded();
-    if(session()&&isAnon()&&!plain){
-      loginLog('anon_session_plain_google_fallback',{reason:'identity_link_fetch_removed_v568',redirectUrl:redir},'info');
-      try{if(a&&a.clearSession)a.clearSession()}catch(e){}
-      markPlainOauth(true);plain=true;
+    if(BUSY)return;BUSY=true;
+    try{
+      /* V96: mevcut Google oturumu varsa yeniden OAuth'a gönderme. */
+      if(session()&&isGoogle()&&!plainOauthNeeded()){
+        var current=await accessStatus(true);renderAccess(current||{status:'unregistered',email:user().email});return true;
+      }
+      saveReturnSnapshot();
+      var a=api(),redir=redirectUrl(),path,plain=plainOauthNeeded();
+      if(session()&&isAnon()&&!plain){
+        loginLog('anon_session_plain_google_fallback',{reason:'identity_link_fetch_removed_v568',redirectUrl:redir},'info');
+        try{if(a&&a.clearSession)a.clearSession({preserveBackup:true})}catch(e){}
+        markPlainOauth(true);plain=true;
+      }
+      if(plain){try{if(a&&a.clearSession)a.clearSession({preserveBackup:true})}catch(e){}}
+      path='/auth/v1/authorize?provider=google&redirect_to='+encodeURIComponent(redir)+'&prompt=select_account';
+      var url2=await oauthStartUrl(path,'');loginLog('oauth_redirect_plain_google',{path:path,redirectUrl:redir,direct:true,preservedTerminal:!!getReturnSnapshot()},'info');location.assign(url2);return true;
+    }finally{
+      /* Yönlendirme olursa sayfa kapanır; mevcut Google oturumunu yeniden kullandıysak kilidi bırak. */
+      if(session()&&isGoogle())BUSY=false;
     }
-    if(plain){try{if(a&&a.clearSession)a.clearSession()}catch(e){}}
-    path='/auth/v1/authorize?provider=google&redirect_to='+encodeURIComponent(redir)+'&prompt=select_account';
-    var url2=await oauthStartUrl(path,'');loginLog('oauth_redirect_plain_google',{path:path,redirectUrl:redir,direct:true},'info');location.assign(url2);
   }
   async function rpcCompat(primary,fallback,params){try{return await rpc(primary,params)}catch(e){var msg=clean(e&&e.message||e);if(/could not find the function|schema cache|does not exist|SQL kurulumu eksik/i.test(msg)){loginLog('rpc_compat_fallback',{primary:primary,fallback:fallback,message:msg},'warning');return await rpc(fallback,params)}throw e}}
   async function accessStatus(force){
@@ -288,8 +316,8 @@
   }
   async function requestAccess(data){loginLog('request_access_click',{auto:!!data},'info');data=data||{};var n=document.getElementById('googleRequestNameV548'),s=document.getElementById('googleRequestSeflikV548'),gName=googleDisplayName(),name=clean(gName||data.name||n&&n.value),seflik=clean(data.seflik||s&&s.value||'Dosya');if(clean(name).length<2)throw new Error('Google ad-soyad alınamadı. Ad soyad girin.');loading('Google hesabı kullanıcıya tanımlanıyor…');loginLog('request_access_send',{name:name,seflik:seflik,googleFullName:gName,googleAvatarUrl:googleAvatarUrl(),auto:true},'info');var out=await rpcCompat('mesaha_google_access_request_v560','mesaha_google_access_request_v557',{p_name:name,p_seflik:seflik,p_device_info:deviceInfo(),p_app_version:(window.MESAHA_VERSION||{}).visibleVersion||'Mesaha İO',p_google_full_name:gName});renderAccess(out.access||out)}
   
-  async function logout(options){options=options||{};loginLog('logout_start',{},'info');loading('Oturum kapatılıyor…');try{await api().signOut('global')}catch(e){try{api().clearSession({preserveBackup:false})}catch(_e){}}hardClearAuthState();clearAccess();if(options.redirect===false)return true;location.replace(redirectUrl()+'?open=account&signed_out=1&t='+Date.now());return true}
-  async function handle(action){if(action==='google'){clearTerminalMode();return beginGoogle()}if(action==='terminal')return terminalForm();if(action==='terminal-save')return saveTerminalFromForm();if(action==='terminal-claim')return claimTerminalCode();if(action==='terminal-code-copy')return copyText(lastTerminalCode).then(function(){try{if(typeof window.mesahaFloatToastV315==='function')window.mesahaFloatToastV315('Kod kopyalandı',lastTerminalCode,'success')}catch(e){}});if(action==='terminal-code-close'){hide();ensureTerminalCodePanel();return true}if(action==='refresh')return boot(true);if(action==='request')return requestAccess();if(action==='request-form')return renderAccess({status:'unregistered',email:user().email});if(action==='logout')return logout()}
+  async function logout(options){options=options||{};loginLog('logout_start',{},'info');loading('Oturum kapatılıyor…');try{saveReturnSnapshot()}catch(e){}try{await api().signOut('global')}catch(e){try{api().clearSession({preserveBackup:false})}catch(_e){}}hardClearAuthState();clearAccess();restoreReturnSnapshot();clearReturnSnapshot();if(options.redirect===false){hide();return true;}location.replace(redirectUrl()+'?open=account&signed_out=1&t='+Date.now());return true}
+  async function handle(action){if(action==='google')return beginGoogle();if(action==='terminal')return terminalForm();if(action==='terminal-save')return saveTerminalFromForm();if(action==='terminal-return'){try{var a=api();if(a&&a.clearSession)a.clearSession({preserveBackup:false})}catch(e){}clearAccess();restoreReturnSnapshot();clearReturnSnapshot();hide();return true}if(action==='terminal-claim')return claimTerminalCode();if(action==='terminal-code-copy')return copyText(lastTerminalCode).then(function(){try{if(typeof window.mesahaFloatToastV315==='function')window.mesahaFloatToastV315('Kod kopyalandı',lastTerminalCode,'success')}catch(e){}});if(action==='terminal-code-close'){hide();ensureTerminalCodePanel();return true}if(action==='refresh')return boot(true);if(action==='request')return requestAccess();if(action==='request-form')return renderAccess({status:'unregistered',email:user().email});if(action==='logout')return logout()}
     async function bootCore(force){
     loginLog('boot_core_start',{force:!!force,hasSession:!!session(),isGoogle:isGoogle(),terminalMode:isTerminalMode(),url:location.href},'info');
     if(isTerminalMode()&&!hasAuthCallback()){ensure();hide();try{var td=terminalData();writeTerminalIdentity(td)}catch(_te){}loginLog('terminal_mode_boot_skip_google',{},'info');return false}
@@ -302,7 +330,7 @@
   window.MesahaGoogleAuthV548={boot:boot,status:accessStatus,access:function(){return currentAccess||cached()},isApproved:function(){var x=currentAccess||cached();return !!(x&&x.status==='approved')},openGoogle:function(){return handle('google')},openTerminal:function(){ensure();return terminalForm()},createTerminalCode:createTerminalCode,claimTerminalCode:claimTerminalCode,listTerminalSessions:listTerminalSessionsV577,revokeTerminalSession:revokeTerminalSessionV577,logout:logout};
   function start(){if(window.MESAHA_SUITE_AUTH_MODE===true)return;boot(false).catch(fail)}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
-  window.addEventListener('mesaha:google-auth-required',function(e){try{var d=e&&e.detail||{};if(d.access)cacheAccess(d.access);if(!session()||!isGoogle()||d.forceGoogle===true){clearTerminalMode();beginGoogle().catch(fail);return}var aa=approvedAccess();if(aa&&aa.status==='approved'){applyIdentity(aa,{silent:true});hide();return}boot(true).catch(fail)}catch(_e){}},{passive:true});
+  window.addEventListener('mesaha:google-auth-required',function(e){try{var d=e&&e.detail||{};if(d.access)cacheAccess(d.access);if(!session()||!isGoogle()||d.forceGoogle===true){beginGoogle().catch(fail);return}var aa=approvedAccess();if(aa&&aa.status==='approved'){applyIdentity(aa,{silent:true});hide();return}boot(true).catch(fail)}catch(_e){}},{passive:true});
   window.addEventListener('mesaha:auth-session-restored',function(){try{var aa=approvedAccess();if(aa&&aa.status==='approved'){applyIdentity(aa,{silent:true});hide();}boot(true).catch(function(){})}catch(e){}},{passive:true});
   window.addEventListener('online',function(){var x=approvedAccess();if(!x||x.status!=='approved')boot(true).catch(function(){})},{passive:true});
   ['mesaha:storage-recovered','mesaha:identity-restored','mesaha:user-login'].forEach(function(name){window.addEventListener(name,enforceCanonicalSoon,{passive:true})});

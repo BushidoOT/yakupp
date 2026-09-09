@@ -1,20 +1,20 @@
 (function (root) {
   "use strict";
   const DATA = /*MESAHA_RELEASE_DATA_START*/{
-  "build": 95,
-  "version": "95.0.0",
+  "build": 96,
+  "version": "96.0.0",
   "channel": "stable",
-  "releasedAt": "2026-09-08T17:58:00+03:00",
-  "assetToken": "orman-io-stable-20260908-v95",
-  "cacheName": "orman-io-shell-stable-20260908-v95",
+  "releasedAt": "2026-09-09T13:50:00+03:00",
+  "assetToken": "orman-io-stable-20260909-v96",
+  "cacheName": "orman-io-shell-stable-20260909-v96",
   "apps": {
     "suite": {
       "label": "Orman İO",
-      "version": "95.0.0"
+      "version": "96.0.0"
     },
     "mesaha": {
       "label": "Mesaha İO",
-      "version": "6.34"
+      "version": "6.35"
     },
     "istif": {
       "label": "İstif İO",
@@ -22,10 +22,10 @@
     },
     "admin": {
       "label": "Orman İO Yönetim",
-      "version": "95.0.0"
+      "version": "96.0.0"
     }
   },
-  "description": "V95: Mesaha girişine isteğe bağlı ölçü kontrol uyarıları eklendi. Çap 9 cm ve altı, çap 100 cm ve üstü veya boy 10 m ve üstü olduğunda kayıt öncesi onay penceresi açılır; kullanıcı onaylarsa kayıt devam eder. Üç uyarı Ayarlar bölümünden ayrı ayrı kapatılıp açılabilir ve varsayılan olarak açıktır."
+  "description": "V96: Şeflik Klasörü Google giriş akışı güvenli hale getirildi. Giriş öncesi Devam Et/Geri Dön onayı eklendi; başarısız veya iptal edilen Google girişinde terminal modu ve yerel şeflik bağlamı korunur. Mesaha kayıt deposuna kullanıcı onayı dışında boşaltmayı engelleyen koruma eklendi ve ilk giriş ekranı mobilde kaydırılabilir hale getirildi."
 }/*MESAHA_RELEASE_DATA_END*/;
   const APP_NAMES = DATA.apps || {};
   const SCRIPT_URL = (() => {
