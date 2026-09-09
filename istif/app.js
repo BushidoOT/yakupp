@@ -851,6 +851,7 @@ function normalizeDeletedRecordTombstones(value) {
   Object.entries(items || {}).forEach(([id, item]) => {
     const key = clean(id || item?.id);
     if (!key) return;
+    if (clean(item?.reason) === "server_authoritative_missing") return; // V97: eski otomatik silme izlerini geçersiz say.
     output[key] = {
       id: key,
       deletedAt: clean(item?.deletedAt || item?.deleted_at) || new Date().toISOString(),
@@ -3754,6 +3755,9 @@ function normalizeRemoteRecord(row) {
     updatedAt: clean(row.updated_at || row.updatedAt || row.created_at || row.createdAt || ""),
     remoteRevision: remoteRecordRevision(row, driveFiles),
     remoteOnly: true,
+    serverMissing: false,
+    serverMissingAt: "",
+    serverMissingReason: "",
   };
 }
 
@@ -3794,9 +3798,16 @@ async function mergeRemoteRecords(remoteRows = [], { authoritative = false } = {
       const sameFolder = (activeKey && clean(localRecord.seflikKey || stableKey(localRecord.seflik)) === activeKey) || (activeName && sameSeflikLabel(localRecord.seflik, activeName));
       const pending = clean(localRecord.syncStatus) && clean(localRecord.syncStatus) !== "synced";
       if (sameFolder && !pending) {
-        releaseRecordBlobUrls(localRecord);
-        await deleteRecordWithTombstone(localRecord, "server_authoritative_missing");
-        localById.delete(localRecord.id);
+        /* V97 ARAZI KORUMASI: Sunucuda görünmeyen kayıt yerelden otomatik silinmez. */
+        const preserved = {
+          ...localRecord,
+          serverMissing: true,
+          serverMissingAt: new Date().toISOString(),
+          serverMissingReason: "server_authoritative_missing",
+          syncStatus: "synced",
+        };
+        await idbPut("records", preserved);
+        localById.set(preserved.id, preserved);
         changed += 1;
       }
     }

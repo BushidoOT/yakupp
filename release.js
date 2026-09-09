@@ -1,31 +1,31 @@
 (function (root) {
   "use strict";
   const DATA = /*MESAHA_RELEASE_DATA_START*/{
-  "build": 96,
-  "version": "96.0.0",
+  "build": 97,
+  "version": "97.0.0",
   "channel": "stable",
-  "releasedAt": "2026-09-09T13:50:00+03:00",
-  "assetToken": "orman-io-stable-20260909-v96",
-  "cacheName": "orman-io-shell-stable-20260909-v96",
+  "releasedAt": "2026-09-09T17:10:00+03:00",
+  "assetToken": "orman-io-stable-20260909-v97",
+  "cacheName": "orman-io-shell-stable-20260909-v97",
   "apps": {
     "suite": {
       "label": "Orman İO",
-      "version": "96.0.0"
+      "version": "97.0.0"
     },
     "mesaha": {
       "label": "Mesaha İO",
-      "version": "6.35"
+      "version": "6.36"
     },
     "istif": {
       "label": "İstif İO",
-      "version": "0.3.30"
+      "version": "0.3.31"
     },
     "admin": {
       "label": "Orman İO Yönetim",
-      "version": "96.0.0"
+      "version": "97.0.0"
     }
   },
-  "description": "V96: Şeflik Klasörü Google giriş akışı güvenli hale getirildi. Giriş öncesi Devam Et/Geri Dön onayı eklendi; başarısız veya iptal edilen Google girişinde terminal modu ve yerel şeflik bağlamı korunur. Mesaha kayıt deposuna kullanıcı onayı dışında boşaltmayı engelleyen koruma eklendi ve ilk giriş ekranı mobilde kaydırılabilir hale getirildi."
+  "description": "V97: Arazi veri güvenliği sertleştirildi. Mesaha ve İstif kayıtları sunucu listesi eksikliği, oturum değişimi veya şeflikten ayrılma nedeniyle otomatik silinmez. Mesaha kayıt deposunda otomatik kayıt azalması engellenir, üçlü kalıcı kopya kurtarmada güvenli birleştirilir, sayfa kapanışında acil snapshot alınır ve Service Worker Mesaha saha paketinin tamamını atomik olarak offline hazır etmeden aktive olmaz."
 }/*MESAHA_RELEASE_DATA_END*/;
   const APP_NAMES = DATA.apps || {};
   const SCRIPT_URL = (() => {

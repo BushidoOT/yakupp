@@ -945,7 +945,7 @@
     try {
       const storage = window.MesahaStorageV527;
       if (storage && typeof storage.replaceAll === "function") {
-        const result = await storage.replaceAll(records, settings, { reason: "workspace-v92-" + clean(reason || "switch") });
+        const result = await storage.replaceAll(records, settings, { reason: "workspace-v97-" + clean(reason || "switch"), allowEmpty: true, workspaceSafe: true });
         if (result && result.ok === false) throw new Error(result.error || "Şeflik çalışma alanı yüklenemedi");
       } else {
         write(K.records, records);
@@ -996,7 +996,15 @@
       if (existing) return restoreMesahaWorkspace(next, reason || "startup");
       const current = await committedMesahaRecords();
       const affinity = mesahaRowsAffinity(current, next.seflik);
-      if (current.length && !affinity.explicitMatch) return restoreMesahaWorkspace(next, reason || "startup-isolate");
+      if (current.length && !affinity.explicitMatch) {
+        /* V97: aktif şeflik anahtarı kaybolmuş olsa bile mevcut saha kayıtlarını
+           yeni boş çalışma alanına geçmeden önce kendi şeflik etiketiyle arşivle. */
+        const tagged = current.find((row) => clean(row && (row.seflik || row.seflikAdi || row.seflik_adi)));
+        const sourceSeflik = clean(tagged && (tagged.seflik || tagged.seflikAdi || tagged.seflik_adi));
+        const sourceKey = sourceSeflik ? store.folderKey(sourceSeflik) : "recovery-local-v97";
+        if (sourceKey && sourceKey !== next.key) await store.saveWorkspace(sourceKey, sourceSeflik || "Kurtarma", current, read(K.settings, {}));
+        return restoreMesahaWorkspace(next, reason || "startup-isolate");
+      }
       await store.saveWorkspace(next.key, next.seflik, current, read(K.settings, {}));
       return true;
     });
@@ -1192,10 +1200,12 @@
         const yieldStore = read(K.yieldTargets, {});
         for (const [no, oldRow] of oldByNo.entries()) {
           if (!no || nextNos.has(no) || (oldRow && (oldRow.pending || oldRow.local_pending))) continue;
-          delete folderRecords[no];
-          await deleteDivisionRecords(key, no);
-          delete readyStore[`${key}::${no}`];
-          delete yieldStore[`${key}::${no}`];
+          /* V97 ARAZI KORUMASI: Sunucu listesinde görünmeyen bölmenin cihazdaki
+             kayıtlarını otomatik silme. Aktif listeden düşebilir ama offline kayıt
+             arşivi cihazda kalır ve yeniden gelirse tekrar kullanılabilir. */
+          const readyKey = `${key}::${no}`;
+          readyStore[readyKey] = { ...(readyStore[readyKey] || {}), archived: true, archivedAt: now(), reason: "server-list-missing-v97" };
+          if (yieldStore[readyKey] && typeof yieldStore[readyKey] === "object") yieldStore[readyKey] = { ...yieldStore[readyKey], archived: true, archivedAt: now() };
         }
         write(K.ready, readyStore);
         write(K.yieldTargets, yieldStore);
@@ -1724,9 +1734,14 @@
   async function istifTombstoneIds() {
     const settings = await idbAll("settings");
     const row = settings.find((item) => item && item.key === K.istifTombstones);
-    return new Set(Object.keys(tombstoneItems(row && row.value)).map(clean).filter(Boolean));
+    const items = tombstoneItems(row && row.value);
+    return new Set(Object.entries(items || {}).filter(([, item]) => clean(item && item.reason) !== "server_authoritative_missing").map(([id]) => clean(id)).filter(Boolean));
   }
   async function deleteIstifWithTombstone(record, reason) {
+    reason = clean(reason || "user_delete");
+    if (!/(^|[-_:])(user-delete|user_delete|manual-delete|manual_delete|confirmed-delete|confirmed_delete)([-_:]|$)/i.test(reason)) {
+      return false; // V97: sunucu eksikliği veya otomatik senkron hiçbir zaman yerel İstif kaydı silemez.
+    }
     const id = clean(record && record.id);
     if (!id) return false;
     const db = await openDb();
@@ -1749,7 +1764,7 @@
           seflik: clean(record.seflik),
           bolme: clean(record.bolme || record.bolmeNo || record.bolme_no),
           istifNo: clean(record.istifNo || record.istif_no),
-          reason: clean(reason || "server_authoritative_missing"),
+          reason: clean(reason || "user_delete"),
         };
         tx.objectStore("records").delete(id);
         settingsStore.put({
@@ -2105,6 +2120,9 @@
       updatedAt: clean(row.updated_at || row.updatedAt || row.created_at || row.createdAt),
       remoteRevision: remoteIstifRevision(row, driveFiles),
       remoteOnly: true,
+      serverMissing: false,
+      serverMissingAt: "",
+      serverMissingReason: "",
     };
   }
   function authoritativeSyncResponse(out) {
@@ -2163,9 +2181,10 @@
       const sameFolder = (seflikKey && localKey === seflikKey) || (seflik && fold(localRecord.seflik) === fold(seflik));
       const pending = clean(localRecord.syncStatus) && clean(localRecord.syncStatus) !== "synced";
       if (sameFolder && !pending) {
-        await deleteIstifWithTombstone(localRecord, "server_authoritative_missing");
-        deletedIds.add(clean(localRecord.id));
-        byId.delete(clean(localRecord.id));
+        /* V97: Sunucu listesinde görünmemek cihazdaki İstif kaydını silme sebebi değildir. */
+        const preserved = { ...localRecord, serverMissing: true, serverMissingAt: now(), serverMissingReason: "server_authoritative_missing", syncStatus: "synced" };
+        await idbPut("records", preserved);
+        byId.set(clean(preserved.id), preserved);
         changed++;
       }
     }
@@ -2855,7 +2874,7 @@
       let saved = { ok: true };
       const store = window.MesahaStorageV527;
       if (store && typeof store.replaceAll === "function") {
-        saved = await store.replaceAll(result, settings, { reason: "drive-restore-v94-" + (mode || "merge") });
+        saved = await store.replaceAll(result, settings, { reason: "drive-restore-v94-" + (mode || "merge"), allowDataLoss: mode === "replace", userAction: true });
       } else {
         const recordsOk = write(K.records, result);
         const settingsOk = write(K.settings, settings);

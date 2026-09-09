@@ -1691,55 +1691,34 @@
     const st = settings(); st.seflik = ""; st.seflikKey = ""; st.seflik_key = ""; st.bolmeNo = ""; write(K.settings, st);
     try { window.dispatchEvent(new Event("mesaha:seflik-folder-active-changed")); } catch {}
   }
-  function purgeFolderLocalCaches(folder) {
+  async function preserveFolderLocalCachesV97(folder) {
     const key = clean(folder && (folder.seflik_key || folder.seflikKey)) || stableKey(folder && folder.seflik);
-    if (!key) return;
-    delete foresters[key]; delete divisions[key];
-    Object.keys(divisionReady).forEach((k) => { if (k === key || k.startsWith(key + "::")) delete divisionReady[k]; });
-    Object.keys(divisionRecords).forEach((k) => { if (k === key || k.startsWith(key + "::")) delete divisionRecords[k]; });
-    const targets = read(K.yieldTargets, {}); Object.keys(targets).forEach((k) => { if (k === key || k.startsWith(key + "::")) delete targets[k]; }); write(K.yieldTargets, targets);
-    pendingOps = pendingOps.filter((item) => {
-      const p = item && item.payload || {};
-      return clean(p.seflik_key || p.seflikKey) !== key && clean(p.seflik).toLocaleLowerCase("tr-TR") !== clean(folder.seflik).toLocaleLowerCase("tr-TR");
-    });
-    write(K.pendingOps, pendingOps);
-    try { localStorage.removeItem("mesaha_istif_last_bolme_v14::" + key); } catch {}
-    /* V92: ayrılan şefliğin cache'i hedefli silinir. Mesaha'nın ortak IndexedDB
-       veritabanını komple silmek diğer şefliklerin offline çalışma alanlarını yok ediyordu. */
+    if (!key) return false;
+    /* V97 ARAZI KORUMASI:
+       Şeflik üyeliğinden çıkmak cihazdaki saha verisini silme işlemi değildir.
+       Mesaha/İstif kayıtları, bölme cache'i ve çalışma alanı cihazda kalır. */
     try {
-      const store = window.OrmanOfflineStore;
-      if (store && store.schemaVersion >= 92) {
-        Promise.resolve(store.deleteFolder(key)).catch(() => {});
-        Promise.resolve(store.deleteWorkspace(key)).catch(() => {});
-      }
-      localStorage.setItem("cam_mesaha_kayitlari_v1", "[]");
-      ["cam_mesaha_kayitlari_v1_mirror_v515","cam_mesaha_kayitlari_v1_last_ok","cam_mesaha_kayitlari_v1_snapshot_v385","cam_mesaha_kayitlari_v1_mirror_meta_v515","mesaha_v527_records_meta"].forEach((k) => localStorage.removeItem(k));
       const persistent = window.MesahaStorageV527;
-      if (persistent && typeof persistent.replaceAll === "function")
-        Promise.resolve(persistent.replaceAll([], { ...(settings() || {}), seflik: "", seflikKey: "", seflik_key: "", bolmeNo: "" }, { reason: "leave-seflik-v92" })).catch(() => {});
-    } catch {}
-    try {
-      const request = indexedDB.open("mesaha-istif-prototype", 2);
-      request.onupgradeneeded = () => {
-        const db = request.result;
-        if (!db.objectStoreNames.contains("records"))
-          db.createObjectStore("records", { keyPath: "id" });
-        if (!db.objectStoreNames.contains("settings"))
-          db.createObjectStore("settings", { keyPath: "key" });
-      };
-      request.onsuccess = () => {
-        const db = request.result;
-        if (!db.objectStoreNames.contains("records")) { db.close(); return; }
-        const tx = db.transaction("records", "readwrite"), store = tx.objectStore("records"), cursor = store.openCursor();
-        cursor.onsuccess = () => {
-          const c = cursor.result; if (!c) return;
-          const row = c.value || {}, rowKey = clean(row.seflikKey || row.seflik_key) || stableKey(row.seflik);
-          if (rowKey === key) c.delete();
-          c.continue();
-        };
-        tx.oncomplete = () => db.close(); tx.onerror = () => db.close();
-      };
-    } catch {}
+      if (persistent && typeof persistent.flush === "function") await persistent.flush().catch(() => false);
+      const rows = persistent && typeof persistent.lastCommittedRecords === "function"
+        ? persistent.lastCommittedRecords()
+        : read(K.records, []);
+      const st = { ...(settings() || {}), seflik: clean(folder && folder.seflik), seflikKey: key, seflik_key: key };
+      const store = window.OrmanOfflineStore;
+      const tagged = (Array.isArray(rows) ? rows : []).filter((row) => clean(row && (row.seflik || row.seflikAdi || row.seflik_adi)));
+      const matches = tagged.filter((row) => clean(row && (row.seflik || row.seflikAdi || row.seflik_adi)).toLocaleLowerCase("tr-TR") === clean(folder && folder.seflik).toLocaleLowerCase("tr-TR"));
+      if (store && store.schemaVersion >= 92 && Array.isArray(rows) && (!tagged.length || matches.length)) {
+        await store.saveWorkspace(key, clean(folder && folder.seflik), rows, st).catch(() => false);
+      }
+      const archiveKey = "orman_io_detached_seflik_archive_v97";
+      const archive = read(archiveKey, {}) || {};
+      archive[key] = { seflik: clean(folder && folder.seflik), seflikKey: key, preservedAt: now(), recordCount: Array.isArray(rows) ? rows.length : 0 };
+      write(archiveKey, archive);
+      try { window.dispatchEvent(new CustomEvent("orman-io:local-field-data-preserved", { detail: archive[key] })); } catch {}
+    } catch (error) {
+      try { console.warn("[V97] Şeflik yerel arşivi hazırlanamadı; ana kayıt deposu silinmedi.", error); } catch {}
+    }
+    return true;
   }
   async function leaveSeflik() {
     if (busy) return;
@@ -1755,12 +1734,12 @@
       return clean(p.seflik_key || p.seflikKey) === key || clean(p.seflik).toLocaleLowerCase("tr-TR") === clean(folder.seflik).toLocaleLowerCase("tr-TR");
     });
     if (pendingForFolder) return toast("Bu şeflikte sunucuya gönderilmemiş işlem var. Önce Senkronize Et düğmesini kullanın.", true);
-    if (!confirm(folder.seflik + " şefliğinden ayrılmak istediğinize emin misiniz? Ortak kayıtlar sunucuda korunur; bu cihazdaki offline şeflik ve İstif kopyaları temizlenir.")) return;
+    if (!confirm(folder.seflik + " şefliğinden ayrılmak istediğinize emin misiniz? Üyelik kaldırılır; cihazdaki Mesaha/İstif saha kayıtları ve offline kopyalar silinmez.")) return;
     busy = true; renderSeflikModal();
     try {
       await edge("seflik_folder_leave", { seflik: folder.seflik, folderSeflik: folder.seflik, seflikKey: key });
       folders = folders.filter((f) => clean(f.seflik_key || f.seflikKey) !== key);
-      purgeFolderLocalCaches(folder);
+      await preserveFolderLocalCachesV97(folder);
       const next = creatorFolder() || folders.find((f) => f && !f.deleted) || null;
       clearActiveFolderContext(next);
       saveLocal();
@@ -1790,7 +1769,7 @@
       ? `<label class="suite-select-label">Aktif Şeflik<select id="suiteFolderSelectV6">${list.map((f, i) => `<option value="${i}" ${af && clean(f.seflik_key) === clean(af.seflik_key) ? "selected" : ""}>${esc(f.seflik)}${canManageFolder(f) ? " • kurucu" : " • üye"}</option>`).join("")}</select></label>`
       : '<div class="modal-note">Henüz seçilebilecek şeflik yok.</div>';
     const current = af
-      ? `<div class="manager-card ${canManageFolder(af) ? "" : "member-leave-card-v61"}"><div><small>Aktif Şeflik</small><b>${esc(af.seflik)}</b><span>${canManageFolder(af) ? "Bu şefliği yönetebilirsiniz." : "Bu şefliğin üyesisiniz. İsterseniz üyeliğinizi sonlandırabilirsiniz."}</span></div>${canManageFolder(af) ? `<div class="manager-actions"><button type="button" class="mini-button" data-action="rename-seflik">İsmini Düzenle</button><button type="button" class="mini-button danger-mini" data-action="delete-seflik">Şefliği Sil</button></div>` : `<div class="manager-actions member-leave-actions-v61"><button type="button" class="mini-button danger-mini leave-seflik-v61" data-action="leave-seflik" ${busy ? "disabled" : ""}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 5H5v14h5M14 8l4 4-4 4M18 12H9"/></svg><span>Şeflikten Ayrıl</span></button></div><div class="member-leave-note-v61">Ortak kayıtlar sunucuda korunur. Bu cihazdaki o şefliğe ait offline kopyalar, bekleyen işlem olmadığı doğrulandıktan sonra temizlenir.</div>`}</div>`
+      ? `<div class="manager-card ${canManageFolder(af) ? "" : "member-leave-card-v61"}"><div><small>Aktif Şeflik</small><b>${esc(af.seflik)}</b><span>${canManageFolder(af) ? "Bu şefliği yönetebilirsiniz." : "Bu şefliğin üyesisiniz. İsterseniz üyeliğinizi sonlandırabilirsiniz."}</span></div>${canManageFolder(af) ? `<div class="manager-actions"><button type="button" class="mini-button" data-action="rename-seflik">İsmini Düzenle</button><button type="button" class="mini-button danger-mini" data-action="delete-seflik">Şefliği Sil</button></div>` : `<div class="manager-actions member-leave-actions-v61"><button type="button" class="mini-button danger-mini leave-seflik-v61" data-action="leave-seflik" ${busy ? "disabled" : ""}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 5H5v14h5M14 8l4 4-4 4M18 12H9"/></svg><span>Şeflikten Ayrıl</span></button></div><div class="member-leave-note-v61">Ortak kayıtlar sunucuda korunur. Bu cihazdaki Mesaha/İstif saha kayıtları ve offline kopyalar otomatik silinmez; gerektiğinde tekrar kullanılabilir.</div>`}</div>`
       : "";
     box.innerHTML = options + current;
     const sel = $("suiteFolderSelectV6");

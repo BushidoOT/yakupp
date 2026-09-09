@@ -124,7 +124,7 @@
       var mergedSettings = st ? Object.assign({}, settings(), st) : settings();
       var saved = null;
       if(window.MesahaStorageV527 && typeof window.MesahaStorageV527.replaceAll === 'function'){
-        saved = await window.MesahaStorageV527.replaceAll(recs, mergedSettings, {reason:'drive-restore'});
+        saved = await window.MesahaStorageV527.replaceAll(recs, mergedSettings, {reason:'drive-restore',allowDataLoss:true,userAction:true});
       }else{
         var recOk = jsonSet(STORAGE_KEY, recs);
         var setOk = jsonSet(SETTINGS_KEY, mergedSettings);
@@ -629,7 +629,7 @@
       var st=payload.settings || ((payload.payload||{}).settings);
       if(!Array.isArray(recs)) throw new Error('Yedek kayıtları bulunamadı');
       var merged=st?Object.assign(settings(),st):settings();
-      var saved=window.MesahaStorageV527?await window.MesahaStorageV527.replaceAll(recs,merged,{reason:'cloud-restore-'+source}):{ok:false,error:'Depolama motoru hazır değil'};
+      var saved=window.MesahaStorageV527?await window.MesahaStorageV527.replaceAll(recs,merged,{reason:'cloud-restore-'+source,allowDataLoss:true,userAction:true}):{ok:false,error:'Depolama motoru hazır değil'};
       if(!saved||saved.ok===false) throw new Error(saved&&saved.error||'Yedek kalıcı depolamaya yazılamadı');
       if(window.state){window.state.records=recs;window.state.settings=merged;}
       toast('Bulut yedeği yüklendi.','Kalıcı depolama doğrulandı; sayfa yenileniyor.','success');

@@ -605,7 +605,7 @@
                 : Object.assign({}, settings());
             const rr = window.MesahaStorageV527
               ? await window.MesahaStorageV527.replaceAll(recs, merged, {
-                  reason: "legacy-cloud-restore",
+                  reason: "legacy-cloud-restore", allowDataLoss: true, userAction: true,
                 })
               : { ok: false };
             if (!rr || rr.ok === false)

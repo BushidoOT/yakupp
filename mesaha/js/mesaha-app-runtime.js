@@ -4017,7 +4017,7 @@
                 ? await window.MesahaStorageV527.replaceAll(
                     migrated,
                     mergedSettings,
-                    { reason: "json-restore" },
+                    { reason: "json-restore", allowDataLoss: true, userAction: true },
                   )
                 : { ok: false, error: "Depolama motoru hazır değil" };
               if (!result || result.ok === false)
@@ -5352,7 +5352,7 @@
             ? await window.MesahaStorageV527.replaceAll(
                 migrated,
                 mergedSettings,
-                { reason: "local-backup-restore" },
+                { reason: "local-backup-restore", allowDataLoss: true, userAction: true },
               )
             : { ok: false, error: "Depolama motoru hazır değil" };
           if (!result || result.ok === false)

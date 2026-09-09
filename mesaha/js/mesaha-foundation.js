@@ -740,8 +740,11 @@
     if(snapshotTimers[kind])clearTimeout(snapshotTimers[kind]);
     snapshotTimers[kind]=setTimeout(function(){
       snapshotTimers[kind]=0;
-      var job=snapshotJobs[kind];snapshotJobs[kind]=null;
-      runIdle(function(){commitLocalSnapshot(kind,job);},isIOS?3500:2200);
+      var job=snapshotJobs[kind];
+      runIdle(function(){
+        if(snapshotJobs[kind]===job)snapshotJobs[kind]=null;
+        commitLocalSnapshot(kind,job);
+      },isIOS?3500:2200);
     },delay==null?localSnapshotDelay(kind):Math.max(0,delay));
   }
 
@@ -770,6 +773,11 @@
     if(change.upsert&&typeof change.upsert==='object')change.upsert=Object.assign({},change.upsert);
     if(change.previousRecord&&typeof change.previousRecord==='object')change.previousRecord=Object.assign({},change.previousRecord);
     opts=Object.assign({},opts||{});
+    if(change.deleteId!=null&&!explicitDeleteReason(opts.reason)){
+      notifyWarning('records',new Error('Onaysız kayıt silme isteği engellendi.'),{protected:true,reason:String(opts.reason||'delta-delete'),deleteId:String(change.deleteId)});
+      return Promise.resolve({ok:false,protected:true,error:'Kayıt silme işlemi kullanıcı onayı olmadan çalıştırılamaz.'});
+    }
+    list=protectRecordSet(list,opts);
     recordChain=recordChain.catch(function(){return null;}).then(async function(){
       var meta=null;
       try{
@@ -813,20 +821,69 @@
     reason=String(reason||'').toLocaleLowerCase('tr-TR');
     return /(^|[-_:])(record-delete|single-delete|bulk-delete|delete-all|legacy-delete-all|recent-delete|user-delete|confirmed-delete)([-_:]|$)/.test(reason);
   }
+  function intentionalReplaceReason(reason){
+    reason=String(reason||'').toLocaleLowerCase('tr-TR');
+    return /^workspace-v97-/.test(reason)||/(^|[-_:])(drive-restore|cloud-restore|json-restore|local-backup-restore|legacy-cloud-restore)([-_:]|$)/.test(reason);
+  }
+  function safetyRecordKey(row,index){
+    row=row&&typeof row==='object'?row:{};
+    var barcode=String(row.barcode||row.barkodNo||row.barkod||'').trim().toLocaleUpperCase('tr-TR');
+    if(barcode)return 'b:'+barcode;
+    var id=String(row.id||row.recordId||row.record_id||'').trim();
+    return id?'i:'+id:'x:'+String(index||0)+':'+checksumText(JSON.stringify(row));
+  }
+  function protectAccidentalLoss(list,opts){
+    list=Array.isArray(list)?list:[];opts=opts||{};
+    var current=Array.isArray(lastCommittedRecords)&&lastCommittedRecords.length?lastCommittedRecords:(Array.isArray(bootRecords)?bootRecords:[]);
+    var allowLoss=opts.allowDataLoss===true||opts.workspaceSafe===true||opts.allowEmpty===true||explicitDeleteReason(opts.reason)||intentionalReplaceReason(opts.reason);
+    if(!current.length||allowLoss)return list;
+    var incomingKeys=new Set(list.map(function(row,i){return safetyRecordKey(row,i);}));
+    var missing=current.filter(function(row,i){return !incomingKeys.has(safetyRecordKey(row,i));});
+    if(!missing.length)return list;
+    var restored=list.concat(cloneRecordsForApi(missing));
+    try{if(window.state&&Array.isArray(window.state.records))window.state.records=cloneRecordsForApi(restored)}catch(e){}
+    setTimeout(function(){
+      try{
+        if(window.state&&Array.isArray(window.state.records)&&window.state.records.length<restored.length){
+          window.state.records=cloneRecordsForApi(restored);
+          if(window.MesahaRenderStorageV382&&window.MesahaRenderStorageV382.renderAllSoon)window.MesahaRenderStorageV382.renderAllSoon(20);
+          else if(typeof window.renderAll==='function')window.renderAll();
+        }
+      }catch(e){}
+    },0);
+    notifyWarning('records',new Error('Kayıt sayısının otomatik azalması engellendi.'),{protected:true,reason:String(opts.reason||'save'),preserved:missing.length,count:restored.length});
+    return restored;
+  }
   function protectAccidentalEmpty(list,opts){
     list=Array.isArray(list)?list:[];opts=opts||{};
     var current=Array.isArray(lastCommittedRecords)&&lastCommittedRecords.length?lastCommittedRecords:(Array.isArray(bootRecords)?bootRecords:[]);
-    if(list.length===0&&current.length>0&&!explicitDeleteReason(opts.reason)){
-      try{if(window.state&&Array.isArray(window.state.records))window.state.records=cloneRecordsForApi(current)}catch(e){}
+    if(list.length===0&&current.length>0&&opts.allowEmpty!==true&&opts.workspaceSafe!==true&&!explicitDeleteReason(opts.reason)&&!intentionalReplaceReason(opts.reason)){
+      var restored=cloneRecordsForApi(current);
+      try{if(window.state&&Array.isArray(window.state.records))window.state.records=cloneRecordsForApi(restored)}catch(e){}
+      /* Bazı eski geri yükleme katmanları replaceAll sonucundan sonra state.records=[]
+         yazabiliyor. Bir sonraki görevde de korunan kayıtları tekrar uygula. */
+      setTimeout(function(){
+        try{
+          if(window.state&&Array.isArray(window.state.records)&&window.state.records.length===0){
+            window.state.records=cloneRecordsForApi(restored);
+            if(window.MesahaRenderStorageV382&&window.MesahaRenderStorageV382.renderAllSoon)window.MesahaRenderStorageV382.renderAllSoon(20);
+            else if(typeof window.renderAll==='function')window.renderAll();
+          }
+        }catch(e){}
+      },0);
       notifyWarning('records',new Error('Kayıtların otomatik boşaltılması engellendi.'),{protected:true,reason:String(opts.reason||'save'),count:current.length});
-      return cloneRecordsForApi(current);
+      return restored;
     }
     return list;
+  }
+  function protectRecordSet(list,opts){
+    list=protectAccidentalEmpty(list,opts);
+    return protectAccidentalLoss(list,opts);
   }
   function saveRecords(list,opts){
     list=Array.isArray(list)?list.slice():[];
     opts=Object.assign({},opts||{});
-    list=protectAccidentalEmpty(list,opts);
+    list=protectRecordSet(list,opts);
     recordChain=recordChain.catch(function(){return null;}).then(async function(){
       var base=null;try{base=await idbGet(META_STORE,'records');}catch(e){}
       var meta=recordMetaFrom(base||bootRecordMeta||{},list,opts&&opts.reason||'records-save');
@@ -866,7 +923,7 @@
     records=Array.isArray(records)?records.slice():[];
     settings=validSettings(settings)?shallowSettings(settings):{};
     opts=Object.assign({},opts||{});
-    records=protectAccidentalEmpty(records,opts);
+    records=protectRecordSet(records,opts);
     bulkChain=bulkChain.catch(function(){return null;}).then(async function(){
       await Promise.all([recordChain.catch(function(){}),settingsChain.catch(function(){})]);
       var currentMeta=null,currentSettings=null;try{var p=await Promise.all([idbGet(META_STORE,'records').catch(function(){return null;}),idbGet(DOC_STORE,'settings').catch(function(){return null;})]);currentMeta=p[0];currentSettings=p[1];}catch(e){}
@@ -907,6 +964,19 @@
     if(b.meta&&b.meta.provisional===true&&!(a.meta&&a.meta.provisional===true))return a;
     return candidateRevision(b.meta)>candidateRevision(a.meta)?b:a;
   }
+  function safeLossMeta(candidate){
+    var reason=String(candidate&&candidate.meta&&candidate.meta.reason||'');
+    return explicitDeleteReason(reason)||intentionalReplaceReason(reason);
+  }
+  function saferRecordCandidate(a,b){
+    if(!a)return b;if(!b)return a;
+    var chosen=newer(a,b),other=chosen===a?b:a;
+    if(!chosen||!other||!Array.isArray(chosen.records)||!Array.isArray(other.records)||safeLossMeta(chosen))return chosen;
+    var keys=new Set(chosen.records.map(function(row,i){return safetyRecordKey(row,i);}));
+    var missing=other.records.filter(function(row,i){return !keys.has(safetyRecordKey(row,i));});
+    if(!missing.length)return chosen;
+    return {source:'safety-merge',records:chosen.records.concat(cloneRecordsForApi(missing)),meta:Object.assign({},chosen.meta||{},{reason:'startup-safety-merge-v97'}),safetyMerged:true,originalSource:chosen.source};
+  }
   function applyToApp(records,settings,reason){
     try{
       if(window.state){
@@ -936,8 +1006,8 @@
       }catch(e){notifyWarning('recovery',e,{startup:true});}
 
       var recCandidate=localRec;
-      if(envelopeValid('records',docRec))recCandidate=newer(recCandidate,{source:'document',records:docRec.value,meta:docRec});
-      if(itemMeta&&itemMeta.initialized===true&&Array.isArray(itemList)&&Number(itemMeta.count||0)===itemList.length){recCandidate=newer(recCandidate,{source:'items',records:itemList,meta:itemMeta});}
+      if(envelopeValid('records',docRec))recCandidate=saferRecordCandidate(recCandidate,{source:'document',records:docRec.value,meta:docRec});
+      if(itemMeta&&itemMeta.initialized===true&&Array.isArray(itemList)&&Number(itemMeta.count||0)===itemList.length){recCandidate=saferRecordCandidate(recCandidate,{source:'items',records:itemList,meta:itemMeta});}
       if(!recCandidate)recCandidate={source:'empty',records:[],meta:{revision:0,updatedAt:0,count:0,provisional:true}};
 
       var setCandidate=localSet;
@@ -949,8 +1019,8 @@
 
       if(!(itemMeta&&itemMeta.initialized===true)){
         try{var migrated=await ensureRecordStore(bootRecords,bootRecordMeta);bootRecordMeta=Object.assign({},migrated);}catch(e){notifyWarning('records-migration',e,{startup:true});}
-      }else if(recCandidate.source!=='items'&&candidateRevision(recCandidate.meta)>candidateRevision(itemMeta)){
-        try{var synced=recordMetaFrom(itemMeta,bootRecords,'startup-record-store-sync');synced.revision=candidateRevision(recCandidate.meta)||synced.revision;synced.updatedAt=Number(recCandidate.meta&&recCandidate.meta.updatedAt||synced.updatedAt);await replaceRecordStore(bootRecords,synced,null);bootRecordMeta=Object.assign({},synced);}catch(e){notifyWarning('records-store-sync',e,{startup:true});}
+      }else if(recCandidate.safetyMerged===true||(recCandidate.source!=='items'&&candidateRevision(recCandidate.meta)>candidateRevision(itemMeta))){
+        try{var synced=recordMetaFrom(itemMeta,bootRecords,recCandidate.safetyMerged===true?'startup-safety-repair-v97':'startup-record-store-sync');synced.revision=Math.max(candidateRevision(recCandidate.meta)||0,candidateRevision(itemMeta)||0)+1;synced.updatedAt=now();await replaceRecordStore(bootRecords,synced,null);bootRecordMeta=Object.assign({},synced);}catch(e){notifyWarning('records-store-sync',e,{startup:true});}
       }
       if(recCandidate.source!=='local')scheduleLocalSnapshot('records',bootRecords,bootRecordMeta,500);
       if(setCandidate.source!=='local')scheduleLocalSnapshot('settings',bootSettings,bootSettingsMeta,400);
@@ -971,16 +1041,40 @@
     var st=validSettings(value)?value:{};scheduleLocalSnapshot('settings',st,bootSettingsMeta||{},0);return {ok:true,pending:true,engine:'delta-v576'};
   }
   function checkpointAll(records,settings,opts){return {ok:true,records:checkpointKind('records',records,opts&&opts.reason),settings:checkpointKind('settings',settings,opts&&opts.reason),engine:'delta-v576'};}
-  async function flush(){await Promise.all([recordChain.catch(function(){}),settingsChain.catch(function(){}),bulkChain.catch(function(){})]);return true;}
-  function info(){return {recordsMeta:bootRecordMeta||readMeta(RECORDS_META),settingsMeta:bootSettingsMeta||readMeta(SETTINGS_META),recordsCount:(window.state&&Array.isArray(window.state.records)?window.state.records:bootRecords).length,pending:!!(snapshotJobs.records||snapshotJobs.settings||snapshotTimers.records||snapshotTimers.settings),database:DB_NAME,engine:'delta-v576',incremental:true};}
+  function flushLocalSnapshotsNow(reason){
+    ['records','settings'].forEach(function(kind){
+      try{if(snapshotTimers[kind]){clearTimeout(snapshotTimers[kind]);snapshotTimers[kind]=0;}}catch(e){}
+      var job=snapshotJobs[kind];
+      if(!job){
+        if(kind==='records')job={value:shallowRecords(lastCommittedRecords),meta:Object.assign({},bootRecordMeta||{})};
+        else job={value:shallowSettings(lastCommittedSettings),meta:Object.assign({},bootSettingsMeta||{})};
+      }
+      if(job){snapshotJobs[kind]=null;commitLocalSnapshot(kind,job);}
+    });
+    try{localStorage.setItem('mesaha_last_emergency_checkpoint_v97',JSON.stringify({at:now(),reason:String(reason||'flush'),records:lastCommittedRecords.length}));}catch(e){}
+    return true;
+  }
+  async function flush(){await Promise.all([recordChain.catch(function(){}),settingsChain.catch(function(){}),bulkChain.catch(function(){})]);flushLocalSnapshotsNow('flush');return true;}
+  function info(){var persistence=readJson('mesaha_storage_persistence_v97',null);return {recordsMeta:bootRecordMeta||readMeta(RECORDS_META),settingsMeta:bootSettingsMeta||readMeta(SETTINGS_META),recordsCount:(window.state&&Array.isArray(window.state.records)?window.state.records:bootRecords).length,pending:!!(snapshotJobs.records||snapshotJobs.settings||snapshotTimers.records||snapshotTimers.settings),database:DB_NAME,engine:'delta-v576-field-v97',incremental:true,persistence:persistence};}
 
   bootRecords=legacyRecords();bootSettings=legacySettings();bootRecordMeta=readMeta(RECORDS_META);bootSettingsMeta=readMeta(SETTINGS_META);
   if(!bootRecordMeta)bootRecordMeta={revision:1,updatedAt:0,deletedAt:0,count:bootRecords.length,checksum:checksum(bootRecords),schema:2,provisional:true};
   if(!bootSettingsMeta)bootSettingsMeta={revision:1,updatedAt:0,count:Object.keys(bootSettings).length,checksum:checksum(bootSettings),schema:2,provisional:true};
   lastCommittedRecords=shallowRecords(bootRecords);lastCommittedSettings=shallowSettings(bootSettings);cleanLegacy();
 
+  async function ensurePersistentStorageV97(){
+    var out={supported:false,persisted:false,requested:false,at:now()};
+    try{
+      if(navigator.storage&&navigator.storage.persisted){out.supported=true;out.persisted=!!(await navigator.storage.persisted());}
+      if(!out.persisted&&navigator.storage&&navigator.storage.persist){out.requested=true;out.persisted=!!(await navigator.storage.persist());}
+    }catch(e){out.error=String(e&&e.message||e||'');}
+    try{localStorage.setItem('mesaha_storage_persistence_v97',JSON.stringify(out));}catch(e){}
+    return out;
+  }
+  function emergencyCheckpointV97(reason){try{return flushLocalSnapshotsNow(reason||'lifecycle');}catch(e){return false;}}
+
   var api={
-    __v527:true,__v576:true,engine:'delta-v576',
+    __v527:true,__v576:true,__fieldV97:true,engine:'delta-v576-field-v97',
     bootstrapRecords:function(){return cloneRecordsForApi(bootRecords);},
     bootstrapSettings:function(){return shallowSettings(bootSettings);},
     saveRecordDelta:saveRecordDelta,
@@ -994,15 +1088,20 @@
     recoverIntoApp:recoverIntoApp,
     flush:flush,
     info:info,
+    emergencyCheckpoint:emergencyCheckpointV97,
+    ensurePersistentStorage:ensurePersistentStorageV97,
     lastCommittedRecords:function(){return cloneRecordsForApi(lastCommittedRecords);},
     lastCommittedSettings:function(){return shallowSettings(lastCommittedSettings);}
   };
   window.MesahaStorageV527=api;
   window.MesahaPersistentStoreV515={__v527:true,__v576:true,saveRecordDelta:saveRecordDelta,saveRecords:saveRecords,saveSettings:saveSettings,recoverIntoApp:recoverIntoApp};
 
-  try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(function(){});}catch(e){}
+  setTimeout(function(){ensurePersistentStorageV97().catch(function(){});},900);
   setTimeout(function(){recoverIntoApp().catch(function(){});},40);
-  window.addEventListener('pagehide',function(){flush();},{passive:true});
+  window.addEventListener('pagehide',function(){emergencyCheckpointV97('pagehide');},{passive:true});
+  window.addEventListener('beforeunload',function(){emergencyCheckpointV97('beforeunload');},{capture:true});
+  window.addEventListener('freeze',function(){emergencyCheckpointV97('freeze');},{passive:true});
+  document.addEventListener('visibilitychange',function(){if(document.hidden)emergencyCheckpointV97('hidden');},{passive:true});
 })();
 ;
 

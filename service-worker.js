@@ -1,4 +1,4 @@
-/* Orman İO V96 — güvenli kimlik dönüşü ve yerel kayıt koruması. */
+/* Orman İO V97 — arazi offline ve otomatik veri kaybı koruması. */
 importScripts("./release.js");
 
 const RELEASE = self.MESAHA_RELEASE || {
@@ -179,6 +179,16 @@ const SHELL_CRITICAL = [
   "./assets/orman_io_hero.webp"
 ];
 
+
+/* V97 ARAZI MODU: Service Worker yalnız ana kabukla aktive olmaz.
+   Mesaha'nın saha girişinde gereken tüm Mesaha + ortak dosyalar atomik olarak
+   hazır değilse yeni worker kurulmaz; varsa önceki eksiksiz sürüm çalışmaya devam eder. */
+const MESAHA_FIELD_CRITICAL = Array.from(new Set(
+  SHELL_CRITICAL.concat(CORE.filter((path) => {
+    const bucket = bucketFor(path);
+    return bucket === "mesaha" || bucket === "shared";
+  }))
+));
 
 const EXTERNAL = [];
 
@@ -485,6 +495,7 @@ async function buildStatus() {
   const missing = await missingFrom(CORE);
   const criticalMissing = await missingFrom(CRITICAL);
   const shellMissing = await missingFrom(SHELL_CRITICAL);
+  const fieldMissing = await missingFrom(MESAHA_FIELD_CRITICAL);
   const groups = appGroups();
   const apps = {};
   for (const [name, paths] of Object.entries(groups)) {
@@ -498,6 +509,9 @@ async function buildStatus() {
     criticalMissing,
     shellMissing,
     shellReady: shellMissing.length === 0,
+    fieldMissing,
+    fieldReady: fieldMissing.length === 0,
+    fieldCriticalCount: MESAHA_FIELD_CRITICAL.length,
     cache: BASE_CACHE,
     caches: CACHE_NAMES,
     build: Number(RELEASE.build || 0),
@@ -585,12 +599,11 @@ async function cacheAll(force = false, cleanupOld = true, options = {}) {
 
 self.addEventListener("install", (event) => {
   event.waitUntil((async () => {
-    // Önce yalnız ana kabuğu hazırla. Büyük Mesaha/İstif dosyaları sayfa açıldıktan
-    // sonra WARM_CACHE ile tamamlanır; eski tam cache bu sırada korunur.
-    await cachePass(SHELL_CRITICAL, false);
-    const shellMissing = await missingFrom(SHELL_CRITICAL);
-    if (shellMissing.length) {
-      throw new Error("Ana offline kabuk alınamadı: " + shellMissing.join(", "));
+    // Arazi güvenliği: Mesaha saha dosyaları tam hazır olmadan yeni worker aktive olmaz.
+    await cachePass(MESAHA_FIELD_CRITICAL, false);
+    const fieldMissing = await missingFrom(MESAHA_FIELD_CRITICAL);
+    if (fieldMissing.length) {
+      throw new Error("Mesaha arazi offline paketi alınamadı: " + fieldMissing.join(", "));
     }
     await self.skipWaiting();
   })());
