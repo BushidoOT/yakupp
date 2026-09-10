@@ -4529,7 +4529,12 @@
             delAll.addEventListener("click", async () => {
               if (!records().length) return toast("Silinecek kayıt yok.");
               if (!confirm("Tüm kayıtlar silinsin mi?")) return;
-              lastDeleted = { records: records().slice() };
+              const legacySnapshotV98 = records().slice();
+              try {
+                if (!window.MesahaStorageV527 || typeof window.MesahaStorageV527.saveDeleteAllRecovery !== "function") throw new Error("Kurtarma deposu hazır değil.");
+                await window.MesahaStorageV527.saveDeleteAllRecovery(legacySnapshotV98, settings(), { reason: "legacy-delete-all", bolmeNo: settings().bolmeNo, seflik: settings().seflik });
+              } catch (err) { toast("Kurtarma kopyası oluşturulamadı; kayıtlar silinmedi."); return; }
+              lastDeleted = { records: legacySnapshotV98.slice() };
               const s = appState();
               s.records = [];
               selectedIds.clear();
@@ -4975,40 +4980,120 @@
         }
 
         function exportScope() {
-          const selected =
-            window.mesahaV303 &&
-            typeof window.mesahaV303.selected === "function"
-              ? window.mesahaV303.selected()
-              : [];
-          const filtered =
-            window.mesahaV303 &&
-            typeof window.mesahaV303.filtered === "function"
-              ? window.mesahaV303.filtered()
-              : records();
-          const q = norm(($("recordSearch") && $("recordSearch").value) || "");
-          const s = settings();
-          const filteredMode =
-            q ||
-            (s.treeFilter && s.treeFilter !== "Tümü") ||
-            (s.cutterFilter && s.cutterFilter !== "Tümü");
-          if (selected && selected.length)
-            return {
-              list: selected,
-              text: `Seçili kayıtlar (${selected.length})`,
-              mode: "selected",
-            };
-          if (filteredMode)
-            return {
-              list: filtered,
-              text: `Filtrelenen kayıtlar (${filtered.length})`,
-              mode: "filtered",
-            };
-          return {
-            list: records(),
-            text: `Tüm kayıtlar (${records().length})`,
-            mode: "all",
-          };
+          /* V98: ekrandaki barkod seçimi, arama veya aktif filtre indirme kapsamını artık otomatik daraltmaz. */
+          const list = records().slice();
+          return { list, text: `Tüm kayıtlar (${list.length})`, mode: "all" };
         }
+
+        function exportFilterOptionsV98() {
+          const list = records().slice();
+          const treeMap = new Map(), cutterMap = new Map();
+          list.forEach((r) => {
+            const tree = norm(r && r.treeType) || "Ağaç kaydı yok";
+            const cutterRaw = norm(r && r.cutter);
+            const cutterKey = cutterRaw || "__NO_CUTTER__";
+            if (!treeMap.has(tree)) treeMap.set(tree, { key: tree, label: tree });
+            if (!cutterMap.has(cutterKey)) cutterMap.set(cutterKey, { key: cutterKey, label: cutterRaw || "Kesimci kaydı yok" });
+          });
+          const sorter = (a,b) => String(a.label).localeCompare(String(b.label), "tr");
+          return { list, trees: Array.from(treeMap.values()).sort(sorter), cutters: Array.from(cutterMap.values()).sort(sorter) };
+        }
+
+        async function chooseExportScopeV98() {
+          const opts = exportFilterOptionsV98();
+          if (!opts.list.length) return null;
+          let chosenScope = null;
+          const section = (title, items, attr) => {
+            if (!items.length) return "";
+            return `<div class="export-filter-group-v98"><b>${esc(title)}</b><div class="export-filter-checks-v98">${items.map((item,idx) => `<label class="export-filter-check-v98"><input type="checkbox" ${attr}="${idx}" checked><span>${esc(item.label)}</span></label>`).join("")}</div></div>`;
+          };
+          const hasChoice = opts.trees.length > 1 || opts.cutters.length > 1;
+          const html = `<p><b>Varsayılan olarak tüm kayıtlar indirilecek.</b></p>
+            <div class="export-filter-help-v98">Ekranda seçili barkodlar ve açık olan filtreler indirmeyi artık otomatik etkilemez. İstersen aşağıdaki seçenekleri kaldırarak sadece istediğin grupları indirebilirsin.</div>
+            ${hasChoice ? `<div class="export-filter-picker-v98" id="exportFilterPickerV98">${section("Ağaç", opts.trees, "data-export-tree-v98")}${section("Kesimci", opts.cutters, "data-export-cutter-v98")}</div>` : ""}`;
+          const ok = await modal({
+            title: "Mesaha Dosyasını İndir",
+            icon: "▣",
+            html,
+            buttons: [
+              { text: "Vazgeç", value: false, cls: "ghost" },
+              { text: "İndir", value: true, cls: "primary", onClick: async () => {
+                  const root = $("exportFilterPickerV98");
+                  if (!root) { chosenScope = exportScope(); return; }
+                  const treeChecks = Array.from(root.querySelectorAll("[data-export-tree-v98]"));
+                  const cutterChecks = Array.from(root.querySelectorAll("[data-export-cutter-v98]"));
+                  const selectedTrees = new Set(treeChecks.filter(x => x.checked).map(x => opts.trees[Number(x.getAttribute("data-export-tree-v98"))]).filter(Boolean).map(x => x.key));
+                  const selectedCutters = new Set(cutterChecks.filter(x => x.checked).map(x => opts.cutters[Number(x.getAttribute("data-export-cutter-v98"))]).filter(Boolean).map(x => x.key));
+                  if (treeChecks.length && !selectedTrees.size) throw new Error("En az bir ağaç seçin.");
+                  if (cutterChecks.length && !selectedCutters.size) throw new Error("En az bir kesimci seçin.");
+                  const filtered = opts.list.filter((r) => {
+                    const tree = norm(r && r.treeType) || "Ağaç kaydı yok";
+                    const cutter = norm(r && r.cutter) || "__NO_CUTTER__";
+                    return (!treeChecks.length || selectedTrees.has(tree)) && (!cutterChecks.length || selectedCutters.has(cutter));
+                  });
+                  if (!filtered.length) throw new Error("Seçilen filtrelerde indirilecek kayıt yok.");
+                  const allSelected = filtered.length === opts.list.length && selectedTrees.size === opts.trees.length && selectedCutters.size === opts.cutters.length;
+                  chosenScope = { list: filtered, text: allSelected ? `Tüm kayıtlar (${filtered.length})` : `Seçilen filtreler (${filtered.length})`, mode: allSelected ? "all" : "manual-filter-v98" };
+                } }
+            ]
+          });
+          return ok ? (chosenScope || exportScope()) : null;
+        }
+
+        function recoveryDateV98(value) {
+          try { return new Date(value).toLocaleString("tr-TR", { dateStyle: "medium", timeStyle: "short" }); } catch (_) { return String(value || "-"); }
+        }
+        async function renderDeleteAllRecoveryV98() {
+          const box = $("deleteRecoveryListV98"), count = $("deleteRecoveryCountV98");
+          if (!box) return;
+          const api = window.MesahaStorageV527;
+          if (!api || typeof api.listDeleteAllRecovery !== "function") {
+            box.innerHTML = '<div class="delete-recovery-empty-v98">Kurtarma deposu hazırlanıyor…</div>';
+            return;
+          }
+          try {
+            const items = await api.listDeleteAllRecovery(false);
+            if (count) count.textContent = `${items.length} yedek`;
+            if (!items.length) {
+              box.innerHTML = '<div class="delete-recovery-empty-v98">Henüz kurtarma kaydı yok.</div>';
+              return;
+            }
+            box.innerHTML = items.map((item) => `<div class="delete-recovery-item-v98"><div><b>${Number(item.count || 0)} kayıt • ${esc(item.bolmeNo ? `Bölme ${item.bolmeNo}` : "Bölme belirtilmemiş")}</b><small>${esc(recoveryDateV98(item.createdAt || item.createdAtMs))}${item.seflik ? ` • ${esc(item.seflik)}` : ""}</small></div><button type="button" data-delete-recovery-restore-v98="${esc(item.id)}">Kurtar</button></div>`).join("");
+          } catch (err) {
+            if (count) count.textContent = "-";
+            box.innerHTML = '<div class="delete-recovery-empty-v98">Kurtarma kayıtları şu anda okunamadı.</div>';
+          }
+        }
+        function recoveryRecordKeyV98(r,idx) {
+          const barcode = norm(r && (r.barcode || r.barkodNo || r.barkod)).toLocaleUpperCase("tr-TR");
+          return barcode ? `b:${barcode}` : `i:${norm(r && r.id) || idx}`;
+        }
+        async function restoreDeleteAllRecoveryV98(id) {
+          const api = window.MesahaStorageV527;
+          if (!api || typeof api.getDeleteAllRecovery !== "function") throw new Error("Kurtarma deposu hazır değil.");
+          const snap = await api.getDeleteAllRecovery(id);
+          if (!snap || !Array.isArray(snap.records) || !snap.records.length) throw new Error("Kurtarma kaydı bulunamadı.");
+          const current = records().slice(), seen = new Set(current.map(recoveryRecordKeyV98));
+          const add = snap.records.filter((r,idx) => { const k = recoveryRecordKeyV98(r,idx); if (seen.has(k)) return false; seen.add(k); return true; });
+          const ok = await modal({
+            title: "Silinen Kayıtları Kurtar",
+            type: "warn", icon: "↶",
+            html: `<p><b>${snap.count}</b> kayıtlık silme yedeği bulundu.</p><div class="modal-note">${esc(recoveryDateV98(snap.createdAt || snap.createdAtMs))}${snap.bolmeNo ? ` • Bölme ${esc(snap.bolmeNo)}` : ""}<br>Mevcut kayıtlar silinmez; eksik barkodlar beyana geri eklenir. Eklenecek: <b>${add.length}</b></div>`,
+            buttons: [{text:"Vazgeç",value:false,cls:"ghost"},{text:"Kurtar",value:true,cls:"primary"}]
+          });
+          if (!ok) return false;
+          if (!add.length) { toast("Bu yedekteki barkodların tamamı zaten mevcut."); return true; }
+          const merged = current.concat(add.map((r) => Object.assign({}, r)));
+          const result = api && typeof api.replaceAll === "function"
+            ? await api.replaceAll(merged, settings(), { reason: "delete-all-recovery-restore-v98", userAction: true })
+            : await saveRecords("delete-all-recovery-restore-v98");
+          if (result && result.ok === false) throw new Error(result.error || "Kayıtlar geri yazılamadı.");
+          const s = appState(); if (s) { s.records = merged; window.state = s; }
+          renderAfterChange();
+          toast(`${add.length} kayıt kurtarıldı.`);
+          return true;
+        }
+
 
         function viewActiveV578(id) {
           const el = $(id);
@@ -5018,7 +5103,7 @@
           /* Gizli ekranlarda filtre/DOM taraması yapma. Büyük kayıt listelerinde özellikle iOS ana iş parçacığını rahatlatır. */
           if (viewActiveV578("recordsView")) {
             const el = $("exportScopeInfo");
-            if (el) el.textContent = "İndirilecek: " + exportScope().text;
+            if (el) el.textContent = "İndirme: Tüm kayıtlar varsayılan • Filtreyi indirme ekranında seç";
           }
           if (viewActiveV578("homeView")) updateLastBarcodeCard();
         }
@@ -5073,6 +5158,7 @@
           updateExportScopeInfo();
           const undo = $("undoDeleteBtn");
           if (undo) undo.classList.toggle("hidden", !lastDeletedV304);
+          renderDeleteAllRecoveryV98().catch(() => {});
         }
 
         function downloadBlob(blob, filename) {
@@ -5094,8 +5180,8 @@
           downloadBlob(new Blob([content], { type }), filename);
         }
 
-        function makeXlsDownload() {
-          const scope = exportScope();
+        function makeXlsDownload(scopeOverride) {
+          const scope = scopeOverride && Array.isArray(scopeOverride.list) ? scopeOverride : exportScope();
           if (!scope.list.length) {
             toast("Çıktı için kayıt yok.");
             return;
@@ -5448,28 +5534,21 @@
                   : null;
               if (!target) return;
 
+              if (target.hasAttribute && target.hasAttribute("data-delete-recovery-restore-v98")) {
+                ev.preventDefault();
+                ev.stopPropagation();
+                ev.stopImmediatePropagation();
+                try { await restoreDeleteAllRecoveryV98(target.getAttribute("data-delete-recovery-restore-v98")); }
+                catch (err) { modal({ title: "Kurtarma yapılamadı", type: "danger", icon: "!", message: err && err.message ? err.message : "Kurtarma kaydı okunamadı." }); }
+                return;
+              }
+
               if (target.id === "downloadXlsBtn") {
                 ev.preventDefault();
                 ev.stopPropagation();
                 ev.stopImmediatePropagation();
-                const scope = exportScope();
-                const ok = await modal({
-                  title: "Mesaha dosyası indiriliyor",
-                  icon: "▣",
-                  html: `<p><b>${esc(scope.text)}</b> ORBİS uyumlu .xls olarak indirilecek.</p>
-            <ol>
-              <li>Dosyayı bilgisayara aktarınız.</li>
-              <li>ORBİS’e bilgisayar üzerinden giriş yapınız.</li>
-              <li>İşletme Pazarlama modülüne giriniz.</li>
-              <li>Kesme Faaliyetleri Raporu ekranında şeflik ve bölme bilgilerini giriniz.</li>
-              <li>Bölmeye çift tıklayıp dosya yükleme bölümünden <b>Excel’den Aktar</b> deyiniz.</li>
-            </ol>`,
-                  buttons: [
-                    { text: "Vazgeç", value: false, cls: "ghost" },
-                    { text: "Dosyayı İndir", value: true, cls: "primary" },
-                  ],
-                });
-                if (ok) makeXlsDownload();
+                const scope = await chooseExportScopeV98();
+                if (scope) makeXlsDownload(scope);
                 return;
               }
 
@@ -5578,14 +5657,22 @@
                   title: "Tümünü Sil",
                   type: "danger",
                   icon: "!",
-                  html: `<p><b>${records().length}</b> kayıt tamamen silinecek.</p><div class="modal-note">Bu işlemden sonra Geri Al butonuyla son silmeyi geri alabilirsin.</div>`,
+                  html: `<p><b>${records().length}</b> kayıt tamamen silinecek.</p><div class="modal-note">Silmeden önce kurtarma kopyası alınır. Son 3 Tümünü Sil işlemi Beyan > Tümünü Sil Kurtarma bölümünde saklanır.</div>`,
                   buttons: [
                     { text: "Vazgeç", value: false, cls: "ghost" },
                     { text: "Tümünü Sil", value: true, cls: "danger" },
                   ],
                 });
                 if (!ok) return;
-                lastDeletedV304 = records().slice();
+                const deleteAllSnapshotV98 = records().slice();
+                try {
+                  if (!window.MesahaStorageV527 || typeof window.MesahaStorageV527.saveDeleteAllRecovery !== "function") throw new Error("Kurtarma deposu hazır değil.");
+                  await window.MesahaStorageV527.saveDeleteAllRecovery(deleteAllSnapshotV98, settings(), { reason: "delete-all", bolmeNo: settings().bolmeNo, seflik: settings().seflik });
+                } catch (err) {
+                  await modal({ title: "Silme durduruldu", type: "danger", icon: "!", html: `<p>Kayıtlar silinmedi.</p><div class="modal-note">Önce kurtarma kopyası oluşturulamadı: ${esc(err && err.message ? err.message : "Depolama hatası")}</div>`, buttons:[{text:"Tamam",value:true,cls:"primary"}] });
+                  return;
+                }
+                lastDeletedV304 = deleteAllSnapshotV98.slice();
                 const s = appState();
                 s.records = [];
                 window.state = s;
@@ -5784,6 +5871,7 @@
           bindIntercepts();
           updateNetwork();
           updateExportScopeInfo();
+          renderDeleteAllRecoveryV98().catch(() => {});
           startupChecks();
           window.addEventListener("online", () => {
             updateNetwork();
@@ -5984,18 +6072,7 @@
           if (count) count.textContent = t.count.toLocaleString("tr-TR");
 
           const scope = $("exportScopeInfo");
-          if (scope) {
-            const selected =
-              window.mesahaV303 &&
-              typeof window.mesahaV303.selected === "function"
-                ? window.mesahaV303.selected()
-                : [];
-            if (selected && selected.length)
-              scope.textContent = `İndirilecek: Seçili kayıtlar (${selected.length})`;
-            else if (filteredMode)
-              scope.textContent = `İndirilecek: Filtrelenen kayıtlar (${list.length})`;
-            else scope.textContent = `İndirilecek: Tüm kayıtlar (${total})`;
-          }
+          if (scope) scope.textContent = `İndirme: Tüm kayıtlar (${total}) varsayılan • Filtreyi indirme ekranında seç`;
 
           const productTotals = $("productTotals");
           if (productTotals) {

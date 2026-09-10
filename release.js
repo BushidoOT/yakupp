@@ -1,20 +1,20 @@
 (function (root) {
   "use strict";
   const DATA = /*MESAHA_RELEASE_DATA_START*/{
-  "build": 97,
-  "version": "97.0.0",
+  "build": 98,
+  "version": "98.0.0",
   "channel": "stable",
-  "releasedAt": "2026-09-09T17:10:00+03:00",
-  "assetToken": "orman-io-stable-20260909-v97",
-  "cacheName": "orman-io-shell-stable-20260909-v97",
+  "releasedAt": "2026-09-10T16:35:00+03:00",
+  "assetToken": "orman-io-stable-20260910-v98",
+  "cacheName": "orman-io-shell-stable-20260910-v98",
   "apps": {
     "suite": {
       "label": "Orman İO",
-      "version": "97.0.0"
+      "version": "98.0.0"
     },
     "mesaha": {
       "label": "Mesaha İO",
-      "version": "6.36"
+      "version": "6.37"
     },
     "istif": {
       "label": "İstif İO",
@@ -22,10 +22,10 @@
     },
     "admin": {
       "label": "Orman İO Yönetim",
-      "version": "97.0.0"
+      "version": "98.0.0"
     }
   },
-  "description": "V97: Arazi veri güvenliği sertleştirildi. Mesaha ve İstif kayıtları sunucu listesi eksikliği, oturum değişimi veya şeflikten ayrılma nedeniyle otomatik silinmez. Mesaha kayıt deposunda otomatik kayıt azalması engellenir, üçlü kalıcı kopya kurtarmada güvenli birleştirilir, sayfa kapanışında acil snapshot alınır ve Service Worker Mesaha saha paketinin tamamını atomik olarak offline hazır etmeden aktive olmaz."
+  "description": "V98: Mesaha Excel indirmesi ekrandaki seçili barkod ve aktif filtrelerden bağımsız hale getirildi. İndirme penceresinde mevcut ağaç ve kesimci filtreleri varsayılan olarak tümü seçili listelenir. Tümünü Sil işlemlerinden önce kalıcı kurtarma kopyası alınır ve son 3 silme yedeği Beyan bölümünden geri yüklenebilir."
 }/*MESAHA_RELEASE_DATA_END*/;
   const APP_NAMES = DATA.apps || {};
   const SCRIPT_URL = (() => {

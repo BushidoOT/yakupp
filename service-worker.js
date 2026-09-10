@@ -1,4 +1,4 @@
-/* Orman İO V97 — arazi offline ve otomatik veri kaybı koruması. */
+/* Orman İO V98 — kontrollü indirme filtreleri ve son 3 Tümünü Sil kurtarma. */
 importScripts("./release.js");
 
 const RELEASE = self.MESAHA_RELEASE || {

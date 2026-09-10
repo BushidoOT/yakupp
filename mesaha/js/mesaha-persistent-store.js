@@ -8,10 +8,12 @@
   if(window.MesahaStorageV527 && window.MesahaStorageV527.__v576) return;
 
   var DB_NAME='mesaha_io_storage_v527';
-  var DB_VERSION=2;
+  var DB_VERSION=3;
   var DOC_STORE='documents';
   var RECORD_STORE='record_items';
   var META_STORE='state_meta';
+  var RECOVERY_STORE='delete_all_recovery';
+  var RECOVERY_FALLBACK_KEY='mesaha_delete_all_recovery_v98';
   var RECORDS_KEY='cam_mesaha_kayitlari_v1';
   var SETTINGS_KEY='cam_mesaha_ayarlar_v1';
   var RECORDS_META='mesaha_v527_records_meta';
@@ -81,6 +83,7 @@
         if(!db.objectStoreNames.contains(DOC_STORE))db.createObjectStore(DOC_STORE,{keyPath:'key'});
         if(!db.objectStoreNames.contains(RECORD_STORE))db.createObjectStore(RECORD_STORE,{keyPath:'id'});
         if(!db.objectStoreNames.contains(META_STORE))db.createObjectStore(META_STORE,{keyPath:'key'});
+        if(!db.objectStoreNames.contains(RECOVERY_STORE))db.createObjectStore(RECOVERY_STORE,{keyPath:'id'});
       };
       req.onsuccess=function(){var db=req.result;try{db.onversionchange=function(){resetDb(db);};}catch(e){}resolve(db);};
       req.onerror=function(){var err=req.error||new Error('IndexedDB açılamadı');dbPromise=null;reject(err);};
@@ -93,6 +96,55 @@
   async function idbGet(store,key){var db=await openDb(),tx=db.transaction(store,'readonly');return requestPromise(tx.objectStore(store).get(key),'IndexedDB okunamadı');}
   async function idbGetAll(store){var db=await openDb(),tx=db.transaction(store,'readonly');return requestPromise(tx.objectStore(store).getAll(),'IndexedDB listesi okunamadı').then(function(x){return Array.isArray(x)?x:[];});}
   async function idbPutDoc(env){var db=await openDb(),tx=db.transaction(DOC_STORE,'readwrite');tx.objectStore(DOC_STORE).put(env);await txDone(tx,'Belge deposu yazılamadı',db);return true;}
+
+  function recoveryFallbackRead(){
+    var list=readJson(RECOVERY_FALLBACK_KEY,[]);return Array.isArray(list)?list:[];
+  }
+  function recoveryFallbackWrite(list){
+    list=Array.isArray(list)?list.slice(0,3):[];
+    try{localStorage.setItem(RECOVERY_FALLBACK_KEY,JSON.stringify(list));return true;}catch(e){
+      /* Büyük saha kayıtlarında localStorage kotası dolabilir. En az son silmeyi tutmayı dene. */
+      try{if(list.length)localStorage.setItem(RECOVERY_FALLBACK_KEY,JSON.stringify([list[0]]));return !!list.length;}catch(_e){return false;}
+    }
+  }
+  function recoverySort(list){return (Array.isArray(list)?list:[]).sort(function(a,b){return Number(b&&b.createdAtMs||0)-Number(a&&a.createdAtMs||0);});}
+  function recoveryPublic(snapshot,withRecords){
+    snapshot=snapshot&&typeof snapshot==='object'?snapshot:{};
+    var out={id:String(snapshot.id||''),createdAt:String(snapshot.createdAt||''),createdAtMs:Number(snapshot.createdAtMs||0),count:Number(snapshot.count||0),bolmeNo:String(snapshot.bolmeNo||''),seflik:String(snapshot.seflik||''),reason:String(snapshot.reason||'delete-all'),checksum:String(snapshot.checksum||'')};
+    if(withRecords)out.records=cloneRecordsForApi(snapshot.records||[]);
+    return out;
+  }
+  async function saveDeleteAllRecovery(records,settings,context){
+    records=cloneRecordsForApi(records);settings=shallowSettings(settings);context=context&&typeof context==='object'?context:{};
+    if(!records.length)throw new Error('Kurtarma için kayıt yok.');
+    var at=now(),snapshot={
+      id:'delete-all-'+String(at)+'-'+Math.random().toString(36).slice(2,8),
+      createdAt:new Date(at).toISOString(),createdAtMs:at,count:records.length,
+      bolmeNo:String(context.bolmeNo||settings.bolmeNo||''),seflik:String(context.seflik||settings.seflik||''),
+      reason:String(context.reason||'delete-all').slice(0,80),checksum:summaryChecksumRecords(records),records:records
+    };
+    try{
+      var db=await openDb(),tx=db.transaction(RECOVERY_STORE,'readwrite');tx.objectStore(RECOVERY_STORE).put(snapshot);await txDone(tx,'Silme kurtarma kopyası yazılamadı',db);
+      var all=recoverySort(await idbGetAll(RECOVERY_STORE));
+      if(all.length>3){var old=all.slice(3),db2=await openDb(),tx2=db2.transaction(RECOVERY_STORE,'readwrite'),st=tx2.objectStore(RECOVERY_STORE);old.forEach(function(x){if(x&&x.id)st.delete(x.id);});await txDone(tx2,'Eski kurtarma kayıtları temizlenemedi',db2);all=all.slice(0,3);}
+      return {ok:true,indexedDB:true,snapshot:recoveryPublic(snapshot,false),count:all.length};
+    }catch(err){
+      var fallback=recoverySort([snapshot].concat(recoveryFallbackRead().filter(function(x){return x&&x.id!==snapshot.id;}))).slice(0,3);
+      if(!recoveryFallbackWrite(fallback))throw err;
+      notifyWarning('delete-all-recovery',err,{fallback:true,count:fallback.length});
+      return {ok:true,indexedDB:false,localStorage:true,degraded:true,snapshot:recoveryPublic(snapshot,false),count:fallback.length};
+    }
+  }
+  async function listDeleteAllRecovery(withRecords){
+    var list=[];
+    try{list=recoverySort(await idbGetAll(RECOVERY_STORE));}catch(e){list=recoverySort(recoveryFallbackRead());}
+    return list.slice(0,3).map(function(x){return recoveryPublic(x,withRecords===true);});
+  }
+  async function getDeleteAllRecovery(id){
+    id=String(id||'');if(!id)return null;
+    try{var row=await idbGet(RECOVERY_STORE,id);if(row)return recoveryPublic(row,true);}catch(e){}
+    var rows=recoveryFallbackRead();for(var i=0;i<rows.length;i++)if(String(rows[i]&&rows[i].id||'')===id)return recoveryPublic(rows[i],true);return null;
+  }
 
   function recordMetaFrom(base,list,reason){
     var rev=nextRevision(base||{}),at=now();
@@ -501,7 +553,10 @@
     emergencyCheckpoint:emergencyCheckpointV97,
     ensurePersistentStorage:ensurePersistentStorageV97,
     lastCommittedRecords:function(){return cloneRecordsForApi(lastCommittedRecords);},
-    lastCommittedSettings:function(){return shallowSettings(lastCommittedSettings);}
+    lastCommittedSettings:function(){return shallowSettings(lastCommittedSettings);},
+    saveDeleteAllRecovery:saveDeleteAllRecovery,
+    listDeleteAllRecovery:listDeleteAllRecovery,
+    getDeleteAllRecovery:getDeleteAllRecovery
   };
   window.MesahaStorageV527=api;
   window.MesahaPersistentStoreV515={__v527:true,__v576:true,saveRecordDelta:saveRecordDelta,saveRecords:saveRecords,saveSettings:saveSettings,recoverIntoApp:recoverIntoApp};
