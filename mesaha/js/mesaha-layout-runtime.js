@@ -101,6 +101,10 @@
           var actions=qs(".action-grid.records-action-grid-v530",recordsCard)||qs(".action-grid.records-action-grid-v530",beyanCard);
           [summary,totals,actions].forEach(function(node){if(node&&node.parentNode!==beyanCard)beyanCard.appendChild(node)});
 
+          /* V99: Son 3 Tümünü Sil kurtarma alanı Ölçümler'de değil, gerçek Beyan ekranında durur. */
+          var recovery=$("deleteRecoveryV98");
+          if(recovery&&recovery.parentNode!==beyanCard)beyanCard.appendChild(recovery);
+
           var filters=$("beyanFiltersV600");
           if(!filters){
             filters=document.createElement("section");

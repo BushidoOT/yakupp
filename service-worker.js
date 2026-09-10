@@ -1,4 +1,4 @@
-/* Orman İO V98 — kontrollü indirme filtreleri ve son 3 Tümünü Sil kurtarma. */
+/* Orman İO V99 — Beyan kurtarma alanı ve bağımsız Mesaha indirme filtresi. */
 importScripts("./release.js");
 
 const RELEASE = self.MESAHA_RELEASE || {

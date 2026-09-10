@@ -2038,21 +2038,21 @@ html body #beyanView #beyanFiltersV600 .beyan-filters-head-v600 h3 {
 
 
 /* === V98: indirme filtresi seçici + Tümünü Sil kurtarma === */
-html body #recordsView .delete-recovery-v98{
+html body #beyanView .delete-recovery-v98,html body .delete-recovery-v98{
   margin-top:14px;padding:14px;border:1px solid #d7e7dd;border-radius:18px;background:#f8fcf9;
 }
-html body #recordsView .delete-recovery-head-v98{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px}
-html body #recordsView .delete-recovery-head-v98 small{display:block;font-size:10px;letter-spacing:.08em;font-weight:950;color:#7b5b13;margin-bottom:3px}
-html body #recordsView .delete-recovery-head-v98 h3{margin:0;color:#173a2c;font-size:16px;font-weight:950}
-html body #recordsView .delete-recovery-head-v98 p{margin:3px 0 0;color:#64766d;font-size:12px;font-weight:750}
-html body #recordsView .delete-recovery-count-v98{flex:0 0 auto;padding:6px 9px;border-radius:999px;background:#fff2c7;color:#75540b;border:1px solid #f4d77c;font-size:11px;font-weight:950}
-html body #recordsView .delete-recovery-list-v98{display:grid;gap:8px}
-html body #recordsView .delete-recovery-item-v98{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 11px;border-radius:14px;background:#fff;border:1px solid #dfe9e3}
-html body #recordsView .delete-recovery-item-v98>div{min-width:0}
-html body #recordsView .delete-recovery-item-v98 b{display:block;color:#173a2c;font-size:13px;font-weight:950}
-html body #recordsView .delete-recovery-item-v98 small{display:block;margin-top:2px;color:#687a71;font-size:11px;font-weight:750;white-space:normal}
-html body #recordsView .delete-recovery-item-v98 button{flex:0 0 auto;min-height:38px;border:1px solid #b8d8c5;border-radius:11px;background:#edf8f1;color:#0b643b;font-size:12px;font-weight:950;padding:0 11px}
-html body #recordsView .delete-recovery-empty-v98{padding:12px;border:1px dashed #cfddd4;border-radius:13px;color:#718077;background:#fff;font-size:12px;font-weight:800;text-align:center}
+html body .delete-recovery-head-v98{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px}
+html body .delete-recovery-head-v98 small{display:block;font-size:10px;letter-spacing:.08em;font-weight:950;color:#7b5b13;margin-bottom:3px}
+html body .delete-recovery-head-v98 h3{margin:0;color:#173a2c;font-size:16px;font-weight:950}
+html body .delete-recovery-head-v98 p{margin:3px 0 0;color:#64766d;font-size:12px;font-weight:750}
+html body .delete-recovery-count-v98{flex:0 0 auto;padding:6px 9px;border-radius:999px;background:#fff2c7;color:#75540b;border:1px solid #f4d77c;font-size:11px;font-weight:950}
+html body .delete-recovery-list-v98{display:grid;gap:8px}
+html body .delete-recovery-item-v98{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 11px;border-radius:14px;background:#fff;border:1px solid #dfe9e3}
+html body .delete-recovery-item-v98>div{min-width:0}
+html body .delete-recovery-item-v98 b{display:block;color:#173a2c;font-size:13px;font-weight:950}
+html body .delete-recovery-item-v98 small{display:block;margin-top:2px;color:#687a71;font-size:11px;font-weight:750;white-space:normal}
+html body .delete-recovery-item-v98 button{flex:0 0 auto;min-height:38px;border:1px solid #b8d8c5;border-radius:11px;background:#edf8f1;color:#0b643b;font-size:12px;font-weight:950;padding:0 11px}
+html body .delete-recovery-empty-v98{padding:12px;border:1px dashed #cfddd4;border-radius:13px;color:#718077;background:#fff;font-size:12px;font-weight:800;text-align:center}
 html body .export-filter-picker-v98{display:grid;gap:12px;margin-top:10px;text-align:left}
 html body .export-filter-group-v98{padding:11px;border:1px solid #dfe9e3;border-radius:14px;background:#f9fcfa}
 html body .export-filter-group-v98>b{display:block;margin-bottom:8px;color:#173a2c;font-size:13px}
@@ -2060,4 +2060,11 @@ html body .export-filter-checks-v98{display:grid;grid-template-columns:repeat(2,
 html body .export-filter-check-v98{display:flex;align-items:center;gap:7px;min-height:38px;padding:7px 9px;border:1px solid #e0e9e4;border-radius:11px;background:#fff;color:#33473e;font-size:12px;font-weight:850}
 html body .export-filter-check-v98 input{width:18px;height:18px;accent-color:#16834e;flex:0 0 auto}
 html body .export-filter-help-v98{padding:9px 10px;border-radius:12px;background:#eef7f2;color:#496158;font-size:12px;font-weight:750;line-height:1.4}
-@media(max-width:430px){html body .export-filter-checks-v98{grid-template-columns:1fr}html body #recordsView .delete-recovery-item-v98{align-items:flex-start}}
+@media(max-width:430px){html body .export-filter-checks-v98{grid-template-columns:1fr}html body .delete-recovery-item-v98{align-items:flex-start}}
+
+/* === V99: Beyan kurtarma konumu + bağımsız indirme seçim penceresi === */
+html body #beyanView .delete-recovery-v98{margin:14px 0 2px!important}
+html body .export-filter-check-v98{position:relative;cursor:pointer;user-select:none}
+html body .export-filter-check-v98:has(input:checked){border-color:#80c59e;background:#edf9f2;color:#0d623d;box-shadow:0 0 0 1px rgba(22,131,78,.06) inset}
+html body .export-filter-check-v98 input{pointer-events:none}
+html body .export-filter-picker-v98{max-height:min(52vh,460px);overflow:auto;padding-right:2px}

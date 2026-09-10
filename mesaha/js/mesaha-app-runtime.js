@@ -5007,10 +5007,10 @@
             if (!items.length) return "";
             return `<div class="export-filter-group-v98"><b>${esc(title)}</b><div class="export-filter-checks-v98">${items.map((item,idx) => `<label class="export-filter-check-v98"><input type="checkbox" ${attr}="${idx}" checked><span>${esc(item.label)}</span></label>`).join("")}</div></div>`;
           };
-          const hasChoice = opts.trees.length > 1 || opts.cutters.length > 1;
-          const html = `<p><b>Varsayılan olarak tüm kayıtlar indirilecek.</b></p>
-            <div class="export-filter-help-v98">Ekranda seçili barkodlar ve açık olan filtreler indirmeyi artık otomatik etkilemez. İstersen aşağıdaki seçenekleri kaldırarak sadece istediğin grupları indirebilirsin.</div>
-            ${hasChoice ? `<div class="export-filter-picker-v98" id="exportFilterPickerV98">${section("Ağaç", opts.trees, "data-export-tree-v98")}${section("Kesimci", opts.cutters, "data-export-cutter-v98")}</div>` : ""}`;
+          /* V99: İndirme kapsamı her zaman bu pencereden seçilir. Ölçümler/Beyan filtresi ve seçili barkodlar taşınmaz. */
+          const html = `<p><b>Varsayılan olarak tüm kayıtlar seçilidir.</b></p>
+            <div class="export-filter-help-v98">Ölçümler ve Beyan ekranındaki arama, seçili barkodlar, ağaç filtresi veya kesimci filtresi bu indirmeyi etkilemez. İndirme kapsamını sadece aşağıdan seç.</div>
+            <div class="export-filter-picker-v98" id="exportFilterPickerV98">${section("Ağaç", opts.trees, "data-export-tree-v98")}${section("Kesimci", opts.cutters, "data-export-cutter-v98")}</div>`;
           const ok = await modal({
             title: "Mesaha Dosyasını İndir",
             icon: "▣",
@@ -5039,6 +5039,8 @@
           });
           return ok ? (chosenScope || exportScope()) : null;
         }
+        /* Feature runtime capture-handler da aynı seçiciyi kullanır; tek indirme akışı. */
+        window.MesahaChooseExportScopeV99 = chooseExportScopeV98;
 
         function recoveryDateV98(value) {
           try { return new Date(value).toLocaleString("tr-TR", { dateStyle: "medium", timeStyle: "short" }); } catch (_) { return String(value || "-"); }

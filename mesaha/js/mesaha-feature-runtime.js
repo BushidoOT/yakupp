@@ -437,7 +437,7 @@
             );
           const scopeEl = $("exportScopeInfo");
           if (scopeEl) {
-            scopeEl.textContent = "İndirilecek: " + scope.text;
+            scopeEl.textContent = "İndirme kapsamı: Mesaha Dosyasını İndir ekranından seçilir • Varsayılan: Tümü";
             scopeEl.classList.add("orbis-v392");
           }
           const sumM3 = $("sumM3");
@@ -459,8 +459,11 @@
             detail.innerHTML = `<div><small>Son Barkod</small><b>${esc(last ? last.barcode : "-")}</b></div><div><small>Son Ağaç</small><b>${esc(last ? last.treeType : "-")}</b></div><div><small>Bugün Kayıt</small><b>${todayList.length}</b></div><div><small>Bugün m³</small><b>${fmt(tt.m3, 3)} m³</b></div><div><small>Toplam Kayıt</small><b>${all.length}</b></div><div><small>Toplam m³</small><b>${fmt(allT.m3, 3)} m³</b></div>`;
           }
         }
-        function downloadFile() {
-          const scope = exportScope();
+        function downloadFile(scopeInput) {
+          const allForExport = activeRecords();
+          const scope = scopeInput && Array.isArray(scopeInput.list)
+            ? scopeInput
+            : { list: allForExport, text: `Tüm kayıtlar (${allForExport.length})`, mode: "all" };
           if (!scope.list.length) {
             toast("Çıktı için kayıt yok.");
             return;
@@ -609,8 +612,11 @@
             appVersion: String((window.MESAHA_VERSION && window.MESAHA_VERSION.version) || "Mesaha İO"),
           });
         }
-        async function shareXlsV62() {
-          const scope = exportScope();
+        async function shareXlsV62(scopeInput) {
+          const allForExport = activeRecords();
+          const scope = scopeInput && Array.isArray(scopeInput.list)
+            ? scopeInput
+            : { list: allForExport, text: `Tüm kayıtlar (${allForExport.length})`, mode: "all" };
           if (!scope.list.length) return toast("Paylaşılacak kayıt yok.");
           let built;
           try {
@@ -632,15 +638,18 @@
             const linkData = await createTemporaryShareLinkV65(built);
             await showShareLinkReadyV65(built, linkData, scope);
           } catch (err) {
-            downloadFile();
+            downloadFile(scope);
             const message = err && err.message
               ? err.message + " Dosya indirildi; İndirilenler klasöründen paylaşabilirsiniz."
               : "Paylaşım bağlantısı hazırlanamadı. Dosya indirildi.";
             toast(message);
           }
         }
-        async function confirmAndDownload() {
-          const scope = exportScope();
+        async function confirmAndDownload(scopeInput) {
+          const allForExport = activeRecords();
+          const scope = scopeInput && Array.isArray(scopeInput.list)
+            ? scopeInput
+            : { list: allForExport, text: `Tüm kayıtlar (${allForExport.length})`, mode: "all" };
           const st = totals(scope.list);
           const html = `<p><b>${esc(scope.text)}</b> ORBİS uyumlu .xls olarak hazırlanacak.</p><div class="modal-note"><b>Kontrol:</b> ${scope.list.length} kayıt • ${fmt(st.m3, 3)} m³<br>Hacimler ORBİS mantığıyla her kayıt 3 haneye yuvarlanarak hesaplanır.</div><div class="orbis-video-note-v392">Video anlatım: <a class="orbis-video-link-v392" href="https://youtube.com/shorts/J25xp8NrHw8?si=-SeJsWMar3Ja3O4I" target="_blank" rel="noopener">ORBİS aktarım videosunu aç</a></div><div class="xls-share-note-v62"><b>Paylaş</b> düğmesi iPhone/iPad’de dosyayı doğrudan paylaşır. Android Chrome’da XLS dosya eki desteklenmediği için 24 saatlik güvenli indirme bağlantısı hazırlanır ve sistem paylaşım menüsüyle gönderilir.</div><ol><li>Dosyayı bilgisayara aktarınız.</li><li>ORBİS’e bilgisayar üzerinden giriş yapınız.</li><li>İşletme Pazarlama modülüne giriniz.</li><li>Kesme Faaliyetleri Raporu ekranında şeflik ve bölme bilgilerini giriniz.</li><li>Bölmeye çift tıklayıp dosya yükleme bölümünden <b>Excel’den Aktar</b> deyiniz.</li></ol>`;
           let action = "download";
@@ -651,12 +660,68 @@
               html,
               buttons: [
                 { text: "Dosyayı İndir", value: "download", cls: "primary xls-download-v62" },
-                { text: "Paylaş", value: false, cls: "xls-share-button-v62", onClick: shareXlsV62 },
+                { text: "Paylaş", value: false, cls: "xls-share-button-v62", onClick: () => shareXlsV62(scope) },
                 { text: "Vazgeç", value: false, cls: "ghost xls-cancel-v62" },
               ],
             });
           else action = confirm(scope.text + " indirilsin mi?") ? "download" : false;
-          if (action === "download") downloadFile();
+          if (action === "download") downloadFile(scope);
+        }
+        function downloadFilterOptionsV99() {
+          const list = activeRecords().slice();
+          const trees = new Map(), cutters = new Map();
+          list.forEach((r) => {
+            const tree = norm(r && r.treeType) || "Ağaç kaydı yok";
+            const cutterRaw = norm(r && r.cutter);
+            const cutterKey = cutterRaw || "__NO_CUTTER__";
+            if (!trees.has(tree)) trees.set(tree, { key: tree, label: tree });
+            if (!cutters.has(cutterKey)) cutters.set(cutterKey, { key: cutterKey, label: cutterRaw || "Kesimci kaydı yok" });
+          });
+          const sorter = (a,b) => String(a.label).localeCompare(String(b.label), "tr");
+          return { list, trees: Array.from(trees.values()).sort(sorter), cutters: Array.from(cutters.values()).sort(sorter) };
+        }
+        function collectDownloadScopeV99(opts) {
+          const root = $("exportFilterPickerV99");
+          if (!root) return { list: opts.list.slice(), text: `Tüm kayıtlar (${opts.list.length})`, mode: "all" };
+          const treeChecks = Array.from(root.querySelectorAll("[data-export-tree-v99]"));
+          const cutterChecks = Array.from(root.querySelectorAll("[data-export-cutter-v99]"));
+          const treeKeys = new Set(treeChecks.filter(x => x.checked).map(x => opts.trees[Number(x.getAttribute("data-export-tree-v99"))]).filter(Boolean).map(x => x.key));
+          const cutterKeys = new Set(cutterChecks.filter(x => x.checked).map(x => opts.cutters[Number(x.getAttribute("data-export-cutter-v99"))]).filter(Boolean).map(x => x.key));
+          if (treeChecks.length && !treeKeys.size) throw new Error("En az bir ağaç seçin.");
+          if (cutterChecks.length && !cutterKeys.size) throw new Error("En az bir kesimci seçin.");
+          const list = opts.list.filter((r) => {
+            const tree = norm(r && r.treeType) || "Ağaç kaydı yok";
+            const cutter = norm(r && r.cutter) || "__NO_CUTTER__";
+            return (!treeChecks.length || treeKeys.has(tree)) && (!cutterChecks.length || cutterKeys.has(cutter));
+          });
+          if (!list.length) throw new Error("Seçilen filtrelerde indirilecek kayıt yok.");
+          const allSelected = list.length === opts.list.length && treeKeys.size === opts.trees.length && cutterKeys.size === opts.cutters.length;
+          return { list, text: allSelected ? `Tüm kayıtlar (${list.length})` : `Seçilen indirme filtreleri (${list.length})`, mode: allSelected ? "all" : "download-filter-v99" };
+        }
+        async function openDownloadFlowV99() {
+          const opts = downloadFilterOptionsV99();
+          if (!opts.list.length) return toast("Çıktı için kayıt yok.");
+          const section = (title, items, attr) => items.length
+            ? `<div class="export-filter-group-v98"><b>${esc(title)}</b><div class="export-filter-checks-v98">${items.map((item,idx) => `<label class="export-filter-check-v98"><input type="checkbox" ${attr}="${idx}" checked><span>${esc(item.label)}</span></label>`).join("")}</div></div>`
+            : "";
+          const html = `<p><b>İndirme kapsamını seç.</b> Varsayılan olarak tümü işaretlidir.</p>
+            <div class="export-filter-help-v98">Ölçümler ve Beyan ekranındaki arama, seçili barkodlar ve filtreler burada geçerli değildir. Excel sadece bu pencerede işaretli olan ağaç ve kesimcilere göre oluşturulur.</div>
+            <div class="export-filter-picker-v98" id="exportFilterPickerV99">${section("Ağaç", opts.trees, "data-export-tree-v99")}${section("Kesimci", opts.cutters, "data-export-cutter-v99")}</div>
+            <div class="modal-note"><b>ORBİS:</b> İndirilen .xls dosyasını bilgisayardan Kesme Faaliyetleri Raporu → Excel’den Aktar bölümünde kullanabilirsiniz.</div>`;
+          let chosenScope = null;
+          const action = await window.mesahaModal({
+            title: "Mesaha Dosyasını İndir",
+            icon: "▣",
+            html,
+            buttons: [
+              { text: "Vazgeç", value: false, cls: "ghost" },
+              { text: "Paylaş", value: "share", cls: "soft xls-share-button-v62", onClick: async () => { chosenScope = collectDownloadScopeV99(opts); } },
+              { text: "İndir", value: "download", cls: "primary xls-download-v62", onClick: async () => { chosenScope = collectDownloadScopeV99(opts); } },
+            ],
+          });
+          if (!chosenScope) return;
+          if (action === "download") return downloadFile(chosenScope);
+          if (action === "share") return shareXlsV62(chosenScope);
         }
         function intercept(ev) {
           const target =
@@ -669,11 +734,12 @@
           if (ev.stopImmediatePropagation) ev.stopImmediatePropagation();
           if (exportRunning) return;
           exportRunning = true;
-          Promise.resolve(confirmAndDownload()).finally(() =>
-            setTimeout(() => {
-              exportRunning = false;
-            }, 650),
-          );
+          Promise.resolve(openDownloadFlowV99())
+            .finally(() =>
+              setTimeout(() => {
+                exportRunning = false;
+              }, 650),
+            );
         }
         function wrapOrbisDownload() {
           if (

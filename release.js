@@ -1,20 +1,20 @@
 (function (root) {
   "use strict";
   const DATA = /*MESAHA_RELEASE_DATA_START*/{
-  "build": 98,
-  "version": "98.0.0",
+  "build": 99,
+  "version": "99.0.0",
   "channel": "stable",
-  "releasedAt": "2026-09-10T16:35:00+03:00",
-  "assetToken": "orman-io-stable-20260910-v98",
-  "cacheName": "orman-io-shell-stable-20260910-v98",
+  "releasedAt": "2026-09-10T17:35:00+03:00",
+  "assetToken": "orman-io-stable-20260910-v99",
+  "cacheName": "orman-io-shell-stable-20260910-v99",
   "apps": {
     "suite": {
       "label": "Orman İO",
-      "version": "98.0.0"
+      "version": "99.0.0"
     },
     "mesaha": {
       "label": "Mesaha İO",
-      "version": "6.37"
+      "version": "6.38"
     },
     "istif": {
       "label": "İstif İO",
@@ -22,10 +22,10 @@
     },
     "admin": {
       "label": "Orman İO Yönetim",
-      "version": "98.0.0"
+      "version": "99.0.0"
     }
   },
-  "description": "V98: Mesaha Excel indirmesi ekrandaki seçili barkod ve aktif filtrelerden bağımsız hale getirildi. İndirme penceresinde mevcut ağaç ve kesimci filtreleri varsayılan olarak tümü seçili listelenir. Tümünü Sil işlemlerinden önce kalıcı kurtarma kopyası alınır ve son 3 silme yedeği Beyan bölümünden geri yüklenebilir."
+  "description": "V99: Tümünü Sil kurtarma alanı Ölçümlerden gerçek Beyan ekranına taşındı. Mesaha Dosyasını İndir tek seçim penceresine bağlandı; Ölçümler/Beyan arama, barkod seçimi ve filtreleri indirmeyi etkilemez. Ağaç ve kesimci seçenekleri her açılışta varsayılan tümü seçili gelir; İndir veya Paylaş yalnız bu penceredeki seçime göre çalışır."
 }/*MESAHA_RELEASE_DATA_END*/;
   const APP_NAMES = DATA.apps || {};
   const SCRIPT_URL = (() => {
